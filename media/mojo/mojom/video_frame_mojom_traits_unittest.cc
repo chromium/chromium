@@ -220,9 +220,8 @@ TEST_F(VideoFrameStructTraitsTest, InvalidOffsets) {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 TEST_F(VideoFrameStructTraitsTest, OOPVDMailboxVideoFrame) {
   gpu::Mailbox mailbox = gpu::Mailbox::Generate();
-  gpu::MailboxHolder mailbox_holder(mailbox, gpu::SyncToken(), 0);
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapOOPVDMailbox(
-      PIXEL_FORMAT_ARGB, mailbox_holder, VideoFrame::ReleaseMailboxCB(),
+      PIXEL_FORMAT_ARGB, mailbox, VideoFrame::ReleaseMailboxCB(),
       gfx::Size(100, 100), gfx::Rect(10, 10, 80, 80), gfx::Size(200, 100),
       base::Seconds(100));
 

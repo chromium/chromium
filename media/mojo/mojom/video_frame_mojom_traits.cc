@@ -161,7 +161,7 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
     } else {
       return media::mojom::VideoFrameData::NewMailboxData(
           media::mojom::MailboxVideoFrameData::New(
-              std::move(mailbox_holder), std::move(input->ycbcr_info())));
+              std::move(mailbox_holder.mailbox)));
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
     }
   }
@@ -365,18 +365,14 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     media::mojom::MailboxVideoFrameDataDataView mailbox_data;
     data.GetMailboxDataDataView(&mailbox_data);
 
-    gpu::MailboxHolder mailbox_holder;
-    if (!mailbox_data.ReadMailboxHolder(&mailbox_holder))
+    gpu::Mailbox mailbox;
+    if (!mailbox_data.ReadMailbox(&mailbox)) {
       return false;
-
-    std::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
-    if (!mailbox_data.ReadYcbcrData(&ycbcr_info))
-      return false;
+    }
 
     frame = media::VideoFrame::WrapOOPVDMailbox(
-        format, mailbox_holder, media::VideoFrame::ReleaseMailboxCB(),
-        coded_size, visible_rect, natural_size, timestamp);
-    frame->set_ycbcr_info(ycbcr_info);
+        format, mailbox, media::VideoFrame::ReleaseMailboxCB(), coded_size,
+        visible_rect, natural_size, timestamp);
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   } else if (data.is_shared_image_data()) {
     media::mojom::SharedImageVideoFrameDataDataView shared_image_data;

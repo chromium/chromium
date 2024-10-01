@@ -247,7 +247,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // argument when the VideoFrame is to be destroyed.
   static scoped_refptr<VideoFrame> WrapOOPVDMailbox(
       VideoPixelFormat format,
-      const gpu::MailboxHolder& mailbox_holder,
+      const gpu::Mailbox& mailbox,
       ReleaseMailboxCB mailbox_holder_release_cb,
       const gfx::Size& coded_size,
       const gfx::Rect& visible_rect,

@@ -456,7 +456,7 @@ VideoFrame::CreateFrameForGpuMemoryBufferOrMappableSIInternal(
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 scoped_refptr<VideoFrame> VideoFrame::WrapOOPVDMailbox(
     VideoPixelFormat format,
-    const gpu::MailboxHolder& mailbox_holder,
+    const gpu::Mailbox& mailbox,
     ReleaseMailboxCB mailbox_holder_release_cb,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
@@ -468,7 +468,12 @@ scoped_refptr<VideoFrame> VideoFrame::WrapOOPVDMailbox(
     return nullptr;
   }
 
-  frame->mailbox_holder_ = mailbox_holder;
+  // `mailbox` is not backed by a GPU texture, so using a texture target of 0
+  // is fine.
+  constexpr uint32_t kTextureTarget = 0;
+
+  frame->mailbox_holder_ =
+      gpu::MailboxHolder(mailbox, gpu::SyncToken(), kTextureTarget);
   frame->mailbox_holder_and_gmb_release_cb_ =
       WrapReleaseMailboxCB(std::move(mailbox_holder_release_cb));
 

@@ -5,7 +5,7 @@
 module media.mojom;
 
 import "gpu/ipc/common/exported_shared_image.mojom";
-import "gpu/ipc/common/mailbox_holder.mojom";
+import "gpu/ipc/common/mailbox.mojom";
 import "gpu/ipc/common/sync_token.mojom";
 import "gpu/ipc/common/vulkan_ycbcr_info.mojom";
 import "media/mojo/mojom/audio_data.mojom";
@@ -493,8 +493,7 @@ struct GpuMemoryBufferSharedImageVideoFrameData {
 [EnableIf=is_linux_or_chromeos]
 // This defines video frame data stored in texture mailbox.
 struct MailboxVideoFrameData {
-  gpu.mojom.MailboxHolder mailbox_holder;
-  gpu.mojom.VulkanYCbCrInfo? ycbcr_data;
+  gpu.mojom.Mailbox mailbox;
 };
 
 // This defines video frame data stored in texture shared images.
