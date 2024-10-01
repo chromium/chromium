@@ -2292,7 +2292,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.NetworkTransaction.GenerateProxyAuthTokenBlockTime{HostType}.{Protocol}"
-    units="ms" expires_after="2024-11-13">
+    units="ms" expires_after="2025-04-30">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -2321,7 +2321,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.NetworkTransaction.GenerateServerAuthTokenBlockTime{HostType}.{Protocol}"
-    units="ms" expires_after="2024-11-13">
+    units="ms" expires_after="2025-04-30">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
