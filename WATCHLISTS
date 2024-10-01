@@ -2144,6 +2144,12 @@
         'content/browser/tab_contents/|'\
         'chrome/browser/ui/tab_contents/',
     },
+    'tab_group_infra': {
+      'filepath': 'chrome/browser/data_sharing/'\
+        '|chrome/browser/tab_group_sync/'\
+        '|components/data_sharing/'\
+        '|components/saved_tab_groups/'
+    },
     'tab_interface': {
       'filepath': 'chrome/browser/tab/'
     },
@@ -3271,6 +3277,7 @@
     'tab_contents': ['ajwong+watch@chromium.org',
                      'avi@chromium.org',
                      'creis+watch@chromium.org'],
+    'tab_group_infra' : [ 'chrome-tab-group-eng-leads+watch-infra@google.com' ],
     'tab_interface': ['jinsukkim+watch@chromium.org'],
     'tab_ui_and_start_surface': ['meiliang+watch@chromium.org',
                                  'yuezhanggg+watch@chromium.org',
