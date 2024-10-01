@@ -681,8 +681,7 @@ suite('AutofillSectionAddressTests', function() {
     });
   });
 
-  // TODO(crbug.com/40279141): Fix the flakiness.
-  test.skip('verifySyncRecordTypeNoticeForNewAddress', async () => {
+  test('verifySyncRecordTypeNoticeForNewAddress', async () => {
     const section = await createAutofillSection([], {}, {
       ...STUB_USER_ACCOUNT_INFO,
       email: 'stub-user@example.com',
