@@ -971,13 +971,17 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)ntpFeedMenuEnableButton {
-  return [ChromeMatchersAppInterface
-      buttonWithAccessibilityLabelID:IDS_IOS_DISCOVER_FEED_MENU_TURN_ON_ITEM];
+  return grey_allOf(
+      [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:
+                                      IDS_IOS_DISCOVER_FEED_MENU_TURN_ON_ITEM],
+      grey_interactable(), nil);
 }
 
 + (id<GREYMatcher>)ntpFeedMenuDisableButton {
-  return [ChromeMatchersAppInterface
-      buttonWithAccessibilityLabelID:IDS_IOS_DISCOVER_FEED_MENU_TURN_OFF_ITEM];
+  return grey_allOf(
+      [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:
+                                      IDS_IOS_DISCOVER_FEED_MENU_TURN_OFF_ITEM],
+      grey_interactable(), nil);
 }
 
 // TODO(crbug.com/40106317): Remove this stub.
