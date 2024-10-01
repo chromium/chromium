@@ -329,9 +329,16 @@ def _generate_variants_pyl(ctx):
 
         _generate_mixin_values(formatter, mixin, generate_skylab_container = True)
 
-        if n.props.mixins:
+        mixins = []
+
+        # The order that mixins are declared is significant,
+        # DEFINITION_ORDER preserves the order that the edges were added
+        # from the parent to the child
+        for mixin in graph.children(n.key, _targets_nodes.MIXIN.kind, graph.DEFINITION_ORDER):
+            mixins.append(mixin.key.id)
+        if mixins:
             formatter.open_scope("'mixins': [")
-            for m in n.props.mixins:
+            for m in mixins:
                 formatter.add_line("'{}',".format(m))
             formatter.close_scope("],")
 

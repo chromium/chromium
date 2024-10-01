@@ -547,15 +547,20 @@ def _variant(
     """
     if enabled == None:
         enabled = True
-    key = _targets_nodes.VARIANT.add(name, props = dict(
+    variant_key = _targets_nodes.VARIANT.add(name, props = dict(
         identifier = identifier,
         enabled = enabled,
-        mixins = mixins,
         mixin_values = _mixin_values(**kwargs),
     ))
 
+    for m in mixins or []:
+        if generate_pyl_entry and type(m) != type(""):
+            fail("variants used by //testing/buildbot cannot use anonymous mixins", trace = stacktrace(skip = 2))
+        mixin_key = _targets_nodes.MIXIN.key(m)
+        graph.add_edge(variant_key, mixin_key)
+
     if generate_pyl_entry:
-        graph.add_edge(keys.project(), key)
+        graph.add_edge(keys.project(), variant_key)
 
 def _bundle(*, name = None, additional_compile_targets = None, targets = None, mixins = None, variants = None, per_test_modifications = None):
     """Define a targets bundle.
