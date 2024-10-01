@@ -162,7 +162,6 @@ PresentationConnection::PresentationConnection(LocalDOMWindow& window,
       state_(mojom::blink::PresentationConnectionState::CONNECTING),
       connection_receiver_(this, &window),
       target_connection_(&window),
-      binary_type_(kBinaryTypeArrayBuffer),
       file_reading_task_runner_(window.GetTaskRunner(TaskType::kFileReading)) {
   UpdateStateIfNeeded();
 }
@@ -540,27 +539,12 @@ void PresentationConnection::HandleMessageQueue() {
   }
 }
 
-String PresentationConnection::binaryType() const {
-  switch (binary_type_) {
-    case kBinaryTypeBlob:
-      return "blob";
-    case kBinaryTypeArrayBuffer:
-      return "arraybuffer";
-  }
-  NOTREACHED_IN_MIGRATION();
-  return String();
+V8BinaryType PresentationConnection::binaryType() const {
+  return V8BinaryType(binary_type_);
 }
 
-void PresentationConnection::setBinaryType(const String& binary_type) {
-  if (binary_type == "blob") {
-    binary_type_ = kBinaryTypeBlob;
-    return;
-  }
-  if (binary_type == "arraybuffer") {
-    binary_type_ = kBinaryTypeArrayBuffer;
-    return;
-  }
-  NOTREACHED_IN_MIGRATION();
+void PresentationConnection::setBinaryType(const V8BinaryType& binary_type) {
+  binary_type_ = binary_type.AsEnum();
 }
 
 void PresentationConnection::SendMessageToTargetConnection(
@@ -582,7 +566,7 @@ void PresentationConnection::DidReceiveBinaryMessage(
     return;
 
   switch (binary_type_) {
-    case kBinaryTypeBlob: {
+    case V8BinaryType::Enum::kBlob: {
       auto blob_data = std::make_unique<BlobData>();
       blob_data->AppendBytes(data);
       auto* blob = MakeGarbageCollected<Blob>(
@@ -590,7 +574,7 @@ void PresentationConnection::DidReceiveBinaryMessage(
       DispatchEvent(*MessageEvent::Create(blob));
       return;
     }
-    case kBinaryTypeArrayBuffer:
+    case V8BinaryType::Enum::kArraybuffer:
       DOMArrayBuffer* buffer = DOMArrayBuffer::Create(data);
       DispatchEvent(*MessageEvent::Create(buffer));
       return;
