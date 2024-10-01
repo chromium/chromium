@@ -547,7 +547,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.AllPages.NonAdNetworkBytes" units="KB"
-    expires_after="2024-10-20">
+    expires_after="2025-10-20">
   <owner>alexmt@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -561,7 +561,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.AllPages.PercentNetworkBytesAds"
-    units="%" expires_after="2024-10-20">
+    units="%" expires_after="2025-10-20">
   <owner>alexmt@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <summary>
