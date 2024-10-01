@@ -452,10 +452,6 @@ ProposedLayout LabelButton::CalculateProposedLayout(
   return layouts;
 }
 
-void LabelButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  Button::GetAccessibleNodeData(node_data);
-}
-
 ui::NativeTheme::Part LabelButton::GetThemePart() const {
   return ui::NativeTheme::kPushButton;
 }
