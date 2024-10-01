@@ -815,6 +815,37 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
   }
 }
 
+TEST(BiddingAndAuctionResponseTest, RemovingFramingSucceeds) {
+  struct {
+    std::vector<uint8_t> input;
+    std::vector<uint8_t> expected_output;
+  } kTestCases[] = {
+      // Small one to test basic functionality
+      {
+          {0x02, 0x00, 0x00, 0x00, 0x01, 0xFE, 0x02},
+          {0xFE},
+      },
+      // Bigger one to check that we have the size right.
+      {
+          []() {
+            std::vector<uint8_t> unframed_input(1000, ' ');
+            std::vector<uint8_t> framing = {0x02, 0x00, 0x00, 0x02, 0xFF};
+            std::copy(framing.begin(), framing.end(),
+                      std::inserter(unframed_input, unframed_input.begin()));
+            return unframed_input;
+          }(),
+          std::vector<uint8_t>(0x2FF, ' '),
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    std::optional<base::span<const uint8_t>> result =
+        ExtractCompressedBiddingAndAuctionResponse(test_case.input);
+    ASSERT_TRUE(result);
+    EXPECT_THAT(*result, testing::ElementsAreArray(test_case.expected_output));
+  }
+}
+
 TEST(BiddingAndAuctionResponseTest, PrivateAggregationDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
@@ -860,6 +891,26 @@ TEST(BiddingAndAuctionResponseTest, BAndAPrivateAggregationDisabled) {
   EXPECT_TRUE(result->component_win_pagg_requests.empty());
   EXPECT_TRUE(result->server_filtered_pagg_requests_reserved.empty());
   EXPECT_TRUE(result->server_filtered_pagg_requests_non_reserved.empty());
+}
+
+TEST(BiddingAndAuctionResponseTest, BAndASampleDebugReportsDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kEnableBandASampleDebugReports);
+
+  base::Value::Dict response = CreateResponseDictWithDebugReports(
+      /*maybe_component_win=*/false, /*maybe_is_seller_report=*/std::nullopt,
+      /*maybe_is_win_report=*/false);
+
+  std::optional<BiddingAndAuctionResponse> result =
+      BiddingAndAuctionResponse::TryParse(base::Value(response.Clone()),
+                                          GroupNames(),
+                                          GroupAggregationCoordinators());
+  ASSERT_TRUE(result);
+  BiddingAndAuctionResponse output = CreateExpectedValidResponse();
+  EXPECT_THAT(*result, EqualsBiddingAndAuctionResponse(std::ref(output)));
+  EXPECT_TRUE(result->component_win_debugging_only_reports.empty());
+  EXPECT_TRUE(result->server_filtered_debugging_only_reports.empty());
 }
 
 class BiddingAndAuctionPAggResponseTest : public testing::Test {
@@ -1253,7 +1304,19 @@ TEST_F(BiddingAndAuctionPAggResponseTest,
     }
   }
 }
-TEST(BiddingAndAuctionResponseTest, ForDebuggingOnlyReports) {
+
+class BiddingAndAuctionSampleDebugReportsTest : public testing::Test {
+ public:
+  BiddingAndAuctionSampleDebugReportsTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kEnableBandASampleDebugReports);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(BiddingAndAuctionSampleDebugReportsTest, ForDebuggingOnlyReports) {
   BiddingAndAuctionResponse output = CreateExpectedValidResponse();
   base::Value::List reports;
   reports.Append(base::Value::Dict()
@@ -1294,7 +1357,8 @@ TEST(BiddingAndAuctionResponseTest, ForDebuggingOnlyReports) {
       testing::UnorderedElementsAre(kDebugReportingURL));
 }
 
-TEST(BiddingAndAuctionResponseTest, ForDebuggingOnlyReportsIgnoreErrors) {
+TEST_F(BiddingAndAuctionSampleDebugReportsTest,
+       ForDebuggingOnlyReportsIgnoreErrors) {
   BiddingAndAuctionResponse output = CreateExpectedValidResponse();
   static const base::Value kTestCases[] = {
       {
@@ -1350,7 +1414,8 @@ TEST(BiddingAndAuctionResponseTest, ForDebuggingOnlyReportsIgnoreErrors) {
   }
 }
 
-TEST(BiddingAndAuctionResponseTest, ForDebuggingOnlyReportsComponentWinner) {
+TEST_F(BiddingAndAuctionSampleDebugReportsTest,
+       ForDebuggingOnlyReportsComponentWinner) {
   BiddingAndAuctionResponse output = CreateExpectedValidResponse();
   static const struct {
     std::optional<bool> is_seller_report;
@@ -1385,7 +1450,8 @@ TEST(BiddingAndAuctionResponseTest, ForDebuggingOnlyReportsComponentWinner) {
   }
 }
 
-TEST(BiddingAndAuctionResponseTest, ForDebuggingOnlyReportsServerFiltered) {
+TEST_F(BiddingAndAuctionSampleDebugReportsTest,
+       ForDebuggingOnlyReportsServerFiltered) {
   BiddingAndAuctionResponse output = CreateExpectedValidResponse();
   static const std::optional<bool> kTestCases[] = {
       true,
@@ -1409,37 +1475,6 @@ TEST(BiddingAndAuctionResponseTest, ForDebuggingOnlyReportsServerFiltered) {
         result->server_filtered_debugging_only_reports[url::Origin::Create(
             GURL(kOwnerOrigin))],
         testing::UnorderedElementsAre(kDebugReportingURL));
-  }
-}
-
-TEST(BiddingAndAuctionResponseTest, RemovingFramingSucceeds) {
-  struct {
-    std::vector<uint8_t> input;
-    std::vector<uint8_t> expected_output;
-  } kTestCases[] = {
-      // Small one to test basic functionality
-      {
-          {0x02, 0x00, 0x00, 0x00, 0x01, 0xFE, 0x02},
-          {0xFE},
-      },
-      // Bigger one to check that we have the size right.
-      {
-          []() {
-            std::vector<uint8_t> unframed_input(1000, ' ');
-            std::vector<uint8_t> framing = {0x02, 0x00, 0x00, 0x02, 0xFF};
-            std::copy(framing.begin(), framing.end(),
-                      std::inserter(unframed_input, unframed_input.begin()));
-            return unframed_input;
-          }(),
-          std::vector<uint8_t>(0x2FF, ' '),
-      },
-  };
-
-  for (const auto& test_case : kTestCases) {
-    std::optional<base::span<const uint8_t>> result =
-        ExtractCompressedBiddingAndAuctionResponse(test_case.input);
-    ASSERT_TRUE(result);
-    EXPECT_THAT(*result, testing::ElementsAreArray(test_case.expected_output));
   }
 }
 

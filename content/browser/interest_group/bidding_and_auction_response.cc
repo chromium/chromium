@@ -241,10 +241,13 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
                            output);
     }
   }
-  base::Value::List* for_debugging_only_reports =
-      input_dict->FindList("debugReports");
-  if (for_debugging_only_reports) {
-    TryParseForDebuggingOnlyReports(*for_debugging_only_reports, output);
+
+  if (base::FeatureList::IsEnabled(features::kEnableBandASampleDebugReports)) {
+    base::Value::List* for_debugging_only_reports =
+        input_dict->FindList("debugReports");
+    if (for_debugging_only_reports) {
+      TryParseForDebuggingOnlyReports(*for_debugging_only_reports, output);
+    }
   }
 
   output.result = AuctionResult::kSuccess;
