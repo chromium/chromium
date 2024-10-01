@@ -36,6 +36,11 @@ CameraBufferFactory::CreateGpuMemoryBuffer(const gfx::Size& size,
     gfx::GpuMemoryBufferHandle gmb_handle;
     gpu_channel_host->CreateGpuMemoryBuffer(
         size, viz::GetSharedImageFormat(format), usage, &gmb_handle);
+    if (gmb_handle.is_null()) {
+      LOG(ERROR)
+          << "GpuChannelHost doesn't work. Probably the gpu channel lost.";
+      return nullptr;
+    }
     return gpu_memory_buffer_support_.CreateGpuMemoryBufferImplFromHandle(
         std::move(gmb_handle), size, format, usage, base::NullCallback());
   }
