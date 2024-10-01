@@ -76,6 +76,7 @@ source_set("lib_with_resources") {
   visibility = [ ":*" ]
   sources = [ "installer.rc" ]
   public_deps = [ ":lib" ]
+  deps = [ "//build:branding_buildflags" ]
 }
 
 # `process_version_rc_template` invokes `process_version` with the default

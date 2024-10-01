@@ -481,6 +481,10 @@ During the initialization of the installer, the user is shown a splash screen UI
 briefly before a full-fledged UI is shown. Installer initialization involves
 unzipping and unpacking the installer files.
 
+The splash screen logo can be customized by editing
+[logo.bmp](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/win/installer/logo.bmp)
+.
+
 During installation, the user is presented with a UI that displays the progress
 of the download and installation. The user may close the dialog, which cancels
 the installation. A cancelled installation still results in an event ping to
