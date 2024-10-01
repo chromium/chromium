@@ -29,7 +29,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="ContentExtraction.Inner{InnerType}.Size" units="bytes"
-    expires_after="2025-01-26">
+    expires_after="2025-03-30">
   <owner>sky@chromium.org</owner>
   <owner>swarm-team@google.com</owner>
   <summary>Histogram for size of {InnerType} (in bytes).</summary>
