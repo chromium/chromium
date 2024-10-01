@@ -290,7 +290,7 @@ class BlinkLengthPrinter:
         if ltype == 5:
             return 'Length(MinIntrinsic)'
         if ltype == 6:
-            return 'Length(FillAvailable)'
+            return 'Length(Stretch)'
         if ltype == 7:
             return 'Length(FitContent)'
         if ltype == 8:

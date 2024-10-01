@@ -41,7 +41,7 @@
 namespace blink {
 
 PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_auto_length);
-PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_fill_available_length);
+PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_stretch_length);
 PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_fit_content_length);
 PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_max_content_length);
 PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_min_content_length);
@@ -50,8 +50,7 @@ PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_min_intrinsic_length);
 // static
 void Length::Initialize() {
   new (WTF::NotNullTag::kNotNull, (void*)&g_auto_length) Length(kAuto);
-  new (WTF::NotNullTag::kNotNull, (void*)&g_fill_available_length)
-      Length(kFillAvailable);
+  new (WTF::NotNullTag::kNotNull, (void*)&g_stretch_length) Length(kStretch);
   new (WTF::NotNullTag::kNotNull, (void*)&g_fit_content_length)
       Length(kFitContent);
   new (WTF::NotNullTag::kNotNull, (void*)&g_max_content_length)
@@ -253,14 +252,14 @@ bool Length::HasPercentOrStretch() const {
   if (GetType() == kCalculated) {
     return GetCalculationValue().HasPercentOrStretch();
   }
-  return GetType() == kPercent || GetType() == kFillAvailable;
+  return GetType() == kPercent || GetType() == kStretch;
 }
 
 bool Length::HasStretch() const {
   if (GetType() == kCalculated) {
     return GetCalculationValue().HasStretch();
   }
-  return GetType() == kFillAvailable;
+  return GetType() == kStretch;
 }
 
 bool Length::HasMinContent() const {
@@ -294,10 +293,9 @@ String Length::ToString() const {
   StringBuilder builder;
   builder.Append("Length(");
   static const char* const kTypeNames[] = {
-      "Auto",         "Percent",      "Fixed",         "MinContent",
-      "MaxContent",   "MinIntrinsic", "FillAvailable", "FitContent",
-      "Calculated",   "Flex",         "ExtendToZoom",  "DeviceWidth",
-      "DeviceHeight", "None",         "Content"};
+      "Auto",         "Percent",     "Fixed",        "MinContent", "MaxContent",
+      "MinIntrinsic", "Stretch",     "FitContent",   "Calculated", "Flex",
+      "ExtendToZoom", "DeviceWidth", "DeviceHeight", "None",       "Content"};
   if (type_ < std::size(kTypeNames))
     builder.Append(kTypeNames[type_]);
   else

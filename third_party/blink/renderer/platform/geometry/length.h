@@ -93,7 +93,7 @@ class CalculationValue;
 class Length;
 
 PLATFORM_EXPORT extern const Length& g_auto_length;
-PLATFORM_EXPORT extern const Length& g_fill_available_length;
+PLATFORM_EXPORT extern const Length& g_stretch_length;
 PLATFORM_EXPORT extern const Length& g_fit_content_length;
 PLATFORM_EXPORT extern const Length& g_max_content_length;
 PLATFORM_EXPORT extern const Length& g_min_content_length;
@@ -117,7 +117,7 @@ class PLATFORM_EXPORT Length {
     kMinContent,
     kMaxContent,
     kMinIntrinsic,
-    kFillAvailable,
+    kStretch,
     kFitContent,
     kCalculated,
     kFlex,
@@ -190,7 +190,7 @@ class PLATFORM_EXPORT Length {
   bool operator!=(const Length& o) const { return !(*this == o); }
 
   static const Length& Auto() { return g_auto_length; }
-  static const Length& FillAvailable() { return g_fill_available_length; }
+  static const Length& Stretch() { return g_stretch_length; }
   static const Length& FitContent() { return g_fit_content_length; }
   static const Length& MaxContent() { return g_max_content_length; }
   static const Length& MinContent() { return g_min_content_length; }
@@ -307,7 +307,7 @@ class PLATFORM_EXPORT Length {
   bool IsMinContent() const { return GetType() == kMinContent; }
   bool IsMaxContent() const { return GetType() == kMaxContent; }
   bool IsMinIntrinsic() const { return GetType() == kMinIntrinsic; }
-  bool IsFillAvailable() const { return GetType() == kFillAvailable; }
+  bool IsStretch() const { return GetType() == kStretch; }
   bool IsFitContent() const { return GetType() == kFitContent; }
   bool IsPercent() const { return GetType() == kPercent; }
   // MayHavePercentDependence should be used to decide whether to optimize
