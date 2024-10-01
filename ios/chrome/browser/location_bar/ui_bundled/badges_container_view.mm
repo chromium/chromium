@@ -8,6 +8,11 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
+namespace {
+// The placeholder view leading margin.
+const CGFloat kPlaceholderViewLeadingMargin = 4.8;
+}  // namespace
+
 @implementation LocationBarBadgesContainerView {
   UIStackView* _containerStackView;
 }
@@ -115,8 +120,11 @@
     _placeholderView.hidden = YES;
     [_containerStackView addArrangedSubview:_placeholderView];
     [NSLayoutConstraint activateConstraints:@[
-      [_badgeView.heightAnchor
-          constraintEqualToAnchor:_placeholderView.heightAnchor]
+      [_placeholderView.heightAnchor
+          constraintEqualToAnchor:_containerStackView.heightAnchor],
+      [_placeholderView.leadingAnchor
+          constraintEqualToAnchor:_containerStackView.leadingAnchor
+                         constant:kPlaceholderViewLeadingMargin]
     ]];
   }
   [self updatePlaceholderVisibility];
