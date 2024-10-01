@@ -227,7 +227,7 @@ TEST_F(PinnedTabsMediatorTest, DropPinnedTabs) {
       web_state_list->GetWebStateAt(0)->GetUniqueIdentifier();
   id local_object =
       [[TabInfo alloc] initWithTabID:web_state_id
-                        browserState:regular_browser_->GetBrowserState()];
+                             profile:regular_browser_->GetProfile()];
   NSItemProvider* item_provider = [[NSItemProvider alloc] init];
   UIDragItem* drag_item =
       [[UIDragItem alloc] initWithItemProvider:item_provider];
@@ -238,9 +238,8 @@ TEST_F(PinnedTabsMediatorTest, DropPinnedTabs) {
 
   // Drop "C" before "B".
   web_state_id = web_state_list->GetWebStateAt(1)->GetUniqueIdentifier();
-  local_object =
-      [[TabInfo alloc] initWithTabID:web_state_id
-                        browserState:regular_browser_->GetBrowserState()];
+  local_object = [[TabInfo alloc] initWithTabID:web_state_id
+                                        profile:regular_browser_->GetProfile()];
   item_provider = [[NSItemProvider alloc] init];
   drag_item = [[UIDragItem alloc] initWithItemProvider:item_provider];
   drag_item.localObject = local_object;
@@ -267,7 +266,7 @@ TEST_F(PinnedTabsMediatorTest, DropRegularTabs) {
       web_state_list->GetWebStateAt(4)->GetUniqueIdentifier();
   id local_object =
       [[TabInfo alloc] initWithTabID:web_state_id
-                        browserState:regular_browser_->GetBrowserState()];
+                             profile:regular_browser_->GetProfile()];
   NSItemProvider* item_provider = [[NSItemProvider alloc] init];
   UIDragItem* drag_item =
       [[UIDragItem alloc] initWithItemProvider:item_provider];
@@ -278,9 +277,8 @@ TEST_F(PinnedTabsMediatorTest, DropRegularTabs) {
 
   // Drop "D" after "E".
   web_state_id = web_state_list->GetWebStateAt(4)->GetUniqueIdentifier();
-  local_object =
-      [[TabInfo alloc] initWithTabID:web_state_id
-                        browserState:regular_browser_->GetBrowserState()];
+  local_object = [[TabInfo alloc] initWithTabID:web_state_id
+                                        profile:regular_browser_->GetProfile()];
   item_provider = [[NSItemProvider alloc] init];
   drag_item = [[UIDragItem alloc] initWithItemProvider:item_provider];
   drag_item.localObject = local_object;
@@ -307,7 +305,7 @@ TEST_F(PinnedTabsMediatorTest, DropTabGroupTabs) {
       web_state_list->GetWebStateAt(4)->GetUniqueIdentifier();
   id local_object =
       [[TabInfo alloc] initWithTabID:web_state_id
-                        browserState:regular_browser_->GetBrowserState()];
+                             profile:regular_browser_->GetProfile()];
   NSItemProvider* item_provider = [[NSItemProvider alloc] init];
   UIDragItem* drag_item =
       [[UIDragItem alloc] initWithItemProvider:item_provider];
@@ -318,9 +316,8 @@ TEST_F(PinnedTabsMediatorTest, DropTabGroupTabs) {
 
   // Drop "D" after "E".
   web_state_id = web_state_list->GetWebStateAt(4)->GetUniqueIdentifier();
-  local_object =
-      [[TabInfo alloc] initWithTabID:web_state_id
-                        browserState:regular_browser_->GetBrowserState()];
+  local_object = [[TabInfo alloc] initWithTabID:web_state_id
+                                        profile:regular_browser_->GetProfile()];
   item_provider = [[NSItemProvider alloc] init];
   drag_item = [[UIDragItem alloc] initWithItemProvider:item_provider];
   drag_item.localObject = local_object;
@@ -330,9 +327,8 @@ TEST_F(PinnedTabsMediatorTest, DropTabGroupTabs) {
 
   // Drop "F" after "D".
   web_state_id = web_state_list->GetWebStateAt(5)->GetUniqueIdentifier();
-  local_object =
-      [[TabInfo alloc] initWithTabID:web_state_id
-                        browserState:regular_browser_->GetBrowserState()];
+  local_object = [[TabInfo alloc] initWithTabID:web_state_id
+                                        profile:regular_browser_->GetProfile()];
   item_provider = [[NSItemProvider alloc] init];
   drag_item = [[UIDragItem alloc] initWithItemProvider:item_provider];
   drag_item.localObject = local_object;

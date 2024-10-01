@@ -1048,7 +1048,7 @@ TEST_P(BaseGridMediatorTest, DropLocalTab) {
       web_state_list->GetWebStateAt(2)->GetUniqueIdentifier();
 
   id local_object = [[TabInfo alloc] initWithTabID:web_state_id
-                                      browserState:browser_->GetBrowserState()];
+                                           profile:browser_->GetProfile()];
   NSItemProvider* item_provider = [[NSItemProvider alloc] init];
   UIDragItem* drag_item =
       [[UIDragItem alloc] initWithItemProvider:item_provider];
@@ -1077,7 +1077,7 @@ TEST_P(BaseGridMediatorTest, DropLocalTabFromTabGroup) {
   web::WebStateID web_state_id =
       web_state_list->GetWebStateAt(3)->GetUniqueIdentifier();
   id local_object = [[TabInfo alloc] initWithTabID:web_state_id
-                                      browserState:browser_->GetBrowserState()];
+                                           profile:browser_->GetProfile()];
   NSItemProvider* item_provider = [[NSItemProvider alloc] init];
   UIDragItem* drag_item =
       [[UIDragItem alloc] initWithItemProvider:item_provider];
@@ -1089,7 +1089,7 @@ TEST_P(BaseGridMediatorTest, DropLocalTabFromTabGroup) {
   // Drop "E" (in a group) before "G".
   web_state_id = web_state_list->GetWebStateAt(4)->GetUniqueIdentifier();
   local_object = [[TabInfo alloc] initWithTabID:web_state_id
-                                   browserState:browser_->GetBrowserState()];
+                                        profile:browser_->GetProfile()];
   item_provider = [[NSItemProvider alloc] init];
   drag_item = [[UIDragItem alloc] initWithItemProvider:item_provider];
   drag_item.localObject = local_object;
@@ -1122,7 +1122,7 @@ TEST_P(BaseGridMediatorTest, DropCrossWindowTab) {
       "| a* b c ", browser_->GetBrowserState()));
 
   id local_object = [[TabInfo alloc] initWithTabID:other_id
-                                      browserState:browser_->GetBrowserState()];
+                                           profile:browser_->GetProfile()];
   NSItemProvider* item_provider = [[NSItemProvider alloc] init];
   UIDragItem* drag_item =
       [[UIDragItem alloc] initWithItemProvider:item_provider];
@@ -1153,7 +1153,7 @@ TEST_P(BaseGridMediatorTest, DropLocalTabGroup) {
 
   id local_object =
       [[TabGroupInfo alloc] initWithTabGroup:tab_group
-                                browserState:browser_state_.get()];
+                                     profile:browser_state_.get()];
   NSItemProvider* item_provider = [[NSItemProvider alloc] init];
   UIDragItem* drag_item =
       [[UIDragItem alloc] initWithItemProvider:item_provider];
@@ -1199,7 +1199,7 @@ TEST_P(BaseGridMediatorTest, DropCrossBrowserTabGroup) {
 
   id local_object =
       [[TabGroupInfo alloc] initWithTabGroup:other_tab_group
-                                browserState:browser_state_.get()];
+                                     profile:browser_state_.get()];
   NSItemProvider* item_provider = [[NSItemProvider alloc] init];
   UIDragItem* drag_item =
       [[UIDragItem alloc] initWithItemProvider:item_provider];

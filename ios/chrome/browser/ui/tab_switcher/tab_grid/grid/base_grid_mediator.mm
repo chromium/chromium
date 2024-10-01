@@ -1316,7 +1316,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   // asynchronous drops.
   if ([dragItem.localObject isKindOfClass:[TabInfo class]]) {
     TabInfo* tabInfo = static_cast<TabInfo*>(dragItem.localObject);
-    if (tabInfo.browserState != self.browserState) {
+    if (tabInfo.profile != self.browserState) {
       // Tabs from different profiles cannot be dropped.
       return UIDropOperationForbidden;
     }
@@ -1331,7 +1331,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   if ([dragItem.localObject isKindOfClass:[TabGroupInfo class]]) {
     TabGroupInfo* tabGroupInfo =
         static_cast<TabGroupInfo*>(dragItem.localObject);
-    if (tabGroupInfo.browserState != self.browserState) {
+    if (tabGroupInfo.profile != self.browserState) {
       // Tabs from different profiles cannot be dropped.
       return UIDropOperationForbidden;
     }

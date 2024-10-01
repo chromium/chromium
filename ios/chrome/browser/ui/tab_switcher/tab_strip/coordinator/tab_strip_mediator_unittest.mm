@@ -1160,7 +1160,7 @@ TEST_F(TabStripMediatorTest, DropTab) {
       web_state_list->GetWebStateAt(2)->GetUniqueIdentifier();
 
   id local_object = [[TabInfo alloc] initWithTabID:web_state_id
-                                      browserState:browser_->GetBrowserState()];
+                                           profile:browser_->GetProfile()];
   NSItemProvider* item_provider = [[NSItemProvider alloc] init];
   UIDragItem* drag_item =
       [[UIDragItem alloc] initWithItemProvider:item_provider];
@@ -1197,7 +1197,7 @@ TEST_F(TabStripMediatorTest, DropLastTabOfGroup) {
       .WillRepeatedly(Return(saved_group));
 
   id local_object = [[TabInfo alloc] initWithTabID:web_state_id
-                                      browserState:browser_->GetBrowserState()];
+                                           profile:browser_->GetProfile()];
   NSItemProvider* item_provider = [[NSItemProvider alloc] init];
   UIDragItem* drag_item =
       [[UIDragItem alloc] initWithItemProvider:item_provider];
@@ -1249,7 +1249,7 @@ TEST_F(TabStripMediatorTest, DropLastTabOfGroupDifferentBrowser) {
       .WillRepeatedly(Return(saved_group));
 
   id local_object = [[TabInfo alloc] initWithTabID:web_state_id
-                                      browserState:browser_->GetBrowserState()];
+                                           profile:browser_->GetProfile()];
   NSItemProvider* item_provider = [[NSItemProvider alloc] init];
   UIDragItem* drag_item =
       [[UIDragItem alloc] initWithItemProvider:item_provider];
@@ -1295,7 +1295,7 @@ TEST_F(TabStripMediatorTest, DropTabOutOfGroup) {
       .WillRepeatedly(Return(saved_group));
 
   id local_object = [[TabInfo alloc] initWithTabID:web_state_id
-                                      browserState:browser_->GetBrowserState()];
+                                           profile:browser_->GetProfile()];
   NSItemProvider* item_provider = [[NSItemProvider alloc] init];
   UIDragItem* drag_item =
       [[UIDragItem alloc] initWithItemProvider:item_provider];
