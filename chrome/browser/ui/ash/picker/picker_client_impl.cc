@@ -66,6 +66,58 @@ namespace {
 // TODO: b/345303965 - Finalize this string.
 constexpr std::u16string_view kAnnouncementViewName = u"Picker";
 
+// Returns an `AppListControllerDelegate` with empty methods. Used only for
+// constructing search engine providers.
+AppListControllerDelegate* GetEmptyAppListControllerDelegate() {
+  class PickerAppListControllerDelegate : public AppListControllerDelegate {
+   public:
+    PickerAppListControllerDelegate() = default;
+    ~PickerAppListControllerDelegate() override = default;
+
+    // AppListControllerDelegate overrides:
+    void DismissView() override { NOTIMPLEMENTED_LOG_ONCE(); }
+    aura::Window* GetAppListWindow() override {
+      NOTIMPLEMENTED_LOG_ONCE();
+      return nullptr;
+    }
+    int64_t GetAppListDisplayId() override {
+      NOTIMPLEMENTED_LOG_ONCE();
+      return 0;
+    }
+    bool IsAppPinned(const std::string& app_id) override {
+      NOTIMPLEMENTED_LOG_ONCE();
+      return false;
+    }
+    bool IsAppOpen(const std::string& app_id) const override {
+      NOTIMPLEMENTED_LOG_ONCE();
+      return false;
+    }
+    void PinApp(const std::string& app_id) override {
+      NOTIMPLEMENTED_LOG_ONCE();
+    }
+    void UnpinApp(const std::string& app_id) override {
+      NOTIMPLEMENTED_LOG_ONCE();
+    }
+    Pinnable GetPinnable(const std::string& app_id) override {
+      NOTIMPLEMENTED_LOG_ONCE();
+      return AppListControllerDelegate::NO_PIN;
+    }
+    void CreateNewWindow(bool incognito,
+                         bool should_trigger_session_restore) override {
+      NOTIMPLEMENTED_LOG_ONCE();
+    }
+    void OpenURL(Profile* profile,
+                 const GURL& url,
+                 ui::PageTransition transition,
+                 WindowOpenDisposition disposition) override {
+      NOTIMPLEMENTED_LOG_ONCE();
+    }
+  };
+
+  static base::NoDestructor<PickerAppListControllerDelegate> delegate;
+  return delegate.get();
+}
+
 std::vector<ash::PickerSearchResult> CreateSearchResultsForRecentLocalImages(
     std::vector<PickerFileSuggester::LocalFile> files) {
   std::vector<ash::PickerSearchResult> results;
@@ -478,7 +530,7 @@ PickerClientImpl::CreateOmniboxProvider(bool bookmarks,
                                         bool history,
                                         bool open_tabs) {
   return std::make_unique<app_list::OmniboxProvider>(
-      profile_, &app_list_controller_delegate_,
+      profile_, GetEmptyAppListControllerDelegate(),
       crosapi::ProviderTypesPicker(bookmarks, history, open_tabs));
 }
 
@@ -514,68 +566,4 @@ void PickerClientImpl::ShowEditor(std::optional<std::string> preset_query_id,
     editor_mediator->HandleTrigger(std::move(preset_query_id),
                                    std::move(freeform_text));
   }
-}
-
-PickerClientImpl::PickerAppListControllerDelegate::
-    PickerAppListControllerDelegate() = default;
-PickerClientImpl::PickerAppListControllerDelegate::
-    ~PickerAppListControllerDelegate() = default;
-
-void PickerClientImpl::PickerAppListControllerDelegate::DismissView() {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
-aura::Window*
-PickerClientImpl::PickerAppListControllerDelegate::GetAppListWindow() {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
-}
-
-int64_t
-PickerClientImpl::PickerAppListControllerDelegate::GetAppListDisplayId() {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return 0;
-}
-
-bool PickerClientImpl::PickerAppListControllerDelegate::IsAppPinned(
-    const std::string& app_id) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return false;
-}
-
-bool PickerClientImpl::PickerAppListControllerDelegate::IsAppOpen(
-    const std::string& app_id) const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return false;
-}
-
-void PickerClientImpl::PickerAppListControllerDelegate::PinApp(
-    const std::string& app_id) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
-void PickerClientImpl::PickerAppListControllerDelegate::UnpinApp(
-    const std::string& app_id) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
-AppListControllerDelegate::Pinnable
-PickerClientImpl::PickerAppListControllerDelegate::GetPinnable(
-    const std::string& app_id) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return AppListControllerDelegate::NO_PIN;
-}
-
-void PickerClientImpl::PickerAppListControllerDelegate::CreateNewWindow(
-    bool incognito,
-    bool should_trigger_session_restore) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
-void PickerClientImpl::PickerAppListControllerDelegate::OpenURL(
-    Profile* profile,
-    const GURL& url,
-    ui::PageTransition transition,
-    WindowOpenDisposition disposition) {
-  NOTIMPLEMENTED_LOG_ONCE();
 }

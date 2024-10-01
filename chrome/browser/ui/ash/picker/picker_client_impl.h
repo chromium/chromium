@@ -21,8 +21,6 @@
 #include "chrome/browser/ash/input_method/editor_announcer.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ui/ash/picker/picker_link_suggester.h"
-#include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -38,10 +36,6 @@ class SearchProvider;
 
 namespace ash {
 class PickerController;
-}
-
-namespace aura {
-class Window;
 }
 
 namespace user_manager {
@@ -99,30 +93,6 @@ class PickerClientImpl
   }
 
  private:
-  // Implements `AppListControllerDelegate` with empty methods. Used only for
-  // constructing search engine providers.
-  class PickerAppListControllerDelegate : public AppListControllerDelegate {
-   public:
-    PickerAppListControllerDelegate();
-    ~PickerAppListControllerDelegate() override;
-
-    // AppListControllerDelegate overrides:
-    void DismissView() override;
-    aura::Window* GetAppListWindow() override;
-    int64_t GetAppListDisplayId() override;
-    bool IsAppPinned(const std::string& app_id) override;
-    bool IsAppOpen(const std::string& app_id) const override;
-    void PinApp(const std::string& app_id) override;
-    void UnpinApp(const std::string& app_id) override;
-    Pinnable GetPinnable(const std::string& app_id) override;
-    void CreateNewWindow(bool incognito,
-                         bool should_trigger_session_restore) override;
-    void OpenURL(Profile* profile,
-                 const GURL& url,
-                 ui::PageTransition transition,
-                 WindowOpenDisposition disposition) override;
-  };
-
   void OnCrosSearchResultsUpdated(
       CrosSearchResultsCallback callback,
       ash::AppListSearchResultType result_type,
@@ -144,7 +114,6 @@ class PickerClientImpl
   raw_ptr<Profile> profile_ = nullptr;
 
   std::unique_ptr<app_list::SearchEngine> search_engine_;
-  PickerAppListControllerDelegate app_list_controller_delegate_;
 
   // A dedicated cros search engine for filtered searches.
   std::unique_ptr<app_list::SearchEngine> filtered_search_engine_;
