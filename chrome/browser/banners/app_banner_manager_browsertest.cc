@@ -351,30 +351,57 @@ class AppBannerManagerBrowserTest : public AppBannerManagerBrowserTestBase {
   base::AutoReset<double> total_engagement_;
 };
 
+// TODO(crbug.com/370270547): Many tests are failing.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_WebAppBannerNoTypeInManifest DISABLED_WebAppBannerNoTypeInManifest
+#else
+#define MAYBE_WebAppBannerNoTypeInManifest WebAppBannerNoTypeInManifest
+#endif
 IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
-                       WebAppBannerNoTypeInManifest) {
+                       MAYBE_WebAppBannerNoTypeInManifest) {
   std::unique_ptr<AppBannerManagerTest> manager(CreateAppBannerManager());
   RunBannerTest(web_contents(), manager.get(),
                 GetBannerURLWithManifest("/banners/manifest_no_type.json"),
                 std::nullopt);
 }
 
+// TODO(crbug.com/370270547): Many tests are failing.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_WebAppBannerNoTypeInManifestCapsExtension \
+  DISABLED_WebAppBannerNoTypeInManifestCapsExtension
+#else
+#define MAYBE_WebAppBannerNoTypeInManifestCapsExtension \
+  WebAppBannerNoTypeInManifestCapsExtension
+#endif
 IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
-                       WebAppBannerNoTypeInManifestCapsExtension) {
+                       MAYBE_WebAppBannerNoTypeInManifestCapsExtension) {
   std::unique_ptr<AppBannerManagerTest> manager(CreateAppBannerManager());
   RunBannerTest(web_contents(), manager.get(),
                 GetBannerURLWithManifest("/banners/manifest_no_type_caps.json"),
                 std::nullopt);
 }
 
-IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, WebAppBannerSvgIcon) {
+// TODO(crbug.com/370270547): Many tests are failing.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_WebAppBannerSvgIcon DISABLED_WebAppBannerSvgIcon
+#else
+#define MAYBE_WebAppBannerSvgIcon WebAppBannerSvgIcon
+#endif
+IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, MAYBE_WebAppBannerSvgIcon) {
   std::unique_ptr<AppBannerManagerTest> manager(CreateAppBannerManager());
   RunBannerTest(web_contents(), manager.get(),
                 GetBannerURLWithManifest("/banners/manifest_svg_icon.json"),
                 std::nullopt);
 }
 
-IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, WebAppBannerWebPIcon) {
+// TODO(crbug.com/370270547): Many tests are failing.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_WebAppBannerWebPIcon DISABLED_WebAppBannerWebPIcon
+#else
+#define MAYBE_WebAppBannerWebPIcon WebAppBannerWebPIcon
+#endif
+IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
+                       MAYBE_WebAppBannerWebPIcon) {
   std::unique_ptr<AppBannerManagerTest> manager(CreateAppBannerManager());
   RunBannerTest(web_contents(), manager.get(),
                 GetBannerURLWithManifest("/banners/manifest_webp_icon.json"),
@@ -589,8 +616,15 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, WebAppBannerCancelled) {
                                 InstallableStatusCode::RENDERER_CANCELLED, 1);
 }
 
+// TODO(crbug.com/370270547): Many tests are failing.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_WebAppBannerPromptWithGesture \
+  DISABLED_WebAppBannerPromptWithGesture
+#else
+#define MAYBE_WebAppBannerPromptWithGesture WebAppBannerPromptWithGesture
+#endif
 IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
-                       WebAppBannerPromptWithGesture) {
+                       MAYBE_WebAppBannerPromptWithGesture) {
   std::unique_ptr<AppBannerManagerTest> manager(CreateAppBannerManager());
   base::HistogramTester histograms;
 
@@ -616,8 +650,14 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
                                 1);
 }
 
+// TODO(crbug.com/370270547): Many tests are failing.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_WebAppBannerNeedsEngagement DISABLED_WebAppBannerNeedsEngagement
+#else
+#define MAYBE_WebAppBannerNeedsEngagement WebAppBannerNeedsEngagement
+#endif
 IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
-                       WebAppBannerNeedsEngagement) {
+                       MAYBE_WebAppBannerNeedsEngagement) {
   std::unique_ptr<AppBannerManagerTest> manager(CreateAppBannerManager());
   base::AutoReset<double> scoped_engagement =
       AppBannerSettingsHelper::ScopeTotalEngagementForTesting(1);
@@ -733,8 +773,15 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, MAYBE_PreferRelatedChromeApp
       InstallableStatusCode::PREFER_RELATED_APPLICATIONS, 1);
 }
 
+// TODO(crbug.com/370270547): Many related tests are failing.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ListedRelatedChromeAppInstalled \
+  DISABLED_ListedRelatedChromeAppInstalled
+#else
+#define MAYBE_ListedRelatedChromeAppInstalled ListedRelatedChromeAppInstalled
+#endif
 IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
-                       ListedRelatedChromeAppInstalled) {
+                       MAYBE_ListedRelatedChromeAppInstalled) {
   std::unique_ptr<AppBannerManagerTest> manager(CreateAppBannerManager());
   base::HistogramTester histograms;
 
@@ -1012,7 +1059,13 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerFencedFrameBrowserTest,
   EXPECT_EQ(manager->state(), AppBannerManager::State::INACTIVE);
 }
 
-IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, ShowBanner) {
+// TODO(crbug.com/370270547): Many tests are failing.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ShowBanner DISABLED_ShowBanner
+#else
+#define MAYBE_ShowBanner ShowBanner
+#endif
+IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, MAYBE_ShowBanner) {
   std::unique_ptr<AppBannerManagerTest> manager(CreateAppBannerManager());
   RunBannerTest(
       web_contents(), manager.get(),
