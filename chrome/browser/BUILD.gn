@@ -8438,6 +8438,7 @@ static_library("browser_public_dependencies") {
     # //chrome/browser/ui and //chrome/browser are semantically the same target,
     # and thus their public dependencies are shared.
     "//base",
+    "//chrome/app/vector_icons",
     "//chrome/browser/ui:ui_public_dependencies",
     "//chrome/common",
     "//chrome/common:buildflags",
@@ -8471,6 +8472,7 @@ static_library("browser_public_dependencies") {
     "//components/sync_device_info",
     "//components/system_cpu:system_cpu",
     "//components/url_deduplication",
+    "//components/webapps/browser",
     "//content/public/browser",
     "//ipc",
     "//pdf:buildflags",
