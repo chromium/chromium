@@ -4,7 +4,7 @@
 
 import 'chrome://customize-chrome-side-panel.top-chrome/themes.js';
 
-import {CustomizeChromeAction} from 'chrome://customize-chrome-side-panel.top-chrome/common.js';
+import {CustomizeChromeAction, NtpImageType} from 'chrome://customize-chrome-side-panel.top-chrome/common.js';
 import type {BackgroundCollection, CollectionImage, CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
@@ -98,13 +98,13 @@ suite('ThemesTest', () => {
   });
 
   test('get collection images when collection changes', async () => {
-    let numThemes = 3;
-    await setCollection('test1', numThemes);
+    let numImages = 3;
+    await setCollection('test1', numImages);
 
     let header = themesElement.$.heading;
     assertEquals('test1', header.textContent!.trim());
     let themes = themesElement.shadowRoot!.querySelectorAll('.theme');
-    assertEquals(themes.length, numThemes);
+    assertEquals(themes.length, numImages);
     assertEquals(
         'https://preview_1.jpg',
         themes[0]!.querySelector('img')!.getAttribute('auto-src'));
@@ -115,13 +115,13 @@ suite('ThemesTest', () => {
         'https://preview_3.jpg',
         themes[2]!.querySelector('img')!.getAttribute('auto-src'));
 
-    numThemes = 5;
-    await setCollection('test2', numThemes);
+    numImages = 5;
+    await setCollection('test2', numImages);
 
     header = themesElement.$.heading;
     assertEquals('test2', header.textContent!.trim());
     themes = themesElement.shadowRoot!.querySelectorAll('.theme');
-    assertEquals(themes.length, numThemes);
+    assertEquals(themes.length, numImages);
     assertEquals(
         'https://preview_1.jpg',
         themes[0]!.querySelector('img')!.getAttribute('auto-src'));
@@ -350,11 +350,11 @@ suite('ThemesTest', () => {
       });
 
       test('theme visibility based on error detection', async () => {
-        const numThemes = 2;
-        await setCollection('test1', numThemes);
+        const numImages = 2;
+        await setCollection('test1', numImages);
 
         const themes = themesElement.shadowRoot!.querySelectorAll('.theme');
-        assertEquals(numThemes, themes.length);
+        assertEquals(numImages, themes.length);
         if (!errorDetectionEnabled) {
           assertTrue(isVisible(themes[0]!));
           assertTrue(isVisible(themes[1]!));
@@ -369,17 +369,43 @@ suite('ThemesTest', () => {
 
         const theme = $$(themesElement, '.theme');
         assertTrue(!!theme);
-        const img1 = theme!.querySelector<CrAutoImgElement>('img');
-        assertTrue(!!img1);
+        const img = theme!.querySelector<CrAutoImgElement>('img');
+        assertTrue(!!img);
 
         if (errorDetectionEnabled) {
           assertFalse(isVisible(theme));
         }
 
-        img1.dispatchEvent(new Event('load'));
+        img.dispatchEvent(new Event('load'));
+        await microtasksFinished();
+
+        assertTrue(isVisible(theme));
+      });
+
+      test('error detection metrics fire correctly', async () => {
+        const numImages = 1;
+        await setCollection('test1', numImages);
+        const img = $$(themesElement, '.theme img');
+        assertTrue(!!img);
 
         await microtasksFinished();
-        assertTrue(isVisible(theme));
+
+        if (!errorDetectionEnabled) {
+          assertEquals(
+              0,
+              metrics.count(
+                  'NewTabPage.BackgroundService.Images.Headers.ErrorDetected'));
+        } else {
+          assertEquals(
+              numImages,
+              metrics.count(
+                  'NewTabPage.BackgroundService.Images.Headers.ErrorDetected'));
+          assertEquals(
+              numImages,
+              metrics.count(
+                  'NewTabPage.BackgroundService.Images.Headers.ErrorDetected',
+                  NtpImageType.BACKGROUND_IMAGE));
+        }
       });
     });
   });
