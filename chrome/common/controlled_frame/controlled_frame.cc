@@ -10,27 +10,13 @@
 #include "base/containers/span.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/initialize_extensions_client.h"
+#include "chrome/common/url_constants.h"
 #include "components/version_info/version_info.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "third_party/blink/public/common/features.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "base/command_line.h"
-#include "chrome/common/chrome_switches.h"
-#include "url/url_constants.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-namespace {
-bool IsRunningInKioskMode() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kForceAppMode);
-}
-}  // namespace
-#endif
 
 base::span<const char* const> GetControlledFrameFeatureList() {
   static constexpr const char* feature_list[] = {
@@ -78,21 +64,9 @@ bool AvailabilityCheck(const std::string& api_full_name,
     return false;
   }
 
-  bool is_allowed_for_scheme = url.SchemeIs("isolated-app");
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Also allow API exposure in ChromeOS Kiosk mode for web apps.
-  if (base::FeatureList::IsEnabled(features::kWebKioskEnableIwaApis) &&
-      IsRunningInKioskMode() && url.SchemeIs(url::kHttpsScheme)) {
-    is_allowed_for_scheme =
-        extensions::GetCurrentChannel() != version_info::Channel::BETA &&
-        extensions::GetCurrentChannel() != version_info::Channel::STABLE;
-  }
-#endif
-
   // Verify that the current context is an Isolated Web App and the API name is
   // in our expected list.
-  return !extension && is_allowed_for_scheme &&
+  return (extension == nullptr) && url.SchemeIs(chrome::kIsolatedAppScheme) &&
          context == extensions::mojom::ContextType::kWebPage &&
          context_data.HasControlledFrameCapability() &&
          base::Contains(GetControlledFrameFeatureList(), api_full_name);

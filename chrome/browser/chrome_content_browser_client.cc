@@ -793,10 +793,6 @@
 #include "chrome/common/bound_session_request_throttled_handler.h"
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/components/kiosk/kiosk_utils.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS) && !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 #include "chrome/browser/enterprise/data_protection/paste_allowed_request.h"
@@ -2608,13 +2604,6 @@ bool ChromeContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
 bool ChromeContentBrowserClient::IsIsolatedContextAllowedForUrl(
     content::BrowserContext* browser_context,
     const GURL& lock_url) {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(features::kWebKioskEnableIwaApis) &&
-      chromeos::IsWebKioskSession()) {
-    return true;
-  }
-#endif
-
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (ChromeContentBrowserClientExtensionsPart::AreExtensionsDisabledForProfile(
           browser_context)) {
