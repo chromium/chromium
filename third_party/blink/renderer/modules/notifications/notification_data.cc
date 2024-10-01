@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/notifications/notification_data.h"
 
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/common/notifications/notification_constants.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
@@ -25,24 +26,27 @@ namespace blink {
 namespace {
 
 mojom::blink::NotificationDirection ToDirectionEnumValue(
-    const String& direction) {
-  if (direction == "ltr")
-    return mojom::blink::NotificationDirection::LEFT_TO_RIGHT;
-  if (direction == "rtl")
-    return mojom::blink::NotificationDirection::RIGHT_TO_LEFT;
-  if (direction == "auto")
-    return mojom::blink::NotificationDirection::AUTO;
-  NOTREACHED_IN_MIGRATION() << "Unknown direction: " << direction;
-  return mojom::blink::NotificationDirection::AUTO;
+    const V8NotificationDirection& direction) {
+  switch (direction.AsEnum()) {
+    case V8NotificationDirection::Enum::kLtr:
+      return mojom::blink::NotificationDirection::LEFT_TO_RIGHT;
+    case V8NotificationDirection::Enum::kRtl:
+      return mojom::blink::NotificationDirection::RIGHT_TO_LEFT;
+    case V8NotificationDirection::Enum::kAuto:
+      return mojom::blink::NotificationDirection::AUTO;
+  }
+  NOTREACHED();
 }
 
-mojom::blink::NotificationScenario ToScenarioEnumValue(const String& scenario) {
-  if (scenario == "default")
-    return mojom::blink::NotificationScenario::DEFAULT;
-  if (scenario == "incoming-call")
-    return mojom::blink::NotificationScenario::INCOMING_CALL;
-  NOTREACHED_IN_MIGRATION() << "Unknown scenario: " << scenario;
-  return mojom::blink::NotificationScenario::DEFAULT;
+mojom::blink::NotificationScenario ToScenarioEnumValue(
+    const V8NotificationScenario& scenario) {
+  switch (scenario.AsEnum()) {
+    case V8NotificationScenario::Enum::kDefault:
+      return mojom::blink::NotificationScenario::DEFAULT;
+    case V8NotificationScenario::Enum::kIncomingCall:
+      return mojom::blink::NotificationScenario::INCOMING_CALL;
+  }
+  NOTREACHED();
 }
 
 KURL CompleteURL(ExecutionContext* context, const String& string_url) {
