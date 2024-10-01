@@ -11,7 +11,7 @@ import "skia/public/mojom/skcolor.mojom";
 import "skia/public/mojom/bitmap.mojom";
 import "ui/accessibility/ax_features.mojom";
 import "ui/accessibility/mojom/ax_event.mojom";
-import "ui/accessibility/mojom/ax_location_changes.mojom";
+import "ui/accessibility/mojom/ax_location_and_scroll_updates.mojom";
 import "ui/accessibility/mojom/ax_tree_id.mojom";
 import "ui/accessibility/mojom/ax_tree_update.mojom";
 import "mojo/public/mojom/base/values.mojom";
@@ -226,7 +226,9 @@ interface UntrustedPage {
   // Send a location change notification to the WebUI. The WebUI updates the
   // locations for each node in the vector. This does not trigger a distillation.
   [RuntimeFeature=ax.mojom.features.kReadAnythingDocsIntegration]
-  AccessibilityLocationChangesReceived(array<ax.mojom.AXLocationChanges> details);
+  AccessibilityLocationChangesReceived(
+    ax.mojom.AXTreeID tree_id,
+    ax.mojom.AXLocationAndScrollUpdates details);
 
   // Sends the active AXTreeID to the WebUI. This is not guaranteed to be called
   // after the tree_id was previously passed to AccessibilityEventsReceived.

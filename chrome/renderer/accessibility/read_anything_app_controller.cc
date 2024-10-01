@@ -47,6 +47,7 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
+#include "ui/accessibility/ax_location_and_scroll_updates.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -523,10 +524,18 @@ void ReadAnythingAppController::AccessibilityEventReceived(
 }
 
 void ReadAnythingAppController::AccessibilityLocationChangesReceived(
-    const std::vector<ui::AXLocationChanges>& details) {
+    const ui::AXTreeID& tree_id,
+    const ui::AXLocationAndScrollUpdates& details) {
+  NOTREACHED() << "Non-const ref version of this method should be used as a "
+                  "performance optimization.";
+}
+
+void ReadAnythingAppController::AccessibilityLocationChangesReceived(
+    const ui::AXTreeID& tree_id,
+    ui::AXLocationAndScrollUpdates& details) {
   // Listen to location change notifications to update locations of the nodes
   // accordingly.
-  for (auto& change : details) {
+  for (auto& change : details.location_changes) {
     ui::AXNode* ax_node = model_.GetAXNode(change.id);
     if (!ax_node) {
       continue;

@@ -26,7 +26,6 @@
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/mojom/ax_event.mojom.h"
-#include "ui/accessibility/mojom/ax_location_changes.mojom.h"
 #include "ui/accessibility/mojom/ax_tree_id.mojom.h"
 #include "ui/accessibility/mojom/ax_tree_update.mojom.h"
 #include "ui/gfx/geometry/size.h"
@@ -51,7 +50,12 @@ class MockPage : public read_anything::mojom::UntrustedPage {
                     const std::vector<ui::AXEvent>& events));
   MOCK_METHOD(void,
               AccessibilityLocationChangesReceived,
-              (const std::vector<ui::AXLocationChanges>& details));
+              (const ui::AXTreeID& tree_id,
+               ui::AXLocationAndScrollUpdates& details));
+  MOCK_METHOD(void,
+              AccessibilityLocationChangesReceived,
+              (const ui::AXTreeID& tree_id,
+               const ui::AXLocationAndScrollUpdates& details));
   MOCK_METHOD(void,
               OnSettingsRestoredFromPrefs,
               (read_anything::mojom::LineSpacing line_spacing,

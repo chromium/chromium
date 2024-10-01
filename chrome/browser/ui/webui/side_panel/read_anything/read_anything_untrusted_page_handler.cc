@@ -241,8 +241,9 @@ void ReadAnythingWebContentsObserver::AccessibilityEventReceived(
 }
 
 void ReadAnythingWebContentsObserver::AccessibilityLocationChangesReceived(
-    const std::vector<ui::AXLocationChanges>& details) {
-  page_handler_->AccessibilityLocationChangesReceived(details);
+    const ui::AXTreeID& tree_id,
+    ui::AXLocationAndScrollUpdates& details) {
+  page_handler_->AccessibilityLocationChangesReceived(tree_id, details);
 }
 
 void ReadAnythingWebContentsObserver::PrimaryPageChanged(content::Page& page) {
@@ -390,9 +391,10 @@ void ReadAnythingUntrustedPageHandler::AccessibilityEventReceived(
 }
 
 void ReadAnythingUntrustedPageHandler::AccessibilityLocationChangesReceived(
-    const std::vector<ui::AXLocationChanges>& details) {
+    const ui::AXTreeID& tree_id,
+    ui::AXLocationAndScrollUpdates& details) {
   if (features::IsReadAnythingDocsIntegrationEnabled()) {
-    page_->AccessibilityLocationChangesReceived(details);
+    page_->AccessibilityLocationChangesReceived(tree_id, details);
   }
 }
 

@@ -128,6 +128,7 @@
 #include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/accessibility/mojom/ax_location_and_scroll_updates.mojom-blink.h"
 #include "ui/accessibility/mojom/ax_relative_bounds.mojom-blink.h"
 #if DCHECK_IS_ON()
 #include "third_party/blink/renderer/modules/accessibility/ax_debug_utils.h"
@@ -5291,8 +5292,9 @@ void AXObjectCacheImpl::SerializeLocationChanges() {
 
   weak_factory_for_loc_updates_pipeline_.Invalidate();
 
-  Vector<mojom::blink::LocationChangesPtr> changes;
-  changes.reserve(changed_bounds_ids_.size());
+  ax::mojom::blink::AXLocationAndScrollUpdatesPtr changes =
+      ax::mojom::blink::AXLocationAndScrollUpdates::New();
+  changes->location_changes.reserve(changed_bounds_ids_.size());
   for (AXID changed_bounds_id : changed_bounds_ids_) {
     if (AXObject* obj = ObjectFromAXID(changed_bounds_id)) {
       DCHECK(!obj->IsDetached());
@@ -5308,12 +5310,13 @@ void AXObjectCacheImpl::SerializeLocationChanges() {
         continue;
 
       cached_bounding_boxes_.Set(changed_bounds_id, new_location);
-      changes.push_back(
-          mojom::blink::LocationChanges::New(changed_bounds_id, new_location));
+      changes->location_changes.push_back(
+          ax::mojom::blink::AXLocationChange::New(changed_bounds_id,
+                                                  new_location));
     }
   }
   changed_bounds_ids_.clear();
-  if (!changes.empty()) {
+  if (!changes->location_changes.empty()) {
     CHECK(reset_token_);
     GetOrCreateRemoteRenderAccessibilityHost()->HandleAXLocationChanges(
         std::move(changes), *reset_token_);

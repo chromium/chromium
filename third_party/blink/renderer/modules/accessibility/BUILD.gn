@@ -60,6 +60,7 @@ blink_modules_sources("accessibility") {
     "//ui/accessibility",
     "//ui/accessibility:ax_base",
     "//ui/accessibility:ax_enums_mojo_blink",
+    "//ui/accessibility/mojom:mojom_blink",
   ]
 
   # The modules/accessibility/ depends closely on core/ --

@@ -48,7 +48,14 @@ void RenderAccessibilityHost::HandleAXEvents(
 }
 
 void RenderAccessibilityHost::HandleAXLocationChanges(
-    std::vector<blink::mojom::LocationChangesPtr> changes,
+    const ui::AXLocationAndScrollUpdates& changes,
+    uint32_t reset_token) {
+  NOTREACHED() << "Non-const ref version of this method should be used as a "
+                  "performance optimization.";
+}
+
+void RenderAccessibilityHost::HandleAXLocationChanges(
+    ui::AXLocationAndScrollUpdates& changes,
     uint32_t reset_token) {
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&RenderFrameHostImpl::HandleAXLocationChanges,

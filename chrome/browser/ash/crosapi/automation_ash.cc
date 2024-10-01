@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ash/crosapi/automation_ash.h"
 
+#include "ui/accessibility/ax_location_and_scroll_updates.h"
+#include "ui/accessibility/ax_tree_id.h"
+
 namespace crosapi {
 
 AutomationAsh::AutomationAsh() {
@@ -63,12 +66,12 @@ void AutomationAsh::DispatchAccessibilityLocationChange(
     const base::UnguessableToken& tree_id,
     int32_t node_id,
     const ui::AXRelativeBounds& bounds) {
-  ui::AXLocationChanges details;
-  details.ax_tree_id = ui::AXTreeID::FromToken(tree_id);
+  ui::AXLocationChange details;
   details.id = node_id;
   details.new_location = bounds;
+  ui::AXTreeID ui_tree_id = ui::AXTreeID::FromToken(tree_id);
   extensions::AutomationEventRouter::GetInstance()
-      ->DispatchAccessibilityLocationChange(details);
+      ->DispatchAccessibilityLocationChange(ui_tree_id, details);
 }
 
 void AutomationAsh::DispatchTreeDestroyedEvent(

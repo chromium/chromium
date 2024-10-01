@@ -3464,7 +3464,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojo::ReportBadMessageCallback report_bad_message_callback);
   void HandleAXLocationChanges(
       const ui::AXTreeID& tree_id,
-      std::vector<blink::mojom::LocationChangesPtr> changes,
+      ui::AXLocationAndScrollUpdates changes,
       uint32_t reset_token,
       mojo::ReportBadMessageCallback report_bad_message_callback);
 

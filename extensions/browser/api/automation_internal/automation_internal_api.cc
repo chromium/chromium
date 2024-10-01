@@ -43,6 +43,7 @@
 #include "ui/accessibility/ax_action_handler_base.h"
 #include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_enum_util.h"
+#include "ui/accessibility/ax_location_and_scroll_updates.h"
 #include "ui/accessibility/ax_updates_and_events.h"
 
 #if defined(USE_AURA)
@@ -353,10 +354,11 @@ class AutomationWebContentsObserver
   }
 
   void AccessibilityLocationChangesReceived(
-      const std::vector<ui::AXLocationChanges>& details) override {
+      const ui::AXTreeID& tree_id,
+      ui::AXLocationAndScrollUpdates& details) override {
     AutomationEventRouter* router = AutomationEventRouter::GetInstance();
-    for (const auto& src : details) {
-      router->DispatchAccessibilityLocationChange(src);
+    for (const auto& src : details.location_changes) {
+      router->DispatchAccessibilityLocationChange(tree_id, src);
     }
   }
 

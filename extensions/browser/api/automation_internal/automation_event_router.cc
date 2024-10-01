@@ -96,14 +96,15 @@ void AutomationEventRouter::UnregisterAllListenersWithDesktopPermission() {
 }
 
 void AutomationEventRouter::DispatchAccessibilityLocationChange(
-    const ui::AXLocationChanges& details) {
+    const ui::AXTreeID& tree_id,
+    const ui::AXLocationChange& details) {
   if (remote_router_) {
-    remote_router_->DispatchAccessibilityLocationChange(details);
+    remote_router_->DispatchAccessibilityLocationChange(tree_id, details);
     return;
   }
 
   for (const auto& remote : automation_remote_set_) {
-    remote->DispatchAccessibilityLocationChange(details.ax_tree_id, details.id,
+    remote->DispatchAccessibilityLocationChange(tree_id, details.id,
                                                 details.new_location);
   }
 }

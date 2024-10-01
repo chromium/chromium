@@ -21,5 +21,7 @@ include_rules = [
     "+ui/accessibility/ax_tree_data.h",
     "+ui/accessibility/ax_tree_id.h",
     "+ui/accessibility/ax_tree_serializer.h",
-    "+ui/accessibility/mojom/ax_relative_bounds.mojom-blink.h"
+    "+ui/accessibility/mojom/ax_relative_bounds.mojom-blink.h",
+    "+ui/accessibility/ax_location_and_scroll_updates.h",
+    "+ui/accessibility/mojom/ax_location_and_scroll_updates.mojom-blink.h",
 ]

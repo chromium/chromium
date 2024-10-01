@@ -13,6 +13,8 @@
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_testing_support.h"
+#include "ui/accessibility/ax_location_and_scroll_updates.h"
+#include "ui/accessibility/ax_updates_and_events.h"
 
 #if defined(LEAK_SANITIZER)
 #include <sanitizer/lsan_interface.h>
@@ -69,12 +71,16 @@ class RenderAccessibilityHostInterceptor
     std::move(callback).Run();
   }
 
-  void HandleAXLocationChanges(
-      std::vector<blink::mojom::LocationChangesPtr> changes,
-      uint32_t reset_token) override {
-    for (auto& change : changes) {
+  void HandleAXLocationChanges(ui::AXLocationAndScrollUpdates& changes,
+                               uint32_t reset_token) override {
+    for (auto& change : changes.location_changes) {
       location_changes_.emplace_back(std::move(change));
     }
+  }
+
+  void HandleAXLocationChanges(const ui::AXLocationAndScrollUpdates& changes,
+                               uint32_t reset_token) override {
+    NOTREACHED();
   }
 
   ui::AXTreeUpdate& last_update() {
@@ -86,7 +92,7 @@ class RenderAccessibilityHostInterceptor
     return handled_updates_;
   }
 
-  std::vector<blink::mojom::LocationChangesPtr>& location_changes() {
+  std::vector<ui::AXLocationChange>& location_changes() {
     return location_changes_;
   }
 
@@ -99,7 +105,7 @@ class RenderAccessibilityHostInterceptor
   mojo::Remote<blink::mojom::RenderAccessibilityHost> local_frame_host_remote_;
 
   std::vector<::ui::AXTreeUpdate> handled_updates_;
-  std::vector<blink::mojom::LocationChangesPtr> location_changes_;
+  std::vector<ui::AXLocationChange> location_changes_;
 };
 
 class RenderAccessibilityTestRenderFrame : public TestRenderFrame {
@@ -123,7 +129,7 @@ class RenderAccessibilityTestRenderFrame : public TestRenderFrame {
     render_accessibility_host_->ClearHandledUpdates();
   }
 
-  std::vector<blink::mojom::LocationChangesPtr>& LocationChanges() {
+  std::vector<ui::AXLocationChange>& LocationChanges() {
     return render_accessibility_host_->location_changes();
   }
 
@@ -226,7 +232,7 @@ void RenderAccessibilityImplTest::ClearHandledUpdates() {
       ->ClearHandledUpdates();
 }
 
-std::vector<blink::mojom::LocationChangesPtr>&
+std::vector<ui::AXLocationChange>&
 RenderAccessibilityImplTest::GetLocationChanges() {
   return static_cast<RenderAccessibilityTestRenderFrame*>(frame())
       ->LocationChanges();

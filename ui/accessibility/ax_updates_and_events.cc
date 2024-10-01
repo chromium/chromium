@@ -16,11 +16,4 @@ AXUpdatesAndEvents& AXUpdatesAndEvents::operator=(AXUpdatesAndEvents&& other) =
 
 AXUpdatesAndEvents::~AXUpdatesAndEvents() = default;
 
-AXLocationChanges::AXLocationChanges()
-    : id(-1), ax_tree_id(AXTreeIDUnknown()) {}
-
-AXLocationChanges::AXLocationChanges(const AXLocationChanges& other) = default;
-
-AXLocationChanges::~AXLocationChanges() {}
-
 }  // namespace ui

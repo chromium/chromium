@@ -255,7 +255,8 @@ class MockWebContentsObserver : public WebContentsObserver {
               (override));
   MOCK_METHOD(void,
               AccessibilityLocationChangesReceived,
-              (const std::vector<ui::AXLocationChanges>& details),
+              (const ui::AXTreeID& tree_id,
+               ui::AXLocationAndScrollUpdates& details),
               (override));
   MOCK_METHOD(void, DidChangeThemeColor, (), (override));
   MOCK_METHOD(void, OnBackgroundColorChanged, (), (override));

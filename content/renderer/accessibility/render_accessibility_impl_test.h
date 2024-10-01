@@ -11,6 +11,7 @@
 #include "content/public/test/render_view_test.h"
 #include "third_party/blink/public/mojom/render_accessibility.mojom.h"
 #include "third_party/blink/public/web/web_ax_object.h"
+#include "ui/accessibility/ax_location_and_scroll_updates.h"
 #include "ui/accessibility/ax_tree_update_forward.h"
 
 namespace content {
@@ -47,7 +48,7 @@ class RenderAccessibilityImplTest : public RenderViewTest {
   const std::vector<ui::AXTreeUpdate>& GetHandledAccUpdates();
   void ClearHandledUpdates();
 
-  std::vector<blink::mojom::LocationChangesPtr>& GetLocationChanges();
+  std::vector<ui::AXLocationChange>& GetLocationChanges();
 
   int CountAccessibilityNodesSentToBrowser();
 

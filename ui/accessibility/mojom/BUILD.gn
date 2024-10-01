@@ -10,7 +10,7 @@ mojom("mojom") {
     "ax_action_data.mojom",
     "ax_event.mojom",
     "ax_event_intent.mojom",
-    "ax_location_changes.mojom",
+    "ax_location_and_scroll_updates.mojom",
     "ax_mode.mojom",
     "ax_node_data.mojom",
     "ax_relative_bounds.mojom",
@@ -88,12 +88,26 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "ax.mojom.AXLocationChanges"
-          cpp = "::ui::AXLocationChanges"
+          mojom = "ax.mojom.AXLocationChange"
+          cpp = "::ui::AXLocationChange"
+        },
+        {
+          mojom = "ax.mojom.AXScrollChange"
+          cpp = "::ui::AXScrollChange"
+        },
+        {
+          mojom = "ax.mojom.AXLocationAndScrollUpdates"
+          cpp = "::ui::AXLocationAndScrollUpdates"
+
+          # This is necessary to avoid expensive copies after this data is
+          # created and passed around. Subsequent methods of the data can
+          # choose to apply const if appropriate. We avoid use move_only here
+          # because it requires the caller copy when passing to the mojo pipe.
+          non_const_ref = true
         },
       ]
-      traits_sources = [ "ax_location_changes_mojom_traits.cc" ]
-      traits_headers = [ "ax_location_changes_mojom_traits.h" ]
+      traits_sources = [ "ax_location_and_scroll_updates_mojom_traits.cc" ]
+      traits_headers = [ "ax_location_and_scroll_updates_mojom_traits.h" ]
       traits_public_deps = [ "//ui/accessibility:ax_base" ]
     },
     {

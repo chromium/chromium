@@ -12,16 +12,9 @@ import "ui/accessibility/mojom/ax_relative_bounds.mojom";
 import "ui/accessibility/mojom/ax_tree_id.mojom";
 import "ui/accessibility/mojom/ax_tree_update.mojom";
 import "ui/accessibility/mojom/ax_updates_and_events.mojom";
+import "ui/accessibility/mojom/ax_location_and_scroll_updates.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
-
-struct LocationChanges {
-  // ID of the object whose location is changing.
-  int32 id;
-
-  // The object's new location info.
-  ax.mojom.AXRelativeBounds new_location;
-};
 
 struct HitTestResponse {
   // The frame token of the frame that got hit. If this is not equal to the
@@ -70,7 +63,7 @@ interface RenderAccessibilityHost {
   // most recent Reset() or SetMode(), so that the browser can filter out
   // obsolete messages.
   [UnlimitedSize]
-  HandleAXLocationChanges(array<LocationChanges> changes, uint32 reset_token);
+  HandleAXLocationChanges(ax.mojom.AXLocationAndScrollUpdates changes, uint32 reset_token);
 };
 
 // Interface for accessibility messages sent from RenderFrameHostImpl in the

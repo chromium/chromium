@@ -647,7 +647,7 @@ void BrowserAccessibilityManager::BeforeAccessibilityEvents() {}
 void BrowserAccessibilityManager::FinalizeAccessibilityEvents() {}
 
 void BrowserAccessibilityManager::OnLocationChanges(
-    const std::vector<AXLocationChanges>& changes) {
+    const AXLocationAndScrollUpdates& changes) {
   TRACE_EVENT0("accessibility",
                is_post_load_
                    ? "BrowserAccessibilityManager::OnLocationChanges"
@@ -655,7 +655,7 @@ void BrowserAccessibilityManager::OnLocationChanges(
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Accessibility.Performance.BrowserAccessibilityManager::"
       "OnLocationChanges");
-  for (auto& change : changes) {
+  for (auto& change : changes.location_changes) {
     BrowserAccessibility* obj = GetFromID(change.id);
     if (!obj)
       continue;
@@ -667,14 +667,14 @@ void BrowserAccessibilityManager::OnLocationChanges(
   // Only send location change events when the page is not in back/forward
   // cache.
   if (CanFireEvents()) {
-    SendLocationChangeEvents(changes);
+    SendLocationChangeEvents(changes.location_changes);
   }
   if (!location_change_callback_for_testing_.is_null())
     location_change_callback_for_testing_.Run();
 }
 
 void BrowserAccessibilityManager::SendLocationChangeEvents(
-    const std::vector<AXLocationChanges>& changes) {
+    const std::vector<AXLocationChange>& changes) {
   for (auto& change : changes) {
     BrowserAccessibility* obj = GetFromID(change.id);
     if (obj)
