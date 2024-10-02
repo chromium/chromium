@@ -102,7 +102,7 @@ std::string InferGuidForLegacyBookmark(
 
 // Legacy method to calculate unique position suffix for the bookmarks which did
 // not have client tag hash.
-std::string GenerateUniquePositionSuffixForBookmark(
+UniquePosition::Suffix GenerateUniquePositionSuffixForBookmark(
     const std::string& originator_cache_guid,
     const std::string& originator_client_item_id) {
   // Blank PB with just the field in it has termination symbol,
@@ -112,8 +112,12 @@ std::string GenerateUniquePositionSuffixForBookmark(
   std::string hash_input;
   serialized_type.AppendToString(&hash_input);
   hash_input.append(originator_cache_guid + originator_client_item_id);
-
-  return base::Base64Encode(base::SHA1Hash(base::as_byte_span(hash_input)));
+  UniquePosition::Suffix suffix;
+  std::string suffix_str =
+      base::Base64Encode(base::SHA1Hash(base::as_byte_span(hash_input)));
+  CHECK_EQ(suffix.size(), suffix_str.size());
+  base::ranges::copy(suffix_str, suffix.begin());
+  return suffix;
 }
 
 sync_pb::UniquePosition GetUniquePositionFromSyncEntity(
@@ -122,7 +126,7 @@ sync_pb::UniquePosition GetUniquePositionFromSyncEntity(
     return update_entity.unique_position();
   }
 
-  std::string suffix;
+  UniquePosition::Suffix suffix;
   if (update_entity.has_originator_cache_guid() &&
       update_entity.has_originator_client_item_id()) {
     suffix = GenerateUniquePositionSuffixForBookmark(

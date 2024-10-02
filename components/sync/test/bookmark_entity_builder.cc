@@ -36,7 +36,8 @@ namespace fake_server {
 
 namespace {
 
-std::string GenerateUniquePositionStringForBookmark(const base::Uuid& uuid) {
+syncer::UniquePosition::Suffix GenerateUniquePositionStringForBookmark(
+    const base::Uuid& uuid) {
   if (!uuid.is_valid()) {
     return syncer::UniquePosition::RandomSuffix();
   }

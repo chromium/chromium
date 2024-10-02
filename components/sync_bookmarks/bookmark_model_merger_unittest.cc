@@ -228,8 +228,8 @@ std::unique_ptr<SyncedBookmarkTracker> Merge(
 }
 
 static syncer::UniquePosition MakeRandomPosition() {
-  const std::string suffix = syncer::UniquePosition::RandomSuffix();
-  return syncer::UniquePosition::InitialPosition(suffix);
+  return syncer::UniquePosition::InitialPosition(
+      syncer::UniquePosition::RandomSuffix());
 }
 
 }  // namespace
@@ -300,7 +300,8 @@ TEST(BookmarkModelMergerTest, ShouldMergeLocalAndRemoteModels) {
   //    |- url3(http://www.url3.com)
   //    |- url4(http://www.url4.com)
 
-  const std::string suffix = syncer::UniquePosition::RandomSuffix();
+  const syncer::UniquePosition::Suffix suffix =
+      syncer::UniquePosition::RandomSuffix();
   syncer::UniquePosition posFolder1 =
       syncer::UniquePosition::InitialPosition(suffix);
   syncer::UniquePosition posFolder3 =
@@ -471,7 +472,8 @@ TEST(BookmarkModelMergerTest, ShouldMergeRemoteReorderToLocalModel) {
   //  |- folder 3
   //  |- folder 2
 
-  const std::string suffix = syncer::UniquePosition::RandomSuffix();
+  const syncer::UniquePosition::Suffix suffix =
+      syncer::UniquePosition::RandomSuffix();
   syncer::UniquePosition posFolder1 =
       syncer::UniquePosition::InitialPosition(suffix);
   syncer::UniquePosition posFolder3 =
@@ -673,17 +675,14 @@ TEST(BookmarkModelMergerTest,
   ASSERT_TRUE(folder);
 
   // -------- The remote model --------
-  const std::string suffix = syncer::UniquePosition::RandomSuffix();
-  syncer::UniquePosition pos = syncer::UniquePosition::InitialPosition(suffix);
-
   syncer::UpdateResponseDataList updates;
   updates.push_back(CreateBookmarkBarNodeUpdateData());
-  updates.push_back(UpdateResponseDataBuilder(/*uuid=*/kUuid,
-                                              /*parent_uuid=*/BookmarkBarUuid(),
-                                              kRemoteTitle,
-                                              /*unique_position=*/pos)
-                        .SetLegacyTitleOnly()
-                        .Build());
+  updates.push_back(
+      UpdateResponseDataBuilder(/*uuid=*/kUuid,
+                                /*parent_uuid=*/BookmarkBarUuid(), kRemoteTitle,
+                                /*unique_position=*/MakeRandomPosition())
+          .SetLegacyTitleOnly()
+          .Build());
 
   std::unique_ptr<SyncedBookmarkTracker> tracker =
       Merge(std::move(updates), &bookmark_model);
@@ -722,15 +721,12 @@ TEST(BookmarkModelMergerTest,
   ASSERT_TRUE(folder);
 
   // -------- The remote model --------
-  const std::string suffix = syncer::UniquePosition::RandomSuffix();
-  syncer::UniquePosition pos = syncer::UniquePosition::InitialPosition(suffix);
-
   syncer::UpdateResponseDataList updates;
   updates.push_back(CreateBookmarkBarNodeUpdateData());
   updates.push_back(CreateUpdateResponseData(
       /*uuid=*/kUuid, /*parent_uuid=*/BookmarkBarUuid(), kRemoteTruncatedTitle,
       /*url=*/std::string(),
-      /*is_folder=*/true, /*unique_position=*/pos));
+      /*is_folder=*/true, /*unique_position=*/MakeRandomPosition()));
 
   std::unique_ptr<SyncedBookmarkTracker> tracker =
       SyncedBookmarkTracker::CreateEmpty(sync_pb::DataTypeState());
@@ -762,16 +758,13 @@ TEST(BookmarkModelMergerTest,
   ASSERT_TRUE(folder);
 
   // -------- The remote model --------
-  const std::string suffix = syncer::UniquePosition::RandomSuffix();
-  syncer::UniquePosition pos = syncer::UniquePosition::InitialPosition(suffix);
-
   syncer::UpdateResponseDataList updates;
   updates.push_back(CreateBookmarkBarNodeUpdateData());
   updates.push_back(CreateUpdateResponseData(
       /*uuid=*/kUuid, /*parent_uuid=*/BookmarkBarUuid(),
       kRemoteTruncatedFullTitle,
       /*url=*/std::string(),
-      /*is_folder=*/true, /*unique_position=*/pos));
+      /*is_folder=*/true, /*unique_position=*/MakeRandomPosition()));
 
   updates.back().entity.specifics.mutable_bookmark()->set_full_title(
       kRemoteTruncatedFullTitle);
@@ -808,16 +801,13 @@ TEST(BookmarkModelMergerTest,
   ASSERT_TRUE(folder);
 
   // -------- The remote model --------
-  const std::string suffix = syncer::UniquePosition::RandomSuffix();
-  syncer::UniquePosition pos = syncer::UniquePosition::InitialPosition(suffix);
-
   syncer::UpdateResponseDataList updates;
   updates.push_back(CreateBookmarkBarNodeUpdateData());
   updates.push_back(CreateUpdateResponseData(
       /*uuid=*/kUuid, /*parent_uuid=*/BookmarkBarUuid(),
       sync_bookmarks::FullTitleToLegacyCanonicalizedTitle(kRemoteFullTitle),
       /*url=*/std::string(),
-      /*is_folder=*/true, /*unique_position=*/pos));
+      /*is_folder=*/true, /*unique_position=*/MakeRandomPosition()));
   ASSERT_EQ(
       kLocalTruncatedTitle,
       updates.back().entity.specifics.bookmark().legacy_canonicalized_title());
@@ -1090,7 +1080,8 @@ TEST(BookmarkModelMergerTest, ShouldIgnoreChildrenForNonFolderNodes) {
   syncer::UpdateResponseDataList updates;
   updates.push_back(CreateBookmarkBarNodeUpdateData());
 
-  const std::string suffix = syncer::UniquePosition::RandomSuffix();
+  const syncer::UniquePosition::Suffix suffix =
+      syncer::UniquePosition::RandomSuffix();
   const syncer::UniquePosition pos1 =
       syncer::UniquePosition::InitialPosition(suffix);
   const syncer::UniquePosition pos2 =
@@ -1166,7 +1157,8 @@ TEST(
   syncer::UpdateResponseDataList updates;
   updates.push_back(CreateBookmarkBarNodeUpdateData());
 
-  const std::string suffix = syncer::UniquePosition::RandomSuffix();
+  const syncer::UniquePosition::Suffix suffix =
+      syncer::UniquePosition::RandomSuffix();
   syncer::UniquePosition pos1 = syncer::UniquePosition::InitialPosition(suffix);
   syncer::UniquePosition pos2 = syncer::UniquePosition::After(pos1, suffix);
 
@@ -1246,7 +1238,8 @@ TEST(BookmarkModelMergerTest,
   syncer::UpdateResponseDataList updates;
   updates.push_back(CreateBookmarkBarNodeUpdateData());
 
-  const std::string suffix = syncer::UniquePosition::RandomSuffix();
+  const syncer::UniquePosition::Suffix suffix =
+      syncer::UniquePosition::RandomSuffix();
   syncer::UniquePosition pos1 = syncer::UniquePosition::InitialPosition(suffix);
   syncer::UniquePosition pos2 = syncer::UniquePosition::After(pos1, suffix);
 
@@ -1569,7 +1562,8 @@ TEST(BookmarkModelMergerTest, ShouldIgnoreRemoteUpdateWithInvalidUuid) {
   // bookmark_bar
   //  | - bookmark (kUuid/kUrl/kTitle1)
   //  | - bookmark (kUuid/kUrl/kTitle2)
-  const std::string suffix = syncer::UniquePosition::RandomSuffix();
+  const syncer::UniquePosition::Suffix suffix =
+      syncer::UniquePosition::RandomSuffix();
   syncer::UniquePosition position1 =
       syncer::UniquePosition::InitialPosition(suffix);
   syncer::UniquePosition position2 =
@@ -1662,7 +1656,8 @@ TEST(BookmarkModelMergerTest,
   //  |- folder 2
   //    |- url1(http://www.url1.com)
 
-  const std::string suffix = syncer::UniquePosition::RandomSuffix();
+  const syncer::UniquePosition::Suffix suffix =
+      syncer::UniquePosition::RandomSuffix();
   syncer::UniquePosition posFolder1 =
       syncer::UniquePosition::InitialPosition(suffix);
   syncer::UniquePosition posFolder2 =
@@ -2148,7 +2143,8 @@ TEST(BookmarkModelMergerTest, ShouldReuploadBookmarkOnEmptyUniquePosition) {
   const base::Uuid kFolder1Uuid = base::Uuid::GenerateRandomV4();
   const base::Uuid kFolder2Uuid = base::Uuid::GenerateRandomV4();
 
-  const std::string suffix = syncer::UniquePosition::RandomSuffix();
+  const syncer::UniquePosition::Suffix suffix =
+      syncer::UniquePosition::RandomSuffix();
   const syncer::UniquePosition posFolder1 =
       syncer::UniquePosition::InitialPosition(suffix);
   const syncer::UniquePosition posFolder2 =

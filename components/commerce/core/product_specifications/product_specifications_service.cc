@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/base64.h"
+#include "base/check_op.h"
 #include "base/containers/map_util.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -19,18 +20,23 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
+#include "components/sync/base/unique_position.h"
 #include "components/sync/model/proxy_data_type_controller_delegate.h"
 #include "components/sync/protocol/product_comparison_specifics.pb.h"
 
 namespace {
 
-std::string GetSuffix(const std::string& uuid) {
-  return base::Base64Encode(base::SHA1HashString(uuid));
+syncer::UniquePosition::Suffix GetSuffix(const std::string& uuid) {
+  std::string suffix_str = base::Base64Encode(base::SHA1HashString(uuid));
+  syncer::UniquePosition::Suffix suffix;
+  CHECK_EQ(suffix.size(), suffix_str.size());
+  base::ranges::copy(suffix_str, suffix.begin());
+  return suffix;
 }
 
 syncer::UniquePosition GetNextPosition(
     const syncer::UniquePosition& prev_position,
-    const std::string& suffix) {
+    const syncer::UniquePosition::Suffix& suffix) {
   if (prev_position.IsValid()) {
     return syncer::UniquePosition::After(prev_position, suffix);
   } else {
@@ -67,7 +73,7 @@ std::vector<sync_pb::ProductComparisonSpecifics> CreateItemLevelSpecifics(
     const std::vector<commerce::UrlInfo>& url_infos,
     const base::Time& now) {
   std::vector<sync_pb::ProductComparisonSpecifics> item_level_specifics;
-  std::string position_suffix = GetSuffix(top_level_uuid);
+  syncer::UniquePosition::Suffix position_suffix = GetSuffix(top_level_uuid);
   syncer::UniquePosition prev_position;
   for (const auto& url_info : url_infos) {
     sync_pb::ProductComparisonSpecifics new_item;

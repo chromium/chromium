@@ -210,7 +210,7 @@ class BookmarkModelMerger {
   syncer::UniquePosition GenerateUniquePositionForLocalCreation(
       const bookmarks::BookmarkNode* parent,
       size_t index,
-      const std::string& suffix) const;
+      const syncer::UniquePosition::Suffix& suffix) const;
 
   void ReportTimeMetrics();
 

@@ -57,7 +57,11 @@ std::vector<sync_pb::EntitySpecifics> GetItemEntities(
     const std::string& top_level_uuid,
     const std::vector<std::string>& urls) {
   std::vector<sync_pb::EntitySpecifics> result;
-  std::string suffix = base::Base64Encode(base::SHA1HashString(top_level_uuid));
+  std::string suffix_str =
+      base::Base64Encode(base::SHA1HashString(top_level_uuid));
+  syncer::UniquePosition::Suffix suffix;
+  CHECK_EQ(suffix.size(), suffix_str.size());
+  base::ranges::copy(suffix_str, suffix.begin());
   syncer::UniquePosition position =
       syncer::UniquePosition::InitialPosition(suffix);
   for (const std::string& url : urls) {
