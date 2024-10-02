@@ -260,7 +260,7 @@ base::Value::Dict GenerateManifest(
 }
 
 auto AccessBlocked() {
-  return testing::HasSubstr("Access to the requested host is blocked");
+  return testing::HasSubstr("Access to the requested host or port is blocked");
 }
 
 auto PrivateNetworkAccessBlocked() {
@@ -767,6 +767,32 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
               ErrorIs(PrivateNetworkAccessBlocked()));
 }
 
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
+                       UdpServerPortRestrictions) {
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebApp(/*with_pna=*/true);
+
+  constexpr std::string_view kUdpBoundPortBelow1024 = R"(
+    (async () => {
+      const socket = new UDPSocket({ localAddress: "0.0.0.0", localPort: 455 });
+      await socket.opened;
+    })();
+  )";
+
+  ASSERT_THAT(EvalJs(app_frame, kUdpBoundPortBelow1024),
+              ErrorIs(AccessBlocked()));
+
+  constexpr std::string_view kUdpBoundPortNumberHighEnough = R"(
+    (async () => {
+      const socket = new UDPSocket({ localAddress: "0.0.0.0", localPort: 2558 });
+      await socket.opened;
+    })();
+  )";
+
+  ASSERT_THAT(EvalJs(app_frame, kUdpBoundPortNumberHighEnough),
+              content::EvalJsResult::IsOk());
+}
+
 using ChromeDirectSocketsTcpServerIsolatedWebAppTest =
     IsolatedWebAppApiTestWithDirectSocketsEnabled;
 
@@ -775,6 +801,32 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerIsolatedWebAppTest,
   content::RenderFrameHost* app_frame = InstallAndOpenIsolatedWebApp();
 
   EXPECT_THAT(EvalJs(app_frame, kTcpServerExchangePacketWithTcpScript),
+              content::EvalJsResult::IsOk());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerIsolatedWebAppTest,
+                       TcpServerPortRestrictions) {
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebApp(/*with_pna=*/true);
+
+  constexpr std::string_view kTcpServerPortBelow32678 = R"(
+    (async () => {
+      const socket = new TCPServerSocket("0.0.0.0", { localPort: 7845 });
+      await socket.opened;
+    })();
+  )";
+
+  ASSERT_THAT(EvalJs(app_frame, kTcpServerPortBelow32678),
+              ErrorIs(AccessBlocked()));
+
+  constexpr std::string_view kTcpServerPortNumberHighEnough = R"(
+    (async () => {
+      const socket = new TCPServerSocket("0.0.0.0", { localPort: 35588 });
+      await socket.opened;
+    })();
+  )";
+
+  ASSERT_THAT(EvalJs(app_frame, kTcpServerPortNumberHighEnough),
               content::EvalJsResult::IsOk());
 }
 
