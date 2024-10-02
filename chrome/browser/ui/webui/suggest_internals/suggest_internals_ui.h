@@ -7,9 +7,22 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/ui/webui/suggest_internals/suggest_internals.mojom-forward.h"
+#include "chrome/common/webui_url_constants.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 class SuggestInternalsHandler;
+
+class SuggestInternalsUI;
+
+class SuggestInternalsUIConfig
+    : public content::DefaultWebUIConfig<SuggestInternalsUI> {
+ public:
+  SuggestInternalsUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUISuggestInternalsHost) {}
+};
 
 // The Web UI controller for the chrome://suggest-internals.
 class SuggestInternalsUI : public ui::MojoWebUIController {

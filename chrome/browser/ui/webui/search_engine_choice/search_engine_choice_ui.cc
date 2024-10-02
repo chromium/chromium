@@ -67,6 +67,12 @@ std::string GetChoiceListJSON(
 }
 }  // namespace
 
+bool SearchEngineChoiceUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return SearchEngineChoiceDialogServiceFactory::GetForProfile(profile);
+}
+
 SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, true),
       profile_(CHECK_DEREF(Profile::FromWebUI(web_ui))) {

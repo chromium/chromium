@@ -10,9 +10,24 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice.mojom.h"
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_handler.h"
+#include "chrome/common/webui_url_constants.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 class Profile;
+class SearchEngineChoiceUI;
+
+class SearchEngineChoiceUIConfig
+    : public content::DefaultWebUIConfig<SearchEngineChoiceUI> {
+ public:
+  SearchEngineChoiceUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUISearchEngineChoiceHost) {}
+
+  // content::WebUIConfig:
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+};
 
 // The WebUI controller for `chrome://search-engine-choice`.
 class SearchEngineChoiceUI

@@ -5,9 +5,25 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_MEDIA_ROUTER_MEDIA_ROUTER_INTERNALS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_MEDIA_ROUTER_MEDIA_ROUTER_INTERNALS_UI_H_
 
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 
 namespace media_router {
+
+class MediaRouterInternalsUI;
+
+class MediaRouterInternalsUIConfig
+    : public content::DefaultWebUIConfig<MediaRouterInternalsUI> {
+ public:
+  MediaRouterInternalsUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUIMediaRouterInternalsHost) {}
+
+  // content::WebUIConfig:
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+};
 
 // Implements the chrome://media-router-internals/ user interface.
 class MediaRouterInternalsUI : public content::WebUIController {

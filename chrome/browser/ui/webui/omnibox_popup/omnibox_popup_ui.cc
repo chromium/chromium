@@ -12,6 +12,7 @@
 #include <atomic>
 #include <string_view>
 
+#include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -28,6 +29,11 @@
 #include "components/omnibox/browser/omnibox_view.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+
+bool OmniboxPopupUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup);
+}
 
 OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),

@@ -34596,6 +34596,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1272316136" label="chrome://image/"/>
   <int value="1281801197" label="chrome://terms/"/>
   <int value="1286620182" label="chrome://reset-password/"/>
+  <int value="1291141725" label="chrome://search-engine-choice/"/>
   <int value="1306215264" label="chrome://activationmessage/"/>
   <int value="1326111536" label="chrome://new-tab-page/"/>
   <int value="1332050252" label="chrome://borealis-installer/"/>
