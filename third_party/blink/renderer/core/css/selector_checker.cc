@@ -543,7 +543,10 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
       return kSelectorFailsAllSiblings;
 
     case CSSSelector::kUAShadow: {
-      CHECK(is_ua_rule_ || context.scope || context.vtt_originating_element);
+      // Note: context.scope should be non-null unless we're checking user or
+      // UA origin rules, or VTT rules.  (We could CHECK() this if it weren't
+      // for the user rules part.)
+
       // If we're in the same tree-scope as the scoping element, then following
       // a kUAShadow combinator would escape that and thus the scope.
       if (context.scope && context.scope->OwnerShadowHost() &&
