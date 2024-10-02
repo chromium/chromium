@@ -57,7 +57,7 @@ class PasswordCheckupClientMetricsRecorder {
         RecordHistogram.recordEnumeratedHistogram(
                 getHistogramName("Error"), error, CredentialManagerError.COUNT);
 
-        if (error == CredentialManagerError.API_ERROR) {
+        if (error == CredentialManagerError.API_EXCEPTION) {
             int apiErrorCode = PasswordManagerAndroidBackendUtil.getApiErrorCode(exception);
             RecordHistogram.recordSparseHistogram(getHistogramName("APIError"), apiErrorCode);
         }

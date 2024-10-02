@@ -517,13 +517,20 @@ public class PasswordManagerHelper {
         }
 
         // If the exception is not a Chrome-defined one, it means that the call failed at the
-        // API call level.
+        // API call level. It could have either failed with a known ApiException or because of a
+        // different error (e.g. a different exception thrown by the implementation of the API).
+        if (!(exception instanceof ApiException)) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    kGetIntentErrorHistogram,
+                    CredentialManagerError.OTHER_API_ERROR,
+                    CredentialManagerError.COUNT);
+            return;
+        }
+
         RecordHistogram.recordEnumeratedHistogram(
                 kGetIntentErrorHistogram,
-                CredentialManagerError.API_ERROR,
+                CredentialManagerError.API_EXCEPTION,
                 CredentialManagerError.COUNT);
-
-        if (!(exception instanceof ApiException)) return;
 
         final String kGetIntentApiErrorHistogram =
                 forAccount

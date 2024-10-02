@@ -24,27 +24,44 @@ public interface CredentialManagerLauncher {
     @IntDef({
         CredentialManagerError.NO_CONTEXT,
         CredentialManagerError.NO_ACCOUNT_NAME,
-        CredentialManagerError.API_ERROR,
         CredentialManagerError.UNCATEGORIZED,
         CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED,
         CredentialManagerError.BACKEND_NOT_AVAILABLE,
+        CredentialManagerError.API_EXCEPTION,
+        CredentialManagerError.OTHER_API_ERROR,
         CredentialManagerError.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface CredentialManagerError {
         // There is no application context.
         int NO_CONTEXT = 0;
+
         // The provided account name is empty
         int NO_ACCOUNT_NAME = 1;
+
         // Error encountered after calling the API to fetch the launch intent.
-        int API_ERROR = 2;
+        // Obsolete: this is now split into API_EXCEPTION and OTHER_API_ERROR
+        // int API_ERROR = 2;
+
         // Error is not categorized.
         int UNCATEGORIZED = 3;
+
         // Operation can not be executed due to unsupported backend version.
         int BACKEND_VERSION_NOT_SUPPORTED = 4;
+
         // Backend downstream implementation is not available.
         int BACKEND_NOT_AVAILABLE = 5;
-        int COUNT = 6;
+
+        // Recorded when the call failed at the API level, with an exception that is an instance
+        // of ApiException.
+        int API_EXCEPTION = 6;
+
+        // Recorded when the call failed at the API level, with an exception that is NOT an
+        // instance of ApiException. This might signal that there was an exception thrown
+        // by the API implementation outside of Chrome.
+        int OTHER_API_ERROR = 7;
+
+        int COUNT = 8;
     }
 
     /** Serves as a general exception for failed requests to the credential manager backend. */

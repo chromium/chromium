@@ -890,7 +890,7 @@ public class PasswordManagerHelperTest {
         HistogramWatcher.Builder builder =
                 histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
                         PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT,
-                        CredentialManagerError.API_ERROR,
+                        CredentialManagerError.API_EXCEPTION,
                         OptionalInt.of(CommonStatusCodes.DEVELOPER_ERROR));
         HistogramWatcher histogram =
                 builder.expectNoRecords(
@@ -917,7 +917,7 @@ public class PasswordManagerHelperTest {
         HistogramWatcher.Builder builder =
                 histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
                         PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT,
-                        CredentialManagerError.API_ERROR,
+                        CredentialManagerError.API_EXCEPTION,
                         OptionalInt.of(CommonStatusCodes.DEVELOPER_ERROR));
         HistogramWatcher histogram =
                 builder.expectNoRecords(
@@ -984,7 +984,7 @@ public class PasswordManagerHelperTest {
         HistogramWatcher histogram =
                 histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
                                 PasswordCheckOperation.RUN_PASSWORD_CHECKUP,
-                                CredentialManagerError.API_ERROR,
+                                CredentialManagerError.API_EXCEPTION,
                                 OptionalInt.of(CommonStatusCodes.DEVELOPER_ERROR))
                         .build();
 
@@ -1046,7 +1046,7 @@ public class PasswordManagerHelperTest {
         HistogramWatcher histogram =
                 histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
                                 PasswordCheckOperation.GET_BREACHED_CREDENTIALS_COUNT,
-                                CredentialManagerError.API_ERROR,
+                                CredentialManagerError.API_EXCEPTION,
                                 OptionalInt.of(CommonStatusCodes.DEVELOPER_ERROR))
                         .build();
         chooseToSyncPasswords();
@@ -1260,7 +1260,7 @@ public class PasswordManagerHelperTest {
     public void testDismissesLoadingDialogOnPasswordSettingsIntentGetError()
             throws CanceledException {
         chooseToSyncPasswords();
-        returnErrorWhenFetchingIntentForAccount(CredentialManagerError.API_ERROR);
+        returnErrorWhenFetchingIntentForAccount(CredentialManagerError.API_EXCEPTION);
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
@@ -1475,7 +1475,7 @@ public class PasswordManagerHelperTest {
     public void testRecordsSettingsLoadingDialogMetricsOnIntentFetchError()
             throws CanceledException {
         chooseToSyncPasswords();
-        returnErrorWhenFetchingIntentForAccount(CredentialManagerError.API_ERROR);
+        returnErrorWhenFetchingIntentForAccount(CredentialManagerError.API_EXCEPTION);
         when(mLoadingModalDialogCoordinator.getState())
                 .thenReturn(LoadingModalDialogCoordinator.State.PENDING);
 
@@ -1714,7 +1714,7 @@ public class PasswordManagerHelperTest {
                                 PasswordMetricsUtil.ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM, 0)
                         .expectIntRecord(
                                 PasswordMetricsUtil.ACCOUNT_GET_INTENT_ERROR_HISTOGRAM,
-                                CredentialManagerError.API_ERROR)
+                                CredentialManagerError.API_EXCEPTION)
                         .expectIntRecord(
                                 PasswordMetricsUtil.ACCOUNT_GET_INTENT_API_ERROR_HISTOGRAM,
                                 CommonStatusCodes.INTERNAL_ERROR)
@@ -1728,7 +1728,39 @@ public class PasswordManagerHelperTest {
         chooseToSyncPasswords();
         ApiException returnedException =
                 new ApiException(new Status(CommonStatusCodes.INTERNAL_ERROR));
-        returnApiExceptionWhenFetchingIntentForAccount(returnedException);
+        returnExceptionWhenFetchingIntentForAccount(returnedException);
+
+        mPasswordManagerHelper.showPasswordSettings(
+                ContextUtils.getApplicationContext(),
+                ManagePasswordsReferrer.CHROME_SETTINGS,
+                mModalDialogManagerSupplier,
+                /* managePasskeys= */ false,
+                TEST_EMAIL_ADDRESS,
+                mCustomTabIntentHelper);
+
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testRecordsOtherApiErrorWhenFetchingAccountCredentialManagerIntent() {
+        HistogramWatcher histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                PasswordMetricsUtil.ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM, 0)
+                        .expectIntRecord(
+                                PasswordMetricsUtil.ACCOUNT_GET_INTENT_ERROR_HISTOGRAM,
+                                CredentialManagerError.OTHER_API_ERROR)
+                        .expectNoRecords(PasswordMetricsUtil.ACCOUNT_GET_INTENT_API_ERROR_HISTOGRAM)
+                        .expectNoRecords(
+                                PasswordMetricsUtil
+                                        .ACCOUNT_GET_INTENT_ERROR_CONNECTION_RESULT_CODE_HISTOGRAM)
+                        .expectNoRecords(
+                                PasswordMetricsUtil
+                                        .ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM)
+                        .build();
+        chooseToSyncPasswords();
+        NullPointerException returnedException = new NullPointerException();
+        returnExceptionWhenFetchingIntentForAccount(returnedException);
 
         mPasswordManagerHelper.showPasswordSettings(
                 ContextUtils.getApplicationContext(),
@@ -1748,7 +1780,7 @@ public class PasswordManagerHelperTest {
                         .expectIntRecord(PasswordMetricsUtil.LOCAL_GET_INTENT_SUCCESS_HISTOGRAM, 0)
                         .expectIntRecord(
                                 PasswordMetricsUtil.LOCAL_GET_INTENT_ERROR_HISTOGRAM,
-                                CredentialManagerError.API_ERROR)
+                                CredentialManagerError.API_EXCEPTION)
                         .expectNoRecords(
                                 PasswordMetricsUtil
                                         .LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM)
@@ -1759,7 +1791,7 @@ public class PasswordManagerHelperTest {
 
         ApiException returnedException =
                 new ApiException(new Status(CommonStatusCodes.INTERNAL_ERROR));
-        returnApiExceptionWhenFetchingIntentForLocal(returnedException);
+        returnExceptionWhenFetchingIntentForLocal(returnedException);
 
         mPasswordManagerHelper.showPasswordSettings(
                 ContextUtils.getApplicationContext(),
@@ -1780,7 +1812,7 @@ public class PasswordManagerHelperTest {
                                 PasswordMetricsUtil.ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM, 0)
                         .expectIntRecord(
                                 PasswordMetricsUtil.ACCOUNT_GET_INTENT_ERROR_HISTOGRAM,
-                                CredentialManagerError.API_ERROR)
+                                CredentialManagerError.API_EXCEPTION)
                         .expectIntRecord(
                                 PasswordMetricsUtil.ACCOUNT_GET_INTENT_API_ERROR_HISTOGRAM,
                                 CommonStatusCodes.API_NOT_CONNECTED)
@@ -1797,7 +1829,7 @@ public class PasswordManagerHelperTest {
         ApiException returnedException =
                 new ApiException(
                         new Status(new ConnectionResult(ConnectionResult.API_UNAVAILABLE), ""));
-        returnApiExceptionWhenFetchingIntentForAccount(returnedException);
+        returnExceptionWhenFetchingIntentForAccount(returnedException);
 
         mPasswordManagerHelper.showPasswordSettings(
                 ContextUtils.getApplicationContext(),
@@ -1817,7 +1849,7 @@ public class PasswordManagerHelperTest {
                         .expectIntRecord(PasswordMetricsUtil.LOCAL_GET_INTENT_SUCCESS_HISTOGRAM, 0)
                         .expectIntRecord(
                                 PasswordMetricsUtil.LOCAL_GET_INTENT_ERROR_HISTOGRAM,
-                                CredentialManagerError.API_ERROR)
+                                CredentialManagerError.API_EXCEPTION)
                         .expectNoRecords(
                                 PasswordMetricsUtil
                                         .LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM)
@@ -1829,7 +1861,7 @@ public class PasswordManagerHelperTest {
         ApiException returnedException =
                 new ApiException(
                         new Status(new ConnectionResult(ConnectionResult.API_UNAVAILABLE), ""));
-        returnApiExceptionWhenFetchingIntentForLocal(returnedException);
+        returnExceptionWhenFetchingIntentForLocal(returnedException);
 
         mPasswordManagerHelper.showPasswordSettings(
                 ContextUtils.getApplicationContext(),
@@ -1993,7 +2025,7 @@ public class PasswordManagerHelperTest {
                         any(Callback.class));
     }
 
-    private void returnApiExceptionWhenFetchingIntentForAccount(ApiException exception) {
+    private void returnExceptionWhenFetchingIntentForAccount(Exception exception) {
         doAnswer(
                         invocation -> {
                             Callback<Exception> cb = invocation.getArgument(3);
@@ -2008,7 +2040,7 @@ public class PasswordManagerHelperTest {
                         any(Callback.class));
     }
 
-    private void returnApiExceptionWhenFetchingIntentForLocal(ApiException exception) {
+    private void returnExceptionWhenFetchingIntentForLocal(Exception exception) {
         doAnswer(
                         invocation -> {
                             Callback<Exception> cb = invocation.getArgument(2);

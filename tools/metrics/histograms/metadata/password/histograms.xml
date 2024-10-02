@@ -1179,7 +1179,7 @@ chromium-metrics-reviews@google.com.
     Records the API error code encountered while attempting to fetch the
     Credential Manager launch intent from Google Play Services for the
     {ProfileType}. This is recorded after the asynchronous call comes back with
-    an error.
+    an error. Only recorded for exceptions of type ApiException.
   </summary>
   <token key="ProfileType" variants="ProfileType"/>
 </histogram>
@@ -2330,7 +2330,7 @@ chromium-metrics-reviews@google.com.
     Records the error code returned by the GMS Password Checkup 1P API while
     attempting to {Operation}. This is recorded after the asynchronous call
     comes back with an error. This is only recorded for GMS API errors on
-    Android.
+    Android and only for exceptions of type ApiException.
   </summary>
   <token key="Operation" variants="PasswordCheckupOperation"/>
 </histogram>
