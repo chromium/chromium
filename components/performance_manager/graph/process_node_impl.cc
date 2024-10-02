@@ -241,6 +241,11 @@ uint64_t ProcessNodeImpl::GetResidentSetKb() const {
   return resident_set_kb_;
 }
 
+uint64_t ProcessNodeImpl::GetPrivateSwapKb() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return private_swap_kb_;
+}
+
 RenderProcessHostId ProcessNodeImpl::GetRenderProcessHostId() const {
   return GetRenderProcessHostProxy().render_process_host_id();
 }
@@ -384,6 +389,7 @@ void ProcessNodeImpl::SetProcessImpl(base::Process process,
   // process.
   private_footprint_kb_ = 0;
   resident_set_kb_ = 0;
+  private_swap_kb_ = 0;
 
   process_id_ = new_pid;
   launch_time_ = launch_time;

@@ -53,18 +53,24 @@ class DiscardAttemptMarker
 
 const char kDescriberName[] = "PageDiscardingHelper";
 
-using NodeRssMap = base::flat_map<const PageNode*, uint64_t>;
+#if BUILDFLAG(IS_CHROMEOS)
+// A 25% compression ratio is very conservative, and it matches the
+// value used by resourced when calculating available memory.
+static const uint64_t kSwapFootprintDiscount = 4;
+#endif
 
-// Returns the mapping from page_node to its RSS estimation.
-NodeRssMap GetPageNodeRssEstimateKb(
+using NodeFootprintMap = base::flat_map<const PageNode*, uint64_t>;
+
+// Returns the mapping from page_node to its memory footprint estimation.
+NodeFootprintMap GetPageNodeFootprintEstimateKb(
     const std::vector<PageNodeSortProxy>& candidates) {
   // Initialize the result map in one shot for time complexity O(n * log(n)).
-  NodeRssMap::container_type result_container;
+  NodeFootprintMap::container_type result_container;
   result_container.reserve(candidates.size());
   for (auto candidate : candidates) {
     result_container.emplace_back(candidate.page_node(), 0);
   }
-  NodeRssMap result(std::move(result_container));
+  NodeFootprintMap result(std::move(result_container));
 
   // TODO(crbug.com/40194476): Use visitor to accumulate the result to avoid
   // allocating extra lists of frame nodes behind the scenes.
@@ -85,10 +91,13 @@ NodeRssMap GetPageNodeRssEstimateKb(
     if (!process_frames.size()) {
       continue;
     }
-    // Get the resident set of the process and split it equally across its
+    // Get the footprint of the process and split it equally across its
     // frames.
-    const uint64_t frame_rss_kb =
-        process_node->GetResidentSetKb() / process_frames.size();
+    uint64_t footprint_kb = process_node->GetResidentSetKb();
+#if BUILDFLAG(IS_CHROMEOS)
+    footprint_kb += process_node->GetPrivateSwapKb() / kSwapFootprintDiscount;
+#endif
+    footprint_kb /= process_frames.size();
     for (const FrameNode* frame_node : process_frames) {
       // Check if the frame belongs to a discardable page, if so update the
       // resident set of the page.
@@ -96,7 +105,7 @@ NodeRssMap GetPageNodeRssEstimateKb(
       if (iter == result.end()) {
         continue;
       }
-      iter->second += frame_rss_kb;
+      iter->second += footprint_kb;
     }
   }
   return result;
@@ -186,7 +195,7 @@ void PageDiscardingHelper::DiscardMultiplePages(
   } else {
     const uint64_t reclaim_target_kb_value = reclaim_target->target_kb;
     uint64_t total_reclaim_kb = 0;
-    NodeRssMap page_node_rss_kb = GetPageNodeRssEstimateKb(candidates);
+    auto page_node_footprint_kb = GetPageNodeFootprintEstimateKb(candidates);
     for (auto& candidate : candidates) {
       if (total_reclaim_kb >= reclaim_target_kb_value) {
         break;
@@ -197,13 +206,14 @@ void PageDiscardingHelper::DiscardMultiplePages(
       // Record metrics about the tab that is about to be discarded.
       RecordDiscardedTabMetrics(candidate);
 
-      // The node RSS value is updated by ProcessMetricsDecorator periodically.
-      // The RSS value is 0 for nodes that have never been updated, estimate the
-      // RSS value to 80 MiB for these nodes. 80 MiB is the average
-      // Memory.Renderer.PrivateMemoryFootprint histogram value on Windows in
-      // August 2021.
-      uint64_t node_reclaim_kb =
-          (page_node_rss_kb[node]) ? page_node_rss_kb[node] : 80 * 1024;
+      // The node footprint value is updated by ProcessMetricsDecorator
+      // periodically. The footprint value is 0 for nodes that have never been
+      // updated, estimate the RSS value to 80 MiB for these nodes. 80 MiB is
+      // the average Memory.Renderer.PrivateMemoryFootprint histogram value on
+      // Windows in August 2021.
+      uint64_t node_reclaim_kb = (page_node_footprint_kb[node])
+                                     ? page_node_footprint_kb[node]
+                                     : 80 * 1024;
       total_reclaim_kb += node_reclaim_kb;
 
       LOG(WARNING) << "Queueing discard attempt, type="

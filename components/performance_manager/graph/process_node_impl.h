@@ -113,6 +113,7 @@ class ProcessNodeImpl
   bool GetMainThreadTaskLoadIsLow() const override;
   uint64_t GetPrivateFootprintKb() const override;
   uint64_t GetResidentSetKb() const override;
+  uint64_t GetPrivateSwapKb() const override;
   RenderProcessHostId GetRenderProcessHostId() const override;
   const RenderProcessHostProxy& GetRenderProcessHostProxy() const override;
   const BrowserChildProcessHostProxy& GetBrowserChildProcessHostProxy()
@@ -135,6 +136,10 @@ class ProcessNodeImpl
   void set_resident_set_kb(uint64_t resident_set_kb) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     resident_set_kb_ = resident_set_kb;
+  }
+  void set_private_swap_kb(uint64_t private_swap_kb) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    private_swap_kb_ = private_swap_kb;
   }
 
   // Add |frame_node| to this process.
@@ -200,6 +205,7 @@ class ProcessNodeImpl
 
   uint64_t private_footprint_kb_ GUARDED_BY_CONTEXT(sequence_checker_) = 0u;
   uint64_t resident_set_kb_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+  uint64_t private_swap_kb_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
   base::ProcessId process_id_ GUARDED_BY_CONTEXT(sequence_checker_) =
       base::kNullProcessId;
