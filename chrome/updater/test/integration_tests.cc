@@ -2129,6 +2129,36 @@ TEST_F(IntegrationTestDeviceManagement, QualifyUpdaterWhenUpdateDisabled) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
+TEST_F(IntegrationTestDeviceManagement,
+       QualifyUpdaterWhenNextCheckDelayIsZero) {
+  // Set update check period to zero via CBCM.
+  DMPushEnrollmentToken(kEnrollmentToken);
+  OmahaSettingsClientProto omaha_settings;
+  omaha_settings.set_auto_update_check_period_minutes(0);
+  omaha_settings.set_cloud_policy_overrides_platform_policy(true);
+  ExpectDeviceManagementRegistrationRequestFromDefaultPolicyAgent(
+      test_server_.get(), kEnrollmentToken, kDMToken);
+  ExpectDeviceManagementPolicyFetchRequestFromDefaultPolicyAgent(
+      test_server_.get(), kDMToken, omaha_settings);
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(SetupFakeUpdaterLowerVersion());
+  ASSERT_NO_FATAL_FAILURE(ExpectVersionNotActive(kUpdaterVersion));
+
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
+
+  // Verify the new instance is qualified and activated itself.
+  ExpectDeviceManagementPolicyFetchRequestFromDefaultPolicyAgent(
+      test_server_.get(), kDMToken, omaha_settings, /*first_request=*/false);
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(ExpectVersionActive(kUpdaterVersion));
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
 #ifdef INCLUDE_ENTERPRISE_COMPANION_IN_INSTALLER
 // During the updater's installation and periodic tasks, the enterprise
 // companion app should not be installed if the device is not cloud managed.
