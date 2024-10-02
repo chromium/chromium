@@ -440,6 +440,36 @@ TEST_F(IpProtectionCoreImplTest, RefreshProxyListOnNetworkChange) {
   EXPECT_TRUE(refresh_requested);
 }
 
+// When `kIpPrivacyIncludeOAuthTokenInGetProxyConfig` feature is enabled, the
+// proxy list should be refreshed on
+// `InvalidateIpProtectionConfigCacheTryAgainAfterTime`.
+TEST_F(IpProtectionCoreImplTest,
+       RefreshProxyListOnInvalidateTryAgainAfterTimeOnly) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kEnableIpProtectionProxy,
+      {
+          {net::features::kIpPrivacyIncludeOAuthTokenInGetProxyConfig.name,
+           "true"},
+      });
+
+  ipp_core_ = std::make_unique<IpProtectionCoreImpl>(
+      /*config_getter=*/nullptr,
+      /*is_ip_protection_enabled=*/true);
+
+  auto ipp_proxy_config_manager =
+      std::make_unique<MockIpProtectionProxyConfigManager>();
+  bool refresh_requested = false;
+  ipp_proxy_config_manager->SetOnRequestRefreshProxyList(
+      base::BindLambdaForTesting([&]() { refresh_requested = true; }));
+  ipp_core_->SetIpProtectionProxyConfigManagerForTesting(
+      std::move(ipp_proxy_config_manager));
+
+  ipp_core_->InvalidateIpProtectionConfigCacheTryAgainAfterTime();
+
+  EXPECT_TRUE(refresh_requested);
+}
+
 // Simulates a geo change detected in the IppProxyConfigManager.
 TEST_F(IpProtectionCoreImplTest, GeoChangeObservedInIppProxyConfigManager) {
   // Set up IppProxyConfigManager to have a "new" geo.

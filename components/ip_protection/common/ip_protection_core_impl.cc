@@ -146,6 +146,12 @@ void IpProtectionCoreImpl::
   for (const auto& manager : ipp_token_managers_) {
     manager.second->InvalidateTryAgainAfterTime();
   }
+  // If OAuth tokens are applied to GetProxyConfig requests (i.e. when
+  // `kIpPrivacyIncludeOAuthTokenInGetProxyConfig` is enabled), refresh the
+  // proxy list to try to obtain a new OAuth token.
+  if (net::features::kIpPrivacyIncludeOAuthTokenInGetProxyConfig.Get()) {
+    RequestRefreshProxyList();
+  }
 }
 
 void IpProtectionCoreImpl::SetIpProtectionTokenManagerForTesting(
