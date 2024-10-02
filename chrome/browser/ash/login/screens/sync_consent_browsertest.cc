@@ -75,23 +75,6 @@ const test::UIPath kReviewSettingsCheckBox = {kSyncConsent,
 const test::UIPath kAcceptButton = {kSyncConsent, "acceptButton"};
 const test::UIPath kDeclineButton = {kSyncConsent, "declineButton"};
 
-const test::UIPath kLacrosOverviewDialog = {kSyncConsent,
-                                            "syncConsentLacrosOverviewDialog"};
-
-const test::UIPath kLacrosAcceptButton = {kSyncConsent, "syncEverythingButton"};
-const test::UIPath kLacrosManageButtonRegular = {kSyncConsent,
-                                                 "manageButtonRegularUser"};
-const test::UIPath kLacrosManageButtonMinor = {kSyncConsent,
-                                               "manageButtonMinorUser"};
-const test::UIPath kLacrosDeclineButton = {kSyncConsent, "declineLacrosButton"};
-const test::UIPath kLacrosNextButton = {kSyncConsent, "nextButton"};
-
-const test::UIPath kAppsSyncToggle = {kSyncConsent, "appsTogglebutton"};
-const test::UIPath kSettingsSyncToggle = {kSyncConsent, "settingsTogglebutton"};
-const test::UIPath kWifiSyncToggle = {kSyncConsent, "wifiTogglebutton"};
-const test::UIPath kWallpaperSyncToggle = {kSyncConsent,
-                                           "wallpaperTogglebutton"};
-
 syncer::SyncUserSettings* GetSyncUserSettings() {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   return SyncServiceFactory::GetForProfile(profile)->GetUserSettings();
@@ -169,12 +152,6 @@ class SyncConsentTest
     LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
         true;
 
-    if (is_lacros_enabled_) {
-      expected_consent_ids_ = {
-          IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE_WITH_ARC_RESTRICTED,
-          IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_DESCRIPTION_WITH_ARC_RESTRICTED,
-      };
-    } else {
       expected_consent_ids_ = {
           IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE_WITH_DEVICE,
           IDS_LOGIN_SYNC_CONSENT_SCREEN_SUBTITLE_2,
@@ -182,7 +159,6 @@ class SyncConsentTest
           IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_NAME_2,
           IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_DESCRIPTION,
       };
-    }
 
     if (is_minor_user_) {
       // In minor mode, decline and turn on button should be displayed.
@@ -192,13 +168,8 @@ class SyncConsentTest
     } else {
       // In regular mdoe, `review later` checkbox and accept button should be
       // displayed.
-      if (is_lacros_enabled_) {
-        expected_consent_ids_.push_back(
-            IDS_LOGIN_SYNC_CONSENT_SCREEN_REVIEW_SYNC_OPTIONS_LATER_ARC_RESTRICTED);
-      } else {
-        expected_consent_ids_.push_back(
-            IDS_LOGIN_SYNC_CONSENT_SCREEN_REVIEW_SYNC_OPTIONS_LATER);
-      }
+      expected_consent_ids_.push_back(
+          IDS_LOGIN_SYNC_CONSENT_SCREEN_REVIEW_SYNC_OPTIONS_LATER);
       expected_consent_ids_.push_back(
           IDS_LOGIN_SYNC_CONSENT_SCREEN_ACCEPT_AND_CONTINUE);
     }
@@ -257,10 +228,6 @@ class SyncConsentTest
             },
             base::Unretained(this)))
         .Wait();
-
-    ASSERT_EQ(is_lacros_enabled_, crosapi::browser_util::IsLacrosEnabled());
-    ASSERT_EQ(is_lacros_enabled_,
-              AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
   }
 
   // Attempts to log in and show sync consent screen if it is not to be skipped.
@@ -283,7 +250,6 @@ class SyncConsentTest
   base::HistogramTester histogram_tester_;
   std::vector<int> expected_consent_ids_;
   bool is_minor_user_ = false;
-  bool is_lacros_enabled_ = false;
 
   static SyncConsentScreen* GetSyncConsentScreen() {
     return static_cast<SyncConsentScreen*>(
@@ -412,35 +378,14 @@ IN_PROC_BROWSER_TEST_F(SyncConsentTest, SyncConsentRecorder) {
 // Tests the different combinations of minor mode and ARC restricted mode.
 class SyncConsentTestWithModesParams
     : public SyncConsentTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+      public ::testing::WithParamInterface<bool> {
  public:
-  SyncConsentTestWithModesParams() {
-    std::tie(is_minor_user_, is_lacros_enabled_) = GetParam();
-    if (is_lacros_enabled_) {
-      // Make sure that `crosapi::browser_util::IsLacrosEnabled()` returns
-      // `true`.
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled=*/ash::standalone_browser::GetFeatureRefs(),
-          /*disabled=*/{features::kOsSyncConsentRevamp});
-      scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
-          ash::switches::kEnableLacrosForTesting);
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled=*/{},
-          /*disabled=*/ash::standalone_browser::GetFeatureRefs());
-    }
-  }
-
+  SyncConsentTestWithModesParams() { is_minor_user_ = GetParam(); }
   SyncConsentTestWithModesParams(const SyncConsentTestWithModesParams&) =
       delete;
   SyncConsentTestWithModesParams& operator=(
       const SyncConsentTestWithModesParams&) = delete;
-
   ~SyncConsentTestWithModesParams() override = default;
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::ScopedCommandLine scoped_command_line_;
 };
 
 IN_PROC_BROWSER_TEST_P(SyncConsentTestWithModesParams, Accept) {
@@ -479,31 +424,15 @@ IN_PROC_BROWSER_TEST_P(SyncConsentTestWithModesParams, Accept) {
       "OOBE.StepCompletionTimeByExitReason.Sync-consent.Next", 1);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         SyncConsentTestWithModesParams,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All, SyncConsentTestWithModesParams, testing::Bool());
 
-// Tests the different combinations of Lacros state and the selection of
-// the `Review later` checkbox.
+// Tests the different combinations the `Review later` checkbox.
 class SyncConsentTestWithReviewParams
     : public SyncConsentTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+      public ::testing::WithParamInterface<bool> {
  public:
   SyncConsentTestWithReviewParams() {
-    std::tie(is_lacros_enabled_, is_review_settings_checked_) = GetParam();
-    if (is_lacros_enabled_) {
-      // Make sure that `crosapi::browser_util::IsLacrosEnabled()` returns
-      // `true`.
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled=*/ash::standalone_browser::GetFeatureRefs(),
-          /*disabled=*/{features::kOsSyncConsentRevamp});
-      scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
-          ash::switches::kEnableLacrosForTesting);
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled=*/{},
-          /*disabled=*/ash::standalone_browser::GetFeatureRefs());
-    }
+    is_review_settings_checked_ = GetParam();
   }
 
   SyncConsentTestWithReviewParams(const SyncConsentTestWithReviewParams&) =
@@ -514,8 +443,6 @@ class SyncConsentTestWithReviewParams
   ~SyncConsentTestWithReviewParams() override = default;
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::ScopedCommandLine scoped_command_line_;
   bool is_review_settings_checked_;
 };
 
@@ -538,9 +465,7 @@ IN_PROC_BROWSER_TEST_P(SyncConsentTestWithReviewParams, Accept) {
       "OOBE.StepCompletionTimeByExitReason.Sync-consent.Next", 1);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         SyncConsentTestWithReviewParams,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All, SyncConsentTestWithReviewParams, testing::Bool());
 
 class SyncConsentTestWithParams
     : public SyncConsentTest,
@@ -794,290 +719,6 @@ IN_PROC_BROWSER_TEST_F(SyncConsentTimeoutTest,
   WaitForScreenShown();
 
   overviewDialogWaiter->Wait();
-}
-
-class SyncConsentLacrosRevampTest : public SyncConsentTest {
- public:
-  SyncConsentLacrosRevampTest() {
-    // Make sure that `crosapi::browser_util::IsLacrosEnabled()` returns `true`.
-    auto features = ash::standalone_browser::GetFeatureRefs();
-    features.push_back(features::kOsSyncConsentRevamp);
-    sync_feature_list_.InitWithFeatures(
-        /*enabled=*/features, /*disabled=*/{});
-    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
-        ash::switches::kEnableLacrosForTesting);
-    is_lacros_enabled_ = true;
-  }
-  ~SyncConsentLacrosRevampTest() override = default;
-
-  void SetLocalizedExpectedConsentStrings() {
-    expected_consent_ids_.clear();
-    expected_consent_ids_ = {
-        IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_TITLE,
-        IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_SUBTITLE,
-        IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_ADDITIONAL_SUBTITLE,
-        IDS_LOGIN_SYNC_CONSENT_SCREEN_TURN_ON_SYNC,
-        IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_SYNC_OPTIONS,
-    };
-  }
-
-  void SetMinorMode() { is_minor_user_ = true; }
-
- private:
-  base::test::ScopedFeatureList sync_feature_list_;
-  base::test::ScopedCommandLine scoped_command_line_;
-};
-
-IN_PROC_BROWSER_TEST_F(SyncConsentLacrosRevampTest, TurnOnSync) {
-  LoginAndShowSyncConsentScreenWithCapability();
-  WaitForScreenShown();
-
-  SetLocalizedExpectedConsentStrings();
-
-  SyncConsentScreen* screen = GetSyncConsentScreen();
-  ConsentRecordedWaiter consent_recorded_waiter;
-  screen->SetDelegateForTesting(&consent_recorded_waiter);
-
-  test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
-  test::OobeJS().ExpectVisiblePath(kLacrosOverviewDialog);
-  test::OobeJS().ExpectVisiblePath(kLacrosManageButtonRegular);
-  test::OobeJS().TapOnPath(kLacrosAcceptButton);
-  consent_recorded_waiter.Wait();
-  screen->SetDelegateForTesting(nullptr);  // cleanup
-
-  EXPECT_EQ(SyncConsentScreen::CONSENT_GIVEN,
-            consent_recorded_waiter.consent_given_);
-  EXPECT_THAT(consent_recorded_waiter.consent_description_strings_,
-              UnorderedElementsAreArray(GetLocalizedExpectedConsentStrings()));
-  EXPECT_EQ("Turn on sync",
-            consent_recorded_waiter.consent_confirmation_string_);
-  EXPECT_THAT(consent_recorded_waiter.consent_description_ids_,
-              UnorderedElementsAreArray(expected_consent_ids_));
-  EXPECT_EQ(IDS_LOGIN_SYNC_CONSENT_SCREEN_TURN_ON_SYNC,
-            consent_recorded_waiter.consent_confirmation_id_);
-
-  WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), SyncConsentScreen::Result::NEXT);
-
-  // Expect all data types are disabled for minor users when initialized.
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  syncer::SyncUserSettings* settings = GetSyncUserSettings();
-
-  histogram_tester_.ExpectUniqueSample(
-      "OOBE.SyncConsentScreen.LacrosSyncOptIns.SyncEverything", true, 1);
-
-  EXPECT_TRUE(settings->IsSyncAllOsTypesEnabled());
-}
-
-IN_PROC_BROWSER_TEST_F(SyncConsentLacrosRevampTest, SkippedSyncByPolicy) {
-  // Set up screen and policy.
-  SyncConsentScreen::SetProfileSyncDisabledByPolicyForTesting(true);
-
-  LoginAndShowSyncConsentScreenWithCapability();
-
-  WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), SyncConsentScreen::Result::NOT_APPLICABLE);
-}
-
-IN_PROC_BROWSER_TEST_F(SyncConsentLacrosRevampTest, OnManage) {
-  LoginAndShowSyncConsentScreenWithCapability();
-  WaitForScreenShown();
-
-  SetLocalizedExpectedConsentStrings();
-
-  SyncConsentScreen* screen = GetSyncConsentScreen();
-  ConsentRecordedWaiter consent_recorded_waiter;
-  screen->SetDelegateForTesting(&consent_recorded_waiter);
-
-  test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
-  test::OobeJS().ExpectVisiblePath(kLacrosOverviewDialog);
-  test::OobeJS().ExpectVisiblePath(kLacrosAcceptButton);
-  test::OobeJS().TapOnPath(kLacrosManageButtonRegular);
-  test::OobeJS().TapOnPath(kLacrosNextButton);
-
-  consent_recorded_waiter.Wait();
-  screen->SetDelegateForTesting(nullptr);  // cleanup
-
-  EXPECT_EQ(SyncConsentScreen::CONSENT_GIVEN,
-            consent_recorded_waiter.consent_given_);
-  EXPECT_THAT(consent_recorded_waiter.consent_description_strings_,
-              UnorderedElementsAreArray(GetLocalizedExpectedConsentStrings()));
-  EXPECT_EQ("Manage sync options",
-            consent_recorded_waiter.consent_confirmation_string_);
-  EXPECT_THAT(consent_recorded_waiter.consent_description_ids_,
-              UnorderedElementsAreArray(expected_consent_ids_));
-  EXPECT_EQ(IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_SYNC_OPTIONS,
-            consent_recorded_waiter.consent_confirmation_id_);
-
-  WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), SyncConsentScreen::Result::NEXT);
-
-  histogram_tester_.ExpectUniqueSample(
-      "OOBE.SyncConsentScreen.LacrosSyncOptIns.SyncEverything", false, 1);
-
-  // Expect all data types are disabled for minor users when initialized.
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  syncer::SyncUserSettings* settings = GetSyncUserSettings();
-
-  EXPECT_FALSE(settings->IsSyncAllOsTypesEnabled());
-}
-
-IN_PROC_BROWSER_TEST_F(SyncConsentLacrosRevampTest, OnDecline) {
-  SetMinorMode();
-  LoginAndShowSyncConsentScreenWithCapability();
-  WaitForScreenShown();
-
-  SyncConsentScreen* screen = GetSyncConsentScreen();
-  ConsentRecordedWaiter consent_recorded_waiter;
-  screen->SetDelegateForTesting(&consent_recorded_waiter);
-
-  test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
-  test::OobeJS().ExpectVisiblePath(kLacrosOverviewDialog);
-  test::OobeJS().ExpectVisiblePath(kLacrosAcceptButton);
-  test::OobeJS().ExpectVisiblePath(kLacrosManageButtonMinor);
-  test::OobeJS().TapOnPath(kLacrosDeclineButton);
-
-  screen->SetDelegateForTesting(nullptr);  // cleanup
-
-  WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), SyncConsentScreen::Result::DECLINE);
-
-  histogram_tester_.ExpectUniqueSample(
-      "OOBE.SyncConsentScreen.LacrosSyncOptIns.SyncEverything", false, 1);
-
-  // Expect all data types are disabled for minor users when initialized.
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  syncer::SyncUserSettings* settings = GetSyncUserSettings();
-
-  EXPECT_FALSE(settings->IsSyncAllOsTypesEnabled());
-}
-
-class SyncConsentTestLacrosRevampWithParams
-    : public SyncConsentTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool, bool, bool>> {
- public:
-  SyncConsentTestLacrosRevampWithParams() {
-    std::tie(is_app_synced, is_settings_synced, is_wifi_synced,
-             is_wallpaper_synced) = GetParam();
-    // Make sure that `crosapi::browser_util::IsLacrosEnabled()` returns `true`.
-    auto features = ash::standalone_browser::GetFeatureRefs();
-    features.push_back(features::kOsSyncConsentRevamp);
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled=*/features, /*disabled=*/{});
-    is_lacros_enabled_ = true;
-  }
-
-  SyncConsentTestLacrosRevampWithParams(
-      const SyncConsentTestLacrosRevampWithParams&) = delete;
-  SyncConsentTestLacrosRevampWithParams& operator=(
-      const SyncConsentTestLacrosRevampWithParams&) = delete;
-
-  ~SyncConsentTestLacrosRevampWithParams() override = default;
-
- protected:
-  bool is_app_synced;
-  bool is_settings_synced;
-  bool is_wifi_synced;
-  bool is_wallpaper_synced;
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         SyncConsentTestLacrosRevampWithParams,
-                         testing::Combine(testing::Bool(),
-                                          testing::Bool(),
-                                          testing::Bool(),
-                                          testing::Bool()));
-
-// TODO(crbug.com/41495890): Re-enable after Resolving flakiness.
-IN_PROC_BROWSER_TEST_P(SyncConsentTestLacrosRevampWithParams,
-                       DISABLED_ManageSync) {
-  LoginAndShowSyncConsentScreenWithCapability();
-  WaitForScreenShown();
-
-  test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
-  test::OobeJS().ExpectVisiblePath(kLacrosOverviewDialog);
-  test::OobeJS().ExpectVisiblePath(kLacrosAcceptButton);
-  test::OobeJS().TapOnPath(kLacrosManageButtonRegular);
-
-  // check Toggle are enabled by default
-  test::OobeJS().ExpectAttributeEQ("checked", kAppsSyncToggle, true);
-  test::OobeJS().ExpectAttributeEQ("checked", kSettingsSyncToggle, true);
-  test::OobeJS().ExpectAttributeEQ("checked", kWifiSyncToggle, true);
-  test::OobeJS().ExpectAttributeEQ("checked", kWallpaperSyncToggle, true);
-
-  // disable Toggle
-  if (!is_app_synced) {
-    test::OobeJS().TapOnPath(kAppsSyncToggle);
-  }
-
-  if (!is_settings_synced) {
-    test::OobeJS().TapOnPath(kSettingsSyncToggle);
-  }
-
-  if (!is_wifi_synced) {
-    test::OobeJS().TapOnPath(kWifiSyncToggle);
-  }
-
-  if (!is_wallpaper_synced) {
-    test::OobeJS().TapOnPath(kWallpaperSyncToggle);
-  }
-
-  // check Toggle reflect Param
-  test::OobeJS().ExpectAttributeEQ("checked", kAppsSyncToggle, is_app_synced);
-  test::OobeJS().ExpectAttributeEQ("checked", kSettingsSyncToggle,
-                                   is_settings_synced);
-  test::OobeJS().ExpectAttributeEQ("checked", kWifiSyncToggle, is_wifi_synced);
-
-  // Wallpaper sync is a special case; its implementation relies upon
-  // OS Settings to be synced. Thus, the wallpaper label and toggle are
-  // only enabled when the Settings sync toggle is on.
-  test::OobeJS().ExpectAttributeEQ("checked", kWallpaperSyncToggle,
-                                   is_wallpaper_synced && is_settings_synced);
-
-  test::OobeJS().TapOnPath(kLacrosNextButton);
-
-  WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), SyncConsentScreen::Result::NEXT);
-
-  histogram_tester_.ExpectUniqueSample(
-      "OOBE.SyncConsentScreen.LacrosSyncOptIns.DataType.SyncWallpaper",
-      is_wallpaper_synced && is_settings_synced, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "OOBE.SyncConsentScreen.LacrosSyncOptIns.DataType.SyncApps",
-      is_app_synced, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "OOBE.SyncConsentScreen.LacrosSyncOptIns.DataType.SyncSettings",
-      is_settings_synced, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "OOBE.SyncConsentScreen.LacrosSyncOptIns.DataType.SyncWifi",
-      is_wifi_synced, 1);
-
-  // Expect all data types are disabled for minor users when initialized.
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  syncer::SyncUserSettings* settings = GetSyncUserSettings();
-
-  EXPECT_FALSE(settings->IsSyncAllOsTypesEnabled());
-  EXPECT_EQ(
-      settings->GetSelectedOsTypes().Has(syncer::UserSelectableOsType::kOsApps),
-      is_app_synced);
-  EXPECT_EQ(settings->GetSelectedOsTypes().Has(
-                syncer::UserSelectableOsType::kOsPreferences),
-            is_settings_synced);
-  EXPECT_EQ(settings->GetSelectedOsTypes().Has(
-                syncer::UserSelectableOsType::kOsWifiConfigurations),
-            is_wifi_synced);
-
-  EXPECT_EQ(profile->GetPrefs()->GetBoolean(settings::prefs::kSyncOsWallpaper),
-            is_wallpaper_synced && is_settings_synced);
 }
 
 }  // namespace
