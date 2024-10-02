@@ -258,20 +258,27 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Input) {
       "Omnibox.LocalHistoryZeroSuggest.AsyncDeleteTime", 0);
 }
 
-// Tests that suggestions are returned only if user is not in an off-the-record
-// context.
+// Tests that suggestions are not returned in an off-the-record context.
 TEST_F(LocalHistoryZeroSuggestProviderTest, Incognito) {
   LoadURLs({
       {default_search_provider(), "hello world", "&foo=bar", 1},
   });
 
   EXPECT_CALL(*client_.get(), IsOffTheRecord())
-      .Times(2)
-      .WillOnce(testing::Return(true))
-      .WillOnce(testing::Return(false));
+      .WillRepeatedly(testing::Return(true));
 
   StartProviderAndWaitUntilDone();
   ExpectMatches({});
+}
+
+// Tests that suggestions are returned in a non off-the-record context.
+TEST_F(LocalHistoryZeroSuggestProviderTest, NonIncognito) {
+  LoadURLs({
+      {default_search_provider(), "hello world", "&foo=bar", 1},
+  });
+
+  EXPECT_CALL(*client_.get(), IsOffTheRecord())
+      .WillRepeatedly(testing::Return(false));
 
   StartProviderAndWaitUntilDone();
   ExpectMatches(
