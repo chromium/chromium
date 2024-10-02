@@ -25,6 +25,11 @@
 
 // https://html.spec.whatwg.org/C/#textmetrics
 
+dictionary TextClusterOptions {
+  DOMString? align = null;
+  DOMString? baseline = null;
+};
+
 [Exposed=(Window,Worker)]
 interface TextMetrics {
     // x-direction
@@ -50,4 +55,6 @@ interface TextMetrics {
     [RuntimeEnabled=ExtendedTextMetrics, RaisesException] sequence<DOMRectReadOnly> getSelectionRects([EnforceRange] unsigned long start, [EnforceRange] unsigned long end);
     // For bounding box
     [RuntimeEnabled=ExtendedTextMetrics, RaisesException] DOMRectReadOnly getActualBoundingBox([EnforceRange] unsigned long start, [EnforceRange] unsigned long end);
+    [RuntimeEnabled=ExtendedTextMetrics, RaisesException] sequence<TextCluster> getTextClusters([EnforceRange] unsigned long start, [EnforceRange] unsigned long end, optional TextClusterOptions options = {});
+    [RuntimeEnabled=ExtendedTextMetrics] sequence<TextCluster> getTextClusters(optional TextClusterOptions options = {});
 };

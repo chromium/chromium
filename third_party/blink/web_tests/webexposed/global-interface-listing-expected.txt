@@ -9919,6 +9919,20 @@ interface Text : CharacterData
     getter wholeText
     method constructor
     method splitText
+interface TextCluster
+    attribute @@toStringTag
+    getter align
+    getter baseline
+    getter begin
+    getter end
+    getter text
+    getter x
+    getter y
+    method constructor
+    setter begin
+    setter end
+    setter x
+    setter y
 interface TextDecoder
     attribute @@toStringTag
     getter encoding
@@ -9991,6 +10005,7 @@ interface TextMetrics
     method constructor
     method getActualBoundingBox
     method getSelectionRects
+    method getTextClusters
 interface TextTrack : EventTarget
     attribute @@toStringTag
     getter activeCues

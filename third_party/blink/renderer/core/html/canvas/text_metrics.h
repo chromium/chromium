@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_baselines.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/html/canvas/text_cluster.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
@@ -38,6 +39,7 @@
 namespace blink {
 
 class DOMRectReadOnly;
+class TextClusterOptions;
 
 class CORE_EXPORT TextMetrics final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -76,6 +78,12 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
   const DOMRectReadOnly* getActualBoundingBox(uint32_t start,
                                               uint32_t end,
                                               ExceptionState& exception_state);
+  HeapVector<Member<TextCluster>> getTextClusters(
+      uint32_t start,
+      uint32_t end,
+      const TextClusterOptions* options,
+      ExceptionState& exception_state);
+  HeapVector<Member<TextCluster>> getTextClusters(const TextClusterOptions* options);
 
   void Trace(Visitor*) const override;
 
@@ -102,6 +110,12 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
 
   void ShapeTextIfNeeded();
 
+  HeapVector<Member<TextCluster>> getTextClustersImpl(
+      uint32_t start,
+      uint32_t end,
+      const TextClusterOptions* options,
+      ExceptionState* exception_state);
+
   // x-direction
   double width_ = 0.0;
   double actual_bounding_box_left_ = 0.0;
@@ -120,12 +134,21 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
 
   // Needed for selection rects, bounding boxes and caret position.
   Font font_;
-  uint32_t text_length_ = 0;
   TextDirection direction_;
+  String text_;
+
+  // Values from the canvas context at the moment the text was measured.
+  TextAlign ctx_text_align_;
+  TextBaseline ctx_text_baseline_;
 
   // Cache of ShapeResults that is lazily created the first time it's needed.
   HeapVector<RunWithOffset> runs_with_offset_;
   bool shaping_needed_ = false;
+
+  // Cache of the character positions before which it is safe to break without
+  // splitting any clusters.
+  HeapVector<Member<TextCluster>> minimal_clusters_;
+  bool minimal_clusters_ready = true;
 };
 
 }  // namespace blink

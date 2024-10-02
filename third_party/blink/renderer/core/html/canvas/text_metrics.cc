@@ -6,17 +6,26 @@
 
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_baselines.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_text_cluster_options.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
+#include "third_party/blink/renderer/core/html/canvas/text_cluster.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
+#include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_metrics.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
+#include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
+#include "third_party/blink/renderer/platform/text/text_direction.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -66,6 +75,7 @@ void TextMetrics::Trace(Visitor* visitor) const {
   visitor->Trace(baselines_);
   visitor->Trace(font_);
   visitor->Trace(runs_with_offset_);
+  visitor->Trace(minimal_clusters_);
   ScriptWrappable::Trace(visitor);
 }
 
@@ -102,8 +112,8 @@ void TextMetrics::Update(const Font& font,
   if (!font_data)
     return;
 
+  text_ = text;
   font_ = font;
-  text_length_ = text.length();
   direction_ = direction;
   runs_with_offset_.clear();
   if (!RuntimeEnabledFeatures::Canvas2dTextMetricsShapingEnabled()) {
@@ -112,6 +122,8 @@ void TextMetrics::Update(const Font& font,
     // lazily created the first time they are required.
     shaping_needed_ = true;
   }
+  minimal_clusters_.clear();
+  minimal_clusters_ready = false;
 
   // x direction
   // Run bidi algorithm on the given text. Step 5 of:
@@ -164,11 +176,16 @@ void TextMetrics::Update(const Font& font,
   text_align_dx_ = 0.0f;
   if (align == kCenterTextAlign) {
     text_align_dx_ = real_width / 2.0f;
+    ctx_text_align_ = kCenterTextAlign;
   } else if (align == kRightTextAlign ||
              (align == kStartTextAlign && direction == TextDirection::kRtl) ||
              (align == kEndTextAlign && direction != TextDirection::kRtl)) {
     text_align_dx_ = real_width;
+    ctx_text_align_ = kRightTextAlign;
+  } else {
+    ctx_text_align_ = kLeftTextAlign;
   }
+  ctx_text_baseline_ = baseline;
   actual_bounding_box_left_ = -glyph_bounds.x() + text_align_dx_;
   actual_bounding_box_right_ = glyph_bounds.right() - text_align_dx_;
 
@@ -232,11 +249,11 @@ const HeapVector<Member<DOMRectReadOnly>> TextMetrics::getSelectionRects(
 
   // Checks indexes that go over the maximum for the text. For indexes less than
   // 0, an exception is thrown by [EnforceRange] in the idl binding.
-  if (start > text_length_ || end > text_length_) {
+  if (start > text_.length() || end > text_.length()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
         String::Format("The %s index is out of bounds.",
-                       start > text_length_ ? "start" : "end"));
+                       start > text_.length() ? "start" : "end"));
     return selection_rects;
   }
 
@@ -317,11 +334,11 @@ const DOMRectReadOnly* TextMetrics::getActualBoundingBox(
 
   // Checks indexes that go over the maximum for the text. For indexes less than
   // 0, an exception is thrown by [EnforceRange] in the idl binding.
-  if (start >= text_length_ || end > text_length_) {
+  if (start >= text_.length() || end > text_.length()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
         String::Format("The %s index is out of bounds.",
-                       start >= text_length_ ? "start" : "end"));
+                       start >= text_.length() ? "start" : "end"));
     return DOMRectReadOnly::FromRectF(bounding_box);
   }
 
@@ -413,6 +430,151 @@ unsigned TextMetrics::caretPositionFromPoint(double x) {
     }
   }
   return 0;
+}
+
+namespace {
+float getTextAlignDelta(float width,
+                        const TextAlign& text_align,
+                        const TextDirection& direction) {
+  switch (text_align) {
+    case kRightTextAlign:
+      return width;
+    case kCenterTextAlign:
+      return width / 2.0f;
+    case kLeftTextAlign:
+      return 0;
+    case kStartTextAlign:
+      if (IsLtr(direction)) {
+        return 0;
+      }
+      return width;
+    case kEndTextAlign:
+      if (IsLtr(direction)) {
+        return width;
+      }
+      return 0;
+  }
+}
+
+float getTextBaselineDelta(float baseline,
+                           const TextBaseline& text_baseline,
+                           const SimpleFontData& font_data) {
+  float new_baseline = TextMetrics::GetFontBaseline(text_baseline, font_data);
+  return baseline - new_baseline;
+}
+
+struct TextClusterCallbackContext {
+  unsigned start_index_;
+  float x_position_;
+  float width_;
+
+  void Trace(Visitor* visitor) const {}
+};
+}  // namespace
+
+HeapVector<Member<TextCluster>> TextMetrics::getTextClusters(
+    const TextClusterOptions* options) {
+  return getTextClustersImpl(0, text_.length(), options,
+                             /*exception_state=*/nullptr);
+}
+
+HeapVector<Member<TextCluster>> TextMetrics::getTextClusters(
+    uint32_t start,
+    uint32_t end,
+    const TextClusterOptions* options,
+    ExceptionState& exception_state) {
+  return getTextClustersImpl(start, end, options, &exception_state);
+}
+
+HeapVector<Member<TextCluster>> TextMetrics::getTextClustersImpl(
+    uint32_t start,
+    uint32_t end,
+    const TextClusterOptions* options,
+    ExceptionState* exception_state) {
+  HeapVector<Member<TextCluster>> clusters_for_range;
+  // Checks indexes that go over the maximum for the text. For indexes less than
+  // 0, an exception is thrown by [EnforceRange] in the idl binding.
+  if (start >= text_.length() || end > text_.length()) {
+    CHECK(exception_state != nullptr);
+    exception_state->ThrowDOMException(
+        DOMExceptionCode::kIndexSizeError,
+        String::Format("The %s index is out of bounds.",
+                       start >= text_.length() ? "start" : "end"));
+    return clusters_for_range;
+  }
+
+  if (!minimal_clusters_ready) {
+    ShapeTextIfNeeded();
+
+    TextAlign cluster_text_align;
+    TextBaseline cluster_text_baseline;
+    if (options == nullptr || !options->hasAlign() ||
+        !ParseTextAlign(options->align(), cluster_text_align)) {
+      cluster_text_align = ctx_text_align_;
+    }
+    if (options == nullptr || !options->hasBaseline() ||
+        !ParseTextBaseline(options->baseline(), cluster_text_baseline)) {
+      cluster_text_baseline = ctx_text_baseline_;
+    }
+
+    for (const auto& run_with_offset : runs_with_offset_) {
+      HeapVector<TextClusterCallbackContext> clusters_for_run;
+
+      run_with_offset.shape_result_->ForEachGraphemeClusters(
+          StringView(run_with_offset.text_), run_with_offset.x_position_, 0,
+          run_with_offset.num_characters_, 0,
+          [](void* context, unsigned character_index, float total_advance,
+             unsigned graphemes_in_cluster, float cluster_advance,
+             CanvasRotationInVertical rotation) {
+            auto* clusters =
+                static_cast<HeapVector<TextClusterCallbackContext>*>(context);
+            TextClusterCallbackContext cluster = {
+                .start_index_ = character_index,
+                .x_position_ = total_advance,
+                .width_ = cluster_advance};
+            clusters->push_back(cluster);
+          },
+          &clusters_for_run);
+
+      std::sort(clusters_for_run.begin(), clusters_for_run.end(),
+                [](TextClusterCallbackContext a, TextClusterCallbackContext b) {
+                  return a.start_index_ < b.start_index_;
+                });
+
+      for (wtf_size_t i = 0; i < clusters_for_run.size(); i++) {
+        TextCluster* text_cluster;
+        if (i + 1 < clusters_for_run.size()) {
+          text_cluster =
+              TextCluster::Create(text_, clusters_for_run[i].x_position_, 0,
+                                  clusters_for_run[i].start_index_,
+                                  clusters_for_run[i + 1].start_index_,
+                                  cluster_text_align, cluster_text_baseline,
+                                  *this);
+        } else {
+          text_cluster = TextCluster::Create(
+              text_, clusters_for_run[i].x_position_, 0,
+              clusters_for_run[i].start_index_, run_with_offset.num_characters_,
+              cluster_text_align, cluster_text_baseline, *this);
+        }
+        text_cluster->OffsetCharacters(run_with_offset.character_offset_);
+        text_cluster->OffsetPosition(
+            getTextAlignDelta(clusters_for_run[i].width_, cluster_text_align,
+                              direction_),
+            getTextBaselineDelta(baseline_y, cluster_text_baseline,
+                                 *font_.PrimaryFont()));
+        text_cluster->OffsetPosition(-text_align_dx_, 0);
+        minimal_clusters_.push_back(text_cluster);
+      }
+    }
+    minimal_clusters_ready = true;
+  }
+  for (const auto& cluster : minimal_clusters_) {
+    if (cluster->end() <= start or end <= cluster->begin()) {
+      continue;
+    }
+    clusters_for_range.push_back(cluster);
+  }
+  return clusters_for_range;
 }
 
 }  // namespace blink

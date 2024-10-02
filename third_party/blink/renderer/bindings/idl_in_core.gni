@@ -361,6 +361,7 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/html/canvas/image_data.idl",
   "//third_party/blink/renderer/core/html/canvas/image_data_settings.idl",
   "//third_party/blink/renderer/core/html/canvas/image_encode_options.idl",
+  "//third_party/blink/renderer/core/html/canvas/text_cluster.idl",
   "//third_party/blink/renderer/core/html/canvas/text_metrics.idl",
   "//third_party/blink/renderer/core/html/closewatcher/close_watcher.idl",
   "//third_party/blink/renderer/core/html/closewatcher/close_watcher_options.idl",
