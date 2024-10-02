@@ -306,8 +306,6 @@ void SVGTextContentElement::SvgAttributeChanged(
   if (attr_name == svg_names::kTextLengthAttr ||
       attr_name == svg_names::kLengthAdjustAttr ||
       attr_name == xml_names::kSpaceAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
-
     if (LayoutObject* layout_object = GetLayoutObject()) {
       if (auto* ng_text =
               LayoutSVGText::LocateLayoutSVGTextAncestor(layout_object)) {

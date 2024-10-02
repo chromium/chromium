@@ -78,13 +78,11 @@ void SVGFEColorMatrixElement::SvgAttributeChanged(
   const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kTypeAttr ||
       attr_name == svg_names::kValuesAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     PrimitiveAttributeChanged(attr_name);
     return;
   }
 
   if (attr_name == svg_names::kInAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     Invalidate();
     return;
   }

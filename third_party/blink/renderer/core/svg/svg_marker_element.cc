@@ -112,7 +112,6 @@ void SVGMarkerElement::SvgAttributeChanged(
   if (viewbox_attribute_changed || length_attribute_changed ||
       attr_name == svg_names::kMarkerUnitsAttr ||
       attr_name == svg_names::kOrientAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     auto* resource_container =
         To<LayoutSVGResourceContainer>(GetLayoutObject());
     if (resource_container) {

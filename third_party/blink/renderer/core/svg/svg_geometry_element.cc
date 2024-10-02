@@ -66,7 +66,6 @@ void SVGGeometryElement::SvgAttributeChanged(
     const SvgAttributeChangedParams& params) {
   const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kPathLengthAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     if (LayoutObject* layout_object = GetLayoutObject())
       MarkForLayoutAndParentResourceInvalidation(*layout_object);
     return;
@@ -237,7 +236,6 @@ void SVGGeometryElement::GeometryPresentationAttributeChanged(
 }
 
 void SVGGeometryElement::GeometryAttributeChanged() {
-  SVGElement::InvalidationGuard invalidation_guard(this);
   if (auto* layout_object = To<LayoutSVGShape>(GetLayoutObject())) {
     layout_object->SetNeedsShapeUpdate();
     MarkForLayoutAndParentResourceInvalidation(*layout_object);

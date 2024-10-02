@@ -78,8 +78,6 @@ void SVGAElement::SvgAttributeChanged(const SvgAttributeChangedParams& params) {
   // SVGURIReference changes as none of the other properties changes the linking
   // behaviour for our <a> element.
   if (SVGURIReference::IsKnownAttribute(params.name)) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
-
     bool was_link = IsLink();
     SetIsLink(!HrefString().IsNull());
 

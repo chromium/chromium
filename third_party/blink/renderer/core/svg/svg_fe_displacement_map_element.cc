@@ -93,13 +93,11 @@ void SVGFEDisplacementMapElement::SvgAttributeChanged(
   if (attr_name == svg_names::kXChannelSelectorAttr ||
       attr_name == svg_names::kYChannelSelectorAttr ||
       attr_name == svg_names::kScaleAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     PrimitiveAttributeChanged(attr_name);
     return;
   }
 
   if (attr_name == svg_names::kInAttr || attr_name == svg_names::kIn2Attr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     Invalidate();
     return;
   }

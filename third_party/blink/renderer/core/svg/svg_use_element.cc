@@ -242,8 +242,6 @@ void SVGUseElement::SvgAttributeChanged(
   if (attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr ||
       attr_name == svg_names::kWidthAttr ||
       attr_name == svg_names::kHeightAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
-
     if (attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr) {
       UpdatePresentationAttributeStyle(params.property);
     }
@@ -261,7 +259,6 @@ void SVGUseElement::SvgAttributeChanged(
   }
 
   if (SVGURIReference::IsKnownAttribute(attr_name)) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     UpdateTargetReference();
     InvalidateShadowTree();
     return;

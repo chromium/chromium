@@ -71,7 +71,6 @@ void SVGLinearGradientElement::SvgAttributeChanged(
   const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kX1Attr || attr_name == svg_names::kX2Attr ||
       attr_name == svg_names::kY1Attr || attr_name == svg_names::kY2Attr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     UpdateRelativeLengthsInformation();
     InvalidateGradient();
     return;

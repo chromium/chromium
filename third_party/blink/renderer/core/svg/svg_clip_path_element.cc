@@ -42,7 +42,6 @@ void SVGClipPathElement::Trace(Visitor* visitor) const {
 void SVGClipPathElement::SvgAttributeChanged(
     const SvgAttributeChangedParams& params) {
   if (params.name == svg_names::kClipPathUnitsAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     auto* layout_object = To<LayoutSVGResourceContainer>(GetLayoutObject());
     if (layout_object) {
       layout_object->InvalidateCache();

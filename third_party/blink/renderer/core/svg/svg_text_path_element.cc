@@ -90,7 +90,6 @@ void SVGTextPathElement::SvgAttributeChanged(
     const SvgAttributeChangedParams& params) {
   const QualifiedName& attr_name = params.name;
   if (SVGURIReference::IsKnownAttribute(attr_name)) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     BuildPendingResource();
     return;
   }
@@ -101,7 +100,6 @@ void SVGTextPathElement::SvgAttributeChanged(
   if (attr_name == svg_names::kStartOffsetAttr ||
       attr_name == svg_names::kMethodAttr ||
       attr_name == svg_names::kSpacingAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     if (LayoutObject* object = GetLayoutObject())
       MarkForLayoutAndParentResourceInvalidation(*object);
 

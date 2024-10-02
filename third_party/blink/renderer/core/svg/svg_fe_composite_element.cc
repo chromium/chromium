@@ -104,13 +104,11 @@ void SVGFECompositeElement::SvgAttributeChanged(
   if (attr_name == svg_names::kOperatorAttr ||
       attr_name == svg_names::kK1Attr || attr_name == svg_names::kK2Attr ||
       attr_name == svg_names::kK3Attr || attr_name == svg_names::kK4Attr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     PrimitiveAttributeChanged(attr_name);
     return;
   }
 
   if (attr_name == svg_names::kInAttr || attr_name == svg_names::kIn2Attr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     Invalidate();
     return;
   }

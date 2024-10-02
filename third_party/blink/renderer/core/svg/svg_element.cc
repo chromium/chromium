@@ -180,15 +180,6 @@ String SVGElement::title() const {
   return String();
 }
 
-bool SVGElement::InstanceUpdatesBlocked() const {
-  return HasSVGRareData() && SvgRareData()->InstanceUpdatesBlocked();
-}
-
-void SVGElement::SetInstanceUpdatesBlocked(bool value) {
-  if (HasSVGRareData())
-    SvgRareData()->SetInstanceUpdatesBlocked(value);
-}
-
 void SVGElement::SetWebAnimationsPending() {
   GetDocument().AccessSVGExtensions().AddWebAnimationsPendingSVGElement(*this);
   EnsureSVGRareData()->SetWebAnimatedAttributesDirty(true);
@@ -217,7 +208,6 @@ void SVGElement::ApplyActiveWebAnimations() {
 
 template <typename T>
 static void ForSelfAndInstances(SVGElement* element, T callback) {
-  SVGElement::InstanceUpdateBlocker blocker(element);
   callback(element);
   for (SVGElement* instance : element->InstancesForElement())
     callback(instance);
@@ -864,8 +854,6 @@ static inline void CollectInstancesForSVGElement(
   if (element->ContainingShadowRoot())
     return;
 
-  DCHECK(!element->InstanceUpdatesBlocked());
-
   instances = element->InstancesForElement();
 }
 
@@ -975,6 +963,7 @@ void SVGElement::AttributeChanged(const AttributeModificationParams& params) {
   if (property) {
     SvgAttributeChanged({*property, params.name, params.reason});
     UpdateWebAnimatedAttributeOnBaseValChange(*property);
+    InvalidateInstances();
     return;
   }
 
@@ -1001,7 +990,6 @@ void SVGElement::AttributeChanged(const AttributeModificationParams& params) {
 void SVGElement::SvgAttributeChanged(const SvgAttributeChangedParams& params) {
   if (class_name_ == &params.property) {
     ClassAttributeChanged(AtomicString(class_name_->CurrentValue()->Value()));
-    InvalidateInstances();
     return;
   }
 }
@@ -1015,6 +1003,7 @@ void SVGElement::BaseValueChanged(const SVGAnimatedPropertyBase& property) {
                     AtomicString(class_name_->BaseValue()->Value()));
   }
   UpdateWebAnimatedAttributeOnBaseValChange(property);
+  InvalidateInstances();
 }
 
 void SVGElement::UpdateWebAnimatedAttributeOnBaseValChange(
@@ -1240,9 +1229,6 @@ void SVGElement::NotifyResourceClients() const {
 }
 
 void SVGElement::InvalidateInstances() {
-  if (InstanceUpdatesBlocked())
-    return;
-
   const HeapHashSet<WeakMember<SVGElement>>& set = InstancesForElement();
   if (set.empty())
     return;
@@ -1269,18 +1255,6 @@ void SVGElement::SetNeedsStyleRecalcForInstances(
 
   for (SVGElement* instance : set)
     instance->SetNeedsStyleRecalc(change_type, reason);
-}
-
-SVGElement::InstanceUpdateBlocker::InstanceUpdateBlocker(
-    SVGElement* target_element)
-    : target_element_(target_element) {
-  if (target_element_)
-    target_element_->SetInstanceUpdatesBlocked(true);
-}
-
-SVGElement::InstanceUpdateBlocker::~InstanceUpdateBlocker() {
-  if (target_element_)
-    target_element_->SetInstanceUpdatesBlocked(false);
 }
 
 #if DCHECK_IS_ON()

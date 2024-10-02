@@ -93,7 +93,6 @@ void SVGFilterElement::SvgAttributeChanged(
 
   if (is_xywh || attr_name == svg_names::kFilterUnitsAttr ||
       attr_name == svg_names::kPrimitiveUnitsAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     InvalidateFilterChain();
     return;
   }

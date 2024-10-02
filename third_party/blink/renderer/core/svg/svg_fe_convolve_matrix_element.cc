@@ -204,14 +204,12 @@ void SVGFEConvolveMatrixElement::SvgAttributeChanged(
       attr_name == svg_names::kTargetXAttr ||
       attr_name == svg_names::kTargetYAttr ||
       attr_name == svg_names::kPreserveAlphaAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     PrimitiveAttributeChanged(attr_name);
     return;
   }
 
   if (attr_name == svg_names::kInAttr || attr_name == svg_names::kOrderAttr ||
       attr_name == svg_names::kKernelMatrixAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     Invalidate();
     return;
   }

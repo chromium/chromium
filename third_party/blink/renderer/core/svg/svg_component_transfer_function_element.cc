@@ -94,7 +94,6 @@ void SVGComponentTransferFunctionElement::SvgAttributeChanged(
       attr_name == svg_names::kAmplitudeAttr ||
       attr_name == svg_names::kExponentAttr ||
       attr_name == svg_names::kOffsetAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     InvalidateFilterPrimitiveParent(*this);
     return;
   }

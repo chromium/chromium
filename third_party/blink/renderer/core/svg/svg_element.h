@@ -98,9 +98,6 @@ class CORE_EXPORT SVGElement : public Element {
   };
   virtual AffineTransform LocalCoordinateSpaceTransform(CTMScope) const;
 
-  bool InstanceUpdatesBlocked() const;
-  void SetInstanceUpdatesBlocked(bool);
-
   // Records the SVG element as having a Web Animation on an SVG attribute that
   // needs applying.
   void SetWebAnimationsPending();
@@ -204,33 +201,6 @@ class CORE_EXPORT SVGElement : public Element {
   SVGElementResourceClient* GetSVGResourceClient();
   SVGElementResourceClient& EnsureSVGResourceClient();
 
-  class InvalidationGuard {
-    STACK_ALLOCATED();
-
-   public:
-    InvalidationGuard(SVGElement* element) : element_(element) {}
-    InvalidationGuard(const InvalidationGuard&) = delete;
-    InvalidationGuard& operator=(const InvalidationGuard&) = delete;
-    ~InvalidationGuard() { element_->InvalidateInstances(); }
-
-   private:
-    SVGElement* element_;
-  };
-
-  class InstanceUpdateBlocker {
-    STACK_ALLOCATED();
-
-   public:
-    InstanceUpdateBlocker(SVGElement* target_element);
-    InstanceUpdateBlocker(const InstanceUpdateBlocker&) = delete;
-    InstanceUpdateBlocker& operator=(const InstanceUpdateBlocker&) = delete;
-    ~InstanceUpdateBlocker();
-
-   private:
-    SVGElement* target_element_;
-  };
-
-  void InvalidateInstances();
   void SetNeedsStyleRecalcForInstances(StyleChangeType,
                                        const StyleChangeReasonForTracing&);
 
@@ -256,6 +226,7 @@ class CORE_EXPORT SVGElement : public Element {
 
   void ParseAttribute(const AttributeModificationParams&) override;
   void AttributeChanged(const AttributeModificationParams&) override;
+  void InvalidateInstances();
 
   void UpdatePresentationAttributeStyle(const SVGAnimatedPropertyBase&);
   void UpdatePresentationAttributeStyle(CSSPropertyID,

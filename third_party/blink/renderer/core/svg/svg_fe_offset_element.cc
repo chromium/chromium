@@ -51,7 +51,6 @@ void SVGFEOffsetElement::SvgAttributeChanged(
   const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kInAttr || attr_name == svg_names::kDxAttr ||
       attr_name == svg_names::kDyAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     Invalidate();
     return;
   }

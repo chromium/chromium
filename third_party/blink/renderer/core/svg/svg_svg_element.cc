@@ -265,7 +265,6 @@ void SVGSVGElement::SvgAttributeChanged(
 
   if (update_relative_lengths_or_view_box ||
       SVGZoomAndPan::IsKnownAttribute(attr_name)) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     if (auto* layout_object = GetLayoutObject())
       MarkForLayoutAndParentResourceInvalidation(*layout_object);
     return;

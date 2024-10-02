@@ -124,7 +124,6 @@ void SVGFETurbulenceElement::SvgAttributeChanged(
       attr_name == svg_names::kSeedAttr ||
       attr_name == svg_names::kStitchTilesAttr ||
       attr_name == svg_names::kTypeAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     PrimitiveAttributeChanged(attr_name);
     return;
   }

@@ -106,8 +106,6 @@ void SVGImageElement::SvgAttributeChanged(
       attr_name == svg_names::kWidthAttr || attr_name == svg_names::kHeightAttr;
 
   if (is_length_attribute || attr_name == svg_names::kPreserveAspectRatioAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
-
     if (is_length_attribute) {
       UpdatePresentationAttributeStyle(params.property);
       UpdateRelativeLengthsInformation();
@@ -126,7 +124,6 @@ void SVGImageElement::SvgAttributeChanged(
   }
 
   if (SVGURIReference::IsKnownAttribute(attr_name)) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     GetImageLoader().UpdateFromElement(ImageLoader::kUpdateIgnorePreviousError);
     return;
   }
