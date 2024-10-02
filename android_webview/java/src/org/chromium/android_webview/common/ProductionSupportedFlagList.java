@@ -1073,6 +1073,11 @@ public final class ProductionSupportedFlagList {
                 ContentFeatures.USE_BROWSER_CALCULATED_ORIGIN,
                 "Use origin calculated in the browser process rather than renderer process for"
                         + " navigations."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_AUTO_GRANT_SANITIZED_CLIPBOARD_WRITE,
+                "Auto-grant clipboard sanitized text write permission with user gesture. "
+                        + "Enabled by default."),
+
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

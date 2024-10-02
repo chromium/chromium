@@ -174,6 +174,7 @@ public class AwPermissionQueryApiTest extends AwParameterizedTest {
         runTestCase("gyroscope", "granted");
         runTestCase("midi", "granted");
         runTestCase("magnetometer", "granted");
+        runTestCase("clipboard-write", "granted");
     }
 
     @Test
@@ -182,7 +183,6 @@ public class AwPermissionQueryApiTest extends AwParameterizedTest {
     public void testPermissionsPrompt() throws Exception {
         // These permissions require a user prompt.
         runTestCase("camera", "prompt");
-        runTestCase("clipboard-write", "prompt");
         runTestCase("geolocation", "prompt");
         runTestCase("microphone", "prompt");
         runTestCase("midi-sysex", "prompt", "{\"name\": \"midi\", \"sysex\": true}");

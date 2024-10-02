@@ -275,4 +275,12 @@ BASE_FEATURE(kWebViewRenderDocument,
              "WebViewRenderDocument",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Auto-grants the `SANITIZED_CLIPBOARD_WRITE` permission.
+// This flag is introduced as a kill-switch in case the change leads
+// to problems.
+// TODO(https://crbug.com/362460435) Remove after launch.
+BASE_FEATURE(kWebViewAutoGrantSanitizedClipboardWrite,
+             "WebViewAutoGrantSanitizedClipboardWrite",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace android_webview::features
