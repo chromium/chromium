@@ -14,13 +14,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/test/supervised_user/child_account_test_utils.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
 #include "net/dns/mock_host_resolver.h"
-#include "services/network/public/cpp/network_switches.h"
 
 namespace supervised_user {
 
@@ -109,30 +109,8 @@ void KidsManagementApiMockSetupMixin::SetUp() {
 
 void KidsManagementApiMockSetupMixin::SetUpCommandLine(
     base::CommandLine* command_line) {
-  CHECK(embedded_test_server_.Started());
-
-  std::string target = embedded_test_server_.host_port_pair().ToString();
-
-  // TODO(b/300129765): Remove manual deduplication.
-  // Workaround on problem where supervision_mixin has two submixins, where both
-  // of them need to alter host resolver rules. For some reason,
-  // host_resolver()->AddRule() is innefective, and
-  // base::CommandLine::AppendSwitch only respects the ultimate value.
-  std::string previous_switch_value =
-      command_line->GetSwitchValueASCII(network::switches::kHostResolverRules);
-  if (!previous_switch_value.empty()) {
-    base::StrAppend(&previous_switch_value, {","});
-  }
-
-  command_line->AppendSwitchASCII(
-      network::switches::kHostResolverRules,
-      base::JoinString({previous_switch_value, "MAP",
-                        kKidsManagementServiceEndpoint, target},
-                       " "));
-
-  LOG(INFO) << "Kids management api server is listening on " << target << ".";
-  LOG(INFO) << "\tAll requests to [" << kKidsManagementServiceEndpoint
-            << "] will be mapped to it.";
+  AddHostResolverRule(command_line, kKidsManagementServiceEndpoint,
+                      embedded_test_server_);
 }
 
 void KidsManagementApiMockSetupMixin::SetUpOnMainThread() {

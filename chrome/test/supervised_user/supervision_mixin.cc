@@ -17,6 +17,7 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chrome/test/supervised_user/child_account_test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -32,7 +33,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test_utils.h"
 #include "google_apis/gaia/fake_gaia.h"
-#include "net/dns/mock_host_resolver.h"
 
 namespace supervised_user {
 
@@ -84,6 +84,11 @@ SupervisionMixin::SupervisionMixin(
 
 SupervisionMixin::~SupervisionMixin() = default;
 
+void SupervisionMixin::SetUpCommandLine(base::CommandLine* command_line) {
+  AddHostResolverRule(command_line, "accounts.google.com",
+                      *fake_gaia_mixin_.gaia_server());
+}
+
 void SupervisionMixin::SetUpInProcessBrowserTestFixture() {
   subscription_ =
       BrowserContextDependencyManager::GetInstance()
@@ -94,7 +99,6 @@ void SupervisionMixin::SetUpInProcessBrowserTestFixture() {
 void SupervisionMixin::SetUpOnMainThread() {
   SetUpIdentityTestEnvironment();
   ConfigureIdentityTestEnvironment();
-  SetUpTestServer();
 }
 
 // static
@@ -107,13 +111,6 @@ ChildAccountService::AuthState SupervisionMixin::GetExpectedAuthState(
     case SignInMode::kSupervised:
       return ChildAccountService::AuthState::AUTHENTICATED;
   }
-}
-
-void SupervisionMixin::SetUpTestServer() {
-  // By default, browser tests block anything that doesn't go to localhost, so
-  // account.google.com requests would never reach fake GAIA server without
-  // this.
-  test_base_->host_resolver()->AddRule("accounts.google.com", "127.0.0.1");
 }
 
 void SupervisionMixin::SetUpIdentityTestEnvironment() {
