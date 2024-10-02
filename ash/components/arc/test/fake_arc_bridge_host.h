@@ -81,9 +81,6 @@ class FakeArcBridgeHost : public mojom::ArcBridgeHost {
   void OnIntentHelperInstanceReady(
       mojo::PendingRemote<mojom::IntentHelperInstance> intent_helper_remote)
       override;
-  void OnKeyboardShortcutInstanceReady(
-      mojo::PendingRemote<mojom::KeyboardShortcutInstance>
-          keyboard_shortcut_remote) override;
   void OnKeymasterInstanceReady(
       mojo::PendingRemote<mojom::KeymasterInstance> keymaster_remote) override;
   void OnKeyMintInstanceReady(

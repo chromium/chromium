@@ -30,7 +30,6 @@
 #include "ash/components/arc/mojom/ime.mojom.h"
 #include "ash/components/arc/mojom/input_method_manager.mojom.h"
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
-#include "ash/components/arc/mojom/keyboard_shortcut.mojom.h"
 #include "ash/components/arc/mojom/keymaster.mojom.h"
 #include "ash/components/arc/mojom/keymint.mojom.h"
 #include "ash/components/arc/mojom/media_session.mojom.h"
@@ -242,13 +241,6 @@ void ArcBridgeHostImpl::OnIntentHelperInstanceReady(
     mojo::PendingRemote<mojom::IntentHelperInstance> intent_helper_remote) {
   OnInstanceReady(arc_bridge_service_->intent_helper(),
                   std::move(intent_helper_remote));
-}
-
-void ArcBridgeHostImpl::OnKeyboardShortcutInstanceReady(
-    mojo::PendingRemote<mojom::KeyboardShortcutInstance>
-        keyboard_shortcut_remote) {
-  OnInstanceReady(arc_bridge_service_->keyboard_shortcut(),
-                  std::move(keyboard_shortcut_remote));
 }
 
 void ArcBridgeHostImpl::OnKeymasterInstanceReady(

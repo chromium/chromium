@@ -18,7 +18,6 @@
 #include "ash/components/arc/crash_collector/arc_crash_collector_bridge.h"
 #include "ash/components/arc/disk_space/arc_disk_space_bridge.h"
 #include "ash/components/arc/ime/arc_ime_service.h"
-#include "ash/components/arc/keyboard_shortcut/arc_keyboard_shortcut_bridge.h"
 #include "ash/components/arc/media_session/arc_media_session_bridge.h"
 #include "ash/components/arc/memory/arc_memory_bridge.h"
 #include "ash/components/arc/metrics/arc_metrics_service.h"
@@ -271,7 +270,6 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
     arc_icon_cache_delegate_provider_ =
         std::make_unique<ArcIconCacheDelegateProvider>(intent_helper);
   }
-  ArcKeyboardShortcutBridge::GetForBrowserContext(profile);
   if (ShouldUseArcKeyMint()) {
     ArcKeyMintBridge::GetForBrowserContext(profile);
   } else {
@@ -457,7 +455,6 @@ void ArcServiceLauncher::EnsureFactoriesBuilt() {
   ArcImeService::EnsureFactoryBuilt();
   ArcInitialOptInMetricsRecorder::EnsureFactoryBuilt();
   ArcInstanceThrottle::EnsureFactoryBuilt();
-  ArcKeyboardShortcutBridge::EnsureFactoryBuilt();
   if (ShouldUseArcKeyMint()) {
     ArcKeyMintBridge::EnsureFactoryBuilt();
   } else {

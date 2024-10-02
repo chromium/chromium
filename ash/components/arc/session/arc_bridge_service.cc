@@ -27,7 +27,6 @@
 #include "ash/components/arc/mojom/ime.mojom.h"
 #include "ash/components/arc/mojom/input_method_manager.mojom.h"
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
-#include "ash/components/arc/mojom/keyboard_shortcut.mojom.h"
 #include "ash/components/arc/mojom/keymaster.mojom.h"
 #include "ash/components/arc/mojom/keymint.mojom.h"
 #include "ash/components/arc/mojom/media_session.mojom.h"

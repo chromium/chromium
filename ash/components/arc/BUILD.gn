@@ -60,8 +60,6 @@ static_library("arc") {
     "ime/arc_ime_util.h",
     "ime/key_event_result_receiver.cc",
     "ime/key_event_result_receiver.h",
-    "keyboard_shortcut/arc_keyboard_shortcut_bridge.cc",
-    "keyboard_shortcut/arc_keyboard_shortcut_bridge.h",
     "memory/arc_memory_bridge.cc",
     "memory/arc_memory_bridge.h",
     "metrics/arc_daily_metrics.cc",

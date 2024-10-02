@@ -24,7 +24,6 @@
 #include "ash/components/arc/mojom/ime.mojom.h"
 #include "ash/components/arc/mojom/input_method_manager.mojom.h"
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
-#include "ash/components/arc/mojom/keyboard_shortcut.mojom.h"
 #include "ash/components/arc/mojom/keymaster.mojom.h"
 #include "ash/components/arc/mojom/keymint.mojom.h"
 #include "ash/components/arc/mojom/media_session.mojom.h"
@@ -143,10 +142,6 @@ void FakeArcBridgeHost::OnInputMethodManagerInstanceReady(
 
 void FakeArcBridgeHost::OnIntentHelperInstanceReady(
     mojo::PendingRemote<mojom::IntentHelperInstance> intent_helper_remote) {}
-
-void FakeArcBridgeHost::OnKeyboardShortcutInstanceReady(
-    mojo::PendingRemote<mojom::KeyboardShortcutInstance>
-        keyboard_shortcut_remote) {}
 
 void FakeArcBridgeHost::OnKeymasterInstanceReady(
     mojo::PendingRemote<mojom::KeymasterInstance> keymaster_remote) {}
