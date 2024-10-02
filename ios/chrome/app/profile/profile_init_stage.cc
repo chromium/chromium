@@ -6,27 +6,27 @@
 
 #include "base/notreached.h"
 
-ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
+ProfileInitStage ProfileInitStageFromAppInitStage(AppInitStage app_init_stage) {
   switch (app_init_stage) {
-    case InitStageStart:
-    case InitStageBrowserBasic:
-    case InitStageSafeMode:
-    case InitStageVariationsSeed:
+    case AppInitStage::kStart:
+    case AppInitStage::kBrowserBasic:
+    case AppInitStage::kSafeMode:
+    case AppInitStage::kVariationsSeed:
       NOTREACHED();
 
-    case InitStageBrowserObjectsForBackgroundHandlers:
+    case AppInitStage::kBrowserObjectsForBackgroundHandlers:
       return ProfileInitStage::kProfileLoaded;
-    case InitStageEnterprise:
+    case AppInitStage::kEnterprise:
       return ProfileInitStage::kEnterprise;
-    case InitStageBrowserObjectsForUI:
+    case AppInitStage::kBrowserObjectsForUI:
       return ProfileInitStage::kPrepareUI;
-    case InitStageNormalUI:
+    case AppInitStage::kNormalUI:
       return ProfileInitStage::kUIReady;
-    case InitStageFirstRun:
+    case AppInitStage::kFirstRun:
       return ProfileInitStage::kFirstRun;
-    case InitStageChoiceScreen:
+    case AppInitStage::kChoiceScreen:
       return ProfileInitStage::kChoiceScreen;
-    case InitStageFinal:
+    case AppInitStage::kFinal:
       return ProfileInitStage::kFinal;
   }
 }

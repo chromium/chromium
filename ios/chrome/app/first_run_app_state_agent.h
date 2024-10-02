@@ -10,7 +10,7 @@
 @class AppState;
 
 // App state agent that displays the first run UI when needed and handles the
-// InitStageFirstRun stage.
+// AppInitStage::kFirstRun stage.
 @interface FirstRunAppAgent : NSObject <AppStateAgent>
 @end
 

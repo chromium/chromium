@@ -17,13 +17,13 @@
 // the scene allow it).
 //
 // The UI is considered as available when the following conditions are met:
-// (1) the app initialization is over (the stage InitStageFinal is reached), (2)
-// the scene is in the foreground, (3) there is no UI blocker, and (4) the app
-// isn't shutting down.
+// (1) the app initialization is over (the stage AppInitStage::kFinal is
+// reached), (2) the scene is in the foreground, (3) there is no UI blocker, and
+// (4) the app isn't shutting down.
 //
 // There are 4 events that can trigger the prompt: (1) a policy update, (2)
-// reaching the InitStageFinal init stage, (3) the scene becomes active in the
-// foreground, and (4) the UI blocker is removed.
+// reaching the AppInitStage::kFinal init stage, (3) the scene becomes active in
+// the foreground, and (4) the UI blocker is removed.
 //
 // In a multi-window context, only one scene will present the prompt. The first
 // scene to receive the event that triggers the prompt will be the one selected.

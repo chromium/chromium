@@ -56,7 +56,7 @@
   // Don't try to trigger Safe Mode when the app has already passed the safe
   // mode stage when the scene transitions to foreground. If the init stage is
   // still Safe Mode at this moment it means that safe mode has to be triggered.
-  if (_appState.initStage != InitStageSafeMode) {
+  if (_appState.initStage != AppInitStage::kSafeMode) {
     return;
   }
   // Don't try to show the safe mode UI on multiple scenes; one scene is
@@ -72,8 +72,8 @@
 #pragma mark - AppStateObserver
 
 - (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
-  if (_appState.initStage != InitStageSafeMode) {
+    didTransitionFromInitStage:(AppInitStage)previousInitStage {
+  if (_appState.initStage != AppInitStage::kSafeMode) {
     return;
   }
   // Iterate further in the init stages when safe mode isn't needed; stop

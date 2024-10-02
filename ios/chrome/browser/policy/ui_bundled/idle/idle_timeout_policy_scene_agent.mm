@@ -275,7 +275,7 @@
 // Returns whether the scene and app states allow for the idle timeout
 // confirmation dialog to be shown if it is needed.
 - (BOOL)isUIAvailableToShowDialog {
-  if (self.sceneState.appState.initStage < InitStageFinal) {
+  if (self.sceneState.appState.initStage < AppInitStage::kFinal) {
     // Return NO when the app isn't yet fully initialized.
     return NO;
   }

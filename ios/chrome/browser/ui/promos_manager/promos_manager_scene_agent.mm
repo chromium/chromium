@@ -46,7 +46,7 @@
 #pragma mark - AppStateObserver
 
 - (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
+    didTransitionFromInitStage:(AppInitStage)previousInitStage {
   // Monitor the app intialization stages to consider showing a promo at a point
   // in the initialization of the app that allows it.
   [self maybeNotifyObserver];

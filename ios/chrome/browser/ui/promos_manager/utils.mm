@@ -27,8 +27,9 @@ bool IsUIAvailableForPromo(SceneState* scene_state) {
   // display (please note the Promos Manager may still decide *not* to display a
   // promo, based on its own internal criteria):
 
-  // (1) The app initialization is over (the stage InitStageFinal is reached).
-  if (scene_state.appState.initStage < InitStageFinal) {
+  // (1) The app initialization is over (the stage AppInitStage::kFinal is
+  // reached).
+  if (scene_state.appState.initStage < AppInitStage::kFinal) {
     return NO;
   }
 

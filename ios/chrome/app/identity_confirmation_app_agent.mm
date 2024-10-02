@@ -50,7 +50,7 @@
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
-  if (self.appState.initStage != InitStageFinal) {
+  if (self.appState.initStage != AppInitStage::kFinal) {
     return;
   }
   id<BrowserProvider> presentingInterface =
@@ -82,11 +82,11 @@
 }
 
 - (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
+    didTransitionFromInitStage:(AppInitStage)previousInitStage {
   if (!appState.foregroundActiveScene) {
     return;
   }
-  if (self.appState.initStage != InitStageFinal) {
+  if (self.appState.initStage != AppInitStage::kFinal) {
     return;
   }
 
@@ -103,7 +103,7 @@
   [super appState:appState didTransitionFromInitStage:previousInitStage];
   if (!_foregroundActiveEventAlreadyHandled) {
     // In case of having a foregroundActiveScene before reaching an
-    // InitStageFinal, this will be the fallback to show the snackbar.
+    // AppInitStage::kFinal, this will be the fallback to show the snackbar.
     [self maybeShowIdentityConfirmationSnackbarWithBrowser:browser];
     _foregroundActiveEventAlreadyHandled = YES;
   }

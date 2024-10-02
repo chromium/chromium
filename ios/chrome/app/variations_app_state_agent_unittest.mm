@@ -12,6 +12,7 @@
 #import "base/time/time.h"
 #import "components/variations/pref_names.h"
 #import "components/variations/service/variations_field_trial_creator.h"
+#import "ios/chrome/app/application_delegate/app_init_stage_test_utils.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
@@ -31,7 +32,7 @@
 // in VariationsAppStateAgentTest.
 @interface StateForMockAppState : NSObject
 
-@property(nonatomic, assign) InitStage initStage;
+@property(nonatomic, assign) AppInitStage initStage;
 @property(nonatomic, assign) BOOL transitionQueuedFromVariationsStage;
 
 @end
@@ -52,7 +53,7 @@ class VariationsAppStateAgentTest : public PlatformTest {
     // Use a local variable to prevent capturing `this` in  member field).
     StateForMockAppState* state = state_;
     OCMStub([mock_app_state_ initStage]).andDo(^(NSInvocation* inv) {
-      InitStage initStage = state.initStage;
+      AppInitStage initStage = state.initStage;
       [inv setReturnValue:&initStage];
     });
     OCMStub([mock_app_state_ queueTransitionToNextInitStage])
@@ -84,7 +85,7 @@ class VariationsAppStateAgentTest : public PlatformTest {
                                        base::Time lastSeedFetchTime,
                                        int percentage_enabled,
                                        int percentage_control) {
-    state_.initStage = InitStageStart;
+    state_.initStage = AppInitStage::kStart;
     state_.transitionQueuedFromVariationsStage = NO;
     VariationsAppStateAgent* agent = [[VariationsAppStateAgent alloc]
         initWithFirstRunExperience:fre
@@ -116,22 +117,22 @@ class VariationsAppStateAgentTest : public PlatformTest {
   // AppStateObserver methods `appState:willTransitionToInitStage:` and
   // `appState:didTransitionFromInitStage:`.
   void TransitionAgentToStage(VariationsAppStateAgent* agent,
-                              InitStage new_stage) {
-    InitStage current_stage = state_.initStage;
+                              AppInitStage new_stage) {
+    AppInitStage current_stage = state_.initStage;
     DCHECK_LE(current_stage, new_stage);
-    InitStage previous_stage;
-    InitStage next_stage;
+    AppInitStage previous_stage;
+    AppInitStage next_stage;
     while (current_stage < new_stage) {
       bool transition_queued_from_variations_stage =
           IsAppStateQueueTransitionToNextInitStageInvoked();
-      if (current_stage < InitStageVariationsSeed) {
+      if (current_stage < AppInitStage::kVariationsSeed) {
         // If the seed should be fetched for `agent`, please make sure
         // `SimulateFetchCompletion(agent)` prior to calling this method.
         ASSERT_FALSE(transition_queued_from_variations_stage);
       } else {
         ASSERT_TRUE(transition_queued_from_variations_stage);
       }
-      next_stage = static_cast<InitStage>(current_stage + 1);
+      next_stage = NextAppInitStage(current_stage);
       [agent appState:mock_app_state_ willTransitionToInitStage:next_stage];
       previous_stage = current_stage;
       current_stage = next_stage;
@@ -183,7 +184,7 @@ class VariationsAppStateAgentTest : public PlatformTest {
 #pragma mark - Test cases
 
 // Tests that on first run, the agent transitions to the next stage from
-// InitStageVariationsSeed after seed is fetched, the field trial group
+// AppInitStage::kVariationsSeed after seed is fetched, the field trial group
 // "Enabled" would be active, and that the metric for non-existing previous seed
 // would be logged.
 TEST_F(VariationsAppStateAgentTest, EnableSeedFetchOnFirstRun) {
@@ -191,7 +192,7 @@ TEST_F(VariationsAppStateAgentTest, EnableSeedFetchOnFirstRun) {
   VariationsAppStateAgent* agent = CreateAgentThatFetches();
   ExpectThatSeedExpiryMetricLogged(
       variations::VariationsSeedExpiry::kFetchTimeMissing);
-  TransitionAgentToStage(agent, InitStageVariationsSeed);
+  TransitionAgentToStage(agent, AppInitStage::kVariationsSeed);
   // Verify that the app agent would NOT transitioned to the next init stage if
   // the seed fetch hasn't completed.
   EXPECT_FALSE(IsAppStateQueueTransitionToNextInitStageInvoked());
@@ -201,17 +202,16 @@ TEST_F(VariationsAppStateAgentTest, EnableSeedFetchOnFirstRun) {
   EXPECT_TRUE(IsAppStateQueueTransitionToNextInitStageInvoked());
   TransitionAgentToStage(
       agent,
-      static_cast<InitStage>(InitStageBrowserObjectsForBackgroundHandlers + 1));
+      NextAppInitStage(AppInitStage::kBrowserObjectsForBackgroundHandlers));
   ExpectThatTrialIsActiveAndAssignedToGroup(
       kIOSChromeVariationsTrialEnabledGroup);
 }
 
 // Tests that the agent immediately transitions to the next stage from
-// InitStageVariationsSeed when the user is not running the first time after
-// installation, even if placed in the enabled group.
-// Also, test that the user is NOT assigned to any experiment group. This is to
-// make sure that users who installed before the experiment is setup would not
-// be enrolled.
+// AppInitStage::kVariationsSeed when the user is not running the first time
+// after installation, even if placed in the enabled group. Also, test that the
+// user is NOT assigned to any experiment group. This is to make sure that users
+// who installed before the experiment is setup would not be enrolled.
 TEST_F(VariationsAppStateAgentTest, DisableSeedFetchOnNonFirstRun) {
   // Start the agent.
   VariationsAppStateAgent* agent =
@@ -219,7 +219,7 @@ TEST_F(VariationsAppStateAgentTest, DisableSeedFetchOnNonFirstRun) {
                   /*percentage_enabled=*/100, /*percentage_control=*/0);
   ExpectThatSeedExpiryMetricLogged(
       variations::VariationsSeedExpiry::kFetchTimeMissing);
-  TransitionAgentToStage(agent, InitStageVariationsSeed);
+  TransitionAgentToStage(agent, AppInitStage::kVariationsSeed);
   // Verify that the app agent would transitioned to the next init stage even if
   // the seed fetch hasn't completed.
   EXPECT_TRUE(IsAppStateQueueTransitionToNextInitStageInvoked());
@@ -228,9 +228,9 @@ TEST_F(VariationsAppStateAgentTest, DisableSeedFetchOnNonFirstRun) {
 }
 
 // Tests that the agent immediately transitions to the next stage from
-// InitStageVariationsSeed when the user is placed in "control" group even when
-// the user is running first time after installation, and that the metric for
-// non-existing previous seed would be logged.
+// AppInitStage::kVariationsSeed when the user is placed in "control" group even
+// when the user is running first time after installation, and that the metric
+// for non-existing previous seed would be logged.
 TEST_F(VariationsAppStateAgentTest, DisableSeedFetchOnFirstRunInControlGroup) {
   // Start the agent that is should fetch the seed if placed in enabled group.
   VariationsAppStateAgent* agent =
@@ -238,21 +238,21 @@ TEST_F(VariationsAppStateAgentTest, DisableSeedFetchOnFirstRunInControlGroup) {
                   /*percentage_enabled=*/0, /*percentage_control=*/100);
   ExpectThatSeedExpiryMetricLogged(
       variations::VariationsSeedExpiry::kFetchTimeMissing);
-  TransitionAgentToStage(agent, InitStageVariationsSeed);
+  TransitionAgentToStage(agent, AppInitStage::kVariationsSeed);
   // Verify that the app agent would transitioned to the next init stage even if
   // the seed fetch hasn't completed.
   EXPECT_TRUE(IsAppStateQueueTransitionToNextInitStageInvoked());
   TransitionAgentToStage(
       agent,
-      static_cast<InitStage>(InitStageBrowserObjectsForBackgroundHandlers + 1));
+      NextAppInitStage(AppInitStage::kBrowserObjectsForBackgroundHandlers));
   ExpectThatTrialIsActiveAndAssignedToGroup(
       kIOSChromeVariationsTrialControlGroup);
 }
 
 // Tests that the agent immediately transitions to the next stage from
-// InitStageVariationsSeed when the user is placed in "default" group even when
-// the user is running first time after installation, and that the metric for
-// non-existing previous seed would be logged.
+// AppInitStage::kVariationsSeed when the user is placed in "default" group even
+// when the user is running first time after installation, and that the metric
+// for non-existing previous seed would be logged.
 TEST_F(VariationsAppStateAgentTest, DisableSeedFetchOnFirstRunInDefaultGroup) {
   // Start the agent that is should fetch the seed if placed in enabled group.
   VariationsAppStateAgent* agent =
@@ -260,20 +260,20 @@ TEST_F(VariationsAppStateAgentTest, DisableSeedFetchOnFirstRunInDefaultGroup) {
                   /*percentage_enabled=*/0, /*percentage_control=*/0);
   ExpectThatSeedExpiryMetricLogged(
       variations::VariationsSeedExpiry::kFetchTimeMissing);
-  TransitionAgentToStage(agent, InitStageVariationsSeed);
+  TransitionAgentToStage(agent, AppInitStage::kVariationsSeed);
   // Verify that the app agent would transitioned to the next init stage even if
   // the seed fetch hasn't completed.
   EXPECT_TRUE(IsAppStateQueueTransitionToNextInitStageInvoked());
   TransitionAgentToStage(
       agent,
-      static_cast<InitStage>(InitStageBrowserObjectsForBackgroundHandlers + 1));
+      NextAppInitStage(AppInitStage::kBrowserObjectsForBackgroundHandlers));
   ExpectThatTrialIsActiveAndAssignedToGroup(
       kIOSChromeVariationsTrialDefaultGroup);
 }
 
 // Tests that the agent immediately transitions to the next stage from
-// InitStageVariationsSeed when the user exists the last FRE experience and
-// relaunches, even when the group assignment is "Enabled".
+// AppInitStage::kVariationsSeed when the user exists the last FRE experience
+// and relaunches, even when the group assignment is "Enabled".
 TEST_F(VariationsAppStateAgentTest,
        DisableSeedFetchWhenUserExitsFREAndRelaunch) {
   // Start the agent.
@@ -283,37 +283,37 @@ TEST_F(VariationsAppStateAgentTest,
       /*percentage_enabled=*/100, /*percentage_control=*/0);
   ExpectThatSeedExpiryMetricLogged(
       variations::VariationsSeedExpiry::kNotExpired);
-  TransitionAgentToStage(agent, InitStageVariationsSeed);
+  TransitionAgentToStage(agent, AppInitStage::kVariationsSeed);
   // Verify that the app agent would transitioned to the next init stage even if
   // the seed fetch hasn't completed.
   EXPECT_TRUE(IsAppStateQueueTransitionToNextInitStageInvoked());
 }
 
 // Tests that the agent immediately transitions to the next stage from
-// InitStageVariationsSeed when the seed fetch has completed before then.
+// AppInitStage::kVariationsSeed when the seed fetch has completed before then.
 TEST_F(VariationsAppStateAgentTest,
        TransitionToNextStageIfSeedFetchedBeforeReachingVariationsStage) {
   VariationsAppStateAgent* agent = CreateAgentThatFetches();
   // Simulate that the seed fetch has completed right before
-  // InitStageVariationsSeed is reached.
+  // AppInitStage::kVariationsSeed is reached.
   TransitionAgentToStage(agent,
-                         static_cast<InitStage>(InitStageVariationsSeed - 1));
+                         PreviousAppInitStage(AppInitStage::kVariationsSeed));
   SimulateFetchCompletion(agent);
   // Verify that even if the seed fetch has completed, the agent should not have
   // transitioned to the next stage because the app has not reached
-  // InitStageVariationsSeed yet,
+  // AppInitStage::kVariationsSeed yet,
   EXPECT_FALSE(IsAppStateQueueTransitionToNextInitStageInvoked());
-  // Verify that arriving at InitStageVariationsSeed would trigger a transition
-  // to the next stage immediately.
-  TransitionAgentToStage(agent, InitStageVariationsSeed);
+  // Verify that arriving at AppInitStage::kVariationsSeed would trigger a
+  // transition to the next stage immediately.
+  TransitionAgentToStage(agent, AppInitStage::kVariationsSeed);
   EXPECT_TRUE(IsAppStateQueueTransitionToNextInitStageInvoked());
 }
 
 // Tests that the field trial group from last run ("Enabled") would be active
 // for subsequent runs, even though the seed would not be fetched.
 TEST_F(VariationsAppStateAgentTest, PreviousGroupAssignmentPersisted) {
-  InitStage stageAfterChromeInitialization =
-      static_cast<InitStage>(InitStageBrowserObjectsForBackgroundHandlers + 1);
+  AppInitStage stageAfterChromeInitialization =
+      NextAppInitStage(AppInitStage::kBrowserObjectsForBackgroundHandlers);
   // Simulate first run.
   {
     VariationsAppStateAgent* first_agent =
@@ -350,8 +350,8 @@ TEST_F(VariationsAppStateAgentTest, PreviousGroupAssignmentPersisted) {
 // Tests that if the app presents first run a second time, experiment group
 // should be re-assigned.
 TEST_F(VariationsAppStateAgentTest, ReassignGroupOnSecondFirstRun) {
-  InitStage stageAfterChromeInitialization =
-      static_cast<InitStage>(InitStageBrowserObjectsForBackgroundHandlers + 1);
+  AppInitStage stageAfterChromeInitialization =
+      NextAppInitStage(AppInitStage::kBrowserObjectsForBackgroundHandlers);
   // Simulate first run in control group.
   {
     VariationsAppStateAgent* control_agent =
@@ -405,8 +405,8 @@ TEST_F(VariationsAppStateAgentTest, LaunchScreenDisplaysIfSeedIsNotFetched) {
   // Starts an agent that fetches the seed.
   VariationsAppStateAgent* agent = CreateAgentThatFetches();
   // Simulate that the seed fetch has completed right before
-  // InitStageVariationsSeed is reached.
-  TransitionAgentToStage(agent, InitStageVariationsSeed);
+  // AppInitStage::kVariationsSeed is reached.
+  TransitionAgentToStage(agent, AppInitStage::kVariationsSeed);
   [agent sceneState:mock_scene_state
       transitionedToActivationLevel:SceneActivationLevelForegroundInactive];
   EXPECT_OCMOCK_VERIFY(mock_window);
@@ -415,8 +415,8 @@ TEST_F(VariationsAppStateAgentTest, LaunchScreenDisplaysIfSeedIsNotFetched) {
 // Tests that the fetch time from last launch will be saved when the app goes to
 // background.
 TEST_F(VariationsAppStateAgentTest, SavesLastSeedFetchTimeOnBackgrounding) {
-  InitStage stageAfterChromeInitialization =
-      static_cast<InitStage>(InitStageBrowserObjectsForBackgroundHandlers + 1);
+  AppInitStage stageAfterChromeInitialization =
+      NextAppInitStage(AppInitStage::kBrowserObjectsForBackgroundHandlers);
   // Simulate foregrounding and setting up Chrome.
   base::Time last_fetch_time = base::Time::Now();
   VariationsAppStateAgent* agent = CreateAgentThatDoesNotFetch();

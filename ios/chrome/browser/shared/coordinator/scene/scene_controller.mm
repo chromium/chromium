@@ -715,7 +715,7 @@ void OnListFamilyMembersResponse(
 - (void)performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem
                    completionHandler:
                        (void (^)(BOOL succeeded))completionHandler {
-  if (self.sceneState.appState.initStage <= InitStageNormalUI ||
+  if (self.sceneState.appState.initStage <= AppInitStage::kNormalUI ||
       !self.currentInterface.profile) {
     // Don't handle the intent if the browser UI objects aren't yet initialized.
     // This is the case when the app is in safe mode or may be the case when the
@@ -746,7 +746,7 @@ void OnListFamilyMembersResponse(
     return;
   }
 
-  if (self.sceneState.appState.initStage <= InitStageNormalUI ||
+  if (self.sceneState.appState.initStage <= AppInitStage::kNormalUI ||
       !self.currentInterface.profile) {
     // Don't handle the intent if the browser UI objects aren't yet initialized.
     // This is the case when the app is in safe mode or may be the case when the
@@ -787,7 +787,7 @@ void OnListFamilyMembersResponse(
 #pragma mark - AppStateObserver
 
 - (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
+    didTransitionFromInitStage:(AppInitStage)previousInitStage {
   [self transitionToSceneActivationLevel:self.sceneState.activationLevel
                             appInitStage:appState.initStage];
 }
@@ -873,7 +873,7 @@ void OnListFamilyMembersResponse(
 // called from both observer callbacks and allows to handle all the transitions
 // in one place.
 - (void)transitionToSceneActivationLevel:(SceneActivationLevel)level
-                            appInitStage:(InitStage)appInitStage {
+                            appInitStage:(AppInitStage)appInitStage {
   // Update `backgroundedSinceLastActivated` and, if the scene has just been
   // activated, mark its state before the current activation for future use.
   BOOL transitionedToForegroundActiveFromBackground =
@@ -890,7 +890,7 @@ void OnListFamilyMembersResponse(
     //  was already set-up should be torn down.
     [self teardownUI];
   }
-  if (appInitStage < InitStageNormalUI) {
+  if (appInitStage < AppInitStage::kNormalUI) {
     // Nothing else per-scene should happen before the app completes the global
     // setup, like executing Safe mode, or creating the main BrowserState.
     return;
@@ -913,7 +913,7 @@ void OnListFamilyMembersResponse(
   }
 
   if (level == SceneActivationLevelForegroundActive &&
-      appInitStage == InitStageFinal) {
+      appInitStage == AppInitStage::kFinal) {
     [self tryPresentSigninModalUI];
 
     [self handleExternalIntents];
@@ -1469,7 +1469,7 @@ void OnListFamilyMembersResponse(
     return NO;
   }
 
-  if (self.sceneState.appState.initStage <= InitStageFirstRun) {
+  if (self.sceneState.appState.initStage <= AppInitStage::kFirstRun) {
     return NO;
   }
 
@@ -2151,7 +2151,7 @@ using UserFeedbackDataCallback =
   if (self.settingsNavigationController) {
     return NO;
   }
-  if (self.sceneState.appState.initStage <= InitStageFirstRun) {
+  if (self.sceneState.appState.initStage <= AppInitStage::kFirstRun) {
     return NO;
   }
   if (self.sceneState.appState.currentUIBlocker) {
@@ -3936,7 +3936,7 @@ using UserFeedbackDataCallback =
 }
 
 - (void)openURLContexts:(NSSet<UIOpenURLContext*>*)URLContexts {
-  if (self.sceneState.appState.initStage <= InitStageNormalUI ||
+  if (self.sceneState.appState.initStage <= AppInitStage::kNormalUI ||
       !self.currentInterface.profile) {
     // Don't handle the intent if the browser UI objects aren't yet initialized.
     // This is the case when the app is in safe mode or may be the case when the

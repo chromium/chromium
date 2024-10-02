@@ -162,7 +162,7 @@
     transitionedToActivationLevel:(SceneActivationLevel)level {
   DCHECK(self.promosManager);
 
-  if (self.sceneState.appState.initStage < InitStageFinal) {
+  if (self.sceneState.appState.initStage < AppInitStage::kFinal) {
     return;
   }
 

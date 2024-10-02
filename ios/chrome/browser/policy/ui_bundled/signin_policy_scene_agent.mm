@@ -124,7 +124,7 @@
 #pragma mark - AppStateObserver
 
 - (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
+    didTransitionFromInitStage:(AppInitStage)previousInitStage {
   // Monitor the app intialization stages to consider showing the sign-in
   // prompts at a point in the initialization of the app that allows it.
   [self handleSigninPromptsIfUIAvailable];
@@ -258,7 +258,7 @@
 // YES if the scene and the app are in a state where the UI of the scene is
 // available to show sign-in related prompts.
 - (BOOL)isUIAvailableToPrompt {
-  if (self.sceneState.appState.initStage < InitStageFinal) {
+  if (self.sceneState.appState.initStage < AppInitStage::kFinal) {
     return NO;
   }
 

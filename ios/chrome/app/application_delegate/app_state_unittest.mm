@@ -12,6 +12,7 @@
 #import "base/ios/ios_util.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/app/app_startup_parameters.h"
+#import "ios/chrome/app/application_delegate/app_init_stage_test_utils.h"
 #import "ios/chrome/app/application_delegate/app_state+Testing.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
@@ -98,36 +99,36 @@
 @end
 @implementation AppStateObserverToMockMainController
 - (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
+    didTransitionFromInitStage:(AppInitStage)previousInitStage {
   switch (appState.initStage) {
-    case InitStageStart:
+    case AppInitStage::kStart:
       [appState queueTransitionToNextInitStage];
       break;
-    case InitStageBrowserBasic:
+    case AppInitStage::kBrowserBasic:
       break;
-    case InitStageSafeMode:
+    case AppInitStage::kSafeMode:
       break;
-    case InitStageVariationsSeed:
+    case AppInitStage::kVariationsSeed:
       [appState queueTransitionToNextInitStage];
       break;
-    case InitStageBrowserObjectsForBackgroundHandlers:
+    case AppInitStage::kBrowserObjectsForBackgroundHandlers:
       [appState queueTransitionToNextInitStage];
       break;
-    case InitStageEnterprise:
+    case AppInitStage::kEnterprise:
       break;
-    case InitStageBrowserObjectsForUI:
+    case AppInitStage::kBrowserObjectsForUI:
       [appState queueTransitionToNextInitStage];
       break;
-    case InitStageNormalUI:
+    case AppInitStage::kNormalUI:
       [appState queueTransitionToNextInitStage];
       break;
-    case InitStageFirstRun:
+    case AppInitStage::kFirstRun:
       [appState queueTransitionToNextInitStage];
       break;
-    case InitStageChoiceScreen:
+    case AppInitStage::kChoiceScreen:
       [appState queueTransitionToNextInitStage];
       break;
-    case InitStageFinal:
+    case AppInitStage::kFinal:
       break;
   }
 }
@@ -175,7 +176,7 @@ typedef NSArray<SceneState*>* (^ScenesBlock)(id self);
 }
 
 - (void)appState:(AppState*)appState
-    willTransitionToInitStage:(InitStage)nextInitStage {
+    willTransitionToInitStage:(AppInitStage)nextInitStage {
   if (self.needsQueueTransition && !self.triggerOnDidTransition) {
     [appState queueTransitionToNextInitStage];
     self.needsQueueTransition = NO;
@@ -183,7 +184,7 @@ typedef NSArray<SceneState*>* (^ScenesBlock)(id self);
 }
 
 - (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
+    didTransitionFromInitStage:(AppInitStage)previousInitStage {
   if (self.needsQueueTransition && self.triggerOnDidTransition) {
     [appState queueTransitionToNextInitStage];
     self.needsQueueTransition = NO;
@@ -551,9 +552,9 @@ TEST_F(AppStateTest, ApplicationDidEnterBackgroundStageBackground) {
 // Tests that -queueTransitionToNextInitStage transitions to the next stage.
 TEST_F(AppStateTest, queueTransitionToNextInitStage) {
   AppState* appState = GetAppStateWithMock();
-  ASSERT_EQ(appState.initStage, InitStageStart);
+  ASSERT_EQ(appState.initStage, AppInitStage::kStart);
   [appState queueTransitionToNextInitStage];
-  ASSERT_EQ(appState.initStage, static_cast<InitStage>(InitStageStart + 1));
+  ASSERT_EQ(appState.initStage, NextAppInitStage(AppInitStage::kStart));
 }
 
 // Tests that -queueTransitionToNextInitStage notifies observers.
@@ -561,19 +562,19 @@ TEST_F(AppStateTest, queueTransitionToNextInitStageNotifiesObservers) {
   // Setup.
   AppState* appState = GetAppStateWithMock();
   id observer = [OCMockObject mockForProtocol:@protocol(AppStateObserver)];
-  InitStage secondStage = static_cast<InitStage>(InitStageStart + 1);
+  AppInitStage secondStage = NextAppInitStage(AppInitStage::kStart);
   [appState addObserver:observer];
 
   [[[observer expect] andDo:^(NSInvocation*) {
     // Verify that the init stage isn't yet increased when calling
     // #willTransitionToInitStage.
-    EXPECT_EQ(InitStageStart, appState.initStage);
+    EXPECT_EQ(AppInitStage::kStart, appState.initStage);
   }] appState:appState willTransitionToInitStage:secondStage];
   [[[observer expect] andDo:^(NSInvocation*) {
     // Verify that the init stage is increased when calling
     // #didTransitionFromInitStage.
     EXPECT_EQ(secondStage, appState.initStage);
-  }] appState:appState didTransitionFromInitStage:InitStageStart];
+  }] appState:appState didTransitionFromInitStage:AppInitStage::kStart];
 
   [appState queueTransitionToNextInitStage];
 
@@ -594,8 +595,8 @@ TEST_F(AppStateTest,
       [[AppStateTransitioningObserver alloc] init];
   id observer2 = [OCMockObject mockForProtocol:@protocol(AppStateObserver)];
 
-  InitStage secondStage = static_cast<InitStage>(InitStageStart + 1);
-  InitStage thirdStage = static_cast<InitStage>(InitStageStart + 2);
+  AppInitStage secondStage = NextAppInitStage(AppInitStage::kStart);
+  AppInitStage thirdStage = NextAppInitStage(secondStage);
 
   // The order is important here.
   [appState addObserver:observer1];
@@ -607,10 +608,10 @@ TEST_F(AppStateTest,
   // transitioningObserver queueing a new transition from one of the callbacks.
   [[observer1 expect] appState:appState willTransitionToInitStage:secondStage];
   [[observer1 expect] appState:appState
-      didTransitionFromInitStage:InitStageStart];
+      didTransitionFromInitStage:AppInitStage::kStart];
   [[observer2 expect] appState:appState willTransitionToInitStage:secondStage];
   [[observer2 expect] appState:appState
-      didTransitionFromInitStage:InitStageStart];
+      didTransitionFromInitStage:AppInitStage::kStart];
   [[observer1 expect] appState:appState willTransitionToInitStage:thirdStage];
   [[observer1 expect] appState:appState didTransitionFromInitStage:secondStage];
   [[observer2 expect] appState:appState willTransitionToInitStage:thirdStage];
@@ -636,8 +637,8 @@ TEST_F(AppStateTest,
   transitioningObserver.triggerOnDidTransition = YES;
   id observer2 = [OCMockObject mockForProtocol:@protocol(AppStateObserver)];
 
-  InitStage secondStage = static_cast<InitStage>(InitStageStart + 1);
-  InitStage thirdStage = static_cast<InitStage>(InitStageStart + 2);
+  AppInitStage secondStage = NextAppInitStage(AppInitStage::kStart);
+  AppInitStage thirdStage = NextAppInitStage(secondStage);
 
   // The order is important here.
   [appState addObserver:observer1];
@@ -649,10 +650,10 @@ TEST_F(AppStateTest,
   // transitioningObserver queueing a new transition from one of the callbacks.
   [[observer1 expect] appState:appState willTransitionToInitStage:secondStage];
   [[observer1 expect] appState:appState
-      didTransitionFromInitStage:InitStageStart];
+      didTransitionFromInitStage:AppInitStage::kStart];
   [[observer2 expect] appState:appState willTransitionToInitStage:secondStage];
   [[observer2 expect] appState:appState
-      didTransitionFromInitStage:InitStageStart];
+      didTransitionFromInitStage:AppInitStage::kStart];
   [[observer1 expect] appState:appState willTransitionToInitStage:thirdStage];
   [[observer1 expect] appState:appState didTransitionFromInitStage:secondStage];
   [[observer2 expect] appState:appState willTransitionToInitStage:thirdStage];

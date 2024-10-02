@@ -215,19 +215,19 @@ class DiscoverFeedProfileHelperList {
 #pragma mark - AppStateObserver
 
 - (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
-  if (appState.initStage == InitStageBrowserBasic) {
+    didTransitionFromInitStage:(AppInitStage)previousInitStage {
+  if (appState.initStage == AppInitStage::kBrowserBasic) {
     // Apple docs say that background tasks must be registered before the
     // end of `application:didFinishLaunchingWithOptions:`.
-    // InitStageBrowserBasic fulfills that requirement.
+    // AppInitStage::kBrowserBasic fulfills that requirement.
     [self maybeRegisterBackgroundRefreshTask];
     // This is a provisional permission, which does not prompt the user at this
     // point.
     [self maybeRequestUserNotificationPermissions];
   } else if (appState.initStage ==
-             InitStageBrowserObjectsForBackgroundHandlers) {
+             AppInitStage::kBrowserObjectsForBackgroundHandlers) {
     // Save the value of the feature flag now since 'base::FeatureList' was
-    // not available in `InitStageBrowserBasic`.
+    // not available in `AppInitStage::kBrowserBasic`.
     // IsFeedBackgroundRefreshCapabilityEnabled() simply reads the saved value
     // saved by SaveFeedBackgroundRefreshCapabilityEnabledForNextColdStart(). Do
     // not wrap this in IsFeedBackgroundRefreshCapabilityEnabled() -- in this

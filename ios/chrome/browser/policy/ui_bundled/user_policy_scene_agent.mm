@@ -126,7 +126,7 @@
 #pragma mark - AppStateObserver
 
 - (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
+    didTransitionFromInitStage:(AppInitStage)previousInitStage {
   // Monitor the app intialization stages to consider showing the sign-in
   // prompts at a point in the initialization of the app that allows it.
   [self maybeShowUserPolicyNotification];
@@ -157,7 +157,7 @@
 
 // Returns YES if the scene UI is available to show the notification dialog.
 - (BOOL)isUIAvailableToShowNotification {
-  if (self.sceneState.appState.initStage < InitStageFinal) {
+  if (self.sceneState.appState.initStage < AppInitStage::kFinal) {
     // Return NO when the app isn't yet fully initialized.
     return NO;
   }

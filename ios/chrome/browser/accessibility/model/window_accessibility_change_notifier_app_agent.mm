@@ -59,7 +59,7 @@ const NSTimeInterval kWindowNotifcationDelay = 0.5;  // seconds
 // Init stage changes are potential opportunities for dictating the window count
 // to Voiceover users.
 - (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
+    didTransitionFromInitStage:(AppInitStage)previousInitStage {
   [self maybeScheduleWindowCountWithDelay:kWindowNotifcationDelay];
 }
 
@@ -85,7 +85,7 @@ const NSTimeInterval kWindowNotifcationDelay = 0.5;  // seconds
   // Weakify, since the window count can change in shutdown, so there are
   // likely to be pending notifications that would otherwise keep this object
   // alive.
-  if (self.appState.initStage == InitStageFinal) {
+  if (self.appState.initStage == AppInitStage::kFinal) {
     __weak WindowAccessibilityChangeNotifierAppAgent* weakSelf = self;
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
                                  static_cast<int64_t>(delay * NSEC_PER_SEC)),

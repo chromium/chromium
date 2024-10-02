@@ -28,7 +28,7 @@ class PrefService;
     connectionInformation:(id<ConnectionInformation>)connectionInformation
        startupInformation:(id<StartupInformation>)startupInformation
               prefService:(PrefService*)prefService
-                initStage:(InitStage)initStage;
+                initStage:(AppInitStage)initStage;
 
 // Handles open URL at application startup.
 + (void)handleLaunchOptions:(URLOpenerParams*)options

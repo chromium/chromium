@@ -98,7 +98,7 @@ class ReSignInInfoBarDelegateTest : public PlatformTest {
 
   AppState* mock_app_state() { return mock_app_state_; }
 
-  void set_init_stage(InitStage init_stage) { init_stage_ = init_stage; }
+  void set_init_stage(AppInitStage init_stage) { init_stage_ = init_stage; }
 
  private:
   web::WebTaskEnvironment task_environment_;
@@ -110,7 +110,7 @@ class ReSignInInfoBarDelegateTest : public PlatformTest {
       OCMProtocolMock(@protocol(SigninPresenter));
   // SceneState only weakly holds AppState, so keep it alive here.
   AppState* mock_app_state_ = OCMStrictClassMock([AppState class]);
-  InitStage init_stage_ = InitStageFinal;
+  AppInitStage init_stage_ = AppInitStage::kFinal;
 };
 
 TEST_F(ReSignInInfoBarDelegateTest, TestCreateWhenNotPrompting) {
@@ -208,9 +208,10 @@ TEST_F(ReSignInInfoBarDelegateTest, TestInfoBarDismissed) {
   EXPECT_FALSE(authentication_service()->ShouldReauthPromptForSignInAndSync());
 }
 
-// Tests that no delegate is returned when the app state is not InitStageFinal.
+// Tests that no delegate is returned when the app state is not
+// AppInitStage::kFinal.
 TEST_F(ReSignInInfoBarDelegateTest, TestAppStateBeforeStageFinal) {
-  set_init_stage(InitStageChoiceScreen);
+  set_init_stage(AppInitStage::kChoiceScreen);
   std::unique_ptr<ReSignInInfoBarDelegate> infobar_delegate =
       ReSignInInfoBarDelegate::Create(authentication_service(),
                                       identity_manager(), mock_app_state(),

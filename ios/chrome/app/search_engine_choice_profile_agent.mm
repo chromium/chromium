@@ -160,11 +160,10 @@ enum class SkipScreenDecision {
     _skipScreenDecision = SkipScreenDecision::kPresent;
   }
 
-  // This point can be reached multiple time if the decision has been taken
-  // to present the screen, then the SceneState used for presentation is
-  // closed. In that case, the previous decision must have been to present
-  // (otherwise the app would have moved to the next InitStage). Assert it
-  // is the case.
+  // This point can be reached multiple time if the decision has been taken to
+  // present the screen, then the SceneState used for presentation is closed. In
+  // that case, the previous decision must have been to present (otherwise the
+  // app would have moved to the next ProfileInitStage). Assert it is the case.
   DCHECK_EQ(_skipScreenDecision, SkipScreenDecision::kPresent);
 
   // Present the screen.

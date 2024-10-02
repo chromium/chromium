@@ -75,7 +75,7 @@ class PromosManagerCoordinatorTest : public PlatformTest {
     [startup_information_ setIsColdStart:YES];
 
     AppState* app_state = OCMClassMock([AppState class]);
-    OCMStub([(AppState*)app_state initStage]).andReturn(InitStageFinal);
+    OCMStub([(AppState*)app_state initStage]).andReturn(AppInitStage::kFinal);
     scene_state_ = [[FakeSceneState alloc] initWithAppState:app_state
                                                     profile:profile_.get()];
     scene_state_.scene = static_cast<UIWindowScene*>(

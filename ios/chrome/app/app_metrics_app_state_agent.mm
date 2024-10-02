@@ -61,8 +61,9 @@ NSString* const kDeferredInitializationBlocksComplete =
 }
 
 - (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
-  if (appState.initStage == InitStageBrowserObjectsForBackgroundHandlers) {
+    didTransitionFromInitStage:(AppInitStage)previousInitStage {
+  if (appState.initStage ==
+      AppInitStage::kBrowserObjectsForBackgroundHandlers) {
     // Log session start if the app is already foreground.
     if (self.appState.foregroundScenes.count > 0) {
       [self handleSessionStart];
@@ -79,12 +80,13 @@ NSString* const kDeferredInitializationBlocksComplete =
         base::TimeTicks::Now();
     self.firstSceneHasConnected = YES;
     if (self.appState.initStage >=
-        InitStageBrowserObjectsForBackgroundHandlers) {
+        AppInitStage::kBrowserObjectsForBackgroundHandlers) {
       [MetricsMediator createStartupTrackingTask];
     }
   }
 
-  if (self.appState.initStage < InitStageBrowserObjectsForBackgroundHandlers) {
+  if (self.appState.initStage <
+      AppInitStage::kBrowserObjectsForBackgroundHandlers) {
     return;
   }
 

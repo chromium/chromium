@@ -82,13 +82,13 @@
 #pragma mark - AppStateObserver
 
 - (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
-  if (self.appState.initStage == InitStageFirstRun) {
+    didTransitionFromInitStage:(AppInitStage)previousInitStage {
+  if (self.appState.initStage == AppInitStage::kFirstRun) {
     [self handleFirstRunStage];
   }
   // Important: do not add code after this block because its purpose is to
   // clear `self` when not needed anymore.
-  if (previousInitStage == InitStageFirstRun) {
+  if (previousInitStage == AppInitStage::kFirstRun) {
     if (self.appState.startupInformation.isFirstRun) {
       [self unlockInterfaceOrientation];
     }
@@ -125,7 +125,7 @@
   self.mainBrowser = self.presentingSceneState.browserProviderInterface
                          .mainBrowserProvider.browser;
 
-  if (self.appState.initStage != InitStageFirstRun) {
+  if (self.appState.initStage != AppInitStage::kFirstRun) {
     return;
   }
 
@@ -153,7 +153,7 @@
 #pragma mark - internal
 
 - (void)showFirstRunUI {
-  DCHECK(self.appState.initStage == InitStageFirstRun);
+  DCHECK(self.appState.initStage == AppInitStage::kFirstRun);
 
   // There must be a designated presenting scene before showing the first run
   // UI.
@@ -192,7 +192,7 @@
 #pragma mark - FirstRunCoordinatorDelegate
 
 - (void)didFinishFirstRun {
-  DCHECK(self.appState.initStage == InitStageFirstRun);
+  DCHECK(self.appState.initStage == AppInitStage::kFirstRun);
   _firstRunUIBlocker.reset();
   [self.firstRunCoordinator stop];
   self.firstRunCoordinator = nil;

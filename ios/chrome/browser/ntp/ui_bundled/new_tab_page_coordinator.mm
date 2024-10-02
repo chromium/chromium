@@ -347,7 +347,7 @@
   // show or if the caller requested for this focus to not happen.
   AppState* appState = sceneState.appState;
   [appState addObserver:self];
-  BOOL appInitializing = appState.initStage < InitStageFinal;
+  BOOL appInitializing = appState.initStage < AppInitStage::kFinal;
   if (appInitializing || !self.canfocusAccessibilityOmniboxWhenViewAppears) {
     self.NTPViewController.focusAccessibilityOmniboxWhenViewAppears = NO;
   }
@@ -1472,8 +1472,8 @@
 #pragma mark - AppStateObserver
 
 - (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
-  if (previousInitStage == InitStageFirstRun) {
+    didTransitionFromInitStage:(AppInitStage)previousInitStage {
+  if (previousInitStage == AppInitStage::kFirstRun) {
     self.NTPViewController.focusAccessibilityOmniboxWhenViewAppears = YES;
     [self.headerViewController focusAccessibilityOnOmnibox];
 

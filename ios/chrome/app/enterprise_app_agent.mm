@@ -76,8 +76,8 @@ constexpr CGFloat kTimeout = 30;
 }
 
 - (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
-  if (appState.initStage == InitStageEnterprise) {
+    didTransitionFromInitStage:(AppInitStage)previousInitStage {
+  if (appState.initStage == AppInitStage::kEnterprise) {
     if ([self shouldShowEnterpriseLoadScreen]) {
       _cloudManagementControllerObserver = std::make_unique<
           ChromeBrowserCloudManagementControllerObserverBridge>(
@@ -112,7 +112,7 @@ constexpr CGFloat kTimeout = 30;
     }
   }
 
-  if (previousInitStage == InitStageEnterprise) {
+  if (previousInitStage == AppInitStage::kEnterprise) {
     // Nothing left to do; clean up.
     _cloudManagementControllerObserver = nullptr;
     _cloudPolicyClientObserver = nullptr;
@@ -126,7 +126,7 @@ constexpr CGFloat kTimeout = 30;
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
-  if (self.appState.initStage == InitStageEnterprise &&
+  if (self.appState.initStage == AppInitStage::kEnterprise &&
       level > SceneActivationLevelBackground) {
     [self showUIInScene:sceneState];
   }

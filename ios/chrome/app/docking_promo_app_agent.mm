@@ -44,13 +44,13 @@
 #pragma mark - AppStateObserver
 
 - (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
-  if (_appState.initStage == InitStageFinal) {
+    didTransitionFromInitStage:(AppInitStage)previousInitStage {
+  if (_appState.initStage == AppInitStage::kFinal) {
     switch (DockingPromoExperimentTypeEnabled()) {
       case DockingPromoDisplayTriggerArm::kDuringFRE:
         break;
       case DockingPromoDisplayTriggerArm::kAfterFRE:
-        if (previousInitStage != InitStageFirstRun) {
+        if (previousInitStage != AppInitStage::kFirstRun) {
           break;
         }
         [[fallthrough]];

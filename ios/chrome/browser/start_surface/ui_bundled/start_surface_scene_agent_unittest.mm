@@ -45,12 +45,12 @@ const char kURL[] = "https://chromium.org/";
 // A fake that allows setting initStage.
 @interface FakeAppStateInitStage : AppState
 // Init stage that will be returned by the initStage getter when testing.
-@property(nonatomic, assign) InitStage initStageForTesting;
+@property(nonatomic, assign) AppInitStage initStageForTesting;
 @end
 
 @implementation FakeAppStateInitStage
 
-- (InitStage)initStage {
+- (AppInitStage)initStage {
   return self.initStageForTesting;
 }
 
@@ -360,7 +360,7 @@ TEST_F(StartSurfaceSceneAgentTest, LogCorrectWarmStartHistogram) {
   scoped_feature_list.InitAndEnableFeatureWithParameters(kStartSurface,
                                                          parameters);
 
-  app_state_.initStageForTesting = InitStageFinal;
+  app_state_.initStageForTesting = AppInitStage::kFinal;
 
   InsertNewWebState(0, GURL(kURL));
   InsertNewWebState(1, GURL(kChromeUINewTabURL));
@@ -388,7 +388,7 @@ TEST_F(StartSurfaceSceneAgentTest, LogCorrectColdStartHistogram) {
   scoped_feature_list.InitAndEnableFeatureWithParameters(kStartSurface,
                                                          parameters);
 
-  app_state_.initStageForTesting = InitStageFinal;
+  app_state_.initStageForTesting = AppInitStage::kFinal;
   [startup_information_ setIsColdStart:YES];
 
   InsertNewWebState(0, GURL(kURL));
@@ -417,7 +417,7 @@ TEST_F(StartSurfaceSceneAgentTest, PrefetchCapabilitiesOnAppStart) {
   mutator->SetAllSupportedCapabilities(true);
 
   // Set up expected app state that prefetches capabilities.
-  app_state_.initStageForTesting = InitStageFinal;
+  app_state_.initStageForTesting = AppInitStage::kFinal;
   [startup_information_ setIsColdStart:YES];
 
   InsertNewWebState(0, GURL(kURL));

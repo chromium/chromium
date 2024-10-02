@@ -88,7 +88,7 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
 
     // Set app state initialization stage to final.
     // App state stage can be moved only one stage at a time.
-    while (app_state_.initStage < InitStageFinal) {
+    while (app_state_.initStage < AppInitStage::kFinal) {
       [app_state_ queueTransitionToNextInitStage];
     }
 

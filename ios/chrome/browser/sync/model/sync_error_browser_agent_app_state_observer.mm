@@ -24,8 +24,8 @@
 }
 
 - (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
-  if (appState.initStage != InitStageFinal) {
+    didTransitionFromInitStage:(AppInitStage)previousInitStage {
+  if (appState.initStage != AppInitStage::kFinal) {
     return;
   }
   if (_syncErrorBrowserAgent) {

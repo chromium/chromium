@@ -182,7 +182,7 @@ TEST_F(URLOpenerTest, HandleOpenURL) {
                      connectionInformation:connectionInformation
                         startupInformation:startupInformation
                                prefService:nil
-                                 initStage:InitStageFinal];
+                                 initStage:AppInitStage::kFinal];
 
           // Tests.
           EXPECT_EQ(isValid, result);
@@ -243,7 +243,7 @@ TEST_F(URLOpenerTest, VerifyLaunchOptions) {
   [[[connectionInformationMock expect] andReturn:params] startupParameters];
 
   id appStateMock = [OCMockObject mockForClass:[AppState class]];
-  [[[appStateMock stub] andReturnValue:@(InitStageFinal)] initStage];
+  OCMStub([appStateMock initStage]).andReturn(AppInitStage::kFinal);
 
   // Action.
   [URLOpener handleLaunchOptions:urlOpenerParams
@@ -304,7 +304,7 @@ TEST_F(URLOpenerTest, VerifyLaunchOptionsWithNoSourceApplication) {
   [[[connectionInformationMock expect] andReturn:params] startupParameters];
 
   id appStateMock = [OCMockObject mockForClass:[AppState class]];
-  [[[appStateMock stub] andReturnValue:@(InitStageFinal)] initStage];
+  OCMStub([appStateMock initStage]).andReturn(AppInitStage::kFinal);
 
   // Action.
   [URLOpener handleLaunchOptions:urlOpenerParams
@@ -363,7 +363,7 @@ TEST_F(URLOpenerTest, VerifyLaunchOptionsWithBadURL) {
   [[[connectionInformationMock expect] andReturn:nil] startupParameters];
 
   id appStateMock = [OCMockObject mockForClass:[AppState class]];
-  [[[appStateMock stub] andReturnValue:@(InitStageFinal)] initStage];
+  OCMStub([appStateMock initStage]).andReturn(AppInitStage::kFinal);
 
   // Action.
   [URLOpener handleLaunchOptions:urlOpenerParams
@@ -401,7 +401,7 @@ TEST_F(URLOpenerTest, PresentingFirstRunUI) {
   [[[connectionInformationMock expect] andReturn:params] startupParameters];
 
   id appStateMock = [OCMockObject mockForClass:[AppState class]];
-  [[[appStateMock stub] andReturnValue:@(InitStageFirstRun)] initStage];
+  OCMStub([appStateMock initStage]).andReturn(AppInitStage::kFirstRun);
 
   // Action.
   [URLOpener handleLaunchOptions:urlOpenerParams

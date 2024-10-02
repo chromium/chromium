@@ -480,11 +480,11 @@ BOOL UserActivityBrowserAgent::Handle3DTouchApplicationShortcuts(
 
 void UserActivityBrowserAgent::RouteToCorrectTab() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  InitStage init_stage = browser_->GetSceneState().appState.initStage;
+  AppInitStage init_stage = browser_->GetSceneState().appState.initStage;
   // Do not load the external URL if the user has not accepted the terms of
   // service. This corresponds to the case when the user installed Chrome,
   // has never launched it and attempts to open an external URL in Chrome.
-  if (init_stage <= InitStageFirstRun) {
+  if (init_stage <= AppInitStage::kFirstRun) {
     return;
   }
   // Do not handle the parameters that are/were already handled.
@@ -615,8 +615,8 @@ BOOL UserActivityBrowserAgent::HandleShortcutItem(
     UIApplicationShortcutItem* shortcut_item) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SceneState* scene_state = browser_->GetSceneState();
-  InitStage init_stage = scene_state.appState.initStage;
-  if (init_stage <= InitStageFirstRun) {
+  AppInitStage init_stage = scene_state.appState.initStage;
+  if (init_stage <= AppInitStage::kFirstRun) {
     return NO;
   }
   base::UmaHistogramEnumeration(kAppLaunchSource,
@@ -703,8 +703,8 @@ void UserActivityBrowserAgent::OpenRequestedURLs(
                                  applicationMode:application_mode];
   [connection_information_ setStartupParameters:startup_params];
 
-  InitStage init_stage = browser_->GetSceneState().appState.initStage;
-  if (application_is_active && init_stage > InitStageFirstRun) {
+  AppInitStage init_stage = browser_->GetSceneState().appState.initStage;
+  if (application_is_active && init_stage > AppInitStage::kFirstRun) {
     // The app is already active so the applicationDidBecomeActive: method will
     // never be called. Open the requested URLs immediately.
     OpenMultipleTabs();
@@ -738,8 +738,8 @@ BOOL UserActivityBrowserAgent::ContinueUserActivityURL(
     return NO;
   }
 
-  InitStage init_stage = browser_->GetSceneState().appState.initStage;
-  if (application_is_active && init_stage > InitStageFirstRun) {
+  AppInitStage init_stage = browser_->GetSceneState().appState.initStage;
+  if (application_is_active && init_stage > AppInitStage::kFirstRun) {
     // The app is already active so the applicationDidBecomeActive: method will
     // never be called. Open the requested URL immediately.
     ApplicationModeForTabOpening target_mode =

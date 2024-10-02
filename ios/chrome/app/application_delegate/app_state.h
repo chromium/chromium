@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/app/application_delegate/app_init_stage.h"
 #import "ios/chrome/app/application_delegate/app_state_agent.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
@@ -85,7 +86,7 @@ enum class PostCrashAction {
 @property(nonatomic, assign) base::TimeTicks lastTimeInForeground;
 
 // The initialization stage the app is currently at.
-@property(nonatomic, readonly) InitStage initStage;
+@property(nonatomic, readonly) AppInitStage initStage;
 
 // This flag is set when the first scene has initialized its UI and never
 // resets.

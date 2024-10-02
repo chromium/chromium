@@ -189,7 +189,7 @@
 }
 
 - (void)queueTransitionToNextInitStage {
-  // TODO(crbug.com/353683675): once ProfileInitStage and (app) InitStage
+  // TODO(crbug.com/353683675): once ProfileInitStage and AppInitStage
   // have been decoupled, then this method should only update the current
   // object. Until then forward the call to AppState if the object is the
   // "main" profile. This allow converting incrementally the AppAgents to

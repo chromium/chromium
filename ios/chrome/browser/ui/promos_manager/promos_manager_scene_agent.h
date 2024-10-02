@@ -15,15 +15,13 @@
 //
 // The UI is considered available when the following conditions are met:
 //
-// (1) the app initialization is over (the stage InitStageFinal is reached),
-// (2) the scene is in the foreground,
-// (3) there is no UI blocker,
-// (4) the app isn't shutting down,
-// (5) there are no launch intents.
+// (1) the app initialization is over (the stage AppInitStage::kFinal is
+// reached), (2) the scene is in the foreground, (3) there is no UI blocker, (4)
+// the app isn't shutting down, (5) there are no launch intents.
 //
 // There are 3 events that can trigger a promo:
 //
-// (1) reaching the InitStageFinal init stage,
+// (1) reaching the AppInitStage::kFinal init stage,
 // (2) the scene becomes active in the foreground,
 // (3) the UI blocker is removed, and
 // (4) forced externally

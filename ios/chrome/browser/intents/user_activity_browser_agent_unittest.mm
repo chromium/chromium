@@ -111,7 +111,7 @@ class UserActivityBrowserAgentTest : public PlatformTest {
   UserActivityBrowserAgentTest() {
     profile_ = TestProfileIOS::Builder().Build();
 
-    AppState* app_state = CreateMockAppState(InitStageFinal);
+    AppState* app_state = CreateMockAppState(AppInitStage::kFinal);
 
     scene_state_ = [[FakeSceneState alloc] initWithAppState:app_state
                                                     profile:profile_.get()];
@@ -151,7 +151,7 @@ class UserActivityBrowserAgentTest : public PlatformTest {
   }
 
   // Mock & stub an AppState object with an arbitrary `init_stage` property.
-  id CreateMockAppState(InitStage init_stage) {
+  id CreateMockAppState(AppInitStage init_stage) {
     id mock_app_state = OCMClassMock([AppState class]);
     OCMStub([(AppState*)mock_app_state initStage]).andReturn(init_stage);
     return mock_app_state;
@@ -726,7 +726,7 @@ TEST_F(UserActivityBrowserAgentTest,
 TEST_F(UserActivityBrowserAgentTest,
        PerformActionForShortcutItemWithFirstRunUI) {
   // Setup.
-  scene_state_.appState = CreateMockAppState(InitStageFirstRun);
+  scene_state_.appState = CreateMockAppState(AppInitStage::kFirstRun);
   UIApplicationShortcutItem* shortcut =
       [[UIApplicationShortcutItem alloc] initWithType:kShortcutNewSearch
                                        localizedTitle:kShortcutNewSearch];
@@ -764,7 +764,7 @@ TEST_F(UserActivityBrowserAgentTest, ContinueUserActivityBookmarks) {
 // due to still being in first run.
 TEST_F(UserActivityBrowserAgentTest,
        ContinueUserActivityBookmarksFailsFirstRun) {
-  scene_state_.appState = CreateMockAppState(InitStageFirstRun);
+  scene_state_.appState = CreateMockAppState(AppInitStage::kFirstRun);
   NSUserActivity* user_activity = [[NSUserActivity alloc]
       initWithActivityType:kSiriShortcutAddBookmarkToChrome];
 
@@ -852,7 +852,7 @@ TEST_F(UserActivityBrowserAgentTest, ContinueUserActivityAddToReadingList) {
 // items intent due to still being in first run.
 TEST_F(UserActivityBrowserAgentTest,
        ContinueUserActivityAddToReadingListFailsFirstRun) {
-  scene_state_.appState = CreateMockAppState(InitStageFirstRun);
+  scene_state_.appState = CreateMockAppState(AppInitStage::kFirstRun);
   NSUserActivity* user_activity = [[NSUserActivity alloc]
       initWithActivityType:kSiriShortcutAddReadingListItemToChrome];
 

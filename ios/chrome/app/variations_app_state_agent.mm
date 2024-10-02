@@ -229,8 +229,9 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
 #pragma mark - AppAgentObserver
 
 - (void)appState:(AppState*)appState
-    willTransitionToInitStage:(InitStage)nextInitStage {
-  if (self.appState.initStage == InitStageBrowserObjectsForBackgroundHandlers) {
+    willTransitionToInitStage:(AppInitStage)nextInitStage {
+  if (self.appState.initStage ==
+      AppInitStage::kBrowserObjectsForBackgroundHandlers) {
     // Records whether the fetched seed for first run has been applied, and if
     // not, which stage has the seed application process reached.
     //
@@ -249,8 +250,8 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
 #pragma mark - ObservingAppAgent
 
 - (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
-  if (self.appState.initStage == InitStageVariationsSeed) {
+    didTransitionFromInitStage:(AppInitStage)previousInitStage {
+  if (self.appState.initStage == AppInitStage::kVariationsSeed) {
     // Keep waiting for the seed if the app should have variations seed fetched
     // but hasn't.
     if (_group != IOSChromeVariationsGroup::kEnabled || _seedFetchCompleted) {
@@ -264,7 +265,7 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
     transitionedToActivationLevel:(SceneActivationLevel)level {
   // If the app would be showing UI before Chrome UI is ready, extend the launch
   // screen.
-  if (self.appState.initStage == InitStageVariationsSeed &&
+  if (self.appState.initStage == AppInitStage::kVariationsSeed &&
       _group == IOSChromeVariationsGroup::kEnabled &&
       level > SceneActivationLevelBackground && !_extendedLaunchScreenShown) {
     [self showExtendedLaunchScreen:sceneState];
@@ -274,7 +275,8 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
   // to background.
   if (_previousActivationLevel > SceneActivationLevelBackground &&
       level == SceneActivationLevelBackground &&
-      self.appState.initStage > InitStageBrowserObjectsForBackgroundHandlers) {
+      self.appState.initStage >
+          AppInitStage::kBrowserObjectsForBackgroundHandlers) {
     SaveFetchTimeOfLatestSeedInLocalState();
   }
   _previousActivationLevel = level;
@@ -285,10 +287,10 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
 
 - (void)variationsSeedFetcherDidCompleteFetchWithSuccess:(BOOL)success {
   DCHECK_EQ(_group, IOSChromeVariationsGroup::kEnabled);
-  DCHECK_LE(self.appState.initStage, InitStageVariationsSeed);
+  DCHECK_LE(self.appState.initStage, AppInitStage::kVariationsSeed);
   _seedFetchCompleted = YES;
   _fetcher.delegate = nil;
-  if (self.appState.initStage == InitStageVariationsSeed) {
+  if (self.appState.initStage == AppInitStage::kVariationsSeed) {
     [self.appState queueTransitionToNextInitStage];
   }
 }

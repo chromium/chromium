@@ -86,7 +86,7 @@ class SceneControllerTest : public PlatformTest {
     base_view_controller_ = [[UIViewController alloc] init];
 
     fake_scene_ = FakeSceneWithIdentifier([[NSUUID UUID] UUIDString]);
-    AppState* appState = CreateMockAppState(InitStageFinal);
+    AppState* appState = CreateMockAppState(AppInitStage::kFinal);
     scene_state_ = [[SceneStateWithFakeScene alloc] initWithScene:fake_scene_
                                                          appState:appState];
 
@@ -155,7 +155,7 @@ class SceneControllerTest : public PlatformTest {
   ~SceneControllerTest() override { [scene_controller_ teardownUI]; }
 
   // Mock & stub an AppState object with an arbitrary `init_stage` property.
-  id CreateMockAppState(InitStage init_stage) {
+  id CreateMockAppState(AppInitStage init_stage) {
     id mock_app_state = OCMClassMock([AppState class]);
     OCMStub([(AppState*)mock_app_state initStage]).andReturn(init_stage);
     return mock_app_state;

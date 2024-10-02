@@ -9,33 +9,33 @@
 // stage each time the app is launched. This enum might expand in the future but
 // the start and last stages will always keep the same label and relative
 // position.
-enum InitStage {
+enum class AppInitStage {
   // The first stage when starting the initialization. The label and value of
   // this enum item should not change.
-  InitStageStart = 0,
+  kStart = 0,
 
   // The app is starting the minimal basic browser services to support safe
   // mode.
-  InitStageBrowserBasic,
+  kBrowserBasic,
 
   // The app is considering whether safe mode should be used. The app will stay
-  // at the InitStageSafeMode stage if safe mode is needed, or will move to the
-  // next stage otherwise.
-  InitStageSafeMode,
+  // at the kSafeMode stage if safe mode is needed, or will move to the next
+  // stage otherwise.
+  kSafeMode,
 
   // The app is waiting for the Finch seed to be fetched on first run. The app
-  // will stay at the InitStageVariationsSeed if it is the first launch after
+  // will stay at the kVariationsSeed if it is the first launch after
   // installation, and the seed has not been fetched; it moves to the next stage
   // otherwise.
-  InitStageVariationsSeed,
+  kVariationsSeed,
 
   // The app is initializing the browser objects for the background handlers.
   // In particular this creates ChromeMain instances which initialises many
   // low-level objects (such as PostTask, ProfileManagerIOS, named threads,
   // ApplicationContext, ...). Using the corresponding features when the
-  // InitStage is below this stage is unsupported. Most likely, you want all new
-  // stages to be >= InitStageBrowserObjectsForBackgroundHandlers.
-  InitStageBrowserObjectsForBackgroundHandlers,
+  // AppInitStage is below this stage is unsupported. Most likely, you want all
+  // new stages to be >= kBrowserObjectsForBackgroundHandlers.
+  kBrowserObjectsForBackgroundHandlers,
 
   // TODO(crbug.com/353683675): All follow-up stage will eventually become
   // ProfileInitStage and will disappear. And corresponding code should move
@@ -43,37 +43,37 @@ enum InitStage {
 
   // The app is fetching any enterprise policies. The initialization is blocked
   // on this because the policies might have an effect on later init stages.
-  InitStageEnterprise,
+  kEnterprise,
 
   // The app is initializing the browser objects for the browser UI (e.g., the
   // browser state).
-  InitStageBrowserObjectsForUI,
+  kBrowserObjectsForUI,
 
   // If there are connected scenes, the app is creating browsers and starting
   // the root coordinators. The BVCs and Tab switchers are created here. This
   // is what is considered the normal UI.
   //
   // The stage is no-op for regular startups (no FRE, no Safe Mode) in which
-  // case the app will continue its transition to InitStageFinal and the UI is
+  // case the app will continue its transition to kFinal and the UI is
   // initialized when the scene transitions to the foreground.
-  InitStageNormalUI,
+  kNormalUI,
 
   // TODO(crbug.com/40760618): Decouple FRE from Browser views to be able to go
-  // through this stage before InitStageNormalUI.
+  // through this stage before kNormalUI.
   // The app is considering presenting the FRE UI. Will remain in that state
   // when presenting the FRE.
-  InitStageFirstRun,
+  kFirstRun,
 
   // The app may present the Search Engine Choice Screen to the user if
   // required by local regulation. Will transition to the following stage
   // when the user has gone through the workflow (possibly in a previous
   // run of the application).
-  InitStageChoiceScreen,
+  kChoiceScreen,
 
   // The final stage before being done with initialization. The label and
   // relative position (always last) of this enum item should not change.
   // The value may change when inserting enum items between Start and Final.
-  InitStageFinal
+  kFinal,
 };
 
 #endif  // IOS_CHROME_APP_APPLICATION_DELEGATE_APP_INIT_STAGE_H_

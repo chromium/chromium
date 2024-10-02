@@ -63,39 +63,39 @@
   InitStageDuringBackgroundRefreshActions stage =
       InitStageDuringBackgroundRefreshActions::kUnknown;
   switch (_appState.initStage) {
-    case InitStageStart:
+    case AppInitStage::kStart:
       stage = InitStageDuringBackgroundRefreshActions::kInitStageStart;
       break;
-    case InitStageBrowserBasic:
+    case AppInitStage::kBrowserBasic:
       stage = InitStageDuringBackgroundRefreshActions::kInitStageBrowserBasic;
       break;
-    case InitStageSafeMode:
+    case AppInitStage::kSafeMode:
       stage = InitStageDuringBackgroundRefreshActions::kInitStageSafeMode;
       break;
-    case InitStageVariationsSeed:
+    case AppInitStage::kVariationsSeed:
       stage = InitStageDuringBackgroundRefreshActions::kInitStageVariationsSeed;
       break;
-    case InitStageBrowserObjectsForBackgroundHandlers:
+    case AppInitStage::kBrowserObjectsForBackgroundHandlers:
       stage = InitStageDuringBackgroundRefreshActions::
           kInitStageBrowserObjectsForBackgroundHandlers;
       break;
-    case InitStageEnterprise:
+    case AppInitStage::kEnterprise:
       stage = InitStageDuringBackgroundRefreshActions::kInitStageEnterprise;
       break;
-    case InitStageBrowserObjectsForUI:
+    case AppInitStage::kBrowserObjectsForUI:
       stage = InitStageDuringBackgroundRefreshActions::
           kInitStageBrowserObjectsForUI;
       break;
-    case InitStageNormalUI:
+    case AppInitStage::kNormalUI:
       stage = InitStageDuringBackgroundRefreshActions::kInitStageNormalUI;
       break;
-    case InitStageFirstRun:
+    case AppInitStage::kFirstRun:
       stage = InitStageDuringBackgroundRefreshActions::kInitStageFirstRun;
       break;
-    case InitStageChoiceScreen:
+    case AppInitStage::kChoiceScreen:
       stage = InitStageDuringBackgroundRefreshActions::kInitStageChoiceScreen;
       break;
-    case InitStageFinal:
+    case AppInitStage::kFinal:
       stage = InitStageDuringBackgroundRefreshActions::kInitStageFinal;
       break;
     default:

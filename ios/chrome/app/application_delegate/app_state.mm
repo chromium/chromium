@@ -212,9 +212,9 @@ void FlushCookieStoreOnIOThread(
 
 // Do not use this setter directly, instead use -queueTransitionToInitStage:
 // that provides reentry guards.
-- (void)setInitStage:(InitStage)newInitStage {
-  DCHECK(newInitStage >= InitStageStart);
-  DCHECK(newInitStage <= InitStageFinal);
+- (void)setInitStage:(AppInitStage)newInitStage {
+  DCHECK_GE(newInitStage, AppInitStage::kStart);
+  DCHECK_LE(newInitStage, AppInitStage::kFinal);
   // As of writing this, it seems reasonable for init stages to be strictly
   // incremented by one only: if a stage needs to be skipped, it can just be a
   // no-op, but the observers will get a chance to react to it normally. If in
@@ -222,13 +222,14 @@ void FlushCookieStoreOnIOThread(
   // 1. Check that all observers will support this change
   // 2. Keep the previous init stage and modify addObserver: code to send the
   // previous init stage instead.
-  DCHECK(newInitStage == _initStage + 1 ||
-         (newInitStage == InitStageStart && _initStage == InitStageStart));
-  // It's probably a programming error to set the same init stage twice, except
-  // for InitStageStart to kick off the startup.
-  DCHECK(newInitStage == InitStageStart || _initStage != newInitStage);
+  if (newInitStage == AppInitStage::kStart) {
+    DCHECK_EQ(_initStage, AppInitStage::kStart);
+  } else {
+    DCHECK_EQ(base::to_underlying(newInitStage),
+              base::to_underlying(_initStage) + 1);
+  }
 
-  InitStage previousInitStage = _initStage;
+  AppInitStage previousInitStage = _initStage;
   [self.observers appState:self willTransitionToInitStage:newInitStage];
   _initStage = newInitStage;
   [self.observers appState:self didTransitionFromInitStage:previousInitStage];
@@ -242,8 +243,8 @@ void FlushCookieStoreOnIOThread(
     return YES;
   }
   // Return YES if the First Run UI is showing.
-  return self.initStage > InitStageSafeMode &&
-         self.initStage <= InitStageFirstRun &&
+  return self.initStage > AppInitStage::kSafeMode &&
+         self.initStage <= AppInitStage::kFirstRun &&
          self.startupInformation.isFirstRun;
 }
 
@@ -256,7 +257,7 @@ void FlushCookieStoreOnIOThread(
 - (void)applicationDidEnterBackground:(UIApplication*)application
                          memoryHelper:(MemoryWarningHelper*)memoryHelper {
   // Exit the app if backgrounding the app while being in safe mode.
-  if (self.initStage == InitStageSafeMode) {
+  if (self.initStage == AppInitStage::kSafeMode) {
     exit(0);
   }
 
@@ -267,7 +268,7 @@ void FlushCookieStoreOnIOThread(
 
   crash_keys::SetCurrentlyInBackground(true);
 
-  if (self.initStage < InitStageBrowserObjectsForUI) {
+  if (self.initStage < AppInitStage::kBrowserObjectsForUI) {
     // The clean-up done in `-applicationDidEnterBackground:` is only valid for
     // the case when the application is started in foreground, so there is
     // nothing to clean up as the application was not initialized for
@@ -348,9 +349,9 @@ void FlushCookieStoreOnIOThread(
                           memoryHelper:(MemoryWarningHelper*)memoryHelper {
   // Fully initialize the browser objects for the browser UI if it is not
   // already the case. This is especially needed for scene startup.
-  if (self.initStage < InitStageBrowserObjectsForUI) {
-    // Invariant: The app has passed InitStageStart.
-    CHECK(self.initStage != InitStageStart);
+  if (self.initStage < AppInitStage::kBrowserObjectsForUI) {
+    // Invariant: The app has passed AppInitStage::kStart.
+    CHECK(self.initStage != AppInitStage::kStart);
     // TODO(crbug.com/40760092): This function should only be called once
     // during a specific stage, but this requires non-trivial refactoring, so
     // for now #initializeUIPreSafeMode will just return early if called more
@@ -362,7 +363,7 @@ void FlushCookieStoreOnIOThread(
   }
   // Don't go further with foregrounding the app when the app has not passed
   // safe mode yet or was initialized from the background.
-  if (self.initStage <= InitStageSafeMode || !_applicationInBackground) {
+  if (self.initStage <= AppInitStage::kSafeMode || !_applicationInBackground) {
     return;
   }
 
@@ -434,7 +435,7 @@ void FlushCookieStoreOnIOThread(
   // closing the tabs. Set the BVC to inactive to cancel all the dialogs.
   // Don't do this if there are no scenes, since there's no defined interface
   // provider (and no tabs).
-  if (self.initStage >= InitStageBrowserObjectsForUI) {
+  if (self.initStage >= AppInitStage::kBrowserObjectsForUI) {
     for (SceneState* sceneState in self.connectedScenes) {
       Browser* browser =
           sceneState.browserProviderInterface.currentBrowserProvider.browser;
@@ -450,7 +451,7 @@ void FlushCookieStoreOnIOThread(
 
 - (void)application:(UIApplication*)application
     didDiscardSceneSessions:(NSSet<UISceneSession*>*)sceneSessions {
-  DCHECK_GE(self.initStage, InitStageBrowserObjectsForBackgroundHandlers);
+  DCHECK_GE(self.initStage, AppInitStage::kBrowserObjectsForBackgroundHandlers);
 
   GetApplicationContext()
       ->GetSystemIdentityManager()
@@ -478,7 +479,7 @@ void FlushCookieStoreOnIOThread(
   // the failed startup count.
   crash_util::ResetFailedStartupAttemptCount();
 
-  if (self.initStage < InitStageBrowserObjectsForUI) {
+  if (self.initStage < AppInitStage::kBrowserObjectsForUI) {
     // If the application did not pass the foreground initialization stage,
     // there is no active tab model to resign.
     return;
@@ -507,8 +508,9 @@ void FlushCookieStoreOnIOThread(
 
   if ([observer respondsToSelector:@selector(appState:
                                        didTransitionFromInitStage:)] &&
-      self.initStage > InitStageStart) {
-    InitStage previousInitStage = static_cast<InitStage>(self.initStage - 1);
+      self.initStage > AppInitStage::kStart) {
+    AppInitStage previousInitStage =
+        static_cast<AppInitStage>(base::to_underlying(self.initStage) - 1);
     // Trigger an update on the newly added agent.
     [observer appState:self didTransitionFromInitStage:previousInitStage];
   }
@@ -531,13 +533,14 @@ void FlushCookieStoreOnIOThread(
 }
 
 - (void)queueTransitionToNextInitStage {
-  InitStage nextInitStage = static_cast<InitStage>(self.initStage + 1);
-  DCHECK(nextInitStage <= InitStageFinal);
+  DCHECK_LT(self.initStage, AppInitStage::kFinal);
+  AppInitStage nextInitStage =
+      static_cast<AppInitStage>(base::to_underlying(self.initStage) + 1);
   [self queueTransitionToInitStage:nextInitStage];
 }
 
 - (void)startInitialization {
-  [self queueTransitionToInitStage:InitStageStart];
+  [self queueTransitionToInitStage:AppInitStage::kStart];
 }
 
 #pragma mark - Multiwindow-related
@@ -618,7 +621,7 @@ void FlushCookieStoreOnIOThread(
   [[PreviousSessionInfo sharedInstance] beginRecordingCurrentSession];
 }
 
-- (void)queueTransitionToInitStage:(InitStage)initStage {
+- (void)queueTransitionToInitStage:(AppInitStage)initStage {
   if (self.isIncrementingInitStage) {
     // It is an error to queue more than one transition at once.
     DCHECK(!self.needsIncrementInitStage);
@@ -632,14 +635,14 @@ void FlushCookieStoreOnIOThread(
   self.isIncrementingInitStage = YES;
   self.initStage = initStage;
   // TODO(crbug.com/353683675) Improve this logic once ProfileInitStage and
-  // (app) InitStage are fully decoupled.
-  if (initStage >= InitStageBrowserObjectsForBackgroundHandlers) {
+  // AppInitStage are fully decoupled.
+  if (initStage >= AppInitStage::kBrowserObjectsForBackgroundHandlers) {
     for (ProfileState* profileState in self.connectedProfileStates) {
       ProfileInitStage currStage = profileState.initStage;
       ProfileInitStage nextStage = ProfileInitStageFromAppInitStage(initStage);
       while (currStage != nextStage) {
-        // The ProfileInitStage enum has more values than InitStage, so move
-        // over all stage that have no representation in InitStage to avoid
+        // The ProfileInitStage enum has more values than AppInitStage, so move
+        // over all stage that have no representation in AppInitStage to avoid
         // failing CHECK in -[ProfileState setInitStage:].
         currStage =
             static_cast<ProfileInitStage>(base::to_underlying(currStage) + 1);
@@ -749,8 +752,8 @@ void FlushCookieStoreOnIOThread(
 
 // TODO(crbug.com/40756629): Move this logic to a specific agent.
 - (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
-  if (previousInitStage != InitStageBrowserObjectsForUI) {
+    didTransitionFromInitStage:(AppInitStage)previousInitStage {
+  if (previousInitStage != AppInitStage::kBrowserObjectsForUI) {
     return;
   }
 

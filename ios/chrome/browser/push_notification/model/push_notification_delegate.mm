@@ -266,8 +266,8 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
 #pragma mark - AppStateObserver
 
 - (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
-  if (appState.initStage < InitStageFinal) {
+    didTransitionFromInitStage:(AppInitStage)previousInitStage {
+  if (appState.initStage < AppInitStage::kFinal) {
     return;
   }
   SceneState* sceneState = appState.foregroundActiveScene;
@@ -279,7 +279,7 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
 
 - (void)appState:(AppState*)appState
     sceneDidBecomeActive:(SceneState*)sceneState {
-  if (appState.initStage < InitStageFinal) {
+  if (appState.initStage < AppInitStage::kFinal) {
     return;
   }
   [self appDidEnterForeground:sceneState];

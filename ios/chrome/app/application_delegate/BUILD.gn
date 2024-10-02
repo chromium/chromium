@@ -250,6 +250,8 @@ source_set("application_delegate_internal") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "app_init_stage_test_utils.cc",
+    "app_init_stage_test_utils.h",
     "fake_startup_information.h",
     "fake_startup_information.mm",
     "metrics_mediator_testing.h",

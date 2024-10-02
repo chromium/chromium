@@ -500,7 +500,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
 }
 
 - (void)startUpBrowserBackgroundInitialization {
-  DCHECK(self.appState.initStage > InitStageSafeMode);
+  DCHECK(self.appState.initStage > AppInitStage::kSafeMode);
 
   NSBundle* baseBundle = base::apple::OuterBundle();
   base::apple::SetBaseBundleID(
@@ -760,14 +760,14 @@ SEQUENCE_CHECKER(_sequenceChecker);
   // If the application is not yet ready to present the UI, install
   // a LaunchScreenViewController as the root view of the connected
   // SceneState. This ensures that there is no "blank" window.
-  if (self.appState.initStage < InitStageBrowserObjectsForUI) {
+  if (self.appState.initStage < AppInitStage::kBrowserObjectsForUI) {
     LaunchScreenViewController* launchScreen =
         [[LaunchScreenViewController alloc] init];
     [sceneState.window setRootViewController:launchScreen];
     [sceneState.window makeKeyAndVisible];
   }
 
-  if (self.appState.initStage >= InitStageEnterprise) {
+  if (self.appState.initStage >= AppInitStage::kEnterprise) {
     [self attachProfileToSceneState:sceneState];
   }
 }
@@ -775,9 +775,9 @@ SEQUENCE_CHECKER(_sequenceChecker);
 // Called when the first scene becomes active.
 - (void)appState:(AppState*)appState
     firstSceneHasInitializedUI:(SceneState*)sceneState {
-  DCHECK(self.appState.initStage > InitStageSafeMode);
+  DCHECK(self.appState.initStage > AppInitStage::kSafeMode);
 
-  if (self.appState.initStage <= InitStageNormalUI) {
+  if (self.appState.initStage <= AppInitStage::kNormalUI) {
     return;
   }
 
@@ -787,44 +787,44 @@ SEQUENCE_CHECKER(_sequenceChecker);
 }
 
 - (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
+    didTransitionFromInitStage:(AppInitStage)previousInitStage {
   // TODO(crbug.com/40769058): Remove this once the bug fixed.
-  if (previousInitStage == InitStageNormalUI &&
+  if (previousInitStage == AppInitStage::kNormalUI &&
       appState.firstSceneHasInitializedUI) {
     [self startUpAfterFirstWindowCreated];
   }
 
   switch (appState.initStage) {
-    case InitStageStart:
+    case AppInitStage::kStart:
       [appState queueTransitionToNextInitStage];
       break;
-    case InitStageBrowserBasic:
+    case AppInitStage::kBrowserBasic:
       [self startUpBrowserBasicInitialization];
       break;
-    case InitStageSafeMode:
+    case AppInitStage::kSafeMode:
       [self addPostSafeModeAgents];
       break;
-    case InitStageVariationsSeed:
+    case AppInitStage::kVariationsSeed:
       break;
-    case InitStageBrowserObjectsForBackgroundHandlers:
+    case AppInitStage::kBrowserObjectsForBackgroundHandlers:
       [self startUpBrowserBackgroundInitialization];
       break;
-    case InitStageEnterprise:
+    case AppInitStage::kEnterprise:
       break;
-    case InitStageBrowserObjectsForUI:
+    case AppInitStage::kBrowserObjectsForUI:
       [self maybeContinueForegroundInitialization];
       break;
-    case InitStageNormalUI:
+    case AppInitStage::kNormalUI:
       // Scene controllers use this stage to create the normal UI if needed.
       // There is no specific agent (other than SceneController) handling
       // this stage.
       [appState queueTransitionToNextInitStage];
       break;
-    case InitStageFirstRun:
+    case AppInitStage::kFirstRun:
       break;
-    case InitStageChoiceScreen:
+    case AppInitStage::kChoiceScreen:
       break;
-    case InitStageFinal:
+    case AppInitStage::kFinal:
       // In a multi-window environment we have the correct number of
       // connectedScenes only at this stage.
       [MetricsMediator
@@ -1023,7 +1023,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
 // level are ready.
 - (void)maybeContinueForegroundInitialization {
   if (self.appState.foregroundScenes.count > 0 &&
-      self.appState.initStage == InitStageBrowserObjectsForUI) {
+      self.appState.initStage == AppInitStage::kBrowserObjectsForUI) {
     DCHECK(self.appState.userInteracted);
     [self startUpBrowserForegroundInitialization];
     [self.appState queueTransitionToNextInitStage];
@@ -1650,14 +1650,14 @@ SEQUENCE_CHECKER(_sequenceChecker);
   }
 
   // TODO(crbug.com/353683675) Improve this logic once ProfileInitStage and
-  // (app) InitStage are fully decoupled.
-  InitStage initStage = self.appState.initStage;
-  if (self.appState.initStage >= InitStageBrowserObjectsForBackgroundHandlers) {
+  // AppInitStage are fully decoupled.
+  AppInitStage initStage = self.appState.initStage;
+  if (initStage >= AppInitStage::kBrowserObjectsForBackgroundHandlers) {
     ProfileInitStage currStage = profileState.initStage;
     ProfileInitStage nextStage = ProfileInitStageFromAppInitStage(initStage);
     while (currStage != nextStage) {
-      // The ProfileInitStage enum has more values than InitStage, so move
-      // over all stage that have no representation in InitStage to avoid
+      // The ProfileInitStage enum has more values than AppInitStage, so move
+      // over all stage that have no representation in AppInitStage to avoid
       // failing CHECK in -[ProfileState setInitStage:].
       currStage =
           static_cast<ProfileInitStage>(base::to_underlying(currStage) + 1);
@@ -1672,7 +1672,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
 }
 
 // TODO(crbug.com/353683675) Improve this logic once ProfileInitStage and
-// (app) InitStage are fully decoupled.
+// AppInitStage are fully decoupled.
 - (void)profileLoaded:(ProfileIOS*)profile
         forSceneState:(SceneState*)sceneState {
   [self initializeBrowserState:profile];

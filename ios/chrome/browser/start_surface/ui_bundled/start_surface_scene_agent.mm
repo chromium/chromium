@@ -86,8 +86,8 @@ bool IsEmptyNTP(const web::WebState* web_state) {
 #pragma mark - AppStateObserver
 
 - (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
-  if (appState.initStage >= InitStageFirstRun &&
+    didTransitionFromInitStage:(AppInitStage)previousInitStage {
+  if (appState.initStage >= AppInitStage::kFirstRun &&
       self.waitingForAppStateAfterSceneStateReady) {
     self.waitingForAppStateAfterSceneStateReady = NO;
     [self showStartSurfaceIfNecessary];
@@ -136,7 +136,7 @@ bool IsEmptyNTP(const web::WebState* web_state) {
 }
 
 - (void)showStartSurfaceIfNecessary {
-  if (self.sceneState.appState.initStage <= InitStageFirstRun) {
+  if (self.sceneState.appState.initStage <= AppInitStage::kFirstRun) {
     // NO if the app is not yet ready to present normal UI that is required by
     // Start Surface.
     self.waitingForAppStateAfterSceneStateReady = YES;

@@ -31,7 +31,7 @@ std::unique_ptr<ReSignInInfoBarDelegate> ReSignInInfoBarDelegate::Create(
     signin::IdentityManager* identity_manager,
     AppState* app_state,
     id<SigninPresenter> signin_presenter) {
-  if (app_state.initStage != InitStageFinal) {
+  if (app_state.initStage != AppInitStage::kFinal) {
     return nullptr;
   }
 

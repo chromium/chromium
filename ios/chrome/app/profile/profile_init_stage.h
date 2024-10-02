@@ -57,9 +57,9 @@ enum class ProfileInitStage {
   kFinal,
 };
 
-// Returns the equivalent ProfileInitStage from application InitStage.
+// Returns the equivalent ProfileInitStage from AppInitStage.
 // TODO(crbug.com/353683675): remove when profile init stage and app
 // init stage are fully separate.
-ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage);
+ProfileInitStage ProfileInitStageFromAppInitStage(AppInitStage app_init_stage);
 
 #endif  // IOS_CHROME_APP_PROFILE_PROFILE_INIT_STAGE_H_

@@ -38,7 +38,7 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
     connectionInformation:(id<ConnectionInformation>)connectionInformation
        startupInformation:(id<StartupInformation>)startupInformation
               prefService:(PrefService*)prefService
-                initStage:(InitStage)initStage {
+                initStage:(AppInitStage)initStage {
   NSURL* URL = options.URL;
   NSString* sourceApplication = options.sourceApplication;
 
@@ -62,7 +62,7 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
                               MOBILE_SESSION_CALLER_APP_COUNT);
   }
 
-  if (initStage == InitStageFirstRun) {
+  if (initStage == AppInitStage::kFirstRun) {
     UMA_HISTOGRAM_ENUMERATION("FirstRun.LaunchSource", [params launchSource],
                               first_run::LAUNCH_SIZE);
   } else if (applicationActive) {

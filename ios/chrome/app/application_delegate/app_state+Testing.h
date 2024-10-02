@@ -11,7 +11,7 @@
 @interface AppState (Testing) <AppStateObserver>
 
 // Redefined internally as readwrite.
-@property(nonatomic, assign) InitStage initStage;
+@property(nonatomic, assign) AppInitStage initStage;
 
 - (void)completeUIInitialization;
 

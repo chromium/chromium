@@ -140,7 +140,7 @@ int ImpressionsCount(const base::Value::List& impressions,
       _safetyCheckManagerObserver =
           std::make_unique<SafetyCheckObserverBridge>(self, safetyCheckManager);
 
-      if (_appState.initStage > InitStageNormalUI &&
+      if (_appState.initStage > AppInitStage::kNormalUI &&
           _appState.firstSceneHasInitializedUI &&
           _safetyCheckState.runningState == RunningSafetyCheckState::kRunning) {
         // When the Safety Check Notifications feature is enabled, the Magic
@@ -260,15 +260,16 @@ int ImpressionsCount(const base::Value::List& impressions,
 #pragma mark - AppStateObserver
 
 // Conditionally starts the Safety Check if the upcoming init stage is
-// `InitStageFinal` and the Safety Check state indicates it's running.
+// `AppInitStage::kFinal` and the Safety Check state indicates it's running.
 //
 // NOTE: It's safe to call `StartSafetyCheck()` multiple times, because calling
 // `StartSafetyCheck()` on an already-running Safety Check is a no-op.
 - (void)appState:(AppState*)appState
-    willTransitionToInitStage:(InitStage)nextInitStage {
+    willTransitionToInitStage:(AppInitStage)nextInitStage {
   if (!safety_check_prefs::IsSafetyCheckInMagicStackDisabled(
           IsHomeCustomizationEnabled() ? _userState : _localState) &&
-      nextInitStage == InitStageFinal && appState.firstSceneHasInitializedUI &&
+      nextInitStage == AppInitStage::kFinal &&
+      appState.firstSceneHasInitializedUI &&
       _safetyCheckState.runningState == RunningSafetyCheckState::kRunning) {
     // When the Safety Check Notifications feature is enabled, the Magic
     // Stack should never initiate a Safety Check run.
