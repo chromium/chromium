@@ -267,9 +267,9 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
   [self loadItemsAppending:NO delayed:NO animated:YES];
 }
 
-- (void)fetchNextPage {
+- (void)loadNextPage {
   CHECK(_pageToken);
-  [self fetchItemsAppending:YES delayed:NO animated:YES];
+  [self loadItemsAppending:YES delayed:NO animated:YES];
 }
 
 - (void)setSortingCriteria:(DriveItemsSortingType)criteria
@@ -281,7 +281,7 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
   _sortingCriteria = criteria;
   _sortingDirection = direction;
   [self.consumer setSortingCriteria:criteria direction:direction];
-  [self fetchItemsAppending:NO delayed:NO animated:YES];
+  [self loadItemsAppending:NO delayed:NO animated:YES];
 }
 
 - (void)fetchIconForDriveItem:(NSString*)itemIdentifier {
@@ -361,7 +361,7 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
   }
   _filter = filter;
   [self.consumer setFilter:filter];
-  [self fetchItemsAppending:NO delayed:NO animated:YES];
+  [self loadItemsAppending:NO delayed:NO animated:YES];
 }
 
 - (void)setSearchBarFocused:(BOOL)focused {
@@ -396,7 +396,7 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
   // Fetching new items is delayed when `_searchText` is modified, to ensure
   // modifying it very frequently does not equally too frequent API calls. This
   // works because only one pending fetch request is ever allowed at a time.
-  [self fetchItemsAppending:NO delayed:YES animated:YES];
+  [self loadItemsAppending:NO delayed:YES animated:YES];
 }
 
 - (void)hideSearchItemsOrBrowseBack {
@@ -567,6 +567,8 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
     return;
   }
 
+  // If root items are to be presented, then `append` should be NO.
+  CHECK(!append);
   // Populating root items asynchronously as `loadItems...:` is expected to work
   // asynchronously in general.
   __weak __typeof(self) weakSelf = self;
@@ -641,8 +643,13 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
   BOOL append = _pageToken != nil;
   if (append) {
     // If `append`, then this is the next page to insert at the end.
-    _fetchedDriveItems.insert(_fetchedDriveItems.end(), result.items.begin(),
-                              result.items.end());
+    _fetchedDriveItems.reserve(_fetchedDriveItems.size() + result.items.size());
+    // Only insert items which were not already fetched.
+    for (const DriveItem& item : result.items) {
+      if (![previousIdentifiers containsObject:item.identifier]) {
+        _fetchedDriveItems.push_back(item);
+      }
+    }
   } else {
     // Otherwise this is a first page so existing items are replaced.
     _fetchedDriveItems = result.items;
@@ -653,7 +660,14 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
   NSMutableArray<NSString*>* itemsToReconfigure = [NSMutableArray array];
   for (const DriveItem& item : result.items) {
     if ([previousIdentifiers containsObject:item.identifier]) {
-      [itemsToReconfigure addObject:item.identifier];
+      if (append) {
+        // If appending, skipping items which are already in previous pages.
+        continue;
+      } else {
+        // If replacing items, then the cell associated with an item which was
+        // already there simply needs to be reconfigured.
+        [itemsToReconfigure addObject:item.identifier];
+      }
     }
     DriveFilePickerItem* filePickerItem =
         DriveItemToDriveFilePickerItem(item, _collectionType, _sortingCriteria,

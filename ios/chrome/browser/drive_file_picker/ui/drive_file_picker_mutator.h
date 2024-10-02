@@ -19,8 +19,8 @@
 // Ask the mutator to load the first drive items.
 - (void)loadFirstPage;
 
-// Ask the mutator to fetch the next drive items.
-- (void)fetchNextPage;
+// Ask the mutator to load the next drive items.
+- (void)loadNextPage;
 
 // Sets the current sorting criteria and direction.
 - (void)setSortingCriteria:(DriveItemsSortingType)criteria

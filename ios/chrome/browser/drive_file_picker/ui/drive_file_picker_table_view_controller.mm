@@ -940,7 +940,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   NSDiffableDataSourceSnapshot* snapshot = _diffableDataSource.snapshot;
   if (indexPath.row == snapshot.numberOfItems - 1 && _nextPageAvailable) {
     [_loadingIndicator startAnimating];
-    [self.mutator fetchNextPage];
+    [self.mutator loadNextPage];
   }
 }
 
