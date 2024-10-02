@@ -1454,7 +1454,8 @@ class InterestGroupAuction::BuyerHelper
         trusted_signals_fetch_latency;
     auction_->ReportTrustedSignalsFetchLatency(interest_group,
                                                trusted_signals_fetch_latency);
-    auction_->HandleUpdateIfOlderThan(interest_group, update_if_older_than);
+    auction_->HandleUpdateIfOlderThan(interest_group.owner, interest_group.name,
+                                      update_if_older_than);
     std::optional<double> new_priority;
     if (!priority_vector.empty()) {
       new_priority = CalculateInterestGroupPriority(
@@ -3154,6 +3155,14 @@ bool InterestGroupAuction::HandleServerResponseImpl(
   }
   get_ad_auction_data_start_time_ = request_context->start_time;
 
+  // Trigger updates for buyers in the auction config.
+  if (config_->non_shared_params.interest_group_buyers.has_value()) {
+    const std::vector<url::Origin>& buyers =
+        config_->non_shared_params.interest_group_buyers.value();
+    post_auction_update_owners_.insert(post_auction_update_owners_.end(),
+                                       buyers.begin(), buyers.end());
+  }
+
   auto maybe_response =
       quiche::ObliviousHttpResponse::CreateClientObliviousResponse(
           std::string(reinterpret_cast<char*>(response.data()),
@@ -4829,7 +4838,8 @@ void InterestGroupAuction::ScoreQueuedBidsIfReady() {
 }
 
 void InterestGroupAuction::HandleUpdateIfOlderThan(
-    const blink::InterestGroup& interest_group,
+    const url::Origin& owner,
+    std::string_view name,
     std::optional<base::TimeDelta> update_if_older_than) {
   if (!base::FeatureList::IsEnabled(
           features::kInterestGroupUpdateIfOlderThan)) {
@@ -4846,8 +4856,7 @@ void InterestGroupAuction::HandleUpdateIfOlderThan(
     *update_if_older_than = base::Minutes(10);
   }
   interest_group_manager_->AllowUpdateIfOlderThan(
-      blink::InterestGroupKey(interest_group.owner, interest_group.name),
-      *update_if_older_than);
+      blink::InterestGroupKey(owner, std::string(name)), *update_if_older_than);
 }
 
 void InterestGroupAuction::HandleAdditionalBidError(AdditionalBidResult result,
@@ -5978,6 +5987,12 @@ void InterestGroupAuction::OnLoadedWinningGroupImpl(
   groups.push_back(std::move(*maybe_group));
   auto buyer_helper = std::make_unique<BuyerHelper>(this, std::move(groups));
   buyer_helpers_.emplace_back(std::move(buyer_helper));
+
+  for (const auto& [group_key, update_if_older_than] :
+       response.triggered_updates) {
+    HandleUpdateIfOlderThan(group_key.owner, group_key.name,
+                            update_if_older_than);
+  }
 
   response.result = AuctionResult::kSuccess;
   saved_response_ = std::move(response);

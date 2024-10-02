@@ -953,7 +953,8 @@ class CONTENT_EXPORT InterestGroupAuction
   void ScoreQueuedBidsIfReady();
 
   void HandleUpdateIfOlderThan(
-      const blink::InterestGroup& interest_group,
+      const url::Origin& owner,
+      std::string_view name,
       std::optional<base::TimeDelta> update_if_older_than);
 
   // Performs errors handling when an error is encountered while decoding an

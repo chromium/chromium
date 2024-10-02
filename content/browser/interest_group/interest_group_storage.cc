@@ -5733,7 +5733,7 @@ InterestGroupStorage::UpdateInterestGroup(
 }
 
 void InterestGroupStorage::AllowUpdateIfOlderThan(
-    const blink::InterestGroupKey& group_key,
+    blink::InterestGroupKey group_key,
     base::TimeDelta update_if_older_than) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized()) {

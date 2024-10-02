@@ -250,6 +250,46 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
     }
   }
 
+  base::Value::Dict* triggered_updates = input_dict->FindDict("updateGroups");
+  if (triggered_updates) {
+    for (const auto owner_groups : *triggered_updates) {
+      url::Origin owner = url::Origin::Create(GURL(owner_groups.first));
+      auto it = group_names.find(owner);
+      if (it == group_names.end()) {
+        continue;
+      }
+      const std::vector<std::string>& names = it->second;
+
+      const base::Value::List* groups = owner_groups.second.GetIfList();
+      if (!groups) {
+        continue;
+      }
+      for (const auto& group : *groups) {
+        const base::Value::Dict* group_dict = group.GetIfDict();
+        if (!group_dict) {
+          continue;
+        }
+        std::optional<int> maybe_group_idx = group_dict->FindInt("index");
+        if (!maybe_group_idx) {
+          continue;
+        }
+        if (*maybe_group_idx < 0 ||
+            static_cast<size_t>(*maybe_group_idx) >= names.size()) {
+          continue;
+        }
+
+        std::optional<int> maybe_update_if_older_than =
+            group_dict->FindInt("time");
+        if (!maybe_update_if_older_than) {
+          continue;
+        }
+        output.triggered_updates[blink::InterestGroupKey(
+            owner, names[*maybe_group_idx])] =
+            base::Milliseconds(*maybe_update_if_older_than);
+      }
+    }
+  }
+
   output.result = AuctionResult::kSuccess;
   return std::move(output);
 }

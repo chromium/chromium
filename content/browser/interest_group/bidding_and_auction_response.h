@@ -162,6 +162,9 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
   // Ad tech origins that have forDebuggingOnly reports from server. This is
   // used to get these origin's cooldown status.
   base::flat_set<url::Origin> debugging_only_report_origins;
+
+  // Interest group updates triggered by "update if older than" signals.
+  std::map<blink::InterestGroupKey, base::TimeDelta> triggered_updates;
 };
 
 }  // namespace content

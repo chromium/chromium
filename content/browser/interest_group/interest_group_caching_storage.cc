@@ -280,11 +280,11 @@ void InterestGroupCachingStorage::UpdateInterestGroup(
 }
 
 void InterestGroupCachingStorage::AllowUpdateIfOlderThan(
-    const blink::InterestGroupKey& group_key,
+    blink::InterestGroupKey group_key,
     base::TimeDelta update_if_older_than) {
   interest_group_storage_
       .AsyncCall(&InterestGroupStorage::AllowUpdateIfOlderThan)
-      .WithArgs(group_key, update_if_older_than);
+      .WithArgs(std::move(group_key), update_if_older_than);
 }
 
 void InterestGroupCachingStorage::ReportUpdateFailed(

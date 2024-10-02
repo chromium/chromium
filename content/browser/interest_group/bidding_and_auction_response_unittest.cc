@@ -802,6 +802,98 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
             return response;
           }(),
       },
+      {
+          base::Value(CreateValidResponseDict().Set("updateGroups", "invalid")),
+          CreateExpectedValidResponse(),  // ignore error
+      },
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "updateGroups",
+              base::Value(base::Value::Dict().Set(
+                  "invalid", base::Value(base::Value::List()))))),
+          CreateExpectedValidResponse(),  // ignore error
+      },
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "updateGroups",
+              base::Value(base::Value::Dict().Set(
+                  kOwnerOrigin, base::Value(base::Value::List()))))),
+          CreateExpectedValidResponse(),
+      },
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "updateGroups",
+              base::Value(base::Value::Dict().Set(
+                  kOwnerOrigin,
+                  base::Value(base::Value::List().Append(
+                      base::Value(base::Value::Dict().Set("index", 0)))))))),
+          CreateExpectedValidResponse(),  // ignore error
+      },
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "updateGroups",
+              base::Value(base::Value::Dict().Set(
+                  kOwnerOrigin,
+                  base::Value(base::Value::List().Append(
+                      base::Value(base::Value::Dict().Set("time", 0)))))))),
+          CreateExpectedValidResponse(),  // ignore error
+      },
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "updateGroups",
+              base::Value(base::Value::Dict().Set(
+                  kOwnerOrigin, base::Value(base::Value::List().Append(
+                                    base::Value(base::Value::Dict()
+                                                    .Set("index", "invalid")
+                                                    .Set("time", 0)))))))),
+          CreateExpectedValidResponse(),  // ignore error
+      },
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "updateGroups",
+              base::Value(base::Value::Dict().Set(
+                  kOwnerOrigin,
+                  base::Value(base::Value::List().Append(
+                      base::Value(base::Value::Dict()
+                                      .Set("index", 0)
+                                      .Set("time", "invalid")))))))),
+          CreateExpectedValidResponse(),  // ignore error
+      },
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "updateGroups",
+              base::Value(base::Value::Dict().Set(
+                  kOwnerOrigin, base::Value(base::Value::List().Append(
+                                    base::Value(base::Value::Dict()
+                                                    .Set("index", -1)
+                                                    .Set("time", 0)))))))),
+          CreateExpectedValidResponse(),  // ignore error
+      },
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "updateGroups",
+              base::Value(base::Value::Dict().Set(
+                  kOwnerOrigin, base::Value(base::Value::List().Append(
+                                    base::Value(base::Value::Dict()
+                                                    .Set("index", 10)
+                                                    .Set("time", 0)))))))),
+          CreateExpectedValidResponse(),  // ignore error
+      },
+      {
+          base::Value(CreateValidResponseDict().Set(
+              "updateGroups",
+              base::Value(base::Value::Dict().Set(
+                  kOwnerOrigin,
+                  base::Value(base::Value::List().Append(base::Value(
+                      base::Value::Dict().Set("index", 0).Set("time", 0)))))))),
+          []() {
+            BiddingAndAuctionResponse response = CreateExpectedValidResponse();
+            response.triggered_updates[blink::InterestGroupKey(
+                url::Origin::Create(GURL(kOwnerOrigin)), "name")] =
+                base::Milliseconds(0);
+            return response;
+          }(),
+      },
   };
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.input.DebugString());

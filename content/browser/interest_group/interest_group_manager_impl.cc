@@ -429,9 +429,10 @@ void InterestGroupManagerImpl::UpdateInterestGroupsOfOwnersWithDelay(
 }
 
 void InterestGroupManagerImpl::AllowUpdateIfOlderThan(
-    const blink::InterestGroupKey& group_key,
+    blink::InterestGroupKey group_key,
     base::TimeDelta update_if_older_than) {
-  caching_storage_.AllowUpdateIfOlderThan(group_key, update_if_older_than);
+  caching_storage_.AllowUpdateIfOlderThan(std::move(group_key),
+                                          update_if_older_than);
 }
 
 void InterestGroupManagerImpl::RecordInterestGroupBids(
