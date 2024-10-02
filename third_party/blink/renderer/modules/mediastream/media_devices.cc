@@ -81,10 +81,6 @@ BASE_FEATURE(kEnumerateDevicesRequestAudioCapabilities,
 
 namespace {
 
-const char kFeaturePolicyBlocked[] =
-    "Access to the feature \"display-capture\" is disallowed by permission "
-    "policy.";
-
 template <typename IDLResolvedType>
 class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
  public:
@@ -616,7 +612,9 @@ ScriptPromise<IDLSequence<MediaStream>> MediaDevices::getAllScreensMedia(
   if (context->IsIsolatedContext() && !capture_allowed_by_permissions_policy) {
     resolver->RecordAndThrowDOMException(
         exception_state, DOMExceptionCode::kNotAllowedError,
-        kFeaturePolicyBlocked, UserMediaRequestResult::kNotAllowedError);
+        "Access to the feature \"all-screenscapture\" is disallowed by "
+        "permissions policy.",
+        UserMediaRequestResult::kNotAllowedError);
     return promise;
   }
 
@@ -672,7 +670,9 @@ ScriptPromise<MediaStream> MediaDevices::getDisplayMedia(
   if (!capture_allowed_by_permissions_policy) {
     resolver->RecordAndThrowDOMException(
         exception_state, DOMExceptionCode::kNotAllowedError,
-        kFeaturePolicyBlocked, UserMediaRequestResult::kNotAllowedError);
+        "Access to the feature \"display-capture\" is disallowed by "
+        "permissions policy.",
+        UserMediaRequestResult::kNotAllowedError);
     return promise;
   }
 
