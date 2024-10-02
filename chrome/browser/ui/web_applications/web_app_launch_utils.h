@@ -58,11 +58,10 @@ struct AppNavigationResult {
   // If navigation needs to happen in a tab inside the browser, this stores the
   // index of the tab.
   int tab_index = -1;
-  // Whether launch params need to be enqueued for the navigation.
-  bool enqueue_launch_params = false;
-  // Whether the IPH bubble for navigation handling needs to be showed to the
-  // end user.
-  bool show_iph = false;
+  // Set to true if web contents in navigation are found. This will perform
+  // tasks like enqueuing launch params and showing IPH bubble for
+  // navigation handling.
+  bool perform_app_handling_tasks_in_web_contents = false;
   // The result of navigation handling by the web app system. Useful for making
   // future decisions if the navigation redirects.
   NavigationHandlingInitialResult initial_result =

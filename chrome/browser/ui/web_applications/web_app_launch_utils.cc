@@ -896,9 +896,9 @@ std::optional<AppNavigationResult> MaybeHandleAppNavigation(
       // This isn't a supported way to launch isolated apps, so we can cancel
       // the navigation, but if we want to support it in the future we'll need
       // to block until `WebAppRegistrar` is loaded.
-      return {AppNavigationResult{/*browser=*/nullptr, -1,
-                                  /*enqueue_launch_params=*/false,
-                                  /*show_iph=*/false}};
+      return {AppNavigationResult{
+          /*browser=*/nullptr, -1,
+          /*perform_app_handling_tasks_in_web_contents=*/false}};
     }
     if (app_id) {
       // Reuse the existing browser for in-app same window navigations.
@@ -907,9 +907,9 @@ std::optional<AppNavigationResult> MaybeHandleAppNavigation(
           web_app::AppBrowserController::IsForWebApp(params.browser, *app_id);
       if (navigating_same_app) {
         if (params.disposition == WindowOpenDisposition::CURRENT_TAB) {
-          return {AppNavigationResult{params.browser, -1,
-                                      /*enqueue_launch_params=*/false,
-                                      /*show_iph=*/false}};
+          return {AppNavigationResult{
+              params.browser, -1,
+              /*perform_app_handling_tasks_in_web_contents=*/false}};
         }
 
         // If the browser window does not yet have any tabs, and we are
@@ -920,9 +920,9 @@ std::optional<AppNavigationResult> MaybeHandleAppNavigation(
         bool browser_has_no_tabs =
             params.browser && params.browser->tab_strip_model()->empty();
         if (navigating_new_tab && browser_has_no_tabs) {
-          return {AppNavigationResult{params.browser, -1,
-                                      /*enqueue_launch_params=*/false,
-                                      /*show_iph=*/false}};
+          return {AppNavigationResult{
+              params.browser, -1,
+              /*perform_app_handling_tasks_in_web_contents=*/false}};
         }
       }
 
@@ -946,9 +946,9 @@ std::optional<AppNavigationResult> MaybeHandleAppNavigation(
                 params.window_features.bounds, profile, params.user_gesture);
         browser_params.initial_origin_specified = GetOriginSpecified(params);
         Browser* browser = Browser::Create(browser_params);
-        return {AppNavigationResult{browser, -1,
-                                    /*enqueue_launch_params=*/false,
-                                    /*show_iph=*/false}};
+        return {AppNavigationResult{
+            browser, -1,
+            /*perform_app_handling_tasks_in_web_contents=*/false}};
       }
     }
   }
@@ -1006,8 +1006,7 @@ std::optional<AppNavigationResult> MaybeHandleAppNavigation(
           params.disposition == WindowOpenDisposition::NEW_POPUP);
       return {AppNavigationResult{
           app_window, -1,
-          /*enqueue_launch_params=*/false,
-          /*show_iph=*/false,
+          /*perform_app_handling_tasks_in_web_contents=*/false,
           NavigationHandlingInitialResult::kAppWindowAuxContext,
           std::move(debug_data)}};
     }
@@ -1026,8 +1025,7 @@ std::optional<AppNavigationResult> MaybeHandleAppNavigation(
             CreateWebAppWindowFromNavigationParams(*controlling_app_id, params);
         return {AppNavigationResult{
             app_window, -1,
-            /*enqueue_launch_params=*/true,
-            /*show_iph=*/true,
+            /*perform_app_handling_tasks_in_web_contents=*/true,
             NavigationHandlingInitialResult::kAppWindowLaunchHandling,
             std::move(debug_data)}};
       }
@@ -1044,8 +1042,7 @@ std::optional<AppNavigationResult> MaybeHandleAppNavigation(
           // browser itself.
           return {AppNavigationResult{
               params.browser, -1,
-              /*enqueue_launch_params=*/true,
-              /*show_iph=*/true,
+              /*perform_app_handling_tasks_in_web_contents=*/true,
               NavigationHandlingInitialResult::kAppWindowLaunchHandling,
               std::move(debug_data)}};
         }
@@ -1053,8 +1050,7 @@ std::optional<AppNavigationResult> MaybeHandleAppNavigation(
             CreateWebAppWindowFromNavigationParams(current_app_id, params);
         return {AppNavigationResult{
             app_window, -1,
-            /*enqueue_launch_params=*/true,
-            /*show_iph=*/true,
+            /*perform_app_handling_tasks_in_web_contents=*/true,
             NavigationHandlingInitialResult::kAppWindowLaunchHandling,
             std::move(debug_data)}};
       }
@@ -1129,9 +1125,12 @@ std::optional<AppNavigationResult> MaybeHandleAppNavigation(
         RecordLaunchMetrics(
             app_id, apps::LaunchContainer::kLaunchContainerWindow,
             apps::LaunchSource::kFromNavigationCapturing, params.url, contents);
+
+        // Returning a `nullptr` browser aborts the navigation entirely, so the
+        // other arguments here don't matter.
         return {AppNavigationResult{
             /*browser= */ nullptr, -1,
-            /*enqueue_launch_params=*/false, /*show_iph=*/true,
+            /*perform_app_handling_tasks_in_web_contents=*/false,
             NavigationHandlingInitialResult::kAppWindowNavigationCaptured}};
       }
 
@@ -1145,8 +1144,7 @@ std::optional<AppNavigationResult> MaybeHandleAppNavigation(
       if (existing_browser_and_tab) {
         return {AppNavigationResult{
             existing_browser_and_tab->first, existing_browser_and_tab->second,
-            /*enqueue_launch_params=*/true,
-            /*show_iph=*/true,
+            /*perform_app_handling_tasks_in_web_contents=*/true,
             NavigationHandlingInitialResult::kAppWindowNavigationCaptured,
             std::move(debug_data)}};
       }
@@ -1169,13 +1167,9 @@ std::optional<AppNavigationResult> MaybeHandleAppNavigation(
       app_window = CreateWebAppWindowFromNavigationParams(app_id, params);
     }
 
-    // TODO(crbug.com/359224477): In all but one case we set `show_iph` to the
-    // same value as `enqueue_launch_params`. Maybe there is an opportunity to
-    // simplify this once the WebAppLaunchProcess logic has been fixed.
     return {AppNavigationResult{
         app_window, -1,
-        /*enqueue_launch_params=*/true,
-        /*show_iph=*/true,
+        /*perform_app_handling_tasks_in_web_contents=*/true,
         NavigationHandlingInitialResult::kAppWindowNavigationCaptured,
         std::move(debug_data)}};
   }
@@ -1230,9 +1224,9 @@ void OnWebAppNavigationAfterWebContentsCreation(
   debug_value.Set("result.browser",
                   base::ToString(app_navigation_result->browser));
   debug_value.Set("result.tab_index", app_navigation_result->tab_index);
-  debug_value.Set("result.enqueue_launch_params",
-                  app_navigation_result->enqueue_launch_params);
-  debug_value.Set("result.show_iph", app_navigation_result->show_iph);
+  debug_value.Set(
+      "result.perform_app_handling_tasks_in_web_contents",
+      app_navigation_result->perform_app_handling_tasks_in_web_contents);
   debug_value.Set("params.navigated_or_inserted_contents",
                   base::ToString(params.navigated_or_inserted_contents));
   web_app::WebAppProvider* provider =
@@ -1242,8 +1236,9 @@ void OnWebAppNavigationAfterWebContentsCreation(
 
   const webapps::AppId& app_id = params.browser->app_controller()->app_id();
 
-  // Enqueue launch params if needed.
-  if (app_navigation_result->enqueue_launch_params) {
+  // Enqueue launch params and show the IPH bubble denoting that an app has
+  // handled the navigation.
+  if (app_navigation_result->perform_app_handling_tasks_in_web_contents) {
     EnqueueLaunchParams(params.navigated_or_inserted_contents, app_id,
                         params.url,
                         /*wait_for_navigation_to_complete=*/true);
@@ -1253,11 +1248,7 @@ void OnWebAppNavigationAfterWebContentsCreation(
     RecordLaunchMetrics(app_id, apps::LaunchContainer::kLaunchContainerWindow,
                         apps::LaunchSource::kFromNavigationCapturing,
                         params.url, params.navigated_or_inserted_contents);
-  }
 
-  // TODO(crbug.com/359224477): Once WebAppLaunchProcess logic has been fixed,
-  // revisit whether the show_iph bool is needed.
-  if (app_navigation_result->show_iph) {
     MaybeShowNavigationCaptureIph(app_id, params.initiating_profile,
                                   params.browser);
   }
