@@ -2645,11 +2645,15 @@ chromium-metrics-reviews@google.com.
   <suffix name="DisplayCapture" label="Display capture permission actions"/>
   <suffix name="Geolocation" label="Geolocation permission actions"/>
   <suffix name="IdleDetection" label="Idle detection permission actions"/>
+  <suffix name="KeyboardAndPointerLock"
+      label="Keyboard and pointer lock permission"/>
+  <suffix name="KeyboardLock" label="Keyboard lock permission"/>
   <suffix name="LocalFonts" label="Local fonts permission actions"/>
   <suffix name="MidiSysEx" label="Midi SysEx permsision actions"/>
   <suffix name="Nfc" label="Nfc permsision actions"/>
   <suffix name="Notifications" label="Notification permission actions"/>
   <suffix name="PaymentHandler" label="Payment Handler permission actions"/>
+  <suffix name="PointerLock" label="Pointer lock permission"/>
   <suffix name="ProtectedMedia" label="Protected media permission actions"/>
   <suffix name="PushMessaging" label="Push messaging permission actions"/>
   <suffix name="StorageAccess" label="Storage Access API permission actions"/>
