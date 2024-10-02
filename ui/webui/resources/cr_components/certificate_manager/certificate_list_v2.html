@@ -24,14 +24,14 @@
     [[headerText]]
     <div class="header-buttons">
       <cr-button hidden$="[[!showImport]]" id="importCert"
+          aria-label="[[i18n('certificateManagerV2ImportButtonAriaLabel', headerText)]]"
           on-click="onImportCertClick_">
-        <!-- TODO(crbug.com/40928765): localize -->
-        Import
+        [[i18n("certificateManagerV2ImportButtonLabel")]]
       </cr-button>
       <cr-button hidden$="[[!showImportAndBind]]" id="importAndBindCert"
+          aria-label="[[i18n('certificateManagerV2ImportAndBindButtonAriaLabel', headerText)]]"
           on-click="onImportAndBindCertClick_">
-        <!-- TODO(crbug.com/40928765): localize -->
-        Import and bind
+        [[i18n("certificateManagerV2ImportAndBindButtonLabel")]]
       </cr-button>
       <cr-button hidden$="[[hideExportButton_(hideExport, hasCerts_)]]"
           aria-label="[[i18n('certificateManagerV2ExportButtonAriaLabel', headerText)]]"

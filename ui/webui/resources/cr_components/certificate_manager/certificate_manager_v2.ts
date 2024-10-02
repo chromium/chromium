@@ -383,8 +383,8 @@ export class CertificateManagerV2Element extends
       return;
     }
     if (result.error !== undefined) {
-      // TODO(crbug.com/40928765): localize
-      this.infoDialogTitle_ = 'import result';
+      this.infoDialogTitle_ =
+          loadTimeData.getString('certificateManagerV2ImportErrorTitle');
       this.infoDialogMessage_ = result.error;
       this.showInfoDialog_ = true;
     }
@@ -396,8 +396,8 @@ export class CertificateManagerV2Element extends
       return;
     }
     if (result.error !== undefined) {
-      // TODO(crbug.com/40928765): localize
-      this.infoDialogTitle_ = 'delete result';
+      this.infoDialogTitle_ =
+          loadTimeData.getString('certificateManagerV2DeleteErrorTitle');
       this.infoDialogMessage_ = result.error;
       this.showInfoDialog_ = true;
     }

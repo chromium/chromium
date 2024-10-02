@@ -8,9 +8,10 @@ import type {CertificatePasswordDialogElement} from './certificate_password_dial
 
 export function getHtml(this: CertificatePasswordDialogElement) {
   return html`
-    <!-- TODO(crbug.com/40928765): localize -->
     <cr-dialog id="dialog" show-on-attach>
-      <div slot="title">Enter password</div>
+      <div slot="title">
+        ${this.i18n('certificateManagerV2EnterPasswordTitle')}
+      </div>
       <div slot="body">
         <cr-input id="password" type="password" autofocus>
         <!-- TODO(crbug.com/40928765): add a button to toggle the password

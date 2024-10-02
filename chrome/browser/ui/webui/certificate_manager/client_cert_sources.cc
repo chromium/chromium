@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/certificate_manager/client_cert_sources.h"
 
 #include <map>
+#include <string>
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_utils.h"
 #include "chrome/common/net/x509_certificate_model.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/crypto_buildflags.h"
 #include "crypto/sha2.h"
@@ -27,6 +29,7 @@
 #include "net/ssl/client_cert_identity.h"
 #include "net/ssl/client_cert_store.h"
 #include "net/ssl/ssl_cert_request_info.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 #include "ui/webui/resources/cr_components/certificate_manager/certificate_manager_v2.mojom-shared.h"
@@ -410,10 +413,28 @@ class CrosClientCertSource : public ClientCertSource,
       const std::string& sha256hash_hex,
       CertificateManagerPageHandler::DeleteCertificateCallback callback)
       override {
-    // TODO(crbug.com/40928765): localize
+    scoped_refptr<net::X509Certificate> cert = FindCertificate(sha256hash_hex);
+    if (!cert) {
+      // This error is not expected to be displayed under normal circumstances,
+      // so it's not localized.
+      std::move(callback).Run(
+          certificate_manager_v2::mojom::ActionResult::NewError(
+              "cert not found"));
+      return;
+    }
+
+    std::u16string cert_title =
+        base::UTF8ToUTF16(x509_certificate_model::X509CertificateModel(
+                              bssl::UpRef(cert->cert_buffer()), "")
+                              .GetTitle());
+
     (*remote_client_)
         ->AskForConfirmation(
-            "delete?", "delete client cert?",
+            l10n_util::GetStringFUTF8(
+                IDS_SETTINGS_CERTIFICATE_MANAGER_V2_DELETE_CERT_TITLE,
+                cert_title),
+            l10n_util::GetStringUTF8(
+                IDS_SETTINGS_CERTIFICATE_MANAGER_V2_DELETE_CLIENT_CERT_DESCRIPTION),
             base::BindOnce(
                 &CrosClientCertSource::GotDeleteCertificateConfirmation,
                 weak_ptr_factory_.GetWeakPtr(), sha256hash_hex,
@@ -435,8 +456,8 @@ class CrosClientCertSource : public ClientCertSource,
             hardware_backed
                 ? ClientCertManagementAccessControls::kHardwareBacked
                 : ClientCertManagementAccessControls::kSoftwareBacked)) {
-      // TODO(crbug.com/40928765): localize? This is an internal error that
-      // isn't expected to be displayed, so dunno if it needs to be localized.
+      // This error is not expected to be displayed under normal circumstances,
+      // so it's not localized.
       std::move(callback).Run(
           certificate_manager_v2::mojom::ActionResult::NewError("not allowed"));
       return;
@@ -489,10 +510,10 @@ class CrosClientCertSource : public ClientCertSource,
  private:
   void FileRead(std::optional<std::vector<uint8_t>> file_bytes) {
     if (!file_bytes) {
-      // TODO(crbug.com/40928765): localize
       std::move(import_callback_)
           .Run(certificate_manager_v2::mojom::ActionResult::NewError(
-              "error reading file"));
+              l10n_util::GetStringUTF8(
+                  IDS_SETTINGS_CERTIFICATE_MANAGER_V2_READ_FILE_ERROR)));
       return;
     }
 
@@ -640,13 +661,29 @@ class CrosClientCertSource : public ClientCertSource,
           certificate_manager_v2::mojom::ActionResult::NewSuccess(
               certificate_manager_v2::mojom::SuccessResult::kSuccess)));
     } else {
-      // TODO(crbug.com/40928765): Localize and provide better error messages.
       // TODO(crbug.com/40928765): If the error was bad password, could prompt
       // the user to try again rather than just failing and requiring the user
       // to reselect the file to try again.
+      int message_id;
+      switch (nss_import_result) {
+        case net::ERR_PKCS12_IMPORT_BAD_PASSWORD:
+          message_id = IDS_SETTINGS_CERTIFICATE_MANAGER_V2_IMPORT_BAD_PASSWORD;
+          break;
+        case net::ERR_PKCS12_IMPORT_INVALID_MAC:
+          message_id = IDS_SETTINGS_CERTIFICATE_MANAGER_V2_IMPORT_INVALID_MAC;
+          break;
+        case net::ERR_PKCS12_IMPORT_INVALID_FILE:
+          message_id = IDS_SETTINGS_CERTIFICATE_MANAGER_V2_IMPORT_INVALID_FILE;
+          break;
+        case net::ERR_PKCS12_IMPORT_UNSUPPORTED:
+          message_id = IDS_SETTINGS_CERTIFICATE_MANAGER_V2_IMPORT_UNSUPPORTED;
+          break;
+        default:
+          message_id = IDS_SETTINGS_CERTIFICATE_MANAGER_V2_IMPORT_FAILED;
+      }
       std::move(import_callback_)
           .Run(certificate_manager_v2::mojom::ActionResult::NewError(
-              "import failed"));
+              l10n_util::GetStringUTF8(message_id)));
     }
   }
 
@@ -662,7 +699,8 @@ class CrosClientCertSource : public ClientCertSource,
 
     scoped_refptr<net::X509Certificate> cert = FindCertificate(sha256hash_hex);
     if (!cert) {
-      // TODO(crbug.com/40928765): Localize.
+      // This error is not expected to be displayed under normal circumstances,
+      // so it's not localized.
       std::move(callback).Run(
           certificate_manager_v2::mojom::ActionResult::NewError(
               "cert not found"));
@@ -735,10 +773,12 @@ class CrosClientCertSource : public ClientCertSource,
           certificate_manager_v2::mojom::ActionResult::NewSuccess(
               certificate_manager_v2::mojom::SuccessResult::kSuccess)));
     } else {
-      // TODO(crbug.com/40928765): Localize.
+      // TODO(crbug.com/40928765): pass through better error status codes from
+      // the lower level deletion code?
       std::move(callback).Run(
           certificate_manager_v2::mojom::ActionResult::NewError(
-              "delete failed"));
+              l10n_util::GetStringUTF8(
+                  IDS_SETTINGS_CERTIFICATE_MANAGER_V2_DELETE_ERROR)));
     }
   }
 

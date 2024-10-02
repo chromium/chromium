@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_utils.h"
 #include "chrome/browser/ui/webui/certificate_manager/client_cert_sources.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -33,12 +34,17 @@
 #include "net/cert/x509_util_nss.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/fake_select_file_dialog.h"
 #include "ui/webui/resources/cr_components/certificate_manager/certificate_manager_v2.mojom.h"
 
 namespace {
 
 constexpr char kUsername[] = "test@example.com";
+
+// The SHA256 hash of the certificate in client.p12, as a hex string.
+constexpr char kTestClientCertHashHex[] =
+    "c72ab9295a0e056fc4390032fe15170a7bdc8aceb920a7254060780b3973fba7";
 
 bool SlotContainsCertWithHash(PK11SlotInfo* slot, std::string_view hash_hex) {
   if (!slot) {
@@ -204,10 +210,6 @@ TEST_P(ClientCertSourceAshUnitTest,
   ui::FakeSelectFileDialog::Factory* factory =
       ui::FakeSelectFileDialog::RegisterFactory();
 
-  // The SHA256 hash of the certificate in client.p12, as a hex string.
-  constexpr char kTestClientCertHashHex[] =
-      "c72ab9295a0e056fc4390032fe15170a7bdc8aceb920a7254060780b3973fba7";
-
   EXPECT_FALSE(SlotContainsCertWithHash(
       crypto::GetPublicSlotForChromeOSUser(username_hash()).get(),
       kTestClientCertHashHex));
@@ -265,7 +267,9 @@ TEST_P(ClientCertSourceAshUnitTest,
         delete_waiter.Take();
     ASSERT_TRUE(delete_result);
     ASSERT_TRUE(delete_result->is_error());
-    EXPECT_EQ(delete_result->get_error(), "delete failed");
+    EXPECT_EQ(delete_result->get_error(),
+              l10n_util::GetStringUTF8(
+                  IDS_SETTINGS_CERTIFICATE_MANAGER_V2_DELETE_ERROR));
   }
 
   EXPECT_TRUE(SlotContainsCertWithHash(
@@ -335,7 +339,9 @@ TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12PasswordWrong) {
       import_waiter.Take();
   ASSERT_TRUE(import_result);
   ASSERT_TRUE(import_result->is_error());
-  EXPECT_EQ(import_result->get_error(), "import failed");
+  EXPECT_EQ(import_result->get_error(),
+            l10n_util::GetStringUTF8(
+                IDS_SETTINGS_CERTIFICATE_MANAGER_V2_IMPORT_BAD_PASSWORD));
 }
 
 TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12PasswordEntryCancelled) {
@@ -385,7 +391,9 @@ TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12FileNotFound) {
       import_waiter.Take();
   ASSERT_TRUE(import_result);
   ASSERT_TRUE(import_result->is_error());
-  EXPECT_EQ(import_result->get_error(), "error reading file");
+  EXPECT_EQ(import_result->get_error(),
+            l10n_util::GetStringUTF8(
+                IDS_SETTINGS_CERTIFICATE_MANAGER_V2_READ_FILE_ERROR));
 }
 
 TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12FileSelectionCancelled) {
@@ -410,15 +418,45 @@ TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12FileSelectionCancelled) {
 }
 
 TEST_P(ClientCertSourceAshUnitTest, DeleteCertificateConfirmationCancelled) {
-  fake_page_->set_mocked_confirmation_result(false);
+  // A certificate is required to be present for the delete dialog to display,
+  // so import the test cert first.
+  {
+    ui::FakeSelectFileDialog::Factory* factory =
+        ui::FakeSelectFileDialog::RegisterFactory();
 
+    // The correct password for the client.p12 file.
+    fake_page_->set_mocked_import_password("12345");
+
+    base::test::TestFuture<void> select_file_dialog_opened_waiter;
+    factory->SetOpenCallback(
+        select_file_dialog_opened_waiter.GetRepeatingCallback());
+
+    base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
+        import_waiter;
+    DoImport(import_waiter.GetCallback());
+    EXPECT_TRUE(select_file_dialog_opened_waiter.Wait());
+    ui::FakeSelectFileDialog* fake_file_select_dialog =
+        factory->GetLastDialog();
+    ASSERT_TRUE(fake_file_select_dialog);
+    ASSERT_TRUE(fake_file_select_dialog->CallFileSelected(
+        net::GetTestCertsDirectory().AppendASCII("client.p12"), "p12"));
+
+    certificate_manager_v2::mojom::ActionResultPtr import_result =
+        import_waiter.Take();
+    ASSERT_TRUE(import_result);
+    EXPECT_TRUE(import_result->is_success());
+  }
+
+  // Mock the user cancelling out of the deletion confirmation dialog.
+  fake_page_->set_mocked_confirmation_result(false);
   base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
       delete_waiter;
-  cert_source_->DeleteCertificate("fakesha256hash",
+  cert_source_->DeleteCertificate(kTestClientCertHashHex,
                                   delete_waiter.GetCallback());
 
   certificate_manager_v2::mojom::ActionResultPtr delete_result =
       delete_waiter.Take();
+  // A cancelled action should be signalled with an empty ActionResult.
   EXPECT_FALSE(delete_result);
 }
 
