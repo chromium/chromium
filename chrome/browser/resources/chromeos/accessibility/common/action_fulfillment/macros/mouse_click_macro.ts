@@ -86,6 +86,84 @@ export class MouseClickMacro extends Macro {
   }
 }
 
+export enum LongClickState {
+  PRESS = 0,
+  DRAG = 1,
+  RELEASE = 2,
+  FULFILLED = 3,
+}
+
+/**
+ * Class that implements a macro to send, hold and release a synthetic mouse
+ * click.
+ */
+export class MouseClickLongMacro extends Macro {
+  private location_: ScreenPoint|undefined;
+  private state_: LongClickState = LongClickState.PRESS;
+
+  /** Pass the location in density-independent pixels. */
+  constructor(location: ScreenPoint|undefined) {
+    super(MacroName.MOUSE_LONG_CLICK_LEFT);
+    this.location_ = location;
+  }
+
+  /**
+   * The long click macro should be run at least twice, once when the click
+   * begins and again when it ends.
+   */
+  override triggersAtActionStartAndEnd(): boolean {
+    return true;
+  }
+
+  /**
+   * Invalid context if location isn't set or this macro is already fulfilled.
+   */
+  override checkContext(): CheckContextResult {
+    if (!this.location_) {
+      return this.createFailureCheckContextResult_(MacroError.BAD_CONTEXT);
+    }
+
+    if (this.state_ === LongClickState.FULFILLED) {
+      // This macro cannot be run after has already been fulfilled.
+      return this.createFailureCheckContextResult_(
+          MacroError.INVALID_USER_INTENT);
+    }
+
+    return this.createSuccessCheckContextResult_();
+  }
+
+  triggerRelease(): void {
+    this.state_ = LongClickState.RELEASE;
+  }
+
+  updateLocation(location?: ScreenPoint): void {
+    this.location_ = location;
+  }
+
+  override run(): RunMacroResult {
+    if (!this.location_ || this.state_ === LongClickState.FULFILLED) {
+      return this.createRunMacroResult_(/*isSuccess=*/ false);
+    }
+
+    switch (this.state_) {
+      case LongClickState.PRESS:
+        EventGenerator.sendMousePress(
+            this.location_.x, this.location_.y, SyntheticMouseEventButton.LEFT);
+        this.state_ = LongClickState.DRAG;
+        break;
+      case LongClickState.DRAG:
+        EventGenerator.sendMouseMove(this.location_.x, this.location_.y);
+        break;
+      case LongClickState.RELEASE:
+        EventGenerator.sendMouseRelease(this.location_.x, this.location_.y);
+        this.state_ = LongClickState.FULFILLED;
+        break;
+    }
+
+    return this.createRunMacroResult_(/*isSuccess=*/ true);
+  }
+}
+
 /** Class that implements a macro to send a double left click. */
 export class MouseClickLeftDoubleMacro extends Macro {
   private location_: ScreenPoint|undefined;
