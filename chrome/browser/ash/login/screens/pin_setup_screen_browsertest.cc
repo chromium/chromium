@@ -29,6 +29,8 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
+#include "chrome/browser/ui/webui/ash/login/fingerprint_setup_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/password_selection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/pin_setup_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/cryptohome/constants.h"
@@ -64,6 +66,12 @@ const test::UIPath kPinKeyboardInput = {kPinSetupScreen, "pinKeyboard",
                                         "pinKeyboard", "pinInput"};
 const test::UIPath kSetupTitle = {kPinSetupScreen, "setupTitle"};
 const test::UIPath kSetupSubtitle = {kPinSetupScreen, "setupSubtitle"};
+
+// PasswordSelectionScreen elements.
+const test::UIPath kGaiaPasswordButton = {"password-selection",
+                                          "gaiaPasswordButton"};
+const test::UIPath kNextButtonPasswordSelection = {"password-selection",
+                                                   "nextButton"};
 
 enum class PinPolicy {
   kUnlock,
@@ -128,6 +136,12 @@ class PinSetupScreenTest : public OobeBaseTest {
     GetScreen()->set_exit_callback_for_testing(base::BindRepeating(
         &PinSetupScreenTest::HandleScreenExit, base::Unretained(this)));
 
+    original_fingerprint_callback_ =
+        GetFingerprintScreen()->get_exit_callback_for_testing();
+    GetFingerprintScreen()->set_exit_callback_for_testing(
+        base::BindRepeating(&PinSetupScreenTest::HandleFingerprintScreenExit,
+                            base::Unretained(this)));
+
     auto* wizard_context =
         LoginDisplayHost::default_host()->GetWizardContextForTesting();
 
@@ -160,6 +174,11 @@ class PinSetupScreenTest : public OobeBaseTest {
     return WizardController::default_controller()->GetScreen<PinSetupScreen>();
   }
 
+  FingerprintSetupScreen* GetFingerprintScreen() {
+    return WizardController::default_controller()
+        ->GetScreen<FingerprintSetupScreen>();
+  }
+
   void EnterPin() { test::OobeJS().TypeIntoPath("654321", kPinKeyboardInput); }
 
   void ShowPinSetupScreen() {
@@ -185,12 +204,37 @@ class PinSetupScreenTest : public OobeBaseTest {
     test::OobeJS().TapOnPath(kDoneButton);
   }
 
+  void InsertAndConfirmPin() {
+    EnterPin();
+    TapNextButton();
+    // Wait until the back button is visible to ensure that the UI is showing
+    // the 'confirmation' step.
+    test::OobeJS().CreateVisibilityWaiter(true, kBackButton)->Wait();
+    EnterPin();
+    TapNextButton();
+    TapDoneButton();
+  }
+
+  void HandlePasswordSelectionScreen() {
+    OobeScreenWaiter(PasswordSelectionScreenView::kScreenId).Wait();
+    test::OobeJS().ClickOnPath(kGaiaPasswordButton);
+    test::OobeJS().ClickOnPath(kNextButtonPasswordSelection);
+  }
+
   void WaitForScreenExit() {
     if (screen_exited_)
       return;
     base::RunLoop run_loop;
     screen_exit_callback_ = run_loop.QuitClosure();
     run_loop.Run();
+  }
+
+  void WaitForFingerprintScreenExit() {
+    if (!fingerprint_screen_result_.has_value()) {
+      base::RunLoop run_loop;
+      fingerprint_screen_exit_callback_ = run_loop.QuitClosure();
+      run_loop.Run();
+    }
   }
 
   void ConfigureUserContextForTest() {
@@ -236,6 +280,13 @@ class PinSetupScreenTest : public OobeBaseTest {
     }
   }
 
+  void ExpectFingerprintScreenExitedAndContinue() {
+    EXPECT_EQ(fingerprint_screen_result_.value(),
+              FingerprintSetupScreen::Result::NOT_APPLICABLE);
+    original_fingerprint_callback_.Run(
+        FingerprintSetupScreen::Result::NOT_APPLICABLE);
+  }
+
   void WaitForSetupTitleAndSubtitle(int title_msg_id,
                                     int subtitle_msg_id,
                                     bool subtitle_has_device_name = false) {
@@ -255,6 +306,7 @@ class PinSetupScreenTest : public OobeBaseTest {
   }
 
   std::optional<PinSetupScreen::Result> screen_result_;
+  std::optional<FingerprintSetupScreen::Result> fingerprint_screen_result_;
   base::HistogramTester histogram_tester_;
   bool screen_exited_ = false;
 
@@ -270,8 +322,19 @@ class PinSetupScreenTest : public OobeBaseTest {
       std::move(screen_exit_callback_).Run();
   }
 
+  void HandleFingerprintScreenExit(FingerprintSetupScreen::Result result) {
+    fingerprint_screen_result_ = result;
+    if (fingerprint_screen_exit_callback_) {
+      std::move(fingerprint_screen_exit_callback_).Run();
+    }
+  }
+
   PinSetupScreen::ScreenExitCallback original_callback_;
   base::RepeatingClosure screen_exit_callback_;
+
+  // For inspecting the exit behavior of the fingerprint setup screen.
+  FingerprintSetupScreen::ScreenExitCallback original_fingerprint_callback_;
+  base::RepeatingClosure fingerprint_screen_exit_callback_;
 };
 
 // By default, OOBE shows the PIN setup screen on supported hardware.
@@ -392,15 +455,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, FinishedFlow) {
   ShowPinSetupScreen();
   WaitForScreenShown();
 
-  EnterPin();
-  TapNextButton();
-  // Wait until the back button is visible to ensure that the UI is showing
-  // the 'confirmation' step.
-  test::OobeJS().CreateVisibilityWaiter(true, kBackButton)->Wait();
-  EnterPin();
-  TapNextButton();
-
-  TapDoneButton();
+  InsertAndConfirmPin();
   WaitForScreenExit();
 
   ExpectExitResultAndMetric(PinSetupScreen::Result::kDone);
