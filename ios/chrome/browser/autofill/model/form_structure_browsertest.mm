@@ -370,6 +370,9 @@ const auto& GetFailingTestNames() {
       "115_checkout_walgreens.com.html",
       "116_cc_checkout_walgreens.com.html",
       "150_checkout_venus.com_search_field.html",
+      // TODO(crbug.com/360322019): Even though the page language detection
+      // feature is enabled, is it not triggered properly for this test on iOS.
+      "153_fmm-en_inm.gob.mx.html",
   };
   return failing_test_names;
 }

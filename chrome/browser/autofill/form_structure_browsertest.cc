@@ -290,8 +290,12 @@ std::unique_ptr<HttpResponse> FormStructureBrowserTest::HandleRequest(
 }
 
 // TODO(https://crbug.com/41493195): Re-enable this test
-IN_PROC_BROWSER_TEST_P(FormStructureBrowserTest,
-                       DISABLED_DataDrivenHeuristics) {
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#define MAYBE_DataDrivenHeuristics DISABLED_DataDrivenHeuristics
+#else
+#define MAYBE_DataDrivenHeuristics DataDrivenHeuristics
+#endif
+IN_PROC_BROWSER_TEST_P(FormStructureBrowserTest, MAYBE_DataDrivenHeuristics) {
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   if (GetActiveHeuristicSource() != HeuristicSource::kLegacyRegexes) {
     GTEST_SKIP() << "DataDrivenHeuristics tests are only supported with legacy "
