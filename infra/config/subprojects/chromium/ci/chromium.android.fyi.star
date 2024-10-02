@@ -838,7 +838,7 @@ ci.builder(
                     "--emulator-debug-tags=all,-qemud,-sensors",
                 ],
             ),
-            "15-x64-emulator",
+            "15-swangle-x64-emulator",
             "emulator-8-cores",
             "has_native_resultdb_integration",
             "linux-jammy",
@@ -853,12 +853,87 @@ ci.builder(
                      "PaymentHandler*"),
                 ],
             ),
+            "base_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14.base_unittests.filter",
+                ],
+            ),
+            "chrome_public_test_apk": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.chrome_public_test_apk.filter",
+                ],
+            ),
+            "chrome_public_unit_test_apk": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.chrome_public_unit_test_apk.filter",
+                ],
+            ),
             "content_browsertests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.content_browsertests.filter",
                 ],
                 swarming = targets.swarming(
                     shards = 40,
+                ),
+            ),
+            "content_shell_test_apk": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15.content_shell_test_apk.filter",
+                ],
+            ),
+            "content_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.content_unittests.filter",
+                ],
+            ),
+            "crashpad_tests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter",
+                ],
+            ),
+            "device_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.device_unittests.filter",
+                ],
+            ),
+            "gl_tests_validating": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12_12l_13.gl_tests.filter",
+                ],
+            ),
+            "gwp_asan_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.gwp_asan_unittests.filter",
+                ],
+            ),
+            "media_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter",
+                ],
+            ),
+            "net_unittests": targets.mixin(
+                args = [
+                    # TODO(crbug.com/362292404): Fix the failed test
+                    "--gtest_filter=-TrafficStatsAndroidTest.*",
+                ],
+            ),
+            "perfetto_unittests": targets.mixin(
+                args = [
+                    # TODO(crbug.com/40201873): Fix the failed test
+                    "--gtest_filter=-ScopedDirTest.CloseOutOfScope",
+                ],
+            ),
+            "unit_tests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15.unit_tests.filter",
+                ],
+            ),
+            "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.webview_instrumentation_test_apk.filter",
+                ],
+                swarming = targets.swarming(
+                    shards = 12,
                 ),
             ),
             "webview_trichrome_64_cts_tests full_mode": targets.remove(

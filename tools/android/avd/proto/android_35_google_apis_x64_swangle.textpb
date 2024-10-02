@@ -1,0 +1,32 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configuration for an Android 15 Beta AVD on google_apis on x86_64
+
+emulator_package {
+  package_name: "chromium/third_party/android_sdk/public/emulator"
+  version: "XS__KK27esI_4qZkc_Ybb_ooYjPfcIQ7DDOPUZGYW5wC"  # 35.1.21 (Stable)
+  dest_path: "android_35_google_apis_x64_swangle"
+}
+
+system_image_package {
+  package_name: "chromium/third_party/android_sdk/public/system-images/android-35/google_apis/x86_64"
+  version: "vNcoxPG6VS5NgGEWmx2Qi3R9P8EC8E-MvyVZ-diDxWYC"  # (r8) AE3A.240806.005
+  dest_path: "android_35_google_apis_x64_swangle"
+}
+system_image_name: "system-images;android-35;google_apis;x86_64"
+
+avd_package {
+  package_name: "chromium/third_party/android_sdk/public/avds/android-35/google_apis/x86_64"
+  # Created in https://ci.chromium.org/ui/b/8735783234873256961
+  # Patched gmscore version 24.26.32 in https://crrev.com/c/5735581
+  version: "g78c3lisaEy84MSSH_dCGDrWQsyK6TAAgzMpYmOFpRcC"
+  dest_path: "android_35_google_apis_x64_swangle"
+}
+avd_name: "android_35_google_apis_x64"
+
+avd_launch_settings {
+  gpu_mode: "swangle_indirect"
+}
+
