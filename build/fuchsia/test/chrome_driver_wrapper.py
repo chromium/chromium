@@ -13,6 +13,7 @@ from typing import Tuple
 from selenium import webdriver
 from selenium.webdriver import ChromeOptions
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
 # pylint: enable=import-error
 
 from common import get_free_local_port
@@ -48,6 +49,15 @@ class ChromeDriverWrapper(AbstractContextManager):
         """Stops the chromedriver, cannot perform other commands afterward."""
         return self._driver.__exit__(exc_type, exc_val, exc_tb)
 
-    def get(self, url: str):
-        """Forwards to webdriver.get to open a page."""
-        return self._driver.get(url)
+    def __getattr__(self, name):
+        """Forwards function calls to the underlying |_driver| instance."""
+        return getattr(self._driver, name)
+
+    # Explicitly override find_element_by_id to avoid importing selenium
+    # packages in the caller files.
+    # The find_element_by_id in webdriver.Chrome is deprecated.
+    #   DeprecationWarning: find_element_by_* commands are deprecated. Please
+    #   use find_element() instead
+    def find_element_by_id(self, id_str):
+        """Returns the element in the page with id |id_str|."""
+        return self._driver.find_element(By.ID, id_str)
