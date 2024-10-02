@@ -11,7 +11,6 @@
 #include "ash/ash_export.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
 
@@ -78,24 +77,6 @@ class ASH_EXPORT CoralController {
   void OpenNewDeskWithGroup(CoralResponse::Group group);
 
  private:
-  using CoralService = coral::mojom::CoralService;
-
-  void EnsureCoralService();
-
-  // Used as the callback of mojom::CoralService::Group.
-  void HandleGroupResult(CoralResponseCallback callback,
-                         coral::mojom::GroupResultPtr result);
-
-  // Used as the callback of mojom::CoralService::CacheEmbeddings. `callback` is
-  // the callback passed from `CoralController::CacheEmbeddings`, which should
-  // be triggered with a bool indicating whether the CacheEmbeddings operation
-  // was successful.
-  void HandleCacheEmbeddingsResult(
-      base::OnceCallback<void(bool)> callback,
-      coral::mojom::CacheEmbeddingsResultPtr result);
-
-  mojo::Remote<CoralService> coral_service_;
-
   base::WeakPtrFactory<CoralController> weak_factory_{this};
 };
 
