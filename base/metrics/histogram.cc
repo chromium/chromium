@@ -589,8 +589,8 @@ std::unique_ptr<HistogramSamples> Histogram::SnapshotFinalDelta() const {
   return SnapshotUnloggedSamples();
 }
 
-void Histogram::AddSamples(const HistogramSamples& samples) {
-  unlogged_samples_->Add(samples);
+bool Histogram::AddSamples(const HistogramSamples& samples) {
+  return unlogged_samples_->Add(samples);
 }
 
 bool Histogram::AddSamplesFromPickle(PickleIterator* iter) {

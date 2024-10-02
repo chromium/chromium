@@ -237,11 +237,10 @@ HistogramSamples::HistogramSamples(uint64_t id, std::unique_ptr<Metadata> meta)
 // be invalid by the time this dtor gets called.
 HistogramSamples::~HistogramSamples() = default;
 
-void HistogramSamples::Add(const HistogramSamples& other) {
+bool HistogramSamples::Add(const HistogramSamples& other) {
   IncreaseSumAndCount(other.sum(), other.redundant_count());
   std::unique_ptr<SampleCountIterator> it = other.Iterator();
-  bool success = AddSubtractImpl(it.get(), ADD);
-  DCHECK(success);
+  return AddSubtractImpl(it.get(), ADD);
 }
 
 bool HistogramSamples::AddFromPickle(PickleIterator* iter) {
@@ -257,14 +256,13 @@ bool HistogramSamples::AddFromPickle(PickleIterator* iter) {
   return AddSubtractImpl(&pickle_iter, ADD);
 }
 
-void HistogramSamples::Subtract(const HistogramSamples& other) {
+bool HistogramSamples::Subtract(const HistogramSamples& other) {
   IncreaseSumAndCount(-other.sum(), -other.redundant_count());
   std::unique_ptr<SampleCountIterator> it = other.Iterator();
-  bool success = AddSubtractImpl(it.get(), SUBTRACT);
-  DCHECK(success);
+  return AddSubtractImpl(it.get(), SUBTRACT);
 }
 
-void HistogramSamples::Extract(HistogramSamples& other) {
+bool HistogramSamples::Extract(HistogramSamples& other) {
   static_assert(sizeof(other.meta_->sum) == 8);
 
 #ifdef ARCH_CPU_64_BITS
@@ -294,8 +292,7 @@ void HistogramSamples::Extract(HistogramSamples& other) {
       subtle::NoBarrier_AtomicExchange(&other.meta_->redundant_count, 0);
   IncreaseSumAndCount(other_sum, other_redundant_count);
   std::unique_ptr<SampleCountIterator> it = other.ExtractingIterator();
-  bool success = AddSubtractImpl(it.get(), ADD);
-  DCHECK(success);
+  return AddSubtractImpl(it.get(), ADD);
 }
 
 bool HistogramSamples::IsDefinitelyEmpty() const {
