@@ -5533,6 +5533,15 @@
     "expiry_milestone": 109
   },
   {
+    "name": "ios-soft-lock",
+    "owners": [
+      "rubindl@chromium.org",
+      "alimariam@google.com",
+      "chrome-browser-privacy-team@google.com"
+    ],
+    "expiry_milestone": 136
+  },
+  {
     "name": "ios-tips-notifications",
     "owners": ["scottyoder@google.com", "bling-get-set-up@google.com"],
     "expiry_milestone": 132

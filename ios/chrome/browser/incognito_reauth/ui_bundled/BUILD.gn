@@ -4,6 +4,14 @@
 
 import("//ios/build/chrome_build.gni")
 
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  public_deps = [ "//base" ]
+}
+
 source_set("incognito_reauth_commands") {
   sources = [ "incognito_reauth_commands.h" ]
   frameworks = [ "UIKit.framework" ]

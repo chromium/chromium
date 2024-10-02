@@ -526,6 +526,10 @@ extern const char kIOSSharedHighlightingAmpDescription[];
 extern const char kIOSSharedHighlightingV2Name[];
 extern const char kIOSSharedHighlightingV2Description[];
 
+// Title and description for the flag to enable the Incognito Soft Lock.
+extern const char kIOSSoftLockName[];
+extern const char kIOSSoftLockDescription[];
+
 // Title and description for the flag to enable Tips Notifications.
 extern const char kIOSTipsNotificationsName[];
 extern const char kIOSTipsNotificationsDescription[];

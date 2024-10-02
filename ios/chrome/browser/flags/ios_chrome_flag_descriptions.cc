@@ -611,6 +611,11 @@ const char kIOSSharedHighlightingV2Description[] =
     "Enables improvements to text fragments UI, including a menu for removing "
     "or resharing a highlight.";
 
+const char kIOSSoftLockName[] = "Soft Lock on iOS";
+const char kIOSSoftLockDescription[] =
+    "Enables an overlay screen over Incognito tabs, whenever the browser is "
+    "backgrounded for long periods of time.";
+
 const char kIOSTipsNotificationsName[] = "Tips Notifications";
 const char kIOSTipsNotificationsDescription[] =
     "Enables Notifications with content to help new users get the most out of "
