@@ -91,7 +91,13 @@ class BlobStorageBrowserTest : public ContentBrowserTest {
   storage::BlobStorageLimits limits_;
 };
 
-IN_PROC_BROWSER_TEST_F(BlobStorageBrowserTest, BlobCombinations) {
+// TODO(crbug.com/370751354): Re-enable this test.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_BlobCombinations DISABLED_BlobCombinations
+#else
+#define MAYBE_BlobCombinations BlobCombinations
+#endif
+IN_PROC_BROWSER_TEST_F(BlobStorageBrowserTest, MAYBE_BlobCombinations) {
   SetBlobLimits();
   SimpleTest(GetTestUrl("blob_storage", "blob_creation_and_slicing.html"));
 
