@@ -37,6 +37,11 @@ class AccessorySheetView extends LinearLayout {
     }
 
     @Override
+    public boolean onGenericMotionEvent(MotionEvent motionEvent) {
+        return true; // Other than its chips, the accessory view is a sink for all events.
+    }
+
+    @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
         if (!ChromeFeatureList.isEnabled(
                 ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID)) {
@@ -63,14 +68,6 @@ class AccessorySheetView extends LinearLayout {
         mSheetTitle = findViewById(R.id.sheet_title);
         findViewById(R.id.sheet_header).setVisibility(View.VISIBLE);
         findViewById(R.id.sheet_header_shadow).setVisibility(View.VISIBLE);
-
-        // Set listener's to touch/click events so they are not propagated to the page below.
-        setOnTouchListener(
-                (view, motionEvent) -> {
-                    performClick(); // Setting a touch listener requires this call which is a NoOp.
-                    // Return that the motionEvent was consumed and needs no further handling.
-                    return true;
-                });
 
         // Ensure that sub components of the sheet use the RTL direction:
         int layoutDirection = isLayoutRtl() ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR;

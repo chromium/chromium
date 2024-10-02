@@ -267,6 +267,9 @@ public class AutofillKeyboardAccessoryIntegrationTest {
 
         whenDisplayed(withChild(withId(R.id.keyboard_accessory_sheet_frame)));
 
+        whenDisplayed(withId(R.id.keyboard_accessory_sheet_frame))
+                .check((v, e) -> assertTrue("Catch click to stay open!", singleMouseClickView(v)));
+
         assertTrue(
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
