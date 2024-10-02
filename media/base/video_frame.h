@@ -966,7 +966,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // Native texture mailbox, if this frame HasTextures().
   gpu::Mailbox mailbox_;
   gpu::SyncToken texture_sync_token_;
-  uint32_t texture_target_ = 0;
   ReleaseMailboxAndGpuMemoryBufferCB mailbox_holder_and_gmb_release_cb_;
 
   // Native texture shared image that is only set when the VideoFrame is
