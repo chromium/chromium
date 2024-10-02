@@ -17,8 +17,8 @@
 #include "net/http/alternate_protocol_usage.h"
 #include "net/quic/quic_http_utils.h"
 #include "net/socket/next_proto.h"
+#include "net/third_party/quiche/src/quiche/http2/core/spdy_protocol.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 
 namespace net {
 
