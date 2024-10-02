@@ -12,6 +12,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
+#import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -33,6 +34,8 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/tips_manager/model/tips_manager_ios.h"
+#import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
 #import "ios/chrome/browser/ui/lens/features.h"
 #import "ios/chrome/browser/ui/lens/lens_availability.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
@@ -198,6 +201,10 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
       base::BindOnce(^(const web::NavigationManager::WebLoadParams params) {
         [weakSelf openWebLoadParams:params];
       }));
+
+  if (IsSegmentationTipsManagerEnabled()) {
+    [self recordLensUsage];
+  }
 }
 
 - (void)openLensInputSelection:(OpenLensInputSelectionCommand*)command {
@@ -312,6 +319,10 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   }
   GetApplicationContext()->GetLocalState()->SetTime(prefs::kLensLastOpened,
                                                     base::Time::Now());
+
+  if (IsSegmentationTipsManagerEnabled()) {
+    [self recordLensUsage];
+  }
 }
 
 #pragma mark - ChromeLensControllerDelegate
@@ -446,6 +457,23 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
 }
 
 #pragma mark - Private
+
+// Records the usage of Google Lens with the Tips Manager. This allows the Tips
+// Manager to provide relevant tips or guidance to the user about the Lens
+// feature.
+- (void)recordLensUsage {
+  CHECK(IsSegmentationTipsManagerEnabled());
+
+  if (!self.browser) {
+    return;
+  }
+
+  TipsManagerIOS* tipsManager =
+      TipsManagerIOSFactory::GetForProfile(self.browser->GetProfile());
+
+  tipsManager->NotifySignal(
+      segmentation_platform::tips_manager::signals::kLensUsed);
+}
 
 - (void)openWebLoadParams:(const web::NavigationManager::WebLoadParams&)params {
   if (!self.browser)
