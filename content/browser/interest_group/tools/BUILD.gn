@@ -1,0 +1,18 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+executable("adjustable_auction") {
+  testonly = true
+  check_includes = false
+
+  sources = [ "adjustable_auction.cc" ]
+  deps = [
+    "//content/test:browsertest_support",
+    "//content/test:content_browsertests",
+    "//content/test:content_test_mojo_bindings",
+    "//content/test:test_support",
+  ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+}

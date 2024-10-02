@@ -198,6 +198,7 @@ group("gn_all") {
         "//components/url_formatter/tools:format_url",
         "//components/viz:viz_perftests",
         "//components/viz:viz_unittests",
+        "//content/browser/interest_group/tools:adjustable_auction",
         "//content/shell:content_shell",
         "//content/test:content_browsertests",
         "//content/test:content_unittests",
