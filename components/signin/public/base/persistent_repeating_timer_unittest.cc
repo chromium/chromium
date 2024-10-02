@@ -23,15 +23,9 @@ constexpr base::TimeDelta kTestDelay = base::Hours(2);
 
 }  // namespace
 
-class PersistentRepeatingTimerTest : public ::testing::TestWithParam<bool> {
+class PersistentRepeatingTimerTest : public ::testing::Test {
  public:
   PersistentRepeatingTimerTest() {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(kPersistentRepeaterTimerUseWallClock);
-    } else {
-      feature_list_.InitAndDisableFeature(kPersistentRepeaterTimerUseWallClock);
-    }
-
     pref_service_.registry()->RegisterTimePref(kLastUpdatedTimePref,
                                                base::Time());
   }
@@ -46,7 +40,7 @@ class PersistentRepeatingTimerTest : public ::testing::TestWithParam<bool> {
 };
 
 // Checks that the missing pref is treated like an old one.
-TEST_P(PersistentRepeatingTimerTest, MissingPref) {
+TEST_F(PersistentRepeatingTimerTest, MissingPref) {
   PersistentRepeatingTimer timer(
       &pref_service_, kLastUpdatedTimePref, kTestDelay,
       base::BindRepeating(&PersistentRepeatingTimerTest::RunTask,
@@ -66,7 +60,7 @@ TEST_P(PersistentRepeatingTimerTest, MissingPref) {
 }
 
 // Checks that spurious calls to Start() have no effect.
-TEST_P(PersistentRepeatingTimerTest, MultipleStarts) {
+TEST_F(PersistentRepeatingTimerTest, MultipleStarts) {
   PersistentRepeatingTimer timer(
       &pref_service_, kLastUpdatedTimePref, kTestDelay,
       base::BindRepeating(&PersistentRepeatingTimerTest::RunTask,
@@ -92,7 +86,7 @@ TEST_P(PersistentRepeatingTimerTest, MultipleStarts) {
   EXPECT_EQ(2, call_count_);
 }
 
-TEST_P(PersistentRepeatingTimerTest, RecentPref) {
+TEST_F(PersistentRepeatingTimerTest, RecentPref) {
   pref_service_.SetTime(kLastUpdatedTimePref,
                         base::Time::Now() - base::Hours(1));
 
@@ -119,7 +113,7 @@ TEST_P(PersistentRepeatingTimerTest, RecentPref) {
   EXPECT_EQ(2, call_count_);
 }
 
-TEST_P(PersistentRepeatingTimerTest, OldPref) {
+TEST_F(PersistentRepeatingTimerTest, OldPref) {
   pref_service_.SetTime(kLastUpdatedTimePref,
                         base::Time::Now() - base::Hours(10));
 
@@ -141,16 +135,11 @@ TEST_P(PersistentRepeatingTimerTest, OldPref) {
   EXPECT_EQ(2, call_count_);
 }
 
-INSTANTIATE_TEST_SUITE_P(, PersistentRepeatingTimerTest, testing::Bool());
-
 // Note: This test can't use base::test::TaskEnvironment (and thus doesn't use
 // the fixture) because TaskEnvironment doesn't allow advancing base::Time
 // without advancing base::TimeTicks, which is what's needed to simulate
 // suspend/resume.
 TEST(PersistentRepeatingTimerStandaloneTest, SuspendAndResume) {
-  base::test::ScopedFeatureList feature_list{
-      kPersistentRepeaterTimerUseWallClock};
-
   base::test::ScopedPowerMonitorTestSource fake_power_monitor_source;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
       base::MakeRefCounted<base::TestMockTimeTaskRunner>(
