@@ -108,8 +108,9 @@ class AuctionWorkletServiceImpl::V8HelperHolder
   const scoped_refptr<AuctionV8Helper>& V8Helper() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (!auction_v8_helper_) {
-      auction_v8_helper_ =
-          AuctionV8Helper::Create(AuctionV8Helper::CreateTaskRunner());
+      auction_v8_helper_ = AuctionV8Helper::Create(
+          AuctionV8Helper::CreateTaskRunner(),
+          /*init_v8=*/process_model_ == ProcessModel::kDedicated);
       if (process_model_ == ProcessModel::kDedicated) {
         auction_v8_helper_->SetDestroyedCallback(base::BindOnce(
             &V8HelperHolder::FinishedDestroying, base::Unretained(this)));

@@ -59,9 +59,8 @@ namespace {
 
 // Initialize V8 (and gin).
 void InitV8() {
-  // TODO(mmenke): All these calls touch global state, which seems rather unsafe
-  // if the process is shared with anything else (e.g. --single-process mode, or
-  // on Android?).  Is there some safer way to do this?
+  // All these calls touch global state, which seems rather unsafe if the
+  // process is shared with anything else; so we do not call this on Android.
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
   gin::V8Initializer::LoadV8Snapshot();
 #endif
@@ -338,8 +337,10 @@ AuctionV8Helper::SerializedValue& AuctionV8Helper::SerializedValue::operator=(
 
 // static
 scoped_refptr<AuctionV8Helper> AuctionV8Helper::Create(
-    scoped_refptr<base::SingleThreadTaskRunner> v8_runner) {
-  scoped_refptr<AuctionV8Helper> result(new AuctionV8Helper(v8_runner));
+    scoped_refptr<base::SingleThreadTaskRunner> v8_runner,
+    bool init_v8) {
+  scoped_refptr<AuctionV8Helper> result(
+      new AuctionV8Helper(v8_runner, init_v8));
 
   // This can't be in the constructor since something else needs to also keep
   // a reference to the object, hence this factory method.
@@ -850,7 +851,8 @@ std::string AuctionV8Helper::FormatScriptName(
 }
 
 AuctionV8Helper::AuctionV8Helper(
-    scoped_refptr<base::SingleThreadTaskRunner> v8_runner)
+    scoped_refptr<base::SingleThreadTaskRunner> v8_runner,
+    bool init_v8)
     : base::RefCountedDeleteOnSequence<AuctionV8Helper>(v8_runner),
       v8_runner_(v8_runner),
       timer_task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})),
@@ -860,8 +862,9 @@ AuctionV8Helper::AuctionV8Helper(
   // InitV8 on main thread, to avoid races if multiple instances exist with
   // different runners.
   static int v8_initialized = false;
-  if (!v8_initialized)
+  if (init_v8 && !v8_initialized) {
     InitV8();
+  }
 
   v8_initialized = true;
 }

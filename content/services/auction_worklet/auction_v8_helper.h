@@ -192,7 +192,8 @@ class CONTENT_EXPORT AuctionV8Helper
   AuctionV8Helper& operator=(const AuctionV8Helper&) = delete;
 
   static scoped_refptr<AuctionV8Helper> Create(
-      scoped_refptr<base::SingleThreadTaskRunner> v8_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> v8_runner,
+      bool init_v8 = true);
   static scoped_refptr<base::SingleThreadTaskRunner> CreateTaskRunner();
 
   scoped_refptr<base::SequencedTaskRunner> v8_runner() const {
@@ -432,8 +433,8 @@ class CONTENT_EXPORT AuctionV8Helper
   friend class base::DeleteHelper<AuctionV8Helper>;
   class ScriptTimeoutHelper;
 
-  explicit AuctionV8Helper(
-      scoped_refptr<base::SingleThreadTaskRunner> v8_runner);
+  AuctionV8Helper(scoped_refptr<base::SingleThreadTaskRunner> v8_runner,
+                  bool init_v8);
   ~AuctionV8Helper();
 
   void CreateIsolate();
