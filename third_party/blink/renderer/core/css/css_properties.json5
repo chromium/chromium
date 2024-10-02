@@ -4580,7 +4580,6 @@
       type_name: "PositionTryFallbacks",
       default_value: "nullptr",
       invalidate: ["layout", "paint"],
-      runtime_flag: "CSSPositionTryFallbacks",
     },
     {
       name: "position-try-order",

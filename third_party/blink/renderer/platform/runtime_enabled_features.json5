@@ -1115,12 +1115,6 @@
       name: "CSSPositionStickyStaticScrollPosition",
       status: "test",
     },
-    {
-      // position-try-options has been renamed to position-try-fallbacks.
-      // This feature was shipped in M128, so this flag can be removed in M130.
-      name: "CSSPositionTryFallbacks",
-      status: "stable",
-    },
     // https://drafts.csswg.org/css-values-5/#progress
     // progress(), media-progress(), container-progress()
     {
