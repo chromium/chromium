@@ -28,7 +28,7 @@ std::string GetLocale() {
 #endif
 }
 
-std::string LocaleToAcceptLanguage(const std::string locale) {
+std::string LocaleToAcceptLanguage(const std::string& locale) {
   return net::HttpUtil::GenerateAcceptLanguageHeader(
 #if BUILDFLAG(IS_ANDROID)
       locale
