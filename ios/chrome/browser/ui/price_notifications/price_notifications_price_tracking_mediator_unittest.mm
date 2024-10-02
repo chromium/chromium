@@ -120,7 +120,7 @@ const bookmarks::BookmarkNode* PrepareSubscription(
 class PriceNotificationsPriceTrackingMediatorTest : public PlatformTest {
  public:
   PriceNotificationsPriceTrackingMediatorTest() {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(ios::BookmarkModelFactory::GetInstance(),
                               ios::BookmarkModelFactory::GetDefaultFactory());
     builder.AddTestingFactory(
@@ -129,12 +129,11 @@ class PriceNotificationsPriceTrackingMediatorTest : public PlatformTest {
             [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
               return commerce::MockShoppingService::Build();
             }));
-    TestChromeBrowserState* test_chrome_browser_state =
+    TestProfileIOS* test_profile =
         profile_manager_.AddProfileWithBuilder(std::move(builder));
 
-    browser_list_ =
-        BrowserListFactory::GetForBrowserState(test_chrome_browser_state);
-    browser_ = std::make_unique<TestBrowser>(test_chrome_browser_state);
+    browser_list_ = BrowserListFactory::GetForProfile(test_profile);
+    browser_ = std::make_unique<TestBrowser>(test_profile);
     browser_list_->AddBrowser(browser_.get());
     web_state_ = std::make_unique<web::FakeWebState>();
     std::unique_ptr<web::FakeNavigationManager> navigation_manager =
@@ -143,20 +142,18 @@ class PriceNotificationsPriceTrackingMediatorTest : public PlatformTest {
     navigation_manager->SetLastCommittedItem(
         navigation_manager->GetItemAtIndex(0));
     web_state_->SetNavigationManager(std::move(navigation_manager));
-    web_state_->SetBrowserState(test_chrome_browser_state);
+    web_state_->SetBrowserState(test_profile);
     web_state_->SetNavigationItemCount(1);
     web_state_->SetCurrentURL(GURL(kTestUrl));
     image_fetcher_ = std::make_unique<image_fetcher::ImageDataFetcher>(
-        test_chrome_browser_state->GetSharedURLLoaderFactory());
+        test_profile->GetSharedURLLoaderFactory());
 
-    bookmark_model_ = ios::BookmarkModelFactory::GetForBrowserState(
-        test_chrome_browser_state);
+    bookmark_model_ = ios::BookmarkModelFactory::GetForProfile(test_profile);
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
     bookmark_model_->CreateAccountPermanentFolders();
 
     shopping_service_ = static_cast<commerce::MockShoppingService*>(
-        commerce::ShoppingServiceFactory::GetForBrowserState(
-            test_chrome_browser_state));
+        commerce::ShoppingServiceFactory::GetForProfile(test_profile));
     shopping_service_->SetupPermissiveMock();
     push_notification_service_ = ios::provider::CreatePushNotificationService();
     mediator_ = [[PriceNotificationsPriceTrackingMediator alloc]

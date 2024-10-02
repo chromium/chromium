@@ -40,13 +40,13 @@
 
 namespace {
 
-// Returns the gaia id used for `browser_state`.
-NSString* GetGaiaIdForBrowserState(ChromeBrowserState* browser_state) {
+// Returns the gaia id used for `profile`.
+NSString* GetGaiaIdForProfile(ProfileIOS* profile) {
   const ProfileAttributesIOS attributes =
       GetApplicationContext()
           ->GetProfileManager()
           ->GetProfileAttributesStorage()
-          ->GetAttributesForProfileWithName(browser_state->GetProfileName());
+          ->GetAttributesForProfileWithName(profile->GetProfileName());
 
   return base::SysUTF8ToNSString(attributes.GetGaiaId());
 }
@@ -76,27 +76,26 @@ NSString* GetGaiaIdForBrowserState(ChromeBrowserState* browser_state) {
 - (void)start {
   self.tableViewController = [[PriceNotificationsTableViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
-  PrefService* prefService = self.browser->GetBrowserState()->GetPrefs();
+  PrefService* prefService = self.browser->GetProfile()->GetPrefs();
   self.tableViewController.hasPreviouslyViewed =
       prefService->GetBoolean(prefs::kPriceNotificationsHasBeenShown);
   if (!self.tableViewController.hasPreviouslyViewed) {
     prefService->SetBoolean(prefs::kPriceNotificationsHasBeenShown, true);
   }
 
-  NSString* gaiaID = GetGaiaIdForBrowserState(self.browser->GetBrowserState());
+  NSString* gaiaID = GetGaiaIdForProfile(self.browser->GetProfile());
   PushNotificationService* pushNotificationService =
       GetApplicationContext()->GetPushNotificationService();
   commerce::ShoppingService* shoppingService =
-      commerce::ShoppingServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      commerce::ShoppingServiceFactory::GetForProfile(
+          self.browser->GetProfile());
   bookmarks::BookmarkModel* bookmarkModel =
-      ios::BookmarkModelFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      ios::BookmarkModelFactory::GetForProfile(self.browser->GetProfile());
   web::WebState* webState =
       self.browser->GetWebStateList()->GetActiveWebState();
   std::unique_ptr<image_fetcher::ImageDataFetcher> imageFetcher =
       std::make_unique<image_fetcher::ImageDataFetcher>(
-          self.browser->GetBrowserState()->GetSharedURLLoaderFactory());
+          self.browser->GetProfile()->GetSharedURLLoaderFactory());
   self.mediator = [[PriceNotificationsPriceTrackingMediator alloc]
       initWithShoppingService:shoppingService
                 bookmarkModel:bookmarkModel
