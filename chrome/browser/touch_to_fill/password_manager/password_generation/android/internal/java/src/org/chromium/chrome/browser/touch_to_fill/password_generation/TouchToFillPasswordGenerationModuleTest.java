@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.touch_to_fill.password_generation;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
@@ -20,6 +21,7 @@ import static org.chromium.chrome.browser.touch_to_fill.password_generation.Touc
 import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationCoordinator.InteractionResult.REJECTED_GENERATED_PASSWORD;
 import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationCoordinator.InteractionResult.USED_GENERATED_PASSWORD;
 
+import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -77,6 +79,7 @@ public class TouchToFillPasswordGenerationModuleTest {
     @Mock private TouchToFillPasswordGenerationCoordinator.Delegate mDelegate;
     @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     @Mock private PrefService mPrefService;
+    @Mock private MotionEvent mMotionEvent;
 
     private static final String sTestEmailAddress = "test@email.com";
     private static final String sGeneratedPassword = "Strong generated password";
@@ -115,6 +118,17 @@ public class TouchToFillPasswordGenerationModuleTest {
         mContent.addView(mCoordinator.getContentViewForTesting());
     }
 
+    /**
+     * Simulates a MotionEvent on the content view of the coordinator. This is necessary because
+     * robolectric doesn't dispatch the event through the view hierarchy that this content view is a
+     * part of.
+     *
+     * @return True iff that event was handled. If false, the event will be passed on.
+     */
+    private boolean simulateMotionEventOnSheet() {
+        return mCoordinator.getContentViewForTesting().dispatchGenericMotionEvent(mMotionEvent);
+    }
+
     @Test
     public void showsAndHidesBottomSheet() {
         show();
@@ -124,6 +138,12 @@ public class TouchToFillPasswordGenerationModuleTest {
         mBottomSheetObserverCaptor.getValue().onSheetClosed(StateChangeReason.SWIPE);
         verify(mBottomSheetController).hideContent(any(), anyBoolean());
         verify(mBottomSheetController).removeObserver(mBottomSheetObserverCaptor.getValue());
+    }
+
+    @Test
+    public void testConsumesGenericMotionEventsToPreventMouseClicksThroughSheet() {
+        show();
+        assertTrue(simulateMotionEventOnSheet());
     }
 
     @Test

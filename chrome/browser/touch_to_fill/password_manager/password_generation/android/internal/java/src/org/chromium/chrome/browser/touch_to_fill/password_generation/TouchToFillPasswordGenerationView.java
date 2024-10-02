@@ -38,6 +38,8 @@ class TouchToFillPasswordGenerationView implements BottomSheetContent {
         mContext = context;
         mContent = content;
 
+        mContent.setOnGenericMotionListener((v, e) -> true); // Filter background interaction.
+
         ImageView sheetHeaderImage = mContent.findViewById(R.id.touch_to_fill_sheet_header_image);
         sheetHeaderImage.setImageDrawable(
                 AppCompatResources.getDrawable(
