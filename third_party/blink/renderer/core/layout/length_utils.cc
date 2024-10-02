@@ -451,6 +451,19 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionForSelf(
                                                      MinMaxSizesFunc);
 }
 
+MinMaxSizesResult ComputeMinAndMaxContentContributionForSelf(
+    const BlockNode& child,
+    const ConstraintSpace& space,
+    MinMaxSizesFunctionRef min_max_sizes_func) {
+  DCHECK(child.CreatesNewFormattingContext());
+
+  return child.IsReplaced()
+             ? ComputeMinAndMaxContentContributionForReplaced(child, space)
+             : ComputeMinAndMaxContentContributionInternal(
+                   child.Style().GetWritingMode(), child, space,
+                   min_max_sizes_func);
+}
+
 MinMaxSizes ComputeMinAndMaxContentContributionForTest(
     WritingMode parent_writing_mode,
     const BlockNode& child,

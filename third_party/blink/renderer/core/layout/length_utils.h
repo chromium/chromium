@@ -675,15 +675,10 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionForSelf(
     const ConstraintSpace& space);
 
 // Same as above, but allows a custom function to compute min/max sizes.
-inline MinMaxSizesResult ComputeMinAndMaxContentContributionForSelf(
+MinMaxSizesResult ComputeMinAndMaxContentContributionForSelf(
     const BlockNode& child,
     const ConstraintSpace& space,
-    MinMaxSizesFunctionRef min_max_sizes_func) {
-  DCHECK(child.CreatesNewFormattingContext());
-
-  return ComputeMinAndMaxContentContributionInternal(
-      child.Style().GetWritingMode(), child, space, min_max_sizes_func);
-}
+    MinMaxSizesFunctionRef min_max_sizes_func);
 
 // Used for unit-tests.
 CORE_EXPORT MinMaxSizes
