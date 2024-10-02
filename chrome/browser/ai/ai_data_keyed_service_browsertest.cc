@@ -21,7 +21,9 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 
 namespace {
 
@@ -55,16 +57,16 @@ class AiDataKeyedServiceBrowserTest : public InProcessBrowserTest {
   const AiDataKeyedService::AiData& ai_data() { return ai_data_; }
 
   void LoadSimplePageAndData() {
-    ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url(),
-                                                              1);
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url(), 1);
     AiDataKeyedService* ai_data_service =
         AiDataKeyedServiceFactory::GetAiDataKeyedService(browser()->profile());
 
     base::RunLoop run_loop;
     auto dom_node_id = 0;
     ai_data_service->GetAiData(
-        dom_node_id, browser()->tab_strip_model()->GetActiveWebContents(),
-        "test",
+        dom_node_id, web_contents, "test",
         base::BindOnce(&AiDataKeyedServiceBrowserTest::SetAiData,
                        base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
@@ -163,6 +165,26 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, TabInnerText) {
   EXPECT_NE(ai_data()->tabs()[0].url().find("simple"), std::string::npos);
   EXPECT_EQ(ai_data()->tabs()[0].page_context().inner_text(),
             "Non empty simple page");
+}
+
+IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, TabInnerTextLimit) {
+  chrome::AddTabAt(browser(), GURL("foo.com"), -1, true);
+  chrome::AddTabAt(browser(), GURL("bar.com"), -1, true);
+  chrome::AddTabAt(browser(), GURL("bar.com"), -1, true);
+  chrome::AddTabAt(browser(), GURL("bar.com"), -1, true);
+  LoadSimplePageAndData();
+  EXPECT_EQ(ai_data()->active_tab_id(), 4);
+  chrome::AddTabAt(browser(), GURL("bar.com"), -1, true);
+  LoadSimplePageAndData();
+  EXPECT_EQ(ai_data()->active_tab_id(), 5);
+  for (auto& tab : ai_data()->tabs()) {
+    if (tab.tab_id() == 4) {
+      EXPECT_EQ(tab.page_context().inner_text(), "Non empty simple page");
+    }
+    if (tab.tab_id() == 5) {
+      EXPECT_EQ(tab.page_context().inner_text(), "");
+    }
+  }
 }
 
 }  // namespace

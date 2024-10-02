@@ -127,9 +127,6 @@ void OnGetTabInnerText(
     std::string url,
     AiDataKeyedService::AiDataCallback continue_callback,
     std::unique_ptr<content_extraction::InnerTextResult> result) {
-  if (!result) {
-    return std::move(continue_callback).Run(std::nullopt);
-  }
   auto data = std::make_optional<
       optimization_guide::proto::
           ModelPrototypingRequest_BrowserCollectedInformation>();
@@ -137,21 +134,23 @@ void OnGetTabInnerText(
   tab->set_tab_id(tab_id);
   tab->set_title(std::move(title));
   tab->set_url(std::move(url));
-  tab->mutable_page_context()->set_inner_text(result->inner_text);
+  if (result) {
+    tab->mutable_page_context()->set_inner_text(result->inner_text);
+  }
   std::move(continue_callback).Run(std::move(data));
 }
 
 // Gets tab info and starts a call to get the inner text from the tab.
 void FillTabInfo(content::WebContents* web_contents,
                  AiDataKeyedService::AiDataCallback continue_callback,
-                 int64_t tab_id) {
+                 int64_t tab_id,
+                 std::string title,
+                 std::string url) {
   content_extraction::GetInnerText(
       *web_contents->GetPrimaryMainFrame(), std::nullopt,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          base::BindOnce(&OnGetTabInnerText, tab_id,
-                         base::UTF16ToUTF8(web_contents->GetTitle()),
-                         std::move(web_contents->GetLastCommittedURL().spec()),
-                         std::move(continue_callback)),
+          base::BindOnce(&OnGetTabInnerText, tab_id, std::move(title),
+                         std::move(url), std::move(continue_callback)),
           nullptr));
 }
 
@@ -171,11 +170,20 @@ void GetTabDataForModelPrototyping(
   AiDataKeyedService::AiData data = std::make_optional<
       optimization_guide::proto::
           ModelPrototypingRequest_BrowserCollectedInformation>();
+  static constexpr int inner_text_limit = 5;
   auto* tab_strip_model = browser->GetTabStripModel();
   for (int index = 0; index < tab_strip_model->count(); index++) {
     content::WebContents* tab_web_contents =
         tab_strip_model->GetWebContentsAt(index);
-    FillTabInfo(tab_web_contents, concurrent.CreateCallback(), index);
+    auto title = base::UTF16ToUTF8(web_contents->GetTitle());
+    auto url = web_contents->GetLastCommittedURL().spec();
+    if (index >= inner_text_limit) {
+      OnGetTabInnerText(index, std::move(title), std::move(url),
+                        concurrent.CreateCallback(), nullptr);
+    } else {
+      FillTabInfo(tab_web_contents, concurrent.CreateCallback(), index,
+                  std::move(title), std::move(url));
+    }
     if (web_contents == tab_web_contents) {
       data->set_active_tab_id(index);
     }
