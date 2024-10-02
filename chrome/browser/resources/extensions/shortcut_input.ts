@@ -3,19 +3,20 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {createDummyExtensionInfo} from './item_util.js';
 import type {KeyboardShortcutDelegate} from './keyboard_shortcut_delegate.js';
-import {getTemplate} from './shortcut_input.html.js';
-import {hasValidModifiers, isValidKeyCode, Key, keystrokeToString} from './shortcut_util.js';
+import {createDummyKeyboardShortcutDelegate} from './keyboard_shortcut_delegate.js';
+import {getCss} from './shortcut_input.css.js';
+import {getHtml} from './shortcut_input.html.js';
+import {formatShortcutText, hasValidModifiers, isValidKeyCode, Key, keystrokeToString} from './shortcut_util.js';
 
 enum ShortcutError {
   NO_ERROR = 0,
@@ -33,7 +34,7 @@ export interface ExtensionsShortcutInputElement {
   };
 }
 
-const ExtensionsShortcutInputElementBase = I18nMixin(PolymerElement);
+const ExtensionsShortcutInputElementBase = I18nMixinLit(CrLitElement);
 
 export class ExtensionsShortcutInputElement extends
     ExtensionsShortcutInputElementBase {
@@ -41,56 +42,46 @@ export class ExtensionsShortcutInputElement extends
     return 'extensions-shortcut-input';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      delegate: Object,
-      item: Object,
-      command: Object,
-
-      shortcut: {
-        type: String,
-        value: '',
-      },
-
-      capturing_: {
-        type: Boolean,
-        value: false,
-      },
-
-      error_: {
-        type: Number,
-        value: ShortcutError.NO_ERROR,
-      },
+      delegate: {type: Object},
+      item: {type: Object},
+      command: {type: Object},
+      shortcut: {type: String},
+      error_: {type: Number},
 
       readonly_: {
         type: Boolean,
-        value: true,
-        reflectToAttribute: true,
-      },
-
-      pendingShortcut_: {
-        type: String,
-        value: '',
+        reflect: true,
       },
     };
   }
 
-  delegate: KeyboardShortcutDelegate;
-  item: chrome.developerPrivate.ExtensionInfo;
-  command: chrome.developerPrivate.Command;
-  shortcut: string;
-  private capturing_: boolean;
-  private error_: ShortcutError;
-  private readonly_: boolean;
-  private pendingShortcut_: string;
+  delegate: KeyboardShortcutDelegate = createDummyKeyboardShortcutDelegate();
+  item: chrome.developerPrivate.ExtensionInfo = createDummyExtensionInfo();
+  command: chrome.developerPrivate.Command = {
+    description: '',
+    keybinding: '',
+    name: '',
+    isActive: false,
+    scope: chrome.developerPrivate.CommandScope.CHROME,
+    isExtensionAction: false,
+  };
+  shortcut: string = '';
+  protected readonly_: boolean = true;
+  private capturing_: boolean = false;
+  private error_: ShortcutError = ShortcutError.NO_ERROR;
+  private pendingShortcut_: string = '';
 
-  override ready() {
-    super.ready();
-
+  override firstUpdated() {
     const node = this.$.input;
     node.addEventListener('mouseup', this.startCapture_.bind(this));
     node.addEventListener('blur', this.endCapture_.bind(this));
@@ -180,9 +171,9 @@ export class ExtensionsShortcutInputElement extends
     this.handleKey_(e);
   }
 
-  private getErrorString_(
-      _error: ShortcutError, includeStartModifier: string,
-      tooManyModifiers: string, needCharacter: string): string {
+  protected getErrorString_(
+      includeStartModifier: string, tooManyModifiers: string,
+      needCharacter: string): string {
     switch (this.error_) {
       case ShortcutError.INCLUDE_START_MODIFIER:
         return includeStartModifier;
@@ -224,7 +215,7 @@ export class ExtensionsShortcutInputElement extends
     this.error_ = ShortcutError.NO_ERROR;
 
     getAnnouncerInstance().announce(
-        this.i18n('shortcutSet', this.computeText_()));
+        this.i18n('shortcutSet', formatShortcutText(this.pendingShortcut_)));
 
     this.commitPending_();
     this.endCapture_();
@@ -236,17 +227,17 @@ export class ExtensionsShortcutInputElement extends
         this.item.id, this.command.name, this.shortcut);
   }
 
-  private computeInputAriaLabel_(): string {
+  protected computeInputAriaLabel_(): string {
     return this.i18n(
         'editShortcutInputLabel', this.command.description, this.item.name);
   }
 
-  private computeEditButtonAriaLabel_(): string {
+  protected computeEditButtonAriaLabel_(): string {
     return this.i18n(
         'editShortcutButtonLabel', this.command.description, this.item.name);
   }
 
-  private computePlaceholder_(): string {
+  protected computePlaceholder_(): string {
     if (this.readonly_) {
       return this.shortcut ? this.i18n('shortcutSet', this.computeText_()) :
                              this.i18n('shortcutNotSet');
@@ -257,17 +248,15 @@ export class ExtensionsShortcutInputElement extends
   /**
    * @return The text to be displayed in the shortcut field.
    */
-  private computeText_(): string {
-    const shortcutString =
-        this.capturing_ ? this.pendingShortcut_ : this.shortcut;
-    return shortcutString.split('+').join(' + ');
+  protected computeText_(): string {
+    return formatShortcutText(this.shortcut);
   }
 
-  private getIsInvalid_(): boolean {
+  protected getIsInvalid_(): boolean {
     return this.error_ !== ShortcutError.NO_ERROR;
   }
 
-  private onEditClick_() {
+  protected onEditClick_() {
     // TODO(ghazale): The clearing functionality should be improved.
     // Instead of clicking the edit button, and then clicking elsewhere to
     // commit the "empty" shortcut, we want to introduce a separate clear
@@ -277,6 +266,9 @@ export class ExtensionsShortcutInputElement extends
     this.$.input.focus();
   }
 }
+
+// Exported to be used in the autogenerated Lit template file
+export type ShortcutInputElement = ExtensionsShortcutInputElement;
 
 declare global {
   interface HTMLElementTagNameMap {

@@ -1,39 +1,18 @@
-<style include="cr-icons cr-hidden-style">
-  #main {
-    position: relative;
-    width: 200px;
-  }
-
-  #clear {
-    --cr-icon-button-size: 28px;
-    position: absolute;
-    right: 2px;
-  }
-
-  #input {
-    --cr-input-readonly-opacity: 1;
-  }
-
-  :host-context([dir='rtl']) #clear {
-    left: -2px;
-    right: inherit;
-  }
-
-</style>
 <div id="main">
-    <cr-input id="input" readonly="[[readonly_]]"
-      aria-label="[[computeInputAriaLabel_(item, command)]]"
-      placeholder="[[computePlaceholder_(readonly_)]]"
-      invalid="[[getIsInvalid_(error_)]]"
-      error-message="[[getErrorString_(error_,
+  <cr-input id="input" ?readonly="${this.readonly_}"
+      aria-label="${this.computeInputAriaLabel_()}"
+      .placeholder="${this.computePlaceholder_()}"
+      ?invalid="${this.getIsInvalid_()}"
+      .errorMessage="${this.getErrorString_(
           '$i18nPolymer{shortcutIncludeStartModifier}',
           '$i18nPolymer{shortcutTooManyModifiers}',
-          '$i18nPolymer{shortcutNeedCharacter}')]]"
-      value="[[computeText_(shortcut)]]">
+          '$i18nPolymer{shortcutNeedCharacter}')}"
+      .value="${this.computeText_()}">
     <cr-icon-button id="edit"
         title="$i18n{edit}"
-        aria-label="[[computeEditButtonAriaLabel_(item, command)]]"
+        aria-label="${this.computeEditButtonAriaLabel_()}"
         slot="suffix" class="icon-edit no-overlap"
-        on-click="onEditClick_"></cr-icon-button>
+        @click="${this.onEditClick_}">
+    </cr-icon-button>
   </cr-input>
 </div>

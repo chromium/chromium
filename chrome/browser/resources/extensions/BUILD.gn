@@ -77,6 +77,7 @@ build_webui("build") {
     "error_page.css",
     "install_warnings_dialog.css",
     "item.css",
+    "keyboard_shortcuts.css",
     "load_error.css",
     "mv2_deprecation_panel.css",
     "options_dialog.css",
@@ -86,6 +87,7 @@ build_webui("build") {
     "shared_style.css",
     "shared_style_lit.css",
     "shared_vars.css",
+    "shortcut_input.css",
   ]
 
   ts_composite = true

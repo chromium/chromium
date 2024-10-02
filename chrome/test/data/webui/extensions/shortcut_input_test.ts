@@ -11,9 +11,9 @@
 import 'chrome://extensions/extensions.js';
 
 import type {ExtensionsShortcutInputElement} from 'chrome://extensions/extensions.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn, keyUpOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
 import {createExtensionInfo} from './test_util.js';
@@ -37,7 +37,6 @@ suite('ExtensionShortcutInputTest', function() {
     };
     input.item = createExtensionInfo({id: 'itemid'});
     document.body.appendChild(input);
-    flush();
   });
 
   test('Basic', async function() {
@@ -50,33 +49,41 @@ suite('ExtensionShortcutInputTest', function() {
 
     assertTrue(arg);
     testService.reset();
+    await microtasksFinished();
     assertEquals('', field.value);
 
     // Press character.
     keyDownOn(field, 65, []);
+    await microtasksFinished();
     assertEquals('', field.value);
     assertTrue(field.errorMessage!.startsWith('Include'));
     // Add shift to character.
     keyDownOn(field, 65, ['shift']);
+    await microtasksFinished();
     assertEquals('', field.value);
     assertTrue(field.errorMessage!.startsWith('Include'));
     // Press ctrl.
     keyDownOn(field, 17, ['ctrl']);
+    await microtasksFinished();
     assertEquals('', field.value);
     assertEquals('Type a letter', field.errorMessage);
     // Add shift.
     keyDownOn(field, 16, ['ctrl', 'shift']);
+    await microtasksFinished();
     assertEquals('', field.value);
     assertEquals('Type a letter', field.errorMessage);
     // Remove shift.
     keyUpOn(field, 16, ['ctrl']);
+    await microtasksFinished();
     assertEquals('', field.value);
     assertEquals('Type a letter', field.errorMessage);
     // Add alt (ctrl + alt is invalid).
     keyDownOn(field, 18, ['ctrl', 'alt']);
+    await microtasksFinished();
     assertEquals('', field.value);
     // Remove alt.
     keyUpOn(field, 18, ['ctrl']);
+    await microtasksFinished();
     assertEquals('', field.value);
     assertEquals('Type a letter', field.errorMessage);
 
@@ -87,6 +94,7 @@ suite('ExtensionShortcutInputTest', function() {
 
     testService.reset();
     assertDeepEquals(['itemid', 'Command', 'Ctrl+A'], arg);
+    await microtasksFinished();
     assertEquals('Ctrl + A', field.value);
     assertEquals('Ctrl+A', input.shortcut);
 
@@ -94,6 +102,7 @@ suite('ExtensionShortcutInputTest', function() {
     input.$.edit.click();
     assertEquals(input.$.input, input.shadowRoot!.activeElement);
     arg = await testService.whenCalled('updateExtensionCommandKeybinding');
+    await microtasksFinished();
 
     field.blur();
     testService.reset();
@@ -102,6 +111,7 @@ suite('ExtensionShortcutInputTest', function() {
 
     input.$.edit.click();
     arg = await testService.whenCalled('setShortcutHandlingSuspended');
+    await microtasksFinished();
     testService.reset();
     assertTrue(arg);
 
