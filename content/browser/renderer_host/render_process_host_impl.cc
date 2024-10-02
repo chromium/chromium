@@ -4547,6 +4547,19 @@ bool RenderProcessHost::IsProcessLimitReached() {
                  << ": process_count >= GetMaxRendererProcessCount() ("
                  << process_count << " >= " << GetMaxRendererProcessCount()
                  << ") - will try to reuse an existing process";
+    // The Finch experiment is *only* for users who go over the process limit.
+    // This ensures that the experiment only measures the impact on affected
+    // users, as the experiment is configured with "starts_active" set to false
+    // (meaning it only collects data from users who reach this code).
+#if !BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(features::kRemoveRendererProcessLimit)) {
+      size_t sys_limit = GetPlatformProcessLimit();
+      if (sys_limit == kUnknownPlatformProcessLimit) {
+        return false;
+      }
+      return process_count >= sys_limit;
+    }
+#endif
     return true;
   }
 

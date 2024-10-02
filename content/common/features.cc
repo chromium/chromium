@@ -305,6 +305,12 @@ BASE_FEATURE(kHandleChildThreadTypeChangesInBrowser,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// A feature to experiment with removing the soft process limit. See
+// https://crbug.com/369342694.
+BASE_FEATURE(kRemoveRendererProcessLimit,
+             "RemoveRendererProcessLimit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // A feature flag for the memory-backed code cache.
 BASE_FEATURE(kInMemoryCodeCache,
              "InMemoryCodeCache",
