@@ -19649,21 +19649,6 @@
             ]
         }
     ],
-    "RetainOmniboxOnFocus": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "RetainOmniboxOnFocus"
-                    ]
-                }
-            ]
-        }
-    ],
     "RetryGetVideoCaptureDeviceInfos": [
         {
             "platforms": [
