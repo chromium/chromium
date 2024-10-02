@@ -58,6 +58,7 @@ class NoPasskeysBottomSheetContent implements BottomSheetContent {
     private View createContentView() {
         View contentView =
                 LayoutInflater.from(mContext).inflate(R.layout.no_passkeys_bottom_sheet, null);
+        contentView.setOnGenericMotionListener((v, e) -> true); // Filter background interaction.
         contentView.setLayoutDirection(
                 LocalizationUtils.isLayoutRtl()
                         ? View.LAYOUT_DIRECTION_RTL

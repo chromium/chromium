@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.touch_to_fill.no_passkeys;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
@@ -16,6 +17,7 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.text.Spanned;
 import android.text.style.StyleSpan;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
@@ -54,6 +56,7 @@ public class NoPasskeysBottomSheetModuleTest {
 
     @Mock private NoPasskeysBottomSheetBridge.Natives mNativeMock;
     @Mock private BottomSheetController mBottomSheetController;
+    @Mock private MotionEvent mMotionEvent;
 
     private final Context mContext =
             new ContextThemeWrapper(
@@ -122,6 +125,17 @@ public class NoPasskeysBottomSheetModuleTest {
         // {@code destroy()} is called when a sheet gets dismissed by action, tabs, or layouting.
         contentCaptor.getValue().destroy();
         verify(mNativeMock).onDismissed(TEST_NATIVE);
+    }
+
+    @Test
+    public void testConsumesGenericMotionEventsToPreventMouseClicksThroughSheet() {
+        var contentCaptor = ArgumentCaptor.forClass(NoPasskeysBottomSheetContent.class);
+
+        mBridge.show(TEST_ORIGIN);
+        verify(mBottomSheetController).requestShowContent(contentCaptor.capture(), eq(true));
+
+        assertTrue(
+                contentCaptor.getValue().getContentView().dispatchGenericMotionEvent(mMotionEvent));
     }
 
     @Test
