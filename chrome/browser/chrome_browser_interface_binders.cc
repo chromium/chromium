@@ -224,15 +224,12 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/companion/visual_query/visual_query_suggestions_service_factory.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
 #include "chrome/browser/ui/web_applications/sub_apps_service_impl.h"
 #include "chrome/browser/ui/webui/discards/discards.mojom.h"
 #include "chrome/browser/ui/webui/discards/discards_ui.h"
 #include "chrome/browser/ui/webui/discards/site_data.mojom.h"
-#include "chrome/common/companion/visual_query.mojom.h"
-#include "chrome/common/companion/visual_query/features.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
@@ -885,17 +882,6 @@ void BindScreen2xMainContentExtractor(
       frame_host->GetProcess()->GetBrowserContext())
       ->BindMainContentExtractor(std::move(receiver));
 }
-
-void BindVisualSuggestionsModelProvider(
-    content::RenderFrameHost* frame_host,
-    mojo::PendingReceiver<
-        companion::visual_query::mojom::VisualSuggestionsModelProvider>
-        receiver) {
-  companion::visual_query::VisualQuerySuggestionsServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(
-          frame_host->GetProcess()->GetBrowserContext()))
-      ->BindModelReceiver(std::move(receiver));
-}
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -1098,12 +1084,6 @@ void PopulateChromeFrameBinders(
     // primary main frame at a later time (eg. a prerendered page).
     map->Add<blink::mojom::SubAppsService>(
         base::BindRepeating(&web_app::SubAppsServiceImpl::CreateIfAllowed));
-  }
-
-  if (companion::visual_query::features::
-          IsVisualQuerySuggestionsAgentEnabled()) {
-    map->Add<companion::visual_query::mojom::VisualSuggestionsModelProvider>(
-        base::BindRepeating(&BindVisualSuggestionsModelProvider));
   }
 
   if (features::IsPdfOcrEnabled()) {

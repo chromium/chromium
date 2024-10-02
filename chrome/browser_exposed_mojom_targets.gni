@@ -60,7 +60,6 @@ browser_exposed_mojom_targets = [
   "//chrome/common:supervised_user_commands_mojom",
   "//chrome/common/accessibility:mojo_bindings",
   "//chrome/common/cart:mojo_bindings",
-  "//chrome/common/companion:mojo_bindings",
   "//chrome/common/compose:mojo_bindings",
   "//chrome/common/importer:interfaces",
   "//chrome/common/search:mojo_bindings",

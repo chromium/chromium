@@ -12,7 +12,6 @@
 #include "chrome/browser/companion/core/companion_metrics_logger.h"
 #include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/mojom/companion.mojom.h"
-#include "chrome/browser/companion/visual_query/visual_query_classifier_host.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "components/lens/buildflags.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -132,16 +131,6 @@ class CompanionPageHandler
   void DidFinishFindingCqTexts(
       const std::vector<std::pair<std::string, bool>>& text_found_vec);
 
-  // This method is used as the callback that handles visual query results.
-  // Its role is to perform some checks and do a mojom IPC to side panel.
-  void HandleVisualQueryResult(
-      const visual_query::VisualSuggestionsResults results,
-      const VisualSuggestionsMetrics stats);
-
-  // Method responsible for binding and sending VQS results to panel.
-  void SendVisualQueryResult(
-      const visual_query::VisualSuggestionsResults& results);
-
   // The callback that handles the response to the request for the innerHTML of
   // the main frame. Stores the response in |inner_html_| and sends it to the
   // side panel if ready.
@@ -159,9 +148,6 @@ class CompanionPageHandler
   std::unique_ptr<PromoHandler> promo_handler_;
   std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper>
       consent_helper_;
-
-  // Owns the orchestrator for visual query suggestions.
-  std::unique_ptr<visual_query::VisualQueryClassifierHost> visual_query_host_;
 
   // Logs metrics for companion page. Reset when there is a new navigation.
   std::unique_ptr<CompanionMetricsLogger> metrics_logger_;

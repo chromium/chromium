@@ -28,7 +28,6 @@
 #include "chrome/common/open_search_description_document_handler.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/renderer/chrome_content_settings_agent_delegate.h"
-#include "chrome/renderer/companion/visual_query/visual_query_classifier_agent.h"
 #include "chrome/renderer/media/media_feeds.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/lens/lens_metadata.mojom.h"
@@ -197,9 +196,6 @@ ChromeRenderFrameObserver::ChromeRenderFrameObserver(
   SetClientSidePhishingDetection();
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-  SetVisualQueryClassifierAgent();
-#endif
   translate_agent_ =
       new translate::TranslateAgent(render_frame, ISOLATED_WORLD_ID_TRANSLATE);
 }
@@ -618,14 +614,6 @@ void ChromeRenderFrameObserver::SetClientSidePhishingDetection() {
       render_frame(), nullptr);
   phishing_image_embedder_ =
       safe_browsing::PhishingImageEmbedderDelegate::Create(render_frame());
-#endif
-}
-
-void ChromeRenderFrameObserver::SetVisualQueryClassifierAgent() {
-#if !BUILDFLAG(IS_ANDROID)
-  visual_classifier_ =
-      companion::visual_query::VisualQueryClassifierAgent::Create(
-          render_frame());
 #endif
 }
 
