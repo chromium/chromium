@@ -4,6 +4,8 @@
 
 package org.chromium.components.data_sharing;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.base.Callback;
 import org.chromium.base.UserDataHost;
 import org.chromium.url.GURL;
@@ -241,13 +243,10 @@ public interface DataSharingService {
     void getSharedEntitiesPreview(
             GroupToken groupToken, Callback<SharedDataPreviewOrFailureOutcome> callback);
 
-    /**
-     * @return The current instance of {@link DataSharingUIDelegate}.
-     */
+    /** Returns The current instance of {@link DataSharingUIDelegate}. */
     DataSharingUIDelegate getUIDelegate();
 
-    /**
-     * @return The current {@link ServiceStatus} of the service.
-     */
+    /** Returns the current {@link ServiceStatus} of the service. */
+    @NonNull
     ServiceStatus getServiceStatus();
 }

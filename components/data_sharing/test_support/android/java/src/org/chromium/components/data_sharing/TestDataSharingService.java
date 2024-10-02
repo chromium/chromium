@@ -122,6 +122,7 @@ public class TestDataSharingService implements DataSharingService {
 
     @Override
     public ServiceStatus getServiceStatus() {
-        return null;
+        return new ServiceStatus(
+                SigninStatus.NOT_SIGNED_IN, SyncStatus.NOT_SYNCING, CollaborationStatus.DISABLED);
     }
 }

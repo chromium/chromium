@@ -24,6 +24,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
@@ -41,6 +42,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
+import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabSwitcherDelegate;
 import org.chromium.chrome.browser.data_sharing.InstantMessageDelegateFactory;
@@ -142,6 +144,8 @@ import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.data_sharing.ServiceStatus;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.search_engines.SearchEnginesFeatures;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
@@ -714,26 +718,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARE_PAGE_INFO)) {
             PageInfoSharingControllerImpl.getInstance().initialize();
         }
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
-            OneshotSupplier<TabModelSelector> wrappedSelector =
-                    TabModelUtils.onInitializedTabModelSelector(mTabModelSelectorSupplier);
-            SupplierUtils.waitForAll(
-                    () -> {
-                        Profile profile = mProfileSupplier.get();
-                        mInstantMessageDelegateImpl =
-                                InstantMessageDelegateFactory.getForProfile(profile);
-                        TabGroupModelFilter tabGroupModelFilter =
-                                (TabGroupModelFilter)
-                                        wrappedSelector
-                                                .get()
-                                                .getTabModelFilterProvider()
-                                                .getTabModelFilter(/* incognito= */ false);
-                        mInstantMessageDelegateImpl.attachWindow(
-                                mWindowAndroid, tabGroupModelFilter);
-                    },
-                    mProfileSupplier,
-                    wrappedSelector);
-        }
+
+        new OneShotCallback<>(mProfileSupplier, this::maybeInitMessageDelegateOnProfile);
     }
 
     @Override
@@ -1186,6 +1172,25 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mInsetObserver,
                         mActivityLifecycleDispatcher,
                         savedInstanceState);
+    }
+
+    private void maybeInitMessageDelegateOnProfile(Profile profile) {
+        DataSharingService dataSharingService = DataSharingServiceFactory.getForProfile(profile);
+        @NonNull ServiceStatus serviceStatus = dataSharingService.getServiceStatus();
+        if (!serviceStatus.isAllowedToJoin()) return;
+
+        TabModelUtils.onInitializedTabModelSelector(mTabModelSelectorSupplier)
+                .runSyncOrOnAvailable(
+                        selector -> {
+                            mInstantMessageDelegateImpl =
+                                    InstantMessageDelegateFactory.getForProfile(profile);
+                            TabGroupModelFilter tabGroupModelFilter =
+                                    (TabGroupModelFilter)
+                                            selector.getTabModelFilterProvider()
+                                                    .getTabModelFilter(/* incognito= */ false);
+                            mInstantMessageDelegateImpl.attachWindow(
+                                    mWindowAndroid, tabGroupModelFilter);
+                        });
     }
 
     @Override
