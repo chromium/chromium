@@ -20,6 +20,13 @@ class FontList;
 
 namespace enterprise_watermark {
 
+struct WatermarkStyle {
+  int block_width;
+  int text_size;
+  SkColor fill_color;
+  SkColor outline_color;
+};
+
 // Utility function to get height of a watermark block. The block height is
 // going to be the max required height for a single line times the number of
 // line.
@@ -31,12 +38,14 @@ int GetWatermarkBlockHeight(const std::u16string& utf16_text,
 // Creates a RenderText instance with a fill style.
 std::unique_ptr<gfx::RenderText> CreateFillRenderText(
     const gfx::Rect& display_rect,
-    const std::u16string& text);
+    const std::u16string& text,
+    const SkColor color);
 
 // Creates a RenderTextInstance with a stroke style for text outlines.
 std::unique_ptr<gfx::RenderText> CreateOutlineRenderText(
     const gfx::Rect& display_rect,
-    const std::u16string& text);
+    const std::u16string& text,
+    const SkColor color);
 
 // Draws a watermark on the surface represented by the gfx::Canvas instance.
 // In this direct refactor, text_fill and text_outline should have the same

@@ -4,7 +4,11 @@
 
 #include "components/enterprise/watermarking/watermark.h"
 
+#include <algorithm>
+
+#include "base/command_line.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "ui/gfx/canvas.h"
@@ -16,9 +20,13 @@ namespace {
 // UX Requirements:
 constexpr int kWatermarkBlockSpacing = 80;
 constexpr double kRotationAngle = 45;
-constexpr SkColor kFillColor = SkColorSetARGB(0x12, 0x00, 0x00, 0x00);
-constexpr SkColor kOutlineColor = SkColorSetARGB(0x27, 0xff, 0xff, 0xff);
 constexpr float kTextSize = 24.0f;
+constexpr int kDefaultFillOpacity = 0xb;
+constexpr int kDefaultOutlineOpacity = 0x11;
+constexpr SkColor kFillColor =
+    SkColorSetARGB(kDefaultFillOpacity, 0x00, 0x00, 0x00);
+constexpr SkColor kOutlineColor =
+    SkColorSetARGB(kDefaultOutlineOpacity, 0xff, 0xff, 0xff);
 
 gfx::Font WatermarkFont() {
   return gfx::Font(
@@ -45,7 +53,8 @@ gfx::Font::Weight WatermarkFontWeight() {
 }
 
 std::unique_ptr<gfx::RenderText> CreateRenderText(const gfx::Rect& display_rect,
-                                                  const std::u16string& text) {
+                                                  const std::u16string& text,
+                                                  const SkColor color) {
   auto render_text = gfx::RenderText::CreateRenderText();
   render_text->set_clip_to_display_rect(false);
   render_text->SetFontList(enterprise_watermark::WatermarkFontList());
@@ -55,6 +64,7 @@ std::unique_ptr<gfx::RenderText> CreateRenderText(const gfx::Rect& display_rect,
   render_text->SetText(text);
   render_text->SetMultiline(true);
   render_text->SetWordWrapBehavior(gfx::WRAP_LONG_WORDS);
+  render_text->SetColor(color);
   return render_text;
 }
 
@@ -199,19 +209,19 @@ int GetWatermarkBlockHeight(const std::u16string& utf16_text,
 
 std::unique_ptr<gfx::RenderText> CreateFillRenderText(
     const gfx::Rect& display_rect,
-    const std::u16string& text) {
-  auto render_text = CreateRenderText(display_rect, text);
+    const std::u16string& text,
+    const SkColor color) {
+  auto render_text = CreateRenderText(display_rect, text, color);
   render_text->SetFillStyle(cc::PaintFlags::kFill_Style);
-  render_text->SetColor(kFillColor);
   return render_text;
 }
 
 std::unique_ptr<gfx::RenderText> CreateOutlineRenderText(
     const gfx::Rect& display_rect,
-    const std::u16string& text) {
-  auto render_text = CreateRenderText(display_rect, text);
+    const std::u16string& text,
+    const SkColor color) {
+  auto render_text = CreateRenderText(display_rect, text, color);
   render_text->SetFillStyle(cc::PaintFlags::kStroke_Style);
-  render_text->SetColor(kOutlineColor);
   return render_text;
 }
 
@@ -254,9 +264,9 @@ void DrawWatermark(SkCanvas* canvas,
   std::u16string utf16_text = base::UTF8ToUTF16(text);
   gfx::Rect display_rect(0, 0, block_width, 0);
   std::unique_ptr<gfx::RenderText> text_fill =
-      CreateFillRenderText(display_rect, utf16_text);
+      CreateFillRenderText(display_rect, utf16_text, kFillColor);
   std::unique_ptr<gfx::RenderText> text_outline =
-      CreateOutlineRenderText(display_rect, utf16_text);
+      CreateOutlineRenderText(display_rect, utf16_text, kOutlineColor);
 
   int block_height = GetWatermarkBlockHeight(
       utf16_text, text_fill->GetNumLines(), block_width, kTextSize);
