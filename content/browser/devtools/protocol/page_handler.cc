@@ -447,6 +447,19 @@ void GotManifest(protocol::Maybe<std::string> manifest_id,
 
 }  // namespace
 
+struct PageHandler::PendingScreenshotRequest {
+  PendingScreenshotRequest(PageHandler::BitmapEncoder encoder,
+                           std::unique_ptr<CaptureScreenshotCallback> callback)
+      : encoder(std::move(encoder)), callback(std::move(callback)) {}
+
+  PageHandler::BitmapEncoder encoder;
+  std::unique_ptr<CaptureScreenshotCallback> callback;
+  blink::DeviceEmulationParams original_emulation_params;
+  std::optional<blink::web_pref::WebPreferences> original_web_prefs;
+  gfx::Size original_view_size;
+  gfx::Size requested_image_size;
+};
+
 PageHandler::PageHandler(EmulationHandler* emulation_handler,
                          BrowserHandler* browser_handler,
                          bool allow_unsafe_operations,
@@ -1128,19 +1141,19 @@ void PageHandler::CaptureScreenshot(
     return;
   }
 
+  auto pending_request = std::make_unique<PendingScreenshotRequest>(
+      std::move(absl::get<BitmapEncoder>(encoder)), std::move(callback));
+
   // We don't support clip/emulation when capturing from window, bail out.
   if (!from_surface.value_or(true)) {
     if (!is_trusted_) {
-      callback->sendFailure(
+      pending_request->callback->sendFailure(
           Response::ServerError("Only screenshots from surface are allowed."));
       return;
     }
     widget_host->GetSnapshotFromBrowser(
         base::BindOnce(&PageHandler::ScreenshotCaptured,
-                       weak_factory_.GetWeakPtr(), std::move(callback),
-                       std::move(absl::get<BitmapEncoder>(encoder)),
-                       gfx::Size(), gfx::Size(), blink::DeviceEmulationParams(),
-                       std::nullopt),
+                       weak_factory_.GetWeakPtr(), std::move(pending_request)),
         false);
     return;
   }
@@ -1148,16 +1161,19 @@ void PageHandler::CaptureScreenshot(
   // Welcome to the neural net of capturing screenshot while emulating device
   // metrics!
   bool emulation_enabled = emulation_handler_->device_emulation_enabled();
-  blink::DeviceEmulationParams original_params =
+  pending_request->original_emulation_params =
       emulation_handler_->GetDeviceEmulationParams();
+  const blink::DeviceEmulationParams& original_params =
+      pending_request->original_emulation_params;
   blink::DeviceEmulationParams modified_params = original_params;
 
   // Capture original view size if we know we are going to destroy it. We use
   // it in ScreenshotCaptured to restore.
-  gfx::Size original_view_size =
+  const gfx::Size original_view_size =
       emulation_enabled || clip.has_value()
           ? widget_host->GetView()->GetViewBounds().size()
           : gfx::Size();
+  pending_request->original_view_size = original_view_size;
   gfx::Size emulated_view_size = modified_params.view_size;
 
   double dpfactor = 1;
@@ -1201,13 +1217,13 @@ void PageHandler::CaptureScreenshot(
     modified_params.viewport_offset.Scale(widget_host_device_scale_factor);
   }
 
-  std::optional<blink::web_pref::WebPreferences> maybe_original_web_prefs;
   if (capture_beyond_viewport.value_or(false)) {
-    blink::web_pref::WebPreferences original_web_prefs =
+    pending_request->original_web_prefs =
         host_->render_view_host()->GetDelegate()->GetOrCreateWebPreferences();
-    maybe_original_web_prefs = original_web_prefs;
-
+    const blink::web_pref::WebPreferences& original_web_prefs =
+        *pending_request->original_web_prefs;
     blink::web_pref::WebPreferences modified_web_prefs = original_web_prefs;
+
     // Hiding scrollbar is needed to avoid scrollbar artefacts on the
     // screenshot. Details: https://crbug.com/1003629.
     modified_web_prefs.hide_scrollbars = true;
@@ -1238,26 +1254,21 @@ void PageHandler::CaptureScreenshot(
     widget_host->GetView()->SetSize(
         gfx::ScaleToFlooredSize(emulated_view_size, dpfactor));
   }
-  gfx::Size requested_image_size = gfx::Size();
   if (emulation_enabled || clip.has_value()) {
-    if (clip.has_value()) {
-      requested_image_size = gfx::Size(clip->GetWidth(), clip->GetHeight());
-    } else {
-      requested_image_size = emulated_view_size;
-    }
+    const gfx::Size requested_image_size =
+        clip.has_value() ? gfx::Size(clip->GetWidth(), clip->GetHeight())
+                         : emulated_view_size;
     double scale = widget_host_device_scale_factor * dpfactor;
     if (clip.has_value()) {
       scale *= clip->GetScale();
     }
-    requested_image_size = gfx::ScaleToRoundedSize(requested_image_size, scale);
+    pending_request->requested_image_size =
+        gfx::ScaleToRoundedSize(requested_image_size, scale);
   }
 
   widget_host->GetSnapshotFromBrowser(
       base::BindOnce(&PageHandler::ScreenshotCaptured,
-                     weak_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(absl::get<BitmapEncoder>(encoder)),
-                     original_view_size, requested_image_size, original_params,
-                     maybe_original_web_prefs),
+                     weak_factory_.GetWeakPtr(), std::move(pending_request)),
       true);
 }
 
@@ -1493,27 +1504,22 @@ void PageHandler::ScreencastFrameEncoded(
 }
 
 void PageHandler::ScreenshotCaptured(
-    std::unique_ptr<CaptureScreenshotCallback> callback,
-    BitmapEncoder encoder,
-    const gfx::Size& original_view_size,
-    const gfx::Size& requested_image_size,
-    const blink::DeviceEmulationParams& original_emulation_params,
-    const std::optional<blink::web_pref::WebPreferences>&
-        maybe_original_web_prefs,
+    std::unique_ptr<PendingScreenshotRequest> request,
     const gfx::Image& image) {
-  if (original_view_size.width()) {
+  if (request->original_view_size.width()) {
     RenderWidgetHostImpl* widget_host = host_->GetRenderWidgetHost();
-    widget_host->GetView()->SetSize(original_view_size);
-    emulation_handler_->SetDeviceEmulationParams(original_emulation_params);
+    widget_host->GetView()->SetSize(request->original_view_size);
+    emulation_handler_->SetDeviceEmulationParams(
+        request->original_emulation_params);
   }
 
-  if (maybe_original_web_prefs) {
+  if (request->original_web_prefs) {
     host_->render_view_host()->GetDelegate()->SetWebPreferences(
-        maybe_original_web_prefs.value());
+        *request->original_web_prefs);
   }
 
   if (image.IsEmpty()) {
-    callback->sendFailure(
+    request->callback->sendFailure(
         Response::ServerError("Unable to capture screenshot"));
     return;
   }
@@ -1521,18 +1527,18 @@ void PageHandler::ScreenshotCaptured(
   std::vector<uint8_t> encoded_bitmap;
   const SkBitmap& bitmap = *image.ToSkBitmap();
 
-  if (!requested_image_size.IsEmpty() &&
-      (image.Width() != requested_image_size.width() ||
-       image.Height() != requested_image_size.height())) {
+  if (!request->requested_image_size.IsEmpty() &&
+      (image.Width() != request->requested_image_size.width() ||
+       image.Height() != request->requested_image_size.height())) {
     SkBitmap cropped = SkBitmapOperations::CreateTiledBitmap(
-        bitmap, 0, 0, requested_image_size.width(),
-        requested_image_size.height());
-    encoder.Run(cropped, encoded_bitmap);
+        bitmap, 0, 0, request->requested_image_size.width(),
+        request->requested_image_size.height());
+    request->encoder.Run(cropped, encoded_bitmap);
   } else {
-    encoder.Run(bitmap, encoded_bitmap);
+    request->encoder.Run(bitmap, encoded_bitmap);
   }
   // TODO(caseq): send failure if we fail to encode?
-  callback->sendSuccess(Binary::fromVector(std::move(encoded_bitmap)));
+  request->callback->sendSuccess(Binary::fromVector(std::move(encoded_bitmap)));
 }
 
 Response PageHandler::StopLoading() {
