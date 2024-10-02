@@ -83,6 +83,14 @@ message CTLog {
   // State of the log at the time it was made read-only. Should only be set if
   // state is READ_ONLY.
   FinalTreeHead read_only_info = 16;
+
+  enum LogType {
+    LOG_TYPE_UNSPECIFIED = 0;
+    RFC6962 = 1;
+    STATIC_CT_API = 2;
+  }
+  // Type of the log.
+  LogType log_type = 18;
 }
 
 message LogOperator {
