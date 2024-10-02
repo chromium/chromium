@@ -80,8 +80,7 @@ PlusAddressServiceFactory::BuildServiceInstanceFor(
                     base::Unretained(groups_manager))
               : base::BindRepeating(&base::FeatureList::IsEnabled);
 
-  if (auto test_service =
-          tests_hook::GetOverriddenPlusAddressService(profile)) {
+  if (auto test_service = tests_hook::GetOverriddenPlusAddressService()) {
     return test_service;
   }
 

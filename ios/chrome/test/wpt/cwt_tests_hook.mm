@@ -69,7 +69,7 @@ GetOverriddenBulkLeakCheckService() {
   return nullptr;
 }
 std::unique_ptr<plus_addresses::PlusAddressService>
-GetOverriddenPlusAddressService(ProfileIOS* profile) {
+GetOverriddenPlusAddressService() {
   return nullptr;
 }
 std::unique_ptr<password_manager::RecipientsFetcher>

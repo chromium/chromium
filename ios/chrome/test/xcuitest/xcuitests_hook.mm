@@ -82,7 +82,7 @@ GetOverriddenBulkLeakCheckService() {
 }
 
 std::unique_ptr<plus_addresses::PlusAddressService>
-GetOverriddenPlusAddressService(ProfileIOS* profile) {
+GetOverriddenPlusAddressService() {
   return nullptr;
 }
 

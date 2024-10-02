@@ -218,8 +218,7 @@ GetOverriddenBulkLeakCheckService() {
 }
 
 std::unique_ptr<plus_addresses::PlusAddressService>
-GetOverriddenPlusAddressService(ProfileIOS* profile) {
-  // TODO(crbug.com/370495073): Remove `profile` from the parameter.
+GetOverriddenPlusAddressService() {
   return std::make_unique<plus_addresses::FakePlusAddressService>();
 }
 
