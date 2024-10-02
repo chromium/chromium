@@ -60,7 +60,7 @@
   if ((self = [super init])) {
     _browser = browser;
     _syncUserSettings =
-        SyncServiceFactory::GetForBrowserState(_browser->GetProfile())
+        SyncServiceFactory::GetForProfile(_browser->GetProfile())
             ->GetUserSettings();
     _prefService = browser->GetProfile()->GetPrefs();
     _accountInfo = GetPreRestoreIdentity(_prefService);
