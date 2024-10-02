@@ -55,11 +55,11 @@ PrivacySandboxSurveyService::GetSentimentSurveyPsb() {
   return {
       {"Topics enabled",
        pref_service_->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled)},
-      {"Fledge enabled",
+      {"Protected audience enabled",
        pref_service_->GetBoolean(prefs::kPrivacySandboxM1FledgeEnabled)},
       {"Measurement enabled",
        pref_service_->GetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled)},
-      {"Signed In",
+      {"Signed in",
        identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)}};
 }
 

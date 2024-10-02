@@ -25,6 +25,8 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.Collections;
+
 /** Class that controls and manages when and if surveys should be shown. */
 public class PrivacySandboxSurveyController {
     private static final String SENTIMENT_SURVEY_TRIGGER = "privacy-sandbox-sentiment-survey";
@@ -35,6 +37,7 @@ public class PrivacySandboxSurveyController {
     private TabModelSelector mTabModelSelector;
     private MessageDispatcher mMessageDispatcher;
     private Profile mProfile;
+    private PrivacySandboxSurveyBridge mPrivacySandboxSurveyBridge;
     private boolean mHasSeenNtp;
 
     PrivacySandboxSurveyController(
@@ -50,6 +53,7 @@ public class PrivacySandboxSurveyController {
         mTabModelSelector = tabModelSelector;
         mMessageDispatcher = messageDispatcher;
         mProfile = profile;
+        mPrivacySandboxSurveyBridge = new PrivacySandboxSurveyBridge(mProfile);
 
         setSurveyMessageToDefault();
         createTabObserver(activityTabProvider);
@@ -111,12 +115,17 @@ public class PrivacySandboxSurveyController {
                 mActivity.getResources(), mMessage);
     }
 
-    private void onNewTabPage() {
+    private void maybeLaunchSurvey() {
         SurveyClient sentimentSurveyClient = constructSurveyClient(SENTIMENT_SURVEY_TRIGGER);
         if (sentimentSurveyClient == null) {
             return;
         }
-        sentimentSurveyClient.showSurvey(mActivity, mActivityLifecycleDispatcher);
+
+        sentimentSurveyClient.showSurvey(
+                mActivity,
+                mActivityLifecycleDispatcher,
+                mPrivacySandboxSurveyBridge.getPrivacySandboxSentimentSurveyPsb(),
+                Collections.emptyMap());
     }
 
     private void createTabObserver(ActivityTabProvider activityTabProvider) {
@@ -129,7 +138,7 @@ public class PrivacySandboxSurveyController {
                         }
                         if (UrlUtilities.isNtpUrl(tab.getUrl())) {
                             if (mHasSeenNtp) {
-                                onNewTabPage();
+                                maybeLaunchSurvey();
                             }
                             mHasSeenNtp = true;
                         }

@@ -132,9 +132,9 @@ TEST_P(PrivacySandboxSurveyServiceSentimentSurveyPsbTest, FetchesValues) {
 
   std::map<std::string, bool> expected_map = {
       {"Topics enabled", testing::get<0>(GetParam())},
-      {"Fledge enabled", testing::get<1>(GetParam())},
+      {"Protected audience enabled", testing::get<1>(GetParam())},
       {"Measurement enabled", testing::get<2>(GetParam())},
-      {"Signed In", testing::get<3>(GetParam())},
+      {"Signed in", testing::get<3>(GetParam())},
   };
 
   EXPECT_THAT(survey_service()->GetSentimentSurveyPsb(),

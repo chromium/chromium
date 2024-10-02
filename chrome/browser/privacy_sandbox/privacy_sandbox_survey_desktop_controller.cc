@@ -13,7 +13,9 @@ namespace privacy_sandbox {
 
 PrivacySandboxSurveyDesktopController::PrivacySandboxSurveyDesktopController(
     PrivacySandboxSurveyService* survey_service)
-    : survey_service_(survey_service) {}
+    : survey_service_(survey_service) {
+  CHECK(survey_service_);
+}
 PrivacySandboxSurveyDesktopController::
     ~PrivacySandboxSurveyDesktopController() = default;
 
@@ -32,7 +34,11 @@ void PrivacySandboxSurveyDesktopController::MaybeShowSentimentSurvey(
       /*success_callback=*/
       base::BindOnce(
           &PrivacySandboxSurveyDesktopController::OnSentimentSurveyShown,
-          weak_ptr_factory_.GetWeakPtr(), profile));
+          weak_ptr_factory_.GetWeakPtr(), profile),
+      // TODO(crbug.com/346991233): Have failures emit an histogram.
+      /*failure_callback=*/base::DoNothing(),
+      /*product_specific_bits_data=*/survey_service_->GetSentimentSurveyPsb(),
+      /*product_specific_string_data=*/{});
 }
 
 void PrivacySandboxSurveyDesktopController::OnSentimentSurveyShown(

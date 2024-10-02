@@ -20,6 +20,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "privacy_sandbox_survey_desktop_controller_factory.h"
+#include "privacy_sandbox_survey_factory.h"
 
 using ::testing::_;
 
@@ -61,6 +62,10 @@ class PrivacySandboxSurveyDesktopControllerTest : public InProcessBrowserTest {
         browser()->profile());
   }
 
+  PrivacySandboxSurveyService* survey_service() {
+    return PrivacySandboxSurveyFactory::GetForProfile(browser()->profile());
+  }
+
   PrefService* prefs() { return browser()->profile()->GetPrefs(); }
 
   raw_ptr<MockHatsService, DanglingUntriaged> mock_hats_service_;
@@ -92,7 +97,8 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSurveyDesktopControllerLaunchSurveyTest,
 IN_PROC_BROWSER_TEST_F(PrivacySandboxSurveyDesktopControllerLaunchSurveyTest,
                        SurveyLaunchedOnSecondNtp) {
   EXPECT_CALL(*mock_hats_service_,
-              LaunchSurvey(GetSentimentSurveyTriggerId(), _, _, _, _));
+              LaunchSurvey(GetSentimentSurveyTriggerId(), _, _,
+                           survey_service()->GetSentimentSurveyPsb(), _));
 
   browser()->window()->Activate();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
