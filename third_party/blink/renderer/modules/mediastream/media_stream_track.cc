@@ -99,7 +99,6 @@ MediaStreamTrack* MediaStreamTrack::FromTransferredState(
   UserMediaRequest* const request = MakeGarbageCollected<UserMediaRequest>(
       window, user_media_client, UserMediaRequestType::kDisplayMedia, audio,
       video, /*should_prefer_current_tab=*/false,
-      /*auto_select_all_screens=*/false,
       /*capture_controller=*/nullptr,
       MakeGarbageCollected<GetOpenDeviceRequestCallbacks>(),
       IdentifiableSurface());

@@ -928,9 +928,8 @@ void UserMediaProcessor::SetupVideoInput() {
   stream_controls->request_pan_tilt_zoom_permission =
       IsPanTiltZoomPermissionRequested(request->VideoConstraints());
 
-  // TODO(crbug.com/1337788): Clean up naming inconsistency with
-  // auto_select_all_screens.
-  stream_controls->request_all_screens = request->auto_select_all_screens();
+  stream_controls->request_all_screens =
+      request->MediaRequestType() == UserMediaRequestType::kAllScreensMedia;
 
   stream_controls->exclude_self_browser_surface =
       request->exclude_self_browser_surface();

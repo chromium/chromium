@@ -108,7 +108,6 @@ class MODULES_EXPORT UserMediaRequest final
                    MediaConstraints audio,
                    MediaConstraints video,
                    bool should_prefer_current_tab,
-                   bool auto_select_all_screens,
                    CaptureController* capture_controller,
                    Callbacks*,
                    IdentifiableSurface surface);
@@ -198,8 +197,6 @@ class MODULES_EXPORT UserMediaRequest final
   bool suppress_local_audio_playback() const {
     return suppress_local_audio_playback_;
   }
-
-  bool auto_select_all_screens() const { return auto_select_all_screens_; }
 
   // Mark this request as an GetOpenDevice request for initializing a
   // TransferredMediaStreamTrack from the deviced identified by session_id.

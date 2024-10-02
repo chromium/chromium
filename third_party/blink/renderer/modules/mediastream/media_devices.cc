@@ -360,9 +360,6 @@ MediaStreamConstraints* ToMediaStreamConstraints(
   if (source->hasPreferCurrentTab()) {
     constraints->setPreferCurrentTab(source->preferCurrentTab());
   }
-  if (source->hasAutoSelectAllScreens()) {
-    constraints->setAutoSelectAllScreens(source->autoSelectAllScreens());
-  }
   if (source->hasController()) {
     constraints->setController(source->controller());
   }
@@ -630,7 +627,6 @@ ScriptPromise<IDLSequence<MediaStream>> MediaDevices::getAllScreensMedia(
   MediaStreamConstraints* constraints = MediaStreamConstraints::Create();
   constraints->setVideo(
       MakeGarbageCollected<V8UnionBooleanOrMediaTrackConstraints>(true));
-  constraints->setAutoSelectAllScreens(true);
   return SendUserMediaRequest(UserMediaRequestType::kAllScreensMedia, resolver,
                               constraints, exception_state);
 }
@@ -681,15 +677,6 @@ ScriptPromise<MediaStream> MediaDevices::getDisplayMedia(
         exception_state, DOMExceptionCode::kInvalidStateError,
         "getDisplayMedia() requires transient activation (user gesture).",
         UserMediaRequestResult::kInvalidStateError);
-    return promise;
-  }
-
-  if (options->hasAutoSelectAllScreens() && options->autoSelectAllScreens()) {
-    resolver->RecordAndThrowTypeError(
-        exception_state,
-        "The autoSelectAllScreens property is not allowed for usage with "
-        "getDisplayMedia.",
-        UserMediaRequestResult::kInvalidConstraints);
     return promise;
   }
 

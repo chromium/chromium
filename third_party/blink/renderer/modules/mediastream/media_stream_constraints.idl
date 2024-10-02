@@ -27,9 +27,6 @@ dictionary DisplayMediaStreamOptions {
 
     // https://wicg.github.io/prefer-current-tab/#prefer-current-tab
     boolean preferCurrentTab = false;
-    [
-      RuntimeEnabled = GetAllScreensMedia
-    ] boolean autoSelectAllScreens = false;
 
     // https://w3c.github.io/mediacapture-screen-share/#dom-displaymediastreamoptions-controller
     [
@@ -51,7 +48,6 @@ dictionary MediaStreamConstraints {
     (boolean or MediaTrackConstraints) video = false;
     (boolean or MediaTrackConstraints) audio = false;
     boolean preferCurrentTab = false;
-    boolean autoSelectAllScreens = false;
     CaptureController controller;
     SelfCapturePreferenceEnum selfBrowserSurface;
     SystemAudioPreferenceEnum systemAudio;
