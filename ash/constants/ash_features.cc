@@ -1465,6 +1465,13 @@ BASE_FEATURE(kGrowthCampaignsTriggerByRecordEvent,
              "GrowthCampaignsTriggerByRecordEvent",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether the growth nudge's triggering and the nudge widget
+// invisibility and inactivation event should be observed to conditionally
+// cancel the nudge.
+BASE_FEATURE(kGrowthCampaignsObserveTriggeringWidgetChange,
+             "GrowthCampaignsObserveTriggeringWidgetChange",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables internals page of ChromeOS growth framework.
 BASE_FEATURE(kGrowthInternals,
              "GrowthInternals",
@@ -3991,6 +3998,11 @@ bool IsGrowthCampaignsTriggerByEventEnabled() {
 
 bool IsGrowthCampaignsTriggerByRecordEventEnabled() {
   return base::FeatureList::IsEnabled(kGrowthCampaignsTriggerByRecordEvent);
+}
+
+bool IsGrowthCampaignsObserveTriggeringWidgetChangeEnabled() {
+  return base::FeatureList::IsEnabled(
+      kGrowthCampaignsObserveTriggeringWidgetChange);
 }
 
 bool IsGrowthInternalsEnabled() {

@@ -85,6 +85,7 @@ chromium-metrics-reviews@google.com.
   <int value="47" label="Shelf view not available at matching"/>
   <int value="48" label="App icon not shown in hotseat"/>
   <int value="49" label="Record events before campaigns loaded"/>
+  <int value="50" label="Shelf icon not found for anchoring nudge"/>
 </enum>
 
 </enums>

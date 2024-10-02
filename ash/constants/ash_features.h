@@ -503,6 +503,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGrowthCampaignsTriggerByEvent);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGrowthCampaignsTriggerByRecordEvent);
+COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kGrowthCampaignsObserveTriggeringWidgetChange);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kGrowthInternals);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kHomeButtonWithText);
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -1236,6 +1238,8 @@ bool IsGrowthCampaignsTriggerByAppOpenEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGrowthCampaignsTriggerByBrowserEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGrowthCampaignsTriggerByEventEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsGrowthCampaignsObserveTriggeringWidgetChangeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGrowthCampaignsTriggerByRecordEventEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGrowthInternalsEnabled();
