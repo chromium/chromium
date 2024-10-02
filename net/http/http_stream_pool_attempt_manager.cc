@@ -469,7 +469,9 @@ void HttpStreamPool::AttemptManager::OnQuicTaskComplete(
     stream_attempt_delay_timer_.Stop();
     MaybeAttemptConnection();
   } else {
-    MaybeComplete();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&AttemptManager::MaybeComplete,
+                                  weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -682,6 +684,11 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
   }
 
   if (group_->force_quic()) {
+    return;
+  }
+
+  if (CanUseQuic() && quic_task_result_.has_value() &&
+      *quic_task_result_ == OK) {
     return;
   }
 

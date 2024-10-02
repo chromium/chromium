@@ -104,9 +104,7 @@ void HttpStreamPool::QuicTask::MaybeAttempt() {
   int rv = session_attempt_->Start(base::BindOnce(
       &QuicTask::OnSessionAttemptComplete, weak_ptr_factory_.GetWeakPtr()));
   if (rv != ERR_IO_PENDING) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&QuicTask::OnSessionAttemptComplete,
-                                  weak_ptr_factory_.GetWeakPtr(), rv));
+    OnSessionAttemptComplete(rv);
   }
 }
 
