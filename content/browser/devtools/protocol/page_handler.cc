@@ -448,10 +448,14 @@ void GotManifest(protocol::Maybe<std::string> manifest_id,
 }  // namespace
 
 struct PageHandler::PendingScreenshotRequest {
-  PendingScreenshotRequest(PageHandler::BitmapEncoder encoder,
+  PendingScreenshotRequest(base::ScopedClosureRunner capturer_handle,
+                           PageHandler::BitmapEncoder encoder,
                            std::unique_ptr<CaptureScreenshotCallback> callback)
-      : encoder(std::move(encoder)), callback(std::move(callback)) {}
+      : capturer_handle(std::move(capturer_handle)),
+        encoder(std::move(encoder)),
+        callback(std::move(callback)) {}
 
+  base::ScopedClosureRunner capturer_handle;
   PageHandler::BitmapEncoder encoder;
   std::unique_ptr<CaptureScreenshotCallback> callback;
   blink::DeviceEmulationParams original_emulation_params;
@@ -1141,8 +1145,18 @@ void PageHandler::CaptureScreenshot(
     return;
   }
 
+  base::ScopedClosureRunner capturer_handle;
+  if (auto* wc = WebContents::FromRenderFrameHost(host_)) {
+    // Tell page it needs to produce frames even if it doesn't want to (e.g. is
+    // not currently visible).
+    capturer_handle =
+        wc->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/true,
+                                   /*stay_awake=*/true, /*is_activity=*/false);
+  }
+
   auto pending_request = std::make_unique<PendingScreenshotRequest>(
-      std::move(absl::get<BitmapEncoder>(encoder)), std::move(callback));
+      std::move(capturer_handle), std::move(absl::get<BitmapEncoder>(encoder)),
+      std::move(callback));
 
   // We don't support clip/emulation when capturing from window, bail out.
   if (!from_surface.value_or(true)) {
