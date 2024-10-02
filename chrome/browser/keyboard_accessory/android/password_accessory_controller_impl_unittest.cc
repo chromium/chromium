@@ -52,12 +52,10 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/plus_addresses/fake_plus_address_service.h"
 #include "components/plus_addresses/features.h"
-#include "components/plus_addresses/plus_address_test_environment.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/resources/android/theme_resources.h"
 #include "components/security_state/core/security_state.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/webauthn/android/cred_man_support.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
@@ -93,9 +91,7 @@ using password_manager::PasswordManagerInterface;
 using password_manager::PasswordStoreInterface;
 using password_manager::TestPasswordStore;
 using plus_addresses::FakePlusAddressService;
-using plus_addresses::PlusAddressSettingService;
 using plus_addresses::PlusProfile;
-using plus_addresses::test::PlusAddressTestEnvironment;
 using testing::_;
 using testing::ByMove;
 using testing::Eq;
@@ -323,12 +319,8 @@ PasswordForm MakeSavedPassword() {
 }
 
 std::unique_ptr<KeyedService> BuildFakePlusAddressService(
-    PrefService* pref_service,
-    signin::IdentityManager* identity_manager,
-    PlusAddressSettingService* setting_service,
     content::BrowserContext* context) {
-  return std::make_unique<FakePlusAddressService>(
-      pref_service, identity_manager, setting_service);
+  return std::make_unique<FakePlusAddressService>();
 }
 
 }  // namespace
@@ -348,11 +340,7 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
 
     PlusAddressServiceFactory::GetInstance()->SetTestingFactory(
-        GetBrowserContext(),
-        base::BindRepeating(&BuildFakePlusAddressService,
-                            &plus_environment_.pref_service(),
-                            plus_environment_.identity_env().identity_manager(),
-                            &plus_environment_.setting_service()));
+        GetBrowserContext(), base::BindRepeating(&BuildFakePlusAddressService));
 
     NavigateAndCommit(GURL(kExampleSite));
     FocusWebContentsOnMainFrame();
@@ -482,7 +470,6 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
     return driver();
   }
 
-  PlusAddressTestEnvironment plus_environment_;
   password_manager::CredentialCache credential_cache_;
   std::unique_ptr<MockPasswordManagerClient> mock_pwd_manager_client_;
   NiceMock<MockPasswordManagerDriver> mock_driver_;

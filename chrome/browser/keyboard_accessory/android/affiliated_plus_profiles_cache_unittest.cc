@@ -9,9 +9,6 @@
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/plus_addresses/fake_plus_address_service.h"
-#include "components/plus_addresses/plus_address_test_environment.h"
-#include "components/plus_addresses/settings/fake_plus_address_setting_service.h"
-#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,7 +17,6 @@ using autofill::AutofillClient;
 using autofill::TestAutofillClientInjector;
 using autofill::TestContentAutofillClient;
 using plus_addresses::FakePlusAddressService;
-using plus_addresses::FakePlusAddressSettingService;
 using ::testing::Test;
 
 class ObserverMock : public AffiliatedPlusProfilesProvider::Observer {
@@ -31,12 +27,6 @@ class ObserverMock : public AffiliatedPlusProfilesProvider::Observer {
 
 class AffiliatedPlusProfilesCacheTest : public ChromeRenderViewHostTestHarness {
  public:
-  AffiliatedPlusProfilesCacheTest()
-      : plus_address_service_(
-            &plus_environment_.pref_service(),
-            plus_environment_.identity_env().identity_manager(),
-            &plus_environment_.setting_service()) {}
-
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     plus_profiles_cache_ = std::make_unique<AffiliatedPlusProfilesCache>(
@@ -52,7 +42,6 @@ class AffiliatedPlusProfilesCacheTest : public ChromeRenderViewHostTestHarness {
  private:
   TestAutofillClientInjector<TestContentAutofillClient>
       autofill_client_injector_;
-  plus_addresses::test::PlusAddressTestEnvironment plus_environment_;
   FakePlusAddressService plus_address_service_;
   std::unique_ptr<AffiliatedPlusProfilesCache> plus_profiles_cache_;
 };

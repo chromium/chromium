@@ -20,10 +20,8 @@
 #include "components/plus_addresses/fake_plus_address_service.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
-#include "components/plus_addresses/plus_address_test_environment.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/settings/mock_plus_address_setting_service.h"
-#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/web_contents_tester.h"
@@ -77,10 +75,7 @@ class PlusAddressCreationControllerAndroidEnabledTest
         browser_context(),
         base::BindLambdaForTesting([&](content::BrowserContext* context)
                                        -> std::unique_ptr<KeyedService> {
-          return std::make_unique<FakePlusAddressService>(
-              &plus_environment_.pref_service(),
-              plus_environment_.identity_env().identity_manager(),
-              &plus_address_setting_service());
+          return std::make_unique<FakePlusAddressService>();
         }));
     // TODO: crbug.com/322279583 - Use FakePlusAddressSettingService from the
     // PlusAddressTestEnvironment instead.
@@ -116,7 +111,6 @@ class PlusAddressCreationControllerAndroidEnabledTest
 
  private:
   base::test::ScopedFeatureList features_{features::kPlusAddressesEnabled};
-  test::PlusAddressTestEnvironment plus_environment_;
 };
 
 // Tests that accepting the bottomsheet calls Autofill to fill the plus address

@@ -26,12 +26,7 @@ using autofill::Suggestion;
 using autofill::SuggestionType;
 }
 
-FakePlusAddressService::FakePlusAddressService(
-    PrefService* pref_service,
-    signin::IdentityManager* identity_manager,
-    PlusAddressSettingService* setting_service) {
-  // TODO(crbug.com/370495073): Use default constructor.
-}
+FakePlusAddressService::FakePlusAddressService() = default;
 
 FakePlusAddressService::~FakePlusAddressService() = default;
 

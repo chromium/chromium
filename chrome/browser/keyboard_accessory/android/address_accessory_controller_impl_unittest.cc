@@ -33,11 +33,9 @@
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/plus_addresses/fake_plus_address_service.h"
 #include "components/plus_addresses/features.h"
-#include "components/plus_addresses/plus_address_test_environment.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -49,8 +47,6 @@ namespace {
 using autofill::UserInfo;
 using base::ASCIIToUTF16;
 using plus_addresses::FakePlusAddressService;
-using plus_addresses::PlusAddressSettingService;
-using plus_addresses::test::PlusAddressTestEnvironment;
 using testing::_;
 using testing::ByMove;
 using testing::Mock;
@@ -97,12 +93,8 @@ std::unique_ptr<KeyedService> BuildTestPersonalDataManager(
 }
 
 std::unique_ptr<KeyedService> BuildFakePlusAddressService(
-    PrefService* pref_service,
-    signin::IdentityManager* identity_manager,
-    PlusAddressSettingService* setting_service,
     content::BrowserContext* context) {
-  return std::make_unique<FakePlusAddressService>(
-      pref_service, identity_manager, setting_service);
+  return std::make_unique<FakePlusAddressService>();
 }
 
 class MockAutofillClient : public TestContentAutofillClient {
@@ -145,11 +137,7 @@ class AddressAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
 
     PlusAddressServiceFactory::GetInstance()->SetTestingFactory(
-        GetBrowserContext(),
-        base::BindRepeating(&BuildFakePlusAddressService,
-                            &plus_environment_.pref_service(),
-                            plus_environment_.identity_env().identity_manager(),
-                            &plus_environment_.setting_service()));
+        GetBrowserContext(), base::BindRepeating(&BuildFakePlusAddressService));
 
     NavigateAndCommit(GURL(kExampleSite));
     FocusWebContentsOnMainFrame();
@@ -197,7 +185,6 @@ class AddressAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
 
   base::test::ScopedFeatureList features_;
   test::AutofillUnitTestEnvironment test_environment_;
-  PlusAddressTestEnvironment plus_environment_;
   StrictMock<MockManualFillingController> mock_manual_filling_controller_;
   base::MockCallback<AccessoryController::FillingSourceObserver>
       filling_source_observer_;

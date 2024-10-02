@@ -20,9 +20,7 @@
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_service.h"
-#include "components/plus_addresses/plus_address_test_environment.h"
 #include "components/plus_addresses/plus_address_types.h"
-#include "components/plus_addresses/settings/fake_plus_address_setting_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
@@ -69,10 +67,7 @@ class PlusAddressCreationControllerDesktopEnabledTest
 
   std::unique_ptr<KeyedService> PlusAddressServiceTestFactory(
       content::BrowserContext* context) {
-    auto unique_service = std::make_unique<FakePlusAddressService>(
-        &plus_environment_.pref_service(),
-        plus_environment_.identity_env().identity_manager(),
-        &plus_environment_.setting_service());
+    auto unique_service = std::make_unique<FakePlusAddressService>();
     fake_plus_address_service_ = unique_service.get();
     return unique_service;
   }
@@ -81,7 +76,6 @@ class PlusAddressCreationControllerDesktopEnabledTest
   // Ensures that the feature is known to be enabled, such that
   // `PlusAddressServiceFactory` doesn't bail early with a null return.
   base::test::ScopedFeatureList features_{features::kPlusAddressesEnabled};
-  test::PlusAddressTestEnvironment plus_environment_;
   base::HistogramTester histogram_tester_;
   raw_ptr<FakePlusAddressService> fake_plus_address_service_ = nullptr;
 };

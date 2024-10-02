@@ -23,9 +23,7 @@
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/plus_addresses/fake_plus_address_service.h"
 #include "components/plus_addresses/features.h"
-#include "components/plus_addresses/plus_address_test_environment.h"
 #include "components/plus_addresses/plus_address_types.h"
-#include "components/plus_addresses/settings/fake_plus_address_setting_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -37,9 +35,6 @@ using autofill::TestAutofillClientInjector;
 using autofill::TestContentAutofillClient;
 using autofill::mojom::FocusedFieldType;
 using plus_addresses::FakePlusAddressService;
-using plus_addresses::FakePlusAddressSettingService;
-using plus_addresses::PlusAddressSettingService;
-using plus_addresses::test::PlusAddressTestEnvironment;
 using testing::_;
 using testing::AnyNumber;
 using testing::AtLeast;
@@ -73,12 +68,8 @@ std::vector<uint8_t> test_passkey_id() {
 }
 
 std::unique_ptr<KeyedService> BuildFakePlusAddressService(
-    PrefService* pref_service,
-    signin::IdentityManager* identity_manager,
-    PlusAddressSettingService* setting_service,
     content::BrowserContext* context) {
-  return std::make_unique<FakePlusAddressService>(
-      pref_service, identity_manager, setting_service);
+  return std::make_unique<FakePlusAddressService>();
 }
 
 constexpr autofill::FieldRendererId kFocusedFieldId(123);
@@ -100,11 +91,7 @@ class ManualFillingControllerTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
 
     PlusAddressServiceFactory::GetInstance()->SetTestingFactory(
-        GetBrowserContext(),
-        base::BindRepeating(&BuildFakePlusAddressService,
-                            &plus_environment_.pref_service(),
-                            plus_environment_.identity_env().identity_manager(),
-                            &plus_environment_.setting_service()));
+        GetBrowserContext(), base::BindRepeating(&BuildFakePlusAddressService));
 
     EXPECT_CALL(mock_pwd_controller_, RegisterFillingSourceObserver)
         .WillOnce(SaveArg<0>(&pwd_source_observer_));
@@ -162,7 +149,6 @@ class ManualFillingControllerTest : public ChromeRenderViewHostTestHarness {
 
   TestAutofillClientInjector<TestContentAutofillClient>
       autofill_client_injector_;
-  PlusAddressTestEnvironment plus_environment_;
 };
 
 TEST_F(ManualFillingControllerTest, ShowsAccessoryForAutofillOnSearchField) {

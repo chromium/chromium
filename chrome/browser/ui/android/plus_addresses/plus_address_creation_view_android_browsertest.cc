@@ -8,7 +8,6 @@
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_test_util.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/android/plus_addresses/plus_address_creation_controller_android.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -17,7 +16,6 @@
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
-#include "components/plus_addresses/settings/fake_plus_address_setting_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,9 +40,7 @@ class PlusAddressCreationViewAndroidBrowserTest : public AndroidBrowserTest {
 
   std::unique_ptr<KeyedService> PlusAddressServiceTestFactory(
       content::BrowserContext* context) {
-    return std::make_unique<FakePlusAddressService>(
-        profile()->GetPrefs(), IdentityManagerFactory::GetForProfile(profile()),
-        &setting_service_);
+    return std::make_unique<FakePlusAddressService>();
   }
 
  protected:
@@ -57,7 +53,6 @@ class PlusAddressCreationViewAndroidBrowserTest : public AndroidBrowserTest {
   // Ensures that the feature is known to be enabled, such that
   // `PlusAddressServiceFactory` doesn't bail early with a null return.
   base::test::ScopedFeatureList features_{features::kPlusAddressesEnabled};
-  FakePlusAddressSettingService setting_service_;
 };
 
 IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest, OfferUi) {

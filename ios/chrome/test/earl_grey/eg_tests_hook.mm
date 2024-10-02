@@ -219,11 +219,8 @@ GetOverriddenBulkLeakCheckService() {
 
 std::unique_ptr<plus_addresses::PlusAddressService>
 GetOverriddenPlusAddressService(ProfileIOS* profile) {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  return std::make_unique<plus_addresses::FakePlusAddressService>(
-      profile->GetPrefs(), identity_manager,
-      PlusAddressSettingServiceFactory::GetForProfile(profile));
+  // TODO(crbug.com/370495073): Remove `profile` from the parameter.
+  return std::make_unique<plus_addresses::FakePlusAddressService>();
 }
 
 std::unique_ptr<password_manager::RecipientsFetcher>
