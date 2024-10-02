@@ -249,12 +249,6 @@ class NavigationManagerImpl final : public NavigationManager {
 
   // Implementation for corresponding NavigationManager getters.
   NavigationItemImpl* GetPendingItemInCurrentOrRestoredSession() const;
-  // Unlike GetLastCommittedItem(), this method does not return null during
-  // session restoration (and returns last known committed item instead).
-  NavigationItemImpl* GetLastCommittedItemInCurrentOrRestoredSession() const;
-  // Unlike GetLastCommittedItemIndex(), this method does not return -1 during
-  // session restoration (and returns last known committed item index instead).
-  int GetLastCommittedItemIndexInCurrentOrRestoredSession() const;
 
   // Identical to GetItemAtIndex() but returns the underlying NavigationItemImpl
   // instead of the public NavigationItem interface.

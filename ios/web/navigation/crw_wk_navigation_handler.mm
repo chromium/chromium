@@ -53,8 +53,6 @@
 #import "url/gurl.h"
 
 using web::wk_navigation_util::kReferrerHeaderName;
-using web::wk_navigation_util::IsRestoreSessionUrl;
-using web::wk_navigation_util::IsWKInternalUrl;
 
 namespace {
 // Maximum number of errors to store in cert verification errors cache.
@@ -236,9 +234,6 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
           navigationItem];
       if (item) {
         item->SetUserAgentType(userAgentType);
-        if (web::wk_navigation_util::IsRestoreSessionUrl(item->GetURL())) {
-          self.webStateImpl->SetUserAgent(userAgentType);
-        }
       }
     }
 
@@ -560,7 +555,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     }
 
     if (![CRWErrorPageHelper isErrorPageFileURL:webViewURL] &&
-        !IsWKInternalUrl(webViewURL) && context->GetUrl() != webViewURL) {
+        context->GetUrl() != webViewURL) {
       web::NavigationItem* item =
           web::GetItemWithUniqueID(self.navigationManagerImpl, context);
 
@@ -592,9 +587,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   bool exemptedAppSpecificLoad = false;
   bool isBackForward =
       self.pendingNavigationInfo.navigationType == WKNavigationTypeBackForward;
-  bool isRestoringSession = IsRestoreSessionUrl(self.documentURL);
-  exemptedAppSpecificLoad =
-      isBackForward || isRestoringSession || self.webStateImpl->HasWebUI();
+  exemptedAppSpecificLoad = isBackForward || self.webStateImpl->HasWebUI();
 
   if (!web::GetWebClient()->IsAppSpecificURL(webViewURL) ||
       !exemptedAppSpecificLoad) {
@@ -646,8 +639,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   // navigation. WKWebView allows multiple provisional navigations, while
   // Navigation Manager has only one pending navigation.
   if (item) {
-    if (!IsWKInternalUrl(webViewURL) &&
-        !self.pendingNavigationInfo.unsafeRedirect) {
+    if (!self.pendingNavigationInfo.unsafeRedirect) {
       item->SetVirtualURL(webViewURL);
       item->SetURL(webViewURL);
     }
@@ -907,11 +899,9 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 
   // The actual navigation item will not be committed until the native content
   // or WebUI is shown.
-  if (context &&
-      !context->GetUrl().SchemeIs(url::kAboutScheme) &&
-      !IsRestoreSessionUrl(context->GetUrl())) {
+  if (context && !context->GetUrl().SchemeIs(url::kAboutScheme)) {
     [self.delegate webViewHandlerUpdateSSLStatusForCurrentNavigationItem:self];
-    if (!context->IsLoadingErrorPage() && !IsRestoreSessionUrl(webViewURL)) {
+    if (!context->IsLoadingErrorPage()) {
       [self setLastCommittedNavigationItemTitle:webView.title];
     }
   }
@@ -963,7 +953,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
       webViewURL = currentWKItemURL;
     }
 
-    if (!IsWKInternalUrl(currentWKItemURL) && currentWKItemURL == webViewURL &&
+    if (currentWKItemURL == webViewURL &&
         currentWKItemURL != context->GetUrl() &&
         item == self.navigationManagerImpl->GetLastCommittedItem() &&
         item->GetURL().DeprecatedGetOriginAsURL() ==
@@ -1382,11 +1372,6 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 
   if (ui::PageTransitionTypeIncludingQualifiersIs(
           pageTransition, ui::PAGE_TRANSITION_AUTO_BOOKMARK)) {
-    return YES;
-  }
-
-  // If the session is being restored, allow the navigation.
-  if (IsRestoreSessionUrl(self.documentURL)) {
     return YES;
   }
 
@@ -1936,13 +1921,12 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
       failedNavigationURLFromErrorPageFileURL:backForwardGURL];
   bool isSameURLFromWebClient = web::GetWebClient()->IsPointingToSameDocument(
       failedURL, net::GURLWithNSURL(errorPage.failedNavigationURL));
-  // There are 4 possible scenarios here:
+  // There are 3 possible scenarios here:
   //   1. Current nav item is an error page for failed URL;
   //   2. Current nav item has a failed URL. This may happen when
   //      back/forward/refresh on a loaded page;
   //   3. Current nav item is an irrelevant page.
-  //   4. Current nav item is a session restoration.
-  // For 1, 2 and 4, load an empty string to remove existing JS code. The URL is
+  // For 1 and 2, load an empty string to remove existing JS code. The URL is
   // also updated to the URL of the page that failed to allow back/forward
   // navigations even on navigations originating from pushstate. See
   // crbug.com/1153261.
@@ -1953,8 +1937,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
       ![errorPage
           isErrorPageFileURLForFailedNavigationURL:backForwardItem.URL] &&
       !isSameURLFromWebClient &&
-      ![backForwardItem.URL isEqual:errorPage.failedNavigationURL] &&
-      !web::wk_navigation_util::IsRestoreSessionUrl(backForwardItem.URL)) {
+      ![backForwardItem.URL isEqual:errorPage.failedNavigationURL]) {
     errorNavigation = [webView loadFileURL:errorPage.errorPageFileURL
                    allowingReadAccessToURL:errorPage.errorPageFileURL];
   } else {

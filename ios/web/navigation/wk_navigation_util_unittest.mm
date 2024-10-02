@@ -85,15 +85,6 @@ TEST_F(WKNavigationUtilTest, GetSafeItemRange) {
   EXPECT_EQ(kMaxSessionSize, size);
 }
 
-TEST_F(WKNavigationUtilTest, IsNotRestoreSessionUrl) {
-  EXPECT_FALSE(IsRestoreSessionUrl(GURL()));
-  EXPECT_FALSE(IsRestoreSessionUrl([NSURL URLWithString:@""]));
-  EXPECT_FALSE(IsRestoreSessionUrl(GURL("file://somefile")));
-  EXPECT_FALSE(IsRestoreSessionUrl([NSURL URLWithString:@"file://somefile"]));
-  EXPECT_FALSE(IsRestoreSessionUrl(GURL("http://www.1.com")));
-  EXPECT_FALSE(IsRestoreSessionUrl([NSURL URLWithString:@"http://www.1.com"]));
-}
-
 // Tests that app specific urls and non-placeholder about: urls do not need a
 // user agent type, but normal urls and placeholders do.
 TEST_F(WKNavigationUtilTest, URLNeedsUserAgentType) {

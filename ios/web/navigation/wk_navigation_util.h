@@ -48,22 +48,9 @@ int GetSafeItemRange(int last_committed_item_index,
                      int* offset,
                      int* size);
 
-// Returns true if `url` is a placeholder URL or restore_session.html URL.
-bool IsWKInternalUrl(const GURL& url);
-bool IsWKInternalUrl(NSURL* url);
-
 // Returns true if `url` is an app specific url or an about:// scheme
 // non-placeholder url.
 bool URLNeedsUserAgentType(const GURL& url);
-
-// Returns true if the base URL of `url` is restore_session.html.
-bool IsRestoreSessionUrl(const GURL& url);
-bool IsRestoreSessionUrl(NSURL* url);
-
-// Extracts the URL encoded in the URL fragment of `restore_session_url` to
-// `target_url` and returns true. If the URL fragment does not have a
-// "targetUrl=" prefix, returns false.
-bool ExtractTargetURL(const GURL& restore_session_url, GURL* target_url);
 
 }  // namespace wk_navigation_util
 }  // namespace web

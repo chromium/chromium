@@ -30,9 +30,6 @@
 #import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
 
-using web::wk_navigation_util::ExtractTargetURL;
-using web::wk_navigation_util::IsRestoreSessionUrl;
-using web::wk_navigation_util::IsWKInternalUrl;
 using web::wk_navigation_util::kReferrerHeaderName;
 using web::wk_navigation_util::URLNeedsUserAgentType;
 
@@ -234,24 +231,13 @@ enum class BackForwardNavigationType {
       [self.navigationHandler pageTransitionFromNavigationType:navigationType];
 
   WKBackForwardListItem* currentItem = self.webView.backForwardList.currentItem;
-  if (currentItem) {
-    // Target redirect pages should default to a RELOAD transition, because
-    // transition state is not persisted on restore.
-    GURL targetURL;
-    if (navigationType == WKNavigationTypeOther &&
-        IsRestoreSessionUrl(net::GURLWithNSURL(currentItem.URL)) &&
-        ExtractTargetURL(net::GURLWithNSURL(currentItem.URL), &targetURL) &&
-        targetURL == URL) {
-      DCHECK(ui::PageTransitionIsRedirect(transition));
-      transition = ui::PAGE_TRANSITION_RELOAD;
-    } else if (navigationType == WKNavigationTypeBackForward) {
-      web::NavigationItem* navigationItem = [[CRWNavigationItemHolder
-          holderForBackForwardListItem:self.webView.backForwardList.currentItem]
-          navigationItem];
-      if (navigationItem) {
-        transition = ui::PageTransitionFromInt(
-            transition | navigationItem->GetTransitionType());
-      }
+  if (currentItem && navigationType == WKNavigationTypeBackForward) {
+    web::NavigationItem* navigationItem = [[CRWNavigationItemHolder
+        holderForBackForwardListItem:self.webView.backForwardList.currentItem]
+        navigationItem];
+    if (navigationItem) {
+      transition = ui::PageTransitionFromInt(
+          transition | navigationItem->GetTransitionType());
     }
   }
 
@@ -334,7 +320,7 @@ enum class BackForwardNavigationType {
   // If WKWebView.loading is used for WebState::IsLoading, do not set it for
   // renderer-initated navigation otherwise WebState::IsLoading will remain true
   // after hash change in the web page.
-  if (!IsWKInternalUrl(requestURL) && !rendererInitiated) {
+  if (!rendererInitiated) {
     self.webState->SetIsLoading(true);
   }
 
@@ -359,12 +345,6 @@ enum class BackForwardNavigationType {
   // not notify WebStateObservers. If `context` is nullptr, don't skip
   // placeholder URLs because this may be the only opportunity to update
   // `isLoading` for native view reload.
-
-  if (context && IsRestoreSessionUrl(context->GetUrl()))
-    return;
-
-  if (IsRestoreSessionUrl(net::GURLWithNSURL(self.webView.URL)))
-    return;
 
   if (context && context->IsLoadingErrorPage())
     return;
@@ -478,8 +458,7 @@ enum class BackForwardNavigationType {
   // Do not attempt to navigate to file URLs that are typed into the
   // omnibox.
   if (navigationURL.SchemeIsFile() &&
-      !web::GetWebClient()->IsAppSpecificURL(virtualURL) &&
-      !IsRestoreSessionUrl(navigationURL)) {
+      !web::GetWebClient()->IsAppSpecificURL(virtualURL)) {
     [self.delegate webRequestControllerStopLoading:self];
     return;
   }

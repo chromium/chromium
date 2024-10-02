@@ -44,23 +44,12 @@ int GetSafeItemRange(int last_committed_item_index,
   return last_committed_item_index - *offset;
 }
 
-bool IsWKInternalUrl(const GURL& url) {
-  return IsRestoreSessionUrl(url);
-}
-
-bool IsWKInternalUrl(NSURL* url) {
-  return IsRestoreSessionUrl(url);
-}
-
 bool URLNeedsUserAgentType(const GURL& url) {
   if (web::GetWebClient()->IsAppSpecificURL(url))
     return false;
 
   if (url.SchemeIs(url::kAboutScheme))
     return false;
-
-  if (url.SchemeIs(url::kFileScheme) && IsRestoreSessionUrl(url))
-    return true;
 
   if (url.SchemeIs(url::kFileScheme) &&
       [CRWErrorPageHelper isErrorPageFileURL:url]) {
@@ -71,19 +60,6 @@ bool URLNeedsUserAgentType(const GURL& url) {
     return false;
 
   return true;
-}
-
-bool IsRestoreSessionUrl(const GURL& url) {
-  return false;
-}
-
-bool IsRestoreSessionUrl(NSURL* url) {
-  return false;
-}
-
-bool ExtractTargetURL(const GURL& restore_session_url, GURL* target_url) {
-  // TODO:(crbug.com/40276021): Cleanup this unused function.
-  return false;
 }
 
 }  // namespace wk_navigation_util
