@@ -264,6 +264,7 @@ bool IsToolbarPinningEnabled();
 
 BASE_DECLARE_FEATURE(kEnterpriseProfileBadging);
 BASE_DECLARE_FEATURE(kEnterpriseProfileBadgingPolicies);
+BASE_DECLARE_FEATURE(kEnterpriseManagementDisclaimerUsesCustomLabel);
 BASE_DECLARE_FEATURE(kEnterpriseUpdatedProfileCreationScreen);
 
 BASE_DECLARE_FEATURE(kWebUITabStrip);

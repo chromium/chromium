@@ -492,9 +492,7 @@ void BuildProfileTitleAndSubtitle(Browser* browser,
   }
 
   if (!management_label.empty()) {
-    auto link = std::make_unique<views::Link>(management_label,
-                                              views::style::CONTEXT_LABEL,
-                                              views::style::STYLE_BODY_5);
+    auto link = std::make_unique<views::Link>(management_label);
     link->SetCallback(base::BindRepeating(
         [](Browser* browser) {
           base::UmaHistogramEnumeration(

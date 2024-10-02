@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/management/management_ui.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
 #include "chrome/common/pref_names.h"
@@ -439,13 +440,16 @@ std::optional<std::string> GetDeviceManagerIdentity() {
   return connector->GetEnterpriseDomainManager();
 #else
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  std::string custom_management_label =
-      g_browser_process->local_state()
-          ? g_browser_process->local_state()->GetString(
-                prefs::kEnterpriseCustomLabel)
-          : std::string();
-  if (!custom_management_label.empty()) {
-    return custom_management_label;
+  if (base::FeatureList::IsEnabled(
+          features::kEnterpriseManagementDisclaimerUsesCustomLabel)) {
+    std::string custom_management_label =
+        g_browser_process->local_state()
+            ? g_browser_process->local_state()->GetString(
+                  prefs::kEnterpriseCustomLabel)
+            : std::string();
+    if (!custom_management_label.empty()) {
+      return custom_management_label;
+    }
   }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   // The device is managed as
@@ -473,10 +477,13 @@ std::optional<std::string> GetAccountManagerIdentity(Profile* profile) {
     return std::nullopt;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  std::string custom_management_label =
-      profile->GetPrefs()->GetString(prefs::kEnterpriseCustomLabel);
-  if (!custom_management_label.empty()) {
-    return custom_management_label;
+  if (base::FeatureList::IsEnabled(
+          features::kEnterpriseManagementDisclaimerUsesCustomLabel)) {
+    std::string custom_management_label =
+        profile->GetPrefs()->GetString(prefs::kEnterpriseCustomLabel);
+    if (!custom_management_label.empty()) {
+      return custom_management_label;
+    }
   }
 #endif
 

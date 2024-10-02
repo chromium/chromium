@@ -398,6 +398,13 @@ BASE_FEATURE(kEnterpriseProfileBadgingPolicies,
              "EnterpriseProfileBadgingPolicies",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables showing the EnterpriseCustomLabel` instead of the cloud policy
+// manager in the managed disclaimer "Managed by..." in the profile and app
+// menus.
+BASE_FEATURE(kEnterpriseManagementDisclaimerUsesCustomLabel,
+             "EnterpriseManagementDisclaimerUsesCustomLabel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnterpriseUpdatedProfileCreationScreen,
              "EnterpriseUpdatedProfileCreationScreen",
              base::FEATURE_DISABLED_BY_DEFAULT);
