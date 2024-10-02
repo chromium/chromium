@@ -29,8 +29,7 @@ void BookmarkEditor::Show(gfx::NativeWindow parent_window,
                           Configuration configuration,
                           OnSaveCallback on_save_callback) {
   auto editor = std::make_unique<BookmarkEditorView>(
-      profile, details.parent_node, details, configuration,
-      std::move(on_save_callback));
+      profile, details, configuration, std::move(on_save_callback));
   editor->Show(parent_window);
   editor.release();  // BookmarkEditorView is self-deleting
 }

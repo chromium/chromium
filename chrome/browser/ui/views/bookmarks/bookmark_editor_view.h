@@ -74,7 +74,6 @@ class BookmarkEditorView : public BookmarkEditor,
   };
 
   BookmarkEditorView(Profile* profile,
-                     const bookmarks::BookmarkNode* parent,
                      const EditDetails& details,
                      BookmarkEditor::Configuration configuration,
                      BookmarkEditor::OnSaveCallback on_save_callback);
@@ -240,7 +239,7 @@ class BookmarkEditorView : public BookmarkEditor,
 
   // Initial parent to select. Is only used if |details_.existing_node| is
   // NULL.
-  raw_ptr<const bookmarks::BookmarkNode> parent_;
+  raw_ptr<const bookmarks::BookmarkNode> initial_parent_;
 
   const EditDetails details_;
 
