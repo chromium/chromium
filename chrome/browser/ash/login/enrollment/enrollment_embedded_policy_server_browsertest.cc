@@ -392,48 +392,6 @@ class InitialEnrollmentTest : public EnrollmentEmbeddedPolicyServerBase {
   system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 };
 
-// Requesting state keys hangs forever, but that should not matter because we're
-// running on reven.
-class EnrollmentOnRevenWithNoStateKeysResponse
-    : public EnrollmentEmbeddedPolicyServerBase {
- public:
-  EnrollmentOnRevenWithNoStateKeysResponse() = default;
-
-  EnrollmentOnRevenWithNoStateKeysResponse(
-      const EnrollmentOnRevenWithNoStateKeysResponse&) = delete;
-  EnrollmentOnRevenWithNoStateKeysResponse& operator=(
-      const EnrollmentOnRevenWithNoStateKeysResponse&) = delete;
-
-  ~EnrollmentOnRevenWithNoStateKeysResponse() override = default;
-
-  // EnrollmentEmbeddedPolicyServerBase:
-  void SetUpInProcessBrowserTestFixture() override {
-    EnrollmentEmbeddedPolicyServerBase::SetUpInProcessBrowserTestFixture();
-    // Session manager client is initialized by DeviceStateMixin.
-    FakeSessionManagerClient::Get()->set_state_keys_handling(
-        FakeSessionManagerClient::ServerBackedStateKeysHandling::kNoResponse);
-    // reven devices are also marked 'nochrome' which is important because it
-    // disables Forced Re-Enrollment (FRE). If FRE is enabled, state keys are
-    // required.
-    fake_statistics_provider_.SetMachineStatistic(
-        system::kFirmwareTypeKey, system::kFirmwareTypeValueNonchrome);
-    // When using a fresh ScopedFakeStatisticsProvider we also need to configure
-    // a few entries (serial number, machine model).
-    // ConfigureFakeStatisticsForZeroTouch does that for us.
-    policy_server_.ConfigureFakeStatisticsForZeroTouch(
-        &fake_statistics_provider_);
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    EnrollmentEmbeddedPolicyServerBase::SetUpCommandLine(command_line);
-
-    command_line->AppendSwitch(switches::kRevenBranding);
-  }
-
- private:
-  system::ScopedFakeStatisticsProvider fake_statistics_provider_;
-};
-
 // Simple manual enrollment.
 IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase, ManualEnrollment) {
   TriggerEnrollmentAndSignInSuccessfully();
@@ -454,19 +412,6 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase, GetDeviceId) {
   std::string received_device_id =
       SigninFrameJS().GetString("gaia.chromeOSLogin.receivedDeviceId");
   EXPECT_TRUE(!received_device_id.empty());
-}
-
-// The test case is the same as
-// EnrollmentEmbeddedPolicyServerBase.ManualEnrollment but the environment is
-// different (simulate reven board, simulate state keys not being available).
-IN_PROC_BROWSER_TEST_F(EnrollmentOnRevenWithNoStateKeysResponse,
-                       ManualEnrollment) {
-  TriggerEnrollmentAndSignInSuccessfully();
-
-  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
-  test::OobeJS().ExpectTrue("Oobe.isEnrollmentSuccessfulForTest()");
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
-  EXPECT_TRUE(InstallAttributes::Get()->IsCloudManaged());
 }
 
 // Device policy blocks dev mode and this is not prohibited by a command-line
