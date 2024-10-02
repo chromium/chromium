@@ -16739,6 +16739,8 @@ from previous Chrome versions.
   <int value="-1471353813" label="AddToHomescreenIPH:disabled"/>
   <int value="-1471021059"
       label="OmniboxUIExperimentShowSuggestionFavicons:disabled"/>
+  <int value="-1469989557"
+      label="SegmentationPlatformComposePromotion:enabled"/>
   <int value="-1469555275"
       label="VmCameraMicIndicatorsAndNotifications:enabled"/>
   <int value="-1469536698" label="ChromeHomeDoodle:enabled"/>
@@ -23189,6 +23191,8 @@ from previous Chrome versions.
   <int value="1193940165" label="NotificationPermissionBottomSheet:disabled"/>
   <int value="1194345470" label="EnableExternalDisplayHDR10Mode:disabled"/>
   <int value="1194496204" label="NewWallpaperPicker:enabled"/>
+  <int value="1194538482"
+      label="SegmentationPlatformComposePromotion:disabled"/>
   <int value="1194624684" label="NewTabSearchEngineUrlAndroid:enabled"/>
   <int value="1194896796" label="PdfHonorJsContentSettings:disabled"/>
   <int value="1194964049" label="AutofillFixOfferInIncognito:enabled"/>

@@ -8347,6 +8347,11 @@ const char kComposePoliteNudgeDescription[] =
     "Uses polite announcements to alert the user that a compose popup is "
     "available to interact with.";
 
+const char kComposeSegmentationPromotionName[] =
+    "Compose Segmentation Promotion";
+const char kComposeSegmentationPromotionDescription[] =
+    "Enables the segmentation platfrom for the Compose proactive nudge";
+
 const char kComposeSelectionNudgeName[] = "Compose Selection Nudge";
 const char kComposeSelectionNudgeDescription[] =
     "Enables nudge on selection for Compose";

@@ -4862,6 +4862,9 @@ extern const char kComposeProactiveNudgeDescription[];
 extern const char kComposePoliteNudgeName[];
 extern const char kComposePoliteNudgeDescription[];
 
+extern const char kComposeSegmentationPromotionName[];
+extern const char kComposeSegmentationPromotionDescription[];
+
 extern const char kComposeSelectionNudgeName[];
 extern const char kComposeSelectionNudgeDescription[];
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
