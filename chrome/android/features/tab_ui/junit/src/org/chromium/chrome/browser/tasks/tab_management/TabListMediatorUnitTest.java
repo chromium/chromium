@@ -2830,10 +2830,14 @@ public class TabListMediatorUnitTest {
                 .getDomainAndRegistry(eq(NEW_URL), anyBoolean());
 
         doReturn(new GURL(NEW_URL)).when(mTab1).getUrl();
+
+        var oldFetcher = mModel.get(POSITION1).model.get(TabProperties.THUMBNAIL_FETCHER);
         mTabObserverCaptor.getValue().onUrlUpdated(mTab1);
 
         assertEquals(mNewDomain, mModel.get(POSITION1).model.get(TabProperties.URL_DOMAIN));
         assertEquals(mTab2Domain, mModel.get(POSITION2).model.get(TabProperties.URL_DOMAIN));
+        assertNotEquals(
+                oldFetcher, mModel.get(POSITION1).model.get(TabProperties.THUMBNAIL_FETCHER));
     }
 
     @Test
@@ -2854,11 +2858,14 @@ public class TabListMediatorUnitTest {
 
         // Update URL_DOMAIN for mTab1.
         doReturn(new GURL(NEW_URL)).when(mTab1).getUrl();
+        var oldFetcher = mModel.get(POSITION1).model.get(TabProperties.THUMBNAIL_FETCHER);
         mTabObserverCaptor.getValue().onUrlUpdated(mTab1);
 
         assertEquals(
                 mNewDomain + ", " + mTab2Domain,
                 mModel.get(POSITION1).model.get(TabProperties.URL_DOMAIN));
+        var newFetcher = mModel.get(POSITION1).model.get(TabProperties.THUMBNAIL_FETCHER);
+        assertNotEquals(oldFetcher, newFetcher);
 
         // Update URL_DOMAIN for mTab2.
         doReturn(new GURL(NEW_URL)).when(mTab2).getUrl();
@@ -2867,6 +2874,8 @@ public class TabListMediatorUnitTest {
         assertEquals(
                 mNewDomain + ", " + mNewDomain,
                 mModel.get(POSITION1).model.get(TabProperties.URL_DOMAIN));
+        var newestFetcher = mModel.get(POSITION1).model.get(TabProperties.THUMBNAIL_FETCHER);
+        assertNotEquals(newFetcher, newestFetcher);
     }
 
     @Test
@@ -2887,6 +2896,7 @@ public class TabListMediatorUnitTest {
         doReturn(mNewDomain)
                 .when(mUrlUtilitiesJniMock)
                 .getDomainAndRegistry(eq(NEW_URL), anyBoolean());
+        var oldFetcher = mModel.get(POSITION1).model.get(TabProperties.THUMBNAIL_FETCHER);
 
         // Update URL_DOMAIN for mTab1.
         doReturn(new GURL(NEW_URL)).when(mTab1).getUrl();
@@ -2894,6 +2904,10 @@ public class TabListMediatorUnitTest {
 
         assertEquals(mNewDomain, mModel.get(POSITION1).model.get(TabProperties.URL_DOMAIN));
         assertEquals(mTab2Domain, mModel.get(POSITION2).model.get(TabProperties.URL_DOMAIN));
+        var newFetcher = mModel.get(POSITION1).model.get(TabProperties.THUMBNAIL_FETCHER);
+        assertNotEquals(oldFetcher, newFetcher);
+
+        oldFetcher = mModel.get(POSITION2).model.get(TabProperties.THUMBNAIL_FETCHER);
 
         // Update URL_DOMAIN for mTab2.
         doReturn(new GURL(NEW_URL)).when(mTab2).getUrl();
@@ -2901,6 +2915,9 @@ public class TabListMediatorUnitTest {
 
         assertEquals(mNewDomain, mModel.get(POSITION1).model.get(TabProperties.URL_DOMAIN));
         assertEquals(mNewDomain, mModel.get(POSITION2).model.get(TabProperties.URL_DOMAIN));
+
+        newFetcher = mModel.get(POSITION2).model.get(TabProperties.THUMBNAIL_FETCHER);
+        assertNotEquals(oldFetcher, newFetcher);
     }
 
     @Test

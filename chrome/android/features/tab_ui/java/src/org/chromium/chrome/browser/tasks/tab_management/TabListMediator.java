@@ -564,19 +564,25 @@ class TabListMediator implements TabListNotificationHandler {
 
                     int index = mModel.indexFromId(updatedTab.getId());
 
+                    @Nullable Tab tab = null;
+                    @Nullable PropertyModel model = null;
                     if (index != TabModel.INVALID_TAB_INDEX) {
-                        mModel.get(index)
-                                .model
-                                .set(TabProperties.URL_DOMAIN, getDomainForTab(updatedTab));
+                        tab = updatedTab;
+                        model = mModel.get(index).model;
                     } else if (mActionsOnAllRelatedTabs) {
                         @Nullable
                         Pair<Integer, Tab> indexAndTab =
                                 getIndexAndTabForRootId(updatedTab.getRootId());
-                        if (indexAndTab == null) return;
-                        Tab tab = indexAndTab.second;
-                        PropertyModel model = mModel.get(indexAndTab.first).model;
-
+                        if (indexAndTab != null) {
+                            tab = indexAndTab.second;
+                            model = mModel.get(indexAndTab.first).model;
+                        }
+                    }
+                    if (tab != null && model != null) {
                         model.set(TabProperties.URL_DOMAIN, getDomainForTab(tab));
+                        // Changing URL will result in a thumbnail invalidation if the on-disk
+                        // thumbnail doesn't match.
+                        updateThumbnailFetcher(model, tab.getId());
                     }
                 }
             };
