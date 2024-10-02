@@ -1938,9 +1938,10 @@ VideoFrame::ScopedMapping::~ScopedMapping() {
 }
 
 uint8_t* VideoFrame::ScopedMapping::Memory(uint32_t plane_index) {
-  return static_cast<uint8_t*>(gpu_memory_buffer_
-                                   ? gpu_memory_buffer_->memory(plane_index)
-                                   : scoped_mapping_->Memory(plane_index));
+  return static_cast<uint8_t*>(
+      gpu_memory_buffer_
+          ? gpu_memory_buffer_->memory(plane_index)
+          : scoped_mapping_->GetMemoryForPlane(plane_index).data());
 }
 
 size_t VideoFrame::ScopedMapping::Stride(uint32_t plane_index) {
