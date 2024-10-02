@@ -56,10 +56,12 @@ import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.ViewAssertion;
 import androidx.test.espresso.contrib.RecyclerViewActions;
+import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -1544,6 +1546,89 @@ public class TabSwitcherLayoutTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
+    public void testUndoGroupMergeInTabSwitcher_GroupToGroupNonAdjacent_TabsAreSelected() {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
+        createTabs(cta, false, 5);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 5);
+
+        // Get the next suggested color id.
+        TabGroupModelFilter filter =
+                (TabGroupModelFilter)
+                        cta.getTabModelSelectorSupplier()
+                                .get()
+                                .getTabModelFilterProvider()
+                                .getCurrentTabModelFilter();
+        int nextSuggestedColorId1 = TabGroupColorUtils.getNextSuggestedColorId(filter);
+
+        // Merge last two tabs into a group.
+        TabModel normalTabModel = cta.getTabModelSelector().getModel(false);
+        List<Tab> tabGroup =
+                new ArrayList<>(
+                        Arrays.asList(normalTabModel.getTabAt(3), normalTabModel.getTabAt(4)));
+        createTabGroup(cta, false, tabGroup);
+        verifyTabSwitcherCardCount(cta, 4);
+
+        // Assert default color 1 was set properly.
+        assertEquals(
+                nextSuggestedColorId1,
+                filter.getTabGroupColor(normalTabModel.getTabAt(4).getRootId()));
+
+        // Get the next suggested color id.
+        int nextSuggestedColorId2 =
+                TabGroupColorUtils.getNextSuggestedColorId(
+                        (TabGroupModelFilter)
+                                cta.getTabModelSelectorSupplier()
+                                        .get()
+                                        .getTabModelFilterProvider()
+                                        .getCurrentTabModelFilter());
+
+        // Merge first two tabs into a group.
+        List<Tab> tabGroup2 =
+                new ArrayList<>(
+                        Arrays.asList(normalTabModel.getTabAt(0), normalTabModel.getTabAt(1)));
+        createTabGroup(cta, false, tabGroup2);
+        verifyTabSwitcherCardCount(cta, 3);
+
+        // Assert default color 2 was set properly.
+        assertEquals(
+                nextSuggestedColorId2,
+                filter.getTabGroupColor(normalTabModel.getTabAt(1).getRootId()));
+
+        // Verify the 2nd tab group is selected.
+        verifyItemSelectedAtPosition(2);
+
+        // Merge the two tab groups into a group.
+        List<Tab> tabGroup3 =
+                new ArrayList<>(
+                        Arrays.asList(normalTabModel.getTabAt(0), normalTabModel.getTabAt(3)));
+        createTabGroup(cta, false, tabGroup3);
+        assertTrue(
+                snackbarManager.getCurrentSnackbarForTesting().getController()
+                        instanceof UndoGroupSnackbarController);
+
+        // Assert default color 2 was set as the overall merged group color.
+        assertEquals(
+                nextSuggestedColorId2,
+                filter.getTabGroupColor(normalTabModel.getTabAt(3).getRootId()));
+
+        // After the merge, the tab group which was merged should now be selected.
+        verifyItemSelectedAtPosition(0);
+
+        // Undo merge in tab switcher.
+        verifyTabSwitcherCardCount(cta, 2);
+        assertEquals("4", snackbarManager.getCurrentSnackbarForTesting().getTextForTesting());
+        CriteriaHelper.pollInstrumentationThread(TabUiTestHelper::verifyUndoBarShowingAndClickUndo);
+        verifyTabSwitcherCardCount(cta, 3);
+
+        // After the undo, the original tab group should be selected.
+        verifyItemSelectedAtPosition(2);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     public void testUndoGroupMergeInTabSwitcher_PostMergeGroupTitleCommit() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
@@ -1879,6 +1964,31 @@ public class TabSwitcherLayoutTest {
                 () -> {
                     mModalDialogManager.dismissAllDialogs(DialogDismissalCause.UNKNOWN);
                 });
+    }
+
+    private void verifyItemSelectedAtPosition(int position) {
+        onView(withId(R.id.tab_list_recycler_view))
+                .check(
+                        matches(
+                                RecyclerViewMatcherUtils.atPosition(
+                                        position,
+                                        new BoundedMatcher<View, TabGridView>(TabGridView.class) {
+
+                                            @Override
+                                            protected boolean matchesSafely(
+                                                    TabGridView selectableTabGridView) {
+
+                                                return TabUiTestHelper.isTabViewSelected(
+                                                        selectableTabGridView);
+                                            }
+
+                                            @Override
+                                            public void describeTo(Description description) {
+                                                description.appendText(
+                                                        "has selected view at position "
+                                                                + position);
+                                            }
+                                        })));
     }
 
     private TabGroupModelFilter getTabGroupModelFilter() {

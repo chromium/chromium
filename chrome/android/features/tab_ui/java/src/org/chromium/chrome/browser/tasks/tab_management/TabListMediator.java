@@ -1943,12 +1943,6 @@ class TabListMediator implements TabListNotificationHandler {
         model.set(TabProperties.TAB_CARD_LABEL_DATA, model.get(TabProperties.TAB_CARD_LABEL_DATA));
 
         if (mTabActionState != TabActionState.SELECTABLE) {
-            model.set(
-                    TabProperties.IS_SELECTED,
-                    TabModelUtils.getCurrentTabId(
-                                    mCurrentTabModelFilterSupplier.get().getTabModel())
-                            == tab.getId());
-
             updateDescriptionString(tab, model);
             updateActionButtonDescriptionString(tab, model);
         }
