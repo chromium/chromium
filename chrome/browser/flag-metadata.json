@@ -6457,7 +6457,7 @@
   },
   {
     "name": "omnibox-actions-in-suggest",
-    "owners": [ "ender@chromium.org", "chrome-mobile-search@google.com" ],
+    "owners": [ "ender@google.com", "chrome-mobile-search@google.com" ],
     "expiry_milestone": 130
   },
   {
@@ -6512,7 +6512,7 @@
   },
   {
     "name": "omnibox-grouping-framework-non-zps",
-    "owners": ["stkhapugin@chromium.org", "manukh@chromium.org", "mahmadi@chromium.org", "ender@chromium.org", "chrome-desktop-search@google.com" ],
+    "owners": ["stkhapugin@chromium.org", "manukh@chromium.org", "mahmadi@chromium.org", "ender@google.com", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 130
   },
   {
@@ -6537,12 +6537,12 @@
   },
   {
     "name": "omnibox-local-history-zero-suggest-beyond-ntp",
-    "owners": [ "mahmadi@chromium.org", "ender@chromium.org", "stkhapugin@chromium.org", "chrome-omnibox-team@google.com" ],
+    "owners": [ "mahmadi@chromium.org", "ender@google.com", "stkhapugin@chromium.org", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 130
   },
   {
     "name": "omnibox-max-url-matches",
-    "owners": [ "orinj@chromium.org", "ender@chromium.org", "chrome-omnibox-team@google.com" ],
+    "owners": [ "orinj@chromium.org", "ender@google.com", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 150
   },
   {

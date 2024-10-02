@@ -2702,7 +2702,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Omnibox.InvalidMatch" enum="MatchResult"
     expires_after="2025-09-01">
-  <owner>ender@chromium.org</owner>
+  <owner>ender@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
     Recorded every time AutocompleteController.java interacts with
@@ -2760,7 +2760,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Omnibox.RefineActionUsage" enum="RefineActionUsage"
     expires_after="2025-09-01">
-  <owner>ender@chromium.org</owner>
+  <owner>ender@google.com</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>
     Records interactions with the Search Refine button, differentiating by
@@ -2777,7 +2777,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Omnibox.SearchActivity.ActivityPresent"
     enum="BooleanPresent" expires_after="2025-09-01">
-  <owner>ender@chromium.org</owner>
+  <owner>ender@google.com</owner>
   <summary>
     Records whether intent is updating an already present activity. For the most
     part the expected value here is 'false', indicating that the intent was
@@ -2791,7 +2791,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Omnibox.SearchActivity.IntentOrigin"
     enum="SearchActivityIntentOrigin" expires_after="2025-09-01">
-  <owner>ender@chromium.org</owner>
+  <owner>ender@google.com</owner>
   <summary>
     Record the origin of an intent (i.e. from where the SearchActivity was
     called). Recorded once per intent.
@@ -2800,7 +2800,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Omnibox.SearchActivity.LaunchedWithQuery"
     enum="Boolean" expires_after="2025-09-01">
-  <owner>ender@chromium.org</owner>
+  <owner>ender@google.com</owner>
   <summary>
     Records whether intent used to launch / update SearchActivity carried an
     (optional) User Query. Recorded once per intent.
@@ -2810,7 +2810,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Android.Omnibox.SearchActivity.NavigationTargetType{IntentOrigin}"
     enum="UrlTargetType" expires_after="2025-09-01">
-  <owner>ender@chromium.org</owner>
+  <owner>ender@google.com</owner>
   <summary>
     Records the intended navigation search target type for every navigation
     initiated from the SearchActivity.
@@ -2824,7 +2824,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Omnibox.SearchActivity.ReferrerValid"
     enum="BooleanValid" expires_after="2025-09-01">
-  <owner>ender@chromium.org</owner>
+  <owner>ender@google.com</owner>
   <summary>
     Records whether Intent Referrer field was valid for Searches initiated from
     SearchActivity. Recorded only when IntentOrigin is &quot;Custom Tab&quot;.
@@ -2834,7 +2834,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Omnibox.SearchActivity.RequestedSearchType"
     enum="SearchActivitySearchType" expires_after="2025-09-01">
-  <owner>ender@chromium.org</owner>
+  <owner>ender@google.com</owner>
   <summary>
     Record the Search type requested from an Intent. Recorded once per intent.
   </summary>
@@ -2843,7 +2843,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Android.Omnibox.SearchActivity.SessionTerminationReason{IntentOrigin}"
     enum="SearchActivityTerminationReason" expires_after="2025-09-01">
-  <owner>ender@chromium.org</owner>
+  <owner>ender@google.com</owner>
   <summary>
     Records the reason SearchActivity was closed.
 
@@ -2885,7 +2885,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Omnibox.SuggestionList.LayoutTime2" units="ms"
     expires_after="2025-09-01">
-  <owner>ender@chromium.org</owner>
+  <owner>ender@google.com</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>
@@ -2910,7 +2910,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Omnibox.SuggestionList.LayoutTime3" units="ms"
     expires_after="2025-09-01">
-  <owner>ender@chromium.org</owner>
+  <owner>ender@google.com</owner>
   <owner>pnoland@chromium.org</owner>
   <owner>gangwu@chromium.org</owner>
   <summary>
@@ -2933,7 +2933,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Omnibox.SuggestionList.MeasureTime2" units="ms"
     expires_after="2025-09-01">
-  <owner>ender@chromium.org</owner>
+  <owner>ender@google.com</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>
@@ -2961,7 +2961,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Omnibox.SuggestionList.MeasureTime3" units="ms"
     expires_after="2025-09-01">
-  <owner>ender@chromium.org</owner>
+  <owner>ender@google.com</owner>
   <owner>pnoland@chromium.org</owner>
   <owner>gangwu@chromium.org</owner>
   <summary>
@@ -3021,7 +3021,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Omnibox.SuggestionsListScrolled.{PageClass}"
     enum="Boolean" expires_after="2025-09-01">
-  <owner>ender@chromium.org</owner>
+  <owner>ender@google.com</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>
     For every interaction with the Omnibox, this metric records whether the user
@@ -3063,7 +3063,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Omnibox.SuggestionView.CreateTime2" units="ms"
     expires_after="2025-09-01">
-  <owner>ender@chromium.org</owner>
+  <owner>ender@google.com</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>
@@ -3086,7 +3086,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Omnibox.SuggestionView.CreateTime3" units="ms"
     expires_after="2025-09-01">
-  <owner>ender@chromium.org</owner>
+  <owner>ender@google.com</owner>
   <owner>pnoland@chromium.org</owner>
   <owner>gangwu@chromium.org</owner>
   <summary>
@@ -3185,7 +3185,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Omnibox.UsedSuggestionFromCache" enum="Boolean"
     expires_after="2025-09-01">
-  <owner>ender@chromium.org</owner>
+  <owner>ender@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
     Records whether users interacted with suggestion originating from Java
