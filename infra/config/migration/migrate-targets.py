@@ -85,7 +85,7 @@ def _per_test_modifications(
       for key, value in modifications.items():
         match key:
           case ('args' | 'ci_only' | 'experiment_percentage'
-                | 'retry_only_failed_tests'):
+                | 'isolate_profile_data' | 'retry_only_failed_tests'):
             mixin_builder[key] = _to_starlark_value(value)
 
           case 'swarming':
