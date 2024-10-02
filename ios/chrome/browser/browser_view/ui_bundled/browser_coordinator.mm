@@ -28,6 +28,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/profile_metrics/browser_profile_type.h"
 #import "components/safe_browsing/core/common/features.h"
+#import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
@@ -203,6 +204,8 @@
 #import "ios/chrome/browser/tabs/ui_bundled/tab_strip_legacy_coordinator.h"
 #import "ios/chrome/browser/text_fragments/ui_bundled/text_fragments_coordinator.h"
 #import "ios/chrome/browser/text_zoom/ui_bundled/text_zoom_coordinator.h"
+#import "ios/chrome/browser/tips_manager/model/tips_manager_ios.h"
+#import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
 #import "ios/chrome/browser/tips_notifications/coordinator/enhanced_safe_browsing_promo_coordinator.h"
 #import "ios/chrome/browser/tips_notifications/coordinator/lens_promo_coordinator.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
@@ -2013,6 +2016,15 @@ enum class ToolbarKind {
     DCHECK(translateManager);
     translateManager->ShowTranslateUI(/*auto_translate=*/true,
                                       /*triggered_from_menu=*/true);
+  }
+
+  // Records the usage of Google Translate. This notifies the Tips Manager,
+  // which may trigger tips or guidance related to translation features.
+  if (IsSegmentationTipsManagerEnabled()) {
+    TipsManagerIOS* tipsManager = TipsManagerIOSFactory::GetForProfile(profile);
+
+    tipsManager->NotifySignal(
+        segmentation_platform::tips_manager::signals::kUsedGoogleTranslation);
   }
 }
 

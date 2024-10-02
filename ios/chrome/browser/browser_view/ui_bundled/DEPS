@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/trusted_vault/trusted_vault_server_constants.h",
   "+ios/chrome/browser/app_launcher/model",
   "+ios/chrome/browser/app_store_rating/ui_bundled/features.h",
   "+ios/chrome/browser/autofill/model",
@@ -11,7 +12,6 @@ include_rules = [
   "+ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h",
   "+ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h",
   "+ios/chrome/browser/contextual_panel",
-  "+components/trusted_vault/trusted_vault_server_constants.h",
   "+ios/chrome/browser/crash_report/model/crash_keys_helper.h",
   "+ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_coordinator.h",
   "+ios/chrome/browser/default_browser/model/utils.h",
@@ -20,6 +20,7 @@ include_rules = [
   "+ios/chrome/browser/docking_promo/coordinator/docking_promo_coordinator.h",
   "+ios/chrome/browser/download/model",
   "+ios/chrome/browser/download/ui_bundled",
+  "+ios/chrome/browser/drive_file_picker/coordinator/root_drive_file_picker_coordinator.h",
   "+ios/chrome/browser/feature_engagement/model",
   "+ios/chrome/browser/find_bar/ui_bundled",
   "+ios/chrome/browser/find_in_page/model",
@@ -33,13 +34,15 @@ include_rules = [
   "+ios/chrome/browser/itunes_urls/model/itunes_urls_handler_tab_helper.h",
   "+ios/chrome/browser/keyboard/ui_bundled/key_command_actions.h",
   "+ios/chrome/browser/lens/model/lens_tab_helper.h",
-  "+ios/chrome/browser/lens_overlay/coordinator/lens_overlay_coordinator.h",
   "+ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h",
+  "+ios/chrome/browser/lens_overlay/coordinator/lens_overlay_coordinator.h",
+  "+ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h",
   "+ios/chrome/browser/metrics/model",
   "+ios/chrome/browser/mini_map/ui_bundled/mini_map_coordinator.h",
   "+ios/chrome/browser/ntp/model",
-  "+ios/chrome/browser/overlays/ui_bundled/overlay_container_coordinator.h",
+  "+ios/chrome/browser/ntp/ui_bundled",
   "+ios/chrome/browser/overlays/model/public/overlay_presenter.h",
+  "+ios/chrome/browser/overlays/ui_bundled/overlay_container_coordinator.h",
   "+ios/chrome/browser/overscroll_actions/model/overscroll_actions_tab_helper.h",
   "+ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h",
   "+ios/chrome/browser/parcel_tracking",
@@ -67,6 +70,7 @@ include_rules = [
   "+ios/chrome/browser/tabs/ui_bundled",
   "+ios/chrome/browser/text_fragments/ui_bundled/text_fragments_coordinator.h",
   "+ios/chrome/browser/text_zoom/ui_bundled/text_zoom_coordinator.h",
+  "+ios/chrome/browser/tips_manager/model",
   "+ios/chrome/browser/tips_notifications/coordinator",
   "+ios/chrome/browser/translate/model/chrome_ios_translate_client.h",
   "+ios/chrome/browser/ui",
@@ -78,16 +82,13 @@ include_rules = [
   "+ios/chrome/browser/web_state_list/model",
   "+ios/chrome/browser/webui",
   "+ios/chrome/browser/window_activities/model/window_activity_helpers.h",
-  "+ios/chrome/browser/drive_file_picker/coordinator/root_drive_file_picker_coordinator.h",
-  "+ios/chrome/browser/ntp/ui_bundled",
-  "+ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h",
 ]
 
 specific_include_rules = {
-  "key_commands_provider_unittest\.mm": [
-    "+ios/web/find_in_page/java_script_find_in_page_manager_impl.h",
-  ],
   "browser_view_controller_egtest\.mm": [
     "+ios/web/public/test/http_server",
+  ],
+  "key_commands_provider_unittest\.mm": [
+    "+ios/web/find_in_page/java_script_find_in_page_manager_impl.h",
   ],
 }
