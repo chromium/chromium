@@ -70,7 +70,10 @@ public class PageInfoTrackingProtectionController extends PageInfoPreferenceSubp
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
         rowParams.visible = delegate.isSiteSettingsAvailable();
         rowParams.title = mTitle;
-        rowParams.iconResId = R.drawable.ic_eye_crossed;
+        rowParams.iconResId =
+                delegate.shouldShowTrackingProtectionBrandedUI()
+                        ? R.drawable.ic_eye_crossed
+                        : R.drawable.permission_cookie;
         rowParams.decreaseIconSize = true;
         rowParams.clickCallback = this::launchSubpage;
         mRowView.setParams(rowParams);
