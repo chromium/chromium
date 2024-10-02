@@ -1570,6 +1570,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.SyncablePrefIncomingIncrementalUpdate"
+    enum="SyncablePref" expires_after="2025-09-30">
+  <owner>ankushkush@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    This is recorded everytime a remote incremental update is received for a
+    syncable pref. This does not take into account whether the pref exists
+    locally or if has the same value.
+  </summary>
+</histogram>
+
 <histogram name="Sync.SyncablePrefValueChanged" enum="SyncablePref"
     expires_after="2025-02-10">
   <owner>ankushkush@google.com</owner>

@@ -13,6 +13,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -81,30 +82,30 @@ const char kOsPriorityPrefName[] = "os_priority_pref";
 // Assigning an id of 0 to all the test prefs.
 const TestSyncablePrefsDatabase::PrefsMap kSyncablePrefsDatabase = {
     {kStringPrefName,
-     {0, syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
+     {1, syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
     {kListPrefName,
-     {0, syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
+     {2, syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
     {kMergeableListPrefName,
-     {0, syncer::PREFERENCES, PrefSensitivity::kNone,
+     {3, syncer::PREFERENCES, PrefSensitivity::kNone,
       MergeBehavior::kMergeableListWithRewriteOnUpdate}},
     {kMergeableDictPrefName,
-     {0, syncer::PREFERENCES, PrefSensitivity::kNone,
+     {4, syncer::PREFERENCES, PrefSensitivity::kNone,
       MergeBehavior::kMergeableDict}},
     {kDefaultCharsetPrefName,
-     {0, syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
+     {5, syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
     {kBrowserPriorityPrefName,
-     {0, syncer::PRIORITY_PREFERENCES, PrefSensitivity::kNone,
+     {6, syncer::PRIORITY_PREFERENCES, PrefSensitivity::kNone,
       MergeBehavior::kNone}},
     {kBrowserPrefName,
-     {0, syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
+     {7, syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
     {kBrowserPriorityPrefName,
-     {0, syncer::PRIORITY_PREFERENCES, PrefSensitivity::kNone,
+     {8, syncer::PRIORITY_PREFERENCES, PrefSensitivity::kNone,
       MergeBehavior::kNone}},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {kOsPrefName,
-     {0, syncer::OS_PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
+     {9, syncer::OS_PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
     {kOsPriorityPrefName,
-     {0, syncer::OS_PRIORITY_PREFERENCES, PrefSensitivity::kNone,
+     {10, syncer::OS_PRIORITY_PREFERENCES, PrefSensitivity::kNone,
       MergeBehavior::kNone}},
 #endif
 };
@@ -664,6 +665,41 @@ TEST_F(PrefServiceSyncableMergeTest, ShouldIgnoreUpdatesToNotSyncablePrefs) {
       pref_sync_service_->IsPrefSyncedForTesting(kUnsyncedPreferenceName));
   EXPECT_THAT(GetPreferenceValue(kUnsyncedPreferenceName).GetString(),
               Eq(kUnsyncedPreferenceDefaultValue));
+}
+
+using PrefServiceSyncableMetricsTest = PrefServiceSyncableMergeTest;
+
+TEST_F(PrefServiceSyncableMetricsTest, RecordRemoteIncrementalChange) {
+  constexpr std::string_view kHistogramName =
+      "Sync.SyncablePrefIncomingIncrementalUpdate";
+
+  InitWithSyncDataTakeOutput({}, nullptr);
+
+  base::HistogramTester tester;
+
+  // Remote incremental updates.
+  syncer::SyncChangeList update;
+  update.push_back(MakeRemoteChange(kStringPrefName,
+                                    base::Value(base::Value::Type::STRING),
+                                    SyncChange::ACTION_DELETE));
+  update.push_back(MakeRemoteChange(kMergeableListPrefName,
+                                    base::Value(base::Value::Type::LIST),
+                                    SyncChange::ACTION_ADD));
+  update.push_back(MakeRemoteChange(kMergeableDictPrefName,
+                                    base::Value(base::Value::Type::DICT),
+                                    SyncChange::ACTION_UPDATE));
+
+  pref_sync_service_->ProcessSyncChanges(FROM_HERE, update);
+
+  // Updates for the three syncable prefs were recorded.
+  tester.ExpectTotalCount(kHistogramName, /*expected_count=*/3);
+  tester.ExpectBucketCount(kHistogramName,
+                           /*sample=*/1, /*expected_count=*/1);
+  tester.ExpectBucketCount(kHistogramName,
+                           /*sample=*/3,
+                           /*expected_count=*/1);
+  tester.ExpectBucketCount(kHistogramName,
+                           /*sample=*/4, /*expected_count=*/1);
 }
 
 TEST_F(PrefServiceSyncableTest, FailModelAssociation) {

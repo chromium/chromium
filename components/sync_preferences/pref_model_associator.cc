@@ -335,6 +335,13 @@ std::optional<syncer::ModelError> PrefModelAssociator::ProcessSyncChanges(
       continue;
     }
 
+    if (client_) {
+      base::UmaHistogramSparse("Sync.SyncablePrefIncomingIncrementalUpdate",
+                               client_->GetSyncablePrefsDatabase()
+                                   .GetSyncablePrefMetadata(pref_name)
+                                   ->syncable_pref_id());
+    }
+
     if (sync_change.change_type() == syncer::SyncChange::ACTION_DELETE) {
       user_prefs_->RemoveValue(pref_name,
                                pref_service_->GetWriteFlags(pref_name));
