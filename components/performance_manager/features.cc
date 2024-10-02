@@ -142,7 +142,7 @@ BASE_FEATURE(kUrgentPageDiscarding,
 
 BASE_FEATURE(kCPUMeasurementInFreezingPolicy,
              "CPUMeasurementInFreezingPolicy",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Note: These params are associated with `kCPUMeasurementInFreezingPolicy`
 // instead of `kFreezingOnBatterySaver`, to allow retrieving the value without
@@ -173,7 +173,7 @@ BASE_FEATURE(kFreezingOnBatterySaverForTesting,
 
 BASE_FEATURE(kResourceAttributionIncludeOrigins,
              "ResourceAttributionIncludeOrigins",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSeamlessRenderFrameSwap,
              "SeamlessRenderFrameSwap",
