@@ -35,7 +35,7 @@
 #include "extensions/shell/browser/shell_navigation_ui_data.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #endif
 
@@ -118,20 +118,12 @@ bool ShellExtensionsBrowserClient::AreExtensionsDisabledForContext(
   return false;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 std::string ShellExtensionsBrowserClient::GetUserIdHashFromContext(
     content::BrowserContext* context) {
   if (!ash::LoginState::IsInitialized())
     return "";
   return ash::LoginState::Get()->primary_user_hash();
-}
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool ShellExtensionsBrowserClient::IsFromMainProfile(
-    content::BrowserContext* context) {
-  // AppShell only supports single context.
-  return true;
 }
 #endif
 

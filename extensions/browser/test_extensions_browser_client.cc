@@ -22,7 +22,7 @@
 #include "extensions/browser/test_runtime_api_delegate.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #endif
 
@@ -128,20 +128,13 @@ bool TestExtensionsBrowserClient::AreExtensionsDisabledForContext(
   return false;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 std::string TestExtensionsBrowserClient::GetUserIdHashFromContext(
     content::BrowserContext* context) {
   if (context != main_context_ || !ash::LoginState::IsInitialized()) {
     return "";
   }
   return ash::LoginState::Get()->primary_user_hash();
-}
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool TestExtensionsBrowserClient::IsFromMainProfile(
-    content::BrowserContext* context) {
-  return context == main_context_;
 }
 #endif
 

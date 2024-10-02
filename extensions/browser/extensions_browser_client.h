@@ -200,16 +200,11 @@ class ExtensionsBrowserClient {
   virtual bool AreExtensionsDisabledForContext(
       content::BrowserContext* context) = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Returns a user id hash from |context| or an empty string if no hash could
   // be extracted.
   virtual std::string GetUserIdHashFromContext(
       content::BrowserContext* context) = 0;
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Returns if a browser |context| belongs to the main profile or not.
-  virtual bool IsFromMainProfile(content::BrowserContext* context) = 0;
 #endif
 
   // Returns true if |context| corresponds to a guest session.

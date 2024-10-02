@@ -710,30 +710,18 @@ source_set("browser_sources") {
     frameworks = [ "CoreServices.framework" ]
   }
 
-  if (is_chromeos_ash) {
-    deps += [
-      "//chrome/browser/ash/crosapi:browser_util",
-      "//chromeos/ash/components/login/login_state",
-    ]
-  }
-
   if (is_chromeos) {
     sources += [
       "api/clipboard/clipboard_api.cc",
       "api/clipboard/clipboard_api.h",
     ]
     deps += [
+      "//chrome/browser/ash/crosapi:browser_util",
+      "//chromeos/ash/components/login/login_state",
       "//chromeos/constants",
       "//chromeos/dbus/permission_broker",
       "//components/prefs:prefs",
       "//ui/base/clipboard",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/startup",
     ]
   }
 
@@ -801,7 +789,7 @@ source_set("test_support") {
     "//ui/base/idle:idle",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "api/feedback_private/mock_feedback_service.cc",
       "api/feedback_private/mock_feedback_service.h",
@@ -982,13 +970,6 @@ source_set("unit_tests") {
   }
 
   if (is_chromeos) {
-    deps += [
-      "//chromeos/constants",
-      "//chromeos/crosapi/mojom",
-    ]
-  }
-
-  if (is_chromeos_ash) {
     sources += [
       "api/audio/audio_device_id_calculator_unittest.cc",
       "api/audio/audio_service_utils_unittest.cc",
@@ -1023,6 +1004,8 @@ source_set("unit_tests") {
       "//chromeos/ash/components/network:test_support",
       "//chromeos/ash/components/standalone_browser",
       "//chromeos/ash/components/standalone_browser:test_support",
+      "//chromeos/constants",
+      "//chromeos/crosapi/mojom",
       "//chromeos/dbus/permission_broker",
       "//chromeos/dbus/power",
       "//components/account_id",
@@ -1032,10 +1015,6 @@ source_set("unit_tests") {
       "//components/user_manager:test_support",
       "//extensions/shell:app_shell_lib",
     ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/startup" ]
   }
 
   data = [
@@ -1109,7 +1088,7 @@ if (enable_extensions) {
 
     public_deps = [ "//content/test:test_support" ]
 
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       sources += [
         "api/audio/audio_apitest_chromeos.cc",
         "api/cec_private/cec_private_ash_apitest.cc",

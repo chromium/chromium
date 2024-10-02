@@ -22,7 +22,7 @@ using AppWindowBrowserTest = PlatformAppBrowserTest;
 // at all, so the test may fail on certain window managers.
 // TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_FrameInsetsForDefaultFrame DISABLED_FrameInsetsForDefaultFrame
 #else
 #define MAYBE_FrameInsetsForDefaultFrame FrameInsetsForDefaultFrame
@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowBrowserTest, DraggableFramelessWindow) {
   EXPECT_FALSE(draggable_region->isEmpty());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // Disabled due to flake. https://crbug.com/1416579
 IN_PROC_BROWSER_TEST_F(AppWindowBrowserTest,
@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowBrowserTest,
       app_window->web_contents()->GetRenderWidgetHostView());
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 

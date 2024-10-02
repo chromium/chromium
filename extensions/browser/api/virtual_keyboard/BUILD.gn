@@ -23,7 +23,7 @@ source_set("virtual_keyboard") {
     "//extensions/common/api",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//ui/base/ime/ash" ]
   }
 

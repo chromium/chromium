@@ -31,11 +31,6 @@
 #include "components/prefs/testing_pref_service.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/startup/browser_init_params.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace extensions {
 
 // Class that implements the binding of a new Renderer mojom interface and
@@ -545,15 +540,8 @@ class RendererStartupHelperTestCaptivePortalPopupWindow
   RendererStartupHelperTestCaptivePortalPopupWindow() = default;
   ~RendererStartupHelperTestCaptivePortalPopupWindow() override = default;
   void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     feature_list_.InitAndEnableFeature(
         chromeos::features::kCaptivePortalPopupWindow);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-    crosapi::mojom::BrowserInitParamsPtr init_params =
-        chromeos::BrowserInitParams::GetForTests()->Clone();
-    init_params->is_captive_portal_popup_window_enabled = true;
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     RendererStartupHelperTest::SetUp();
     static_cast<TestingPrefServiceSimple*>(pref_service())

@@ -38,7 +38,7 @@
 #include "components/prefs/pref_service.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/system/sys_info.h"
 #endif
 
@@ -47,7 +47,7 @@ namespace util {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool IsSigninProfileTestExtensionOnTestImage(const Extension* extension) {
   if (extension->id() != extension_misc::kSigninProfileTestExtensionId)
     return false;
@@ -78,7 +78,7 @@ bool IsIncognitoEnabled(const ExtensionId& extension_id,
       return true;
     if (extension->is_login_screen_extension())
       return true;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (IsSigninProfileTestExtensionOnTestImage(extension))
       return true;
 #endif

@@ -22,7 +22,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/test/scoped_command_line.h"
@@ -36,7 +36,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace extensions {
 
@@ -548,7 +548,7 @@ TEST_F(ExtensionRegistrarTest, DisableNotAshKeeplistedExtension) {
   TryDisablingNotAshKeeplistedExtension(/* expect_extension_disabled= */ true);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Test that a controlled extension that is not on the ash keep-list can be
 // disabled if ash is disabled.
 TEST_F(ExtensionRegistrarTest,
@@ -605,6 +605,6 @@ TEST_F(ExtensionRegistrarTest,
 
   TryDisablingNotAshKeeplistedExtension(/* expect_extension_disabled= */ false);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions
