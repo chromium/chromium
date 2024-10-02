@@ -230,15 +230,15 @@ impl Config {
     /// # if cfg!(miri) { return Ok(()); } // miri takes too long
     /// use regex_automata::nfa::thompson::NFA;
     ///
-    /// // 300KB isn't enough!
+    /// // 400KB isn't enough!
     /// NFA::compiler()
-    ///     .configure(NFA::config().nfa_size_limit(Some(300_000)))
+    ///     .configure(NFA::config().nfa_size_limit(Some(400_000)))
     ///     .build(r"\w{20}")
     ///     .unwrap_err();
     ///
-    /// // ... but 400KB probably is.
+    /// // ... but 500KB probably is.
     /// let nfa = NFA::compiler()
-    ///     .configure(NFA::config().nfa_size_limit(Some(400_000)))
+    ///     .configure(NFA::config().nfa_size_limit(Some(500_000)))
     ///     .build(r"\w{20}")?;
     ///
     /// assert_eq!(nfa.pattern_len(), 1);

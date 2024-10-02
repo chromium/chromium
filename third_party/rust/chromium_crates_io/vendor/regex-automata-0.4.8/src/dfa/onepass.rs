@@ -521,7 +521,7 @@ struct InternalBuilder<'a> {
 
 impl<'a> InternalBuilder<'a> {
     /// Create a new builder with an initial empty DFA.
-    fn new(config: Config, nfa: &'a NFA) -> InternalBuilder {
+    fn new(config: Config, nfa: &'a NFA) -> InternalBuilder<'a> {
         let classes = if !config.get_byte_classes() {
             // A one-pass DFA will always use the equivalence class map, but
             // enabling this option is useful for debugging. Namely, this will

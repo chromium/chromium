@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.65"
 name = "regex-automata"
-version = "0.4.7"
+version = "0.4.8"
 authors = [
     "The Rust Project Developers",
     "Andrew Gallant <jamslam@gmail.com>",
@@ -61,7 +61,7 @@ optional = true
 default-features = false
 
 [dependencies.regex-syntax]
-version = "0.8.2"
+version = "0.8.5"
 optional = true
 default-features = false
 

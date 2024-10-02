@@ -203,7 +203,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."read-fonts:0.22.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."regex-automata:0.4.7"]
+[policy."regex-automata:0.4.8"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."regex-syntax:0.8.5"]
@@ -361,7 +361,7 @@ Exemption updated to 1.0.128 in September 2024.
 
 [[exemptions.cxxbridge-macro]]
 version = "1.0.128"
-criteria = ["safe-to-deploy", "ub-risk-2", "crypto-safe"]
+criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
 
