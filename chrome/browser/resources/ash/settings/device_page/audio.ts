@@ -129,7 +129,6 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
       isAllowAGCEnabled: {
         type: Boolean,
         value: true,
-        observer: SettingsAudioElement.prototype.onAllowAGCEnabledChanged,
       },
 
       isHfpMicSrEnabled: {
@@ -272,21 +271,6 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
         '#audioInputDeviceDropdown');
     assert(!!inputDeviceSelect);
     this.crosAudioConfig_.setActiveDevice(BigInt(inputDeviceSelect.value));
-  }
-
-  /** Handles updates to force respect ui gains state. */
-  protected onAllowAGCEnabledChanged(
-      enabled: SettingsAudioElement['isAllowAGCEnabled'],
-      previousEnabled: SettingsAudioElement['isAllowAGCEnabled']): void {
-    // Polymer triggers change event on all assignment to
-    // `isAllowAGCEnabled` even if the value is logically unchanged.
-    // Check previous value before calling `setAllowAGCEnabled` to
-    // test if value actually updated.
-    if (previousEnabled === undefined || previousEnabled === enabled) {
-      return;
-    }
-
-    this.crosAudioConfig_.setForceRespectUiGainsEnabled(!enabled);
   }
 
   /**
@@ -461,6 +445,10 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
 
   private toggleStartupSoundEnabled_(e: CustomEvent<boolean>): void {
     this.audioAndCaptionsBrowserProxy_.setStartupSoundEnabled(e.detail);
+  }
+
+  private toggleAllowAgcEnabled_(e: CustomEvent<boolean>): void {
+    this.crosAudioConfig_.setForceRespectUiGainsEnabled(!e.detail);
   }
 
   private computePowerSoundsHidden_(): boolean {

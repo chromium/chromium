@@ -230,7 +230,8 @@
         $i18n{audioInputAllowAGCTitle}
       </div>
       <cr-toggle id="audioInputAllowAGCToggle"
-          checked="{{isAllowAGCEnabled}}">
+          checked="{{isAllowAGCEnabled}}"
+          on-change="toggleAllowAgcEnabled_">
       </cr-toggle>
     </div>
     <div id="audioInputHfpMicSrSubsection" class="settings-box"
