@@ -26,13 +26,19 @@ import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
 class TestPrivacySandboxDialogBrowserProxy extends TestBrowserProxy implements
     PrivacySandboxDialogBrowserProxy {
+  private privacySandboxShouldShowPrivacyPolicy_ = false;
   constructor() {
     super([
       'promptActionOccurred',
       'resizeDialog',
       'showDialog',
       'recordPrivacyPolicyLoadTime',
+      'shouldShowPrivacySandboxPrivacyPolicy',
     ]);
+  }
+
+  setPrivacySandboxShouldShowPrivacyPolicy(shouldShow: boolean) {
+    this.privacySandboxShouldShowPrivacyPolicy_ = shouldShow;
   }
 
   promptActionOccurred() {
@@ -50,6 +56,11 @@ class TestPrivacySandboxDialogBrowserProxy extends TestBrowserProxy implements
 
   recordPrivacyPolicyLoadTime() {
     this.methodCalled('recordPrivacyPolicyLoadTime', arguments);
+  }
+
+  shouldShowPrivacySandboxPrivacyPolicy() {
+    this.methodCalled('shouldShowPrivacySandboxPrivacyPolicy');
+    return Promise.resolve(this.privacySandboxShouldShowPrivacyPolicy_);
   }
 }
 
@@ -476,7 +487,8 @@ suite('Combined', function() {
     assertFalse(collapseElement!.opened);
   });
 
-  test('privacyPolicy', async function() {
+  test('privacyPolicyNotShown', async function() {
+    browserProxy.setPrivacySandboxShouldShowPrivacyPolicy(false);
     await verifyActionOccured(
         browserProxy, PrivacySandboxPromptAction.CONSENT_SHOWN);
     const consentStep = getActiveStep()!;
@@ -491,9 +503,41 @@ suite('Combined', function() {
         browserProxy, PrivacySandboxPromptAction.CONSENT_MORE_INFO_OPENED);
     assertTrue(collapseElement!.opened);
 
-    // TODO(crbug.com/358087159): Add metrics testing for privacy policy page
-    // loading. After clicking the privacy policy link, the privacy policy page
-    // should be opened.
+    const learnMoreDiv = learnMore!.querySelector<HTMLElement>('#learnMoreDiv');
+    assertTrue(!!learnMoreDiv);
+
+    // Privacy policy div does not exist.
+    assertEquals(
+        isChildVisible(learnMore, '#privacyPolicyDiv'), false,
+        'privacy policy link should not be visible');
+
+    // Privacy policy iframe does not exist.
+    assertEquals(
+        isChildVisible(consentStep, '.iframe'), false,
+        `privacy policy page should not be visible`);
+  });
+
+  test('privacyPolicy', async function() {
+    browserProxy.setPrivacySandboxShouldShowPrivacyPolicy(true);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.CONSENT_SHOWN);
+    const consentStep = getActiveStep()!;
+    assertEquals(getActiveStep()!.id, PrivacySandboxCombinedDialogStep.CONSENT);
+
+    // The collapse section is opened.
+    const learnMore: HTMLElement = consentStep!.shadowRoot!.querySelector(
+        'privacy-sandbox-dialog-learn-more')!;
+    const collapseElement = learnMore!.shadowRoot!.querySelector('cr-collapse');
+    testClickButton('cr-expand-button', learnMore);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.CONSENT_MORE_INFO_OPENED);
+    assertTrue(collapseElement!.opened);
+
+    // Privacy policy div is not shown.
+    const learnMoreDiv =
+        learnMore!.querySelector<HTMLElement>('#learnMoreDiv')!;
+    assertEquals(window.getComputedStyle(learnMoreDiv).display, 'none');
+
     const privacyPolicyDiv =
         learnMore!.querySelector<HTMLElement>('#privacyPolicyDiv');
     const privacyPolicyLink =
@@ -503,7 +547,7 @@ suite('Combined', function() {
         `the link isn\'t found, selector: ${privacyPolicyDiv}`);
     privacyPolicyLink.click();
     assertEquals(
-        isChildVisible(consentStep, '.iframe'), true,
+        isChildVisible(consentStep, '.iframe.visible'), true,
         `privacy policy page should be visible when the link is clicked`);
     assertEquals(
         isChildVisible(consentStep, '#consentNotice'), false,
@@ -517,6 +561,9 @@ suite('Combined', function() {
     assertEquals(
         isChildVisible(consentStep, '#confirmButton'), true,
         `buttons should be shown on the consent notice again`);
+    assertEquals(
+        isChildVisible(consentStep, '.iframe.hidden'), true,
+        `privacy policy page should be hidden when the link is clicked`);
   });
 });
 

@@ -13,8 +13,6 @@
 class PrivacySandboxDialogTest : public WebUIMochaBrowserTest {
  protected:
   PrivacySandboxDialogTest() {
-    feature_list()->InitAndEnableFeature(
-        privacy_sandbox::kPrivacySandboxPrivacyPolicy);
     set_test_loader_host(chrome::kChromeUIPrivacySandboxDialogHost);
   }
 

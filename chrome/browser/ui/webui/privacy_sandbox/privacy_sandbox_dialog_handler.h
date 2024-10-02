@@ -32,6 +32,9 @@ class PrivacySandboxDialogHandler : public content::WebUIMessageHandler {
   void HandleResizeDialog(const base::Value::List& args);
   void HandleShowDialog(const base::Value::List& args);
   void HandleRecordPrivacyPolicyLoadTime(const base::Value::List& args);
+  // Determines if the Privacy Policy page should be shown.
+  void HandleShouldShowPrivacySandboxPrivacyPolicy(
+      const base::Value::List& args);
   void CloseDialog();
 
   base::OnceClosure close_callback_;
