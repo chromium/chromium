@@ -10,6 +10,7 @@ import androidx.fragment.app.FragmentActivity;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.lifetime.ApplicationLifetime;
+import org.chromium.chrome.browser.password_manager.PasswordAccessLossDialogHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -87,7 +88,7 @@ public class PasswordAccessLossExportFlowCoordinator
 
     private @PasswordAccessLossWarningType int getAccessLossWarningType() {
         PrefService prefService = UserPrefs.get(mProfile);
-        return PasswordManagerHelper.getAccessLossWarningType(prefService);
+        return PasswordAccessLossDialogHelper.getAccessLossWarningType(prefService);
     }
 
     @Override

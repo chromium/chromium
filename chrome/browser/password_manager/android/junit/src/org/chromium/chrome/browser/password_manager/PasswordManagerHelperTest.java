@@ -1861,39 +1861,6 @@ public class PasswordManagerHelperTest {
     @Test
     @EnableFeatures(
             ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
-    public void testPasswordAccessLossDialogNoGmsCore() {
-        when(mPasswordManagerUtilBridgeJniMock.getPasswordAccessLossWarningType(mPrefService))
-                .thenReturn(PasswordAccessLossWarningType.NO_GMS_CORE);
-
-        mPasswordManagerHelper.showPasswordSettings(
-                mContext,
-                ManagePasswordsReferrer.CHROME_SETTINGS,
-                mModalDialogManagerSupplier,
-                /* managePasskeys= */ false,
-                TEST_NO_EMAIL_ADDRESS,
-                mCustomTabIntentHelper);
-
-        PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
-        View customView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
-        Context context = RuntimeEnvironment.getApplication().getApplicationContext();
-        assertEquals(
-                context.getString(R.string.access_loss_no_gms_title),
-                ((TextView) customView.findViewById(R.id.title)).getText());
-        assertEquals(
-                context.getString(R.string.access_loss_no_gms_desc),
-                ((TextView) customView.findViewById(R.id.details)).getText());
-        assertTrue(customView.findViewById(R.id.help_button).getVisibility() == View.VISIBLE);
-        assertEquals(
-                context.getString(R.string.access_loss_no_gms_positive_button_text),
-                dialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
-        assertEquals(
-                context.getString(R.string.close),
-                dialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
-    }
-
-    @Test
-    @EnableFeatures(
-            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
     public void testPasswordAccessLossDialogNoUpm() {
         when(mPasswordManagerUtilBridgeJniMock.getPasswordAccessLossWarningType(mPrefService))
                 .thenReturn(PasswordAccessLossWarningType.NO_UPM);
@@ -1912,49 +1879,6 @@ public class PasswordManagerHelperTest {
         assertEquals(
                 context.getString(R.string.access_loss_update_gms_title),
                 ((TextView) customView.findViewById(R.id.title)).getText());
-        assertEquals(
-                context.getString(R.string.access_loss_update_gms_desc),
-                ((TextView) customView.findViewById(R.id.details)).getText());
-        assertTrue(customView.findViewById(R.id.help_button).getVisibility() == View.VISIBLE);
-        assertEquals(
-                context.getString(R.string.password_manager_outdated_gms_positive_button),
-                dialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
-        assertEquals(
-                context.getString(R.string.password_manager_outdated_gms_negative_button),
-                dialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
-    }
-
-    @Test
-    @EnableFeatures(
-            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
-    public void testPasswordAccessLossDialogNewGmsMigrationFailed() {
-        when(mPasswordManagerUtilBridgeJniMock.getPasswordAccessLossWarningType(mPrefService))
-                .thenReturn(PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED);
-
-        mPasswordManagerHelper.showPasswordSettings(
-                mContext,
-                ManagePasswordsReferrer.CHROME_SETTINGS,
-                mModalDialogManagerSupplier,
-                /* managePasskeys= */ false,
-                TEST_NO_EMAIL_ADDRESS,
-                mCustomTabIntentHelper);
-
-        PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
-        View customView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
-        Context context = RuntimeEnvironment.getApplication().getApplicationContext();
-        assertEquals(
-                context.getString(R.string.access_loss_fix_problem_title),
-                ((TextView) customView.findViewById(R.id.title)).getText());
-        assertEquals(
-                context.getString(R.string.access_loss_fix_problem_desc),
-                ((TextView) customView.findViewById(R.id.details)).getText());
-        assertTrue(customView.findViewById(R.id.help_button).getVisibility() == View.GONE);
-        assertEquals(
-                context.getString(R.string.access_loss_fix_problem_positive_button_text),
-                dialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
-        assertEquals(
-                context.getString(R.string.password_manager_outdated_gms_negative_button),
-                dialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
     }
 
     @Test

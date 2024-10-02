@@ -12,7 +12,7 @@ import android.widget.TextView;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
-import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
+import org.chromium.chrome.browser.password_manager.PasswordAccessLossDialogHelper;
 import org.chromium.chrome.browser.password_manager.R;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -68,7 +68,7 @@ public class PasswordsPreference extends ChromeBasePreference implements Profile
     public void setUpPasswordAccessLossWarning(PreferenceViewHolder holder) {
         assert mProfile != null : "Profile is not set!";
         PrefService prefService = UserPrefs.get(mProfile);
-        if (PasswordManagerHelper.getAccessLossWarningType(prefService)
+        if (PasswordAccessLossDialogHelper.getAccessLossWarningType(prefService)
                 == PasswordAccessLossWarningType.NONE) return;
 
         TextView summaryView = (TextView) holder.findViewById(android.R.id.summary);

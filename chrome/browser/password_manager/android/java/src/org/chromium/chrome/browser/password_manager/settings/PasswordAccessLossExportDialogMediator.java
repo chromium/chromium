@@ -13,7 +13,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
-import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
+import org.chromium.chrome.browser.password_manager.PasswordAccessLossDialogHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge.PasswordStoreObserver;
 import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
@@ -61,7 +61,7 @@ class PasswordAccessLossExportDialogMediator
 
     public String getDialogTitle() {
         PrefService prefService = UserPrefs.get(mProfile);
-        if (PasswordManagerHelper.getAccessLossWarningType(prefService)
+        if (PasswordAccessLossDialogHelper.getAccessLossWarningType(prefService)
                 == PasswordAccessLossWarningType.NO_GMS_CORE) {
             return mActivity.getString(R.string.access_loss_export_dialog_title_no_gms);
         }
@@ -183,7 +183,7 @@ class PasswordAccessLossExportDialogMediator
 
     private boolean shouldDeleteAllPasswords() {
         PrefService prefService = UserPrefs.get(mProfile);
-        if (PasswordManagerHelper.getAccessLossWarningType(prefService)
+        if (PasswordAccessLossDialogHelper.getAccessLossWarningType(prefService)
                 == PasswordAccessLossWarningType.NO_GMS_CORE) return true;
         if (prefService.getInteger(Pref.PASSWORDS_USE_UPM_LOCAL_AND_SEPARATE_STORES)
                 == /* UseUpmLocalAndSeparateStoresState::kOffAndMigrationPending */ 1) return true;

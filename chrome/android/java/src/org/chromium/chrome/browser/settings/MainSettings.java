@@ -39,8 +39,8 @@ import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
+import org.chromium.chrome.browser.password_manager.PasswordAccessLossDialogHelper;
 import org.chromium.chrome.browser.password_manager.PasswordExportLauncher;
-import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.password_manager.settings.PasswordsPreference;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -566,8 +566,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
                             && getArguments()
                                     .getBoolean(PasswordExportLauncher.START_PASSWORDS_EXPORT);
             if (startPasswordsExportFlow) {
-                PasswordManagerHelper.getForProfile(getProfile())
-                        .launchExportFlow(getContext(), mModalDialogManagerSupplier);
+                PasswordAccessLossDialogHelper.launchExportFlow(
+                        getContext(), getProfile(), mModalDialogManagerSupplier);
                 getArguments().putBoolean(PasswordExportLauncher.START_PASSWORDS_EXPORT, false);
             }
         }

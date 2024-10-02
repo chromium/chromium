@@ -19,25 +19,21 @@ import android.text.TextUtils;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.common.api.ApiException;
 
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.access_loss.PasswordAccessLossDialogSettingsCoordinator;
-import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerBackendException;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
-import org.chromium.chrome.browser.password_manager.settings.PasswordAccessLossExportFlowCoordinator;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
@@ -170,22 +166,13 @@ public class PasswordManagerHelper {
         SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
         PrefService prefService = UserPrefs.get(mProfile);
 
-        @PasswordAccessLossWarningType int warningType = getAccessLossWarningType(prefService);
-        if (warningType != PasswordAccessLossWarningType.NONE) {
-            // Always start export flow from Chrome main settings. If this is already being called
-            // from main settings, then launch export flow right away.
-            Runnable startExportFlow =
-                    referrer == ManagePasswordsReferrer.CHROME_SETTINGS
-                            ? () -> launchExportFlow(context, modalDialogManagerSupplier)
-                            : () -> PasswordExportLauncher.showMainSettingsAndStartExport(context);
-            new PasswordAccessLossDialogSettingsCoordinator()
-                    .showPasswordAccessLossDialog(
-                            context,
-                            modalDialogManagerSupplier.get(),
-                            warningType,
-                            GmsUpdateLauncher::launch,
-                            startExportFlow,
-                            customTabIntentHelper);
+        if (PasswordAccessLossDialogHelper.tryShowAccessLossWarning(
+                mProfile,
+                context,
+                referrer,
+                modalDialogManagerSupplier,
+                customTabIntentHelper,
+                BuildInfo.getInstance())) {
             return;
         }
 
@@ -423,15 +410,6 @@ public class PasswordManagerHelper {
         // Re-enroll the user by resetting the enroll pref. Other state reset happens on
         // unenroll.
         prefs.setBoolean(Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS, false);
-    }
-
-    public void launchExportFlow(
-            Context context, Supplier<ModalDialogManager> modalDialogManagerSupplier) {
-        FragmentActivity activity = (FragmentActivity) ContextUtils.activityFromContext(context);
-        assert activity != null : "Context is expected to be a fragment activity";
-
-        new PasswordAccessLossExportFlowCoordinator(activity, mProfile, modalDialogManagerSupplier)
-                .startExportFlow();
     }
 
     @VisibleForTesting
@@ -754,18 +732,6 @@ public class PasswordManagerHelper {
             } catch (ActivityNotFoundException e) {
             }
         }
-    }
-
-    public static @PasswordAccessLossWarningType int getAccessLossWarningType(
-            PrefService prefService) {
-        // TODO(crbug.com/323149739): Enable this feature flag in SafetyCheckMediatorTest and
-        // PasswordManagerHelperTest in all tests before launch.
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList
-                        .UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)) {
-            return PasswordAccessLossWarningType.NONE;
-        }
-        return PasswordManagerUtilBridge.getPasswordAccessLossWarningType(prefService);
     }
 
     @NativeMethods
