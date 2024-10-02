@@ -565,9 +565,11 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
       !device_registration_state_recorded_to_uma_) {
     device_registration_state_recorded_to_uma_ = true;
     base::UmaHistogramBoolean(
-        "Sync.TrustedVaultDeviceRegistered",
+        "TrustedVault.DeviceRegistered." +
+            GetSecurityDomainNameForUma(security_domain_id_),
         per_user_vault->local_device_registration_info().device_registered());
-    RecordTrustedVaultDeviceRegistrationState(*registration_state);
+    RecordTrustedVaultDeviceRegistrationState(security_domain_id_,
+                                              *registration_state);
   }
 
   MaybeProcessPendingTrustedRecoveryMethod();
@@ -989,6 +991,7 @@ void StandaloneTrustedVaultBackend::OnDeviceRegistered(
   DCHECK(!per_user_vault->local_device_registration_info()
               .last_registration_returned_local_data_obsolete());
   RecordTrustedVaultDeviceRegistrationOutcome(
+      security_domain_id_,
       GetDeviceRegistrationOutcomeForUMAFromResponse(status));
   switch (status) {
     case TrustedVaultRegistrationStatus::kSuccess:

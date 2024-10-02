@@ -90,15 +90,27 @@ void RecordTrustedVaultHintDegradedRecoverabilityChangedReason(
 }
 
 void RecordTrustedVaultDeviceRegistrationState(
+  TrustedVaultDeviceRegistrationStateForUMA registration_state) {
+  RecordTrustedVaultDeviceRegistrationState(
+      SecurityDomainId::kChromeSync, registration_state);
+}
+
+void RecordTrustedVaultDeviceRegistrationState(
+    SecurityDomainId security_domain_id,
     TrustedVaultDeviceRegistrationStateForUMA registration_state) {
-  base::UmaHistogramEnumeration("Sync.TrustedVaultDeviceRegistrationState",
-                                registration_state);
+  base::UmaHistogramEnumeration(
+      "TrustedVault.DeviceRegistrationState." +
+          GetSecurityDomainNameForUma(security_domain_id),
+      registration_state);
 }
 
 void RecordTrustedVaultDeviceRegistrationOutcome(
+    SecurityDomainId security_domain_id,
     TrustedVaultDeviceRegistrationOutcomeForUMA registration_outcome) {
-  base::UmaHistogramEnumeration("Sync.TrustedVaultDeviceRegistrationOutcome",
-                                registration_outcome);
+  base::UmaHistogramEnumeration(
+      "TrustedVault.DeviceRegistrationOutcome." +
+          GetSecurityDomainNameForUma(security_domain_id),
+      registration_outcome);
 }
 
 void RecordTrustedVaultURLFetchResponse(SecurityDomainId security_domain_id,

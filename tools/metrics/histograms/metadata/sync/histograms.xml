@@ -1908,39 +1908,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.TrustedVaultDeviceRegistered" enum="Boolean"
-    expires_after="2024-11-03">
-  <owner>mmoskvitin@google.com</owner>
-  <owner>mastiz@chromium.org</owner>
-  <summary>
-    Simplified version of Sync.TrustedVaultDeviceRegistrationState. Records
-    whether the local device is registered (and ignores whether re-registration
-    was completed/pending/in-flight) upon startup (if signed in) or upon first
-    signin.
-  </summary>
-</histogram>
-
-<histogram name="Sync.TrustedVaultDeviceRegistrationOutcome"
-    enum="TrustedVaultDeviceRegistrationOutcome" expires_after="2025-01-05">
-  <owner>mmoskvitin@google.com</owner>
-  <owner>mastiz@chromium.org</owner>
-  <summary>
-    Records the outcome of device registration attempt upon request completion
-    or failure.
-  </summary>
-</histogram>
-
-<histogram name="Sync.TrustedVaultDeviceRegistrationState"
-    enum="TrustedVaultDeviceRegistrationState" expires_after="2025-03-09">
-  <owner>mmoskvitin@google.com</owner>
-  <owner>mastiz@chromium.org</owner>
-  <summary>
-    Records whether the local device is registered on the server upon startup
-    (if signed in) or upon first signin, and if not registered, provides
-    insights into why.
-  </summary>
-</histogram>
-
 <histogram name="Sync.TrustedVaultDownloadKeysStatus"
     enum="TrustedVaultDownloadKeysStatus" expires_after="2025-03-09">
   <owner>mmoskvitin@google.com</owner>

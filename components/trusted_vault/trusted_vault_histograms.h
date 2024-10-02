@@ -36,7 +36,7 @@ enum class TrustedVaultDeviceRegistrationStateForUMA {
   kAlreadyRegisteredV1 = 6,
   kMaxValue = kAlreadyRegisteredV1,
 };
-// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:TrustedVaultDeviceRegistrationState)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/trusted_vault/enums.xml:TrustedVaultDeviceRegistrationState)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -52,7 +52,7 @@ enum class TrustedVaultDeviceRegistrationOutcomeForUMA {
   kOtherError = 7,
   kMaxValue = kOtherError,
 };
-// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:TrustedVaultDeviceRegistrationOutcome)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/trusted_vault/enums.xml:TrustedVaultDeviceRegistrationOutcome)
 
 // Used to provide UMA metric breakdowns.
 enum class TrustedVaultURLFetchReasonForUMA {
@@ -115,10 +115,17 @@ void RecordTrustedVaultHintDegradedRecoverabilityChangedReason(
     TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA
         hint_degraded_recoverability_changed_reason);
 
+// TODO(crbug.com/369980730): this is used in internals, replace usages with the
+// version below and delete this one.
 void RecordTrustedVaultDeviceRegistrationState(
+  TrustedVaultDeviceRegistrationStateForUMA registration_state);
+
+void RecordTrustedVaultDeviceRegistrationState(
+    SecurityDomainId security_domain_id,
     TrustedVaultDeviceRegistrationStateForUMA registration_state);
 
 void RecordTrustedVaultDeviceRegistrationOutcome(
+    SecurityDomainId security_domain_id,
     TrustedVaultDeviceRegistrationOutcomeForUMA registration_outcome);
 
 // Records url fetch response status (combined http and net error code) for

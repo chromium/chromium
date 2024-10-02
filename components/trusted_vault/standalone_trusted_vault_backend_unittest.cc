@@ -819,20 +819,22 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRegisterDevice) {
   SetPrimaryAccountWithUnknownAuthError(account_info);
   ASSERT_FALSE(device_registration_callback.is_null());
   histogram_tester.ExpectUniqueSample(
-      "Sync.TrustedVaultDeviceRegistrationState",
+      "TrustedVault.DeviceRegistrationState." + security_domain_name_for_uma(),
       /*sample=*/
       TrustedVaultDeviceRegistrationStateForUMA::
           kAttemptingRegistrationWithNewKeyPair,
       /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample("Sync.TrustedVaultDeviceRegistered",
-                                      /*sample=*/false,
-                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.DeviceRegistered." + security_domain_name_for_uma(),
+      /*sample=*/false,
+      /*expected_bucket_count=*/1);
 
   // Pretend that the registration completed successfully.
   std::move(device_registration_callback)
       .Run(TrustedVaultRegistrationStatus::kSuccess, kLastKeyVersion);
   histogram_tester.ExpectUniqueSample(
-      /*name=*/"Sync.TrustedVaultDeviceRegistrationOutcome",
+      /*name=*/"TrustedVault.DeviceRegistrationOutcome." +
+          security_domain_name_for_uma(),
       /*sample=*/TrustedVaultDeviceRegistrationOutcomeForUMA::kSuccess,
       /*expected_bucket_count=*/1);
 
@@ -984,7 +986,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
       account_info, StandaloneTrustedVaultBackend::RefreshTokenErrorState::
                         kPersistentAuthError);
   histogram_tester.ExpectUniqueSample(
-      "Sync.TrustedVaultDeviceRegistrationState",
+      "TrustedVault.DeviceRegistrationState." + security_domain_name_for_uma(),
       /*sample=*/
       TrustedVaultDeviceRegistrationStateForUMA::
           kAttemptingRegistrationWithNewKeyPair,
@@ -1008,8 +1010,9 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // The second attempt should NOT have logged the histogram, following the
   // histogram's definition that it should be logged once.
-  histogram_tester2.ExpectTotalCount("Sync.TrustedVaultDeviceRegistrationState",
-                                     /*expected_count=*/0);
+  histogram_tester2.ExpectTotalCount(
+      "TrustedVault.DeviceRegistrationState." + security_domain_name_for_uma(),
+      /*expected_count=*/0);
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest,
@@ -1035,7 +1038,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   SetPrimaryAccountWithUnknownAuthError(account_info);
 
   histogram_tester.ExpectUniqueSample(
-      "Sync.TrustedVaultDeviceRegistrationState",
+      "TrustedVault.DeviceRegistrationState." + security_domain_name_for_uma(),
       /*sample=*/
       TrustedVaultDeviceRegistrationStateForUMA::
           kAttemptingRegistrationWithNewKeyPair,
@@ -1059,7 +1062,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   SetPrimaryAccountWithUnknownAuthError(account_info);
 
   histogram_tester.ExpectUniqueSample(
-      "Sync.TrustedVaultDeviceRegistrationState",
+      "TrustedVault.DeviceRegistrationState." + security_domain_name_for_uma(),
       /*sample=*/
       TrustedVaultDeviceRegistrationStateForUMA::kLocalKeysAreStale,
       /*expected_bucket_count=*/1);
@@ -1134,7 +1137,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
   SetPrimaryAccountWithUnknownAuthError(account_info);
   histogram_tester.ExpectUniqueSample(
-      "Sync.TrustedVaultDeviceRegistrationState",
+      "TrustedVault.DeviceRegistrationState." + security_domain_name_for_uma(),
       /*sample=*/
       TrustedVaultDeviceRegistrationStateForUMA::kThrottledClientSide,
       /*expected_bucket_count=*/1);
@@ -1147,7 +1150,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   clock()->Advance(StandaloneTrustedVaultBackend::kThrottlingDuration);
   SetPrimaryAccountWithUnknownAuthError(account_info);
   histogram_tester2.ExpectUniqueSample(
-      "Sync.TrustedVaultDeviceRegistrationState",
+      "TrustedVault.DeviceRegistrationState." + security_domain_name_for_uma(),
       /*sample=*/
       TrustedVaultDeviceRegistrationStateForUMA::
           kAttemptingRegistrationWithExistingKeyPair,
@@ -1187,7 +1190,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
            /*key_version=*/0);
 
   histogram_tester.ExpectUniqueSample(
-      /*name=*/"Sync.TrustedVaultDeviceRegistrationOutcome",
+      /*name=*/"TrustedVault.DeviceRegistrationOutcome." +
+          security_domain_name_for_uma(),
       /*sample=*/
       TrustedVaultDeviceRegistrationOutcomeForUMA::
           kTransientAccessTokenFetchError,
@@ -1685,14 +1689,16 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRedoDeviceRegistration) {
     SetPrimaryAccountWithUnknownAuthError(account_info);
     ASSERT_FALSE(device_registration_callback.is_null());
     histogram_tester.ExpectUniqueSample(
-        "Sync.TrustedVaultDeviceRegistrationState",
+        "TrustedVault.DeviceRegistrationState." +
+            security_domain_name_for_uma(),
         /*sample=*/
         TrustedVaultDeviceRegistrationStateForUMA::
             kAttemptingRegistrationWithExistingKeyPair,
         /*expected_bucket_count=*/1);
-    histogram_tester.ExpectUniqueSample("Sync.TrustedVaultDeviceRegistered",
-                                        /*sample=*/true,
-                                        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "TrustedVault.DeviceRegistered." + security_domain_name_for_uma(),
+        /*sample=*/true,
+        /*expected_bucket_count=*/1);
 
     // Pretend that the registration completed successfully.
     std::move(device_registration_callback)
@@ -1721,13 +1727,15 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRedoDeviceRegistration) {
     base::HistogramTester histogram_tester;
     SetPrimaryAccountWithUnknownAuthError(account_info);
     histogram_tester.ExpectUniqueSample(
-        "Sync.TrustedVaultDeviceRegistrationState",
+        "TrustedVault.DeviceRegistrationState." +
+            security_domain_name_for_uma(),
         /*sample=*/
         TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegisteredV1,
         /*expected_bucket_count=*/1);
-    histogram_tester.ExpectUniqueSample("Sync.TrustedVaultDeviceRegistered",
-                                        /*sample=*/true,
-                                        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "TrustedVault.DeviceRegistered." + security_domain_name_for_uma(),
+        /*sample=*/true,
+        /*expected_bucket_count=*/1);
   }
 }
 
@@ -1782,14 +1790,16 @@ TEST_F(StandaloneTrustedVaultBackendTest,
     base::HistogramTester histogram_tester;
     SetPrimaryAccountWithUnknownAuthError(account_info);
     histogram_tester.ExpectUniqueSample(
-        "Sync.TrustedVaultDeviceRegistrationState",
+        "TrustedVault.DeviceRegistrationState." +
+            security_domain_name_for_uma(),
         /*sample=*/
         TrustedVaultDeviceRegistrationStateForUMA::
             kAttemptingRegistrationWithExistingKeyPair,
         /*expected_bucket_count=*/1);
-    histogram_tester.ExpectUniqueSample("Sync.TrustedVaultDeviceRegistered",
-                                        /*sample=*/true,
-                                        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "TrustedVault.DeviceRegistered." + security_domain_name_for_uma(),
+        /*sample=*/true,
+        /*expected_bucket_count=*/1);
 
     // Pretend that the registration completed successfully and that constant
     // key version has changed between device registration requests.
@@ -1820,13 +1830,15 @@ TEST_F(StandaloneTrustedVaultBackendTest,
     base::HistogramTester histogram_tester;
     SetPrimaryAccountWithUnknownAuthError(account_info);
     histogram_tester.ExpectUniqueSample(
-        "Sync.TrustedVaultDeviceRegistrationState",
+        "TrustedVault.DeviceRegistrationState." +
+            security_domain_name_for_uma(),
         /*sample=*/
         TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegisteredV1,
         /*expected_bucket_count=*/1);
-    histogram_tester.ExpectUniqueSample("Sync.TrustedVaultDeviceRegistered",
-                                        /*sample=*/true,
-                                        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "TrustedVault.DeviceRegistered." + security_domain_name_for_uma(),
+        /*sample=*/true,
+        /*expected_bucket_count=*/1);
   }
 }
 
@@ -1854,13 +1866,14 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   base::HistogramTester histogram_tester;
   SetPrimaryAccountWithUnknownAuthError(account_info);
   histogram_tester.ExpectUniqueSample(
-      "Sync.TrustedVaultDeviceRegistrationState",
+      "TrustedVault.DeviceRegistrationState." + security_domain_name_for_uma(),
       /*sample=*/
       TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegisteredV1,
       /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample("Sync.TrustedVaultDeviceRegistered",
-                                      /*sample=*/true,
-                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.DeviceRegistered." + security_domain_name_for_uma(),
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldAddTrustedRecoveryMethod) {
