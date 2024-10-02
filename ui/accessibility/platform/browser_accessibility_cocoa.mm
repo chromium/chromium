@@ -1130,11 +1130,7 @@ bool ui::IsNSRange(id value) {
   } else if (_owner->IsTextField() &&
              _owner->HasState(ax::mojom::State::kMultiline) &&
              !_owner->GetData().IsSpinnerTextField()) {
-    if (_owner->IsNonAtomicTextField()) {
-      cocoa_role = NSAccessibilityGroupRole;
-    } else {
-      cocoa_role = NSAccessibilityTextAreaRole;
-    }
+    cocoa_role = NSAccessibilityTextAreaRole;
   } else if (ui::IsImage(_owner->GetRole()) && _owner->GetChildCount()) {
     // An image map is an image with children, and exposed on Mac as a group.
     cocoa_role = NSAccessibilityGroupRole;
