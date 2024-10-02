@@ -140,7 +140,7 @@ void UserCloudPolicyManager::DisconnectAndRemovePolicy() {
   // that all external data references have been removed, causing the
   // |external_data_manager_| to clear its cache as well.
   user_store_->Clear();
-  SetPoliciesRequired(false, PolicyFetchReason::kUnspecified);
+  SetPoliciesRequired(false, PolicyFetchReason::kDisconnect);
 }
 
 void UserCloudPolicyManager::GetChromePolicy(PolicyMap* policy_map) {

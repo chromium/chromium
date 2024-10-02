@@ -1055,7 +1055,7 @@ message DevicePolicyRequest {
     SCHEDULED = 16;
     // Policy fetch triggered by sign-in.
     SIGNIN = 17;
-    // A placeholder reason used for tests (should not occur in production).
+    // A placeholder reason used for tests.
     TEST = 18;
     // Policy fetched at browser start, e.g. device policies at Ash start.
     BROWSER_START = 19;
@@ -1065,6 +1065,12 @@ message DevicePolicyRequest {
     USER_REQUEST = 21;
     // Policy fetches triggered by the Chrome Remote Desktop policy watcher.
     CRD_HOST_POLICY_WATCHER = 22;
+    // Fetch policy request when we shouldn't.
+    UNNECESSARY = 100;
+    // Fetch policy request when we disconnect from cloud management.
+    UNNECESSARY_DISCONNECT = 101;
+    // Fetch policy request when schema is updated.
+    UNNECESSARY_SCHEMA_UPDATED = 102;
   }
   optional Reason reason = 4;
 }

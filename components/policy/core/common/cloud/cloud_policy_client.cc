@@ -148,6 +148,10 @@ em::DevicePolicyRequest::Reason TranslateFetchReason(PolicyFetchReason reason) {
       return Request::USER_REQUEST;
     case PolicyFetchReason::kRetry:
       return Request::RETRY;
+    case PolicyFetchReason::kSchemaUpdated:
+      return Request::UNNECESSARY_SCHEMA_UPDATED;
+    case PolicyFetchReason::kDisconnect:
+      return Request::UNNECESSARY_DISCONNECT;
   }
   NOTREACHED();
 }

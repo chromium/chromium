@@ -387,12 +387,12 @@ void ProfilePolicyConnector::Init(
   ConfigurationPolicyProvider* machine_level_user_cloud_policy_provider =
       connector->proxy_policy_provider();
   if (machine_level_user_cloud_policy_provider) {
-    AppendPolicyProviderWithSchemaTracking(
-        machine_level_user_cloud_policy_provider, schema_registry);
+    policy_providers_.push_back(machine_level_user_cloud_policy_provider);
   }
 
-  if (connector->command_line_policy_provider())
+  if (connector->command_line_policy_provider()) {
     policy_providers_.push_back(connector->command_line_policy_provider());
+  }
 #endif
 
     local_test_policy_provider_ = connector->local_test_policy_provider();

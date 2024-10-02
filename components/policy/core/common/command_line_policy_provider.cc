@@ -61,7 +61,7 @@ bool CommandLinePolicyProvider::IsFirstPolicyLoadComplete(
 CommandLinePolicyProvider::CommandLinePolicyProvider(
     const base::CommandLine& command_line)
     : loader_(command_line) {
-  RefreshPolicies(PolicyFetchReason::kUnspecified);
+  RefreshPolicies(PolicyFetchReason::kBrowserStart);
 }
 
 }  // namespace policy
