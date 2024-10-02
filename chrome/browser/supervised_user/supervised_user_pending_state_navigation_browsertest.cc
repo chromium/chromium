@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "build/buildflag.h"
@@ -57,7 +58,8 @@ class SupervisedUserPendingStateNavigationTest
         /*enabled_features=*/
         {supervised_user::kForceSupervisedUserReauthenticationForBlockedSites,
          supervised_user::kCloseSignTabsFromReauthenticationInterstitial,
-         supervised_user::kUncredentialedFilteringFallbackForSupervisedUsers},
+         supervised_user::kUncredentialedFilteringFallbackForSupervisedUsers,
+         supervised_user::kAllowSupervisedUserReauthenticationForSubframes},
         /*disabled_features=*/{});
   }
 
@@ -184,6 +186,12 @@ class SupervisedUserPendingStateNavigationTest
     url_filter->SetManualHosts(std::move(hosts));
   }
 
+  content::RenderFrameHost* FindFrameByName(const std::string& name) {
+    return content::FrameMatchingPredicate(
+        contents()->GetPrimaryPage(),
+        base::BindRepeating(&content::FrameMatchesName, name));
+  }
+
  private:
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -288,13 +296,52 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
 
   // Add exampleURL to the manual blocklist
   GURL exampleURL = GURL("https://example.com/");
-  SetManualHost(exampleURL, /* allowlist */ false);
+  SetManualHost(exampleURL, /*allowlist=*/false);
 
   // Navigate to the requested URL and wait for the interstitial.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), exampleURL));
   ASSERT_TRUE(WaitForRenderFrameReady(contents()->GetPrimaryMainFrame()));
 
   WaitForReauthenticationInterstitial();
+}
+
+// Tests the blocked site subframe re-authentication interstitial.
+IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
+                       TestBlockedSiteSubFrameReauthInterstitial) {
+  supervision_mixin_.SetPendingStateForPrimaryAccount();
+
+  // Filter the iframe URL.
+  GURL exampleURL = GURL("https://iframe2.com/");
+  SetManualHost(exampleURL, /*allowlist=*/false);
+  kids_management_api_mock().AllowSubsequentClassifyUrl();
+
+  GURL allowed_url_with_iframes = embedded_test_server()->GetURL(
+      "www.example.com", "/supervised_user/with_iframes.html");
+
+  // Navigate to the custom html containing 2 iframes.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), allowed_url_with_iframes));
+  ASSERT_TRUE(WaitForRenderFrameReady(contents()->GetPrimaryMainFrame()));
+
+  // Verify that the iframes are loaded.
+  WaitForPageTitle(u"Supervised User test: page with iframes");
+  EXPECT_TRUE(content::EvalJs(contents(), "loaded1()").ExtractBool());
+  EXPECT_TRUE(content::EvalJs(contents(), "loaded2()").ExtractBool());
+
+  SCOPED_TRACE("iframe2");
+  content::RenderFrameHost* frame = FindFrameByName("iframe2");
+  ASSERT_TRUE(frame);
+  ASSERT_TRUE(frame->IsRenderFrameLive());
+
+  // Check that the sub-frame interstitial contains the correct text.
+  EXPECT_THAT(
+      content::EvalJs(frame, "document.documentElement.innerHTML")
+          .ExtractString(),
+      testing::HasSubstr(l10n_util::GetStringUTF8(
+          IDS_SUPERVISED_USER_VERIFY_PAGE_SUBFRAME_BLOCKED_SITE_HEADING)));
+
+  // UKM should not be recorded for the sub-frame interstitial.
+  EXPECT_EQ(GetReauthInterstitialUKMTotalCount(), 0);
 }
 
 }  // namespace
