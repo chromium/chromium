@@ -534,6 +534,77 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
   std::vector<std::unique_ptr<TestExtensionDir>> extension_dirs_;
 };
 
+// Verify that an injected content script can successfully use dynamic imports
+// when operating in a sandboxed srcdoc iframe.
+IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
+                       ContentScriptDynamicImportsWorkInSandboxedSrcdocFrames) {
+  // Create extension with a content script that relies on dynamic imports.
+  static constexpr char kManifest[] = R"(
+  {
+    "name": "Test Dynamic Import",
+    "manifest_version": 2,
+    "version": "1.0",
+    "web_accessible_resources": [
+      "content-import.js"
+    ],
+    "content_scripts": [{
+      "matches": [ "*://*/*" ],
+      "all_frames": true,
+      "js": [ "content-script.js" ],
+      "match_origin_as_fallback": true
+    }]
+  })";
+
+  TestExtensionDir dir;
+  dir.WriteManifest(kManifest);
+  dir.WriteFile(FILE_PATH_LITERAL("content-import.js"),
+                R"(export function main() {
+                     document.body.innerHTML =
+                         document.body.innerHTML.replace('sandboxed',
+                                                         'SANDBOXED');
+                     chrome.test.sendMessage('dynamic import success');
+                   })");
+  dir.WriteFile(FILE_PATH_LITERAL("content-script.js"), R"(
+    const src = chrome.runtime.getURL("content-import.js");
+    import(src).then((contentImport) => {
+                   contentImport.main();
+                 }).catch ((error) => {
+                   console.log('Error: import failed: ' + error.message);
+                 });
+  )");
+  const Extension* extension = LoadExtension(dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Load a page and give it a sandboxed-srcdoc frame.
+  ExtensionTestMessageListener listener_mainframe("dynamic import success");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.test", "/simple.html")));
+  ASSERT_TRUE(listener_mainframe.WaitUntilSatisfied());
+
+  content::WebContents* web_contents = GetActiveTab();
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
+  content::TestNavigationObserver observer(web_contents, 1);
+  ExtensionTestMessageListener listener_subframe("dynamic import success");
+  EXPECT_TRUE(ExecJs(main_frame, R"(
+          let frame = document.createElement('iframe');
+          frame.sandbox = '';
+          frame.srcdoc = '<html><body>sandboxed</body></html>';
+          document.body.appendChild(frame);
+        )"));
+  observer.Wait();
+
+  // Wait for the injected content script to complete.
+  ASSERT_TRUE(listener_subframe.WaitUntilSatisfied());
+
+  // Verify that the action performed by the dynamically imported code was
+  // successful.
+  content::RenderFrameHost* sandboxed_child_frame =
+      content::ChildFrameAt(main_frame, 0);
+  EXPECT_TRUE(content::EvalJs(sandboxed_child_frame,
+                              "document.body.innerHTML == 'SANDBOXED';")
+                  .ExtractBool());
+}
+
 // Check that when an extension frame is inadvertently loaded as sandboxed
 // because it inherits sandbox flags from its parent, the extension frame can
 // still use extension messaging APIs without triggering a renderer kill due

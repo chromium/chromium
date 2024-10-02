@@ -24,6 +24,13 @@ JSModuleScript* JSModuleScript::Create(
     Modulator* modulator,
     const ScriptFetchOptions& options,
     const TextPosition& start_position) {
+  // Note: this needs to be set here so modulator->IsScriptingDisabled() below
+  //       has access to the correct context information.
+  // TODO(crbug.com/371004128): this seems wrong; `IsScriptingDisabled()` should
+  //       be modified so that it uses the correct ScriptState internally.
+  ScriptState* script_state = modulator->GetScriptState();
+  ScriptState::Scope scope(script_state);
+
   // <spec step="1">If scripting is disabled for settings's responsible browsing
   // context, then set source to the empty string.</spec>
   const ModuleScriptCreationParams& params =
@@ -40,8 +47,6 @@ JSModuleScript* JSModuleScript::Create(
 
   // <spec step="7">Let result be ParseModule(source, settings's Realm,
   // script).</spec>
-  ScriptState* script_state = modulator->GetScriptState();
-  ScriptState::Scope scope(script_state);
   v8::Isolate* isolate = script_state->GetIsolate();
   ExceptionState exception_state(isolate, v8::ExceptionContext::kOperation,
                                  "JSModuleScript", "Create");
