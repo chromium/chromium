@@ -65,9 +65,7 @@ class FakeDelegate : public ClientSideDetectionService::Delegate {
 class FakeClientSideDetectionService : public ClientSideDetectionService {
  public:
   FakeClientSideDetectionService()
-      : ClientSideDetectionService(std::make_unique<FakeDelegate>(),
-                                   nullptr,
-                                   nullptr) {}
+      : ClientSideDetectionService(std::make_unique<FakeDelegate>(), nullptr) {}
 
   void SendClientReportPhishingRequest(
       std::unique_ptr<ClientPhishingRequest> verdict,

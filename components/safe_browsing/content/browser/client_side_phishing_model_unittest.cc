@@ -129,11 +129,8 @@ class ClientSidePhishingModelTest : public content::RenderViewHostTestHarness {
 
     model_observer_tracker_ =
         std::make_unique<ClientSidePhishingModelObserverTracker>();
-    scoped_refptr<base::SequencedTaskRunner> background_task_runner =
-        base::ThreadPool::CreateSequencedTaskRunner(
-            {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
     client_side_phishing_model_ = std::make_unique<ClientSidePhishingModel>(
-        model_observer_tracker_.get(), background_task_runner);
+        model_observer_tracker_.get());
   }
 
   void TearDown() override {

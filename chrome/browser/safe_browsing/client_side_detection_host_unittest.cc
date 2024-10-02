@@ -143,7 +143,7 @@ MATCHER(CallbackIsNull, "") {
 class MockClientSideDetectionService : public ClientSideDetectionService {
  public:
   MockClientSideDetectionService()
-      : ClientSideDetectionService(nullptr, nullptr, nullptr) {}
+      : ClientSideDetectionService(nullptr, nullptr) {}
 
   MockClientSideDetectionService(const MockClientSideDetectionService&) =
       delete;

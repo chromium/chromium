@@ -93,8 +93,7 @@ class ClientSideDetectionService
 
   ClientSideDetectionService(
       std::unique_ptr<Delegate> delegate,
-      optimization_guide::OptimizationGuideModelProvider* opt_guide,
-      const scoped_refptr<base::SequencedTaskRunner>& background_task_runner);
+      optimization_guide::OptimizationGuideModelProvider* opt_guide);
 
   ClientSideDetectionService(const ClientSideDetectionService&) = delete;
   ClientSideDetectionService& operator=(const ClientSideDetectionService&) =

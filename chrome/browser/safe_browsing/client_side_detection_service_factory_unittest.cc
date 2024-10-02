@@ -4,7 +4,6 @@
 
 #include "chrome/browser/safe_browsing/client_side_detection_service_factory.h"
 
-#include "base/command_line.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
