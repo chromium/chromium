@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/commerce/core/shopping_service.h"
@@ -195,6 +196,12 @@ std::u16string
 ProductSpecificationsPageActionController::GetComparisonSetName() {
   CHECK(product_group_for_page_.has_value());
   return base::UTF8ToUTF16(product_group_for_page_->name);
+}
+
+GURL ProductSpecificationsPageActionController::GetComparisonTableURL() {
+  CHECK(product_group_for_page_.has_value());
+  return commerce::GetProductSpecsTabUrlForID(
+      product_group_for_page_.value().uuid);
 }
 
 void ProductSpecificationsPageActionController::HandleProductInfoResponse(

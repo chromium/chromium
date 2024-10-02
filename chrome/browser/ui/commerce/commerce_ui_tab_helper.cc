@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/commerce/commerce_page_action_controller.h"
@@ -451,9 +452,32 @@ bool CommerceUiTabHelper::IsInRecommendedSet() {
   return product_specifications_controller_->IsInRecommendedSet();
 }
 
+GURL CommerceUiTabHelper::GetComparisonTableURL() {
+  return product_specifications_controller_->GetComparisonTableURL();
+}
+
 void CommerceUiTabHelper::OnOpenComparePageClicked() {
-  // TODO(b/369238920): Open the comparison page if the page is not opened in
-  // the current window, otherwise switch to the comparison tab.
+  auto* tab_strip_model = tabs::TabInterface::GetFromContents(web_contents())
+                              ->GetBrowserWindowInterface()
+                              ->GetTabStripModel();
+  GURL comparison_table_url = GetComparisonTableURL();
+
+  for (int index = 0; index < tab_strip_model->count(); index++) {
+    auto* tab_web_contents = tab_strip_model->GetWebContentsAt(index);
+    if (tab_web_contents->GetLastCommittedURL() == comparison_table_url) {
+      tab_strip_model->ActivateTabAt(index);
+      return;
+    }
+  }
+
+  auto* browser = chrome::FindBrowserWithTab(web_contents());
+  if (!browser) {
+    return;
+  }
+
+  int active_index = tab_strip_model->active_index();
+  chrome::AddTabAt(browser, comparison_table_url, active_index + 1, true,
+                   tab_strip_model->GetTabGroupForTab(active_index));
 }
 
 std::u16string CommerceUiTabHelper::GetComparisonSetName() {

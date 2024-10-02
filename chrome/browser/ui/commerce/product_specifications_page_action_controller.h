@@ -51,6 +51,7 @@ class ProductSpecificationsPageActionController
   bool IsInRecommendedSet();
   std::u16string GetProductSpecificationsLabel(bool is_added);
   std::u16string GetComparisonSetName();
+  GURL GetComparisonTableURL();
 
  private:
   void HandleProductInfoResponse(const GURL& url,

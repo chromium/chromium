@@ -160,6 +160,8 @@ class CommerceUiTabHelper : public content::WebContentsObserver {
 
   virtual std::unique_ptr<views::View> CreateShoppingInsightsWebView();
 
+  virtual GURL GetComparisonTableURL();
+
  private:
   friend class CommerceUiTabHelperTest;
 

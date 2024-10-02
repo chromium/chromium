@@ -151,9 +151,24 @@ TEST_P(ProductSpecificationsIconViewIntegrationTest, IconExecution) {
   icon_view->ExecuteForTesting();
 
   if (GetParam()) {
+    // Verify toast is showing.
     ToastController* toast_controller =
         browser()->browser_window_features()->toast_controller();
     EXPECT_TRUE(toast_controller->IsShowingToast());
+
+    GURL expected_comparison_table_url = GURL("example.com");
+    ON_CALL(*GetTabHelper(), GetComparisonTableURL)
+        .WillByDefault(testing::Return(expected_comparison_table_url));
+
+    // Simulate clicking the "Open" button in the toast.
+    GetTabHelper()->OnOpenComparePageClicked();
+    EXPECT_EQ(browser()
+                  ->browser_window_features()
+                  ->tab_strip_model()
+                  ->GetActiveTab()
+                  ->contents()
+                  ->GetLastCommittedURL(),
+              expected_comparison_table_url);
   }
 }
 

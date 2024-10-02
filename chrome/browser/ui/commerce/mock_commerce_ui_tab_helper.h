@@ -63,6 +63,7 @@ class MockCommerceUiTabHelper : public commerce::CommerceUiTabHelper {
               GetPriceInsightsIconLabelTypeForPage,
               ());
   MOCK_METHOD(const std::vector<commerce::DiscountInfo>&, GetDiscounts, ());
+  MOCK_METHOD(GURL, GetComparisonTableURL, ());
 
  private:
   gfx::Image valid_product_image_;
