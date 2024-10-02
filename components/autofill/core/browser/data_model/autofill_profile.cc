@@ -1193,6 +1193,14 @@ AutofillProfile AutofillProfile::ConvertToAccountProfile() const {
   return account_profile;
 }
 
+AutofillProfile AutofillProfile::DowngradeToAccountProfile() const {
+  CHECK(record_type() == RecordType::kAccountHome ||
+        record_type() == RecordType::kAccountWork);
+  AutofillProfile account_profile = *this;
+  account_profile.record_type_ = RecordType::kAccount;
+  return account_profile;
+}
+
 FieldTypeSet AutofillProfile::FindInaccessibleProfileValues() const {
   FieldTypeSet inaccessible_fields;
   const std::string stored_country =

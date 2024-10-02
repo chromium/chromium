@@ -99,6 +99,20 @@ class ContactInfoSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
   // the processor so it can start tracking changes.
   void LoadMetadata();
 
+  // Ensures that at most one address in the storage can be labeled as home and
+  // work each. If `profile` is H/W and a different address of the same record
+  // type already exists in the storage, this function downgrades it to a
+  // regular one. The change is intentionally not re-uploaded, because:
+  // - The logic is meant to catch inconsistencies due to failed writes, which
+  //   are not reflected on the server to begin with. E.g, it can happen that an
+  //   address is promoted to H/W in Chrome, but persisting it on the backend
+  //   fails. Then, a different address might be promoted to H/W from outside of
+  //   Chrome. Since CONTACT_INFO doesn't have a way to propagate errors back to
+  //   the client, this would result in duplicate H/W addresses.
+  // - It avoids a potential ping-pong.
+  // Returns false if storage operations fail.
+  bool EnsureUniquenessOfHomeAndWork(const AutofillProfile& profile);
+
   // The bridge should be used on the same sequence where it has been
   // constructed.
   SEQUENCE_CHECKER(sequence_checker_);

@@ -65,9 +65,10 @@ std::vector<AutofillProfile> ExtractAutofillProfilesFromDataBatch(
   return profiles;
 }
 
-AutofillProfile TestProfile(std::string_view guid) {
-  return AutofillProfile(std::string(guid),
-                         AutofillProfile::RecordType::kAccount,
+AutofillProfile TestProfile(std::string_view guid,
+                            AutofillProfile::RecordType record_type =
+                                AutofillProfile::RecordType::kAccount) {
+  return AutofillProfile(std::string(guid), record_type,
                          i18n_model_definition::kLegacyHierarchyCountryCode);
 }
 
@@ -118,8 +119,11 @@ class ContactInfoSyncBridgeTest : public testing::Test {
   // how the PersonalDataManager will access the profiles.
   std::vector<AutofillProfile> GetAllDataFromTable() {
     std::vector<AutofillProfile> profiles;
-    EXPECT_TRUE(table_.GetAutofillProfiles(
-        {AutofillProfile::RecordType::kAccount}, profiles));
+    EXPECT_TRUE(
+        table_.GetAutofillProfiles({AutofillProfile::RecordType::kAccount,
+                                    AutofillProfile::RecordType::kAccountHome,
+                                    AutofillProfile::RecordType::kAccountWork},
+                                   profiles));
     return profiles;
   }
 
@@ -248,6 +252,61 @@ TEST_F(ContactInfoSyncBridgeTest,
   std::vector<AutofillProfile> profiles = GetAllDataFromTable();
   ASSERT_EQ(profiles.size(), 1u);
   EXPECT_EQ(profiles[0].modification_date(), profile.modification_date());
+}
+
+// Tests that `ApplyIncrementalSyncChanges()` ensures that at most one H/W
+// address exists after a profile addition.
+TEST_F(ContactInfoSyncBridgeTest,
+       ApplyIncrementalSyncChanges_DuplicateHomeAndWork_Add) {
+  ASSERT_TRUE(StartSyncing(/*remote_profiles=*/{}));
+
+  // Simulate that a home address exists and that a new home address with a
+  // different storage key is received from sync.
+  AutofillProfile local =
+      TestProfile(kGUID1, AutofillProfile::RecordType::kAccountHome);
+  AddAutofillProfilesToTable({local});
+
+  AutofillProfile remote =
+      TestProfile(kGUID2, AutofillProfile::RecordType::kAccountHome);
+  syncer::EntityChangeList entity_change_list;
+  entity_change_list.push_back(
+      syncer::EntityChange::CreateAdd(kGUID2, ProfileToEntity(remote)));
+  // `ApplyIncrementalSyncChanges()` returns an error if it fails.
+  EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
+      bridge().CreateMetadataChangeList(), std::move(entity_change_list)));
+
+  // Expect that `local` still exists, but is no longer kAccountHome.
+  EXPECT_THAT(GetAllDataFromTable(),
+              UnorderedElementsAre(local.DowngradeToAccountProfile(), remote));
+}
+
+// Tests that `ApplyIncrementalSyncChanges()` ensures that at most one H/W
+// address exists after a profile gets updated to H/W.
+TEST_F(ContactInfoSyncBridgeTest,
+       ApplyIncrementalSyncChanges_DuplicateHomeAndWork_Update) {
+  ASSERT_TRUE(StartSyncing(/*remote_profiles=*/{}));
+
+  // Simulate that a home address exists and that an existing regular address
+  // gets upgraded to home.
+  AutofillProfile local_home =
+      TestProfile(kGUID1, AutofillProfile::RecordType::kAccountHome);
+  AutofillProfile local_regular =
+      TestProfile(kGUID2, AutofillProfile::RecordType::kAccountHome);
+  AddAutofillProfilesToTable({local_home, local_regular});
+
+  AutofillProfile remote =
+      TestProfile(kGUID2, AutofillProfile::RecordType::kAccountHome);
+  syncer::EntityChangeList entity_change_list;
+  entity_change_list.push_back(
+      syncer::EntityChange::CreateUpdate(kGUID2, ProfileToEntity(remote)));
+  // `ApplyIncrementalSyncChanges()` returns an error if it fails.
+  EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
+      bridge().CreateMetadataChangeList(), std::move(entity_change_list)));
+
+  // Expect that `local_home` still exists, but is no longer kAccountHome.
+  EXPECT_THAT(
+      GetAllDataFromTable(),
+      UnorderedElementsAre(local_home.DowngradeToAccountProfile(), remote));
 }
 
 // Tests that `GetDataForCommit()` returns all local profiles of matching GUID.

@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/webdata/addresses/contact_info_sync_bridge.h"
 
+#include <algorithm>
+
 #include "base/check.h"
-#include "base/ranges/algorithm.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/webdata/addresses/contact_info_sync_util.h"
@@ -116,6 +117,10 @@ ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
         // Since the specifics are guaranteed to be valid by
         // `IsEntityDataValid()`, the conversion will succeed.
         DCHECK(remote);
+        if (!EnsureUniquenessOfHomeAndWork(*remote)) {
+          return syncer::ModelError(FROM_HERE,
+                                    "Failed to ensure uniqueness of H/W.");
+        }
         // Since the distinction between adds and updates is not always clear,
         // we check the existence of the profile manually and act accordingly.
         // TODO(crbug.com/40100455): Consider adding an AddOrUpdate() function
@@ -148,10 +153,10 @@ ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
 std::unique_ptr<syncer::DataBatch> ContactInfoSyncBridge::GetDataForCommit(
     StorageKeyList storage_keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::ranges::sort(storage_keys);
+  std::ranges::sort(storage_keys);
   auto filter_by_keys = base::BindRepeating(
       [](const StorageKeyList& storage_keys, const std::string& guid) {
-        return base::ranges::binary_search(storage_keys, guid);
+        return std::ranges::binary_search(storage_keys, guid);
       },
       storage_keys);
   return GetDataAndFilter(filter_by_keys);
@@ -331,6 +336,22 @@ void ContactInfoSyncBridge::LoadMetadata() {
     batch = std::make_unique<syncer::MetadataBatch>();
   }
   change_processor()->ModelReadyToSync(std::move(batch));
+}
+
+bool ContactInfoSyncBridge::EnsureUniquenessOfHomeAndWork(
+    const AutofillProfile& profile) {
+  if (profile.record_type() != AutofillProfile::RecordType::kAccountHome &&
+      profile.record_type() != AutofillProfile::RecordType::kAccountWork) {
+    return true;
+  }
+  std::vector<AutofillProfile> existing_profiles;
+  AddressAutofillTable& table = *GetAutofillTable();
+  return table.GetAutofillProfiles({profile.record_type()},
+                                   existing_profiles) &&
+         std::ranges::all_of(existing_profiles, [&](const AutofillProfile& p) {
+           return p.guid() == profile.guid() ||
+                  table.UpdateAutofillProfile(p.DowngradeToAccountProfile());
+         });
 }
 
 }  // namespace autofill
