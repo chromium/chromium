@@ -69,9 +69,5 @@
 
 .customizable-select-button::after {
   padding-inline-start: 0.5em;
-  content: counter(fake-counter-name, disclosure-closed);
-}
-
-.customizable-select-button.open::after {
   content: counter(fake-counter-name, disclosure-open);
 }

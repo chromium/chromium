@@ -154,11 +154,8 @@ select:not(-internal-list-box):not(:-internal-select-has-child-button)::after {
   padding-inline-start: 0.5em;
   display: block;
 }
-select:not(:-internal-list-box):not(:-internal-select-has-child-button):open::after {
+select:not(:-internal-list-box):not(:-internal-select-has-child-button)::after {
   content: -internal-appearance-auto-base-select(none, counter(fake-counter-name, disclosure-open));
-}
-select:not(:-internal-list-box):not(:-internal-select-has-child-button):not(:open)::after {
-  content: -internal-appearance-auto-base-select(none, counter(fake-counter-name, disclosure-closed));
 }
 
 select:not(:-internal-list-box) optgroup {

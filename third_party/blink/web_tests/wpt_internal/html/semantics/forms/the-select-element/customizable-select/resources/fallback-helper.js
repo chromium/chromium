@@ -72,7 +72,7 @@ async function generateReferenceFrame(numOptions,initialx,initialy,extraStyleRul
   const options = Array(numOptions).fill(singleOption).join('\n');
   const content = `
     <link rel=stylesheet href="resources/customizable-select-styles.css">
-    <div class="select customizable-select-button open" popovertarget=popover id=button style="anchor-name:--button">
+    <div class="select customizable-select-button" popovertarget=popover id=button style="anchor-name:--button">
       <span class=customizable-select-selectedoption>Select</span>
     </div>
     <div id=popover popover=auto anchor=button class=customizable-select-popover style="position-anchor:--button">
