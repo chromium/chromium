@@ -34,8 +34,8 @@
 // The inactive browser. This can be nullptr if in an incognito interface or if
 // Inactive Tabs is disabled.
 @property(nonatomic) Browser* inactiveBrowser;
-// The browser state for this interface. This can never be nullptr.
-@property(nonatomic, readonly) ChromeBrowserState* browserState;
+// The profile for this interface. This can never be nullptr.
+@property(nonatomic, readonly) ProfileIOS* profile;
 // YES if this interface is incognito.
 @property(nonatomic, readonly) BOOL incognito;
 // YES if TTS audio is playing.

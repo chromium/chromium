@@ -47,7 +47,7 @@ class BrowserViewWranglerTest : public PlatformTest {
     scene_state_ = [[SceneStateWithFakeScene alloc] initWithScene:fake_scene_
                                                          appState:nil];
 
-    TestChromeBrowserState::Builder test_cbs_builder;
+    TestProfileIOS::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         SendTabToSelfSyncServiceFactory::GetInstance(),
         SendTabToSelfSyncServiceFactory::GetDefaultFactory());
@@ -79,48 +79,44 @@ class BrowserViewWranglerTest : public PlatformTest {
         SessionRestorationServiceFactory::GetInstance(),
         TestSessionRestorationService::GetTestingFactory());
 
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
-    chrome_browser_state_->CreateOffTheRecordBrowserStateWithTestingFactories(
-        {TestChromeBrowserState::TestingFactory{
+    profile_ = std::move(test_cbs_builder).Build();
+    profile_->CreateOffTheRecordProfileWithTestingFactories(
+        {TestProfileIOS::TestingFactory{
             SessionRestorationServiceFactory::GetInstance(),
             TestSessionRestorationService::GetTestingFactory(),
         }});
 
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        chrome_browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+    AuthenticationServiceFactory::CreateAndInitializeForProfile(
+        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
 
     scoped_session_restoration_observation_.AddObservation(
-        SessionRestorationServiceFactory::GetForBrowserState(
-            chrome_browser_state_.get()));
+        SessionRestorationServiceFactory::GetForProfile(profile_.get()));
     scoped_session_restoration_observation_.AddObservation(
-        SessionRestorationServiceFactory::GetForBrowserState(
-            chrome_browser_state_->GetOffTheRecordChromeBrowserState()));
+        SessionRestorationServiceFactory::GetForProfile(
+            profile_->GetOffTheRecordProfile()));
 
     scoped_browser_list_observation_.Observe(
-        BrowserListFactory::GetForBrowserState(chrome_browser_state_.get()));
+        BrowserListFactory::GetForProfile(profile_.get()));
   }
 
-  void RecreateOffTheRecordChromeBrowserState() {
+  void RecreateOffTheRecordProfile() {
     scoped_session_restoration_observation_.RemoveObservation(
-        SessionRestorationServiceFactory::GetForBrowserState(
-            chrome_browser_state_->GetOffTheRecordChromeBrowserState()));
+        SessionRestorationServiceFactory::GetForProfile(
+            profile_->GetOffTheRecordProfile()));
 
-    chrome_browser_state_->DestroyOffTheRecordChromeBrowserState();
-    chrome_browser_state_->CreateOffTheRecordBrowserStateWithTestingFactories(
-        {TestChromeBrowserState::TestingFactory{
+    profile_->DestroyOffTheRecordProfile();
+    profile_->CreateOffTheRecordProfileWithTestingFactories(
+        {TestProfileIOS::TestingFactory{
             SessionRestorationServiceFactory::GetInstance(),
             TestSessionRestorationService::GetTestingFactory(),
         }});
 
     scoped_session_restoration_observation_.AddObservation(
-        SessionRestorationServiceFactory::GetForBrowserState(
-            chrome_browser_state_->GetOffTheRecordChromeBrowserState()));
+        SessionRestorationServiceFactory::GetForProfile(
+            profile_->GetOffTheRecordProfile()));
   }
 
-  ChromeBrowserState* chrome_browser_state() {
-    return chrome_browser_state_.get();
-  }
+  ProfileIOS* profile() { return profile_.get(); }
 
   SceneState* scene_state() { return scene_state_; }
 
@@ -135,7 +131,7 @@ class BrowserViewWranglerTest : public PlatformTest {
  private:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   id fake_scene_;
   SceneState* scene_state_;
 
@@ -156,10 +152,10 @@ TEST_F(BrowserViewWranglerTest, TestInitNilObserver) {
   // objects may rely on threading API in dealloc.
   @autoreleasepool {
     BrowserViewWrangler* wrangler =
-        [[BrowserViewWrangler alloc] initWithBrowserState:chrome_browser_state()
-                                               sceneState:scene_state()
-                                      applicationEndpoint:nil
-                                         settingsEndpoint:nil];
+        [[BrowserViewWrangler alloc] initWithProfile:profile()
+                                          sceneState:scene_state()
+                                 applicationEndpoint:nil
+                                    settingsEndpoint:nil];
     [wrangler createMainCoordinatorAndInterface];
 
     // Test that BVC is created on demand.
@@ -177,7 +173,7 @@ TEST_F(BrowserViewWranglerTest, TestInitNilObserver) {
     // Test that the OTR objects are (a) OTR and (b) not the same as the non-OTR
     // objects.
     EXPECT_NE(bvc, wrangler.incognitoInterface.viewController);
-    EXPECT_TRUE(wrangler.incognitoInterface.browserState->IsOffTheRecord());
+    EXPECT_TRUE(wrangler.incognitoInterface.profile->IsOffTheRecord());
 
     // Test that the OTR browser has SceneState associated with it.
     SceneState* otr_browser_scene_state =
@@ -195,13 +191,12 @@ TEST_F(BrowserViewWranglerTest, TestBrowserList) {
       {/* Disabled features */ kTabInactivityThreshold});
 
   BrowserViewWrangler* wrangler =
-      [[BrowserViewWrangler alloc] initWithBrowserState:chrome_browser_state()
-                                             sceneState:scene_state()
-                                    applicationEndpoint:nil
-                                       settingsEndpoint:nil];
+      [[BrowserViewWrangler alloc] initWithProfile:profile()
+                                        sceneState:scene_state()
+                               applicationEndpoint:nil
+                                  settingsEndpoint:nil];
 
-  BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(chrome_browser_state());
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile());
 
   // Create the coordinator and interface. This is required to get access
   // to the Browser via the -mainInterface/-incognitoInterface providers.
@@ -223,11 +218,11 @@ TEST_F(BrowserViewWranglerTest, TestBrowserList) {
             browser_list_observer().GetLastAddedIncognitoBrowser());
 
   // Record the old Browser before it is destroyed. This will be dangling
-  // after the call to -willDestroyIncognitoBrowserState.
+  // after the call to -willDestroyIncognitoProfile.
   Browser* prior_otr_browser = wrangler.incognitoInterface.browser;
-  [wrangler willDestroyIncognitoBrowserState];
-  RecreateOffTheRecordChromeBrowserState();
-  [wrangler incognitoBrowserStateCreated];
+  [wrangler willDestroyIncognitoProfile];
+  RecreateOffTheRecordProfile();
+  [wrangler incognitoProfileCreated];
 
   // Expect that the prior OTR browser was removed, and a new one was added.
   EXPECT_EQ(prior_otr_browser,
@@ -275,13 +270,12 @@ TEST_F(BrowserViewWranglerTest, TestInactiveInterface) {
                                                   parameters);
 
   BrowserViewWrangler* wrangler =
-      [[BrowserViewWrangler alloc] initWithBrowserState:chrome_browser_state()
-                                             sceneState:scene_state()
-                                    applicationEndpoint:nil
-                                       settingsEndpoint:nil];
+      [[BrowserViewWrangler alloc] initWithProfile:profile()
+                                        sceneState:scene_state()
+                               applicationEndpoint:nil
+                                  settingsEndpoint:nil];
 
-  BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(chrome_browser_state());
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile());
 
   [wrangler createMainCoordinatorAndInterface];
   EXPECT_EQ(2UL,
@@ -302,10 +296,10 @@ TEST_F(BrowserViewWranglerTest, TestInactiveInterface) {
 // Tests the session restoration logic.
 TEST_F(BrowserViewWranglerTest, TestSessionRestorationLogic) {
   BrowserViewWrangler* wrangler =
-      [[BrowserViewWrangler alloc] initWithBrowserState:chrome_browser_state()
-                                             sceneState:scene_state()
-                                    applicationEndpoint:nil
-                                       settingsEndpoint:nil];
+      [[BrowserViewWrangler alloc] initWithProfile:profile()
+                                        sceneState:scene_state()
+                               applicationEndpoint:nil
+                                  settingsEndpoint:nil];
 
   // Create the coordinator and interface. This is required to get access
   // to the Browser via the -mainInterface/-incognitoInterface providers.
@@ -319,9 +313,9 @@ TEST_F(BrowserViewWranglerTest, TestSessionRestorationLogic) {
 
   // Destroing and rebuilding the incognito browser should not restore the
   // sessions.
-  [wrangler willDestroyIncognitoBrowserState];
-  RecreateOffTheRecordChromeBrowserState();
-  [wrangler incognitoBrowserStateCreated];
+  [wrangler willDestroyIncognitoProfile];
+  RecreateOffTheRecordProfile();
+  [wrangler incognitoProfileCreated];
 
   EXPECT_EQ(3, session_restoration_observer().session_restoration_call_count());
   [wrangler shutdown];

@@ -103,12 +103,11 @@
 }
 
 - (BOOL)isSignedIn {
-  ChromeBrowserState* browserState =
-      self.sceneState.browserProviderInterface.mainBrowserProvider.browser
-          ->GetBrowserState();
+  ProfileIOS* profile = self.sceneState.browserProviderInterface
+                            .mainBrowserProvider.browser->GetProfile();
 
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
+      AuthenticationServiceFactory::GetForProfile(profile);
   DCHECK(authenticationService);
   DCHECK(authenticationService->initialized());
   return authenticationService->HasPrimaryIdentity(
@@ -124,13 +123,12 @@
 
   Browser* browser =
       self.sceneState.browserProviderInterface.mainBrowserProvider.browser;
-  if (!browser || !browser->GetBrowserState()) {
+  if (!browser || !browser->GetProfile()) {
     return;
   }
 
   feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(
-          browser->GetBrowserState());
+      feature_engagement::TrackerFactory::GetForProfile(browser->GetProfile());
   tracker->NotifyEvent(
       feature_engagement::events::kGenericDefaultBrowserPromoConditionsMet);
 }
@@ -147,12 +145,12 @@
       HasTriggerCriteriaExperimentStarted21days()) {
     Browser* browser =
         self.sceneState.browserProviderInterface.mainBrowserProvider.browser;
-    if (!browser || !browser->GetBrowserState()) {
+    if (!browser || !browser->GetProfile()) {
       return;
     }
     feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForBrowserState(
-            browser->GetBrowserState());
+        feature_engagement::TrackerFactory::GetForProfile(
+            browser->GetProfile());
     tracker->NotifyEvent(feature_engagement::events::
                              kDefaultBrowserPromoTriggerCriteriaConditionsMet);
   }

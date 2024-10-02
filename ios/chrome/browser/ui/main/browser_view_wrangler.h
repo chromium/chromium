@@ -22,7 +22,7 @@ class Browser;
 // BrowserViewControllers.
 @interface BrowserViewWrangler : NSObject <BrowserProviderInterface>
 
-// Initialize a new instance of this class using `browserState` as the primary
+// Initialize a new instance of this class using `profile` as the primary
 // browser state for the tab models and BVCs. The Browser objects are created
 // during the initialization (the OTR Browser may be destroyed and recreated
 // during the application lifetime).
@@ -32,11 +32,10 @@ class Browser;
 // `applicationEndpoint`, `settingsEndpoint, and `browsingDataEndpoint` are the
 // objects that methods in the respective command protocols should be
 // dispatched to.
-- (instancetype)
-    initWithBrowserState:(ChromeBrowserState*)browserState
-              sceneState:(SceneState*)sceneState
-     applicationEndpoint:(id<ApplicationCommands>)applicationEndpoint
-        settingsEndpoint:(id<SettingsCommands>)settingsEndpoint
+- (instancetype)initWithProfile:(ProfileIOS*)profile
+                     sceneState:(SceneState*)sceneState
+            applicationEndpoint:(id<ApplicationCommands>)applicationEndpoint
+               settingsEndpoint:(id<SettingsCommands>)settingsEndpoint
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -66,14 +65,14 @@ class Browser;
 - (void)loadSession;
 
 // Tells the receiver to clean up all the state that is tied to the incognito
-// BrowserState. This method should be called before the incognito BrowserState
+// profile. This method should be called before the incognito profile
 // is destroyed.
-- (void)willDestroyIncognitoBrowserState;
+- (void)willDestroyIncognitoProfile;
 
 // Tells the receiver to create all state that is tied to the incognito
-// BrowserState. This method should be called after the incognito BrowserState
+// profile. This method should be called after the incognito profile
 // has been created.
-- (void)incognitoBrowserStateCreated;
+- (void)incognitoProfileCreated;
 
 // Tells the receiver to clean up prior to deallocation. It is an error for an
 // instance of this class to deallocate without a call to this method first.

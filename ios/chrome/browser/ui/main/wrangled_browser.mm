@@ -44,12 +44,12 @@
   return self.coordinator.browser;
 }
 
-- (ChromeBrowserState*)browserState {
-  return self.browser->GetBrowserState();
+- (ProfileIOS*)profile {
+  return self.browser->GetProfile();
 }
 
 - (BOOL)incognito {
-  return self.browserState->IsOffTheRecord();
+  return self.profile->IsOffTheRecord();
 }
 
 - (BOOL)playingTTS {

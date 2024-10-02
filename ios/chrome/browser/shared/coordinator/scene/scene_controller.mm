@@ -716,7 +716,7 @@ void OnListFamilyMembersResponse(
                    completionHandler:
                        (void (^)(BOOL succeeded))completionHandler {
   if (self.sceneState.appState.initStage <= InitStageNormalUI ||
-      !self.currentInterface.browserState) {
+      !self.currentInterface.profile) {
     // Don't handle the intent if the browser UI objects aren't yet initialized.
     // This is the case when the app is in safe mode or may be the case when the
     // app is going through an odd sequence of lifecyle events (shouldn't happen
@@ -747,7 +747,7 @@ void OnListFamilyMembersResponse(
   }
 
   if (self.sceneState.appState.initStage <= InitStageNormalUI ||
-      !self.currentInterface.browserState) {
+      !self.currentInterface.profile) {
     // Don't handle the intent if the browser UI objects aren't yet initialized.
     // This is the case when the app is in safe mode or may be the case when the
     // app is going through an odd sequence of lifecyle events (shouldn't happen
@@ -758,7 +758,7 @@ void OnListFamilyMembersResponse(
   BOOL sceneIsActive = [self canHandleIntents];
   self.sceneState.startupHadExternalIntent = YES;
 
-  PrefService* prefs = self.currentInterface.browserState->GetPrefs();
+  PrefService* prefs = self.currentInterface.profile->GetPrefs();
   UserActivityBrowserAgent* userActivityBrowserAgent =
       UserActivityBrowserAgent::FromBrowser(self.currentInterface.browser);
   if (IsIncognitoPolicyApplied(prefs) &&
@@ -1014,10 +1014,10 @@ void OnListFamilyMembersResponse(
   ProfileIOS* profile = sceneState.profileState.profile;
 
   self.browserViewWrangler =
-      [[BrowserViewWrangler alloc] initWithBrowserState:profile
-                                             sceneState:sceneState
-                                    applicationEndpoint:self
-                                       settingsEndpoint:self];
+      [[BrowserViewWrangler alloc] initWithProfile:profile
+                                        sceneState:sceneState
+                               applicationEndpoint:self
+                                  settingsEndpoint:self];
 
   // Create and start the BVC.
   [self.browserViewWrangler createMainCoordinatorAndInterface];
@@ -1382,7 +1382,7 @@ void OnListFamilyMembersResponse(
 - (BOOL)isTabActivityValid:(NSUserActivity*)activity {
   web::WebStateID tabID = GetTabIDFromActivity(activity);
 
-  ChromeBrowserState* browserState = self.currentInterface.browserState;
+  ChromeBrowserState* browserState = self.currentInterface.profile;
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(browserState);
   const BrowserList::BrowserType browser_types =
@@ -1655,7 +1655,7 @@ using UserFeedbackDataCallback =
   }
 
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(self.mainInterface.browserState);
+      IdentityManagerFactory::GetForProfile(self.mainInterface.profile);
   CoreAccountInfo primary_account =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
 
@@ -1665,7 +1665,7 @@ using UserFeedbackDataCallback =
     __weak SceneController* weakSelf = self;
     _family_members_fetcher = supervised_user::FetchListFamilyMembers(
         *identity_manager,
-        self.mainInterface.browserState->GetSharedURLLoaderFactory(),
+        self.mainInterface.profile->GetSharedURLLoaderFactory(),
         base::BindOnce(&OnListFamilyMembersResponse, primary_account.gaia, data)
             .Then(base::BindOnce(^{
               [weakSelf presentUserFeedbackViewController:baseViewController
@@ -1751,7 +1751,7 @@ using UserFeedbackDataCallback =
   DCHECK(lastView);
   data.currentPageScreenshot = CaptureView(lastView, scale);
 
-  ChromeBrowserState* browserState = self.currentInterface.browserState;
+  ChromeBrowserState* browserState = self.currentInterface.profile;
   if (browserState->IsOffTheRecord()) {
     data.currentPageIsIncognito = YES;
   } else {
@@ -1974,7 +1974,7 @@ using UserFeedbackDataCallback =
       ![self isTabAvailableToPresentViewController]) {
     return;
   }
-  if (!signin::ShouldPresentWebSignin(self.mainInterface.browserState)) {
+  if (!signin::ShouldPresentWebSignin(self.mainInterface.profile)) {
     return;
   }
   self.signinCoordinator = [SigninCoordinator
@@ -2111,7 +2111,7 @@ using UserFeedbackDataCallback =
   options.requestingScene = self.sceneState.scene;
 
   if (self.mainInterface) {
-    PrefService* prefs = self.mainInterface.browserState->GetPrefs();
+    PrefService* prefs = self.mainInterface.profile->GetPrefs();
     if (IsIncognitoModeForced(prefs)) {
       userActivity = AdaptUserActivityToIncognito(userActivity, true);
     } else if (IsIncognitoModeDisabled(prefs)) {
@@ -3007,13 +3007,12 @@ using UserFeedbackDataCallback =
                  startupInformation:(id<StartupInformation>)startupInformation
                            appState:(AppState*)appState {
   if (params) {
-    [URLOpener
-          handleLaunchOptions:params
-                    tabOpener:self
-        connectionInformation:self
-           startupInformation:startupInformation
-                     appState:appState
-                  prefService:self.currentInterface.browserState->GetPrefs()];
+    [URLOpener handleLaunchOptions:params
+                         tabOpener:self
+             connectionInformation:self
+                startupInformation:startupInformation
+                          appState:appState
+                       prefService:self.currentInterface.profile->GetPrefs()];
   }
 }
 
@@ -3119,8 +3118,7 @@ using UserFeedbackDataCallback =
 
   // MailtoHandlerService is responsible for the dialogs displayed by the
   // services it wraps.
-  MailtoHandlerServiceFactory::GetForBrowserState(
-      self.currentInterface.browserState)
+  MailtoHandlerServiceFactory::GetForBrowserState(self.currentInterface.profile)
       ->DismissAllMailtoHandlerInterfaces();
 
   // Then, depending on what the SSO view controller is presented on, dismiss
@@ -3905,7 +3903,7 @@ using UserFeedbackDataCallback =
   // until the callback is received.
   BrowsingDataRemover* browsingDataRemover =
       BrowsingDataRemoverFactory::GetForProfileIfExists(
-          self.currentInterface.browserState);
+          self.currentInterface.profile);
   if (browsingDataRemover && browsingDataRemover->IsRemoving()) {
     return;
   }
@@ -3939,7 +3937,7 @@ using UserFeedbackDataCallback =
 
 - (void)openURLContexts:(NSSet<UIOpenURLContext*>*)URLContexts {
   if (self.sceneState.appState.initStage <= InitStageNormalUI ||
-      !self.currentInterface.browserState) {
+      !self.currentInterface.profile) {
     // Don't handle the intent if the browser UI objects aren't yet initialized.
     // This is the case when the app is in safe mode or may be the case when the
     // app is going through an odd sequence of lifecyle events (shouldn't happen
@@ -3970,7 +3968,7 @@ using UserFeedbackDataCallback =
                     tabOpener:self
         connectionInformation:self
            startupInformation:self.sceneState.appState.startupInformation
-                  prefService:self.currentInterface.browserState->GetPrefs()
+                  prefService:self.currentInterface.profile->GetPrefs()
                     initStage:self.sceneState.appState.initStage];
   }
 }
@@ -4104,11 +4102,11 @@ using UserFeedbackDataCallback =
   }
 
   _incognitoWebStateObserver.reset();
-  [self.browserViewWrangler willDestroyIncognitoBrowserState];
+  [self.browserViewWrangler willDestroyIncognitoProfile];
 }
 
 - (void)incognitoBrowserStateCreated {
-  [self.browserViewWrangler incognitoBrowserStateCreated];
+  [self.browserViewWrangler incognitoProfileCreated];
 
   // There should be a new URL loading browser agent for the incognito browser,
   // so set the scene URL loading service on it.

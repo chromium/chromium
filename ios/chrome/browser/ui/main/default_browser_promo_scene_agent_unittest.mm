@@ -63,24 +63,22 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
     local_state_ = std::make_unique<TestingPrefServiceSimple>();
     RegisterLocalStatePrefs(local_state_->registry());
     TestingApplicationContext::GetGlobal()->SetLocalState(local_state_.get());
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
         base::BindRepeating(&BuildFeatureEngagementMockTracker));
-    browser_state_ = std::move(builder).Build();
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+    profile_ = std::move(builder).Build();
+    AuthenticationServiceFactory::CreateAndInitializeForProfile(
+        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
     startup_information_ = [[FakeStartupInformation alloc] init];
     [startup_information_ setIsColdStart:YES];
     app_state_ =
         [[AppState alloc] initWithStartupInformation:startup_information_];
-    scene_state_ =
-        [[FakeSceneState alloc] initWithAppState:app_state_
-                                    browserState:browser_state_.get()];
+    scene_state_ = [[FakeSceneState alloc] initWithAppState:app_state_
+                                                    profile:profile_.get()];
     scene_state_.scene = static_cast<UIWindowScene*>(
         [[[UIApplication sharedApplication] connectedScenes] anyObject]);
     promos_manager_ = std::make_unique<NiceMock<MockPromosManager>>();
@@ -95,15 +93,14 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
     }
 
     mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(
-        feature_engagement::TrackerFactory::GetForBrowserState(
-            browser_state_.get()));
+        feature_engagement::TrackerFactory::GetForProfile(profile_.get()));
   }
 
   void TearDown() override {
     [[NSUserDefaults standardUserDefaults]
         setBool:NO
          forKey:@"SimulatePostDeviceRestore"];
-    browser_state_.reset();
+    profile_.reset();
     ClearDefaultBrowserPromoData();
     TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
     local_state_.reset();
@@ -115,7 +112,7 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(identity);
-    AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
+    AuthenticationServiceFactory::GetForProfile(profile_.get())
         ->SignIn(identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   }
 
@@ -189,7 +186,7 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   DefaultBrowserPromoSceneAgent* agent_;
   FakeSceneState* scene_state_;
   AppState* app_state_;

@@ -37,7 +37,7 @@
 #import "ios/chrome/browser/ui/main/wrangled_browser.h"
 
 @implementation BrowserViewWrangler {
-  raw_ptr<ChromeBrowserState> _browserState;
+  raw_ptr<ProfileIOS> _profile;
 
   __weak SceneState* _sceneState;
   __weak id<ApplicationCommands> _applicationEndpoint;
@@ -52,25 +52,23 @@
   BOOL _isShutdown;
 }
 
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
-                          sceneState:(SceneState*)sceneState
-                 applicationEndpoint:
-                     (id<ApplicationCommands>)applicationEndpoint
-                    settingsEndpoint:(id<SettingsCommands>)settingsEndpoint {
+- (instancetype)initWithProfile:(ProfileIOS*)profile
+                     sceneState:(SceneState*)sceneState
+            applicationEndpoint:(id<ApplicationCommands>)applicationEndpoint
+               settingsEndpoint:(id<SettingsCommands>)settingsEndpoint {
   if ((self = [super init])) {
-    _browserState = browserState;
+    _profile = profile;
     _sceneState = sceneState;
     _applicationEndpoint = applicationEndpoint;
     _settingsEndpoint = settingsEndpoint;
 
     // Create all browsers.
-    _mainBrowser = Browser::Create(_browserState, _sceneState);
+    _mainBrowser = Browser::Create(_profile, _sceneState);
     [self setupBrowser:_mainBrowser.get()];
     [self setupBrowser:_mainBrowser->CreateInactiveBrowser()];
 
-    ChromeBrowserState* otrBrowserState =
-        _browserState->GetOffTheRecordChromeBrowserState();
-    _otrBrowser = Browser::Create(otrBrowserState, _sceneState);
+    ProfileIOS* otrProfile = _profile->GetOffTheRecordProfile();
+    _otrBrowser = Browser::Create(otrProfile, _sceneState);
     [self setupBrowser:_otrBrowser.get()];
   }
   return self;
@@ -148,7 +146,7 @@
 
 // This method should almost never return NO since the incognitoInterface
 // is not lazily created, but it is possible for it to return YES after
-// -shutdown or as a transient state while the OTR ChromeBrowserState is
+// -shutdown or as a transient state while the OTR Profile is
 // being detroyed and recreated (see SceneController).
 - (BOOL)hasIncognitoBrowserProvider {
   return _mainInterface && _incognitoInterface;
@@ -182,7 +180,7 @@
 
 #pragma mark - Other public methods
 
-- (void)willDestroyIncognitoBrowserState {
+- (void)willDestroyIncognitoProfile {
   // It is theoretically possible that a Tab has been added to the webStateList
   // since the deletion has been scheduled. It is unlikely to happen for real
   // because it would require superhuman speed.
@@ -200,7 +198,7 @@
     _incognitoInterface = nil;
 
     // Cleanup and destroy the OTR browser. It will be recreated with the
-    // off-the-record ChromeBrowserState.
+    // off-the-record Profile.
     [self cleanupBrowser:_otrBrowser.get()];
     _otrBrowser.reset();
 
@@ -212,19 +210,18 @@
   }
 }
 
-- (void)incognitoBrowserStateCreated {
-  DCHECK(_browserState);
-  DCHECK(_browserState->HasOffTheRecordChromeBrowserState());
+- (void)incognitoProfileCreated {
+  DCHECK(_profile);
+  DCHECK(_profile->HasOffTheRecordProfile());
   DCHECK(!_otrBrowser);
 
   // An empty _otrBrowser must be created at this point, because it is then
   // possible to prevent the tabChanged notification being sent. Otherwise,
   // when it is created, a notification with no tabs will be sent, and it will
   // be immediately deleted.
-  ChromeBrowserState* incognitoBrowserState =
-      _browserState->GetOffTheRecordChromeBrowserState();
+  ProfileIOS* incognitoProfile = _profile->GetOffTheRecordProfile();
 
-  _otrBrowser = Browser::Create(incognitoBrowserState, _sceneState);
+  _otrBrowser = Browser::Create(incognitoProfile, _sceneState);
   [self setupBrowser:_otrBrowser.get()];
 
   // Recreate the off-the-record interface, but do not load the session as
@@ -264,7 +261,7 @@
   _mainBrowser->DestroyInactiveBrowser();
   _mainBrowser.reset();
 
-  _browserState = nullptr;
+  _profile = nullptr;
 }
 
 #pragma mark - Internal methods
@@ -285,9 +282,8 @@
 
 // Sets up an existing browser.
 - (void)setupBrowser:(Browser*)browser {
-  ChromeBrowserState* browserState = browser->GetBrowserState();
-  BrowserList* browserList =
-      BrowserListFactory::GetForBrowserState(browserState);
+  ProfileIOS* profile = browser->GetProfile();
+  BrowserList* browserList = BrowserListFactory::GetForProfile(profile);
   browserList->AddBrowser(browser);
 
   [self dispatchToEndpointsForBrowser:browser];
@@ -299,7 +295,7 @@
 
   // Follow loaded URLs in the non-incognito browser to send those in case of
   // crashes.
-  if (!browserState->IsOffTheRecord()) {
+  if (!profile->IsOffTheRecord()) {
     crash_report_helper::MonitorURLsForWebStateList(browser->GetWebStateList());
   }
 }
@@ -326,18 +322,16 @@
 
   // Remove the Browser from the browser list. The browser itself is still
   // alive during this call, so any observer can act on it.
-  ChromeBrowserState* browserState = browser->GetBrowserState();
-  BrowserList* browserList =
-      BrowserListFactory::GetForBrowserState(browserState);
+  ProfileIOS* profile = browser->GetProfile();
+  BrowserList* browserList = BrowserListFactory::GetForProfile(profile);
   browserList->RemoveBrowser(browser);
 
   // Stop serializing the state of `browser`.
-  SessionRestorationServiceFactory::GetForBrowserState(browserState)
-      ->Disconnect(browser);
+  SessionRestorationServiceFactory::GetForProfile(profile)->Disconnect(browser);
 
   WebStateList* webStateList = browser->GetWebStateList();
   crash_report_helper::StopMonitoringTabStateForWebStateList(webStateList);
-  if (!browser->GetBrowserState()->IsOffTheRecord()) {
+  if (!browser->GetProfile()->IsOffTheRecord()) {
     crash_report_helper::StopMonitoringURLsForWebStateList(webStateList);
   }
 
@@ -357,16 +351,16 @@
 
   SnapshotBrowserAgent::FromBrowser(browser)->SetSessionID(identifier);
 
-  ChromeBrowserState* browserState = browser->GetBrowserState();
-  SessionRestorationServiceFactory::GetForBrowserState(browserState)
-      ->SetSessionID(browser, identifier);
+  ProfileIOS* profile = browser->GetProfile();
+  SessionRestorationServiceFactory::GetForProfile(profile)->SetSessionID(
+      browser, identifier);
 }
 
 // Load session for `browser`.
 - (void)loadSessionForBrowser:(Browser*)browser {
-  ChromeBrowserState* browserState = browser->GetBrowserState();
-  SessionRestorationServiceFactory::GetForBrowserState(browserState)
-      ->LoadSession(browser);
+  ProfileIOS* profile = browser->GetProfile();
+  SessionRestorationServiceFactory::GetForProfile(profile)->LoadSession(
+      browser);
 }
 
 @end

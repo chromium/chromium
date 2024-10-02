@@ -140,10 +140,10 @@ class SceneControllerTest : public PlatformTest {
             &test_loader_factory_));
 
     scene_controller_.browserViewWrangler =
-        [[BrowserViewWrangler alloc] initWithBrowserState:browser_state_.get()
-                                               sceneState:scene_state_
-                                      applicationEndpoint:nil
-                                         settingsEndpoint:nil];
+        [[BrowserViewWrangler alloc] initWithProfile:browser_state_.get()
+                                          sceneState:scene_state_
+                                 applicationEndpoint:nil
+                                    settingsEndpoint:nil];
     [scene_controller_.browserViewWrangler createMainCoordinatorAndInterface];
 
     scene_controller_.browser = browser_.get();
@@ -164,8 +164,7 @@ class SceneControllerTest : public PlatformTest {
   // Mock & stub a WrangledBrowser object.
   id CreateMockCurrentInterface() {
     id mock_wrangled_browser = OCMClassMock(WrangledBrowser.class);
-    OCMStub([mock_wrangled_browser browserState])
-        .andReturn(browser_state_.get());
+    OCMStub([mock_wrangled_browser profile]).andReturn(browser_state_.get());
     OCMStub([mock_wrangled_browser browser]).andReturn(browser_.get());
     return mock_wrangled_browser;
   }

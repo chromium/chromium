@@ -87,8 +87,7 @@ class TabOpenerTest : public PlatformTest {
       builder.SetPrefService(factory.CreateSyncable(registry.get()));
       browser_state_ = std::move(builder).Build();
 
-      OCMStub([mock_wrangled_browser browserState])
-          .andReturn(browser_state_.get());
+      OCMStub([mock_wrangled_browser profile]).andReturn(browser_state_.get());
 
       SceneController* controller =
           [[SceneController alloc] initWithSceneState:scene_state_];
