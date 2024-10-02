@@ -56,6 +56,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -227,6 +228,18 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, ShowWithRecentlyClosedWindow) {
 
   // Show the AppMenu.
   menu_button()->ShowMenu(views::MenuRunner::NO_FLAGS);
+}
+
+IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, ExpandCollapse) {
+  EXPECT_FALSE(menu_button()->IsMenuShowing());
+
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kExpand;
+  menu_button()->HandleAccessibleAction(action_data);
+  EXPECT_TRUE(menu_button()->IsMenuShowing());
+  action_data.action = ax::mojom::Action::kCollapse;
+  menu_button()->HandleAccessibleAction(action_data);
+  EXPECT_FALSE(menu_button()->IsMenuShowing());
 }
 
 // There should be at least one subtest below for every distinct submenu of the

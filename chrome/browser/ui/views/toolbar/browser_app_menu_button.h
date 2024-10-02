@@ -54,6 +54,9 @@ class BrowserAppMenuButton : public AppMenuButton {
   // Updates the presentation according to |severity_| and the theme provider.
   void UpdateIcon() override;
 
+  // Need to override to implement the Expand and Collapse actions.
+  bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
+
  private:
   void OnTouchUiChanged();
 
