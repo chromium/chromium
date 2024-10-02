@@ -25,9 +25,11 @@ namespace lens {
 namespace {
 
 const int kMaxDownloadBytes = 1024 * 1024;
-const int kTranslateTaskCompletionID = 198158;
+const int kCopyAsImageTaskCompletionID = 233325;
 const int kCopyTextTaskCompletionID = 198153;
+const int kSaveAsImageTaskCompletionID = 233326;
 const int kSelectTextTaskCompletionID = 198157;
+const int kTranslateTaskCompletionID = 198158;
 constexpr char kGen204IdentifierQueryParameter[] = "plla";
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
@@ -133,6 +135,12 @@ void LensOverlayGen204Controller::SendTaskCompletionGen204IfEnabled(
         break;
       case mojom::UserAction::kTranslateText:
         task_id = kTranslateTaskCompletionID;
+        break;
+      case mojom::UserAction::kCopyAsImage:
+        task_id = kCopyAsImageTaskCompletionID;
+        break;
+      case mojom::UserAction::kSaveAsImage:
+        task_id = kSaveAsImageTaskCompletionID;
         break;
       default:
         // Other user actions should not send an associated gen204 ping.
