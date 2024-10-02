@@ -45,13 +45,15 @@ struct COMPONENT_EXPORT(COLOR_PROVIDER_KEY) ColorProviderKey {
     // https://support.microsoft.com/en-us/windows/change-color-contrast-in-windows-fedc744c-90ac-69df-aed5-c8a90125e696
     kActive,
     // Forced colors is activated by the browser's Page colors feature across
-    // platforms. kDusk and kDesert themes map to defaults available on Windows
-    // 11 [1], while kBlack and kWhite are themes available in Windows 10 [2].
-    // [1] https://support.microsoft.com/en-us/windows/change-color-contrast-in-windows-fedc744c-90ac-69df-aed5-c8a90125e696
-    // [2] https://support.microsoft.com/en-us/windows/change-color-contrast-in-windows-fedc744c-90ac-69df-aed5-c8a90125e696#WindowsVersion=Windows_10
+    // platforms. kDusk, kDesert, and kNightSky themes map to defaults available
+    // on Windows 11 [1], while kWhite is a theme available in Windows 10 [2].
+    // [1]
+    // https://support.microsoft.com/en-us/windows/change-color-contrast-in-windows-fedc744c-90ac-69df-aed5-c8a90125e696
+    // [2]
+    // https://support.microsoft.com/en-us/windows/change-color-contrast-in-windows-fedc744c-90ac-69df-aed5-c8a90125e696#WindowsVersion=Windows_10
     kDusk,
     kDesert,
-    kBlack,
+    kNightSky,
     kWhite,
   };
   enum class FrameType {

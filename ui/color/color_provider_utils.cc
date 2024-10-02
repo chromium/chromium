@@ -174,8 +174,8 @@ std::string_view ForcedColorsName(
       return "kDusk";
     case ColorProviderKey::ForcedColors::kDesert:
       return "kDesert";
-    case ColorProviderKey::ForcedColors::kBlack:
-      return "kBlack";
+    case ColorProviderKey::ForcedColors::kNightSky:
+      return "kNightSky";
     case ColorProviderKey::ForcedColors::kWhite:
       return "kWhite";
     default:

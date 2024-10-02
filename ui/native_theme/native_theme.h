@@ -125,7 +125,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
     kOff = 0,
     kDusk = 1,
     kDesert = 2,
-    kBlack = 3,
+    kNightSky = 3,
     kWhite = 4,
     kHighContrast = 5,
     kMaxValue = kHighContrast,

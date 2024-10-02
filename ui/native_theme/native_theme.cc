@@ -65,7 +65,7 @@ ColorProviderKey NativeTheme::GetColorProviderKey(
             {{PageColors::kOff, ColorProviderKey::ForcedColors::kNone},
              {PageColors::kDusk, ColorProviderKey::ForcedColors::kDusk},
              {PageColors::kDesert, ColorProviderKey::ForcedColors::kDesert},
-             {PageColors::kBlack, ColorProviderKey::ForcedColors::kBlack},
+             {PageColors::kNightSky, ColorProviderKey::ForcedColors::kNightSky},
              {PageColors::kWhite, ColorProviderKey::ForcedColors::kWhite},
              {PageColors::kHighContrast,
               ColorProviderKey::ForcedColors::kActive}});
@@ -380,9 +380,9 @@ bool NativeTheme::UpdateContrastRelatedStates(
       preferred_contrast = PreferredContrast::kNoPreference;
     } else if (page_colors != PageColors::kHighContrast) {
       // Set other states based on the selected theme (i.e. `kDusk`, `kDesert`,
-      // `kBlack`, or `kWhite`). This block is only executed when one of these
-      // themes is chosen. `kHighContrast` is not a valid theme here, as it is
-      // only available in forced colors mode.
+      // `kNightSky`, or `kWhite`). This block is only executed when one of
+      // these themes is chosen. `kHighContrast` is not a valid theme here, as
+      // it is only available in forced colors mode.
       CHECK_GE(page_colors, ui::NativeTheme::PageColors::kDusk);
       CHECK_LE(page_colors, ui::NativeTheme::PageColors::kWhite);
       forced_colors = true;
@@ -399,8 +399,8 @@ bool NativeTheme::UpdateContrastRelatedStates(
     // Only update the color scheme if page colors is a selected theme.
     if (page_colors != PageColors::kOff &&
         page_colors != PageColors::kHighContrast) {
-      bool is_dark_color =
-          page_colors == PageColors::kBlack || page_colors == PageColors::kDusk;
+      bool is_dark_color = page_colors == PageColors::kNightSky ||
+                           page_colors == PageColors::kDusk;
       PreferredColorScheme page_colors_theme_scheme =
           is_dark_color ? PreferredColorScheme::kDark
                         : PreferredColorScheme::kLight;

@@ -45,13 +45,13 @@ void AddDesertPageColorsToMixer(ColorMixer& mixer) {
   mixer[kColorCssSystemWindowText] = {SkColorSetRGB(0x3D, 0x3D, 0x3D)};
 }
 
-void AddBlackPageColorsToMixer(ColorMixer& mixer) {
+void AddNightSkyPageColorsToMixer(ColorMixer& mixer) {
   mixer[kColorCssSystemBtnFace] = {SK_ColorBLACK};
-  mixer[kColorCssSystemBtnText] = {SK_ColorWHITE};
-  mixer[kColorCssSystemGrayText] = {SkColorSetRGB(0x3F, 0xF2, 0x3F)};
-  mixer[kColorCssSystemHighlight] = {SkColorSetRGB(0x1A, 0xEB, 0xFF)};
-  mixer[kColorCssSystemHighlightText] = {SK_ColorBLACK};
-  mixer[kColorCssSystemHotlight] = {SK_ColorYELLOW};
+  mixer[kColorCssSystemBtnText] = {SkColorSetRGB(0xFF, 0xEE, 0x32)};
+  mixer[kColorCssSystemGrayText] = {SkColorSetRGB(0xA6, 0xA6, 0xA6)};
+  mixer[kColorCssSystemHighlight] = {SkColorSetRGB(0xD5, 0xB4, 0xFD)};
+  mixer[kColorCssSystemHighlightText] = {SkColorSetRGB(0x2B, 0x2B, 0x2B)};
+  mixer[kColorCssSystemHotlight] = {SkColorSetRGB(0x80, 0x80, 0xFF)};
   mixer[kColorCssSystemMenuHilight] = {SkColorSetRGB(0x80, 0x00, 0x80)};
   mixer[kColorCssSystemScrollbar] = {SK_ColorBLACK};
   mixer[kColorCssSystemWindow] = {SK_ColorBLACK};
@@ -98,8 +98,8 @@ void AddCssSystemColorMixer(ColorProvider* provider,
     case ColorProviderKey::ForcedColors::kDesert:
       AddDesertPageColorsToMixer(mixer);
       break;
-    case ColorProviderKey::ForcedColors::kBlack:
-      AddBlackPageColorsToMixer(mixer);
+    case ColorProviderKey::ForcedColors::kNightSky:
+      AddNightSkyPageColorsToMixer(mixer);
       break;
     case ColorProviderKey::ForcedColors::kWhite:
       AddWhitePageColorsToMixer(mixer);
