@@ -379,17 +379,49 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionViewControllerBrowserTest,
   check_visibility_string(action, IDS_EXTENSIONS_PIN_TO_TOOLBAR);
 }
 
-// TODO(devlin): Now that this is only parameterized in one way, it could be a
-// TestWithParamInterface<PermissionType>.
+enum class PermissionType {
+  kScriptableHost,
+  kExplicitHost,
+};
+
 class ExtensionActionViewControllerGrayscaleTest
-    : public ExtensionActionViewControllerBrowserTest {
+    : public ExtensionActionViewControllerBrowserTest,
+      public testing::WithParamInterface<PermissionType> {
  public:
-  enum class PermissionType {
-    kScriptableHost,
-    kExplicitHost,
+  enum class ActionState {
+    kEnabled,
+    kDisabled,
   };
 
-  ExtensionActionViewControllerGrayscaleTest() {}
+  enum class PageAccessStatus {
+    // The extension has been granted permission to the host.
+    kGranted,
+    // The extension had the host withheld and it has not tried to access the
+    // page.
+    kWithheld,
+    // The extension had the host withheld and it has been blocked when trying
+    // to access the page.
+    kBlocked,
+    // The extension has not been granted permissions to the host, nor was it
+    // withheld.
+    kNone,
+  };
+
+  enum class Coloring {
+    // The extension action color is grayscale.
+    kGrayscale,
+    // The extension action has full color.
+    kFull,
+  };
+
+  enum class BlockedDecoration {
+    // The extension is blocked, thus its action has painted decoration.
+    kPainted,
+    // The extension is not blocked, thus its action has no painted decoration.
+    kNotPainted,
+  };
+
+  ExtensionActionViewControllerGrayscaleTest() = default;
 
   ExtensionActionViewControllerGrayscaleTest(
       const ExtensionActionViewControllerGrayscaleTest&) = delete;
@@ -398,23 +430,77 @@ class ExtensionActionViewControllerGrayscaleTest
 
   ~ExtensionActionViewControllerGrayscaleTest() override = default;
 
-  void RunGrayscaleTest(PermissionType permission_type);
-
- private:
   scoped_refptr<const extensions::Extension> CreateExtension(
-      PermissionType permission_type);
+      PermissionType permission_type,
+      const std::string& host_permission);
+
   extensions::PermissionsData::PageAccess GetPageAccess(
       content::WebContents* web_contents,
       scoped_refptr<const extensions::Extension> extensions,
       PermissionType permission_type);
 };
 
-void ExtensionActionViewControllerGrayscaleTest::RunGrayscaleTest(
+scoped_refptr<const extensions::Extension>
+ExtensionActionViewControllerGrayscaleTest::CreateExtension(
+    PermissionType permission_type,
+    const std::string& host_permission) {
+  extensions::ExtensionBuilder builder("extension");
+  builder.SetAction(extensions::ActionInfo::Type::kBrowser)
+      .SetLocation(ManifestLocation::kInternal);
+  switch (permission_type) {
+    case PermissionType::kScriptableHost:
+      builder.AddContentScript("script.js", {host_permission});
+      break;
+    case PermissionType::kExplicitHost:
+      builder.AddHostPermission(host_permission);
+      break;
+  }
+
+  return builder.Build();
+}
+
+extensions::PermissionsData::PageAccess
+ExtensionActionViewControllerGrayscaleTest::GetPageAccess(
+    content::WebContents* web_contents,
+    scoped_refptr<const extensions::Extension> extension,
     PermissionType permission_type) {
+  int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
+  GURL url = web_contents->GetLastCommittedURL();
+  switch (permission_type) {
+    case PermissionType::kExplicitHost:
+      return extension->permissions_data()->GetPageAccess(url, tab_id,
+                                                          /*error=*/nullptr);
+    case PermissionType::kScriptableHost:
+      return extension->permissions_data()->GetContentScriptAccess(
+          url, tab_id, /*error=*/nullptr);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ExtensionActionViewControllerGrayscaleTest,
+    ::testing::Values(PermissionType::kScriptableHost,
+                      PermissionType::kExplicitHost),
+    [](const testing::TestParamInfo<PermissionType>& info) {
+      switch (info.param) {
+        case PermissionType::kScriptableHost:
+          return "ScriptableHost";
+        case PermissionType::kExplicitHost:
+          return "ExplicitHost";
+      }
+    });
+
+// Tests the behavior for icon grayscaling.
+IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerGrayscaleTest,
+                       GrayscaleIcon_ExplicitHosts) {
+  Init();
+
   // Create an extension with google.com as either an explicit or scriptable
   // host permission.
+  PermissionType permission_type = GetParam();
+  std::string host_permission = "https://www.google.com/*";
   scoped_refptr<const extensions::Extension> extension =
-      CreateExtension(permission_type);
+      CreateExtension(permission_type, host_permission);
   extension_service()->GrantPermissions(extension.get());
   extension_service()->AddExtension(extension.get());
 
@@ -432,33 +518,7 @@ void ExtensionActionViewControllerGrayscaleTest::RunGrayscaleTest(
   // Load up a page that we will navigate for the different test cases.
   AddTab(browser(), GURL("about:blank"));
 
-  enum class ActionState {
-    kEnabled,
-    kDisabled,
-  };
-  enum class PageAccessStatus {
-    // The extension has been granted permission to the host.
-    kGranted,
-    // The extension had the host withheld and it has not tried to access the
-    // page.
-    kWithheld,
-    // The extension had the host withheld and it has been blocked when trying
-    // to access the page.
-    kBlocked,
-    // The extension has not been granted permissions to the host, nor was it
-    // withheld.
-    kNone,
-  };
-  enum class Coloring {
-    kGrayscale,
-    kFull,
-  };
-  enum class BlockedDecoration {
-    kPainted,
-    kNotPainted,
-  };
-
-  struct {
+  static constexpr struct {
     ActionState action_state;
     PageAccessStatus page_access;
     Coloring expected_coloring;
@@ -520,8 +580,8 @@ void ExtensionActionViewControllerGrayscaleTest::RunGrayscaleTest(
         break;
       }
       case PageAccessStatus::kBlocked:
-        // Navigate to a page where the permission is currently withheld and try
-        // to inject a script.
+        // Navigate to a page where the permission is currently withheld and
+        // try to inject a script.
         NavigateAndCommitActiveTab(kHasPermissionUrl);
         action_runner->RequestScriptInjectionForTesting(
             extension.get(), extensions::mojom::RunLocation::kDocumentIdle,
@@ -533,6 +593,7 @@ void ExtensionActionViewControllerGrayscaleTest::RunGrayscaleTest(
         NavigateAndCommitActiveTab(kHasPermissionUrl);
         break;
     }
+
     // Enable or disable the action based on the test case.
     extension_action->SetIsVisible(
         tab_id, test_case.action_state == ActionState::kEnabled);
@@ -551,57 +612,6 @@ void ExtensionActionViewControllerGrayscaleTest::RunGrayscaleTest(
     }
     action_runner->ClearInjectionsForTesting(*extension);
   }
-}
-
-scoped_refptr<const extensions::Extension>
-ExtensionActionViewControllerGrayscaleTest::CreateExtension(
-    PermissionType permission_type) {
-  extensions::ExtensionBuilder builder("extension");
-  builder.SetAction(extensions::ActionInfo::Type::kBrowser)
-      .SetLocation(ManifestLocation::kInternal);
-  constexpr char kHostGoogle[] = "https://www.google.com/*";
-  switch (permission_type) {
-    case PermissionType::kScriptableHost: {
-      builder.AddContentScript("script.js", {kHostGoogle});
-      break;
-    }
-    case PermissionType::kExplicitHost:
-      builder.AddHostPermission(kHostGoogle);
-      break;
-  }
-
-  return builder.Build();
-}
-
-extensions::PermissionsData::PageAccess
-ExtensionActionViewControllerGrayscaleTest::GetPageAccess(
-    content::WebContents* web_contents,
-    scoped_refptr<const extensions::Extension> extension,
-    PermissionType permission_type) {
-  int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
-  GURL url = web_contents->GetLastCommittedURL();
-  switch (permission_type) {
-    case PermissionType::kExplicitHost:
-      return extension->permissions_data()->GetPageAccess(url, tab_id,
-                                                          /*error=*/nullptr);
-    case PermissionType::kScriptableHost:
-      return extension->permissions_data()->GetContentScriptAccess(
-          url, tab_id, /*error=*/nullptr);
-  }
-}
-
-// Tests the behavior for icon grayscaling. Ideally, these would be a single
-// parameterized test, but toolbar tests are already parameterized with the UI
-// mode.
-IN_PROC_BROWSER_TEST_F(ExtensionActionViewControllerGrayscaleTest,
-                       GrayscaleIcon_ExplicitHosts) {
-  Init();
-  RunGrayscaleTest(PermissionType::kExplicitHost);
-}
-IN_PROC_BROWSER_TEST_F(ExtensionActionViewControllerGrayscaleTest,
-                       GrayscaleIcon_ScriptableHosts) {
-  Init();
-  RunGrayscaleTest(PermissionType::kScriptableHost);
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionActionViewControllerBrowserTest,
