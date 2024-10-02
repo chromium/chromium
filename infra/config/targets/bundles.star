@@ -996,6 +996,39 @@ targets.bundle(
     },
 )
 
+# Please also change ios_code_coverage_tests for any change in this suite.
+targets.bundle(
+    name = "ios_simulator_tests",
+    targets = [
+        targets.bundle(
+            targets = "ios_common_tests",
+            variants = [
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_cq_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+            ],
+            variants = [
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_screen_size_dependent_tests",
+            variants = [
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPAD_PRO_6TH_GEN_17_5",
+                "SIM_IPHONE_15_18_0",
+                "SIM_IPAD_PRO_7TH_GEN_18_0",
+            ],
+        ),
+    ],
+)
+
 targets.bundle(
     name = "linux_force_accessibility_gtests",
     targets = [

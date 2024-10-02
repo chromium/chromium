@@ -736,15 +736,16 @@ def _legacy_matrix_compound_suite(*, name, basic_suites):
         matrix_config_key = _targets_nodes.LEGACY_MATRIX_CONFIG.add(name, basic_suite_name)
         graph.add_edge(key, matrix_config_key)
         config = config or _legacy_matrix_config()
+        for v in config.variants:
+            graph.add_edge(matrix_config_key, _targets_nodes.VARIANT.key(v))
         for m in config.mixins:
             graph.add_edge(matrix_config_key, _targets_nodes.MIXIN.key(m))
-        if config.variants:
+        if config.variants or config.mixins:
             dep_targets.append(_bundle(
                 targets = basic_suite_name,
                 variants = config.variants,
+                mixins = config.mixins,
             ))
-            for v in config.variants:
-                graph.add_edge(matrix_config_key, _targets_nodes.VARIANT.key(v))
         else:
             dep_targets.append(basic_suite_name)
 

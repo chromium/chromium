@@ -11,6 +11,7 @@ load("//lib/builders.star", "cpu", "gardener_rotations", "os", "siso")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
+load("//lib/targets.star", "targets")
 load("//lib/xcode.star", "xcode")
 
 ci.defaults.set(
@@ -33,6 +34,10 @@ ci.defaults.set(
     siso_remote_jobs = siso.remote_jobs.DEFAULT,
     thin_tester_cores = 8,
 )
+
+targets.builder_defaults.set(mixins = [
+    "chromium-tester-service-account",
+])
 
 consoles.console_view(
     name = "chromium.mac",
@@ -704,6 +709,27 @@ ios_builder(
             "remoteexec",
             "ios_simulator",
             "x64",
+            "xctest",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "ios_simulator_tests",
+        ],
+        additional_compile_targets = [
+            "all",
+        ],
+        mixins = [
+            # Make sure any gtests included get expanded as isolated scripts
+            targets.mixin(
+                expand_as_isolated_script = True,
+            ),
+            "has_native_resultdb_integration",
+            "isolate_profile_data",
+            "mac_default_x64",
+            "mac_toolchain",
+            "out_dir_arg",
+            "xcode_16_main",
             "xctest",
         ],
     ),

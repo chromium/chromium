@@ -1078,36 +1078,6 @@ targets.legacy_matrix_compound_suite(
     },
 )
 
-# Please also change ios_code_coverage_tests for any change in this suite.
-targets.legacy_matrix_compound_suite(
-    name = "ios_simulator_tests",
-    basic_suites = {
-        "ios_common_tests": targets.legacy_matrix_config(
-            variants = [
-                "SIM_IPHONE_14_17_5",
-                "SIM_IPHONE_15_18_0",
-            ],
-        ),
-        "ios_eg2_cq_tests": targets.legacy_matrix_config(
-            mixins = [
-                "xcodebuild_sim_runner",
-            ],
-            variants = [
-                "SIM_IPHONE_14_17_5",
-                "SIM_IPHONE_15_18_0",
-            ],
-        ),
-        "ios_screen_size_dependent_tests": targets.legacy_matrix_config(
-            variants = [
-                "SIM_IPHONE_14_17_5",
-                "SIM_IPAD_PRO_6TH_GEN_17_5",
-                "SIM_IPHONE_15_18_0",
-                "SIM_IPAD_PRO_7TH_GEN_18_0",
-            ],
-        ),
-    },
-)
-
 targets.legacy_matrix_compound_suite(
     name = "ios_webkit_tot_tests",
     basic_suites = {

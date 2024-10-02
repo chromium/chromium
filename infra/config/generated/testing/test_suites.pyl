@@ -7652,32 +7652,6 @@
       },
     },
 
-    'ios_simulator_tests': {
-      'ios_common_tests': {
-        'variants': [
-          'SIM_IPHONE_14_17_5',
-          'SIM_IPHONE_15_18_0',
-        ],
-      },
-      'ios_eg2_cq_tests': {
-        'mixins': [
-          'xcodebuild_sim_runner',
-        ],
-        'variants': [
-          'SIM_IPHONE_14_17_5',
-          'SIM_IPHONE_15_18_0',
-        ],
-      },
-      'ios_screen_size_dependent_tests': {
-        'variants': [
-          'SIM_IPAD_PRO_6TH_GEN_17_5',
-          'SIM_IPAD_PRO_7TH_GEN_18_0',
-          'SIM_IPHONE_14_17_5',
-          'SIM_IPHONE_15_18_0',
-        ],
-      },
-    },
-
     'ios_webkit_tot_tests': {
       'ios_common_tests': {
         'variants': [

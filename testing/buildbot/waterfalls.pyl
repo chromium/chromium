@@ -3739,6 +3739,10 @@
     },
   },
   {
+    # The following builders in this group have been migrated to set their
+    # targets in the builders' declarations in
+    # //infra/config/subprojects/ci/chromium.mac.star
+    #   ios-simulator
     'name': 'chromium.mac',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -3798,23 +3802,6 @@
         'test_suites': {
           'scripts': 'chromium_ios_scripts'
         },
-      },
-      'ios-simulator': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-          'isolate_profile_data',
-          'mac_default_x64',
-          'mac_toolchain',
-          'out_dir_arg',
-          'xcode_16_main',
-          'xctest',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'ios_simulator_tests',
-        }
       },
       'ios-simulator-full-configs': {
         'additional_compile_targets': [
