@@ -17,8 +17,8 @@ TEST(HttpAuthChallengeTokenizerTest, Basic) {
   EXPECT_EQ("basic", challenge.auth_scheme());
   EXPECT_TRUE(parameters.GetNext());
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ("realm", parameters.name_piece());
-  EXPECT_EQ("foobar", parameters.value_piece());
+  EXPECT_EQ("realm", parameters.name());
+  EXPECT_EQ("foobar", parameters.value());
   EXPECT_FALSE(parameters.GetNext());
 }
 
@@ -33,8 +33,8 @@ TEST(HttpAuthChallengeTokenizerTest, NoQuotes) {
   EXPECT_EQ("basic", challenge.auth_scheme());
   EXPECT_TRUE(parameters.GetNext());
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ("realm", parameters.name_piece());
-  EXPECT_EQ("foobar@baz.com", parameters.value_piece());
+  EXPECT_EQ("realm", parameters.name());
+  EXPECT_EQ("foobar@baz.com", parameters.value());
   EXPECT_FALSE(parameters.GetNext());
 }
 
@@ -49,8 +49,8 @@ TEST(HttpAuthChallengeTokenizerTest, MismatchedQuotes) {
   EXPECT_EQ("basic", challenge.auth_scheme());
   EXPECT_TRUE(parameters.GetNext());
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ("realm", parameters.name_piece());
-  EXPECT_EQ("foobar@baz.com", parameters.value_piece());
+  EXPECT_EQ("realm", parameters.name());
+  EXPECT_EQ("foobar@baz.com", parameters.value());
   EXPECT_FALSE(parameters.GetNext());
 }
 
@@ -65,8 +65,8 @@ TEST(HttpAuthChallengeTokenizerTest, MismatchedQuotesNoValue) {
   EXPECT_EQ("basic", challenge.auth_scheme());
   EXPECT_TRUE(parameters.GetNext());
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ("realm", parameters.name_piece());
-  EXPECT_EQ("", parameters.value_piece());
+  EXPECT_EQ("realm", parameters.name());
+  EXPECT_EQ("", parameters.value());
   EXPECT_FALSE(parameters.GetNext());
 }
 
@@ -82,8 +82,8 @@ TEST(HttpAuthChallengeTokenizerTest, MismatchedQuotesSpaces) {
   EXPECT_EQ("basic", challenge.auth_scheme());
   EXPECT_TRUE(parameters.GetNext());
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ("realm", parameters.name_piece());
-  EXPECT_EQ("foo bar", parameters.value_piece());
+  EXPECT_EQ("realm", parameters.name());
+  EXPECT_EQ("foo bar", parameters.value());
   EXPECT_FALSE(parameters.GetNext());
 }
 
@@ -99,16 +99,16 @@ TEST(HttpAuthChallengeTokenizerTest, MismatchedQuotesMultiple) {
   EXPECT_EQ("digest", challenge.auth_scheme());
   EXPECT_TRUE(parameters.GetNext());
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ("qop", parameters.name_piece());
-  EXPECT_EQ("auth-int", parameters.value_piece());
+  EXPECT_EQ("qop", parameters.name());
+  EXPECT_EQ("auth-int", parameters.value());
   EXPECT_TRUE(parameters.GetNext());
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ("algorithm", parameters.name_piece());
-  EXPECT_EQ("md5", parameters.value_piece());
+  EXPECT_EQ("algorithm", parameters.name());
+  EXPECT_EQ("md5", parameters.value());
   EXPECT_TRUE(parameters.GetNext());
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ("realm", parameters.name_piece());
-  EXPECT_EQ("foo", parameters.value_piece());
+  EXPECT_EQ("realm", parameters.name());
+  EXPECT_EQ("foo", parameters.value());
   EXPECT_FALSE(parameters.GetNext());
 }
 
@@ -137,16 +137,16 @@ TEST(HttpAuthChallengeTokenizerTest, Multiple) {
   EXPECT_EQ("digest", challenge.auth_scheme());
   EXPECT_TRUE(parameters.GetNext());
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ("algorithm", parameters.name_piece());
-  EXPECT_EQ("md5", parameters.value_piece());
+  EXPECT_EQ("algorithm", parameters.name());
+  EXPECT_EQ("md5", parameters.value());
   EXPECT_TRUE(parameters.GetNext());
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ("realm", parameters.name_piece());
-  EXPECT_EQ("Oblivion", parameters.value_piece());
+  EXPECT_EQ("realm", parameters.name());
+  EXPECT_EQ("Oblivion", parameters.value());
   EXPECT_TRUE(parameters.GetNext());
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ("qop", parameters.name_piece());
-  EXPECT_EQ("auth-int", parameters.value_piece());
+  EXPECT_EQ("qop", parameters.name());
+  EXPECT_EQ("auth-int", parameters.value());
   EXPECT_FALSE(parameters.GetNext());
   EXPECT_TRUE(parameters.valid());
 }

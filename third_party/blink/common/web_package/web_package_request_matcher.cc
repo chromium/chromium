@@ -65,24 +65,23 @@ class ContentNegotiationAlgorithm {
                                          /*delimiter=*/',');
     while (values.GetNext()) {
       net::HttpUtil::NameValuePairsIterator name_value_pairs(
-          values.value_piece(), /*delimiter=*/';',
+          values.value(), /*delimiter=*/';',
           net::HttpUtil::NameValuePairsIterator::Values::NOT_REQUIRED,
           net::HttpUtil::NameValuePairsIterator::Quotes::STRICT_QUOTES);
       if (!name_value_pairs.GetNext())
         continue;
       WeightedValue item;
-      item.value = name_value_pairs.name_piece();
+      item.value = name_value_pairs.name();
       item.weight = 1.0;
       while (name_value_pairs.GetNext()) {
-        if (base::EqualsCaseInsensitiveASCII(name_value_pairs.name_piece(),
-                                             "q")) {
-          if (auto value = GetQValue(name_value_pairs.value_piece())) {
+        if (base::EqualsCaseInsensitiveASCII(name_value_pairs.name(), "q")) {
+          if (auto value = GetQValue(name_value_pairs.value())) {
             item.weight = *value;
           }
         } else {
           // Parameters except for "q" are included in the output.
-          base::StrAppend(&item.value, {";", name_value_pairs.name_piece(), "=",
-                                        name_value_pairs.value_piece()});
+          base::StrAppend(&item.value, {";", name_value_pairs.name(), "=",
+                                        name_value_pairs.value()});
         }
       }
       if (item.weight != 0.0)

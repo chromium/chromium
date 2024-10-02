@@ -162,15 +162,14 @@ HttpAuth::AuthorizationResult HttpAuthHandlerDigest::HandleAnotherChallengeImpl(
   // for the new challenge.
   std::string original_realm;
   while (parameters.GetNext()) {
-    if (base::EqualsCaseInsensitiveASCII(parameters.name_piece(), "stale")) {
-      if (base::EqualsCaseInsensitiveASCII(parameters.value_piece(), "true")) {
+    if (base::EqualsCaseInsensitiveASCII(parameters.name(), "stale")) {
+      if (base::EqualsCaseInsensitiveASCII(parameters.value(), "true")) {
         return HttpAuth::AUTHORIZATION_RESULT_STALE;
       }
-    } else if (base::EqualsCaseInsensitiveASCII(parameters.name_piece(),
-                                                "realm")) {
+    } else if (base::EqualsCaseInsensitiveASCII(parameters.name(), "realm")) {
       // This has to be a copy, since value_piece() may point to an internal
       // buffer of `parameters`.
-      original_realm = parameters.value_piece();
+      original_realm = parameters.value();
     }
   }
   return (original_realm_ != original_realm)
@@ -227,8 +226,7 @@ bool HttpAuthHandlerDigest::ParseChallenge(
   // Loop through all the properties.
   while (parameters.GetNext()) {
     // FAIL -- couldn't parse a property.
-    if (!ParseChallengeProperty(parameters.name_piece(),
-                                parameters.value_piece())) {
+    if (!ParseChallengeProperty(parameters.name(), parameters.value())) {
       return false;
     }
   }
@@ -286,7 +284,7 @@ bool HttpAuthHandlerDigest::ParseChallengeProperty(std::string_view name,
     HttpUtil::ValuesIterator qop_values(value, /*delimiter=*/',');
     qop_ = QOP_UNSPECIFIED;
     while (qop_values.GetNext()) {
-      if (base::EqualsCaseInsensitiveASCII(qop_values.value_piece(), "auth")) {
+      if (base::EqualsCaseInsensitiveASCII(qop_values.value(), "auth")) {
         qop_ = QOP_AUTH;
         break;
       }

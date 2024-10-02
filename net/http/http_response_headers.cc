@@ -987,9 +987,9 @@ void HttpResponseHeaders::AddHeader(std::string::const_iterator name_begin,
       // TODO(crbug.com/369533090): Converting from a string_view back to a
       // string iterator is awkward. Switch this class to using string_views.
       std::string::const_iterator sub_value_begin =
-          values_begin + (it.value_piece().data() - values.data());
+          values_begin + (it.value().data() - values.data());
       std::string::const_iterator sub_value_end =
-          sub_value_begin + it.value_piece().length();
+          sub_value_begin + it.value().length();
 
       AddToParsed(name_begin, name_end, sub_value_begin, sub_value_end);
       // clobber these so that subsequent values are treated as continuations

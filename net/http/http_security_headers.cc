@@ -81,8 +81,7 @@ bool ParseHSTSHeader(std::string_view value,
       HttpUtil::NameValuePairsIterator::Quotes::STRICT_QUOTES);
   while (hsts_iterator.GetNext()) {
     // Process `max-age`:
-    if (base::EqualsCaseInsensitiveASCII(hsts_iterator.name_piece(),
-                                         "max-age")) {
+    if (base::EqualsCaseInsensitiveASCII(hsts_iterator.name(), "max-age")) {
       // Reject the header if `max-age` is specified more than once.
       if (max_age_seen) {
         return false;
@@ -91,21 +90,20 @@ bool ParseHSTSHeader(std::string_view value,
 
       // Reject the header if `max-age`'s value is invalid. Otherwise, store it
       // in `max_age_value`.
-      if (!MaxAgeToLimitedInt(hsts_iterator.value_piece(), kMaxHSTSAgeSecs,
+      if (!MaxAgeToLimitedInt(hsts_iterator.value(), kMaxHSTSAgeSecs,
                               &max_age_value)) {
         return false;
       }
 
       // Process `includeSubDomains`:
-    } else if (base::EqualsCaseInsensitiveASCII(hsts_iterator.name_piece(),
+    } else if (base::EqualsCaseInsensitiveASCII(hsts_iterator.name(),
                                                 "includeSubDomains")) {
       // Reject the header if `includeSubDomains` is specified more than once.
       if (include_subdomains_value) {
         return false;
       }
       // Reject the header if `includeSubDomains` has a value specified:
-      if (!hsts_iterator.value_piece().empty() ||
-          hsts_iterator.value_is_quoted()) {
+      if (!hsts_iterator.value().empty() || hsts_iterator.value_is_quoted()) {
         return false;
       }
 
@@ -115,13 +113,12 @@ bool ParseHSTSHeader(std::string_view value,
     } else {
       // Reject the header if a directive's name or unquoted value doesn't match
       // the `token` grammar.
-      if (!HttpUtil::IsToken(hsts_iterator.name_piece()) ||
-          hsts_iterator.name_piece().empty()) {
+      if (!HttpUtil::IsToken(hsts_iterator.name()) ||
+          hsts_iterator.name().empty()) {
         return false;
       }
-      if (!hsts_iterator.value_piece().empty() &&
-          !hsts_iterator.value_is_quoted() &&
-          !HttpUtil::IsToken(hsts_iterator.value_piece())) {
+      if (!hsts_iterator.value().empty() && !hsts_iterator.value_is_quoted() &&
+          !HttpUtil::IsToken(hsts_iterator.value())) {
         return false;
       }
     }

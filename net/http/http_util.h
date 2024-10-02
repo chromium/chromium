@@ -380,7 +380,7 @@ class NET_EXPORT HttpUtil {
     // is a next value.  Use value* methods to access the resultant value.
     bool GetNext();
 
-    std::string_view value_piece() const { return value_; }
+    std::string_view value() const { return value_; }
 
    private:
     base::StringViewTokenizer values_;
@@ -431,18 +431,18 @@ class NET_EXPORT HttpUtil {
     bool valid() const { return valid_; }
 
     // The name of the current name-value pair.
-    std::string_view name_piece() const { return name_; }
+    std::string_view name() const { return name_; }
 
     // The value of the current name-value pair. Note that the returned
     // string_view will be invalidated by the next GetNext() call.
-    std::string_view value_piece() const LIFETIME_BOUND {
+    std::string_view value() const LIFETIME_BOUND {
       return value_is_quoted_ ? unquoted_value_ : value_;
     }
 
     bool value_is_quoted() const { return value_is_quoted_; }
 
     // The value before unquoting (if any).
-    std::string_view raw_value_piece() const LIFETIME_BOUND { return value_; }
+    std::string_view raw_value() const LIFETIME_BOUND { return value_; }
 
    private:
     // Attempts to parse `name_value_pair`, populating `name_`, `value_`, and

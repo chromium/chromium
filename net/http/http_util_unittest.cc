@@ -227,13 +227,13 @@ TEST(HttpUtilTest, ValuesIterator) {
                               /*ignore_empty_values=*/true);
 
   ASSERT_TRUE(it.GetNext());
-  EXPECT_EQ("must-revalidate", it.value_piece());
+  EXPECT_EQ("must-revalidate", it.value());
 
   ASSERT_TRUE(it.GetNext());
-  EXPECT_EQ("no-cache=\"foo, bar\"", it.value_piece());
+  EXPECT_EQ("no-cache=\"foo, bar\"", it.value());
 
   ASSERT_TRUE(it.GetNext());
-  EXPECT_EQ("private", it.value_piece());
+  EXPECT_EQ("private", it.value());
 
   EXPECT_FALSE(it.GetNext());
 }
@@ -243,28 +243,28 @@ TEST(HttpUtilTest, ValuesIterator_EmptyValues) {
 
   HttpUtil::ValuesIterator it(values, ',', /*ignore_empty_values=*/true);
   ASSERT_TRUE(it.GetNext());
-  EXPECT_EQ("foopy", it.value_piece());
+  EXPECT_EQ("foopy", it.value());
   EXPECT_FALSE(it.GetNext());
 
   HttpUtil::ValuesIterator it_with_empty_values(values, ',',
                                                 /*ignore_empty_values=*/false);
   ASSERT_TRUE(it_with_empty_values.GetNext());
-  EXPECT_EQ("", it_with_empty_values.value_piece());
+  EXPECT_EQ("", it_with_empty_values.value());
 
   ASSERT_TRUE(it_with_empty_values.GetNext());
-  EXPECT_EQ("foopy", it_with_empty_values.value_piece());
+  EXPECT_EQ("foopy", it_with_empty_values.value());
 
   ASSERT_TRUE(it_with_empty_values.GetNext());
-  EXPECT_EQ("", it_with_empty_values.value_piece());
+  EXPECT_EQ("", it_with_empty_values.value());
 
   ASSERT_TRUE(it_with_empty_values.GetNext());
-  EXPECT_EQ("", it_with_empty_values.value_piece());
+  EXPECT_EQ("", it_with_empty_values.value());
 
   ASSERT_TRUE(it_with_empty_values.GetNext());
-  EXPECT_EQ("", it_with_empty_values.value_piece());
+  EXPECT_EQ("", it_with_empty_values.value());
 
   ASSERT_TRUE(it_with_empty_values.GetNext());
-  EXPECT_EQ("", it_with_empty_values.value_piece());
+  EXPECT_EQ("", it_with_empty_values.value());
 
   EXPECT_FALSE(it_with_empty_values.GetNext());
 }
@@ -278,7 +278,7 @@ TEST(HttpUtilTest, ValuesIterator_Blanks) {
   HttpUtil::ValuesIterator it_with_empty_values(values, ',',
                                                 /*ignore_empty_values=*/false);
   ASSERT_TRUE(it_with_empty_values.GetNext());
-  EXPECT_EQ("", it_with_empty_values.value_piece());
+  EXPECT_EQ("", it_with_empty_values.value());
   EXPECT_FALSE(it_with_empty_values.GetNext());
 }
 
@@ -1214,14 +1214,14 @@ void CheckCurrentNameValuePair(HttpUtil::NameValuePairsIterator* parser,
   // Let's make sure that this never changes (i.e., when a quoted value is
   // unquoted, it should be cached on the first calls and not regenerated
   // later).
-  const std::string_view first_value = parser->value_piece();
+  const std::string_view first_value = parser->value();
 
-  ASSERT_EQ(expected_name, parser->name_piece());
-  ASSERT_EQ(expected_value, parser->value_piece());
+  ASSERT_EQ(expected_name, parser->name());
+  ASSERT_EQ(expected_value, parser->value());
 
   // Make sure they didn't/don't change.
-  ASSERT_TRUE(first_value.data() == parser->value_piece().data());
-  ASSERT_TRUE(first_value.length() == parser->value_piece().length());
+  ASSERT_TRUE(first_value.data() == parser->value().data());
+  ASSERT_TRUE(first_value.length() == parser->value().length());
 }
 
 void CheckNextNameValuePair(HttpUtil::NameValuePairsIterator* parser,
@@ -1258,16 +1258,16 @@ void CheckInvalidNameValuePair(std::string valid_part,
     ASSERT_TRUE(invalid_parser.GetNext());
     ASSERT_TRUE(valid_parser.valid());
     ASSERT_TRUE(invalid_parser.valid());
-    ASSERT_EQ(valid_parser.name_piece(), invalid_parser.name_piece());
-    ASSERT_EQ(valid_parser.value_piece(), invalid_parser.value_piece());
+    ASSERT_EQ(valid_parser.name(), invalid_parser.name());
+    ASSERT_EQ(valid_parser.value(), invalid_parser.value());
   }
 
   // valid_parser is exhausted and remains 'valid'
   ASSERT_TRUE(valid_parser.valid());
   // But all data in it should have been cleared.
-  EXPECT_TRUE(valid_parser.name_piece().empty());
-  EXPECT_TRUE(valid_parser.value_piece().empty());
-  EXPECT_TRUE(valid_parser.raw_value_piece().empty());
+  EXPECT_TRUE(valid_parser.name().empty());
+  EXPECT_TRUE(valid_parser.value().empty());
+  EXPECT_TRUE(valid_parser.raw_value().empty());
   EXPECT_FALSE(valid_parser.value_is_quoted());
 
   // invalid_parser's corresponding call to GetNext also returns false...
@@ -1276,9 +1276,9 @@ void CheckInvalidNameValuePair(std::string valid_part,
   ASSERT_FALSE(invalid_parser.valid());
 
   // All values in an invalid parser should be cleared.
-  EXPECT_TRUE(invalid_parser.name_piece().empty());
-  EXPECT_TRUE(invalid_parser.value_piece().empty());
-  EXPECT_TRUE(invalid_parser.raw_value_piece().empty());
+  EXPECT_TRUE(invalid_parser.name().empty());
+  EXPECT_TRUE(invalid_parser.value().empty());
+  EXPECT_TRUE(invalid_parser.raw_value().empty());
   EXPECT_FALSE(invalid_parser.value_is_quoted());
 }
 

@@ -182,7 +182,7 @@ bool HttpUtil::ParseRangeHeader(const std::string& ranges_specifier,
       std::string_view(byte_range_set_begin, byte_range_set_end),
       /*delimiter=*/',');
   while (byte_range_set_iterator.GetNext()) {
-    std::string_view value = byte_range_set_iterator.value_piece();
+    std::string_view value = byte_range_set_iterator.value();
     size_t minus_char_offset = value.find('-');
     // If '-' character is not found, reports failure.
     if (minus_char_offset == std::string::npos)
@@ -400,7 +400,7 @@ bool HttpUtil::IsSafeHeader(std::string_view name, std::string_view value) {
   if (is_forbidden_header_fields_with_forbidden_method) {
     ValuesIterator method_iterator(value, ',');
     while (method_iterator.GetNext()) {
-      std::string_view method = method_iterator.value_piece();
+      std::string_view method = method_iterator.value();
       for (const char* forbidden_method : kForbiddenMethods) {
         if (base::EqualsCaseInsensitiveASCII(method, forbidden_method))
           return false;
@@ -1010,7 +1010,7 @@ bool HttpUtil::NameValuePairsIterator::GetNext() {
   if (props_.GetNext()) {
     // State only becomes invalid if there's another element, but parsing it
     // fails.
-    valid_ = ParseNameValuePair(props_.value_piece());
+    valid_ = ParseNameValuePair(props_.value());
     if (valid_) {
       return true;
     }
