@@ -27,11 +27,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/dom/document.h"
 
 #include <memory>
@@ -386,6 +381,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
 
@@ -558,33 +554,27 @@ static inline bool IsValidNamePart(UChar32 c) {
 // Tests whether |name| is something the HTML parser would accept as a
 // tag name.
 template <typename CharType>
-static inline bool IsValidElementNamePerHTMLParser(const CharType* characters,
-                                                   unsigned length) {
+static inline bool IsValidElementNamePerHTMLParser(
+    base::span<const CharType> characters) {
   CharType c = characters[0] | 0x20;
   if (!('a' <= c && c <= 'z'))
     return false;
 
-  for (unsigned i = 1; i < length; ++i) {
+  for (size_t i = 1; i < characters.size(); ++i) {
     c = characters[i];
     if (c == '\t' || c == '\n' || c == '\f' || c == '\r' || c == ' ' ||
         c == '/' || c == '>')
       return false;
   }
-
   return true;
 }
 
 static bool IsValidElementNamePerHTMLParser(const String& name) {
-  unsigned length = name.length();
-  if (!length)
+  if (name.empty()) {
     return false;
-
-  if (name.Is8Bit()) {
-    const LChar* characters = name.Characters8();
-    return IsValidElementNamePerHTMLParser(characters, length);
   }
-  const UChar* characters = name.Characters16();
-  return IsValidElementNamePerHTMLParser(characters, length);
+  return WTF::VisitCharacters(
+      name, [](auto chars) { return IsValidElementNamePerHTMLParser(chars); });
 }
 
 // Tests whether |name| is a valid name per DOM spec. Also checks
@@ -1782,17 +1772,15 @@ bool Document::StandardizedBrowserZoomEnabled() const {
  *  3. Collapse internal whitespace.
  */
 template <typename CharacterType>
-static inline String CanonicalizedTitle(Document* document,
-                                        const String& title) {
-  unsigned length = title.length();
+static inline String CanonicalizedTitle(
+    base::span<const CharacterType> characters) {
   unsigned builder_index = 0;
-  const CharacterType* characters = title.GetCharacters<CharacterType>();
-
-  StringBuffer<CharacterType> buffer(length);
+  StringBuffer<CharacterType> buffer(
+      base::checked_cast<unsigned>(characters.size()));
 
   // Replace control characters with spaces and collapse whitespace.
   bool pending_whitespace = false;
-  for (unsigned i = 0; i < length; ++i) {
+  for (size_t i = 0; i < characters.size(); ++i) {
     UChar32 c = characters[i];
     if ((c <= WTF::unicode::kSpaceCharacter &&
          c != WTF::unicode::kLineTabulationCharacter) ||
@@ -1819,12 +1807,12 @@ void Document::UpdateTitle(const String& title) {
   raw_title_ = title;
 
   String old_title = title_;
-  if (raw_title_.empty())
+  if (raw_title_.empty()) {
     title_ = String();
-  else if (raw_title_.Is8Bit())
-    title_ = CanonicalizedTitle<LChar>(this, raw_title_);
-  else
-    title_ = CanonicalizedTitle<UChar>(this, raw_title_);
+  } else {
+    title_ = WTF::VisitCharacters(
+        raw_title_, [](auto chars) { return CanonicalizedTitle(chars); });
+  }
 
   if (!dom_window_ || old_title == title_)
     return;
@@ -6737,11 +6725,11 @@ void Document::ariaNotify(const String& announcement,
   }
 }
 
-static bool IsValidNameNonASCII(const LChar* characters, unsigned length) {
+static bool IsValidNameNonASCII(base::span<const LChar> characters) {
   if (!IsValidNameStart(characters[0]))
     return false;
 
-  for (unsigned i = 1; i < length; ++i) {
+  for (size_t i = 1; i < characters.size(); ++i) {
     if (!IsValidNamePart(characters[i]))
       return false;
   }
@@ -6749,11 +6737,11 @@ static bool IsValidNameNonASCII(const LChar* characters, unsigned length) {
   return true;
 }
 
-static bool IsValidNameNonASCII(const UChar* characters, unsigned length) {
-  for (unsigned i = 0; i < length;) {
+static bool IsValidNameNonASCII(base::span<const UChar> characters) {
+  for (size_t i = 0; i < characters.size();) {
     bool first = i == 0;
     UChar32 c;
-    U16_NEXT(characters, i, length, c);  // Increments i.
+    U16_NEXT(characters, i, characters.size(), c);  // Increments i.
     if (first ? !IsValidNameStart(c) : !IsValidNamePart(c))
       return false;
   }
@@ -6762,13 +6750,12 @@ static bool IsValidNameNonASCII(const UChar* characters, unsigned length) {
 }
 
 template <typename CharType>
-static inline bool IsValidNameASCII(const CharType* characters,
-                                    unsigned length) {
+static inline bool IsValidNameASCII(base::span<const CharType> characters) {
   CharType c = characters[0];
   if (!(IsASCIIAlpha(c) || c == ':' || c == '_'))
     return false;
 
-  for (unsigned i = 1; i < length; ++i) {
+  for (size_t i = 1; i < characters.size(); ++i) {
     c = characters[i];
     if (!(IsASCIIAlphanumeric(c) || c == ':' || c == '_' || c == '-' ||
           c == '.'))
@@ -6782,22 +6769,12 @@ bool Document::IsValidName(const StringView& name) {
   unsigned length = name.length();
   if (!length)
     return false;
-
-  if (name.Is8Bit()) {
-    const LChar* characters = name.Characters8();
-
-    if (IsValidNameASCII(characters, length))
+  return WTF::VisitCharacters(name, [](auto chars) {
+    if (IsValidNameASCII(chars)) {
       return true;
-
-    return IsValidNameNonASCII(characters, length);
-  }
-
-  const UChar* characters = name.Characters16();
-
-  if (IsValidNameASCII(characters, length))
-    return true;
-
-  return IsValidNameNonASCII(characters, length);
+    }
+    return IsValidNameNonASCII(chars);
+  });
 }
 
 enum QualifiedNameStatus {
@@ -6822,17 +6799,16 @@ struct ParseQualifiedNameResult {
 template <typename CharType>
 static ParseQualifiedNameResult ParseQualifiedNameInternal(
     const AtomicString& qualified_name,
-    const CharType* characters,
-    unsigned length,
+    base::span<const CharType> characters,
     AtomicString& prefix,
     AtomicString& local_name) {
   bool name_start = true;
   bool saw_colon = false;
-  unsigned colon_pos = 0;
+  size_t colon_pos = 0;
 
-  for (unsigned i = 0; i < length;) {
+  for (size_t i = 0; i < characters.size();) {
     UChar32 c;
-    U16_NEXT(characters, i, length, c);
+    U16_NEXT(characters, i, characters.size(), c);
     if (c == ':') {
       if (saw_colon)
         return ParseQualifiedNameResult(kQNMultipleColons);
@@ -6853,11 +6829,11 @@ static ParseQualifiedNameResult ParseQualifiedNameInternal(
     prefix = g_null_atom;
     local_name = qualified_name;
   } else {
-    prefix = AtomicString(characters, colon_pos);
+    auto [prefix_span, rest] = characters.split_at(colon_pos);
+    prefix = AtomicString(prefix_span);
     if (prefix.empty())
       return ParseQualifiedNameResult(kQNEmptyPrefix);
-    int prefix_start = colon_pos + 1;
-    local_name = AtomicString(characters + prefix_start, length - prefix_start);
+    local_name = AtomicString(rest.subspan(1u));
   }
 
   if (local_name.empty())
@@ -6870,23 +6846,17 @@ bool Document::ParseQualifiedName(const AtomicString& qualified_name,
                                   AtomicString& prefix,
                                   AtomicString& local_name,
                                   ExceptionState& exception_state) {
-  unsigned length = qualified_name.length();
-
-  if (!length) {
+  if (qualified_name.empty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidCharacterError,
                                       "The qualified name provided is empty.");
     return false;
   }
 
-  ParseQualifiedNameResult return_value;
-  if (qualified_name.Is8Bit())
-    return_value =
-        ParseQualifiedNameInternal(qualified_name, qualified_name.Characters8(),
-                                   length, prefix, local_name);
-  else
-    return_value = ParseQualifiedNameInternal(qualified_name,
-                                              qualified_name.Characters16(),
-                                              length, prefix, local_name);
+  ParseQualifiedNameResult return_value = WTF::VisitCharacters(
+      qualified_name, [&qualified_name, &prefix, &local_name](auto chars) {
+        return ParseQualifiedNameInternal(qualified_name, chars, prefix,
+                                          local_name);
+      });
   if (return_value.status == kQNValid)
     return true;
 
