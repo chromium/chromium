@@ -683,6 +683,20 @@ void MaybeAddAddressSuggestionStrikes(AutofillClient& client,
 #endif
 }
 
+// Returns the plus address to be used as the email override on profile
+// suggestions matching the user's gaia email.
+std::optional<std::string> GetPlusAddressOverride(
+    const AutofillPlusAddressDelegate* delegate,
+    const std::vector<std::string>& plus_addresses) {
+  if (!delegate || !delegate->IsPlusAddressFullFormFillingEnabled() ||
+      plus_addresses.empty()) {
+    return std::nullopt;
+  }
+  // Except in very rare cases where affiliation data changes, `plus_addresses`
+  // should contain exactly one item.
+  return plus_addresses[0];
+}
+
 }  // namespace
 
 BrowserAutofillManager::MetricsState::MetricsState(
@@ -1529,8 +1543,10 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
   autofill_metrics::SuggestionRankingContext ranking_context;
   std::vector<Suggestion> suggestions =
       GetAvailableAddressAndCreditCardSuggestions(
-          form, form_structure, field, autofill_field, trigger_source, context,
-          ranking_context);
+          form, form_structure, field, autofill_field, trigger_source,
+          GetPlusAddressOverride(client().GetPlusAddressDelegate(),
+                                 plus_addresses),
+          context, ranking_context);
 
   if (context.is_autofill_available &&
       ShouldSuppressSuggestions(context.suppress_reason, log_manager())) {
@@ -2115,7 +2131,8 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
   std::vector<Suggestion> suggestions =
       GetAvailableAddressAndCreditCardSuggestions(
           form, form_structure, field, autofill_field,
-          AutofillSuggestionTriggerSource::kUnspecified, context,
+          AutofillSuggestionTriggerSource::kUnspecified,
+          /*plus_address_email_override=*/std::nullopt, context,
           ranking_context);
   external_delegate_->OnAutofillAvailabilityEvent(
       (context.suppress_reason == SuppressReason::kNotSuppressed &&
@@ -2826,7 +2843,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     const FormStructure* form_structure,
     const FormFieldData& trigger_field,
     const AutofillField* trigger_autofill_field,
-    AutofillSuggestionTriggerSource trigger_source) {
+    AutofillSuggestionTriggerSource trigger_source,
+    std::optional<std::string> plus_address_email_override) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (trigger_source !=
       AutofillSuggestionTriggerSource::kManualFallbackAddress) {
@@ -2958,7 +2976,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
 
   return GetSuggestionsForProfiles(client(), field_types, trigger_field,
                                    trigger_field_type, current_suggestion_type,
-                                   trigger_source);
+                                   trigger_source,
+                                   std::move(plus_address_email_override));
 }
 
 std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
@@ -3205,6 +3224,7 @@ BrowserAutofillManager::GetAvailableAddressAndCreditCardSuggestions(
     const FormFieldData& field,
     AutofillField* autofill_field,
     AutofillSuggestionTriggerSource trigger_source,
+    std::optional<std::string> plus_address_email_override,
     SuggestionsContext& context,
     autofill_metrics::SuggestionRankingContext& ranking_context) {
   if (IsPlusAddressesManuallyTriggered(trigger_source)) {
@@ -3237,7 +3257,8 @@ BrowserAutofillManager::GetAvailableAddressAndCreditCardSuggestions(
     // through manual fallbacks. As such, suggestion labels differ depending on
     // the `trigger_source`.
     suggestions = GetProfileSuggestions(form, form_structure, field,
-                                        autofill_field, trigger_source);
+                                        autofill_field, trigger_source,
+                                        std::move(plus_address_email_override));
   }
 
   if (EvaluateAblationStudy(suggestions, autofill_field, context)) {

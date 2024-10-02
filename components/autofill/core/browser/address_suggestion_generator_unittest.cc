@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -678,6 +679,21 @@ TEST_F(AddressSuggestionGeneratorTest, CreateSuggestionsFromProfiles) {
   ASSERT_FALSE(suggestions.empty());
   EXPECT_EQ(u"123 Zoo St., Second Line, Third line, unit 5",
             suggestions[0].main_text.value);
+}
+
+TEST_F(AddressSuggestionGeneratorTest, CreateSuggestionsUsingEmailOverride) {
+  AutofillProfile profile1 = test::GetFullProfile();
+
+  AutofillProfile profile2 = test::GetFullProfile2();
+
+  std::vector<Suggestion> suggestions = CreateSuggestionsFromProfilesForTest(
+      {&profile1, &profile2}, {EMAIL_ADDRESS}, SuggestionType::kAddressEntry,
+      EMAIL_ADDRESS, /*trigger_field_max_length=*/0, false, "en-US",
+      "plus-address-override@me.com",
+      base::UTF16ToUTF8(profile2.GetRawInfo(EMAIL_ADDRESS)));
+  ASSERT_EQ(suggestions.size(), 2u);
+  EXPECT_EQ(profile1.GetRawInfo(EMAIL_ADDRESS), suggestions[0].main_text.value);
+  EXPECT_EQ(u"plus-address-override@me.com", suggestions[1].main_text.value);
 }
 
 TEST_F(AddressSuggestionGeneratorTest,
@@ -1539,7 +1555,7 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
   std::vector<Suggestion> suggestions = GetSuggestionsForProfiles(
       *autofill_client(), {UNKNOWN_TYPE}, triggering_field, UNKNOWN_TYPE,
       SuggestionType::kAddressEntry,
-      AutofillSuggestionTriggerSource::kManualFallbackAddress);
+      AutofillSuggestionTriggerSource::kManualFallbackAddress, std::nullopt);
   EXPECT_EQ(suggestions.size(), 4ul);
   EXPECT_THAT(suggestions[0], EqualsSuggestion(SuggestionType::kAddressEntry));
   EXPECT_THAT(suggestions[1], EqualsSuggestion(SuggestionType::kAddressEntry));
@@ -1780,7 +1796,7 @@ TEST_F(AddressSuggestionGeneratorTest,
       *autofill_client(),
       {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, PHONE_HOME_WHOLE_NUMBER},
       FormFieldData(), PHONE_HOME_WHOLE_NUMBER, SuggestionType::kAddressEntry,
-      AutofillSuggestionTriggerSource::kManualFallbackAddress);
+      AutofillSuggestionTriggerSource::kManualFallbackAddress, std::nullopt);
   ASSERT_EQ(3u, suggestions.size());
   EXPECT_EQ(suggestions[0].type, SuggestionType::kAddressEntry);
   // This is the check which actually verifies that the suggestion looks the
@@ -1809,7 +1825,8 @@ TEST_F(AddressSuggestionGeneratorTest, GetSuggestionsForProfiles_Filtering) {
   std::vector<Suggestion> address_suggestions = GetSuggestionsForProfiles(
       *autofill_client(), {NAME_FIRST}, triggering_field, NAME_FIRST,
       SuggestionType::kAddressEntry,
-      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+      AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      std::nullopt);
   EXPECT_EQ(address_suggestions.size(), 3ul);
   EXPECT_THAT(address_suggestions, ContainsAddressFooterSuggestions());
 
@@ -1818,7 +1835,8 @@ TEST_F(AddressSuggestionGeneratorTest, GetSuggestionsForProfiles_Filtering) {
       GetSuggestionsForProfiles(
           *autofill_client(), {NAME_FIRST}, triggering_field, NAME_FIRST,
           SuggestionType::kAddressEntry,
-          AutofillSuggestionTriggerSource::kManualFallbackAddress);
+          AutofillSuggestionTriggerSource::kManualFallbackAddress,
+          std::nullopt);
   EXPECT_EQ(manual_fallback_suggestions.size(), 4ul);
   EXPECT_THAT(manual_fallback_suggestions, ContainsAddressFooterSuggestions());
 }
@@ -1858,7 +1876,7 @@ TEST_F(AddressSuggestionGeneratorTest, UndoAutofillOnAddressForm) {
   field.set_is_autofilled(true);
   std::vector<Suggestion> suggestions = GetSuggestionsForProfiles(
       *autofill_client(), {NAME_FIRST}, field, NAME_FIRST,
-      SuggestionType::kAddressEntry, kDefaultTriggerSource);
+      SuggestionType::kAddressEntry, kDefaultTriggerSource, std::nullopt);
   EXPECT_THAT(suggestions,
               ElementsAre(EqualsSuggestion(SuggestionType::kAddressEntry),
                           EqualsSuggestion(SuggestionType::kSeparator),
@@ -1874,7 +1892,7 @@ TEST_F(AddressSuggestionGeneratorTest,
   std::vector<Suggestion> suggestions = GetSuggestionsForProfiles(
       *autofill_client(), /*field_types=*/{NAME_FIRST}, FormFieldData(),
       NAME_FIRST, SuggestionType::kAddressEntry,
-      AutofillSuggestionTriggerSource::kManualFallbackAddress);
+      AutofillSuggestionTriggerSource::kManualFallbackAddress, std::nullopt);
 
   // There should be one `SuggestionType::kDevtoolsTestAddresses`, one
   // `SuggestionType::kSeparator` and one `SuggestionType::kManageAddress`.
@@ -1911,7 +1929,7 @@ TEST_F(AddressSuggestionGeneratorTest,
   std::vector<Suggestion> suggestions = GetSuggestionsForProfiles(
       *autofill_client(), /*field_types=*/{CREDIT_CARD_NUMBER}, FormFieldData(),
       CREDIT_CARD_NUMBER, SuggestionType::kAddressEntry,
-      AutofillSuggestionTriggerSource::kManualFallbackAddress);
+      AutofillSuggestionTriggerSource::kManualFallbackAddress, std::nullopt);
 
   EXPECT_THAT(suggestions, IsEmpty());
 }

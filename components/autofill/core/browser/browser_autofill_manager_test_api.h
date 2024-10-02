@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_BROWSER_AUTOFILL_MANAGER_TEST_API_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_BROWSER_AUTOFILL_MANAGER_TEST_API_H_
 
+#include <optional>
+
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -108,13 +110,15 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
       const FormData& form,
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source =
-          AutofillSuggestionTriggerSource::kFormControlElementClicked) {
+          AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      std::optional<std::string> plus_address_override = std::nullopt) {
     FormStructure* form_structure;
     AutofillField* autofill_field;
     CHECK(manager_->GetCachedFormAndField(form, field, &form_structure,
                                           &autofill_field));
     return manager_->GetProfileSuggestions(form, form_structure, field,
-                                           autofill_field, trigger_source);
+                                           autofill_field, trigger_source,
+                                           std::move(plus_address_override));
   }
 
  private:

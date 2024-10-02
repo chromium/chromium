@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_ADDRESS_SUGGESTION_GENERATOR_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_ADDRESS_SUGGESTION_GENERATOR_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -42,7 +43,8 @@ std::vector<Suggestion> GetSuggestionsForProfiles(
     const FormFieldData& trigger_field,
     FieldType trigger_field_type,
     SuggestionType suggestion_type,
-    AutofillSuggestionTriggerSource trigger_source);
+    AutofillSuggestionTriggerSource trigger_source,
+    std::optional<std::string> plus_address_email_override);
 
 // Generates a footer suggestion "Manage addresses..." menu item which will
 // redirect to Chrome address settings page.
@@ -68,7 +70,9 @@ std::vector<Suggestion> CreateSuggestionsFromProfilesForTest(
     FieldType trigger_field_type,
     uint64_t trigger_field_max_length,
     bool is_off_the_record = false,
-    const std::string& app_locale = "en-US");
+    const std::string& app_locale = "en-US",
+    std::optional<std::string> plus_address_email_override = std::nullopt,
+    const std::string& gaia_email = "");
 
 }  // namespace autofill
 

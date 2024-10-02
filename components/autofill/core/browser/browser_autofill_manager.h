@@ -548,7 +548,8 @@ class BrowserAutofillManager : public AutofillManager {
       const FormStructure* form_structure,
       const FormFieldData& trigger_field,
       const AutofillField* trigger_autofill_field,
-      AutofillSuggestionTriggerSource trigger_source);
+      AutofillSuggestionTriggerSource trigger_source,
+      std::optional<std::string> plus_address_email_override);
 
   // Returns a list of values from the stored credit cards that match
   // `trigger_field_type` and the value of `trigger_field` and returns the
@@ -613,6 +614,7 @@ class BrowserAutofillManager : public AutofillManager {
       const FormFieldData& field,
       AutofillField* autofill_field,
       AutofillSuggestionTriggerSource trigger_source,
+      std::optional<std::string> plus_address_email_override,
       SuggestionsContext& context,
       autofill_metrics::SuggestionRankingContext& ranking_context);
 
