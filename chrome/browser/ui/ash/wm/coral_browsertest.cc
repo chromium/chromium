@@ -98,8 +98,7 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PRE_PostLoginBrowser) {
 
 // Launches a browser with the expected tabs when the post login coral chip is
 // clicked.
-// TODO(crbug.com/370844780): Re-enable this test.
-IN_PROC_BROWSER_TEST_F(CoralBrowserTest, DISABLED_PostLoginBrowser) {
+IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PostLoginBrowser) {
   // Wait until the chip is visible, it may not be visible while data fetch is
   // underway or the overview animation is still running.
   EXPECT_TRUE(base::test::RunUntil([]() {
