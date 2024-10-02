@@ -7902,6 +7902,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "screenlock-reauth",
+    "owners": ["hardikgoyal@google.com", "iscsi@chromium.org"],
+    "expiry_milestone": 133
+  },
+  {
     "name": "screenlock-reauth-promo-card",
     "owners": ["sygiet@google.com", "vasilii@chromium.org"],
     "expiry_milestone": 133

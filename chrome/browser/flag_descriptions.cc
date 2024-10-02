@@ -8147,13 +8147,22 @@ const char kCupsIppPrintingBackendDescription[] =
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kScreenlockReauthCardName[] =
+    "Show screenlock reauth before filling password setting in password "
+    "manager";
+const char kScreenlockReauthCardDescription[] =
+    "Enables setting for requiring reauth before filling passwords "
+    "in password manager settings. The default for setting is turned off.";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 const char kScreenlockReauthPromoCardName[] =
     "Enables screenlock reauth before filling promo card in settings";
 const char kScreenlockReauthPromoCardDescription[] =
     "Enables promo card in settings encouraging users to enable screenlock "
     "reauth before filling passwords.";
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 const char kChromeWideEchoCancellationName[] = "Chrome-wide echo cancellation";
