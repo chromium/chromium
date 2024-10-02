@@ -242,6 +242,10 @@ BASE_FEATURE(kPrivacySandboxPrivacyPolicy,
              "PrivacySandboxPrivacyPolicy",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrivacySandboxNoticeQueue,
+             "PrivacySandboxNoticeQueue",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPrivacySandboxSentimentSurvey,
              "PrivacySandboxSentimentSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
