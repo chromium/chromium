@@ -104,12 +104,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
         computed: 'computePasswordsOnDevice_(groups_)',
       },
 
-      showMovePasswords_: {
-        type: Boolean,
-        computed: 'computeShowMovePasswords_(isAccountStoreUser, ' +
-            'passwordsOnDevice_, searchTerm_)',
-      },
-
       showPasswordsDescription_: {
         type: Boolean,
         computed: 'computeShowPasswordsDescription_(groups_, searchTerm_)',
