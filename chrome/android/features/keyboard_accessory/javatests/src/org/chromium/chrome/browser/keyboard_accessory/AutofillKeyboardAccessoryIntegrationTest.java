@@ -19,6 +19,7 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.util.ViewActionOnDescendant.performOnRecyclerViewNthItem;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createClickActionWithFlags;
+import static org.chromium.chrome.browser.autofill.AutofillTestHelper.singleMouseClickView;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.selectTabAtPosition;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.waitToBeHidden;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.whenDisplayed;
@@ -231,6 +232,22 @@ public class AutofillKeyboardAccessoryIntegrationTest {
         onView(isAssignableFrom(KeyboardAccessoryButtonGroupView.class)).perform(click());
         mHelper.waitForKeyboardAccessoryToDisappear();
         histogramExpectation.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testMouseClicksConsumedByAccessoryBar()
+            throws ExecutionException, TimeoutException, InterruptedException {
+        mHelper.loadTestPage(false);
+        mHelper.registerSheetDataProvider(AccessoryTabType.CREDIT_CARDS);
+        // Register a sheet data provider so that sheet is available when needed.
+
+        // Focus the field to bring up the accessory.
+        mHelper.focusPasswordField();
+        mHelper.waitForKeyboardAccessoryToBeShown();
+
+        whenDisplayed(isAssignableFrom(KeyboardAccessoryButtonGroupView.class))
+                .check((v, e) -> assertTrue("Didn't catch the click!", singleMouseClickView(v)));
     }
 
     @Test

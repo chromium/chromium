@@ -163,6 +163,11 @@ class KeyboardAccessoryView extends LinearLayout {
     }
 
     @Override
+    public boolean onGenericMotionEvent(MotionEvent motionEvent) {
+        return true; // Accessory view is a sink for all events. Touch/Click is handled earlier.
+    }
+
+    @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
         final boolean isViewObscured =
                 (event.getFlags()
