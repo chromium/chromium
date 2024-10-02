@@ -56,8 +56,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::mt19937_64 rng;
 
   std::string str = std::string(reinterpret_cast<const char*>(data), size);
-  auto buffer = media::DecoderBuffer::CopyFrom({data, size});
-  buffer->set_is_key_frame(true);
   {  // Seed rng from data.
     std::size_t data_hash = std::hash<std::string>()(str);
     rng.seed(data_hash);
@@ -88,6 +86,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         const auto has_alpha_frame = rng() % 4;
         auto parameters = media::Muxer::VideoParameters(*video_frame);
         parameters.codec = video_codec;
+        auto buffer = media::DecoderBuffer::CopyFrom({data, size});
         if (has_alpha_frame) {
           buffer->WritableSideData().alpha_data.assign(data, data + size);
         }
@@ -109,6 +108,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         const media::AudioParameters params(
             media::AudioParameters::AUDIO_PCM_LOW_LATENCY, layout, sample_rate,
             60 * sample_rate);
+        auto buffer = media::DecoderBuffer::CopyFrom({data, size});
         buffer->set_is_key_frame(true);
         muxer.PutFrame(
             media::Muxer::EncodedFrame{params, std::nullopt, std::move(buffer)},
