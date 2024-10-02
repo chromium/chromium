@@ -137,11 +137,14 @@ up, see the [previous section](#verify-driver).
 The following feature switch controls video encoding (see [media
 switches](https://source.chromium.org/chromium/chromium/src/+/main:media/base/media_switches.cc)
 for more details):
-* `--enable-features=VaapiVideoEncoder`
+* `--enable-features=AcceleratedVideoEncoder`
 
 The following two arguments are optional:
 * `--ignore-gpu-blocklist`
 * `--disable-gpu-driver-bug-workaround`
+
+The following feature can improve performance when using EGL/Wayland:
+* `--enable-features=AcceleratedVideoDecodeLinuxZeroCopyGL`
 
 The NVIDIA VaAPI drivers are known to not support Chromium (see
 [crbug.com/1492880](https://crbug.com/1492880)). This feature switch is
@@ -152,7 +155,7 @@ provided for developers to test VaAPI drivers on NVIDIA GPUs:
 
 ```shell
 ./out/gn/chrome --use-gl=angle --use-angle=gl \
---enable-features=VaapiVideoEncoder,VaapiVideoDecodeLinuxGL,VaapiOnNvidiaGPUs \
+--enable-features=AcceleratedVideoEncoder,AcceleratedVideoDecodeLinuxGL,VaapiOnNvidiaGPUs \
 --ignore-gpu-blocklist --disable-gpu-driver-bug-workaround
 ```
 
@@ -160,7 +163,7 @@ provided for developers to test VaAPI drivers on NVIDIA GPUs:
 
 ```shell
 ./out/gn/chrome --use-gl=angle --use-angle=vulkan \
---enable-features=VaapiVideoEncoder,VaapiOnNvidiaGPUs,VaapiIgnoreDriverChecks,Vulkan,DefaultANGLEVulkan,VulkanFromANGLE \
+--enable-features=AcceleratedVideoEncoder,VaapiOnNvidiaGPUs,VaapiIgnoreDriverChecks,Vulkan,DefaultANGLEVulkan,VulkanFromANGLE \
 --ignore-gpu-blocklist --disable-gpu-driver-bug-workaround
 ```
 

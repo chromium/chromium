@@ -18,13 +18,13 @@ namespace media {
 
 namespace {
 
-BASE_FEATURE(kVaapiVideoDecodeLinuxZeroCopyGL,
-             "VaapiVideoDecodeLinuxZeroCopyGL",
+BASE_FEATURE(kAcceleratedVideoDecodeLinuxZeroCopyGL,
+             "AcceleratedVideoDecodeLinuxZeroCopyGL",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 VideoDecoderType GetPreferredLinuxDecoderImplementation() {
   // VaapiVideoDecoder flag is required for VaapiVideoDecoder.
-  if (!base::FeatureList::IsEnabled(kVaapiVideoDecodeLinux)) {
+  if (!base::FeatureList::IsEnabled(kAcceleratedVideoDecodeLinux)) {
     return VideoDecoderType::kUnknown;
   }
 
@@ -59,7 +59,7 @@ std::vector<Fourcc> GetPreferredRenderableFourccs(
     // Allow zero-copy formats with GL for testing or in controlled
     // environments.
     if (gpu_preferences.gr_context_type == gpu::GrContextType::kGL &&
-        base::FeatureList::IsEnabled(kVaapiVideoDecodeLinuxZeroCopyGL)) {
+        base::FeatureList::IsEnabled(kAcceleratedVideoDecodeLinuxZeroCopyGL)) {
       renderable_fourccs.emplace_back(Fourcc::NV12);
       renderable_fourccs.emplace_back(Fourcc::P010);
     }
@@ -79,18 +79,25 @@ std::vector<Fourcc> GetPreferredRenderableFourccs(
 VideoDecoderType GetActualPlatformDecoderImplementation(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GPUInfo& gpu_info) {
-  // On linux, Vaapi has GL restrictions.
+  // On linux, Vaapi and V4L2 have GL restrictions.
   switch (GetPreferredLinuxDecoderImplementation()) {
     case VideoDecoderType::kUnknown:
       return VideoDecoderType::kUnknown;
     case VideoDecoderType::kOutOfProcess:
       return VideoDecoderType::kOutOfProcess;
     case VideoDecoderType::kV4L2:
+      if (gpu_preferences.gr_context_type == gpu::GrContextType::kGL) {
+        if (base::FeatureList::IsEnabled(kAcceleratedVideoDecodeLinuxGL)) {
+          return VideoDecoderType::kV4L2;
+        } else {
+          return VideoDecoderType::kUnknown;
+        }
+      }
       return VideoDecoderType::kV4L2;
     case VideoDecoderType::kVaapi: {
       // Allow VaapiVideoDecoder on GL.
       if (gpu_preferences.gr_context_type == gpu::GrContextType::kGL) {
-        if (base::FeatureList::IsEnabled(kVaapiVideoDecodeLinuxGL)) {
+        if (base::FeatureList::IsEnabled(kAcceleratedVideoDecodeLinuxGL)) {
           return VideoDecoderType::kVaapi;
         } else {
           return VideoDecoderType::kUnknown;

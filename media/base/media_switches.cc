@@ -731,18 +731,18 @@ BASE_FEATURE(kUnifiedAutoplay,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_LINUX)
-// Enable vaapi video decoding on linux. This is already enabled by default on
-// chromeos, but needs an experiment on linux.
-BASE_FEATURE(kVaapiVideoDecodeLinux,
-             "VaapiVideoDecoder",
+// Enable vaapi/v4l2 video decoding on linux. This is already enabled by default
+// on chromeos, but needs an experiment on linux.
+BASE_FEATURE(kAcceleratedVideoDecodeLinux,
+             "AcceleratedVideoDecoder",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kVaapiVideoDecodeLinuxGL,
-             "VaapiVideoDecodeLinuxGL",
+BASE_FEATURE(kAcceleratedVideoDecodeLinuxGL,
+             "AcceleratedVideoDecodeLinuxGL",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kVaapiVideoEncodeLinux,
-             "VaapiVideoEncoder",
+BASE_FEATURE(kAcceleratedVideoEncodeLinux,
+             "AcceleratedVideoEncoder",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Ignore the non-intel driver blacklist for VaapiVideoDecoder implementations.

@@ -154,7 +154,7 @@ std::vector<GpuFeatureData> GetGpuFeatureData(
       SafeGetFeatureStatus(
           gpu_feature_info, gpu::GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE,
 #if BUILDFLAG(IS_LINUX)
-          !base::FeatureList::IsEnabled(media::kVaapiVideoDecodeLinux) ||
+          !base::FeatureList::IsEnabled(media::kAcceleratedVideoDecodeLinux) ||
 #endif  // BUILDFLAG(IS_LINUX)
               command_line.HasSwitch(switches::kDisableAcceleratedVideoDecode)),
       DisableInfo::Problem(
@@ -166,7 +166,7 @@ std::vector<GpuFeatureData> GetGpuFeatureData(
       SafeGetFeatureStatus(
           gpu_feature_info, gpu::GPU_FEATURE_TYPE_ACCELERATED_VIDEO_ENCODE,
 #if BUILDFLAG(IS_LINUX)
-          !base::FeatureList::IsEnabled(media::kVaapiVideoEncodeLinux)),
+          !base::FeatureList::IsEnabled(media::kAcceleratedVideoEncodeLinux)),
 #else
           command_line.HasSwitch(switches::kDisableAcceleratedVideoEncode)),
 #endif  // BUILDFLAG(IS_LINUX)
