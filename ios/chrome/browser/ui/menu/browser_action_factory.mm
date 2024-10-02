@@ -194,7 +194,7 @@
                         [handler openURLInNewTab:[OpenNewTabCommand
                                                      commandWithIncognito:NO]];
                       }];
-  if (IsIncognitoModeForced(self.browser->GetBrowserState()->GetPrefs())) {
+  if (IsIncognitoModeForced(self.browser->GetProfile()->GetPrefs())) {
     action.attributes = UIMenuElementAttributesDisabled;
   }
   return action;
@@ -213,7 +213,7 @@
                         [handler openURLInNewTab:[OpenNewTabCommand
                                                      commandWithIncognito:YES]];
                       }];
-  if (IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs())) {
+  if (IsIncognitoModeDisabled(self.browser->GetProfile()->GetPrefs())) {
     action.attributes = UIMenuElementAttributesDisabled;
   }
   return action;
@@ -329,7 +329,7 @@
                   }];
                 }];
 
-  if (IsIncognitoModeForced(self.browser->GetBrowserState()->GetPrefs())) {
+  if (IsIncognitoModeForced(self.browser->GetProfile()->GetPrefs())) {
     action.attributes = UIMenuElementAttributesDisabled;
   }
 
@@ -354,7 +354,7 @@
                         }];
                       }];
 
-  if (IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs())) {
+  if (IsIncognitoModeDisabled(self.browser->GetProfile()->GetPrefs())) {
     action.attributes = UIMenuElementAttributesDisabled;
   }
 
@@ -372,8 +372,8 @@
         __typeof(weakSelf) strongSelf = weakSelf;
 
         TemplateURLService* templateURLService =
-            ios::TemplateURLServiceFactory::GetForBrowserState(
-                strongSelf.browser->GetBrowserState());
+            ios::TemplateURLServiceFactory::GetForProfile(
+                strongSelf.browser->GetProfile());
 
         UIImage* image = [optionalImage.value().ToUIImage() copy];
 
