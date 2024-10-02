@@ -656,7 +656,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
       LOG(ERROR) << "MapSharedImage Failed.";
       return nullptr;
     }
-    SkPixmap pixmap(CreateSkImageInfo(), mapping->Memory(0),
+    SkPixmap pixmap(CreateSkImageInfo(), mapping->GetMemoryForPlane(0).data(),
                     mapping->Stride(0));
     auto sk_image = SkImages::RasterFromPixmapCopy(pixmap);
 
