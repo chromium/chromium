@@ -768,6 +768,8 @@ class TabImpl implements Tab {
         RecordHistogram.recordBooleanHistogram(
                 "Tabs.FreezeAndAppendPendingNavigationResult", success);
         if (success) {
+            // The pending load params were consumed to make the WebContentsState. Invalidate them.
+            mPendingLoadParams = null;
             mUrl = new GURL(mWebContentsState.getVirtualUrlFromState());
         } else {
             // Since we are not allowed to auto-navigate the only remaining fallback is to clobber
