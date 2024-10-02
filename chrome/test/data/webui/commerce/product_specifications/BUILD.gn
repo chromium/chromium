@@ -14,6 +14,7 @@ build_webui_tests("build") {
     "drag_and_drop_manager_test.ts",
     "header_test.ts",
     "horizontal_carousel_test.ts",
+    "loading_state_test.ts",
     "new_column_selector_test.ts",
     "product_selection_menu_test.ts",
     "product_selector_test.ts",

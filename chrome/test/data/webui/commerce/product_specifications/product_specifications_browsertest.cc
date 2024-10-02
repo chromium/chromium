@@ -114,6 +114,11 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, HorizontalCarousel) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, LoadingState) {
+  RunTest("commerce/product_specifications/loading_state_test.js",
+          "mocha.run()");
+}
+
 // TODO(crbug.com/365430929): Flaky on
 // linux-blink-web-tests-force-accessibility-rel.
 #if BUILDFLAG(IS_LINUX)
