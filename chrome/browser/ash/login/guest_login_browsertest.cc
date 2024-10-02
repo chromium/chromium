@@ -13,6 +13,8 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -117,6 +119,13 @@ IN_PROC_BROWSER_TEST_F(GuestLoginTest, Login) {
 
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   EXPECT_TRUE(user_manager->IsLoggedInAsGuest());
+
+  // Checks User::GetProfilePrefs() uses the correct instance.
+  user_manager::User* user = user_manager->GetActiveUser();
+  ASSERT_TRUE(user);
+  EXPECT_EQ(user_manager::UserType::kGuest, user->GetType());
+  EXPECT_EQ(ProfileHelper::Get()->GetProfileByUser(user)->GetPrefs(),
+            user->GetProfilePrefs());
 }
 
 // Check that the guest button is visible on user creation screen before
