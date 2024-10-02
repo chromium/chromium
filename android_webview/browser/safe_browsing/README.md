@@ -18,6 +18,17 @@ interfaces and library. For each navigation in Android apps when Safe Browsing i
 since a single page can contain multiple threats WebView gets the most
 severe threat for the navigation chain and shows an interstitial.
 
+For WebView versions prior to M126, Safe Browsing on WebView uses the
+"Local Blocklist" or "V4" protocol. URLs are checked for malware, phishing etc
+against an on-device blocklist that is periodically updated by Google's servers.
+
+From M126 onwards, WebView uses a "Real-Time" or "V5" protocol for Safe Browsing.
+URLs are checked in real-time against blocklists maintained by our servers.
+This [blog post](https://blog.google/products/chrome/google-chrome-safe-browsing-real-time/)
+highlights the motivation behind real-time safe browsing and
+[go/androidSBv5](http://go/androidSBv5) explains this protocol in detail.
+Real-time Safe Browsing can be disabled by the user.
+
 ## Safe Browsing in //components
 
 Safe Browsing has many components; for brevity, we will only discuss the ones most
@@ -117,6 +128,23 @@ accessed by your choice of two different routes:
   Settings (gear icon) > Scan apps with Play Protect`, or
 * In the Android Settings app: `Launch the Settings app > Security & Privacy >
   App Security > Google Play Protect > Gear icon > Scan apps with Play Protect`
+
+
+### Real-time Safe Browsing user opt-in
+
+*** note
+**Note:** this is only relevant for the GMS-based implementation in downstream
+WebView targets.
+***
+
+To enable real-time Safe Browsing, which is available M126 onwards, ensure that
+you have opted into it.
+
+`Launch Settings > Security & Privacy > More Security & Privacy >
+Android Safe Browsing > Use live threat protection`
+
+If this toggle is off, WebView will still perform Safe Browsing, but will use
+the "Local Blocklist" (V4) protocol instead of the "Real-time" (V5) protocol.
 
 ### Application opt-in
 
