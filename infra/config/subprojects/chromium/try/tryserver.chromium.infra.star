@@ -140,6 +140,14 @@ try_.builder(
                 ],
                 "build_dir": "out/linux-rel",
             },
+            {
+                "bucket": "ci",
+                "builder_name": "Linux Tests",
+                "test_names": [
+                    "telemetry_gpu_unittests",
+                ],
+                "build_dir": "out/linux-rel",
+            },
         ],
     },
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
