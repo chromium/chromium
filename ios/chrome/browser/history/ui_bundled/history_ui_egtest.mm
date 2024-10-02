@@ -11,6 +11,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
+#import "components/browsing_data/core/pref_names.h"
 #import "components/sync/base/command_line_switches.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/history/ui_bundled/history_ui_constants.h"
@@ -860,6 +861,12 @@ void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
   // Reset all prefs, so they're at their default value.
   [ChromeEarlGrey resetBrowsingDataPrefs];
 
+  // Disable closing tabs as it's on by default in delete browsing data, so the
+  // tab closure animation is not run in iPads. This is needed so the history UI
+  // is not closed due to the animation.
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kCloseTabs];
+
   // Create an history entry that took place one day ago.
   const base::Time oneDayAgo = base::Time::Now() - base::Days(1);
   [ChromeEarlGrey addHistoryServiceTypedURL:olderURL visitTimestamp:oneDayAgo];
@@ -896,25 +903,31 @@ void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
 // Tests that if all history entries are deleted from Delete Browsing Data, that
 // then the history view is updated to show the empty state.
 - (void)testEmptyState {
-    [self loadTestURLs];
-    [self openHistoryPanel];
+  // Disable closing tabs as it's on by default in delete browsing data, so the
+  // tab closure animation is not run in iPads. This is needed so the history UI
+  // is not closed due to the animation.
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kCloseTabs];
 
-    // The toolbar should contain the CBD and edit buttons.
-    [[EarlGrey selectElementWithMatcher:HistoryClearBrowsingDataButton()]
-        assertWithMatcher:grey_notNil()];
-    [[EarlGrey selectElementWithMatcher:NavigationEditButton()]
-        assertWithMatcher:grey_notNil()];
+  [self loadTestURLs];
+  [self openHistoryPanel];
 
-    [ChromeEarlGreyUI openAndClearBrowsingDataFromHistory];
+  // The toolbar should contain the CBD and edit buttons.
+  [[EarlGrey selectElementWithMatcher:HistoryClearBrowsingDataButton()]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:NavigationEditButton()]
+      assertWithMatcher:grey_notNil()];
 
-    // Toolbar should only contain CBD button and the background should contain
-    // the Illustrated empty view
-    [[EarlGrey selectElementWithMatcher:HistoryClearBrowsingDataButton()]
-        assertWithMatcher:grey_notNil()];
-    [[EarlGrey selectElementWithMatcher:NavigationEditButton()]
-        assertWithMatcher:grey_nil()];
-    [[EarlGrey selectElementWithMatcher:EmptyIllustratedTableViewBackground()]
-        assertWithMatcher:grey_notNil()];
+  [ChromeEarlGreyUI openAndClearBrowsingDataFromHistory];
+
+  // Toolbar should only contain CBD button and the background should contain
+  // the Illustrated empty view
+  [[EarlGrey selectElementWithMatcher:HistoryClearBrowsingDataButton()]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:NavigationEditButton()]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:EmptyIllustratedTableViewBackground()]
+      assertWithMatcher:grey_notNil()];
 }
 
 #pragma mark Multiwindow

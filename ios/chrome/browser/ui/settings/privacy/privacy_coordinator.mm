@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/ui/settings/privacy/privacy_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+#import "ui/base/device_form_factor.h"
 
 @interface PrivacyCoordinator () <
     ClearBrowsingDataCoordinatorDelegate,
@@ -140,7 +141,9 @@
   if (IsIosQuickDeleteEnabled()) {
     id<QuickDeleteCommands> quickDeleteHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), QuickDeleteCommands);
-    [quickDeleteHandler showQuickDeleteAndCanPerformTabsClosureAnimation:NO];
+    [quickDeleteHandler
+        showQuickDeleteAndCanPerformTabsClosureAnimation:
+            ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET];
   } else {
     self.clearBrowsingDataCoordinator = [[ClearBrowsingDataCoordinator alloc]
         initWithBaseNavigationController:self.baseNavigationController
