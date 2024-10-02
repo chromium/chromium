@@ -1195,7 +1195,14 @@ public class SiteSettingsTest {
     public void testSiteSettingsMenuWithTrackingProtectionEnabled() {
         final SettingsActivity settingsActivity = SiteSettingsTestUtils.startSiteSettingsMenu("");
         SiteSettings websitePreferences = (SiteSettings) settingsActivity.getMainFragment();
-        assertNotNull(websitePreferences.findPreference("tracking_protection"));
+        final Preference trackingProtectionPreference =
+                websitePreferences.findPreference("tracking_protection");
+        assertNotNull(trackingProtectionPreference);
+        Assert.assertEquals(
+                trackingProtectionPreference.getTitle(),
+                websitePreferences
+                        .getContext()
+                        .getString(R.string.third_party_cookies_link_row_label));
         settingsActivity.finish();
     }
 

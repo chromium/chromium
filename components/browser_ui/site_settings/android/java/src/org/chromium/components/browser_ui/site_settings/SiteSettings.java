@@ -205,6 +205,10 @@ public class SiteSettings extends BaseSiteSettingsFragment
         if (getSiteSettingsDelegate().shouldShowTrackingProtectionUI()) {
             p = findPreference(Type.TRACKING_PROTECTION);
             if (p != null) {
+                if (getSiteSettingsDelegate().shouldShowTrackingProtectionBrandedUI()) {
+                    p.setTitle(R.string.tracking_protection_settings_title);
+                    p.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.ic_eye_crossed));
+                }
                 p.setSummary(
                         ContentSettingsResources.getTrackingProtectionListSummary(
                                 getSiteSettingsDelegate()
