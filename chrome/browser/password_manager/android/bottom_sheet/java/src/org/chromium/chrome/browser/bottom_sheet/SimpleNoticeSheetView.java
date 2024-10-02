@@ -29,6 +29,7 @@ class SimpleNoticeSheetView implements BottomSheetContent {
         mContentView =
                 (RelativeLayout)
                         LayoutInflater.from(context).inflate(R.layout.simple_notice_sheet, null);
+        mContentView.setOnGenericMotionListener((v, e) -> true); // Filter background interaction.
         ImageView sheetHeaderImage = mContentView.findViewById(R.id.sheet_header_image);
         sheetHeaderImage.setImageDrawable(
                 AppCompatResources.getDrawable(
