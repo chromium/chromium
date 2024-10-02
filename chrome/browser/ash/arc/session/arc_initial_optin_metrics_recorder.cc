@@ -14,63 +14,9 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace arc {
-
-namespace {
-
-class ArcInitialOptInMetricsRecorderFactory
-    : public ProfileKeyedServiceFactory {
- public:
-  ArcInitialOptInMetricsRecorderFactory();
-
-  ArcInitialOptInMetricsRecorderFactory(
-      const ArcInitialOptInMetricsRecorderFactory&) = delete;
-  ArcInitialOptInMetricsRecorderFactory& operator=(
-      const ArcInitialOptInMetricsRecorderFactory&) = delete;
-
-  ~ArcInitialOptInMetricsRecorderFactory() override = default;
-
-  KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* browser_context) const override {
-    return new ArcInitialOptInMetricsRecorder(browser_context);
-  }
-
-  // static
-  static ArcInitialOptInMetricsRecorder* GetForBrowserContext(
-      content::BrowserContext* context) {
-    return static_cast<ArcInitialOptInMetricsRecorder*>(
-        GetInstance()->GetServiceForBrowserContext(context, true));
-  }
-
-  // static
-  static ArcInitialOptInMetricsRecorderFactory* GetInstance() {
-    return base::Singleton<ArcInitialOptInMetricsRecorderFactory>::get();
-  }
-};
-
-ArcInitialOptInMetricsRecorderFactory::ArcInitialOptInMetricsRecorderFactory()
-    : ProfileKeyedServiceFactory(
-          "ArcInitialOptInMetricsRecorderFactory",
-          ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/40257657): Check if this service is needed in
-              // Guest mode.
-              .WithGuest(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/41488885): Check if this service is needed for
-              // Ash Internals.
-              .WithAshInternals(ProfileSelection::kOriginalOnly)
-              .Build()) {}
-
-}  // anonymous namespace
-
-// static
-ArcInitialOptInMetricsRecorder* ArcInitialOptInMetricsRecorder::GetForProfile(
-    Profile* profile) {
-  return ArcInitialOptInMetricsRecorderFactory::GetForBrowserContext(profile);
-}
 
 ArcInitialOptInMetricsRecorder::ArcInitialOptInMetricsRecorder(
     content::BrowserContext* context) {
@@ -125,11 +71,6 @@ void ArcInitialOptInMetricsRecorder::OnArcAppListReady() {
 
 bool ArcInitialOptInMetricsRecorder::NeedReportArcAppListReady() const {
   return arc_opt_in_time_.has_value() && !arc_app_list_ready_reported_;
-}
-
-// static
-void ArcInitialOptInMetricsRecorder::EnsureFactoryBuilt() {
-  ArcInitialOptInMetricsRecorderFactory::GetInstance();
 }
 
 }  // namespace arc

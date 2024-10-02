@@ -86,7 +86,7 @@
 #include "chrome/browser/ash/arc/process/arc_process_service.h"
 #include "chrome/browser/ash/arc/screen_capture/arc_screen_capture_bridge.h"
 #include "chrome/browser/ash/arc/session/arc_disk_space_monitor.h"
-#include "chrome/browser/ash/arc/session/arc_initial_optin_metrics_recorder.h"
+#include "chrome/browser/ash/arc/session/arc_initial_optin_metrics_recorder_factory.h"
 #include "chrome/browser/ash/arc/session/arc_play_store_enabled_preference_handler.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/sharesheet/arc_sharesheet_bridge.h"
@@ -323,7 +323,7 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   apps::ArcAppsFactory::GetForProfile(profile);
   ash::ApkWebAppService::Get(profile);
   ash::app_restore::AppRestoreArcTaskHandlerFactory::GetForProfile(profile);
-  ArcInitialOptInMetricsRecorder::GetForProfile(profile);
+  ArcInitialOptInMetricsRecorderFactory::GetForBrowserContext(profile);
   ArcChromeFeatureFlagsBridge::GetForBrowserContext(profile);
 
   if (arc::IsArcVmEnabled()) {
@@ -453,7 +453,7 @@ void ArcServiceLauncher::EnsureFactoriesBuilt() {
   ArcIdleManager::EnsureFactoryBuilt();
   ArcIioSensorBridge::EnsureFactoryBuilt();
   ArcImeService::EnsureFactoryBuilt();
-  ArcInitialOptInMetricsRecorder::EnsureFactoryBuilt();
+  ArcInitialOptInMetricsRecorderFactory::GetInstance();
   ArcInstanceThrottle::EnsureFactoryBuilt();
   if (ShouldUseArcKeyMint()) {
     ArcKeyMintBridge::EnsureFactoryBuilt();

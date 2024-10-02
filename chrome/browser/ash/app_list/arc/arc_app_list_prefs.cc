@@ -48,6 +48,7 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/ash/arc/session/arc_initial_optin_metrics_recorder.h"
+#include "chrome/browser/ash/arc/session/arc_initial_optin_metrics_recorder_factory.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
@@ -432,7 +433,7 @@ void OnArcAppListRefreshed(Profile* profile) {
   if (!arc::IsArcPlayStoreEnabledForProfile(profile))
     return;
 
-  if (!arc::ArcInitialOptInMetricsRecorder::GetForProfile(profile)
+  if (!arc::ArcInitialOptInMetricsRecorderFactory::GetForBrowserContext(profile)
            ->NeedReportArcAppListReady()) {
     return;
   }
@@ -459,7 +460,7 @@ void OnArcAppListRefreshed(Profile* profile) {
     }
   }
   if (ready + error >= launchable) {
-    arc::ArcInitialOptInMetricsRecorder::GetForProfile(profile)
+    arc::ArcInitialOptInMetricsRecorderFactory::GetForBrowserContext(profile)
         ->OnArcAppListReady();
   }
 }

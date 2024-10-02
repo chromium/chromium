@@ -18,6 +18,8 @@ static_library("session") {
     "arc_disk_space_monitor.h",
     "arc_initial_optin_metrics_recorder.cc",
     "arc_initial_optin_metrics_recorder.h",
+    "arc_initial_optin_metrics_recorder_factory.cc",
+    "arc_initial_optin_metrics_recorder_factory.h",
     "arc_play_store_enabled_preference_handler.cc",
     "arc_play_store_enabled_preference_handler.h",
     "arc_provisioning_result.cc",
