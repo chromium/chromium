@@ -419,9 +419,10 @@ class NET_EXPORT HttpUtil {
     ~NameValuePairsIterator();
 
     // Advances the iterator to the next pair, if any.  Returns true if there
-    // is a next pair. Returns false and on error, and `valid()` starts
-    // returning false. Once GetNext() returns false Use name() and value()
-    // methods to access the resultant value.
+    // is a next pair. Returns false on completion or on error. In the error
+    // case, `valid()` will return false. Once GetNext() returns false, whether
+    // due to error or completion, it should not be called again. Use name() and
+    // value() methods to access the resultant value.
     //
     // Each call will invalidate the string views obtained through the previous
     // GetNext() call, as they may point to temporary buffers.
