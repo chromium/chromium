@@ -141,6 +141,7 @@ constexpr char kOpSoftplusTypeName[] = "softplus";
 constexpr char kOpSoftsignTypeName[] = "softsign";
 constexpr char kOpSplitTypeName[] = "split";
 constexpr char kOpTanhTypeName[] = "tanh";
+constexpr char kOpTileTypeName[] = "tile";
 constexpr char kOpTransposeTypeName[] = "transpose";
 constexpr char kOpWhereTypeName[] = "select";
 // Elementwise binary operators.
@@ -200,6 +201,7 @@ constexpr char kOpParamEpsilon[] = "epsilon";
 constexpr char kOpParamGamma[] = "gamma";
 constexpr char kOpParamKeepDims[] = "keep_dims";
 constexpr char kOpParamPad[] = "pad";
+constexpr char kOpParamReps[] = "reps";
 constexpr char kOpParamX[] = "x";
 constexpr char kOpParamY[] = "y";
 // Hard coded path used in the model file to point at the weight path.
@@ -759,8 +761,10 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.tensor_operation.split
        /*split_input=*/kFloatsAndInt32,
        /*tanh_input=*/DataTypeConstraint::kFloat16To32,
-       // Tile is not implemented.
-       /*tile_input=*/{},
+       // Note that BOOL is also supported by CoreML, but WebNN does not have a
+       // corresponding BOOL type. See docs here:
+       // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.tensor_operation.tile
+       /*tile_input=*/kFloatsAndInt32,
        // Note that BOOL is also supported by CoreML, but WebNN does not have a
        // corresponding BOOL type. See docs here:
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.tensor_operation.transpose
@@ -1012,6 +1016,10 @@ GraphBuilderCoreml::BuildCoreMLModel() {
         AddUnaryOperation(kOpTanhTypeName, *operation->get_tanh(), block);
         break;
       }
+      case mojom::Operation::Tag::kTile: {
+        AddOperationForTile(*operation->get_tile(), block);
+        break;
+      }
       case mojom::Operation::Tag::kTranspose: {
         AddOperationForTranspose(*operation->get_transpose(), block);
         break;
@@ -1031,7 +1039,6 @@ GraphBuilderCoreml::BuildCoreMLModel() {
       case mojom::Operation::Tag::kPrelu:
       case mojom::Operation::Tag::kQuantizeLinear:
       case mojom::Operation::Tag::kScatterNd:
-      case mojom::Operation::Tag::kTile:
       case mojom::Operation::Tag::kTriangular:
         return NewNotSupportedError(NotSupportedOperatorError(*operation));
     }
@@ -1996,9 +2003,8 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForExpand(
       CreateUnaryOperation(SupportedDataType::kFloatsAndInt32,
                            kOpExpandTypeName, reshaped_input,
                            operation.output_operand_id, block, ops::kExpand));
-  constexpr char kParamReps[] = "reps";
 
-  SetInputWithValue(*op->mutable_inputs(), kParamReps,
+  SetInputWithValue(*op->mutable_inputs(), kOpParamReps,
                     Create1DTensorImmediateValue<int32_t>(reps));
   return base::ok();
 }
@@ -2814,6 +2820,30 @@ void GraphBuilderCoreml::AddOperationForSplit(
       {{kParamSplitSizes, Create1DTensorImmediateValue<int32_t>(split_sizes)},
        {kOpParamAxis, CreateScalarImmediateValue(
                           base::checked_cast<int32_t>(operation.axis))}});
+}
+
+void GraphBuilderCoreml::AddOperationForTile(
+    const mojom::Tile& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+  CHECK(context_properties_.data_type_limits.tile_input.Has(
+      MILDataTypeToOperandType(input_operand_info.mil_data_type)));
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpTileTypeName);
+  SetInputWithName(*op->mutable_inputs(), kOpParamX,
+                   input_operand_info.coreml_name);
+
+  // CoreML expects repetitions to be vector of int32_t.
+  base::FixedArray<int32_t> repetitions(operation.repetitions.size());
+  base::ranges::transform(
+      operation.repetitions, repetitions.begin(),
+      [](uint32_t val) { return base::checked_cast<int32_t>(val); });
+  SetInputWithValue(*op->mutable_inputs(), kOpParamReps,
+                    Create1DTensorImmediateValue<int32_t>(repetitions));
+
+  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
 }
 
 void GraphBuilderCoreml::AddOperationForTranspose(
