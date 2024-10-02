@@ -548,9 +548,9 @@ void PasskeySyncBridge::OnStoreReadAllDataAndMetadata(
     data_[std::move(storage_key)] = std::move(specifics);
   }
   ready_ = true;
-  NotifyPasskeyModelIsReady(ready_);
   NotifyPasskeysChanged(std::move(changes));
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
+  NotifyPasskeyModelIsReady(ready_);
 }
 
 void PasskeySyncBridge::OnStoreCommitWriteBatch(
