@@ -145,15 +145,7 @@ CSSPropertyValueSet* ComputePresentationAttributeStyle(Element& element) {
   // The element can be cached (has non-zero hash) and has an entry in the
   // cache. Hit.
   if (cache_hash && cache_value->value) {
-    // Reference the property set, since if we clean the cache below it may
-    // disappear.
-    CSSPropertyValueSet* style = cache_value->value->value;
-
-    static const unsigned kMinimumPresentationAttributeCacheSizeForCleaning =
-        100;
-    if (cache.size() >= kMinimumPresentationAttributeCacheSizeForCleaning)
-      cache.clear();
-    return style;
+    return cache_value->value->value;
   }
 
   // No entry in the cache or cannot be cached. Miss. Create a new property set.
