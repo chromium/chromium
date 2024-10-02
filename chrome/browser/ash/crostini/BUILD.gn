@@ -77,6 +77,8 @@ static_library("crostini") {
     "crostini_upgrade_available_notification.h",
     "crostini_upgrader.cc",
     "crostini_upgrader.h",
+    "crostini_upgrader_factory.cc",
+    "crostini_upgrader_factory.h",
     "crostini_upgrader_ui_delegate.h",
     "crostini_util.cc",
     "crostini_util.h",

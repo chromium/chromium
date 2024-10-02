@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/crostini/crostini_upgrader.h"
+#include "chrome/browser/ash/crostini/crostini_upgrader_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -139,7 +140,8 @@ void CrostiniUpgraderUI::CreatePageHandler(
 
   page_handler_ = std::make_unique<CrostiniUpgraderPageHandler>(
       web_ui()->GetWebContents(),
-      crostini::CrostiniUpgrader::GetForProfile(Profile::FromWebUI(web_ui())),
+      crostini::CrostiniUpgraderFactory::GetForProfile(
+          Profile::FromWebUI(web_ui())),
       std::move(pending_page_handler), std::move(pending_page),
       // Using Unretained(this) because |page_handler_| will not out-live
       // |this|.
