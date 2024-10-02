@@ -677,7 +677,8 @@ void VizLayerContext::UpdateDisplayTreeFrom(
   update->source_frame_number = tree.source_frame_number();
   update->trace_id = tree.trace_id().value();
   update->device_viewport = tree.GetDeviceViewport();
-  update->device_scale_factor = tree.painted_device_scale_factor();
+  update->device_scale_factor = tree.device_scale_factor();
+  update->painted_device_scale_factor = tree.painted_device_scale_factor();
   if (tree.local_surface_id_from_parent().is_valid()) {
     update->local_surface_id_from_parent = tree.local_surface_id_from_parent();
   }
