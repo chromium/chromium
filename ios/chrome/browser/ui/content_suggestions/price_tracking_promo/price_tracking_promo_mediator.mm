@@ -148,6 +148,10 @@
     [self.delegate removePriceTrackingPromo];
   } else if (!granted && !promptShown && !error) {
     [self.actionDelegate showPriceTrackingPromoAlertCoordinator];
+  } else {
+    // Catch all other scenarios e.g. first time opt in and user
+    // denied access to notifications, should remove and disable module.
+    [self disableModule];
   }
 }
 
@@ -266,6 +270,14 @@
 
 - (void)setPriceTrackingPromoItemForTesting:(PriceTrackingPromoItem*)item {
   self->_priceTrackingPromoItem = item;
+}
+
+- (void)requestPushNotificationDoneWithGrantedForTesting:(BOOL)granted
+                                             promptShown:(BOOL)promptShown
+                                                   error:(NSError*)error {
+  [self requestPushNotificationDoneWithGranted:granted
+                                   promptShown:promptShown
+                                         error:error];
 }
 
 @end
