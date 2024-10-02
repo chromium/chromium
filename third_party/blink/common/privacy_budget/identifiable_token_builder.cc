@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 
 #include <algorithm>
@@ -151,7 +146,7 @@ bool IdentifiableTokenBuilder::IsAligned() const {
 
 IdentifiableTokenBuilder::ByteSpan IdentifiableTokenBuilder::GetPartialBlock()
     const {
-  return ByteSpan(partial_.begin(), position_);
+  return ByteSpan(partial_).first(PartialSize());
 }
 
 }  // namespace blink
