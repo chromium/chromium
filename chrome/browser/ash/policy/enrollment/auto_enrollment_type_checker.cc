@@ -80,18 +80,21 @@ static std::string FRERequirementToString(
   }
 }
 
-// Returns true if we are on Flex and FRE is enabled on Flex.
-static bool IsFlexAndFREOnFlexIsEnabled() {
-  return ash::switches::IsRevenBranding() &&
+// Returns true if we are on an officially branded Flex and FRE is enabled
+// on Flex.
+static bool IsOfficialGoogleFlexAndFREOnFlexIsEnabled() {
+  return IsOfficialGoogleFlex() &&
+         // FRE on Flex is enabled unless explicitly disabled ("never" enabled).
          base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-             ash::switches::kEnterpriseEnableForcedReEnrollmentOnFlex) ==
-             AutoEnrollmentTypeChecker::kForcedReEnrollmentAlways;
+             ash::switches::kEnterpriseEnableForcedReEnrollmentOnFlex) !=
+             AutoEnrollmentTypeChecker::kForcedReEnrollmentNever;
 }
 
 // Returns true if FRE state keys are supported.
 static bool AreFREStateKeysSupported() {
   // TODO(b/331677599): Return IsOfficialGoogleOS().
-  return IsOfficialGoogleChrome() || IsFlexAndFREOnFlexIsEnabled();
+  return IsOfficialGoogleChrome() ||
+         IsOfficialGoogleFlexAndFREOnFlexIsEnabled();
 }
 
 // Kill switch config request parameters.
