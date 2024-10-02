@@ -138,7 +138,6 @@ std::vector<wgpu::FeatureName> GetRequiredFeatures(
   std::vector<wgpu::FeatureName> features = {
       wgpu::FeatureName::DawnInternalUsages,
       wgpu::FeatureName::ImplicitDeviceSynchronization,
-      wgpu::FeatureName::SurfaceCapabilities,
 #if BUILDFLAG(IS_ANDROID)
       wgpu::FeatureName::TextureCompressionETC2,
 #endif
