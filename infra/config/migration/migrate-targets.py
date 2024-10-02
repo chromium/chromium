@@ -55,19 +55,29 @@ _OS_TYPE_MAPPING = {
 }
 
 
+def _to_starlark_value(value: typing.Any) -> value_builders.Value:
+  if value is None or isinstance(value, (int, bool)):
+    return str(value)
+  if isinstance(value, str):
+    return f'"{value}"'
+  if isinstance(value, list):
+    return value_builders.ListValueBuilder(
+        [_to_starlark_value(e) for e in value])
+  if isinstance(value, dict):
+    return value_builders.DictValueBuilder({
+        k: _to_starlark_value(v)
+        for k, v in value.items()
+    })
+  raise Exception(f'unhandled python value: {value!r}')
+
+
 def _swarming(swarming: dict[str, typing.Any]) -> value_builders.ValueBuilder:
   value_builder = value_builders.CallValueBuilder('targets.swarming')
 
   for key, value in swarming.items():
     match key:
-      case 'dimensions':
-        dimensions_builder = value_builders.DictValueBuilder()
-        for k, v in value.items():
-          dimensions_builder[k] = f'"{v}"'
-        value_builder['dimensions'] = dimensions_builder
-
-      case 'shards':
-        value_builder['shards'] = value
+      case 'dimensions' | 'shards':
+        value_builder[key] = _to_starlark_value(value)
 
       case _:
         raise Exception(f'unhandled key in swarming: "{key}"')
@@ -97,12 +107,8 @@ def _per_test_modifications(
 
       for key, value in modifications.items():
         match key:
-          case 'args':
-            mixin_builder['args'] = value_builders.ListValueBuilder(
-                [f'"{arg}"' for arg in value])
-
-          case 'ci_only' | 'experiment_percentage':
-            mixin_builder[key] = value
+          case 'args' | 'ci_only' | 'experiment_percentage':
+            mixin_builder[key] = _to_starlark_value(value)
 
           case 'swarming':
             mixin_builder['swarming'] = _swarming(value)
@@ -217,12 +223,10 @@ def _compute_edits(
               raise Exception(f'unhandled suite type: "{suite}"')
 
       case 'additional_compile_targets':
-        bundle_builder[key] = value_builders.ListValueBuilder(
-            [f'"{element}"' for element in value])
+        bundle_builder[key] = _to_starlark_value(value)
 
       case 'args':
-        anonymous_mixin_builder['args'] = value_builders.ListValueBuilder(
-            [f'"{arg}"' for arg in value])
+        anonymous_mixin_builder['args'] = _to_starlark_value(value)
 
       case 'mixins':
         for element in value:
@@ -242,8 +246,8 @@ def _compute_edits(
       case _:
         raise Exception(f'unhandled key in builder config: "{key}"')
 
-  bundle_builder['per_test_modifications'] = (_per_test_modifications(
-      builder, test_suite_exceptions))
+  bundle_builder['per_test_modifications'] = _per_test_modifications(
+      builder, test_suite_exceptions)
 
   edits = {'targets': ''.join(bundle_builder.output())}
   if (settings_output := settings_builder.output()) is not None:
