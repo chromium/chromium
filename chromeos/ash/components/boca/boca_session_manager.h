@@ -121,6 +121,8 @@ class BocaSessionManager
   base::ObserverList<Observer>& observers() { return observers_; }
 
  private:
+  SEQUENCE_CHECKER(sequence_checker_);
+
   bool IsProfileActive();
   void NotifySessionUpdate();
   void NotifyOnTaskUpdate();

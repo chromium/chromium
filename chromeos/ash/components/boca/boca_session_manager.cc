@@ -116,6 +116,7 @@ void BocaSessionManager::ParseSessionResponse(
 
 void BocaSessionManager::UpdateCurrentSession(
     std::unique_ptr<::boca::Session> session) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   previous_session_ = std::move(current_session_);
   current_session_ = std::move(session);
   NotifySessionUpdate();
