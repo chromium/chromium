@@ -738,9 +738,8 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSSRecursive(
   while (auto* child = child_iterator.Next()) {
     AddTransitionElementsFromCSSRecursive(
         child, tree_scope, containing_group_stack,
-        root_style.ViewTransitionGroup().IsContain()
-            ? current_name
-            : nearest_group_with_contain);
+        root_style.ViewTransitionGroup().IsNormal() ? nearest_group_with_contain
+                                                    : current_name);
   }
 
   if (current_name) {
