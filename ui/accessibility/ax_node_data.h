@@ -237,6 +237,8 @@ struct AX_BASE_EXPORT AXNodeData {
   void SetNameFrom(ax::mojom::NameFrom name_from);
   ax::mojom::DescriptionFrom GetDescriptionFrom() const;
   void SetDescriptionFrom(ax::mojom::DescriptionFrom description_from);
+  ax::mojom::DetailsFrom GetDetailsFrom() const;
+  void SetDetailsFrom(ax::mojom::DetailsFrom details_from);
   ax::mojom::TextPosition GetTextPosition() const;
   void SetTextPosition(ax::mojom::TextPosition text_position);
   ax::mojom::Restriction GetRestriction() const;

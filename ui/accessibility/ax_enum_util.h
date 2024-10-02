@@ -136,6 +136,9 @@ AX_BASE_EXPORT const char* ToString(ax::mojom::NameFrom name_from);
 AX_BASE_EXPORT const char* ToString(
     ax::mojom::DescriptionFrom description_from);
 
+// ax::mojom::DetailsFrom
+AX_BASE_EXPORT const char* ToString(ax::mojom::DetailsFrom details_from);
+
 // ax::mojom::EventFrom
 AX_BASE_EXPORT const char* ToString(ax::mojom::EventFrom event_from);
 

@@ -4,7 +4,7 @@ rootWebArea
 ++++++paragraph
 ++++++++staticText name='This '
 ++++++++++inlineTextBox name='This '
-++++++++genericContainer detailsIds=group,image
+++++++++genericContainer detailsFrom=ariaDetails detailsIds=group,image
 ++++++++++staticText name='text'
 ++++++++++++inlineTextBox name='text'
 ++++++++staticText name=' has details'

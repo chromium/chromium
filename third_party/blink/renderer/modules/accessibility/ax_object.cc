@@ -2496,6 +2496,11 @@ void AXObject::SerializeComputedDetailsRelation(
   // aria-details attribute is understood to mean that no automatic relation
   // should be set.
   if (HasAttribute(html_names::kAriaDetailsAttr)) {
+    if (!node_data
+             ->GetIntListAttribute(ax::mojom::IntListAttribute::kDetailsIds)
+             .empty()) {
+      node_data->SetDetailsFrom(ax::mojom::blink::DetailsFrom::kAriaDetails);
+    }
     return;
   }
 
@@ -2505,6 +2510,7 @@ void AXObject::SerializeComputedDetailsRelation(
     node_data->AddIntListAttribute(
         ax::mojom::blink::IntListAttribute::kDetailsIds,
         {static_cast<int32_t>(popover->AXObjectID())});
+    node_data->SetDetailsFrom(ax::mojom::blink::DetailsFrom::kPopoverAttribute);
     return;
   }
 
@@ -2513,6 +2519,7 @@ void AXObject::SerializeComputedDetailsRelation(
     node_data->AddIntListAttribute(
         ax::mojom::blink::IntListAttribute::kDetailsIds,
         {static_cast<int32_t>(positioned_obj->AXObjectID())});
+    node_data->SetDetailsFrom(ax::mojom::blink::DetailsFrom::kCssAnchor);
   }
 }
 

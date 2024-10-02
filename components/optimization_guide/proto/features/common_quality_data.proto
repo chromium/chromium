@@ -800,7 +800,7 @@ enum AXStringAttribute {
 }
 
 // AX Int attribute enum.
-// Next ID: 66
+// Next ID: 67
 enum AXIntAttribute {
   AX_IA_NONE = 0;
 
@@ -933,6 +933,8 @@ enum AXIntAttribute {
   AX_IA_ARIANOTIFICATIONINTERRUPTDEPRECATED = 64;
 
   AX_IA_ARIANOTIFICATIONPRIORITYDEPRECATED = 65;
+
+  AX_IA_DETAILSFROM = 66;
 }
 
 // AX Float attribute enum.

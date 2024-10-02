@@ -637,6 +637,8 @@ optimization_guide::proto::AXIntAttribute IntAttributeToProto(
       return optimization_guide::proto::AXIntAttribute::AX_IA_NAMEFROM;
     case ax::mojom::IntAttribute::kDescriptionFrom:
       return optimization_guide::proto::AXIntAttribute::AX_IA_DESCRIPTIONFROM;
+    case ax::mojom::IntAttribute::kDetailsFrom:
+      return optimization_guide::proto::AXIntAttribute::AX_IA_DETAILSFROM;
     case ax::mojom::IntAttribute::kActivedescendantId:
       return optimization_guide::proto::AXIntAttribute::
           AX_IA_ACTIVEDESCENDANTID;

@@ -634,8 +634,8 @@ enum StringAttribute {
   kVirtualContent = 30,
 };
 
-// Next version: 4
-// Next value: 66
+// Next version: 5
+// Next value: 67
 [Extensible, Stable, Uuid="c350e50f-5177-405d-b155-79868449ba7b"]
 enum IntAttribute {
   [Default]kNone = 0,
@@ -785,6 +785,10 @@ enum IntAttribute {
   // support multiple contiguous calls to `ariaNotify`.
   [MinVersion=3] kAriaNotificationInterruptDeprecated = 64,
   [MinVersion=3] kAriaNotificationPriorityDeprecated = 65,
+
+  // What information was used to compute the object's details
+  // (of type AXDetailsFrom).
+  [MinVersion=4] kDetailsFrom = 66,
 };
 
 // Next version: 2
@@ -1380,6 +1384,19 @@ enum DescriptionFrom {
 
   // The description comes from a non-tooltip popover, e.g. the
   // |popovertarget| attribute pointing to a `popover=auto`.
+  kPopoverAttribute,
+};
+
+// The source of the accessible details.
+enum DetailsFrom {
+  // The details comes from the aria-details attribute.
+  kAriaDetails,
+
+  // The details comes from an element anchored to this element by CSS.
+  // https://www.w3.org/TR/css-anchor-position-1/
+  kCssAnchor,
+
+  // The details comes from a tooltip-style popover (aka hint popover).
   kPopoverAttribute,
 };
 

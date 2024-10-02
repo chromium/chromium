@@ -1503,6 +1503,8 @@ const char* ToString(ax::mojom::IntAttribute int_attribute) {
       return "nameFrom";
     case ax::mojom::IntAttribute::kDescriptionFrom:
       return "descriptionFrom";
+    case ax::mojom::IntAttribute::kDetailsFrom:
+      return "detailsFrom";
     case ax::mojom::IntAttribute::kActivedescendantId:
       return "activedescendantId";
     case ax::mojom::IntAttribute::kErrormessageIdDeprecated:
@@ -1641,6 +1643,8 @@ ax::mojom::IntAttribute StringToIntAttribute(const std::string& int_attribute) {
     return ax::mojom::IntAttribute::kNameFrom;
   } else if (int_attribute == "kDescriptionFrom") {
     return ax::mojom::IntAttribute::kDescriptionFrom;
+  } else if (int_attribute == "kDetailsFrom") {
+    return ax::mojom::IntAttribute::kDetailsFrom;
   } else if (int_attribute == "kActivedescendantId") {
     return ax::mojom::IntAttribute::kActivedescendantId;
   } else if (int_attribute == "kErrormessageId") {
@@ -2438,6 +2442,19 @@ const char* ToString(ax::mojom::EventFrom event_from) {
       return "page";
     case ax::mojom::EventFrom::kAction:
       return "action";
+  }
+
+  return "";
+}
+
+const char* ToString(ax::mojom::DetailsFrom details_from) {
+  switch (details_from) {
+    case ax::mojom::DetailsFrom::kAriaDetails:
+      return "ariaDetails";
+    case ax::mojom::DetailsFrom::kCssAnchor:
+      return "cssAnchor";
+    case ax::mojom::DetailsFrom::kPopoverAttribute:
+      return "popoverAttribute";
   }
 
   return "";

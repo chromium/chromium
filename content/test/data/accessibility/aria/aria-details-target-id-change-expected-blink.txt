@@ -1,7 +1,7 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++main detailsIds=paragraph
+++++++main detailsFrom=ariaDetails detailsIds=paragraph
 ++++++paragraph
 ++++++++staticText name='Paragraph'
 ++++++++++inlineTextBox name='Paragraph'
@@ -12,7 +12,7 @@ rootWebArea
 rootWebArea name='switch-reference'
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++main detailsIds=article
+++++++main detailsFrom=ariaDetails detailsIds=article
 ++++++paragraph
 ++++++++staticText name='Paragraph'
 ++++++++++inlineTextBox name='Paragraph'
@@ -34,7 +34,7 @@ rootWebArea name='remove-reference'
 rootWebArea name='restore-reference'
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++main detailsIds=paragraph
+++++++main detailsFrom=ariaDetails detailsIds=paragraph
 ++++++paragraph
 ++++++++staticText name='Paragraph'
 ++++++++++inlineTextBox name='Paragraph'
