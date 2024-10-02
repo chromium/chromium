@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -241,19 +242,28 @@ class NET_EXPORT HttpUtil {
 
   // Returns true if the parameters describe a response with a strong etag or
   // last-modified header.  See section 13.3.3 of RFC 2616.
-  // An empty string should be passed for missing headers.
-  static bool HasStrongValidators(HttpVersion version,
-                                  const std::string& etag_header,
-                                  const std::string& last_modified_header,
-                                  const std::string& date_header);
+  //
+  // Non-nullopt times will be converted to std::strings and parsed, which can
+  // be somewhat expensive.
+  //
+  // Note that HasStringValidators() being true for a set of headers implies
+  // HasValidators() is also true.
+  static bool HasStrongValidators(
+      HttpVersion version,
+      std::optional<std::string_view> etag_header,
+      std::optional<std::string_view> last_modified_header,
+      std::optional<std::string_view> date_header);
 
   // Returns true if this response has any validator (either a Last-Modified or
   // an ETag) regardless of whether it is strong or weak.  See section 13.3.3 of
   // RFC 2616.
-  // An empty string should be passed for missing headers.
-  static bool HasValidators(HttpVersion version,
-                            const std::string& etag_header,
-                            const std::string& last_modified_header);
+  //
+  // Non-nullopt times will be converted to std::strings and parsed, which can
+  // be somewhat expensive.
+  static bool HasValidators(
+      HttpVersion version,
+      std::optional<std::string_view> etag_header,
+      std::optional<std::string_view> last_modified_header);
 
   // Gets a vector of common HTTP status codes for histograms of status
   // codes.  Currently returns everything in the range [100, 600), plus 0

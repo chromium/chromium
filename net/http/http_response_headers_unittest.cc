@@ -1806,6 +1806,10 @@ TEST_P(HasStrongValidatorsTest, HasStrongValidators) {
   auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
 
   EXPECT_EQ(test.expected_result, parsed->HasStrongValidators());
+  // Having string validators implies having validators.
+  if (parsed->HasStrongValidators()) {
+    EXPECT_TRUE(parsed->HasValidators());
+  }
 }
 
 const HasStrongValidatorsTestData strong_validators_tests[] = {

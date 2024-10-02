@@ -1520,23 +1520,16 @@ bool HttpResponseHeaders::IsKeepAlive() const {
 }
 
 bool HttpResponseHeaders::HasStrongValidators() const {
-  std::string etag_header;
-  EnumerateHeader(nullptr, "etag", &etag_header);
-  std::string last_modified_header;
-  EnumerateHeader(nullptr, "Last-Modified", &last_modified_header);
-  std::string date_header;
-  EnumerateHeader(nullptr, "Date", &date_header);
-  return HttpUtil::HasStrongValidators(GetHttpVersion(), etag_header,
-                                       last_modified_header, date_header);
+  return HttpUtil::HasStrongValidators(
+      GetHttpVersion(), EnumerateHeader(nullptr, "etag"),
+      EnumerateHeader(nullptr, "Last-Modified"),
+      EnumerateHeader(nullptr, "Date"));
 }
 
 bool HttpResponseHeaders::HasValidators() const {
-  std::string etag_header;
-  EnumerateHeader(nullptr, "etag", &etag_header);
-  std::string last_modified_header;
-  EnumerateHeader(nullptr, "Last-Modified", &last_modified_header);
-  return HttpUtil::HasValidators(GetHttpVersion(), etag_header,
-                                 last_modified_header);
+  return HttpUtil::HasValidators(GetHttpVersion(),
+                                 EnumerateHeader(nullptr, "etag"),
+                                 EnumerateHeader(nullptr, "Last-Modified"));
 }
 
 // From RFC 2616:
