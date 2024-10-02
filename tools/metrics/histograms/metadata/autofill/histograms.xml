@@ -3461,21 +3461,20 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram
-    name="Autofill.LocalCardMigrationOrigin{AutofillLocalCardMigrationOrigin}"
+    name="Autofill.LocalCardMigrationOrigin.{AutofillLocalCardMigrationOrigin}"
     enum="LocalCardMigrationPrompt" expires_after="2025-07-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
-    Records when local card migration prompts are shown and/or accepted.
-    {AutofillLocalCardMigrationOrigin}
+    Records when local card migration prompts are shown and/or accepted, after
+    being triggered from {AutofillLocalCardMigrationOrigin}.
   </summary>
   <token key="AutofillLocalCardMigrationOrigin">
-    <variant name=""/>
-    <variant name=".SettingsPage" summary="Trigger from settings page"/>
-    <variant name=".UseOfLocalCard"
-        summary="Trigger from submitted form with local card"/>
-    <variant name=".UseOfServerCard"
-        summary="Trigger from submitted form with server card"/>
+    <variant name="SettingsPage" summary="the settings page"/>
+    <variant name="UseOfLocalCard"
+        summary="submitting a form with a local card"/>
+    <variant name="UseOfServerCard"
+        summary="submitting a form with a server card"/>
   </token>
 </histogram>
 
