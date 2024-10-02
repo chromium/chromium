@@ -1282,8 +1282,6 @@ static_library("browser") {
     "process_singleton_internal.h",
     "profiles/bookmark_model_loaded_observer.cc",
     "profiles/bookmark_model_loaded_observer.h",
-    "profiles/chrome_browser_main_extra_parts_profiles.cc",
-    "profiles/chrome_browser_main_extra_parts_profiles.h",
     "profiles/chrome_version_service.cc",
     "profiles/chrome_version_service.h",
     "profiles/force_safe_search_policy_handler.cc",
@@ -1809,6 +1807,7 @@ static_library("browser") {
     "//chrome/browser/signin:impl",
     "//chrome/browser/ui/safety_hub:impl",
     "//chrome/browser/ui/prefs:impl",
+    "//chrome/browser/profiles:profiles_extra_parts_impl",
   ]
 
   if (!is_chromeos_lacros) {
@@ -1925,6 +1924,8 @@ static_library("browser") {
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/profiles:profile_util_impl",
     "//chrome/browser/profiles:profiles",
+    "//chrome/browser/profiles:profiles_extra_parts",
+    "//chrome/browser/profiles:profiles_extra_parts_impl",
     "//chrome/browser/profiling_host",
     "//chrome/browser/promos:utils",
     "//chrome/browser/reading_list",

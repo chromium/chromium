@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//components/enterprise/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 # This target should be the default place for adding public interface things
@@ -270,4 +271,166 @@ source_set("profile_statistics_impl") {
     "//components/browsing_data/core",
     "//content/public/browser",
   ]
+}
+
+source_set("profiles_extra_parts") {
+  sources = [ "chrome_browser_main_extra_parts_profiles.h" ]
+
+  public_deps = [ "//chrome/browser:main_extra_parts" ]
+}
+
+source_set("profiles_extra_parts_impl") {
+  sources = [ "chrome_browser_main_extra_parts_profiles.cc" ]
+
+  deps = [
+    ":profile_statistics",
+    ":profiles_extra_parts",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:font_pref",
+    "//chrome/browser/ai",
+    "//chrome/browser/autofill",
+    "//chrome/browser/bitmap_fetcher",
+    "//chrome/browser/breadcrumbs",
+    "//chrome/browser/commerce",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/favicon",
+    "//chrome/browser/file_system_access",
+    "//chrome/browser/ip_protection",
+    "//chrome/browser/media/router",
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/omnibox",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/permissions",
+    "//chrome/browser/persisted_state_db",
+    "//chrome/browser/reading_list",
+    "//chrome/browser/safe_browsing",
+    "//chrome/browser/safe_browsing:advanced_protection",
+    "//chrome/browser/safe_browsing:metrics_collector",
+    "//chrome/browser/safe_browsing:verdict_cache_manager_factory",
+    "//chrome/browser/search_engine_choice",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/storage_access_api",
+    "//chrome/browser/sync",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/autofill",
+    "//chrome/browser/ui/cookie_controls",
+    "//chrome/browser/ui/find_bar",
+    "//chrome/browser/ui/hats",
+    "//chrome/browser/ui/prefs",
+    "//chrome/browser/ui/safety_hub",
+    "//chrome/browser/updates/announcement_notification",
+    "//chrome/common:chrome_features",
+    "//components/autofill/content/browser",
+    "//components/breadcrumbs/core:status",
+    "//components/captive_portal/core:buildflags",
+    "//components/commerce/core:commerce_subscription_db_content_proto",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:persisted_state_db_content_proto",
+    "//components/enterprise/content",
+    "//components/manta",
+    "//components/omnibox/browser",
+    "//components/optimization_guide/core",
+    "//components/password_manager/content/browser",
+    "//components/payments/content",
+    "//components/permissions:permissions_common",
+    "//components/policy/content",
+    "//components/policy/content:safe_sites_navigation_throttle",
+    "//components/reading_list/features:flags",
+    "//components/safe_browsing/core/common:features",
+    "//components/signin/public/base",
+    "//components/site_engagement/content",
+    "//components/spellcheck:buildflags",
+    "//components/sync/base:features",
+    "//media",
+    "//services/network/public/cpp",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  if (is_android) {
+    deps += [
+      "//chrome/browser/commerce/merchant_viewer:merchant_viewer_data_manager",
+      "//components/commerce/core:merchant_signal_db_proto",
+    ]
+  } else {
+    deps += [
+      "//chrome/browser/apps/app_service",
+      "//chrome/browser/autofill",
+      "//chrome/browser/devtools",
+      "//chrome/browser/feedback",
+      "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
+      "//chrome/browser/screen_ai:screen_ai_service_router_factory",
+      "//chrome/browser/search",
+      "//chrome/browser/search/background",
+      "//chrome/browser/search_engine_choice",
+      "//chrome/browser/themes",
+      "//chrome/browser/ui/global_error",
+      "//chrome/browser/ui/global_media_controls",
+      "//chrome/browser/ui/media_router",
+      "//chrome/browser/ui/views/side_panel",
+      "//chrome/browser/ui/webui/signin",
+      "//chrome/browser/ui/webui/signin:login",
+      "//chrome/browser/user_annotations",
+      "//components/commerce/core:cart_db_content_proto",
+    ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//chrome/browser/apps/almanac_api_client",
+      "//chrome/browser/apps/app_preload_service",
+      "//chrome/browser/ash/app_list",
+      "//chrome/browser/ash/crosapi:browser_util",
+      "//chrome/browser/ash/file_manager",
+      "//chrome/browser/ash/floating_sso",
+      "//chrome/browser/ash/input_method",
+      "//chrome/browser/ash/keyed_service",
+      "//chrome/browser/ash/language_packs",
+      "//chrome/browser/ash/lobster",
+      "//chrome/browser/ash/policy/dlp",
+      "//chrome/browser/ash/policy/multi_screen_capture",
+      "//chrome/browser/ash/policy/skyvault",
+      "//chrome/browser/ash/scanner",
+      "//chrome/browser/chromeos/cros_apps",
+      "//chrome/browser/chromeos/enterprise/cloud_storage",
+      "//chrome/browser/chromeos/extensions/telemetry/api:keyed_service_factory",
+      "//chrome/browser/chromeos/policy/dlp",
+      "//chrome/browser/policy:onc",
+      "//chrome/browser/smart_card",
+    ]
+  }
+
+  if (!is_chromeos_ash && !is_android) {
+    deps += [ ":profile_statistics" ]
+  }
+
+  if (enable_extensions_core) {
+    deps += [ "//extensions/browser" ]
+  }
+
+  if (enable_extensions) {
+    deps += [
+      "//apps",
+      "//chrome/browser/apps/platform_apps",
+      "//chrome/browser/apps/platform_apps/api",
+      "//chrome/browser/extensions",
+      "//chrome/browser/extensions:keyed_service_factories",
+      "//chrome/browser/web_applications",
+      "//components/omnibox/browser",
+    ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [
+      "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
+      "//chrome/browser/chromeos/reporting",
+      "//chrome/browser/lacros/account_manager",
+    ]
+  }
+
+  if (enterprise_data_controls) {
+    deps += [ "//chrome/browser/enterprise/data_controls" ]
+  }
 }

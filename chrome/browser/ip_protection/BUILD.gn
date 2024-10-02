@@ -8,6 +8,7 @@ static_library("ip_protection") {
   visibility = [
     ":*",
     "//chrome/browser:*",
+    "//chrome/browser/profiles:profiles_extra_parts_impl",
   ]
 
   sources = [
