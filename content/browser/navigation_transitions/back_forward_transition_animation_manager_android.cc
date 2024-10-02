@@ -242,10 +242,10 @@ void BackForwardTransitionAnimationManagerAndroid::
 }
 
 void BackForwardTransitionAnimationManagerAndroid::OnAnimationStageChanged() {
-  web_contents_view_android()
-      ->web_contents()
-      ->GetDelegate()
-      ->DidBackForwardTransitionAnimationChange();
+  if (auto* delegate =
+          web_contents_view_android()->web_contents()->GetDelegate()) {
+    delegate->DidBackForwardTransitionAnimationChange();
+  }
 }
 
 void BackForwardTransitionAnimationManagerAndroid::
