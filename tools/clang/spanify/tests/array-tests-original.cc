@@ -49,23 +49,23 @@ void fct() {
   buf6[index] = 1;
 
   // Expected rewrite:
-  // std::array<int (*)(int), 16> buf7 = {{nullptr}};
+  // std::array<int (*)(int), 16> buf7 = {nullptr};
   int (*buf7[16])(int) = {nullptr};
   buf7[index] = nullptr;
 
   // Expected rewrite:
-  // std::array<int (**)[], 16> buf8 = {{nullptr}};
+  // std::array<int (**)[], 16> buf8 = {nullptr};
   int(**buf8[16])[] = {nullptr};
   buf8[index] = nullptr;
 
   using Arr = int(**)[];
   // Expected rewrite:
-  // std::array<Arr, buf3[0]> buf9 = {{nullptr}};
+  // std::array<Arr, buf3[0]> buf9 = {nullptr};
   Arr buf9[buf3[0]] = {nullptr};
   buf9[index] = nullptr;
 
   // Expected rewrite:
-  // static std::array<const volatile char*, 3> buf10 = {{"1", "2", "3"}};
+  // static std::array<const volatile char*, 3> buf10 = {"1", "2", "3"};
   volatile static const char* buf10[] = {"1", "2", "3"};
   buf10[index] = nullptr;
 

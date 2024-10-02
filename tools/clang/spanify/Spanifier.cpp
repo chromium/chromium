@@ -704,6 +704,47 @@ const clang::InitListExpr* GetArrayInitList(const clang::VarDecl* var_decl) {
   return clang::dyn_cast_or_null<clang::InitListExpr>(*first_child);
 }
 
+// Returns true if the array's initializer list needs one more brace({}) after
+// rewriting into `std::array<>`.
+bool ArrayInitListNeedsExtraBrace(clang::QualType element_type,
+                                  const clang::InitListExpr* init_list_expr) {
+  if (!init_list_expr) {
+    return false;
+  }
+  if (!(element_type->isArrayType() ||
+        element_type->isStructureOrClassType())) {
+    return false;
+  }
+  // `std::array` is a struct that encapsulates a fixed-size array as a member
+  // variable. It's an aggregate type, meaning it can be initialized using
+  // aggregate initialization (like plain arrays and structs).  Unlike
+  // `std::vector` or other containers, `std::array` doesn't have constructors
+  // that explicitly take initializer lists. However, aggregate initialization
+  // allows sub elements to be initialized with initializer lists.
+  //
+  // The extra brace is required to indicate that the inner initializer list
+  // corresponds to the initialization of a single element of the inner
+  // array, not a field of the wrapper (e.g. a field of std::array).
+  //
+  // For instance:
+  // std::array<Aggregate, 1> buffer =
+  // {      // Initialization of std::array<Aggregate,1>
+  //   {    // Initialization of std::array<Aggregate,1>::inner_ C-style array.
+  //     {  // Initialization of Aggregate
+  //        1,2,3
+  //     }
+  //   }
+  // }
+  //
+  for (unsigned int index = 0; index < init_list_expr->getNumInits(); ++index) {
+    const clang::Expr* expr = init_list_expr->getInit(index);
+    if (clang::dyn_cast_or_null<clang::InitListExpr>(expr)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // Creates a replacement node for c-style arrays on which we invoke operator[].
 // These arrays are rewritten to std::array<Type, Size>.
 Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
@@ -802,15 +843,7 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
     const clang::InitListExpr* init_list_expr =
         GetArrayInitList(array_variable);
 
-    // When replacing an array with std::array<>, we need one more {}-s.
-    // The replacement seems to work:
-    //   `int arr[] = {1, 2, 3};` => `std::array<int, 3> arr = {1, 2, 3};`
-    // (`std::array<int, 3> arr = {{1, 2, 3}};` also works)
-    // But when replacing std::vector's array, e.g.
-    //   `std::vector<int> arr[2] = {{1}, {2}};`
-    // we have to replace it with:
-    //   `std::array<std::vector<int>, 2> = {{{1}, {2}}};`
-    if (!element_type->isBuiltinType() && init_list_expr) {
+    if (ArrayInitListNeedsExtraBrace(element_type, init_list_expr)) {
       clang::Rewriter rw(source_manager, ast_context.getLangOpts());
       std::string init_expr_as_string = rw.getRewrittenText(clang::SourceRange(
           init_list_expr->getBeginLoc(), init_list_expr->getEndLoc()));
