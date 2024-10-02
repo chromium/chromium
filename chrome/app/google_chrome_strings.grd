@@ -2024,7 +2024,7 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
         <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_TITLE"
           desc="The title of the lens permission search bubble dialog, introducing Lens as a way to search what's on their screen.">
-          New! An easy way to search what's on your screen
+          Search what's on your screen with Google Lens
         </message>
 
         <!-- Title Case Dependent -->
