@@ -29421,6 +29421,12 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Price insights"/>
 </enum>
 
+<enum name="PriceTrackingPromoOptInFlow">
+  <int value="0" label="First time"/>
+  <int value="1" label="Enable Price Tracking"/>
+  <int value="2" label="Re-enable Notifications"/>
+</enum>
+
 <enum name="PrimaryButtonRight">
   <int value="0" label="Right-handed"/>
   <int value="1" label="Left-handed"/>

@@ -690,6 +690,8 @@ using segmentation_platform::TipIdentifier;
       break;
     }
     case ContentSuggestionsModuleType::kPriceTrackingPromo: {
+      base::RecordAction(base::UserMetricsAction(
+          "Commerce.PriceTracking.MagicStackPromo.Hidden"));
       [_priceTrackingPromoMediator disableModule];
       break;
     }
@@ -1116,6 +1118,8 @@ using segmentation_platform::TipIdentifier;
           l10n_util::GetNSString(
               IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_SETTINGS_TURN_ON_NOTIFICATIONS_ACCEPT)
                 action:^{
+                  base::RecordAction(base::UserMetricsAction(
+                      "Commerce.PriceTracking.MagicStackPromo.Reenable.Allow"));
                   NSString* settingURL = UIApplicationOpenSettingsURLString;
                   if (@available(iOS 15.4, *)) {
                     settingURL = UIApplicationOpenNotificationSettingsURLString;
@@ -1143,6 +1147,8 @@ using segmentation_platform::TipIdentifier;
                   if (!strongSelf) {
                     return;
                   }
+                  base::RecordAction(base::UserMetricsAction(
+                      "Commerce.PriceTracking.MagicStackPromo.Reenable.Deny"));
                   [strongSelf dismissAlertCoordinator];
                   [strongSelf->_priceTrackingPromoMediator
                           removePriceTrackingPromo];

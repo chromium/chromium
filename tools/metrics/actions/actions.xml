@@ -7307,6 +7307,81 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Commerce.PriceTracking.MagicStackPromo.Allow">
+  <owner>ayman@chromium.org</owner>
+  <owner>davidjm@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when the user taps 'Allow price tracking notifications' upon viewing
+    the price tracking promotion in the magic stack. The price tracking
+    promotion is for users who use price tracking on another platform (e.g.
+    Desktop) but haven't discovered the feature on mobile yet.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.MagicStackPromo.FirstTime.Allow">
+  <owner>ayman@chromium.org</owner>
+  <owner>davidjm@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when the user allows notifications for the app for the first time
+    when prompted to do so upon tapping 'Allow price tracking notifications' on
+    the price tracking promotion in the magic stack. The price tracking
+    promotion is for users who use price tracking on another platform (e.g.
+    Desktop) but haven't discovered the feature on mobile yet.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.MagicStackPromo.FirstTime.Deny">
+  <owner>ayman@chromium.org</owner>
+  <owner>davidjm@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when the user denies notifications for the app for the first time
+    when prompted to do so upon tapping 'Allow price tracking notifications' on
+    the price tracking promotion in the magic stack. The price tracking
+    promotion is for users who use price tracking on another platform (e.g.
+    Desktop) but haven't discovered the feature on mobile yet.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.MagicStackPromo.Hidden">
+  <owner>ayman@chromium.org</owner>
+  <owner>davidjm@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when the user hides the price tracking promotion in the magic stack.
+    The price tracking promotion is for users who use price tracking on another
+    platform (e.g. Desktop) but haven't discovered the feature on mobile yet.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.MagicStackPromo.Reenable.Allow">
+  <owner>ayman@chromium.org</owner>
+  <owner>davidjm@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when the user allows notifications for the app after they have been
+    previously turned off when prompted to do so upon tapping 'Allow price
+    tracking notifications' on the price tracking promotion in the magic stack.
+    The price tracking promotion is for users who use price tracking on another
+    platform (e.g. Desktop) but haven't discovered the feature on mobile yet.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.MagicStackPromo.Reenable.Deny">
+  <owner>ayman@chromium.org</owner>
+  <owner>davidjm@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when the user denies notifications for the app after they have been
+    previously turned off when prompted to do so upon tapping 'Allow price
+    tracking notifications' on the price tracking promotion in the magic stack.
+    The price tracking promotion is for users who use price tracking on another
+    platform (e.g. Desktop) but haven't discovered the feature on mobile yet.
+  </description>
+</action>
+
 <action name="Commerce.PriceTracking.OmniboxChip.Tracked">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
