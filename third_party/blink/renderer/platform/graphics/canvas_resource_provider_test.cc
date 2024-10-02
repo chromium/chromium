@@ -127,6 +127,51 @@ class CanvasResourceProviderTest : public Test {
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform_;
 };
 
+TEST_F(CanvasResourceProviderTest,
+       GetBackingClientSharedImageForExternalWrite) {
+  const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
+  const gpu::SharedImageUsageSet shared_image_usage_flags =
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
+      gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
+
+  auto provider = CanvasResourceProvider::CreateSharedImageProvider(
+      kInfo, cc::PaintFlags::FilterQuality::kMedium,
+      CanvasResourceProvider::ShouldInitialize::kCallClear,
+      context_provider_wrapper_, RasterMode::kGPU, shared_image_usage_flags);
+
+  auto client_si = provider->GetBackingClientSharedImageForExternalWrite(
+      /*internal_access_sync_token=*/nullptr, gpu::SharedImageUsageSet());
+
+  // When supplied required usages that the backing SI already supports, that
+  // backing SI should be returned.
+  auto client_si_with_no_new_usage_required =
+      provider->GetBackingClientSharedImageForExternalWrite(
+          /*internal_access_sync_token=*/nullptr,
+          gpu::SHARED_IMAGE_USAGE_SCANOUT);
+  EXPECT_EQ(client_si_with_no_new_usage_required, client_si);
+
+  // When supplied required usages that the backing SI does not support, a new
+  // backing SI should be created that supports the required usages.
+  auto client_si_with_webgpu_usage_required =
+      provider->GetBackingClientSharedImageForExternalWrite(
+          /*internal_access_sync_token=*/nullptr,
+          gpu::SHARED_IMAGE_USAGE_WEBGPU_READ);
+  EXPECT_NE(client_si_with_webgpu_usage_required, client_si);
+  EXPECT_TRUE(client_si_with_webgpu_usage_required->usage().HasAll(
+      shared_image_usage_flags));
+  EXPECT_TRUE(client_si_with_webgpu_usage_required->usage().Has(
+      gpu::SHARED_IMAGE_USAGE_WEBGPU_READ));
+
+  // That new backing SI should then be returned on subsequent calls with
+  // already-supported usages.
+  client_si_with_no_new_usage_required =
+      provider->GetBackingClientSharedImageForExternalWrite(
+          /*internal_access_sync_token=*/nullptr,
+          gpu::SHARED_IMAGE_USAGE_SCANOUT);
+  EXPECT_EQ(client_si_with_no_new_usage_required,
+            client_si_with_webgpu_usage_required);
+}
+
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderAcceleratedOverlay) {
   const gfx::Size kSize(10, 10);
   const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
