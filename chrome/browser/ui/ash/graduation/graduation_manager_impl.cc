@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/graduation/graduation_manager.h"
+#include "chrome/browser/ui/ash/graduation/graduation_manager_impl.h"
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/edusumer/graduation_utils.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -17,17 +18,12 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash::graduation {
-namespace {
-GraduationManager* g_instance = nullptr;
-}
 
-GraduationManager::GraduationManager() {
-  CHECK_EQ(g_instance, nullptr);
-  g_instance = this;
-
+GraduationManagerImpl::GraduationManagerImpl() {
   // SessionManager may be unset in unit tests.
   auto* session_manager = session_manager::SessionManager::Get();
   if (session_manager) {
@@ -35,18 +31,16 @@ GraduationManager::GraduationManager() {
   }
 }
 
-GraduationManager::~GraduationManager() {
-  CHECK_EQ(g_instance, this);
-  g_instance = nullptr;
+GraduationManagerImpl::~GraduationManagerImpl() {
   pref_change_registrar_.Reset();
 }
 
-// static
-GraduationManager* GraduationManager::Get() {
-  return g_instance;
+const std::string GraduationManagerImpl::GetLanguageCode() const {
+  return google_util::GetGoogleLocale(
+      g_browser_process->GetApplicationLocale());
 }
 
-void GraduationManager::OnUserSessionStarted(bool is_primary) {
+void GraduationManagerImpl::OnUserSessionStarted(bool is_primary) {
   profile_ = ProfileManager::GetActiveUserProfile();
   CHECK(profile_);
   if (!profile_->GetProfilePolicyConnector()->IsManaged()) {
@@ -59,20 +53,20 @@ void GraduationManager::OnUserSessionStarted(bool is_primary) {
   SystemWebAppManager* swa_manager = SystemWebAppManager::Get(profile_);
   CHECK(swa_manager);
   swa_manager->on_apps_synchronized().Post(
-      FROM_HERE, base::BindOnce(&GraduationManager::OnAppsSynchronized,
+      FROM_HERE, base::BindOnce(&GraduationManagerImpl::OnAppsSynchronized,
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
-void GraduationManager::OnAppsSynchronized() {
+void GraduationManagerImpl::OnAppsSynchronized() {
   CHECK(profile_);
   auto* web_app_provider = SystemWebAppManager::GetWebAppProvider(profile_);
   CHECK(web_app_provider);
   web_app_provider->on_registry_ready().Post(
-      FROM_HERE, base::BindOnce(&GraduationManager::OnWebAppProviderReady,
+      FROM_HERE, base::BindOnce(&GraduationManagerImpl::OnWebAppProviderReady,
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
-void GraduationManager::OnWebAppProviderReady() {
+void GraduationManagerImpl::OnWebAppProviderReady() {
   // Set initial app pinned state.
   UpdateAppPinnedState();
 
@@ -81,11 +75,11 @@ void GraduationManager::OnWebAppProviderReady() {
   pref_change_registrar_.Init(pref_service);
   pref_change_registrar_.Add(
       prefs::kGraduationEnablementStatus,
-      base::BindRepeating(&GraduationManager::UpdateAppPinnedState,
+      base::BindRepeating(&GraduationManagerImpl::UpdateAppPinnedState,
                           base::Unretained(this)));
 }
 
-void GraduationManager::UpdateAppPinnedState() {
+void GraduationManagerImpl::UpdateAppPinnedState() {
   CHECK(profile_);
   SystemWebAppManager* swa_manager = SystemWebAppManager::Get(profile_);
 

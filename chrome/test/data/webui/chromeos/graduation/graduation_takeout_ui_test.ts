@@ -10,7 +10,7 @@ import {GraduationTakeoutUi} from 'chrome://graduation/js/graduation_takeout_ui.
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {PaperSpinnerLiteElement} from 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 
 suite('GraduationTakeoutUiTest', function() {
@@ -67,6 +67,8 @@ suite('GraduationTakeoutUiTest', function() {
     assertFalse(getWebview().hidden);
     assertFalse(getBackButton().hidden);
     assertTrue(getDoneButton().hidden);
+    assertEquals(
+        'https://takeout.google.com/transfer?hl=en-US', getWebview().src);
   });
 
   test('TriggerErrorScreenOnLoadAbort', function() {

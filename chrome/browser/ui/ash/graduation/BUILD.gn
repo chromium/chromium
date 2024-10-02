@@ -6,11 +6,10 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-# TODO(b:367728392): Refactor graduation_manager to build as a component target.
 static_library("graduation") {
   sources = [
-    "graduation_manager.cc",
-    "graduation_manager.h",
+    "graduation_manager_impl.cc",
+    "graduation_manager_impl.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -18,8 +17,10 @@ static_library("graduation") {
   deps = [
     "//ash",
     "//ash/constants",
+    "//ash/public/cpp:cpp",
     "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
+    "//chrome/browser:browser_process",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/shelf",
@@ -35,13 +36,14 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [ "graduation_manager_browsertest.cc" ]
+  sources = [ "graduation_manager_impl_browsertest.cc" ]
 
   deps = [
     ":graduation",
     "//ash/constants",
     "//base/test:test_support",
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/base",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",

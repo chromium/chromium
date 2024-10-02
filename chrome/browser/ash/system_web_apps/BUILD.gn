@@ -25,6 +25,7 @@ static_library("system_web_apps") {
   public_deps = [
     "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
+    "//chrome/browser:browser_process",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/profiles:profile",
@@ -44,7 +45,6 @@ static_library("system_web_apps") {
     "//ash/webui/camera_app_ui",
     "//ash/webui/system_apps/public:system_web_app_config",
     "//build:chromeos_buildflags",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system_web_apps/apps",

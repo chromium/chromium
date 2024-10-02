@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/graduation/graduation_manager.h"
+#include "chrome/browser/ui/ash/graduation/graduation_manager_impl.h"
 
 #include <algorithm>
 #include <ranges>
@@ -15,9 +15,11 @@
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
@@ -40,6 +42,12 @@ void WaitForAppRegistryCommands(Profile* profile) {
   web_app_provider->on_registry_ready().Post(FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
   web_app_provider->command_manager().AwaitAllCommandsCompleteForTesting();
+}
+
+// Called on completion of locale_util::SwitchLanguage.
+void OnLocaleSwitched(base::RunLoop* run_loop,
+                      const locale_util::LanguageSwitchResult& result) {
+  run_loop->Quit();
 }
 }  // namespace
 
@@ -85,6 +93,10 @@ class GraduationManagerTest : public SystemWebAppBrowserTestBase {
     status.Set("is_enabled", is_enabled);
     browser()->profile()->GetPrefs()->SetDict(
         prefs::kGraduationEnablementStatus, status.Clone());
+  }
+
+  std::string GetLanguageCode() {
+    return ash::graduation::GraduationManagerImpl::Get()->GetLanguageCode();
   }
 
  private:
@@ -145,6 +157,20 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest, AppUnpinnedWhenPolicyDisabled) {
   EXPECT_EQ(apps::Readiness::kReady,
             GetAppReadiness(web_app::kGraduationAppId));
   EXPECT_TRUE(IsItemPinned(web_app::kGraduationAppId));
+}
+
+IN_PROC_BROWSER_TEST_F(GraduationManagerTest, GetLanguageCode) {
+  // Browser tests should default to English.
+  EXPECT_EQ("en-US", GetLanguageCode());
+
+  // Switch the application locale to Spanish.
+  base::RunLoop run_loop;
+  locale_util::SwitchLanguage("es", true, false,
+                              base::BindRepeating(&OnLocaleSwitched, &run_loop),
+                              ProfileManager::GetActiveUserProfile());
+  run_loop.Run();
+
+  EXPECT_EQ("es", GetLanguageCode());
 }
 
 class GraduationManagerWithUnmanagedUserTest

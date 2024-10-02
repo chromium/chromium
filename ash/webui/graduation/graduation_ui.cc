@@ -15,6 +15,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/edusumer/graduation_utils.h"
+#include "ash/public/cpp/graduation/graduation_manager.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/webui/common/trusted_types_util.h"
@@ -23,6 +24,7 @@
 #include "ash/webui/grit/ash_graduation_resources.h"
 #include "ash/webui/grit/ash_graduation_resources_map.h"
 #include "base/containers/span.h"
+#include "base/strings/stringprintf.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -36,6 +38,21 @@
 namespace ash::graduation {
 
 namespace {
+const std::string GetTransferUrl() {
+  const std::string language_code =
+      ash::graduation::GraduationManager::Get()->GetLanguageCode();
+
+  const GURL transfer_url_base(kTransferURLBase);
+  GURL::Replacements replacements;
+  const std::string query_string =
+      base::StringPrintf("hl=%s", language_code.c_str());
+  replacements.SetQueryStr(query_string);
+  const GURL transfer_url = transfer_url_base.ReplaceComponents(replacements);
+  CHECK(transfer_url.is_valid())
+      << "Invalid URL for Takeout Transfer tool: \"" << transfer_url << "\"";
+  return transfer_url.spec();
+}
+
 void AddResources(content::WebUIDataSource* source) {
   source->SetDefaultResource(IDR_ASH_GRADUATION_INDEX_HTML);
   source->AddResourcePaths(
@@ -56,7 +73,7 @@ void AddResources(content::WebUIDataSource* source) {
 
   source->AddLocalizedStrings(kLocalizedStrings);
 
-  source->AddString("webviewUrl", kTakeoutTransferURL);
+  source->AddString("webviewUrl", GetTransferUrl());
 
   // Set up test resources used in browser tests.
   source->AddResourcePath("test_loader.html", IDR_WEBUI_TEST_LOADER_HTML);

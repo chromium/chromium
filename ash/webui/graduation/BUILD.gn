@@ -22,6 +22,7 @@ static_library("graduation") {
     "resources:resources",
     "//ash:ash",
     "//ash/constants:constants",
+    "//ash/public/cpp:cpp",
     "//ash/webui/common:chrome_os_webui_config",
     "//ash/webui/common:trusted_types_util",
     "//ash/webui/system_apps/public:system_web_app_config",

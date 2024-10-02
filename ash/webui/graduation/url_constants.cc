@@ -8,6 +8,6 @@ namespace ash::graduation {
 
 const char kChromeUIGraduationAppHost[] = "graduation";
 const char kChromeUIGraduationAppURL[] = "chrome://graduation";
-const char kTakeoutTransferURL[] = "https://takeout.google.com/transfer";
+const char kTransferURLBase[] = "https://takeout.google.com/transfer";
 
 }  // namespace ash::graduation
