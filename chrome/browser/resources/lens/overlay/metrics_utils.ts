@@ -4,6 +4,7 @@
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {UserAction} from './lens.mojom-webui.js';
+import type {SemanticEvent} from './lens.mojom-webui.js';
 
 export function recordLensOverlayInteraction(
     invocationSource: string, interaction: UserAction) {
@@ -14,6 +15,11 @@ export function recordLensOverlayInteraction(
       interaction, UserAction.MAX_VALUE + 1);
   BrowserProxyImpl.getInstance()
       .handler.recordUkmAndTaskCompletionForLensOverlayInteraction(interaction);
+}
+
+export function recordLensOverlaySemanticEvent(semanticEvent: SemanticEvent) {
+  BrowserProxyImpl.getInstance().handler.recordLensOverlaySemanticEvent(
+      semanticEvent);
 }
 
 /** Records |durationMs| in the |metricName| histogram. */

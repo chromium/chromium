@@ -9,7 +9,7 @@ import {BrowserProxyImpl} from 'chrome-untrusted://lens-overlay/browser_proxy.js
 import {CenterRotatedBox_CoordinateType} from 'chrome-untrusted://lens-overlay/geometry.mojom-webui.js';
 import type {CenterRotatedBox} from 'chrome-untrusted://lens-overlay/geometry.mojom-webui.js';
 import type {LensPageRemote} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
-import {UserAction} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
+import {SemanticEvent, UserAction} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
 import type {OverlayObject} from 'chrome-untrusted://lens-overlay/overlay_object.mojom-webui.js';
 import {ScreenshotBitmapBrowserProxyImpl} from 'chrome-untrusted://lens-overlay/screenshot_bitmap_browser_proxy.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens-overlay/selection_overlay.js';
@@ -101,6 +101,10 @@ suite('SelectionOverlay', function() {
       ]),
     ]);
     callbackRouterRemote.textReceived(text);
+    const semanticEventArgs = await testBrowserProxy.handler.getArgs(
+        'recordLensOverlaySemanticEvent');
+    const semanticEvent = semanticEventArgs[semanticEventArgs.length - 1];
+    assertEquals(SemanticEvent.kTextGleamsViewStart, semanticEvent);
     await waitAfterNextRender(selectionOverlayElement);
   }
 
@@ -179,6 +183,20 @@ suite('SelectionOverlay', function() {
     await waitAfterNextRender(selectionOverlayElement);
     await waitAfterNextRender(selectionOverlayElement);
   }
+
+  test(
+      'verify that adding words twice sends a end text view event.',
+      async () => {
+        await addWords();
+        await addWords();
+
+        const semanticEventArgs = await testBrowserProxy.handler.getArgs(
+            'recordLensOverlaySemanticEvent');
+        const penultimateSemanticEvent =
+            semanticEventArgs[semanticEventArgs.length - 2];
+        assertEquals(
+            SemanticEvent.kTextGleamsViewEnd, penultimateSemanticEvent);
+      });
 
   // <if expr="not chromeos_lacros">
   test(

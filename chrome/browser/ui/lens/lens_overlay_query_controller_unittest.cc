@@ -12,6 +12,7 @@
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
 #include "chrome/test/base/testing_profile.h"
@@ -102,6 +103,17 @@ class FakeEndpointFetcher : public EndpointFetcher {
 
  private:
   EndpointResponse response_;
+};
+
+class FakeLensOverlayGen204Controller : public LensOverlayGen204Controller {
+ public:
+  FakeLensOverlayGen204Controller() = default;
+  ~FakeLensOverlayGen204Controller() override = default;
+
+ protected:
+  void CheckMetricsConsentAndIssueGen204NetworkRequest(GURL url) override {
+    // Noop.
+  }
 };
 
 class LensOverlayQueryControllerMock : public LensOverlayQueryController {
@@ -294,16 +306,20 @@ class LensOverlayQueryControllerTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<lens::LensOverlayGen204Controller> gen204_controller_;
+  std::unique_ptr<lens::FakeLensOverlayGen204Controller> gen204_controller_;
 
   TestingProfile* profile() { return profile_.get(); }
 
  private:
   void SetUp() override {
     TestingProfile::Builder profile_builder;
+    profile_builder.AddTestingFactory(
+        TemplateURLServiceFactory::GetInstance(),
+        base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
     profile_ = profile_builder.Build();
     g_browser_process->SetApplicationLocale(kLocale);
-    gen204_controller_ = std::make_unique<lens::LensOverlayGen204Controller>();
+    gen204_controller_ =
+        std::make_unique<lens::FakeLensOverlayGen204Controller>();
     icu::TimeZone::adoptDefault(
         icu::TimeZone::createTimeZone(icu::UnicodeString(kTimeZone)));
     UErrorCode error_code = U_ZERO_ERROR;

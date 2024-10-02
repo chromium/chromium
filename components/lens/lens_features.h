@@ -238,6 +238,10 @@ extern bool GetLensOverlaySendLatencyGen204();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetLensOverlaySendTaskCompletionGen204();
 
+// Returns whether or not to send semantic event pings.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetLensOverlaySendSemanticEventGen204();
+
 // Returns the finch configured max image height for the Lens overlay feature
 // when tiered downscaling approach is disabled.
 COMPONENT_EXPORT(LENS_FEATURES)

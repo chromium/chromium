@@ -365,6 +365,11 @@ void LensOverlayQueryController::SendTaskCompletionGen204IfEnabled(
       request_id_generator_->GetBase32EncodedAnalyticsId(), user_action);
 }
 
+void LensOverlayQueryController::SendSemanticEventGen204IfEnabled(
+    lens::mojom::SemanticEvent event) {
+  gen204_controller_->SendSemanticEventGen204IfEnabled(event);
+}
+
 void LensOverlayQueryController::CreateAndFetchEndpointFetcher(
     lens::LensOverlayServerRequest request_data,
     base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
