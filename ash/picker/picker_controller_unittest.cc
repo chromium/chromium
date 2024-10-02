@@ -177,12 +177,7 @@ class TestPickerClient : public MockPickerClient {
 class PickerControllerTestBase : public AshTestBase {
  public:
   PickerControllerTestBase()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    auto delegate = std::make_unique<MockNewWindowDelegate>();
-    new_window_delegate_ = delegate.get();
-    delegate_provider_ =
-        std::make_unique<TestNewWindowDelegateProvider>(std::move(delegate));
-  }
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
     AshTestBase::SetUp();
@@ -204,7 +199,7 @@ class PickerControllerTestBase : public AshTestBase {
   }
 
   MockNewWindowDelegate& mock_new_window_delegate() {
-    return *new_window_delegate_;
+    return new_window_delegate_;
   }
 
   PickerController& controller() { return *controller_; }
@@ -218,10 +213,7 @@ class PickerControllerTestBase : public AshTestBase {
   }
 
  private:
-  std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
-  // Holds a raw ptr to the `MockNewWindowDelegate` owned by
-  // `delegate_provider_`.
-  raw_ptr<MockNewWindowDelegate> new_window_delegate_;
+  MockNewWindowDelegate new_window_delegate_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
   std::unique_ptr<PickerController> controller_;
   std::unique_ptr<NiceMock<TestPickerClient>> client_;

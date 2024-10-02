@@ -360,12 +360,7 @@ class VoidEventHandler : public ui::EventHandler {
 // it is referenced as a friend by exit_warning_handler.h
 class AcceleratorControllerTest : public AshTestBase {
  public:
-  AcceleratorControllerTest() {
-    auto delegate = std::make_unique<MockNewWindowDelegate>();
-    new_window_delegate_ = delegate.get();
-    delegate_provider_ =
-        std::make_unique<TestNewWindowDelegateProvider>(std::move(delegate));
-  }
+  AcceleratorControllerTest() = default;
 
   AcceleratorControllerTest(const AcceleratorControllerTest&) = delete;
   AcceleratorControllerTest& operator=(const AcceleratorControllerTest&) =
@@ -513,11 +508,14 @@ class AcceleratorControllerTest : public AshTestBase {
     return true;
   }
 
+  MockNewWindowDelegate& new_window_delegate() { return new_window_delegate_; }
+
   raw_ptr<AcceleratorControllerImpl, DanglingUntriaged> controller_ =
       nullptr;  // Not owned.
   std::unique_ptr<AcceleratorControllerImpl::TestApi> test_api_;
-  raw_ptr<MockNewWindowDelegate, DanglingUntriaged> new_window_delegate_;
-  std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
+
+ private:
+  MockNewWindowDelegate new_window_delegate_;
 };
 
 namespace {
@@ -2622,7 +2620,7 @@ TEST_F(AcceleratorControllerTest, CalculatorKey) {
   EXPECT_TRUE(controller_->IsRegistered(accelerator));
 
   // Verify that the delegate to open the app is called.
-  EXPECT_CALL(*new_window_delegate_, OpenCalculator)
+  EXPECT_CALL(new_window_delegate(), OpenCalculator)
       .WillOnce(testing::Return());
   EXPECT_CALL(*observer, OnActionPerformed)
       .WillOnce([](AcceleratorAction action) {

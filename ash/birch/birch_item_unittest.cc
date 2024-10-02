@@ -19,7 +19,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -95,11 +94,6 @@ class BirchItemTest : public testing::Test {
   BirchItemTest()
       : ash_timezone_(u"America/Los_Angeles"),
         scoped_libc_timezone_("America/Los_Angeles") {
-    auto new_window_delegate = std::make_unique<TestNewWindowDelegateImpl>();
-    new_window_delegate_ = new_window_delegate.get();
-    new_window_delegate_provider_ =
-        std::make_unique<TestNewWindowDelegateProvider>(
-            std::move(new_window_delegate));
     BirchItem::set_action_count_for_test(0);
 
     // The mock clock starts with a fixed but arbitrary time. Adjust the time
@@ -109,8 +103,13 @@ class BirchItemTest : public testing::Test {
 
   ~BirchItemTest() override { BirchItem::set_action_count_for_test(0); }
 
-  std::unique_ptr<TestNewWindowDelegateProvider> new_window_delegate_provider_;
-  raw_ptr<TestNewWindowDelegateImpl> new_window_delegate_ = nullptr;
+  TestNewWindowDelegateImpl& new_window_delegate() {
+    return new_window_delegate_;
+  }
+
+ private:
+  TestNewWindowDelegateImpl new_window_delegate_;
+
   // Use an arbitrary but fixed "now" time for tests.
   base::ScopedMockClockOverride mock_clock_override_;
 
@@ -180,12 +179,12 @@ TEST_F(BirchItemTest, Calendar_PerformAction_BothConferenceAndCalendar) {
                          /*event_id=*/"000",
                          /*all_day_event=*/false);
   item.PerformAction(/*is_post_login=*/false);
-  EXPECT_EQ(new_window_delegate_->last_opened_url_,
+  EXPECT_EQ(new_window_delegate().last_opened_url_,
             GURL("http://calendar.com/"));
 
   EXPECT_TRUE(item.addon_label());
   item.PerformAddonAction();
-  EXPECT_EQ(new_window_delegate_->last_opened_url_, GURL("http://meet.com/"));
+  EXPECT_EQ(new_window_delegate().last_opened_url_, GURL("http://meet.com/"));
 }
 
 TEST_F(BirchItemTest, Calendar_PerformAction_Histograms) {
@@ -216,12 +215,12 @@ TEST_F(BirchItemTest, Calendar_PerformAction_CalendarOnly) {
                          /*event_id=*/"000",
                          /*all_day_event=*/false);
   item.PerformAction(/*is_post_login=*/false);
-  EXPECT_EQ(new_window_delegate_->last_opened_url_,
+  EXPECT_EQ(new_window_delegate().last_opened_url_,
             GURL("http://calendar.com/"));
 
   EXPECT_FALSE(item.addon_label());
   item.PerformAddonAction();
-  EXPECT_EQ(new_window_delegate_->last_opened_url_,
+  EXPECT_EQ(new_window_delegate().last_opened_url_,
             GURL("http://calendar.com/"));
 }
 
@@ -234,7 +233,7 @@ TEST_F(BirchItemTest, Calendar_PerformAction_NoURL) {
                          /*event_id=*/"000",
                          /*all_day_event=*/false);
   item.PerformAction(/*is_post_login=*/false);
-  EXPECT_EQ(new_window_delegate_->last_opened_url_, GURL());
+  EXPECT_EQ(new_window_delegate().last_opened_url_, GURL());
 }
 
 TEST_F(BirchItemTest, Calendar_ShouldShowAddonAction) {
@@ -340,7 +339,7 @@ TEST_F(BirchItemTest, Attachment_PerformAction_ValidUrl) {
                            /*end_time=*/base::Time(),
                            /*file_id=*/"");
   item.PerformAction(/*is_post_login=*/false);
-  EXPECT_EQ(new_window_delegate_->last_opened_url_, GURL("http://file.com/"));
+  EXPECT_EQ(new_window_delegate().last_opened_url_, GURL("http://file.com/"));
 }
 
 TEST_F(BirchItemTest, Attachment_PerformAction_Histograms) {
@@ -365,7 +364,7 @@ TEST_F(BirchItemTest, Attachment_PerformAction_EmptyUrl) {
                            /*end_time=*/base::Time(),
                            /*file_id=*/"");
   item.PerformAction(/*is_post_login=*/false);
-  EXPECT_EQ(new_window_delegate_->last_opened_url_, GURL());
+  EXPECT_EQ(new_window_delegate().last_opened_url_, GURL());
 }
 
 TEST_F(BirchItemTest, Attachment_Subtitle_Now) {
@@ -412,7 +411,7 @@ TEST_F(BirchItemTest, File_PerformAction) {
   EXPECT_EQ("id_1", item.file_id());
 
   item.PerformAction(/*is_post_login=*/false);
-  EXPECT_EQ(new_window_delegate_->last_opened_file_path_,
+  EXPECT_EQ(new_window_delegate().last_opened_file_path_,
             base::FilePath("file_path"));
 }
 
@@ -429,7 +428,7 @@ TEST_F(BirchItemTest, File_PerformAction_Histograms) {
 TEST_F(BirchItemTest, Weather_PerformAction) {
   BirchWeatherItem item(u"item", 72.f, GURL("http://icon.com/"));
   item.PerformAction(/*is_post_login=*/false);
-  EXPECT_EQ(new_window_delegate_->last_opened_url_,
+  EXPECT_EQ(new_window_delegate().last_opened_url_,
             GURL("https://google.com/search?q=weather"));
 }
 
@@ -496,7 +495,7 @@ TEST_F(BirchItemTest, Tab_PerformAction_ValidUrl) {
                     /*favicon_url=*/GURL(), /*session_name=*/"",
                     /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop);
   item.PerformAction(/*is_post_login=*/false);
-  EXPECT_EQ(new_window_delegate_->last_opened_url_,
+  EXPECT_EQ(new_window_delegate().last_opened_url_,
             GURL("http://example.com/"));
 }
 
@@ -506,7 +505,7 @@ TEST_F(BirchItemTest, Tab_PerformAction_EmptyUrl) {
                     /*favicon_url=*/GURL(), /*session_name=*/"",
                     /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop);
   item.PerformAction(/*is_post_login=*/false);
-  EXPECT_EQ(new_window_delegate_->last_opened_url_, GURL());
+  EXPECT_EQ(new_window_delegate().last_opened_url_, GURL());
 }
 
 TEST_F(BirchItemTest, Tab_PerformAction_Histograms) {
@@ -542,7 +541,7 @@ TEST_F(BirchItemTest, LastActive_Subtitle_OneHourAgo) {
 TEST_F(BirchItemTest, LastActive_PerformAction) {
   BirchLastActiveItem item(u"item", GURL("http://example.com/"), base::Time());
   item.PerformAction(/*is_post_login=*/false);
-  EXPECT_EQ(new_window_delegate_->last_opened_url_,
+  EXPECT_EQ(new_window_delegate().last_opened_url_,
             GURL("http://example.com/"));
 }
 
@@ -556,7 +555,7 @@ TEST_F(BirchItemTest, SelfShare_PerformAction) {
       /*activation_callback=*/activation_callback.Get());
   EXPECT_CALL(activation_callback, Run).Times(1);
   item.PerformAction(/*is_post_login=*/false);
-  EXPECT_EQ(new_window_delegate_->last_opened_url_,
+  EXPECT_EQ(new_window_delegate().last_opened_url_,
             GURL("https://www.example.com/"));
 }
 

@@ -86,12 +86,8 @@ class TabDragDropDelegateTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    auto mock_new_window_delegate =
+    mock_new_window_delegate_ =
         std::make_unique<NiceMock<MockNewWindowDelegate>>();
-    mock_new_window_delegate_ptr_ = mock_new_window_delegate.get();
-    test_new_window_delegate_provider_ =
-        std::make_unique<TestNewWindowDelegateProvider>(
-            std::move(mock_new_window_delegate));
 
     auto mock_shell_delegate = std::make_unique<NiceMock<MockShellDelegate>>();
     mock_shell_delegate_ = mock_shell_delegate.get();
@@ -110,7 +106,9 @@ class TabDragDropDelegateTest : public AshTestBase {
 
     // Clear our pointer before the object is destroyed.
     mock_shell_delegate_ = nullptr;
-    test_new_window_delegate_provider_.reset();
+
+    mock_new_window_delegate_.reset();
+
     AshTestBase::TearDown();
   }
 
@@ -122,13 +120,8 @@ class TabDragDropDelegateTest : public AshTestBase {
   }
 
  private:
+  std::unique_ptr<NiceMock<MockNewWindowDelegate>> mock_new_window_delegate_;
   raw_ptr<NiceMock<MockShellDelegate>> mock_shell_delegate_ = nullptr;
-
-  std::unique_ptr<TestNewWindowDelegateProvider>
-      test_new_window_delegate_provider_;
-  raw_ptr<NiceMock<MockNewWindowDelegate>, DanglingUntriaged>
-      mock_new_window_delegate_ptr_ = nullptr;
-
   std::unique_ptr<aura::Window> dummy_window_;
 };
 

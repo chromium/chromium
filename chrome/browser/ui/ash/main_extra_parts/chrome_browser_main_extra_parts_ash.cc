@@ -78,7 +78,6 @@
 #include "chrome/browser/ui/ash/network/network_connect_delegate.h"
 #include "chrome/browser/ui/ash/network/network_portal_notification_controller.h"
 #include "chrome/browser/ui/ash/new_window/chrome_new_window_client.h"
-#include "chrome/browser/ui/ash/new_window/chrome_new_window_delegate_provider.h"
 #include "chrome/browser/ui/ash/picker/picker_client_impl.h"
 #include "chrome/browser/ui/ash/projector/projector_app_client_impl.h"
 #include "chrome/browser/ui/ash/projector/projector_client_impl.h"
@@ -245,13 +244,9 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   accessibility_controller_client_ =
       std::make_unique<AccessibilityControllerClient>();
 
-  {
-    auto chrome_new_window_client = std::make_unique<ChromeNewWindowClient>();
-    new_window_delegate_provider_ =
-        std::make_unique<ChromeNewWindowDelegateProvider>(
-            std::move(chrome_new_window_client));
-    arc_open_url_delegate_impl_ = std::make_unique<ArcOpenUrlDelegateImpl>();
-  }
+  chrome_new_window_client_ = std::make_unique<ChromeNewWindowClient>();
+
+  arc_open_url_delegate_impl_ = std::make_unique<ArcOpenUrlDelegateImpl>();
 
   ime_controller_client_ = std::make_unique<ImeControllerClientImpl>(
       ash::input_method::InputMethodManager::Get());
@@ -539,7 +534,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   ime_controller_client_.reset();
   in_session_auth_dialog_client_.reset();
   arc_open_url_delegate_impl_.reset();
-  new_window_delegate_provider_.reset();
+  chrome_new_window_client_.reset();
   accessibility_controller_client_.reset();
   // AppListClientImpl indirectly holds WebContents for answer card and
   // needs to be released before destroying the profile.
@@ -565,8 +560,8 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   arc_window_watcher_.reset();
 }
 
-void ChromeBrowserMainExtraPartsAsh::ResetNewWindowDelegateProviderForTest() {
-  new_window_delegate_provider_.reset();
+void ChromeBrowserMainExtraPartsAsh::ResetChromeNewWindowClientForTesting() {
+  chrome_new_window_client_.reset();
 }
 
 class ChromeBrowserMainExtraPartsAsh::UserProfileLoadedObserver

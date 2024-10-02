@@ -116,16 +116,9 @@ class PrivacyHubMicrophoneControllerTest
     }
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
     scoped_feature_list_->InitWithFeatures(enabled_features, {});
-
-    auto delegate = std::make_unique<MockNewWindowDelegate>();
-    new_window_delegate_ = delegate.get();
-    window_delegate_provider_ =
-        std::make_unique<TestNewWindowDelegateProvider>(std::move(delegate));
   }
   ~PrivacyHubMicrophoneControllerTest() override {
     fake_video_conference_tray_controller_.reset();
-    new_window_delegate_ = nullptr;
-    window_delegate_provider_.reset();
   }
 
   // AshTestBase:
@@ -236,14 +229,13 @@ class PrivacyHubMicrophoneControllerTest
     return histogram_tester_;
   }
 
-  MockNewWindowDelegate& new_window_delegate() { return *new_window_delegate_; }
+  MockNewWindowDelegate& new_window_delegate() { return new_window_delegate_; }
 
   ::testing::NiceMock<MockFrontendAPI> mock_frontend_;
 
  private:
   const base::HistogramTester histogram_tester_;
-  raw_ptr<MockNewWindowDelegate> new_window_delegate_ = nullptr;
-  std::unique_ptr<TestNewWindowDelegateProvider> window_delegate_provider_;
+  MockNewWindowDelegate new_window_delegate_;
   std::unique_ptr<FakeVideoConferenceTrayController>
       fake_video_conference_tray_controller_;
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;

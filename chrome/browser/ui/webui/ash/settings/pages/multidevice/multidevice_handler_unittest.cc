@@ -306,11 +306,8 @@ class MultideviceHandlerTest : public testing::Test {
         phonehub::prefs::kScreenLockStatus,
         static_cast<int>(phonehub::ScreenLockManager::LockStatus::kLockedOff));
 
-    InitializeNewWindowDelegate();
     CreateHandler();
   }
-
-  void TearDown() override { new_window_provider_.reset(); }
 
   void CreateHandler() {
     handler_ = std::make_unique<TestMultideviceHandler>(
@@ -327,14 +324,6 @@ class MultideviceHandlerTest : public testing::Test {
 
     handler_->RegisterMessages();
     handler_->AllowJavascript();
-  }
-
-  void InitializeNewWindowDelegate() {
-    auto instance = std::make_unique<MockNewWindowDelegate>();
-    auto primary = std::make_unique<MockNewWindowDelegate>();
-    new_window_delegate_primary_ = primary.get();
-    new_window_provider_ = std::make_unique<TestNewWindowDelegateProvider>(
-        std::move(instance), std::move(primary));
   }
 
   void InitWithFeatures(
@@ -803,9 +792,7 @@ class MultideviceHandlerTest : public testing::Test {
         ->IsCombinedSetupOperationInProgress();
   }
 
-  MockNewWindowDelegate* new_window_delegate_primary() {
-    return new_window_delegate_primary_;
-  }
+  MockNewWindowDelegate& new_window_delegate() { return new_window_delegate_; }
 
   const multidevice::RemoteDeviceRef test_device_;
 
@@ -840,9 +827,7 @@ class MultideviceHandlerTest : public testing::Test {
   std::unique_ptr<eche_app::FakeAppsAccessManager> fake_apps_access_manager_;
   std::unique_ptr<phonehub::FakeCameraRollManager> fake_camera_roll_manager_;
   phonehub::FakeBrowserTabsModelProvider fake_browser_tabs_model_provider_;
-  raw_ptr<MockNewWindowDelegate, DanglingUntriaged>
-      new_window_delegate_primary_;
-  std::unique_ptr<TestNewWindowDelegateProvider> new_window_provider_;
+  MockNewWindowDelegate new_window_delegate_;
 
   multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice
       host_status_with_device_;
@@ -1315,7 +1300,7 @@ TEST_F(MultideviceHandlerTest, ScreenLockStatusChanged) {
 }
 
 TEST_F(MultideviceHandlerTest, ShowBrowserSyncSettings) {
-  EXPECT_CALL(*new_window_delegate_primary(),
+  EXPECT_CALL(new_window_delegate(),
               OpenUrl(GURL("chrome://settings/syncSetup/advanced"),
                       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
                       ash::NewWindowDelegate::Disposition::kSwitchToTab));

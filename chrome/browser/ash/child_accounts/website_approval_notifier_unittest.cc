@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/public/cpp/test/test_new_window_delegate.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -34,22 +33,14 @@ class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
 
 class WebsiteApprovalNotifierTest : public testing::Test {
  public:
-  WebsiteApprovalNotifierTest() {
-    auto instance = std::make_unique<MockNewWindowDelegate>();
-    auto primary = std::make_unique<MockNewWindowDelegate>();
-    new_window_delegate_primary_ = primary.get();
-    new_window_provider_ = std::make_unique<TestNewWindowDelegateProvider>(
-        std::move(instance), std::move(primary));
-  }
+  WebsiteApprovalNotifierTest() = default;
   WebsiteApprovalNotifierTest(const WebsiteApprovalNotifierTest&) = delete;
   WebsiteApprovalNotifierTest& operator=(const WebsiteApprovalNotifierTest&) =
       delete;
 
   ~WebsiteApprovalNotifierTest() override = default;
 
-  MockNewWindowDelegate& new_window_delegate_primary() {
-    return *new_window_delegate_primary_;
-  }
+  MockNewWindowDelegate& new_window_delegate() { return new_window_delegate_; }
 
  protected:
   void OnNewWebsiteApproval(const std::string& hostname) {
@@ -69,9 +60,9 @@ class WebsiteApprovalNotifierTest : public testing::Test {
   TestingProfile profile_;
   NotificationDisplayServiceTester notification_tester_{&profile_};
   WebsiteApprovalNotifier notifier_{&profile_};
-  raw_ptr<MockNewWindowDelegate, DanglingUntriaged>
-      new_window_delegate_primary_;
-  std::unique_ptr<TestNewWindowDelegateProvider> new_window_provider_;
+
+ private:
+  MockNewWindowDelegate new_window_delegate_;
 };
 
 TEST_F(WebsiteApprovalNotifierTest, ShowNotificationsForValidHosts) {
@@ -117,7 +108,7 @@ TEST_F(WebsiteApprovalNotifierTest, UrlOpensInPrimaryBrowser) {
   std::string expected_url = std::string("https://") + host + "/";
   OnNewWebsiteApproval(host);
   EXPECT_TRUE(HasApprovalNotification(host));
-  EXPECT_CALL(new_window_delegate_primary(),
+  EXPECT_CALL(new_window_delegate(),
               OpenUrl(GURL(expected_url),
                       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
                       NewWindowDelegate::Disposition::kNewForegroundTab));

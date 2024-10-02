@@ -46,8 +46,6 @@ class ShelfContextMenuModelTest
   ~ShelfContextMenuModelTest() override = default;
 
   void SetUp() override {
-    delegate_provider_ = std::make_unique<TestNewWindowDelegateProvider>(
-        std::make_unique<MockNewWindowDelegate>());
     AshTestBase::SetUp();
     TestSessionControllerClient* session = GetSessionControllerClient();
     session->AddUserSession("user1@test.com", GetUserType());
@@ -57,13 +55,12 @@ class ShelfContextMenuModelTest
 
   user_manager::UserType GetUserType() const { return GetParam(); }
 
-  MockNewWindowDelegate* GetMockNewWindowDelegate() {
-    return static_cast<MockNewWindowDelegate*>(
-        delegate_provider_->GetPrimary());
+  MockNewWindowDelegate& GetMockNewWindowDelegate() {
+    return new_window_delegate_;
   }
 
  private:
-  std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
+  MockNewWindowDelegate new_window_delegate_;
 };
 
 // A test shelf item delegate that records the commands sent for execution.
@@ -162,7 +159,7 @@ TEST_P(ShelfContextMenuModelTest, OpensPersonalizationHubOrWallpaper) {
 
   ShelfContextMenuModel menu(nullptr, display_id, /*menu_in_shelf=*/false);
 
-  EXPECT_CALL(*GetMockNewWindowDelegate(), OpenPersonalizationHub).Times(1);
+  EXPECT_CALL(GetMockNewWindowDelegate(), OpenPersonalizationHub).Times(1);
   menu.ActivatedAt(2);
 }
 

@@ -10,8 +10,6 @@ static_library("new_window") {
   sources = [
     "chrome_new_window_client.cc",
     "chrome_new_window_client.h",
-    "chrome_new_window_delegate_provider.cc",
-    "chrome_new_window_delegate_provider.h",
   ]
 
   public_deps = [

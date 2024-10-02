@@ -209,7 +209,7 @@ class MahiPanelViewTest : public AshTestBase {
 
   MahiUiController* ui_controller() { return &ui_controller_; }
 
-  MockNewWindowDelegate& new_window_delegate() { return *new_window_delegate_; }
+  MockNewWindowDelegate& new_window_delegate() { return new_window_delegate_; }
 
   MahiPanelView* panel_view() { return panel_view_; }
 
@@ -222,11 +222,6 @@ class MahiPanelViewTest : public AshTestBase {
         /*enabled_features=*/{chromeos::features::kMahi,
                               chromeos::features::kFeatureManagementMahi},
         /*disabled_features=*/{});
-
-    auto delegate = std::make_unique<MockNewWindowDelegate>();
-    new_window_delegate_ = delegate.get();
-    delegate_provider_ =
-        std::make_unique<TestNewWindowDelegateProvider>(std::move(delegate));
 
     AshTestBase::SetUp();
 
@@ -242,8 +237,6 @@ class MahiPanelViewTest : public AshTestBase {
     scoped_setter_.reset();
 
     AshTestBase::TearDown();
-
-    new_window_delegate_ = nullptr;
   }
 
   // Creates a widget hosting `MahiPanelView`. Recreates if there is one.
@@ -286,8 +279,7 @@ class MahiPanelViewTest : public AshTestBase {
   MahiUiController ui_controller_;
   raw_ptr<MahiPanelView> panel_view_ = nullptr;
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<MockNewWindowDelegate> new_window_delegate_;
-  std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
+  MockNewWindowDelegate new_window_delegate_;
 };
 
 // Checks that the summary text is set correctly in ctor with different texts.

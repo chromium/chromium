@@ -222,7 +222,7 @@ void AshTestHelper::TearDown() {
   session_controller_client_.reset();
   dlc_service_client_.reset();
   test_views_delegate_.reset();
-  new_window_delegate_provider_.reset();
+  new_window_delegate_.reset();
   bluez_dbus_manager_initializer_.reset();
   floss_dbus_manager_initializer_.reset();
   system_tray_client_.reset();
@@ -336,9 +336,7 @@ void AshTestHelper::SetUp(InitParams init_params) {
   }
 
   if (!NewWindowDelegate::GetInstance()) {
-    new_window_delegate_provider_ =
-        std::make_unique<TestNewWindowDelegateProvider>(
-            std::make_unique<TestNewWindowDelegate>());
+    new_window_delegate_ = std::make_unique<TestNewWindowDelegate>();
   }
   if (!views::ViewsDelegate::GetInstance()) {
     test_views_delegate_ = MakeTestViewsDelegate();

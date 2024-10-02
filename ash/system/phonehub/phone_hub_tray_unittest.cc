@@ -79,10 +79,6 @@ class PhoneHubTrayTest : public AshTestBase {
                               features::kEcheLauncher, features::kEcheSWA,
                               features::kEcheNetworkConnectionState},
         /*disabled_features=*/{});
-    auto delegate = std::make_unique<MockNewWindowDelegate>();
-    new_window_delegate_ = delegate.get();
-    delegate_provider_ =
-        std::make_unique<TestNewWindowDelegateProvider>(std::move(delegate));
     AshTestBase::SetUp();
 
     phone_hub_tray_ =
@@ -103,7 +99,6 @@ class PhoneHubTrayTest : public AshTestBase {
   }
 
   void TearDown() override {
-    delegate_provider_.reset();
     AshTestBase::TearDown();
   }
 
@@ -137,7 +132,7 @@ class PhoneHubTrayTest : public AshTestBase {
     task_environment()->FastForwardBy(kConnectingViewGracePeriod);
   }
 
-  MockNewWindowDelegate& new_window_delegate() { return *new_window_delegate_; }
+  MockNewWindowDelegate& new_window_delegate() { return new_window_delegate_; }
 
   views::View* bubble_view() { return phone_hub_tray_->GetBubbleView(); }
 
@@ -190,8 +185,7 @@ class PhoneHubTrayTest : public AshTestBase {
   raw_ptr<PhoneHubTray, DanglingUntriaged> phone_hub_tray_ = nullptr;
   phonehub::FakePhoneHubManager phone_hub_manager_;
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<MockNewWindowDelegate, DanglingUntriaged> new_window_delegate_;
-  std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
+  MockNewWindowDelegate new_window_delegate_;
 };
 
 TEST_F(PhoneHubTrayTest, SetPhoneHubManager) {

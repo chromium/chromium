@@ -38,14 +38,12 @@ class ASH_PUBLIC_EXPORT NewWindowDelegate {
     kFeedbackSourceChannelIndicator,
   };
 
-  virtual ~NewWindowDelegate();
-
   // Returns an instance connected to ash-chrome.
   static NewWindowDelegate* GetInstance();
 
-  // Returns an instance connected to the primary browser.
-  // Specifically, if Lacros is the primary browser, the instance connected
-  // to the registered browser via crosapi.
+  // DEPRECATED: This method is no longer useful after Lacros deprecation. This
+  // now returns the same value as `GetInstance` but will be removed soon.
+  // TODO(b/367844818): Remove this.
   static NewWindowDelegate* GetPrimary();
 
   // Invoked when the user uses Ctrl+T to open a new tab.
@@ -141,21 +139,7 @@ class ASH_PUBLIC_EXPORT NewWindowDelegate {
   NewWindowDelegate();
   NewWindowDelegate(const NewWindowDelegate&) = delete;
   NewWindowDelegate& operator=(const NewWindowDelegate&) = delete;
-};
-
-// Interface to provide delegate instances for
-// NewWindowDelegate::GetInstance/GetPrimary methods.
-class ASH_PUBLIC_EXPORT NewWindowDelegateProvider {
- public:
-  virtual ~NewWindowDelegateProvider();
-  virtual NewWindowDelegate* GetInstance() = 0;
-  virtual NewWindowDelegate* GetPrimary() = 0;
-
- protected:
-  NewWindowDelegateProvider();
-  NewWindowDelegateProvider(const NewWindowDelegateProvider&) = delete;
-  NewWindowDelegateProvider& operator=(const NewWindowDelegateProvider&) =
-      delete;
+  virtual ~NewWindowDelegate();
 };
 
 }  // namespace ash

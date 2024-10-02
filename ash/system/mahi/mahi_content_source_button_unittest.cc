@@ -46,11 +46,7 @@ class MockNewWindowDelegate : public NiceMock<TestNewWindowDelegate> {
 
 class MahiContentSourceButtonTest : public AshTestBase {
  public:
-  MahiContentSourceButtonTest() {
-    new_window_delegate_provider_ =
-        std::make_unique<TestNewWindowDelegateProvider>(
-            std::make_unique<MockNewWindowDelegate>());
-  }
+  MahiContentSourceButtonTest() = default;
 
   ~MahiContentSourceButtonTest() override = default;
 
@@ -60,9 +56,8 @@ class MahiContentSourceButtonTest : public AshTestBase {
     return mock_mahi_media_app_content_manager_;
   }
 
-  MockNewWindowDelegate* GetMockNewWindowDelegate() {
-    return static_cast<MockNewWindowDelegate*>(
-        new_window_delegate_provider_->GetPrimary());
+  MockNewWindowDelegate& GetMockNewWindowDelegate() {
+    return new_window_delegate_;
   }
 
  private:
@@ -75,7 +70,7 @@ class MahiContentSourceButtonTest : public AshTestBase {
       scoped_mahi_media_app_content_manager_{
           &mock_mahi_media_app_content_manager_};
 
-  std::unique_ptr<TestNewWindowDelegateProvider> new_window_delegate_provider_;
+  MockNewWindowDelegate new_window_delegate_;
 };
 
 TEST_F(MahiContentSourceButtonTest, InitialContentSourceTitle) {
@@ -143,11 +138,11 @@ TEST_F(MahiContentSourceButtonTest, InitialContentSourceButtonUrl) {
       widget->SetContentsView(std::make_unique<MahiContentSourceButton>());
 
   EXPECT_CALL(
-      *GetMockNewWindowDelegate(),
+      GetMockNewWindowDelegate(),
       OpenUrl(kInitialUrl, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
               NewWindowDelegate::Disposition::kSwitchToTab));
   LeftClickOn(content_source_button);
-  Mock::VerifyAndClearExpectations(GetMockNewWindowDelegate());
+  Mock::VerifyAndClearExpectations(&GetMockNewWindowDelegate());
 }
 
 TEST_F(MahiContentSourceButtonTest, ContentSourceButtonUrlAfterRefresh) {
@@ -164,11 +159,11 @@ TEST_F(MahiContentSourceButtonTest, ContentSourceButtonUrlAfterRefresh) {
   content_source_button->RefreshContentSourceInfo();
 
   EXPECT_CALL(
-      *GetMockNewWindowDelegate(),
+      GetMockNewWindowDelegate(),
       OpenUrl(kRefreshedUrl, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
               NewWindowDelegate::Disposition::kSwitchToTab));
   LeftClickOn(content_source_button);
-  Mock::VerifyAndClearExpectations(GetMockNewWindowDelegate());
+  Mock::VerifyAndClearExpectations(&GetMockNewWindowDelegate());
 }
 
 TEST_F(MahiContentSourceButtonTest, ContentSourceButtonActivateMediaAppWindow) {
@@ -186,9 +181,9 @@ TEST_F(MahiContentSourceButtonTest, ContentSourceButtonActivateMediaAppWindow) {
   EXPECT_CALL(mock_mahi_media_app_content_manager(),
               ActivateClientWindow(media_app_client_id))
       .Times(1);
-  EXPECT_CALL(*GetMockNewWindowDelegate(), OpenUrl(_, _, _)).Times(0);
+  EXPECT_CALL(GetMockNewWindowDelegate(), OpenUrl(_, _, _)).Times(0);
   LeftClickOn(content_source_button);
-  Mock::VerifyAndClearExpectations(GetMockNewWindowDelegate());
+  Mock::VerifyAndClearExpectations(&GetMockNewWindowDelegate());
 }
 
 }  // namespace

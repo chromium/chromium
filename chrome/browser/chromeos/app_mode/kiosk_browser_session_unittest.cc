@@ -1143,12 +1143,6 @@ class KioskBrowserSessionTroubleshootingShortcutsTest
   }
 
   void SetUp() override {
-    auto new_window_delegate = std::make_unique<FakeNewWindowDelegate>();
-    fake_new_window_delegate_ = new_window_delegate.get();
-    test_new_window_delegate_provider_ =
-        std::make_unique<ash::TestNewWindowDelegateProvider>(
-            std::move(new_window_delegate));
-
     KioskBrowserSessionTroubleshootingTest::SetUp();
 
     ash::SessionInfo info;
@@ -1164,19 +1158,19 @@ class KioskBrowserSessionTroubleshootingShortcutsTest
   }
 
   bool IsNewWindowCalled() const {
-    return fake_new_window_delegate_->is_new_window_called();
+    return fake_new_window_delegate_.is_new_window_called();
   }
 
   bool IsNewTabCalled() const {
-    return fake_new_window_delegate_->is_new_tab_called();
+    return fake_new_window_delegate_.is_new_tab_called();
   }
 
   bool IsTaskManagerCalled() const {
-    return fake_new_window_delegate_->is_task_manager_called();
+    return fake_new_window_delegate_.is_task_manager_called();
   }
 
   bool IsOpenFeedbackPageCalled() const {
-    return fake_new_window_delegate_->is_open_feedback_page_called();
+    return fake_new_window_delegate_.is_open_feedback_page_called();
   }
 
  protected:
@@ -1190,9 +1184,7 @@ class KioskBrowserSessionTroubleshootingShortcutsTest
       ui::Accelerator(ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_NONE);
 
  private:
-  raw_ptr<FakeNewWindowDelegate, DanglingUntriaged> fake_new_window_delegate_;
-  std::unique_ptr<ash::TestNewWindowDelegateProvider>
-      test_new_window_delegate_provider_;
+  FakeNewWindowDelegate fake_new_window_delegate_;
 };
 
 TEST_P(KioskBrowserSessionTroubleshootingShortcutsTest,

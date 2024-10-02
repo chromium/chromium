@@ -46,34 +46,26 @@ class AccessibilityHandlerTest : public testing::Test {
     handler_ = handler.get();
     web_ui_ = std::make_unique<content::TestWebUI>();
     web_ui_->AddMessageHandler(std::move(handler));
-
-    // Initialize NewWindowDelegate things.
-    auto instance = std::make_unique<MockNewWindowDelegate>();
-    auto primary = std::make_unique<MockNewWindowDelegate>();
-    new_window_delegate_primary_ = primary.get();
-    new_window_provider_ = std::make_unique<TestNewWindowDelegateProvider>(
-        std::move(instance), std::move(primary));
   }
 
   void TearDown() override {
-    new_window_provider_.reset();
     web_ui_.reset();
   }
 
  protected:
+  MockNewWindowDelegate& new_window_delegate() { return new_window_delegate_; }
+
   std::unique_ptr<content::TestWebUI> web_ui_;
-  raw_ptr<MockNewWindowDelegate, DanglingUntriaged>
-      new_window_delegate_primary_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   raw_ptr<AccessibilityHandler, DanglingUntriaged> handler_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  std::unique_ptr<TestNewWindowDelegateProvider> new_window_provider_;
+  MockNewWindowDelegate new_window_delegate_;
 };
 
 TEST_F(AccessibilityHandlerTest, ShowBrowserAppearanceSettings) {
-  EXPECT_CALL(*new_window_delegate_primary_,
+  EXPECT_CALL(new_window_delegate(),
               OpenUrl(GURL(chrome::kChromeUISettingsURL)
                           .Resolve(chrome::kAppearanceSubPage),
                       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,

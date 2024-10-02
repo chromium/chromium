@@ -119,24 +119,14 @@ class AppNotificationHandlerTest : public testing::Test {
 
     observer_ = std::make_unique<AppNotificationHandlerTestObserver>();
     handler_->AddObserver(observer_->GenerateRemote());
-
-    auto instance = std::make_unique<MockNewWindowDelegate>();
-    auto primary = std::make_unique<MockNewWindowDelegate>();
-    new_window_delegate_primary_ = primary.get();
-    new_window_provider_ = std::make_unique<TestNewWindowDelegateProvider>(
-        std::move(instance), std::move(primary));
   }
 
   void TearDown() override {
-    new_window_provider_.reset();
     handler_.reset();
     MessageCenterAsh::SetForTesting(nullptr);
   }
 
  protected:
-  raw_ptr<MockNewWindowDelegate, DanglingUntriaged>
-      new_window_delegate_primary_;
-
   AppNotificationHandlerTestObserver* observer() { return observer_.get(); }
 
   void SetQuietModeState(bool quiet_mode_enabled) {
@@ -183,6 +173,8 @@ class AppNotificationHandlerTest : public testing::Test {
     return false;
   }
 
+  MockNewWindowDelegate& new_window_delegate() { return new_window_delegate_; }
+
  private:
   std::unique_ptr<AppNotificationHandler> handler_;
   content::BrowserTaskEnvironment task_environment_;
@@ -190,7 +182,7 @@ class AppNotificationHandlerTest : public testing::Test {
   raw_ptr<apps::AppServiceProxy> app_service_proxy_;
   FakeMessageCenterAsh message_center_ash_;
   std::unique_ptr<AppNotificationHandlerTestObserver> observer_;
-  std::unique_ptr<TestNewWindowDelegateProvider> new_window_provider_;
+  MockNewWindowDelegate new_window_delegate_;
 };
 
 // Tests for update of in_quiet_mode_ variable by MessageCenterAsh observer
@@ -284,7 +276,7 @@ TEST_F(AppNotificationHandlerTest, TestAppListUpdated) {
 }
 
 TEST_F(AppNotificationHandlerTest, TestOpenBrowserNotificationSettings) {
-  EXPECT_CALL(*new_window_delegate_primary_,
+  EXPECT_CALL(new_window_delegate(),
               OpenUrl(GURL(chrome::kAppNotificationsBrowserSettingsURL),
                       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
                       ash::NewWindowDelegate::Disposition::kSwitchToTab));

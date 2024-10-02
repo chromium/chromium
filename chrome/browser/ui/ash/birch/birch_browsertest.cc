@@ -265,19 +265,15 @@ class BirchBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    // Clear out the existing NewWindowDelegateProvider so we can replace it
+    // Clear out the existing ChromeNewWindowDelegateClient so we can replace it
     // with a mock (there are CHECKs that prevent doing this without the reset).
     ChromeBrowserMainExtraPartsAsh::Get()
-        ->ResetNewWindowDelegateProviderForTest();
-    auto window_delegate = std::make_unique<MockNewWindowDelegate>();
-    mock_new_window_delegate_ = window_delegate.get();
-    window_delegate_provider_ = std::make_unique<TestNewWindowDelegateProvider>(
-        std::move(window_delegate));
+        ->ResetChromeNewWindowClientForTesting();
+    new_window_delegate_ = std::make_unique<MockNewWindowDelegate>();
   }
 
   void TearDownOnMainThread() override {
-    mock_new_window_delegate_ = nullptr;  // Avoid dangling pointer.
-    window_delegate_provider_.reset();
+    new_window_delegate_.reset();
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
@@ -288,8 +284,7 @@ class BirchBrowserTest : public InProcessBrowserTest {
 
  protected:
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<MockNewWindowDelegate> mock_new_window_delegate_;
-  std::unique_ptr<TestNewWindowDelegateProvider> window_delegate_provider_;
+  std::unique_ptr<MockNewWindowDelegate> new_window_delegate_;
 };
 
 // Test that no crash occurs on shutdown with an instantiated BirchKeyedService.
@@ -336,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, WeatherChip) {
   ClickOnView(std::exchange(button, nullptr));
 
   // Clicking on the chip opens a browser with a Google search for weather.
-  EXPECT_EQ(mock_new_window_delegate_->opened_url_,
+  EXPECT_EQ(new_window_delegate_->opened_url_,
             GURL("https://google.com/search?q=weather"));
 }
 
@@ -374,8 +369,7 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, CalendarChip) {
   // dangling pointer with std::exchange.
   ClickOnView(std::exchange(button, nullptr));
 
-  EXPECT_EQ(mock_new_window_delegate_->opened_url_,
-            GURL("http://example.com/"));
+  EXPECT_EQ(new_window_delegate_->opened_url_, GURL("http://example.com/"));
 }
 
 IN_PROC_BROWSER_TEST_F(BirchBrowserTest, AttachmentChip) {
@@ -419,8 +413,7 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, AttachmentChip) {
   // dangling pointers with std::exchange.
   ClickOnView(std::exchange(button, nullptr));
 
-  EXPECT_EQ(mock_new_window_delegate_->opened_url_,
-            GURL("http://attachment.com/"));
+  EXPECT_EQ(new_window_delegate_->opened_url_, GURL("http://attachment.com/"));
 }
 
 IN_PROC_BROWSER_TEST_F(BirchBrowserTest, FileSuggestChip) {
@@ -458,8 +451,7 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, FileSuggestChip) {
   ClickOnView(std::exchange(button, nullptr));
 
   // Clicking the button should attempt to open the file.
-  EXPECT_EQ(mock_new_window_delegate_->opened_file_,
-            base::FilePath("test-path"));
+  EXPECT_EQ(new_window_delegate_->opened_file_, base::FilePath("test-path"));
 }
 
 IN_PROC_BROWSER_TEST_F(BirchBrowserTest, RecentTabsChip) {
@@ -497,8 +489,7 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, RecentTabsChip) {
   ClickOnView(std::exchange(button, nullptr));
 
   // Clicking the button should attempt to open the URL.
-  EXPECT_EQ(mock_new_window_delegate_->opened_url_,
-            GURL("http://example.com/"));
+  EXPECT_EQ(new_window_delegate_->opened_url_, GURL("http://example.com/"));
 }
 
 IN_PROC_BROWSER_TEST_F(BirchBrowserTest, LastActiveChip) {
@@ -540,8 +531,7 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, LastActiveChip) {
   ClickOnView(std::exchange(button, nullptr));
 
   // Clicking the button should attempt to open the URL.
-  EXPECT_EQ(mock_new_window_delegate_->opened_url_,
-            GURL("http://example.com/"));
+  EXPECT_EQ(new_window_delegate_->opened_url_, GURL("http://example.com/"));
 }
 
 IN_PROC_BROWSER_TEST_F(BirchBrowserTest, MostVisitedChip) {
@@ -584,8 +574,7 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, MostVisitedChip) {
   ClickOnView(std::exchange(button, nullptr));
 
   // Clicking the button should attempt to open the URL.
-  EXPECT_EQ(mock_new_window_delegate_->opened_url_,
-            GURL("http://example.com/"));
+  EXPECT_EQ(new_window_delegate_->opened_url_, GURL("http://example.com/"));
 }
 
 IN_PROC_BROWSER_TEST_F(BirchBrowserTest, SelfShareChip) {
@@ -623,8 +612,7 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, SelfShareChip) {
   ClickOnView(std::exchange(button, nullptr));
 
   // Clicking the button should attempt to open the URL.
-  EXPECT_EQ(mock_new_window_delegate_->opened_url_,
-            GURL("http://example.com/"));
+  EXPECT_EQ(new_window_delegate_->opened_url_, GURL("http://example.com/"));
 }
 
 IN_PROC_BROWSER_TEST_F(BirchBrowserTest, LostMediaChip) {
@@ -704,7 +692,7 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, ReleaseNotesChip) {
   ClickOnView(std::exchange(button, nullptr));
 
   // Clicking the button should attempt to open the URL.
-  EXPECT_EQ(mock_new_window_delegate_->opened_url_,
+  EXPECT_EQ(new_window_delegate_->opened_url_,
             GURL("chrome://help-app/updates"));
 }
 

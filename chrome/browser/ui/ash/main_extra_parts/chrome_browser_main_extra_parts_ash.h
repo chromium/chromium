@@ -19,7 +19,6 @@ class ActiveSessionFingerprintClient;
 class InSessionAuthTokenProviderImpl;
 class MagicBoostStateAsh;
 class NetworkPortalNotificationController;
-class NewWindowDelegateProvider;
 class OobeDialogUtil;
 class PeripheralsAppDelegateImpl;
 class VideoConferenceTrayController;
@@ -62,6 +61,7 @@ class AshWebViewFactoryImpl;
 class CampaignsManagerClientImpl;
 class CampaignsManagerSession;
 class CastConfigControllerMediaRouter;
+class ChromeNewWindowClient;
 class DesksClient;
 class ExoParts;
 class ImeControllerClientImpl;
@@ -117,7 +117,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
 
   bool did_post_browser_start() const { return did_post_browser_start_; }
 
-  void ResetNewWindowDelegateProviderForTest();
+  void ResetChromeNewWindowClientForTesting();
 
  private:
   class UserProfileLoadedObserver;
@@ -136,7 +136,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<AccessibilityControllerClient>
       accessibility_controller_client_;
   std::unique_ptr<AppListClientImpl> app_list_client_;
-  std::unique_ptr<ash::NewWindowDelegateProvider> new_window_delegate_provider_;
+  std::unique_ptr<ChromeNewWindowClient> chrome_new_window_client_;
   std::unique_ptr<ash::ArcWindowWatcher> arc_window_watcher_;
   std::unique_ptr<ArcOpenUrlDelegateImpl> arc_open_url_delegate_impl_;
   std::unique_ptr<ash::boca::BocaAppClientImpl> boca_client_;
