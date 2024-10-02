@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.65"
 name = "regex-syntax"
-version = "0.8.4"
+version = "0.8.5"
 authors = [
     "The Rust Project Developers",
     "Andrew Gallant <jamslam@gmail.com>",
