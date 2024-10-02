@@ -44,6 +44,16 @@ void fct() {
   // std::array<funcHasName, 4> funcNamedBufferButNotInline;
   funcHasName funcNamedBufferButNotInline[4];
 
+  // Expected rewrite:
+  // struct FuncBuffer2 {
+  //   int val;
+  // };
+  // static const std::array<FuncBuffer2, 4> func_buffer2 = {{{1}, {2}, {3},
+  // {4}}};
+  static const struct {
+    int val;
+  } func_buffer2[] = {{1}, {2}, {3}, {4}};
+
   // Buffer accesses to trigger spanification.
   func_buffer[2].val = 3;
   globalBuffer[2].val = 3;
@@ -51,4 +61,5 @@ void fct() {
   globalNamedBuffer[2].val = 3;
   globalNamedBufferButNotInline[2].val = 3;
   funcNamedBufferButNotInline[3].val = 3;
+  (void)func_buffer2[2].val;
 }

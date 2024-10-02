@@ -611,59 +611,66 @@ std::string snakeCaseToCamelCase(std::string snake_case) {
 //   - {"PointArray", "struct PointArray { ... };"} -> for the unnamed struct
 //     case.
 std::pair<std::string, std::string> maybeGetUnnamedAndDefinition(
-    const std::string& element_type,
-    const std::string& array_variable,
-    const clang::SourceRange replacement_range,
-    const clang::SourceManager& source_manager,
+    const clang::QualType element_type,
+    const clang::VarDecl* array_variable,
+    const std::string& array_variable_as_string,
     const clang::ASTContext& ast_context) {
-  // Look for unnamed types. If we find one we guess that the variable name is
-  // descriptive and use that with a capital first letter.
-  std::string unnamed_class;
-  if (element_type.find("(unnamed") != std::string::npos) {
-    unnamed_class = snakeCaseToCamelCase(array_variable);
+  if (!element_type->hasUnnamedOrLocalType()) {
+    return std::make_pair("", "");
   }
 
-  // Extract the source code within the replacement range.
-  // If it contains the class/struct definition itself, we have to emit the
-  // class definition as well.
-  const auto& lang_opts = ast_context.getLangOpts();
-  std::string initial_text =
-      clang::Lexer::getSourceText(
-          clang::CharSourceRange::getCharRange(replacement_range),
-          source_manager, lang_opts)
-          .str();
-
-  assert(initial_text.find(array_variable) != std::string::npos);
-  // Recall that inline definitions are of the form:
-  // struct TypeName { <body> } variable_name;
-  // So below we see if the location of variable_name (which has to be in the
-  // replacement_range) is after the first occurrence of a '}' bracket (if it
-  // exists). This would mean we have a class/struct definition with an inline
-  // variable and we can't rewrite without adding a ';' between the variable and
-  // the class definition.
+  std::string new_class_name_string;
   std::string class_definition;
-  const size_t bracket_location = initial_text.find("}");
-  if (bracket_location != std::string::npos &&
-      initial_text.find(array_variable) > bracket_location) {
-    size_t open_bracket = initial_text.find("{");
-    assert(open_bracket < bracket_location);
+  // Structs/classes can be defined alongside an option list of variable
+  // declarations.
+  //
+  // struct <OptionalName> { ... } var1[3];
+  //
+  // In this case we need the class_definition and in the case of unnamed
+  // types, we have to construct a name to use instead of the compiler
+  // generated one.
+  if (auto record_decl = element_type->getAsRecordDecl()) {
+    // If the `VarDecl` contains the `RecordDecl`'s {}, the `VarDecl` contains
+    // the struct/class definition.
+    bool has_definition = array_variable->getSourceRange().fullyContains(
+        record_decl->getBraceRange());
+    bool is_unnamed = record_decl->getDeclName().isEmpty();
 
-    // The class definition is then:
-    // initial_text.substr(0, bracket_location + 1), but if this is an unnamed
-    // struct we want to insert a name between `struct {`, if this isn't an
-    // unnamed struct then we'll just be adding an empty string here.
-    //
-    // I.E.
-    //   if unnamed_class == "" ->
-    //   class_definition = "struct Foo " + "" + "{ ... }" + ";"
-    //   else unnamed_class == "Bar" ->
-    //   class_definition = "struct " + "Bar" + "{ ... }" + ";"
-    class_definition =
-        initial_text.substr(0, open_bracket) + unnamed_class +
-        initial_text.substr(open_bracket, bracket_location + 1 - open_bracket) +
-        ";";
+    // If the struct/class has an empty name (=unnamed) and has its
+    // definition, we will temporariliy assign a new name to the `RecordDecl`
+    // and invoke `getAsString()` to obtain the definition with the new name.
+    clang::DeclarationName original_name = record_decl->getDeclName();
+    clang::DeclarationName temporal_class_name;
+    if (is_unnamed) {
+      new_class_name_string = snakeCaseToCamelCase(array_variable_as_string);
+      clang::StringRef new_class_name(new_class_name_string);
+      clang::IdentifierInfo& new_class_name_identifier =
+          ast_context.Idents.get(new_class_name);
+      temporal_class_name = ast_context.DeclarationNames.getIdentifier(
+          &new_class_name_identifier);
+      record_decl->setDeclName(temporal_class_name);
+    }
+    if (has_definition) {
+      clang::PrintingPolicy printing_policy(ast_context.getLangOpts());
+      // Because of class/struct definition, we will drop any qualifiers from
+      // `element_type`. E.g. `const struct { int val; }` must be
+      // `struct { int val; }`.
+      clang::QualType new_qual_type(element_type.getTypePtr(), 0);
+      printing_policy.SuppressScope = 0;
+      printing_policy.SuppressUnwrittenScope = 1;
+      printing_policy.SuppressElaboration = 0;
+      printing_policy.SuppressInlineNamespace = 1;
+      printing_policy.SuppressDefaultTemplateArgs = 1;
+      printing_policy.PrintCanonicalTypes = 0;
+      printing_policy.IncludeTagDefinition = 1;
+      printing_policy.AnonymousTagLocations = 1;
+      class_definition = new_qual_type.getAsString(printing_policy) + ";\n";
+    }
+    if (is_unnamed) {
+      record_decl->setDeclName(original_name);
+    }
   }
-  return std::make_pair(unnamed_class, class_definition);
+  return std::make_pair(new_class_name_string, class_definition);
 }
 
 // Returns an initializer list(`initListExpr`) of the given
@@ -811,57 +818,41 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
     qualifier_string << "static ";
   }
 
-  std::string replacement_text;
-  if (element_type->hasUnnamedOrLocalType()) {
-    // Structs/classes can be defined alongside an option list of variable
-    // declarations.
-    //
-    // struct <OptionalName> { ... } var1[3];
-    //
-    // In this case we need the class_definition and in the case of unnamed
-    // types, we have to construct a name to use instead of the compiler
-    // generated one.
-    const auto& [unnamed_class, class_definition] =
-        maybeGetUnnamedAndDefinition(
-            element_type_as_string, array_variable_as_string, replacement_range,
-            source_manager, ast_context);
-
-    // If this isn't an inline declaration with a class_definition than both
-    // |unnamed_class| and |class_definition| will be empty strings and not
-    // change the below format.
-    replacement_text = llvm::formatv(
-        "{0}std::array<{1},{2}>{3}", class_definition,
-        unnamed_class.empty() ? element_type_as_string : unnamed_class,
-        array_size_as_string, array_variable_as_string);
-  } else {
-    // `const int buf[] = ...` must be `const std::array<int,...> buf = ...`.
-    if (!element_type->isPointerOrReferenceType() &&
-        element_type.isConstant(ast_context)) {
-      qualifier_string << "const ";
-    }
-
-    const clang::InitListExpr* init_list_expr =
-        GetArrayInitList(array_variable);
-
-    if (ArrayInitListNeedsExtraBrace(element_type, init_list_expr)) {
-      clang::Rewriter rw(source_manager, ast_context.getLangOpts());
-      std::string init_expr_as_string = rw.getRewrittenText(clang::SourceRange(
-          init_list_expr->getBeginLoc(), init_list_expr->getEndLoc()));
-
-      replacement_range =
-          clang::SourceRange(array_variable->getSourceRange().getBegin(),
-                             init_list_expr->getEndLoc().getLocWithOffset(1));
-      replacement_text = llvm::formatv(
-          "std::array<{0},{1}> {2} = {{{3}}", element_type_as_string,
-          array_size_as_string, array_variable_as_string, init_expr_as_string);
-    } else {
-      replacement_text =
-          llvm::formatv("std::array<{0},{1}> {2}", element_type_as_string,
-                        array_size_as_string, array_variable_as_string);
-    }
+  const auto& [unnamed_class, class_definition] = maybeGetUnnamedAndDefinition(
+      element_type, array_variable, array_variable_as_string, ast_context);
+  if (!unnamed_class.empty()) {
+    element_type_as_string = unnamed_class;
   }
+
+  // `const int buf[] = ...` must be `const std::array<int,...> buf = ...`.
+  if (!element_type->isPointerOrReferenceType() &&
+      element_type.isConstant(ast_context)) {
+    qualifier_string << "const ";
+  }
+
+  const clang::InitListExpr* init_list_expr = GetArrayInitList(array_variable);
+
+  std::string replacement_text;
+  if (ArrayInitListNeedsExtraBrace(element_type, init_list_expr)) {
+    clang::Rewriter rw(source_manager, ast_context.getLangOpts());
+    std::string init_expr_as_string = rw.getRewrittenText(clang::SourceRange(
+        init_list_expr->getBeginLoc(), init_list_expr->getEndLoc()));
+
+    replacement_range =
+        clang::SourceRange(array_variable->getSourceRange().getBegin(),
+                           init_list_expr->getEndLoc().getLocWithOffset(1));
+    replacement_text = llvm::formatv(
+        "std::array<{0},{1}> {2} = {{{3}}", element_type_as_string,
+        array_size_as_string, array_variable_as_string, init_expr_as_string);
+  } else {
+    replacement_text =
+        llvm::formatv("std::array<{0},{1}> {2}", element_type_as_string,
+                      array_size_as_string, array_variable_as_string);
+  }
+
   auto replacement_and_include_pair = GetReplacementAndIncludeDirectives(
-      replacement_range, qualifier_string.str() + replacement_text,
+      replacement_range,
+      class_definition + qualifier_string.str() + replacement_text,
       source_manager, "array",
       /* is_system_include_header =*/true);
   Node n;
