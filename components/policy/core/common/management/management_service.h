@@ -23,6 +23,10 @@
 class PrefService;
 class PrefRegistrySimple;
 
+namespace ui {
+class ImageModel;
+}
+
 namespace policy {
 
 class ManagementService;
@@ -106,6 +110,8 @@ class POLICY_EXPORT ManagementService {
   // on an instance of ManagementService that is certain to not be destroyed
   // until `callback` is called.
   virtual void RefreshCache(CacheRefreshCallback callback);
+
+  virtual ui::ImageModel* GetManagementIcon();
 
   // Returns true if `authority` is are actively managed.
   bool HasManagementAuthority(EnterpriseManagementAuthority authority);

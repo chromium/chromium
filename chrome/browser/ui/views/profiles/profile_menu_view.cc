@@ -562,14 +562,10 @@ void ProfileMenuView::BuildIdentity() {
               ? l10n_util::GetStringFUTF16(IDS_PROFILES_MANAGED_BY,
                                            base::UTF8ToUTF16(*account_manager))
               : std::u16string();
-
-      auto management_environment = enterprise_util::GetManagementEnvironment(
-          profile, identity_manager->FindExtendedAccountInfoByAccountId(
-                       identity_manager->GetPrimaryAccountId(
-                           signin::ConsentLevel::kSignin)));
-
-      if (management_environment !=
-          enterprise_util::ManagementEnvironment::kNone) {
+      if (auto* icon = policy::ManagementServiceFactory::GetForProfile(profile)
+                           ->GetManagementIcon()) {
+        badge_image_model = *icon;
+      } else {
         badge_image_model = ui::ImageModel::FromVectorIcon(
             vector_icons::kBusinessIcon, ui::kColorMenuIcon, 16);
       }
