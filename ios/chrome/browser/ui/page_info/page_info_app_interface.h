@@ -11,7 +11,7 @@
 @interface PageInfoAppInterface : NSObject
 
 // Adds an AboutThisSite hint to the OptimizationGuide of the original
-// BrowserState.
+// Profile.
 + (void)addAboutThisSiteHintForURL:(NSString*)url
                        description:(NSString*)description
                   aboutThisSiteURL:(NSString*)aboutThisSiteURL;

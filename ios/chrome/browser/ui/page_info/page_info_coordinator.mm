@@ -113,13 +113,13 @@
   if (base::FeatureList::IsEnabled(
           feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature)) {
     feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
+        feature_engagement::TrackerFactory::GetForProfile(
+            self.browser->GetProfile());
     tracker->NotifyEvent(
         feature_engagement::events::kEnhancedSafeBrowsingPromoCriterionMet);
   }
 
-  const bool isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
+  const bool isIncognito = self.browser->GetProfile()->IsOffTheRecord();
 
   // Create the PageInfoHistoryMediator only if kPageInfoLastVisitedIOS is
   // enabled, the browser is not in incognito mode and the page is neither
@@ -127,9 +127,8 @@
   if (IsPageInfoLastVisitedIOSEnabled() && !isIncognito &&
       !_siteSecurityDescription.isEmpty) {
     history::HistoryService* historyService =
-        ios::HistoryServiceFactory::GetForBrowserState(
-            self.browser->GetBrowserState(),
-            ServiceAccessType::EXPLICIT_ACCESS);
+        ios::HistoryServiceFactory::GetForProfile(
+            self.browser->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS);
 
     const GURL& siteURL =
         webState->GetNavigationManager()->GetVisibleItem()->GetURL();
@@ -196,7 +195,7 @@
                                 page_info::PAGE_INFO_CONNECTION_HELP_OPENED);
 
   UrlLoadParams params = UrlLoadParams::InNewTab(GURL(kPageInfoHelpCenterURL));
-  params.in_incognito = self.browser->GetBrowserState()->IsOffTheRecord();
+  params.in_incognito = self.browser->GetProfile()->IsOffTheRecord();
   UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
   id<PageInfoCommands> pageInfoCommandsHandler =
       HandlerForProtocol(self.dispatcher, PageInfoCommands);
@@ -212,7 +211,7 @@
 
   web::NavigationManager::WebLoadParams webParams =
       web::NavigationManager::WebLoadParams(URL);
-  bool in_incognito = self.browser->GetBrowserState()->IsOffTheRecord();
+  bool in_incognito = self.browser->GetProfile()->IsOffTheRecord();
 
   // Add X-Client-Data header.
   NSMutableDictionary<NSString*, NSString*>* combinedExtraHeaders =
