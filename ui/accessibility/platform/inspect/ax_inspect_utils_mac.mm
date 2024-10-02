@@ -135,6 +135,22 @@ base::apple::ScopedCFTypeRef<AXUIElementRef> FindAXUIElement(
 
 std::pair<base::apple::ScopedCFTypeRef<AXUIElementRef>, int> FindAXUIElement(
     const AXTreeSelector& selector) {
+  int pid;
+  base::apple::ScopedCFTypeRef<AXUIElementRef> node;
+  std::tie(node, pid) = FindAXApplication(selector);
+
+  // ActiveTab selector.
+  if (node && selector.types & AXTreeSelector::ActiveTab) {
+    // Only active tab in exposed in browsers, thus find first
+    // AXWebArea role.
+    node = FindAXUIElement(node.get(), "AXWebArea");
+  }
+
+  return {node, pid};
+}
+
+std::pair<base::apple::ScopedCFTypeRef<AXUIElementRef>, int> FindAXApplication(
+    const AXTreeSelector& selector) {
   if (selector.widget) {
     return {base::apple::ScopedCFTypeRef<AXUIElementRef>(
                 AXUIElementCreateApplication(selector.widget)),
@@ -185,13 +201,6 @@ std::pair<base::apple::ScopedCFTypeRef<AXUIElementRef>, int> FindAXUIElement(
       if (window) {
         node = window;
       }
-    }
-
-    // ActiveTab selector.
-    if (node && selector.types & AXTreeSelector::ActiveTab) {
-      // Only active tab in exposed in browsers, thus find first
-      // AXWebArea role.
-      node = FindAXUIElement(node.get(), "AXWebArea");
     }
 
     // Found a match.

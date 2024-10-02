@@ -39,6 +39,12 @@ COMPONENT_EXPORT(AX_PLATFORM)
 std::pair<base::apple::ScopedCFTypeRef<AXUIElementRef>, int> FindAXUIElement(
     const AXTreeSelector&);
 
+// Returns application AXUIElement and its application process id by a given
+// tree selector.
+COMPONENT_EXPORT(AX_PLATFORM)
+std::pair<base::apple::ScopedCFTypeRef<AXUIElementRef>, int> FindAXApplication(
+    const AXTreeSelector&);
+
 // Returns AXUIElement for a window having title matching the given pattern.
 COMPONENT_EXPORT(AX_PLATFORM)
 base::apple::ScopedCFTypeRef<AXUIElementRef> FindAXWindowChild(
