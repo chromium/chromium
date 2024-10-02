@@ -1099,7 +1099,7 @@ class DBTracker::TrackedDBImpl : public base::LinkNode<TrackedDBImpl>,
                                  public TrackedDB {
  public:
   TrackedDBImpl(DBTracker* tracker,
-                const std::string name,
+                const std::string& name,
                 leveldb::DB* db,
                 const leveldb::Cache* block_cache,
                 DatabaseErrorReportingCallback on_get_error,

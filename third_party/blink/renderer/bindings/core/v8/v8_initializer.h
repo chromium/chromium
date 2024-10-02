@@ -64,7 +64,7 @@ class CORE_EXPORT V8Initializer {
   static void InitializeWorker(v8::Isolate*);
 
   static void InitializeIsolateHolder(const intptr_t* reference_table,
-                                      const std::string js_command_line_flag);
+                                      const std::string& js_command_line_flag);
   static void InitializeV8Common(v8::Isolate*);
 
   static void MessageHandlerInMainThread(v8::Local<v8::Message>,

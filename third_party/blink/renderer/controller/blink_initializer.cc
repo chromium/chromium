@@ -150,11 +150,10 @@ void InitializeCommon(Platform* platform, mojo::BinderMap* binders) {
   // BlinkInitializer::Initialize() must be called before InitializeMainThread
   GetBlinkInitializer().Initialize();
 
-  std::string js_command_line_flag =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          blink::switches::kJavaScriptFlags);
   blink::V8Initializer::InitializeIsolateHolder(
-      blink::V8ContextSnapshot::GetReferenceTable(), js_command_line_flag);
+      blink::V8ContextSnapshot::GetReferenceTable(),
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          blink::switches::kJavaScriptFlags));
 
   GetBlinkInitializer().RegisterInterfaces(*binders);
 

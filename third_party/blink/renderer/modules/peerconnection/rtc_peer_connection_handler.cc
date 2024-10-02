@@ -264,7 +264,7 @@ std::set<RTCPeerConnectionHandler*>* GetPeerConnectionHandlers() {
 // Counts the number of senders that have |stream_id| as an associated stream.
 size_t GetLocalStreamUsageCount(
     const Vector<std::unique_ptr<blink::RTCRtpSenderImpl>>& rtp_senders,
-    const std::string stream_id) {
+    const std::string& stream_id) {
   size_t usage_count = 0;
   for (const auto& sender : rtp_senders) {
     for (const auto& sender_stream_id : sender->state().stream_ids()) {
