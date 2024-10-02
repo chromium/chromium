@@ -286,8 +286,8 @@ void* PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
   } else {
     // size == 0 and address != null means just "free(address)".
     if (address) {
-      partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<
-          base_free_flags | partition_alloc::FreeFlags::kNoHooks>(address);
+      partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<base_free_flags>(
+          address);
     }
   }
   // The original memory block (specified by address) is unchanged if ENOMEM.
@@ -301,8 +301,8 @@ void* PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
     size_t copy_size = usage > size ? size : usage;
     memcpy(new_ptr, address, copy_size);
 
-    partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<
-        base_free_flags | partition_alloc::FreeFlags::kNoHooks>(address);
+    partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<base_free_flags>(
+        address);
   }
   return new_ptr;
 }
@@ -324,8 +324,8 @@ void* PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
   } else {
     // size == 0 and address != null means just "free(address)".
     if (address) {
-      partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<
-          base_free_flags | partition_alloc::FreeFlags::kNoHooks>(address);
+      partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<base_free_flags>(
+          address);
     }
   }
   // The original memory block (specified by address) is unchanged if ENOMEM.
@@ -339,8 +339,8 @@ void* PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
     size_t copy_size = usage > size ? size : usage;
     memcpy(new_ptr, address, copy_size);
 
-    partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<
-        base_free_flags | partition_alloc::FreeFlags::kNoHooks>(address);
+    partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<base_free_flags>(
+        address);
   }
   return new_ptr;
 }
@@ -431,8 +431,8 @@ PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::Free(
   }
 #endif  // PA_BUILDFLAG(IS_CAST_ANDROID)
 
-  partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<
-      base_free_flags | partition_alloc::FreeFlags::kNoHooks>(object);
+  partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<base_free_flags>(
+      object);
 }
 
 #if PA_BUILDFLAG(IS_APPLE)
@@ -450,8 +450,8 @@ void PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
   partition_alloc::ScopedDisallowAllocations guard{};
   // TODO(lizeb): Optimize PartitionAlloc to use the size information. This is
   // still useful though, as we avoid double-checking that the address is owned.
-  partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<
-      base_free_flags | partition_alloc::FreeFlags::kNoHooks>(address);
+  partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<base_free_flags>(
+      address);
 }
 #endif  // PA_BUILDFLAG(IS_APPLE)
 
@@ -557,20 +557,21 @@ void PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
     return allocator_shim::TryFreeDefaultFallbackToFindZoneAndFree(address);
   }
 
-  partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<
-      base_free_flags | partition_alloc::FreeFlags::kNoHooks>(address);
+  partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<base_free_flags>(
+      address);
 }
 #endif  // PA_BUILDFLAG(IS_APPLE)
 
 // Explicitly instantiate `PartitionAllocFunctions`.
 template class PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
     PartitionAllocFunctionsInternal<partition_alloc::AllocFlags::kNoHooks,
-                                    partition_alloc::FreeFlags::kNone>;
+                                    partition_alloc::FreeFlags::kNoHooks>;
 // Explicitly instantiate `PartitionAllocWithAdvancedChecksFunctions`.
 template class PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
     PartitionAllocFunctionsInternal<
         partition_alloc::AllocFlags::kNoHooks,
-        partition_alloc::FreeFlags::kZap |
+        partition_alloc::FreeFlags::kNoHooks |
+            partition_alloc::FreeFlags::kZap |
             partition_alloc::FreeFlags::kSchedulerLoopQuarantine>;
 
 // static
