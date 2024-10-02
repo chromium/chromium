@@ -1,3 +1,17 @@
+1.11.0 (2024-09-29)
+===================
+This is a new minor release of `regex` that brings in an update to the
+Unicode Character Database. Specifically, this updates the Unicode data
+used by `regex` internally to the version 16 release.
+
+New features:
+
+* [FEATURE #1228](https://github.com/rust-lang/regex/pull/1228):
+Add new `regex::SetMatches::matched_all` method.
+* [FEATURE #1229](https://github.com/rust-lang/regex/pull/1229):
+Update to Unicode Character Database (UCD) version 16.
+
+
 1.10.6 (2024-08-02)
 ===================
 This is a new patch release with a fix for the `unstable` crate feature that

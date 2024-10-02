@@ -1,6 +1,6 @@
 [package]
 name = "regex"
-version = "1.10.6"  #:version
+version = "1.11.0"  #:version
 authors = ["The Rust Project Developers", "Andrew Gallant <jamslam@gmail.com>"]
 license = "MIT OR Apache-2.0"
 readme = "README.md"
@@ -176,14 +176,14 @@ default-features = false
 # For the actual regex engines.
 [dependencies.regex-automata]
 path = "regex-automata"
-version = "0.4.4"
+version = "0.4.8"
 default-features = false
 features = ["alloc", "syntax", "meta", "nfa-pikevm"]
 
 # For parsing regular expressions.
 [dependencies.regex-syntax]
 path = "regex-syntax"
-version = "0.8.2"
+version = "0.8.5"
 default-features = false
 
 [dev-dependencies]

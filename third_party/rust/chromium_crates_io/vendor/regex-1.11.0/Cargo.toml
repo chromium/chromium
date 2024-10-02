@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.65"
 name = "regex"
-version = "1.10.6"
+version = "1.11.0"
 authors = [
     "The Rust Project Developers",
     "Andrew Gallant <jamslam@gmail.com>",
@@ -78,7 +78,7 @@ optional = true
 default-features = false
 
 [dependencies.regex-automata]
-version = "0.4.4"
+version = "0.4.8"
 features = [
     "alloc",
     "syntax",
@@ -88,7 +88,7 @@ features = [
 default-features = false
 
 [dependencies.regex-syntax]
-version = "0.8.2"
+version = "0.8.5"
 default-features = false
 
 [dev-dependencies.anyhow]
