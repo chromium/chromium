@@ -487,6 +487,7 @@ NSString* GetOverridenReason(
             CreateDefaultFetchOptionsForTabResumption(),
         base::BindOnce(
             ^(visited_url_ranking::ResultStatus status,
+              visited_url_ranking::URLVisitsMetadata url_visits_metadata,
               std::vector<visited_url_ranking::URLVisitAggregate> urls) {
               [weakSelf onURLFetched:std::move(urls) withStatus:status];
             }));

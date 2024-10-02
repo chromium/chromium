@@ -53,6 +53,12 @@ enum class ResultStatus {
   kMaxValue = kSuccess,
 };
 
+// Holds data about the vector of URLVisitAggregates.
+struct URLVisitsMetadata {
+  size_t aggregates_count_before_transforms = 0;
+  std::optional<base::Time> most_recent_timestamp;
+};
+
 // Provides APIs suitable for combining URL Visit data across various data
 // sources and their subsequent ranking via a model.
 // Example usage:
@@ -82,8 +88,8 @@ class VisitedURLRankingService : public KeyedService {
 
   // Computes `URLVisitAggregate` objects based on a series of `options` for
   // one or more data providers and triggers the `callback` with such data.
-  using GetURLVisitAggregatesCallback =
-      base::OnceCallback<void(ResultStatus, std::vector<URLVisitAggregate>)>;
+  using GetURLVisitAggregatesCallback = base::OnceCallback<
+      void(ResultStatus, URLVisitsMetadata, std::vector<URLVisitAggregate>)>;
   virtual void FetchURLVisitAggregates(
       const FetchOptions& options,
       GetURLVisitAggregatesCallback callback) = 0;

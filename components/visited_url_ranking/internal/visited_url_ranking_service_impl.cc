@@ -117,7 +117,8 @@ const char* URLVisitAggregatesFetcherName(Fetcher fetcher) {
 // Combines `URLVisitVariant` data obtained from various fetchers into
 // `URLVisitAggregate` objects. Leverages the `URLMergeKey` in order to
 // reconcile what data belongs to the same aggregate object.
-std::vector<URLVisitAggregate> ComputeURLVisitAggregates(
+std::pair<std::vector<URLVisitAggregate>, URLVisitsMetadata>
+ComputeURLVisitAggregates(
     std::vector<std::pair<Fetcher, FetchResult>> fetcher_results) {
   std::map<URLMergeKey, URLVisitAggregate> url_visit_map = {};
   for (auto& result_pair : fetcher_results) {
@@ -162,13 +163,21 @@ std::vector<URLVisitAggregate> ComputeURLVisitAggregates(
   }
 
   std::vector<URLVisitAggregate> url_visits;
+  URLVisitsMetadata url_visits_metadata;
+  url_visits_metadata.aggregates_count_before_transforms = url_visit_map.size();
   url_visits.reserve(url_visit_map.size());
   for (auto& url_visit_pair : url_visit_map) {
+    if (!url_visits_metadata.most_recent_timestamp.has_value() ||
+        url_visits_metadata.most_recent_timestamp <
+            url_visit_pair.second.GetLastVisitTime()) {
+      url_visits_metadata.most_recent_timestamp =
+          url_visit_pair.second.GetLastVisitTime();
+    }
     url_visits.push_back(std::move(url_visit_pair.second));
   }
   url_visit_map.clear();
 
-  return url_visits;
+  return std::make_pair(std::move(url_visits), url_visits_metadata);
 }
 
 void SortScoredAggregatesAndCallback(
@@ -452,12 +461,16 @@ void VisitedURLRankingServiceImpl::MergeVisitsAndCallback(
     transform_type_queue.push(transform_type);
   }
 
+  auto url_visit_aggregates_data =
+      ComputeURLVisitAggregates(std::move(fetcher_results));
+
   TransformVisitsAndCallback(
       std::move(callback), options, std::move(transform_type_queue),
       URLVisitAggregatesTransformType::kUnspecified,
-      /*previous_aggregates_count=*/0, base::Time::Now(),
+      /*previous_aggregates_count=*/0,
+      std::move(url_visit_aggregates_data.second), base::Time::Now(),
       URLVisitAggregatesTransformer::Status::kSuccess,
-      ComputeURLVisitAggregates(std::move(fetcher_results)));
+      std::move(url_visit_aggregates_data.first));
 }
 
 void VisitedURLRankingServiceImpl::TransformVisitsAndCallback(
@@ -466,6 +479,7 @@ void VisitedURLRankingServiceImpl::TransformVisitsAndCallback(
     std::queue<URLVisitAggregatesTransformType> transform_type_queue,
     URLVisitAggregatesTransformType transform_type,
     size_t previous_aggregates_count,
+    URLVisitsMetadata url_visits_metadata,
     base::Time start_time,
     URLVisitAggregatesTransformer::Status status,
     std::vector<URLVisitAggregate> aggregates) {
@@ -482,7 +496,8 @@ void VisitedURLRankingServiceImpl::TransformVisitsAndCallback(
   }
 
   if (status == URLVisitAggregatesTransformer::Status::kError) {
-    std::move(callback).Run(ResultStatus::kError, {});
+    std::move(callback).Run(ResultStatus::kError,
+                            std::move(url_visits_metadata), {});
     return;
   }
 
@@ -502,7 +517,8 @@ void VisitedURLRankingServiceImpl::TransformVisitsAndCallback(
   }
 
   if (transform_type_queue.empty() || aggregates.empty()) {
-    std::move(callback).Run(ResultStatus::kSuccess, std::move(aggregates));
+    std::move(callback).Run(ResultStatus::kSuccess, url_visits_metadata,
+                            std::move(aggregates));
     return;
   }
 
@@ -517,7 +533,7 @@ void VisitedURLRankingServiceImpl::TransformVisitsAndCallback(
         base::StringPrintf("VisitedURLRanking.TransformType.%s.Success",
                            URLVisitAggregatesTransformTypeName(transform_type)),
         false);
-    std::move(callback).Run(ResultStatus::kError, {});
+    std::move(callback).Run(ResultStatus::kError, url_visits_metadata, {});
     return;
   }
 
@@ -527,7 +543,7 @@ void VisitedURLRankingServiceImpl::TransformVisitsAndCallback(
       base::BindOnce(&VisitedURLRankingServiceImpl::TransformVisitsAndCallback,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      options, std::move(transform_type_queue), transform_type,
-                     aggregates_count, base::Time::Now()));
+                     aggregates_count, url_visits_metadata, base::Time::Now()));
 }
 
 void VisitedURLRankingServiceImpl::GetNextResult(

@@ -53,6 +53,7 @@ using visited_url_ranking::ResultStatus;
 using visited_url_ranking::ScoredURLUserAction;
 using visited_url_ranking::URLVisitAggregate;
 using visited_url_ranking::URLVisitAggregatesTransformType;
+using visited_url_ranking::URLVisitsMetadata;
 using visited_url_ranking::VisitedURLRankingService;
 
 // Must match Java Tab.INVALID_TAB_ID.
@@ -111,6 +112,7 @@ class FetchAndRankFlow : public base::RefCounted<FetchAndRankFlow> {
 
   // Continuing after RunFlow()'s call to FetchURLVisitAggregates().
   void OnFetched(ResultStatus status,
+                 URLVisitsMetadata url_visits_metadata,
                  std::vector<URLVisitAggregate> aggregates) {
     if (status != ResultStatus::kSuccess) {
       Java_VisitedUrlRankingBackend_onSuggestions(env_, j_suggestions_,

@@ -30,6 +30,7 @@ using visited_url_ranking::FetchOptions;
 using visited_url_ranking::ResultStatus;
 using visited_url_ranking::URLVisit;
 using visited_url_ranking::URLVisitAggregate;
+using visited_url_ranking::URLVisitsMetadata;
 using visited_url_ranking::VisitedURLRankingService;
 using visited_url_ranking::VisitedURLRankingServiceFactory;
 
@@ -174,8 +175,9 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, GetURLVisits_TabURLTypesOnly) {
                 visited_url_ranking::CreateSampleURLVisitAggregate(
                     GURL(visited_url_ranking::kSampleSearchUrl), 1.0f,
                     base::Time::Now(), {Fetcher::kHistory}));
+            URLVisitsMetadata url_visits_metadata;
 
-            std::move(callback).Run(ResultStatus::kSuccess,
+            std::move(callback).Run(ResultStatus::kSuccess, url_visits_metadata,
                                     std::move(url_visit_aggregates));
           }));
 
@@ -230,8 +232,9 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, GetURLVisits) {
                 visited_url_ranking::CreateSampleURLVisitAggregate(
                     GURL(visited_url_ranking::kSampleSearchUrl), 1.0f,
                     base::Time::Now(), {Fetcher::kHistory}));
+            URLVisitsMetadata url_visits_metadata;
 
-            std::move(callback).Run(ResultStatus::kSuccess,
+            std::move(callback).Run(ResultStatus::kSuccess, url_visits_metadata,
                                     std::move(url_visit_aggregates));
           }));
 
@@ -293,8 +296,9 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, DismissAndRestoreURLVisit) {
                 visited_url_ranking::CreateSampleURLVisitAggregate(
                     GURL(visited_url_ranking::kSampleSearchUrl), 1.0f,
                     base::Time::Now(), {Fetcher::kHistory}));
+            URLVisitsMetadata url_visits_metadata;
 
-            std::move(callback).Run(ResultStatus::kSuccess,
+            std::move(callback).Run(ResultStatus::kSuccess, url_visits_metadata,
                                     std::move(url_visit_aggregates));
           }));
 
@@ -368,8 +372,9 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, DismissAndRestoreAll) {
                     base::Time::FromDeltaSinceWindowsEpoch(
                         base::Microseconds(123456)),
                     {Fetcher::kHistory}));
+            URLVisitsMetadata url_visits_metadata;
 
-            std::move(callback).Run(ResultStatus::kSuccess,
+            std::move(callback).Run(ResultStatus::kSuccess, url_visits_metadata,
                                     std::move(url_visit_aggregates));
           }));
 
@@ -448,8 +453,9 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest,
                 visited_url_ranking::CreateSampleURLVisitAggregate(
                     GURL(visited_url_ranking::kSampleSearchUrl), 1.0f,
                     base::Time::Now() - base::Minutes(5), {Fetcher::kHistory}));
+            URLVisitsMetadata url_visits_metadata;
 
-            std::move(callback).Run(ResultStatus::kSuccess,
+            std::move(callback).Run(ResultStatus::kSuccess, url_visits_metadata,
                                     std::move(url_visit_aggregates));
           }));
 
