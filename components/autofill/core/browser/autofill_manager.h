@@ -276,7 +276,8 @@ class AutofillManager
   // Invoked when the language has been detected by the Translate component.
   // As this usually happens after Autofill has parsed the forms for the first
   // time, the heuristics need to be re-run by this function in order to use
-  // language-specific patterns.
+  // language-specific patterns. Since the ML model doesn't depend on the page
+  // language, its predictions are not recomputed.
   void OnLanguageDetermined(
       const translate::LanguageDetectionDetails& details) override;
 

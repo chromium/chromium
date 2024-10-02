@@ -171,10 +171,6 @@ void AutofillManager::Reset() {
 }
 
 // TODO(crbug.com/40219607): Unify form parsing logic.
-// TODO(crbug.com/40276177): ML predictions are not computed here since
-// `kAutofillPageLanguageDetection` is disabled by default. Once the form
-// parsing logic is unified with `ParseFormsAsync()`, this won't be necessary
-// anymore.
 void AutofillManager::OnLanguageDetermined(
     const translate::LanguageDetectionDetails& details) {
   if (!base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection))
