@@ -53,10 +53,8 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-@interface AccountMenuCoordinator () <
-    AccountMenuMediatorDelegate,
-    UIAdaptivePresentationControllerDelegate,
-    UINavigationControllerDelegate>
+@interface AccountMenuCoordinator () <AccountMenuMediatorDelegate,
+                                      UIAdaptivePresentationControllerDelegate>
 
 // The view controller.
 @property(nonatomic, strong) AccountMenuViewController* viewController;
@@ -119,7 +117,6 @@
 
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
-  _navigationController.delegate = self;
 
   _navigationController.modalPresentationStyle = UIModalPresentationPopover;
   _navigationController.popoverPresentationController.sourceView =
@@ -317,7 +314,6 @@
   [_navigationController presentViewController:navigationController
                                       animated:YES
                                     completion:nil];
-  return;
 }
 
 - (void)openTrustedVaultReauthForFetchKeys {
