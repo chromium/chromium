@@ -1903,6 +1903,11 @@ const char kExtensionManifestV2DeprecationDisabledName[] =
 const char kExtensionManifestV2DeprecationDisabledDescription[] =
     "Displays a warning that affected MV2 extensions were turned off due to "
     "the Manifest V2 deprecation.";
+const char kExtensionManifestV2DeprecationUnsupportedName[] =
+    "Extension Manifest V2 Deprecation Unsupported Stage";
+const char kExtensionManifestV2DeprecationUnsupportedDescription[] =
+    "Displays a warning that affected MV2 extensions were turned off due to "
+    "the Manifest V2 deprecation and cannot be re-enabled.";
 
 const char kWebAuthFlowInBrowserTabName[] =
     "Web Authentication Flow in Browser Tab";

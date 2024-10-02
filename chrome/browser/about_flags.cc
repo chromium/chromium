@@ -9334,6 +9334,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(extensions_features::kExtensionManifestV2Disabled)},
 
+    {"extension-manifest-v2-deprecation-unsupported",
+     flag_descriptions::kExtensionManifestV2DeprecationUnsupportedName,
+     flag_descriptions::kExtensionManifestV2DeprecationUnsupportedDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(extensions_features::kExtensionManifestV2Unsupported)},
+
 #if BUILDFLAG(IS_CHROMEOS)
     {"extension-web-file-handlers",
      flag_descriptions::kExtensionWebFileHandlersName,

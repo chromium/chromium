@@ -1073,6 +1073,8 @@ extern const char kExtensionManifestV2DeprecationWarningName[];
 extern const char kExtensionManifestV2DeprecationWarningDescription[];
 extern const char kExtensionManifestV2DeprecationDisabledName[];
 extern const char kExtensionManifestV2DeprecationDisabledDescription[];
+extern const char kExtensionManifestV2DeprecationUnsupportedName[];
+extern const char kExtensionManifestV2DeprecationUnsupportedDescription[];
 
 extern const char kExtensionsToolbarZeroStateName[];
 extern const char kExtensionsToolbarZeroStateDescription[];
