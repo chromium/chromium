@@ -96,7 +96,7 @@ UtilitySandboxedProcessLauncherDelegate::
 #if BUILDFLAG(IS_LINUX)
       sandbox_type_ == sandbox::mojom::Sandbox::kVideoEffects ||
 #endif
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
       sandbox_type_ == sandbox::mojom::Sandbox::kOnDeviceTranslation ||
 #endif
       sandbox_type_ == sandbox::mojom::Sandbox::kAudio ||
@@ -165,6 +165,7 @@ ZygoteCommunication* UtilitySandboxedProcessLauncherDelegate::GetZygote() {
 #endif
 #if BUILDFLAG(IS_LINUX)
       sandbox_type_ == sandbox::mojom::Sandbox::kVideoEffects ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kOnDeviceTranslation ||
 #endif  // BUILDFLAG(IS_LINUX)
       sandbox_type_ == sandbox::mojom::Sandbox::kSpeechRecognition) {
     return GetUnsandboxedZygote();

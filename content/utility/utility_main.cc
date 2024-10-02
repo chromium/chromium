@@ -102,6 +102,9 @@
 sandbox::TargetServices* g_utility_target_services = nullptr;
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_LINUX)
+#include "components/services/on_device_translation/sandbox_hook.h"
+#endif  // BUILDFLAG(IS_LINUX)
 namespace content {
 
 namespace {
@@ -289,6 +292,12 @@ int UtilityMain(MainFunctionParams parameters) {
       pre_sandbox_hook =
           base::BindOnce(&speech::SpeechRecognitionPreSandboxHook);
       break;
+#if BUILDFLAG(IS_LINUX)
+    case sandbox::mojom::Sandbox::kOnDeviceTranslation:
+      pre_sandbox_hook = base::BindOnce(
+          &on_device_translation::OnDeviceTranslationSandboxHook);
+      break;
+#endif  // BUILDFLAG(IS_LINUX)
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     case sandbox::mojom::Sandbox::kScreenAI:
       pre_sandbox_hook =

@@ -74,9 +74,9 @@ SANDBOX_POLICY_EXPORT extern const char kLibassistantSandbox[];
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 SANDBOX_POLICY_EXPORT extern const char kOnDeviceTranslationSandbox[];
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 // Flags owned by the service manager sandbox.
 SANDBOX_POLICY_EXPORT extern const char kAllowSandboxDebugging[];

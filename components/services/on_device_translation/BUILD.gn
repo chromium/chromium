@@ -22,6 +22,15 @@ source_set("on_device_translation_service") {
     "//components/services/on_device_translation/public/mojom",
     "//mojo/public/cpp/bindings",
   ]
+
+  if (is_linux) {
+    sources += [
+      "sandbox_hook.cc",
+      "sandbox_hook.h",
+    ]
+    deps += [ "//sandbox/linux:sandbox_services" ]
+    public_deps += [ "//sandbox/policy" ]
+  }
 }
 
 source_set("unit_tests") {

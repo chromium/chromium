@@ -75,6 +75,10 @@
 #include "sandbox/policy/linux/bpf_hardware_video_decoding_policy_linux.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_LINUX)
+#include "sandbox/policy/linux/bpf_on_device_translation_policy_linux.h"
+#endif  // BUILDFLAG(IS_LINUX)
+
 using sandbox::bpf_dsl::Allow;
 using sandbox::bpf_dsl::ResultExpr;
 
@@ -214,6 +218,10 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
       return std::make_unique<ServiceProcessPolicy>();
     case sandbox::mojom::Sandbox::kSpeechRecognition:
       return std::make_unique<SpeechRecognitionProcessPolicy>();
+#if BUILDFLAG(IS_LINUX)
+    case sandbox::mojom::Sandbox::kOnDeviceTranslation:
+      return std::make_unique<OnDeviceTranslationProcessPolicy>();
+#endif  // BUILDFLAG(IS_LINUX)
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     case sandbox::mojom::Sandbox::kScreenAI:
       return std::make_unique<ScreenAIProcessPolicy>();
@@ -317,6 +325,9 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
     case sandbox::mojom::Sandbox::kPrintBackend:
 #endif
     case sandbox::mojom::Sandbox::kOnDeviceModelExecution:
+#if BUILDFLAG(IS_LINUX)
+    case sandbox::mojom::Sandbox::kOnDeviceTranslation:
+#endif  // BUILDFLAG(IS_LINUX)
     case sandbox::mojom::Sandbox::kUtility:
     case sandbox::mojom::Sandbox::kNoSandbox:
     case sandbox::mojom::Sandbox::kZygoteIntermediateSandbox:

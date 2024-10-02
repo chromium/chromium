@@ -168,8 +168,8 @@ enum Sandbox {
 
   // Hosts On Device Translation service.
   // Currently the sandboxing of the On Device Translation service is supported
-  // only on macOS.
+  // only on macOS and Linux.
   // TODO(crbug.com/340778819): Implement sandboxing on other platforms.
-  [EnableIf=is_mac]
+  [EnableIf=is_linux_or_mac]
   kOnDeviceTranslation,
 };

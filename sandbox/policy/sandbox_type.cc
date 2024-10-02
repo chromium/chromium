@@ -84,7 +84,7 @@ bool IsUnsandboxedSandboxType(Sandbox sandbox_type) {
 #if BUILDFLAG(IS_LINUX)
     case Sandbox::kVideoEffects:
 #endif
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
     case Sandbox::kOnDeviceTranslation:
 #endif
       return false;
@@ -171,7 +171,7 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
 #if BUILDFLAG(IS_LINUX)
     case Sandbox::kVideoEffects:
 #endif
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
     case Sandbox::kOnDeviceTranslation:
 #endif
       DCHECK(command_line->GetSwitchValueASCII(switches::kProcessType) ==
@@ -285,7 +285,7 @@ std::string StringFromUtilitySandboxType(Sandbox sandbox_type) {
     case Sandbox::kVideoEffects:
       return switches::kVideoEffectsSandbox;
 #endif
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
     case Sandbox::kOnDeviceTranslation:
       return switches::kOnDeviceTranslationSandbox;
 #endif
@@ -404,7 +404,7 @@ sandbox::mojom::Sandbox UtilitySandboxTypeFromString(
     return Sandbox::kVideoEffects;
   }
 #endif
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
   if (sandbox_string == switches::kOnDeviceTranslationSandbox) {
     return Sandbox::kOnDeviceTranslation;
   }

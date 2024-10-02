@@ -147,6 +147,7 @@ class UtilityProcessSandboxBrowserTest
 #endif
 #if BUILDFLAG(IS_LINUX)
       case Sandbox::kVideoEffects:
+      case Sandbox::kOnDeviceTranslation:
 #endif
       case Sandbox::kSpeechRecognition: {
         constexpr int kExpectedPartialSandboxFlags =
