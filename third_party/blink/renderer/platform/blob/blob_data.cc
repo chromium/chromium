@@ -409,17 +409,6 @@ void BlobDataHandle::ReadAll(
   blob_remote_ = blob.Unbind();
 }
 
-void BlobDataHandle::ReadRange(
-    uint64_t offset,
-    uint64_t length,
-    mojo::ScopedDataPipeProducerHandle pipe,
-    mojo::PendingRemote<mojom::blink::BlobReaderClient> client) {
-  base::AutoLock locker(blob_remote_lock_);
-  mojo::Remote<mojom::blink::Blob> blob(std::move(blob_remote_));
-  blob->ReadRange(offset, length, std::move(pipe), std::move(client));
-  blob_remote_ = blob.Unbind();
-}
-
 bool BlobDataHandle::CaptureSnapshot(
     uint64_t* snapshot_size,
     std::optional<base::Time>* snapshot_modification_time) {

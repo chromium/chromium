@@ -216,10 +216,6 @@ class PLATFORM_EXPORT BlobDataHandle
 
   void ReadAll(mojo::ScopedDataPipeProducerHandle,
                mojo::PendingRemote<mojom::blink::BlobReaderClient>);
-  void ReadRange(uint64_t offset,
-                 uint64_t length,
-                 mojo::ScopedDataPipeProducerHandle,
-                 mojo::PendingRemote<mojom::blink::BlobReaderClient>);
 
   // This does synchronous IPC, and possibly synchronous file operations. Think
   // twice before calling this function.
