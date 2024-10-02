@@ -3143,6 +3143,7 @@ static_library("browser") {
       "prefetch/android/preload_pages_settings_bridge.cc",
       "privacy/secure_dns_bridge.cc",
       "privacy_sandbox/android/privacy_sandbox_bridge.cc",
+      "privacy_sandbox/android/privacy_sandbox_survey_bridge.cc",
       "profiles/android/profile_manager_utils.cc",
       "profiles/android/profile_resolver.cc",
       "profiles/android/profile_resolver.h",
