@@ -15,6 +15,10 @@
 
 class PrefService;
 
+namespace signin {
+enum class Tribool;
+}
+
 namespace growth {
 
 class CampaignsMatcher {
@@ -48,6 +52,8 @@ class CampaignsMatcher {
   // Select the targeted campaign for the given `slot`. Returns nullptr if no
   // campaign found for the given `slot`.
   const Campaign* GetCampaignBySlot(Slot slot) const;
+
+  void SetMantaCapabilityForTesting(signin::Tribool value);
 
  private:
   bool IsCampaignMatched(const Campaign* campaign, bool is_prematch) const;
@@ -102,6 +108,7 @@ class CampaignsMatcher {
   base::Time oobe_compelete_time_;
   bool is_user_owner_ = false;
   Trigger trigger_{TriggerType::kUnSpecified};
+  std::optional<signin::Tribool> manta_capability_for_testing_;
 };
 
 }  // namespace growth

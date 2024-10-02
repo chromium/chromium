@@ -30,6 +30,7 @@
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/version_info/version_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1729,6 +1730,69 @@ TEST_F(CampaignsManagerTest, GetCampaignForNonOwnerMismatch) {
   })");
 
   campaigns_manager_->SetIsUserOwner(true);
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignForMinorUsers) {
+  LoadComponentWithSessionTargeting(R"({
+    "isMinorUser": true
+  })");
+
+  campaigns_manager_->SetMantaCapabilityForTesting(signin::Tribool::kFalse);
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignForMinorUsersMismatch) {
+  LoadComponentWithSessionTargeting(R"({
+    "isMinorUser": true
+  })");
+
+  campaigns_manager_->SetMantaCapabilityForTesting(signin::Tribool::kTrue);
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignForNonMinorUser) {
+  LoadComponentWithSessionTargeting(R"({
+    "isMinorUser": false
+  })");
+
+  campaigns_manager_->SetMantaCapabilityForTesting(signin::Tribool::kTrue);
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignForNonMinorUserMismatch) {
+  LoadComponentWithSessionTargeting(R"({
+    "isMinorUser": true
+  })");
+
+  campaigns_manager_->SetMantaCapabilityForTesting(signin::Tribool::kTrue);
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignForMantaCapabilityUnknownTargetMinor) {
+  LoadComponentWithSessionTargeting(R"({
+    "isMinorUser": true
+  })");
+
+  campaigns_manager_->SetMantaCapabilityForTesting(signin::Tribool::kUnknown);
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest,
+       GetCampaignForMantaCapabilityUnknownTargetNonMinor) {
+  LoadComponentWithSessionTargeting(R"({
+    "isMinorUser": false
+  })");
+
+  campaigns_manager_->SetMantaCapabilityForTesting(signin::Tribool::kUnknown);
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }

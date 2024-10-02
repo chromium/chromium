@@ -411,6 +411,10 @@ const Campaign* CampaignsMatcher::GetCampaignBySlot(Slot slot) const {
   return nullptr;
 }
 
+void CampaignsMatcher::SetMantaCapabilityForTesting(signin::Tribool value) {
+  manta_capability_for_testing_ = value;
+}
+
 bool CampaignsMatcher::IsCampaignMatched(const Campaign* campaign,
                                          bool is_prematch) const {
   if (!campaign || !IsCampaignValid(campaign)) {
@@ -840,21 +844,26 @@ bool CampaignsMatcher::MatchMinorUser(
     return true;
   }
 
-  std::string gaia_id = user_manager::UserManager::Get()
-                            ->GetActiveUser()
-                            ->GetAccountId()
-                            .GetGaiaId();
-  auto* identity_manager = client_->GetIdentityManager();
-  if (!identity_manager) {
-    // Identity manager is not available (e.g:guest mode). In that case,
-    // a campaign with minor user targeting shouldn't be triggered.
-    CAMPAIGNS_LOG(ERROR) << "IdentityManager is null.";
-    return false;
+  signin::Tribool capability;
+  if (manta_capability_for_testing_) {
+    capability = manta_capability_for_testing_.value();
+  } else {
+    auto* identity_manager = client_->GetIdentityManager();
+    if (!identity_manager) {
+      // Identity manager is not available (e.g:guest mode). In that case,
+      // a campaign with minor user targeting shouldn't be triggered.
+      CAMPAIGNS_LOG(ERROR) << "IdentityManager is null.";
+      return false;
+    }
+    std::string gaia_id = user_manager::UserManager::Get()
+                              ->GetActiveUser()
+                              ->GetAccountId()
+                              .GetGaiaId();
+    const AccountInfo account_info =
+        identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id);
+    // TODO: b/333896450 - find a better signal for minor mode.
+    capability = account_info.capabilities.can_use_manta_service();
   }
-  const AccountInfo account_info =
-      identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id);
-  // TODO: b/333896450 - find a better signal for minor mode.
-  auto capability = account_info.capabilities.can_use_manta_service();
 
   if (capability == signin::Tribool::kUnknown) {
     // Records metrics when minor user state is unknown. This could be caused
@@ -862,9 +871,10 @@ bool CampaignsMatcher::MatchMinorUser(
     // to understand the impact while matching on the conservative side by
     // considering unknown as minor users.
     RecordCampaignsManagerError(CampaignsManagerError::kUnknownMinorUserState);
+    return false;
   }
 
-  bool isMinor = capability != signin::Tribool::kTrue;
+  bool isMinor = capability == signin::Tribool::kFalse;
   return isMinor == minor_user_targeting.value();
 }
 

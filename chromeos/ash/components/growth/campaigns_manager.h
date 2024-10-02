@@ -22,6 +22,10 @@
 class PrefService;
 class PrefRegistrySimple;
 
+namespace signin {
+enum class Tribool;
+}
+
 namespace growth {
 
 // A class that manages growth campaigns.
@@ -117,6 +121,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   // event.
   void RecordEvent(const std::string& event, bool trigger_campaigns = false);
 
+  void SetMantaCapabilityForTesting(signin::Tribool value);
   void SetOobeCompleteTimeForTesting(base::Time time);
   void SetTrackerInitializedForTesting();
   const Campaigns* GetCampaignsBySlotForTesting(Slot slot) const;

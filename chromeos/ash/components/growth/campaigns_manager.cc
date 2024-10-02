@@ -31,6 +31,7 @@
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/user_manager/user_manager.h"
 
 namespace growth {
@@ -448,6 +449,10 @@ void CampaignsManager::NotifyCampaignsLoaded() {
   for (auto& observer : observers_) {
     observer.OnCampaignsLoadCompleted();
   }
+}
+
+void CampaignsManager::SetMantaCapabilityForTesting(signin::Tribool value) {
+  matcher_.SetMantaCapabilityForTesting(value);  // IN-TEST
 }
 
 void CampaignsManager::SetOobeCompleteTimeForTesting(base::Time time) {
