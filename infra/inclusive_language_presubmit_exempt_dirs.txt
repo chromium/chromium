@@ -731,7 +731,6 @@ third_party/rust/chromium_crates_io/vendor/syn-2.0.79/src 2 1
 third_party/rust/chromium_crates_io/vendor/termcolor-1.4.1/.github/workflows 3 1
 third_party/rust/chromium_crates_io/vendor/unicode-ident-1.0.13 1 1
 third_party/rust/chromium_crates_io/vendor/unicode-ident-1.0.13/.github/workflows 2 1
-third_party/rust/chromium_crates_io/vendor/unicode-width-0.1.13/tests 1 1
 third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.9/.github/workflows 4 1
 third_party/rust/chromium_crates_io/vendor/windows-sys-0.52.0 1 1
 third_party/rust/chromium_crates_io/vendor/windows-sys-0.52.0/src/Windows/Wdk/System/SystemServices 1 1

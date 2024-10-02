@@ -12,16 +12,16 @@ cargo_crate("lib") {
   crate_name = "unicode_width"
   epoch = "0.1"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/unicode-width-0.1.13/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/unicode-width-0.1.14/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/unicode-width-0.1.13/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/unicode-width-0.1.13/src/tables.rs",
+    "//third_party/rust/chromium_crates_io/vendor/unicode-width-0.1.14/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/unicode-width-0.1.14/src/tables.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.1.13"
+  cargo_pkg_version = "0.1.14"
   cargo_pkg_authors =
       "kwantam <kwantam@gmail.com>, Manish Goregaokar <manishsmail@gmail.com>"
   cargo_pkg_name = "unicode-width"
@@ -32,6 +32,7 @@ cargo_crate("lib") {
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
   proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
+  features = [ "cjk" ]
 
   # Only for usage from third-party crates. Add the crate to
   # //third_party/rust/chromium_crates_io/Cargo.toml to use
