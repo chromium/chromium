@@ -477,6 +477,7 @@ PrefetchContainer::PrefetchContainer(
           referring_render_frame_host.GetBrowserContext()->GetWeakPtr(),
           GetUkmSourceId(referring_render_frame_host),
           std::move(attempt),
+          /*holdback_status_override=*/std::nullopt,
           referring_render_frame_host.GetDevToolsNavigationToken(),
           /* prefetch_start_callback=*/std::nullopt,
           WebContentsImpl::FromRenderFrameHostImpl(&referring_render_frame_host)
@@ -492,7 +493,8 @@ PrefetchContainer::PrefetchContainer(
     const blink::mojom::Referrer& referrer,
     const std::optional<url::Origin>& referring_origin,
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
-    base::WeakPtr<PreloadingAttempt> attempt)
+    base::WeakPtr<PreloadingAttempt> attempt,
+    std::optional<PreloadingHoldbackStatus> holdback_status_override)
     : PrefetchContainer(
           GlobalRenderFrameHostId(),
           referring_origin.value_or(url::Origin()),
@@ -507,6 +509,7 @@ PrefetchContainer::PrefetchContainer(
           referring_web_contents.GetBrowserContext()->GetWeakPtr(),
           ukm::kInvalidSourceId,
           std::move(attempt),
+          holdback_status_override,
           /*initiator_devtools_navigation_token=*/std::nullopt,
           /* prefetch_start_callback=*/std::nullopt,
           referring_web_contents.GetOrCreateWebPreferences()
@@ -538,6 +541,7 @@ PrefetchContainer::PrefetchContainer(
                         browser_context->GetWeakPtr(),
                         ukm::kInvalidSourceId,
                         std::move(attempt),
+                        /*holdback_status_override=*/std::nullopt,
                         /*initiator_devtools_navigation_token=*/std::nullopt,
                         std::move(prefetch_start_callback),
                         javascript_enabled) {
@@ -557,6 +561,7 @@ PrefetchContainer::PrefetchContainer(
     base::WeakPtr<BrowserContext> browser_context,
     ukm::SourceId ukm_source_id,
     base::WeakPtr<PreloadingAttempt> attempt,
+    std::optional<PreloadingHoldbackStatus> holdback_status_override,
     std::optional<base::UnguessableToken> initiator_devtools_navigation_token,
     std::optional<PrefetchStartCallback> prefetch_start_callback,
     bool is_javascript_enabled)
@@ -572,6 +577,7 @@ PrefetchContainer::PrefetchContainer(
       ukm_source_id_(ukm_source_id),
       request_id_(base::UnguessableToken::Create().ToString()),
       attempt_(std::move(attempt)),
+      holdback_status_override_(holdback_status_override),
       initiator_devtools_navigation_token_(
           std::move(initiator_devtools_navigation_token)),
       prefetch_start_callback_(std::move(prefetch_start_callback)),

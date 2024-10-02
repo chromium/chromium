@@ -208,6 +208,11 @@ constexpr base::FeatureParam<bool> kEdgeToEdgeBottomChinDebugParam(
     "debug_bottom_chin",
     /*default_value=*/false);
 
+constexpr base::FeatureParam<bool> kCCTNavigationalPrefetchHoldback(
+    &kCCTNavigationalPrefetch,
+    "holdback",
+    false);
+
 constexpr base::FeatureParam<std::string> kQuickDeleteAndroidSurveyTriggerId(
     &kQuickDeleteAndroidSurvey,
     "trigger_id",

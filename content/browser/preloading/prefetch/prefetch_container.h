@@ -118,7 +118,9 @@ class CONTENT_EXPORT PrefetchContainer {
       const blink::mojom::Referrer& referrer,
       const std::optional<url::Origin>& referring_origin,
       std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
-      base::WeakPtr<PreloadingAttempt> attempt = nullptr);
+      base::WeakPtr<PreloadingAttempt> attempt = nullptr,
+      std::optional<PreloadingHoldbackStatus> holdback_status_override =
+          std::nullopt);
 
   // Ctor used for browser-initiated prefetch that doesn't depend on web
   // contents. We can pass the referring origin of prefetches via
@@ -300,6 +302,17 @@ class CONTENT_EXPORT PrefetchContainer {
   void SetPrefetchStatus(PrefetchStatus prefetch_status);
   bool HasPrefetchStatus() const { return prefetch_status_.has_value(); }
   PrefetchStatus GetPrefetchStatus() const;
+
+  // These are intended to be called on
+  // PrefetchService::CheckAndSetPrefetchHoldbackStatus() to set this overridden
+  // prefetch status to `attempt_`.
+  bool HasOverriddenHoldbackStatus() const {
+    return holdback_status_override_.has_value();
+  }
+  PreloadingHoldbackStatus GetOverriddenHoldbackStatus() const {
+    CHECK(holdback_status_override_);
+    return holdback_status_override_.value();
+  }
 
   // The state enum of the current prefetch, to replace `PrefetchStatus`.
   // https://crbug.com/1494771
@@ -701,6 +714,7 @@ class CONTENT_EXPORT PrefetchContainer {
       base::WeakPtr<BrowserContext> browser_context,
       ukm::SourceId ukm_source_id,
       base::WeakPtr<PreloadingAttempt> attempt,
+      std::optional<PreloadingHoldbackStatus> holdback_status_override,
       std::optional<base::UnguessableToken> initiator_devtools_navigation_token,
       std::optional<PrefetchStartCallback> prefetch_start_callback,
       bool is_javascript_enabled);
@@ -866,6 +880,12 @@ class CONTENT_EXPORT PrefetchContainer {
   // holdback status, triggering outcome and failure reason are set in
   // `SetPrefetchStatus`.
   base::WeakPtr<PreloadingAttempt> attempt_;
+
+  // If set, this value is used to override holdback status derived by the
+  // normal process. It is set to `attempt_` on
+  // PrefetchService::CheckAndSetPrefetchHoldbackStatus().
+  std::optional<PreloadingHoldbackStatus> holdback_status_override_ =
+      std::nullopt;
 
   // A DevTools token used to identify initiator document if the prefetch is
   // triggered by SpeculationRules.

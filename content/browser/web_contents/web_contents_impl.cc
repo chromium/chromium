@@ -11064,7 +11064,8 @@ void WebContentsImpl::StartPrefetch(
     bool use_prefetch_proxy,
     const blink::mojom::Referrer& referrer,
     const std::optional<url::Origin>& referring_origin,
-    base::WeakPtr<PreloadingAttempt> attempt) {
+    base::WeakPtr<PreloadingAttempt> attempt,
+    std::optional<PreloadingHoldbackStatus> holdback_status_override) {
   if (!base::FeatureList::IsEnabled(
           features::kPrefetchBrowserInitiatedTriggers)) {
     return;
@@ -11081,7 +11082,8 @@ void WebContentsImpl::StartPrefetch(
 
   auto container = std::make_unique<PrefetchContainer>(
       *this, prefetch_url, prefetch_type, referrer, referring_origin,
-      /*no_vary_search_expected=*/std::nullopt, std::move(attempt));
+      /*no_vary_search_expected=*/std::nullopt, std::move(attempt),
+      holdback_status_override);
 
   // TODO(crbug.com/40946257): Update this list when prefetch container is
   // eliminated from `PrefetchService`.

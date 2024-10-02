@@ -193,21 +193,32 @@ bool CheckAndSetPrefetchHoldbackStatus(
     return false;
   }
 
-  // Currently DevTools only supports when the prefetch is initiated by
-  // renderer.
-  if (prefetch_container->IsRendererInitiated()) {
-    // Normally CheckIfShouldHoldback() computes the holdback status based on
-    // PreloadingConfig. In special cases, we call SetHoldbackOverride() to
-    // override that processing.
+  bool devtools_client_exist = [&] {
+    // Currently DevTools only supports when the prefetch is initiated by
+    // renderer.
+    if (!prefetch_container->IsRendererInitiated()) {
+      return false;
+    }
     RenderFrameHostImpl* initiator_rfh = RenderFrameHostImpl::FromID(
         prefetch_container->GetReferringRenderFrameHostId());
-    bool devtools_client_exist =
-        initiator_rfh &&
-        RenderFrameDevToolsAgentHost::GetFor(initiator_rfh) != nullptr;
-    if (devtools_client_exist) {
-      prefetch_container->preloading_attempt()->SetHoldbackStatus(
-          PreloadingHoldbackStatus::kAllowed);
-    }
+    return initiator_rfh &&
+           RenderFrameDevToolsAgentHost::GetFor(initiator_rfh) != nullptr;
+  }();
+
+  // Normally PreloadingAttemptImpl::ShouldHoldback() eventually computes its
+  // `holdback_status_`, but we forcely set the status in two special cases
+  // below, by calling PreloadingAttemptImpl::SetHoldbackStatus().
+  // As its comment describes, this is expected to be called only once.
+
+  if (devtools_client_exist) {
+    // 1. When developers debug Speculation Rules Prefetch using DevTools,
+    // always set status to kAllowed for developer experience.
+    prefetch_container->preloading_attempt()->SetHoldbackStatus(
+        PreloadingHoldbackStatus::kAllowed);
+  } else if (prefetch_container->HasOverriddenHoldbackStatus()) {
+    // 2. If PrefetchContainer has custom overridden status, set that value.
+    prefetch_container->preloading_attempt()->SetHoldbackStatus(
+        prefetch_container->GetOverriddenHoldbackStatus());
   }
 
   if (prefetch_container->preloading_attempt()->ShouldHoldback()) {

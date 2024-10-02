@@ -1536,11 +1536,15 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   //   be embedded into it here.
   // - `attempt` is used to record some metrics associated with this prefetch
   //   request.
-  virtual void StartPrefetch(const GURL& prefetch_url,
-                             bool use_prefetch_proxy,
-                             const blink::mojom::Referrer& referrer,
-                             const std::optional<url::Origin>& referring_origin,
-                             base::WeakPtr<PreloadingAttempt> attempt) = 0;
+  // - `holdback_status_override` is used to override holdback status, if
+  //   specified.
+  virtual void StartPrefetch(
+      const GURL& prefetch_url,
+      bool use_prefetch_proxy,
+      const blink::mojom::Referrer& referrer,
+      const std::optional<url::Origin>& referring_origin,
+      base::WeakPtr<PreloadingAttempt> attempt,
+      std::optional<PreloadingHoldbackStatus> holdback_status_override) = 0;
 
   // Starts an embedder triggered (browser-initiated) prerendering page and
   // returns the unique_ptr<PrerenderHandle>, which cancels prerendering on its
