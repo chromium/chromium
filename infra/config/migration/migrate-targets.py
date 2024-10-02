@@ -237,7 +237,7 @@ def _compute_edits(
 
       case 'skip_merge_script':
         if value:
-          settings_builder['use_android_merge_script_by_default'] = False
+          settings_builder['use_android_merge_script_by_default'] = str(False)
 
       case _:
         raise Exception(f'unhandled key in builder config: "{key}"')

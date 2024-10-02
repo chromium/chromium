@@ -15,13 +15,13 @@ import value_builders
 @dataclasses.dataclass
 class TestValueBuilder(value_builders.ValueBuilder):
 
-  output: str | None = None
+  test_output: str | None = None
 
   def _output_stream(self, indent: str) -> typing.Iterable[str] | None:
     del indent
-    if self.output is None:
+    if self.test_output is None:
       return None
-    return [self.output]
+    return [self.test_output]
 
 
 class ValueBuildersTest(unittest.TestCase):
@@ -81,7 +81,7 @@ class ValueBuildersTest(unittest.TestCase):
         builder.output(),
     )
 
-    test_value_builder.output = 'x'
+    test_value_builder.test_output = 'x'
 
     self.assertEqual(
         textwrap.dedent("""\
@@ -146,7 +146,7 @@ class ValueBuildersTest(unittest.TestCase):
         builder.output(),
     )
 
-    test_value_builder.output = 'x'
+    test_value_builder.test_output = 'x'
 
     self.assertEqual(
         textwrap.dedent("""\
@@ -211,7 +211,7 @@ class ValueBuildersTest(unittest.TestCase):
         builder.output(),
     )
 
-    test_value_builder.output = 'foo'
+    test_value_builder.test_output = 'foo'
 
     self.assertEqual(
         textwrap.dedent("""\
