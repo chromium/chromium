@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
@@ -593,8 +594,8 @@ void BruschettaInstallerImpl::OnStartVm(
     return;
   }
 
-  BruschettaService::GetForProfile(profile_)->RegisterVmLaunch(vm_name_,
-                                                               launch_policy);
+  BruschettaServiceFactory::GetForProfile(profile_)->RegisterVmLaunch(
+      vm_name_, launch_policy);
   profile_->GetPrefs()->SetBoolean(bruschetta::prefs::kBruschettaInstalled,
                                    true);
 
@@ -608,7 +609,7 @@ void BruschettaInstallerImpl::LaunchTerminal() {
   // TODO(b/231899688): Implement Bruschetta sending an RPC when installation
   // finishes so that we only add to prefs on success.
   auto guest_id = MakeBruschettaId(std::move(vm_name_));
-  BruschettaService::GetForProfile(profile_)->RegisterInPrefs(
+  BruschettaServiceFactory::GetForProfile(profile_)->RegisterInPrefs(
       guest_id, std::move(config_id_));
 
   guest_id.container_name = "";

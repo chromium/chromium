@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
@@ -224,7 +225,8 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
 
     case ash::SHUTDOWN_BRUSCHETTA_OS:
       if (item().id.app_id == guest_os::kTerminalSystemAppId) {
-        bruschetta::BruschettaService::GetForProfile(controller()->profile())
+        bruschetta::BruschettaServiceFactory::GetForProfile(
+            controller()->profile())
             ->StopRunningVms();
       } else {
         LOG(ERROR) << "App " << item().id.app_id

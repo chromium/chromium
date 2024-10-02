@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_installer_impl.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
@@ -528,7 +529,7 @@ void BruschettaInstallerView::SetSecondaryMessageLabel() {
 void BruschettaInstallerView::CleanupPartialInstall() {
   state_ = State::kCleaningUp;
   OnStateUpdated();
-  bruschetta::BruschettaService::GetForProfile(profile_)->RemoveVm(
+  bruschetta::BruschettaServiceFactory::GetForProfile(profile_)->RemoveVm(
       guest_id_,
       base::BindOnce(&BruschettaInstallerView::UninstallBruschettaFinished,
                      weak_factory_.GetWeakPtr()));

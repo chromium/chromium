@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/guest_os/dbus_test_helper.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/test/base/testing_profile.h"
@@ -160,8 +161,8 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
   }
 
   void CheckVmRegistration() {
-    const auto& running_vms =
-        BruschettaService::GetForProfile(&profile_)->GetRunningVmsForTesting();
+    const auto& running_vms = BruschettaServiceFactory::GetForProfile(&profile_)
+                                  ->GetRunningVmsForTesting();
     if (expect_vm_registered_) {
       auto it = running_vms.find(kVmName);
       EXPECT_NE(it, running_vms.end());

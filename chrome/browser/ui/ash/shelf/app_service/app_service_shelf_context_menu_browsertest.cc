@@ -16,6 +16,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
@@ -449,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuCrostiniAppBrowserTest,
       ->AddGuestForTesting(id, guest_os::GuestInfo{id, 0, {}, {}, {}, {}});
 
   auto* bruschetta_service =
-      bruschetta::BruschettaService::GetForProfile(browser()->profile());
+      bruschetta::BruschettaServiceFactory::GetForProfile(browser()->profile());
   bruschetta_service->RegisterVmLaunch(bruschetta::kBruschettaVmName,
                                        bruschetta::RunningVmPolicy{false});
   base::RunLoop run_loop;

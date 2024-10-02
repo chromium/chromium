@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_disk.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
@@ -767,7 +768,8 @@ void CrostiniHandler::HandleShutdownCrostini(const base::Value::List& args) {
 void CrostiniHandler::HandleShutdownBruschetta(const base::Value::List& args) {
   CHECK_EQ(0U, args.size());
 
-  bruschetta::BruschettaService::GetForProfile(profile_)->StopRunningVms();
+  bruschetta::BruschettaServiceFactory::GetForProfile(profile_)
+      ->StopRunningVms();
 }
 
 void CrostiniHandler::HandleCreateContainer(const base::Value::List& args) {

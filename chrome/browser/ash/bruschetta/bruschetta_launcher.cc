@@ -15,6 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
@@ -200,8 +201,8 @@ void BruschettaLauncher::OnStartVm(
     return;
   }
 
-  BruschettaService::GetForProfile(profile_)->RegisterVmLaunch(vm_name_,
-                                                               launch_policy);
+  BruschettaServiceFactory::GetForProfile(profile_)->RegisterVmLaunch(
+      vm_name_, launch_policy);
 
   auto* tracker = guest_os::GuestOsSessionTracker::GetForProfile(profile_);
   subscription_ = tracker->RunOnceContainerStarted(

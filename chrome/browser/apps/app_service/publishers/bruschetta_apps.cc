@@ -15,6 +15,7 @@
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_launcher.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -186,9 +187,8 @@ void BruschettaApps::LaunchAppWithIntent(const std::string& app_id,
 
   // Start the bruschetta VM if necessary.
   const std::string& vm_name = registration->VmName();
-  auto launcher =
-      bruschetta::BruschettaService::GetForProfile(profile())->GetLauncher(
-          vm_name);
+  auto launcher = bruschetta::BruschettaServiceFactory::GetForProfile(profile())
+                      ->GetLauncher(vm_name);
   if (!launcher) {
     OnLaunchFailed(app_id, std::move(callback),
                    "Unknown Bruschetta VM name: " + vm_name);

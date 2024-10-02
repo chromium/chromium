@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_launcher.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_mount_provider.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
-#include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
@@ -88,10 +87,6 @@ BruschettaService::~BruschettaService() {
   if (auto* concierge = ash::ConciergeClient::Get(); concierge) {
     concierge->RemoveVmObserver(this);
   }
-}
-
-BruschettaService* BruschettaService::GetForProfile(Profile* profile) {
-  return BruschettaServiceFactory::GetForProfile(profile);
 }
 
 void BruschettaService::OnPolicyChanged() {

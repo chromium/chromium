@@ -97,7 +97,7 @@ TEST_F(BruschettaAppsTest, LaunchApp) {
       "desktop_file_id", bruschetta::kBruschettaVmName, "test_container");
 
   // Set up FakeBruschettaLauncher to pretend to launch the VM.
-  bruschetta::BruschettaService::GetForProfile(profile())
+  bruschetta::BruschettaServiceFactory::GetForProfile(profile())
       ->SetLauncherForTesting(
           bruschetta::kBruschettaVmName,
           std::make_unique<bruschetta::FakeBruschettaLauncher>());

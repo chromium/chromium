@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/bruschetta/bruschetta_terminal_provider.h"
+
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_launcher.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/extensions/api/terminal/startup_status.h"
@@ -64,8 +66,9 @@ void BruschettaTerminalProvider::EnsureRunning(
   startup_status->printer()->PrintStage(
       1,
       l10n_util::GetStringUTF8(IDS_CROSTINI_TERMINAL_STATUS_START_TERMINA_VM));
-  auto launcher = BruschettaService::GetForProfile(profile_)->GetLauncher(
-      guest_id_.vm_name);
+  auto launcher =
+      BruschettaServiceFactory::GetForProfile(profile_)->GetLauncher(
+          guest_id_.vm_name);
 
   if (launcher) {
     launcher->EnsureRunning(base::BindOnce(

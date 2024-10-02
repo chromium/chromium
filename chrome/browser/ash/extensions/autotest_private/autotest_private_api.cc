@@ -103,6 +103,7 @@
 #include "chrome/browser/ash/borealis/borealis_types.mojom.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crosapi/automation_ash.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -6864,7 +6865,7 @@ AutotestPrivateRemoveBruschettaFunction::Run() {
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
 
-  auto* service = bruschetta::BruschettaService::GetForProfile(profile);
+  auto* service = bruschetta::BruschettaServiceFactory::GetForProfile(profile);
   if (!service) {
     return RespondNow(Error("Couldn't get BruschettaService instance"));
   }
