@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/documents_provider_root_manager.h"
@@ -404,6 +405,10 @@ class VolumeManager
   bool local_user_files_allowed_ = true;
   // Whether a read only version of local folders (My Files) is needed.
   bool read_only_local_folders_ = true;
+
+  base::ScopedObservation<arc::ArcSessionManager,
+                          arc::ArcSessionManagerObserver>
+      arc_session_manager_observation_{this};
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
