@@ -2611,7 +2611,7 @@ crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-rgb.html [ Cr
 crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-computed.html [ Crash Pass ]
 
 # ====== New tests from wpt-importer added here ======
-[ Mac13 ] external/wpt/compute-pressure/compute_pressure_rate_obfuscation_mitigation_triggered.https.window.html?globalScope=window [ Skip Timeout ]
+crbug.com/370689422 [ Mac13 ] external/wpt/compute-pressure/compute_pressure_rate_obfuscation_mitigation_triggered.https.window.html?globalScope=window [ Skip Timeout ]
 crbug.com/370191721 external/wpt/css/css-scoping/has-slotted-003.tentative.html [ Failure ]
 crbug.com/370191721 external/wpt/css/css-scoping/has-slotted-flattened-003.tentative.html [ Failure ]
 crbug.com/370191721 external/wpt/css/css-scoping/has-slotted-functional-001.tentative.html [ Failure ]
