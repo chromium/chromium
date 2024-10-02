@@ -52,8 +52,7 @@ ScriptPromise<IDLUndefined> SerialPortUnderlyingSource::Pull(
   return ToResolvedUndefinedPromise(script_state_.Get());
 }
 
-ScriptPromise<IDLUndefined> SerialPortUnderlyingSource::Cancel(
-    ExceptionState& exception_state) {
+ScriptPromise<IDLUndefined> SerialPortUnderlyingSource::Cancel() {
   DCHECK(data_pipe_);
 
   Close();
@@ -75,9 +74,8 @@ ScriptPromise<IDLUndefined> SerialPortUnderlyingSource::Cancel(
 }
 
 ScriptPromise<IDLUndefined> SerialPortUnderlyingSource::Cancel(
-    v8::Local<v8::Value> reason,
-    ExceptionState& exception_state) {
-  return Cancel(exception_state);
+    v8::Local<v8::Value> reason) {
+  return Cancel();
 }
 
 ScriptState* SerialPortUnderlyingSource::GetScriptState() {

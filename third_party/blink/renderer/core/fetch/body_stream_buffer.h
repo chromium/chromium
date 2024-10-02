@@ -88,9 +88,8 @@ class CORE_EXPORT BodyStreamBuffer final
   // UnderlyingByteSourceBase
   ScriptPromise<IDLUndefined> Pull(ReadableByteStreamController* controller,
                                    ExceptionState&) override;
-  ScriptPromise<IDLUndefined> Cancel(ExceptionState&) override;
-  ScriptPromise<IDLUndefined> Cancel(v8::Local<v8::Value> reason,
-                                     ExceptionState&) override;
+  ScriptPromise<IDLUndefined> Cancel() override;
+  ScriptPromise<IDLUndefined> Cancel(v8::Local<v8::Value> reason) override;
   ScriptState* GetScriptState() override;
 
   // ExecutionContextLifecycleObserver

@@ -628,15 +628,14 @@ class TestUnderlyingByteSource : public UnderlyingByteSourceBase {
     return ToResolvedUndefinedPromise(script_state_.Get());
   }
 
-  virtual void CancelVoid(v8::Local<v8::Value>, ExceptionState&) {}
+  virtual void CancelVoid() {}
 
-  ScriptPromise<IDLUndefined> Cancel(ExceptionState& exception_state) override {
-    return Cancel(v8::Undefined(script_state_->GetIsolate()), exception_state);
+  ScriptPromise<IDLUndefined> Cancel() override {
+    return Cancel(v8::Undefined(script_state_->GetIsolate()));
   }
 
-  ScriptPromise<IDLUndefined> Cancel(v8::Local<v8::Value> reason,
-                                     ExceptionState& exception_state) override {
-    CancelVoid(reason, exception_state);
+  ScriptPromise<IDLUndefined> Cancel(v8::Local<v8::Value>) override {
+    CancelVoid();
     return ToResolvedUndefinedPromise(script_state_.Get());
   }
 
@@ -659,10 +658,9 @@ class MockUnderlyingByteSource : public UnderlyingByteSourceBase {
   MOCK_METHOD2(Pull,
                ScriptPromise<IDLUndefined>(ReadableByteStreamController*,
                                            ExceptionState&));
-  MOCK_METHOD1(Cancel, ScriptPromise<IDLUndefined>(ExceptionState&));
-  MOCK_METHOD2(Cancel,
-               ScriptPromise<IDLUndefined>(v8::Local<v8::Value> reason,
-                                           ExceptionState&));
+  MOCK_METHOD0(Cancel, ScriptPromise<IDLUndefined>());
+  MOCK_METHOD1(Cancel,
+               ScriptPromise<IDLUndefined>(v8::Local<v8::Value> reason));
 
   ScriptState* GetScriptState() override { return script_state_.Get(); }
 
@@ -711,7 +709,7 @@ TEST_F(ReadableByteStreamTest, CancelIsCalled) {
   scope.PerformMicrotaskCheckpoint();
   CopyStreamToGlobal(scope);
 
-  EXPECT_CALL(*mock, Cancel(_, _))
+  EXPECT_CALL(*mock, Cancel(_))
       .WillOnce(
           Return(ByMove(ToResolvedUndefinedPromise(scope.GetScriptState()))));
 
@@ -785,9 +783,9 @@ TEST_F(ReadableByteStreamTest, ThrowFromCancel) {
     explicit ThrowFromCancelUnderlyingByteSource(ScriptState* script_state)
         : TestUnderlyingByteSource(script_state) {}
 
-    void CancelVoid(v8::Local<v8::Value>,
-                    ExceptionState& exception_state) override {
-      exception_state.ThrowTypeError(kMessage);
+    void CancelVoid() override {
+      V8ThrowException::ThrowTypeError(GetScriptState()->GetIsolate(),
+                                       kMessage);
     }
   };
 

@@ -120,8 +120,7 @@ class ReadableStream::CancelAlgorithm final : public StreamAlgorithm {
         // This is needed because the realm of the underlying source can be
         // different from the realm of the readable stream.
         ScriptState::Scope scope(underlying_byte_source_->GetScriptState());
-        promise = underlying_byte_source_->Cancel(
-            argv[0], PassThroughException(script_state->GetIsolate()));
+        promise = underlying_byte_source_->Cancel(argv[0]);
       }
       if (try_catch.HasCaught()) {
         return PromiseReject(script_state, try_catch.Exception());
@@ -881,9 +880,10 @@ void ReadableStream::CloseStream(ScriptState* script_state,
           DynamicTo<ReadableByteStreamController>(
               readable_stream_controller_.Get())) {
     // 1. Perform ! ReadableByteStreamControllerClose(stream.[[controller]]).
-    readable_byte_stream_controller->Close(
-        script_state, readable_byte_stream_controller, exception_state);
-    if (exception_state.HadException()) {
+    TryRethrowScope rethrow_scope(script_state->GetIsolate(), exception_state);
+    readable_byte_stream_controller->Close(script_state,
+                                           readable_byte_stream_controller);
+    if (rethrow_scope.HasCaught()) {
       return;
     }
 

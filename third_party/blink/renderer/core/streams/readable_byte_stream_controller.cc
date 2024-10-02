@@ -158,7 +158,7 @@ void ReadableByteStreamController::close(ScriptState* script_state,
   }
 
   // 3. Perform ? ReadableByteStreamControllerClose(this).
-  Close(script_state, this, exception_state);
+  Close(script_state, this);
 }
 
 void ReadableByteStreamController::enqueue(ScriptState* script_state,
@@ -209,8 +209,7 @@ void ReadableByteStreamController::error(ScriptState* script_state,
 
 void ReadableByteStreamController::Close(
     ScriptState* script_state,
-    ReadableByteStreamController* controller,
-    ExceptionState& exception_state) {
+    ReadableByteStreamController* controller) {
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-close
   // 1. Let stream be controller.[[stream]].
   ReadableStream* const stream = controller->controlled_readable_stream_;
@@ -238,11 +237,12 @@ void ReadableByteStreamController::Close(
     //   b. If firstPendingPullInto’s bytes filled > 0,
     if (first_pending_pull_into->bytes_filled > 0) {
       //     i. Let e be a new TypeError exception.
-      exception_state.ThrowTypeError("Cannot close while responding");
-      v8::Local<v8::Value> e = exception_state.GetException();
+      v8::Local<v8::Value> e = V8ThrowException::CreateTypeError(
+          script_state->GetIsolate(), "Cannot close while responding");
       //     ii. Perform ! ReadableByteStreamControllerError(controller, e).
       Error(script_state, controller, e);
       //     iii. Throw e.
+      V8ThrowException::ThrowException(script_state->GetIsolate(), e);
       return;
     }
   }

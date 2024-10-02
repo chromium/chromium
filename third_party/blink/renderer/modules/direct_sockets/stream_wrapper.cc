@@ -73,14 +73,13 @@ class ForwardingUnderlyingByteSource : public UnderlyingByteSourceBase {
     return ToResolvedUndefinedPromise(GetScriptState());
   }
 
-  ScriptPromise<IDLUndefined> Cancel(ExceptionState&) override {
+  ScriptPromise<IDLUndefined> Cancel() override {
     readable_stream_wrapper_->CloseStream();
     return ToResolvedUndefinedPromise(GetScriptState());
   }
 
-  ScriptPromise<IDLUndefined> Cancel(v8::Local<v8::Value> reason,
-                                     ExceptionState& exception_state) override {
-    return Cancel(exception_state);
+  ScriptPromise<IDLUndefined> Cancel(v8::Local<v8::Value> reason) override {
+    return Cancel();
   }
 
   ScriptState* GetScriptState() override {

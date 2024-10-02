@@ -353,20 +353,17 @@ ScriptPromise<IDLUndefined> BodyStreamBuffer::Pull(
   return ToResolvedUndefinedPromise(GetScriptState());
 }
 
-ScriptPromise<IDLUndefined> BodyStreamBuffer::Cancel(
-    ExceptionState& exception_state) {
-  return Cancel(v8::Undefined(GetScriptState()->GetIsolate()), exception_state);
+ScriptPromise<IDLUndefined> BodyStreamBuffer::Cancel() {
+  return Cancel(v8::Undefined(GetScriptState()->GetIsolate()));
 }
 
 ScriptPromise<IDLUndefined> BodyStreamBuffer::Cancel(
-    v8::Local<v8::Value> reason,
-    ExceptionState& exception_state) {
+    v8::Local<v8::Value> reason) {
   ReadableStreamController* controller = Stream()->GetController();
   DCHECK(controller->IsByteStreamController());
   ReadableByteStreamController* byte_controller =
       To<ReadableByteStreamController>(controller);
-  byte_controller->Close(GetScriptState(), byte_controller, exception_state);
-  DCHECK(!exception_state.HadException());
+  byte_controller->Close(GetScriptState(), byte_controller);
   CancelConsumer();
   return ToResolvedUndefinedPromise(GetScriptState());
 }

@@ -155,8 +155,7 @@ class ByteStreamTeeEngine::ByteTeeReadRequest final : public ReadRequest {
     for (int branch = 0; branch < 2; ++branch) {
       if (!engine_->canceled_[branch]) {
         engine_->controller_[branch]->Close(script_state,
-                                            engine_->controller_[branch],
-                                            PassThroughException(isolate));
+                                            engine_->controller_[branch]);
         if (try_catch.HasCaught()) {
           // Instead of returning a rejection, which is inconvenient here,
           // call ControllerError(). The only difference this makes is that it
@@ -321,14 +320,12 @@ class ByteStreamTeeEngine::ByteTeeReadIntoRequest final
         !for_branch_2_ ? engine_->canceled_[1] : engine_->canceled_[0];
     // 4. If byobCanceled is false, perform !
     //    ReadableByteStreamControllerClose(byobBranch.[[controller]]).
-    ExceptionState exception_state(script_state->GetIsolate());
     if (!byob_canceled) {
       ReadableStreamController* controller =
           byob_branch_->readable_stream_controller_;
       ReadableByteStreamController* byte_controller =
           To<ReadableByteStreamController>(controller);
-      byte_controller->Close(script_state, byte_controller, exception_state);
-      DCHECK(!exception_state.HadException());
+      byte_controller->Close(script_state, byte_controller);
     }
     // 5. If otherCanceled is false, perform !
     //    ReadableByteStreamControllerClose(otherBranch.[[controller]]).
@@ -337,8 +334,7 @@ class ByteStreamTeeEngine::ByteTeeReadIntoRequest final
           other_branch_->readable_stream_controller_;
       ReadableByteStreamController* byte_controller =
           To<ReadableByteStreamController>(controller);
-      byte_controller->Close(script_state, byte_controller, exception_state);
-      DCHECK(!exception_state.HadException());
+      byte_controller->Close(script_state, byte_controller);
     }
     // 6. If chunk is not undefined,
     if (chunk) {
@@ -347,6 +343,7 @@ class ByteStreamTeeEngine::ByteTeeReadIntoRequest final
       //   b. If byobCanceled is false, perform !
       //      ReadableByteStreamControllerRespondWithNewView(byobBranch.[[controller]],
       //      chunk).
+      ExceptionState exception_state(script_state->GetIsolate());
       if (!byob_canceled) {
         ReadableStreamController* controller =
             byob_branch_->readable_stream_controller_;

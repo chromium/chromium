@@ -294,12 +294,11 @@ class WebTransport::DatagramUnderlyingSource final
     return ToResolvedUndefinedPromise(script_state_.Get());
   }
 
-  ScriptPromise<IDLUndefined> Cancel(ExceptionState& exception_state) override {
-    return Cancel(v8::Undefined(script_state_->GetIsolate()), exception_state);
+  ScriptPromise<IDLUndefined> Cancel() override {
+    return Cancel(v8::Undefined(script_state_->GetIsolate()));
   }
 
-  ScriptPromise<IDLUndefined> Cancel(v8::Local<v8::Value> reason,
-                                     ExceptionState&) override {
+  ScriptPromise<IDLUndefined> Cancel(v8::Local<v8::Value> reason) override {
     uint32_t code = 0;
     WebTransportError* exception =
         V8WebTransportError::ToWrappable(script_state_->GetIsolate(), reason);
