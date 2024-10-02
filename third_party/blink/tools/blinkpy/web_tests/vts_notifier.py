@@ -32,14 +32,21 @@ DEFAULT_COMPONENT_IDS = [
 ]
 
 BUGAINZER_DESCRIPTION_TEMPLATE = '''\
-This virtual test suite '{prefix}' expired on {expires}.
+This is a reminder that the virtual test suite, **{prefix}**, expired on **{expires}**.
 
-If the virtual test suite is no longer needed, please remove the entry from
-//third_party/blink/web_tests/VirtualTestSuites.
-Otherwise, update the expiration date.
+Expired virtual test suites that don't add meaningful coverage unnecessarily slow down web tests on CQ.
 
-Note: Test suite owners are automatically added to CC.
+Please review this virtual test suite, [**{prefix}**](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/VirtualTestSuites?q=%22{prefix}%22%20file:third_party%2Fblink%2Fweb_tests%2FVirtualTestSuites), and take one of the following actions:
+
+1. Delete: If the virtual test suite is no longer needed, please remove the entry from [//third_party/blink/web_tests/VirtualTestSuites](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/VirtualTestSuites) ([Example CL](https://crrev.com/c/5741322))
+
+2. Update: If the virtual test suite is still in use, update the expiration date at **{prefix}**. ([Example CL] ((https://crrev.com/c/5104889)))
+
+Note:
+* Test suite owners are automatically added to CC.
+* If you do not own this test suite, please reassign it to the appropriate team or to `Blink>Infra` for triage.
 '''
+WATCHERS = ['ansung@google.com']
 
 
 class VTSNotifier:
@@ -113,7 +120,7 @@ class VTSNotifier:
         bug = BuganizerIssue(title=title,
                              description=description,
                              component_id=component_id,
-                             cc=vts.owners or [],
+                             cc=(vts.owners or []) + WATCHERS,
                              priority=Priority.P1)
         return bug
 
