@@ -72,6 +72,7 @@ source_set("entry_point") {
     "lens_overlay_entrypoint_view.mm",
   ]
   deps = [
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",

@@ -2558,6 +2558,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_LENS_OVERLAY_CONSENT_TITLE" desc="The title for the lens overlay consent dialog. [iOS only].">
         Tap or highlight to search anything with Google Lens
       </message>
+      <message name="IDS_IOS_LENS_OVERLAY_ENTRYPOINT_BUTTON_ACCESSIBILITY_LABEL" desc=" The Lesn overlay entrypoint button accessibility label [iOS only].">
+        Search your screen with Google Lens
+      </message>
       <message name="IDS_IOS_LENS_OVERLAY_NEW_TAB_MESSAGE" desc="Message displayed when a context menu selection resuls in a new tab openening in the background [iOS only].">
         Your selection opened in a new tab
       </message>

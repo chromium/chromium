@@ -116,7 +116,6 @@ const CGFloat kPlaceholderViewLeadingMargin = 4.8;
   _placeholderView = placeholderView;
   if (_placeholderView) {
     _placeholderView.translatesAutoresizingMaskIntoConstraints = NO;
-    _placeholderView.isAccessibilityElement = NO;
     _placeholderView.hidden = YES;
     [_containerStackView addArrangedSubview:_placeholderView];
     [NSLayoutConstraint activateConstraints:@[

@@ -461,8 +461,8 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
   BOOL hadBadgeView = _badgesContainerView.badgeView != nil;
   if (!hadBadgeView && badgeView) {
     _badgesContainerView.badgeView = badgeView;
-    [self updateAccessibility];
   }
+  [self updateAccessibility];
 }
 
 - (void)setContextualPanelEntrypointView:
@@ -472,15 +472,15 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
   if (!hadEntrypointView && contextualPanelEntrypointView) {
     _badgesContainerView.contextualPanelEntrypointView =
         contextualPanelEntrypointView;
-    [self updateAccessibility];
   }
+  [self updateAccessibility];
 }
 
 - (void)setPlaceholderView:(UIView*)placeholderView {
   if (_badgesContainerView.placeholderView != placeholderView) {
     _badgesContainerView.placeholderView = placeholderView;
-    [self updateAccessibility];
   }
+  [self updateAccessibility];
 }
 
 - (void)setFullScreenCollapsedMode:(BOOL)isFullScreenCollapsed {
