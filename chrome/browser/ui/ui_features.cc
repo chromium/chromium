@@ -46,7 +46,12 @@ BASE_FEATURE(kCloseOmniboxPopupOnInactiveAreaClick,
 // Enables updated copy and modified behavior for the default browser prompt.
 BASE_FEATURE(kDefaultBrowserPromptRefresh,
              "DefaultBrowserPromptRefresh",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 // Parallel feature to track the group name for the synthetic trial.
 BASE_FEATURE(kDefaultBrowserPromptRefreshTrial,
              "DefaultBrowserPromptRefreshTrial",
@@ -62,19 +67,19 @@ const base::FeatureParam<bool> kShowDefaultBrowserAppMenuChip{
     &kDefaultBrowserPromptRefresh, "show_app_menu_chip", false};
 
 const base::FeatureParam<bool> kShowDefaultBrowserAppMenuItem{
-    &kDefaultBrowserPromptRefresh, "show_app_menu_item", false};
+    &kDefaultBrowserPromptRefresh, "show_app_menu_item", true};
 
 const base::FeatureParam<bool> kUpdatedInfoBarCopy{
-    &kDefaultBrowserPromptRefresh, "updated_info_bar_copy", true};
+    &kDefaultBrowserPromptRefresh, "updated_info_bar_copy", false};
 
 const base::FeatureParam<base::TimeDelta> kRepromptDuration{
-    &kDefaultBrowserPromptRefresh, "reprompt_duration", base::Days(28)};
+    &kDefaultBrowserPromptRefresh, "reprompt_duration", base::Days(21)};
 
 const base::FeatureParam<int> kMaxPromptCount{&kDefaultBrowserPromptRefresh,
-                                              "max_prompt_count", -1};
+                                              "max_prompt_count", 5};
 
 const base::FeatureParam<int> kRepromptDurationMultiplier{
-    &kDefaultBrowserPromptRefresh, "reprompt_duration_multiplier", 2};
+    &kDefaultBrowserPromptRefresh, "reprompt_duration_multiplier", 1};
 
 const base::FeatureParam<base::TimeDelta> kDefaultBrowserAppMenuDuration{
     &kDefaultBrowserPromptRefresh, "app_menu_duration", base::Days(3)};
