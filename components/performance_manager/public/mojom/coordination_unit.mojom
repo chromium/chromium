@@ -118,10 +118,4 @@ interface ProcessCoordinationUnit {
   // by OnRemoteIframeAttached.
   OnRemoteIframeDetached(blink.mojom.LocalFrameToken parent_frame_token,
                          blink.mojom.RemoteFrameToken remote_frame_token);
-
-  // Called when a renderer has observed an allow-listed performance.mark
-  // trigger event. The browser will reconfirm that the trigger is indeed
-  // allow-listed before firing the background tracing trigger, which can result
-  // in a trace being uploaded to the background tracing pipeline.
-  FireBackgroundTracingTrigger(string trigger_name);
 };

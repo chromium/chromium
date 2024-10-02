@@ -11,6 +11,7 @@
 #include "base/hash/md5.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/rand_util.h"
+#include "base/trace_event/named_trigger.h"
 #include "base/trace_event/typed_macros.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -70,13 +71,15 @@ char ConsumeSeparator(std::string_view& chars, Separators... separators) {
 
 static constexpr char kTriggerPrefix[] = "trigger:";
 
-bool MarkNameIsTrigger(const String& mark_name) {
-  return mark_name.StartsWith(kTriggerPrefix);
+bool MarkNameIsTrigger(std::string_view mark_name) {
+  return mark_name.starts_with(kTriggerPrefix);
 }
 
-String GenerateFullTrigger(const String& site, const String& mark_name) {
+std::string GenerateFullTrigger(std::string_view site,
+                                std::string_view mark_name) {
   DCHECK(MarkNameIsTrigger(mark_name));
-  return site + "-" + mark_name.Substring(std::size(kTriggerPrefix) - 1);
+  return base::StrCat(
+      {site, "-", mark_name.substr(std::size(kTriggerPrefix) - 1)});
 }
 
 }  // namespace
@@ -127,14 +130,15 @@ BackgroundTracingHelper::BackgroundTracingHelper(ExecutionContext* context) {
   // ASCII, and matching the format in which URLs will be encoded prior to
   // hashing in the Finch list).
   String this_site = EncodeWithURLEscapeSequences(origin->Domain());
-  uint32_t this_site_hash = MD5Hash32(this_site.Ascii());
+  std::string this_site_ascii = this_site.Ascii();
+  uint32_t this_site_hash = MD5Hash32(this_site_ascii);
 
   // Get the allow-list for this site, if there is one.
   mark_hashes_ = GetMarkHashSetForSiteHash(this_site_hash);
 
   // We only need the site information if there's actually a set of mark hashes.
   if (mark_hashes_) {
-    site_ = this_site;
+    site_ = this_site_ascii;
     site_hash_ = this_site_hash;
   }
 
@@ -146,9 +150,6 @@ BackgroundTracingHelper::BackgroundTracingHelper(ExecutionContext* context) {
                     token.value().GetLowForSerialization();
   execution_context_id_ = static_cast<uint32_t>(merged & 0xffffffff) ^
                           static_cast<uint32_t>((merged >> 32) & 0xffffffff);
-
-  // Generate a random sequence number offset to be used by this context.
-  sequence_number_offset_ = static_cast<uint32_t>(base::RandUint64());
 }
 
 BackgroundTracingHelper::~BackgroundTracingHelper() = default;
@@ -158,15 +159,10 @@ void BackgroundTracingHelper::MaybeEmitBackgroundTracingPerformanceMarkEvent(
   if (!mark_hashes_)
     return;
 
-  // Get the mark name in ASCII.
-  const String& mark_name = mark.name();
-  std::string mark_name_ascii = mark_name.Ascii();
-
-  // Parse the mark and the sequence number, if any.
-  uint32_t mark_hash = 0;
-  uint32_t sequence_number = 0;
-  GetMarkHashAndSequenceNumber(mark_name_ascii, sequence_number_offset_,
-                               &mark_hash, &sequence_number);
+  // Parse the mark and the numerical suffix, if any.
+  auto mark_and_id = SplitMarkNameAndId(mark.name());
+  std::string mark_name = mark_and_id.first.ToString().Ascii();
+  uint32_t mark_hash = MD5Hash32(mark_name);
 
   // See if the mark hash is in the permitted list.
   if (!mark_hashes_->Contains(mark_hash))
@@ -180,11 +176,13 @@ void BackgroundTracingHelper::MaybeEmitBackgroundTracingPerformanceMarkEvent(
     auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
     auto* data = event->set_chrome_hashed_performance_mark();
     data->set_site_hash(site_hash_);
-    data->set_site(site_.Ascii());
+    data->set_site(site_);
     data->set_mark_hash(mark_hash);
-    data->set_mark(mark_name_ascii);
+    data->set_mark(mark_name);
     data->set_execution_context_id(execution_context_id_);
-    data->set_sequence_number(sequence_number);
+    if (mark_and_id.second.has_value()) {
+      data->set_sequence_number(*mark_and_id.second);
+    }
   };
 
   // For additional context, also emit a paired event marking *when* the
@@ -195,10 +193,10 @@ void BackgroundTracingHelper::MaybeEmitBackgroundTracingPerformanceMarkEvent(
   TRACE_EVENT_INSTANT("blink", "performance.mark", mark.UnsafeTimeForTraces(),
                       event_lambda);
 
-  // If this is a slow-reports trigger then fire it.
   if (MarkNameIsTrigger(mark_name)) {
-    RendererResourceCoordinator::Get()->FireBackgroundTracingTrigger(
-        GenerateFullTrigger(site_, mark_name));
+    // If this is a slow-reports trigger then fire it.
+    base::trace_event::EmitNamedTrigger(GenerateFullTrigger(site_, mark_name),
+                                        mark_and_id.second);
   }
 }
 
@@ -225,9 +223,9 @@ BackgroundTracingHelper::GetMarkHashSetForSiteHash(uint32_t site_hash) {
 }
 
 // static
-size_t BackgroundTracingHelper::GetSequenceNumberPos(std::string_view string) {
+size_t BackgroundTracingHelper::GetIdSuffixPos(StringView string) {
   // Extract any trailing integers.
-  size_t cursor = string.size();
+  size_t cursor = string.length();
   while (cursor > 0) {
     char c = string[cursor - 1];
     if (c < '0' || c > '9')
@@ -236,8 +234,9 @@ size_t BackgroundTracingHelper::GetSequenceNumberPos(std::string_view string) {
   }
 
   // A valid suffix must have 1 or more integers.
-  if (cursor == string.size())
+  if (cursor == string.length()) {
     return 0;
+  }
 
   // A valid suffix must be preceded by an underscore and at least one prefix
   // character.
@@ -252,42 +251,29 @@ size_t BackgroundTracingHelper::GetSequenceNumberPos(std::string_view string) {
   return cursor - 1;
 }
 
+std::pair<StringView, std::optional<uint32_t>>
+BackgroundTracingHelper::SplitMarkNameAndId(StringView mark_name) {
+  // Extract a sequence number suffix, if it exists.
+  size_t sequence_number_pos = GetIdSuffixPos(mark_name);
+  if (sequence_number_pos == 0) {
+    return std::make_pair(mark_name, std::nullopt);
+  }
+  auto suffix = StringView(mark_name, sequence_number_pos + 1);
+  mark_name = StringView(mark_name, 0, sequence_number_pos);
+  bool result = false;
+  int seq_num =
+      WTF::CharactersToInt(suffix, WTF::NumberParsingOptions(), &result);
+  if (!result) {
+    return std::make_pair(mark_name, std::nullopt);
+  }
+  return std::make_pair(mark_name, seq_num);
+}
+
 // static
 uint32_t BackgroundTracingHelper::MD5Hash32(std::string_view string) {
   base::MD5Digest digest;
   base::MD5Sum(base::as_byte_span(string), &digest);
   return base::U32FromBigEndian(base::span(digest.a).first<4u>());
-}
-
-// static
-void BackgroundTracingHelper::GetMarkHashAndSequenceNumber(
-    std::string_view mark_name,
-    uint32_t sequence_number_offset,
-    uint32_t* mark_hash,
-    uint32_t* sequence_number) {
-  *sequence_number = 0;
-
-  // Extract a sequence number suffix, if it exists.
-  size_t sequence_number_pos = GetSequenceNumberPos(mark_name);
-  if (sequence_number_pos != 0) {
-    // Parse the suffix.
-    auto suffix = mark_name.substr(sequence_number_pos + 1);
-    bool result = false;
-    int seq_num = WTF::CharactersToInt(base::as_byte_span(suffix),
-                                       WTF::NumberParsingOptions(), &result);
-    if (result) {
-      // Cap the sequence number to an easily human-consumable size. It is fine
-      // for this calculation to overflow.
-      *sequence_number =
-          (static_cast<uint32_t>(seq_num) + sequence_number_offset) % 1000;
-    }
-
-    // Remove the suffix from the mark name.
-    mark_name = mark_name.substr(0, sequence_number_pos);
-  }
-
-  // Hash the mark name.
-  *mark_hash = MD5Hash32(mark_name);
 }
 
 // static

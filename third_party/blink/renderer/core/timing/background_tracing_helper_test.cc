@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/timing/background_tracing_helper.h"
 
+#include <optional>
 #include <string_view>
 
 #include "base/hash/md5_constexpr.h"
@@ -20,20 +21,17 @@ class BackgroundTracingHelperTest : public testing::Test {
   BackgroundTracingHelperTest() = default;
   ~BackgroundTracingHelperTest() override = default;
 
-  static size_t GetSequenceNumberPos(std::string_view string) {
-    return BackgroundTracingHelper::GetSequenceNumberPos(string);
+  static size_t GetIdSuffixPos(StringView string) {
+    return BackgroundTracingHelper::GetIdSuffixPos(string);
   }
 
   static uint32_t MD5Hash32(std::string_view string) {
     return BackgroundTracingHelper::MD5Hash32(string);
   }
 
-  static void GetMarkHashAndSequenceNumber(std::string_view mark_name,
-                                           uint32_t sequence_number_offset,
-                                           uint32_t* mark_hash,
-                                           uint32_t* sequence_number) {
-    return BackgroundTracingHelper::GetMarkHashAndSequenceNumber(
-        mark_name, sequence_number_offset, mark_hash, sequence_number);
+  static std::pair<StringView, std::optional<uint32_t>> SplitMarkNameAndId(
+      StringView mark_name) {
+    return BackgroundTracingHelper::SplitMarkNameAndId(mark_name);
   }
 
   static bool ParseBackgroundTracingPerformanceMarkHashes(
@@ -45,20 +43,20 @@ class BackgroundTracingHelperTest : public testing::Test {
   test::TaskEnvironment task_environment_;
 };
 
-TEST_F(BackgroundTracingHelperTest, GetSequenceNumberPos) {
+TEST_F(BackgroundTracingHelperTest, GetIdSuffixPos) {
   static constexpr char kFailNoSuffix[] = "nosuffixatall";
   static constexpr char kFailNoUnderscore[] = "missingunderscore123";
   static constexpr char kFailUnderscoreOnly[] = "underscoreonly_";
   static constexpr char kFailNoPrefix[] = "_123";
-  EXPECT_EQ(0u, GetSequenceNumberPos(kFailNoSuffix));
-  EXPECT_EQ(0u, GetSequenceNumberPos(kFailNoUnderscore));
-  EXPECT_EQ(0u, GetSequenceNumberPos(kFailUnderscoreOnly));
-  EXPECT_EQ(0u, GetSequenceNumberPos(kFailNoPrefix));
+  EXPECT_EQ(0u, GetIdSuffixPos(kFailNoSuffix));
+  EXPECT_EQ(0u, GetIdSuffixPos(kFailNoUnderscore));
+  EXPECT_EQ(0u, GetIdSuffixPos(kFailUnderscoreOnly));
+  EXPECT_EQ(0u, GetIdSuffixPos(kFailNoPrefix));
 
   static constexpr char kSuccess0[] = "success_1";
   static constexpr char kSuccess1[] = "thisworks_123";
-  EXPECT_EQ(7u, GetSequenceNumberPos(kSuccess0));
-  EXPECT_EQ(9u, GetSequenceNumberPos(kSuccess1));
+  EXPECT_EQ(7u, GetIdSuffixPos(kSuccess0));
+  EXPECT_EQ(9u, GetIdSuffixPos(kSuccess1));
 }
 
 TEST_F(BackgroundTracingHelperTest, MD5Hash32) {
@@ -81,31 +79,29 @@ TEST_F(BackgroundTracingHelperTest, GetMarkHashAndSequenceNumber) {
   static constexpr char kInvalidSuffix1[] = "foo123";
   static constexpr char kHasSuffix[] = "foo_123";
 
-  uint32_t mark_hash = 0;
-  uint32_t sequence_number = 0;
+  {
+    auto result = SplitMarkNameAndId(kNoSuffix);
+    EXPECT_EQ("foo", result.first);
+    EXPECT_EQ(std::nullopt, result.second);
+  }
 
-  GetMarkHashAndSequenceNumber(kNoSuffix, 0, &mark_hash, &sequence_number);
-  EXPECT_EQ(0xacbd18dbu, mark_hash);
-  EXPECT_EQ(0u, sequence_number);
+  {
+    auto result = SplitMarkNameAndId(kInvalidSuffix0);
+    EXPECT_EQ("foo_", result.first);
+    EXPECT_EQ(std::nullopt, result.second);
+  }
 
-  GetMarkHashAndSequenceNumber(kInvalidSuffix0, 0, &mark_hash,
-                               &sequence_number);
-  EXPECT_EQ(0x2023d768u, mark_hash);
-  EXPECT_EQ(0u, sequence_number);
+  {
+    auto result = SplitMarkNameAndId(kInvalidSuffix1);
+    EXPECT_EQ("foo123", result.first);
+    EXPECT_EQ(std::nullopt, result.second);
+  }
 
-  GetMarkHashAndSequenceNumber(kInvalidSuffix1, 0, &mark_hash,
-                               &sequence_number);
-  EXPECT_EQ(0xef238ea0u, mark_hash);
-  EXPECT_EQ(0u, sequence_number);
-
-  GetMarkHashAndSequenceNumber(kHasSuffix, 0, &mark_hash, &sequence_number);
-  EXPECT_EQ(0xacbd18db, mark_hash);
-  EXPECT_EQ(123u, sequence_number);
-
-  // Ensure that capping and offset logic works.
-  GetMarkHashAndSequenceNumber(kHasSuffix, 7457, &mark_hash, &sequence_number);
-  EXPECT_EQ(0xacbd18dbu, mark_hash);
-  EXPECT_EQ(580u, sequence_number);
+  {
+    auto result = SplitMarkNameAndId(kHasSuffix);
+    EXPECT_EQ("foo", result.first);
+    EXPECT_EQ(123u, result.second);
+  }
 }
 
 TEST_F(BackgroundTracingHelperTest,

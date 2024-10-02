@@ -249,11 +249,6 @@ void RendererResourceCoordinatorImpl::OnBeforeContentFrameDetached(
       frame.GetFrameToken().GetAs<RemoteFrameToken>());
 }
 
-void RendererResourceCoordinatorImpl::FireBackgroundTracingTrigger(
-    const String& trigger_name) {
-  DispatchFireBackgroundTracingTrigger(trigger_name);
-}
-
 RendererResourceCoordinatorImpl::RendererResourceCoordinatorImpl(
     mojo::PendingRemote<ProcessCoordinationUnit> remote) {
   service_task_runner_ =
@@ -310,21 +305,6 @@ void RendererResourceCoordinatorImpl::DispatchOnV8ContextDestroyed(
             WTF::CrossThreadUnretained(this), token));
   } else {
     service_->OnV8ContextDestroyed(token);
-  }
-}
-
-void RendererResourceCoordinatorImpl::DispatchFireBackgroundTracingTrigger(
-    const String& trigger_name) {
-  DCHECK(service_);
-  if (!service_task_runner_->RunsTasksInCurrentSequence()) {
-    blink::PostCrossThreadTask(
-        *service_task_runner_, FROM_HERE,
-        WTF::CrossThreadBindOnce(&RendererResourceCoordinatorImpl::
-                                     DispatchFireBackgroundTracingTrigger,
-                                 WTF::CrossThreadUnretained(this),
-                                 trigger_name));
-  } else {
-    service_->FireBackgroundTracingTrigger(trigger_name);
   }
 }
 

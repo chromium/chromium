@@ -100,7 +100,6 @@ class ProcessNodeImpl
   void OnRemoteIframeDetached(
       const blink::LocalFrameToken& parent_frame_token,
       const blink::RemoteFrameToken& remote_frame_token) override;
-  void FireBackgroundTracingTrigger(const std::string& trigger_name) override;
 
   // Partial ProcessNode implementation:
   content::ProcessType GetProcessType() const override;
@@ -164,8 +163,6 @@ class ProcessNodeImpl
   }
 
   void OnAllFramesInProcessFrozenForTesting() { OnAllFramesInProcessFrozen(); }
-  static void FireBackgroundTracingTriggerOnUIForTesting(
-      const std::string& trigger_name);
 
   base::WeakPtr<ProcessNodeImpl> GetWeakPtrOnUIThread();
   base::WeakPtr<ProcessNodeImpl> GetWeakPtr();

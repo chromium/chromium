@@ -33,13 +33,6 @@ content::ProcessType ValidateBrowserChildProcessType(
   return process_type;
 }
 
-void FireBackgroundTracingTriggerOnUI(const std::string& trigger_name) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  base::trace_event::EmitNamedTrigger(
-      content::BackgroundTracingManager::kContentTriggerConfig);
-}
-
 }  // namespace
 
 ProcessNodeImpl::ProcessNodeImpl(BrowserProcessNodeTag tag)
@@ -178,15 +171,6 @@ void ProcessNodeImpl::OnRemoteIframeDetached(
           remote_frame_token);
     }
   }
-}
-
-void ProcessNodeImpl::FireBackgroundTracingTrigger(
-    const std::string& trigger_name) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&FireBackgroundTracingTriggerOnUI, trigger_name));
 }
 
 content::ProcessType ProcessNodeImpl::GetProcessType() const {
@@ -356,12 +340,6 @@ void ProcessNodeImpl::add_hosted_content_type(ContentType content_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
   hosted_content_types_.Put(content_type);
-}
-
-// static
-void ProcessNodeImpl::FireBackgroundTracingTriggerOnUIForTesting(
-    const std::string& trigger_name) {
-  FireBackgroundTracingTriggerOnUI(trigger_name);
 }
 
 base::WeakPtr<ProcessNodeImpl> ProcessNodeImpl::GetWeakPtrOnUIThread() {

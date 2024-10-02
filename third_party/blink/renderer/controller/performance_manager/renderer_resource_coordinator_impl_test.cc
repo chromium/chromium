@@ -75,10 +75,6 @@ class MockProcessCoordinationUnit : public ProcessCoordinationUnit {
               (const blink::LocalFrameToken& parent_frame_token,
                const blink::RemoteFrameToken& remote_frame_token),
               (override));
-  MOCK_METHOD(void,
-              FireBackgroundTracingTrigger,
-              (const String& trigger_name),
-              (override));
 
   void VerifyExpectations() {
     // Ensure that any pending Mojo messages are processed.
