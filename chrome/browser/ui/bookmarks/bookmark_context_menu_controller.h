@@ -19,8 +19,9 @@
 class Browser;
 class Profile;
 
+class BookmarkMergedSurfaceService;
+
 namespace bookmarks {
-class BookmarkModel;
 class ManagedBookmarkService;
 }  // namespace bookmarks
 
@@ -105,7 +106,7 @@ class BookmarkContextMenuController
   raw_ptr<const bookmarks::BookmarkNode> parent_;
   std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
       selection_;
-  const raw_ptr<bookmarks::BookmarkModel> model_;
+  const raw_ptr<BookmarkMergedSurfaceService> bookmark_merged_surface_service_;
   const raw_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service_;
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   // Used to detect deletion of |this| executing a command.

@@ -14,6 +14,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -48,6 +50,7 @@
 
 using base::UserMetricsAction;
 using bookmarks::BookmarkNode;
+using PermanentFolderType = BookmarkParentFolder::PermanentFolderType;
 
 namespace {
 
@@ -135,26 +138,25 @@ BookmarkContextMenuController::BookmarkContextMenuController(
       opened_from_(opened_from),
       parent_(parent),
       selection_(selection),
-      model_(BookmarkModelFactory::GetForBrowserContext(profile)),
+      bookmark_merged_surface_service_(
+          BookmarkMergedSurfaceServiceFactory::GetForProfile(profile)),
       managed_bookmark_service_(
           ManagedBookmarkServiceFactory::GetForProfile(profile)) {
   DCHECK(profile_);
-  DCHECK(model_->loaded());
+  DCHECK(bookmark_merged_surface_service_->loaded());
   menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
-  model_->AddObserver(this);
+  bookmark_merged_surface_service_->bookmark_model()->AddObserver(this);
 
   BuildMenu();
 }
 
 BookmarkContextMenuController::~BookmarkContextMenuController() {
-  if (model_)
-    model_->RemoveObserver(this);
+  bookmark_merged_surface_service_->bookmark_model()->RemoveObserver(this);
 }
 
 void BookmarkContextMenuController::BuildMenu() {
   if (selection_.size() == 1 && selection_[0]->is_url()) {
-    AddItem(IDC_BOOKMARK_BAR_OPEN_ALL,
-            IDS_BOOKMARK_BAR_OPEN_IN_NEW_TAB);
+    AddItem(IDC_BOOKMARK_BAR_OPEN_ALL, IDS_BOOKMARK_BAR_OPEN_IN_NEW_TAB);
     AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW,
             IDS_BOOKMARK_BAR_OPEN_IN_NEW_WINDOW);
     AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO,
@@ -238,8 +240,9 @@ void BookmarkContextMenuController::AddCheckboxItem(int id,
 }
 
 void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
-  if (delegate_)
+  if (delegate_) {
     delegate_->WillExecuteCommand(id, selection_);
+  }
 
   base::WeakPtr<BookmarkContextMenuController> ref(weak_factory_.GetWeakPtr());
 
@@ -259,8 +262,9 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
       }
       const UserMetricsAction* const action =
           GetActionForLocationAndDisposition(opened_from_, initial_disposition);
-      if (action)
+      if (action) {
         base::RecordAction(*action);
+      }
 
       chrome::OpenAllIfAllowed(browser_, selection_, initial_disposition,
                                id == IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP);
@@ -277,21 +281,20 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
         break;
       }
 
-      BookmarkEditor::Show(
-          parent_window_,
-          profile_,
-          BookmarkEditor::EditDetails::EditNode(selection_[0]),
-          selection_[0]->is_url() ? BookmarkEditor::SHOW_TREE :
-                                    BookmarkEditor::NO_TREE);
+      BookmarkEditor::Show(parent_window_, profile_,
+                           BookmarkEditor::EditDetails::EditNode(selection_[0]),
+                           selection_[0]->is_url() ? BookmarkEditor::SHOW_TREE
+                                                   : BookmarkEditor::NO_TREE);
       break;
 
     case IDC_BOOKMARK_BAR_ADD_TO_BOOKMARKS_BAR: {
       base::RecordAction(
           UserMetricsAction("BookmarkBar_ContextMenu_AddToBookmarkBar"));
-      const BookmarkNode* bookmark_bar_node = model_->bookmark_bar_node();
       for (const bookmarks::BookmarkNode* node : selection_) {
-        model_->Move(node, bookmark_bar_node,
-                     bookmark_bar_node->children().size());
+        bookmark_merged_surface_service_->Move(
+            node, BookmarkParentFolder::BookmarkBarFolder(),
+            bookmark_merged_surface_service_->GetChildrenCount(
+                BookmarkParentFolder::BookmarkBarFolder()));
       }
       break;
     }
@@ -299,24 +302,28 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
     case IDC_BOOKMARK_BAR_REMOVE_FROM_BOOKMARKS_BAR: {
       base::RecordAction(
           UserMetricsAction("BookmarkBar_ContextMenu_RemoveFromBookmarkBar"));
-      const BookmarkNode* other_node = model_->other_node();
       for (const bookmarks::BookmarkNode* node : selection_) {
-        model_->Move(node, other_node, other_node->children().size());
+        bookmark_merged_surface_service_->Move(
+            node, BookmarkParentFolder::OtherFolder(),
+            bookmark_merged_surface_service_->GetChildrenCount(
+                BookmarkParentFolder::OtherFolder()));
       }
       break;
     }
 
     case IDC_BOOKMARK_BAR_UNDO: {
       base::RecordAction(UserMetricsAction("BookmarkBar_ContextMenu_Undo"));
-      BookmarkUndoServiceFactory::GetForProfile(profile_)->undo_manager()->
-          Undo();
+      BookmarkUndoServiceFactory::GetForProfile(profile_)
+          ->undo_manager()
+          ->Undo();
       break;
     }
 
     case IDC_BOOKMARK_BAR_REDO: {
       base::RecordAction(UserMetricsAction("BookmarkBar_ContextMenu_Redo"));
-      BookmarkUndoServiceFactory::GetForProfile(profile_)->undo_manager()->
-          Redo();
+      BookmarkUndoServiceFactory::GetForProfile(profile_)
+          ->undo_manager()
+          ->Redo();
       break;
     }
 
@@ -324,10 +331,11 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
       base::RecordAction(UserMetricsAction("BookmarkBar_ContextMenu_Remove"));
       RecordBookmarkRemoved(opened_from_);
 
-      bookmarks::ScopedGroupBookmarkActions group_remove(model_);
+      bookmarks::ScopedGroupBookmarkActions group_remove(
+          bookmark_merged_surface_service_->bookmark_model());
       for (const bookmarks::BookmarkNode* node : selection_) {
-        model_->Remove(node, bookmarks::metrics::BookmarkEditSource::kUser,
-                       FROM_HERE);
+        bookmark_merged_surface_service_->bookmark_model()->Remove(
+            node, bookmarks::metrics::BookmarkEditSource::kUser, FROM_HERE);
       }
       selection_.clear();
       break;
@@ -346,8 +354,7 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
               &title)) {
         break;
       }
-      BookmarkEditor::Show(parent_window_,
-                           profile_,
+      BookmarkEditor::Show(parent_window_, profile_,
                            BookmarkEditor::EditDetails::AddNodeInFolder(
                                parent, index, url, title),
                            BookmarkEditor::SHOW_TREE);
@@ -362,8 +369,7 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
       const BookmarkNode* parent =
           bookmarks::GetParentForNewNodes(parent_, selection_, &index);
       BookmarkEditor::Show(
-          parent_window_,
-          profile_,
+          parent_window_, profile_,
           BookmarkEditor::EditDetails::AddFolder(parent, index),
           BookmarkEditor::SHOW_TREE);
       break;
@@ -401,37 +407,45 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
     }
 
     case IDC_BOOKMARK_MANAGER: {
-      if (selection_.size() != 1)
+      if (selection_.size() != 1) {
         chrome::ShowBookmarkManager(browser_);
-      else if (selection_[0]->is_folder())
+      } else if (selection_[0]->is_folder()) {
         chrome::ShowBookmarkManagerForNode(browser_, selection_[0]->id());
-      else if (parent_)
+      } else if (parent_) {
         chrome::ShowBookmarkManagerForNode(browser_, parent_->id());
-      else
+      } else {
         chrome::ShowBookmarkManager(browser_);
+      }
       break;
     }
 
     case IDC_CUT:
-      bookmarks::CopyToClipboard(model_, selection_, true,
-                                 bookmarks::metrics::BookmarkEditSource::kUser,
-                                 profile_->IsOffTheRecord());
+      bookmarks::CopyToClipboard(
+          bookmark_merged_surface_service_->bookmark_model(), selection_, true,
+          bookmarks::metrics::BookmarkEditSource::kUser,
+          profile_->IsOffTheRecord());
       break;
 
     case IDC_COPY:
-      bookmarks::CopyToClipboard(model_, selection_, false,
-                                 bookmarks::metrics::BookmarkEditSource::kUser,
-                                 profile_->IsOffTheRecord());
+      bookmarks::CopyToClipboard(
+          bookmark_merged_surface_service_->bookmark_model(), selection_, false,
+          bookmarks::metrics::BookmarkEditSource::kUser,
+          profile_->IsOffTheRecord());
       break;
 
     case IDC_PASTE: {
+      // TODO(b/369304373): Update `PasteFromClipboard` to accept/handle a
+      // `BookmarkParentFolder::PermanentFolderType` for merged surfaces.
       size_t index;
       const BookmarkNode* paste_target =
           bookmarks::GetParentForNewNodes(parent_, selection_, &index);
-      if (!paste_target)
+      if (!paste_target) {
         return;
+      }
 
-      bookmarks::PasteFromClipboard(model_, paste_target, index);
+      bookmarks::PasteFromClipboard(
+          bookmark_merged_surface_service_->bookmark_model(), paste_target,
+          index);
       break;
     }
 
@@ -440,15 +454,17 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
   }
 
   // It's possible executing the command resulted in deleting |this|.
-  if (!ref)
+  if (!ref) {
     return;
+  }
 
-  if (delegate_)
+  if (delegate_) {
     delegate_->DidExecuteCommand(id);
+  }
 }
 
-bool BookmarkContextMenuController::IsItemForCommandIdDynamic(int command_id)
-    const {
+bool BookmarkContextMenuController::IsItemForCommandIdDynamic(
+    int command_id) const {
   return command_id == IDC_BOOKMARK_BAR_UNDO ||
          command_id == IDC_BOOKMARK_BAR_REDO ||
          command_id == IDC_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS;
@@ -457,12 +473,14 @@ bool BookmarkContextMenuController::IsItemForCommandIdDynamic(int command_id)
 std::u16string BookmarkContextMenuController::GetLabelForCommandId(
     int command_id) const {
   if (command_id == IDC_BOOKMARK_BAR_UNDO) {
-    return BookmarkUndoServiceFactory::GetForProfile(profile_)->
-        undo_manager()->GetUndoLabel();
+    return BookmarkUndoServiceFactory::GetForProfile(profile_)
+        ->undo_manager()
+        ->GetUndoLabel();
   }
   if (command_id == IDC_BOOKMARK_BAR_REDO) {
-    return BookmarkUndoServiceFactory::GetForProfile(profile_)->
-        undo_manager()->GetRedoLabel();
+    return BookmarkUndoServiceFactory::GetForProfile(profile_)
+        ->undo_manager()
+        ->GetRedoLabel();
   }
   if (command_id == IDC_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS) {
     bookmarks::ManagedBookmarkService* managed =
@@ -477,8 +495,9 @@ std::u16string BookmarkContextMenuController::GetLabelForCommandId(
 
 bool BookmarkContextMenuController::IsCommandIdChecked(int command_id) const {
   PrefService* prefs = profile_->GetPrefs();
-  if (command_id == IDC_BOOKMARK_BAR_ALWAYS_SHOW)
+  if (command_id == IDC_BOOKMARK_BAR_ALWAYS_SHOW) {
     return prefs->GetBoolean(bookmarks::prefs::kShowBookmarkBar);
+  }
   if (command_id == IDC_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS) {
     return prefs->GetBoolean(
         bookmarks::prefs::kShowManagedBookmarksInBookmarkBar);
@@ -494,8 +513,10 @@ bool BookmarkContextMenuController::IsCommandIdChecked(int command_id) const {
 bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
   PrefService* prefs = profile_->GetPrefs();
 
-  bool is_root_node = selection_.size() == 1 &&
-                      selection_[0]->parent() == model_->root_node();
+  // TODO(b/369304373): Update to handle `selection_` containing 2 permanent
+  // nodes.
+  bool is_root_node =
+      selection_.size() == 1 && selection_[0]->is_permanent_node();
   bool can_edit =
       prefs->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled) &&
       chrome::CanAllBeEditedByUser(managed_bookmark_service_, selection_);
@@ -526,7 +547,8 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
     case IDC_BOOKMARK_BAR_ADD_TO_BOOKMARKS_BAR:
       for (const bookmarks::BookmarkNode* node : selection_) {
         if (node->is_permanent_node() ||
-            node->parent() == model_->bookmark_bar_node()) {
+            bookmark_merged_surface_service_->IsPermanentNodeOfType(
+                node->parent(), PermanentFolderType::kBookmarkBarNode)) {
           return false;
         }
       }
@@ -534,21 +556,22 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
     case IDC_BOOKMARK_BAR_REMOVE_FROM_BOOKMARKS_BAR:
       for (const bookmarks::BookmarkNode* node : selection_) {
         if (node->is_permanent_node() ||
-            node->parent() != model_->bookmark_bar_node()) {
+            !bookmark_merged_surface_service_->IsPermanentNodeOfType(
+                node->parent(), PermanentFolderType::kBookmarkBarNode)) {
           return false;
         }
       }
       return can_edit && !IsNodeManaged(managed_bookmark_service_, parent_);
 
     case IDC_BOOKMARK_BAR_UNDO:
-      return can_edit &&
-          BookmarkUndoServiceFactory::GetForProfile(profile_)->
-              undo_manager()->undo_count() > 0;
+      return can_edit && BookmarkUndoServiceFactory::GetForProfile(profile_)
+                                 ->undo_manager()
+                                 ->undo_count() > 0;
 
     case IDC_BOOKMARK_BAR_REDO:
-      return can_edit &&
-          BookmarkUndoServiceFactory::GetForProfile(profile_)->
-              undo_manager()->redo_count() > 0;
+      return can_edit && BookmarkUndoServiceFactory::GetForProfile(profile_)
+                                 ->undo_manager()
+                                 ->redo_count() > 0;
 
     case IDC_BOOKMARK_BAR_REMOVE:
       return !selection_.empty() && !is_root_node && can_edit;
@@ -574,8 +597,11 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
       // Paste to selection from the Bookmark Bar, to parent_ everywhere else
       return can_edit &&
              ((!selection_.empty() &&
-               bookmarks::CanPasteFromClipboard(model_, selection_[0])) ||
-              bookmarks::CanPasteFromClipboard(model_, parent_));
+               bookmarks::CanPasteFromClipboard(
+                   bookmark_merged_surface_service_->bookmark_model(),
+                   selection_[0])) ||
+              bookmarks::CanPasteFromClipboard(
+                  bookmark_merged_surface_service_->bookmark_model(), parent_));
   }
   return true;
 }
@@ -591,6 +617,7 @@ bool BookmarkContextMenuController::IsCommandIdVisible(int command_id) const {
 }
 
 void BookmarkContextMenuController::BookmarkModelChanged() {
-  if (delegate_)
+  if (delegate_) {
     delegate_->CloseMenu();
+  }
 }

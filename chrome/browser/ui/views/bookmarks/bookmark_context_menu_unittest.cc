@@ -17,6 +17,8 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -63,6 +65,9 @@ class BookmarkContextMenuTest : public testing::Test {
     profile_builder.AddTestingFactory(
         ManagedBookmarkServiceFactory::GetInstance(),
         ManagedBookmarkServiceFactory::GetDefaultFactory());
+    profile_builder.AddTestingFactory(
+        BookmarkMergedSurfaceServiceFactory::GetInstance(),
+        BookmarkMergedSurfaceServiceFactory::GetDefaultFactory());
     profile_ = profile_builder.Build();
 
     model_ = BookmarkModelFactory::GetForBrowserContext(profile_.get());
