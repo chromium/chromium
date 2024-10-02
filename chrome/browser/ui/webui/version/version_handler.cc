@@ -88,16 +88,13 @@ void VersionHandler::HandleRequestVersionInfo(const base::Value::List& args) {
 void VersionHandler::HandleRequestVariationInfo(const base::Value::List& args) {
   AllowJavascript();
 
-  CHECK_EQ(2U, args.size());
+  CHECK_EQ(1U, args.size());
   const std::string& callback_id = args[0].GetString();
-  const bool include_variations_cmd = args[1].GetBool();
 
   base::Value::Dict response;
   response.Set(version_ui::kKeyVariationsList, version_ui::GetVariationsList());
-  if (include_variations_cmd) {
-    response.Set(version_ui::kKeyVariationsCmd,
-                 version_ui::GetVariationsCommandLineAsValue());
-  }
+  response.Set(version_ui::kKeyVariationsCmd,
+               version_ui::GetVariationsCommandLineAsValue());
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }
 

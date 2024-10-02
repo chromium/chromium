@@ -248,7 +248,7 @@ class ExportDelegate {
       batchExports.push(exportData);
     }
     const variationInfo =
-        await sendWithPromise('requestVariationInfo', true);
+        await sendWithPromise('requestVariationInfo');
     const pathInfo = await sendWithPromise('requestPathInfo');
 
     const now = new Date();

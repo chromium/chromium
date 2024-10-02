@@ -101,6 +101,10 @@ web::WebUIIOSDataSource* CreateVersionUIDataSource() {
                                   IDS_VERSION_UI_VARIATIONS);
   html_source->AddLocalizedString(version_ui::kVariationsCmdName,
                                   IDS_VERSION_UI_VARIATIONS_CMD);
+  html_source->AddLocalizedString(version_ui::kCopyVariationsLabel,
+                                  IDS_VERSION_UI_COPY_VARIATIONS_LABEL);
+  html_source->AddLocalizedString(version_ui::kCopyVariationsNotice,
+                                  IDS_VERSION_UI_COPY_VARIATIONS_NOTICE);
   html_source->AddLocalizedString(version_ui::kVariationsSeedName,
                                   IDS_VERSION_UI_VARIATIONS_SEED_NAME);
 
