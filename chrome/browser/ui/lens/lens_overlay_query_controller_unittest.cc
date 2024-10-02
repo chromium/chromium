@@ -151,42 +151,6 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
   int num_full_page_translate_gen204_pings_sent_ = 0;
 
  protected:
-  void CreateAndFetchEndpointFetcher(
-      lens::LensOverlayServerRequest request_data,
-      base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
-          fetcher_created_callback,
-      EndpointFetcherCallback endpoint_fetcher_callback) override {
-    lens::LensOverlayServerResponse fake_server_response;
-    if (request_data.has_objects_request()) {
-      sent_objects_request_.CopyFrom(request_data.objects_request());
-      fake_server_response.mutable_objects_response()->CopyFrom(
-          fake_objects_response_);
-      sent_request_id_.CopyFrom(
-          request_data.objects_request().request_context().request_id());
-    } else if (request_data.has_interaction_request()) {
-      sent_interaction_request_.CopyFrom(request_data.interaction_request());
-      fake_server_response.mutable_interaction_response()->CopyFrom(
-          fake_interaction_response_);
-      sent_request_id_.CopyFrom(
-          request_data.interaction_request().request_context().request_id());
-    } else {
-      NOTREACHED_IN_MIGRATION();
-    }
-    sent_client_logs_.CopyFrom(request_data.client_logs());
-
-    EndpointResponse fake_endpoint_response;
-    fake_endpoint_response.response = fake_server_response.SerializeAsString();
-    fake_endpoint_response.http_status_code =
-        google_apis::ApiErrorCode::HTTP_SUCCESS;
-    std::unique_ptr<FakeEndpointFetcher> endpoint_fetcher =
-        std::make_unique<FakeEndpointFetcher>(fake_endpoint_response);
-    EndpointFetcher* fetcher = endpoint_fetcher.get();
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(fetcher_created_callback),
-                                  std::move(endpoint_fetcher)));
-    fetcher->PerformRequest(std::move(endpoint_fetcher_callback), kTestApiKey);
-  }
-
   // Mocked to avoid making actual server call. Instead, returns a fake
   // response.
   void PerformFetchRequest(
@@ -776,9 +740,10 @@ TEST_F(LensOverlayQueryControllerTest,
   auto sent_interaction_request = query_controller.sent_interaction_request_;
   ASSERT_TRUE(interaction_data_response_future.IsReady());
   ASSERT_EQ(
-      sent_interaction_request.request_context().request_id().sequence_id(), 2);
-  ASSERT_EQ(sent_interaction_request.interaction_request_metadata().type(),
-            lens::LensOverlayInteractionRequestMetadata::CONTEXTUAL_SEARCH_QUERY);
+      sent_interaction_request.request_context().request_id().sequence_id(), 3);
+  ASSERT_EQ(
+      sent_interaction_request.interaction_request_metadata().type(),
+      lens::LensOverlayInteractionRequestMetadata::CONTEXTUAL_SEARCH_QUERY);
   ASSERT_EQ(sent_interaction_request.interaction_request_metadata()
                 .query_metadata()
                 .text_query()

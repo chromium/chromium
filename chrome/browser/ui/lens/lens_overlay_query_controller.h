@@ -135,16 +135,6 @@ class LensOverlayQueryController {
       lens::mojom::SemanticEvent event);
 
  protected:
-  // Creates an endpoint fetcher for fetching the request data and fetches
-  // the request.
-  // TODO(b/369374459): Cleanup this method once interaction flow goes through
-  //                    PerformFetchRequest instead.
-  virtual void CreateAndFetchEndpointFetcher(
-      lens::LensOverlayServerRequest request_data,
-      base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
-          fetcher_created_callback,
-      EndpointFetcherCallback fetched_response_callback);
-
   // Creates an endpoint fetcher with the given request_headers to perform the
   // given request. Calls fetcher_created_callback when the EndpointFetcher is
   // created to keep it alive while the request is being made.
@@ -213,6 +203,10 @@ class LensOverlayQueryController {
 
     // The headers to attach to the request.
     std::unique_ptr<std::vector<std::string>> request_headers_;
+
+    // A callback to run once the request has been sent. This is optional, but
+    // can be used to run some logic once the request has been sent.
+    std::optional<base::OnceClosure> request_sent_callback_;
   };
 
   // Makes a LensOverlayServerClusterInfoRequest to get the cluster info. Will
@@ -282,20 +276,6 @@ class LensOverlayQueryController {
   // Runs the full image callback with empty response data, for errors.
   void RunFullImageCallbackForError();
 
-  // Creates a client context proto to be attached to a server request.
-  lens::LensOverlayClientContext CreateClientContext();
-
-  // Fetches the OAuth headers and calls the callback with the headers. If the
-  // OAuth cannot be retrieve (like if the user is not logged in), the callback
-  // will be called with an empty vector.
-  void CreateOAuthHeadersAndContinue(OAuthHeadersCreatedCallback callback);
-
-  // Adds the visual search interaction log data param to the search query
-  // params.
-  std::map<std::string, std::string> AddVisualSearchInteractionLogData(
-      std::map<std::string, std::string> additional_search_query_params,
-      lens::LensOverlaySelectionType selection_type);
-
   // Sends the interaction data, triggering async image cropping and fetching
   // the request.
   void SendInteraction(
@@ -306,51 +286,81 @@ class LensOverlayQueryController {
       std::map<std::string, std::string> additional_search_query_params,
       std::optional<SkBitmap> region_bytes);
 
-  // Continues with SendInteraction after the full image cropping is finished.
-  void OnImageCropReady(
-      int request_index,
+  // Creates the interaction request that is sent to the server and tries to
+  // perform the interaction request. If not all asynchronous flows have
+  // finished, the attempt to perform the request will be ignored. Only the last
+  // asynchronous flow to finish will perform the request.
+  void CreateInteractionRequestAndTryPerformInteractionRequest(
+      int sequence_id,
       lens::mojom::CenterRotatedBoxPtr region,
       std::optional<std::string> query_text,
       std::optional<std::string> object_id,
-      lens::LensOverlaySelectionType selection_type,
-      std::map<std::string, std::string> additional_search_query_params,
       scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs,
+      std::unique_ptr<lens::LensOverlayRequestId> request_id,
       std::optional<lens::ImageCrop> image_crop);
+
+  // Creates the OAuth headers that get attached to the interaction request to
+  // authenticate the user. After, tries to perform the interaction request. If
+  // not all asynchronous flows have finished, the attempt to perform the
+  // request will be ignored. Only the last asynchronous flow to finish will
+  // perform the request.
+  void CreateOAuthHeadersAndTryPerformInteractionRequest(int sequence_id);
+
+  // Called when an asynchronous piece of data needed to make the interaction
+  // request is ready. Once this has been invoked with every necessary piece of
+  // data with the same sequence_id, it will call PerformInteractionRequest to
+  // send the request to the server. Ignores any data received from an old
+  // sequence_id.
+  void InteractionRequestDataReady(int sequence_id,
+                                   lens::LensOverlayServerRequest request);
+  void InteractionRequestDataReady(int sequence_id,
+                                   std::vector<std::string> headers);
+
+  // If all data needed to PerformInteractionRequest is available, will call
+  // PerformInteractionRequest to fetch the request. If any async flow has not
+  // finished, it will ignore the request with the assumption
+  // TryPerformInteractionRequest will be called again once the flow has
+  // finished. Will also ensure the full image response has been received. If
+  // the full image response has not been received, will kick off the full image
+  // response flow with a callback to send this interaction request after.
+  void TryPerformInteractionRequest(int sequence_id);
+
+  // Verifies the given sequence_id is still the most recent.
+  bool IsCurrentInteractionSequence(int sequence_id);
+
+  // Creates the endpoint fetcher and send the full image request to the server.
+  void PerformInteractionRequest();
+
+  // Creates the URL to load in the side panel and sends it to the callback.
+  void CreateSearchUrlAndSendToCallback(
+      std::optional<std::string> query_text,
+      std::map<std::string, std::string> additional_search_query_params,
+      lens::LensOverlaySelectionType selection_type,
+      std::unique_ptr<lens::LensOverlayRequestId> request_id);
 
   // Handles the endpoint fetch response for an interaction request.
   void InteractionFetchResponseHandler(
+      int sequence_id,
       std::unique_ptr<EndpointResponse> response);
 
   // Runs the interaction callback with empty response data, for errors.
   void RunInteractionCallbackForError();
 
-  // Helper to gate interaction fetches on whether or not the cluster
-  // info has been received. If it has not been received, this function
-  // sets the cluster info received callback to fetch the interaction.
-  // Additionally, invokes `thumbnail_created_callback_` and passes the data
-  // in `image_crop`.
-  void FetchInteractionRequestAndGenerateUrlIfClusterInfoReady(
-      int request_index,
-      lens::mojom::CenterRotatedBoxPtr region,
-      std::optional<std::string> query_text,
-      std::optional<std::string> object_id,
-      lens::LensOverlaySelectionType selection_type,
-      std::map<std::string, std::string> additional_search_query_params,
-      std::optional<lens::ImageCrop> image_crop,
-      lens::LensOverlayClientLogs client_logs);
+  // Creates a client context proto to be attached to a server request.
+  lens::LensOverlayClientContext CreateClientContext();
 
-  // Fetches the endpoint for an interaction request and creates a Lens search
-  // url if the request is the most recent request.
-  void FetchInteractionRequestAndGenerateLensSearchUrl(
-      int request_index,
-      lens::mojom::CenterRotatedBoxPtr region,
-      std::optional<std::string> query_text,
-      std::optional<std::string> object_id,
-      lens::LensOverlaySelectionType selection_type,
+  // Fetches the OAuth headers and calls the callback with the headers. If the
+  // OAuth cannot be retrieve (like if the user is not logged in), the callback
+  // will be called with an empty vector. Returns the access token fetcher
+  // making the request so it can be kept alive.
+  std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
+  CreateOAuthHeadersAndContinue(OAuthHeadersCreatedCallback callback);
+
+  // Adds the visual search interaction log data param to the search query
+  // params.
+  std::map<std::string, std::string> AddVisualSearchInteractionLogData(
       std::map<std::string, std::string> additional_search_query_params,
-      std::optional<lens::ImageCrop> image_crop,
-      lens::LensOverlayClientLogs client_logs,
-      lens::LensOverlayClusterInfo cluster_info);
+      lens::LensOverlaySelectionType selection_type);
 
   // Creates the metadata for an interaction request using the latest
   // interaction and image crop data.
@@ -372,15 +382,6 @@ class LensOverlayQueryController {
   // Callback for when the interaction endpoint fetcher is created.
   void OnInteractionEndpointFetcherCreated(
       std::unique_ptr<EndpointFetcher> endpoint_fetcher);
-
-  // Creates an endpoint fetcher using the received auth token data.
-  // TODO(b/369374459): Cleanup this method once interaction flow goes through
-  //                    PerformFetchRequest instead.
-  void FetchEndpoint(lens::LensOverlayServerRequest request_data,
-                     base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
-                         fetcher_created_callback,
-                     EndpointFetcherCallback fetched_response_callback,
-                     std::vector<std::string> headers);
 
   // The request id generator.
   std::unique_ptr<lens::LensOverlayRequestIdGenerator> request_id_generator_;
@@ -426,19 +427,33 @@ class LensOverlayQueryController {
   // The last received cluster info.
   std::optional<lens::LensOverlayClusterInfo> cluster_info_ = std::nullopt;
 
-  // The cluster info received callback. Will be used to send a queued
-  // interaction request if an interaction is received before the initial
-  // request receives the cluster info.
-  base::OnceCallback<void(lens::LensOverlayClusterInfo)>
-      cluster_info_received_callback_;
+  // The full image response received callback. Will be used to send a queued
+  // interaction request if an interaction is received before the full image
+  // response has been received.
+  base::OnceClosure full_image_response_received_callback_;
 
-  // The access token fetcher used for OAuth requests.
+  // TODO(b/370805019): All our flows are requesting the same headers, so
+  // ideally we use one fetcher that returns the same headers wherever they are
+  // needed.
+  // The access token fetcher used for getting OAuth for cluster info requests.
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
-      access_token_fetcher_;
+      cluster_info_access_token_fetcher_;
+
+  // The access token fetcher used for getting OAuth for full image requests.
+  std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
+      full_image_access_token_fetcher_;
+
+  // The access token fetcher used for getting OAuth for interaction requests.
+  std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
+      interaction_access_token_fetcher_;
 
   // The data for the full image request in progress. Is null if no full image
   // request has been made.
   std::unique_ptr<LensServerFetchRequest> latest_full_image_request_data_;
+
+  // The data for the interaction request in progress. Is null if no interaction
+  // request has been made.
+  std::unique_ptr<LensServerFetchRequest> latest_interaction_request_data_;
 
   // The endpoint fetcher used for the cluster info request.
   std::unique_ptr<EndpointFetcher> cluster_info_endpoint_fetcher_;
@@ -477,10 +492,6 @@ class LensOverlayQueryController {
   // The mime type of underlying_content_bytes. Will be empty if
   // underlying_content_bytes_ is empty.
   std::string underlying_content_type_;
-
-  // The request counter, used to make sure requests are not sent out of
-  // order.
-  int request_counter_ = 0;
 
   // Whether or not the parent interaction query has been sent. This should
   // always be the first interaction in a query flow.
