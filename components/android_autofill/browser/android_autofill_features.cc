@@ -46,7 +46,7 @@ BASE_FEATURE(kAndroidAutofillDeprecateAccessibilityApi,
 // provider of submission.
 BASE_FEATURE(kAndroidAutofillDirectFormSubmission,
              "AndroidAutofillDirectFormSubmission",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, offer prefill requests (i.e. calls to
 // `AutofillManager.notifyVirtualViewsReady`) to change

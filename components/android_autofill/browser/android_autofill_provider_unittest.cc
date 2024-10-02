@@ -737,40 +737,6 @@ TEST_F(AndroidAutofillProviderTest, FormSubmissionHappensDirectly) {
       mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED);
 }
 
-// Tests that a form submission of an ongoing Autofill session is propagated to
-// Java when the `AutofillManager` of the tab is destroyed. Put differently,
-// it tests that the `AutofillManager` is reset on destruction.
-TEST_F(AndroidAutofillProviderTest, FormSubmissionHappensOnFrameDestruction) {
-  content::RenderFrameHost* child_rfh =
-      content::RenderFrameHostTester::For(main_frame())
-          ->AppendChild(std::string("child"));
-  child_rfh = content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("https://foo.bar"), child_rfh);
-
-  // Force creation of driver.
-  ASSERT_TRUE(ContentAutofillDriver::GetForRenderFrameHost(child_rfh));
-
-  FormData form = CreateFormDataForFrame(
-      CreateTestPersonalInformationFormData(),
-      LocalFrameToken(child_rfh->GetFrameToken().value()));
-  android_autofill_manager(child_rfh).OnFormsSeen({form},
-                                                  /*removed_forms=*/{});
-
-  // Start an Autofill session.
-  android_autofill_manager(child_rfh).SimulateOnAskForValuesToFill(
-      form, form.fields()[0]);
-
-  EXPECT_CALL(provider_bridge(), OnFormSubmitted).Times(0);
-  android_autofill_manager(child_rfh).SimulateOnFormSubmitted(
-      form, /*known_success=*/false, mojom::SubmissionSource::XHR_SUCCEEDED);
-  Mock::VerifyAndClearExpectations(&provider_bridge());
-
-  EXPECT_CALL(provider_bridge(),
-              OnFormSubmitted(mojom::SubmissionSource::XHR_SUCCEEDED));
-  content::RenderFrameHostTester::For(std::exchange(child_rfh, nullptr))
-      ->Detach();
-}
-
 // Tests the predictions from `password_manager::FormDataParser` are used to
 // overwrite all type predictions of the respective `FormDataAndroidField`s.
 TEST_F(AndroidAutofillProviderTest,
