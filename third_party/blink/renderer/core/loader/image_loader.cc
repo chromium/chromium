@@ -767,11 +767,8 @@ void ImageLoader::ImageNotifyFinished(ImageResourceContent* content) {
     Image& image = *image_content_->GetImage();
 
     if (auto* svg_image = DynamicTo<SVGImage>(image)) {
-      // SVG's document should be completely loaded before access control
-      // checks, which can occur anytime after ImageNotifyFinished()
-      // (See SVGImage::CurrentFrameHasSingleSecurityOrigin()).
-      // We check the document is loaded here to catch violation of the
-      // assumption reliably.
+      // Check that the SVGImage has completed loading (i.e the 'load' event
+      // has been dispatched in the SVG document).
       svg_image->CheckLoaded();
       svg_image->UpdateUseCounters(GetElement()->GetDocument());
       svg_image->MaybeRecordSvgImageProcessingTime(GetElement()->GetDocument());

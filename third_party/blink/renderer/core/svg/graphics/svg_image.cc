@@ -145,8 +145,6 @@ bool SVGImage::CurrentFrameHasSingleSecurityOrigin() const {
     return true;
   }
 
-  CheckLoaded();
-
   SVGSVGElement* root_element = RootElement();
   if (!root_element)
     return true;
