@@ -68,7 +68,7 @@ void OAuthTokenGetterImpl::OnGetTokensResponse(const std::string& refresh_token,
 
   // At this point we don't know the email address so we need to fetch it.
   email_discovery_ = true;
-  gaia_oauth_client_->GetTokenInfo(access_token, kMaxRetries, this);
+  gaia_oauth_client_->GetUserEmail(access_token, kMaxRetries, this);
 }
 
 void OAuthTokenGetterImpl::OnRefreshTokenResponse(
@@ -82,7 +82,7 @@ void OAuthTokenGetterImpl::OnRefreshTokenResponse(
   UpdateAccessToken(access_token, expires_seconds);
 
   if (!authorization_credentials_->is_service_account && !email_verified_) {
-    gaia_oauth_client_->GetTokenInfo(access_token, kMaxRetries, this);
+    gaia_oauth_client_->GetUserEmail(access_token, kMaxRetries, this);
   } else {
     NotifyTokenCallbacks(OAuthTokenGetterImpl::SUCCESS,
                          authorization_credentials_->login, oauth_access_token_,
@@ -90,22 +90,16 @@ void OAuthTokenGetterImpl::OnRefreshTokenResponse(
   }
 }
 
-void OAuthTokenGetterImpl::OnGetTokenInfoResponse(
-    const base::Value::Dict& token_info) {
+void OAuthTokenGetterImpl::OnGetUserEmailResponse(
+    const std::string& user_email) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(authorization_credentials_);
-  VLOG(1) << "Received token info.";
-
-  const std::string* user_email = token_info.FindString("email");
-  if (!user_email) {
-    OnOAuthError();
-    return;
-  }
+  VLOG(1) << "Received user email.";
 
   if (email_discovery_) {
-    authorization_credentials_->login = *user_email;
+    authorization_credentials_->login = user_email;
     email_discovery_ = false;
-  } else if (*user_email != authorization_credentials_->login) {
+  } else if (user_email != authorization_credentials_->login) {
     LOG(ERROR) << "OAuth token and email address do not refer to "
                   "the same account.";
     OnOAuthError();
@@ -113,14 +107,6 @@ void OAuthTokenGetterImpl::OnGetTokenInfoResponse(
   }
 
   email_verified_ = true;
-
-  if (!token_info.FindString("scope")) {
-    LOG(ERROR) << "Missing scopes in token info.";
-    OnOAuthError();
-    return;
-  }
-
-  scopes_ = *token_info.FindString("scope");
   NotifyTokenCallbacks(OAuthTokenGetterImpl::SUCCESS,
                        authorization_credentials_->login, oauth_access_token_,
                        scopes_);
