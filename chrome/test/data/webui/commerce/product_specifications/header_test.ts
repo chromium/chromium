@@ -113,4 +113,21 @@ suite('HeaderTest', () => {
     assertTrue(!!input);
     assertTrue(isVisible(input));
   });
+
+  test('subtitle and input do not change after empty input', async () => {
+    const subtitle = 'foo';
+
+    header.subtitle = subtitle;
+    header.$.menu.dispatchEvent(new CustomEvent('rename-click'));
+    await waitAfterNextRender(header);
+
+    const input = header.shadowRoot!.querySelector<CrInputElement>('#input');
+    assertTrue(!!input);
+    input.value = '';
+    input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+    await waitAfterNextRender(header);
+
+    assertEquals(subtitle, header.subtitle);
+    assertEquals(subtitle, input.value);
+  });
 });
