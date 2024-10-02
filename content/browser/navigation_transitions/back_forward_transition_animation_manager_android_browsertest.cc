@@ -4371,8 +4371,11 @@ class BackForwardTransitionAnimationManagerBrowserTestSuspendDialog
   }
 
   void TearDown() override {
-    EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kTab));
-    EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kApp));
+    // If the tests are skipped on emulators, `fake_dialog_manager()` is null.
+    if (fake_dialog_manager()) {
+      EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kTab));
+      EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kApp));
+    }
   }
 
   ui::FakeModalDialogManagerBridge* fake_dialog_manager() {
