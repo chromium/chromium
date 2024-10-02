@@ -530,7 +530,6 @@ bool ui::IsNSRange(id value) {
       {NSAccessibilityEnabledAttribute, @"enabled"},
       {NSAccessibilityEndTextMarkerAttribute, @"endTextMarker"},
       {NSAccessibilityExpandedAttribute, @"expanded"},
-      {NSAccessibilityFocusedAttribute, @"focused"},
       {NSAccessibilityHeaderAttribute, @"header"},
       {NSAccessibilityIndexAttribute, @"index"},
       {NSAccessibilityInsertionPointLineNumberAttribute,
@@ -750,7 +749,7 @@ bool ui::IsNSRange(id value) {
   return @(GetState(_owner, ax::mojom::State::kExpanded));
 }
 
-- (NSNumber*)focused {
+- (NSNumber*)AXFocused {
   if (![self instanceActive])
     return nil;
   BrowserAccessibilityManager* manager = _owner->manager();
