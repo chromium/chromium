@@ -87,10 +87,6 @@ namespace blink {
 
 namespace {
 
-BASE_FEATURE(kColorBufferGetTextureTargetFromClientSI,
-             "ColorBufferGetTextureTargetFromClientSI",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 const float kResourceAdjustedRatio = 0.5;
 
 bool g_should_fail_drawing_buffer_creation_for_testing = false;
@@ -942,15 +938,7 @@ DrawingBuffer::ColorBuffer::ColorBuffer(
       shared_image(std::move(shared_image)),
       shared_image_texture_(std::move(shared_image_texture)) {
   CHECK(this->shared_image);
-
-  // In all cases it should be correct for this instance to use the texture
-  // target of the passed-in ClientSharedImage. As the texture target was
-  // historically computed separately by the client, we guard this change with a
-  // killswitch.
-  // TODO(crbug.com/41494843): Remove this killswitch post-safe rollout.
-  if (base::FeatureList::IsEnabled(kColorBufferGetTextureTargetFromClientSI)) {
-    this->texture_target = this->shared_image->GetTextureTarget();
-  }
+  this->texture_target = this->shared_image->GetTextureTarget();
 }
 
 DrawingBuffer::ColorBuffer::~ColorBuffer() {
