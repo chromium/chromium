@@ -114,6 +114,23 @@ def build(out_dir, build_target, extra_options=None):
   return run(cmd)
 
 
+def build_all(out_dir, build_targets, extra_options=None):
+  """Runs `autoninja build`.
+
+  Runs `autoninja -C |out_dir| |build_targets| |extra_options|` which will build
+  the targets |build_targets| for the GN configuration living under |out_dir|.
+  This is done locally on the same chromium checkout.
+
+  Returns:
+    Exit code of running `autoninja ..` command with the argument provided.
+  """
+  cmd = ['autoninja', '-C', out_dir]
+  cmd.extend(build_targets)
+  if extra_options:
+    cmd += extra_options
+  return run(cmd)
+
+
 def android_gn_gen(is_release, target_cpu, out_dir):
   """Runs `gn gen` using Cronet's android gn_args.
 

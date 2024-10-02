@@ -1,0 +1,12 @@
+{
+  "//components/cronet/gn2bp/tests/test_rlib_crate:target1_gn2bp_test": {
+    "x86": [
+      "--cfg",
+      "build_script_ran",
+      "--cfg",
+      "is_android",
+      "--cfg",
+      "i686"
+    ]
+  }
+}
