@@ -6274,6 +6274,11 @@
     "expiry_milestone": 111
   },
   {
+    "name": "ntp-mobile-promo",
+    "owners": [ "rkgibson@google.com", "bling-mony-pod@google.com", "pauladedeji@google.com" ],
+    "expiry_milestone": 134
+  },
+  {
     "name": "ntp-modules-drag-and-drop",
     "owners": [ "pauladedeji@chromium.org", "mahmadi@chromium.org", "tiborg@chromium.org" ],
     "expiry_milestone": 108

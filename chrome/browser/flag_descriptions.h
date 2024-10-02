@@ -3039,6 +3039,9 @@ extern const char kNtpMostRelevantTabResumptionModuleDeviceIconDescription[];
 extern const char kNtpMiddleSlotPromoDismissalName[];
 extern const char kNtpMiddleSlotPromoDismissalDescription[];
 
+extern const char kNtpMobilePromoName[];
+extern const char kNtpMobilePromoDescription[];
+
 extern const char kNtpModulesDragAndDropName[];
 extern const char kNtpModulesDragAndDropDescription[];
 

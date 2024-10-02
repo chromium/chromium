@@ -17583,6 +17583,7 @@ from previous Chrome versions.
   <int value="-1133285806" label="MacLoopbackAudioForScreenShare:disabled"/>
   <int value="-1132704128" label="AndroidPaymentAppsFilter:disabled"/>
   <int value="-1132486267" label="ProductSpecificationsMultiSpecifics:enabled"/>
+  <int value="-1132119678" label="NtpMobilePromo:disabled"/>
   <int value="-1131848860" label="TilingWindowResize:enabled"/>
   <int value="-1131726331" label="BackGestureRefactorAndroid:disabled"/>
   <int value="-1130835436" label="SuspendStateMachine:disabled"/>
@@ -17631,6 +17632,7 @@ from previous Chrome versions.
   <int value="-1113373128" label="WebUIDownloadShelf:enabled"/>
   <int value="-1112782121" label="AndroidSigninPromos:disabled"/>
   <int value="-1112092067" label="AndroidHubV2:disabled"/>
+  <int value="-1111837928" label="NtpMobilePromo:enabled"/>
   <int value="-1111269978" label="FluentOverlayScrollbar:enabled"/>
   <int value="-1111094917" label="Cormorant:enabled"/>
   <int value="-1111056156" label="AdvancedPeripheralsSupportTabStrip:enabled"/>
