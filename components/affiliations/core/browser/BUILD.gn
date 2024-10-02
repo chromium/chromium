@@ -53,6 +53,7 @@ source_set("affiliations") {
   ]
   deps = [
     ":affiliation_proto",
+    ":features",
     "//base",
     "//components/affiliations/core/browser:sql_builder",
     "//components/keyed_service/core",
@@ -97,6 +98,16 @@ source_set("test_support") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+}
+
+component("features") {
+  output_name = "affiliation_features"
+  defines = [ "IS_AFFILIATION_FEATURES_IMPL" ]
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  public_deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
