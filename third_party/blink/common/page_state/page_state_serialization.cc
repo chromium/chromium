@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/public/common/page_state/page_state_serialization.h"
 
 #include <algorithm>
@@ -14,6 +9,7 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/pickle.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -308,8 +304,7 @@ void WriteString(const std::u16string& str, SerializeObject* obj) {
   // bifurcation where the Pickle version originally wrote a Windows
   // std::wstring, which then turned into std::u16string, while this code
   // originally dealt with WebString(), which then turned into std::u16string.
-  obj->pickle.WriteData(base::span(reinterpret_cast<const uint8_t*>(str.data()),
-                                   str.length() * sizeof(char16_t)));
+  obj->pickle.WriteData(base::as_byte_span(str));
 }
 
 // If str is a null optional, this simply pickles a length of -1. Otherwise,
@@ -686,9 +681,7 @@ void WriteResourceRequestBody(const network::ResourceRequestBody& request_body,
     switch (element.type()) {
       case network::DataElement::Tag::kBytes: {
         const auto& bytes = element.As<network::DataElementBytes>().bytes();
-        const char* data = reinterpret_cast<const char*>(bytes.data());
-        data_element = mojom::Element::NewBytes(
-            std::vector<unsigned char>(data, data + bytes.size()));
+        data_element = mojom::Element::NewBytes(base::ToVector(bytes));
         break;
       }
       case network::DataElement::Tag::kFile: {
@@ -1052,11 +1045,10 @@ bool DecodePageStateWithDeviceScaleFactorForTesting(
 }
 
 scoped_refptr<network::ResourceRequestBody> DecodeResourceRequestBody(
-    const char* data,
-    size_t size) {
+    base::span<const uint8_t> data) {
   scoped_refptr<network::ResourceRequestBody> result =
       new network::ResourceRequestBody();
-  SerializeObject obj(base::as_bytes(base::span(data, size)));
+  SerializeObject obj(data);
   ReadResourceRequestBody(&obj, result);
   // Please see the EncodeResourceRequestBody() function below for information
   // about why the contains_sensitive_info() field is being explicitly

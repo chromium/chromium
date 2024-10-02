@@ -380,6 +380,16 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/common/page_state/page_state_serialization.cc',
+        ],
+        'allowed': [
+            'base::ToVector',
+            'mojom::Element',
+            'network::DataElementBytes',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/common/performance/performance_scenarios.cc',
         ],
         'allowed': [

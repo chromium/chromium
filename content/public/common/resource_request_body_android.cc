@@ -81,8 +81,7 @@ ExtractResourceRequestBodyFromJavaObject(
   std::vector<uint8_t> encoded;
   base::android::JavaByteArrayToByteVector(env, j_encoded, &encoded);
 
-  return blink::DecodeResourceRequestBody(
-      reinterpret_cast<const char*>(encoded.data()), encoded.size());
+  return blink::DecodeResourceRequestBody(encoded);
 }
 
 }  // namespace content
