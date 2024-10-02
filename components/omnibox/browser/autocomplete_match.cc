@@ -1533,7 +1533,7 @@ int AutocompleteMatch::GetSortingOrder() const {
 
 bool AutocompleteMatch::IsMlSignalLoggingEligible() const {
   const auto& ml_config = OmniboxFieldTrial::GetMLConfig();
-  if (answer.has_value()) {
+  if (answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED) {
     return false;
   }
   return type == AutocompleteMatchType::URL_WHAT_YOU_TYPED ||
@@ -1558,7 +1558,8 @@ bool AutocompleteMatch::IsMlScoringEligible() const {
   // Do not apply ML scoring to calculator or answer suggestions as the ML model
   // currently doesn't provide accurate scores for suggestions that have a low
   // click-through rate.
-  if (type == AutocompleteMatchType::CALCULATOR || answer.has_value()) {
+  if (type == AutocompleteMatchType::CALCULATOR ||
+      answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED) {
     return false;
   }
 
