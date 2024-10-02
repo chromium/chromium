@@ -46,11 +46,6 @@ enum class InfobarBannerPresentationState;
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
-    NS_UNAVAILABLE;
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                              browserState:(ChromeBrowserState*)browserState
-    NS_UNAVAILABLE;
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
 // Present the InfobarBanner using `self.baseViewController`.
@@ -93,7 +88,7 @@ enum class InfobarBannerPresentationState;
 // The WebState that the InfobarCoordinator is associated with. Can be nil.
 @property(nonatomic, assign) web::WebState* webState;
 
-// The ChromeBrowserState owned by the Coordinator.
+// The ViewController owned by the Coordinator.
 // TODO(crbug.com/40611826): Once we create the coordinators in the UI Hierarchy
 // baseViewController will be set on init.
 @property(nonatomic, weak) UIViewController* baseViewController;
