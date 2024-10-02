@@ -1881,6 +1881,290 @@ bool ChildProcessSecurityPolicyImpl::IsAccessAllowedForPdfProcess(
   }
 }
 
+bool ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(
+    int child_id,
+    SecurityState* security_state,
+    const GURL& url,
+    bool url_is_precursor_of_opaque_origin,
+    AccessType access_type,
+    ProcessLock& out_expected_process_lock,
+    std::string& out_failure_reason) {
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+
+  ProcessLock actual_process_lock = security_state->process_lock();
+
+  BrowserOrResourceContext browser_or_resource_context =
+      security_state->GetBrowserOrResourceContext();
+  // The caller ensures that the `browser_or_resource_context` is valid.
+  CHECK(browser_or_resource_context);
+
+  // Loop over all BrowsingInstanceIDs in the SecurityState, and return true if
+  // any of them would return true, otherwise return false. This allows the
+  // checks to be slightly stricter in cases where all BrowsingInstances agree
+  // (e.g., whether an origin is considered isolated and thus inaccessible from
+  // a site-locked process).  When the BrowsingInstances do not agree, the check
+  // might be slightly weaker (as the least common denominator), but the
+  // differences must never violate the ProcessLock.
+  if (security_state->browsing_instance_default_isolation_states().empty()) {
+    // If no BrowsingInstances are found, then the some of the state we need to
+    // perform an accurate check is unexpectedly missing, because there should
+    // always be a BrowsingInstance for such requests, even from workers. Thus,
+    // we should usually kill the process in this case, so that a compromised
+    // renderer can't bypass checks by sending IPCs when no BrowsingInstances
+    // are left.
+    //
+    // However, if the requested `url` is compatible with the current
+    // ProcessLock, then there is no need to kill the process because the checks
+    // would have passed anyway. To reduce the number of crashes while we debug
+    // why no BrowsingInstances were found (in https://crbug.com/1148542), we'll
+    // allow requests with an acceptable process lock to proceed.
+    // TODO(crbug.com/40731345): Remove this when known cases of having no
+    // BrowsingInstance IDs are solved.
+    url::Origin origin(url::Origin::Create(url));
+    bool matches_origin_keyed_process =
+        actual_process_lock.is_origin_keyed_process() &&
+        actual_process_lock.lock_url() == origin.GetURL();
+    bool matches_site_keyed_process =
+        !actual_process_lock.is_origin_keyed_process() &&
+        actual_process_lock.lock_url() == SiteInfo::GetSiteForOrigin(origin);
+    // ProcessLocks with is_pdf() = true actually means that the process is not
+    // supposed to access certain resources from the lock's site/origin, so it's
+    // safest here to fall through in that case. See discussion of
+    // https://crbug.com/1271197 below.
+    if (!actual_process_lock.is_pdf()) {
+      // If the ProcessLock isn't locked to a site, we should fall through since
+      // we have no way of knowing if the requested url was expecting to be in a
+      // locked process.
+      if (actual_process_lock.is_locked_to_site()) {
+        if (matches_origin_keyed_process || matches_site_keyed_process) {
+          return true;
+        } else {
+          out_failure_reason = base::StringPrintf(
+              "No BrowsingInstanceIDs: Lock Mismatch. lock = %s vs. "
+              "requested_url = %s ",
+              actual_process_lock.ToString().c_str(), url.spec().c_str());
+        }
+      } else {
+        out_failure_reason =
+            "No BrowsingInstanceIDs: process not locked to site";
+      }
+    } else {
+      out_failure_reason = "No BrowsingInstanceIDs: process lock is_pdf";
+    }
+    return false;
+  }
+
+  for (auto browsing_instance_info_entry :
+       security_state->browsing_instance_default_isolation_states()) {
+    auto& browsing_instance_id = browsing_instance_info_entry.first;
+    auto& default_isolation_state = browsing_instance_info_entry.second;
+    // In the case of multiple BrowsingInstances in the SecurityState, note that
+    // failure reasons will only be reported if none of the BrowsingInstances
+    // allow access. In that event, |failure_reason| contains the concatenated
+    // reasons for each BrowsingInstance, each prefaced by its id.
+    out_failure_reason +=
+        base::StringPrintf("[BI=%d]", browsing_instance_id.GetUnsafeValue());
+
+    // Use the actual process lock's state to compute `is_guest` and `is_fenced`
+    // for the expected process lock's `isolation_context`. Guest status and
+    // fenced status doesn't currently influence the outcome of this access
+    // check, and even if it did, `url` wouldn't be sufficient to tell whether
+    // the request belongs solely to a guest (or non-guest) or fenced process.
+    // Note that a guest isn't allowed to access data outside of its own
+    // StoragePartition, but this is enforced by other means (e.g., resource
+    // access APIs can't name an alternate StoragePartition).
+    IsolationContext isolation_context(
+        browsing_instance_id, browser_or_resource_context,
+        actual_process_lock.is_guest(), actual_process_lock.is_fenced(),
+        default_isolation_state);
+
+    // NOTE: If we're on the IO thread, the call to ProcessLock::Create() below
+    // will return a ProcessLock with an (internally) identical site_url, one
+    // that does not use effective URLs. That's ok in this instance since we
+    // only ever look at the lock url.
+    //
+    // Since we are dealing with a valid ProcessLock at this point, we know the
+    // lock contains a valid StoragePartitionConfig and COOP/COEP information
+    // because that information must be provided when creating the locks.
+    //
+    // At this point, any origin opt-in isolation requests should be complete,
+    // so to avoid the possibility of opting something set
+    // |origin_isolation_request| to kNone below (this happens by default in
+    // UrlInfoInit's ctor).  Note: We might need to revisit this if
+    // CanAccessDataForOrigin() needs to be called while a SiteInstance is being
+    // determined for a navigation, i.e. during
+    // GetSiteInstanceForNavigationRequest().  If this happens, we'd need to
+    // plumb UrlInfo::origin_isolation_request value from the ongoing
+    // NavigationRequest into here. Also, we would likely need to attach the
+    // BrowsingInstanceID to UrlInfo once the SiteInstance has been determined
+    // in case the RenderProcess has multiple BrowsingInstances in it.
+    // TODO(acolwell): Provide a way for callers, that know their request's
+    // require COOP/COEP handling, to pass in their COOP/COEP information so it
+    // can be used here instead of the values in |actual_process_lock|.
+    // TODO(crbug.com/40205612): The code below is subtly incorrect in cases
+    // where actual_process_lock.is_pdf() is true, since in the case of PDFs the
+    // lock is intended to prevent access to the lock's site/origin, while still
+    // allowing the navigation to commit.
+    out_expected_process_lock = ProcessLock::Create(
+        isolation_context,
+        UrlInfo(
+            UrlInfoInit(url)
+                .WithStoragePartitionConfig(
+                    actual_process_lock.GetStoragePartitionConfig())
+                .WithWebExposedIsolationInfo(
+                    actual_process_lock.GetWebExposedIsolationInfo())
+                .WithIsPdf(actual_process_lock.is_pdf())
+                .WithSandbox(actual_process_lock.is_sandboxed())
+                .WithUniqueSandboxId(actual_process_lock.unique_sandbox_id())
+                .WithCrossOriginIsolationKey(
+                    actual_process_lock.agent_cluster_key()
+                        ? actual_process_lock.agent_cluster_key()
+                              ->GetCrossOriginIsolationKey()
+                        : std::nullopt)));
+
+    if (actual_process_lock.is_locked_to_site()) {
+      // Jail-style enforcement - a process with a lock can only access data
+      // from origins that require exactly the same lock.
+      if (actual_process_lock == out_expected_process_lock) {
+        return true;
+      }
+
+      // TODO(acolwell, nasko): https://crbug.com/1029092: Ensure the precursor
+      // of opaque origins matches the renderer's origin lock.
+      if (url_is_precursor_of_opaque_origin) {
+        const GURL& lock_url = actual_process_lock.lock_url();
+        // SitePerProcessBrowserTest.TwoBlobURLsWithNullOriginDontShareProcess.
+        if (lock_url.SchemeIsBlob() &&
+            base::StartsWith(lock_url.path_piece(), "null/")) {
+          return true;
+        }
+
+        // DeclarativeApiTest.PersistRules.
+        if (actual_process_lock.matches_scheme(url::kDataScheme)) {
+          return true;
+        }
+      }
+
+      // Make an exception to allow most visited tiles to commit in third-party
+      // NTP processes.
+      // TODO(crbug.com/40447789): This exception should be removed once these
+      // tiles can be loaded in OOPIFs on the NTP.
+      if (AllowProcessLockMismatchForNTP(out_expected_process_lock,
+                                         actual_process_lock)) {
+        return true;
+      }
+
+      // TODO(wjmaclean): We should update the ProcessLock comparison API to
+      // return a reason why two locks differ.
+      if (actual_process_lock.lock_url() !=
+          out_expected_process_lock.lock_url()) {
+        out_failure_reason += "lock_mismatch:url ";
+        // If the actual lock is same-site to the expected lock, then this is an
+        // isolated origins mismatch; in that case we add text to
+        // |failure_reason| to make this case easy to search for. Note: We don't
+        // compare ports, since the mismatch might be between isolated and
+        // non-isolated.
+        url::Origin actual_origin =
+            url::Origin::Create(actual_process_lock.lock_url());
+        url::Origin expected_origin =
+            url::Origin::Create(out_expected_process_lock.lock_url());
+        if (actual_process_lock.lock_url() ==
+                SiteInfo::GetSiteForOrigin(expected_origin) ||
+            out_expected_process_lock.lock_url() ==
+                SiteInfo::GetSiteForOrigin(actual_origin)) {
+          out_failure_reason += "[origin vs site mismatch] ";
+        }
+      } else {
+        // TODO(wjmaclean,alexmos): Apparently this might not be true anymore,
+        // since is_pdf() and web_exposed_isolation_info() have been added to
+        // the ProcessLock. We need to update the code here to differentiate
+        // these cases, as well as adding documentation (or some other
+        // mechanism) to prevent these getting out of sync in future.
+        out_failure_reason += "lock_mismatch:requires_origin_keyed_process ";
+      }
+    } else {
+      // Citadel-style enforcement - an unlocked process should not be able to
+      // access data from origins that require a lock.
+
+      RenderProcessHost* process = RenderProcessHostImpl::FromID(child_id);
+      if (process) {  // |process| can be null in unittests
+        // Unlocked process can be legitimately used when navigating from an
+        // unused process (about:blank, NTP on Android) to an isolated origin.
+        // See also https://crbug.com/945399.  Returning |true| below will allow
+        // such navigations to succeed (i.e. pass CanCommitOriginAndUrl checks).
+        // We don't expect unused processes to be used outside of navigations
+        // (e.g. when checking CanAccessDataForOrigin for localStorage, etc.).
+        if (process->IsUnused()) {
+          return true;
+        }
+      }
+
+      // See the ProcessLock::Create() call above regarding why we pass kNone
+      // for |origin_isolation_request| below.
+      SiteInfo site_info = SiteInfo::Create(
+          isolation_context,
+          UrlInfo(UrlInfoInit(url).WithWebExposedIsolationInfo(
+              actual_process_lock.GetWebExposedIsolationInfo())));
+
+      // A process that's not locked to any site can only access data from
+      // origins that do not require a locked process.
+      if (!site_info.ShouldLockProcessToSite(isolation_context)) {
+        return true;
+      }
+
+      out_failure_reason += " citadel_enforcement ";
+      if (url_is_precursor_of_opaque_origin) {
+        out_failure_reason += "for_precursor ";
+      }
+
+      // TODO(crbug.com/326251583): Log additional information for diagnosing
+      // the bug. Remove once the investigation is complete.
+      if (site_info.RequiresDedicatedProcess(isolation_context)) {
+        out_failure_reason += "dedicated ";
+        if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
+          out_failure_reason += "spp ";
+        }
+        if (site_info.does_site_request_dedicated_process_for_coop()) {
+          out_failure_reason += "coop ";
+        }
+        if (site_info.requires_origin_keyed_process()) {
+          out_failure_reason += "oac ";
+        }
+        if (site_info.is_sandboxed()) {
+          out_failure_reason += "sandbox ";
+        }
+        if (site_info.is_error_page()) {
+          out_failure_reason += "error ";
+        }
+        if (site_info.is_pdf()) {
+          out_failure_reason += "pdf ";
+        }
+        if (IsIsolatedOrigin(isolation_context,
+                             url::Origin::Create(site_info.site_url()),
+                             site_info.requires_origin_keyed_process())) {
+          out_failure_reason += "io ";
+        }
+      }
+      out_failure_reason +=
+          "site=" + site_info.site_url().possibly_invalid_spec();
+      out_failure_reason +=
+          " next_bi=" +
+          base::NumberToString(
+              SiteInstanceImpl::NextBrowsingInstanceId().GetUnsafeValue());
+      out_failure_reason +=
+          " dis_oac=" + base::NumberToString(
+                            default_isolation_state.is_origin_agent_cluster());
+      out_failure_reason +=
+          " dis_rokp=" +
+          base::NumberToString(
+              default_isolation_state.requires_origin_keyed_process()) +
+          " ";
+    }
+  }
+
+  return false;
+}
+
 bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
     int child_id,
     const GURL& url,
@@ -1893,16 +2177,12 @@ bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
   base::AutoLock lock(lock_);
 
   SecurityState* security_state = GetSecurityState(child_id);
-  BrowserOrResourceContext browser_or_resource_context;
-  if (security_state)
-    browser_or_resource_context = security_state->GetBrowserOrResourceContext();
-
   ProcessLock expected_process_lock;
   std::string failure_reason;
 
   if (!security_state) {
     failure_reason = "no_security_state";
-  } else if (!browser_or_resource_context) {
+  } else if (!security_state->GetBrowserOrResourceContext()) {
     failure_reason = "no_browser_or_resource_context";
   } else {
     ProcessLock actual_process_lock = security_state->process_lock();
@@ -1921,282 +2201,18 @@ bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
                !IsAccessAllowedForPdfProcess(access_type)) {
       failure_reason = "pdf_restrictions";
     } else {
-      // Loop over all BrowsingInstanceIDs in the SecurityState, and return true
-      // if any of them would return true, otherwise return false. This allows
-      // the checks to be slightly stricter in cases where all BrowsingInstances
-      // agree (e.g., whether an origin is considered isolated and thus
-      // inaccessible from a site-locked process).  When the BrowsingInstances
-      // do not agree, the check might be slightly weaker (as the least common
-      // denominator), but the differences must never violate the ProcessLock.
-      if (security_state->browsing_instance_default_isolation_states()
-              .empty()) {
-        // If no BrowsingInstances are found, then the some of the state we need
-        // to perform an accurate check is unexpectedly missing, because there
-        // should always be a BrowsingInstance for such requests, even from
-        // workers. Thus, we should usually kill the process in this case, so
-        // that a compromised renderer can't bypass checks by sending IPCs when
-        // no BrowsingInstances are left.
-        //
-        // However, if the requested `url` is compatible with the current
-        // ProcessLock, then there is no need to kill the process because the
-        // checks would have passed anyway. To reduce the number of crashes
-        // while we debug why no BrowsingInstances were found (in
-        // https://crbug.com/1148542), we'll allow requests with an acceptable
-        // process lock to proceed.
-        // TODO(crbug.com/40731345): Remove this when known cases of having no
-        // BrowsingInstance IDs are solved.
-        url::Origin origin(url::Origin::Create(url));
-        bool matches_origin_keyed_process =
-            actual_process_lock.is_origin_keyed_process() &&
-            actual_process_lock.lock_url() == origin.GetURL();
-        bool matches_site_keyed_process =
-            !actual_process_lock.is_origin_keyed_process() &&
-            actual_process_lock.lock_url() ==
-                SiteInfo::GetSiteForOrigin(origin);
-        // ProcessLocks with is_pdf() = true actually means that the process is
-        // not supposed to access certain resources from the lock's site/origin,
-        // so it's safest here to fall through in that case. See discussion of
-        // https://crbug.com/1271197 below.
-        if (!actual_process_lock.is_pdf()) {
-          // If the ProcessLock isn't locked to a site, we should fall through
-          // since we have no way of knowing if the requested url was expecting
-          // to be in a locked process.
-          if (actual_process_lock.is_locked_to_site()) {
-            if (matches_origin_keyed_process || matches_site_keyed_process) {
-              return true;
-            } else {
-              failure_reason = base::StringPrintf(
-                  "No BrowsingInstanceIDs: Lock Mismatch. lock = %s vs. "
-                  "requested_url = %s ",
-                  actual_process_lock.ToString().c_str(), url.spec().c_str());
-            }
-          } else {
-            failure_reason =
-                "No BrowsingInstanceIDs: process not locked to site";
-          }
-        } else {
-          failure_reason = "No BrowsingInstanceIDs: process lock is_pdf";
-        }
-        // This will fall through to the call to
-        // LogCanAccessDataForOriginCrashKeys below, then return false.
-      }
-      for (auto browsing_instance_info_entry :
-           security_state->browsing_instance_default_isolation_states()) {
-        auto& browsing_instance_id = browsing_instance_info_entry.first;
-        auto& default_isolation_state = browsing_instance_info_entry.second;
-        // In the case of multiple BrowsingInstances in the SecurityState, note
-        // that failure reasons will only be reported if none of the
-        // BrowsingInstances allow access. In that event, |failure_reason|
-        // contains the concatenated reasons for each BrowsingInstance, each
-        // prefaced by its id.
-        failure_reason += base::StringPrintf(
-            "[BI=%d]", browsing_instance_id.GetUnsafeValue());
-
-        // Use the actual process lock's state to compute `is_guest` and
-        // `is_fenced` for the expected process lock's `isolation_context`.
-        // Guest status and fenced status doesn't currently influence the
-        // outcome of this access check, and even if it did, `url` wouldn't be
-        // sufficient to tell whether the request belongs solely to a guest (or
-        // non-guest) or fenced process.  Note that a guest isn't allowed to
-        // access data outside of its own StoragePartition, but this is enforced
-        // by other means (e.g., resource access APIs can't name an alternate
-        // StoragePartition).
-        IsolationContext isolation_context(
-            browsing_instance_id, browser_or_resource_context,
-            actual_process_lock.is_guest(), actual_process_lock.is_fenced(),
-            default_isolation_state);
-
-        // NOTE: If we're on the IO thread, the call to
-        // ProcessLock::Create() below will return a ProcessLock with
-        // an (internally) identical site_url, one that does not use effective
-        // URLs. That's ok in this instance since we only ever look at the lock
-        // url.
-        //
-        // Since we are dealing with a valid ProcessLock at this point, we know
-        // the lock contains a valid StoragePartitionConfig and COOP/COEP
-        // information because that information must be provided when creating
-        // the locks.
-        //
-        // At this point, any origin opt-in isolation requests should be
-        // complete, so to avoid the possibility of opting something set
-        // |origin_isolation_request| to kNone below (this happens by default in
-        // UrlInfoInit's ctor).  Note: We might need to revisit this if
-        // CanAccessDataForOrigin() needs to be called while a SiteInstance is
-        // being determined for a navigation, i.e. during
-        // GetSiteInstanceForNavigationRequest().  If this happens, we'd need
-        // to plumb UrlInfo::origin_isolation_request value from the ongoing
-        // NavigationRequest into here. Also, we would likely need to attach
-        // the BrowsingInstanceID to UrlInfo once the SiteInstance has been
-        // determined in case the RenderProcess has multiple BrowsingInstances
-        // in it.
-        // TODO(acolwell): Provide a way for callers, that know their request's
-        // require COOP/COEP handling, to pass in their COOP/COEP information
-        // so it can be used here instead of the values in
-        // |actual_process_lock|.
-        // TODO(crbug.com/40205612): The code below is subtly incorrect in cases
-        // where actual_process_lock.is_pdf() is true, since in the case of PDFs
-        // the lock is intended to prevent access to the lock's site/origin,
-        // while still allowing the navigation to commit.
-        expected_process_lock = ProcessLock::Create(
-            isolation_context,
-            UrlInfo(UrlInfoInit(url)
-                        .WithStoragePartitionConfig(
-                            actual_process_lock.GetStoragePartitionConfig())
-                        .WithWebExposedIsolationInfo(
-                            actual_process_lock.GetWebExposedIsolationInfo())
-                        .WithIsPdf(actual_process_lock.is_pdf())
-                        .WithSandbox(actual_process_lock.is_sandboxed())
-                        .WithUniqueSandboxId(
-                            actual_process_lock.unique_sandbox_id())
-                        .WithCrossOriginIsolationKey(
-                            actual_process_lock.agent_cluster_key()
-                                ? actual_process_lock.agent_cluster_key()
-                                      ->GetCrossOriginIsolationKey()
-                                : std::nullopt)));
-
-        if (actual_process_lock.is_locked_to_site()) {
-          // Jail-style enforcement - a process with a lock can only access
-          // data from origins that require exactly the same lock.
-          if (actual_process_lock == expected_process_lock)
-            return true;
-
-          // TODO(acolwell, nasko): https://crbug.com/1029092: Ensure the
-          // precursor of opaque origins matches the renderer's origin lock.
-          if (url_is_precursor_of_opaque_origin) {
-            const GURL& lock_url = actual_process_lock.lock_url();
-            // SitePerProcessBrowserTest
-            // .TwoBlobURLsWithNullOriginDontShareProcess.
-            if (lock_url.SchemeIsBlob() &&
-                base::StartsWith(lock_url.path_piece(), "null/")) {
-              return true;
-            }
-
-            // DeclarativeApiTest.PersistRules.
-            if (actual_process_lock.matches_scheme(url::kDataScheme))
-              return true;
-          }
-
-          // Make an exception to allow most visited tiles to commit in
-          // third-party NTP processes.
-          // TODO(crbug.com/40447789): This exception should be removed once
-          // these tiles can be loaded in OOPIFs on the NTP.
-          if (AllowProcessLockMismatchForNTP(expected_process_lock,
-                                             actual_process_lock)) {
-            return true;
-          }
-
-          // TODO(wjmaclean): We should update the ProcessLock comparison API
-          // to return a reason why two locks differ.
-          if (actual_process_lock.lock_url() !=
-              expected_process_lock.lock_url()) {
-            failure_reason += "lock_mismatch:url ";
-            // If the actual lock is same-site to the expected lock, then this
-            // is an isolated origins mismatch; in that case we add text to
-            // |failure_reason| to make this case easy to search for.
-            // Note: We don't compare ports, since the mismatch might be between
-            // isolated and non-isolated.
-            url::Origin actual_origin =
-                url::Origin::Create(actual_process_lock.lock_url());
-            url::Origin expected_origin =
-                url::Origin::Create(expected_process_lock.lock_url());
-            if (actual_process_lock.lock_url() ==
-                    SiteInfo::GetSiteForOrigin(expected_origin) ||
-                expected_process_lock.lock_url() ==
-                    SiteInfo::GetSiteForOrigin(actual_origin)) {
-              failure_reason += "[origin vs site mismatch] ";
-            }
-          } else {
-            // TODO(wjmaclean,alexmos): Apparently this might not be true
-            // anymore, since is_pdf() and web_exposed_isolation_info() have
-            // been added to the ProcessLock. We need to update the code here to
-            // differentiate these cases, as well as adding documentation (or
-            // some other mechanism) to prevent these getting out of sync in
-            // future.
-            failure_reason += "lock_mismatch:requires_origin_keyed_process ";
-          }
-        } else {
-          // Citadel-style enforcement - an unlocked process should not be
-          // able to access data from origins that require a lock.
-
-          DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-          RenderProcessHost* process = RenderProcessHostImpl::FromID(child_id);
-          if (process) {  // |process| can be null in unittests
-            // Unlocked process can be legitimately used when navigating from an
-            // unused process (about:blank, NTP on Android) to an isolated
-            // origin. See also https://crbug.com/945399.  Returning |true|
-            // below will allow such navigations to succeed (i.e. pass
-            // CanCommitOriginAndUrl checks). We don't expect unused processes
-            // to be used outside of navigations (e.g. when checking
-            // CanAccessDataForOrigin for localStorage, etc.).
-            if (process->IsUnused())
-              return true;
-          }
-
-          // See the ProcessLock::Create() call above regarding why we pass
-          // kNone for |origin_isolation_request| below.
-          SiteInfo site_info = SiteInfo::Create(
-              isolation_context,
-              UrlInfo(UrlInfoInit(url).WithWebExposedIsolationInfo(
-                  actual_process_lock.GetWebExposedIsolationInfo())));
-
-          // A process that's not locked to any site can only access data from
-          // origins that do not require a locked process.
-          if (!site_info.ShouldLockProcessToSite(isolation_context))
-            return true;
-
-          failure_reason += " citadel_enforcement ";
-          if (url_is_precursor_of_opaque_origin) {
-            failure_reason += "for_precursor ";
-          }
-
-          // TODO(crbug.com/326251583): Log additional information for
-          // diagnosing the bug. Remove once the investigation is complete.
-          if (site_info.RequiresDedicatedProcess(isolation_context)) {
-            failure_reason += "dedicated ";
-            if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
-              failure_reason += "spp ";
-            }
-            if (site_info.does_site_request_dedicated_process_for_coop()) {
-              failure_reason += "coop ";
-            }
-            if (site_info.requires_origin_keyed_process()) {
-              failure_reason += "oac ";
-            }
-            if (site_info.is_sandboxed()) {
-              failure_reason += "sandbox ";
-            }
-            if (site_info.is_error_page()) {
-              failure_reason += "error ";
-            }
-            if (site_info.is_pdf()) {
-              failure_reason += "pdf ";
-            }
-            if (IsIsolatedOrigin(isolation_context,
-                                 url::Origin::Create(site_info.site_url()),
-                                 site_info.requires_origin_keyed_process())) {
-              failure_reason += "io ";
-            }
-          }
-          failure_reason +=
-              "site=" + site_info.site_url().possibly_invalid_spec();
-          failure_reason +=
-              " next_bi=" +
-              base::NumberToString(
-                  SiteInstanceImpl::NextBrowsingInstanceId().GetUnsafeValue());
-          failure_reason +=
-              " dis_oac=" +
-              base::NumberToString(
-                  default_isolation_state.is_origin_agent_cluster());
-          failure_reason +=
-              " dis_rokp=" +
-              base::NumberToString(
-                  default_isolation_state.requires_origin_keyed_process()) +
-              " ";
-        }
+      // Perform Jail and Citadel checks. See PerformJailAndCitadelChecks() for
+      // more details. If these checks fail, collect crash keys below before
+      // returning false.
+      bool passes_jail_and_citadel_checks = PerformJailAndCitadelChecks(
+          child_id, security_state, url, url_is_precursor_of_opaque_origin,
+          access_type, expected_process_lock, failure_reason);
+      if (passes_jail_and_citadel_checks) {
+        return true;
       }
     }
   }
+
   // Record the duration of KeepAlive requests to include in the crash keys.
   std::string keep_alive_durations;
   std::string shutdown_delay_ref_count;

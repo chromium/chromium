@@ -860,6 +860,36 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   static std::string GetKilledProcessOriginLock(
       const SecurityState* security_state);
 
+  // Helper for CanAccessMaybeOpaqueOrigin, to perform two security checks:
+  //  - Jail check: a process locked to a particular site shouldn't access data
+  //    belonging to other sites.
+  //  - Citadel check: a process not locked to any site shouldn't access data
+  //    belonging to sites that require a dedicated process.
+  //
+  // These checks are performed by comparing the actual ProcessLock of the
+  // process represented by `child_id` and `security_state` to an expected
+  // ProcessLock computed from `url`, which takes into account factors such as
+  // whether `url` should be site-isolated or origin-isolated (or not isolated,
+  // e.g. on Android). Determining site-vs-origin isolation is non-trivial: the
+  // answer may differ depending on BrowsingInstance (e.g., OriginAgentCluster
+  // might require origin isolation only for certain BrowsingInstances), so all
+  // BrowsingInstances hosting in the process must be consulted.
+  //
+  // This function returns true only if both Jail and Citadel checks pass. On
+  // failure, it also populates `out_failure_reason` with debugging information
+  // about the cause of the failure, as well as `out_expected_process_lock` with
+  // what the process lock was expected to be (e.g., to be used in crash keys).
+  //
+  // This function must be called while already holding `lock_`.
+  bool PerformJailAndCitadelChecks(int child_id,
+                                   SecurityState* security_state,
+                                   const GURL& url,
+                                   bool url_is_precursor_of_opaque_origin,
+                                   AccessType access_type,
+                                   ProcessLock& out_expected_process_lock,
+                                   std::string& out_failure_reason)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
   // Helper for public CanAccessOrigin overloads.
   bool CanAccessMaybeOpaqueOrigin(int child_id,
                                   const GURL& url,
