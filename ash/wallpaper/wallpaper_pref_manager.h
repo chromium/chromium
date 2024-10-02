@@ -182,4 +182,4 @@ class ASH_EXPORT WallpaperPrefManager : public SessionObserver {
 
 }  // namespace ash
 
-#endif  //  ASH_WALLPAPER_WALLPAPER_PREF_MANAGER_H_
+#endif  // ASH_WALLPAPER_WALLPAPER_PREF_MANAGER_H_

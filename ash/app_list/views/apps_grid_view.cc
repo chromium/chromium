@@ -2587,16 +2587,16 @@ void AppsGridView::OnListItemAdded(size_t index, AppListItem* item) {
                                              /*send_native_event=*/true);
 
   // Attempt to animate the transition from a promise app into an actual app
-  const std::string package_name =
-      view->item()->GetMetadata()->promise_package_id;
-  auto found = pending_promise_apps_removals_.find(package_name);
-
-  if (item->GetMetadata()->app_status == AppStatus::kReady &&
-      found != pending_promise_apps_removals_.end()) {
-    view->AnimateInFromPromiseApp(
-        found->second,
-        base::BindRepeating(&AppsGridView::FinishAnimationForPromiseApps,
-                            weak_factory_.GetWeakPtr(), package_name));
+  if (item->GetMetadata()->app_status == AppStatus::kReady) {
+    std::string package_name = view->item()->GetMetadata()->promise_package_id;
+    auto found = pending_promise_apps_removals_.find(package_name);
+    if (found != pending_promise_apps_removals_.end()) {
+      view->AnimateInFromPromiseApp(
+          found->second,
+          base::BindRepeating(&AppsGridView::FinishAnimationForPromiseApps,
+                              weak_factory_.GetWeakPtr(),
+                              std::move(package_name)));
+    }
   }
 }
 

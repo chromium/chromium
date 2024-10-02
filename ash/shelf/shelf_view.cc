@@ -2281,7 +2281,7 @@ void ShelfView::ShelfItemAdded(int model_index) {
   AnimateToIdealBounds();
 
   // Attempt to animate the transition from a promise app into an actual app
-  const std::string package_id = item.package_id;
+  std::string package_id = item.package_id;
   auto found = pending_promise_apps_removals_.find(package_id);
 
   if (item.app_status == AppStatus::kReady &&
@@ -2290,16 +2290,16 @@ void ShelfView::ShelfItemAdded(int model_index) {
     static_cast<ShelfAppButton*>(view)->AnimateInFromPromiseApp(
         found->second,
         base::BindRepeating(&ShelfView::FinishAnimationForPromiseApps,
-                            weak_factory_.GetWeakPtr(), package_id));
-  } else {
-    DCHECK_LE(static_cast<size_t>(model_index), visible_views_indices_.back());
-    // TODO(crbug.com/40266934): Remove the check below once the bounds animator
-    // works better with zero animation duration.
-    if (!bounds_animator_->GetAnimationDuration().is_zero()) {
-      bounds_animator_->SetAnimationDelegate(
-          view, std::unique_ptr<gfx::AnimationDelegate>(
-                    new StartFadeAnimationDelegate(this, view)));
-    }
+                            weak_factory_.GetWeakPtr(), std::move(package_id)));
+    return;
+  }
+  DCHECK_LE(static_cast<size_t>(model_index), visible_views_indices_.back());
+  // TODO(crbug.com/40266934): Remove the check below once the bounds animator
+  // works better with zero animation duration.
+  if (!bounds_animator_->GetAnimationDuration().is_zero()) {
+    bounds_animator_->SetAnimationDelegate(
+        view, std::unique_ptr<gfx::AnimationDelegate>(
+                  new StartFadeAnimationDelegate(this, view)));
   }
 }
 

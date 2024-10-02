@@ -80,8 +80,8 @@ class IconImageWithBackground : public views::ImageView {
 
 }  // namespace
 
-AppListToastView::Builder::Builder(const std::u16string title)
-    : title_(title) {}
+AppListToastView::Builder::Builder(std::u16string title)
+    : title_(std::move(title)) {}
 
 AppListToastView::Builder::~Builder() = default;
 
@@ -125,7 +125,7 @@ AppListToastView::Builder& AppListToastView::Builder::SetIcon(
 }
 
 AppListToastView::Builder& AppListToastView::Builder::SetSubtitle(
-    const std::u16string subtitle) {
+    const std::u16string& subtitle) {
   subtitle_ = subtitle;
   return *this;
 }
@@ -143,7 +143,7 @@ AppListToastView::Builder& AppListToastView::Builder::SetIconSize(
 }
 
 AppListToastView::Builder& AppListToastView::Builder::SetButton(
-    const std::u16string button_text,
+    const std::u16string& button_text,
     views::Button::PressedCallback button_callback) {
   DCHECK(button_callback);
 
@@ -186,7 +186,7 @@ bool AppListToastView::IsToastButton(views::View* view) {
   return views::IsViewClass<ToastPillButton>(view);
 }
 
-AppListToastView::AppListToastView(const std::u16string title,
+AppListToastView::AppListToastView(const std::u16string& title,
                                    bool style_for_tablet_mode) {
   layout_manager_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, kInteriorMargin));
@@ -258,11 +258,11 @@ void AppListToastView::SetCloseButton(
   close_button_->SetProperty(views::kMarginsKey, kCloseButtonMargin);
 }
 
-void AppListToastView::SetTitle(const std::u16string title) {
+void AppListToastView::SetTitle(const std::u16string& title) {
   title_label_->SetText(title);
 }
 
-void AppListToastView::SetSubtitle(const std::u16string subtitle) {
+void AppListToastView::SetSubtitle(const std::u16string& subtitle) {
   if (subtitle_label_) {
     subtitle_label_->SetText(subtitle);
     return;

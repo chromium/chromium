@@ -46,12 +46,12 @@ std::string AcceleratorDataToString(const AcceleratorData& accelerator) {
 }
 
 std::string HashAcceleratorData(
-    const std::vector<AcceleratorData> accelerators) {
+    const std::vector<AcceleratorData>& accelerators) {
   base::MD5Context context;
   base::MD5Init(&context);
-  for (const AcceleratorData& accelerator : accelerators)
+  for (const AcceleratorData& accelerator : accelerators) {
     base::MD5Update(&context, AcceleratorDataToString(accelerator));
-
+  }
   base::MD5Digest digest;
   base::MD5Final(&digest, &context);
   return MD5DigestToBase16(digest);

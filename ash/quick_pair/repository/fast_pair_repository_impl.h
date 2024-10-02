@@ -129,7 +129,7 @@ class FastPairRepositoryImpl : public FastPairRepository,
   void UpdateUserDevicesCache(
       std::optional<nearby::fastpair::UserReadDevicesResponse> user_devices);
   void CompleteAccountKeyLookup(CheckAccountKeysCallback callback,
-                                const std::vector<uint8_t> account_key,
+                                std::vector<uint8_t> account_key,
                                 DeviceMetadata* device_metadata,
                                 bool has_retryable_error);
   void WriteAccountAssociationToFootprintsWithMetadata(

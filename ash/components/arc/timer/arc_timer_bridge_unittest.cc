@@ -136,7 +136,7 @@ class ArcTimerTest : public testing::Test {
  private:
   // Stores |read_fds| corresponding to clock ids in |clocks| in
   // |arc_timer_store_|.
-  bool StoreReadFds(const std::vector<clockid_t> clocks,
+  bool StoreReadFds(const std::vector<clockid_t>& clocks,
                     std::vector<base::ScopedFD> read_fds);
 
   content::BrowserTaskEnvironment task_environment_;
@@ -149,7 +149,7 @@ class ArcTimerTest : public testing::Test {
   raw_ptr<ArcTimerBridge> timer_bridge_;
 };
 
-bool ArcTimerTest::StoreReadFds(const std::vector<clockid_t> clocks,
+bool ArcTimerTest::StoreReadFds(const std::vector<clockid_t>& clocks,
                                 std::vector<base::ScopedFD> read_fds) {
   auto read_fd_iter = read_fds.begin();
   for (auto clock_id : clocks) {
