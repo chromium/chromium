@@ -13,6 +13,8 @@ static_library("speech") {
     "speech_recognition_private_delegate.h",
     "speech_recognition_private_manager.cc",
     "speech_recognition_private_manager.h",
+    "speech_recognition_private_manager_factory.cc",
+    "speech_recognition_private_manager_factory.h",
     "speech_recognition_private_recognizer.cc",
     "speech_recognition_private_recognizer.h",
   ]

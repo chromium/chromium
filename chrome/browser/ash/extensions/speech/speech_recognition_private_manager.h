@@ -16,8 +16,6 @@
 #include "chrome/browser/speech/speech_recognition_constants.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-class BrowserContextKeyedServiceFactory;
-
 namespace content {
 class BrowserContext;
 }  // namespace content
@@ -45,10 +43,6 @@ class SpeechRecognitionPrivateManager
   SpeechRecognitionPrivateManager& operator=(
       const SpeechRecognitionPrivateManager&) = delete;
 
-  // Gets or creates an instance of SpeechRecognitionPrivateManager from a
-  // browser context.
-  static SpeechRecognitionPrivateManager* Get(content::BrowserContext* context);
-
   // Creates a unique ID for an API client given an extension ID and an optional
   // ID, which is provided by the client.
   std::string CreateKey(const std::string& extension_id,
@@ -61,8 +55,6 @@ class SpeechRecognitionPrivateManager
   // Handles a call to stop speech recognition.
   void HandleStop(const std::string& key, OnStopCallback callback);
 
-  static void EnsureFactoryBuilt();
-
  private:
   friend class SpeechRecognitionPrivateManagerTest;
   friend class SpeechRecognitionPrivateApiTest;
@@ -74,9 +66,6 @@ class SpeechRecognitionPrivateManager
                                      bool is_final) override;
   void HandleSpeechRecognitionError(const std::string& key,
                                     const std::string& error) override;
-
-  // Retrieves the factory instance for SpeechRecognitionPrivateManager.
-  static BrowserContextKeyedServiceFactory* GetFactory();
 
   // Returns the speech recognizer associated with the key. Creates one if
   // none exists.

@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/extensions/speech/speech_recognition_private_base_test.h"
+#include "chrome/browser/ash/extensions/speech/speech_recognition_private_manager_factory.h"
 #include "chrome/browser/ash/extensions/speech/speech_recognition_private_recognizer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/speech_recognition_constants.h"
@@ -31,7 +32,8 @@ class SpeechRecognitionPrivateManagerTest
 
   void SetUpOnMainThread() override {
     SpeechRecognitionPrivateBaseTest::SetUpOnMainThread();
-    manager_ = SpeechRecognitionPrivateManager::Get(profile());
+    manager_ =
+        SpeechRecognitionPrivateManagerFactory::GetForBrowserContext(profile());
   }
 
   void TearDownOnMainThread() override {

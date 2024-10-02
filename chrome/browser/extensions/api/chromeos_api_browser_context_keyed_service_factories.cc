@@ -18,7 +18,7 @@
 #include "chrome/browser/ash/crostini/throttle/crostini_throttle.h"
 #include "chrome/browser/ash/extensions/autotest_private/autotest_private_api.h"
 #include "chrome/browser/ash/extensions/install_limiter_factory.h"
-#include "chrome/browser/ash/extensions/speech/speech_recognition_private_manager.h"
+#include "chrome/browser/ash/extensions/speech/speech_recognition_private_manager_factory.h"
 #include "chrome/browser/ash/extensions/users_private/users_private_delegate_factory.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/external_logout_done/external_logout_done_event_handler_factory.h"
 #endif
@@ -50,7 +50,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::SessionStateChangedEventDispatcher::GetFactoryInstance();
   extensions::SmartCardProviderPrivateAPI::GetFactoryInstance();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  extensions::SpeechRecognitionPrivateManager::EnsureFactoryBuilt();
+  extensions::SpeechRecognitionPrivateManagerFactory::GetInstance();
   extensions::UsersPrivateDelegateFactory::GetInstance();
 #endif
 }
