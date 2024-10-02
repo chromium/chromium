@@ -286,6 +286,7 @@ public class HubToolbarViewRenderTest {
                     mPropertyModel.set(
                             HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA, paneSwitcherButtonData);
                     mPropertyModel.set(HubToolbarProperties.SEARCH_BOX_VISIBLE, true);
+                    mPropertyModel.set(HubToolbarProperties.IS_INCOGNITO, false);
                 });
         mRenderTestRule.render(mToolbar, "searchBox");
     }

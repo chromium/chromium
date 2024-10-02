@@ -13,6 +13,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.ACTION_BUTTON_DATA;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.COLOR_SCHEME;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_BUTTON_LOOKUP_CALLBACK;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA;
@@ -22,12 +24,16 @@ import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_VI
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT;
 
 import android.app.Activity;
+import android.content.res.ColorStateList;
+import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 
+import androidx.core.content.ContextCompat;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.MediumTest;
 
@@ -46,7 +52,10 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -75,6 +84,7 @@ public class HubToolbarViewUnitTest {
     private TabLayout mPaneSwitcher;
     private FrameLayout mMenuButtonContainer;
     private View mSearchBox;
+    private EditText mSearchBoxText;
     private PropertyModel mPropertyModel;
 
     @Before
@@ -92,6 +102,7 @@ public class HubToolbarViewUnitTest {
         mPaneSwitcher = mToolbar.findViewById(R.id.pane_switcher);
         mMenuButtonContainer = mToolbar.findViewById(R.id.menu_button_container);
         mSearchBox = mToolbar.findViewById(R.id.search_box);
+        mSearchBoxText = mToolbar.findViewById(R.id.search_box_text);
         mActivity.setContentView(mToolbar);
 
         mPropertyModel = new PropertyModel(HubToolbarProperties.ALL_KEYS);
@@ -253,5 +264,43 @@ public class HubToolbarViewUnitTest {
         mPropertyModel.set(SEARCH_BOX_LISTENER, testListener);
         mSearchBox.performClick();
         assertEquals(1, callbackHelper.getCallCount());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_HUB_SEARCH)
+    public void testUpdateIncognitoElements() {
+        mPropertyModel.set(IS_INCOGNITO, true);
+        assertEquals(
+                mActivity.getString(R.string.hub_search_empty_hint_incognito),
+                mSearchBoxText.getHint());
+
+        mPropertyModel.set(IS_INCOGNITO, false);
+        assertEquals(mActivity.getString(R.string.hub_search_empty_hint), mSearchBoxText.getHint());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_HUB_SEARCH)
+    public void testUpdateSearchBoxColorScheme() {
+        mPropertyModel.set(COLOR_SCHEME, HubColorScheme.INCOGNITO);
+        assertEquals(
+                ContextCompat.getColor(mActivity, R.color.baseline_neutral_60),
+                mSearchBoxText.getCurrentHintTextColor());
+
+        GradientDrawable backgroundDrawable = (GradientDrawable) mSearchBox.getBackground();
+        assertEquals(
+                ColorStateList.valueOf(
+                        ContextCompat.getColor(mActivity, R.color.baseline_neutral_20)),
+                backgroundDrawable.getColor());
+
+        mPropertyModel.set(COLOR_SCHEME, HubColorScheme.DEFAULT);
+        assertEquals(
+                SemanticColorUtils.getDefaultTextColor(mActivity),
+                mSearchBoxText.getCurrentHintTextColor());
+        assertEquals(
+                ColorStateList.valueOf(
+                        ContextCompat.getColor(mActivity, R.color.color_primary_with_alpha_15)),
+                backgroundDrawable.getColor());
     }
 }

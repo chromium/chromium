@@ -7,15 +7,18 @@ package org.chromium.chrome.browser.hub;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.core.widget.TextViewCompat;
 
 import com.google.android.material.tabs.TabLayout;
@@ -23,6 +26,7 @@ import com.google.android.material.tabs.TabLayout.OnTabSelectedListener;
 import com.google.android.material.tabs.TabLayout.Tab;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
 
 import java.util.List;
@@ -33,7 +37,7 @@ public class HubToolbarView extends LinearLayout {
     private TabLayout mPaneSwitcher;
     private FrameLayout mMenuButtonContainer;
     private View mSearchBoxLayout;
-    private View mSearchBoxTextView;
+    private EditText mSearchBoxTextView;
 
     private OnTabSelectedListener mOnTabSelectedListener;
     private boolean mBlockTabSelectionCallback;
@@ -113,6 +117,15 @@ public class HubToolbarView extends LinearLayout {
                 HubColors.getSelectableIconList(selectedIconColor, iconColor.getDefaultColor()));
         mPaneSwitcher.setSelectedTabIndicatorColor(selectedIconColor);
 
+        if (ChromeFeatureList.sAndroidHubSearch.isEnabled()) {
+            @ColorInt int hintTextColor = HubColors.getSearchBoxHintTextColor(context, colorScheme);
+            mSearchBoxTextView.setHintTextColor(hintTextColor);
+            GradientDrawable backgroundDrawable =
+                    (GradientDrawable) mSearchBoxLayout.getBackground();
+            @ColorInt int searchBoxBgColor = HubColors.getSearchBoxBgColor(context, colorScheme);
+            backgroundDrawable.setColor(searchBoxBgColor);
+        }
+
         // TODO(crbug.com/40948541): Updating the app menu color here is more correct and
         // should be done for code health.
     }
@@ -128,6 +141,12 @@ public class HubToolbarView extends LinearLayout {
     void setSearchBoxListener(Runnable searchBarListener) {
         mSearchBoxLayout.setOnClickListener(v -> searchBarListener.run());
         mSearchBoxTextView.setOnClickListener(v -> searchBarListener.run());
+    }
+
+    void updateIncognitoElements(boolean isIncognito) {
+        if (ChromeFeatureList.sAndroidHubSearch.isEnabled()) {
+            updateSearchBoxElements(isIncognito);
+        }
     }
 
     private View getButtonView(int index) {
@@ -151,5 +170,15 @@ public class HubToolbarView extends LinearLayout {
             @Override
             public void onTabReselected(Tab tab) {}
         };
+    }
+
+    private void updateSearchBoxElements(boolean isIncognito) {
+        Context context = getContext();
+        @StringRes
+        int emptyHintRes =
+                isIncognito
+                        ? R.string.hub_search_empty_hint_incognito
+                        : R.string.hub_search_empty_hint;
+        mSearchBoxTextView.setHint(context.getString(emptyHintRes));
     }
 }

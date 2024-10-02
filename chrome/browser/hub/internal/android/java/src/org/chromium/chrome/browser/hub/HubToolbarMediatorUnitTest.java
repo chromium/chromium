@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.ACTION_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.COLOR_SCHEME;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_BUTTON_LOOKUP_CALLBACK;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA;
@@ -318,6 +319,18 @@ public class HubToolbarMediatorUnitTest {
         paneSwitcherButtonData.get(1).getOnPressRunnable().run();
         verify(mPaneManager).focusPane(PaneId.TAB_GROUPS);
         verify(mTracker).notifyEvent("tab_groups_surface_clicked");
+    }
+
+    @Test
+    @SmallTest
+    public void testIsCurrentPaneIncognito() {
+        new HubToolbarMediator(mActivity, mModel, mPaneManager, mTracker, mSearchActivityClient);
+        mFocusedPaneSupplier.set(mTabSwitcherPane);
+        assertFalse(mModel.get(IS_INCOGNITO));
+        mFocusedPaneSupplier.set(mIncognitoTabSwitcherPane);
+        assertTrue(mModel.get(IS_INCOGNITO));
+        mFocusedPaneSupplier.set(null);
+        assertFalse(mModel.get(IS_INCOGNITO));
     }
 
     @Test

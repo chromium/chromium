@@ -39,6 +39,8 @@ class HubToolbarProperties {
     public static final WritableObjectPropertyKey<Runnable> SEARCH_BOX_LISTENER =
             new WritableObjectPropertyKey<>();
 
+    public static final WritableBooleanPropertyKey IS_INCOGNITO = new WritableBooleanPropertyKey();
+
     @FunctionalInterface
     public interface PaneButtonLookup {
         View get(int index);
@@ -57,5 +59,6 @@ class HubToolbarProperties {
         PANE_BUTTON_LOOKUP_CALLBACK,
         SEARCH_BOX_VISIBLE,
         SEARCH_BOX_LISTENER,
+        IS_INCOGNITO,
     };
 }

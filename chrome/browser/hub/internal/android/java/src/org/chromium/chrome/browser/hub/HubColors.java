@@ -10,6 +10,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 import androidx.core.content.ContextCompat;
@@ -194,6 +195,38 @@ public final class HubColors {
                 assert false;
                 return Color.TRANSPARENT;
         }
+    }
+
+    /** Returns the color of the search box hint text. */
+    public static @ColorInt int getSearchBoxHintTextColor(
+            Context context, @HubColorScheme int colorScheme) {
+        switch (colorScheme) {
+            case HubColorScheme.DEFAULT:
+                return SemanticColorUtils.getDefaultTextColor(context);
+            case HubColorScheme.INCOGNITO:
+                return ContextCompat.getColor(context, R.color.baseline_neutral_60);
+            default:
+                assert false;
+                return Color.TRANSPARENT;
+        }
+    }
+
+    /** Returns the color of the background for the search box. */
+    public static @ColorInt int getSearchBoxBgColor(
+            Context context, @HubColorScheme int colorScheme) {
+        @ColorRes int backgroundColorRes;
+        switch (colorScheme) {
+            case HubColorScheme.DEFAULT:
+                backgroundColorRes = R.color.color_primary_with_alpha_15;
+                break;
+            case HubColorScheme.INCOGNITO:
+                backgroundColorRes = R.color.baseline_neutral_20;
+                break;
+            default:
+                assert false;
+                backgroundColorRes = Resources.ID_NULL;
+        }
+        return ContextCompat.getColor(context, backgroundColorRes);
     }
 
     private static ColorStateList asDisabledAndNormalStates(Context context, @ColorInt int color) {

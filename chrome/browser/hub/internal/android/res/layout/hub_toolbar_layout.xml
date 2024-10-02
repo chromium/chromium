@@ -39,8 +39,7 @@ found in the LICENSE file.
       android:focusableInTouchMode="false"
       android:focusable="false"
       android:inputType="text"
-      android:singleLine="true"
-      android:hint="@string/hub_search_empty_hint" />
+      android:singleLine="true" />
   </view>
 
   <FrameLayout
