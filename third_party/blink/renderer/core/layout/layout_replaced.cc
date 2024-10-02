@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
+#include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
@@ -424,14 +425,24 @@ PositionWithAffinity LayoutReplaced::PositionForPoint(
 
   auto [top, bottom] = SelectionTopAndBottom(*this);
 
-  LayoutPoint flipped_point_in_container =
-      LocationContainer()->FlipForWritingMode(point + PhysicalLocation());
-  LayoutUnit block_direction_position = IsHorizontalWritingMode()
-                                            ? flipped_point_in_container.Y()
-                                            : flipped_point_in_container.X();
-  LayoutUnit line_direction_position = IsHorizontalWritingMode()
-                                           ? flipped_point_in_container.X()
-                                           : flipped_point_in_container.Y();
+  LayoutUnit block_direction_position;
+  LayoutUnit line_direction_position;
+  if (RuntimeEnabledFeatures::SidewaysWritingModesEnabled()) {
+    LogicalOffset logical_point =
+        LocationContainer()->CreateWritingModeConverter().ToLogical(
+            point + PhysicalLocation(), {});
+    block_direction_position = logical_point.block_offset;
+    line_direction_position = logical_point.inline_offset;
+  } else {
+    LayoutPoint flipped_point_in_container =
+        LocationContainer()->FlipForWritingMode(point + PhysicalLocation());
+    block_direction_position = IsHorizontalWritingMode()
+                                   ? flipped_point_in_container.Y()
+                                   : flipped_point_in_container.X();
+    line_direction_position = IsHorizontalWritingMode()
+                                  ? flipped_point_in_container.X()
+                                  : flipped_point_in_container.Y();
+  }
 
   if (block_direction_position < top)
     return PositionBeforeThis();  // coordinates are above
