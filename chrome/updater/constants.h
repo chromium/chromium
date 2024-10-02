@@ -181,7 +181,9 @@ inline constexpr char kLoggingModuleSwitchValue[] =
 #if BUILDFLAG(IS_WIN)
     "*/components/winhttp/*=1,"
 #endif
-    "*/components/update_client/*=2,*/chrome/updater/*=2";
+    "*/components/update_client/*=2,"
+    "*/chrome/enterprise_companion/*=2,"
+    "*/chrome/updater/*=2";
 
 // Specifies the application that the Updater needs to install.
 inline constexpr char kAppIdSwitch[] = "app-id";
