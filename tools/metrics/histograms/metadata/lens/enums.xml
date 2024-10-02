@@ -72,6 +72,8 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Translate source language changed"/>
   <int value="13" label="Translate target language changed"/>
   <int value="14" label="Translate text selection"/>
+  <int value="15" label="Copy as image action"/>
+  <int value="16" label="Save as image action"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/lens/core/mojom/lens.mojom:UserAction) -->

@@ -930,6 +930,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     BrowserProxyImpl.getInstance().handler.copyImage(
         this.selectedRegionContextMenuBox);
     this.showSelectedRegionContextMenu = false;
+    recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.kCopyAsImage);
     this.dispatchEvent(new CustomEvent('copied-as-image', {
       bubbles: true,
       composed: true,
@@ -940,6 +941,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     BrowserProxyImpl.getInstance().handler.saveAsImage(
         this.selectedRegionContextMenuBox);
     this.showSelectedRegionContextMenu = false;
+    recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.kSaveAsImage);
   }
 
   // Make the cursor disappear over the context menu, as if leaving the overlay.
