@@ -35,7 +35,5 @@ This is a testharness.js-based test.
   Failed to execute 'querySelector' on 'Document': ':has-slotted(div + div)' is not a valid selector.
 [FAIL] ":has-slotted(div:has(> span))" should be a valid selector
   Failed to execute 'querySelector' on 'Document': ':has-slotted(div:has(> span))' is not a valid selector.
-[FAIL] ":has-slotted" should be a valid selector
-  Failed to execute 'querySelector' on 'Document': ':has-slotted' is not a valid selector.
 Harness: the test ran to completion.
 

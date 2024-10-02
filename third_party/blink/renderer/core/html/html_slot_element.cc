@@ -689,6 +689,7 @@ void HTMLSlotElement::SetShadowRootNeedsAssignmentRecalc() {
 
 void HTMLSlotElement::DidSlotChange(SlotChangeType slot_change_type) {
   DCHECK(SupportsAssignment());
+  PseudoStateChanged(CSSSelector::kPseudoHasSlotted);
   if (slot_change_type == SlotChangeType::kSignalSlotChangeEvent)
     EnqueueSlotChangeEvent();
   SetShadowRootNeedsAssignmentRecalc();

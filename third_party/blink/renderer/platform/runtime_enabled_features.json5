@@ -1128,6 +1128,12 @@
       status: "experimental",
     },
     {
+      // Enables the :has-slotted pseudo-selector.
+      // https://chromestatus.com/feature/5134941143433216
+      name: "CSSPseudoHasSlotted",
+      status: "experimental",
+    },
+    {
       // Enables the :open and :closed pseudo-selectors.
       // https://chromestatus.com/feature/5085419215781888
       name: "CSSPseudoOpenClosed",

@@ -1696,6 +1696,12 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         return true;
       }
       return element.HasFocusWithin();
+    case CSSSelector::kPseudoHasSlotted:
+      DCHECK(RuntimeEnabledFeatures::CSSPseudoHasSlottedEnabled());
+      if (auto* slot = DynamicTo<HTMLSlotElement>(element)) {
+        return slot->HasAssignedNodesNoRecalc();
+      }
+      return false;
     case CSSSelector::kPseudoHover:
       if (mode_ == kResolvingStyle) {
         if (context.is_inside_has_pseudo_class) [[unlikely]] {

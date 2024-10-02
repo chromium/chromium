@@ -28,31 +28,61 @@
   </template></div>
 
   <script>
-    const blue = 'rgb(0, 0,  255)';
+    const blue = 'rgb(0, 0, 255)';
     const green = 'rgb(0, 255, 0)';
-    test(function () {
+    test(function (t) {
       const test = document.getElementById('test');
       const target = test.shadowRoot.getElementById('target');
+      t.add_cleanup(() => { test.innerHTML = '' });
       let styles = getComputedStyle(target);
-      assert_equals(styles.getPropertyValue('color'), green);
+      assert_equals(styles.getPropertyValue('color'), blue);
+    }, "empty node is blue");
+
+    test(function (t) {
+      const test = document.getElementById('test');
+      const target = test.shadowRoot.getElementById('target');
       test.innerHTML = ' ';
-      styles = getComputedStyle(target);
-      assert_equals(styles.getPropertyValue('color'), blue);
-      test.replaceChildren();;
+      t.add_cleanup(() => { test.innerHTML = '' });
       styles = getComputedStyle(target);
       assert_equals(styles.getPropertyValue('color'), green);
-      const div = document.createElement('div');
-      test.append(div);
-      styles = getComputedStyle(target);
-      assert_equals(styles.getPropertyValue('color'), blue);
-      const node = document.createTextNode(' ');
-      test.replaceChildren(node);
-      styles = getComputedStyle(target);
-      assert_equals(styles.getPropertyValue('color'), blue);
       test.innerHTML = '';
       styles = getComputedStyle(target);
+      assert_equals(styles.getPropertyValue('color'), blue);
+    }, "setting innerHTML to whitespace invalidates and becomes green, then empty string becomes blue");
+
+    test(function (t) {
+      const test = document.getElementById('test');
+      const target = test.shadowRoot.getElementById('target');
+      test.replaceChildren(document.createElement('div'));
       assert_equals(styles.getPropertyValue('color'), green);
-    }, name);
+      test.replaceChildren();
+      styles = getComputedStyle(target);
+      assert_equals(styles.getPropertyValue('color'), blue);
+    }, "calling replaceChildren invalidates and becomes green, emptying with replaceChildren becomes blue");
+
+    test(function (t) {
+      const test = document.getElementById('test');
+      const target = test.shadowRoot.getElementById('target');
+      const div = document.createElement('div');
+      test.innerHTML = '';
+      test.append(div);
+      t.add_cleanup(() => { test.innerHTML = '' });
+      styles = getComputedStyle(target);
+      assert_equals(styles.getPropertyValue('color'), green);
+    }, "calling append invalidates and becomes green");
+
+    test(function (t) {
+      const test = document.getElementById('test');
+      const target = test.shadowRoot.getElementById('target');
+      const node = document.createTextNode(' ');
+      test.replaceChildren(node);
+      t.add_cleanup(() => { test.innerHTML = '' });
+      styles = getComputedStyle(target);
+      assert_equals(styles.getPropertyValue('color'), green);
+      test.replaceChildren();
+      styles = getComputedStyle(target);
+      assert_equals(styles.getPropertyValue('color'), blue);
+    }, "calling replaceChildren(textnode) invalidates and becomes green");
   </script>
 </body>
 
