@@ -119,11 +119,12 @@ class ThemeSyncableService final : public syncer::SyncableService,
   ThemeSyncState MaybeSetTheme(const sync_pb::ThemeSpecifics& current_specs,
                                const syncer::SyncData& sync_data);
 
-  // If the current theme is syncable, fills in the passed |theme_specifics|
-  // structure based on the currently applied theme and returns |true|.
-  // Otherwise returns |false|.
-  bool GetThemeSpecificsFromCurrentTheme(
-      sync_pb::ThemeSpecifics* theme_specifics) const;
+  // Returns a ThemeSpecifics based on the currently applied theme.
+  sync_pb::ThemeSpecifics GetThemeSpecificsFromCurrentTheme() const;
+
+  // Returns if the current theme is syncable. A theme can be unsyncable if, for
+  // example, it is set by an unsyncable extension or is set by policy.
+  bool IsCurrentThemeSyncable() const;
 
   // Updates theme specifics in sync to |theme_specifics|.
   std::optional<syncer::ModelError> ProcessNewTheme(

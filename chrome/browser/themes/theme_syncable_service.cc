@@ -277,11 +277,10 @@ ThemeSyncableService::~ThemeSyncableService() {
 }
 
 void ThemeSyncableService::OnThemeChanged() {
-  if (sync_processor_.get() && !processing_syncer_changes_) {
-    sync_pb::ThemeSpecifics current_specifics;
-    if (!GetThemeSpecificsFromCurrentTheme(&current_specifics)) {
-      return;  // Current theme is unsyncable.
-    }
+  if (sync_processor_.get() && !processing_syncer_changes_ &&
+      IsCurrentThemeSyncable()) {
+    const sync_pb::ThemeSpecifics current_specifics =
+        GetThemeSpecificsFromCurrentTheme();
     ProcessNewTheme(syncer::SyncChange::ACTION_UPDATE, current_specifics);
     use_system_theme_by_default_ =
         current_specifics.use_system_theme_by_default();
@@ -331,13 +330,15 @@ ThemeSyncableService::MergeDataAndStartSyncing(
                            static_cast<int>(initial_sync_data.size())));
   }
 
-  sync_pb::ThemeSpecifics current_specifics;
-  if (!GetThemeSpecificsFromCurrentTheme(&current_specifics)) {
+  if (!IsCurrentThemeSyncable()) {
     // Current theme is unsyncable - don't overwrite from sync data, and don't
     // save the unsyncable theme to sync data.
     NotifyOnSyncStarted(ThemeSyncState::kFailed);
     return std::nullopt;
   }
+
+  sync_pb::ThemeSpecifics current_specifics =
+      GetThemeSpecificsFromCurrentTheme();
 
   // Find the last SyncData that has theme data and set the current theme from
   // it. If SyncData doesn't have a theme, but there is a current theme, it will
@@ -374,8 +375,9 @@ syncer::SyncDataList ThemeSyncableService::GetAllSyncDataForTesting(
   DCHECK_EQ(type, syncer::THEMES);
 
   syncer::SyncDataList list;
-  sync_pb::EntitySpecifics entity_specifics;
-  if (GetThemeSpecificsFromCurrentTheme(entity_specifics.mutable_theme())) {
+  if (IsCurrentThemeSyncable()) {
+    sync_pb::EntitySpecifics entity_specifics;
+    *entity_specifics.mutable_theme() = GetThemeSpecificsFromCurrentTheme();
     list.push_back(syncer::SyncData::CreateLocalData(
         kSyncEntityClientTag, kSyncEntityTitle, entity_specifics));
   }
@@ -411,8 +413,7 @@ std::optional<syncer::ModelError> ThemeSyncableService::ProcessSyncChanges(
         FROM_HERE, "Invalid theme change: " + change_list.begin()->ToString());
   }
 
-  sync_pb::ThemeSpecifics current_specifics;
-  if (!GetThemeSpecificsFromCurrentTheme(&current_specifics)) {
+  if (!IsCurrentThemeSyncable()) {
     // Current theme is unsyncable, so don't overwrite it.
     return std::nullopt;
   }
@@ -423,7 +424,8 @@ std::optional<syncer::ModelError> ThemeSyncableService::ProcessSyncChanges(
     if (theme_change.sync_data().GetSpecifics().has_theme() &&
         (theme_change.change_type() == syncer::SyncChange::ACTION_ADD ||
          theme_change.change_type() == syncer::SyncChange::ACTION_UPDATE)) {
-      MaybeSetTheme(current_specifics, theme_change.sync_data());
+      MaybeSetTheme(GetThemeSpecificsFromCurrentTheme(),
+                    theme_change.sync_data());
       return std::nullopt;
     }
   }
@@ -582,8 +584,7 @@ ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
   return ThemeSyncState::kApplied;
 }
 
-bool ThemeSyncableService::GetThemeSpecificsFromCurrentTheme(
-    sync_pb::ThemeSpecifics* theme_specifics) const {
+bool ThemeSyncableService::IsCurrentThemeSyncable() const {
   const std::string theme_id = theme_service_->GetThemeID();
   const extensions::Extension* current_extension =
       theme_service_->UsingExtensionTheme() &&
@@ -603,16 +604,29 @@ bool ThemeSyncableService::GetThemeSpecificsFromCurrentTheme(
     return false;
   }
 
-  theme_specifics->Clear();
-  theme_specifics->set_use_custom_theme(false);
+  return true;
+}
 
+sync_pb::ThemeSpecifics
+ThemeSyncableService::GetThemeSpecificsFromCurrentTheme() const {
+  sync_pb::ThemeSpecifics theme_specifics;
+  theme_specifics.set_use_custom_theme(false);
+
+  const std::string theme_id = theme_service_->GetThemeID();
+  const extensions::Extension* current_extension =
+      theme_service_->UsingExtensionTheme() &&
+              !theme_service_->UsingDefaultTheme()
+          ? extensions::ExtensionRegistry::Get(profile_)
+                ->enabled_extensions()
+                .GetByID(theme_id)
+          : nullptr;
   if (current_extension) {
     // Using custom theme and it's an extension.
     DCHECK(current_extension->is_theme());
-    theme_specifics->set_use_custom_theme(true);
-    theme_specifics->set_custom_theme_name(current_extension->name());
-    theme_specifics->set_custom_theme_id(current_extension->id());
-    theme_specifics->set_custom_theme_update_url(
+    theme_specifics.set_use_custom_theme(true);
+    theme_specifics.set_custom_theme_name(current_extension->name());
+    theme_specifics.set_custom_theme_id(current_extension->id());
+    theme_specifics.set_custom_theme_update_url(
         extensions::ManifestURL::GetUpdateURL(current_extension).spec());
   }
 
@@ -622,21 +636,21 @@ bool ThemeSyncableService::GetThemeSpecificsFromCurrentTheme(
     if (PrefService* prefs = profile_->GetPrefs()) {
       if (const base::Value* pref = prefs->GetUserPrefValue(
               prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse)) {
-        *theme_specifics->mutable_ntp_background() =
+        *theme_specifics.mutable_ntp_background() =
             SpecificsNtpBackgroundFromDict(pref->GetDict());
       }
     }
 
-    theme_specifics->set_browser_color_scheme(
+    theme_specifics.set_browser_color_scheme(
         BrowserColorSchemeToProtoEnum(theme_service_->GetBrowserColorScheme()));
 
     if (theme_service_->GetIsGrayscale()) {
-      theme_specifics->mutable_grayscale_theme_enabled();
+      theme_specifics.mutable_grayscale_theme_enabled();
     } else if (ThemeService::kUserColorThemeID == theme_id) {
       if (const std::optional<SkColor> user_color =
               theme_service_->GetUserColor()) {
         sync_pb::ThemeSpecifics::UserColorTheme* user_color_theme =
-            theme_specifics->mutable_user_color_theme();
+            theme_specifics.mutable_user_color_theme();
         user_color_theme->set_color(*user_color);
         user_color_theme->set_browser_color_variant(
             BrowserColorVariantToProtoEnum(
@@ -647,8 +661,8 @@ bool ThemeSyncableService::GetThemeSpecificsFromCurrentTheme(
 
   if (theme_service_->UsingAutogeneratedTheme()) {
     // Using custom theme and it's autogenerated from color.
-    theme_specifics->set_use_custom_theme(false);
-    theme_specifics->mutable_autogenerated_color_theme()->set_color(
+    theme_specifics.set_use_custom_theme(false);
+    theme_specifics.mutable_autogenerated_color_theme()->set_color(
         theme_service_->GetAutogeneratedThemeColor());
   }
 
@@ -657,20 +671,20 @@ bool ThemeSyncableService::GetThemeSpecificsFromCurrentTheme(
     // use_system_theme_by_default to true if system theme is used, false
     // if default system theme is used. Otherwise restore it to value in sync.
     if (theme_service_->UsingSystemTheme()) {
-      theme_specifics->set_use_system_theme_by_default(true);
+      theme_specifics.set_use_system_theme_by_default(true);
     } else if (theme_service_->UsingDefaultTheme()) {
-      theme_specifics->set_use_system_theme_by_default(false);
+      theme_specifics.set_use_system_theme_by_default(false);
     } else {
-      theme_specifics->set_use_system_theme_by_default(
+      theme_specifics.set_use_system_theme_by_default(
           use_system_theme_by_default_);
     }
   } else {
     // Restore use_system_theme_by_default when platform doesn't distinguish
     // between default theme and system theme.
-    theme_specifics->set_use_system_theme_by_default(
+    theme_specifics.set_use_system_theme_by_default(
         use_system_theme_by_default_);
   }
-  return true;
+  return theme_specifics;
 }
 
 /* static */
