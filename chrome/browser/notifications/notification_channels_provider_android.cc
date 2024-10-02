@@ -145,19 +145,6 @@ class ChannelsRuleIterator : public content_settings::RuleIterator {
   size_t index_ = 0;
 };
 
-// This copies the logic of
-// SearchPermissionsService::IsPermissionControlledByDSE, which cannot be
-// called from this class as it would introduce a circular dependency between
-// the HostContentSettingsMap and the SearchPermissionsService factories.
-bool OriginMatchesDefaultSearchEngine(const GURL& default_search_engine_url,
-                                      const std::string& origin) {
-  if (default_search_engine_url.is_empty()) {
-    return false;
-  }
-
-  return url::IsSameOriginWith(GURL(origin), default_search_engine_url);
-}
-
 }  // anonymous namespace
 
 static void JNI_NotificationSettingsBridge_OnGetSiteChannelsDone(
@@ -288,19 +275,16 @@ void NotificationChannelsProviderAndroid::ClearBlockedChannelsIfNecessary(
 void NotificationChannelsProviderAndroid::ClearBlockedChannelsIfNecessaryImpl(
     TemplateURLService* template_url_service,
     const std::vector<NotificationChannel>& channels) {
-  GURL default_search_engine_url;
-  if (template_url_service &&
-      template_url_service->GetDefaultSearchProvider()) {
-    default_search_engine_url =
-        template_url_service->GetDefaultSearchProvider()->GenerateSearchURL(
-            template_url_service->search_terms_data());
+  url::Origin default_search_engine_origin;
+  if (template_url_service) {
+    default_search_engine_origin =
+        template_url_service->GetDefaultSearchProviderOrigin();
   }
 
   for (const NotificationChannel& channel : channels) {
     if (channel.status != NotificationChannelStatus::BLOCKED)
       continue;
-    if (OriginMatchesDefaultSearchEngine(default_search_engine_url,
-                                         channel.origin)) {
+    if (default_search_engine_origin.IsSameOriginWith(GURL(channel.origin))) {
       // Do not clear the DSE permission, as it should always be ALLOW or BLOCK.
       continue;
     }

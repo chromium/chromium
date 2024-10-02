@@ -64,6 +64,10 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
+namespace url {
+class Origin;
+}
+
 // TemplateURLService is the backend for keywords. It's used by
 // KeywordAutocomplete.
 //
@@ -375,6 +379,11 @@ class TemplateURLService final : public WebDataServiceConsumer,
   //       1.) Unit test mode
   //       2.) The default search engine is disabled by policy.
   const TemplateURL* GetDefaultSearchProvider() const;
+
+  // Returns the Origin of the user's default search engine. If a default search
+  // engine is set and its URL is valid, the Origin of that URL is returned.
+  // Otherwise, an opaque Origin with a unique nonce is returned.
+  url::Origin GetDefaultSearchProviderOrigin() const;
 
   // Returns the default search provider, ignoring any that were provided by an
   // extension.

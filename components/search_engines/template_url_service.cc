@@ -8,8 +8,6 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "components/search_engines/template_url_service.h"
-
 #include <algorithm>
 #include <iterator>
 #include <memory>
@@ -58,6 +56,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_client.h"
 #include "components/search_engines/template_url_service_observer.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
@@ -69,6 +68,7 @@
 #include "components/url_formatter/url_fixer.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/search_engines/android/template_url_service_android.h"
@@ -1161,6 +1161,15 @@ void TemplateURLService::SetUserSelectedDefaultSearchProvider(
 const TemplateURL* TemplateURLService::GetDefaultSearchProvider() const {
   return loaded_ ? default_search_provider_.get()
                  : pre_loading_providers_->default_search_provider();
+}
+
+url::Origin TemplateURLService::GetDefaultSearchProviderOrigin() const {
+  const TemplateURL* template_url = GetDefaultSearchProvider();
+  if (template_url) {
+    GURL search_url = template_url->GenerateSearchURL(search_terms_data());
+    return url::Origin::Create(search_url);
+  }
+  return url::Origin();
 }
 
 const TemplateURL*
