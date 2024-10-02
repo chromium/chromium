@@ -29,6 +29,8 @@ void AddProductSpecificationsColorMixer(ui::ColorProvider* provider,
   mixer[kColorProductSpecificationsDisclosureSummaryBackground] = {
       ui::kColorSysSurface4};
   mixer[kColorProductSpecificationsDivider] = {ui::kColorSysDivider};
+  mixer[kColorProductSpecificationsGradientIcon] = {
+      ui::kColorSysOnSurfacePrimary};
   mixer[kColorProductSpecificationsHorizontalCarouselScrollbarThumb] = {
       ui::kColorSysTonalOutline};
   mixer[kColorProductSpecificationsIcon] = {ui::kColorSysOnSurfaceSubtle};
