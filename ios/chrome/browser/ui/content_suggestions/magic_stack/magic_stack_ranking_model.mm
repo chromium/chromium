@@ -415,11 +415,7 @@ using segmentation_platform::TipIdentifier;
       }
     }
   }
-  if (_ephemeralCardToShow != ContentSuggestionsModuleType::kInvalid) {
-    if (!card) {
-      base::debug::DumpWithoutCrashing();
-      return;
-    }
+  if (_ephemeralCardToShow != ContentSuggestionsModuleType::kInvalid && card) {
     [self addEphemeralCardToMagicStack:card];
   }
 }
