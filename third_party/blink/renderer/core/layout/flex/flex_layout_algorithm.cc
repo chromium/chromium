@@ -640,15 +640,26 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         }
       }
 
-      if (!layout_result) {
-        std::optional<DisableLayoutSideEffectsScope> disable_side_effects;
-        if (phase != Phase::kLayout && !Node().GetLayoutBox()->NeedsLayout()) {
-          disable_side_effects.emplace();
+      LayoutUnit intrinsic_size;
+      if (child.ShouldApplyBlockSizeContainment()) {
+        // If we have block-size containment we can avoid layout for
+        // determining the intrinsic size.
+        intrinsic_size = ClampIntrinsicBlockSize(
+            child_space, child, /* break_token */ nullptr,
+            border_padding_in_child_writing_mode,
+            /* current_intrinsic_block_size */ LayoutUnit());
+      } else {
+        if (!layout_result) {
+          std::optional<DisableLayoutSideEffectsScope> disable_side_effects;
+          if (phase != Phase::kLayout &&
+              !Node().GetLayoutBox()->NeedsLayout()) {
+            disable_side_effects.emplace();
+          }
+          layout_result = child.Layout(child_space, /* break_token */ nullptr);
+          DCHECK(layout_result);
         }
-        layout_result = child.Layout(child_space, /* break_token */ nullptr);
-        DCHECK(layout_result);
+        intrinsic_size = layout_result->IntrinsicBlockSize();
       }
-      const LayoutUnit intrinsic_size = layout_result->IntrinsicBlockSize();
 
       // Constrain the intrinsic-size by the transferred min/max constraints.
       if (has_aspect_ratio) {
