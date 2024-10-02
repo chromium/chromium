@@ -33,11 +33,11 @@ consoles.list_view(
 )
 
 try_.builder(
-    name = "build-size",
+    name = "compile-size",
     branch_selector = branches.selector.MAIN,
-    # TODO: crbug.com/370594503 - Add documents for build-size.
-    description_html = "Measures and prevents unexpected build growth. " +
-                       "See docs for details.",
+    # TODO: crbug.com/370594503 - Add documents for compile-size.
+    description_html = "Measures and prevents unexpected compile input size " +
+                       "growth. See docs for details.",
     executable = "recipe:build_size_trybot",
     gn_args = gn_args.config(
         configs = [
