@@ -8,7 +8,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/core/controller_client.h"
-#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/navigation_handle.h"
 
 namespace {
@@ -34,39 +33,33 @@ void SecurityInterstitialTabHelper::DidFinishNavigation(
     return;
   }
 
-  int64_t navigation_id = navigation_handle->GetNavigationId();
-  content::FrameTreeNodeId frame_tree_node_id =
-      navigation_handle->GetFrameTreeNodeId();
+  auto it = blocking_pages_for_navigations_.find(
+      navigation_handle->GetNavigationId());
+
   if (navigation_handle->HasCommitted()) {
-    // Prepare any existing interstitial in this frame for removal.
-    if (IsInterstitialCommittedForFrame(frame_tree_node_id)) {
+    if (blocking_page_for_currently_committed_navigation_) {
       base::UmaHistogramEnumeration("interstitial.CloseReason",
                                     InterstitialCloseReason::NAVIGATE_AWAY);
-      blocking_documents_for_committed_navigations_.find(frame_tree_node_id)
-          ->second->OnInterstitialClosing();
+      blocking_page_for_currently_committed_navigation_
+          ->OnInterstitialClosing();
     }
 
-    if (IsInterstitialPendingForNavigation(navigation_id)) {
-      blocking_documents_for_committed_navigations_.insert_or_assign(
-          frame_tree_node_id,
-          std::move(
-              blocking_documents_for_pending_navigations_[navigation_id]));
-      // The navigation has been committed, update interstitial state to
-      // reflect the interstitial is being shown.
+    if (it == blocking_pages_for_navigations_.end()) {
+      blocking_page_for_currently_committed_navigation_.reset();
+    } else {
+      blocking_page_for_currently_committed_navigation_ = std::move(it->second);
+      // According to `IsDisplayingInterstitial`,  inserting a value into
+      // `blocking_page_for_currently_committed_navigation_` means an
+      // interstitial is displaying, so log the INTERSTITIAL_SHOWN bucket here.
       base::UmaHistogramEnumeration(
           "interstitial.CloseReason",
           InterstitialCloseReason::INTERSTITIAL_SHOWN);
-      blocking_documents_for_committed_navigations_.find(frame_tree_node_id)
-          ->second->OnInterstitialShown();
-      blocking_documents_for_pending_navigations_.erase(navigation_id);
-    } else {
-      // There is no new interstitial for navigation_id, so clear any previously
-      // committed blocking document in the same frame.
-      blocking_documents_for_committed_navigations_.erase(frame_tree_node_id);
+      blocking_page_for_currently_committed_navigation_->OnInterstitialShown();
     }
-  } else if (IsInterstitialPendingForNavigation(navigation_id)) {
-    // Stop tracking the associated navigation since it has not committed.
-    blocking_documents_for_pending_navigations_.erase(navigation_id);
+  }
+
+  if (it != blocking_pages_for_navigations_.end()) {
+    blocking_pages_for_navigations_.erase(it);
   }
 
   // Interstitials may change the visibility of the URL or other security state.
@@ -74,33 +67,11 @@ void SecurityInterstitialTabHelper::DidFinishNavigation(
 }
 
 void SecurityInterstitialTabHelper::WebContentsDestroyed() {
-  content::FrameTreeNodeId main_frame_tree_node_id =
-      web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId();
-  // Record a tab closing event if the main frame is displaying an interstitial.
-  if (IsInterstitialCommittedForFrame(main_frame_tree_node_id)) {
+  if (blocking_page_for_currently_committed_navigation_) {
     base::UmaHistogramEnumeration("interstitial.CloseReason",
                                   InterstitialCloseReason::CLOSE_TAB);
-    blocking_documents_for_committed_navigations_.find(main_frame_tree_node_id)
-        ->second->OnInterstitialClosing();
+    blocking_page_for_currently_committed_navigation_->OnInterstitialClosing();
   }
-  blocking_documents_for_committed_navigations_.clear();
-}
-
-void SecurityInterstitialTabHelper::FrameDeleted(
-    content::FrameTreeNodeId frame_tree_node_id) {
-  content::FrameTreeNodeId main_frame_tree_node_id =
-      web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId();
-  // Primary main frame interstitial closing is processed on
-  // WebContentsDestroyed.
-  // TODO(crbug.com/370683964): Investigate assumption in safe browsing that
-  // requires main frame interstitials to be cleared in WebContentsDestroyed.
-  if (!IsInterstitialCommittedForFrame(frame_tree_node_id) ||
-      main_frame_tree_node_id == frame_tree_node_id) {
-    return;
-  }
-  blocking_documents_for_committed_navigations_.find(frame_tree_node_id)
-      ->second->OnInterstitialClosing();
-  blocking_documents_for_committed_navigations_.erase(frame_tree_node_id);
 }
 
 // static
@@ -138,43 +109,29 @@ void SecurityInterstitialTabHelper::BindInterstitialCommands(
   tab_helper->receivers_.Bind(rfh, std::move(receiver));
 }
 
-bool SecurityInterstitialTabHelper::IsInterstitialPendingForNavigation(
-    int64_t navigation_id) const {
-  return base::Contains(blocking_documents_for_pending_navigations_,
-                        navigation_id);
-}
-
 bool SecurityInterstitialTabHelper::ShouldDisplayURL() const {
-  return GetBlockingPageForMainFrame()->ShouldDisplayURL();
+  CHECK(IsDisplayingInterstitial());
+  return blocking_page_for_currently_committed_navigation_->ShouldDisplayURL();
 }
 
 bool SecurityInterstitialTabHelper::IsDisplayingInterstitial() const {
-  return !blocking_documents_for_committed_navigations_.empty();
+  return blocking_page_for_currently_committed_navigation_ != nullptr;
 }
 
 bool SecurityInterstitialTabHelper::HasPendingOrActiveInterstitial() const {
-  return !blocking_documents_for_pending_navigations_.empty() ||
-         IsDisplayingInterstitial();
+  return !blocking_pages_for_navigations_.empty() || IsDisplayingInterstitial();
 }
 
-bool SecurityInterstitialTabHelper::IsInterstitialCommittedForFrame(
-    content::FrameTreeNodeId frame_tree_node_id) const {
-  return base::Contains(blocking_documents_for_committed_navigations_,
-                        frame_tree_node_id);
+bool SecurityInterstitialTabHelper::IsInterstitialPendingForNavigation(
+    int64_t navigation_id) const {
+  return blocking_pages_for_navigations_.find(navigation_id) !=
+         blocking_pages_for_navigations_.end();
 }
 
 security_interstitials::SecurityInterstitialPage*
 SecurityInterstitialTabHelper::
     GetBlockingPageForCurrentlyCommittedNavigationForTesting() {
-  // TODO(crbug.com/369759355): Support retrieving blocking page by frame ID.
-  content::FrameTreeNodeId frame_tree_node_id =
-      web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId();
-  if (IsInterstitialCommittedForFrame(frame_tree_node_id)) {
-    return blocking_documents_for_committed_navigations_
-        .find(frame_tree_node_id)
-        ->second.get();
-  }
-  return nullptr;
+  return blocking_page_for_currently_committed_navigation_.get();
 }
 
 SecurityInterstitialTabHelper::SecurityInterstitialTabHelper(
@@ -188,39 +145,19 @@ void SecurityInterstitialTabHelper::SetBlockingPage(
     int64_t navigation_id,
     std::unique_ptr<security_interstitials::SecurityInterstitialPage>
         blocking_page) {
-  blocking_documents_for_pending_navigations_[navigation_id] =
-      std::move(blocking_page);
-}
-
-SecurityInterstitialPage*
-SecurityInterstitialTabHelper::GetBlockingPageForCurrentTargetFrame() {
-  CHECK(!blocking_documents_for_committed_navigations_.empty());
-  auto* render_frame_host = receivers_.GetCurrentTargetFrame();
-  content::FrameTreeNodeId id = render_frame_host->GetFrameTreeNodeId();
-  CHECK(IsInterstitialCommittedForFrame(id));
-  return blocking_documents_for_committed_navigations_.find(id)->second.get();
-}
-
-SecurityInterstitialPage*
-SecurityInterstitialTabHelper::GetBlockingPageForMainFrame() const {
-  content::FrameTreeNodeId frame_tree_node_id =
-      web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId();
-  CHECK(IsInterstitialCommittedForFrame(frame_tree_node_id));
-  return blocking_documents_for_committed_navigations_.find(frame_tree_node_id)
-      ->second.get();
+  blocking_pages_for_navigations_[navigation_id] = std::move(blocking_page);
 }
 
 void SecurityInterstitialTabHelper::HandleCommand(
     security_interstitials::SecurityInterstitialCommand cmd) {
-  // TODO(crbug.com/369784619): Currently commands need to be converted to
-  // strings before passing them to CommandReceived, which then turns them into
-  // integers again, this redundant conversion should be removed.
-  //
-  // HandleCommand is only called in response to a Mojo message sent from frames
-  // that have a committed interstitial. This ensures that the current target
-  // frame is present and can process the corresponding command received.
-  GetBlockingPageForCurrentTargetFrame()->CommandReceived(
-      base::NumberToString(cmd));
+  if (blocking_page_for_currently_committed_navigation_) {
+    // Currently commands need to be converted to strings before passing them
+    // to CommandReceived, which then turns them into integers again, this
+    // redundant conversion will be removed once commited interstitials are the
+    // only supported codepath.
+    blocking_page_for_currently_committed_navigation_->CommandReceived(
+        base::NumberToString(cmd));
+  }
 }
 
 void SecurityInterstitialTabHelper::DontProceed() {
