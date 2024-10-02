@@ -144,6 +144,7 @@ SystemWebAppDelegateMap CreateSystemWebApps(Profile* profile) {
       std::make_unique<vc_background_ui::VcBackgroundUISystemAppDelegate>(
           profile));
   info_vec.push_back(std::make_unique<PrintPreviewCrosDelegate>(profile));
+  info_vec.push_back(std::make_unique<RecorderSystemAppDelegate>(profile));
   if (ash::boca_util::IsEnabled()) {
     info_vec.push_back(std::make_unique<BocaSystemAppDelegate>(profile));
   }
@@ -154,10 +155,6 @@ SystemWebAppDelegateMap CreateSystemWebApps(Profile* profile) {
 
   if (base::FeatureList::IsEnabled(ash::features::kSanitize)) {
     info_vec.push_back(std::make_unique<SanitizeSystemAppDelegate>(profile));
-  }
-
-  if (base::FeatureList::IsEnabled(ash::features::kConch)) {
-    info_vec.push_back(std::make_unique<RecorderSystemAppDelegate>(profile));
   }
 
   if (features::IsGraduationEnabled()) {
