@@ -18,10 +18,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace autofill_prediction_improvements {
-class AutofillPredictionImprovementsFillingEngineImpl;
-}  // namespace autofill_prediction_improvements
-
 namespace autofill {
 
 class LogBuffer;
@@ -330,9 +326,8 @@ class FormData {
     constexpr MutableFieldsPassKey() = default;
     friend class FormDataAndroid;
     friend class internal::FormForest;
-    friend class autofill_prediction_improvements::
-        AutofillPredictionImprovementsFillingEngineImpl;
   };
+  // Use `ExtractFields()` and `set_fields()` instead if possible.
   std::vector<FormFieldData>& mutable_fields(MutableFieldsPassKey pass_key) {
     return fields_;
   }
