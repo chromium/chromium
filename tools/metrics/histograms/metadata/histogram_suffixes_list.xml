@@ -1911,22 +1911,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Net.HttpOriginalContentLengthV2.Https.ViaDRP"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="NetHttpProxyConnectLatencySecure" separator=".">
-  <owner>tbansal@chromium.org</owner>
-  <suffix name="Insecure" label="Insecure proxy"/>
-  <suffix name="Secure" label="Secure proxy"/>
-  <affected-histogram name="Net.HttpProxy.ConnectLatency"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="NetHttpProxyConnectLatencySuccess" separator=".">
-  <owner>tbansal@chromium.org</owner>
-  <suffix name="Error" label="Connection to proxy resulted in an error"/>
-  <suffix name="Success" label="Connection to proxy was successful"/>
-  <suffix name="TimedOut" label="Connection to proxy timed out"/>
-  <affected-histogram name="Net.HttpProxy.ConnectLatency.Insecure"/>
-  <affected-histogram name="Net.HttpProxy.ConnectLatency.Secure"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="NetQuicDiskCacheBackend" separator=".">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>

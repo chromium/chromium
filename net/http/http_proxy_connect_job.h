@@ -23,6 +23,7 @@
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/connect_job_params.h"
+#include "net/socket/next_proto.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/spdy/spdy_session_key.h"
 #include "net/ssl/ssl_cert_request_info.h"
@@ -207,6 +208,20 @@ class NET_EXPORT_PRIVATE HttpProxyConnectJob : public ConnectJob,
 
   // Updates the field trial parameters used in calculating timeouts.
   static void UpdateFieldTrialParametersForTesting();
+
+  enum class HttpConnectResult {
+    kSuccess,
+    kError,
+    kTimedOut,
+  };
+
+  // Emit a Net.HttpProxy.ConnectLatency.* metric. This is used both by this
+  // class and by QuicSessionPool, which handles QUIC tunnels which will carry
+  // QUIC.
+  static void EmitConnectLatency(NextProto http_version,
+                                 ProxyServer::Scheme scheme,
+                                 HttpConnectResult result,
+                                 base::TimeDelta latency);
 
  private:
   enum State {

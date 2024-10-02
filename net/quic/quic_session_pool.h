@@ -10,6 +10,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -569,7 +570,9 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   // |destination| on |session|.
   bool CanWaiveIpMatching(const url::SchemeHostPort& destination,
                           QuicChromiumClientSession* session) const;
-  void OnJobComplete(Job* job, int rv);
+  void OnJobComplete(Job* job,
+                     std::optional<base::TimeTicks> proxy_connect_start_time,
+                     int rv);
   bool HasActiveSession(const QuicSessionKey& session_key) const;
   bool HasActiveJob(const QuicSessionKey& session_key) const;
   int CreateSessionSync(QuicSessionAliasKey key,

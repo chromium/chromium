@@ -5,6 +5,7 @@
 #include "net/quic/quic_session_pool.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string_view>
 #include <tuple>
@@ -46,6 +47,7 @@
 #include "net/cert/cert_verifier.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/secure_dns_policy.h"
+#include "net/http/http_proxy_connect_job.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_event_type.h"
@@ -657,7 +659,12 @@ int QuicSessionPool::RequestSession(
 
   QuicSessionAliasKey key(destination, session_key);
   std::unique_ptr<Job> job;
+  // Connect start time, but only for direct connections to a proxy.
+  std::optional<base::TimeTicks> proxy_connect_start_time = std::nullopt;
   if (session_key.proxy_chain().is_direct()) {
+    if (session_key.session_usage() == SessionUsage::kProxy) {
+      proxy_connect_start_time = base::TimeTicks::Now();
+    }
     job = std::make_unique<DirectJob>(
         this, quic_version, host_resolver_, std::move(key),
         CreateCryptoConfigHandle(session_key.network_anonymization_key()),
@@ -673,7 +680,8 @@ int QuicSessionPool::RequestSession(
   }
   job->AssociateWithNetLogSource(net_log);
   int rv = job->Run(base::BindOnce(&QuicSessionPool::OnJobComplete,
-                                   weak_factory_.GetWeakPtr(), job.get()));
+                                   weak_factory_.GetWeakPtr(), job.get(),
+                                   proxy_connect_start_time));
   if (rv == ERR_IO_PENDING) {
     job->AddRequest(request);
     active_jobs_[session_key] = std::move(job);
@@ -1403,8 +1411,19 @@ bool QuicSessionPool::HasMatchingIpSession(
   return false;
 }
 
-void QuicSessionPool::OnJobComplete(Job* job, int rv) {
+void QuicSessionPool::OnJobComplete(
+    Job* job,
+    std::optional<base::TimeTicks> proxy_connect_start_time,
+    int rv) {
   auto iter = active_jobs_.find(job->key().session_key());
+  if (proxy_connect_start_time) {
+    HttpProxyConnectJob::EmitConnectLatency(
+        NextProto::kProtoQUIC, ProxyServer::Scheme::SCHEME_QUIC,
+        rv == 0 ? HttpProxyConnectJob::HttpConnectResult::kSuccess
+                : HttpProxyConnectJob::HttpConnectResult::kError,
+        base::TimeTicks::Now() - *proxy_connect_start_time);
+  }
+
   CHECK(iter != active_jobs_.end(), base::NotFatalUntil::M130);
   if (rv == OK) {
     if (!is_quic_known_to_work_on_current_network_) {

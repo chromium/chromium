@@ -17,6 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "http_proxy_client_socket.h"
@@ -515,11 +516,13 @@ int HttpProxyConnectJob::DoTransportConnectComplete(int result) {
   resolve_error_info_ = nested_connect_job_->GetResolveErrorInfo();
   ProxyServer::Scheme scheme = GetProxyServerScheme();
   if (result != OK) {
-    base::UmaHistogramMediumTimes(
-        scheme == ProxyServer::SCHEME_HTTP
-            ? "Net.HttpProxy.ConnectLatency.Insecure.Error"
-            : "Net.HttpProxy.ConnectLatency.Secure.Error",
-        base::TimeTicks::Now() - connect_start_time_);
+    // Only record latency for connections to the first proxy in a chain.
+    if (params_->proxy_chain_index() == 0) {
+      EmitConnectLatency(NextProto::kProtoUnknown,
+                         params_->proxy_server().scheme(),
+                         HttpConnectResult::kError,
+                         base::TimeTicks::Now() - connect_start_time_);
+    }
 
     if (IsCertificateError(result)) {
       DCHECK_EQ(ProxyServer::SCHEME_HTTPS, scheme);
@@ -568,12 +571,13 @@ int HttpProxyConnectJob::DoTransportConnectComplete(int result) {
     return ERR_PROXY_CONNECTION_FAILED;
   }
 
-  base::UmaHistogramMediumTimes(
-      scheme == ProxyServer::SCHEME_HTTP
-          ? "Net.HttpProxy.ConnectLatency.Insecure.Success"
-          : "Net.HttpProxy.ConnectLatency.Secure.Success",
-      base::TimeTicks::Now() - connect_start_time_);
-
+  NextProto next_proto = nested_connect_job_->socket()->GetNegotiatedProtocol();
+  // Only record latency for connections to the first proxy in a chain.
+  if (params_->proxy_chain_index() == 0) {
+    EmitConnectLatency(next_proto, params_->proxy_server().scheme(),
+                       HttpConnectResult::kSuccess,
+                       base::TimeTicks::Now() - connect_start_time_);
+  }
   has_established_connection_ = true;
 
   if (!params_->tunnel()) {
@@ -588,7 +592,7 @@ int HttpProxyConnectJob::DoTransportConnectComplete(int result) {
 
   // Establish a tunnel over the proxy by making a CONNECT request. HTTP/1.1 and
   // HTTP/2 handle CONNECT differently.
-  if (nested_connect_job_->socket()->GetNegotiatedProtocol() == kProtoHTTP2) {
+  if (next_proto == kProtoHTTP2) {
     DCHECK_EQ(ProxyServer::SCHEME_HTTPS, scheme);
     next_state_ = STATE_SPDY_PROXY_CREATE_STREAM;
   } else {
@@ -869,12 +873,13 @@ void HttpProxyConnectJob::ChangePriorityInternal(RequestPriority priority) {
 }
 
 void HttpProxyConnectJob::OnTimedOutInternal() {
-  if (next_state_ == STATE_TRANSPORT_CONNECT_COMPLETE) {
-    base::UmaHistogramMediumTimes(
-        GetProxyServerScheme() == ProxyServer::SCHEME_HTTP
-            ? "Net.HttpProxy.ConnectLatency.Insecure.TimedOut"
-            : "Net.HttpProxy.ConnectLatency.Secure.TimedOut",
-        base::TimeTicks::Now() - connect_start_time_);
+  // Only record latency for connections to the first proxy in a chain.
+  if (next_state_ == STATE_TRANSPORT_CONNECT_COMPLETE &&
+      params_->proxy_chain_index() == 0) {
+    EmitConnectLatency(NextProto::kProtoUnknown,
+                       params_->proxy_server().scheme(),
+                       HttpConnectResult::kTimedOut,
+                       base::TimeTicks::Now() - connect_start_time_);
   }
 }
 
@@ -920,6 +925,67 @@ SpdySessionKey HttpProxyConnectJob::CreateSpdySessionKey() const {
       session_key_proxy_chain, SessionUsage::kProxy, socket_tag(),
       params_->network_anonymization_key(), params_->secure_dns_policy(),
       /*disable_cert_verification_network_fetches=*/true);
+}
+
+// static
+void HttpProxyConnectJob::EmitConnectLatency(NextProto http_version,
+                                             ProxyServer::Scheme scheme,
+                                             HttpConnectResult result,
+                                             base::TimeDelta latency) {
+  std::string_view http_version_piece;
+  switch (http_version) {
+    case kProtoUnknown:
+    // fall through to assume Http1
+    case kProtoHTTP11:
+      http_version_piece = "Http1";
+      break;
+    case kProtoHTTP2:
+      http_version_piece = "Http2";
+      break;
+    case kProtoQUIC:
+      http_version_piece = "Http3";
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  std::string_view scheme_piece;
+  switch (scheme) {
+    case ProxyServer::SCHEME_HTTP:
+      scheme_piece = "Http";
+      break;
+    case ProxyServer::SCHEME_HTTPS:
+      scheme_piece = "Https";
+      break;
+    case ProxyServer::SCHEME_QUIC:
+      scheme_piece = "Quic";
+      break;
+    case ProxyServer::SCHEME_INVALID:
+    case ProxyServer::SCHEME_SOCKS4:
+    case ProxyServer::SCHEME_SOCKS5:
+    default:
+      NOTREACHED();
+  }
+
+  std::string_view result_piece;
+  switch (result) {
+    case HttpConnectResult::kSuccess:
+      result_piece = "Success";
+      break;
+    case HttpConnectResult::kError:
+      result_piece = "Error";
+      break;
+    case HttpConnectResult::kTimedOut:
+      result_piece = "TimedOut";
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  std::string histogram =
+      base::StrCat({"Net.HttpProxy.ConnectLatency.", http_version_piece, ".",
+                    scheme_piece, ".", result_piece});
+  base::UmaHistogramMediumTimes(histogram, latency);
 }
 
 }  // namespace net

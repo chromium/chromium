@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/strings/strcat.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_chain.h"
@@ -46,6 +47,8 @@ class QuicSessionPoolProxyJobTest
         context_.clock(), host, perspective, client_priority_uses_incremental,
         use_priority_header);
   }
+
+  base::HistogramTester histogram_tester;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -152,6 +155,8 @@ TEST_P(QuicSessionPoolProxyJobTest, CreateProxiedQuicSession) {
   RunUntilIdle();
 
   EXPECT_TRUE(socket_data.AllDataConsumed());
+  histogram_tester.ExpectTotalCount(
+      "Net.HttpProxy.ConnectLatency.Http3.Quic.Success", 1);
 }
 
 TEST_P(QuicSessionPoolProxyJobTest, DoubleProxiedQuicSession) {
@@ -371,6 +376,9 @@ TEST_P(QuicSessionPoolProxyJobTest, DoubleProxiedQuicSession) {
   RunUntilIdle();
 
   ASSERT_TRUE(socket_data.AllDataConsumed());
+
+  histogram_tester.ExpectTotalCount(
+      "Net.HttpProxy.ConnectLatency.Http3.Quic.Success", 1);
 }
 
 TEST_P(QuicSessionPoolProxyJobTest, CreateProxySessionFails) {
@@ -463,6 +471,13 @@ TEST_P(QuicSessionPoolProxyJobTest, CreateSessionFails) {
                              quic::QuicErrorCode::QUIC_INTERNAL_ERROR);
 
   ASSERT_EQ(ERR_QUIC_HANDSHAKE_FAILED, callback_.WaitForResult());
+
+  // The direct connection was successful; the tunneled connection failed, but
+  // that is not measured by this metric.
+  histogram_tester.ExpectTotalCount(
+      "Net.HttpProxy.ConnectLatency.Http3.Quic.Success", 1);
+  histogram_tester.ExpectTotalCount(
+      "Net.HttpProxy.ConnectLatency.Http3.Quic.Error", 0);
 }
 
 // If the server in a proxied session provides an SPA, the client does not

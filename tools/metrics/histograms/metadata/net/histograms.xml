@@ -2149,16 +2149,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.HttpProxy.ConnectLatency" units="ms"
-    expires_after="2023-09-17">
-  <owner>dschinazi@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
+<histogram
+    name="Net.HttpProxy.ConnectLatency.{HttpVersion}.{ProxySchema}.{Result}"
+    units="ms" expires_after="M133">
+  <owner>djmitche@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
-    Time taken to establish the connection to the HTTP proxy. Note that the
-    histogram expired briefly for M-86 and M-87 non-stable versions. Exact
-    counts during that period may not be meaningful.
+    Time taken to establish the connection to an HTTP proxy. This is only
+    measured for connections to the first proxy in a proxy chain. In the Error
+    and TimedOut variations, HTTP/1 and HTTP/2 cannot be distinguished, so these
+    are reported as HTTP/1. This histogram expired 2024-09-17 and was
+    re-established in M131 with the addition of the HTTP version and proxy
+    scheme.
   </summary>
+  <token key="HttpVersion">
+    <variant name="Http1"/>
+    <variant name="Http2"/>
+    <variant name="Http3"/>
+  </token>
+  <token key="ProxySchema">
+    <variant name="Http"/>
+    <variant name="Https"/>
+    <variant name="Quic"/>
+  </token>
+  <token key="Result">
+    <variant name="Error"/>
+    <variant name="Success"/>
+    <variant name="TimedOut"/>
+  </token>
 </histogram>
 
 <histogram name="Net.HttpRequestSSLUpgradeDecision"

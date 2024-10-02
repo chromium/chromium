@@ -478,12 +478,17 @@ TEST_P(HttpProxyConnectJobTest, NoTunnel) {
     // Proxies should not set any DNS aliases.
     EXPECT_TRUE(test_delegate.socket()->GetDnsAliases().empty());
 
-    bool is_secure_proxy = GetParam() == HTTPS || GetParam() == SPDY;
+    bool is_secure = GetParam() == HTTPS || GetParam() == SPDY;
+    bool is_http2 = GetParam() == SPDY;
     histogram_tester.ExpectTotalCount(
-        "Net.HttpProxy.ConnectLatency.Insecure.Success",
-        is_secure_proxy ? 0 : 1);
+        "Net.HttpProxy.ConnectLatency.Http1.Http.Success",
+        (!is_secure && !is_http2) ? 1 : 0);
     histogram_tester.ExpectTotalCount(
-        "Net.HttpProxy.ConnectLatency.Secure.Success", is_secure_proxy ? 1 : 0);
+        "Net.HttpProxy.ConnectLatency.Http1.Https.Success",
+        (is_secure && !is_http2) ? 1 : 0);
+    histogram_tester.ExpectTotalCount(
+        "Net.HttpProxy.ConnectLatency.Http2.Https.Success",
+        (is_secure && is_http2) ? 1 : 0);
   }
 }
 
@@ -1543,9 +1548,11 @@ TEST_P(HttpProxyConnectJobTest, TCPError) {
 
     bool is_secure_proxy = GetParam() == HTTPS;
     histogram_tester.ExpectTotalCount(
-        "Net.HttpProxy.ConnectLatency.Insecure.Error", is_secure_proxy ? 0 : 1);
+        "Net.HttpProxy.ConnectLatency.Http1.Http.Error",
+        is_secure_proxy ? 0 : 1);
     histogram_tester.ExpectTotalCount(
-        "Net.HttpProxy.ConnectLatency.Secure.Error", is_secure_proxy ? 1 : 0);
+        "Net.HttpProxy.ConnectLatency.Http1.Https.Error",
+        is_secure_proxy ? 1 : 0);
   }
 }
 
@@ -1577,9 +1584,13 @@ TEST_P(HttpProxyConnectJobTest, SSLError) {
                                           io_mode == SYNCHRONOUS);
 
     histogram_tester.ExpectTotalCount(
-        "Net.HttpProxy.ConnectLatency.Secure.Error", 1);
+        "Net.HttpProxy.ConnectLatency.Http1.Https.Error", 1);
     histogram_tester.ExpectTotalCount(
-        "Net.HttpProxy.ConnectLatency.Insecure.Error", 0);
+        "Net.HttpProxy.ConnectLatency.Http1.Http.Error", 0);
+    histogram_tester.ExpectTotalCount(
+        "Net.HttpProxy.ConnectLatency.Http2.Https.Error", 0);
+    histogram_tester.ExpectTotalCount(
+        "Net.HttpProxy.ConnectLatency.Http2.Http.Error", 0);
   }
 }
 
@@ -1741,9 +1752,9 @@ TEST_P(HttpProxyConnectJobTest, SslClientAuth) {
                                           io_mode == SYNCHRONOUS);
 
     histogram_tester.ExpectTotalCount(
-        "Net.HttpProxy.ConnectLatency.Secure.Error", 1);
+        "Net.HttpProxy.ConnectLatency.Http1.Https.Error", 1);
     histogram_tester.ExpectTotalCount(
-        "Net.HttpProxy.ConnectLatency.Insecure.Error", 0);
+        "Net.HttpProxy.ConnectLatency.Http1.Http.Error", 0);
   }
 }
 
