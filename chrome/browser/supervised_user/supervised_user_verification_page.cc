@@ -6,14 +6,19 @@
 
 #include <utility>
 
+#include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/signin/signin_promo.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "components/grit/components_resources.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/core/common_string_util.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/referrer.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -79,11 +84,12 @@ SupervisedUserVerificationPage::SupervisedUserVerificationPage(
       has_second_custodian_(has_second_custodian) {
   if (child_account_service_) {
     // Reloads the interstitial to continue navigation once the supervised user
-    // is authenticated.
+    // is authenticated. Also closes the sign-in tabs opened by this
+    // interstitial.
     google_auth_state_subscription_ =
         child_account_service_->ObserveGoogleAuthState(base::BindRepeating(
             &SupervisedUserVerificationPage::OnGoogleAuthStateUpdate,
-            base::Unretained(this)));
+            weak_factory_.GetWeakPtr()));
     RecordReauthStatusMetrics(Status::SHOWN);
   }
 }
@@ -93,6 +99,21 @@ SupervisedUserVerificationPage::~SupervisedUserVerificationPage() = default;
 security_interstitials::SecurityInterstitialPage::TypeID
 SupervisedUserVerificationPage::GetTypeForTesting() {
   return SupervisedUserVerificationPage::kTypeForTesting;
+}
+
+void SupervisedUserVerificationPage::CloseSignInTabs() {
+  while (!signin_tabs_handle_id_list_.empty()) {
+    auto tab_handle_id = signin_tabs_handle_id_list_.front();
+    // Obtains the tab associated with the unique tab handle id. A tab pointer
+    // is only returned if the tab is still valid.
+    auto* tab_interface = tabs::TabInterface::MaybeGetFromHandle(tab_handle_id);
+    if (tab_interface) {
+      tab_interface->Close();
+    }
+    signin_tabs_handle_id_list_.pop_front();
+  }
+  // TODO(b/364546097): Ideally focus the last visited tab (before the sign-in
+  // page), before closing the sign-in tabs.
 }
 
 void SupervisedUserVerificationPage::OnGoogleAuthStateUpdate() {
@@ -106,6 +127,10 @@ void SupervisedUserVerificationPage::OnGoogleAuthStateUpdate() {
   }
 
   RecordReauthStatusMetrics(Status::REAUTH_COMPLETED);
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kCloseSignTabsFromReauthenticationInterstitial)) {
+    CloseSignInTabs();
+  }
   controller()->Reload();
 }
 
@@ -285,11 +310,25 @@ void SupervisedUserVerificationPage::CommandReceived(
   DCHECK(retval);
 
   switch (cmd) {
-    case security_interstitials::CMD_OPEN_LOGIN:
+    case security_interstitials::CMD_OPEN_LOGIN: {
       RecordReauthStatusMetrics(Status::REAUTH_STARTED);
-      controller()->OpenUrlInNewForegroundTab(
-          signin::GetChromeReauthURL({.email = email_to_reauth_}));
+      content::OpenURLParams params(
+          signin::GetChromeReauthURL({.email = email_to_reauth_}),
+          content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK, false);
+      auto* signin_web_contents =
+          SecurityInterstitialPage::web_contents()->OpenURL(
+              params, /*navigation_handle_callback=*/{});
+      if (base::FeatureList::IsEnabled(
+              supervised_user::
+                  kCloseSignTabsFromReauthenticationInterstitial) &&
+          signin_web_contents) {
+        tabs::TabInterface* tab_interface =
+            tabs::TabInterface::GetFromContents(signin_web_contents);
+        signin_tabs_handle_id_list_.emplace_back(tab_interface->GetTabHandle());
+      }
       break;
+    }
     case security_interstitials::CMD_DONT_PROCEED:
     case security_interstitials::CMD_OPEN_HELP_CENTER:
     case security_interstitials::CMD_PROCEED:

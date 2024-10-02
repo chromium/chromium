@@ -84,6 +84,10 @@ BASE_DECLARE_FEATURE(kForceSupervisedUserReauthenticationForYouTube);
 // access a blocked site, allowing the user to ask for parent's approval.
 BASE_DECLARE_FEATURE(kForceSupervisedUserReauthenticationForBlockedSites);
 
+// Specifies if we should close the sign-in tabs that can be opened from
+// the re-authentication interstitial.
+BASE_DECLARE_FEATURE(kCloseSignTabsFromReauthenticationInterstitial);
+
 // Shows the subframe re-authentication interstitial for unauthenticated
 // supervised users when they try to access:
 // * Embedded YouTube videos if re-auth is forced for YouTube.

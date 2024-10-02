@@ -10,6 +10,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/supervised_user/core/browser/child_account_service.h"
 #include "content/public/browser/web_contents.h"
@@ -93,6 +94,7 @@ class SupervisedUserVerificationPage
   int GetHTMLTemplateId() override;
 
  private:
+  void CloseSignInTabs();
   void OnGoogleAuthStateUpdate();
   void PopulateStringsForSharedHTML(base::Value::Dict& load_time_data);
   void RecordReauthStatusMetrics(Status status);
@@ -107,6 +109,9 @@ class SupervisedUserVerificationPage
   ukm::SourceId source_id_;
   bool is_main_frame_;
   bool has_second_custodian_;
+  // List with unique tab identifiers for spawned sign-in tabs.
+  std::list<uint32_t> signin_tabs_handle_id_list_;
+  base::WeakPtrFactory<SupervisedUserVerificationPage> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_VERIFICATION_PAGE_H_
