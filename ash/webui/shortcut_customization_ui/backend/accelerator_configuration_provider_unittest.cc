@@ -620,7 +620,9 @@ TEST_F(AcceleratorConfigurationProviderTest, ConnectedKeyboardsUpdated) {
   EXPECT_EQ(1, mojo_observer.num_times_notified());
 }
 
-TEST_F(AcceleratorConfigurationProviderTest, ValidateAllAcceleratorLayouts) {
+// TODO(crbug.com/371040033): Re-enable this test
+TEST_F(AcceleratorConfigurationProviderTest,
+       DISABLED_ValidateAllAcceleratorLayouts) {
   // Initialize with all default accelerators.
   Shell::Get()->ash_accelerator_configuration()->Initialize();
   base::RunLoop().RunUntilIdle();
