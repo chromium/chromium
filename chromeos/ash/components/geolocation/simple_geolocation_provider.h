@@ -156,7 +156,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
 
   // Stores the time of the last geolocation request for each client ID. This is
   // used to calculate the time gap between requests for metrics reporting.
-  base::flat_map<ClientId, base::Time> last_request_times_;
+  base::flat_map<ClientId, base::TimeTicks> last_request_times_;
 
   // Creation and destruction should happen on the same thread.
   THREAD_CHECKER(thread_checker_);

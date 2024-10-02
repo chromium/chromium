@@ -222,7 +222,7 @@ void SimpleGeolocationProvider::RecordClientIdUma(ClientId client_id) {
 
   base::UmaHistogramEnumeration("SimpleGeolocation.Provider.ClientId",
                                 client_id);
-  base::Time now = base::Time();
+  base::TimeTicks now = base::TimeTicks::Now();
   auto it = last_request_times_.find(client_id);
   if (it != last_request_times_.end()) {
     base::UmaHistogramExactLinear(GetClientIdUmaName(client_id),
