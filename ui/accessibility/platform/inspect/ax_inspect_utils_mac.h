@@ -21,6 +21,12 @@ namespace ui {
 COMPONENT_EXPORT(AX_PLATFORM)
 bool IsValidAXAttribute(const std::string& attribute);
 
+// Return AXElement in a tree by a given accessibility role.
+COMPONENT_EXPORT(AX_PLATFORM)
+base::apple::ScopedCFTypeRef<AXUIElementRef> FindAXUIElement(
+    const AXUIElementRef node,
+    const char* role);
+
 // Return AXElement in a tree by a given criteria.
 using AXFindCriteria = base::RepeatingCallback<bool(const AXUIElementRef)>;
 COMPONENT_EXPORT(AX_PLATFORM)
