@@ -1048,8 +1048,8 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PageLoad.Clients.FromGoogleSearch.FromSidePanel.PaintTiming.NavigationToFirstImagePaint"
     units="ms" expires_after="2024-10-01">
-  <owner>sullivan@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>chrome-cros@chromium.org</owner>
   <summary>
     Measures the time from navigation timing's navigation start to the time the
     first image is painted, for main frame documents. For images that render
