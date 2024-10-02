@@ -1791,6 +1791,11 @@ targets.binaries.script(
     ],
 )
 
+targets.binaries.windowed_test_launcher(
+    name = "tracing_service_unittests",
+    label = "//chrome/windows_services/tracing_service:tracing_service_unittests",
+)
+
 targets.binaries.console_test_launcher(
     name = "trichrome_chrome_bundle_smoke_test",
     label = "//chrome/android:trichrome_chrome_bundle_smoke_test",

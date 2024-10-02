@@ -4893,6 +4893,7 @@ targets.legacy_basic_suite(
                 },
             ),
         ),
+        "tracing_service_unittests": targets.legacy_test_config(),
         "updater_tests": targets.legacy_test_config(),
         "updater_tests_system": targets.legacy_test_config(),
         "zucchini_unittests": targets.legacy_test_config(),

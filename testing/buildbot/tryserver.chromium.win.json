@@ -1500,6 +1500,23 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "tracing_service_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-11-22631"
+          },
+          "expiration": 36000,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "tracing_service_unittests",
+        "test_id_prefix": "ninja://chrome/windows_services/tracing_service:tracing_service_unittests/"
+      },
+      {
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
         "name": "ui_base_unittests",
         "swarming": {
           "dimensions": {

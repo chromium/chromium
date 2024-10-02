@@ -2264,6 +2264,10 @@ targets.tests.gpu_telemetry_test(
 )
 
 targets.tests.gtest_test(
+    name = "tracing_service_unittests",
+)
+
+targets.tests.gtest_test(
     name = "trichrome_chrome_bundle_smoke_test",
 )
 

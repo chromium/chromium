@@ -5886,6 +5886,7 @@
           },
         },
       },
+      'tracing_service_unittests': {},
       'updater_tests': {},
       'updater_tests_system': {},
       'zucchini_unittests': {},

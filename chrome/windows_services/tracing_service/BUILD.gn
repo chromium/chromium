@@ -4,6 +4,7 @@
 
 import("//build/config/chrome_build.gni")
 import("//chrome/process_version_rc_template.gni")
+import("//testing/test.gni")
 
 executable("tracing_service") {
   sources = [
@@ -26,4 +27,17 @@ executable("tracing_service") {
 process_version_rc_template("version_resources") {
   sources = [ "tracing_service_exe.ver" ]
   output = "$target_gen_dir/tracing_service_exe.rc"
+}
+
+test("tracing_service_unittests") {
+  sources = [ "run_all_unittests.cc" ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/install_static/test:test_support",
+    "//testing/gtest",
+  ]
+
+  data_deps = [ ":tracing_service" ]
 }

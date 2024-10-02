@@ -1647,6 +1647,10 @@
       "src/third_party/android_sdk/public/platform-tools/adb",
     ],
   },
+  "tracing_service_unittests": {
+    "label": "//chrome/windows_services/tracing_service:tracing_service_unittests",
+    "type": "windowed_test_launcher",
+  },
   "traffic_annotation_auditor_dependencies": {
     "label": "//:traffic_annotation_auditor_dependencies",
     "type": "additional_compile_target",
