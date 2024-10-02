@@ -102,6 +102,7 @@ void GraduationManager::UpdateAppPinnedState() {
   }
 
   UnpinAppWithIDFromShelf(web_app::kGraduationAppId);
+  nudge_controller_->ResetNudgePref();
   auto* browser =
       FindSystemWebAppBrowser(profile_, SystemWebAppType::GRADUATION);
   if (browser) {

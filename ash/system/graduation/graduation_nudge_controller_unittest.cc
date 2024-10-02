@@ -113,6 +113,20 @@ TEST_F(GraduationNudgeControllerTest, NudgeNotShownWhenAlreadyShown) {
   EXPECT_FALSE(IsNudgeShown());
 }
 
+TEST_F(GraduationNudgeControllerTest, NudgeShownIfPrefReset) {
+  SetNudgeShownPref(true);
+  ShelfID added_item = AddItem(ShelfItemType::TYPE_PINNED_APP, true);
+
+  EXPECT_FALSE(IsNudgeShown());
+  nudge_controller()->MaybeShowNudge(added_item);
+  EXPECT_FALSE(IsNudgeShown());
+
+  nudge_controller()->ResetNudgePref();
+  nudge_controller()->MaybeShowNudge(added_item);
+
+  EXPECT_TRUE(IsNudgeShown());
+}
+
 TEST_F(GraduationNudgeControllerTest, EnableAppWhenHotseatHidden) {
   GetPrimaryShelf()->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlwaysHidden);
 

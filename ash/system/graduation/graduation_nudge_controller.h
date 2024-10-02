@@ -30,6 +30,9 @@ class ASH_EXPORT GraduationNudgeController {
   // in the shelf, or if the shelf is not visible, then the nudge is not shown.
   void MaybeShowNudge(const ShelfID& id);
 
+  // Sets kGraduationNudgeShown pref to false.
+  void ResetNudgePref();
+
  private:
   raw_ptr<PrefService> pref_service_ = nullptr;
 };

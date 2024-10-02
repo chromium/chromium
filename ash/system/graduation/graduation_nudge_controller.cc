@@ -61,4 +61,12 @@ void GraduationNudgeController::MaybeShowNudge(const ShelfID& id) {
   pref_service_->SetBoolean(prefs::kGraduationNudgeShown, true);
 }
 
+void GraduationNudgeController::ResetNudgePref() {
+  bool nudge_shown = pref_service_->GetBoolean(prefs::kGraduationNudgeShown);
+  if (!nudge_shown) {
+    VLOG(1) << "graduation: Nudge has not been shown but pref is being reset";
+  }
+  pref_service_->SetBoolean(prefs::kGraduationNudgeShown, false);
+}
+
 }  // namespace ash::graduation
