@@ -31,29 +31,6 @@ _THIS_DIR = pathlib.Path(__file__).parent
 _INFRA_CONFIG_DIR = _THIS_DIR.parent
 _TESTING_BUILDBOT_DIR = (_INFRA_CONFIG_DIR / '../../testing/buildbot').resolve()
 
-_BROWSER_CONFIG_MAPPING = {
-    'android-chromium': 'ANDROID_CHROMIUM',
-    'android-chromium-monochrome': 'ANDROID_CHROMIUM_MONOCHROME',
-    'android-webview': 'ANDROID_WEBVIEW',
-    'cros-chrome': 'CROS_CHROME',
-    'debug': 'DEBUG',
-    'debug_x64': 'DEBUG_X64',
-    'lacros-chrome': 'LACROS_CHROME',
-    'release': 'RELEASE',
-    'release_x64': 'RELEASE_X64',
-    'web-engine-shell': 'WEB_ENGINE_SHELL',
-}
-
-_OS_TYPE_MAPPING = {
-    'android': 'ANDROID',
-    'chromeos': 'CROS',
-    'fuchsia': 'FUCHSIA',
-    'lacros': 'LACROS',
-    'linux': 'LINUX',
-    'mac': 'MAC',
-    'win': 'WINDOWS',
-}
-
 
 def _to_starlark_value(value: typing.Any) -> value_builders.Value:
   if value is None or isinstance(value, (int, bool)):
@@ -119,76 +96,35 @@ def _per_test_modifications(
   return value_builder
 
 
-def _escape_spaces(s: str) -> str:
-  return s.replace(' ', '\\ ').replace('\n', '\\\n')
-
-
-# Override the buildozer tables with empty tanles to avoid buildozer making
-# unintended changes such as sorting most lists, including in existing portions
-# of the file
-_TABLE_JSON_FILE = _THIS_DIR / 'tables.json'
-_CMD_PREFIX = ['buildozer', '-tables', _TABLE_JSON_FILE]
-
-
-def _update_starlark(
-    builder_group: str,
-    star_file: pathlib.Path,
-    targets_builder_defaults: dict[str, str],
-    edits_by_builder: dict[str, dict[str, str]],
-):
-
-  # Ideally all modifications would be done with a single buildozer invocation
-  # using a commands file, but escaped newlines aren't supported with commands
-  # files.
-  #
-  # Pull request to fix: https://github.com/bazelbuild/buildtools/pull/1296
-  def buildoze(*args):
-    # output is always captured to avoid having each edit trigger a repetitive
-    # line of output
-    ret = subprocess.run([*_CMD_PREFIX, *args],
-                         capture_output=True,
-                         encoding='utf-8')
-    # buildozer returns exit code of 3 when it makes no changes, the edits
-    # should be idempotent, so we have to manually check the return code
-    if ret.returncode not in (0, 3):
-      sys.stderr.write(ret.stderr)
-      ret.check_returncode()
-    return ret.stdout
-
-  # Buildozer is geared towards manipulating build targets, actions that operate
-  # on the file level, such as adding a new rule, use __pkg__ as the target name
-  file_target = f'{star_file}:__pkg__'
-
-  buildoze('new_load //lib/targets.star targets', file_target)
-
-  defaults_rule_kind = 'targets.builder_defaults.set'
-  # %{kind} as the pattern tells it to operate on all rules of that kind. There
-  # shouldn't be more than one targets.builder_defaults.set "rule".
-  defaults_target = f'{star_file}:%{defaults_rule_kind}'
-  # Check if a targets.builder_defaults.set declaration already exists, any
-  # print operation will result in output if there is already a rule
-  if not subprocess.check_output([*_CMD_PREFIX, 'print kind', defaults_target]):
-    # It's not possible to add an arbitrary function call, only new rules, which
-    # require a name, so create a rule with a temporary name and then remove the
-    # name attribute, then we can just use the kind filter for modifying it
-    temp_name = 'NO_DECLARATION_SHOULD_EXIST_WITH_THIS_NAME'
-    buildoze(f'new {defaults_rule_kind} {temp_name} before {builder_group}',
-             file_target)
-    buildoze('remove name', f'{star_file}:{temp_name}')
-
-  for attr, value in targets_builder_defaults.items():
-    buildoze(f'set {attr} {_escape_spaces(value)}', defaults_target)
-
-  for builder, edits in edits_by_builder.items():
-    for attr, value in edits.items():
-      buildoze(f'set {attr} {_escape_spaces(value)}', f'{star_file}:{builder}')
-
-
 class SkylabSuite(Exception):
 
   def __init__(self, suite_type: str, suite: str):
     return super().__init__(f'skylab suite "{suite}" with'
                             f' suite_type "{suite_type}" is not supported')
+
+
+_BROWSER_CONFIG_MAPPING = {
+    'android-chromium': 'ANDROID_CHROMIUM',
+    'android-chromium-monochrome': 'ANDROID_CHROMIUM_MONOCHROME',
+    'android-webview': 'ANDROID_WEBVIEW',
+    'cros-chrome': 'CROS_CHROME',
+    'debug': 'DEBUG',
+    'debug_x64': 'DEBUG_X64',
+    'lacros-chrome': 'LACROS_CHROME',
+    'release': 'RELEASE',
+    'release_x64': 'RELEASE_X64',
+    'web-engine-shell': 'WEB_ENGINE_SHELL',
+}
+
+_OS_TYPE_MAPPING = {
+    'android': 'ANDROID',
+    'chromeos': 'CROS',
+    'fuchsia': 'FUCHSIA',
+    'lacros': 'LACROS',
+    'linux': 'LINUX',
+    'mac': 'MAC',
+    'win': 'WINDOWS',
+}
 
 
 def _compute_edits(
@@ -254,6 +190,71 @@ def _compute_edits(
     edits['targets_settings'] = ''.join(settings_output)
 
   return edits
+
+
+def _escape_spaces(s: str) -> str:
+  return s.replace(' ', '\\ ').replace('\n', '\\\n')
+
+
+# Override the buildozer tables with empty tables to avoid buildozer making
+# unintended changes such as sorting most lists, including in existing portions
+# of the file
+_TABLE_JSON_FILE = _THIS_DIR / 'tables.json'
+_CMD_PREFIX = ['buildozer', '-tables', _TABLE_JSON_FILE]
+
+
+def _update_starlark(
+    builder_group: str,
+    star_file: pathlib.Path,
+    targets_builder_defaults: dict[str, str],
+    edits_by_builder: dict[str, dict[str, str]],
+):
+
+  # Ideally all modifications would be done with a single buildozer invocation
+  # using a commands file, but escaped newlines aren't supported with commands
+  # files.
+  #
+  # Pull request to fix: https://github.com/bazelbuild/buildtools/pull/1296
+  def buildoze(*args):
+    # output is always captured to avoid having each edit trigger a repetitive
+    # line of output
+    ret = subprocess.run([*_CMD_PREFIX, *args],
+                         capture_output=True,
+                         encoding='utf-8')
+    # buildozer returns exit code of 3 when it makes no changes, the edits
+    # should be idempotent, so we have to manually check the return code
+    if ret.returncode not in (0, 3):
+      sys.stderr.write(ret.stderr)
+      ret.check_returncode()
+    return ret.stdout
+
+  # Buildozer is geared towards manipulating build targets, actions that operate
+  # on the file level, such as adding a new rule, use __pkg__ as the target name
+  file_target = f'{star_file}:__pkg__'
+
+  buildoze('new_load //lib/targets.star targets', file_target)
+
+  defaults_rule_kind = 'targets.builder_defaults.set'
+  # %{kind} as the pattern tells it to operate on all rules of that kind. There
+  # shouldn't be more than one targets.builder_defaults.set "rule".
+  defaults_target = f'{star_file}:%{defaults_rule_kind}'
+  # Check if a targets.builder_defaults.set declaration already exists, any
+  # print operation will result in output if there is already a rule
+  if not subprocess.check_output([*_CMD_PREFIX, 'print kind', defaults_target]):
+    # It's not possible to add an arbitrary function call, only new rules, which
+    # require a name, so create a rule with a temporary name and then remove the
+    # name attribute, then we can just use the kind filter for modifying it
+    temp_name = 'NO_DECLARATION_SHOULD_EXIST_WITH_THIS_NAME'
+    buildoze(f'new {defaults_rule_kind} {temp_name} before {builder_group}',
+             file_target)
+    buildoze('remove name', f'{star_file}:{temp_name}')
+
+  for attr, value in targets_builder_defaults.items():
+    buildoze(f'set {attr} {_escape_spaces(value)}', defaults_target)
+
+  for builder, edits in edits_by_builder.items():
+    for attr, value in edits.items():
+      buildoze(f'set {attr} {_escape_spaces(value)}', f'{star_file}:{builder}')
 
 
 def main(argv: list[str]):
