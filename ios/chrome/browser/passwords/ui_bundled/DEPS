@@ -1,9 +1,10 @@
 include_rules = [
-  "+ios/chrome/browser/ui/settings/password",
   "+ios/chrome/browser/autofill/model",
   "+ios/chrome/browser/default_browser/model/default_browser_interest_signals.h",
   "+ios/chrome/browser/favicon/model",
   "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
   "+ios/chrome/browser/signin/model/authentication_service.h",
   "+ios/chrome/browser/signin/model/authentication_service_factory.h",
+  "+ios/chrome/browser/tips_manager/model",
+  "+ios/chrome/browser/ui/settings/password",
 ]

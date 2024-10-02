@@ -9,6 +9,7 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
@@ -21,6 +22,9 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/tips_manager/model/tips_manager_ios.h"
+#import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/web/public/web_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -206,6 +210,16 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
                                                           atIndex:index
                                                        completion:completion];
                          }];
+
+  // Records the usage of password autofill. This notifies the Tips Manager,
+  // which may trigger tips or guidance related to password management features.
+  if (IsSegmentationTipsManagerEnabled()) {
+    TipsManagerIOS* tipsManager =
+        TipsManagerIOSFactory::GetForProfile(self.browser->GetProfile());
+
+    tipsManager->NotifySignal(
+        segmentation_platform::tips_manager::signals::kUsedPasswordAutofill);
+  }
 }
 
 - (void)secondaryButtonTapped {
