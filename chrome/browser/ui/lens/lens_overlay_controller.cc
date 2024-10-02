@@ -24,8 +24,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
-#include "chrome/browser/ui/hats/hats_service.h"
-#include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller_glue.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_event_handler.h"
@@ -440,7 +438,6 @@ void LensOverlayController::ShowUI(
   search_performed_in_session_ = false;
   invocation_time_ = base::TimeTicks::Now();
   invocation_time_since_epoch_ = base::Time::Now();
-  hats_triggered_in_session_ = false;
 }
 
 void LensOverlayController::CloseUIAsync(
@@ -967,7 +964,6 @@ void LensOverlayController::IssueTranslateFullPageRequest(
 
   lens_overlay_query_controller_->SendFullPageTranslateQuery(source_language,
                                                              target_language);
-  MaybeLaunchSurvey();
 }
 
 void LensOverlayController::IssueEndTranslateModeRequest() {
@@ -2051,7 +2047,6 @@ void LensOverlayController::DoLensRequest(
   RecordTimeToFirstInteraction();
   search_performed_in_session_ = true;
   state_ = State::kOverlayAndResults;
-  MaybeLaunchSurvey();
 }
 
 void LensOverlayController::ActivityRequestedByOverlay(
@@ -2233,7 +2228,6 @@ void LensOverlayController::IssueTextSelectionRequestInner(
   RecordTimeToFirstInteraction();
   search_performed_in_session_ = true;
   state_ = State::kOverlayAndResults;
-  MaybeLaunchSurvey();
 }
 
 void LensOverlayController::CloseSearchBubble() {
@@ -2310,7 +2304,6 @@ void LensOverlayController::IssueSearchBoxRequest(
   CloseSearchBubble();
   RecordTimeToFirstInteraction();
   search_performed_in_session_ = true;
-  MaybeLaunchSurvey();
 
   // If we are in the zero state, this request must have come from CSB. In that
   // case, hide the overlay to allow live page to show through.
@@ -2412,25 +2405,4 @@ void LensOverlayController::RecordEndOfSessionMetrics(
   lens::RecordUKMSessionEndMetrics(source_id, invocation_source_,
                                    search_performed_in_session_,
                                    session_duration);
-}
-
-void LensOverlayController::MaybeLaunchSurvey() {
-  if (!base::FeatureList::IsEnabled(lens::features::kLensOverlaySurvey)) {
-    return;
-  }
-  if (hats_triggered_in_session_) {
-    return;
-  }
-  hats_triggered_in_session_ = true;
-  HatsService* hats_service = HatsServiceFactory::GetForProfile(
-      tab_->GetBrowserWindowInterface()->GetProfile(),
-      /*create_if_necessary=*/true);
-  CHECK(hats_service);
-  hats_service->LaunchDelayedSurveyForWebContents(
-      kHatsSurveyTriggerLensOverlayResults, tab_->GetContents(),
-      lens::features::GetLensOverlaySurveyResultsTime().InMilliseconds(),
-      /*product_specific_bits_data=*/{},
-      /*product_specific_string_data=*/
-      {{"Paella ID",
-        base::NumberToString(lens_overlay_query_controller_->gen204_id())}});
 }

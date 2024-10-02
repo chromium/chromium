@@ -68,7 +68,6 @@ source_set("impl") {
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",
     "//components/content_settings/core/common",
-    "//components/lens:features",
     "//components/metrics_services_manager",
     "//components/password_manager/core/common",
     "//components/permissions",

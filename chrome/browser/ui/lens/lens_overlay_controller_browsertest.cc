@@ -38,8 +38,6 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
-#include "chrome/browser/ui/hats/hats_service_factory.h"
-#include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/lens/lens_overlay_colors.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller_glue.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
@@ -111,7 +109,6 @@ constexpr char kDocumentWithDynamicColor[] = "/lens/dynamic_color.html";
 constexpr char kPdfDocument[] = "/pdf/test.pdf";
 constexpr char kDocumentWithNonAsciiCharacters[] = "/non-ascii.html";
 
-using ::testing::_;
 using State = LensOverlayController::State;
 using LensOverlayInvocationSource = lens::LensOverlayInvocationSource;
 using LensOverlayDismissalSource = lens::LensOverlayDismissalSource;
@@ -590,10 +587,6 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
     // Permits sharing the page screenshot by default.
     PrefService* prefs = browser()->profile()->GetPrefs();
     prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, true);
-
-    mock_hats_service_ = static_cast<MockHatsService*>(
-        HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            browser()->profile(), base::BindRepeating(&BuildMockHatsService)));
   }
 
   void TearDownOnMainThread() override {
@@ -603,8 +596,6 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
     // Disallow sharing the page screenshot by default.
     PrefService* prefs = browser()->profile()->GetPrefs();
     prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, false);
-
-    mock_hats_service_ = nullptr;
   }
 
   ~LensOverlayControllerBrowserTest() override {
@@ -623,8 +614,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
           {
               {"use-inner-text-as-context", "true"},
               {"use-inner-html-as-context", "true"},
-          }},
-         {lens::features::kLensOverlaySurvey, {}}},
+          }}},
         /*disabled_features=*/{});
   }
 
@@ -774,7 +764,6 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
 
  protected:
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<MockHatsService> mock_hats_service_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -1060,9 +1049,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, ShowSidePanel) {
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        ShowSidePanelWithPendingRegion) {
-  EXPECT_CALL(*mock_hats_service_, LaunchDelayedSurveyForWebContents(
-                                       kHatsSurveyTriggerLensOverlayResults, _,
-                                       _, _, _, _, _, _, _, _));
   WaitForPaint();
 
   // State should start in off.
@@ -1203,9 +1189,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        MAYBE_SidePanelInteractionsAfterRegionSelection) {
-  EXPECT_CALL(*mock_hats_service_, LaunchDelayedSurveyForWebContents(
-                                       kHatsSurveyTriggerLensOverlayResults, _,
-                                       _, _, _, _, _, _, _, _));
   WaitForPaint();
 
   std::string text_query = "Apples";
@@ -1297,9 +1280,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        MAYBE_ShowSidePanelAfterTextSelectionRequest) {
-  EXPECT_CALL(*mock_hats_service_, LaunchDelayedSurveyForWebContents(
-                                       kHatsSurveyTriggerLensOverlayResults, _,
-                                       _, _, _, _, _, _, _, _));
   WaitForPaint();
 
   std::string text_query = "Apples";
@@ -1348,9 +1328,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        MAYBE_ShowSidePanelAfterTranslateSelectionRequest) {
-  EXPECT_CALL(*mock_hats_service_, LaunchDelayedSurveyForWebContents(
-                                       kHatsSurveyTriggerLensOverlayResults, _,
-                                       _, _, _, _, _, _, _, _));
   WaitForPaint();
 
   std::string text_query = "Manzanas";
@@ -1394,9 +1371,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        IssueTranslateFullPageRequest) {
-  EXPECT_CALL(*mock_hats_service_, LaunchDelayedSurveyForWebContents(
-                                       kHatsSurveyTriggerLensOverlayResults, _,
-                                       _, _, _, _, _, _, _, _));
   WaitForPaint();
 
   // State should start in off.

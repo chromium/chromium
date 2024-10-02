@@ -11,7 +11,6 @@
 #include "base/strings/string_util.h"
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/lens/lens_features.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_hats_trigger_helper.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -53,7 +52,6 @@ constexpr char kHatsSurveyTriggerDownloadWarningPageHeed[] =
     "download-warning-page-heed";
 constexpr char kHatsSurveyTriggerDownloadWarningPageIgnore[] =
     "download-warning-page-ignore";
-constexpr char kHatsSurveyTriggerLensOverlayResults[] = "lens-overlay-results";
 constexpr char kHatsSurveyTriggerM1AdPrivacyPage[] = "m1-ad-privacy-page";
 constexpr char kHatsSurveyTriggerM1TopicsSubpage[] = "m1-topics-subpage";
 constexpr char kHatsSurveyTriggerM1FledgeSubpage[] = "m1-fledge-subpage";
@@ -608,12 +606,6 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       features::kHatsSurveyTriggerSafetyHubOneOffExperimentInteractionTriggerId
           .Get(),
       sh_psd_fields);
-
-  // Lens overlay surveys.
-  survey_configs.emplace_back(
-      &lens::features::kLensOverlaySurvey, kHatsSurveyTriggerLensOverlayResults,
-      /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
-      std::vector<std::string>{"Paella ID"});
 
 #else
   survey_configs.emplace_back(&chrome::android::kChromeSurveyNextAndroid,

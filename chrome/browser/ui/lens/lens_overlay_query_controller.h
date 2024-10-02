@@ -130,8 +130,6 @@ class LensOverlayQueryController {
   virtual void SendTaskCompletionGen204IfEnabled(
       lens::mojom::UserAction user_action);
 
-  uint64_t gen204_id() const { return gen204_id_; }
-
  protected:
   // Creates an endpoint fetcher for fetching the request data and fetches
   // the request.
