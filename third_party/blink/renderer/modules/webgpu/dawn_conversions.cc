@@ -249,17 +249,4 @@ wgpu::PipelineLayout AsDawnType(
   return nullptr;
 }
 
-String ConvertFromDawn(const char* s) {
-  return {s};
-}
-
-String ConvertFromDawn(wgpu::StringView view) {
-  if (view.data == nullptr) {
-    return {};
-  }
-  size_t length =
-      view.length == SIZE_MAX ? std::strlen(view.data) : view.length;
-  return {view.data, length};
-}
-
 }  // namespace blink

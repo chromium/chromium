@@ -688,12 +688,12 @@ GPUTexture* GPUCanvasContext::getCurrentTexture(
       device_, swap_texture_descriptor_.format,
       static_cast<wgpu::TextureUsage>(swap_texture_descriptor_.usage),
       std::move(mailbox_texture),
-      ConvertFromDawn(swap_texture_descriptor_.label));
+      String::FromUTF8(swap_texture_descriptor_.label));
 
   if (copy_to_swap_texture_required_) {
     texture_ = MakeGarbageCollected<GPUTexture>(
         device_, device_->GetHandle().CreateTexture(&texture_descriptor_),
-        ConvertFromDawn(texture_descriptor_.label));
+        String::FromUTF8(texture_descriptor_.label));
     // If the user manually destroys the texture before yielding control back
     // to the browser, do the copy just prior to the texture destruction.
     texture_->SetBeforeDestroyCallback(WTF::BindOnce(

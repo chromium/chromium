@@ -180,7 +180,7 @@ GPUTexture* GPUTexture::Create(GPUDevice* device,
 
   return MakeGarbageCollected<GPUTexture>(
       device, device->GetHandle().CreateTexture(desc),
-      ConvertFromDawn(desc->label));
+      String::FromUTF8(desc->label));
 }
 
 // static
@@ -190,7 +190,7 @@ GPUTexture* GPUTexture::CreateError(GPUDevice* device,
   DCHECK(desc);
   return MakeGarbageCollected<GPUTexture>(
       device, device->GetHandle().CreateErrorTexture(desc),
-      ConvertFromDawn(desc->label));
+      String::FromUTF8(desc->label));
 }
 
 GPUTexture::GPUTexture(GPUDevice* device,

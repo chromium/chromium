@@ -54,11 +54,6 @@ bool ConvertToDawn(const GPUImageCopyTexture* in,
 const char* ValidateTextureDataLayout(const GPUImageDataLayout* webgpu_layout,
                                       wgpu::TextureDataLayout* layout);
 
-// TODO(42241188): The const char* overload shouldn't be needed anymore once all
-// Dawn strings are converted to [Nullable]StringView.
-String ConvertFromDawn(const char* s);
-String ConvertFromDawn(wgpu::StringView view);
-
 // WebGPU objects are converted to Dawn objects by getting the opaque handle
 // which can be passed to Dawn.
 template <typename Handle>
