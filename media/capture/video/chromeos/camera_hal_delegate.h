@@ -180,7 +180,7 @@ class CAPTURE_EXPORT CameraHalDelegate final
   // Changes hex string |module_id| into decimal integer and check if
   // |module_id| is one of the popular camera peripherals. If it is, it returns
   // the decimal integer and if not, it returns 0.
-  int32_t GetMaskedModuleID(const std::string module_id);
+  int32_t GetMaskedModuleID(const std::string& module_id);
 
   using GetCameraInfoCallback =
       base::OnceCallback<void(int32_t, cros::mojom::CameraInfoPtr)>;

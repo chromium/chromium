@@ -97,7 +97,7 @@ struct InteriorNode : public Model {
 
 struct LeafNode : public Model {
   LeafNode(const TrainingData& training_data,
-           const std::vector<size_t> training_idx,
+           const std::vector<size_t>& training_idx,
            LearningTask::Ordering ordering) {
     for (size_t idx : training_idx)
       distribution_ += training_data[idx];
