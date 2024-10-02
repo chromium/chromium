@@ -28,13 +28,6 @@ IOSPasswordManagerSettingsServiceFactory::GetInstance() {
 
 // static
 password_manager::PasswordManagerSettingsService*
-IOSPasswordManagerSettingsServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
-password_manager::PasswordManagerSettingsService*
 IOSPasswordManagerSettingsServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<password_manager::PasswordManagerSettingsService*>(
       GetInstance()->GetServiceForBrowserState(profile, true));

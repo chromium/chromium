@@ -20,10 +20,6 @@ class IOSChromePasswordCheckManager;
 class IOSPasswordManagerSettingsServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static password_manager::PasswordManagerSettingsService* GetForBrowserState(
-      ProfileIOS* profile);
-
   static password_manager::PasswordManagerSettingsService* GetForProfile(
       ProfileIOS* profile);
   static IOSPasswordManagerSettingsServiceFactory* GetInstance();
