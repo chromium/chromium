@@ -125,6 +125,12 @@ Matcher CreateEventLogMatcher(
       test_server.event_logging_url(), std::move(expected_events));
 }
 
+Matcher CreatePacUrlMatcher(const TestServer& test_server) {
+  return base::BindRepeating([](const net::test_server::HttpRequest& request) {
+    return request.relative_url == "/proxy.pac";
+  });
+}
+
 std::string CreateLogResponse(const base::TimeDelta& next_request_wait) {
   proto::LogResponse response;
   response.set_next_request_wait_millis(next_request_wait.InMilliseconds());

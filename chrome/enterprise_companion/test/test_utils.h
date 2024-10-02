@@ -5,6 +5,8 @@
 #ifndef CHROME_ENTERPRISE_COMPANION_TEST_TEST_UTILS_H_
 #define CHROME_ENTERPRISE_COMPANION_TEST_TEST_UTILS_H_
 
+#include <optional>
+
 #include "base/functional/function_ref.h"
 #include "base/process/process.h"
 #include "build/build_config.h"
@@ -26,6 +28,13 @@ int WaitForProcess(base::Process&);
 #if BUILDFLAG(IS_WIN)
 // Asserts that the application has been properly registered with the updater.
 void ExpectUpdaterRegistration();
+
+// Sets applies the given proxy settings via Group Policy.
+void SetLocalProxyPolicies(
+    std::optional<std::string> proxy_mode,
+    std::optional<std::string> pac_url,
+    std::optional<std::string> proxy_server,
+    std::optional<bool> cloud_policy_overrides_platform_policy);
 #endif
 
 #if BUILDFLAG(IS_MAC)

@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "build/build_config.h"
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -24,6 +25,16 @@
 #include "net/proxy_resolution/proxy_config_with_annotation.h"
 #include "services/network/public/cpp/mutable_network_traffic_annotation_tag_mojom_traits.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/strings/sys_string_conversions.h"
+#include "base/win/registry.h"
+#include "base/win/shlwapi.h"
+#include "base/win/windows_types.h"
+#include "chrome/enterprise_companion/enterprise_companion_branding.h"
+#define UPDATER_POLICIES_KEY \
+  L"Software\\Policies\\" COMPANY_SHORTNAME_STRING L"\\Update\\"
+#endif
 
 namespace enterprise_companion {
 
@@ -134,8 +145,43 @@ std::optional<ProxyConfigAndOverridePrecedence> GetProxyConfigFromCloudPolicy(
 std::optional<ProxyConfigAndOverridePrecedence>
 GetProxyConfigFromSystemPolicy() {
 #if BUILDFLAG(IS_WIN)
-  // TODO(http://crbug.com/368328077): Determine config from Group Policy.
-  return std::nullopt;
+  std::string proxy_mode;
+  std::string pac_url;
+  std::string proxy_server;
+  std::optional<bool> cloud_policy_overrides_platform_policy;
+  for (base::win::RegistryValueIterator it(HKEY_LOCAL_MACHINE,
+                                           UPDATER_POLICIES_KEY);
+       it.Valid(); ++it) {
+    const std::string key_name =
+        base::ToLowerASCII(base::SysWideToUTF8(it.Name()));
+    if (it.Type() == REG_DWORD &&
+        key_name == "cloudpolicyoverridesplatformpolicy") {
+      cloud_policy_overrides_platform_policy =
+          *reinterpret_cast<const int*>(it.Value());
+      continue;
+    } else if (it.Type() != REG_SZ) {
+      continue;
+    }
+
+    const std::string value = base::SysWideToUTF8(it.Value());
+
+    if (key_name == "proxymode") {
+      proxy_mode = value;
+    } else if (key_name == "proxypacurl") {
+      pac_url = value;
+    } else if (key_name == "proxyserver") {
+      proxy_server = value;
+    }
+  }
+
+  std::optional<net::ProxyConfig> config =
+      GetProxyConfigFromPolicyValues(proxy_mode, pac_url, proxy_server);
+  return config ? std::make_optional(ProxyConfigAndOverridePrecedence{
+                      .config = *config,
+                      .cloud_policy_overrides_platform_policy =
+                          cloud_policy_overrides_platform_policy})
+                : std::nullopt;
+
 #else
   // Proxy configuration is not supported via system policy on Mac or Linux.
   return std::nullopt;
@@ -212,7 +258,7 @@ class ProxyConfigService final : public net::ProxyConfigService,
         dm_storage_, system_policy_proxy_config_provider_.Run());
     if (policy_config) {
       VLOG(1) << "Determined proxy configuration from policies: "
-              << config->value().ToValue();
+              << policy_config->ToValue();
       *config = net::ProxyConfigWithAnnotation(
           *policy_config, kPolicyProxyConfigTrafficAnnotation);
       return ConfigAvailability::CONFIG_VALID;
@@ -223,7 +269,7 @@ class ProxyConfigService final : public net::ProxyConfigService,
       VLOG(1) << "Determined proxy configuration from fallback: "
               << config->value().ToValue();
     } else {
-      VLOG(1) << "No proxy configuration from poicies or the fallback is "
+      VLOG(1) << "No proxy configuration from policies or the fallback is "
                  "available.";
     }
     return fallback_availability;
