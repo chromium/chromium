@@ -77,6 +77,8 @@ NSString* kOnlyShowImagesExtraTerm =
 NSString* kOnlyShowPDFsExtraTerm =
     @"(mimeType='application/vnd.google-apps.folder' or"
      " mimeType='application/pdf')";
+// Prefix of MIME types associated with Google apps.
+NSString* kGoogleAppsMIMETypePrefix = @"application/vnd.google-apps.";
 
 }  // namespace
 
@@ -256,7 +258,8 @@ bool DriveFilePickerItemShouldBeEnabled(const DriveItem& item,
     return true;
   }
   // Non-downloadable files cannot be selected.
-  if (!item.can_download) {
+  if (!item.can_download ||
+      [item.mime_type hasPrefix:kGoogleAppsMIMETypePrefix]) {
     return false;
   }
   // If the list of accepted types is empty, or the user opted to ignore it,

@@ -353,6 +353,11 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
   }
   [self.consumer setEnabledItems:enabledItemsIdentifiers];
   [self.consumer setAllFilesEnabled:_ignoreAcceptedTypes];
+  // If the currently selected item is not part of enabled items, unselect it.
+  if (_selectedIdentifier &&
+      ![enabledItemsIdentifiers containsObject:_selectedIdentifier]) {
+    [self setSelectedItem:std::nullopt];
+  }
 }
 
 - (void)setFilter:(DriveFilePickerFilter)filter {

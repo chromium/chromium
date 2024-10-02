@@ -29,7 +29,6 @@
 
 namespace {
 
-constexpr CGFloat kCellDisabledAlpha = 0.4;
 constexpr CGFloat kCellImageDimension = 24.0;
 constexpr CGFloat kCellVerticalMarginsText = 12.0;
 constexpr CGFloat kCellVerticalMarginsTextAndSecondaryText = 8.0;
@@ -537,7 +536,8 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   // Set up text.
   UIListContentTextProperties* textProperties =
       contentConfiguration.textProperties;
-  textProperties.color = [UIColor colorNamed:kTextPrimaryColor];
+  textProperties.color = item.enabled ? [UIColor colorNamed:kTextPrimaryColor]
+                                      : [UIColor colorNamed:kDisabledTintColor];
   textProperties.numberOfLines = 1;
   textProperties.allowsDefaultTighteningForTruncation = YES;
   UIFont* textFont = textProperties.font;
@@ -560,12 +560,9 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   // Set up subtitle (secondary text).
   if (item.subtitle) {
     contentConfiguration.secondaryText = item.subtitle;
-    // Using primary color if the item is disabled so the final appearance after
-    // changing the content view's alpha value is similar to that of the main
-    // text.
     contentConfiguration.secondaryTextProperties.color =
         item.enabled ? [UIColor colorNamed:kTextSecondaryColor]
-                     : [UIColor colorNamed:kTextPrimaryColor];
+                     : [UIColor colorNamed:kDisabledTintColor];
     contentConfiguration.secondaryTextProperties.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   }
@@ -601,7 +598,6 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   }
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
-  cell.contentView.alpha = item.enabled ? 1.0 : kCellDisabledAlpha;
 
   return cell;
 }
@@ -937,6 +933,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 - (void)tableView:(UITableView*)tableView
       willDisplayCell:(UITableViewCell*)cell
     forRowAtIndexPath:(NSIndexPath*)indexPath {
+  // If this is the last item and the next page is available, load it.
   NSDiffableDataSourceSnapshot* snapshot = _diffableDataSource.snapshot;
   if (indexPath.row == snapshot.numberOfItems - 1 && _nextPageAvailable) {
     [_loadingIndicator startAnimating];
