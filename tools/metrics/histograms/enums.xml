@@ -34344,6 +34344,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="-1697612520" label="chrome://print-management/"/>
   <int value="-1697077152" label="chrome://device-log/"/>
   <int value="-1690355375" label="chrome://mobilesetup/"/>
+  <int value="-1683501080" label="chrome://family-link-user-internals/"/>
   <int value="-1681544613" label="chrome://print/"/>
   <int value="-1667471433" label="chrome://vc-background/"/>
   <int value="-1663881220" label="chrome://recorder-app/"/>
@@ -34373,6 +34374,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="-1382906531" label="chrome://managed-user-passphrase/"/>
   <int value="-1379571130" label="chrome://newtab/"/>
   <int value="-1378421581" label="chrome://media-router/"/>
+  <int value="-1362220223" label="chrome://connection-help/"/>
   <int value="-1346911023" label="chrome://signin-dice-web-intercept/"/>
   <int value="-1331415629" label="chrome://os-settings/"/>
   <int value="-1313432739" label="chrome://plugins/"/>
