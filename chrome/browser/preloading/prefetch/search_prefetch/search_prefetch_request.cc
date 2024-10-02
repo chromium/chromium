@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/state_transitions.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -19,6 +18,7 @@
 #include "base/state_transitions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/named_trigger.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/prefetch/prefetch_headers.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
@@ -141,7 +141,9 @@ SearchPrefetchRequest::SearchPrefetchRequest(
           prefetch_preloading_attempt
               ? prefetch_preloading_attempt->GetWeakPtr()
               : nullptr),
-      report_error_callback_(std::move(report_error_callback)) {}
+      report_error_callback_(std::move(report_error_callback)) {
+  base::trace_event::EmitNamedTrigger("search-prefetch-start");
+}
 
 SearchPrefetchRequest::~SearchPrefetchRequest() {
   StopPrerender();
