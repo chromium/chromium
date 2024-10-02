@@ -2414,6 +2414,10 @@ DOMWindow* LocalDOMWindow::openPictureInPictureWindow(
       To<LocalDOMWindow>(result.frame->DomWindow());
   pip_dom_window->SetIsPictureInPictureWindow();
 
+  // Ensure that we're using the same compatibility mode as the opener document.
+  pip_dom_window->document()->SetCompatibilityMode(
+      entered_window->document()->GetCompatibilityMode());
+
   // Also copy any autoplay flags, since these are set on navigation commit.
   // The pip window should match whatever the opener has.
   auto* opener_page = entered_window->document()->GetPage();

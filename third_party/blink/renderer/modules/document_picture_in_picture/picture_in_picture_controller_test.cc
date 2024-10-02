@@ -903,6 +903,34 @@ TEST_F(PictureInPictureControllerTestWithChromeClient, CopiesAutoplayFlags) {
   EXPECT_EQ(pictureInPictureWindow->document()->GetPage()->AutoplayFlags(),
             flags);
 }
+
+TEST_F(PictureInPictureControllerTestWithChromeClient,
+       CopiesCompatibilityMode_Quirks) {
+  V8TestingScope v8_scope;
+  LocalFrame::NotifyUserActivation(
+      &GetFrame(), mojom::UserActivationNotificationType::kTest);
+
+  GetDocument().SetCompatibilityMode(Document::kQuirksMode);
+
+  auto* pictureInPictureWindow =
+      OpenDocumentPictureInPictureWindow(v8_scope, GetDocument());
+  EXPECT_EQ(pictureInPictureWindow->document()->GetCompatibilityMode(),
+            Document::kQuirksMode);
+}
+
+TEST_F(PictureInPictureControllerTestWithChromeClient,
+       CopiesCompatibilityMode_NoQuirks) {
+  V8TestingScope v8_scope;
+  LocalFrame::NotifyUserActivation(
+      &GetFrame(), mojom::UserActivationNotificationType::kTest);
+
+  GetDocument().SetCompatibilityMode(Document::kNoQuirksMode);
+
+  auto* pictureInPictureWindow =
+      OpenDocumentPictureInPictureWindow(v8_scope, GetDocument());
+  EXPECT_EQ(pictureInPictureWindow->document()->GetCompatibilityMode(),
+            Document::kNoQuirksMode);
+}
 #endif  // !BUILDFLAG(TARGET_OS_IS_ANDROID)
 
 }  // namespace blink
