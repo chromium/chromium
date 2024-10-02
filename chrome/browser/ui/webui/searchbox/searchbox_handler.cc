@@ -246,7 +246,8 @@ bool MatchHasSideTypeAndRenderType(
 std::vector<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
     const AutocompleteResult& result,
     bookmarks::BookmarkModel* bookmark_model,
-    const omnibox::GroupConfigMap& suggestion_groups_map) {
+    const omnibox::GroupConfigMap& suggestion_groups_map,
+    const TemplateURLService* turl_service) {
   std::vector<searchbox::mojom::AutocompleteMatchPtr> matches;
   int line = 0;
   for (const AutocompleteMatch& match : result) {
@@ -294,9 +295,15 @@ std::vector<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
         match.suggestion_group_id.value_or(omnibox::GROUP_INVALID);
     const bool is_bookmarked =
         bookmark_model->IsBookmarked(match.destination_url);
+    // For starter pack suggestions, use template url to generate proper vector
+    // icon.
+    const TemplateURL* turl = match.associated_keyword
+                                  ? turl_service->GetTemplateURLForKeyword(
+                                        match.associated_keyword->keyword)
+                                  : nullptr;
     mojom_match->icon_url =
         SearchboxHandler::AutocompleteMatchVectorIconToResourceName(
-            match.GetVectorIcon(is_bookmarked));
+            match.GetVectorIcon(is_bookmarked, turl));
     mojom_match->image_dominant_color = match.image_dominant_color;
     mojom_match->image_url = match.image_url.spec();
     mojom_match->fill_into_edit = match.fill_into_edit;
@@ -408,7 +415,7 @@ std::string GetBase64UrlVariations(Profile* profile) {
 base::flat_map<int32_t, searchbox::mojom::SuggestionGroupPtr>
 CreateSuggestionGroupsMap(
     const AutocompleteResult& result,
-    PrefService* prefs,
+    const PrefService* prefs,
     const omnibox::GroupConfigMap& suggestion_groups_map) {
   base::flat_map<int32_t, searchbox::mojom::SuggestionGroupPtr> result_map;
   for (const auto& pair : suggestion_groups_map) {
@@ -436,12 +443,13 @@ searchbox::mojom::AutocompleteResultPtr CreateAutocompleteResult(
     const std::u16string& input,
     const AutocompleteResult& result,
     bookmarks::BookmarkModel* bookmark_model,
-    PrefService* prefs) {
+    const PrefService* prefs,
+    const TemplateURLService* turl_service) {
   return searchbox::mojom::AutocompleteResult::New(
       input,
       CreateSuggestionGroupsMap(result, prefs, result.suggestion_groups_map()),
       CreateAutocompleteMatches(result, bookmark_model,
-                                result.suggestion_groups_map()));
+                                result.suggestion_groups_map(), turl_service));
 }
 
 }  // namespace
@@ -692,12 +700,12 @@ void SearchboxHandler::OnResultChanged(AutocompleteController* controller,
   if (metrics_reporter_ && !metrics_reporter_->HasLocalMark("ResultChanged")) {
     metrics_reporter_->Mark("ResultChanged");
   }
-
   page_->AutocompleteResultChanged(CreateAutocompleteResult(
       autocomplete_controller()->input().text(),
       autocomplete_controller()->result(),
       BookmarkModelFactory::GetForBrowserContext(profile_),
-      profile_->GetPrefs()));
+      profile_->GetPrefs(),
+      omnibox_controller()->client()->GetTemplateURLService()));
 
   // The owned OmniboxController does not observe the AutocompleteController.
   // Notify the prerender here to start preloading if the results are ready.
