@@ -650,17 +650,14 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
 
   SkImageInfo image_info = CreateSkImageInfo();
   if (!is_accelerated_) {
-    std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping;
-    void* memory = nullptr;
-    size_t stride = 0;
-    mapping = GetClientSharedImage()->Map();
+    std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping =
+        GetClientSharedImage()->Map();
     if (!mapping) {
       LOG(ERROR) << "MapSharedImage Failed.";
       return nullptr;
     }
-    memory = mapping->Memory(0);
-    stride = mapping->Stride(0);
-    SkPixmap pixmap(CreateSkImageInfo(), memory, stride);
+    SkPixmap pixmap(CreateSkImageInfo(), mapping->Memory(0),
+                    mapping->Stride(0));
     auto sk_image = SkImages::RasterFromPixmapCopy(pixmap);
 
     // Unmap the underlying buffer.
