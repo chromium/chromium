@@ -51,6 +51,7 @@ class HTMLMediaElement;
 class MediaKeysPolicy;
 class MediaKeySession;
 class ScriptState;
+class V8MediaKeySessionType;
 class V8MediaKeyStatus;
 class WebContentDecryptionModule;
 
@@ -70,7 +71,7 @@ class MediaKeys : public ScriptWrappable,
   ~MediaKeys() override;
 
   MediaKeySession* createSession(ScriptState*,
-                                 const String& session_type_string,
+                                 const V8MediaKeySessionType& session_type,
                                  ExceptionState&);
 
   ScriptPromise<IDLBoolean> setServerCertificate(

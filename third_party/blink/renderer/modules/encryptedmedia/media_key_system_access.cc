@@ -190,10 +190,10 @@ MediaKeySystemConfiguration* MediaKeySystemAccess::getConfiguration() const {
   // |distinctiveIdentifier|, |persistentState|, and |sessionTypes| are always
   // set by requestMediaKeySystemAccess().
   result->setDistinctiveIdentifier(
-      EncryptedMediaUtils::ConvertMediaKeysRequirementToString(
+      EncryptedMediaUtils::ConvertMediaKeysRequirementToEnum(
           configuration.distinctive_identifier));
   result->setPersistentState(
-      EncryptedMediaUtils::ConvertMediaKeysRequirementToString(
+      EncryptedMediaUtils::ConvertMediaKeysRequirementToEnum(
           configuration.persistent_state));
   result->setSessionTypes(ConvertSessionTypes(configuration.session_types));
 

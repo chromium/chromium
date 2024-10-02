@@ -130,36 +130,37 @@ V8MediaKeyStatus EncryptedMediaUtils::ConvertKeyStatusToEnum(
     case WebEncryptedMediaKeyInformation::KeyStatus::kInternalError:
       return V8MediaKeyStatus(V8MediaKeyStatus::Enum::kInternalError);
   }
+  NOTREACHED();
 }
 
 // static
 WebMediaKeySystemConfiguration::Requirement
-EncryptedMediaUtils::ConvertToMediaKeysRequirement(const String& requirement) {
-  if (requirement == "required")
-    return WebMediaKeySystemConfiguration::Requirement::kRequired;
-  if (requirement == "optional")
-    return WebMediaKeySystemConfiguration::Requirement::kOptional;
-  if (requirement == "not-allowed")
-    return WebMediaKeySystemConfiguration::Requirement::kNotAllowed;
-
-  NOTREACHED_IN_MIGRATION();
-  return WebMediaKeySystemConfiguration::Requirement::kOptional;
+EncryptedMediaUtils::ConvertToMediaKeysRequirement(
+    V8MediaKeysRequirement::Enum requirement) {
+  switch (requirement) {
+    case V8MediaKeysRequirement::Enum::kRequired:
+      return WebMediaKeySystemConfiguration::Requirement::kRequired;
+    case V8MediaKeysRequirement::Enum::kOptional:
+      return WebMediaKeySystemConfiguration::Requirement::kOptional;
+    case V8MediaKeysRequirement::Enum::kNotAllowed:
+      return WebMediaKeySystemConfiguration::Requirement::kNotAllowed;
+  }
+  NOTREACHED();
 }
 
 // static
-String EncryptedMediaUtils::ConvertMediaKeysRequirementToString(
+V8MediaKeysRequirement::Enum
+EncryptedMediaUtils::ConvertMediaKeysRequirementToEnum(
     WebMediaKeySystemConfiguration::Requirement requirement) {
   switch (requirement) {
     case WebMediaKeySystemConfiguration::Requirement::kRequired:
-      return "required";
+      return V8MediaKeysRequirement::Enum::kRequired;
     case WebMediaKeySystemConfiguration::Requirement::kOptional:
-      return "optional";
+      return V8MediaKeysRequirement::Enum::kOptional;
     case WebMediaKeySystemConfiguration::Requirement::kNotAllowed:
-      return "not-allowed";
+      return V8MediaKeysRequirement::Enum::kNotAllowed;
   }
-
-  NOTREACHED_IN_MIGRATION();
-  return "not-allowed";
+  NOTREACHED();
 }
 
 // static

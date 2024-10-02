@@ -36,7 +36,7 @@ MediaKeyMessageEvent::MediaKeyMessageEvent(
     const MediaKeyMessageEventInit* initializer)
     : Event(type, initializer) {
   if (initializer->hasMessageType())
-    message_type_ = initializer->messageType();
+    message_type_ = String(initializer->messageType());
   if (initializer->hasMessage())
     message_ = initializer->message();
 }

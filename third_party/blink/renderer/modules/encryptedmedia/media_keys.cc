@@ -36,6 +36,7 @@
 #include "third_party/blink/public/platform/web_content_decryption_module.h"
 #include "third_party/blink/public/platform/web_encrypted_media_key_information.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_key_session_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_keys_policy.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -262,11 +263,12 @@ MediaKeys::~MediaKeys() {
   InstanceCounters::DecrementCounter(InstanceCounters::kMediaKeysCounter);
 }
 
-MediaKeySession* MediaKeys::createSession(ScriptState* script_state,
-                                          const String& session_type_string,
-                                          ExceptionState& exception_state) {
+MediaKeySession* MediaKeys::createSession(
+    ScriptState* script_state,
+    const V8MediaKeySessionType& v8_session_type,
+    ExceptionState& exception_state) {
   DVLOG(MEDIA_KEYS_LOG_LEVEL)
-      << __func__ << "(" << this << ") " << session_type_string;
+      << __func__ << "(" << this << ") " << v8_session_type.AsCStr();
 
   // If the context for MediaKeys has been destroyed, fail.
   if (!GetExecutionContext()) {
@@ -287,7 +289,7 @@ MediaKeySession* MediaKeys::createSession(ScriptState* script_state,
   //    implementation value does not support sessionType, throw a new
   //    DOMException whose name is NotSupportedError.
   WebEncryptedMediaSessionType session_type =
-      EncryptedMediaUtils::ConvertToSessionType(session_type_string);
+      EncryptedMediaUtils::ConvertToSessionType(v8_session_type.AsString());
   if (!SessionTypeSupported(session_type)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Unsupported session type.");
