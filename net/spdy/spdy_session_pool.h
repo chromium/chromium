@@ -427,7 +427,7 @@ class NET_EXPORT SpdySessionPool
   // * Assumes there is only one host resolution for `key` at the same time.
   base::WeakPtr<SpdySession> FindMatchingIpSession(
       const SpdySessionKey& key,
-      const std::vector<IPEndPoint> ip_endpoints,
+      const std::vector<IPEndPoint>& ip_endpoints,
       const std::set<std::string>& dns_aliases);
 
   raw_ptr<HttpServerProperties> http_server_properties_;

@@ -864,7 +864,7 @@ void SpdySessionPool::RemoveRequestInternal(
 
 base::WeakPtr<SpdySession> SpdySessionPool::FindMatchingIpSession(
     const SpdySessionKey& key,
-    const std::vector<IPEndPoint> ip_endpoints,
+    const std::vector<IPEndPoint>& ip_endpoints,
     const std::set<std::string>& dns_aliases) {
   for (const auto& endpoint : ip_endpoints) {
     auto range = aliases_.equal_range(endpoint);

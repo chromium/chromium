@@ -39,7 +39,7 @@ std::string ExtensionsHeaderString(
 
 std::string ValidResponseString(
     const std::string& accept_hash,
-    const std::vector<WebSocketExtension> extensions) {
+    const std::vector<WebSocketExtension>& extensions) {
   return base::StringPrintf(
       "HTTP/1.1 101 WebSocket Protocol Handshake\r\n"
       "Upgrade: WebSocket\r\n"
