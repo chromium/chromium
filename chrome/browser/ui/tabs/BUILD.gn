@@ -105,6 +105,9 @@ if (!is_android) {
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/color:color_headers",
+
+      # TODO(370883612): depends on //chrome/browser/ui/tabs instead.
+      "//components/saved_tab_groups:tab_group_sync_bridge",
       "//components/tab_groups",
     ]
   }

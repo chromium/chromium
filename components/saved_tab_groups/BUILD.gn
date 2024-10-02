@@ -293,6 +293,7 @@ source_set("tab_group_sync_bridge") {
     # to TabGroupSyncService.
     "//chrome/browser",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/tabs:tab_group_impl",
     "//chrome/test:browser_tests",
     "//chrome/test:sync_integration_tests",
     "//ios/chrome/browser/saved_tab_groups/model",
@@ -321,6 +322,7 @@ source_set("tab_group_sync_bridge") {
 
   public_deps = [
     "//base",
+    "//components/saved_tab_groups/proto:proto",
     "//components/sync/base",
     "//components/sync/model",
   ]
