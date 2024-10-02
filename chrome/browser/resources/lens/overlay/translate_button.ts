@@ -437,6 +437,16 @@ export class TranslateButtonElement extends PolymerElement {
         !this.targetLanguageMenuVisible;
   }
 
+  private getSourceLanguageButtonAriaLabel(): string {
+    return loadTimeData.getStringF(
+        'sourceLanguageAriaLabel', this.getSourceLanguageDisplayName());
+  }
+
+  private getTargetLanguageButtonAriaLabel(): string {
+    return loadTimeData.getStringF(
+        'targetLanguageAriaLabel', this.getTargetLanguageDisplayName());
+  }
+
   private getAutoCheckedClass(
       sourceLanguage: chrome.languageSettingsPrivate.Language): string {
     return sourceLanguage === null ? 'selected' : '';

@@ -387,6 +387,7 @@
 <div id="translateContainer">
   <cr-button id="translateEnableButton" class="button"
     on-click="onTranslateButtonClick" aria-hidden="[[isTranslateModeEnabled]]"
+    aria-label="$i18n{translateButtonLabel}"
     tabindex$="[[getTabIndexForTranslateEntry(isTranslateModeEnabled)]]">
     <span id="translateEnableIcon" class="translate-icon" slot="prefix-icon">
     </span>
@@ -398,6 +399,7 @@
     <cr-button id="sourceLanguageButton" class="button language-picker-button"
         on-click="onSourceLanguageButtonClick"
         aria-hidden="[[!languagePickerButtonsVisible]]"
+        aria-label="[[getSourceLanguageButtonAriaLabel(sourceLanguage)]]"
         tabindex$="[[getTabIndexForLanguagePickerButtons(isTranslateModeEnabled,
                     sourceLanguageMenuVisible, targetLanguageMenuVisible)]]">
       <span id="starsIcon" slot="prefix-icon"></span>
@@ -411,6 +413,7 @@
     <cr-button id="targetLanguageButton" class="button language-picker-button"
         on-click="onTargetLanguageButtonClick"
         aria-hidden="[[!languagePickerButtonsVisible]]"
+        aria-label="[[getTargetLanguageButtonAriaLabel(targetLanguage)]]"
         tabindex$="[[getTabIndexForLanguagePickerButtons(isTranslateModeEnabled,
                     sourceLanguageMenuVisible, targetLanguageMenuVisible)]]">
       <span id="targetLanguageLabel" class="button-label language-picker-label">
@@ -422,19 +425,22 @@
     <cr-button id="translateDisableButton" class="button"
       on-click="onTranslateButtonClick"
       aria-hidden="[[!languagePickerButtonsVisible]]"
+      aria-label="$i18n{translateCloseAriaLabel}"
       tabindex$="[[getTabIndexForLanguagePickerButtons(isTranslateModeEnabled,
                   sourceLanguageMenuVisible, targetLanguageMenuVisible)]]">
     </cr-button>
     <span id="translateDisableIcon" class="translate-icon"></span>
   </div>
   <div id="sourceLanguagePickerMenu" class="language-picker-menu" role="menu"
-      aria-labelledby="sourceLanguageButton">
+      aria-label="$i18n{languagePickerAriaLabel}">
     <div class="language-picker-menu-title-section">
       <cr-icon-button id="sourceLanguagePickerBackButton"
           iron-icon="cr:arrow-back" class="language-picker-menu-back-button"
           role="button" aria-label="$i18n{backButton}" title="$i18n{backButton}"
           on-click="hideLanguagePickerMenus"></cr-icon-button>
-      <div class="language-picker-menu-title">$i18n{translateFrom}</div>
+      <div role="heading" aria-level="1" class="language-picker-menu-title">
+        $i18n{translateFrom}
+      </div>
     </div>
     <div class="language-picker-menu-section">
       <cr-button id="sourceAutoDetectButton"
@@ -455,7 +461,9 @@
       </cr-button>
     </div>
     <div class="language-picker-menu-section">
-      <h3 class="language-picker-menu-header">$i18n{allLanguages}</h3>
+      <h3 role="heading" aria-level="2" class="language-picker-menu-header">
+        $i18n{allLanguages}
+      </h3>
       <template id="sourceLanguagePickerContainer" is="dom-repeat"
           items="[[translateLanguageList]]" as="language">
         <cr-button class="button language-picker-menu-button"
@@ -472,16 +480,20 @@
     </div>
   </div>
   <div id="targetLanguagePickerMenu" class="language-picker-menu" role="menu"
-      aria-labelledby="targetLanguageButton">
+      aria-label="$i18n{languagePickerAriaLabel}">
     <div class="language-picker-menu-title-section">
       <cr-icon-button id="targetLanguagePickerBackButton"
           iron-icon="cr:arrow-back" class="language-picker-menu-back-button"
           role="button" aria-label="$i18n{backButton}" title="$i18n{backButton}"
           on-click="hideLanguagePickerMenus"></cr-icon-button>
-      <div class="language-picker-menu-title">$i18n{translateTo}</div>
+      <div role="heading" aria-level="1" class="language-picker-menu-title">
+        $i18n{translateTo}
+      </div>
     </div>
     <div class="language-picker-menu-section">
-      <h3 class="language-picker-menu-header">$i18n{allLanguages}</h3>
+      <h3 role="heading" aria-level="2" class="language-picker-menu-header">
+        $i18n{allLanguages}
+      </h3>
       <template id="targetLanguagePickerContainer" is="dom-repeat"
           items="[[translateLanguageList]]" as="language">
         <cr-button class="button language-picker-menu-button"

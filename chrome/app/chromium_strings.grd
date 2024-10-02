@@ -1780,6 +1780,22 @@ Permissions you've already given to websites and apps may apply to this account.
           desc="The label for the renderer process housing the Lens overlay.">
           Image Search
         </message>
+        <message name="IDS_LENS_OVERLAY_CLOSE_TRANSLATE_SCREEN_LABEL"
+          desc="Accessibility label for the button that closes translate mode on the Lens Overlay UI. Informs the user that the button this label is associated with closes translate screen functionality.">
+          Close translate screen
+        </message>
+        <message name="IDS_LENS_OVERLAY_LANGUAGE_PICKER_LABEL"
+          desc="Accessibility label for the language picker menu. Informs the user that the menu opened is a language picker menu where they can select a language.">
+          Language picker
+        </message>
+        <message name="IDS_LENS_OVERLAY_SOURCE_LANGUAGE_ACCESSIBILITY_LABEL"
+          desc="Accessibility label for the button that shows the source translate language when in translate mode. Informs the user of the current source translate language that is set on the UI which is the language the screen will be translated from.">
+          Original language: <ph name="LANGUAGE"><ex>English</ex>$1</ph>
+        </message>
+        <message name="IDS_LENS_OVERLAY_TARGET_LANGUAGE_ACCESSIBILITY_LABEL"
+          desc="Accessibility label for the button that shows the target translate language when in translate mode. Informs the user of the current target translate language that is set on the UI which is the language the screen will be translated to.">
+          Translated language: <ph name="LANGUAGE"><ex>English</ex>$1</ph>
+        </message>
 
         <!-- Entrypoint Strings -->
         <message name="IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_MESSAGE"

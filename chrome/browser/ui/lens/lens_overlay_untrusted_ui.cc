@@ -90,6 +90,16 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
       "translateTo", IDS_LENS_OVERLAY_TARGET_LANGUAGE_PICKER_MENU_TITLE);
   html_source->AddLocalizedString("allLanguages",
                                   IDS_LENS_OVERLAY_ALL_LANGUAGES_LABEL);
+  html_source->AddLocalizedString("languagePickerAriaLabel",
+                                  IDS_LENS_OVERLAY_LANGUAGE_PICKER_LABEL);
+  html_source->AddLocalizedString(
+      "translateCloseAriaLabel", IDS_LENS_OVERLAY_CLOSE_TRANSLATE_SCREEN_LABEL);
+  html_source->AddLocalizedString(
+      "sourceLanguageAriaLabel",
+      IDS_LENS_OVERLAY_SOURCE_LANGUAGE_ACCESSIBILITY_LABEL);
+  html_source->AddLocalizedString(
+      "targetLanguageAriaLabel",
+      IDS_LENS_OVERLAY_TARGET_LANGUAGE_ACCESSIBILITY_LABEL);
 
   // Add default theme colors.
   const auto& palette = lens::kPaletteColors.at(lens::PaletteId::kFallback);
