@@ -513,8 +513,7 @@ public class AutofillTestHelper {
 
             @Override
             public void perform(UiController uiController, View view) {
-                final boolean clicked = AutofillTestHelper.singleClickView(view, flags);
-                if (!clicked) {
+                if (!singleTouchView(view, flags)) {
                     throw new PerformException.Builder()
                             .withActionDescription(this.getDescription())
                             .withViewDescription(HumanReadables.describe(view))
@@ -527,7 +526,7 @@ public class AutofillTestHelper {
     }
 
     // Sends click event at the center of the `view` with the provided `flags`.
-    private static boolean singleClickView(View view, int flags) {
+    private static boolean singleTouchView(View view, int flags) {
         int[] windowXY = new int[2];
         view.getLocationInWindow(windowXY);
         windowXY[0] += view.getWidth() / 2;
@@ -538,18 +537,61 @@ public class AutofillTestHelper {
         if (!TouchCommon.dispatchTouchEvent(
                 rootView,
                 getMotionEventWithFlags(
-                        downTime, MotionEvent.ACTION_DOWN, flags, windowXY[0], windowXY[1]))) {
+                        downTime,
+                        MotionEvent.ACTION_DOWN,
+                        flags,
+                        windowXY[0],
+                        windowXY[1],
+                        InputDevice.SOURCE_CLASS_POINTER))) {
             return false;
         }
 
         return TouchCommon.dispatchTouchEvent(
                 rootView,
                 getMotionEventWithFlags(
-                        downTime, MotionEvent.ACTION_UP, flags, windowXY[0], windowXY[1]));
+                        downTime,
+                        MotionEvent.ACTION_UP,
+                        flags,
+                        windowXY[0],
+                        windowXY[1],
+                        InputDevice.SOURCE_CLASS_POINTER));
+    }
+
+    // Sends click event at the center of the `view` with the provided `flags`.
+    public static boolean singleMouseClickView(View view) {
+        int[] windowXY = new int[2];
+        view.getLocationInWindow(windowXY);
+        windowXY[0] += view.getWidth() / 2;
+        windowXY[1] += view.getHeight() / 2;
+
+        final long initiationTime = SystemClock.uptimeMillis();
+        return dispatchMotionEvent(
+                        view,
+                        getMotionEvent(
+                                initiationTime,
+                                MotionEvent.ACTION_POINTER_DOWN,
+                                windowXY,
+                                InputDevice.SOURCE_MOUSE))
+                && dispatchMotionEvent(
+                        view,
+                        getMotionEvent(
+                                initiationTime,
+                                MotionEvent.ACTION_POINTER_UP,
+                                windowXY,
+                                InputDevice.SOURCE_MOUSE));
+    }
+
+    private static boolean dispatchMotionEvent(View view, MotionEvent event) {
+        return runOnUiThreadBlocking(() -> view.getRootView().dispatchGenericMotionEvent(event));
+    }
+
+    private static MotionEvent getMotionEvent(
+            long downTime, int action, int[] windowXY, int device) {
+        return getMotionEventWithFlags(downTime, action, 0x0, windowXY[0], windowXY[1], device);
     }
 
     private static MotionEvent getMotionEventWithFlags(
-            long downTime, int action, int flags, int x, int y) {
+            long downTime, int action, int flags, int x, int y, int device) {
         MotionEvent.PointerProperties props = new MotionEvent.PointerProperties();
         props.id = 0;
         MotionEvent.PointerCoords coords = new MotionEvent.PointerCoords();
@@ -570,7 +612,7 @@ public class AutofillTestHelper {
                 /* yPrecision= */ 1.0f,
                 /* deviceId= */ 0,
                 /* edgeFlags= */ 0,
-                /* source= */ InputDevice.SOURCE_CLASS_POINTER,
+                /* source= */ device,
                 /* flags= */ flags);
     }
 

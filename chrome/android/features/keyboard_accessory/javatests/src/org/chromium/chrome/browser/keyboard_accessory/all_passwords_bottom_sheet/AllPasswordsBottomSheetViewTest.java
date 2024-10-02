@@ -23,6 +23,7 @@ import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.test.util.CriteriaHelper.pollInstrumentationThread;
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
+import static org.chromium.chrome.browser.autofill.AutofillTestHelper.singleMouseClickView;
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.VISIBLE;
 
 import android.text.method.PasswordTransformationMethod;
@@ -273,6 +274,17 @@ public class AllPasswordsBottomSheetViewTest {
                             .inRoot(isDialog())
                             .check(matches(isDisplayed()));
                 });
+    }
+
+    @Test
+    @MediumTest
+    public void testConsumesGenericMotionEventsToPreventMouseClicksThroughSheet() {
+        // After setting the visibility to true, the view should exist and be visible.
+        ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
+        pollUiThread(() -> getBottomSheetState() == SheetState.FULL);
+        assertThat(mAllPasswordsBottomSheetView.getContentView().isShown(), is(true));
+
+        assertThat(singleMouseClickView(mAllPasswordsBottomSheetView.getContentView()), is(true));
     }
 
     @Test

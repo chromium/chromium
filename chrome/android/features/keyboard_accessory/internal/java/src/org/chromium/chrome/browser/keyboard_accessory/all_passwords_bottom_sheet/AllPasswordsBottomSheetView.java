@@ -81,6 +81,8 @@ class AllPasswordsBottomSheetView implements BottomSheetContent {
                         ? View.LAYOUT_DIRECTION_RTL
                         : View.LAYOUT_DIRECTION_LTR;
         mContentView.setLayoutDirection(layoutDirection);
+
+        mContentView.setOnGenericMotionListener((v, e) -> true); // Filter background interaction.
     }
 
     /**
