@@ -401,6 +401,8 @@ public abstract class ChromeFeatureList {
     public static final String PLUS_ADDRESSES_ENABLED = "PlusAddressesEnabled";
     public static final String PLUS_ADDRESS_LOADING_STATES_ANDROID =
             "PlusAddressLoadingStatesAndroid";
+    public static final String PLUS_ADDRESS_ANDROID_ENHANCED_LOADING_STATES_ENABLED =
+            "PlusAddressAndroidEnhancedLoadingStatesEnabled";
     public static final String PREFETCH_BROWSER_INITIATED_TRIGGERS =
             "PrefetchBrowserInitiatedTriggers";
     public static final String PRERENDER2 = "Prerender2";

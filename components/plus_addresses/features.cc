@@ -24,6 +24,12 @@ constexpr char kShowForwardingEmailInSuggestionName[] = "show-forwarding-email";
 
 #if BUILDFLAG(IS_ANDROID)
 // When enabled, mobile plus address creation bottom sheet shows enhanced UI for
+// different plus address loading states.
+BASE_FEATURE(kPlusAddressAndroidEnhancedLoadingStatesEnabled,
+             "PlusAddressAndroidEnhancedLoadingStatesEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, mobile plus address creation bottom sheet shows enhanced UI for
 // different error states.
 BASE_FEATURE(kPlusAddressAndroidErrorStatesEnabled,
              "PlusAddressAndroidErrorStatesEnabled",

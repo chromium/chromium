@@ -39,6 +39,8 @@ import org.robolectric.shadows.ShadowView;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -54,6 +56,7 @@ import java.util.concurrent.TimeoutException;
         shadows = {ShadowView.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 @Batch(Batch.UNIT_TESTS)
+@EnableFeatures(ChromeFeatureList.PLUS_ADDRESS_ANDROID_ENHANCED_LOADING_STATES_ENABLED)
 public class PlusAddressCreationModuleTest {
     private static final PlusAddressCreationNormalStateInfo FIRST_TIME_USAGE_INFO =
             new PlusAddressCreationNormalStateInfo(
@@ -241,7 +244,7 @@ public class PlusAddressCreationModuleTest {
         verify(mBridge).onConfirmRequested();
         assertEquals(firstTimeNotice.getVisibility(), View.VISIBLE);
         assertEquals(modalConfirmButton.getVisibility(), View.GONE);
-        assertEquals(modalCancelButton.getVisibility(), View.GONE);
+        assertEquals(modalCancelButton.getVisibility(), View.VISIBLE);
         assertEquals(loadingView.getVisibility(), View.VISIBLE);
 
         // Hide the loading indicator and resurface the buttons if we show an error.
@@ -253,6 +256,39 @@ public class PlusAddressCreationModuleTest {
         assertFalse(modalConfirmButton.isEnabled());
         assertEquals(modalCancelButton.getVisibility(), View.VISIBLE);
         assertTrue(modalCancelButton.isEnabled());
+
+        modalCancelButton.performClick();
+        verify(mBottomSheetController).hideContent(view, true);
+        verify(mBridge).onCanceled();
+    }
+
+    @Test
+    @SmallTest
+    public void testFirstTimeUsage_cancelDuringLoading() throws TimeoutException {
+        PlusAddressCreationBottomSheetContent view = openBottomSheet();
+
+        // Before clicking confirm, there is no loading indicator, but both
+        // a confirmation and a cancel button.
+        TextView firstTimeNotice =
+                view.getContentView().findViewById(R.id.plus_address_first_time_use_notice);
+        LoadingView loadingView =
+                view.getContentView().findViewById(R.id.plus_address_creation_loading_view);
+        Button modalConfirmButton =
+                view.getContentView().findViewById(R.id.plus_address_confirm_button);
+        Button modalCancelButton =
+                view.getContentView().findViewById(R.id.plus_address_cancel_button);
+        assertEquals(firstTimeNotice.getVisibility(), View.VISIBLE);
+        assertEquals(loadingView.getVisibility(), View.GONE);
+        assertEquals(modalConfirmButton.getVisibility(), View.VISIBLE);
+        assertEquals(modalCancelButton.getVisibility(), View.VISIBLE);
+
+        // Show the loading indicator and hide the buttons once we click the confirm button.
+        modalConfirmButton.performClick();
+        verify(mBridge).onConfirmRequested();
+        assertEquals(firstTimeNotice.getVisibility(), View.VISIBLE);
+        assertEquals(modalConfirmButton.getVisibility(), View.GONE);
+        assertEquals(modalCancelButton.getVisibility(), View.VISIBLE);
+        assertEquals(loadingView.getVisibility(), View.VISIBLE);
 
         modalCancelButton.performClick();
         verify(mBottomSheetController).hideContent(view, true);
@@ -299,7 +335,8 @@ public class PlusAddressCreationModuleTest {
         assertEquals(firstTimeNotice.getVisibility(), View.GONE);
         assertEquals(loadingView.getVisibility(), View.VISIBLE);
         assertEquals(modalConfirmButton.getVisibility(), View.GONE);
-        assertEquals(modalCancelButton.getVisibility(), View.GONE);
+        assertEquals(modalCancelButton.getVisibility(), View.VISIBLE);
+        assertTrue(modalCancelButton.isEnabled());
 
         // Hide the loading indicator and resurface the buttons if we show an error.
         coordinator.showError(/* errorStateInfo= */ null);
@@ -308,7 +345,8 @@ public class PlusAddressCreationModuleTest {
         assertEquals(loadingView.getVisibility(), View.GONE);
         assertEquals(modalConfirmButton.getVisibility(), View.VISIBLE);
         assertFalse(modalConfirmButton.isEnabled());
-        assertEquals(modalCancelButton.getVisibility(), View.GONE);
+        assertEquals(modalCancelButton.getVisibility(), View.VISIBLE);
+        assertTrue(modalCancelButton.isEnabled());
     }
 
     private void verifyErrorScreenIsShown(
@@ -384,7 +422,7 @@ public class PlusAddressCreationModuleTest {
         LoadingView loadingView =
                 view.getContentView().findViewById(R.id.plus_address_creation_loading_view);
         assertEquals(confirmButton.getVisibility(), View.GONE);
-        assertEquals(cancelButton.getVisibility(), View.GONE);
+        assertEquals(cancelButton.getVisibility(), View.VISIBLE);
         assertEquals(proposedPlusAddressView.getText(), proposedPlusAddress);
         assertEquals(refreshIcon.getVisibility(), View.VISIBLE);
         assertFalse(refreshIcon.isEnabled());

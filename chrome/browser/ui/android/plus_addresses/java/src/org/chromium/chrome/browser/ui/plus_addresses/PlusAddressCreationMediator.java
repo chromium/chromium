@@ -20,6 +20,7 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -145,7 +146,10 @@ import org.chromium.url.GURL;
         mModel.set(REFRESH_ICON_ENABLED, false);
         mModel.set(CONFIRM_BUTTON_ENABLED, false);
         mModel.set(CONFIRM_BUTTON_VISIBLE, false);
-        mModel.set(CANCEL_BUTTON_VISIBLE, false);
+        mModel.set(
+                CANCEL_BUTTON_VISIBLE,
+                ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.PLUS_ADDRESS_ANDROID_ENHANCED_LOADING_STATES_ENABLED));
         mModel.set(LOADING_INDICATOR_VISIBLE, true);
         mBridge.onConfirmRequested();
     }
