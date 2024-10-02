@@ -7,6 +7,7 @@ import("//build/apple/tweak_info_plist.gni")
 import("//build/config/ios/rules.gni")
 import("//ios/build/chrome_build.gni")
 import("//ios/build/config.gni")
+import("//ios/public/provider/chrome/browser/build_config.gni")
 
 assert(
     ios_enable_credential_provider_extension,
@@ -43,6 +44,21 @@ ios_appex_bundle("appex") {
   ]
   if (ios_app_extension_privacy_manifest != "") {
     deps += [ ":privacy_manifest" ]
+  }
+
+  if (!is_chrome_branded || ios_chrome_app_variants == []) {
+    bundle_deps = ios_providers_cpe_resources_targets
+  } else {
+    _variants = []
+    foreach(_variant, ios_chrome_app_variants) {
+      _variants += [
+        {
+          name = _variant.name
+          bundle_deps = _variant.cpe_bundle_deps
+        },
+      ]
+    }
+    variants = _variants
   }
 
   bundle_deps_filter = [ "//third_party/icu:icudata" ]

@@ -753,6 +753,14 @@ chrome_app("chrome") {
       _variants += [
         {
           forward_variables_from(_variant, "*", [ "cpe_bundle_deps" ])
+          if (ios_enable_credential_provider_extension) {
+            if (!defined(bundle_deps)) {
+              bundle_deps = []
+            }
+            bundle_deps += [
+              ":credential_provider_extension_bundle_variants_${_variant.name}",
+            ]
+          }
         },
       ]
     }
@@ -778,28 +786,30 @@ chrome_app("chrome") {
 
   if (current_toolchain == default_toolchain) {
     if (ios_enable_search_widget_extension) {
-      deps += [ ":search_widget_extension_bundle" ]
+      bundle_deps += [ ":search_widget_extension_bundle" ]
     }
     if (ios_enable_content_widget_extension) {
-      deps += [ ":content_widget_extension_bundle" ]
+      bundle_deps += [ ":content_widget_extension_bundle" ]
     }
     if (ios_enable_share_extension) {
-      deps += [ ":share_extension_bundle" ]
+      bundle_deps += [ ":share_extension_bundle" ]
     }
     if (ios_enable_open_extension) {
-      deps += [ ":open_extension_bundle" ]
+      bundle_deps += [ ":open_extension_bundle" ]
     }
     if (ios_enable_credential_provider_extension) {
-      deps += [ ":credential_provider_extension_bundle" ]
+      if (!is_chrome_branded || ios_chrome_app_variants == []) {
+        bundle_deps += [ ":credential_provider_extension_bundle" ]
+      }
     }
     if (ios_enable_widget_kit_extension) {
-      deps += [ ":widget_kit_extension_bundle" ]
+      bundle_deps += [ ":widget_kit_extension_bundle" ]
     }
     if (ios_enable_intents_extension) {
-      deps += [ ":intents_extension_bundle" ]
+      bundle_deps += [ ":intents_extension_bundle" ]
     }
     if (ios_enable_push_notification_service_extension) {
-      deps += [ ":push_notification_service_extension_bundle" ]
+      bundle_deps += [ ":push_notification_service_extension_bundle" ]
     }
   }
 
@@ -884,6 +894,9 @@ if (current_toolchain == default_toolchain && !ios_chrome_generate_order_file) {
     extension_bundle_data("credential_provider_extension_bundle") {
       extension_name = "credential_provider_extension.appex"
       extension_target = "//ios/chrome/credential_provider_extension/appex(${_extension_toolchain})"
+      if (is_chrome_branded && ios_chrome_app_variants != []) {
+        variants = ios_chrome_app_variants
+      }
     }
   }
 
