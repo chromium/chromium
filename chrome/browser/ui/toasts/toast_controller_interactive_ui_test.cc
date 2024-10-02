@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
@@ -409,4 +410,37 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
   RemoveOmniboxFocus();
   EXPECT_TRUE(toast_controller->IsShowingToast());
   EXPECT_TRUE(toast_controller->GetToastWidgetForTesting()->IsVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, RecordToastShows) {
+  base::HistogramTester histogram_tester;
+  RunTestSequence(
+      InstrumentTab(kFirstTab), AddInstrumentedTab(kSecondTab, GetURL()),
+      SelectTab(kTabStripElementId, 0), WaitForShow(kFirstTab), Do([&]() {
+        histogram_tester.ExpectBucketCount("Toast.TriggeredToShow",
+                                           ToastId::kLinkCopied, 0);
+      }),
+      ShowToast(ToastParams(ToastId::kLinkCopied)),
+      WaitForShow(toasts::ToastView::kToastViewId), Do([&]() {
+        histogram_tester.ExpectBucketCount("Toast.TriggeredToShow",
+                                           ToastId::kLinkCopied, 1);
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
+                       RecordToastDismissReason) {
+  base::HistogramTester histogram_tester;
+  RunTestSequence(
+      InstrumentTab(kFirstTab), AddInstrumentedTab(kSecondTab, GetURL()),
+      SelectTab(kTabStripElementId, 0), WaitForShow(kFirstTab), Do([&]() {
+        histogram_tester.ExpectBucketCount("Toast.LinkCopied.Dismissed",
+                                           toasts::ToastCloseReason::kAbort, 0);
+      }),
+      ShowToast(ToastParams(ToastId::kLinkCopied)),
+      WaitForShow(toasts::ToastView::kToastViewId),
+      SelectTab(kTabStripElementId, 1),
+      WaitForHide(toasts::ToastView::kToastViewId), Do([&]() {
+        histogram_tester.ExpectBucketCount("Toast.LinkCopied.Dismissed",
+                                           toasts::ToastCloseReason::kAbort, 1);
+      }));
 }

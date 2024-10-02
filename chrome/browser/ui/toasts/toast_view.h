@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -21,6 +22,9 @@ class MdTextButton;
 }  // namespace views
 
 namespace toasts {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class ToastCloseReason {
   kAutoDismissed = 0,
   kActionButton = 1,
@@ -39,11 +43,14 @@ class ToastView : public views::BubbleDialogDelegateView,
 
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToastViewId);
-  ToastView(views::View* anchor_view,
-            const std::u16string& toast_text,
-            const gfx::VectorIcon& icon,
-            bool has_close_button,
-            bool should_hide_ui_for_fullscreen);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToastActionButton);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToastCloseButton);
+  ToastView(
+      views::View* anchor_view,
+      const std::u16string& toast_text,
+      const gfx::VectorIcon& icon,
+      bool should_hide_ui_for_fullscreen,
+      base::RepeatingCallback<void(ToastCloseReason)> on_toast_close_callback);
   ~ToastView() override;
 
   // Must be called prior to Init (which is called from
@@ -51,6 +58,11 @@ class ToastView : public views::BubbleDialogDelegateView,
   void AddActionButton(
       const std::u16string& action_button_text,
       base::RepeatingClosure action_button_callback = base::DoNothing());
+
+  // Must be called prior to Init (which is called from
+  // views::BubbleDialogDelegateView::CreateBubble).
+  void AddCloseButton(
+      base::RepeatingClosure close_button_callback = base::DoNothing());
 
   // views::BubbleDialogDelegateView:
   void Init() override;
@@ -85,11 +97,13 @@ class ToastView : public views::BubbleDialogDelegateView,
 
   const std::u16string toast_text_;
   const raw_ref<const gfx::VectorIcon> icon_;
-  const bool has_close_button_;
   bool render_toast_over_web_contents_;
+  bool has_close_button_ = false;
   bool has_action_button_ = false;
   std::u16string action_button_text_;
   base::RepeatingClosure action_button_callback_;
+  base::RepeatingClosure close_button_callback_;
+  base::RepeatingCallback<void(ToastCloseReason)> toast_close_callback_;
 
   // Raw pointers to child views.
   raw_ptr<views::Label> label_ = nullptr;
