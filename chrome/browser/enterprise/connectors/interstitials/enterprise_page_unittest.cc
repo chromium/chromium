@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/connectors/interstitials/enterprise_block_page.h"
 #include "chrome/browser/enterprise/connectors/interstitials/enterprise_warn_page.h"
 
@@ -57,17 +56,11 @@ class EnterprisePageTest : public testing::Test {
     return web_contents_.get();
   }
 
-  void enable_custom_message_feature() {
-    scoped_feature_list.InitAndEnableFeature(
-        safe_browsing::kRealTimeUrlFilteringCustomMessage);
-  }
-
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_;
   std::unique_ptr<content::WebContents> web_contents_;
-  base::test::ScopedFeatureList scoped_feature_list;
 };
 
 TEST_F(EnterprisePageTest, EnterpriseBlock_ShownAndMetricsRecorded) {
@@ -109,8 +102,6 @@ TEST_F(EnterprisePageTest, EnterpriseWarn_ShownAndMetricsRecorded) {
 }
 
 TEST_F(EnterprisePageTest, EnterpriseWarn_CustomMessageDisplayed) {
-  enable_custom_message_feature();
-
   auto unsafe_resources =
       safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList();
   security_interstitials::UnsafeResource resource;
@@ -131,8 +122,6 @@ TEST_F(EnterprisePageTest, EnterpriseWarn_CustomMessageDisplayed) {
 }
 
 TEST_F(EnterprisePageTest, EnterpriseBlock_CustomMessageDisplayed) {
-  enable_custom_message_feature();
-
   auto unsafe_resources =
       safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList();
   security_interstitials::UnsafeResource resource;

@@ -216,10 +216,6 @@ BASE_FEATURE(kPasswordLeakToggleMove,
              "PasswordLeakToggleMove",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kRealTimeUrlFilteringCustomMessage,
-             "RealTimeUrlFilteringCustomMessage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kRedWarningSurvey,
              "RedWarningSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -345,7 +341,6 @@ base::Value::List GetFeatureStatusList() {
       &kHashPrefixRealTimeLookupsFasterOhttpKeyRotation,
       &kLocalListsUseSBv5,
       &kLogAccountEnhancedProtectionStateInProtegoPings,
-      &kRealTimeUrlFilteringCustomMessage,
       &kSafeBrowsingAsyncRealTimeCheck,
       &kSafeBrowsingRemoveCookiesInAuthRequests,
       &kSafetyHubAbusiveNotificationRevocation,

@@ -38,16 +38,14 @@ std::u16string GetUrlFilteringCustomMessage(
     const safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList&
         unsafe_resources_) {
   std::u16string custom_message = u"";
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kRealTimeUrlFilteringCustomMessage)) {
-    // Threat info already ordered by severity
-    if (!unsafe_resources_.empty() &&
-        !unsafe_resources_[0].rt_lookup_response.threat_info().empty()) {
-      custom_message = GetCustomMessageFromNavigationRule(
-          unsafe_resources_[0]
-              .rt_lookup_response.threat_info()[0]
-              .matched_url_navigation_rule());
-    }
+
+  // Threat info already ordered by severity
+  if (!unsafe_resources_.empty() &&
+      !unsafe_resources_[0].rt_lookup_response.threat_info().empty()) {
+    custom_message = GetCustomMessageFromNavigationRule(
+        unsafe_resources_[0]
+            .rt_lookup_response.threat_info()[0]
+            .matched_url_navigation_rule());
   }
   return custom_message;
 }

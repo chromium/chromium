@@ -210,10 +210,7 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   // "CancelledByUser" metrics should not be recorded.
   void Cancel(bool warning) override;
 
-  // Returns both rule-based and policy-based custom message without the prefix
-  // if DialogCustomRuleMessageEnabled flag enabled.
-  // TODO(b/322999022) Cleanup comments after custom rule message finch flag
-  // experiment.
+  // Returns both rule-based and policy-based custom message without the prefix.
   std::optional<std::u16string> GetCustomMessage() const override;
 
   std::optional<GURL> GetCustomLearnMoreUrl() const override;

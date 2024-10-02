@@ -1026,8 +1026,7 @@ void ContentAnalysisDialog::AddLinksToDialogMessage() {
 }
 
 void ContentAnalysisDialog::UpdateDialogMessage(std::u16string new_message) {
-  if (IsDialogCustomRuleMessageEnabled() && (is_failure() || is_warning()) &&
-      has_custom_message()) {
+  if ((is_failure() || is_warning()) && has_custom_message()) {
     message_->SetText(new_message);
     AddLinksToDialogMessage();
     message_->GetViewAccessibility().AnnounceText(std::move(new_message));

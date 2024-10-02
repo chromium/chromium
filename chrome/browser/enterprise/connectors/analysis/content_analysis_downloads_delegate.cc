@@ -113,14 +113,12 @@ void ContentAnalysisDownloadsDelegate::ResetCallbacks() {
 std::optional<std::u16string>
 ContentAnalysisDownloadsDelegate::GetCustomMessage() const {
   // Rule-based custom messages take precedence over policy-based.
-  if (IsDialogCustomRuleMessageEnabled()) {
-    std::u16string custom_rule_message =
-        GetCustomRuleString(custom_rule_message_);
-    if (!custom_rule_message.empty()) {
-      return l10n_util::GetStringFUTF16(
-          IDS_DEEP_SCANNING_DIALOG_DOWNLOADS_CUSTOM_MESSAGE, filename_,
-          custom_rule_message);
-    }
+  std::u16string custom_rule_message =
+      GetCustomRuleString(custom_rule_message_);
+  if (!custom_rule_message.empty()) {
+    return l10n_util::GetStringFUTF16(
+        IDS_DEEP_SCANNING_DIALOG_DOWNLOADS_CUSTOM_MESSAGE, filename_,
+        custom_rule_message);
   }
 
   if (custom_message_.empty())

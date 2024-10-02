@@ -164,7 +164,6 @@ TEST_F(ContentAnalysisDownloadsDelegateTest, TestGetMessageAndUrl) {
 
 TEST_F(ContentAnalysisDownloadsDelegateTest,
        TestCustomRuleMessageAndCustomMessage) {
-  base::test::ScopedFeatureList enable_feature(kDialogCustomRuleMessageEnabled);
   ContentAnalysisDownloadsDelegate delegate(
       kTestFile, kTestMessage, GURL(kTestUrl), true,
       base::BindOnce(&ContentAnalysisDownloadsDelegateTest::OpenCallback,
@@ -186,7 +185,6 @@ TEST_F(ContentAnalysisDownloadsDelegateTest,
 
 TEST_F(ContentAnalysisDownloadsDelegateTest,
        TestCustomRuleMessageAndCustomMessageInvalidUrl) {
-  base::test::ScopedFeatureList enable_feature(kDialogCustomRuleMessageEnabled);
   ContentAnalysisDownloadsDelegate delegate(
       u"foo.txt", kTestMessage, GURL(kTestUrl), true,
       base::BindOnce(&ContentAnalysisDownloadsDelegateTest::OpenCallback,

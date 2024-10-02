@@ -199,10 +199,6 @@ BASE_DECLARE_FEATURE(kLogAccountEnhancedProtectionStateInProtegoPings);
 // its own section.
 BASE_DECLARE_FEATURE(kPasswordLeakToggleMove);
 
-// Controls whether custom messages from admin are shown for warn and block
-// enterprise interstitials.
-BASE_DECLARE_FEATURE(kRealTimeUrlFilteringCustomMessage);
-
 // Controls whether asynchronous real-time check is enabled. When enabled, the
 // navigation can be committed before real-time Safe Browsing check is
 // completed.
