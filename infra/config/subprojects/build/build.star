@@ -92,6 +92,7 @@ ci.defaults.set(
     contact_team_email = "chrome-build-team@google.com",
     execution_timeout = 10 * time.hour,
     priority = ci.DEFAULT_FYI_PRIORITY,
+    resultdb_enable = False,
     service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
     siso_configs = [],
     siso_enabled = True,
