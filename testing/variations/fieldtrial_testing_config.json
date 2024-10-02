@@ -6847,21 +6847,6 @@
             ]
         }
     ],
-    "CrOSLateBootSetRtForDisplayThreads": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CrOSLateBootSetRtForDisplayThreads"
-                    ]
-                }
-            ]
-        }
-    ],
     "CrOSLateBootSlowAdaptiveCharging": [
         {
             "platforms": [
@@ -21813,6 +21798,24 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ServiceWorkerStorageSuppressPostTask"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SetRtForDisplayThreads": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20241001",
+                    "enable_features": [
+                        "CrOSLateBootInitDLServer",
+                        "CrOSLateBootSetRtForDisplayThreads",
+                        "SetRtForDisplayThreads",
+                        "SetThreadBgForBgProcess"
                     ]
                 }
             ]
