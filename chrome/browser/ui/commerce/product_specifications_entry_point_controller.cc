@@ -231,12 +231,8 @@ bool ProductSpecificationsEntryPointController::ShouldExecuteEntryPointShow() {
 
 void ProductSpecificationsEntryPointController::OnClusterFinishedForNavigation(
     const GURL& url) {
-  // Cluster finished for a navigation that didn't happen in this window, or the
-  // clustering took so long to finish that the user has navigated away.
-  GURL current_url = browser_->GetTabStripModel()
-                         ->GetActiveWebContents()
-                         ->GetLastCommittedURL();
-  if (current_url != url || !cluster_manager_) {
+  // Cluster finished for a navigation that didn't happen in this window.
+  if (!browser_->IsActive()) {
     return;
   }
 
