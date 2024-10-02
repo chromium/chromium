@@ -17,6 +17,7 @@ message AuxiliarySearchEntry {
   optional int64 creation_timestamp = 3;
   optional int64 last_modification_timestamp = 4;
   optional int64 last_access_timestamp = 5;
+  optional int32 id = 6;
 }
 
 message AuxiliarySearchBookmarkGroup {
