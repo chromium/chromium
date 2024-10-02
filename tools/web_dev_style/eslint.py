@@ -24,14 +24,11 @@ def Run(os_path=None, args=None):
   # navigate parent directories via '../'. We must set the repository's root as
   # the cwd.
   os.chdir(_SRC_PATH)
-  os.environ["ESLINT_USE_FLAT_CONFIG"] = "false"
   return node.RunNode([
       node_modules.PathToEsLint(),
       '--quiet',
       '--config',
-      os_path.join(_HERE_PATH, '.eslintrc.js'),
-      '--resolve-plugins-relative-to',
-      os_path.join(_NODE_PATH, 'node_modules'),
+      os_path.join(_HERE_PATH, 'eslint.config.mjs'),
   ] + args)
 
 
