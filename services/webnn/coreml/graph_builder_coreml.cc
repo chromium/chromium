@@ -1612,10 +1612,11 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForConv2d(
 
   if (operation.kind == mojom::Conv2d::Kind::kTransposed) {
     // Get the output shape from the output operand.
-    std::vector<int32_t> output_shape;
+    const OperandInfo& output_operand =
+        GetOperandInfo(operation.output_operand_id);
+    base::FixedArray<int32_t> output_shape(output_operand.dimensions.size());
     base::ranges::transform(
-        GetOperandInfo(operation.output_operand_id).dimensions,
-        std::back_inserter(output_shape),
+        output_operand.dimensions, output_shape.begin(),
         [](uint32_t val) { return base::checked_cast<int32_t>(val); });
     SetInputWithValue(*op->mutable_inputs(), kParamOutputShape,
                       Create1DTensorImmediateValue<int32_t>(output_shape));
@@ -2240,10 +2241,10 @@ GraphBuilderCoreml::AddOperationForLayerNormalization(
   op->set_type(kOpLayerNormalizationTypeName);
   SetInputWithName(*op->mutable_inputs(), kOpParamX,
                    input_operand_info.coreml_name);
-  std::vector<int32_t> axes;
-  base::ranges::transform(
-      operation.axes, std::back_inserter(axes),
-      [](uint32_t val) { return base::checked_cast<int32_t>(val); });
+  base::FixedArray<int32_t> axes(operation.axes.size());
+  base::ranges::transform(operation.axes, axes.begin(), [](uint32_t val) {
+    return base::checked_cast<int32_t>(val);
+  });
 
   // TODO: crbug.com/338529226: These params must all be constant tensors.
   if (operation.scale_operand_id.has_value()) {
@@ -2607,11 +2608,10 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForReduce(
       break;
   }
 
-  std::vector<int32_t> axes;
-
-  base::ranges::transform(
-      operation.axes, std::back_inserter(axes),
-      [](uint32_t val) { return base::checked_cast<int32_t>(val); });
+  base::FixedArray<int32_t> axes(operation.axes.size());
+  base::ranges::transform(operation.axes, axes.begin(), [](uint32_t val) {
+    return base::checked_cast<int32_t>(val);
+  });
   SetInputsWithValues(
       *op->mutable_inputs(),
       {{kOpParamAxes, Create1DTensorImmediateValue<int32_t>(axes)},
@@ -2712,9 +2712,9 @@ GraphBuilderCoreml::AddOperationForReshape(
                    input_operand_info.coreml_name);
 
   static constexpr char kParamShape[] = "shape";
-  std::vector<int32_t> shape;
+  base::FixedArray<int32_t> shape(output_operand_info.dimensions.size());
   base::ranges::transform(
-      output_operand_info.dimensions, std::back_inserter(shape),
+      output_operand_info.dimensions, shape.begin(),
       [](uint32_t val) { return base::checked_cast<int32_t>(val); });
   SetInputWithValue(*op->mutable_inputs(), kParamShape,
                     Create1DTensorImmediateValue<int32_t>(shape));
@@ -2747,15 +2747,15 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForSlice(
 
   static constexpr char kParamBegin[] = "begin";
   static constexpr char kParamSize[] = "size";
-  std::vector<int32_t> beginnings;
-  std::vector<int32_t> sizes;
-  for (const mojom::StartAndSizePtr& start_and_size :
-       operation.starts_and_sizes) {
-    if (start_and_size->size == 0) {
+  base::FixedArray<int32_t> beginnings(operation.starts_and_sizes.size());
+  base::FixedArray<int32_t> sizes(operation.starts_and_sizes.size());
+  for (size_t i = 0; i < operation.starts_and_sizes.size(); ++i) {
+    if (operation.starts_and_sizes[i]->size == 0) {
       continue;
     }
-    beginnings.push_back(base::checked_cast<int32_t>(start_and_size->start));
-    sizes.push_back(base::checked_cast<int32_t>(start_and_size->size));
+    beginnings[i] =
+        base::checked_cast<int32_t>(operation.starts_and_sizes[i]->start);
+    sizes[i] = base::checked_cast<int32_t>(operation.starts_and_sizes[i]->size);
   }
 
   SetInputsWithValues(
@@ -2862,9 +2862,9 @@ void GraphBuilderCoreml::AddOperationForTranspose(
 
   // CoreML expects permutation to be vector of int32_t.
   static constexpr char kParamPerm[] = "perm";
-  std::vector<int32_t> permutation;
+  base::FixedArray<int32_t> permutation(operation.permutation.size());
   base::ranges::transform(
-      operation.permutation, std::back_inserter(permutation),
+      operation.permutation, permutation.begin(),
       [](uint32_t val) { return base::checked_cast<int32_t>(val); });
   SetInputWithValue(*op->mutable_inputs(), kParamPerm,
                     Create1DTensorImmediateValue<int32_t>(permutation));
@@ -2931,7 +2931,7 @@ GraphBuilderCoreml::AddConstantImmediateValue(
 
   switch (constant_operand->descriptor().data_type()) {
     case OperandDataType::kFloat32: {
-      std::vector<float> floats(value.size() / sizeof(float));
+      base::FixedArray<float> floats(value.size() / sizeof(float));
       for (size_t i = 0u; i < floats.size(); ++i) {
         floats[i] = base::FloatFromNativeEndian(
             value.subspan(i * sizeof(float)).first<4u>());
@@ -2941,7 +2941,7 @@ GraphBuilderCoreml::AddConstantImmediateValue(
       break;
     }
     case OperandDataType::kFloat16: {
-      std::vector<Float16> float16s(value.size() / sizeof(Float16));
+      base::FixedArray<Float16> float16s(value.size() / sizeof(Float16));
       for (size_t i = 0u; i < float16s.size(); ++i) {
         float16s[i].data = base::U16FromNativeEndian(
             value.subspan(i * sizeof(Float16)).first<2u>());
@@ -2951,7 +2951,7 @@ GraphBuilderCoreml::AddConstantImmediateValue(
       break;
     }
     case OperandDataType::kInt32: {
-      std::vector<int32_t> ints(value.size() / sizeof(int32_t));
+      base::FixedArray<int32_t> ints(value.size() / sizeof(int32_t));
       for (size_t i = 0u; i < ints.size(); ++i) {
         ints[i] = base::I32FromNativeEndian(
             value.subspan(i * sizeof(int32_t)).first<4u>());
