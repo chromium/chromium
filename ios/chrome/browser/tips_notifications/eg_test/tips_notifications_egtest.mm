@@ -312,7 +312,8 @@ void MaybeDismissNotification() {
 }
 
 // Tests that the Lens Promo appears when tapping on the Lens notification.
-- (void)testEnhancedSafeBrowsingNotification {
+// TODO(crbug.com/370897273): Test is flaky on various bots.
+- (void)DISABLED_testEnhancedSafeBrowsingNotification {
   MaybeDismissNotification();
   [ChromeEarlGreyUI waitForAppToIdle];
   [self optInToTipsNotifications:{}];
