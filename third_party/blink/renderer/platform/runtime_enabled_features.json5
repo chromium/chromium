@@ -1121,14 +1121,6 @@
       name: "CSSPositionTryFallbacks",
       status: "stable",
     },
-    {
-      // Kill switch (inverted logic) to re-enable `position-try-options`. That
-      // property was renamed to `position-try-fallbacks` which is enabled via
-      // the CSSPositionTryFallbacks flag.
-      // This feature was disabled in M128, so this flag (and the code to
-      // implement `position-try-options`) can be removed in M130.
-      name: "CSSPositionTryOptions",
-    },
     // https://drafts.csswg.org/css-values-5/#progress
     // progress(), media-progress(), container-progress()
     {

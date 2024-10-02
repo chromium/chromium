@@ -710,8 +710,6 @@ String StylePropertySerializer::SerializeShorthand(
       return ScrollStartValue();
     case CSSPropertyID::kPositionTry:
       return PositionTryValue(positionTryShorthand());
-    case CSSPropertyID::kAlternativePositionTry:
-      return PositionTryValue(alternativePositionTryShorthand());
     default:
       NOTREACHED_IN_MIGRATION()
           << "Shorthand property "

@@ -471,42 +471,6 @@ TEST_F(CSSPropertyTest, AnchorModeHeight) {
             ComputedValue("max-height", "anchor-size(width, 0px)", context));
 }
 
-TEST_F(CSSPropertyTest, PositionTryFallbacksAlternativeEnabled) {
-  ScopedCSSPositionTryFallbacksForTest fallbacks_enabled(true);
-  ScopedCSSPositionTryOptionsForTest options_enabled(true);
-  const CSSPropertyValueSet* declarations =
-      ParseShorthand("position-try", "most-width flip-block");
-  ASSERT_TRUE(declarations);
-  ASSERT_EQ(declarations->PropertyCount(), 2u);
-  EXPECT_EQ(declarations->PropertyAt(0).Id(), CSSPropertyID::kPositionTryOrder);
-  EXPECT_EQ(declarations->PropertyAt(1).Id(),
-            CSSPropertyID::kPositionTryFallbacks);
-}
-
-TEST_F(CSSPropertyTest, PositionTryFallbacksAlternativeDisabled) {
-  ScopedCSSPositionTryFallbacksForTest fallbacks_enabled(false);
-  ScopedCSSPositionTryOptionsForTest options_enabled(true);
-  const CSSPropertyValueSet* declarations =
-      ParseShorthand("position-try", "most-width flip-block");
-  ASSERT_TRUE(declarations);
-  ASSERT_EQ(declarations->PropertyCount(), 2u);
-  EXPECT_EQ(declarations->PropertyAt(0).Id(), CSSPropertyID::kPositionTryOrder);
-  EXPECT_EQ(declarations->PropertyAt(1).Id(),
-            CSSPropertyID::kPositionTryOptions);
-}
-
-TEST_F(CSSPropertyTest, PositionTryOptionsDisabled) {
-  ScopedCSSPositionTryFallbacksForTest fallbacks_enabled(true);
-  ScopedCSSPositionTryOptionsForTest options_enabled(false);
-  const CSSPropertyValueSet* declarations =
-      ParseShorthand("position-try", "most-width flip-block");
-  ASSERT_TRUE(declarations);
-  ASSERT_EQ(declarations->PropertyCount(), 2u);
-  EXPECT_EQ(declarations->PropertyAt(0).Id(), CSSPropertyID::kPositionTryOrder);
-  EXPECT_EQ(declarations->PropertyAt(1).Id(),
-            CSSPropertyID::kPositionTryFallbacks);
-}
-
 TEST_F(CSSPropertyTest, InsetAreaDisabled) {
   ScopedCSSInsetAreaPropertyForTest inset_area_enabled(false);
   auto* declarations = ParseShorthand("position-area", "center top");

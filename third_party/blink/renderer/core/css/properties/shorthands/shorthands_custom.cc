@@ -3084,25 +3084,6 @@ const CSSValue* PositionTry::CSSValueFromComputedStyleInternal(
   return list;
 }
 
-bool AlternativePositionTry::ParseShorthand(
-    bool important,
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context,
-    const CSSParserLocalContext& local_context,
-    HeapVector<CSSPropertyValue, 64>& properties) const {
-  return ParsePositionTryShorthand(alternativePositionTryShorthand(), important,
-                                   stream, context, local_context, properties);
-}
-
-const CSSValue* AlternativePositionTry::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject* layout_object,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  return GetCSSPropertyPositionTry().CSSValueFromComputedStyleInternal(
-      style, layout_object, allow_visited_style, value_phase);
-}
-
 bool ScrollMarginBlock::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,

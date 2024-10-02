@@ -920,7 +920,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.Zoom() == b.Zoom();
     case CSSPropertyID::kPositionTryOrder:
       return a.PositionTryOrder() == b.PositionTryOrder();
-    case CSSPropertyID::kPositionTryOptions:
     case CSSPropertyID::kPositionTryFallbacks:
       return base::ValuesEquivalent(a.GetPositionTryFallbacks(),
                                     b.GetPositionTryFallbacks());
@@ -1249,7 +1248,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kPlaceItems:
     case CSSPropertyID::kPlaceSelf:
     case CSSPropertyID::kPositionTry:
-    case CSSPropertyID::kAlternativePositionTry:
     case CSSPropertyID::kScrollMargin:
     case CSSPropertyID::kScrollPadding:
     case CSSPropertyID::kScrollStart:

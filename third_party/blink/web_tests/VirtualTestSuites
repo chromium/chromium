@@ -1464,14 +1464,6 @@
     "expires": "Jun 1, 2025"
   },
   {
-    "prefix": "position-try-options-enabled",
-    "owners": ["masonf@chromium.org"],
-    "platforms": ["Linux"],
-    "bases": ["external/wpt/css/css-anchor-position"],
-    "args": ["--enable-blink-features=CSSPositionTryOptions"],
-    "expires": "Dec 1, 2024"
-  },
-  {
     "prefix": "popover-anchor-relationships-disabled",
     "owners": ["masonf@chromium.org"],
     "platforms": ["Linux"],

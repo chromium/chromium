@@ -7442,22 +7442,6 @@ void PositionTryFallbacks::ApplyValue(StyleResolverState& state,
       MakeGarbageCollected<blink::PositionTryFallbacks>(fallbacks));
 }
 
-const CSSValue* PositionTryOptions::ParseSingleValue(
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context,
-    const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumePositionTryFallbacks(stream, context);
-}
-
-const CSSValue* PositionTryOptions::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject* layout_object,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  return GetCSSPropertyPositionTryFallbacks().CSSValueFromComputedStyleInternal(
-      style, layout_object, allow_visited_style, value_phase);
-}
-
 const CSSValue* PositionTryOrder::InitialValue() const {
   return CSSIdentifierValue::Create(CSSValueID::kNormal);
 }
