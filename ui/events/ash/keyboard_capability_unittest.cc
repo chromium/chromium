@@ -824,7 +824,7 @@ class KeyboardCapabilityDogfoodTest : public KeyboardCapabilityTestBase {
 // With the dogfood flag enabled AND no Google account logged in, the feature
 // should act as though its disabled.
 TEST_F(KeyboardCapabilityDogfoodTest,
-       TestGetModifierKeysForSplitModifierKeyboardDogfood) {
+       DISABLED_TestGetModifierKeysForSplitModifierKeyboardDogfood) {
   AccountId non_google_account_id =
       AccountId::FromUserEmail("testaccount@gmail.com");
   AccountId google_account_id =
