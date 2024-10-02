@@ -45,6 +45,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -66,6 +67,7 @@ import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.InsetObserver;
@@ -126,6 +128,7 @@ public class EdgeToEdgeControllerTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private InsetObserver mInsetObserver;
     @Mock private Tab mTab;
+    @Mock private NativePage mKeyNativePage;
 
     @Mock private WebContents mWebContents;
 
@@ -165,6 +168,7 @@ public class EdgeToEdgeControllerTest {
         doNothing().when(mTab).addObserver(any());
         when(mTab.getUserDataHost()).thenReturn(mTabDataHost);
         when(mTab.getWebContents()).thenReturn(mWebContents);
+        when(mKeyNativePage.supportsEdgeToEdge()).thenReturn(true);
 
         doNothing().when(mOsWrapper).setDecorFitsSystemWindows(any(), anyBoolean());
         doNothing().when(mOsWrapper).setPadding(any(), anyInt(), anyInt(), anyInt(), anyInt());
@@ -476,6 +480,96 @@ public class EdgeToEdgeControllerTest {
         verifyInteractions(mTab);
         assertToEdgeExpectations();
         assertBottomInsetForSafeArea(SYSTEM_INSETS.bottom);
+    }
+
+    @Test
+    @Features.EnableFeatures({
+        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
+        ChromeFeatureList.EDGE_TO_EDGE_WEB_OPT_IN,
+        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE
+    })
+    public void testNavigateFromKeyNativePageToNotOptedInWebPage() {
+        Mockito.clearInvocations(mTab, mOsWrapper);
+
+        // Navigate to key native page, which should draw toEdge.
+        when(mTab.isNativePage()).thenReturn(true);
+        when(mTab.getNativePage()).thenReturn(mKeyNativePage);
+        mTabProvider.set(mTab);
+        assertToEdgeExpectations();
+
+        Mockito.clearInvocations(mTab, mOsWrapper);
+        // Native to a web page that is not opted in, which should draw toNormal.
+        when(mTab.isNativePage()).thenReturn(false);
+        when(mTab.getNativePage()).thenReturn(null);
+        mEdgeToEdgeControllerImpl.getTabObserverForTesting().onContentChanged(mTab);
+        assertToNormalExpectations();
+    }
+
+    @Test
+    @Features.EnableFeatures({
+        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
+        ChromeFeatureList.EDGE_TO_EDGE_WEB_OPT_IN,
+        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE
+    })
+    public void testNavigateFromNotOptedInWebPageToKeyNativePage() {
+        // Native to a web page that is not opted in, which should draw toNormal.
+        when(mTab.isNativePage()).thenReturn(false);
+        when(mTab.getNativePage()).thenReturn(null);
+        mEdgeToEdgeControllerImpl.getTabObserverForTesting().onContentChanged(mTab);
+        assertToNormalExpectations();
+
+        Mockito.clearInvocations(mTab, mOsWrapper);
+        // Navigate to key native page, which should draw toEdge.
+        when(mTab.isNativePage()).thenReturn(true);
+        when(mTab.getNativePage()).thenReturn(mKeyNativePage);
+        mTabProvider.set(mTab);
+        assertToEdgeExpectations();
+    }
+
+    @Test
+    @Features.EnableFeatures({
+        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
+        ChromeFeatureList.EDGE_TO_EDGE_WEB_OPT_IN,
+        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE
+    })
+    public void testNavigateFromKeyNativePageToOptedInWebPage() {
+        EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
+        Mockito.clearInvocations(mTab, mOsWrapper);
+
+        // Navigate to key native page, which should draw toEdge.
+        when(mTab.isNativePage()).thenReturn(true);
+        when(mTab.getNativePage()).thenReturn(mKeyNativePage);
+        mTabProvider.set(mTab);
+        assertToEdgeExpectations();
+
+        // Native to a web page that is opted in, which should draw toEdge.
+        when(mTab.isNativePage()).thenReturn(false);
+        when(mTab.getNativePage()).thenReturn(null);
+        mEdgeToEdgeControllerImpl.getTabObserverForTesting().onContentChanged(mTab);
+        assertNoChangeExpectations();
+    }
+
+    @Test
+    @Features.EnableFeatures({
+        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
+        ChromeFeatureList.EDGE_TO_EDGE_WEB_OPT_IN,
+        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE
+    })
+    public void testNavigateFromOptedInWebPageToKeyNativePage() {
+        EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
+        Mockito.clearInvocations(mTab, mOsWrapper);
+
+        // Native to a web page that is opted in, which should draw toEdge.
+        when(mTab.isNativePage()).thenReturn(false);
+        when(mTab.getNativePage()).thenReturn(null);
+        mTabProvider.set(mTab);
+        assertToEdgeExpectations();
+
+        // Navigate to key native page, which should draw toEdge.
+        when(mTab.isNativePage()).thenReturn(true);
+        when(mTab.getNativePage()).thenReturn(mKeyNativePage);
+        mEdgeToEdgeControllerImpl.getTabObserverForTesting().onContentChanged(mTab);
+        assertNoChangeExpectations();
     }
 
     @Test

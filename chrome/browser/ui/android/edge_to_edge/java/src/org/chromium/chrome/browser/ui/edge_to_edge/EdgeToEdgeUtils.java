@@ -263,7 +263,7 @@ public class EdgeToEdgeUtils {
     static boolean isPageOptedIntoEdgeToEdge(
             Tab tab, @WebContentsObserver.ViewportFitType int value) {
         if (tab == null || tab.isNativePage()) {
-            return ChromeFeatureList.sDrawNativeEdgeToEdge.isEnabled();
+            return isNativeTabDrawingToEdge(tab);
         }
         if (sAlwaysDrawWebEdgeToEdgeForTesting) {
             return true;

@@ -144,6 +144,9 @@ public class EdgeToEdgeControllerImpl
                     @Override
                     public void onWebContentsSwapped(
                             Tab tab, boolean didStartLoad, boolean didFinishLoad) {
+                        drawToEdge(
+                                EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(mCurrentTab),
+                                /* changedWindowState= */ false);
                         updateWebContentsObserver(tab);
                     }
 
@@ -152,6 +155,9 @@ public class EdgeToEdgeControllerImpl
                         assert tab.getWebContents() != null
                                 : "onContentChanged called on tab w/o WebContents: "
                                         + tab.getTitle();
+                        drawToEdge(
+                                EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(mCurrentTab),
+                                /* changedWindowState= */ false);
                         updateWebContentsObserver(tab);
                     }
                 };
@@ -555,6 +561,10 @@ public class EdgeToEdgeControllerImpl
     @Nullable
     WebContentsObserver getWebContentsObserver() {
         return mWebContentsObserver;
+    }
+
+    TabObserver getTabObserverForTesting() {
+        return mTabObserver;
     }
 
     public void setIsOptedIntoEdgeToEdgeForTesting(boolean toEdge) {
