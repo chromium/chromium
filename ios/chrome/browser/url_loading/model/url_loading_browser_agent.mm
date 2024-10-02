@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 
 #import "base/compiler_specific.h"
+#import "base/debug/dump_without_crashing.h"
 #import "base/immediate_crash.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/task/thread_pool.h"
@@ -61,6 +62,13 @@ NOINLINE void InduceBrowserCrash(const GURL& url) {
     if (base::StringToInt(delay_string, &delay) && delay > 0) {
       sleep(delay);
     }
+  }
+
+  std::string dump_without_crashing;
+  if (net::GetValueForKeyInQuery(url, "dwc", &dump_without_crashing) &&
+      (dump_without_crashing == "" || dump_without_crashing == "true")) {
+    base::debug::DumpWithoutCrashing();
+    return;
   }
 
 #if !TARGET_IPHONE_SIMULATOR  // Leaking memory does not cause UTE on simulator.
