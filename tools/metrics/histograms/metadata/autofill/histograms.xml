@@ -217,6 +217,11 @@ chromium-metrics-reviews@google.com.
   <variant name="SmsOtp" summary="The OTP authentication with a SMS OTP."/>
 </variants>
 
+<!--
+TODO(crbug.com/335030020): Prefer variants without empty tokens or leading
+spaces. This should be deprecated in favor of FirstShowOrReshow.
+-->
+
 <variants name="Autofill.PaymentBubble.Show">
   <variant name=".FirstShow" summary="first-show"/>
   <variant name=".Reshows" summary="re-show"/>
@@ -550,6 +555,17 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="AutofillSaveCreditCardPromptDestination">
+  <variant name="Local" summary="locally"/>
+  <variant name="Upload" summary="to server"/>
+</variants>
+
+<!--
+TODO(crbug.com/335030020): Prefer variants without empty tokens or leading
+spaces. This should be deprecated in favor of
+AutofillSaveCreditCardPromptDestination.
+-->
+
+<variants name="AutofillSaveCreditCardPromptDestinationWithLeadingPeriod">
   <variant name=".Local" summary="locally"/>
   <variant name=".Upload" summary="to server"/>
 </variants>
@@ -608,6 +624,11 @@ chromium-metrics-reviews@google.com.
   <variant name=".WithNoData" summary="no autofill data"/>
   <variant name=".WithOnlyLocalData" summary="only local autofill data"/>
   <variant name=".WithOnlyServerData" summary="only server autofill data"/>
+</variants>
+
+<variants name="FirstShowOrReshow">
+  <variant name="FirstShow" summary="first-show"/>
+  <variant name="Reshows" summary="re-show"/>
 </variants>
 
 <variants name="IbanRecordType">
@@ -1828,7 +1849,7 @@ chromium-metrics-reviews@google.com.
     {AutofillSaveCreditCardPromptDestination}.
   </summary>
   <token key="AutofillSaveCreditCardPromptDestination"
-      variants="AutofillSaveCreditCardPromptDestination"/>
+      variants="AutofillSaveCreditCardPromptDestinationWithLeadingPeriod"/>
 </histogram>
 
 <histogram name="Autofill.CvcStorage.CvcFilling.{CardType}"
@@ -4963,23 +4984,37 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Autofill.SaveCreditCardPromptOffer{SaveDestination}{ShowType}{SaveType}"
+    name="Autofill.SaveCreditCardPromptOffer.{SaveDestination}.{ShowType}{SaveType}"
     enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2025-07-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     The relative frequency with which the Autofill save credit card prompt is
-    shown or not to save credit card {SaveDestination}, {SaveType}. Logged when
-    the flow is triggered and the prompt should be shown. It was a {ShowType}.
+    shown or not to save a credit card {SaveDestination}, {SaveType}. Logged
+    when the flow is triggered and the decision of whether or not to offer
+    credit card save is made. It was a {ShowType}.
   </summary>
   <token key="SaveDestination"
-      variants="AutofillSaveCreditCardPromptDestination">
-    <variant name=""/>
-  </token>
-  <token key="ShowType" variants="Autofill.PaymentBubble.Show">
-    <variant name=""/>
-  </token>
+      variants="AutofillSaveCreditCardPromptDestination"/>
+  <token key="ShowType" variants="FirstShowOrReshow"/>
+  <token key="SaveType" variants="AutofillCreditCardSaveType"/>
+</histogram>
+
+<histogram
+    name="Autofill.SaveCreditCardPromptResult.{SaveDestination}.{ShowType}{SaveType}"
+    enum="AutofillSavePaymentMethodPromptResultEnum" expires_after="2025-07-01">
+  <owner>jsaul@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The relative frequency with which (and how) users accept or deny the
+    Autofill save credit card prompt to save credit card {SaveDestination}.
+    Logged when the prompt closes.
+  </summary>
+  <token key="SaveDestination"
+      variants="AutofillSaveCreditCardPromptDestination"/>
+  <token key="ShowType" variants="FirstShowOrReshow"/>
   <token key="SaveType" variants="AutofillCreditCardSaveType"/>
 </histogram>
 
@@ -4995,7 +5030,7 @@ chromium-metrics-reviews@google.com.
     are recorded. Logged when the prompt closes.
   </summary>
   <token key="SaveDestination"
-      variants="AutofillSaveCreditCardPromptDestination"/>
+      variants="AutofillSaveCreditCardPromptDestinationWithLeadingPeriod"/>
   <token key="UserGroup">
     <variant name="Aggregate" summary="Aggregated data of all users."/>
     <variant name="UserHasNoCards"
@@ -5005,27 +5040,6 @@ chromium-metrics-reviews@google.com.
         summary="Metrics are recorded for users who have credit cards saved
                  already."/>
   </token>
-</histogram>
-
-<histogram
-    name="Autofill.SaveCreditCardPromptResult{SaveDestination}{ShowType}{SaveType}"
-    enum="AutofillSavePaymentMethodPromptResultEnum" expires_after="2025-07-01">
-  <owner>jsaul@google.com</owner>
-  <owner>siyua@chromium.org</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    The relative frequency with which users accept or deny the Autofill save
-    credit card prompt to save credit card {SaveDestination}. Logged when the
-    prompt closes.
-  </summary>
-  <token key="SaveDestination"
-      variants="AutofillSaveCreditCardPromptDestination">
-    <variant name=""/>
-  </token>
-  <token key="ShowType" variants="Autofill.PaymentBubble.Show">
-    <variant name=""/>
-  </token>
-  <token key="SaveType" variants="AutofillCreditCardSaveType"/>
 </histogram>
 
 <histogram
@@ -5040,7 +5054,7 @@ chromium-metrics-reviews@google.com.
     flow is triggered and the prompt should be shown. It was a {ShowType}.
   </summary>
   <token key="AutofillSaveCreditCardPromptDestination"
-      variants="AutofillSaveCreditCardPromptDestination"/>
+      variants="AutofillSaveCreditCardPromptDestinationWithLeadingPeriod"/>
   <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>
 </histogram>
 
@@ -5056,7 +5070,7 @@ chromium-metrics-reviews@google.com.
     the prompt closes. It was a {ShowType}.
   </summary>
   <token key="AutofillSaveCreditCardPromptDestination"
-      variants="AutofillSaveCreditCardPromptDestination"/>
+      variants="AutofillSaveCreditCardPromptDestinationWithLeadingPeriod"/>
   <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>
 </histogram>
 
