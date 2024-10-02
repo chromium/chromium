@@ -4316,6 +4316,12 @@ deps = {
       'condition': 'checkout_chromium_autofill_test_dependencies',
   },
 
+  'src/components/test/data/autofill/label-doms/internal': {
+      'url': Var('chrome_git') + '/chrome/test/autofill/field_labels.git' + '@' +
+        '932bfac96f5e5792bca46e9d1ae76a4fe36798c3',
+      'condition': 'checkout_chromium_autofill_test_dependencies',
+  },
+
   'src/components/vector_icons/google_chrome': {
       'url': Var('chrome_git') + '/chrome/vector_icons/google_chrome.git' + '@' +
         'ecad7931572c1f673bf582b785838daadbaadfab',

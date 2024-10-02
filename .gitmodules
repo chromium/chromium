@@ -774,6 +774,10 @@
 	path = components/test/data/autofill/heuristics-json/internal
 	url = https://chrome-internal.googlesource.com/chrome/test/autofill/structured_forms
 	gclient-condition = checkout_chromium_autofill_test_dependencies
+[submodule "components/test/data/autofill/label-doms/internal"]
+	path = components/test/data/autofill/label-doms/internal
+	url = https://chrome-internal.googlesource.com/chrome/test/autofill/field_labels
+	gclient-condition = checkout_chromium_autofill_test_dependencies
 [submodule "components/vector_icons/google_chrome"]
 	path = components/vector_icons/google_chrome
 	url = https://chrome-internal.googlesource.com/chrome/vector_icons/google_chrome
