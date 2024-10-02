@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/public/common/origin_trials/trial_token.h"
 
 #include <memory>
@@ -152,11 +147,11 @@ OriginTrialTokenStatus TrialToken::Extract(
     return OriginTrialTokenStatus::kMalformed;
   }
 
+  auto token_bytes = base::as_byte_span(token_contents);
+
   // Extract the length of the signed data (Big-endian).
-  uint32_t payload_length =
-      base::U32FromBigEndian(base::as_byte_span(token_contents)
-                                 .subspan(kPayloadLengthOffset)
-                                 .first<4>());
+  uint32_t payload_length = base::U32FromBigEndian(
+      token_bytes.subspan(kPayloadLengthOffset).first<4>());
 
   // Validate that the stated length matches the actual payload length.
   if (payload_length != token_contents.length() - kPayloadOffset) {
@@ -164,11 +159,12 @@ OriginTrialTokenStatus TrialToken::Extract(
   }
 
   // Extract the version-specific contents of the token.
-  const char* token_bytes = token_contents.data();
-  std::string_view version_piece(token_bytes + kVersionOffset, kVersionSize);
-  std::string_view signature(token_bytes + kSignatureOffset, kSignatureSize);
-  std::string_view payload_piece(token_bytes + kPayloadLengthOffset,
-                                 kPayloadLengthSize + payload_length);
+  std::string_view version_piece(
+      base::as_string_view(token_bytes.subspan(kVersionOffset, kVersionSize)));
+  std::string_view signature(base::as_string_view(
+      token_bytes.subspan(kSignatureOffset, kSignatureSize)));
+  std::string_view payload_piece(base::as_string_view(token_bytes.subspan(
+      kPayloadLengthOffset, kPayloadLengthSize + payload_length)));
 
   // The data which is covered by the signature is (version + length + payload).
   std::string signed_data = base::StrCat({version_piece, payload_piece});
