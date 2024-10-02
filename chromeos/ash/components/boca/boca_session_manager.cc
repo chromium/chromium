@@ -20,6 +20,7 @@
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/components/boca/session_api/get_session_request.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/common/api_error_codes.h"
 
@@ -36,6 +37,7 @@ BocaSessionManager::BocaSessionManager(SessionClientImpl* session_client_impl,
   if (BocaAppClient::HasInstance()) {
     BocaAppClient::Get()->AddSessionManager(this);
   }
+  LoadInitialNetworkState();
 }
 BocaSessionManager::~BocaSessionManager() = default;
 
@@ -57,8 +59,8 @@ void BocaSessionManager::OnNetworkStateChanged(
     chromeos::network_config::mojom::NetworkStatePropertiesPtr network_state) {
   // Check network types comment here:
   // chromeos/services/network_config/public/mojom/network_types.mojom
-  if (network_state->connection_state ==
-      chromeos::network_config::mojom::ConnectionStateType::kOnline) {
+  if (chromeos::network_config::StateIsConnected(
+          network_state->connection_state)) {
     if (!is_network_conntected_) {
       // Explicitly trigger a load whenever network back online. This will cover
       // the case for initial ctor too.
@@ -71,6 +73,7 @@ void BocaSessionManager::OnNetworkStateChanged(
     is_network_conntected_ = false;
   }
 }
+
 void BocaSessionManager::NotifyError(BocaError error) {}
 
 void BocaSessionManager::AddObserver(Observer* observer) {
@@ -133,6 +136,28 @@ void BocaSessionManager::NotifyLocalCaptionEvents(
     ::boca::CaptionsConfig caption_config) {
   for (auto& observer : observers_) {
     observer.OnLocalCaptionConfigUpdated(std::move(caption_config));
+  }
+}
+
+void BocaSessionManager::LoadInitialNetworkState() {
+  cros_network_config_->GetNetworkStateList(
+      chromeos::network_config::mojom::NetworkFilter::New(
+          chromeos::network_config::mojom::FilterType::kVisible,
+          chromeos::network_config::mojom::NetworkType::kAll,
+          /*limit=*/0),
+      base::BindOnce(&BocaSessionManager::OnNetworkStateFetched,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void BocaSessionManager::OnNetworkStateFetched(
+    std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
+        networks) {
+  for (const chromeos::network_config::mojom::NetworkStatePropertiesPtr&
+           network : networks) {
+    if (chromeos::network_config::StateIsConnected(network->connection_state)) {
+      is_network_conntected_ = true;
+      break;
+    }
   }
 }
 

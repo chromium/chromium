@@ -131,6 +131,9 @@ class BocaSessionManagerTest : public testing::Test {
     boca_session_manager_->AddObserver(observer_.get());
 
     EXPECT_CALL(*observer(), OnSessionStarted(_, _)).Times(1);
+    // Set initial network config.
+    ToggleOffline();
+    // Trigger network update activity.
     ToggleOnline();
   }
 

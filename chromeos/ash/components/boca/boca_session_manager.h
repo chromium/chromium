@@ -123,6 +123,10 @@ class BocaSessionManager
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
+  void LoadInitialNetworkState();
+  void OnNetworkStateFetched(
+      std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
+          networks);
   bool IsProfileActive();
   void NotifySessionUpdate();
   void NotifyOnTaskUpdate();
