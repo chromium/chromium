@@ -424,7 +424,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
                 const gfx::ColorSpace& color_space,
                 viz::SharedImageFormat,
                 SkAlphaType alpha_type,
-                GLenum texture_target,
                 bool is_overlay_candidate,
                 scoped_refptr<gpu::ClientSharedImage> shared_image,
                 std::unique_ptr<gpu::SharedImageTexture> shared_image_texture);

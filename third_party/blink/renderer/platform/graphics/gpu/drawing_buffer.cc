@@ -923,7 +923,6 @@ DrawingBuffer::ColorBuffer::ColorBuffer(
     const gfx::ColorSpace& color_space,
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
-    GLenum texture_target,
     bool is_overlay_candidate,
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     std::unique_ptr<gpu::SharedImageTexture> shared_image_texture)
@@ -933,12 +932,11 @@ DrawingBuffer::ColorBuffer::ColorBuffer(
       color_space(color_space),
       format(format),
       alpha_type(alpha_type),
-      texture_target(texture_target),
       is_overlay_candidate(is_overlay_candidate),
       shared_image(std::move(shared_image)),
       shared_image_texture_(std::move(shared_image_texture)) {
   CHECK(this->shared_image);
-  this->texture_target = this->shared_image->GetTextureTarget();
+  texture_target = this->shared_image->GetTextureTarget();
 }
 
 DrawingBuffer::ColorBuffer::~ColorBuffer() {
@@ -2201,7 +2199,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
         front_buffer_shared_image->CreateGLTexture(gl_);
     front_color_buffer_ = base::MakeRefCounted<ColorBuffer>(
         weak_factory_.GetWeakPtr(), size, color_space_, color_buffer_format_,
-        back_buffer_alpha_type, texture_target,
+        back_buffer_alpha_type,
         /*is_overlay_candidate=*/true, std::move(front_buffer_shared_image),
         std::move(si_texture));
   }
@@ -2213,7 +2211,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   scoped_refptr<DrawingBuffer::ColorBuffer> color_buffer =
       base::MakeRefCounted<ColorBuffer>(
           weak_factory_.GetWeakPtr(), size, color_space_, color_buffer_format_,
-          back_buffer_alpha_type, texture_target, is_overlay_candidate,
+          back_buffer_alpha_type, is_overlay_candidate,
           std::move(back_buffer_shared_image), std::move(si_texture));
   color_buffer->BeginAccess(gpu::SyncToken(), /*readonly=*/false);
   gl_->BindTexture(texture_target, color_buffer->texture_id());
