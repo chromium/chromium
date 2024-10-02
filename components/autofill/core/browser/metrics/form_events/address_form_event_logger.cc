@@ -161,7 +161,9 @@ bool AddressFormEventLogger::HasLoggedDataToFillAvailable() const {
 
 DenseSet<FormTypeNameForLogging>
 AddressFormEventLogger::GetSupportedFormTypeNamesForLogging() const {
-  return {FormTypeNameForLogging::kAddressForm};
+  return {FormTypeNameForLogging::kAddressForm,
+          FormTypeNameForLogging::kEmailOnlyForm,
+          FormTypeNameForLogging::kPostalAddressForm};
 }
 
 DenseSet<FormTypeNameForLogging> AddressFormEventLogger::GetFormTypesForLogging(

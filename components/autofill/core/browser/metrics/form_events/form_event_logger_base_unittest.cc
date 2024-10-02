@@ -103,6 +103,8 @@ TEST_P(FormEventLoggerBaseFunnelTest, LogFunnelMetrics) {
   // Phase 2: Validate Funnel expectations.
   histogram_tester.ExpectBucketCount("Autofill.Funnel.ParsedAsType.Address", 1,
                                      1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Funnel.ParsedAsType.PostalAddress", 1, 1);
   histogram_tester.ExpectBucketCount("Autofill.Funnel.ParsedAsType.CreditCard",
                                      0, 1);
   histogram_tester.ExpectBucketCount(
