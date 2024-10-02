@@ -11,6 +11,7 @@ import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
+import './shared_vars.css.js';
 
 import {assert} from '//resources/js/assert.js';
 import {getFaviconForPageURL} from '//resources/js/icon.js';

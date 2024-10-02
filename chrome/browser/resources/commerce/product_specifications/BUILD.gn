@@ -32,6 +32,7 @@ build_webui("build") {
     "disclosure/app.css",
     "horizontal_carousel.css",
     "loading_state.css",
+    "shared_vars.css",
   ]
 
   mojo_files_deps = [

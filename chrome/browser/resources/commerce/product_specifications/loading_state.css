@@ -7,6 +7,10 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
+:host {
+  overflow-y: hidden;
+}
+
 #loadingContainer {
   border: solid 1px var(--color-loading-gradient-border);
   border-radius: 8px;

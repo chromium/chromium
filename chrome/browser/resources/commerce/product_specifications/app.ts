@@ -12,6 +12,7 @@ import './horizontal_carousel.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import './shared_vars.css.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {BrowserProxy} from 'chrome://resources/cr_components/commerce/browser_proxy.js';

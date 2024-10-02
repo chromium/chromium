@@ -29,6 +29,7 @@ suite('HorizontalCarouselTest', () => {
       });
     }
     const carouselElement = document.body.querySelector('horizontal-carousel')!;
+    carouselElement.style.maxWidth = '1140px';
     const eventPromise =
         eventToPromise('intersection-observed', carouselElement);
     tableElement.columns = columns;
@@ -68,14 +69,6 @@ suite('HorizontalCarouselTest', () => {
           // Arrange.
           const carouselElement =
               document.body.querySelector('horizontal-carousel')!;
-          const carouselContainer = carouselElement.$.carouselContainer;
-          // Remove restrictions on `carouselContainer`'s width,
-          // by setting `carouselElement`'s width to the maximum width
-          // `carouselContainer` can have.
-          const maxWidth =
-              carouselContainer.computedStyleMap().get('max-width');
-          carouselElement.style.width =
-              maxWidth !== undefined ? maxWidth.toString() : 'initial';
 
           // Act.
           await setupColumns({numColumns: numColumns});
