@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_commit_behavior.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_focus_reset.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_scroll_behavior.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_navigation_type.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/focused_element_change_observer.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -58,7 +59,9 @@ class NavigateEvent final : public Event,
     dispatch_params_ = dispatch_params;
   }
 
-  String navigationType() { return navigation_type_; }
+  V8NavigationType navigationType() {
+    return V8NavigationType(navigation_type_);
+  }
   NavigationDestination* destination() { return destination_.Get(); }
   bool canIntercept() const { return can_intercept_; }
   bool userInitiated() const { return user_initiated_; }
@@ -108,7 +111,7 @@ class NavigateEvent final : public Event,
 
   void DelayedLoadStartTimerFired();
 
-  String navigation_type_;
+  V8NavigationType::Enum navigation_type_;
   Member<NavigationDestination> destination_;
   bool can_intercept_;
   bool user_initiated_;

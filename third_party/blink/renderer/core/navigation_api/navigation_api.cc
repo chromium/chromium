@@ -100,18 +100,18 @@ NavigationResult* EarlySuccessResult(ScriptState* script_state,
   return result;
 }
 
-String DetermineNavigationType(WebFrameLoadType type) {
+V8NavigationType::Enum DetermineNavigationType(WebFrameLoadType type) {
   switch (type) {
     case WebFrameLoadType::kStandard:
-      return "push";
+      return V8NavigationType::Enum::kPush;
     case WebFrameLoadType::kBackForward:
     case WebFrameLoadType::kRestore:
-      return "traverse";
+      return V8NavigationType::Enum::kTraverse;
     case WebFrameLoadType::kReload:
     case WebFrameLoadType::kReloadBypassingCache:
-      return "reload";
+      return V8NavigationType::Enum::kReload;
     case WebFrameLoadType::kReplaceCurrentItem:
-      return "replace";
+      return V8NavigationType::Enum::kReplace;
   }
   NOTREACHED();
 }
@@ -147,9 +147,10 @@ void NavigationApi::UpdateActivation(HistoryItem* previous_item,
       previous_history_entry = MakeEntryFromItem(*previous_item);
     }
   }
-  String navigation_type = window_->GetFrame()->GetPage()->IsPrerendering()
-                               ? "push"
-                               : DetermineNavigationType(load_type);
+  V8NavigationType::Enum navigation_type =
+      window_->GetFrame()->GetPage()->IsPrerendering()
+          ? V8NavigationType::Enum::kPush
+          : DetermineNavigationType(load_type);
   activation_->Update(currentEntry(), previous_history_entry, navigation_type);
 }
 
@@ -357,22 +358,21 @@ void NavigationApi::SetEntriesForRestore(
   keys_to_indices_.clear();
   PopulateKeySet();
 
-  String navigation_type;
+  V8NavigationType::Enum navigation_type;
   switch (restore_reason) {
     case mojom::blink::NavigationApiEntryRestoreReason::kBFCache:
-      navigation_type = "traverse";
+      navigation_type = V8NavigationType::Enum::kTraverse;
       break;
     case mojom::blink::NavigationApiEntryRestoreReason::
         kPrerenderActivationPush:
-      navigation_type = "push";
+      navigation_type = V8NavigationType::Enum::kPush;
       break;
     case mojom::blink::NavigationApiEntryRestoreReason::
         kPrerenderActivationReplace:
-      navigation_type = "replace";
+      navigation_type = V8NavigationType::Enum::kReplace;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   activation_->Update(currentEntry(),
                       GetEntryForRestore(entry_arrays->previous_entry),
@@ -778,7 +778,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   ScriptState::Scope scope(script_state);
 
   auto* init = NavigateEventInit::Create();
-  const String& navigation_type =
+  V8NavigationType::Enum navigation_type =
       DetermineNavigationType(params->frame_load_type);
   init->setNavigationType(navigation_type);
 
@@ -787,7 +787,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     destination_state = params->destination_item->GetNavigationApiState();
   } else if (ongoing_api_method_tracker_) {
     destination_state = ongoing_api_method_tracker_->GetSerializedState();
-  } else if (navigation_type == "reload") {
+  } else if (navigation_type == V8NavigationType::Enum::kReload) {
     HistoryItem* current_item = window_->document()->Loader()->GetHistoryItem();
     destination_state = current_item->GetNavigationApiState();
   }
