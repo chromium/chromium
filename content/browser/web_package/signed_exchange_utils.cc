@@ -102,7 +102,7 @@ std::optional<SignedExchangeVersion> GetSignedExchangeVersion(
         ';');
     while (parser.GetNext()) {
       const std::string_view name = parser.name_piece();
-      params[base::ToLowerASCII(name)] = parser.value();
+      params[base::ToLowerASCII(name)] = parser.value_piece();
     }
     if (!parser.valid())
       return std::nullopt;

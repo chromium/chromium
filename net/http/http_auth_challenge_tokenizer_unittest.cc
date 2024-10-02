@@ -14,11 +14,11 @@ TEST(HttpAuthChallengeTokenizerTest, Basic) {
   HttpUtil::NameValuePairsIterator parameters = challenge.param_pairs();
 
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ(std::string("basic"), challenge.auth_scheme());
+  EXPECT_EQ("basic", challenge.auth_scheme());
   EXPECT_TRUE(parameters.GetNext());
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ(std::string("realm"), parameters.name());
-  EXPECT_EQ(std::string("foobar"), parameters.value());
+  EXPECT_EQ("realm", parameters.name_piece());
+  EXPECT_EQ("foobar", parameters.value_piece());
   EXPECT_FALSE(parameters.GetNext());
 }
 
@@ -30,11 +30,11 @@ TEST(HttpAuthChallengeTokenizerTest, NoQuotes) {
   HttpUtil::NameValuePairsIterator parameters = challenge.param_pairs();
 
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ(std::string("basic"), challenge.auth_scheme());
+  EXPECT_EQ("basic", challenge.auth_scheme());
   EXPECT_TRUE(parameters.GetNext());
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ(std::string("realm"), parameters.name());
-  EXPECT_EQ(std::string("foobar@baz.com"), parameters.value());
+  EXPECT_EQ("realm", parameters.name_piece());
+  EXPECT_EQ("foobar@baz.com", parameters.value_piece());
   EXPECT_FALSE(parameters.GetNext());
 }
 
@@ -46,11 +46,11 @@ TEST(HttpAuthChallengeTokenizerTest, MismatchedQuotes) {
   HttpUtil::NameValuePairsIterator parameters = challenge.param_pairs();
 
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ(std::string("basic"), challenge.auth_scheme());
+  EXPECT_EQ("basic", challenge.auth_scheme());
   EXPECT_TRUE(parameters.GetNext());
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ(std::string("realm"), parameters.name());
-  EXPECT_EQ(std::string("foobar@baz.com"), parameters.value());
+  EXPECT_EQ("realm", parameters.name_piece());
+  EXPECT_EQ("foobar@baz.com", parameters.value_piece());
   EXPECT_FALSE(parameters.GetNext());
 }
 
@@ -62,11 +62,11 @@ TEST(HttpAuthChallengeTokenizerTest, MismatchedQuotesNoValue) {
   HttpUtil::NameValuePairsIterator parameters = challenge.param_pairs();
 
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ(std::string("basic"), challenge.auth_scheme());
+  EXPECT_EQ("basic", challenge.auth_scheme());
   EXPECT_TRUE(parameters.GetNext());
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ(std::string("realm"), parameters.name());
-  EXPECT_EQ(std::string(), parameters.value());
+  EXPECT_EQ("realm", parameters.name_piece());
+  EXPECT_EQ("", parameters.value_piece());
   EXPECT_FALSE(parameters.GetNext());
 }
 
@@ -79,11 +79,11 @@ TEST(HttpAuthChallengeTokenizerTest, MismatchedQuotesSpaces) {
   HttpUtil::NameValuePairsIterator parameters = challenge.param_pairs();
 
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ(std::string("basic"), challenge.auth_scheme());
+  EXPECT_EQ("basic", challenge.auth_scheme());
   EXPECT_TRUE(parameters.GetNext());
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ(std::string("realm"), parameters.name());
-  EXPECT_EQ(std::string("foo bar"), parameters.value());
+  EXPECT_EQ("realm", parameters.name_piece());
+  EXPECT_EQ("foo bar", parameters.value_piece());
   EXPECT_FALSE(parameters.GetNext());
 }
 
@@ -96,19 +96,19 @@ TEST(HttpAuthChallengeTokenizerTest, MismatchedQuotesMultiple) {
   HttpUtil::NameValuePairsIterator parameters = challenge.param_pairs();
 
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ(std::string("digest"), challenge.auth_scheme());
+  EXPECT_EQ("digest", challenge.auth_scheme());
   EXPECT_TRUE(parameters.GetNext());
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ(std::string("qop"), parameters.name());
-  EXPECT_EQ(std::string("auth-int"), parameters.value());
+  EXPECT_EQ("qop", parameters.name_piece());
+  EXPECT_EQ("auth-int", parameters.value_piece());
   EXPECT_TRUE(parameters.GetNext());
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ(std::string("algorithm"), parameters.name());
-  EXPECT_EQ(std::string("md5"), parameters.value());
+  EXPECT_EQ("algorithm", parameters.name_piece());
+  EXPECT_EQ("md5", parameters.value_piece());
   EXPECT_TRUE(parameters.GetNext());
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ(std::string("realm"), parameters.name());
-  EXPECT_EQ(std::string("foo"), parameters.value());
+  EXPECT_EQ("realm", parameters.name_piece());
+  EXPECT_EQ("foo", parameters.value_piece());
   EXPECT_FALSE(parameters.GetNext());
 }
 
@@ -134,19 +134,19 @@ TEST(HttpAuthChallengeTokenizerTest, Multiple) {
   HttpUtil::NameValuePairsIterator parameters = challenge.param_pairs();
 
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ(std::string("digest"), challenge.auth_scheme());
+  EXPECT_EQ("digest", challenge.auth_scheme());
   EXPECT_TRUE(parameters.GetNext());
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ(std::string("algorithm"), parameters.name());
-  EXPECT_EQ(std::string("md5"), parameters.value());
+  EXPECT_EQ("algorithm", parameters.name_piece());
+  EXPECT_EQ("md5", parameters.value_piece());
   EXPECT_TRUE(parameters.GetNext());
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ(std::string("realm"), parameters.name());
-  EXPECT_EQ(std::string("Oblivion"), parameters.value());
+  EXPECT_EQ("realm", parameters.name_piece());
+  EXPECT_EQ("Oblivion", parameters.value_piece());
   EXPECT_TRUE(parameters.GetNext());
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ(std::string("qop"), parameters.name());
-  EXPECT_EQ(std::string("auth-int"), parameters.value());
+  EXPECT_EQ("qop", parameters.name_piece());
+  EXPECT_EQ("auth-int", parameters.value_piece());
   EXPECT_FALSE(parameters.GetNext());
   EXPECT_TRUE(parameters.valid());
 }

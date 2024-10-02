@@ -30,7 +30,7 @@ mojom::TimingAllowOriginPtr ParseTimingAllowOrigin(const std::string& value) {
     if (v.value_piece() == "*") {
       return mojom::TimingAllowOrigin::NewAll(/*ignored=*/0);
     }
-    values.push_back(v.value());
+    values.emplace_back(v.value_piece());
   }
   return mojom::TimingAllowOrigin::NewSerializedOrigins(std::move(values));
 }

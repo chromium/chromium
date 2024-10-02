@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "net/base/mime_util.h"
@@ -70,7 +71,7 @@ class ContentNegotiationAlgorithm {
       if (!name_value_pairs.GetNext())
         continue;
       WeightedValue item;
-      item.value = name_value_pairs.name();
+      item.value = name_value_pairs.name_piece();
       item.weight = 1.0;
       while (name_value_pairs.GetNext()) {
         if (base::EqualsCaseInsensitiveASCII(name_value_pairs.name_piece(),
@@ -80,8 +81,8 @@ class ContentNegotiationAlgorithm {
           }
         } else {
           // Parameters except for "q" are included in the output.
-          item.value +=
-              ';' + name_value_pairs.name() + '=' + name_value_pairs.value();
+          base::StrAppend(&item.value, {";", name_value_pairs.name_piece(), "=",
+                                        name_value_pairs.value_piece()});
         }
       }
       if (item.weight != 0.0)

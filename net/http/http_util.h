@@ -380,11 +380,6 @@ class NET_EXPORT HttpUtil {
     // is a next value.  Use value* methods to access the resultant value.
     bool GetNext();
 
-    std::string_view::const_iterator value_begin() const {
-      return value_.begin();
-    }
-    std::string_view::const_iterator value_end() const { return value_.end(); }
-    std::string value() const { return std::string(value_); }
     std::string_view value_piece() const { return value_; }
 
    private:
@@ -427,27 +422,27 @@ class NET_EXPORT HttpUtil {
     // is a next pair. Returns false and on error, and `valid()` starts
     // returning false. Once GetNext() returns false Use name() and value()
     // methods to access the resultant value.
+    //
+    // Each call will invalidate the string views obtained through the previous
+    // GetNext() call, as they may point to temporary buffers.
     bool GetNext();
 
     // Returns false if there was a parse error.
     bool valid() const { return valid_; }
 
     // The name of the current name-value pair.
-    std::string name() const { return std::string(name_); }
     std::string_view name_piece() const { return name_; }
 
-    // The value of the current name-value pair.
-    std::string value() const {
-      return value_is_quoted_ ? unquoted_value_ : std::string(value_);
-    }
-    std::string_view value_piece() const {
+    // The value of the current name-value pair. Note that the returned
+    // string_view will be invalidated by the next GetNext() call.
+    std::string_view value_piece() const LIFETIME_BOUND {
       return value_is_quoted_ ? unquoted_value_ : value_;
     }
 
     bool value_is_quoted() const { return value_is_quoted_; }
 
     // The value before unquoting (if any).
-    std::string raw_value() const { return std::string(value_); }
+    std::string_view raw_value_piece() const LIFETIME_BOUND { return value_; }
 
    private:
     // Attempts to parse `name_value_pair`, populating `name_`, `value_`, and

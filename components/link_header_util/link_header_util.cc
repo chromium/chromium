@@ -188,7 +188,7 @@ bool ParseLinkHeaderValue(
         params_iterator.value_piece().empty())
       params->insert(std::make_pair(name, std::nullopt));
     else
-      params->insert(std::make_pair(name, params_iterator.value()));
+      params->insert(std::make_pair(name, params_iterator.value_piece()));
   }
   return params_iterator.valid();
 }

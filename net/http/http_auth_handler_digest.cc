@@ -168,7 +168,9 @@ HttpAuth::AuthorizationResult HttpAuthHandlerDigest::HandleAnotherChallengeImpl(
       }
     } else if (base::EqualsCaseInsensitiveASCII(parameters.name_piece(),
                                                 "realm")) {
-      original_realm = parameters.value();
+      // This has to be a copy, since value_piece() may point to an internal
+      // buffer of `parameters`.
+      original_realm = parameters.value_piece();
     }
   }
   return (original_realm_ != original_realm)
