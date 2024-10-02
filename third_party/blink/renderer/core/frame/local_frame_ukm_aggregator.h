@@ -371,7 +371,8 @@ class CORE_EXPORT LocalFrameUkmAggregator
   };
 
   void UpdateEventTimeAndUpdateSampleIfNeeded(
-      cc::ActiveFrameSequenceTrackers trackers);
+      cc::ActiveFrameSequenceTrackers trackers,
+      bool& record_ukm_for_next_frame);
   void UpdateSample(cc::ActiveFrameSequenceTrackers trackers);
   void ResetAllMetrics();
 
@@ -415,6 +416,7 @@ class CORE_EXPORT LocalFrameUkmAggregator
   // events per page load, which in turn maximizes client counts.
   SampleToRecord current_sample_;
   unsigned frames_since_last_report_ = 0;
+  bool record_ukm_for_current_frame_ = true;
 
   // Control for the ForcedStyleAndUpdate UMA metric sampling
   unsigned mean_calls_between_forced_style_layout_uma_ = 500;

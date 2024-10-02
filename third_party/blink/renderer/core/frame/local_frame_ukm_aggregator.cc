@@ -499,7 +499,8 @@ void LocalFrameUkmAggregator::RecordEndOfFrameMetrics(
   if (report_as_pre_fcp)
     primary_metric_.pre_fcp_aggregate += count;
 
-  UpdateEventTimeAndUpdateSampleIfNeeded(trackers);
+  bool record_ukm_for_next_frame = false;
+  UpdateEventTimeAndUpdateSampleIfNeeded(trackers, record_ukm_for_next_frame);
 
   // Report the FCP metrics, if necessary, after updating the sample so that
   // the sample has been recorded for the frame that produced FCP.
@@ -512,18 +513,21 @@ void LocalFrameUkmAggregator::RecordEndOfFrameMetrics(
 
   // Reset for the next frame.
   ResetAllMetrics();
+
+  record_ukm_for_current_frame_ = record_ukm_for_next_frame;
 }
 
 void LocalFrameUkmAggregator::UpdateEventTimeAndUpdateSampleIfNeeded(
-    cc::ActiveFrameSequenceTrackers trackers) {
+    cc::ActiveFrameSequenceTrackers trackers,
+    bool& record_ukm_for_next_frame) {
+  // Regardless of test requests always capture the first frame, since
+  // record_current_ukm_frame_ is initialized to true.
+  if (record_ukm_for_current_frame_) {
+    UpdateSample(trackers);
+  }
+
   // Update the frame count first, because it must include this frame
   frames_since_last_report_++;
-
-  // Regardless of test requests, always capture the first frame.
-  if (frames_since_last_report_ == 1) {
-    UpdateSample(trackers);
-    return;
-  }
 
   // Exit if in testing and we do not want to update this frame
   if (next_frame_sample_control_for_test_ == kMustNotChooseNextFrame)
@@ -531,10 +535,9 @@ void LocalFrameUkmAggregator::UpdateEventTimeAndUpdateSampleIfNeeded(
 
   // Update the sample with probability 1/frames_since_last_report_, or if
   // testing demand is.
-  if ((next_frame_sample_control_for_test_ == kMustChooseNextFrame) ||
-      base::RandDouble() < 1 / static_cast<double>(frames_since_last_report_)) {
-    UpdateSample(trackers);
-  }
+  record_ukm_for_next_frame =
+      (next_frame_sample_control_for_test_ == kMustChooseNextFrame) ||
+      base::RandDouble() < 1 / static_cast<double>(frames_since_last_report_);
 }
 
 void LocalFrameUkmAggregator::UpdateSample(
