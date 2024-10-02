@@ -6,10 +6,10 @@
 
 #include <string>
 
-#include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
@@ -136,13 +136,24 @@ void CacheStorageScheduler::MaybeRunOperation() {
   // Most operations are wrapped with `CompleteOperationAndRunNext()`, which
   // means that executing an operation can cause re-entrancy in
   // `MaybeRunOperation().` No-op in this case; the next operation will be run
-  // in the next loop iteration.
+  // in the next loop iteration. Note that this doesn't use `AutoReset` because
+  // running an operation can cause `this` to be deleted. See
+  // https://crbug.com/370069678.
   if (in_maybe_run_) {
     return;
   }
-  base::AutoReset nesting(&in_maybe_run_, true);
+  in_maybe_run_ = true;
+  base::WeakPtr<CacheStorageScheduler> this_ptr =
+      weak_ptr_factory_.GetWeakPtr();
+  base::ScopedClosureRunner reset(base::BindOnce(
+      [](base::WeakPtr<CacheStorageScheduler> scheduler) {
+        if (scheduler) {
+          scheduler->in_maybe_run_ = false;
+        }
+      },
+      this_ptr));
 
-  while (!pending_operations_.empty()) {
+  while (this_ptr && !pending_operations_.empty()) {
     base::WeakPtr<CacheStorageOperation> next_operation =
         pending_operations_.front()->AsWeakPtr();
 
@@ -183,7 +194,7 @@ void CacheStorageScheduler::MaybeRunOperation() {
 
     DispatchOperationTask(
         base::BindOnce(&CacheStorageOperation::Run, next_operation));
-    // `next_operation` may be null at this point.
+    // `next_operation` and `this_ptr` may both be null at this point.
   }
 }
 
