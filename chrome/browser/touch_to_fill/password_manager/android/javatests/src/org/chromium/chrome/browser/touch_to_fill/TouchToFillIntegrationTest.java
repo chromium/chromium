@@ -9,12 +9,14 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
+import static org.chromium.chrome.browser.autofill.AutofillTestHelper.singleMouseClickView;
 
 import android.annotation.SuppressLint;
 import android.view.View;
@@ -123,6 +125,25 @@ public class TouchToFillIntegrationTest {
                             mMockBridge,
                             mMockFocusHelper);
                 });
+    }
+
+    @Test
+    @MediumTest
+    public void testConsumesGenericMotionEventsToPreventMouseClicksThroughSheet() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mTouchToFill.showCredentials(
+                            sExampleUrl,
+                            true,
+                            Collections.emptyList(),
+                            Collections.singletonList(sAna),
+                            /* submitCredential= */ false,
+                            /* managePasskeysHidesPasswords= */ false,
+                            /* showHybridPasskeyOption= */ false,
+                            /* showCredManEntry= */ false);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        assert singleMouseClickView(getCredentials());
     }
 
     @Test
