@@ -1,9 +1,0 @@
-Name: miniz_oxide
-URL: https://crates.io/crates/miniz_oxide
-Description: DEFLATE compression and decompression library rewritten in Rust based on miniz
-Version: 0.7.4
-Security Critical: yes
-Shipped: yes
-License: Apache 2.0
-License File: //third_party/rust/chromium_crates_io/vendor/miniz_oxide-0.7.4/LICENSE,//third_party/rust/chromium_crates_io/vendor/miniz_oxide-0.7.4/LICENSE-APACHE.md
-Revision: 084c21bcaa0a788f330b15af5abc1bd33bce13a6
