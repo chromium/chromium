@@ -600,13 +600,13 @@ AutofillSaveCreditCardPromptDestination.
 </variants>
 
 <variants name="AutofillStrikeDatabaseProjectType">
-  <variant name=".CreditCardSave" summary="Credit card save"/>
-  <variant name=".CvcStorage" summary="CVC save"/>
-  <variant name=".FidoAuthentication"
+  <variant name="CreditCardSave" summary="Credit card save"/>
+  <variant name="CvcStorage" summary="CVC save"/>
+  <variant name="FidoAuthentication"
       summary="Fido authentication (Better Auth Project)"/>
-  <variant name=".IBANSave" summary="IBAN save"/>
-  <variant name=".LocalCardMigration" summary="Local card migration"/>
-  <variant name=".VirtualCardEnrollment" summary="virtual card enrollment"/>
+  <variant name="IBANSave" summary="IBAN save"/>
+  <variant name="LocalCardMigration" summary="Local card migration"/>
+  <variant name="VirtualCardEnrollment" summary="virtual card enrollment"/>
 </variants>
 
 <variants name="ClassificationMatchesFillingProduct">
@@ -5547,18 +5547,17 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram
-    name="Autofill.StrikeDatabase.NthStrikeAdded{AutofillStrikeDatabaseProjectType}"
+    name="Autofill.StrikeDatabase.NthStrikeAdded.{AutofillStrikeDatabaseProjectType}"
     units="strikes" expires_after="2025-07-01">
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
-    Records the number of &quot;strikes&quot; a particular feature has when a
-    new strike is added for that feature. {AutofillStrikeDatabaseProjectType}
+    Records the number of &quot;strikes&quot; the
+    {AutofillStrikeDatabaseProjectType} feature had when a strike was added for
+    it.
   </summary>
   <token key="AutofillStrikeDatabaseProjectType"
-      variants="AutofillStrikeDatabaseProjectType">
-    <variant name=""/>
-  </token>
+      variants="AutofillStrikeDatabaseProjectType"/>
 </histogram>
 
 <histogram name="Autofill.StrikeDatabase.StrikeDatabaseInitFailed"
@@ -5617,18 +5616,16 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram
-    name="Autofill.StrikeDatabase.StrikesPresentWhenStrikeExpired{AutofillStrikeDatabaseProjectType}"
+    name="Autofill.StrikeDatabase.StrikesPresentWhenStrikeExpired.{AutofillStrikeDatabaseProjectType}"
     units="strikes" expires_after="2025-07-01">
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the number of &quot;strikes&quot; present in a StrikeDatabase entry
-    when a strike expires. {AutofillStrikeDatabaseProjectType}
+    when a strike expired for the {AutofillStrikeDatabaseProjectType} feature.
   </summary>
   <token key="AutofillStrikeDatabaseProjectType"
-      variants="AutofillStrikeDatabaseProjectType">
-    <variant name=""/>
-  </token>
+      variants="AutofillStrikeDatabaseProjectType"/>
 </histogram>
 
 <histogram name="Autofill.StrikeDatabase.StrikesPresentWhenVirtualCardEnrolled"
