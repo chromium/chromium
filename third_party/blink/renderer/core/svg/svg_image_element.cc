@@ -109,7 +109,7 @@ void SVGImageElement::SvgAttributeChanged(
     SVGElement::InvalidationGuard invalidation_guard(this);
 
     if (is_length_attribute) {
-      UpdatePresentationAttributeStyle(attr_name);
+      UpdatePresentationAttributeStyle(params.property);
       UpdateRelativeLengthsInformation();
     }
 

@@ -77,7 +77,7 @@ void SVGForeignObjectElement::SvgAttributeChanged(
 
   if (is_xy_attribute || is_width_height_attribute) {
     SVGElement::InvalidationGuard invalidation_guard(this);
-    UpdatePresentationAttributeStyle(attr_name);
+    UpdatePresentationAttributeStyle(params.property);
     UpdateRelativeLengthsInformation();
     if (LayoutObject* layout_object = GetLayoutObject())
       MarkForLayoutAndParentResourceInvalidation(*layout_object);

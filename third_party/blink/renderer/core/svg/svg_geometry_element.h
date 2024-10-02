@@ -69,7 +69,7 @@ class SVGGeometryElement : public SVGGraphicsElement {
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
   void GeometryAttributeChanged();
-  void GeometryPresentationAttributeChanged(const QualifiedName&);
+  void GeometryPresentationAttributeChanged(const SVGAnimatedPropertyBase&);
 
   SVGAnimatedPropertyBase* PropertyFromAttribute(
       const QualifiedName& attribute_name) const override;

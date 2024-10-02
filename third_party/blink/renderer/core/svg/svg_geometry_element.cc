@@ -231,8 +231,8 @@ float SVGGeometryElement::PathLengthScaleFactor(float computed_path_length,
 }
 
 void SVGGeometryElement::GeometryPresentationAttributeChanged(
-    const QualifiedName& attr_name) {
-  UpdatePresentationAttributeStyle(attr_name);
+    const SVGAnimatedPropertyBase& property) {
+  UpdatePresentationAttributeStyle(property);
   GeometryAttributeChanged();
 }
 

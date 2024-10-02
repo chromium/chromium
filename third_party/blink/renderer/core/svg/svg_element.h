@@ -141,10 +141,7 @@ class CORE_EXPORT SVGElement : public Element {
     STACK_ALLOCATED();
 
    public:
-    SvgAttributeChangedParams(const QualifiedName& qname,
-                              AttributeModificationReason reason)
-        : name(qname), reason(reason) {}
-
+    const SVGAnimatedPropertyBase& property;
     const QualifiedName& name;
     const AttributeModificationReason reason;
   };
@@ -260,7 +257,6 @@ class CORE_EXPORT SVGElement : public Element {
   void ParseAttribute(const AttributeModificationParams&) override;
   void AttributeChanged(const AttributeModificationParams&) override;
 
-  void UpdatePresentationAttributeStyle(const QualifiedName&);
   void UpdatePresentationAttributeStyle(const SVGAnimatedPropertyBase&);
   void UpdatePresentationAttributeStyle(CSSPropertyID,
                                         const QualifiedName&,
@@ -334,7 +330,8 @@ class CORE_EXPORT SVGElement : public Element {
 
   void WillRecalcStyle(const StyleRecalcChange) override;
   static SVGElementSet& GetDependencyTraversalVisitedSet();
-  void UpdateWebAnimatedAttributeOnBaseValChange(const QualifiedName&);
+  void UpdateWebAnimatedAttributeOnBaseValChange(
+      const SVGAnimatedPropertyBase&);
 
   SMILTimeContainer* GetTimeContainer() const;
 

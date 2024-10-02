@@ -245,7 +245,7 @@ void SVGUseElement::SvgAttributeChanged(
     SVGElement::InvalidationGuard invalidation_guard(this);
 
     if (attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr) {
-      UpdatePresentationAttributeStyle(attr_name);
+      UpdatePresentationAttributeStyle(params.property);
     }
 
     UpdateRelativeLengthsInformation();

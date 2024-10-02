@@ -95,7 +95,7 @@ void SVGMaskElement::SvgAttributeChanged(
     SVGElement::InvalidationGuard invalidation_guard(this);
 
     if (is_length_attr) {
-      UpdatePresentationAttributeStyle(attr_name);
+      UpdatePresentationAttributeStyle(params.property);
       UpdateRelativeLengthsInformation();
     }
 

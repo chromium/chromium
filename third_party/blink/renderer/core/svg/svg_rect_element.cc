@@ -124,7 +124,7 @@ void SVGRectElement::SvgAttributeChanged(
       attr_name == svg_names::kHeightAttr || attr_name == svg_names::kRxAttr ||
       attr_name == svg_names::kRyAttr) {
     UpdateRelativeLengthsInformation();
-    GeometryPresentationAttributeChanged(attr_name);
+    GeometryPresentationAttributeChanged(params.property);
     return;
   }
 
