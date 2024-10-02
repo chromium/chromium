@@ -183,9 +183,9 @@ class WTF_EXPORT StringBuilder {
 
   operator StringView() const {
     if (Is8Bit()) {
-      return StringView(Characters8(), length());
+      return StringView(Span8());
     } else {
-      return StringView(Characters16(), length());
+      return StringView(Span16());
     }
   }
 
@@ -237,6 +237,30 @@ class WTF_EXPORT StringBuilder {
     return buffer16_.data();
   }
 
+  base::span<const LChar> Span8() const {
+    DCHECK(is_8bit_);
+    if (!length()) {
+      return {};
+    }
+    if (!string_.IsNull()) {
+      return string_.Span8();
+    }
+    DCHECK(has_buffer_);
+    return base::span(buffer8_).first(length());
+  }
+
+  base::span<const UChar> Span16() const {
+    DCHECK(!is_8bit_);
+    if (!length()) {
+      return {};
+    }
+    if (!string_.IsNull()) {
+      return string_.Span16();
+    }
+    DCHECK(has_buffer_);
+    return base::span(buffer16_).first(length());
+  }
+
   bool Is8Bit() const { return is_8bit_; }
   void Ensure16Bit();
 
@@ -269,9 +293,9 @@ class WTF_EXPORT StringBuilder {
   template <typename StringType>
   void BuildString() {
     if (is_8bit_)
-      string_ = StringType(Characters8(), length_);
+      string_ = StringType(Span8());
     else
-      string_ = StringType(Characters16(), length_);
+      string_ = StringType(Span16());
     ClearBuffer();
   }
 

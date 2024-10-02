@@ -85,8 +85,8 @@ StringView StringBuilder::SubstringView(unsigned start, unsigned length) const {
     return StringView(string_, start, length);
   length = std::min(length, length_ - start);
   if (is_8bit_)
-    return StringView(Characters8() + start, length);
-  return StringView(Characters16() + start, length);
+    return StringView(Span8().subspan(start, length));
+  return StringView(Span16().subspan(start, length));
 }
 
 void StringBuilder::Swap(StringBuilder& builder) {
