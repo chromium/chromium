@@ -36,6 +36,7 @@ namespace blink {
 
 class BaseAudioContext;
 class ExceptionState;
+class V8OverSampleType;
 class WaveShaperOptions;
 class WaveShaperProcessor;
 
@@ -55,8 +56,8 @@ class WaveShaperNode final : public AudioNode {
   void setCurve(const Vector<float>&, ExceptionState&);
   NotShared<DOMFloat32Array> curve();
 
-  void setOversample(const String&);
-  String oversample() const;
+  void setOversample(const V8OverSampleType&);
+  V8OverSampleType oversample() const;
 
   // InspectorHelperMixin
   void ReportDidCreate() final;

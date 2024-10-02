@@ -45,7 +45,7 @@ OfflineAudioDestinationHandler::OfflineAudioDestinationHandler(
   DCHECK(main_thread_task_runner_->BelongsToCurrentThread());
 
   channel_count_ = number_of_channels;
-  SetInternalChannelCountMode(kExplicit);
+  SetInternalChannelCountMode(V8ChannelCountMode::Enum::kExplicit);
   SetInternalChannelInterpretation(AudioBus::kSpeakers);
 }
 

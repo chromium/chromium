@@ -38,7 +38,7 @@ MediaStreamAudioDestinationHandler::MediaStreamAudioDestinationHandler(
   SendLogMessage(__func__, "");
   source_.Lock()->SetAudioFormat(static_cast<int>(number_of_channels),
                                  node.context()->sampleRate());
-  SetInternalChannelCountMode(kExplicit);
+  SetInternalChannelCountMode(V8ChannelCountMode::Enum::kExplicit);
   Initialize();
 }
 

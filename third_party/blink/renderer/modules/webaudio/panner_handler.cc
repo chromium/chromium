@@ -30,9 +30,6 @@ namespace {
 constexpr unsigned kMinimumOutputChannels = 1;
 constexpr unsigned kMaximumOutputChannels = 2;
 
-constexpr char kEqualPowerString[] = "equalpower";
-constexpr char kHrtfString[] = "HRTF";
-
 void FixNANs(double& x) {
   if (!std::isfinite(x)) {
     x = 0.0;
@@ -62,12 +59,12 @@ PannerHandler::PannerHandler(AudioNode& node,
 
   // Node-specific default mixing rules
   channel_count_ = kMaximumOutputChannels;
-  SetInternalChannelCountMode(kClampedMax);
+  SetInternalChannelCountMode(V8ChannelCountMode::Enum::kClampedMax);
   SetInternalChannelInterpretation(AudioBus::kSpeakers);
 
   // Explicitly set the default panning model here so that the histograms
   // include the default value.
-  SetPanningModel(kEqualPowerString);
+  SetPanningModel(V8PanningModelType::Enum::kEqualpower);
 
   Initialize();
 }
@@ -352,27 +349,28 @@ void PannerHandler::Uninitialize() {
   AudioHandler::Uninitialize();
 }
 
-String PannerHandler::PanningModel() const {
+V8PanningModelType::Enum PannerHandler::PanningModel() const {
   switch (panning_model_) {
     case Panner::PanningModel::kEqualPower:
-      return kEqualPowerString;
+      return V8PanningModelType::Enum::kEqualpower;
     case Panner::PanningModel::kHRTF:
-      return kHrtfString;
+      return V8PanningModelType::Enum::kHRTF;
   }
-  NOTREACHED_IN_MIGRATION();
-  return kEqualPowerString;
+  NOTREACHED();
 }
 
-void PannerHandler::SetPanningModel(const String& model) {
+void PannerHandler::SetPanningModel(V8PanningModelType::Enum model) {
   // WebIDL should guarantee that we are never called with an invalid string
   // for the model.
-  if (model == kEqualPowerString) {
-    SetPanningModel(Panner::PanningModel::kEqualPower);
-  } else if (model == kHrtfString) {
-    SetPanningModel(Panner::PanningModel::kHRTF);
-  } else {
-    NOTREACHED_IN_MIGRATION();
+  switch (model) {
+    case V8PanningModelType::Enum::kEqualpower:
+      SetPanningModel(Panner::PanningModel::kEqualPower);
+      return;
+    case V8PanningModelType::Enum::kHRTF:
+      SetPanningModel(Panner::PanningModel::kHRTF);
+      return;
   }
+  NOTREACHED();
 }
 
 // This method should only be called from setPanningModel(const String&)!
@@ -403,28 +401,31 @@ bool PannerHandler::SetPanningModel(Panner::PanningModel model) {
   return true;
 }
 
-String PannerHandler::DistanceModel() const {
+V8DistanceModelType::Enum PannerHandler::DistanceModel() const {
   switch (const_cast<PannerHandler*>(this)->distance_effect_.Model()) {
     case DistanceEffect::kModelLinear:
-      return "linear";
+      return V8DistanceModelType::Enum::kLinear;
     case DistanceEffect::kModelInverse:
-      return "inverse";
+      return V8DistanceModelType::Enum::kInverse;
     case DistanceEffect::kModelExponential:
-      return "exponential";
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return "inverse";
+      return V8DistanceModelType::Enum::kExponential;
   }
+  NOTREACHED();
 }
 
-void PannerHandler::SetDistanceModel(const String& model) {
-  if (model == "linear") {
-    SetDistanceModel(DistanceEffect::kModelLinear);
-  } else if (model == "inverse") {
-    SetDistanceModel(DistanceEffect::kModelInverse);
-  } else if (model == "exponential") {
-    SetDistanceModel(DistanceEffect::kModelExponential);
+void PannerHandler::SetDistanceModel(V8DistanceModelType::Enum model) {
+  switch (model) {
+    case V8DistanceModelType::Enum::kLinear:
+      SetDistanceModel(DistanceEffect::kModelLinear);
+      return;
+    case V8DistanceModelType::Enum::kInverse:
+      SetDistanceModel(DistanceEffect::kModelInverse);
+      return;
+    case V8DistanceModelType::Enum::kExponential:
+      SetDistanceModel(DistanceEffect::kModelExponential);
+      return;
   }
+  NOTREACHED();
 }
 
 bool PannerHandler::SetDistanceModel(unsigned model) {
@@ -684,7 +685,7 @@ void PannerHandler::SetChannelCount(unsigned channel_count,
       channel_count <= kMaximumOutputChannels) {
     if (channel_count_ != channel_count) {
       channel_count_ = channel_count;
-      if (InternalChannelCountMode() != kMax) {
+      if (InternalChannelCountMode() != V8ChannelCountMode::Enum::kMax) {
         UpdateChannelsForInputs();
       }
     }
@@ -698,18 +699,17 @@ void PannerHandler::SetChannelCount(unsigned channel_count,
   }
 }
 
-void PannerHandler::SetChannelCountMode(const String& mode,
+void PannerHandler::SetChannelCountMode(V8ChannelCountMode::Enum mode,
                                         ExceptionState& exception_state) {
   DCHECK(IsMainThread());
   DeferredTaskHandler::GraphAutoLocker locker(Context());
 
-  ChannelCountMode old_mode = InternalChannelCountMode();
+  V8ChannelCountMode::Enum old_mode = InternalChannelCountMode();
 
-  if (mode == "clamped-max") {
-    new_channel_count_mode_ = kClampedMax;
-  } else if (mode == "explicit") {
-    new_channel_count_mode_ = kExplicit;
-  } else if (mode == "max") {
+  if (mode == V8ChannelCountMode::Enum::kClampedMax ||
+      mode == V8ChannelCountMode::Enum::kExplicit) {
+    new_channel_count_mode_ = mode;
+  } else if (mode == V8ChannelCountMode::Enum::kMax) {
     // This is not supported for a PannerNode, which can only handle 1 or 2
     // channels.
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,

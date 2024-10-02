@@ -42,7 +42,7 @@ class MODULES_EXPORT DynamicsCompressorHandler final : public AudioHandler {
   }
 
   void SetChannelCount(unsigned, ExceptionState&) final;
-  void SetChannelCountMode(const String&, ExceptionState&) final;
+  void SetChannelCountMode(V8ChannelCountMode::Enum, ExceptionState&) final;
 
  private:
   DynamicsCompressorHandler(AudioNode&,

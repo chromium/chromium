@@ -63,7 +63,7 @@ RealtimeAudioDestinationHandler::RealtimeAudioDestinationHandler(
           update_echo_cancellation_on_first_start) {
   // Node-specific default channel count and mixing rules.
   channel_count_ = kDefaultNumberOfInputChannels;
-  SetInternalChannelCountMode(kExplicit);
+  SetInternalChannelCountMode(V8ChannelCountMode::Enum::kExplicit);
   SetInternalChannelInterpretation(AudioBus::kSpeakers);
 }
 
