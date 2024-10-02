@@ -31,6 +31,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/test/event_generator.h"
@@ -147,6 +148,10 @@ class OverviewWindowDragControllerTest : public AshTestBase {
         desks_bar_view->GetWidget()->GetNativeWindow()->GetRootWindow(),
         DeskBarViewBase::Type::kOverview, DeskBarViewBase::State::kExpanded);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      chromeos::features::kOverviewSessionInitOptimizations};
 };
 
 TEST_F(OverviewWindowDragControllerTest, NoDragToCloseUsingMouse) {

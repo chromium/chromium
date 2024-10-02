@@ -533,6 +533,10 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   int num_unsupported_windows() const { return num_unsupported_windows_; }
 
+  OverviewUiTaskPool& enter_animation_task_pool() {
+    return enter_animation_task_pool_;
+  }
+
   SaveDeskOptionStatus GetEnableStateAndTooltipIDForTemplateType(
       DeskTemplateType type) const;
 

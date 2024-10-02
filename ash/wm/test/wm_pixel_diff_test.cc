@@ -26,6 +26,7 @@
 #include "ash/wm/window_state.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
@@ -43,7 +44,8 @@ class WmPixelDiffTest : public AshTestBase {
   WmPixelDiffTest() {
     scoped_features_.InitWithFeatures(
         {features::kForestFeature, features::kSavedDeskUiRevamp,
-         features::kDeskBarWindowOcclusionOptimization},
+         features::kDeskBarWindowOcclusionOptimization,
+         chromeos::features::kOverviewSessionInitOptimizations},
         {});
   }
 

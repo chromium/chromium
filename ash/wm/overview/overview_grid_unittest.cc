@@ -22,6 +22,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -39,7 +40,9 @@ class OverviewGridTest : public AshTestBase {
  public:
   OverviewGridTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kOsSettingsRevampWayfinding},
+        /*enabled_features=*/{features::kOsSettingsRevampWayfinding,
+                              chromeos::features::
+                                  kOverviewSessionInitOptimizations},
         /*disabled_features=*/{features::kForestFeature});
   }
 

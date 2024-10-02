@@ -540,9 +540,9 @@ void OverviewGroupItem::OnOverviewItemWindowDestroying(
       // Remove the group-level shadow and apply it on the window-level to
       // ensure that the shadow bounds get updated properly.
       item->set_eligible_for_shadow_config(/*eligible_for_shadow_config=*/true);
-
-      OverviewItemView* item_view = item->overview_item_view();
-      item_view->ResetRoundedCorners();
+      if (OverviewItemView* item_view = item->overview_item_view()) {
+        item_view->ResetRoundedCorners();
+      }
     }
   }
 

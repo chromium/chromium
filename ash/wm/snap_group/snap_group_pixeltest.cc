@@ -22,6 +22,7 @@
 #include "ash/wm/window_cycle/window_cycle_list.h"
 #include "ash/wm/window_cycle/window_cycle_view.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/events/test/event_generator.h"
@@ -37,7 +38,9 @@ class SnapGroupPixelTest : public AshTestBase {
  public:
   SnapGroupPixelTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kForestFeature, features::kSavedDeskUiRevamp}, {});
+        {features::kForestFeature, features::kSavedDeskUiRevamp,
+         chromeos::features::kOverviewSessionInitOptimizations},
+        {});
   }
   SnapGroupPixelTest(const SnapGroupPixelTest&) = delete;
   SnapGroupPixelTest& operator=(const SnapGroupPixelTest&) = delete;
