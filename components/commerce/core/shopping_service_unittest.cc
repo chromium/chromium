@@ -2098,6 +2098,46 @@ TEST_P(ShoppingServiceTest, TestDiscountInfoResponse_InfoWithoutDiscountCode) {
   run_loop.Run();
 }
 
+TEST_P(ShoppingServiceTest, TestProductSpecificationsCache) {
+  test_features_.InitWithFeatures({kProductSpecifications}, {});
+
+  const GURL url("http://example.com");
+  OptimizationMetadata meta = opt_guide_->BuildPriceTrackingResponse(
+      kTitle, kImageUrl, kOfferId, kClusterId, kCountryCode, kPrice,
+      kCurrencyCode, kGpcTitle, kProductCategories);
+  opt_guide_->SetResponse(url, OptimizationType::PRICE_TRACKING,
+                          OptimizationGuideDecision::kTrue, meta);
+
+  ProductSpecifications specs;
+  specs.product_dimension_map[1L] = kTitle;
+  MockProductSpecificationsServerProxy* mock_server_proxy =
+      new MockProductSpecificationsServerProxy();
+  mock_server_proxy->SetGetProductSpecificationsForClusterIdsResponse(
+      std::move(specs));
+  SetProductSpecificationsServerProxy(base::WrapUnique(mock_server_proxy));
+
+  base::RunLoop run_loop[2];
+
+  shopping_service_->GetProductSpecificationsForUrls(
+      {url}, base::BindOnce([](std::vector<uint64_t> cluster_ids,
+                               std::optional<ProductSpecifications> specs) {
+             }).Then(run_loop[0].QuitClosure()));
+  run_loop[0].Run();
+
+  // The first product specs should be cached, so this empty value should not be
+  // returned.
+  mock_server_proxy->SetGetProductSpecificationsForClusterIdsResponse(
+      std::nullopt);
+
+  shopping_service_->GetProductSpecificationsForUrls(
+      {url}, base::BindOnce([](std::vector<uint64_t> cluster_ids,
+                               std::optional<ProductSpecifications> specs) {
+               ASSERT_TRUE(specs.has_value());
+               ASSERT_TRUE(specs->product_dimension_map[1L] == kTitle);
+             }).Then(run_loop[1].QuitClosure()));
+  run_loop[1].Run();
+}
+
 INSTANTIATE_TEST_SUITE_P(All, ShoppingServiceTest, ::testing::Bool());
 
 }  // namespace commerce

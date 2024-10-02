@@ -50,7 +50,7 @@ class ProductSpecificationsServerProxy {
   // Gets the specifications data for the provided cluster IDs. The callback
   // will provide both the list of product cluster IDs for the products being
   // compared and the specifications data.
-  void GetProductSpecificationsForClusterIds(
+  virtual void GetProductSpecificationsForClusterIds(
       std::vector<uint64_t> cluster_ids,
       ProductSpecificationsCallback callback);
 

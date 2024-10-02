@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/commerce/core/commerce_info_cache.h"
+#include "components/commerce/core/compare/product_specifications_server_proxy.h"
 #include "components/commerce/core/product_specifications/mock_product_specifications_service.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/web_extractor.h"
@@ -201,6 +202,26 @@ class MockWebExtractor : public WebExtractor {
               (override));
 };
 
+class MockProductSpecificationsServerProxy
+    : public ProductSpecificationsServerProxy {
+ public:
+  explicit MockProductSpecificationsServerProxy();
+  MockProductSpecificationsServerProxy(
+      const MockProductSpecificationsServerProxy&) = delete;
+  MockProductSpecificationsServerProxy operator=(
+      const MockProductSpecificationsServerProxy&) = delete;
+  ~MockProductSpecificationsServerProxy() override;
+
+  MOCK_METHOD(void,
+              GetProductSpecificationsForClusterIds,
+              (std::vector<uint64_t> cluster_ids,
+               ProductSpecificationsCallback callback),
+              (override));
+
+  void SetGetProductSpecificationsForClusterIdsResponse(
+      std::optional<ProductSpecifications> specs);
+};
+
 class ShoppingServiceTestBase : public testing::Test {
  public:
   ShoppingServiceTestBase();
@@ -243,6 +264,9 @@ class ShoppingServiceTestBase : public testing::Test {
   // Gets a handle to the ProductSpecificationsService observer that tracks the
   // URLs that are part of a user's ProductSpecificationsSets.
   ProductSpecificationsSet::Observer* GetProductSpecServiceUrlRefObserver();
+
+  void SetProductSpecificationsServerProxy(
+      std::unique_ptr<ProductSpecificationsServerProxy> proxy_ptr);
 
  protected:
   base::test::TaskEnvironment task_environment_{
