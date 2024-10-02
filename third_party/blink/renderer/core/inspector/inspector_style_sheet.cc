@@ -659,13 +659,15 @@ std::unique_ptr<protocol::CSS::CSSStyle> InspectorStyle::BuildObjectForStyle(
     if (parent_style_sheet_ && !parent_style_sheet_->Id().empty())
       result->setStyleSheetId(parent_style_sheet_->Id());
     result->setRange(parent_style_sheet_->BuildSourceRangeObject(
-        source_data_->rule_body_range));
+        source_data_->rule_declarations_range));
     String sheet_text;
     bool success = parent_style_sheet_->GetText(&sheet_text);
     if (success) {
-      const SourceRange& body_range = source_data_->rule_body_range;
+      const SourceRange& declarations_range =
+          source_data_->rule_declarations_range;
       result->setCssText(sheet_text.Substring(
-          body_range.start, body_range.end - body_range.start));
+          declarations_range.start,
+          declarations_range.end - declarations_range.start));
     }
   }
 
@@ -676,7 +678,7 @@ bool InspectorStyle::StyleText(String* result) {
   if (!source_data_)
     return false;
 
-  return TextForRange(source_data_->rule_body_range, result);
+  return TextForRange(source_data_->rule_declarations_range, result);
 }
 
 bool InspectorStyle::TextForRange(const SourceRange& range, String* result) {
@@ -1166,7 +1168,7 @@ CSSRule* InspectorStyleSheet::SetStyleText(const SourceRange& range,
                                            SourceRange* new_range,
                                            String* old_text,
                                            ExceptionState& exception_state) {
-  CSSRuleSourceData* source_data = FindRuleByBodyRange(range);
+  CSSRuleSourceData* source_data = FindRuleByDeclarationsRange(range);
   if (!source_data || !source_data->HasProperties()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotFoundError,
@@ -1223,7 +1225,7 @@ CSSRule* InspectorStyleSheet::SetStyleText(const SourceRange& range,
 
   style->setCSSText(execution_context, text, exception_state);
 
-  ReplaceText(source_data->rule_body_range, text, new_range, old_text);
+  ReplaceText(source_data->rule_declarations_range, text, new_range, old_text);
   OnStyleSheetTextChanged();
 
   return rule;
@@ -2199,15 +2201,15 @@ CSSRuleSourceData* InspectorStyleSheet::FindRuleByHeaderRange(
   return nullptr;
 }
 
-CSSRuleSourceData* InspectorStyleSheet::FindRuleByBodyRange(
+CSSRuleSourceData* InspectorStyleSheet::FindRuleByDeclarationsRange(
     const SourceRange& source_range) {
   if (!source_data_)
     return nullptr;
 
   for (wtf_size_t i = 0; i < source_data_->size(); ++i) {
     CSSRuleSourceData* rule_source_data = source_data_->at(i).Get();
-    if (rule_source_data->rule_body_range.start == source_range.start &&
-        rule_source_data->rule_body_range.end == source_range.end) {
+    if (rule_source_data->rule_declarations_range.start == source_range.start &&
+        rule_source_data->rule_declarations_range.end == source_range.end) {
       return rule_source_data;
     }
   }

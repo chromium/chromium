@@ -254,7 +254,7 @@ class InspectorStyleSheet : public InspectorStyleSheetBase {
  private:
   CSSRuleSourceData* RuleSourceDataAfterSourceRange(const SourceRange&);
   CSSRuleSourceData* FindRuleByHeaderRange(const SourceRange&);
-  CSSRuleSourceData* FindRuleByBodyRange(const SourceRange&);
+  CSSRuleSourceData* FindRuleByDeclarationsRange(const SourceRange&);
   CSSRule* RuleForSourceData(CSSRuleSourceData*);
   CSSStyleRule* InsertCSSOMRuleInStyleSheet(CSSRule* insert_before,
                                             const String& rule_text,

@@ -28,21 +28,6 @@ void InspectorCSSParserObserver::StartRuleHeader(StyleRule::RuleType type,
     current_rule_data_stack_.pop_back();
   }
 
-  if (RuntimeEnabledFeatures::CSSNestedDeclarationsEnabled() &&
-      !current_rule_data_stack_.empty() &&
-      current_rule_data_stack_.back()->type == StyleRule::RuleType::kStyle &&
-      current_rule_data_stack_.back()->rule_body_range.end == 0) {
-    unsigned end_of_last_declaration =
-        current_rule_data_stack_.back()->property_data.empty()
-            ? current_rule_data_stack_.back()->rule_body_range.start
-            : current_rule_data_stack_.back()->property_data.back().range.end;
-    // This is the first nested rule in this nesting context. We cut off the
-    // rule body here to not include inner rules in the outer rules body text.
-    // Following bare declarations are captured by CSSNestedDeclarations.
-    current_rule_data_stack_.back()->rule_body_range.end =
-        end_of_last_declaration;
-  }
-
   CSSRuleSourceData* data = MakeGarbageCollected<CSSRuleSourceData>(type);
   data->rule_header_range.start = offset;
   current_rule_data_ = data;
@@ -117,22 +102,33 @@ void InspectorCSSParserObserver::EndRuleBody(unsigned offset) {
     current_rule_data_stack_.pop_back();
   }
   DCHECK(!current_rule_data_stack_.empty());
+
+  CSSRuleSourceData* current_rule = current_rule_data_stack_.back().Get();
+  Vector<CSSPropertySourceData>& property_data = current_rule->property_data;
+
   // See comment about non-empty property_data for rules with
   // HasProperties()==false in ObserveProperty.
-  if (!current_rule_data_stack_.back()->HasProperties()) {
+  if (!current_rule->HasProperties()) {
     // It's possible for nested grouping rules to still hold some
     // CSSPropertySourceData objects if only commented-out or invalid
     // declarations were observed. There will be no ObserveNestedDeclarations
     // call in that case.
-    current_rule_data_stack_.back()->property_data.clear();
+    property_data.clear();
   }
 
-  // We ignore this event if we've already seen the start of a child rule,
-  // see InspectorCSSParserObserver::StartRuleHeader.
-  if (!RuntimeEnabledFeatures::CSSNestedDeclarationsEnabled() ||
-      current_rule_data_stack_.back()->rule_body_range.end == 0) {
-    current_rule_data_stack_.back()->rule_body_range.end = offset;
+  current_rule->rule_body_range.end = offset;
+  current_rule->rule_declarations_range = current_rule->rule_body_range;
+
+  if (!current_rule->child_rules.empty() && !property_data.empty()) {
+    // Cut off the declarations range at the end of the last declaration
+    // if there are child rules. Following bare declarations are captured
+    // by CSSNestedDeclarations.
+    unsigned end_of_last_declaration =
+        property_data.empty() ? current_rule->rule_declarations_range.start
+                              : property_data.back().range.end;
+    current_rule->rule_declarations_range.end = end_of_last_declaration;
   }
+
   AddNewRuleToSourceTree(PopRuleData());
 }
 
@@ -491,6 +487,8 @@ void InspectorCSSParserObserver::ObserveNestedDeclarations(
       nested_property_data.front().range.start;
   nested_declarations_rule->rule_body_range.end =
       nested_property_data.back().range.end;
+  nested_declarations_rule->rule_declarations_range =
+      nested_declarations_rule->rule_body_range;
   nested_declarations_rule->property_data = std::move(nested_property_data);
   child_rules.insert(insert_rule_index, nested_declarations_rule);
 }
