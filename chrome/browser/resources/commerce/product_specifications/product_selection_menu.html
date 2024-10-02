@@ -67,7 +67,7 @@
 
 <cr-lazy-render id="menu">
   <template>
-    <cr-action-menu on-close="onClose_">
+    <cr-action-menu on-close="onClose_" auto-reposition="true">
       <div id="selectionContainer">
         <template is="dom-if"
             if="[[!showTableFullMessage_(forNewColumn, isTableFull)]]">
