@@ -16,10 +16,6 @@
 #include "build/build_config.h"
 #include "net/base/net_errors.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/content_uri_utils.h"
-#endif
-
 #if BUILDFLAG(IS_MAC)
 #include "net/base/apple/guarded_fd.h"
 #endif  // BUILDFLAG(IS_MAC)
@@ -167,23 +163,16 @@ FileStream::Context::OpenResult FileStream::Context::OpenFileImpl(
   // Always use blocking IO.
   open_flags &= ~base::File::FLAG_ASYNC;
 #endif
-  base::File file;
-#if BUILDFLAG(IS_ANDROID)
-  if (path.IsContentUri()) {
-    file = base::OpenContentUri(path, open_flags);
-  } else {
-#endif  // BUILDFLAG(IS_ANDROID)
-    // FileStream::Context actually closes the file asynchronously,
-    // independently from FileStream's destructor. It can cause problems for
-    // users wanting to delete the file right after FileStream deletion. Thus
-    // we are always adding SHARE_DELETE flag to accommodate such use case.
-    // TODO(rvargas): This sounds like a bug, as deleting the file would
-    // presumably happen on the wrong thread. There should be an async delete.
-    open_flags |= base::File::FLAG_WIN_SHARE_DELETE;
-    file.Initialize(path, open_flags);
-#if BUILDFLAG(IS_ANDROID)
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
+  // FileStream::Context actually closes the file asynchronously,
+  // independently from FileStream's destructor. It can cause problems for
+  // users wanting to delete the file right after FileStream deletion. Thus
+  // we are always adding SHARE_DELETE flag to accommodate such use case.
+  // TODO(rvargas): This sounds like a bug, as deleting the file would
+  // presumably happen on the wrong thread. There should be an async delete.
+#if BUILDFLAG(IS_WIN)
+  open_flags |= base::File::FLAG_WIN_SHARE_DELETE;
+#endif
+  base::File file(path, open_flags);
   if (!file.IsValid()) {
     return OpenResult(base::File(),
                       IOResult::FromOSError(logging::GetLastSystemErrorCode()));

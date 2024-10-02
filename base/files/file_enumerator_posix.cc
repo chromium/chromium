@@ -185,7 +185,7 @@ FilePath FileEnumerator::Next() {
 
 #if BUILDFLAG(IS_ANDROID)
     if (root_path_.IsContentUri()) {
-      directory_entries_ = ListContentUriDirectory(root_path_);
+      directory_entries_ = internal::ListContentUriDirectory(root_path_);
       current_directory_entry_ = 0;
       if (directory_entries_.empty()) {
         return base::FilePath();

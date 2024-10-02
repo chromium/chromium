@@ -32,6 +32,8 @@ std::string SafeConvertJavaStringToUTF8(JNIEnv* env,
 }
 }  // namespace
 
+namespace internal {
+
 bool ContentUriExists(const FilePath& content_uri) {
   JNIEnv* env = android::AttachCurrentThread();
   return Java_ContentUriUtils_contentUriExists(env, content_uri.value());
@@ -61,15 +63,11 @@ std::optional<std::string> TranslateOpenFlagsToJavaMode(uint32_t open_flags) {
   }
 }
 
-File OpenContentUri(const FilePath& content_uri, uint32_t open_flags) {
-  JNIEnv* env = android::AttachCurrentThread();
+int OpenContentUri(const FilePath& content_uri, uint32_t open_flags) {
+  JNIEnv* env = base::android::AttachCurrentThread();
   auto mode = TranslateOpenFlagsToJavaMode(open_flags);
   CHECK(mode.has_value()) << "Unsupported flags=0x" << std::hex << open_flags;
-  jint fd = Java_ContentUriUtils_openContentUri(env, content_uri.value(),
-                                                mode.value());
-  if (fd < 0)
-    return File();
-  return File(fd);
+  return Java_ContentUriUtils_openContentUri(env, content_uri.value(), *mode);
 }
 
 bool ContentUriGetFileInfo(const FilePath& content_uri, File::Info* results) {
@@ -102,6 +100,14 @@ std::vector<FileEnumerator::FileInfo> ListContentUriDirectory(
   // Java will call back sync to AddFileInfoToVector(&result).
   return result;
 }
+
+bool DeleteContentUri(const FilePath& content_uri) {
+  DCHECK(content_uri.IsContentUri());
+  JNIEnv* env = android::AttachCurrentThread();
+  return Java_ContentUriUtils_delete(env, content_uri.value());
+}
+
+}  // namespace internal
 
 void JNI_ContentUriUtils_AddFileInfoToVector(
     JNIEnv* env,
@@ -142,12 +148,6 @@ bool MaybeGetFileDisplayName(const FilePath& content_uri,
 
   *file_display_name = android::ConvertJavaStringToUTF16(j_display_name);
   return true;
-}
-
-bool DeleteContentUri(const FilePath& content_uri) {
-  DCHECK(content_uri.IsContentUri());
-  JNIEnv* env = android::AttachCurrentThread();
-  return Java_ContentUriUtils_delete(env, content_uri.value());
 }
 
 FilePath ContentUriBuildDocumentUriUsingTree(

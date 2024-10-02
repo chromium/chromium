@@ -32,8 +32,8 @@
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "url/origin.h"
+
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/content_uri_utils.h"
 #include "components/download/internal/common/android/download_collection_bridge.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -147,7 +147,7 @@ CreateIntermediateUriResult CreateIntermediateUri(
     const base::FilePath& suggested_name,
     const std::string& mime_type) {
   base::FilePath content_path =
-      current_path.IsContentUri() && base::ContentUriExists(current_path)
+      current_path.IsContentUri() && base::PathExists(current_path)
           ? current_path
           : DownloadCollectionBridge::CreateIntermediateUriForPublish(
                 original_url, referrer_url, suggested_name, mime_type);
@@ -698,12 +698,6 @@ bool IsDownloadDone(const GURL& url,
 
 bool DeleteDownloadedFile(const base::FilePath& path) {
   DCHECK(GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
-#if BUILDFLAG(IS_ANDROID)
-  if (path.IsContentUri()) {
-    base::DeleteContentUri(path);
-    return true;
-  }
-#endif
   // Make sure we only delete files.
   if (base::DirectoryExists(path))
     return true;

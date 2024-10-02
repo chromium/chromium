@@ -38,6 +38,7 @@ static_assert(sizeof(base::stat_wrapper_t::st_size) >= 8);
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/content_uri_utils.h"
 #include "base/os_compat_android.h"
 #endif
 
@@ -405,11 +406,12 @@ int64_t File::GetLength() const {
 
   SCOPED_FILE_TRACE("GetLength");
 
-  stat_wrapper_t file_info;
-  if (Fstat(file_.get(), &file_info))
+  Info info;
+  if (!GetInfo(&info)) {
     return -1;
+  }
 
-  return file_info.st_size;
+  return info.size;
 }
 
 bool File::SetLength(int64_t length) {
@@ -433,17 +435,28 @@ bool File::SetTimes(Time last_access_time, Time last_modified_time) {
   return !CallFutimes(file_.get(), times);
 }
 
-bool File::GetInfo(Info* info) {
+bool File::GetInfo(Info* info) const {
   DCHECK(IsValid());
 
   SCOPED_FILE_TRACE("GetInfo");
 
   stat_wrapper_t file_info;
-  if (Fstat(file_.get(), &file_info))
-    return false;
-
-  info->FromStat(file_info);
-  return true;
+  bool success = (Fstat(file_.get(), &file_info) == 0);
+  if (success) {
+    info->FromStat(file_info);
+  }
+#if BUILDFLAG(IS_ANDROID)
+  if (path_.IsContentUri()) {
+    // Content-URIs may represent files on the local disk, or may be virtual
+    // files backed by a ContentProvider. First attempt to use fstat(fd) with a
+    // FD from ContentResolver#openAssetFileDescriptor(). Some files may not
+    // succeed at all, or may have size=0 in which case we will attempt to get
+    // info via DocumentFile.
+    return (success && info->size > 0) ||
+           internal::ContentUriGetFileInfo(path_, info);
+  }
+#endif
+  return success;
 }
 
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -578,6 +591,24 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
   mode |= S_IRGRP | S_IROTH;
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+  if (path.IsContentUri()) {
+    int fd = internal::OpenContentUri(path, flags);
+    if (fd < 0) {
+      error_details_ = FILE_ERROR_FAILED;
+      return;
+    }
+
+    // Save path for any call to GetInfo().
+    path_ = path;
+    created_ = (flags & (FLAG_CREATE_ALWAYS | FLAG_CREATE));
+    async_ = (flags & FLAG_ASYNC);
+    error_details_ = FILE_OK;
+    file_.reset(fd);
+    return;
+  }
+#endif
+
   int descriptor = HANDLE_EINTR(open(path.value().c_str(), open_flags, mode));
 
   if (flags & FLAG_OPEN_ALWAYS) {
@@ -674,6 +705,24 @@ File::Error File::GetLastFileError() {
 
 int File::Stat(const FilePath& path, stat_wrapper_t* sb) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
+#if BUILDFLAG(IS_ANDROID)
+  if (path.IsContentUri()) {
+    File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+    if (file.IsValid()) {
+      Info info;
+      if (file.GetInfo(&info)) {
+        memset(sb, 0, sizeof(*sb));
+        sb->st_mode = info.is_directory ? S_IFDIR : S_IFREG;
+        sb->st_size = info.size;
+        sb->st_mtime = info.last_modified.ToTimeT();
+        sb->st_mtime_nsec =
+            (info.last_modified - Time::UnixEpoch()).InNanoseconds() %
+            Time::kNanosecondsPerSecond;
+        return 0;
+      }
+    }
+  }
+#endif
   return stat(path.value().c_str(), sb);
 }
 int File::Fstat(int fd, stat_wrapper_t* sb) {

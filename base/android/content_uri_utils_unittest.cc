@@ -17,7 +17,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
-namespace android {
 
 TEST(ContentUriUtilsTest, Test) {
   // Get the test image path.
@@ -68,7 +67,7 @@ TEST(ContentUriUtilsTest, TranslateOpenFlagsToJavaMode) {
       for (const auto other : std::vector<uint32_t>(
                {0u, File::FLAG_DELETE_ON_CLOSE, File::FLAG_TERMINAL_DEVICE})) {
         uint32_t open_flags = open_or_create | read_write_append | other;
-        auto mode = TranslateOpenFlagsToJavaMode(open_flags);
+        auto mode = internal::TranslateOpenFlagsToJavaMode(open_flags);
         auto it = kTranslations.find(open_flags);
         if (it != kTranslations.end()) {
           EXPECT_TRUE(mode.has_value()) << "flag=0x" << std::hex << open_flags;
@@ -101,9 +100,9 @@ TEST(ContentUriUtilsTest, GetFileInfo) {
   ASSERT_TRUE(test::android::GetContentUriFromCacheDirFilePath(
       not_exists, &content_uri_not_exists));
 
-  EXPECT_TRUE(ContentUriExists(content_uri_file));
-  EXPECT_TRUE(ContentUriExists(content_uri_dir));
-  EXPECT_FALSE(ContentUriExists(content_uri_not_exists));
+  EXPECT_TRUE(PathExists(content_uri_file));
+  EXPECT_TRUE(PathExists(content_uri_dir));
+  EXPECT_FALSE(PathExists(content_uri_not_exists));
 
   File::Info info;
   EXPECT_TRUE(GetFileInfo(file, &info));
@@ -144,5 +143,4 @@ TEST(ContentUriUtilsTest, ContentUriBuildDocumentUriUsingTree) {
             "content://authority/tree/foo/document/doc%EF%BF%BD%00y");
 }
 
-}  // namespace android
 }  // namespace base

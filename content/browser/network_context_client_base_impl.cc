@@ -20,10 +20,6 @@
 #include "net/base/net_errors.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/content_uri_utils.h"
-#endif
-
 namespace content {
 
 namespace {
@@ -48,15 +44,7 @@ void HandleFileUploadRequest(
                                     std::vector<base::File>()));
       return;
     }
-#if BUILDFLAG(IS_ANDROID)
-    if (file_path.IsContentUri()) {
-      files.push_back(base::OpenContentUri(file_path, file_flags));
-    } else {
-      files.emplace_back(file_path, file_flags);
-    }
-#else
     files.emplace_back(file_path, file_flags);
-#endif
     if (!files.back().IsValid()) {
       task_runner->PostTask(
           FROM_HERE,

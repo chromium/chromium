@@ -228,7 +228,7 @@ bool File::SetTimes(Time last_access_time, Time last_modified_time) {
                         &last_modified_filetime) != FALSE);
 }
 
-bool File::GetInfo(Info* info) {
+bool File::GetInfo(Info* info) const {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
 

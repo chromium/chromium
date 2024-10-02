@@ -188,8 +188,7 @@ class ContentURLLoader : public network::mojom::URLLoader {
       return CompleteWithFailure(std::move(client), net::ERR_FAILED);
     }
 
-    base::File file = base::OpenContentUri(
-        path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+    base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
     if (!file.IsValid()) {
       return CompleteWithFailure(
           std::move(client), net::FileErrorToNetError(file.error_details()));

@@ -86,7 +86,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/content_uri_utils.h"
+#include "base/test/android/content_uri_test_utils.h"
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -1757,6 +1757,31 @@ TEST_F(FileUtilTest, DeleteDeep) {
 #endif  // BUILDFLAG(IS_POSIX)
 
 #if BUILDFLAG(IS_ANDROID)
+TEST_F(FileUtilTest, ContentUriGetInfo) {
+  // path and content_uri are the same file.
+  FilePath path = temp_dir_.GetPath().Append("content_uri.txt");
+  WriteFile(path, "file-content");
+  FilePath content_uri;
+  ASSERT_TRUE(
+      test::android::GetContentUriFromCacheDirFilePath(path, &content_uri));
+
+  // GetInfo() should work the same for files and content-URIs.
+  File::Info path_info;
+  File::Info content_uri_info;
+  EXPECT_TRUE(GetFileInfo(path, &path_info));
+  EXPECT_TRUE(GetFileInfo(content_uri, &content_uri_info));
+  EXPECT_EQ(12u, path_info.size);
+  EXPECT_EQ(12u, content_uri_info.size);
+  EXPECT_EQ(path_info.last_modified, content_uri_info.last_modified);
+  EXPECT_FALSE(path_info.is_directory);
+  EXPECT_FALSE(content_uri_info.is_directory);
+
+  // GetPosixFilePermissions() should fail for content URIs.
+  int mode = 0;
+  EXPECT_TRUE(GetPosixFilePermissions(path, &mode));
+  EXPECT_FALSE(GetPosixFilePermissions(content_uri, &mode));
+}
+
 TEST_F(FileUtilTest, DeleteContentUri) {
   // Get the path to the test file.
   FilePath data_dir;
@@ -4417,14 +4442,14 @@ TEST_F(FileUtilTest, DISABLED_ValidContentUriTest) {
   EXPECT_EQ(image_size, content_uri_size);
 
   // We should be able to read the file.
-  File file = OpenContentUri(path, File::FLAG_OPEN | File::FLAG_READ);
+  File file(path, File::FLAG_OPEN | File::FLAG_READ);
   EXPECT_TRUE(file.IsValid());
   auto buffer = std::make_unique<char[]>(image_size);
   // SAFETY: required for test.
   EXPECT_TRUE(UNSAFE_BUFFERS(file.ReadAtCurrentPos(buffer.get(), image_size)));
 
   // We should be able to open the file as writable.
-  file = OpenContentUri(path, File::FLAG_CREATE_ALWAYS | File::FLAG_WRITE);
+  file = File(path, File::FLAG_CREATE_ALWAYS | File::FLAG_WRITE);
   EXPECT_TRUE(file.IsValid());
 }
 
@@ -4437,7 +4462,7 @@ TEST_F(FileUtilTest, NonExistentContentUriTest) {
   EXPECT_FALSE(GetFileSize(path, &size));
 
   // We should not be able to read the file.
-  File file = OpenContentUri(path, File::FLAG_OPEN | File::FLAG_READ);
+  File file(path, File::FLAG_OPEN | File::FLAG_READ);
   EXPECT_FALSE(file.IsValid());
 }
 #endif
