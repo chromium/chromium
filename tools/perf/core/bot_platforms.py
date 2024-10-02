@@ -852,6 +852,9 @@ ANDROID_PIXEL4_PGO = PerfPlatform(
 ANDROID_PIXEL4_WEBVIEW = PerfPlatform(
     'android-pixel4_webview-perf', 'Android R',
     _ANDROID_PIXEL4_WEBVIEW_BENCHMARK_CONFIGS, 23, 'android')
+ANDROID_PIXEL4_WEBVIEW_PGO = PerfPlatform(
+    'android-pixel4_webview-perf-pgo', 'Android R',
+    _ANDROID_PIXEL4_WEBVIEW_BENCHMARK_CONFIGS, 20, 'android')
 # TODO(crbug.com/307958700): Switch shard number back to a higher number around
 #                            28 once more devices are procured. Temporarily use
 #                            15 to avoid high contention in the pixel6 pool.

@@ -1,0 +1,423 @@
+{
+    "0": {
+        "benchmarks": {
+            "ad_frames.fencedframe": {
+                "abridged": false
+            },
+            "blink_perf.accessibility": {
+                "abridged": false
+            },
+            "blink_perf.bindings": {
+                "end": 25,
+                "abridged": false
+            },
+            "speedometer2": {
+                "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            }
+        }
+    },
+    "1": {
+        "benchmarks": {
+            "blink_perf.bindings": {
+                "begin": 25,
+                "abridged": false
+            },
+            "blink_perf.css": {
+                "end": 27,
+                "abridged": false
+            },
+            "speedometer2": {
+                "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            }
+        }
+    },
+    "2": {
+        "benchmarks": {
+            "blink_perf.css": {
+                "begin": 27,
+                "abridged": false
+            },
+            "blink_perf.dom": {
+                "end": 8,
+                "abridged": false
+            },
+            "speedometer2": {
+                "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            }
+        }
+    },
+    "3": {
+        "benchmarks": {
+            "blink_perf.dom": {
+                "begin": 8,
+                "abridged": false
+            },
+            "blink_perf.events": {
+                "abridged": false
+            },
+            "blink_perf.image_decoder": {
+                "abridged": false
+            },
+            "blink_perf.layout": {
+                "end": 25,
+                "abridged": false
+            },
+            "speedometer2": {
+                "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            }
+        }
+    },
+    "4": {
+        "benchmarks": {
+            "blink_perf.layout": {
+                "begin": 25,
+                "end": 80,
+                "abridged": false
+            },
+            "speedometer2": {
+                "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            }
+        }
+    },
+    "5": {
+        "benchmarks": {
+            "blink_perf.layout": {
+                "begin": 80,
+                "abridged": false
+            },
+            "blink_perf.owp_storage": {
+                "abridged": false
+            },
+            "blink_perf.parser": {
+                "end": 13,
+                "abridged": false
+            },
+            "speedometer2": {
+                "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            }
+        }
+    },
+    "6": {
+        "benchmarks": {
+            "blink_perf.parser": {
+                "begin": 13,
+                "abridged": false
+            },
+            "blink_perf.shadow_dom": {
+                "end": 38,
+                "abridged": false
+            },
+            "speedometer2": {
+                "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            }
+        }
+    },
+    "7": {
+        "benchmarks": {
+            "blink_perf.shadow_dom": {
+                "begin": 38,
+                "abridged": false
+            },
+            "blink_perf.webaudio": {
+                "abridged": false
+            },
+            "blink_perf.webcodecs": {
+                "abridged": false
+            },
+            "blink_perf.webgl": {
+                "abridged": false
+            },
+            "blink_perf.webgl_fast_call": {
+                "abridged": false
+            },
+            "dummy_benchmark.noisy_benchmark_1": {
+                "abridged": false
+            },
+            "dummy_benchmark.stable_benchmark_1": {
+                "abridged": false
+            },
+            "media.mobile": {
+                "abridged": false
+            },
+            "octane": {
+                "abridged": false
+            },
+            "rasterize_and_record_micro.top_25": {
+                "end": 6,
+                "abridged": false
+            },
+            "speedometer2": {
+                "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            }
+        }
+    },
+    "8": {
+        "benchmarks": {
+            "rasterize_and_record_micro.top_25": {
+                "begin": 6,
+                "abridged": false
+            },
+            "rendering.mobile": {
+                "end": 36,
+                "abridged": false
+            },
+            "speedometer2": {
+                "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            }
+        }
+    },
+    "9": {
+        "benchmarks": {
+            "rendering.mobile": {
+                "begin": 36,
+                "end": 90,
+                "abridged": false
+            },
+            "speedometer2": {
+                "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            }
+        }
+    },
+    "10": {
+        "benchmarks": {
+            "rendering.mobile": {
+                "begin": 90,
+                "end": 145,
+                "abridged": false
+            },
+            "speedometer2": {
+                "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            }
+        }
+    },
+    "11": {
+        "benchmarks": {
+            "rendering.mobile": {
+                "begin": 145,
+                "end": 199,
+                "abridged": false
+            },
+            "speedometer2": {
+                "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            }
+        }
+    },
+    "12": {
+        "benchmarks": {
+            "rendering.mobile": {
+                "begin": 199,
+                "end": 254,
+                "abridged": false
+            },
+            "speedometer2": {
+                "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            }
+        }
+    },
+    "13": {
+        "benchmarks": {
+            "rendering.mobile": {
+                "begin": 254,
+                "end": 308,
+                "abridged": false
+            },
+            "speedometer2": {
+                "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            }
+        }
+    },
+    "14": {
+        "benchmarks": {
+            "rendering.mobile": {
+                "begin": 308,
+                "end": 363,
+                "abridged": false
+            },
+            "speedometer2": {
+                "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            }
+        }
+    },
+    "15": {
+        "benchmarks": {
+            "rendering.mobile": {
+                "begin": 363,
+                "end": 417,
+                "abridged": false
+            },
+            "speedometer2": {
+                "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            }
+        }
+    },
+    "16": {
+        "benchmarks": {
+            "rendering.mobile": {
+                "begin": 417,
+                "abridged": false
+            },
+            "rendering.mobile.notracing": {
+                "abridged": false
+            },
+            "speedometer": {
+                "abridged": false
+            },
+            "speedometer-future": {
+                "abridged": false
+            },
+            "speedometer2": {
+                "abridged": false
+            },
+            "speedometer2-future": {
+                "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            },
+            "speedometer3-future": {
+                "abridged": false
+            },
+            "startup.mobile": {
+                "abridged": false
+            },
+            "system_health.common_mobile": {
+                "end": 39,
+                "abridged": false
+            }
+        }
+    },
+    "17": {
+        "benchmarks": {
+            "system_health.common_mobile": {
+                "begin": 39,
+                "abridged": false
+            },
+            "system_health.memory_mobile": {
+                "end": 17,
+                "abridged": false
+            },
+            "speedometer2": {
+                "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            }
+        }
+    },
+    "18": {
+        "benchmarks": {
+            "system_health.memory_mobile": {
+                "begin": 17,
+                "end": 72,
+                "abridged": false
+            },
+            "speedometer2": {
+                "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            }
+        }
+    },
+    "19": {
+        "benchmarks": {
+            "system_health.memory_mobile": {
+                "begin": 72,
+                "abridged": false
+            },
+            "system_health.webview_startup": {
+                "abridged": false
+            },
+            "v8.browsing_mobile": {
+                "abridged": false
+            },
+            "wasmpspdfkit": {
+                "abridged": false
+            },
+            "webrtc": {
+                "abridged": false
+            },
+            "speedometer2": {
+                "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            }
+        }
+    },
+    "extra_infos": {
+        "num_stories": 1131,
+        "predicted_min_shard_time": 560,
+        "predicted_min_shard_index": 3,
+        "predicted_max_shard_time": 570,
+        "predicted_max_shard_index": 0,
+        "shard #0": 570,
+        "shard #1": 570,
+        "shard #2": 570,
+        "shard #3": 560,
+        "shard #4": 570,
+        "shard #5": 560,
+        "shard #6": 570,
+        "shard #7": 560,
+        "shard #8": 570,
+        "shard #9": 560,
+        "shard #10": 570,
+        "shard #11": 560,
+        "shard #12": 570,
+        "shard #13": 560,
+        "shard #14": 570,
+        "shard #15": 560,
+        "shard #16": 570,
+        "shard #17": 560,
+        "shard #18": 570,
+        "shard #19": 560
+    }
+}

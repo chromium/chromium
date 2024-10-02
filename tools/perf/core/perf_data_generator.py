@@ -519,6 +519,19 @@ BUILDERS = {
             'device_os_flavor': 'google',
         },
     },
+    'android-pixel4_webview-perf-pgo': {
+        'tests': [{
+            'isolate': 'performance_webview_test_suite',
+        }],
+        'platform': 'android-webview-trichrome-google-bundle',
+        'dimension': {
+            'pool': 'chrome.tests.perf-webview-pgo',
+            'os': 'Android',
+            'device_type': 'flame',
+            'device_os': 'RP1A.201105.002',
+            'device_os_flavor': 'google',
+        },
+    },
     'android-pixel4-perf': {
         'tests': [{
             'isolate':
@@ -1015,12 +1028,16 @@ BUILDERS = {
         'platform':
         'mac',
         'dimension': {
-            'cpu': 'arm',
-            'mac_model': 'Mac14,7',
-            'os': 'Mac',
-            'pool': 'chrome.tests.perf',
+            'cpu':
+            'arm',
+            'mac_model':
+            'Mac14,7',
+            'os':
+            'Mac',
+            'pool':
+            'chrome.tests.perf',
             'synthetic_product_name':
-                'Mac14,7_arm64-64-Apple_M2_apple m2_8192_APPLE SSD AP0256Z',
+            'Mac14,7_arm64-64-Apple_M2_apple m2_8192_APPLE SSD AP0256Z',
         },
     },
     'linux-perf': {
