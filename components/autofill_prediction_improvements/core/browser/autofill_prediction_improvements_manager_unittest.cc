@@ -355,27 +355,14 @@ TEST_F(AutofillPredictionImprovementsManagerTest, EndToEnd) {
           HasType(SuggestionType::kEditPredictionImprovementsInformation)));
 }
 
-// Tests that no suggestions are added to `address_suggestions` if
-// `should_add_trigger_suggestion` is `false`.
-TEST_F(AutofillPredictionImprovementsManagerTest,
-       MaybeUpdateSuggestionsDoesNotUpdateIfItShouldNot) {
-  std::vector<Suggestion> address_suggestions;
-  autofill::FormFieldData field;
-  EXPECT_FALSE(manager_->MaybeUpdateSuggestions(
-      address_suggestions, field, /*should_add_trigger_suggestion=*/false));
-}
-
-// Tests that `address_suggestions` only contains the
+// Tests that `autofill_suggestions` only contains the
 // triggering improved predictions suggestions if it was empty before calling
 // `MaybeUpdateSuggestions()`.
 TEST_F(AutofillPredictionImprovementsManagerTest,
        MaybeUpdateSuggestionsOnEmptyAddressSuggestionsAddsTriggerSuggestion) {
-  std::vector<Suggestion> address_suggestions;
   autofill::FormFieldData field;
-  EXPECT_TRUE(manager_->MaybeUpdateSuggestions(
-      address_suggestions, field, /*should_add_trigger_suggestion=*/true));
   EXPECT_THAT(
-      address_suggestions,
+      manager_->GetSuggestions({}, field),
       ElementsAre(HasType(SuggestionType::kRetrievePredictionImprovements),
                   HasType(SuggestionType::kPredictionImprovementsDetails)));
 }
@@ -384,7 +371,7 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
 // field is not cached.
 TEST_F(AutofillPredictionImprovementsManagerTest,
        MaybeUpdateSuggestionsReplacesAddressSuggestionsWithTrigger) {
-  std::vector<Suggestion> suggestions_to_show = {
+  std::vector<Suggestion> autofill_suggestions = {
       Suggestion(SuggestionType::kAddressEntry),
       Suggestion(SuggestionType::kSeparator),
       Suggestion(SuggestionType::kManageAddress)};
@@ -392,11 +379,8 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
       .fields = {{.role = autofill::NAME_FIRST,
                   .heuristic_type = autofill::NAME_FIRST}}};
   autofill::FormData form = autofill::test::GetFormData(form_description);
-  EXPECT_TRUE(manager_->MaybeUpdateSuggestions(
-      suggestions_to_show, form.fields().front(),
-      /*should_add_trigger_suggestion=*/true));
   EXPECT_THAT(
-      suggestions_to_show,
+      manager_->GetSuggestions(autofill_suggestions, form.fields().front()),
       ElementsAre(HasType(SuggestionType::kRetrievePredictionImprovements),
                   HasType(SuggestionType::kPredictionImprovementsDetails)));
 }
@@ -404,7 +388,7 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
 // Tests that cached filling suggestions for prediction improvements are shown
 // before address suggestions.
 TEST_F(AutofillPredictionImprovementsManagerTest, MaybeUpdateSuggestionsShows) {
-  std::vector<Suggestion> suggestions_to_show = {
+  std::vector<Suggestion> autofill_suggestions = {
       Suggestion(SuggestionType::kAddressEntry),
       Suggestion(SuggestionType::kSeparator),
       Suggestion(SuggestionType::kManageAddress)};
@@ -412,14 +396,11 @@ TEST_F(AutofillPredictionImprovementsManagerTest, MaybeUpdateSuggestionsShows) {
       .fields = {{.role = autofill::NAME_FIRST,
                   .heuristic_type = autofill::NAME_FIRST}}};
   autofill::FormData form = autofill::test::GetFormData(form_description);
-  test_api(*manager_).SetAddressSuggestions(suggestions_to_show);
+  test_api(*manager_).SetAutofillSuggestions(autofill_suggestions);
   test_api(*manager_).SetCache(PredictionsByGlobalId{
       {form.fields().front().global_id(), {u"value", u"label"}}});
-  EXPECT_TRUE(manager_->MaybeUpdateSuggestions(
-      suggestions_to_show, form.fields().front(),
-      /*should_add_trigger_suggestion=*/true));
   EXPECT_THAT(
-      suggestions_to_show,
+      manager_->GetSuggestions(autofill_suggestions, form.fields().front()),
       ElementsAre(HasType(SuggestionType::kFillPredictionImprovements),
                   HasType(SuggestionType::kAddressEntry),
                   HasType(SuggestionType::kSeparator),
@@ -428,22 +409,18 @@ TEST_F(AutofillPredictionImprovementsManagerTest, MaybeUpdateSuggestionsShows) {
 }
 
 // Tests that filling predictions will be added to the empty
-// `address_suggestions` for a cached field.
+// `autofill_suggestions` for a cached field.
 TEST_F(
     AutofillPredictionImprovementsManagerTest,
     MaybeUpdateSuggestionsAddsFillPredictionsWhenAutofillSuggestionsAreEmpty) {
-  std::vector<Suggestion> address_suggestions;
   autofill::test::FormDescription form_description = {
       .fields = {{.role = autofill::NAME_FIRST,
                   .heuristic_type = autofill::NAME_FIRST}}};
   autofill::FormData form = autofill::test::GetFormData(form_description);
   test_api(*manager_).SetCache(PredictionsByGlobalId{
       {form.fields().front().global_id(), {u"value", u"label"}}});
-  EXPECT_TRUE(manager_->MaybeUpdateSuggestions(
-      address_suggestions, form.fields().front(),
-      /*should_add_trigger_suggestion=*/true));
   EXPECT_THAT(
-      address_suggestions,
+      manager_->GetSuggestions({}, form.fields().front()),
       ElementsAre(HasType(SuggestionType::kFillPredictionImprovements),
                   HasType(SuggestionType::kSeparator),
                   HasType(SuggestionType::kPredictionImprovementsDetails),
@@ -470,14 +447,9 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
        {trigger_field_value, trigger_field_label}},
       {form.fields()[1].global_id(),
        {select_field_value, select_field_label, select_field_option_text}}});
-  std::vector<Suggestion> suggestions_to_show;
-
-  EXPECT_TRUE(
-      manager_->MaybeUpdateSuggestions(suggestions_to_show, form.fields()[0],
-                                       /*should_add_trigger_suggestion=*/true));
 
   EXPECT_THAT(
-      suggestions_to_show,
+      manager_->GetSuggestions({}, form.fields()[0]),
       ElementsAre(
           AllOf(
               HasType(SuggestionType::kFillPredictionImprovements),
@@ -521,11 +493,10 @@ TEST_F(
   test_api(*manager_).SetCache(PredictionsByGlobalId{
       {form.fields()[0].global_id(), {u"Jane", u"First name"}}});
 
-  std::vector<Suggestion> suggestions_to_show;
-  EXPECT_TRUE(
-      manager_->MaybeUpdateSuggestions(suggestions_to_show, form.fields()[0],
-                                       /*should_add_trigger_suggestion=*/true));
-  EXPECT_EQ(suggestions_to_show[0].labels[0][0].value, u"Fill First name");
+  const std::vector<autofill::Suggestion> suggestions =
+      manager_->GetSuggestions({}, form.fields()[0]);
+  ASSERT_FALSE(suggestions.empty());
+  EXPECT_THAT(suggestions[0], HasLabel(u"Fill First name"));
 }
 
 // Tests that the filling suggestion label is correct when 3 fields can be
@@ -546,12 +517,11 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
       {form.fields()[1].global_id(), {u"Country roads str", u"Street name"}},
       {form.fields()[2].global_id(), {u"33", u"state", u"West Virginia"}}});
 
-  std::vector<Suggestion> suggestions_to_show;
-  EXPECT_TRUE(
-      manager_->MaybeUpdateSuggestions(suggestions_to_show, form.fields()[0],
-                                       /*should_add_trigger_suggestion=*/true));
-  EXPECT_EQ(suggestions_to_show[0].labels[0][0].value,
-            u"Fill First name, Street name & 1 more field");
+  const std::vector<autofill::Suggestion> suggestions =
+      manager_->GetSuggestions({}, form.fields()[0]);
+  ASSERT_FALSE(suggestions.empty());
+  EXPECT_THAT(suggestions[0],
+              HasLabel(u"Fill First name, Street name & 1 more field"));
 }
 
 // Tests that the filling suggestion label is correct when more than 3 fields
@@ -576,12 +546,11 @@ TEST_F(
       {form.fields()[2].global_id(), {u"Country roads str", u"Street name"}},
       {form.fields()[3].global_id(), {u"33", u"state", u"West Virginia"}}});
 
-  std::vector<Suggestion> suggestions_to_show;
-  EXPECT_TRUE(
-      manager_->MaybeUpdateSuggestions(suggestions_to_show, form.fields()[0],
-                                       /*should_add_trigger_suggestion=*/true));
-  EXPECT_EQ(suggestions_to_show[0].labels[0][0].value,
-            u"Fill First name, Last name & 2 more fields");
+  const std::vector<autofill::Suggestion> suggestions =
+      manager_->GetSuggestions({}, form.fields()[0]);
+  ASSERT_FALSE(suggestions.empty());
+  EXPECT_THAT(suggestions[0],
+              HasLabel(u"Fill First name, Last name & 2 more fields"));
 }
 
 class AutofillPredictionImprovementsManagerUserFeedbackTest

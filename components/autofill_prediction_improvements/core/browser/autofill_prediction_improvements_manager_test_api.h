@@ -23,9 +23,9 @@ class AutofillPredictionImprovementsManagerTestApi {
     manager_->cache_ = cache;
   }
 
-  void SetAddressSuggestions(
-      std::vector<autofill::Suggestion> address_suggestions) {
-    manager_->address_suggestions_ = address_suggestions;
+  void SetAutofillSuggestions(
+      std::vector<autofill::Suggestion> autofill_suggestions) {
+    manager_->autofill_suggestions_ = autofill_suggestions;
   }
 
   void SetFeedbackId(std::optional<std::string> feedback_id) {

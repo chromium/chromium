@@ -196,15 +196,15 @@ AutofillPredictionImprovementsManager::
 std::vector<autofill::Suggestion>
 AutofillPredictionImprovementsManager::CreateFillingSuggestions(
     const autofill::FormFieldData& field,
-    const std::vector<autofill::Suggestion>& address_suggestions) {
+    const std::vector<autofill::Suggestion>& autofill_suggestions) {
   if (!cache_) {
     return {};
   }
-  if (!(*cache_).contains(field.global_id())) {
+  if (!cache_->contains(field.global_id())) {
     return {};
   }
   const AutofillPredictionImprovementsFillingEngine::Prediction& prediction =
-      (*cache_).at(field.global_id());
+      cache_->at(field.global_id());
 
   autofill::Suggestion suggestion(
       prediction.value, autofill::SuggestionType::kFillPredictionImprovements);
@@ -232,7 +232,7 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestions(
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_LABEL_TEXT) +
       u" " + prediction.label;
-  for (const auto& [child_field_global_id, child_prediction] : (*cache_)) {
+  for (const auto& [child_field_global_id, child_prediction] : *cache_) {
     // Only add a child suggestion if the field is not the triggering field and
     // the value to fill is not empty.
     if (child_field_global_id == field.global_id() ||
@@ -272,11 +272,11 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestions(
 
   // TODO(crbug.com/365512352): Figure out how to handle Undo suggestion.
   std::vector<autofill::Suggestion> filling_suggestions = {suggestion};
-  for (const autofill::Suggestion& address_suggestion : address_suggestions) {
-    if (address_suggestion.type == autofill::SuggestionType::kAddressEntry ||
-        address_suggestion.type ==
+  for (const autofill::Suggestion& autofill_suggestion : autofill_suggestions) {
+    if (autofill_suggestion.type == autofill::SuggestionType::kAddressEntry ||
+        autofill_suggestion.type ==
             autofill::SuggestionType::kAddressFieldByFieldFilling) {
-      filling_suggestions.push_back(address_suggestion);
+      filling_suggestions.push_back(autofill_suggestion);
     }
   }
   filling_suggestions.emplace_back(autofill::SuggestionType::kSeparator);
@@ -305,7 +305,7 @@ bool AutofillPredictionImprovementsManager::HasImprovedPredictionsForField(
   if (!cache_) {
     return false;
   }
-  return (*cache_).contains(field.global_id());
+  return cache_->contains(field.global_id());
 }
 
 bool AutofillPredictionImprovementsManager::IsFormEligible(
@@ -321,27 +321,21 @@ bool AutofillPredictionImprovementsManager::IsUserEligible() {
   return client_->IsUserEligible();
 }
 
-bool AutofillPredictionImprovementsManager::MaybeUpdateSuggestions(
-    std::vector<autofill::Suggestion>& address_suggestions,
-    const autofill::FormFieldData& field,
-    bool should_add_trigger_suggestion) {
+std::vector<autofill::Suggestion>
+AutofillPredictionImprovementsManager::GetSuggestions(
+    const std::vector<autofill::Suggestion>& autofill_suggestions,
+    const autofill::FormFieldData& field) {
   loading_suggestion_timer_.Stop();
   // Show a cached prediction improvements filling suggestion for `field` if
   // it exists.
   if (HasImprovedPredictionsForField(field)) {
-    address_suggestions = CreateFillingSuggestions(field, address_suggestions);
-    return true;
+    return CreateFillingSuggestions(field, autofill_suggestions);
   }
-  // Add prediction improvements trigger suggestion.
-  else if (should_add_trigger_suggestion) {
-    // Store `address_suggestions` to show them with prediction improvements
-    // later if the trigger was accepted.
-    address_suggestions_ = address_suggestions;
-    // Set `address_suggestions` to the trigger suggestion.
-    address_suggestions = CreateTriggerSuggestion();
-    return true;
-  }
-  return false;
+  // Store `autofill_suggestions` to show them with prediction improvements
+  // later if the trigger was accepted.
+  autofill_suggestions_ = autofill_suggestions;
+  // Return the trigger suggestion.
+  return CreateTriggerSuggestion();
 }
 
 void AutofillPredictionImprovementsManager::
@@ -396,7 +390,7 @@ void AutofillPredictionImprovementsManager::OnReceivedPredictions(
           ? base::BindRepeating(
                 &AutofillPredictionImprovementsManager::UpdateSuggestions,
                 weak_ptr_factory_.GetWeakPtr(),
-                CreateFillingSuggestions(trigger_field, address_suggestions_))
+                CreateFillingSuggestions(trigger_field, autofill_suggestions_))
           : base::BindRepeating(
                 &AutofillPredictionImprovementsManager::UpdateSuggestions,
                 weak_ptr_factory_.GetWeakPtr(), CreateErrorSuggestions()));
@@ -445,9 +439,9 @@ AutofillPredictionImprovementsManager::GetValuesToFill() {
     return {};
   }
   std::vector<std::pair<autofill::FieldGlobalId, std::u16string>>
-      values_to_fill((*cache_).size());
+      values_to_fill(cache_->size());
   size_t i = 0;
-  for (const auto& [field_global_id, prediction] : (*cache_)) {
+  for (const auto& [field_global_id, prediction] : *cache_) {
     values_to_fill[i++] = {field_global_id, prediction.value};
   }
   return values_to_fill;

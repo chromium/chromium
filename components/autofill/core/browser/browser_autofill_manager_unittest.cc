@@ -7236,14 +7236,9 @@ TEST_F(BrowserAutofillManagerTest, ShowPredictionImprovementsSuggestions) {
   EXPECT_CALL(delegate, HasDataStored)
       .WillOnce(RunOnceCallback<0>(
           AutofillPredictionImprovementsDelegate::HasData(true)));
-  EXPECT_CALL(delegate, MaybeUpdateSuggestions)
-      .WillOnce([](std::vector<Suggestion>& address_suggestions,
-                   const FormFieldData& field,
-                   bool should_add_trigger_suggestion) {
-        address_suggestions = {Suggestion(
-            u"Autocomplete", SuggestionType::kRetrievePredictionImprovements)};
-        return true;
-      });
+  EXPECT_CALL(delegate, GetSuggestions)
+      .WillOnce(Return(std::vector<Suggestion>{Suggestion(
+          u"Autocomplete", SuggestionType::kRetrievePredictionImprovements)}));
 
   GetAutofillSuggestions(
       form, form.fields().front(),

@@ -20,11 +20,10 @@ class MockAutofillPredictionImprovementsDelegate
   MockAutofillPredictionImprovementsDelegate();
   ~MockAutofillPredictionImprovementsDelegate() override;
 
-  MOCK_METHOD(bool,
-              MaybeUpdateSuggestions,
-              (std::vector<Suggestion> & address_suggestions,
-               const FormFieldData& field,
-               bool should_add_trigger_suggestion),
+  MOCK_METHOD(std::vector<Suggestion>,
+              GetSuggestions,
+              (const std::vector<Suggestion>& address_suggestions,
+               const FormFieldData& field),
               (override));
   MOCK_METHOD(bool,
               ShouldProvidePredictionImprovements,

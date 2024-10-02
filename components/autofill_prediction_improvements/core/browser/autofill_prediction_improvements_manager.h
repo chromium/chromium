@@ -55,10 +55,9 @@ class AutofillPredictionImprovementsManager
   ~AutofillPredictionImprovementsManager() override;
 
   // autofill::AutofillPredictionImprovementsDelegate
-  bool MaybeUpdateSuggestions(
-      std::vector<autofill::Suggestion>& address_suggestions,
-      const autofill::FormFieldData& field,
-      bool should_add_trigger_suggestion) override;
+  std::vector<autofill::Suggestion> GetSuggestions(
+      const std::vector<autofill::Suggestion>& autofill_suggestions,
+      const autofill::FormFieldData& field) override;
   bool IsFormEligible(const autofill::FormStructure& form) override;
   bool IsUserEligible() override;
   bool ShouldProvidePredictionImprovements(const GURL& url) override;
@@ -142,7 +141,7 @@ class AutofillPredictionImprovementsManager
 
   // Address suggestions that will be shown as defined in
   // `CreateFillingSuggestions()` after prediction improvements was triggered.
-  std::vector<autofill::Suggestion> address_suggestions_;
+  std::vector<autofill::Suggestion> autofill_suggestions_;
 
   // Stores the execution id for the latest successful retrieval of prediction
   // improvements. If set, the feedback page will open when the "thumbs down"

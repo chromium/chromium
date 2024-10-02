@@ -47,13 +47,11 @@ class AutofillPredictionImprovementsDelegate {
 
   virtual ~AutofillPredictionImprovementsDelegate() = default;
 
-  // Returns `true` if it set or updated `address_suggestions`. That will happen
-  // if there are cached prediction improvements for `field` or
-  // `should_add_trigger_suggestion` is `true`.
-  virtual bool MaybeUpdateSuggestions(
-      std::vector<Suggestion>& address_suggestions,
-      const FormFieldData& field,
-      bool should_add_trigger_suggestion) = 0;
+  // Returns Autofill prediction improvements suggestions combined with
+  // `autofill_suggestions`. May return an empty vector.
+  virtual std::vector<Suggestion> GetSuggestions(
+      const std::vector<Suggestion>& autofill_suggestions,
+      const FormFieldData& field) = 0;
 
   // Returns whether `form` is eligible for the improved prediction experience.
   virtual bool IsFormEligible(const FormStructure& form) = 0;

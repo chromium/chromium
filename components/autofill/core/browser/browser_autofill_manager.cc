@@ -1561,15 +1561,16 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
 
   if (AutofillPredictionImprovementsDelegate* delegate =
           client().GetAutofillPredictionImprovementsDelegate();
-      delegate && has_prediction_improvements_data) {
-    bool suggestions_were_updated = delegate->MaybeUpdateSuggestions(
-        suggestions, field,
-        /*should_add_trigger_suggestion=*/trigger_source ==
-                AutofillSuggestionTriggerSource::kPredictionImprovements ||
-            trigger_source ==
-                AutofillSuggestionTriggerSource::kFormControlElementClicked);
-    if (suggestions_were_updated) {
-      std::move(callback).Run(/*show_suggestions=*/true, suggestions,
+      delegate && has_prediction_improvements_data &&
+      (trigger_source ==
+           AutofillSuggestionTriggerSource::kPredictionImprovements ||
+       trigger_source ==
+           AutofillSuggestionTriggerSource::kFormControlElementClicked)) {
+    std::vector<Suggestion> prediction_improvements_suggestions =
+        delegate->GetSuggestions(suggestions, field);
+    if (!prediction_improvements_suggestions.empty()) {
+      std::move(callback).Run(/*show_suggestions=*/true,
+                              std::move(prediction_improvements_suggestions),
                               /*ranking_context=*/std::nullopt);
       return;
     }
