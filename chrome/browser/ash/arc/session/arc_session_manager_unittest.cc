@@ -2337,6 +2337,7 @@ TEST_F(ArcSessionManagerTest, FileExpansion_AlreadyDone) {
   arc_session_manager()->AddObserver(&observer);
   ASSERT_TRUE(observer.property_files_expansion_result().has_value());
   EXPECT_TRUE(observer.property_files_expansion_result().value());
+  arc_session_manager()->RemoveObserver(&observer);
 }
 
 // Tests that OnPropertyFilesExpanded() is called with true when the files are
@@ -2349,6 +2350,7 @@ TEST_F(ArcSessionManagerTest, FileExpansion) {
   arc_session_manager()->OnExpandPropertyFilesAndReadSaltForTesting(true);
   ASSERT_TRUE(observer.property_files_expansion_result().has_value());
   EXPECT_TRUE(observer.property_files_expansion_result().value());
+  arc_session_manager()->RemoveObserver(&observer);
 }
 
 // Tests that OnPropertyFilesExpanded() is called with false when the expansion
@@ -2361,6 +2363,7 @@ TEST_F(ArcSessionManagerTest, FileExpansion_Fail) {
   arc_session_manager()->OnExpandPropertyFilesAndReadSaltForTesting(false);
   ASSERT_TRUE(observer.property_files_expansion_result().has_value());
   EXPECT_FALSE(observer.property_files_expansion_result().value());
+  arc_session_manager()->RemoveObserver(&observer);
 }
 
 // Tests that TrimVmMemory doesn't crash.

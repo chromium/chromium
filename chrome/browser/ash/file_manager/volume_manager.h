@@ -234,6 +234,7 @@ class VolumeManager
 
   // arc::ArcSessionManagerObserver overrides.
   void OnArcPlayStoreEnabledChanged(bool enabled) override;
+  void OnShutdown() override;
 
   // Called on change to kExternalStorageDisabled pref.
   void OnExternalStorageDisabledChanged();

@@ -905,6 +905,9 @@ void ArcSessionManager::Shutdown() {
     scoped_opt_in_tracker_->TrackShutdown();
     scoped_opt_in_tracker_.reset();
   }
+  for (auto& observer : observer_list_) {
+    observer.OnShutdown();
+  }
 }
 
 void ArcSessionManager::ShutdownSession() {

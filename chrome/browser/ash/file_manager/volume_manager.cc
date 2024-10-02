@@ -1094,6 +1094,10 @@ void VolumeManager::OnArcPlayStoreEnabledChanged(bool enabled) {
   arc_volumes_mounted_ = mounting;
 }
 
+void VolumeManager::OnShutdown() {
+  arc_session_manager_observation_.Reset();
+}
+
 void VolumeManager::OnExternalStorageDisabledChanged() {
   // If the policy just got disabled we have to unmount every device currently
   // mounted. The opposite is fine - we can let the user re-plug their device to
