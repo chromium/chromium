@@ -50,18 +50,17 @@ class LegacyAccountsTableViewControllerTest
     : public LegacyChromeTableViewControllerTest {
  public:
   LegacyAccountsTableViewControllerTest() {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
-    browser_state_ = std::move(builder).Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+    AuthenticationServiceFactory::CreateAndInitializeForProfile(
+        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
   }
 
   LegacyChromeTableViewController* InstantiateController() override {
@@ -101,12 +100,11 @@ class LegacyAccountsTableViewControllerTest
 
   // Identity Services
   signin::IdentityManager* identity_manager() {
-    return IdentityManagerFactory::GetForProfile(browser_state_.get());
+    return IdentityManagerFactory::GetForProfile(profile_.get());
   }
 
   AuthenticationService* authentication_service() {
-    return AuthenticationServiceFactory::GetForBrowserState(
-        browser_state_.get());
+    return AuthenticationServiceFactory::GetForProfile(profile_.get());
   }
 
   FakeSystemIdentityManager* fake_system_identity_manager() {
@@ -116,19 +114,18 @@ class LegacyAccountsTableViewControllerTest
 
   syncer::TestSyncService* test_sync_service() {
     return static_cast<syncer::TestSyncService*>(
-        SyncServiceFactory::GetForBrowserState(browser_state_.get()));
+        SyncServiceFactory::GetForProfile(profile_.get()));
   }
 
   ChromeAccountManagerService* account_manager_service() {
-    return ChromeAccountManagerServiceFactory::GetForBrowserState(
-        browser_state_.get());
+    return ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
   }
 
  private:
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::MainThreadType::IO};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};

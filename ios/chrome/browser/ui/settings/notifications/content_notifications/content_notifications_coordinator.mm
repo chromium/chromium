@@ -55,12 +55,11 @@
 
 - (void)start {
   AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
   id<SystemIdentity> identity =
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   const std::string& gaiaID = base::SysNSStringToUTF8(identity.gaiaID);
-  PrefService* prefService = self.browser->GetBrowserState()->GetPrefs();
+  PrefService* prefService = self.browser->GetProfile()->GetPrefs();
 
   self.viewController = [[ContentNotificationsViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
@@ -69,8 +68,8 @@
       [[ContentNotificationsMediator alloc] initWithPrefService:prefService
                                                          gaiaID:gaiaID];
   ContentNotificationService* contentNotificationService =
-      ContentNotificationServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      ContentNotificationServiceFactory::GetForProfile(
+          self.browser->GetProfile());
   self.mediator.contentNotificationService = contentNotificationService;
   self.mediator.consumer = self.viewController;
   self.mediator.presenter = self;

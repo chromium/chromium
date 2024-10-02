@@ -44,13 +44,13 @@
 class QuickDeleteMediatorTest : public PlatformTest {
  public:
   QuickDeleteMediatorTest() {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(ios::HistoryServiceFactory::GetInstance(),
                               ios::HistoryServiceFactory::GetDefaultFactory());
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
 
-    history_service_ = ios::HistoryServiceFactory::GetForBrowserState(
-        browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS);
+    history_service_ = ios::HistoryServiceFactory::GetForProfile(
+        profile_.get(), ServiceAccessType::EXPLICIT_ACCESS);
 
     password_store_ =
         new testing::NiceMock<password_manager::MockPasswordStoreInterface>();
@@ -74,23 +74,23 @@ class QuickDeleteMediatorTest : public PlatformTest {
 
     fake_browsing_data_counter_wrapper_producer_ =
         [[FakeBrowsingDataCounterWrapperProducer alloc]
-            initWithBrowserState:browser_state_.get()];
+            initWithProfile:profile_.get()];
 
     signin::IdentityManager* identityManager =
-        IdentityManagerFactory::GetForProfile(browser_state_.get());
+        IdentityManagerFactory::GetForProfile(profile_.get());
     BrowsingDataRemover* browsing_data_remover =
-        BrowsingDataRemoverFactory::GetForBrowserState(browser_state_.get());
+        BrowsingDataRemoverFactory::GetForBrowserState(profile_.get());
     DiscoverFeedService* discover_feed_service =
-        DiscoverFeedServiceFactory::GetForProfile(browser_state_.get());
+        DiscoverFeedServiceFactory::GetForProfile(profile_.get());
 
-    mediator_ = [[QuickDeleteMediator alloc]
-                             initWithPrefs:browser_state_.get()->GetPrefs()
-        browsingDataCounterWrapperProducer:
-            fake_browsing_data_counter_wrapper_producer_
-                           identityManager:identityManager
-                       browsingDataRemover:browsing_data_remover
-                       discoverFeedService:discover_feed_service
-            canPerformTabsClosureAnimation:NO];
+    mediator_ =
+        [[QuickDeleteMediator alloc] initWithPrefs:profile_.get()->GetPrefs()
+                browsingDataCounterWrapperProducer:
+                    fake_browsing_data_counter_wrapper_producer_
+                                   identityManager:identityManager
+                               browsingDataRemover:browsing_data_remover
+                               discoverFeedService:discover_feed_service
+                    canPerformTabsClosureAnimation:NO];
   }
 
   ~QuickDeleteMediatorTest() override {
@@ -108,10 +108,10 @@ class QuickDeleteMediatorTest : public PlatformTest {
     password_store_->ShutdownOnUIThread();
     password_store_ = nil;
 
-    browser_state_ = nil;
+    profile_ = nil;
   }
 
-  PrefService* prefs() { return browser_state_->GetPrefs(); }
+  PrefService* prefs() { return profile_->GetPrefs(); }
 
   void resetQuickDeletePrefs() {
     prefs()->SetInteger(browsing_data::prefs::kDeleteTimePeriod,
@@ -156,9 +156,8 @@ class QuickDeleteMediatorTest : public PlatformTest {
   // `num_tabs`.
   void triggerUpdateUICallbackForTabsResults(int num_tabs) {
     TabsCounter tabsCounter(
-        BrowserListFactory::GetForBrowserState(browser_state_.get()),
-        SessionRestorationServiceFactory::GetForBrowserState(
-            browser_state_.get()));
+        BrowserListFactory::GetForProfile(profile_.get()),
+        SessionRestorationServiceFactory::GetForProfile(profile_.get()));
     const TabsCounter::TabsResult tabsResult(&tabsCounter, num_tabs,
                                              /*num_windows=*/0, {});
     OCMExpect(
@@ -203,7 +202,7 @@ class QuickDeleteMediatorTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   QuickDeleteMediator* mediator_;
   id consumer_;
   raw_ptr<history::HistoryService> history_service_;
@@ -311,22 +310,21 @@ TEST_F(QuickDeleteMediatorTest, TestTabsSummary) {
     };
   // clang-format on
 
-  TabsCounter counter(
-      BrowserListFactory::GetForBrowserState(browser_state_.get()),
-      SessionRestorationServiceFactory::GetForBrowserState(
-          browser_state_.get()));
+    TabsCounter counter(
+        BrowserListFactory::GetForProfile(profile_.get()),
+        SessionRestorationServiceFactory::GetForProfile(profile_.get()));
 
-  for (const TestCase& test_case : kTestCases) {
-    const TabsCounter::TabsResult result(&counter, test_case.num_tabs,
-                                         test_case.num_windows, {});
-    OCMExpect([consumer_ setBrowsingDataSummary:test_case.expected_output]);
-    OCMExpect(
-        [consumer_ setTabsSummary:quick_delete_util::GetCounterTextFromResult(
-                                      result, timeRange())]);
-    [fake_browsing_data_counter_wrapper_producer_
-        triggerUpdateUICallbackForResult:result];
-    EXPECT_OCMOCK_VERIFY(consumer_);
-  }
+    for (const TestCase& test_case : kTestCases) {
+      const TabsCounter::TabsResult result(&counter, test_case.num_tabs,
+                                           test_case.num_windows, {});
+      OCMExpect([consumer_ setBrowsingDataSummary:test_case.expected_output]);
+      OCMExpect(
+          [consumer_ setTabsSummary:quick_delete_util::GetCounterTextFromResult(
+                                        result, timeRange())]);
+      [fake_browsing_data_counter_wrapper_producer_
+          triggerUpdateUICallbackForResult:result];
+      EXPECT_OCMOCK_VERIFY(consumer_);
+    }
 }
 
 // Tests the construction of the passwords summary with different inputs.

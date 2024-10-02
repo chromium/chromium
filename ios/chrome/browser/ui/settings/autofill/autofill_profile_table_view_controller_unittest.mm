@@ -36,9 +36,9 @@ class AutofillProfileTableViewControllerTest
     : public LegacyChromeTableViewControllerTest {
  protected:
   AutofillProfileTableViewControllerTest() {
-    TestChromeBrowserState::Builder test_cbs_builder;
+    TestProfileIOS::Builder test_cbs_builder;
     // Profile import requires a PersonalDataManager which itself needs the
-    // WebDataService; this is not initialized on a TestChromeBrowserState by
+    // WebDataService; this is not initialized on a TestProfileIOS by
     // default.
     test_cbs_builder.AddTestingFactory(
         ios::WebDataServiceFactory::GetInstance(),
@@ -46,16 +46,14 @@ class AutofillProfileTableViewControllerTest
     test_cbs_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
+    profile_ = std::move(test_cbs_builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        chrome_browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+    AuthenticationServiceFactory::CreateAndInitializeForProfile(
+        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
 
     // Set circular SyncService dependency to null.
-    autofill::PersonalDataManagerFactory::GetForBrowserState(
-        chrome_browser_state_.get())
+    autofill::PersonalDataManagerFactory::GetForProfile(profile_.get())
         ->SetSyncServiceForTest(nullptr);
   }
 
@@ -72,8 +70,7 @@ class AutofillProfileTableViewControllerTest
 
   void AddProfile(const std::string& name, const std::string& address) {
     autofill::PersonalDataManager* personal_data_manager =
-        autofill::PersonalDataManagerFactory::GetForBrowserState(
-            chrome_browser_state_.get());
+        autofill::PersonalDataManagerFactory::GetForProfile(profile_.get());
     personal_data_manager->address_data_manager()
         .get_alternative_state_name_map_updater_for_testing()
         ->set_local_state_for_testing(local_state());
@@ -95,7 +92,7 @@ class AutofillProfileTableViewControllerTest
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
 };
 

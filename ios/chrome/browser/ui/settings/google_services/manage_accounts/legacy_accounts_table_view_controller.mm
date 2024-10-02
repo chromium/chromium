@@ -162,7 +162,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
     signoutDismissalByParentCoordinator:
         (BOOL)signoutDismissalByParentCoordinator {
   DCHECK(browser);
-  DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
+  DCHECK(!browser->GetProfile()->IsOffTheRecord());
 
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
@@ -776,8 +776,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 
 - (AuthenticationService*)authService {
   DCHECK(_browser) << "-authService called after -settingsWillBeDismissed";
-  return AuthenticationServiceFactory::GetForBrowserState(
-      _browser->GetBrowserState());
+  return AuthenticationServiceFactory::GetForProfile(_browser->GetProfile());
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate

@@ -34,19 +34,19 @@ class ParcelTrackingSettingsMediatorUnittest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    TestChromeBrowserState::Builder builder;
-    browser_state_ = std::move(builder).Build();
+    TestProfileIOS::Builder builder;
+    profile_ = std::move(builder).Build();
 
     consumer_ = [[MockParcelTrackingSettingsModelConsumer alloc] init];
     mediator_ = [[ParcelTrackingSettingsMediator alloc]
-        initWithPrefs:browser_state_->GetTestingPrefService()];
+        initWithPrefs:profile_->GetTestingPrefService()];
   }
 
  protected:
-  // Needed for test browser state created by TestChromeBrowserState().
+  // Needed for test profile created by TestProfileIOS().
   web::WebTaskEnvironment task_environment_;
 
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   ParcelTrackingSettingsMediator* mediator_;
   MockParcelTrackingSettingsModelConsumer* consumer_;
 };
@@ -70,7 +70,7 @@ TEST_F(ParcelTrackingSettingsMediatorUnittest, TestDidSelectItemAtIndexPath) {
 
   IOSParcelTrackingOptInStatus optInStatus =
       static_cast<IOSParcelTrackingOptInStatus>(
-          browser_state_->GetTestingPrefService()->GetInteger(
+          profile_->GetTestingPrefService()->GetInteger(
               prefs::kIosParcelTrackingOptInStatus));
   EXPECT_EQ(optInStatus, IOSParcelTrackingOptInStatus::kNeverTrack);
 

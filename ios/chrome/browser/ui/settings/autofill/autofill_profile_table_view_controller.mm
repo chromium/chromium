@@ -122,9 +122,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     self.title = l10n_util::GetNSString(IDS_AUTOFILL_ADDRESSES_SETTINGS_TITLE);
     self.shouldDisableDoneButtonOnEdit = YES;
     _browser = browser;
-    _personalDataManager =
-        autofill::PersonalDataManagerFactory::GetForBrowserState(
-            _browser->GetBrowserState());
+    _personalDataManager = autofill::PersonalDataManagerFactory::GetForProfile(
+        _browser->GetProfile());
     _observer.reset(new autofill::PersonalDataManagerObserverBridge(self));
     _personalDataManager->AddObserver(_observer.get());
   }
@@ -151,7 +150,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   [model addSectionWithIdentifier:SectionIdentifierSwitches];
 
-  if (_browser->GetBrowserState()->GetPrefs()->IsManagedPreference(
+  if (_browser->GetProfile()->GetPrefs()->IsManagedPreference(
           autofill::prefs::kAutofillProfileEnabled)) {
     [model addItem:[self managedAddressItem]
         toSectionWithIdentifier:SectionIdentifierSwitches];
@@ -524,20 +523,19 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (BOOL)isAutofillProfileEnabled {
   return autofill::prefs::IsAutofillProfileEnabled(
-      _browser->GetBrowserState()->GetPrefs());
+      _browser->GetProfile()->GetPrefs());
 }
 
 - (void)setAutofillProfileEnabled:(BOOL)isEnabled {
   return autofill::prefs::SetAutofillProfileEnabled(
-      _browser->GetBrowserState()->GetPrefs(), isEnabled);
+      _browser->GetProfile()->GetPrefs(), isEnabled);
 }
 
 - (void)determineUserEmail {
   self.syncEnabled = NO;
   self.userEmail = nil;
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(
-          _browser->GetBrowserState());
+      AuthenticationServiceFactory::GetForProfile(_browser->GetProfile());
   CHECK(authenticationService);
   id<SystemIdentity> identity =
       authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);

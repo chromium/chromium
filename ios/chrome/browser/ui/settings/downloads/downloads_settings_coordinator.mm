@@ -58,13 +58,13 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
   _saveToPhotosSettingsMediator = [[SaveToPhotosSettingsMediator alloc]
       initWithAccountManagerService:ChromeAccountManagerServiceFactory::
-                                        GetForBrowserState(browserState)
-                        prefService:browserState->GetPrefs()
+                                        GetForProfile(profile)
+                        prefService:profile->GetPrefs()
                     identityManager:IdentityManagerFactory::GetForProfile(
-                                        browserState)];
+                                        profile)];
 
   _downloadsSettingsTableViewController =
       [[DownloadsSettingsTableViewController alloc] init];

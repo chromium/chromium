@@ -79,8 +79,8 @@
   // There is no personal data manager in OTR (incognito). Get the original
   // one so the user can edit the profile.
   autofill::PersonalDataManager* personalDataManager =
-      autofill::PersonalDataManagerFactory::GetForBrowserState(
-          self.browser->GetBrowserState()->GetOriginalChromeBrowserState());
+      autofill::PersonalDataManagerFactory::GetForProfile(
+          self.browser->GetProfile()->GetOriginalProfile());
 
   self.mediator = [[AutofillProfileEditMediator alloc]
          initWithDelegate:self
@@ -162,8 +162,7 @@
 
 - (NSString*)userEmail {
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
   CHECK(authenticationService);
   id<SystemIdentity> identity =
       authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);

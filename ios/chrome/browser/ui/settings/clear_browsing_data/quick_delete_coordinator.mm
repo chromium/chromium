@@ -75,7 +75,7 @@ using browsing_data::DeleteBrowsingDataDialogAction;
   CHECK(!profile->IsOffTheRecord());
 
   BrowsingDataCounterWrapperProducer* producer =
-      [[BrowsingDataCounterWrapperProducer alloc] initWithBrowserState:profile];
+      [[BrowsingDataCounterWrapperProducer alloc] initWithProfile:profile];
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(profile);
   BrowsingDataRemover* browsingDataRemover =
@@ -187,7 +187,7 @@ using browsing_data::DeleteBrowsingDataDialogAction;
 
   BrowsingDataRemover* browsingDataRemover =
       BrowsingDataRemoverFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+          self.browser->GetProfile());
   browsingDataRemover->SetCachedTabsInfo(cachedTabsInfo);
 
   BrowsingDataRemover::RemovalParams params{

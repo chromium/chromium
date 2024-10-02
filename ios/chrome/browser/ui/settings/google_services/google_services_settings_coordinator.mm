@@ -90,8 +90,8 @@ using signin_metrics::PromoAction;
   self.viewController = viewController;
   self.mediator = [[GoogleServicesSettingsMediator alloc]
       initWithIdentityManager:IdentityManagerFactory::GetForProfile(
-                                  self.browser->GetBrowserState())
-              userPrefService:self.browser->GetBrowserState()->GetPrefs()
+                                  self.browser->GetProfile())
+              userPrefService:self.browser->GetProfile()->GetPrefs()
              localPrefService:GetApplicationContext()->GetLocalState()];
   self.mediator.consumer = viewController;
   self.mediator.authService = self.authService;
@@ -132,8 +132,8 @@ using signin_metrics::PromoAction;
 #pragma mark - Properties
 
 - (AuthenticationService*)authService {
-  return AuthenticationServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
+  return AuthenticationServiceFactory::GetForProfile(
+      self.browser->GetProfile());
 }
 
 - (GoogleServicesSettingsViewController*)googleServicesSettingsViewController {
@@ -142,7 +142,7 @@ using signin_metrics::PromoAction;
 }
 
 - (signin::IdentityManager*)identityManager {
-  return IdentityManagerFactory::GetForProfile(self.browser->GetBrowserState());
+  return IdentityManagerFactory::GetForProfile(self.browser->GetProfile());
 }
 
 #pragma mark - GoogleServicesSettingsCommandHandler
@@ -152,7 +152,7 @@ using signin_metrics::PromoAction;
                            (signin_ui::SignoutCompletionCallback)completion {
   DCHECK(completion);
   syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
+      SyncServiceFactory::GetForProfile(self.browser->GetProfile());
   BOOL isSyncConsentGiven =
       syncService &&
       syncService->GetUserSettings()->IsInitialSyncFeatureSetupComplete();

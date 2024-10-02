@@ -76,7 +76,7 @@ using signin_metrics::PromoAction;
                                    browser:(Browser*)browser
                  closeSettingsOnAddAccount:(BOOL)closeSettingsOnAddAccount {
   DCHECK(browser);
-  DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
+  DCHECK(!browser->GetProfile()->IsOffTheRecord());
 
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
@@ -91,7 +91,7 @@ using signin_metrics::PromoAction;
                        closeSettingsOnAddAccount:
                            (BOOL)closeSettingsOnAddAccount {
   DCHECK(browser);
-  DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
+  DCHECK(!browser->GetProfile()->IsOffTheRecord());
 
   if ((self = [super initWithBaseViewController:navigationController
                                         browser:browser])) {
@@ -103,17 +103,14 @@ using signin_metrics::PromoAction;
 
 - (void)start {
   base::RecordAction(base::UserMetricsAction("Signin_AccountsTableView_Open"));
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(browserState);
+  ProfileIOS* profile = self.browser->GetProfile();
+  syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
   _mediator = [[AccountsMediator alloc]
         initWithSyncService:syncService
-      accountManagerService:ChromeAccountManagerServiceFactory::
-                                GetForBrowserState(browserState)
-                authService:AuthenticationServiceFactory::GetForBrowserState(
-                                browserState)
-            identityManager:IdentityManagerFactory::GetForProfile(
-                                browserState)];
+      accountManagerService:ChromeAccountManagerServiceFactory::GetForProfile(
+                                profile)
+                authService:AuthenticationServiceFactory::GetForProfile(profile)
+            identityManager:IdentityManagerFactory::GetForProfile(profile)];
 
   if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu) &&
       !syncService->HasSyncConsent()) {
@@ -292,8 +289,8 @@ using signin_metrics::PromoAction;
 - (void)removeAccountDialogConfirmedWithIdentity:(id<SystemIdentity>)identity {
   [self dismissConfirmRemoveIdentityAlertCoordinator];
   NSArray<id<SystemIdentity>>* allIdentities =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState())
+      ChromeAccountManagerServiceFactory::GetForProfile(
+          self.browser->GetProfile())
           ->GetAllIdentities();
   if (![allIdentities containsObject:identity]) {
     // If the identity was removed by another way (another window, another app
@@ -370,9 +367,10 @@ using signin_metrics::PromoAction;
   if (!success) {
     return;
   }
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  CHECK(!AuthenticationServiceFactory::GetForBrowserState(browserState)
-             ->HasPrimaryIdentity(signin::ConsentLevel::kSignin));
+  ProfileIOS* profile = self.browser->GetProfile();
+  CHECK(
+      !AuthenticationServiceFactory::GetForProfile(profile)->HasPrimaryIdentity(
+          signin::ConsentLevel::kSignin));
   [self closeSettings];
 }
 

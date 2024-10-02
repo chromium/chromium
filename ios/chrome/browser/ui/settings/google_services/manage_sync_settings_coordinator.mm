@@ -141,9 +141,8 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 }
 
 - (void)start {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(browserState);
+  ProfileIOS* profile = self.browser->GetProfile();
+  syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
   switch (_accountState) {
     case SyncSettingsAccountState::kSyncing:
       // Ensure that SyncService::IsSetupInProgress is true while the
@@ -159,11 +158,11 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
   self.mediator = [[ManageSyncSettingsMediator alloc]
         initWithSyncService:self.syncService
-            identityManager:IdentityManagerFactory::GetForProfile(browserState)
+            identityManager:IdentityManagerFactory::GetForProfile(profile)
       authenticationService:self.authService
-      accountManagerService:ChromeAccountManagerServiceFactory::
-                                GetForBrowserState(browserState)
-                prefService:browserState->GetPrefs()
+      accountManagerService:ChromeAccountManagerServiceFactory::GetForProfile(
+                                profile)
+                prefService:profile->GetPrefs()
         initialAccountState:_accountState];
   self.mediator.commandHandler = self;
   self.mediator.syncErrorHandler = self;
@@ -171,10 +170,9 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
       self.authService->GetServiceStatus() ==
       AuthenticationService::ServiceStatus::SigninForcedByPolicy;
   if (IsLinkedServicesSettingIosEnabled()) {
-    self.mediator.isEEAAccount =
-        ios::TemplateURLServiceFactory::GetForBrowserState(
-            self.browser->GetBrowserState())
-            ->IsEeaChoiceCountry();
+    self.mediator.isEEAAccount = ios::TemplateURLServiceFactory::GetForProfile(
+                                     self.browser->GetProfile())
+                                     ->IsEeaChoiceCountry();
   }
 
   ManageSyncSettingsTableViewController* viewController =
@@ -244,13 +242,12 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 }
 
 - (syncer::SyncService*)syncService {
-  return SyncServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
+  return SyncServiceFactory::GetForProfile(self.browser->GetProfile());
 }
 
 - (AuthenticationService*)authService {
-  return AuthenticationServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
+  return AuthenticationServiceFactory::GetForProfile(
+      self.browser->GetProfile());
 }
 
 #pragma mark - Private

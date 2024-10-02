@@ -68,11 +68,11 @@ enum ClearBrowsingDataItemType {
 // The manager's consumer.
 @property(nonatomic, weak) id<ClearBrowsingDataConsumer> consumer;
 
-// Default init method. `browserState` can't be nil.
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState;
+// Default init method. `profile` can't be nil.
+- (instancetype)initWithProfile:(ProfileIOS*)profile;
 
 // Designated initializer to allow dependency injection (in tests).
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
+- (instancetype)initWithProfile:(ProfileIOS*)profile
                    browsingDataRemover:(BrowsingDataRemover*)remover
     browsingDataCounterWrapperProducer:
         (BrowsingDataCounterWrapperProducer*)producer NS_DESIGNATED_INITIALIZER;

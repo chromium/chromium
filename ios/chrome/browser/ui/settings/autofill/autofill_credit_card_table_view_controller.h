@@ -19,8 +19,7 @@ class Browser;
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 
 // Use -initWithBrowser:.
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
-    NS_UNAVAILABLE;
+- (instancetype)initWithProfile:(ProfileIOS*)profile NS_UNAVAILABLE;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 

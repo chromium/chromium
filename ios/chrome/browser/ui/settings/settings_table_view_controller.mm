@@ -1511,7 +1511,7 @@ struct EnhancedSafeBrowsingActivePromoData
     case SettingsItemTypeBandwidth:
       base::RecordAction(base::UserMetricsAction("Settings.Bandwidth"));
       controller = [[BandwidthManagementTableViewController alloc]
-          initWithBrowserState:_browserState];
+          initWithProfile:_browserState];
       break;
     case SettingsItemTypeAboutChrome: {
       base::RecordAction(base::UserMetricsAction("AboutChrome"));

@@ -21,8 +21,8 @@ class ContentSettingsTableViewControllerTest
     : public LegacyChromeTableViewControllerTest {
  protected:
   ContentSettingsTableViewControllerTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
   }
 
   void TearDown() override {
@@ -38,7 +38,7 @@ class ContentSettingsTableViewControllerTest
 
  private:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
 };
 

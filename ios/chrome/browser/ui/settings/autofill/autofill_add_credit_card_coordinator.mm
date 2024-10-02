@@ -43,8 +43,8 @@
   // There is no personal data manager in OTR (incognito). Get the original
   // one so the user can add credit cards.
   autofill::PersonalDataManager* personalDataManager =
-      autofill::PersonalDataManagerFactory::GetForBrowserState(
-          self.browser->GetBrowserState()->GetOriginalChromeBrowserState());
+      autofill::PersonalDataManagerFactory::GetForProfile(
+          self.browser->GetProfile()->GetOriginalProfile());
 
   self.mediator = [[AutofillAddCreditCardMediator alloc]
          initWithDelegate:self

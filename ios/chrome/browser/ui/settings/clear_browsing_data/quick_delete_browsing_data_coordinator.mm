@@ -38,7 +38,7 @@
   CHECK(!profile->IsOffTheRecord());
 
   BrowsingDataCounterWrapperProducer* producer =
-      [[BrowsingDataCounterWrapperProducer alloc] initWithBrowserState:profile];
+      [[BrowsingDataCounterWrapperProducer alloc] initWithProfile:profile];
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(profile);
   BrowsingDataRemover* browsingDataRemover =

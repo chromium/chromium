@@ -42,13 +42,13 @@ class DownloadsSettingsCoordinatorTest : public PlatformTest {
   void SetUp() final {
     PlatformTest::SetUp();
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
         base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
                                 BuildIdentityManagerForTests));
-    browser_state_ = std::move(builder).Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     base_navigation_controller_ = [[FakeUINavigationController alloc] init];
 
@@ -88,14 +88,13 @@ class DownloadsSettingsCoordinatorTest : public PlatformTest {
     if (stubbed) {
       OCMStub([mock_save_to_photos_settings_mediator_ alloc])
           .andReturn(mock_save_to_photos_settings_mediator_);
-      OCMStub([mock_save_to_photos_settings_mediator_
-                  initWithAccountManagerService:
-                      ChromeAccountManagerServiceFactory::GetForBrowserState(
-                          browser_state_.get())
-                                    prefService:browser_state_->GetPrefs()
-                                identityManager:IdentityManagerFactory::
-                                                    GetForProfile(
-                                                        browser_state_.get())])
+      OCMStub(
+          [mock_save_to_photos_settings_mediator_
+              initWithAccountManagerService:ChromeAccountManagerServiceFactory::
+                                                GetForProfile(profile_.get())
+                                prefService:profile_->GetPrefs()
+                            identityManager:IdentityManagerFactory::
+                                                GetForProfile(profile_.get())])
           .andReturn(mock_save_to_photos_settings_mediator_);
     }
   }
@@ -135,7 +134,7 @@ class DownloadsSettingsCoordinatorTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   FakeUINavigationController* base_navigation_controller_;
 
@@ -163,11 +162,10 @@ TEST_F(DownloadsSettingsCoordinatorTest,
   OCMExpect(
       [mock_save_to_photos_settings_mediator_
           initWithAccountManagerService:ChromeAccountManagerServiceFactory::
-                                            GetForBrowserState(
-                                                browser_state_.get())
-                            prefService:browser_state_->GetPrefs()
+                                            GetForProfile(profile_.get())
+                            prefService:profile_->GetPrefs()
                         identityManager:IdentityManagerFactory::GetForProfile(
-                                            browser_state_.get())])
+                                            profile_.get())])
       .andReturn(mock_save_to_photos_settings_mediator_);
 
   // Mock VC and expect it is created and initialized as expected.

@@ -66,22 +66,21 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(fake_system_identity_);
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
 
     sync_service_mock_ = static_cast<syncer::MockSyncService*>(
-        SyncServiceFactory::GetForBrowserState(browser_state_.get()));
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+        SyncServiceFactory::GetForProfile(profile_.get()));
+    AuthenticationServiceFactory::CreateAndInitializeForProfile(
+        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
 
     AuthenticationService* authentication_service =
-        AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
+        AuthenticationServiceFactory::GetForProfile(profile_.get());
     authentication_service->SignIn(
         fake_system_identity_,
         signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
@@ -98,12 +97,12 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
     mediator_ = [[ManageSyncSettingsMediator alloc]
           initWithSyncService:sync_service_mock_
               identityManager:IdentityManagerFactory::GetForProfile(
-                                  browser_state_.get())
-        authenticationService:AuthenticationServiceFactory::GetForBrowserState(
-                                  browser_state_.get())
-        accountManagerService:ChromeAccountManagerServiceFactory::
-                                  GetForBrowserState(browser_state_.get())
-                  prefService:browser_state_->GetPrefs()
+                                  profile_.get())
+        authenticationService:AuthenticationServiceFactory::GetForProfile(
+                                  profile_.get())
+        accountManagerService:ChromeAccountManagerServiceFactory::GetForProfile(
+                                  profile_.get())
+                  prefService:profile_->GetPrefs()
           initialAccountState:initialAccountState];
     mediator_.consumer = consumer_;
   }
@@ -164,7 +163,7 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
   }
 
  protected:
-  // Needed for test browser state created by TestChromeBrowserState().
+  // Needed for test profile created by TestProfileIOS().
   web::WebTaskEnvironment task_environment_;
 
   // Needed for the initialization of authentication service.
@@ -173,7 +172,7 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
   base::test::ScopedFeatureList feature_list_;
 
   raw_ptr<syncer::MockSyncService> sync_service_mock_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 
   ManageSyncSettingsMediator* mediator_ = nullptr;
   ManageSyncSettingsTableViewController* consumer_ = nullptr;
@@ -493,7 +492,7 @@ TEST_F(ManageSyncSettingsMediatorTest, TestAccountStateTransitionOnSignOut) {
 
   // Sign out.
   AuthenticationService* authentication_service =
-      AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
+      AuthenticationServiceFactory::GetForProfile(profile_.get());
   authentication_service->SignOut(signin_metrics::ProfileSignout::kTest,
                                   /*force_clear_browsing_data=*/true, nil);
 

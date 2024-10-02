@@ -13,12 +13,11 @@
 @implementation BlockPopupsAppInterface
 
 + (void)setPopupPolicy:(ContentSetting)policy forPattern:(NSString*)pattern {
-  ChromeBrowserState* browserState =
-      chrome_test_util::GetOriginalBrowserState();
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
 
   ContentSettingsPattern exceptionPattern =
       ContentSettingsPattern::FromString(base::SysNSStringToUTF8(pattern));
-  ios::HostContentSettingsMapFactory::GetForBrowserState(browserState)
+  ios::HostContentSettingsMapFactory::GetForProfile(profile)
       ->SetContentSettingCustomScope(exceptionPattern,
                                      ContentSettingsPattern::Wildcard(),
                                      ContentSettingsType::POPUPS, policy);
