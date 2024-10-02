@@ -35,29 +35,26 @@ SearchEngineTableViewControllerTest::~SearchEngineTableViewControllerTest() {}
 void SearchEngineTableViewControllerTest::SetUp() {
   LegacyChromeTableViewControllerTest::SetUp();
 
-  TestChromeBrowserState::Builder test_cbs_builder;
+  TestProfileIOS::Builder builder;
 
-  test_cbs_builder.AddTestingFactory(
+  builder.AddTestingFactory(
       ios::TemplateURLServiceFactory::GetInstance(),
       ios::TemplateURLServiceFactory::GetDefaultFactory());
-  test_cbs_builder.AddTestingFactory(
-      ios::FaviconServiceFactory::GetInstance(),
-      ios::FaviconServiceFactory::GetDefaultFactory());
-  test_cbs_builder.AddTestingFactory(
+  builder.AddTestingFactory(ios::FaviconServiceFactory::GetInstance(),
+                            ios::FaviconServiceFactory::GetDefaultFactory());
+  builder.AddTestingFactory(
       IOSChromeLargeIconServiceFactory::GetInstance(),
       IOSChromeLargeIconServiceFactory::GetDefaultFactory());
-  test_cbs_builder.AddTestingFactory(
-      IOSChromeFaviconLoaderFactory::GetInstance(),
-      IOSChromeFaviconLoaderFactory::GetDefaultFactory());
-  test_cbs_builder.AddTestingFactory(
-      ios::HistoryServiceFactory::GetInstance(),
-      ios::HistoryServiceFactory::GetDefaultFactory());
-  chrome_browser_state_ = std::move(test_cbs_builder).Build();
+  builder.AddTestingFactory(IOSChromeFaviconLoaderFactory::GetInstance(),
+                            IOSChromeFaviconLoaderFactory::GetDefaultFactory());
+  builder.AddTestingFactory(ios::HistoryServiceFactory::GetInstance(),
+                            ios::HistoryServiceFactory::GetDefaultFactory());
+  profile_ = std::move(builder).Build();
   // Override the country checks to simulate being in Belgium.
-  pref_service_ = chrome_browser_state_->GetTestingPrefService();
+  pref_service_ = profile_->GetTestingPrefService();
   DefaultSearchManager::SetFallbackSearchEnginesDisabledForTesting(true);
-  template_url_service_ = ios::TemplateURLServiceFactory::GetForBrowserState(
-      chrome_browser_state_.get());
+  template_url_service_ =
+      ios::TemplateURLServiceFactory::GetForProfile(profile_.get());
   template_url_service_->Load();
 }
 
@@ -69,8 +66,8 @@ void SearchEngineTableViewControllerTest::TearDown() {
 
 LegacyChromeTableViewController*
 SearchEngineTableViewControllerTest::InstantiateController() {
-  return [[SearchEngineTableViewController alloc]
-      initWithBrowserState:chrome_browser_state_.get()];
+  return
+      [[SearchEngineTableViewController alloc] initWithProfile:profile_.get()];
 }
 
 // Adds a prepopulated search engine to TemplateURLService.

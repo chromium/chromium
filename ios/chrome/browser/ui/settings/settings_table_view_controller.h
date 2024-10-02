@@ -15,7 +15,7 @@ class Browser;
     : SettingsRootTableViewController <SettingsControllerProtocol>
 
 // Initializes a new SettingsTableViewController. `browser` must not
-// be nil and must not be associated with an off the record browser state.
+// be nil and must not be associated with an off the record profile.
 - (instancetype)initWithBrowser:(Browser*)browser
        hasDefaultBrowserBlueDot:(BOOL)hasDefaultBrowserBlueDot
     NS_DESIGNATED_INITIALIZER;

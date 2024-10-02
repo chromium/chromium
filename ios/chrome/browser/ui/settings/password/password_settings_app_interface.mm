@@ -48,8 +48,8 @@ constexpr char kEncrypted[] = "encrypted";
 scoped_refptr<password_manager::PasswordStoreInterface>
 GetPasswordProfileStore() {
   // Ensure that the fails in incognito mode by using IMPLICIT_ACCESS.
-  return IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-      chrome_test_util::GetOriginalBrowserState(),
+  return IOSChromeProfilePasswordStoreFactory::GetForProfile(
+      chrome_test_util::GetOriginalProfile(),
       ServiceAccessType::IMPLICIT_ACCESS);
 }
 
@@ -57,16 +57,15 @@ GetPasswordProfileStore() {
 scoped_refptr<password_manager::PasswordStoreInterface>
 GetPasswordAccountStore() {
   // Ensure that the fails in incognito mode by using IMPLICIT_ACCESS.
-  return IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
-      chrome_test_util::GetOriginalBrowserState(),
+  return IOSChromeAccountPasswordStoreFactory::GetForProfile(
+      chrome_test_util::GetOriginalProfile(),
       ServiceAccessType::IMPLICIT_ACCESS);
 }
 
 // Helper to get the passkey store.
 webauthn::PasskeyModel* GetPasskeyStore() {
-  ChromeBrowserState* browser_state =
-      chrome_test_util::GetOriginalBrowserState();
-  return IOSPasskeyModelFactory::GetForBrowserState(browser_state);
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
+  return IOSPasskeyModelFactory::GetForProfile(profile);
 }
 
 // This class is used to obtain results from the PasswordStore and hence both
@@ -422,9 +421,8 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
 }
 
 + (BOOL)isCredentialsServiceEnabled {
-  ChromeBrowserState* browserState =
-      chrome_test_util::GetOriginalBrowserState();
-  return browserState->GetPrefs()->GetBoolean(
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
+  return profile->GetPrefs()->GetBoolean(
       password_manager::prefs::kCredentialsEnableService);
 }
 
@@ -432,8 +430,8 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
     (password_manager::BulkLeakCheckServiceInterface::State)state {
   FakeBulkLeakCheckService* fakeBulkLeakCheckService =
       static_cast<FakeBulkLeakCheckService*>(
-          IOSChromeBulkLeakCheckServiceFactory::GetForBrowserState(
-              chrome_test_util::GetOriginalBrowserState()));
+          IOSChromeBulkLeakCheckServiceFactory::GetForProfile(
+              chrome_test_util::GetOriginalProfile()));
   fakeBulkLeakCheckService->SetBufferedState(state);
 }
 

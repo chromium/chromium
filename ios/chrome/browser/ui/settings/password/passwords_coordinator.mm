@@ -133,29 +133,28 @@ using password_manager::WarningType;
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
   FaviconLoader* faviconLoader =
-      IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
+      IOSChromeFaviconLoaderFactory::GetForProfile(profile);
 
   self.mediator = [[PasswordsMediator alloc]
       initWithPasswordCheckManager:IOSChromePasswordCheckManagerFactory::
-                                       GetForBrowserState(browserState)
+                                       GetForProfile(profile)
                      faviconLoader:faviconLoader
-                       syncService:SyncServiceFactory::GetForBrowserState(
-                                       browserState)
-                       prefService:browserState->GetPrefs()];
+                       syncService:SyncServiceFactory::GetForProfile(profile)
+                       prefService:profile->GetPrefs()];
   self.mediator.tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(browserState);
+      feature_engagement::TrackerFactory::GetForProfile(profile);
 
   self.reauthModule = password_manager::BuildReauthenticationModule(
       /*successfulReauthTimeAccessor=*/self.mediator);
   ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
+      ChromeAccountManagerServiceFactory::GetForProfile(profile);
 
   PasswordManagerViewController* passwordsViewController =
       [[PasswordManagerViewController alloc]
           initWithChromeAccountManagerService:accountManagerService
-                                  prefService:browserState->GetPrefs()
+                                  prefService:profile->GetPrefs()
                        shouldOpenInSearchMode:
                            self.openViewControllerForPasswordSearch];
   self.passwordsViewController = passwordsViewController;

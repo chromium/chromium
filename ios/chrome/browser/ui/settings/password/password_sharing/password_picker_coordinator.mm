@@ -59,8 +59,8 @@
 
   self.mediator = [[PasswordPickerMediator alloc]
       initWithCredentials:_credentials
-            faviconLoader:IOSChromeFaviconLoaderFactory::GetForBrowserState(
-                              self.browser->GetBrowserState())];
+            faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
+                              self.browser->GetProfile())];
   self.viewController.imageDataSource = self.mediator;
   self.mediator.consumer = self.viewController;
 

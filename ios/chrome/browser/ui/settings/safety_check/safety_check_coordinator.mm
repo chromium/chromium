@@ -123,16 +123,16 @@ using password_manager::WarningType;
   self.viewController = viewController;
 
   scoped_refptr<IOSChromePasswordCheckManager> passwordCheckManager =
-      IOSChromePasswordCheckManagerFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      IOSChromePasswordCheckManagerFactory::GetForProfile(
+          self.browser->GetProfile());
   self.mediator = [[SafetyCheckMediator alloc]
-      initWithUserPrefService:self.browser->GetBrowserState()->GetPrefs()
+      initWithUserPrefService:self.browser->GetProfile()->GetPrefs()
              localPrefService:GetApplicationContext()->GetLocalState()
          passwordCheckManager:passwordCheckManager
-                  authService:AuthenticationServiceFactory::GetForBrowserState(
-                                  self.browser->GetBrowserState())
-                  syncService:SyncServiceFactory::GetForBrowserState(
-                                  self.browser->GetBrowserState())
+                  authService:AuthenticationServiceFactory::GetForProfile(
+                                  self.browser->GetProfile())
+                  syncService:SyncServiceFactory::GetForProfile(
+                                  self.browser->GetProfile())
                      referrer:_referrer];
 
   self.mediator.consumer = self.viewController;

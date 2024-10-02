@@ -14,7 +14,7 @@ class Browser;
 @interface SyncEncryptionTableViewController
     : SettingsRootTableViewController <SettingsControllerProtocol>
 
-// Designated initializer. `browserState` must not be nil.
+// Designated initializer. `profile` must not be nil.
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 

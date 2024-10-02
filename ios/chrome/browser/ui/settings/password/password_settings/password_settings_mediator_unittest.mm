@@ -54,18 +54,18 @@ void SetSyncStatus(SyncServiceForPasswordTests* sync_service,
 class PasswordSettingsMediatorTest : public PlatformTest {
  protected:
   void SetUp() override {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindRepeating(
             &password_manager::BuildPasswordStore<web::BrowserState,
                                                   TestPasswordStore>));
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
 
     store_ =
         base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
-            IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-                browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS)
+            IOSChromeProfilePasswordStoreFactory::GetForProfile(
+                profile_.get(), ServiceAccessType::EXPLICIT_ACCESS)
                 .get()));
     presenter_ = std::make_unique<SavedPasswordsPresenter>(
         &affiliation_service_, store_, /*accont_store=*/nullptr);
@@ -76,9 +76,9 @@ class PasswordSettingsMediatorTest : public PlatformTest {
         bulkMovePasswordsToAccountHandler:
             bulk_move_passwords_to_account_handler_
                             exportHandler:export_handler_
-                              prefService:browser_state_->GetPrefs()
+                              prefService:profile_->GetPrefs()
                           identityManager:IdentityManagerFactory::GetForProfile(
-                                              browser_state_.get())
+                                              profile_.get())
                               syncService:&sync_service_];
     mediator_.consumer = consumer_;
   }
@@ -90,7 +90,7 @@ class PasswordSettingsMediatorTest : public PlatformTest {
   affiliations::FakeAffiliationService affiliation_service_;
   scoped_refptr<TestPasswordStore> store_;
   std::unique_ptr<SavedPasswordsPresenter> presenter_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   id consumer_ = OCMProtocolMock(@protocol(PasswordSettingsConsumer));
   id export_handler_ = OCMProtocolMock(@protocol(PasswordExportHandler));
   id bulk_move_passwords_to_account_handler_ =

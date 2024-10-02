@@ -94,9 +94,9 @@ class LanguageSettingsMediatorTest : public PlatformTest {
   LanguageSettingsMediatorTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {
     // Create profile.
-    TestProfileIOS::Builder test_cbs_builder;
-    test_cbs_builder.SetPrefService(CreatePrefService());
-    profile_ = std::move(test_cbs_builder).Build();
+    TestProfileIOS::Builder builder;
+    builder.SetPrefService(CreatePrefService());
+    profile_ = std::move(builder).Build();
 
     // Create TranslatePrefs.
     translate_prefs_ =

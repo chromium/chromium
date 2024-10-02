@@ -57,7 +57,7 @@ void AddIssueToForm(PasswordForm* form,
 class PasswordCheckupMediatorTest : public PlatformTest {
  protected:
   PasswordCheckupMediatorTest() {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindRepeating(
@@ -70,10 +70,10 @@ class PasswordCheckupMediatorTest : public PlatformTest {
               std::make_unique<affiliations::FakeAffiliationService>());
         })));
 
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
 
-    password_check_ = IOSChromePasswordCheckManagerFactory::GetForBrowserState(
-        browser_state_.get());
+    password_check_ =
+        IOSChromePasswordCheckManagerFactory::GetForProfile(profile_.get());
 
     consumer_ = OCMProtocolMock(@protocol(PasswordCheckupConsumer));
 
@@ -84,14 +84,14 @@ class PasswordCheckupMediatorTest : public PlatformTest {
 
   PasswordCheckupMediator* mediator() { return mediator_; }
 
-  ChromeBrowserState* browserState() { return browser_state_.get(); }
+  ProfileIOS* profile() { return profile_.get(); }
 
   id consumer() { return consumer_; }
 
   TestPasswordStore& GetTestStore() {
     return *static_cast<TestPasswordStore*>(
-        IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-            browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS)
+        IOSChromeProfilePasswordStoreFactory::GetForProfile(
+            profile_.get(), ServiceAccessType::EXPLICIT_ACCESS)
             .get());
   }
 
@@ -102,7 +102,7 @@ class PasswordCheckupMediatorTest : public PlatformTest {
 
  private:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   scoped_refptr<IOSChromePasswordCheckManager> password_check_;
   id consumer_;
   PasswordCheckupMediator* mediator_;

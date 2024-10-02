@@ -41,18 +41,17 @@ class PassphraseTableViewControllerTest
   void TearDown() override;
 
   // Allow sub-classes to register testing factories in the builder for the
-  // new TestChromeBrowserState.
-  virtual void RegisterTestingFactories(
-      TestChromeBrowserState::Builder& builder);
+  // new TestProfileIOS.
+  virtual void RegisterTestingFactories(TestProfileIOS::Builder& builder);
 
   void SetUpNavigationController(UIViewController* test_controller);
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
-  // Weak, owned by chrome_browser_state_.
+  // Weak, owned by profile_.
   raw_ptr<syncer::MockSyncService> fake_sync_service_;
 
   // Default return values for NiceMock<syncer::MockSyncService>.

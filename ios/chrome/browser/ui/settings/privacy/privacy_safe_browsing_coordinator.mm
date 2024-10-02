@@ -73,7 +73,7 @@
       [UIColor colorNamed:kTextfieldHighlightBackgroundColor];
   self.viewController.presentationDelegate = self;
   self.mediator = [[PrivacySafeBrowsingMediator alloc]
-      initWithUserPrefService:self.browser->GetBrowserState()->GetPrefs()];
+      initWithUserPrefService:self.browser->GetProfile()->GetPrefs()];
   self.mediator.consumer = self.viewController;
   self.mediator.handler = self;
   self.viewController.modelDelegate = self.mediator;

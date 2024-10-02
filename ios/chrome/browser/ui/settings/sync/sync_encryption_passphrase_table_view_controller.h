@@ -37,7 +37,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @property(nonatomic, copy) NSString* syncErrorMessage;
 @property(nonatomic, assign) BOOL presentModally;
 
-// `browserState` must not be nil.
+// `profile` must not be nil.
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 

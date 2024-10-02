@@ -41,9 +41,9 @@ class BandwidthManagementTableViewControllerTest
     std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs(
         factory.CreateSyncable(registry.get()));
     RegisterProfilePrefs(registry.get());
-    TestProfileIOS::Builder test_cbs_builder;
-    test_cbs_builder.SetPrefService(std::move(prefs));
-    profile_ = std::move(test_cbs_builder).Build();
+    TestProfileIOS::Builder builder;
+    builder.SetPrefService(std::move(prefs));
+    profile_ = std::move(builder).Build();
 
     CreateController();
   }

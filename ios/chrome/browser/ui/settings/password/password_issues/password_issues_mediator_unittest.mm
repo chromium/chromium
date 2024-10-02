@@ -119,29 +119,29 @@ class PasswordIssuesMediatorTest : public BlockCleanupTest {
  protected:
   void SetUp() override {
     BlockCleanupTest::SetUp();
-    // Create BrowserState.
-    TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.AddTestingFactory(
+    // Create profile.
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindRepeating(
             &password_manager::BuildPasswordStore<web::BrowserState,
                                                   TestPasswordStore>));
-    test_cbs_builder.AddTestingFactory(
+    builder.AddTestingFactory(
         IOSChromeAffiliationServiceFactory::GetInstance(),
         base::BindRepeating(base::BindLambdaForTesting([](web::BrowserState*) {
           return std::unique_ptr<KeyedService>(
               std::make_unique<affiliations::FakeAffiliationService>());
         })));
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
+    profile_ = std::move(builder).Build();
 
     store_ =
         base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
-            IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-                chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS)
+            IOSChromeProfilePasswordStoreFactory::GetForProfile(
+                profile_.get(), ServiceAccessType::EXPLICIT_ACCESS)
                 .get()));
 
-    password_check_ = IOSChromePasswordCheckManagerFactory::GetForBrowserState(
-        chrome_browser_state_.get());
+    password_check_ =
+        IOSChromePasswordCheckManagerFactory::GetForProfile(profile_.get());
 
     consumer_ = [[FakePasswordIssuesConsumer alloc] init];
 
@@ -153,10 +153,9 @@ class PasswordIssuesMediatorTest : public BlockCleanupTest {
     mediator_ = [[PasswordIssuesMediator alloc]
           initForWarningType:warning_type
         passwordCheckManager:password_check_.get()
-               faviconLoader:IOSChromeFaviconLoaderFactory::GetForBrowserState(
-                                 chrome_browser_state_.get())
-                 syncService:SyncServiceFactory::GetForBrowserState(
-                                 chrome_browser_state_.get())];
+               faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
+                                 profile_.get())
+                 syncService:SyncServiceFactory::GetForProfile(profile_.get())];
     mediator_.consumer = consumer_;
   }
 
@@ -218,7 +217,7 @@ class PasswordIssuesMediatorTest : public BlockCleanupTest {
  private:
   base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   scoped_refptr<TestPasswordStore> store_;
   scoped_refptr<IOSChromePasswordCheckManager> password_check_;
   FakePasswordIssuesConsumer* consumer_;

@@ -120,16 +120,14 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
 - (void)start {
   [super start];
 
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
   _mediator = [[PasswordIssuesMediator alloc]
         initForWarningType:_warningType
-      passwordCheckManager:IOSChromePasswordCheckManagerFactory::
-                               GetForBrowserState(browserState)
-                                   .get()
-             faviconLoader:IOSChromeFaviconLoaderFactory::GetForBrowserState(
-                               browserState)
-               syncService:SyncServiceFactory::GetForBrowserState(
-                               browserState)];
+      passwordCheckManager:IOSChromePasswordCheckManagerFactory::GetForProfile(
+                               profile)
+                               .get()
+             faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(profile)
+               syncService:SyncServiceFactory::GetForProfile(profile)];
 
   PasswordIssuesTableViewController* passwordIssuesTableViewController =
       [[PasswordIssuesTableViewController alloc]

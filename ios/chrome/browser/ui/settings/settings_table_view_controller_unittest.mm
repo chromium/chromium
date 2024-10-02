@@ -147,7 +147,7 @@ class SettingsTableViewControllerTest
 
     scoped_variations_service_.Get()->OverrideStoredPermanentCountry("us");
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
     builder.AddTestingFactory(
@@ -161,26 +161,24 @@ class SettingsTableViewControllerTest
         base::BindRepeating(
             &password_manager::BuildPasswordStore<
                 web::BrowserState, password_manager::TestPasswordStore>));
-    chrome_browser_state_ =
-        profile_manager_.AddProfileWithBuilder(std::move(builder));
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     // Prepare mocks for PushNotificationClient dependency
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        chrome_browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+    AuthenticationServiceFactory::CreateAndInitializeForProfile(
+        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
     sync_service_mock_ = static_cast<syncer::MockSyncService*>(
-        SyncServiceFactory::GetForBrowserState(chrome_browser_state_.get()));
+        SyncServiceFactory::GetForProfile(profile_.get()));
 
     auth_service_ = static_cast<AuthenticationService*>(
-        AuthenticationServiceFactory::GetInstance()->GetForBrowserState(
-            chrome_browser_state_.get()));
+        AuthenticationServiceFactory::GetInstance()->GetForProfile(
+            profile_.get()));
 
     password_store_mock_ =
         base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
-            IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-                chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS)
+            IOSChromeProfilePasswordStoreFactory::GetForProfile(
+                profile_.get(), ServiceAccessType::EXPLICIT_ACCESS)
                 .get()));
 
     fake_identity_ = [FakeSystemIdentity fakeIdentity1];
@@ -283,7 +281,7 @@ class SettingsTableViewControllerTest
   }
 
  protected:
-  // Needed for test browser state created by TestChromeBrowserState().
+  // Needed for test profile created by TestProfileIOS().
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   ScopedVariationsService scoped_variations_service_;
@@ -294,7 +292,7 @@ class SettingsTableViewControllerTest
   raw_ptr<syncer::MockSyncService> sync_service_mock_ = nullptr;
   scoped_refptr<password_manager::TestPasswordStore> password_store_mock_;
 
-  raw_ptr<TestChromeBrowserState> chrome_browser_state_;
+  raw_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
 
   SettingsTableViewController* controller_ = nullptr;
@@ -399,7 +397,7 @@ TEST_F(SettingsTableViewControllerTest,
 // Verifies that the sign-in setting row is removed if sign-in is disabled
 // through the "Allow Chrome Sign-in" option.
 TEST_F(SettingsTableViewControllerTest, SigninDisabled) {
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
   CreateController();
   CheckController();
 

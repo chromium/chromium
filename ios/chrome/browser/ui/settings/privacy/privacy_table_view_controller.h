@@ -34,7 +34,7 @@ extern NSString* const kPrivacyTableViewId;
 @property(nonatomic, weak) id<PrivacyTableViewControllerPresentationDelegate>
     presentationDelegate;
 
-// `browserState` cannot be nil
+// `profile` cannot be nil
 - (instancetype)initWithBrowser:(Browser*)browser
          reauthenticationModule:(id<ReauthenticationProtocol>)reauthModule
     NS_DESIGNATED_INITIALIZER;

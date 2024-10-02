@@ -20,8 +20,8 @@
 class DefaultPageModeMediatorTest : public PlatformTest {
  protected:
   DefaultPageModeMediatorTest() {
-    TestProfileIOS::Builder test_cbs_builder;
-    profile_ = std::move(test_cbs_builder).Build();
+    TestProfileIOS::Builder builder;
+    profile_ = std::move(builder).Build();
   }
 
   web::WebTaskEnvironment task_environment_;

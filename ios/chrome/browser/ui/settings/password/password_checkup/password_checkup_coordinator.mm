@@ -100,7 +100,7 @@ using password_manager::PasswordCheckReferrer;
 
     if (IsSafetyCheckNotificationsEnabled()) {
       _notificationsSettingsObserver = [[NotificationsSettingsObserver alloc]
-          initWithPrefService:self.browser->GetBrowserState()->GetPrefs()
+          initWithPrefService:self.browser->GetProfile()->GetPrefs()
                    localState:GetApplicationContext()->GetLocalState()];
 
       _notificationsSettingsObserver.delegate = self;
@@ -118,8 +118,8 @@ using password_manager::PasswordCheckReferrer;
   _viewController.handler = self;
   _mediator = [[PasswordCheckupMediator alloc]
       initWithPasswordCheckManager:IOSChromePasswordCheckManagerFactory::
-                                       GetForBrowserState(
-                                           self.browser->GetBrowserState())];
+                                       GetForProfile(
+                                           self.browser->GetProfile())];
   _viewController.delegate = _mediator;
   _mediator.consumer = _viewController;
   _mediator.delegate = self;

@@ -74,14 +74,13 @@
       [[SharingStatusViewController alloc] initWithNibName:nil bundle:nil];
   self.viewController.delegate = self;
 
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
   self.mediator = [[SharingStatusMediator alloc]
-        initWithAuthService:AuthenticationServiceFactory::GetForBrowserState(
-                                browserState)
-      accountManagerService:ChromeAccountManagerServiceFactory::
-                                GetForBrowserState(browserState)
-              faviconLoader:IOSChromeFaviconLoaderFactory::GetForBrowserState(
-                                browserState)
+        initWithAuthService:AuthenticationServiceFactory::GetForProfile(profile)
+      accountManagerService:ChromeAccountManagerServiceFactory::GetForProfile(
+                                profile)
+              faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
+                                profile)
                  recipients:_recipients
                     website:_website
                         URL:_URL

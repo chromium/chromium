@@ -28,8 +28,8 @@ class SyncEncryptionTableViewControllerTest
   void SetUp() override {
     LegacyChromeTableViewControllerTest::SetUp();
 
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     CreateController();
   }
@@ -50,7 +50,7 @@ class SyncEncryptionTableViewControllerTest
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
 };
 

@@ -93,7 +93,7 @@ class PasswordManagerViewControllerTest
 
   void SetUp() override {
     LegacyChromeTableViewControllerTest::SetUp();
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindRepeating(
@@ -112,20 +112,19 @@ class PasswordManagerViewControllerTest
               std::make_unique<affiliations::FakeAffiliationService>());
         })));
 
-    browser_state_ = std::move(builder).Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     CreateController();
 
-    ChromeBrowserState* browserState = browser_->GetBrowserState();
+    ProfileIOS* profile = browser_->GetProfile();
     mediator_ = [[TestPasswordsMediator alloc]
         initWithPasswordCheckManager:IOSChromePasswordCheckManagerFactory::
-                                         GetForBrowserState(browserState)
+                                         GetForProfile(profile)
                        faviconLoader:IOSChromeFaviconLoaderFactory::
-                                         GetForBrowserState(browserState)
-                         syncService:SyncServiceFactory::GetForBrowserState(
-                                         browserState)
-                         prefService:browserState->GetPrefs()];
+                                         GetForProfile(profile)
+                         syncService:SyncServiceFactory::GetForProfile(profile)
+                         prefService:profile->GetPrefs()];
     mediator_.encryptionState = OnDeviceEncryptionStateNotShown;
 
     // Inject some fake passwords to pass the loading state.
@@ -151,24 +150,23 @@ class PasswordManagerViewControllerTest
 
   TestPasswordStore& GetTestStore() {
     return *static_cast<TestPasswordStore*>(
-        IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-            browser_->GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS)
+        IOSChromeProfilePasswordStoreFactory::GetForProfile(
+            browser_->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS)
             .get());
   }
 
   MockBulkLeakCheckService& GetMockPasswordCheckService() {
     return *static_cast<MockBulkLeakCheckService*>(
-        IOSChromeBulkLeakCheckServiceFactory::GetForBrowserState(
-            browser_->GetBrowserState()));
+        IOSChromeBulkLeakCheckServiceFactory::GetForProfile(
+            browser_->GetProfile()));
   }
 
   LegacyChromeTableViewController* InstantiateController() override {
     ChromeAccountManagerService* account_manager_service =
-        ChromeAccountManagerServiceFactory::GetForBrowserState(
-            browser_state_.get());
+        ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
     return [[PasswordManagerViewController alloc]
         initWithChromeAccountManagerService:account_manager_service
-                                prefService:browser_state_.get()->GetPrefs()
+                                prefService:profile_.get()->GetPrefs()
                      shouldOpenInSearchMode:NO];
   }
 
@@ -178,12 +176,11 @@ class PasswordManagerViewControllerTest
 
   PasswordManagerViewController* CreateControllerForPasswordSearch() {
     ChromeAccountManagerService* account_manager_service =
-        ChromeAccountManagerServiceFactory::GetForBrowserState(
-            browser_state_.get());
+        ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
     PasswordManagerViewController* passwords_controller =
         [[PasswordManagerViewController alloc]
             initWithChromeAccountManagerService:account_manager_service
-                                    prefService:browser_state_.get()->GetPrefs()
+                                    prefService:profile_.get()->GetPrefs()
                          shouldOpenInSearchMode:YES];
     passwords_controller.delegate = mediator_;
     mediator_.consumer = passwords_controller;
@@ -355,7 +352,7 @@ class PasswordManagerViewControllerTest
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   TestPasswordsMediator* mediator_;
   ScopedKeyWindow scoped_window_;

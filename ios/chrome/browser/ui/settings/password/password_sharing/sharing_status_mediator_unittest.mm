@@ -94,38 +94,34 @@ class SharingStatusMediatorTest : public PlatformTest {
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(fake_identity_);
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
 
-    browser_state_ = std::move(builder).Build();
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+    profile_ = std::move(builder).Build();
+    AuthenticationServiceFactory::CreateAndInitializeForProfile(
+        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
   }
 
   id<SystemIdentity> fake_identity() { return fake_identity_; }
 
   AuthenticationService* GetAuthenticationService() {
-    return AuthenticationServiceFactory::GetForBrowserState(
-        browser_state_.get());
+    return AuthenticationServiceFactory::GetForProfile(profile_.get());
   }
 
   ChromeAccountManagerService* GetAccountManagerService() {
-    return ChromeAccountManagerServiceFactory::GetForBrowserState(
-        browser_state_.get());
+    return ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
   }
 
   FaviconLoader* GetFaviconLoader() {
-    return IOSChromeFaviconLoaderFactory::GetForBrowserState(
-        browser_state_.get());
+    return IOSChromeFaviconLoaderFactory::GetForProfile(profile_.get());
   }
 
  private:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   id<SystemIdentity> fake_identity_;
 };
 

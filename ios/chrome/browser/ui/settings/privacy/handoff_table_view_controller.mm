@@ -51,14 +51,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 #pragma mark - Initialization
 
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState {
-  DCHECK(browserState);
+- (instancetype)initWithProfile:(ProfileIOS*)profile {
+  DCHECK(profile);
 
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     self.title = l10n_util::GetNSString(IDS_IOS_OPTIONS_CONTINUITY_LABEL);
     _handoffEnabled = [[PrefBackedBoolean alloc]
-        initWithPrefService:browserState->GetPrefs()
+        initWithPrefService:profile->GetPrefs()
                    prefName:prefs::kIosHandoffToOtherDevices];
     _handoffEnabled.observer = self;
   }

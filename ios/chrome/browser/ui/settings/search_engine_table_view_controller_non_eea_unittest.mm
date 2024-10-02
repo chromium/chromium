@@ -242,7 +242,7 @@ TEST_F(SearchEngineTableViewControllerNonEEATest, TestChangeProvider) {
 
   // Check that the selection was written back to the prefs.
   const base::Value::Dict& searchProviderDict =
-      chrome_browser_state_->GetTestingPrefService()->GetDict(
+      profile_->GetTestingPrefService()->GetDict(
           DefaultSearchManager::kDefaultSearchProviderDataPrefName);
   const std::string* short_name =
       searchProviderDict.FindString(DefaultSearchManager::kShortName);

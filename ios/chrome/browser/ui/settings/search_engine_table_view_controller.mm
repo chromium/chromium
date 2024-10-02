@@ -104,22 +104,22 @@ const char kUmaSelectDefaultSearchEngine[] =
 
 #pragma mark - Initialization
 
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState {
-  DCHECK(browserState);
+- (instancetype)initWithProfile:(ProfileIOS*)profile {
+  DCHECK(profile);
 
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     _templateURLService =
-        ios::TemplateURLServiceFactory::GetForBrowserState(browserState);
+        ios::TemplateURLServiceFactory::GetForProfile(profile);
     _observer =
         std::make_unique<SearchEngineObserverBridge>(self, _templateURLService);
     _templateURLService->Load();
-    _faviconLoader =
-        IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
-    _prefService = browserState->GetPrefs();
+    _faviconLoader = IOSChromeFaviconLoaderFactory::GetForProfile(profile);
+    _prefService = profile->GetPrefs();
 
     _searchEngineChoiceService =
-        ios::SearchEngineChoiceServiceFactory::GetForProfile(browserState);
+        ios::SearchEngineChoiceServiceFactory::GetForProfile(profile);
+
     [self setTitle:l10n_util::GetNSString(IDS_IOS_SEARCH_ENGINE_SETTING_TITLE)];
     self.shouldDisableDoneButtonOnEdit = YES;
   }

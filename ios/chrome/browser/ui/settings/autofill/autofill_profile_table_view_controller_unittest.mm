@@ -36,17 +36,16 @@ class AutofillProfileTableViewControllerTest
     : public LegacyChromeTableViewControllerTest {
  protected:
   AutofillProfileTableViewControllerTest() {
-    TestProfileIOS::Builder test_cbs_builder;
+    TestProfileIOS::Builder builder;
     // Profile import requires a PersonalDataManager which itself needs the
     // WebDataService; this is not initialized on a TestProfileIOS by
     // default.
-    test_cbs_builder.AddTestingFactory(
-        ios::WebDataServiceFactory::GetInstance(),
-        ios::WebDataServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    builder.AddTestingFactory(ios::WebDataServiceFactory::GetInstance(),
+                              ios::WebDataServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    profile_ = std::move(test_cbs_builder).Build();
+    profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     AuthenticationServiceFactory::CreateAndInitializeForProfile(

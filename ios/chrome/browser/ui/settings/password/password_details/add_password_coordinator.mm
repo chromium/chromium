@@ -66,18 +66,17 @@
 }
 
 - (void)start {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
   self.viewController = [[AddPasswordViewController alloc] init];
   self.viewController.presentationController.delegate = self;
 
   self.mediator = [[AddPasswordMediator alloc]
           initWithDelegate:self
-      passwordCheckManager:IOSChromePasswordCheckManagerFactory::
-                               GetForBrowserState(browserState)
-                                   .get()
-               prefService:browserState->GetPrefs()
-               syncService:SyncServiceFactory::GetForBrowserState(
-                               browserState)];
+      passwordCheckManager:IOSChromePasswordCheckManagerFactory::GetForProfile(
+                               profile)
+                               .get()
+               prefService:profile->GetPrefs()
+               syncService:SyncServiceFactory::GetForProfile(profile)];
   self.mediator.consumer = self.viewController;
   self.viewController.delegate = self.mediator;
 

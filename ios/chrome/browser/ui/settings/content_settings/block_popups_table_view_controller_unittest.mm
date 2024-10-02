@@ -36,8 +36,8 @@ class BlockPopupsTableViewControllerTest
  protected:
   void SetUp() override {
     LegacyChromeTableViewControllerTest::SetUp();
-    TestProfileIOS::Builder test_cbs_builder;
-    profile_ = std::move(test_cbs_builder).Build();
+    TestProfileIOS::Builder builder;
+    profile_ = std::move(builder).Build();
   }
 
   LegacyChromeTableViewController* InstantiateController() override {

@@ -170,13 +170,12 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
     credentials.push_back(_credential);
   }
 
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  self.mediator =
-      [[PasswordDetailsMediator alloc] initWithPasswords:credentials
-                                             displayName:displayName
-                                            browserState:browserState
-                                                 context:_context
-                                                delegate:self];
+  ProfileIOS* profile = self.browser->GetProfile();
+  self.mediator = [[PasswordDetailsMediator alloc] initWithPasswords:credentials
+                                                         displayName:displayName
+                                                             profile:profile
+                                                             context:_context
+                                                            delegate:self];
   self.mediator.consumer = self.viewController;
   self.viewController.handler = self;
   self.viewController.delegate = self.mediator;
@@ -369,7 +368,7 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
   LogPasswordSharingInteraction(
       PasswordSharingInteraction::kPasswordDetailsShareButtonClicked);
 
-  if (self.browser->GetBrowserState()->GetPrefs()->GetBoolean(
+  if (self.browser->GetProfile()->GetPrefs()->GetBoolean(
           prefs::kPasswordSharingFlowHasBeenEntered)) {
     [self startPasswordSharingCoordinator];
   } else {
@@ -422,9 +421,8 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
 }
 
 - (void)updateFormManagers {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  BrowserList* browserList =
-      BrowserListFactory::GetForBrowserState(browserState);
+  ProfileIOS* profile = self.browser->GetProfile();
+  BrowserList* browserList = BrowserListFactory::GetForProfile(profile);
 
   for (Browser* browser :
        browserList->BrowsersOfType(BrowserList::BrowserType::kAll)) {
@@ -480,7 +478,7 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
 
 - (void)passwordSharingFirstRunCoordinatorDidAccept:
     (PasswordSharingFirstRunCoordinator*)coordinator {
-  self.browser->GetBrowserState()->GetPrefs()->SetBoolean(
+  self.browser->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kPasswordSharingFlowHasBeenEntered, true);
 
   if (self.passwordSharingFirstRunCoordinator == coordinator) {

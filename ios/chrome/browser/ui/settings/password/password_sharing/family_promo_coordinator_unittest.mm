@@ -23,8 +23,8 @@
 class FamilyPromoCoordinatorTest : public PlatformTest {
  protected:
   void SetUp() override {
-    browser_ = std::make_unique<TestBrowser>(
-        TestChromeBrowserState::Builder().Build().get());
+    browser_ =
+        std::make_unique<TestBrowser>(TestProfileIOS::Builder().Build().get());
 
     mock_application_commands_handler_ =
         OCMStrictProtocolMock(@protocol(ApplicationCommands));

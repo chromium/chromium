@@ -49,7 +49,7 @@ class PasswordCheckupViewControllerTest
 
   void SetUp() override {
     LegacyChromeTableViewControllerTest::SetUp();
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindRepeating(
@@ -61,8 +61,8 @@ class PasswordCheckupViewControllerTest
           return std::unique_ptr<KeyedService>(
               std::make_unique<affiliations::FakeAffiliationService>());
         })));
-    browser_state_ = std::move(builder).Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     CreateController();
 
@@ -71,8 +71,7 @@ class PasswordCheckupViewControllerTest
 
     mediator_ = [[PasswordCheckupMediator alloc]
         initWithPasswordCheckManager:IOSChromePasswordCheckManagerFactory::
-                                         GetForBrowserState(
-                                             browser_state_.get())];
+                                         GetForProfile(profile_.get())];
     view_controller.delegate = mediator_;
     mediator_.consumer = view_controller;
 
@@ -86,8 +85,8 @@ class PasswordCheckupViewControllerTest
 
   TestPasswordStore& GetTestStore() {
     return *static_cast<TestPasswordStore*>(
-        IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-            browser_->GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS)
+        IOSChromeProfilePasswordStoreFactory::GetForProfile(
+            browser_->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS)
             .get());
   }
 
@@ -262,7 +261,7 @@ class PasswordCheckupViewControllerTest
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   PasswordCheckupMediator* mediator_;
   base::test::ScopedFeatureList feature_list;

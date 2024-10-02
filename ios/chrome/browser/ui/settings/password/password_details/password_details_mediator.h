@@ -39,7 +39,7 @@ class SavedPasswordsPresenter;
                     (const std::vector<password_manager::CredentialUIEntry>&)
                         credentials
                       displayName:(NSString*)displayName
-                     browserState:(ChromeBrowserState*)browserState
+                          profile:(ProfileIOS*)profile
                           context:(DetailsContext)context
                          delegate:(id<PasswordDetailsMediatorDelegate>)delegate
     NS_DESIGNATED_INITIALIZER;

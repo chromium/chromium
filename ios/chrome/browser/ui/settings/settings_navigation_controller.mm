@@ -468,11 +468,10 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                                               delegate
                                     creditCard:(autofill::CreditCard)creditCard
                                     inEditMode:(BOOL)editMode {
-  ChromeBrowserState* browserState =
-      browser->GetBrowserState()->GetOriginalChromeBrowserState();
+  ProfileIOS* profile = browser->GetProfile()->GetOriginalProfile();
   autofill::PersonalDataManager* personalDataManager =
-      autofill::PersonalDataManagerFactory::GetForBrowserState(
-          browserState->GetOriginalChromeBrowserState());
+      autofill::PersonalDataManagerFactory::GetForProfile(
+          profile->GetOriginalProfile());
 
   AutofillCreditCardEditTableViewController* controller =
       [[AutofillCreditCardEditTableViewController alloc]
@@ -602,7 +601,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                                       (id<SettingsNavigationControllerDelegate>)
                                           delegate {
   CHECK(browser);
-  CHECK(!browser->GetBrowserState()->IsOffTheRecord());
+  CHECK(!browser->GetProfile()->IsOffTheRecord());
   self = [super initWithRootViewController:rootViewController];
   if (self) {
     _browser = browser;
@@ -766,7 +765,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   // users migrated to kSignin in phase 3. See ConsentLevel::kSync
   // documentation for details.
   SyncSettingsAccountState accountState =
-      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState())
+      SyncServiceFactory::GetForProfile(self.browser->GetProfile())
               ->HasSyncConsent()
           ? SyncSettingsAccountState::kSyncing
           : SyncSettingsAccountState::kSignedIn;
@@ -1194,11 +1193,10 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 - (void)showCreditCardDetails:(autofill::CreditCard)creditCard
                    inEditMode:(BOOL)editMode {
-  ChromeBrowserState* browserState =
-      self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
   autofill::PersonalDataManager* personalDataManager =
-      autofill::PersonalDataManagerFactory::GetForBrowserState(
-          browserState->GetOriginalChromeBrowserState());
+      autofill::PersonalDataManagerFactory::GetForProfile(
+          profile->GetOriginalProfile());
   AutofillCreditCardEditTableViewController* controller =
       [[AutofillCreditCardEditTableViewController alloc]
            initWithCreditCard:creditCard

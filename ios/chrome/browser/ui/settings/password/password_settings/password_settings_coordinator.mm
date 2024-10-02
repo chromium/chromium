@@ -159,29 +159,29 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
 
   _reauthModule = password_manager::BuildReauthenticationModule();
 
   _savedPasswordsPresenter =
       std::make_unique<password_manager::SavedPasswordsPresenter>(
-          IOSChromeAffiliationServiceFactory::GetForBrowserState(browserState),
-          IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-              browserState, ServiceAccessType::EXPLICIT_ACCESS),
-          IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
-              browserState, ServiceAccessType::EXPLICIT_ACCESS),
-          IOSPasskeyModelFactory::GetForBrowserState(browserState));
+          IOSChromeAffiliationServiceFactory::GetForProfile(profile),
+          IOSChromeProfilePasswordStoreFactory::GetForProfile(
+              profile, ServiceAccessType::EXPLICIT_ACCESS),
+          IOSChromeAccountPasswordStoreFactory::GetForProfile(
+              profile, ServiceAccessType::EXPLICIT_ACCESS),
+          IOSPasskeyModelFactory::GetForProfile(profile));
 
   _mediator = [[PasswordSettingsMediator alloc]
          initWithReauthenticationModule:_reauthModule
                 savedPasswordsPresenter:_savedPasswordsPresenter.get()
       bulkMovePasswordsToAccountHandler:self
                           exportHandler:self
-                            prefService:browserState->GetPrefs()
+                            prefService:profile->GetPrefs()
                         identityManager:IdentityManagerFactory::GetForProfile(
-                                            browserState)
-                            syncService:SyncServiceFactory::GetForBrowserState(
-                                            browserState)];
+                                            profile)
+                            syncService:SyncServiceFactory::GetForProfile(
+                                            profile)];
 
   _dispatcher = static_cast<id<ApplicationCommands>>(
       self.browser->GetCommandDispatcher());

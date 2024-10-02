@@ -46,24 +46,22 @@ using testing::ReturnRef;
 class SettingsNavigationControllerTest : public PlatformTest {
  protected:
   SettingsNavigationControllerTest() {
-    TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.AddTestingFactory(
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindRepeating(
             &password_manager::BuildPasswordStore<
                 web::BrowserState, password_manager::TestPasswordStore>));
-    chrome_browser_state_ =
-        profile_manager_.AddProfileWithBuilder(std::move(test_cbs_builder));
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        chrome_browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
+    AuthenticationServiceFactory::CreateAndInitializeForProfile(
+        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     NSArray<Protocol*>* command_protocols = @[
       @protocol(ApplicationCommands), @protocol(BrowserCommands),
@@ -82,8 +80,7 @@ class SettingsNavigationControllerTest : public PlatformTest {
         niceMockForProtocol:@protocol(SettingsNavigationControllerDelegate)];
 
     TemplateURLService* template_url_service =
-        ios::TemplateURLServiceFactory::GetForBrowserState(
-            chrome_browser_state_.get());
+        ios::TemplateURLServiceFactory::GetForProfile(profile_.get());
     template_url_service->Load();
 
     NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
@@ -106,7 +103,7 @@ class SettingsNavigationControllerTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
-  raw_ptr<TestChromeBrowserState> chrome_browser_state_;
+  raw_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   id mockDelegate_;
   NSString* initialValueForSpdyProxyEnabled_;

@@ -64,7 +64,7 @@ BOOL DeviceSupportsAuthentication() {
 }
 
 std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
-    web::BrowserState* browser_state) {
+    web::BrowserState* context) {
   return std::make_unique<feature_engagement::test::MockTracker>();
 }
 
@@ -82,16 +82,15 @@ class PrivacyTableViewControllerTest
   void SetUp() override {
     LegacyChromeTableViewControllerTest::SetUp();
 
-    TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.AddTestingFactory(
-        SyncServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateMockSyncService));
-    test_cbs_builder.AddTestingFactory(
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                              base::BindRepeating(&CreateMockSyncService));
+    builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
         base::BindRepeating(&BuildFeatureEngagementMockTracker));
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
+    profile_ = std::move(builder).Build();
 
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
     initialValueForSpdyProxyEnabled_ =
@@ -99,7 +98,7 @@ class PrivacyTableViewControllerTest
     [defaults setValue:@"Disabled" forKey:kSpdyProxyEnabled];
 
     // Set Incognito Mode availability depending on test config.
-    chrome_browser_state_->GetTestingPrefService()->SetManagedPref(
+    profile_->GetTestingPrefService()->SetManagedPref(
         policy::policy_prefs::kIncognitoModeAvailability,
         std::make_unique<base::Value>(
             static_cast<int>(GetParam().incognitoModeAvailability)));
@@ -128,13 +127,13 @@ class PrivacyTableViewControllerTest
 
   syncer::MockSyncService* mock_sync_service() {
     return static_cast<syncer::MockSyncService*>(
-        SyncServiceFactory::GetForBrowserState(chrome_browser_state_.get()));
+        SyncServiceFactory::GetForProfile(profile_.get()));
   }
 
   // Returns the proper detail text for the safe browsing item depending on the
   // safe browsing and enhanced protection preference values.
   NSString* SafeBrowsingDetailText() {
-    PrefService* prefService = chrome_browser_state_->GetPrefs();
+    PrefService* prefService = profile_->GetPrefs();
     if (safe_browsing::IsEnhancedProtectionEnabled(*prefService)) {
       return l10n_util::GetNSString(
           IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_TITLE);
@@ -148,7 +147,7 @@ class PrivacyTableViewControllerTest
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   NSString* initialValueForSpdyProxyEnabled_;
   base::test::ScopedFeatureList feature_list_;
@@ -157,7 +156,7 @@ class PrivacyTableViewControllerTest
 // Tests PrivacyTableViewController is set up with all appropriate items
 // and sections.
 TEST_P(PrivacyTableViewControllerTest, TestModel) {
-  PrefService* prefService = chrome_browser_state_->GetPrefs();
+  PrefService* prefService = profile_->GetPrefs();
   CreateController();
   CheckController();
 
@@ -204,10 +203,10 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
   // WebServices section.
   currentSection++;
   EXPECT_EQ(1, NumberOfItemsInSection(currentSection));
-  NSString* handoffSubtitle = chrome_browser_state_->GetPrefs()->GetBoolean(
-                                  prefs::kIosHandoffToOtherDevices)
-                                  ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
-                                  : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+  NSString* handoffSubtitle =
+      profile_->GetPrefs()->GetBoolean(prefs::kIosHandoffToOtherDevices)
+          ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
+          : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
   CheckTextCellTextAndDetailText(
       l10n_util::GetNSString(IDS_IOS_OPTIONS_ENABLE_HANDOFF_TO_OTHER_DEVICES),
       handoffSubtitle, currentSection, 0);
@@ -313,11 +312,10 @@ TEST_P(PrivacyTableViewControllerTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature);
-  PrefService* prefService = chrome_browser_state_->GetPrefs();
+  PrefService* prefService = profile_->GetPrefs();
   feature_engagement::test::MockTracker* tracker =
       static_cast<feature_engagement::test::MockTracker*>(
-          feature_engagement::TrackerFactory::GetForBrowserState(
-              chrome_browser_state_.get()));
+          feature_engagement::TrackerFactory::GetForProfile(profile_.get()));
 
   CreateController();
   CheckController();

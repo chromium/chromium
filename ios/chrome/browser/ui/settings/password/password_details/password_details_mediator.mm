@@ -186,7 +186,7 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
   // Listens to compromised passwords changes.
   std::unique_ptr<PasswordCheckObserverBridge> _passwordCheckObserver;
 
-  // The BrowserState pref service.
+  // The profile pref service.
   raw_ptr<PrefService> _prefService;
 
   // The sync service.
@@ -215,10 +215,10 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
 - (instancetype)
     initWithPasswords:(const std::vector<CredentialUIEntry>&)credentials
           displayName:(NSString*)displayName
-         browserState:(ChromeBrowserState*)browserState
+              profile:(ProfileIOS*)profile
               context:(DetailsContext)context
              delegate:(id<PasswordDetailsMediatorDelegate>)delegate {
-  DCHECK(browserState);
+  DCHECK(profile);
   DCHECK(!credentials.empty());
 
   self = [super init];
@@ -226,16 +226,14 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
     return nil;
   }
 
-  _manager =
-      IOSChromePasswordCheckManagerFactory::GetForBrowserState(browserState)
-          .get();
+  _manager = IOSChromePasswordCheckManagerFactory::GetForProfile(profile).get();
   _passwordCheckObserver =
       std::make_unique<PasswordCheckObserverBridge>(self, _manager.get());
   _credentials = credentials;
   _displayName = displayName;
   _context = context;
-  _prefService = browserState->GetPrefs();
-  _syncService = SyncServiceFactory::GetForBrowserState(browserState);
+  _prefService = profile->GetPrefs();
+  _syncService = SyncServiceFactory::GetForProfile(profile);
   _delegate = delegate;
 
   return self;
