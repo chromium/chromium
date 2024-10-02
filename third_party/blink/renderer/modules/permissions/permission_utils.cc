@@ -398,11 +398,25 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
     return CreatePermissionDescriptor(PermissionName::SPEAKER_SELECTION);
   }
   if (name == V8PermissionName::Enum::kKeyboardLock) {
+#if !BUILDFLAG(IS_ANDROID)
     return CreatePermissionDescriptor(PermissionName::KEYBOARD_LOCK);
+#else
+    exception_state.ThrowTypeError(
+        "The Keyboard Lock permission isn't available on Android.");
+    return nullptr;
+#endif
   }
+
   if (name == V8PermissionName::Enum::kPointerLock) {
+#if !BUILDFLAG(IS_ANDROID)
     return CreatePermissionDescriptor(PermissionName::POINTER_LOCK);
+#else
+    exception_state.ThrowTypeError(
+        "The Pointer Lock permission isn't available on Android.");
+    return nullptr;
+#endif
   }
+
   if (name == V8PermissionName::Enum::kFullscreen) {
     FullscreenPermissionDescriptor* fullscreen_permission =
         NativeValueTraits<FullscreenPermissionDescriptor>::NativeValue(

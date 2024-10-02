@@ -54,7 +54,11 @@ public class AwPermissionQueryApiTest extends AwParameterizedTest {
           }).catch(e => {
             if (e instanceof TypeError && e.message.includes("is not enabled")) {
                 resultListener.postMessage("not_enabled");
-            } else {
+            }
+            else if (e instanceof TypeError && e.message.includes("isn't available on Android")) {
+                resultListener.postMessage("not_available");
+            }
+            else {
                 resultListener.postMessage("" + e);
             }
           });
@@ -212,9 +216,7 @@ public class AwPermissionQueryApiTest extends AwParameterizedTest {
         runTestCase("display-capture", "denied");
         runTestCase("idle-detection", "denied");
         runTestCase("periodic-background-sync", "denied");
-        runTestCase("keyboard-lock", "denied");
         runTestCase("push", "denied", "{\"name\": \"push\", \"userVisibleOnly\": true}");
-        runTestCase("pointer-lock", "denied");
         runTestCase(
                 "fullscreen",
                 "denied",
@@ -233,6 +235,15 @@ public class AwPermissionQueryApiTest extends AwParameterizedTest {
         runTestCase("local-fonts", "not_enabled");
         runTestCase("captured-surface-control", "not_enabled");
         runTestCase("speaker-selection", "not_enabled");
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @SmallTest
+    public void testPermissionsNotAvailable() throws Exception {
+        // These permissions aren't available on Android.
+        runTestCase("pointer-lock", "not_available");
+        runTestCase("keyboard-lock", "not_available");
     }
 
     @Test
