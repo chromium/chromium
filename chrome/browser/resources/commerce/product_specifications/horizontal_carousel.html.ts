@@ -8,7 +8,7 @@ import type {HorizontalCarouselElement} from './horizontal_carousel.js';
 
 export function getHtml(this: HorizontalCarouselElement) {
   return html`
-  <div class="carousel-button-container">
+  <div id="backButtonContainer" class="carousel-button-container">
     <cr-icon-button id="backButton" class="carousel-button"
         @click="${this.onCarouselBackClick_}" iron-icon="cr:chevron-left"
         ?hidden="${!this.showBackButton_}" tabindex="-1">
@@ -22,7 +22,7 @@ export function getHtml(this: HorizontalCarouselElement) {
     <div id="endProbe"></div>
   </div>
 
-  <div class="carousel-button-container">
+  <div id="forwardButtonContainer" class="carousel-button-container">
     <cr-icon-button id="forwardButton" class="carousel-button"
         @click="${this.onCarouselForwardClick_}" iron-icon="cr:chevron-right"
         ?hidden="${!this.showForwardButton}" tabindex="-1">
