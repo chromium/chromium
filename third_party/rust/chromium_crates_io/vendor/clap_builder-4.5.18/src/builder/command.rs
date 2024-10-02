@@ -3462,6 +3462,12 @@ impl Command {
         self.long_version.as_deref()
     }
 
+    /// Get the placement within help
+    #[inline]
+    pub fn get_display_order(&self) -> usize {
+        self.disp_ord.unwrap_or(999)
+    }
+
     /// Get the authors of the cmd.
     #[inline]
     pub fn get_author(&self) -> Option<&str> {
@@ -4775,11 +4781,6 @@ impl Command {
         self.get_subcommands()
             .find(|sc| sc.long_flag_aliases_to(long))
             .map(|sc| sc.get_name())
-    }
-
-    #[cfg(feature = "help")]
-    pub(crate) fn get_display_order(&self) -> usize {
-        self.disp_ord.unwrap_or(999)
     }
 
     pub(crate) fn write_help_err(&self, mut use_long: bool) -> StyledStr {

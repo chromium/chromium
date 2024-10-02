@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.74"
 name = "clap"
-version = "4.5.17"
+version = "4.5.18"
 build = false
 include = [
     "build.rs",
@@ -465,11 +465,11 @@ doc-scrape-examples = true
 required-features = ["derive"]
 
 [dependencies.clap_builder]
-version = "=4.5.17"
+version = "=4.5.18"
 default-features = false
 
 [dependencies.clap_derive]
-version = "=4.5.13"
+version = "=4.5.18"
 optional = true
 
 [dev-dependencies.automod]

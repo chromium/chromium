@@ -3870,6 +3870,12 @@ impl Arg {
         self.long_help.as_ref()
     }
 
+    /// Get the placement within help
+    #[inline]
+    pub fn get_display_order(&self) -> usize {
+        self.disp_ord.unwrap_or(999)
+    }
+
     /// Get the help heading specified for this argument, if any
     #[inline]
     pub fn get_help_heading(&self) -> Option<&str> {
@@ -4421,11 +4427,6 @@ impl Arg {
     /// Either multiple values or occurrences
     pub(crate) fn is_multiple(&self) -> bool {
         self.is_multiple_values_set() || matches!(*self.get_action(), ArgAction::Append)
-    }
-
-    #[cfg(feature = "help")]
-    pub(crate) fn get_display_order(&self) -> usize {
-        self.disp_ord.unwrap_or(999)
     }
 }
 
