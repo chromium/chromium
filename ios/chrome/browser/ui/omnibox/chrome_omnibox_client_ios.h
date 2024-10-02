@@ -30,7 +30,7 @@ class ChromeOmniboxClientIOS final : public OmniboxClient,
                                      public web::WebStateObserver {
  public:
   ChromeOmniboxClientIOS(WebLocationBar* location_bar,
-                         ChromeBrowserState* browser_state,
+                         ProfileIOS* profile,
                          feature_engagement::Tracker* tracker);
 
   ChromeOmniboxClientIOS(const ChromeOmniboxClientIOS&) = delete;
@@ -110,7 +110,7 @@ class ChromeOmniboxClientIOS final : public OmniboxClient,
     AutocompleteMatch match;
   };
   raw_ptr<WebLocationBar> location_bar_;
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
   AutocompleteSchemeClassifierImpl scheme_classifier_;
   raw_ptr<feature_engagement::Tracker> engagement_tracker_;
   // Stores observed navigations from the omnibox. Items are removed once

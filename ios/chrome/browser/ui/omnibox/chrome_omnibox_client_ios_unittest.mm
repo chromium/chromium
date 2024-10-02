@@ -60,7 +60,7 @@ class ChromeOmniboxClientIOSTest
   base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<TestWebLocationBar> web_location_bar_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<feature_engagement::Tracker> tracker_;
   std::unique_ptr<ChromeOmniboxClientIOS> chrome_omnibox_client_ios_;
 
@@ -78,14 +78,14 @@ void ChromeOmniboxClientIOSTest::SetUp() {
   load_notified_ = false;
   changed_notified_ = false;
 
-  TestChromeBrowserState::Builder builder;
+  TestProfileIOS::Builder builder;
   builder.AddTestingFactory(ios::ShortcutsBackendFactory::GetInstance(),
                             ios::ShortcutsBackendFactory::GetDefaultFactory());
-  browser_state_ = std::move(builder).Build();
+  profile_ = std::move(builder).Build();
   web_location_bar_ = std::make_unique<TestWebLocationBar>();
   tracker_ = feature_engagement::CreateTestTracker();
   chrome_omnibox_client_ios_ = std::make_unique<ChromeOmniboxClientIOS>(
-      web_location_bar_.get(), browser_state_.get(), tracker_.get());
+      web_location_bar_.get(), profile_.get(), tracker_.get());
 
   web_state_ = std::make_unique<web::FakeWebState>();
   web_location_bar_->SetWebState(web_state_.get());
@@ -94,7 +94,7 @@ void ChromeOmniboxClientIOSTest::SetUp() {
 
   shortcuts_backend_ =
       ios::ShortcutsBackendFactory::GetInstance()->GetForProfile(
-          browser_state_.get());
+          profile_.get());
   ASSERT_TRUE(shortcuts_backend_.get());
   shortcuts_backend_->AddObserver(this);
 }

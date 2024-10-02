@@ -133,20 +133,20 @@
       LayoutGuideCenterForBrowser(self.browser);
   self.viewController.isSearchOnlyUI = self.isSearchOnlyUI;
 
-  BOOL isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
+  BOOL isIncognito = self.browser->GetProfile()->IsOffTheRecord();
   self.mediator = [[OmniboxMediator alloc]
       initWithIncognito:isIncognito
                 tracker:feature_engagement::TrackerFactory::GetForBrowserState(
-                            self.browser->GetBrowserState())
+                            self.browser->GetProfile())
           isLensOverlay:_isLensOverlay];
 
   TemplateURLService* templateURLService =
       ios::TemplateURLServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+          self.browser->GetProfile());
   self.mediator.templateURLService = templateURLService;
   self.mediator.faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+          self.browser->GetProfile());
   self.mediator.consumer = self.viewController;
   self.mediator.omniboxCommandsHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
@@ -164,7 +164,7 @@
   id<OmniboxCommands> omniboxHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
   _editView = std::make_unique<OmniboxViewIOS>(
-      self.textField, std::move(_client), self.browser->GetBrowserState(),
+      self.textField, std::move(_client), self.browser->GetProfile(),
       omniboxHandler, self.focusDelegate, _toolbarHandler, self.viewController);
   self.pasteDelegate = [[OmniboxTextFieldPasteDelegate alloc] init];
   [self.textField setPasteDelegate:self.pasteDelegate];
@@ -234,7 +234,7 @@
   if (!self.keyboardAccessoryView && !self.isSearchOnlyUI) {
     TemplateURLService* templateURLService =
         ios::TemplateURLServiceFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
+            self.browser->GetProfile());
     self.keyboardAccessoryView = ConfigureAssistiveKeyboardViews(
         self.textField, kDotComTLD, _keyboardMediator, templateURLService,
         HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands));

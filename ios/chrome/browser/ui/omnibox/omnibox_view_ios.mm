@@ -52,7 +52,7 @@ using base::UserMetricsAction;
 
 OmniboxViewIOS::OmniboxViewIOS(OmniboxTextFieldIOS* field,
                                std::unique_ptr<OmniboxClient> client,
-                               ChromeBrowserState* browser_state,
+                               ProfileIOS* profile,
                                id<OmniboxCommands> omnibox_focuser,
                                id<OmniboxFocusDelegate> focus_delegate,
                                id<ToolbarCommands> toolbar_commands_handler,

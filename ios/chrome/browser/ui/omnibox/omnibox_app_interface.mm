@@ -80,8 +80,8 @@ const base::FilePath& GetTestDataDir() {
 
 + (void)blockURLFromTopSites:(NSString*)URL {
   scoped_refptr<history::TopSites> top_sites =
-      ios::TopSitesFactory::GetForBrowserState(
-          chrome_test_util::GetOriginalBrowserState());
+      ios::TopSitesFactory::GetForProfile(
+          chrome_test_util::GetOriginalProfile());
   if (top_sites) {
     top_sites->AddBlockedUrl(GURL(base::SysNSStringToUTF8(URL)));
   }
@@ -90,11 +90,11 @@ const base::FilePath& GetTestDataDir() {
 + (void)setUpFakeSuggestionsService:(NSString*)filename {
   RemoteSuggestionsService* remoteSuggestionsService =
       RemoteSuggestionsServiceFactory::GetForProfile(
-          chrome_test_util::GetOriginalBrowserState(), YES);
+          chrome_test_util::GetOriginalProfile(), YES);
 
   TemplateURLService* templateURLService =
-      ios::TemplateURLServiceFactory::GetForBrowserState(
-          chrome_test_util::GetOriginalBrowserState());
+      ios::TemplateURLServiceFactory::GetForProfile(
+          chrome_test_util::GetOriginalProfile());
 
   base::FilePath filePath =
       GetTestDataDir().AppendASCII(base::SysNSStringToUTF8(filename));
@@ -105,10 +105,10 @@ const base::FilePath& GetTestDataDir() {
 + (void)tearDownFakeSuggestionsService {
   RemoteSuggestionsService* remoteSuggestionsService =
       RemoteSuggestionsServiceFactory::GetForProfile(
-          chrome_test_util::GetOriginalBrowserState(), YES);
+          chrome_test_util::GetOriginalProfile(), YES);
 
   network::mojom::URLLoaderFactory* urlLoaderFactory =
-      chrome_test_util::GetOriginalBrowserState()->GetURLLoaderFactory();
+      chrome_test_util::GetOriginalProfile()->GetURLLoaderFactory();
 
   TestFakeSuggestionsService::GetInstance()->TearDown(remoteSuggestionsService,
                                                       urlLoaderFactory);
@@ -117,7 +117,7 @@ const base::FilePath& GetTestDataDir() {
 + (BOOL)shortcutsBackendInitialized {
   scoped_refptr<ShortcutsBackend> shortcuts_backend =
       ios::ShortcutsBackendFactory::GetInstance()->GetForProfileIfExists(
-          chrome_test_util::GetOriginalBrowserState());
+          chrome_test_util::GetOriginalProfile());
   if (shortcuts_backend) {
     return shortcuts_backend->initialized();
   }
@@ -127,7 +127,7 @@ const base::FilePath& GetTestDataDir() {
 + (NSInteger)numberOfShortcutsInDatabase {
   scoped_refptr<ShortcutsBackend> shortcuts_backend =
       ios::ShortcutsBackendFactory::GetInstance()->GetForProfileIfExists(
-          chrome_test_util::GetOriginalBrowserState());
+          chrome_test_util::GetOriginalProfile());
   if (shortcuts_backend && shortcuts_backend->initialized()) {
     return static_cast<NSInteger>(shortcuts_backend->shortcuts_map().size());
   }
