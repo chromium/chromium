@@ -521,8 +521,8 @@ void SaveCardBubbleControllerImpl::OnSaveButton(
                    kAccepted);
       break;
     case BubbleType::MANAGE_CARDS:
-      LogManageCardsPromptMetric(ManageCardsPromptMetric::kManageCardsDone,
-                                 is_upload_save_);
+      CHECK(!is_upload_save_);
+      LogManageCardsPromptMetric(ManageCardsPromptMetric::kManageCardsDone);
       return;
     case BubbleType::UPLOAD_IN_PROGRESS:
     case BubbleType::UPLOAD_COMPLETED:
@@ -538,9 +538,9 @@ void SaveCardBubbleControllerImpl::OnLegalMessageLinkClicked(const GURL& url) {
 
 void SaveCardBubbleControllerImpl::OnManageCardsClicked() {
   CHECK(current_bubble_type_ == BubbleType::MANAGE_CARDS);
+  CHECK(!is_upload_save_);
 
-  LogManageCardsPromptMetric(ManageCardsPromptMetric::kManageCardsManageCards,
-                             is_upload_save_);
+  LogManageCardsPromptMetric(ManageCardsPromptMetric::kManageCardsManageCards);
 
   ShowPaymentsSettingsPage();
 }
@@ -836,8 +836,8 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
           is_reshow_);
       break;
     case BubbleType::MANAGE_CARDS:
-      LogManageCardsPromptMetric(ManageCardsPromptMetric::kManageCardsShown,
-                                 is_upload_save_);
+      CHECK(!is_upload_save_);
+      LogManageCardsPromptMetric(ManageCardsPromptMetric::kManageCardsShown);
       break;
     case BubbleType::UPLOAD_COMPLETED:
       autofill_metrics::LogCreditCardUploadConfirmationViewShownMetric(

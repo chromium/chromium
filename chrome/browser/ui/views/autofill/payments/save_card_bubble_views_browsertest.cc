@@ -871,7 +871,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestSettings,
 
   // Metrics should have been recorded correctly.
   EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.ManageCardsPrompt.Local"),
+      histogram_tester.GetAllSamples("Autofill.ManageCardsPrompt"),
       ElementsAre(Bucket(ManageCardsPromptMetric::kManageCardsShown, 1),
                   Bucket(ManageCardsPromptMetric::kManageCardsManageCards, 1)));
 }
@@ -2295,8 +2295,8 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
   EXPECT_TRUE(
       FindViewInBubbleById(DialogViewId::MANAGE_CARDS_VIEW)->GetVisible());
   histogram_tester.ExpectUniqueSample(
-      "Autofill.ManageCardsPrompt.Local",
-      ManageCardsPromptMetric::kManageCardsShown, 1);
+      "Autofill.ManageCardsPrompt", ManageCardsPromptMetric::kManageCardsShown,
+      1);
 }
 
 // Tests the manage cards bubble. Ensures that clicking the [Done]
@@ -2326,7 +2326,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
   // No bubble should be showing now and metrics should be recorded correctly.
   EXPECT_EQ(nullptr, GetSaveCardBubbleViews());
   EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.ManageCardsPrompt.Local"),
+      histogram_tester.GetAllSamples("Autofill.ManageCardsPrompt"),
       ElementsAre(Bucket(ManageCardsPromptMetric::kManageCardsShown, 1),
                   Bucket(ManageCardsPromptMetric::kManageCardsDone, 1)));
 }

@@ -1043,7 +1043,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
 
   ClickSaveButton();
   EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.ManageCardsPrompt.Local"),
+      histogram_tester.GetAllSamples("Autofill.ManageCardsPrompt"),
       ElementsAre(Bucket(ManageCardsPromptMetric::kManageCardsShown, 1),
                   Bucket(ManageCardsPromptMetric::kManageCardsDone, 1)));
 }
@@ -1057,7 +1057,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
   CloseAndReshowBubble();
   controller()->OnManageCardsClicked();
   EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.ManageCardsPrompt.Local"),
+      histogram_tester.GetAllSamples("Autofill.ManageCardsPrompt"),
       ElementsAre(Bucket(ManageCardsPromptMetric::kManageCardsShown, 1),
                   Bucket(ManageCardsPromptMetric::kManageCardsManageCards, 1)));
 }
@@ -1074,7 +1074,7 @@ TEST_F(
   // After closing the sign-in promo, clicking the icon should bring
   // up the Manage cards bubble.
   EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.ManageCardsPrompt.Local"),
+      histogram_tester.GetAllSamples("Autofill.ManageCardsPrompt"),
       ElementsAre(Bucket(ManageCardsPromptMetric::kManageCardsShown, 2)));
 }
 
@@ -1089,7 +1089,7 @@ TEST_F(
   // After closing the sign-in promo, clicking the icon should bring
   // up the Manage cards bubble.
   EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.ManageCardsPrompt.Local"),
+      histogram_tester.GetAllSamples("Autofill.ManageCardsPrompt"),
       ElementsAre(Bucket(ManageCardsPromptMetric::kManageCardsShown, 1)));
 }
 
@@ -1112,21 +1112,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
   ClickSaveButton();
   // No other bubbles should have popped up.
   histogram_tester.ExpectTotalCount("Autofill.SignInPromo", 0);
-  histogram_tester.ExpectTotalCount("Autofill.ManageCardsPrompt.Local", 0);
-  histogram_tester.ExpectTotalCount("Autofill.ManageCardsPrompt.Upload", 0);
-}
-
-TEST_F(SaveCardBubbleControllerImplTest, Metrics_Upload_FirstShow_ManageCards) {
-  EXPECT_CALL(*mock_sentiment_service_, SavedCard()).Times(1);
-  base::HistogramTester histogram_tester;
-  ShowUploadBubble();
-  ClickSaveButton();
-  controller()->ShowBubbleForManageCardsForTesting(
-      autofill::test::GetCreditCard());
-  // Icon should disappear after an upload save,
-  // even when this flag is enabled.
-  histogram_tester.ExpectTotalCount("Autofill.ManageCardsPrompt.Local", 0);
-  histogram_tester.ExpectTotalCount("Autofill.ManageCardsPrompt.Upload", 1);
+  histogram_tester.ExpectTotalCount("Autofill.ManageCardsPrompt", 0);
 }
 
 // Test that the credit card upload loading and confirmation metrics are

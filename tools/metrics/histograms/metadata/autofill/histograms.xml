@@ -3514,19 +3514,14 @@ AutofillSaveCreditCardPromptDestination.
   </token>
 </histogram>
 
-<histogram name="Autofill.ManageCardsPrompt{AutofillManageCardsPrompt}"
-    enum="AutofillManageCardsPrompt" expires_after="2025-07-01">
+<histogram name="Autofill.ManageCardsPrompt" enum="AutofillManageCardsPrompt"
+    expires_after="2025-07-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <summary>
-    The frequency of user interactions with the Manage Cards prompt.
-    {AutofillManageCardsPrompt}
+    The frequency of user interactions with the Manage Cards prompt, which is
+    shown after a successful local card save.
   </summary>
-  <token key="AutofillManageCardsPrompt">
-    <variant name=""/>
-    <variant name=".Local" summary="Card was saved locally"/>
-    <variant name=".Upload" summary="Card was uploaded to server"/>
-  </token>
 </histogram>
 
 <histogram name="Autofill.ManualFallback.AddNewAddressPromptShown"
