@@ -13,7 +13,7 @@
 #import "components/plus_addresses/affiliations/plus_address_affiliation_source_adapter.h"
 #import "components/plus_addresses/features.h"
 #import "components/plus_addresses/plus_address_http_client_impl.h"
-#import "components/plus_addresses/plus_address_service.h"
+#import "components/plus_addresses/plus_address_service_impl.h"
 #import "components/variations/service/google_groups_manager.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
@@ -70,7 +70,7 @@ PlusAddressServiceFactory::BuildServiceInstanceFor(
   // `groups_manager` can be null in tests.
   GoogleGroupsManager* groups_manager =
       GoogleGroupsManagerFactory::GetForProfile(profile);
-  plus_addresses::PlusAddressService::FeatureEnabledForProfileCheck
+  plus_addresses::PlusAddressServiceImpl::FeatureEnabledForProfileCheck
       feature_check =
           (groups_manager &&
            base::FeatureList::IsEnabled(
@@ -85,8 +85,8 @@ PlusAddressServiceFactory::BuildServiceInstanceFor(
     return test_service;
   }
 
-  std::unique_ptr<plus_addresses::PlusAddressService> plus_address_service =
-      std::make_unique<plus_addresses::PlusAddressService>(
+  std::unique_ptr<plus_addresses::PlusAddressServiceImpl> plus_address_service =
+      std::make_unique<plus_addresses::PlusAddressServiceImpl>(
           profile->GetPrefs(), identity_manager,
           PlusAddressSettingServiceFactory::GetForProfile(profile),
           std::make_unique<plus_addresses::PlusAddressHttpClientImpl>(

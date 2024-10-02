@@ -19,7 +19,7 @@
 #include "components/plus_addresses/affiliations/plus_address_affiliation_source_adapter.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_http_client_impl.h"
-#include "components/plus_addresses/plus_address_service.h"
+#include "components/plus_addresses/plus_address_service_impl.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/variations/service/google_groups_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -87,7 +87,7 @@ PlusAddressServiceFactory::BuildServiceInstanceForBrowserContext(
   // `groups_manager` can be null in tests.
   GoogleGroupsManager* groups_manager =
       GoogleGroupsManagerFactory::GetForBrowserContext(context);
-  plus_addresses::PlusAddressService::FeatureEnabledForProfileCheck
+  plus_addresses::PlusAddressServiceImpl::FeatureEnabledForProfileCheck
       feature_check =
           (groups_manager &&
            base::FeatureList::IsEnabled(
@@ -97,8 +97,8 @@ PlusAddressServiceFactory::BuildServiceInstanceForBrowserContext(
                     base::Unretained(groups_manager))
               : base::BindRepeating(&base::FeatureList::IsEnabled);
 
-  std::unique_ptr<plus_addresses::PlusAddressService> plus_address_service =
-      std::make_unique<plus_addresses::PlusAddressService>(
+  std::unique_ptr<plus_addresses::PlusAddressServiceImpl> plus_address_service =
+      std::make_unique<plus_addresses::PlusAddressServiceImpl>(
           profile->GetPrefs(), identity_manager,
           PlusAddressSettingServiceFactory::GetForBrowserContext(context),
           std::make_unique<plus_addresses::PlusAddressHttpClientImpl>(

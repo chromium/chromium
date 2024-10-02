@@ -1,8 +1,7 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#include "components/plus_addresses/plus_address_service.h"
+#include "components/plus_addresses/plus_address_service_impl.h"
 
 #include <memory>
 #include <string>
@@ -61,6 +60,11 @@ using autofill::FormFieldData;
 using autofill::Suggestion;
 using autofill::SuggestionType;
 using PasswordFormClassification = autofill::PasswordFormClassification;
+
+// The number of `HTTP_FORBIDDEN` responses that the user may receive before
+// `this` is disabled for this session. If a user makes a single successful
+// call, this limit no longer applies.
+constexpr int kMaxHttpForbiddenResponses = 1;
 
 // Get the ETLD+1 of `origin`, which means any subdomain is treated
 // equivalently. See `GetDomainAndRegistry` for concrete examples.
@@ -131,7 +135,7 @@ std::string GetPlusAddressFromPlusProfile(
 
 }  // namespace
 
-PlusAddressService::PlusAddressService(
+PlusAddressServiceImpl::PlusAddressServiceImpl(
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
     PlusAddressSettingService* setting_service,
@@ -142,9 +146,10 @@ PlusAddressService::PlusAddressService(
     : pref_service_(CHECK_DEREF(pref_service)),
       identity_manager_(CHECK_DEREF(identity_manager)),
       setting_service_(CHECK_DEREF(setting_service)),
-      submission_logger_(identity_manager,
-                         base::BindRepeating(&PlusAddressService::IsPlusAddress,
-                                             base::Unretained(this))),
+      submission_logger_(
+          identity_manager,
+          base::BindRepeating(&PlusAddressServiceImpl::IsPlusAddress,
+                              base::Unretained(this))),
       plus_address_http_client_(std::move(plus_address_http_client)),
       webdata_service_(std::move(webdata_service)),
       plus_address_match_helper_(this, affiliation_service),
@@ -155,7 +160,7 @@ PlusAddressService::PlusAddressService(
   plus_address_allocator_ =
       CreateAllocator(&pref_service_.get(), &setting_service_.get(),
                       plus_address_http_client_.get(),
-                      base::BindRepeating(&PlusAddressService::IsEnabled,
+                      base::BindRepeating(&PlusAddressServiceImpl::IsEnabled,
                                           base::Unretained(this)));
 
   if (webdata_service_) {
@@ -171,13 +176,21 @@ PlusAddressService::PlusAddressService(
   }
 }
 
-PlusAddressService::~PlusAddressService() {
-  for (Observer& o : observers_) {
+PlusAddressServiceImpl::~PlusAddressServiceImpl() {
+  for (PlusAddressService::Observer& o : observers_) {
     o.OnPlusAddressServiceShutdown();
   }
 }
 
-bool PlusAddressService::IsPlusAddressCreationEnabled(
+void PlusAddressServiceImpl::AddObserver(PlusAddressService::Observer* o) {
+  observers_.AddObserver(o);
+}
+
+void PlusAddressServiceImpl::RemoveObserver(PlusAddressService::Observer* o) {
+  observers_.RemoveObserver(o);
+}
+
+bool PlusAddressServiceImpl::IsPlusAddressCreationEnabled(
     const url::Origin& origin,
     bool is_off_the_record) const {
   // Disabled plus address filling implies that plus address creation is
@@ -202,7 +215,7 @@ bool PlusAddressService::IsPlusAddressCreationEnabled(
          setting_service_->GetIsPlusAddressesEnabled();
 }
 
-bool PlusAddressService::ShouldShowManualFallback(
+bool PlusAddressServiceImpl::ShouldShowManualFallback(
     const url::Origin& origin,
     bool is_off_the_record) const {
   if (!IsPlusAddressFillingEnabled(origin)) {
@@ -227,7 +240,7 @@ bool PlusAddressService::ShouldShowManualFallback(
          setting_service_->GetIsPlusAddressesEnabled();
 }
 
-std::optional<PlusAddress> PlusAddressService::GetPlusAddress(
+std::optional<PlusAddress> PlusAddressServiceImpl::GetPlusAddress(
     const affiliations::FacetURI& facet) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::optional<PlusProfile> profile = GetPlusProfile(facet);
@@ -235,7 +248,7 @@ std::optional<PlusAddress> PlusAddressService::GetPlusAddress(
                  : std::nullopt;
 }
 
-void PlusAddressService::GetAffiliatedPlusProfiles(
+void PlusAddressServiceImpl::GetAffiliatedPlusProfiles(
     const url::Origin& origin,
     GetPlusProfilesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -244,12 +257,12 @@ void PlusAddressService::GetAffiliatedPlusProfiles(
                                                        std::move(callback));
 }
 
-base::span<const PlusProfile> PlusAddressService::GetPlusProfiles() const {
+base::span<const PlusProfile> PlusAddressServiceImpl::GetPlusProfiles() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return plus_address_cache_.GetPlusProfiles();
 }
 
-std::optional<PlusProfile> PlusAddressService::GetPlusProfile(
+std::optional<PlusProfile> PlusAddressServiceImpl::GetPlusProfile(
     const affiliations::FacetURI& facet) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!facet.is_valid()) {
@@ -258,43 +271,43 @@ std::optional<PlusProfile> PlusAddressService::GetPlusProfile(
   return plus_address_cache_.FindByFacet(facet);
 }
 
-void PlusAddressService::SavePlusProfile(const PlusProfile& profile) {
+void PlusAddressServiceImpl::SavePlusProfile(const PlusProfile& profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(profile.is_confirmed);
   // New plus addresses are requested directly from the PlusAddress backend.
   // These addresses become later available through sync. Until the address
   // shows up in sync, it should still be available through
-  // `PlusAddressService`, even after reloading the data. This requires adding
-  // the address to the database.
+  // `PlusAddressServiceImpl`, even after reloading the data. This requires
+  // adding the address to the database.
   if (webdata_service_) {
     webdata_service_->AddOrUpdatePlusProfile(profile);
   }
   // Update the in-memory plus profiles cache.
   plus_address_cache_.InsertProfile(profile);
-  for (Observer& o : observers_) {
+  for (PlusAddressService::Observer& o : observers_) {
     o.OnPlusAddressesChanged(
         {PlusAddressDataChange(PlusAddressDataChange::Type::kAdd, profile)});
   }
 }
 
-bool PlusAddressService::IsPlusAddress(
+bool PlusAddressServiceImpl::IsPlusAddress(
     const std::string& potential_plus_address) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return plus_address_cache_.IsPlusAddress(potential_plus_address);
 }
 
-bool PlusAddressService::IsPlusAddressFillingEnabled(
+bool PlusAddressServiceImpl::IsPlusAddressFillingEnabled(
     const url::Origin& origin) const {
   // Check that the feature is enabled and the origin is supported (not opaque,
   // in the `excluded_sites_`, or is non http/https scheme)
   return IsEnabled() && IsSupportedOrigin(origin);
 }
 
-bool PlusAddressService::IsPlusAddressFullFormFillingEnabled() const {
+bool PlusAddressServiceImpl::IsPlusAddressFullFormFillingEnabled() const {
   return base::FeatureList::IsEnabled(features::kPlusAddressFullFormFill);
 }
 
-void PlusAddressService::GetAffiliatedPlusAddresses(
+void PlusAddressServiceImpl::GetAffiliatedPlusAddresses(
     const url::Origin& origin,
     base::OnceCallback<void(std::vector<std::string>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -311,7 +324,7 @@ void PlusAddressService::GetAffiliatedPlusAddresses(
           std::move(callback)));
 }
 
-std::vector<Suggestion> PlusAddressService::GetSuggestionsFromPlusAddresses(
+std::vector<Suggestion> PlusAddressServiceImpl::GetSuggestionsFromPlusAddresses(
     const std::vector<std::string>& plus_addresses,
     const url::Origin& origin,
     bool is_off_the_record,
@@ -346,11 +359,11 @@ std::vector<Suggestion> PlusAddressService::GetSuggestionsFromPlusAddresses(
   return suggestions;
 }
 
-Suggestion PlusAddressService::GetManagePlusAddressSuggestion() const {
+Suggestion PlusAddressServiceImpl::GetManagePlusAddressSuggestion() const {
   return PlusAddressSuggestionGenerator::GetManagePlusAddressSuggestion();
 }
 
-void PlusAddressService::ReservePlusAddress(
+void PlusAddressServiceImpl::ReservePlusAddress(
     const url::Origin& origin,
     PlusAddressRequestCallback on_completed) {
   if (!IsEnabled()) {
@@ -363,11 +376,11 @@ void PlusAddressService::ReservePlusAddress(
   }
   plus_address_allocator_->AllocatePlusAddress(
       origin, PlusAddressAllocator::AllocationMode::kAny,
-      base::BindOnce(&PlusAddressService::HandleCreateOrConfirmResponse,
+      base::BindOnce(&PlusAddressServiceImpl::HandleCreateOrConfirmResponse,
                      base::Unretained(this), origin, std::move(on_completed)));
 }
 
-void PlusAddressService::RefreshPlusAddress(
+void PlusAddressServiceImpl::RefreshPlusAddress(
     const url::Origin& origin,
     PlusAddressRequestCallback on_completed) {
   if (!IsEnabled()) {
@@ -380,15 +393,15 @@ void PlusAddressService::RefreshPlusAddress(
   }
   plus_address_allocator_->AllocatePlusAddress(
       origin, PlusAddressAllocator::AllocationMode::kNewPlusAddress,
-      base::BindOnce(&PlusAddressService::HandleCreateOrConfirmResponse,
+      base::BindOnce(&PlusAddressServiceImpl::HandleCreateOrConfirmResponse,
                      base::Unretained(this), origin, std::move(on_completed)));
 }
 
-bool PlusAddressService::IsRefreshingSupported(const url::Origin& origin) {
+bool PlusAddressServiceImpl::IsRefreshingSupported(const url::Origin& origin) {
   return plus_address_allocator_->IsRefreshingSupported(origin);
 }
 
-void PlusAddressService::ConfirmPlusAddress(
+void PlusAddressServiceImpl::ConfirmPlusAddress(
     const url::Origin& origin,
     const PlusAddress& plus_address,
     PlusAddressRequestCallback on_completed) {
@@ -414,11 +427,11 @@ void PlusAddressService::ConfirmPlusAddress(
   plus_address_allocator_->RemoveAllocatedPlusAddress(plus_address);
   plus_address_http_client_->ConfirmPlusAddress(
       origin, plus_address,
-      base::BindOnce(&PlusAddressService::HandleCreateOrConfirmResponse,
+      base::BindOnce(&PlusAddressServiceImpl::HandleCreateOrConfirmResponse,
                      base::Unretained(this), origin, std::move(on_completed)));
 }
 
-void PlusAddressService::HandleCreateOrConfirmResponse(
+void PlusAddressServiceImpl::HandleCreateOrConfirmResponse(
     const url::Origin& origin,
     PlusAddressRequestCallback callback,
     const PlusProfileOrError& maybe_profile) {
@@ -435,7 +448,7 @@ void PlusAddressService::HandleCreateOrConfirmResponse(
   std::move(callback).Run(maybe_profile);
 }
 
-std::optional<std::string> PlusAddressService::GetPrimaryEmail() {
+std::optional<std::string> PlusAddressServiceImpl::GetPrimaryEmail() {
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return std::nullopt;
   }
@@ -446,7 +459,7 @@ std::optional<std::string> PlusAddressService::GetPrimaryEmail() {
       .email;
 }
 
-bool PlusAddressService::IsEnabled() const {
+bool PlusAddressServiceImpl::IsEnabled() const {
   if (features::kDisableForForbiddenUsers.Get() &&
       account_is_forbidden_.has_value() && account_is_forbidden_.value()) {
     return false;
@@ -465,7 +478,7 @@ bool PlusAddressService::IsEnabled() const {
                  .state() == GoogleServiceAuthError::State::NONE;
 }
 
-void PlusAddressService::OnWebDataChangedBySync(
+void PlusAddressServiceImpl::OnWebDataChangedBySync(
     const std::vector<PlusAddressDataChange>& changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<PlusAddressDataChange> applied_changes;
@@ -492,12 +505,12 @@ void PlusAddressService::OnWebDataChangedBySync(
     }
   }
 
-  for (Observer& o : observers_) {
+  for (PlusAddressService::Observer& o : observers_) {
     o.OnPlusAddressesChanged(applied_changes);
   }
 }
 
-void PlusAddressService::OnWebDataServiceRequestDone(
+void PlusAddressServiceImpl::OnWebDataServiceRequestDone(
     WebDataServiceBase::Handle handle,
     std::unique_ptr<WDTypedResult> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -516,12 +529,12 @@ void PlusAddressService::OnWebDataServiceRequestDone(
                                  plus_profile);
   }
 
-  for (Observer& o : observers_) {
+  for (PlusAddressService::Observer& o : observers_) {
     o.OnPlusAddressesChanged(applied_changes);
   }
 }
 
-void PlusAddressService::HandlePlusAddressRequestError(
+void PlusAddressServiceImpl::HandlePlusAddressRequestError(
     const PlusAddressRequestError& error) {
   if (!features::kDisableForForbiddenUsers.Get() ||
       error.type() != PlusAddressRequestErrorType::kNetworkError) {
@@ -535,7 +548,8 @@ void PlusAddressService::HandlePlusAddressRequestError(
     account_is_forbidden_ = true;
   }
 }
-void PlusAddressService::OnPrimaryAccountChanged(
+
+void PlusAddressServiceImpl::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   signin::PrimaryAccountChangeEvent::Type type =
       event.GetEventTypeFor(signin::ConsentLevel::kSignin);
@@ -544,7 +558,7 @@ void PlusAddressService::OnPrimaryAccountChanged(
   }
 }
 
-void PlusAddressService::OnErrorStateOfRefreshTokenUpdatedForAccount(
+void PlusAddressServiceImpl::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info,
     const GoogleServiceAuthError& error,
     signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
@@ -559,13 +573,13 @@ void PlusAddressService::OnErrorStateOfRefreshTokenUpdatedForAccount(
   }
 }
 
-void PlusAddressService::HandleSignout() {
+void PlusAddressServiceImpl::HandleSignout() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   plus_address_http_client_->Reset();
 }
 
-
-bool PlusAddressService::IsSupportedOrigin(const url::Origin& origin) const {
+bool PlusAddressServiceImpl::IsSupportedOrigin(
+    const url::Origin& origin) const {
   if (origin.opaque() || IsSiteExcluded(excluded_sites_, origin)) {
     return false;
   }
@@ -574,12 +588,12 @@ bool PlusAddressService::IsSupportedOrigin(const url::Origin& origin) const {
          origin.scheme() == url::kHttpScheme;
 }
 
-void PlusAddressService::RecordAutofillSuggestionEvent(
+void PlusAddressServiceImpl::RecordAutofillSuggestionEvent(
     SuggestionEvent suggestion_event) {
   metrics::RecordAutofillSuggestionEvent(suggestion_event);
 }
 
-void PlusAddressService::OnPlusAddressSuggestionShown(
+void PlusAddressServiceImpl::OnPlusAddressSuggestionShown(
     autofill::AutofillManager& manager,
     autofill::FormGlobalId form,
     autofill::FieldGlobalId field,
@@ -592,7 +606,7 @@ void PlusAddressService::OnPlusAddressSuggestionShown(
       /*plus_address_count=*/plus_address_cache_.Size());
 }
 
-void PlusAddressService::OnClickedRefreshInlineSuggestion(
+void PlusAddressServiceImpl::OnClickedRefreshInlineSuggestion(
     const url::Origin& last_committed_primary_main_frame_origin,
     base::span<const autofill::Suggestion> current_suggestions,
     size_t current_suggestion_index,
@@ -614,7 +628,7 @@ void PlusAddressService::OnClickedRefreshInlineSuggestion(
           AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess);
 }
 
-void PlusAddressService::OnShowedInlineSuggestion(
+void PlusAddressServiceImpl::OnShowedInlineSuggestion(
     const url::Origin& primary_main_frame_origin,
     base::span<const Suggestion> current_suggestions,
     UpdateSuggestionsCallback update_suggestions_callback) {
@@ -665,7 +679,7 @@ void PlusAddressService::OnShowedInlineSuggestion(
   RefreshPlusAddress(primary_main_frame_origin, std::move(callback));
 }
 
-void PlusAddressService::OnAcceptedInlineSuggestion(
+void PlusAddressServiceImpl::OnAcceptedInlineSuggestion(
     const url::Origin& primary_main_frame_origin,
     base::span<const Suggestion> current_suggestions,
     size_t current_suggestion_index,
@@ -695,15 +709,16 @@ void PlusAddressService::OnAcceptedInlineSuggestion(
 
   ConfirmPlusAddress(
       primary_main_frame_origin, std::move(requested_plus_address),
-      base::BindOnce(
-          &PlusAddressService::OnConfirmInlineCreation, base::Unretained(this),
-          std::move(hide_suggestions_callback), std::move(fill_field_callback),
-          std::move(show_affiliation_error_dialog),
-          std::move(show_error_dialog), std::move(reshow_suggestions),
-          requested_plus_address));
+      base::BindOnce(&PlusAddressServiceImpl::OnConfirmInlineCreation,
+                     base::Unretained(this),
+                     std::move(hide_suggestions_callback),
+                     std::move(fill_field_callback),
+                     std::move(show_affiliation_error_dialog),
+                     std::move(show_error_dialog),
+                     std::move(reshow_suggestions), requested_plus_address));
 }
 
-void PlusAddressService::OnConfirmInlineCreation(
+void PlusAddressServiceImpl::OnConfirmInlineCreation(
     HideSuggestionsCallback hide_callback,
     PlusAddressCallback fill_callback,
     ShowAffiliationErrorDialogCallback show_affiliation_error,

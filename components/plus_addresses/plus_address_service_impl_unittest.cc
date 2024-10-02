@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/plus_addresses/plus_address_service.h"
+#include "components/plus_addresses/plus_address_service_impl.h"
 
 #include <optional>
 #include <string>
@@ -126,8 +126,8 @@ auto IsSingleCreatePlusAddressSuggestion() {
 auto EqualsFillPlusAddressSuggestion(std::string_view address) {
   std::vector<std::vector<Suggestion::Text>> labels;
   if constexpr (!BUILDFLAG(IS_ANDROID)) {
-      labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_FILL_SUGGESTION_SECONDARY_TEXT))}};
+    labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
+        IDS_PLUS_ADDRESS_FILL_SUGGESTION_SECONDARY_TEXT))}};
   }
   return AllOf(EqualsSuggestion(SuggestionType::kFillExistingPlusAddress,
                                 /*main_text=*/base::UTF8ToUTF16(address)),
@@ -231,7 +231,7 @@ class PlusAddressServiceTest : public ::testing::Test {
     return identity_env().identity_manager();
   }
   PrefService& pref_service() { return plus_environment_.pref_service(); }
-  PlusAddressService& service() { return *service_; }
+  PlusAddressServiceImpl& service() { return *service_; }
   FakePlusAddressSettingService& setting_service() {
     return plus_environment_.setting_service();
   }
@@ -243,7 +243,6 @@ class PlusAddressServiceTest : public ::testing::Test {
   network::TestURLLoaderFactory& url_loader_factory() {
     return test_url_loader_factory_;
   }
-
 
   // Forces (re-)initialization of the `PlusAddressService`, which can be useful
   // when classes override feature parameters.
@@ -266,7 +265,7 @@ class PlusAddressServiceTest : public ::testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   data_decoder::test::InProcessDataDecoder decoder_;
-  std::optional<PlusAddressService> service_;
+  std::optional<PlusAddressServiceImpl> service_;
 };
 
 TEST_F(PlusAddressServiceTest, BasicTest) {
@@ -1083,7 +1082,7 @@ class PlusAddressServiceWebDataTest : public ::testing::Test {
     return plus_environment_.identity_env().identity_manager();
   }
 
-  PlusAddressService& service() { return *service_; }
+  PlusAddressServiceImpl& service() { return *service_; }
 
   PlusAddressTable& table() {
     return *PlusAddressTable::FromWebDatabase(
@@ -1097,7 +1096,7 @@ class PlusAddressServiceWebDataTest : public ::testing::Test {
   scoped_refptr<WebDatabaseService> webdatabase_service_;
   scoped_refptr<PlusAddressWebDataService> plus_webdata_service_;
   // Except briefly during initialisation, it always has a value.
-  std::optional<PlusAddressService> service_;
+  std::optional<PlusAddressServiceImpl> service_;
 };
 
 TEST_F(PlusAddressServiceWebDataTest, OnWebDataChangedBySync) {

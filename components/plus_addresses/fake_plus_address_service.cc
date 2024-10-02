@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/plus_addresses/features.h"
 #include "components/plus_addresses/mock_plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -28,18 +29,19 @@ using autofill::SuggestionType;
 FakePlusAddressService::FakePlusAddressService(
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
-    PlusAddressSettingService* setting_service)
-    : PlusAddressService(
-          pref_service,
-          identity_manager,
-          setting_service,
-          std::make_unique<testing::NiceMock<MockPlusAddressHttpClient>>(),
-          /*webdata_service=*/nullptr,
-          /*affiliation_service=*/&mock_affiliation_service_,
-          /*feature_enabled_for_profile_check=*/
-          base::BindRepeating(&base::FeatureList::IsEnabled)) {}
+    PlusAddressSettingService* setting_service) {
+  // TODO(crbug.com/370495073): Use default constructor.
+}
 
 FakePlusAddressService::~FakePlusAddressService() = default;
+
+void FakePlusAddressService::AddObserver(PlusAddressService::Observer* o) {
+  NOTIMPLEMENTED();
+}
+
+void FakePlusAddressService::RemoveObserver(PlusAddressService::Observer* o) {
+  NOTIMPLEMENTED();
+}
 
 std::vector<autofill::Suggestion>
 FakePlusAddressService::GetSuggestionsFromPlusAddresses(
@@ -76,9 +78,61 @@ FakePlusAddressService::GetSuggestionsFromPlusAddresses(
   return {};
 }
 
+autofill::Suggestion FakePlusAddressService::GetManagePlusAddressSuggestion()
+    const {
+  return Suggestion();
+}
+
+void FakePlusAddressService::RecordAutofillSuggestionEvent(
+    SuggestionEvent suggestion_event) {
+  NOTIMPLEMENTED();
+}
+
+void FakePlusAddressService::OnPlusAddressSuggestionShown(
+    autofill::AutofillManager& manager,
+    autofill::FormGlobalId form,
+    autofill::FieldGlobalId field,
+    SuggestionContext suggestion_context,
+    autofill::PasswordFormClassification::Type form_type,
+    autofill::SuggestionType suggestion_type) {
+  NOTIMPLEMENTED();
+}
+
+void FakePlusAddressService::OnClickedRefreshInlineSuggestion(
+    const url::Origin& last_committed_primary_main_frame_origin,
+    base::span<const autofill::Suggestion> current_suggestions,
+    size_t current_suggestion_index,
+    UpdateSuggestionsCallback update_suggestions_callback) {
+  NOTIMPLEMENTED();
+}
+
+void FakePlusAddressService::OnShowedInlineSuggestion(
+    const url::Origin& primary_main_frame_origin,
+    base::span<const autofill::Suggestion> current_suggestions,
+    UpdateSuggestionsCallback update_suggestions_callback) {
+  NOTIMPLEMENTED();
+}
+
+void FakePlusAddressService::OnAcceptedInlineSuggestion(
+    const url::Origin& primary_main_frame_origin,
+    base::span<const autofill::Suggestion> current_suggestions,
+    size_t current_suggestion_index,
+    UpdateSuggestionsCallback update_suggestions_callback,
+    HideSuggestionsCallback hide_suggestions_callback,
+    PlusAddressCallback fill_field_callback,
+    ShowAffiliationErrorDialogCallback show_affiliation_error_dialog,
+    ShowErrorDialogCallback show_error_dialog,
+    base::OnceClosure reshow_suggestions) {
+  NOTIMPLEMENTED();
+}
+
 bool FakePlusAddressService::IsPlusAddressFillingEnabled(
     const url::Origin& origin) const {
   return is_plus_address_filling_enabled_;
+}
+
+bool FakePlusAddressService::IsPlusAddressFullFormFillingEnabled() const {
+  return base::FeatureList::IsEnabled(features::kPlusAddressFullFormFill);
 }
 
 bool FakePlusAddressService::IsPlusAddressCreationEnabled(
@@ -166,6 +220,10 @@ void FakePlusAddressService::RefreshPlusAddress(
           is_confirmed_));
 }
 
+bool FakePlusAddressService::IsRefreshingSupported(const url::Origin& origin) {
+  return true;
+}
+
 std::optional<std::string> FakePlusAddressService::GetPrimaryEmail() {
   // Ensure the value is present without requiring identity setup.
   return "plus+primary@plus.plus";
@@ -173,6 +231,30 @@ std::optional<std::string> FakePlusAddressService::GetPrimaryEmail() {
 
 base::span<const PlusProfile> FakePlusAddressService::GetPlusProfiles() const {
   return plus_profiles_;
+}
+
+std::optional<PlusAddress> FakePlusAddressService::GetPlusAddress(
+    const affiliations::FacetURI& facet) const {
+  return PlusAddress(plus_addresses::test::kFakePlusAddress);
+}
+
+std::optional<PlusProfile> FakePlusAddressService::GetPlusProfile(
+    const affiliations::FacetURI& facet) const {
+  return plus_profiles_[0];
+}
+
+bool FakePlusAddressService::ShouldShowManualFallback(
+    const url::Origin& origin,
+    bool is_off_the_record) const {
+  return true;
+}
+
+void FakePlusAddressService::SavePlusProfile(const PlusProfile& profile) {
+  NOTREACHED();
+}
+
+bool FakePlusAddressService::IsEnabled() const {
+  return true;
 }
 
 }  // namespace plus_addresses

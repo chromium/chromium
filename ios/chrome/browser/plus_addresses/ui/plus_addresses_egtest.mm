@@ -202,7 +202,7 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
 #pragma mark - Tests
 
 // Tests showing up a bottom sheet to confirm a plus address. Once, the plus
-// address is confirmed checks if it is filled in the file.d
+// address is confirmed checks if it is filled in the file.
 - (void)testConfirmPlusAddressUsingBottomSheet {
   [self openCreatePlusAddressBottomSheet];
 

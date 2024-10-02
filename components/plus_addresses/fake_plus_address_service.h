@@ -36,32 +36,74 @@ class FakePlusAddressService : public PlusAddressService {
   static constexpr char kFakeProfileId[] = "123";
   static constexpr char kFacet[] = "https://facet.bar";
 
-  // PlusAddressService:
+  // autofill::AutofillPlusAddressDelegate:
+  bool IsPlusAddress(const std::string& potential_plus_address) const override;
+  bool IsPlusAddressFillingEnabled(const url::Origin& origin) const override;
+  bool IsPlusAddressFullFormFillingEnabled() const override;
+  void GetAffiliatedPlusAddresses(
+      const url::Origin& origin,
+      base::OnceCallback<void(std::vector<std::string>)> callback) override;
   std::vector<autofill::Suggestion> GetSuggestionsFromPlusAddresses(
       const std::vector<std::string>& plus_addresses,
-      const url::Origin& last_committed_primary_main_frame_origin,
+      const url::Origin& origin,
       bool is_off_the_record,
       const autofill::PasswordFormClassification& focused_form_classification,
       const autofill::FormFieldData& focused_field,
       autofill::AutofillSuggestionTriggerSource trigger_source) override;
-  bool IsPlusAddressFillingEnabled(const url::Origin& origin) const override;
+  autofill::Suggestion GetManagePlusAddressSuggestion() const override;
+  void RecordAutofillSuggestionEvent(SuggestionEvent suggestion_event) override;
+  void OnPlusAddressSuggestionShown(
+      autofill::AutofillManager& manager,
+      autofill::FormGlobalId form,
+      autofill::FieldGlobalId field,
+      SuggestionContext suggestion_context,
+      autofill::PasswordFormClassification::Type form_type,
+      autofill::SuggestionType suggestion_type) override;
+  void OnClickedRefreshInlineSuggestion(
+      const url::Origin& last_committed_primary_main_frame_origin,
+      base::span<const autofill::Suggestion> current_suggestions,
+      size_t current_suggestion_index,
+      UpdateSuggestionsCallback update_suggestions_callback) override;
+  void OnShowedInlineSuggestion(
+      const url::Origin& primary_main_frame_origin,
+      base::span<const autofill::Suggestion> current_suggestions,
+      UpdateSuggestionsCallback update_suggestions_callback) override;
+  void OnAcceptedInlineSuggestion(
+      const url::Origin& primary_main_frame_origin,
+      base::span<const autofill::Suggestion> current_suggestions,
+      size_t current_suggestion_index,
+      UpdateSuggestionsCallback update_suggestions_callback,
+      HideSuggestionsCallback hide_suggestions_callback,
+      PlusAddressCallback fill_field_callback,
+      ShowAffiliationErrorDialogCallback show_affiliation_error_dialog,
+      ShowErrorDialogCallback show_error_dialog,
+      base::OnceClosure reshow_suggestions) override;
+
+  // PlusAddressService:
+  void AddObserver(PlusAddressService::Observer* o) override;
+  void RemoveObserver(PlusAddressService::Observer* o) override;
   bool IsPlusAddressCreationEnabled(const url::Origin& origin,
                                     bool is_off_the_record) const override;
-  bool IsPlusAddress(const std::string& potential_plus_address) const override;
   void GetAffiliatedPlusProfiles(const url::Origin& origin,
                                  GetPlusProfilesCallback callback) override;
-  void GetAffiliatedPlusAddresses(
-      const url::Origin& origin,
-      base::OnceCallback<void(std::vector<std::string>)> callback) override;
+  base::span<const PlusProfile> GetPlusProfiles() const override;
   void ReservePlusAddress(const url::Origin& origin,
+                          PlusAddressRequestCallback on_completed) override;
+  void RefreshPlusAddress(const url::Origin& origin,
                           PlusAddressRequestCallback on_completed) override;
   void ConfirmPlusAddress(const url::Origin& origin,
                           const PlusAddress& plus_address,
                           PlusAddressRequestCallback on_completed) override;
-  void RefreshPlusAddress(const url::Origin& origin,
-                          PlusAddressRequestCallback on_completed) override;
+  bool IsRefreshingSupported(const url::Origin& origin) override;
+  std::optional<PlusAddress> GetPlusAddress(
+      const affiliations::FacetURI& facet) const override;
+  std::optional<PlusProfile> GetPlusProfile(
+      const affiliations::FacetURI& facet) const override;
   std::optional<std::string> GetPrimaryEmail() override;
-  base::span<const PlusProfile> GetPlusProfiles() const override;
+  bool ShouldShowManualFallback(const url::Origin& origin,
+                                bool is_off_the_record) const override;
+  void SavePlusProfile(const PlusProfile& profile) override;
+  bool IsEnabled() const override;
 
   void add_plus_profile(PlusProfile profile) {
     plus_profiles_.emplace_back(std::move(profile));
