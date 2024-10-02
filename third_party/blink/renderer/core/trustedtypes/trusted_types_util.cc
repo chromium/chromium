@@ -222,9 +222,13 @@ bool TrustedTypeFail(TrustedTypeViolationKind kind,
       ContentSecurityPolicyViolationType::kTrustedTypesSinkViolation);
 
   if (!allow) {
-    exception_state.ThrowTypeError(GetMessage(kind));
-    MaybeAssociateExceptionMetaData(exception_state, "issueId",
+    v8::Isolate* isolate = execution_context->GetIsolate();
+    TryRethrowScope rethrow_scope(isolate, exception_state);
+    auto exception =
+        V8ThrowException::CreateTypeError(isolate, GetMessage(kind));
+    MaybeAssociateExceptionMetaData(exception, "issueId",
                                     IdentifiersFactory::IdFromToken(issue_id));
+    V8ThrowException::ThrowException(isolate, exception);
   }
   return !allow;
 }
