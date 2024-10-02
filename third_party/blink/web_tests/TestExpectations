@@ -2635,8 +2635,8 @@ crbug.com/369724006 [ Mac15 ] virtual/threaded/external/wpt/css/css-backgrounds/
 [ Mac14 ] virtual/threaded/external/wpt/css/css-backgrounds/background-size/vector/zero-ratio-no-dimensions-contain.html [ Failure ]
 [ Mac15 ] virtual/threaded/external/wpt/web-animations/timing-model/animations/document-timeline-animation.html [ Failure ]
 crbug.com/369685643 [ Win10.20h2 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/animating-new-content-subset.html [ Failure ]
-crbug.com/369685643 [ Mac12 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/animating-new-content-subset.html [ Failure ]
-crbug.com/369685643 [ Mac14 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/animating-new-content-subset.html [ Failure ]
+crbug.com/369685643 crbug.com/369826505 [ Mac ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/animating-new-content-subset.html [ Failure Pass ]
+
 crbug.com/369668292 [ Mac12 ] virtual/threaded/external/wpt/css/css-view-transitions/animating-new-content-subset.html [ Failure ]
 crbug.com/369668292 [ Mac13 ] virtual/threaded/external/wpt/css/css-view-transitions/animating-new-content-subset.html [ Failure ]
 crbug.com/369668292 [ Mac14 ] virtual/threaded/external/wpt/css/css-view-transitions/animating-new-content-subset.html [ Failure ]
