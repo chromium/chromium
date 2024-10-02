@@ -685,6 +685,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_ORGANIZE_TABS:
       StartTabOrganizationRequest(browser_);
       break;
+    case IDC_DECLUTTER_TABS:
+      ShowTabDeclutter(browser_);
+      break;
     case IDC_SHOW_TRANSLATE:
       ShowTranslateBubble(browser_);
       break;
@@ -1244,6 +1247,7 @@ void BrowserCommandController::InitCommandState() {
 
   command_updater_.UpdateCommandEnabled(IDC_ORGANIZE_TABS, true);
   command_updater_.UpdateCommandEnabled(IDC_CREATE_NEW_TAB_GROUP, true);
+  command_updater_.UpdateCommandEnabled(IDC_DECLUTTER_TABS, true);
 #if BUILDFLAG(IS_CHROMEOS)
   command_updater_.UpdateCommandEnabled(IDC_TOGGLE_MULTITASK_MENU, true);
 #endif

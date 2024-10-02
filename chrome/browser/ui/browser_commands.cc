@@ -1882,6 +1882,13 @@ void CloseTabSearch(Browser* browser) {
   browser->window()->CloseTabSearchBubble();
 }
 
+void ShowTabDeclutter(Browser* browser) {
+  const int tab_organization_tab_index = 1;
+  browser->window()->CreateTabSearchBubble(
+      tab_organization_tab_index,
+      tab_search::mojom::TabOrganizationFeature::kDeclutter);
+}
+
 bool CanCloseFind(Browser* browser) {
   WebContents* current_tab = browser->tab_strip_model()->GetActiveWebContents();
   if (!current_tab) {

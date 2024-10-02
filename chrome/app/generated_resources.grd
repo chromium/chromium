@@ -9699,7 +9699,18 @@ Keep your key file in a safe place. You will need it to create new versions of y
           =1 {Visited 1 day ago}
           other {Visited # days ago}}
       </message>
-
+      <if expr="use_titlecase">
+        <then>
+          <message name="IDS_DECLUTTER_MENU" desc="In Title Case: The text label for the declutter app menu item.">
+            Close Unused Tabs
+          </message>
+        </then>
+        <else>
+          <message name="IDS_DECLUTTER_MENU" desc="The text label for the declutter app menu item.">
+            Close unused tabs
+          </message>
+        </else>
+      </if>
       <!-- Strings for tab organization -->
       <message name="IDS_TOOLTIP_TAB_ORGANIZE" desc="The tooltip for the Tab Organization button.">
         Organize tabs?

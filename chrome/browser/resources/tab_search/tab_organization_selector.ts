@@ -92,7 +92,13 @@ export class TabOrganizationSelectorElement extends CrLitElement {
   }
 
   private updateSelectedFeature_(feature: TabOrganizationFeature) {
-    if (feature !== TabOrganizationFeature.kNone) {
+    if (feature === TabOrganizationFeature.kNone) {
+      return;
+    }
+    if (feature === TabOrganizationFeature.kDeclutter &&
+        this.disableDeclutter_) {
+      this.selectedState_ = TabOrganizationFeature.kSelector;
+    } else {
       this.selectedState_ = feature;
     }
   }

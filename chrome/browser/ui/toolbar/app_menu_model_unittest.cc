@@ -143,7 +143,8 @@ class ExtensionsMenuModelTest : public AppMenuModelTest {
 class TestAppMenuModelCR2023 : public AppMenuModelTest {
  public:
   TestAppMenuModelCR2023() {
-    feature_list_.InitWithFeatures({features::kTabOrganization}, {});
+    feature_list_.InitWithFeatures(
+        {features::kTabOrganization, features::kTabstripDeclutter}, {});
   }
 
   TestAppMenuModelCR2023(const TestAppMenuModelCR2023&) = delete;
@@ -376,6 +377,16 @@ TEST_F(TestAppMenuModelCR2023, OrganizeTabsItem) {
   size_t organize_tabs_index =
       toolModel.GetIndexOfCommandId(IDC_ORGANIZE_TABS).value();
   EXPECT_TRUE(toolModel.IsEnabledAt(organize_tabs_index));
+}
+
+TEST_F(TestAppMenuModelCR2023, DeclutterTabsItem) {
+  TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
+  AppMenuModel model(this, browser());
+  model.Init();
+  ToolsMenuModel toolModel(&model, browser());
+  size_t declutter_tabs_index =
+      toolModel.GetIndexOfCommandId(IDC_DECLUTTER_TABS).value();
+  EXPECT_TRUE(toolModel.IsEnabledAt(declutter_tabs_index));
 }
 
 TEST_F(TestAppMenuModelCR2023, ModelHasIcons) {

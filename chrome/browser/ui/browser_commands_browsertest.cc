@@ -23,8 +23,10 @@
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/browser/ui/webui/commerce/product_specifications_disclosure_dialog.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -48,6 +50,7 @@ class BrowserCommandsTest : public InProcessBrowserTest {
     feature_list_.InitWithFeatures(
         {
             features::kTabOrganization,
+            features::kTabstripDeclutter,
             toast_features::kToastFramework,
             toast_features::kReadingListToast,
             toast_features::kLinkCopiedToast,
@@ -373,6 +376,17 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, StartsOrganizationRequest) {
                                       true, 1);
   histogram_tester.ExpectUniqueSample("Tab.Organization.ThreeDotMenu.Clicked",
                                       true, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, ShowsDeclutter) {
+  TabSearchBubbleHost* tab_search_bubble_host =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->GetTabSearchBubbleHost();
+  EXPECT_FALSE(tab_search_bubble_host->bubble_created_time_for_testing());
+
+  chrome::ExecuteCommand(browser(), IDC_DECLUTTER_TABS);
+
+  EXPECT_TRUE(tab_search_bubble_host->bubble_created_time_for_testing());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,

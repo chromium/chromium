@@ -45,6 +45,8 @@ chromium-metrics-reviews@google.com.
       summary="Plus address manual fallback entry point in the context menu."/>
   <variant name="TabOrganization"
       summary="Promotion for Organize Tabs in the app menu."/>
+  <variant name="TabstripDeclutter"
+      summary="Promotion for Close Unused Tabs in the app menu."/>
 </variants>
 
 <variants name="TutorialID">

@@ -1461,6 +1461,12 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
       user_education::Metadata(
           128, "theocristea@google.com",
           "For passwords manual fallback; shown in the context menu.")));
+
+  registry.RegisterFeature(user_education::NewBadgeSpecification(
+      features::kTabstripDeclutter,
+      user_education::Metadata(
+          132, "emshack@chromium.org",
+          "Shown in app menu when Tab Declutter menu item is enabled.")));
 }
 
 std::unique_ptr<BrowserFeaturePromoController> CreateUserEducationResources(

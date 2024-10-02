@@ -135,6 +135,7 @@
 #define IDC_SHOW_ADDRESSES              35043
 #define IDC_ORGANIZE_TABS               35044
 #define IDC_CREATE_NEW_TAB_GROUP        35045
+#define IDC_DECLUTTER_TABS              35046
 
 // Page-manipulation commands that target a specified tab, which may not be the
 // active one.
