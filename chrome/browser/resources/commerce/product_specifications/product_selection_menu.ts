@@ -66,6 +66,16 @@ export class ProductSelectionMenuElement extends PolymerElement {
         value: () => [],
       },
 
+      forNewColumn: {
+        type: Boolean,
+        value: false,
+      },
+
+      isTableFull: {
+        type: Boolean,
+        value: false,
+      },
+
       sections: Array,
     };
   }
@@ -74,6 +84,8 @@ export class ProductSelectionMenuElement extends PolymerElement {
 
   selectedUrl: string;
   excludedUrls: string[];
+  forNewColumn: boolean;
+  isTableFull: boolean;
   sections: MenuSection[];
 
   async showAt(element: HTMLElement) {
@@ -167,6 +179,18 @@ export class ProductSelectionMenuElement extends PolymerElement {
 
   private getUrl_(item: UrlListEntry) {
     return getAbbreviatedUrl(item.url);
+  }
+
+  private showEmptySuggestionsMessage_(
+      sections: MenuSection[], forNewColumn: boolean,
+      isTableFull: boolean): boolean {
+    return (!sections || sections.length === 0) &&
+        !this.showTableFullMessage_(forNewColumn, isTableFull);
+  }
+
+  private showTableFullMessage_(forNewColumn: boolean, isTableFull: boolean):
+      boolean {
+    return forNewColumn && isTableFull;
   }
 }
 

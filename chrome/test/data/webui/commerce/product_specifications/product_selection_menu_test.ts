@@ -8,10 +8,10 @@ import type {ProductSelectionMenuElement} from 'chrome://compare/product_selecti
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {$$, assertNotStyle, assertStyle} from './test_support.js';
 
@@ -244,6 +244,69 @@ suite('ProductSelectionMenuTest', () => {
     assertTrue(!!tabUrl);
     assertEquals('example.com', tabUrl.textContent);
   });
+
+  test('shows table too large message on new column only', async () => {
+    initUrlInfos();
+    const menu = await createMenu();
+    menu.selectedUrl = '';
+    menu.excludedUrls = [];
+    menu.forNewColumn = true;
+    menu.isTableFull = true;
+    menu.showAt(document.body);
+    await flushTasks();
+    await waitAfterNextRender(menu);
+
+    const crActionMenu = menu.$.menu.get();
+    assertTrue(crActionMenu.open);
+
+    const tableFullMessage =
+        crActionMenu.querySelector<HTMLElement>('#tableFullMessage');
+    assertTrue(isVisible(tableFullMessage));
+
+    const emptyMessage = crActionMenu.querySelector<HTMLElement>('#empty');
+    assertFalse(isVisible(emptyMessage));
+
+    const removeColumnButton =
+        crActionMenu.querySelector<HTMLElement>('#remove');
+    assertFalse(isVisible(removeColumnButton));
+
+    // In this state, no URL options should be shown, even if they're available.
+    const listElements =
+        crActionMenu.querySelectorAll<HTMLElement>('.dropdown-item');
+    assertEquals(0, listElements.length);
+  });
+
+  test(
+      'shows table too large message not shown for normal column', async () => {
+        initUrlInfos();
+        const menu = await createMenu();
+        menu.selectedUrl = 'https://example.com';
+        menu.excludedUrls = ['https://example.com'];
+        menu.forNewColumn = false;
+        menu.isTableFull = true;
+        menu.showAt(document.body);
+        await flushTasks();
+        await waitAfterNextRender(menu);
+
+        const crActionMenu = menu.$.menu.get();
+        assertTrue(crActionMenu.open);
+
+        const tableFullMessage =
+            crActionMenu.querySelector<HTMLElement>('#tableFullMessage');
+        assertFalse(isVisible(tableFullMessage));
+
+        const emptyMessage = crActionMenu.querySelector<HTMLElement>('#empty');
+        assertFalse(isVisible(emptyMessage));
+
+        const removeColumnButton =
+            crActionMenu.querySelector<HTMLElement>('#remove');
+        assertTrue(isVisible(removeColumnButton));
+
+        // In this state, URL options should be shown even if the table is full.
+        const listElements =
+            crActionMenu.querySelectorAll<HTMLElement>('.dropdown-item');
+        assertNotEquals(0, listElements.length);
+      });
 
   test('fires selector event', async () => {
     initUrlInfos();

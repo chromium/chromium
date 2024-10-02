@@ -34,10 +34,15 @@ export class NewColumnSelectorElement extends PolymerElement {
         type: Array,
         value: () => [],
       },
+      isTableFull: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   excludedUrls: string[];
+  isTableFull: boolean;
 
   private showMenu_() {
     this.$.productSelectionMenu.showAt(this.$.button);

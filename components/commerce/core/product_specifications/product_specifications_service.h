@@ -16,6 +16,8 @@ namespace commerce {
 
 extern const size_t kMaxNameLength;
 
+extern const size_t kMaxTableSize;
+
 class ProductSpecificationsServiceTest;
 
 // Acquires synced data about product specifications.

@@ -73,6 +73,14 @@ class ProductSpecificationsPageActionControllerUnittest : public testing::Test {
     mock_product_specifications_service_ =
         static_cast<commerce::MockProductSpecificationsService*>(
             shopping_service_->GetProductSpecificationsService());
+
+    // Add a basic set for the tests to work on.
+    ProductSpecificationsSet set = ProductSpecificationsSet(
+        base::Uuid::GenerateRandomV4().AsLowercaseString(), 0, 0,
+        {GURL(kTestUrl1)}, "set");
+    ON_CALL(*mock_product_specifications_service_, GetSetByUuid)
+        .WillByDefault(testing::Return(std::move(set)));
+
     commerce::RegisterCommercePrefs(prefs_->registry());
     commerce::SetTabCompareEnterprisePolicyPref(prefs_.get(), 0);
     controller_ = std::make_unique<ProductSpecificationsPageActionController>(
@@ -124,6 +132,39 @@ TEST_F(ProductSpecificationsPageActionControllerUnittest, IconShow) {
                 IDS_COMPARE_PAGE_ACTION_ADD,
                 base::UTF8ToUTF16(static_cast<std::string>(kSetTitle))),
             controller_->GetProductSpecificationsLabel(false));
+}
+
+TEST_F(ProductSpecificationsPageActionControllerUnittest,
+       IconNotShown_MaxTableSize) {
+  EXPECT_CALL(*mock_cluster_manager_, GetProductGroupForCandidateProduct)
+      .Times(1);
+  EXPECT_CALL(*shopping_service_, GetProductInfoForUrl).Times(1);
+  EXPECT_CALL(notify_host_callback_, Run()).Times(testing::AtLeast(1));
+
+  // Before a navigation, the controller should be in an "undecided" state.
+  ASSERT_FALSE(controller_->ShouldShowForNavigation().has_value());
+  ASSERT_FALSE(controller_->WantsExpandedUi());
+
+  // Create a set with the max number of URLs.
+  std::vector<GURL> urls;
+  for (size_t i = 0; i < kMaxTableSize; ++i) {
+    urls.push_back(GURL(base::StringPrintf("http://example.com/%zu", i)));
+  }
+  ProductSpecificationsSet set = ProductSpecificationsSet(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), 0, 0, urls, "set1");
+  ON_CALL(*mock_product_specifications_service_, GetSetByUuid)
+      .WillByDefault(testing::Return(std::move(set)));
+
+  mock_cluster_manager_->SetResponseForGetProductGroupForCandidateProduct(
+      CreateProductGroup());
+  shopping_service_->SetResponseForGetProductInfoForUrl(
+      CreateProductInfo(kClusterId));
+
+  controller_->ResetForNewNavigation(GURL(kTestUrl1));
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(controller_->ShouldShowForNavigation().has_value());
+  ASSERT_FALSE(controller_->ShouldShowForNavigation().value());
 }
 
 TEST_F(ProductSpecificationsPageActionControllerUnittest,
@@ -382,5 +423,47 @@ TEST_F(ProductSpecificationsPageActionControllerUnittest,
   ASSERT_TRUE(controller_->ShouldShowForNavigation().has_value());
   ASSERT_TRUE(controller_->ShouldShowForNavigation().value());
   ASSERT_FALSE(controller_->IsInRecommendedSet());
+}
+
+TEST_F(ProductSpecificationsPageActionControllerUnittest,
+       OnProductSpecificationsSetUpdated_MaxTableSize) {
+  // Set up ClusterManager to trigger page action.
+  auto product_group = CreateProductGroup();
+  mock_cluster_manager_->SetResponseForGetProductGroupForCandidateProduct(
+      product_group);
+  shopping_service_->SetResponseForGetProductInfoForUrl(
+      CreateProductInfo(kClusterId));
+
+  // Trigger page action.
+  controller_->ResetForNewNavigation(GURL(kTestUrl1));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(controller_->ShouldShowForNavigation().has_value());
+  ASSERT_TRUE(controller_->ShouldShowForNavigation().value());
+  ASSERT_FALSE(controller_->IsInRecommendedSet());
+
+  EXPECT_CALL(notify_host_callback_, Run()).Times(1);
+
+  // Create a set with close to max size.
+  std::vector<GURL> urls;
+  for (size_t i = 0; i < kMaxTableSize - 1; ++i) {
+    urls.push_back(GURL(base::StringPrintf("http://example.com/%zu", i)));
+  }
+
+  ProductSpecificationsSet set1 = ProductSpecificationsSet(
+      product_group->uuid.AsLowercaseString(), 0, 0, urls, "set");
+
+  // The "updated" set has max size.
+  urls.push_back(GURL(kTestUrl2));
+  ProductSpecificationsSet set2 = ProductSpecificationsSet(
+      product_group->uuid.AsLowercaseString(), 0, 0, urls, "set");
+
+  ON_CALL(*mock_product_specifications_service_, GetSetByUuid)
+      .WillByDefault(testing::Return(set2));
+
+  // Notify the controller that the set grew to max size.
+  controller_->OnProductSpecificationsSetUpdate(set1, set2);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(controller_->ShouldShowForNavigation().has_value());
+  ASSERT_FALSE(controller_->ShouldShowForNavigation().value());
 }
 }  // namespace commerce
