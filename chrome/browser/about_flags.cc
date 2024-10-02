@@ -6011,11 +6011,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnablePixDetectionDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(payments::facilitated::kEnablePixDetection)},
 
-    {"enable-pix-detection-on-copy-event",
-     flag_descriptions::kEnablePixDetectionOnCopyEventName,
-     flag_descriptions::kEnablePixDetectionOnCopyEventDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(payments::facilitated::kEnablePixDetectionOnCopyEvent)},
-
     {"enable-pix-detection-on-dom-content-loaded",
      flag_descriptions::kEnablePixDetectionOnDomContentLoadedName,
      flag_descriptions::kEnablePixDetectionOnDomContentLoadedDescription,

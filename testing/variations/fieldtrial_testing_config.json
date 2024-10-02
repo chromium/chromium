@@ -9122,7 +9122,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillEnableSyncingOfPixBankAccounts",
-                        "EnablePixDetectionOnCopyEvent",
                         "EnablePixPayments"
                     ]
                 }

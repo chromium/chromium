@@ -2618,9 +2618,6 @@ extern const char kEnableCommandLineOnNoRootedDescription[];
 extern const char kEnablePixDetectionName[];
 extern const char kEnablePixDetectionDescription[];
 
-extern const char kEnablePixDetectionOnCopyEventName[];
-extern const char kEnablePixDetectionOnCopyEventDescription[];
-
 extern const char kEnablePixDetectionOnDomContentLoadedName[];
 extern const char kEnablePixDetectionOnDomContentLoadedDescription[];
 
