@@ -54,7 +54,7 @@
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
-  DCHECK_GE(self.profileState.initStage, ProfileInitStage::InitStageUIReady);
+  DCHECK_GE(self.profileState.initStage, ProfileInitStage::kUIReady);
   if (level == SceneActivationLevelForegroundActive) {
     [self recordActivationForSceneState:sceneState];
   }

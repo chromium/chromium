@@ -55,7 +55,7 @@ bool IsGoogleDefaultSearchEngine(ProfileIOS* profile) {
     didTransitionToInitStage:(ProfileInitStage)nextInitStage
                fromInitStage:(ProfileInitStage)fromInitStage {
   CHECK_EQ(profileState, self.profileState);
-  if (nextInitStage != ProfileInitStage::InitStagePrepareUI) {
+  if (nextInitStage != ProfileInitStage::kPrepareUI) {
     return;
   }
 

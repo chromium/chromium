@@ -81,7 +81,7 @@
 }
 
 - (SceneState*)foregroundActiveScene {
-  if (self.initStage < ProfileInitStage::InitStageUIReady) {
+  if (self.initStage < ProfileInitStage::kUIReady) {
     return nil;
   }
 
@@ -95,7 +95,7 @@
 }
 
 - (NSArray<SceneState*>*)connectedScenes {
-  if (self.initStage < ProfileInitStage::InitStageUIReady) {
+  if (self.initStage < ProfileInitStage::kUIReady) {
     return nil;
   }
 
@@ -107,12 +107,12 @@
 }
 
 - (void)setInitStage:(ProfileInitStage)initStage {
-  CHECK_GE(initStage, ProfileInitStage::InitStageLoadProfile);
-  CHECK_LE(initStage, ProfileInitStage::InitStageFinal);
+  CHECK_GE(initStage, ProfileInitStage::kLoadProfile);
+  CHECK_LE(initStage, ProfileInitStage::kFinal);
 
-  if (initStage == ProfileInitStage::InitStageLoadProfile) {
+  if (initStage == ProfileInitStage::kLoadProfile) {
     // Support setting the initStage to InitStageLoadProfile for startup.
-    CHECK_EQ(_initStage, ProfileInitStage::InitStageLoadProfile);
+    CHECK_EQ(_initStage, ProfileInitStage::kLoadProfile);
   } else {
     // After InitStageLoadProfile, the init stages must be incremented by one
     // only. If a stage needs to be skipped, it can just be a no-op.
@@ -131,7 +131,7 @@
       didTransitionToInitStage:initStage
                  fromInitStage:fromStage];
 
-  if (initStage == ProfileInitStage::InitStageUIReady) {
+  if (initStage == ProfileInitStage::kUIReady) {
     for (SceneState* sceneState in _connectedSceneStates) {
       [_observers profileState:self sceneConnected:sceneState];
       if (sceneState.activationLevel >= SceneActivationLevelForegroundActive) {
@@ -162,7 +162,7 @@
   [_observers addObserver:observer];
 
   const ProfileInitStage initStage = self.initStage;
-  if (initStage > ProfileInitStage::InitStageLoadProfile &&
+  if (initStage > ProfileInitStage::kLoadProfile &&
       [observer respondsToSelector:@selector
                 (profileState:didTransitionToInitStage:fromInitStage:)]) {
     const ProfileInitStage prevStage =
@@ -183,7 +183,7 @@
 - (void)sceneStateConnected:(SceneState*)sceneState {
   [sceneState addObserver:self];
   [_connectedSceneStates addObject:sceneState];
-  if (self.initStage >= ProfileInitStage::InitStageUIReady) {
+  if (self.initStage >= ProfileInitStage::kUIReady) {
     [_observers profileState:self sceneConnected:sceneState];
   }
 }
@@ -205,14 +205,14 @@
     transitionedToActivationLevel:(SceneActivationLevel)level {
   if (level == SceneActivationLevelForegroundActive) {
     const ProfileInitStage initStage = self.initStage;
-    if (initStage >= ProfileInitStage::InitStageUIReady) {
+    if (initStage >= ProfileInitStage::kUIReady) {
       [_observers profileState:self sceneDidBecomeActive:sceneState];
     }
   }
 }
 
 - (void)sceneStateDidEnableUI:(SceneState*)sceneState {
-  DCHECK_GE(self.initStage, ProfileInitStage::InitStagePrepareUI);
+  DCHECK_GE(self.initStage, ProfileInitStage::kPrepareUI);
   if (!_firstSceneHasInitializedUI) {
     _firstSceneHasInitializedUI = YES;
     [_observers profileState:self firstSceneHasInitializedUI:sceneState];

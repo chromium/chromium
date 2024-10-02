@@ -71,12 +71,12 @@ class PostRestoreProfileAgentTest : public PlatformTest {
 
   void TriggerProfileStateChange() {
     [profile_agent_ profileState:profile_state_
-        didTransitionToInitStage:ProfileInitStage::InitStageProfileLoaded
-                   fromInitStage:ProfileInitStage::InitStageLoadProfile];
+        didTransitionToInitStage:ProfileInitStage::kProfileLoaded
+                   fromInitStage:ProfileInitStage::kLoadProfile];
 
     [profile_agent_ profileState:profile_state_
-        didTransitionToInitStage:ProfileInitStage::InitStageFinal
-                   fromInitStage:ProfileInitStage::InitStageNormalUI];
+        didTransitionToInitStage:ProfileInitStage::kFinal
+                   fromInitStage:ProfileInitStage::kNormalUI];
   }
 
   void SetFakePreRestoreAccountInfo() {

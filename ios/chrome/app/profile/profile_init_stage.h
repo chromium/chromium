@@ -13,50 +13,48 @@
 // each stage each time a new profile is added.
 enum class ProfileInitStage {
   // Perform all asynch operation to load profile's preferences from disk.
-  InitStageLoadProfile,
+  kLoadProfile,
 
-  // Profile preferences have been loaded and the ChromeBrowserState object and
-  // all KeyedServices can be used. The app will automatically transition to the
+  // Profile preferences have been loaded and the ProfileIOS object and all
+  // KeyedServices can be used. The app will automatically transition to the
   // next stage.
-  InitStageProfileLoaded,
+  kProfileLoaded,
 
-  // The app is fetching any enterprise policies for the profile. The
+  // The application is fetching any enterprise policies for the profile. The
   // initialization is blocked on this because the policies might have an effect
   // on later init stages.
-  InitStageEnterprise,
+  kEnterprise,
 
-  // The app is loading any elements needed for UI (e.g. Session data, ...)
-  InitStagePrepareUI,
+  // The application is loading any elements needed for UI for this profile
+  // (e.g. Session data, ...)
+  kPrepareUI,
 
-  // Application is ready to present UI for profile, it will automatically
-  // transition to the next stage. This can be used to start background tasks to
-  // update UI.
-  InitStageUIReady,
+  // The application is ready to present UI for the profile, it will transition
+  // to the next stage. This can be used to start background tasks to update UI.
+  kUIReady,
 
-  // All the stage between InitStageUIReady and InitStageNormalUI represent
-  // blocking screens that the user must go through before proceeding to the
-  // next
-  // stage. If the conditions are already handled, the transition will be
-  // instantanous.
+  // All the stage between kUIReady and kNormalUI represent blocking screens
+  // that the user must go through before proceeding to the next stage. If the
+  // conditions are already handled, the transition will be instantanous.
+  //
+  // It is possible to add new stage between kNormalUI and kNormalUI to add new
+  // blocking stage if a feature requires it.
 
-  // It is possible to add new stage between InitStageUIReady and
-  // InitStageNormalUI to add new blocking stage if a feature requires it.
-
-  // This present the first run experience. Only presented for new profile
+  // This presents the first run experience. Only presented for new profile
   // (maybe first profile?)
-  InitStageFirstRun,
+  kFirstRun,
 
-  // This present the search engine selection screen. It is presented for each
+  // This presents the search engine selection screen. It is presented for each
   // profile and if the user did not select a default search engine yet.
-  InitStageChoiceScreen,
+  kChoiceScreen,
 
-  // Application is presenting the regular chrome UI for this profile, it will
-  // automatically transition to the next stage. This can be used to detect
-  // users can now start interacting with the UI.
-  InitStageNormalUI,
+  // The application is presenting the regular chrome UI for this profile, it
+  // will automatically transition to the next stage. This can be used to detect
+  // that users can now start interacting with the UI.
+  kNormalUI,
 
   // Final stage, no transition until the profile is shut down.
-  InitStageFinal,
+  kFinal,
 };
 
 // Returns the equivalent ProfileInitStage from application InitStage.

@@ -26,7 +26,7 @@
 @property(nonatomic, assign) ProfileInitStage initStage;
 
 // The non-incognito ProfileIOS instance.
-// This will be null until `initStage` >= `InitStageProfileLoaded`.
+// This will be null until `initStage` >= `ProfileInitStage::kProfileLoaded`.
 @property(nonatomic, assign) ProfileIOS* profile;
 
 // The foreground and active scene, if there is one.
@@ -70,7 +70,7 @@
 // this method from a transition notification, the transition will be queued
 // and performed once the in-progress transition is complete. It is an error
 // to queue more than one transition at once, or to queue a transition when
-// the stage is already InitStageFinal.
+// the stage is already ProfileInitStage::kFinal.
 - (void)queueTransitionToNextInitStage;
 
 @end

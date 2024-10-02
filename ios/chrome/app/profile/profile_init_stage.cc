@@ -15,18 +15,18 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
       NOTREACHED();
 
     case InitStageBrowserObjectsForBackgroundHandlers:
-      return ProfileInitStage::InitStageProfileLoaded;
+      return ProfileInitStage::kProfileLoaded;
     case InitStageEnterprise:
-      return ProfileInitStage::InitStageEnterprise;
+      return ProfileInitStage::kEnterprise;
     case InitStageBrowserObjectsForUI:
-      return ProfileInitStage::InitStagePrepareUI;
+      return ProfileInitStage::kPrepareUI;
     case InitStageNormalUI:
-      return ProfileInitStage::InitStageUIReady;
+      return ProfileInitStage::kUIReady;
     case InitStageFirstRun:
-      return ProfileInitStage::InitStageFirstRun;
+      return ProfileInitStage::kFirstRun;
     case InitStageChoiceScreen:
-      return ProfileInitStage::InitStageChoiceScreen;
+      return ProfileInitStage::kChoiceScreen;
     case InitStageFinal:
-      return ProfileInitStage::InitStageFinal;
+      return ProfileInitStage::kFinal;
   }
 }

@@ -47,14 +47,14 @@
     didTransitionToInitStage:(ProfileInitStage)nextInitStage
                fromInitStage:(ProfileInitStage)fromInitStage {
   switch (nextInitStage) {
-    case ProfileInitStage::InitStageProfileLoaded: {
+    case ProfileInitStage::kProfileLoaded: {
       ProfileIOS* profile = self.profileState.profile;
       _promosManager = PromosManagerFactory::GetForProfile(profile);
       _identityManager = IdentityManagerFactory::GetForProfile(profile);
       _prefService = profile->GetPrefs();
       break;
     }
-    case ProfileInitStage::InitStageFinal: {
+    case ProfileInitStage::kFinal: {
       _hasAccountInfo = GetPreRestoreIdentity(_prefService).has_value();
       [self maybeRegisterPromo];
       if (_hasAccountInfo && _identityManager) {

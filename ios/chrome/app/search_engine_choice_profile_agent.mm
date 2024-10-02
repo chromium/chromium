@@ -53,7 +53,7 @@ enum class SkipScreenDecision {
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
-  if (self.profileState.initStage != ProfileInitStage::InitStageChoiceScreen) {
+  if (self.profileState.initStage != ProfileInitStage::kChoiceScreen) {
     return;
   }
 
@@ -79,7 +79,7 @@ enum class SkipScreenDecision {
 - (void)profileState:(ProfileState*)profileState
     didTransitionToInitStage:(ProfileInitStage)nextInitStage
                fromInitStage:(ProfileInitStage)fromInitStage {
-  if (self.profileState.initStage != ProfileInitStage::InitStageChoiceScreen) {
+  if (self.profileState.initStage != ProfileInitStage::kChoiceScreen) {
     return;
   }
 
@@ -97,7 +97,7 @@ enum class SkipScreenDecision {
   [self stopPresentingChoiceScreen];
 
   // Advance to the next stage when the screen is dismissed by the user.
-  if (self.profileState.initStage == ProfileInitStage::InitStageChoiceScreen) {
+  if (self.profileState.initStage == ProfileInitStage::kChoiceScreen) {
     [self.profileState queueTransitionToNextInitStage];
     [self.profileState removeAgent:self];
   }
@@ -120,8 +120,7 @@ enum class SkipScreenDecision {
 // Tries to present the choice screen on `sceneState`. If the screen is not
 // presented for any reason, then advance the application init state.
 - (void)maybeShowChoiceScreen:(SceneState*)sceneState {
-  DCHECK_EQ(self.profileState.initStage,
-            ProfileInitStage::InitStageChoiceScreen);
+  DCHECK_EQ(self.profileState.initStage, ProfileInitStage::kChoiceScreen);
   DCHECK_EQ(sceneState.activationLevel, SceneActivationLevelForegroundActive);
 
   // If the Choice Screen is already presented on another SceneState, then
@@ -184,8 +183,7 @@ enum class SkipScreenDecision {
 // was presenting the Search Engine Choice Screen, move the presentation
 // to the next active SceneState, if any.
 - (void)sceneStateDisconnected:(SceneState*)sceneState {
-  DCHECK_EQ(self.profileState.initStage,
-            ProfileInitStage::InitStageChoiceScreen);
+  DCHECK_EQ(self.profileState.initStage, ProfileInitStage::kChoiceScreen);
   if (!_searchEngineChoiceCoordinator) {
     // Nothing to do if the Search Engine Choice Screen is not presented.
     return;

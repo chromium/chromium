@@ -53,7 +53,7 @@ TEST_F(SceneObservingProfileAgentTest, sceneConnected) {
   AppState* app_state = OCMClassMock([AppState class]);
   ProfileState* profile_state =
       [[ProfileState alloc] initWithAppState:app_state];
-  ProgressInitStage(profile_state, ProfileInitStage::InitStageUIReady);
+  ProgressInitStage(profile_state, ProfileInitStage::kUIReady);
 
   SampleSceneObservingProfileAgent* agent =
       [[SampleSceneObservingProfileAgent alloc] init];

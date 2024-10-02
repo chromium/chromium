@@ -62,8 +62,8 @@ TEST_F(ProfileStateTest, profile) {
 // Tests that initStage can be set and get correctly.
 TEST_F(ProfileStateTest, initStages) {
   ProfileState* state = [[ProfileState alloc] initWithAppState:nil];
-  state.initStage = ProfileInitStage::InitStageLoadProfile;
-  while (state.initStage != ProfileInitStage::InitStageFinal) {
+  state.initStage = ProfileInitStage::kLoadProfile;
+  while (state.initStage != ProfileInitStage::kFinal) {
     const ProfileInitStage nextStage =
         static_cast<ProfileInitStage>(base::to_underlying(state.initStage) + 1);
 
@@ -106,8 +106,8 @@ TEST_F(ProfileStateTest, observers) {
   // not have been notified yet.
   EXPECT_EQ(observer1.lastStage, std::nullopt);
 
-  state.initStage = ProfileInitStage::InitStageProfileLoaded;
-  EXPECT_EQ(observer1.lastStage, ProfileInitStage::InitStageProfileLoaded);
+  state.initStage = ProfileInitStage::kProfileLoaded;
+  EXPECT_EQ(observer1.lastStage, ProfileInitStage::kProfileLoaded);
 
   ObserverForProfileStateTest* observer2 =
       [[ObserverForProfileStateTest alloc] init];
@@ -115,5 +115,5 @@ TEST_F(ProfileStateTest, observers) {
 
   // As the ProfileState was not InitStageLoadProfile, the observer must have
   // been notified during -addObserver:
-  EXPECT_EQ(observer2.lastStage, ProfileInitStage::InitStageProfileLoaded);
+  EXPECT_EQ(observer2.lastStage, ProfileInitStage::kProfileLoaded);
 }

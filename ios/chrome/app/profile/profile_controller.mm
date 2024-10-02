@@ -30,32 +30,32 @@
     didTransitionToInitStage:(ProfileInitStage)nextInitStage
                fromInitStage:(ProfileInitStage)fromInitStage {
   switch (nextInitStage) {
-    case ProfileInitStage::InitStageLoadProfile:
+    case ProfileInitStage::kLoadProfile:
       break;
 
-    case ProfileInitStage::InitStageProfileLoaded:
+    case ProfileInitStage::kProfileLoaded:
       [self attachProfileAgents];
       break;
 
-    case ProfileInitStage::InitStageEnterprise:
+    case ProfileInitStage::kEnterprise:
       break;
 
-    case ProfileInitStage::InitStagePrepareUI:
+    case ProfileInitStage::kPrepareUI:
       break;
 
-    case ProfileInitStage::InitStageUIReady:
+    case ProfileInitStage::kUIReady:
       break;
 
-    case ProfileInitStage::InitStageFirstRun:
+    case ProfileInitStage::kFirstRun:
       break;
 
-    case ProfileInitStage::InitStageChoiceScreen:
+    case ProfileInitStage::kChoiceScreen:
       break;
 
-    case ProfileInitStage::InitStageNormalUI:
+    case ProfileInitStage::kNormalUI:
       break;
 
-    case ProfileInitStage::InitStageFinal:
+    case ProfileInitStage::kFinal:
       break;
   }
 }
