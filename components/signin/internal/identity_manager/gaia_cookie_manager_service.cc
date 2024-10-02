@@ -826,6 +826,11 @@ void GaiaCookieManagerService::InitializeListedAccountsIds() {
     account.id = account_tracker_service_->PickAccountIdForAccount(
         account.gaia_id, account.email);
   }
+  for (gaia::ListedAccount& account : signed_out_accounts_) {
+    DCHECK(account.id.empty());
+    account.id = account_tracker_service_->PickAccountIdForAccount(
+        account.gaia_id, account.email);
+  }
 }
 
 void GaiaCookieManagerService::StartGaiaLogOut() {

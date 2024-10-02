@@ -671,6 +671,7 @@ TEST_F(GaiaCookieManagerServiceTest, ListAccountsFindsSignedOutAccounts) {
   signed_in_account.gaia_id = "8";
   signed_in_account.raw_email = "a@b.com";
   gaia::ListedAccount signed_out_account;
+  signed_out_account.id = CoreAccountId::FromGaiaId("9");
   signed_out_account.email = "c@d.com";
   signed_out_account.gaia_id = "9";
   signed_out_account.raw_email = "c@d.com";
@@ -856,6 +857,7 @@ TEST_F(GaiaCookieManagerServiceTest, GaiaCookieLastListAccountsDataSaved) {
   signed_in_account.gaia_id = "8";
   signed_in_account.raw_email = "a@b.com";
   gaia::ListedAccount signed_out_account;
+  signed_out_account.id = CoreAccountId::FromGaiaId("9");
   signed_out_account.email = "c@d.com";
   signed_out_account.gaia_id = "9";
   signed_out_account.raw_email = "c@d.com";
@@ -1078,11 +1080,13 @@ TEST_F(GaiaCookieManagerServiceTest, RemoveLoggedOutAccountByGaiaId) {
           kTestGaiaId1.c_str(), kTestGaiaId2.c_str()));
 
   gaia::ListedAccount account1;
+  account1.id = CoreAccountId::FromGaiaId(kTestGaiaId1);
   account1.email = "a@d.com";
   account1.gaia_id = kTestGaiaId1;
   account1.raw_email = "a@d.com";
   account1.signed_out = true;
   gaia::ListedAccount account2;
+  account2.id = CoreAccountId::FromGaiaId(kTestGaiaId2);
   account2.email = "b@d.com";
   account2.gaia_id = kTestGaiaId2;
   account2.raw_email = "b@d.com";
@@ -1130,6 +1134,7 @@ TEST_F(GaiaCookieManagerServiceTest,
   helper.ForceOnCookieChangeProcessing();
 
   gaia::ListedAccount account;
+  account.id = CoreAccountId::FromGaiaId(kTestGaiaId1);
   account.email = "a@d.com";
   account.gaia_id = kTestGaiaId1;
   account.raw_email = "a@d.com";
@@ -1169,6 +1174,7 @@ TEST_F(GaiaCookieManagerServiceTest,
           kTestGaiaId1.c_str()));
 
   gaia::ListedAccount account;
+  account.id = CoreAccountId::FromGaiaId(kTestGaiaId1);
   account.email = "a@d.com";
   account.gaia_id = kTestGaiaId1;
   account.raw_email = "a@d.com";
