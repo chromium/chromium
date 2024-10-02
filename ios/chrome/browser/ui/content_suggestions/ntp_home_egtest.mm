@@ -585,7 +585,15 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 
 // Tests that rotating to landscape and scrolling into the feed, opening another
 // NTP, and then swtiching back retains the scroll position.
-- (void)testOpenMultipleTabsandChangeOrientation {
+// TODO(crbug.com/370968166): Test flaky on iphone-device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testOpenMultipleTabsandChangeOrientation \
+  testOpenMultipleTabsandChangeOrientation
+#else
+#define MAYBE_testOpenMultipleTabsandChangeOrientation \
+  DISABLED_testOpenMultipleTabsandChangeOrientation
+#endif
+- (void)MAYBE_testOpenMultipleTabsandChangeOrientation {
   UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
   [self testNTPInitialPositionAndContent:collectionView];
 
