@@ -36,6 +36,13 @@ class ResponseHolder {
     return provided_by_on_device_;
   }
   ModelQualityLogEntry* log_entry() { return log_entry_received_.get(); }
+  const auto& logged_executions() {
+    return log_entry()
+        ->log_ai_data_request()
+        ->model_execution_info()
+        .on_device_model_execution_info()
+        .execution_infos();
+  }
 
  private:
   void OnResponse(OptimizationGuideModelStreamingExecutionResult result);

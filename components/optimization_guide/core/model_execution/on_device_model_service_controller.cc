@@ -223,7 +223,8 @@ OnDeviceModelServiceController::CreateSession(
   opts.model_versions = GetModelVersions(
       *model_metadata_, safety_model_info_.get(), adaptation_version);
   opts.adapter = std::move(adapter);
-  opts.safety_cfg = SafetyConfig(safety_config);
+  opts.safety_checker =
+      std::make_unique<SafetyChecker>(SafetyConfig(safety_config));
   opts.token_limits = GetTokenLimits();
 
   has_started_session_ = true;

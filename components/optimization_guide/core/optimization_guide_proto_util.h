@@ -5,7 +5,10 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_PROTO_UTIL_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_PROTO_UTIL_H_
 
+#include "components/optimization_guide/proto/common_types.pb.h"
+
 namespace optimization_guide::proto {
+class Any;
 class AXTreeUpdate;
 }  // namespace optimization_guide::proto
 
@@ -14,6 +17,9 @@ struct AXTreeUpdate;
 }  // namespace ui
 
 namespace optimization_guide {
+
+// Constructs an Any proto containing the given message.
+proto::Any AnyWrapProto(const google::protobuf::MessageLite& m);
 
 // Populate the AXTreeUpdate proto structure from the ui structure.
 void PopulateAXTreeUpdateProto(

@@ -1022,6 +1022,13 @@ void PopulateAXNode(const ui::AXNodeData& source,
 
 }  // namespace
 
+proto::Any AnyWrapProto(const google::protobuf::MessageLite& m) {
+  optimization_guide::proto::Any any;
+  any.set_type_url("type.googleapis.com/" + m.GetTypeName());
+  m.SerializeToString(any.mutable_value());
+  return any;
+}
+
 void PopulateAXTreeUpdateProto(
     const ui::AXTreeUpdate& source,
     optimization_guide::proto::AXTreeUpdate* destination) {
