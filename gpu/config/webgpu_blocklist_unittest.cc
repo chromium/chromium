@@ -104,17 +104,29 @@ TEST_F(WebGPUBlocklistTest, BlockDeviceIdOrArch) {
   WGPUAdapterInfo info1 = {};
   info1.vendorID = 0x8086;
   info1.deviceID = 0x1;
+#if defined(WGPU_BREAKING_CHANGE_STRING_VIEW_OUTPUT_STRUCTS)
+  info1.architecture = {"gen-9", WGPU_STRLEN};
+#else   // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_OUTPUT_STRUCTS)
   info1.architecture = "gen-9";
+#endif  // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_OUTPUT_STRUCTS)
 
   WGPUAdapterInfo info2 = {};
   info2.vendorID = 0x8086;
   info2.deviceID = 0x2;
+#if defined(WGPU_BREAKING_CHANGE_STRING_VIEW_OUTPUT_STRUCTS)
+  info2.architecture = {"gen-9", WGPU_STRLEN};
+#else   // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_OUTPUT_STRUCTS)
   info2.architecture = "gen-9";
+#endif  // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_OUTPUT_STRUCTS)
 
   WGPUAdapterInfo info3 = {};
   info3.vendorID = 0x1002;
   info3.deviceID = 0x1;
+#if defined(WGPU_BREAKING_CHANGE_STRING_VIEW_OUTPUT_STRUCTS)
+  info3.architecture = {"gcn-3", WGPU_STRLEN};
+#else   // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_OUTPUT_STRUCTS)
   info3.architecture = "gcn-3";
+#endif  // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_OUTPUT_STRUCTS)
 
   // Test blocking exactly a vendor and deviceID
   EXPECT_TRUE(IsWebGPUAdapterBlocklisted(info1, "8086:1"));
@@ -157,20 +169,35 @@ TEST_F(WebGPUBlocklistTest, BlockDriverDescription) {
   WGPUAdapterInfo info1 = {};
   info1.vendorID = 0x8086;
   info1.deviceID = 0x1;
+#if defined(WGPU_BREAKING_CHANGE_STRING_VIEW_OUTPUT_STRUCTS)
+  info1.architecture = {"gen-9", WGPU_STRLEN};
+  info1.description = {"D3D12 driver version 31.0.101.2111", WGPU_STRLEN};
+#else   // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_OUTPUT_STRUCTS)
   info1.architecture = "gen-9";
   info1.description = "D3D12 driver version 31.0.101.2111";
+#endif  // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_OUTPUT_STRUCTS)
 
   WGPUAdapterInfo info2 = {};
   info2.vendorID = 0x8086;
   info2.deviceID = 0x1;
+#if defined(WGPU_BREAKING_CHANGE_STRING_VIEW_OUTPUT_STRUCTS)
+  info2.architecture = {"gen-9", WGPU_STRLEN};
+  info2.description = {"D3D12 driver version 33.0.100.0004", WGPU_STRLEN};
+#else   // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_OUTPUT_STRUCTS)
   info2.architecture = "gen-9";
   info2.description = "D3D12 driver version 33.0.100.0004";
+#endif  // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_OUTPUT_STRUCTS)
 
   WGPUAdapterInfo info3 = {};
   info3.vendorID = 0x1002;
   info3.deviceID = 0x1;
+#if defined(WGPU_BREAKING_CHANGE_STRING_VIEW_OUTPUT_STRUCTS)
+  info3.architecture = {"gcn-3", WGPU_STRLEN};
+  info3.description = {"D3D12 driver version 31.0.203.3113", WGPU_STRLEN};
+#else   // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_OUTPUT_STRUCTS)
   info3.architecture = "gcn-3";
   info3.description = "D3D12 driver version 31.0.203.3113";
+#endif  // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_OUTPUT_STRUCTS)
 
   // Test blocking specific driver versions, with vendor+device ids
   EXPECT_TRUE(IsWebGPUAdapterBlocklisted(

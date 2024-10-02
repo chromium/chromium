@@ -155,15 +155,15 @@ GPUAdapter::GPUAdapter(
   // TODO(crbug.com/359418629): Report xr compatibility in GetInfo()
   is_xr_compatible_ = options->xrCompatible();
 
-  vendor_ = info.vendor;
-  architecture_ = info.architecture;
+  vendor_ = String::FromUTF8(info.vendor);
+  architecture_ = String::FromUTF8(info.architecture);
   if (info.deviceID <= 0xffff) {
     device_ = String::Format("0x%04x", info.deviceID);
   } else {
     device_ = String::Format("0x%08x", info.deviceID);
   }
-  description_ = info.device;
-  driver_ = info.description;
+  description_ = String::FromUTF8(info.device);
+  driver_ = String::FromUTF8(info.description);
   for (size_t i = 0; i < memoryHeapProperties.heapCount; ++i) {
     memory_heaps_.push_back(MakeGarbageCollected<GPUMemoryHeapInfo>(
         memoryHeapProperties.heapInfo[i]));
