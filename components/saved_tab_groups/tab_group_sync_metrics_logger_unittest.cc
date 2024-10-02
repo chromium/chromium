@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
-
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "components/saved_tab_groups/tab_group_sync_metrics_logger_impl.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_tracker.h"
@@ -39,8 +38,8 @@ class TabGroupSyncMetricsLoggerTest : public testing::Test {
 
   void SetUp() override {
     device_info_tracker_ = std::make_unique<syncer::FakeDeviceInfoTracker>();
-    metrics_logger_ =
-        std::make_unique<TabGroupSyncMetricsLogger>(device_info_tracker_.get());
+    metrics_logger_ = std::make_unique<TabGroupSyncMetricsLoggerImpl>(
+        device_info_tracker_.get());
     SetUpDeviceInfo();
   }
 
@@ -68,7 +67,7 @@ class TabGroupSyncMetricsLoggerTest : public testing::Test {
 
  protected:
   std::unique_ptr<syncer::FakeDeviceInfoTracker> device_info_tracker_;
-  std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger_;
+  std::unique_ptr<TabGroupSyncMetricsLoggerImpl> metrics_logger_;
   std::unique_ptr<syncer::DeviceInfo> device_info1_;
   std::unique_ptr<syncer::DeviceInfo> device_info2_;
   std::unique_ptr<syncer::DeviceInfo> device_info3_;

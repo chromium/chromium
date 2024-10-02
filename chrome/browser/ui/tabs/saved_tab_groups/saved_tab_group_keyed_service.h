@@ -12,12 +12,12 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_listener.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/saved_tab_groups/public/tab_group_sync_metrics_logger.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
 #include "components/saved_tab_groups/tab_group_sync_bridge_mediator.h"
-#include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/gfx/range/range.h"
 

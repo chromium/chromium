@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
+#include "components/saved_tab_groups/tab_group_sync_metrics_logger_impl.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -135,15 +135,15 @@ void LogTabGroupUserInteracted(DeviceType group_create_origin,
 
 }  // namespace
 
-TabGroupSyncMetricsLogger::TabGroupSyncMetricsLogger(
+TabGroupSyncMetricsLoggerImpl::TabGroupSyncMetricsLoggerImpl(
     syncer::DeviceInfoTracker* device_info_tracker)
     : device_info_tracker_(device_info_tracker) {}
 
-TabGroupSyncMetricsLogger::~TabGroupSyncMetricsLogger() = default;
+TabGroupSyncMetricsLoggerImpl::~TabGroupSyncMetricsLoggerImpl() = default;
 
-void TabGroupSyncMetricsLogger::LogEvent(const EventDetails& event_details,
-                                         const SavedTabGroup* group,
-                                         const SavedTabGroupTab* tab) {
+void TabGroupSyncMetricsLoggerImpl::LogEvent(const EventDetails& event_details,
+                                             const SavedTabGroup* group,
+                                             const SavedTabGroupTab* tab) {
   // Record creator origin related metrics first.
   CHECK(group);
 
@@ -193,7 +193,7 @@ void TabGroupSyncMetricsLogger::LogEvent(const EventDetails& event_details,
   }
 }
 
-DeviceType TabGroupSyncMetricsLogger::GetDeviceTypeFromCacheGuid(
+DeviceType TabGroupSyncMetricsLoggerImpl::GetDeviceTypeFromCacheGuid(
     const std::optional<std::string>& cache_guid) const {
   if (!cache_guid.has_value()) {
     return DeviceType::kUnknown;
@@ -213,7 +213,7 @@ DeviceType TabGroupSyncMetricsLogger::GetDeviceTypeFromCacheGuid(
   return GetDeviceTypeFromDeviceInfo(*device_info);
 }
 
-DeviceType TabGroupSyncMetricsLogger::GetDeviceTypeFromDeviceInfo(
+DeviceType TabGroupSyncMetricsLoggerImpl::GetDeviceTypeFromDeviceInfo(
     const syncer::DeviceInfo& device_info) const {
   // Map OsType and FormFactor to DeviceType.
   switch (device_info.os_type()) {
@@ -250,7 +250,7 @@ DeviceType TabGroupSyncMetricsLogger::GetDeviceTypeFromDeviceInfo(
   }
 }
 
-void TabGroupSyncMetricsLogger::RecordMetricsOnStartup(
+void TabGroupSyncMetricsLoggerImpl::RecordMetricsOnStartup(
     const std::vector<SavedTabGroup>& saved_tab_groups,
     const std::vector<bool>& is_remote) {
   int total_group_count = saved_tab_groups.size();
@@ -358,13 +358,13 @@ void TabGroupSyncMetricsLogger::RecordMetricsOnStartup(
       remote_active_group_count_28_day);
 }
 
-void TabGroupSyncMetricsLogger::RecordTabGroupDeletionsOnStartup(
+void TabGroupSyncMetricsLoggerImpl::RecordTabGroupDeletionsOnStartup(
     size_t group_count) {
   base::UmaHistogramCounts10000("TabGroups.Sync.NumberOfGroupsDeletedOnStartup",
                                 group_count);
 }
 
-void TabGroupSyncMetricsLogger::RecordMetricsOnSignin(
+void TabGroupSyncMetricsLoggerImpl::RecordMetricsOnSignin(
     const std::vector<SavedTabGroup>& saved_tab_groups,
     signin::ConsentLevel consent_level) {
   std::string_view consent_level_token =

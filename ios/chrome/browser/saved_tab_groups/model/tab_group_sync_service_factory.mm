@@ -13,6 +13,7 @@
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "components/saved_tab_groups/sync_data_type_configuration.h"
 #import "components/saved_tab_groups/tab_group_sync_coordinator_impl.h"
+#import "components/saved_tab_groups/tab_group_sync_metrics_logger_impl.h"
 #import "components/saved_tab_groups/tab_group_sync_service_impl.h"
 #import "components/sync/base/report_unrecoverable_error.h"
 #import "components/sync/model/client_tag_based_data_type_processor.h"
@@ -115,7 +116,7 @@ TabGroupSyncServiceFactory::BuildServiceInstanceFor(
       DeviceInfoSyncServiceFactory::GetForProfile(profile)
           ->GetDeviceInfoTracker();
   auto metrics_logger =
-      std::make_unique<TabGroupSyncMetricsLogger>(device_info_tracker);
+      std::make_unique<TabGroupSyncMetricsLoggerImpl>(device_info_tracker);
 
   // Give the opportunity for the test hook to override the factory from
   // the provider (allowing EG tests to use a fake TabGroupSyncService).

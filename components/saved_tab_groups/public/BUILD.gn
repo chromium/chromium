@@ -14,6 +14,7 @@ source_set("public") {
     "saved_tab_group.h",
     "saved_tab_group_tab.cc",
     "saved_tab_group_tab.h",
+    "tab_group_sync_metrics_logger.h",
     "tab_group_sync_service.h",
     "types.cc",
     "types.h",

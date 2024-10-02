@@ -44,7 +44,7 @@
 #include "components/saved_tab_groups/stats.h"
 #include "components/saved_tab_groups/sync_data_type_configuration.h"
 #include "components/saved_tab_groups/tab_group_sync_bridge_mediator.h"
-#include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
+#include "components/saved_tab_groups/tab_group_sync_metrics_logger_impl.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
@@ -136,8 +136,8 @@ SavedTabGroupKeyedService::SavedTabGroupKeyedService(
               GetStoreFactory()),
           MaybeCreateSyncConfigurationForSharedTabGroupData(
               GetStoreFactory()))),
-      metrics_logger_(
-          std::make_unique<TabGroupSyncMetricsLogger>(device_info_tracker)) {
+      metrics_logger_(std::make_unique<TabGroupSyncMetricsLoggerImpl>(
+          device_info_tracker)) {
   model_->AddObserver(this);
 
   metrics_timer_.Start(

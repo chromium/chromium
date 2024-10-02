@@ -31,7 +31,7 @@
 #include "components/saved_tab_groups/public/types.h"
 #include "components/saved_tab_groups/sync_data_type_configuration.h"
 #include "components/saved_tab_groups/tab_group_sync_coordinator_impl.h"
-#include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
+#include "components/saved_tab_groups/tab_group_sync_metrics_logger_impl.h"
 #include "components/saved_tab_groups/tab_group_sync_service_impl.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
@@ -102,7 +102,7 @@ class TabGroupSyncDelegateBrowserTest : public InProcessBrowserTest,
         DeviceInfoSyncServiceFactory::GetForProfile(profile)
             ->GetDeviceInfoTracker();
     auto metrics_logger =
-        std::make_unique<TabGroupSyncMetricsLogger>(device_info_tracker);
+        std::make_unique<TabGroupSyncMetricsLoggerImpl>(device_info_tracker);
 
     auto service = std::make_unique<TabGroupSyncServiceImpl>(
         std::move(model), std::move(saved_config), nullptr, profile->GetPrefs(),

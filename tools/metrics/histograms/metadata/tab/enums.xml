@@ -61,7 +61,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="IOS Tablet"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/saved_tab_groups/tab_group_sync_metrics_logger.h:DeviceType) -->
+<!-- LINT.ThenChange(//components/saved_tab_groups/tab_group_sync_metrics_logger_impl.h:DeviceType) -->
 
 <enum name="ExternalLauncherOption">
   <int value="0" label="Cancel"/>

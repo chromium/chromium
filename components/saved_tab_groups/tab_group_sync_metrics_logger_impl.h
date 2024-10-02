@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAVED_TAB_GROUPS_TAB_GROUP_SYNC_METRICS_LOGGER_H_
-#define COMPONENTS_SAVED_TAB_GROUPS_TAB_GROUP_SYNC_METRICS_LOGGER_H_
+#ifndef COMPONENTS_SAVED_TAB_GROUPS_TAB_GROUP_SYNC_METRICS_LOGGER_IMPL_H_
+#define COMPONENTS_SAVED_TAB_GROUPS_TAB_GROUP_SYNC_METRICS_LOGGER_IMPL_H_
 
 #include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "components/saved_tab_groups/public/tab_group_sync_metrics_logger.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/sync_device_info/device_info.h"
@@ -44,16 +45,22 @@ enum class DeviceType {
 
 // Class to record histograms for events related to tab group sync,
 // capturing information about the originating device type and form factor.
-class TabGroupSyncMetricsLogger {
+class TabGroupSyncMetricsLoggerImpl : public TabGroupSyncMetricsLogger {
  public:
-  explicit TabGroupSyncMetricsLogger(
+  explicit TabGroupSyncMetricsLoggerImpl(
       syncer::DeviceInfoTracker* device_info_tracker);
-  ~TabGroupSyncMetricsLogger();
+  ~TabGroupSyncMetricsLoggerImpl() override;
 
-  // Central method to log various tab group events.
+  // TabGroupSyncMetricsLogger overrides.
   void LogEvent(const EventDetails& event_details,
                 const SavedTabGroup* group,
-                const SavedTabGroupTab* tab);
+                const SavedTabGroupTab* tab) override;
+  void RecordMetricsOnStartup(
+      const std::vector<SavedTabGroup>& saved_tab_groups,
+      const std::vector<bool>& is_remote) override;
+  void RecordTabGroupDeletionsOnStartup(size_t group_count) override;
+  void RecordMetricsOnSignin(const std::vector<SavedTabGroup>& saved_tab_groups,
+                             signin::ConsentLevel consent_level) override;
 
   // Returns the DeviceType based on the sync cache guid which can resolve to a
   // local device or a remote device with a specific OS and form factor. The
@@ -66,21 +73,6 @@ class TabGroupSyncMetricsLogger {
   DeviceType GetDeviceTypeFromDeviceInfo(
       const syncer::DeviceInfo& device_info) const;
 
-  // Records metrics about the state of service such as the number of active,
-  // inactive, open, closed, remote saved groups on startup. Recorded 10 seconds
-  // after startup.
-  void RecordMetricsOnStartup(
-      const std::vector<SavedTabGroup>& saved_tab_groups,
-      const std::vector<bool>& is_remote);
-
-  // Records metrics about number of groups deleted on startup.
-  void RecordTabGroupDeletionsOnStartup(size_t group_count);
-
-  // Records metrics about the number of groups, and tabs within groups, at the
-  // moment of signing in / turning on sync.
-  void RecordMetricsOnSignin(const std::vector<SavedTabGroup>& saved_tab_groups,
-                             signin::ConsentLevel consent_level);
-
  private:
   // For resolving device information.
   raw_ptr<syncer::DeviceInfoTracker> device_info_tracker_;
@@ -88,4 +80,4 @@ class TabGroupSyncMetricsLogger {
 
 }  // namespace tab_groups
 
-#endif  // COMPONENTS_SAVED_TAB_GROUPS_TAB_GROUP_SYNC_METRICS_LOGGER_H_
+#endif  // COMPONENTS_SAVED_TAB_GROUPS_TAB_GROUP_SYNC_METRICS_LOGGER_IMPL_H_

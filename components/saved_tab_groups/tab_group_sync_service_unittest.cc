@@ -18,7 +18,7 @@
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/sync_data_type_configuration.h"
 #include "components/saved_tab_groups/tab_group_sync_coordinator.h"
-#include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
+#include "components/saved_tab_groups/tab_group_sync_metrics_logger_impl.h"
 #include "components/saved_tab_groups/tab_group_sync_service_impl.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -150,7 +150,7 @@ class TabGroupSyncServiceTest : public testing::Test {
         prefs::kLocallyClosedRemoteTabGroupIds, base::Value::Dict());
 
     auto metrics_logger =
-        std::make_unique<TabGroupSyncMetricsLogger>(&device_info_tracker_);
+        std::make_unique<TabGroupSyncMetricsLoggerImpl>(&device_info_tracker_);
 
     EXPECT_CALL(*decider_, RegisterOptimizationTypes(_)).Times(1);
     tab_group_sync_service_ = std::make_unique<TabGroupSyncServiceImpl>(

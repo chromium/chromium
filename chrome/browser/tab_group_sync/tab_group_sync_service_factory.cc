@@ -26,7 +26,7 @@
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/sync_data_type_configuration.h"
 #include "components/saved_tab_groups/tab_group_sync_coordinator_impl.h"
-#include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
+#include "components/saved_tab_groups/tab_group_sync_metrics_logger_impl.h"
 #include "components/saved_tab_groups/tab_group_sync_service_impl.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
@@ -113,7 +113,7 @@ TabGroupSyncServiceFactory::BuildServiceInstanceForBrowserContext(
       DeviceInfoSyncServiceFactory::GetForProfile(profile)
           ->GetDeviceInfoTracker();
   auto metrics_logger =
-      std::make_unique<TabGroupSyncMetricsLogger>(device_info_tracker);
+      std::make_unique<TabGroupSyncMetricsLoggerImpl>(device_info_tracker);
   auto model = std::make_unique<SavedTabGroupModel>();
   auto saved_config = CreateSavedTabGroupDataTypeConfiguration(profile);
   auto shared_config = MaybeCreateSharedTabGroupDataTypeConfiguration(profile);

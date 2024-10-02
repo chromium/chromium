@@ -17,6 +17,7 @@
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/saved_tab_groups/delegate/tab_group_sync_delegate.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/tab_group_sync_metrics_logger.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
@@ -24,7 +25,6 @@
 #include "components/saved_tab_groups/shared_tab_group_data_sync_bridge.h"
 #include "components/saved_tab_groups/tab_group_sync_bridge_mediator.h"
 #include "components/saved_tab_groups/tab_group_sync_coordinator.h"
-#include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 class PrefService;
