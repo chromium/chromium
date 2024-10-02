@@ -42,68 +42,31 @@ source_set("unit_tests") {
   ]
 }
 
-if (is_chromeos_ash) {
-  source_set("browser_tests") {
-    testonly = true
+source_set("browser_tests") {
+  testonly = true
 
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources = [ "network_bandwidth_sampler_ash_browsertest.cc" ]
+  sources = [ "network_bandwidth_sampler_ash_browsertest.cc" ]
 
-    deps = [
-      ":network",
-      "//base/test:test_support",
-      "//chrome/browser",
-      "//chrome/browser:browser_process",
-      "//chrome/browser/ash/login/test:test_support",
-      "//chrome/browser/ash/policy/affiliation:test_support",
-      "//chrome/browser/ash/policy/core:test_support",
-      "//chrome/browser/ash/settings",
-      "//chrome/browser/ash/settings:test_support",
-      "//chrome/browser/chromeos/reporting",
-      "//chromeos/ash/components/settings",
-      "//chromeos/dbus/missive:test_support",
-      "//components/reporting/proto:record_constants",
-      "//components/reporting/proto:record_proto",
-      "//components/reporting/util:test_callbacks_support",
-      "//content/test:test_support",
-      "//testing/gmock",
-      "//testing/gtest",
-    ]
-  }
-}
-
-if (is_chromeos_lacros) {
-  source_set("lacros_chrome_browsertests") {
-    testonly = true
-
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-    sources = [ "network_bandwidth_sampler_lacros_browsertest.cc" ]
-
-    deps = [
-      ":network",
-      "//base",
-      "//base/test:test_support",
-      "//chrome/browser",
-      "//chrome/browser:browser_process",
-      "//chrome/browser/chromeos/reporting",
-      "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
-      "//chrome/test:test_support",
-      "//chrome/test:test_support_ui",
-      "//chromeos/crosapi/mojom",
-      "//chromeos/dbus/missive:test_support",
-      "//chromeos/startup",
-      "//components/policy/core/common",
-      "//components/policy/proto",
-      "//components/reporting/proto:record_constants",
-      "//components/reporting/proto:record_proto",
-      "//components/reporting/util:test_callbacks_support",
-      "//content/test:test_support",
-      "//services/network/public/cpp",
-      "//testing/gmock",
-      "//testing/gtest",
-    ]
-  }
+  deps = [
+    ":network",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/policy/affiliation:test_support",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/chromeos/reporting",
+    "//chromeos/ash/components/settings",
+    "//chromeos/dbus/missive:test_support",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/util:test_callbacks_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }
