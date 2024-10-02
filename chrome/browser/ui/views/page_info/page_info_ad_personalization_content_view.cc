@@ -86,9 +86,9 @@ void PageInfoAdPersonalizationContentView::SetAdPersonalizationInfo(
   auto* description_label =
       info_container_->AddChildView(std::make_unique<views::Label>(
           l10n_util::GetStringUTF16(message_id), views::style::CONTEXT_LABEL,
-          views::style::STYLE_BODY_4));
+          views::style::STYLE_BODY_3));
   description_label->SetMultiLine(true);
-  description_label->SetEnabledColorId(kColorPageInfoSubtitleForeground);
+  description_label->SetEnabledColorId(kColorPageInfoForeground);
   description_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   // TODO(crbug.com/40244046): Figure out why without additional horizontal
   // margin the size is being calculated incorrectly and the topics labels are
@@ -107,8 +107,9 @@ void PageInfoAdPersonalizationContentView::SetAdPersonalizationInfo(
       auto* topic_label =
           info_container_->AddChildView(std::make_unique<views::Label>(
               topic.GetLocalizedRepresentation(), views::style::CONTEXT_LABEL,
-              views::style::STYLE_PRIMARY));
+              views::style::STYLE_BODY_4));
       topic_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+      topic_label->SetEnabledColorId(kColorPageInfoSubtitleForeground);
     }
   }
 
