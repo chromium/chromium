@@ -132,7 +132,7 @@ module.exports = {
 
   'overrides': [{
     'files': ['**/*.ts'],
-    'parser': './third_party/node/node_modules/@typescript-eslint/parser/dist/index.js',
+    'parser': '../../third_party/node/node_modules/@typescript-eslint/parser/dist/index.js',
     'plugins': [
       '@typescript-eslint',
       '@stylistic',
@@ -371,6 +371,7 @@ module.exports = {
 
   ],
 
+  // All paths are relative to src/.
   'ignorePatterns': [
     // Ignore because eslint doesn't understand // <if expr>
     'chrome/browser/resources/gaia_auth_host/authenticator.js',
