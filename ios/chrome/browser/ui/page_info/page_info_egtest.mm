@@ -528,7 +528,7 @@ void ExpectPermissionChangedHistograms(ContentSettingsType type) {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   GURL URL("https://www.example.com/");
 
-  // Create an entry in History which took place one day ago on `url`.
+  // Create an entry in History which took place one day ago on `URL`.
   const base::Time oneDayAgo = base::Time::Now() - base::Hours(24);
   [ChromeEarlGrey addHistoryServiceTypedURL:URL visitTimestamp:oneDayAgo];
 
@@ -554,9 +554,9 @@ void ExpectPermissionChangedHistograms(ContentSettingsType type) {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   GURL URL("https://www.example.com/");
 
-  // Create an entry in History which took place one hour ago on `url`.
-  const base::Time oneHourAgo = base::Time::Now() - base::Hours(1);
-  [ChromeEarlGrey addHistoryServiceTypedURL:URL visitTimestamp:oneHourAgo];
+  // Create an entry in History which took place one day ago on `URL`.
+  const base::Time oneDayAgo = base::Time::Now() - base::Hours(24);
+  [ChromeEarlGrey addHistoryServiceTypedURL:URL visitTimestamp:oneDayAgo];
 
   // Visit `URL` and open Page Info.
   AddAboutThisSiteHint(URL);
@@ -588,9 +588,9 @@ void ExpectPermissionChangedHistograms(ContentSettingsType type) {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   GURL URL("https://www.example.com/");
 
-  // Create an entry in History which took place one hour ago on `url`.
-  const base::Time oneHourAgo = base::Time::Now() - base::Hours(1);
-  [ChromeEarlGrey addHistoryServiceTypedURL:URL visitTimestamp:oneHourAgo];
+  // Create an entry in History which took place one day ago on `URL`.
+  const base::Time oneDayAgo = base::Time::Now() - base::Hours(24);
+  [ChromeEarlGrey addHistoryServiceTypedURL:URL visitTimestamp:oneDayAgo];
 
   // Visit `URL` and open Page Info.
   AddAboutThisSiteHint(URL);
@@ -634,9 +634,9 @@ void ExpectPermissionChangedHistograms(ContentSettingsType type) {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   GURL URL("https://www.example.com/");
 
-  // Create an entry in History which took place one hour ago on `url`.
-  const base::Time oneHourAgo = base::Time::Now() - base::Hours(1);
-  [ChromeEarlGrey addHistoryServiceTypedURL:URL visitTimestamp:oneHourAgo];
+  // Create an entry in History which took place one day ago on `URL`.
+  const base::Time oneDayAgo = base::Time::Now() - base::Hours(24);
+  [ChromeEarlGrey addHistoryServiceTypedURL:URL visitTimestamp:oneDayAgo];
 
   // Visit `URL` and open Page Info.
   AddAboutThisSiteHint(URL);
@@ -654,16 +654,19 @@ void ExpectPermissionChangedHistograms(ContentSettingsType type) {
           grey_accessibilityID(kHistoryToolbarShowFullHistoryButtonIdentifier)]
       performAction:grey_tap()];
 
-  // Check that tapping on a URL (from full history) dismisses both full history
-  // and Page Info.
-  [[EarlGrey
+  // Check that tapping on the older URL (from full history) dismisses both full
+  // history and Page Info. `atIndex:1` is required because two entries would be
+  // matched (current visit and the visit from one day ago) and we want to
+  // select the last one (i.e. the older history entry).
+  [[[EarlGrey
       selectElementWithMatcher:
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
                       FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           URL)),
-              kTitleAndContentOfExternalWebsite)] performAction:grey_tap()];
+              kTitleAndContentOfExternalWebsite)] atIndex:1]
+      performAction:grey_tap()];
 
   [ChromeEarlGrey
       waitForWebStateContainingText:kTitleAndContentOfExternalWebsite];
