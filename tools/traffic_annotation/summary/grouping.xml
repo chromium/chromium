@@ -342,6 +342,7 @@ after discussions on the right group.
       <annotation id="iwa_web_app_internals_update_manifest"/>
       <annotation id="iwa_web_app_internals_web_bundle"/>
       <annotation id="digital_asset_links_include"/>
+      <annotation id="lens_overlay_gen204"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
