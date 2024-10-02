@@ -144,7 +144,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.selection.SelectionPopupBackPressHandler;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateImpl;
 import org.chromium.chrome.browser.share.ShareDelegateSupplier;
@@ -193,7 +193,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvi
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.Type;
@@ -2484,8 +2484,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         int type = Profile.getBrowserProfileTypeFromProfile(getCurrentTabModel().getProfile());
 
         if (id == R.id.preferences_id) {
-            SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
-            settingsLauncher.launchSettingsActivity(this);
+            SettingsNavigation settingsNavigation =
+                    SettingsNavigationFactory.createSettingsNavigation();
+            settingsNavigation.startSettings(this);
             RecordUserAction.record("MobileMenuSettings");
             RecordHistogram.recordEnumeratedHistogram(
                     "Settings.OpenSettingsFromMenu.PerProfileType",

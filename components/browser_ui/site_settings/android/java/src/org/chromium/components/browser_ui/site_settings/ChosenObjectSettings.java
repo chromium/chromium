@@ -192,7 +192,7 @@ public class ChosenObjectSettings extends BaseSiteSettingsFragment
         if (hasManagedObject) {
             ManagedPreferencesUtils.showManagedSettingsCannotBeResetToast(getContext());
         } else {
-            getSettingsLauncher().finishCurrentFragment(this);
+            getSettingsNavigation().finishCurrentSettings(this);
         }
     }
 
@@ -229,7 +229,7 @@ public class ChosenObjectSettings extends BaseSiteSettingsFragment
             // them back to SingleCategorySettings which will now no longer offer the option to
             // examine the permissions for this object.
             if (mObjectInfos.isEmpty()) {
-                getSettingsLauncher().finishCurrentFragment(ChosenObjectSettings.this);
+                getSettingsNavigation().finishCurrentSettings(ChosenObjectSettings.this);
             } else {
                 resetList();
             }

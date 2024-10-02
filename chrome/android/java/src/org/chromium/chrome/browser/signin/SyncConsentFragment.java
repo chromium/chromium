@@ -13,12 +13,12 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.ui.signin.SyncConsentDelegate;
 import org.chromium.chrome.browser.ui.signin.SyncConsentFragmentBase;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 import java.lang.annotation.Retention;
@@ -104,8 +104,9 @@ public class SyncConsentFragment extends SyncConsentFragmentBase {
     @Override
     protected void closeAndMaybeOpenSyncSettings(boolean settingsClicked) {
         if (settingsClicked) {
-            SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
-            settingsLauncher.launchSettingsActivity(
+            SettingsNavigation settingsNavigation =
+                    SettingsNavigationFactory.createSettingsNavigation();
+            settingsNavigation.startSettings(
                     getActivity(),
                     ManageSyncSettings.class,
                     ManageSyncSettings.createArguments(true));

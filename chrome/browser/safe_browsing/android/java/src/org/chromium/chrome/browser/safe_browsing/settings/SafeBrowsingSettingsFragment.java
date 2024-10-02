@@ -19,7 +19,7 @@ import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.chrome.browser.safe_browsing.metrics.UserAction;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 
 /** Fragment containing Safe Browsing settings. */
@@ -94,13 +94,11 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
     public void onSafeBrowsingModeDetailsRequested(@SafeBrowsingState int safeBrowsingState) {
         recordUserActionHistogramForStateDetailsClicked(safeBrowsingState);
         if (safeBrowsingState == SafeBrowsingState.ENHANCED_PROTECTION) {
-            SettingsLauncherFactory.createSettingsLauncher()
-                    .launchSettingsActivity(
-                            getActivity(), EnhancedProtectionSettingsFragment.class);
+            SettingsNavigationFactory.createSettingsNavigation()
+                    .startSettings(getActivity(), EnhancedProtectionSettingsFragment.class);
         } else if (safeBrowsingState == SafeBrowsingState.STANDARD_PROTECTION) {
-            SettingsLauncherFactory.createSettingsLauncher()
-                    .launchSettingsActivity(
-                            getActivity(), StandardProtectionSettingsFragment.class);
+            SettingsNavigationFactory.createSettingsNavigation()
+                    .startSettings(getActivity(), StandardProtectionSettingsFragment.class);
         } else {
             assert false : "Should not be reached";
         }

@@ -15,7 +15,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
@@ -43,8 +43,8 @@ public final class SearchEngineChoiceNotification {
 
         @Override
         public void onAction(Object actionData) {
-            SettingsLauncherFactory.createSettingsLauncher()
-                    .launchSettingsActivity(mContext, SearchEngineSettings.class);
+            SettingsNavigationFactory.createSettingsNavigation()
+                    .startSettings(mContext, SearchEngineSettings.class);
             SearchEngineChoiceMetrics.recordEvent(SearchEngineChoiceMetrics.Events.PROMPT_FOLLOWED);
             SearchEngineChoiceMetrics.recordSearchEngineTypeBeforeChoice();
         }

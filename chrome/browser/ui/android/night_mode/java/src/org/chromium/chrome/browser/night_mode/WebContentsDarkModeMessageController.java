@@ -22,7 +22,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -214,8 +214,8 @@ public class WebContentsDarkModeMessageController {
         args.putInt(
                 ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY,
                 ThemeSettingsEntry.AUTO_DARK_MODE_MESSAGE);
-        SettingsLauncherFactory.createSettingsLauncher()
-                .launchSettingsActivity(activity, ThemeSettingsFragment.class, args);
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(activity, ThemeSettingsFragment.class, args);
     }
 
     /**
@@ -360,8 +360,8 @@ public class WebContentsDarkModeMessageController {
         args.putInt(
                 ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY,
                 ThemeSettingsEntry.AUTO_DARK_MODE_DIALOG);
-        SettingsLauncherFactory.createSettingsLauncher()
-                .launchSettingsActivity(context, ThemeSettingsFragment.class, args);
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(context, ThemeSettingsFragment.class, args);
     }
 
     /** Returns link-formatted message text for the auto dark dialog. */

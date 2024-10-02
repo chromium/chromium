@@ -23,9 +23,9 @@ import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.Context
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSettingsFragment;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchUma;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
@@ -373,9 +373,9 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
                         new Runnable() {
                             @Override
                             public void run() {
-                                SettingsLauncher settingsLauncher =
-                                        SettingsLauncherFactory.createSettingsLauncher();
-                                settingsLauncher.launchSettingsActivity(
+                                SettingsNavigation settingsNavigation =
+                                        SettingsNavigationFactory.createSettingsNavigation();
+                                settingsNavigation.startSettings(
                                         getContext(), ContextualSearchSettingsFragment.class);
                             }
                         });

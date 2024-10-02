@@ -55,7 +55,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/autofill/settings/AutofillDeleteSavedCvcsConfirmationDialogTest.java",
   "junit/src/org/chromium/chrome/browser/autofill/settings/AutofillVirtualCardEnrollmentDialogTest.java",
   "junit/src/org/chromium/chrome/browser/autofill/settings/AutofillVirtualCardUnenrollmentDialogTest.java",
-  "junit/src/org/chromium/chrome/browser/autofill/settings/SettingsLauncherHelperTest.java",
+  "junit/src/org/chromium/chrome/browser/autofill/settings/SettingsNavigationHelperTest.java",
   "junit/src/org/chromium/chrome/browser/autofill/vcn/AutofillVcnEnrollBottomSheetBridgeTest.java",
   "junit/src/org/chromium/chrome/browser/autofill/vcn/AutofillVcnEnrollBottomSheetContentTest.java",
   "junit/src/org/chromium/chrome/browser/autofill/vcn/AutofillVcnEnrollBottomSheetCoordinatorTest.java",

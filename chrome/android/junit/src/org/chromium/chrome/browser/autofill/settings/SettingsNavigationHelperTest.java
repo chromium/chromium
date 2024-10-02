@@ -25,15 +25,15 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 
-/** Test for {@link SettingsLauncherHelper}. */
+/** Test for {@link SettingsNavigationHelper}. */
 @RunWith(RobolectricTestRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "Uses static launcher.")
-public class SettingsLauncherHelperTest {
-    @Mock private SettingsLauncher mMockLauncher;
+public class SettingsNavigationHelperTest {
+    @Mock private SettingsNavigation mMockLauncher;
     @Mock private Context mMockContext;
 
     private UserActionTester mActionTester = new UserActionTester();
@@ -41,7 +41,7 @@ public class SettingsLauncherHelperTest {
     @Before
     public void setup() {
         MockitoAnnotations.openMocks(this);
-        SettingsLauncherFactory.setInstanceForTesting(mMockLauncher);
+        SettingsNavigationFactory.setInstanceForTesting(mMockLauncher);
     }
 
     @After
@@ -52,24 +52,23 @@ public class SettingsLauncherHelperTest {
     @Test
     @SmallTest
     public void testRecordsActionThenLaunchesPaymentsSettings() {
-        assertTrue(SettingsLauncherHelper.showAutofillCreditCardSettings(mMockContext));
+        assertTrue(SettingsNavigationHelper.showAutofillCreditCardSettings(mMockContext));
         assertTrue(mActionTester.getActions().contains("AutofillCreditCardsViewed"));
-        verify(mMockLauncher)
-                .launchSettingsActivity(mMockContext, AutofillPaymentMethodsFragment.class);
+        verify(mMockLauncher).startSettings(mMockContext, AutofillPaymentMethodsFragment.class);
     }
 
     @Test
     @SmallTest
     public void testRecordsActionThenLaunchesAddressesSettings() {
-        assertTrue(SettingsLauncherHelper.showAutofillProfileSettings(mMockContext));
+        assertTrue(SettingsNavigationHelper.showAutofillProfileSettings(mMockContext));
         assertTrue(mActionTester.getActions().contains("AutofillAddressesViewed"));
-        verify(mMockLauncher).launchSettingsActivity(mMockContext, AutofillProfilesFragment.class);
+        verify(mMockLauncher).startSettings(mMockContext, AutofillProfilesFragment.class);
     }
 
     @Test
     @SmallTest
     public void testDoesntLaunchOrRecordPaymentsSettingsWithoutContext() {
-        assertFalse(SettingsLauncherHelper.showAutofillCreditCardSettings(null));
+        assertFalse(SettingsNavigationHelper.showAutofillCreditCardSettings(null));
         assertFalse(mActionTester.getActions().contains("AutofillCreditCardsViewed"));
         verifyNoInteractions(mMockLauncher);
     }
@@ -77,7 +76,7 @@ public class SettingsLauncherHelperTest {
     @Test
     @SmallTest
     public void testDoesntLaunchOrRecordAddressesSettingsWithoutContext() {
-        assertFalse(SettingsLauncherHelper.showAutofillCreditCardSettings(null));
+        assertFalse(SettingsNavigationHelper.showAutofillCreditCardSettings(null));
         assertFalse(mActionTester.getActions().contains("AutofillAddressesViewed"));
         verifyNoInteractions(mMockLauncher);
     }

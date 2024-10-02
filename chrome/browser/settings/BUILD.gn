@@ -8,19 +8,19 @@ import("//chrome/android/features/android_library_factory_tmpl.gni")
 android_library_factory("factory_java") {
   deps = [ "//components/browser_ui/settings/android:java" ]
 
-  sources = [ "android/java/src/org/chromium/chrome/browser/settings/SettingsLauncherFactory.java" ]
+  sources = [ "android/java/src/org/chromium/chrome/browser/settings/SettingsNavigationFactory.java" ]
 }
 
 android_library("internal_java") {
   deps = [
     "//base:resetters_java",
 
-    # Exception: depends on :chrome_java for SettingsLauncherImpl.
+    # Exception: depends on :chrome_java for SettingsNavigationImpl.
     "//chrome/android:chrome_java",
     "//components/browser_ui/settings/android:java",
   ]
 
-  sources = [ "android/java/src/org/chromium/chrome/browser/settings/SettingsLauncherFactory.java" ]
+  sources = [ "android/java/src/org/chromium/chrome/browser/settings/SettingsNavigationFactory.java" ]
 }
 
 android_library("java") {

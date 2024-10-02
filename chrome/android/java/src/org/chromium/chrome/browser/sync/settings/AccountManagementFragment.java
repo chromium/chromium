@@ -30,7 +30,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -44,7 +44,7 @@ import org.chromium.chrome.browser.ui.signin.SignOutCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -179,7 +179,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         if (mSignedInCoreAccountInfo == null || coreAccountInfos.isEmpty()) {
             // The AccountManagementFragment can only be shown when the user is signed in. If the
             // user is signed out, exit the fragment.
-            SettingsLauncherFactory.createSettingsLauncher().finishCurrentFragment(this);
+            SettingsNavigationFactory.createSettingsNavigation().finishCurrentSettings(this);
             return;
         }
 
@@ -422,8 +422,8 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
 
                                 // Return to the last opened tab if triggered from the content area.
                                 if (mGaiaServiceType != GAIAServiceType.GAIA_SERVICE_TYPE_NONE) {
-                                    SettingsLauncherFactory.createSettingsLauncher()
-                                            .finishCurrentFragment(this);
+                                    SettingsNavigationFactory.createSettingsNavigation()
+                                            .finishCurrentSettings(this);
                                 }
                             });
                     return true;
@@ -590,9 +590,9 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
             Context context, @GAIAServiceType int serviceType) {
         Bundle arguments = new Bundle();
         arguments.putInt(SHOW_GAIA_SERVICE_TYPE_EXTRA, serviceType);
-        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
-        settingsLauncher.launchSettingsActivity(
-                context, AccountManagementFragment.class, arguments);
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
+        settingsNavigation.startSettings(context, AccountManagementFragment.class, arguments);
     }
 
     private void closeDialogIfOpen(String tag) {

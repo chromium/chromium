@@ -50,7 +50,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -497,7 +497,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
             RecordHistogram.recordBooleanHistogram(DIALOG_HISTOGRAM, true);
         } else {
             dismissProgressDialog();
-            SettingsLauncherFactory.createSettingsLauncher().finishCurrentFragment(this);
+            SettingsNavigationFactory.createSettingsNavigation().finishCurrentSettings(this);
             RecordHistogram.recordBooleanHistogram(DIALOG_HISTOGRAM, false);
         }
     }

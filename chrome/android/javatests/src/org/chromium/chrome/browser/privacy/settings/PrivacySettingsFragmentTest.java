@@ -65,14 +65,14 @@ import org.chromium.chrome.browser.privacy_sandbox.FakePrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridgeJni;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
@@ -115,7 +115,7 @@ public class PrivacySettingsFragmentTest {
 
     private FakePrivacySandboxBridge mFakePrivacySandboxBridge;
     private UserActionTester mActionTester;
-    @Mock private SettingsLauncher mSettingsLauncher;
+    @Mock private SettingsNavigation mSettingsNavigation;
 
     private void waitForOptionsMenu() {
         CriteriaHelper.pollUiThread(
@@ -602,7 +602,7 @@ public class PrivacySettingsFragmentTest {
     @Features.EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testSignedOutFooterLink() {
         mSettingsActivityTestRule.startSettingsActivity();
-        SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncher);
+        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
 
         onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
         String footer =
@@ -615,7 +615,7 @@ public class PrivacySettingsFragmentTest {
                         .toString();
         onView(withText(containsString(footerWithoutSpans))).perform(clickOnClickableSpan(0));
 
-        verify(mSettingsLauncher).launchSettingsActivity(any(), eq(GoogleServicesSettings.class));
+        verify(mSettingsNavigation).startSettings(any(), eq(GoogleServicesSettings.class));
     }
 
     @Test
@@ -628,7 +628,7 @@ public class PrivacySettingsFragmentTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Settings.FragmentAttached", expectedValue)) {
             mSettingsActivityTestRule.startSettingsActivity();
-            SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncher);
+            SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
         }
     }
 }

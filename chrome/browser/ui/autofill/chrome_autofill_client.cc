@@ -122,7 +122,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/preferences/autofill/settings_launcher_helper.h"
+#include "chrome/browser/android/preferences/autofill/settings_navigation_helper.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/signin/android/signin_bridge.h"

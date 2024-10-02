@@ -11,24 +11,24 @@ import androidx.annotation.Nullable;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.content_public.browser.WebContents;
 
 /** Launches autofill settings subpages. */
-public class SettingsLauncherHelper {
+public class SettingsNavigationHelper {
     /**
      * Tries showing the settings page for Addresses.
      *
      * @param context The {@link Context} required to start the settings page. Noop without it.
-     * @return True iff the context is valid and `launchSettingsActivity` was called.
+     * @return True iff the context is valid and `startSettings` was called.
      */
     public static boolean showAutofillProfileSettings(@Nullable Context context) {
         if (context == null) {
             return false;
         }
         RecordUserAction.record("AutofillAddressesViewed");
-        SettingsLauncherFactory.createSettingsLauncher()
-                .launchSettingsActivity(context, AutofillProfilesFragment.class);
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(context, AutofillProfilesFragment.class);
         return true;
     }
 
@@ -36,15 +36,15 @@ public class SettingsLauncherHelper {
      * Tries showing the settings page for Payments.
      *
      * @param context The {@link Context} required to start the settings page. Noop without it.
-     * @return True iff the context is valid and `launchSettingsActivity` was called.
+     * @return True iff the context is valid and `startSettings` was called.
      */
     public static boolean showAutofillCreditCardSettings(@Nullable Context context) {
         if (context == null) {
             return false;
         }
         RecordUserAction.record("AutofillCreditCardsViewed");
-        SettingsLauncherFactory.createSettingsLauncher()
-                .launchSettingsActivity(context, AutofillPaymentMethodsFragment.class);
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(context, AutofillPaymentMethodsFragment.class);
         return true;
     }
 

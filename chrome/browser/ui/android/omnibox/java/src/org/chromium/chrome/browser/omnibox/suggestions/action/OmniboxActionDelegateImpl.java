@@ -14,9 +14,9 @@ import androidx.annotation.Nullable;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
+import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -68,7 +68,7 @@ public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
 
     @Override
     public void openSettingsPage(@SettingsFragment int fragment) {
-        SettingsLauncherFactory.createSettingsLauncher().launchSettingsActivity(mContext, fragment);
+        SettingsNavigationFactory.createSettingsNavigation().startSettings(mContext, fragment);
     }
 
     @Override

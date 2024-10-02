@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.password_manager;
 import android.content.Context;
 import android.os.Bundle;
 
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
-import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 
 /** Launches {@link MainSettings} and starts the password export flow. */
 public class PasswordExportLauncher {
@@ -20,8 +20,7 @@ public class PasswordExportLauncher {
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putBoolean(START_PASSWORDS_EXPORT, true);
         context.startActivity(
-                SettingsLauncherFactory.createSettingsLauncher()
-                        .createSettingsActivityIntent(
-                                context, SettingsFragment.MAIN, fragmentArgs));
+                SettingsNavigationFactory.createSettingsNavigation()
+                        .createSettingsIntent(context, SettingsFragment.MAIN, fragmentArgs));
     }
 }

@@ -58,7 +58,7 @@ public class IncognitoReauthSettingTest {
                 .perform(RecyclerViewActions.scrollTo(hasDescendant(matcher)));
     }
 
-    private void launchSettingsActivity() {
+    private void startSettings() {
         mSettingsActivityTestRule.startSettingsActivity();
         mPrivacySettings = mSettingsActivityTestRule.getFragment();
     }
@@ -67,7 +67,7 @@ public class IncognitoReauthSettingTest {
     @LargeTest
     public void testIncognitoReauthSetting_WhenDisabled_AndOnClickSummary() {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
-        launchSettingsActivity();
+        startSettings();
         Intent intent = new Intent();
         Instrumentation.ActivityResult result =
                 new Instrumentation.ActivityResult(Activity.RESULT_OK, intent);

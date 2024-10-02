@@ -12,10 +12,10 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.site_settings.CookieControlsServiceBridge;
 import org.chromium.chrome.browser.site_settings.CookieControlsServiceBridge.CookieControlsServiceObserver;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
@@ -124,8 +124,9 @@ public class IncognitoCookieControlsManager
                     SingleCategorySettings.EXTRA_CATEGORY,
                     SiteSettingsCategory.preferenceKey(
                             SiteSettingsCategory.Type.THIRD_PARTY_COOKIES));
-            SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
-            settingsLauncher.launchSettingsActivity(
+            SettingsNavigation settingsNavigation =
+                    SettingsNavigationFactory.createSettingsNavigation();
+            settingsNavigation.startSettings(
                     v.getContext(), SingleCategorySettings.class, fragmentArguments);
         }
     }

@@ -57,10 +57,10 @@ public class ManageTrustedWebActivityDataActivity extends AppCompatActivity {
                 .recordOpenedSettingsViaManageSpace();
 
         if (isWebApk) {
-            TrustedWebActivitySettingsLauncher.launchForWebApkPackageName(
+            TrustedWebActivitySettingsNavigation.launchForWebApkPackageName(
                     this, packageName, urlToLaunchSettingsFor);
         } else {
-            TrustedWebActivitySettingsLauncher.launchForPackageName(this, packageName);
+            TrustedWebActivitySettingsNavigation.launchForPackageName(this, packageName);
         }
     }
 

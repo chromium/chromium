@@ -38,12 +38,12 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.FaviconLoader;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
 import org.chromium.components.browsing_data.content.BrowsingDataModel;
@@ -372,14 +372,15 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     @Override
     public void launchClearBrowsingDataDialog(Activity currentActivity) {
         if (QuickDeleteController.isQuickDeleteFollowupEnabled()) {
-            SettingsLauncherFactory.createSettingsLauncher()
-                    .launchSettingsActivity(
+            SettingsNavigationFactory.createSettingsNavigation()
+                    .startSettings(
                             currentActivity,
-                            SettingsLauncher.SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE);
+                            SettingsNavigation.SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE);
         } else {
-            SettingsLauncherFactory.createSettingsLauncher()
-                    .launchSettingsActivity(
-                            currentActivity, SettingsLauncher.SettingsFragment.CLEAR_BROWSING_DATA);
+            SettingsNavigationFactory.createSettingsNavigation()
+                    .startSettings(
+                            currentActivity,
+                            SettingsNavigation.SettingsFragment.CLEAR_BROWSING_DATA);
         }
     }
 

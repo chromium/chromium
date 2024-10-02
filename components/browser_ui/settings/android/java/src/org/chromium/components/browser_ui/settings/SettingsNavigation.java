@@ -15,8 +15,8 @@ import androidx.fragment.app.Fragment;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/** Interface for launching Settings. */
-public interface SettingsLauncher {
+/** Interface for navigating Settings. */
+public interface SettingsNavigation {
     @IntDef({
         SettingsFragment.MAIN,
         SettingsFragment.CLEAR_BROWSING_DATA,
@@ -57,77 +57,74 @@ public interface SettingsLauncher {
     }
 
     /**
-     * Launches a Settings Activity with the default (top-level) fragment.
+     * Starts settings with the default (top-level) fragment.
      *
      * @param context The current Activity, or an application context if no Activity is available.
      */
-    void launchSettingsActivity(Context context);
+    void startSettings(Context context);
 
     /**
-     * Launches a specific Settings Activity fragment. This can be used by code that does not supply
-     * its own settings page, but instead needs to redirect the user to an appropriate page that is
-     * out of reach.
+     * Starts a specific settings fragment. This can be used by code that does not supply its own
+     * settings page, but instead needs to redirect the user to an appropriate page that is out of
+     * reach.
      *
      * @param context The current Activity, or an application context if no Activity is available.
      * @param settingsFragment The {@link SettingsFragment} to run.
      */
-    void launchSettingsActivity(Context context, @SettingsFragment int settingsFragment);
+    void startSettings(Context context, @SettingsFragment int settingsFragment);
 
     /**
-     * Launches a Settings Activity with the specified fragment.
+     * Starts settings with the specified fragment.
      *
      * @param context The current Activity, or an application context if no Activity is available.
      * @param fragment The fragment to show, or null to show the default fragment.
      */
-    void launchSettingsActivity(Context context, @Nullable Class<? extends Fragment> fragment);
+    void startSettings(Context context, @Nullable Class<? extends Fragment> fragment);
 
     /**
-     * Launches a Settings Activity with the specified fragment and arguments.
+     * Starts settings with the specified fragment and arguments.
      *
      * @param context The current Activity, or an application context if no Activity is available.
      * @param fragment The fragment to show, or null to show the default fragment.
      * @param fragmentArgs A bundle of additional fragment arguments.
      */
-    void launchSettingsActivity(
+    void startSettings(
             Context context,
             @Nullable Class<? extends Fragment> fragment,
             @Nullable Bundle fragmentArgs);
 
     /**
-     * Creates an intent for launching a Settings Activity with the specified fragment.
+     * Creates an intent for starting settings with the specified fragment.
      *
      * @param context The current Activity, or an application context if no Activity is available.
      * @param fragment The class of the fragment to show, or null to show the default fragment.
      */
-    Intent createSettingsActivityIntent(
-            Context context, @Nullable Class<? extends Fragment> fragment);
+    Intent createSettingsIntent(Context context, @Nullable Class<? extends Fragment> fragment);
 
     /**
-     * Creates an intent for launching a Settings Activity with the specified fragment and
-     * arguments.
+     * Creates an intent for starting settings with the specified fragment and arguments.
      *
      * @param context The current Activity, or an application context if no Activity is available.
      * @param fragment The class of the fragment to show, or null to show the default fragment.
      * @param fragmentArgs A bundle of additional fragment arguments.
      */
-    Intent createSettingsActivityIntent(
+    Intent createSettingsIntent(
             Context context,
             @Nullable Class<? extends Fragment> fragment,
             @Nullable Bundle fragmentArgs);
 
     /**
-     * Creates an intent for launching a Settings Activity with the specified fragment and
-     * arguments.
+     * Creates an intent for starting settings with the specified fragment and arguments.
      *
      * @param context The current Activity, or an application context if no Activity is available.
      * @param fragment The fragment to show.
      * @param fragmentArgs A bundle of additional fragment arguments.
      */
-    Intent createSettingsActivityIntent(
+    Intent createSettingsIntent(
             Context context, @SettingsFragment int fragment, @Nullable Bundle fragmentArgs);
 
     /**
-     * Finishes the current settings fragment.
+     * Finishes the current settings.
      *
      * <p>Call this method when the user is done with the current fragment and should go back to the
      * previous fragment (e.g. selected a language from the language list). If the given fragment is
@@ -135,5 +132,5 @@ public interface SettingsLauncher {
      *
      * @param fragment The expected current fragment.
      */
-    void finishCurrentFragment(Fragment fragment);
+    void finishCurrentSettings(Fragment fragment);
 }

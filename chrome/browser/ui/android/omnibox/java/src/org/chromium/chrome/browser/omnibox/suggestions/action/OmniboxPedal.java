@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.omnibox.suggestions.action;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
+import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.R;
 import org.chromium.components.omnibox.action.OmniboxAction;

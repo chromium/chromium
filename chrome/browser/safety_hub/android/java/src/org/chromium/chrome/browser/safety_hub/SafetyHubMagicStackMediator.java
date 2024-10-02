@@ -19,7 +19,7 @@ import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.ExternalInteractions;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -177,8 +177,8 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
                 SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER,
                 (view) -> {
                     mShowSurveyCallback.onResult(MagicStackEntry.ModuleType.REVOKED_PERMISSIONS);
-                    SettingsLauncherFactory.createSettingsLauncher()
-                            .launchSettingsActivity(mContext, SafetyHubFragment.class);
+                    SettingsNavigationFactory.createSettingsNavigation()
+                            .startSettings(mContext, SafetyHubFragment.class);
                     recordExternalInteractions(ExternalInteractions.OPEN_FROM_MAGIC_STACK);
                 });
     }
@@ -207,8 +207,8 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
                 (view) -> {
                     mShowSurveyCallback.onResult(
                             MagicStackEntry.ModuleType.NOTIFICATION_PERMISSIONS);
-                    SettingsLauncherFactory.createSettingsLauncher()
-                            .launchSettingsActivity(mContext, SafetyHubFragment.class);
+                    SettingsNavigationFactory.createSettingsNavigation()
+                            .startSettings(mContext, SafetyHubFragment.class);
                     recordExternalInteractions(ExternalInteractions.OPEN_FROM_MAGIC_STACK);
                 });
     }
@@ -236,8 +236,8 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
                 SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER,
                 (view) -> {
                     mShowSurveyCallback.onResult(MagicStackEntry.ModuleType.SAFE_BROWSING);
-                    SettingsLauncherFactory.createSettingsLauncher()
-                            .launchSettingsActivity(mContext, SafeBrowsingSettingsFragment.class);
+                    SettingsNavigationFactory.createSettingsNavigation()
+                            .startSettings(mContext, SafeBrowsingSettingsFragment.class);
                     recordExternalInteractions(
                             ExternalInteractions.OPEN_SAFE_BROWSING_FROM_MAGIC_STACK);
                     mMagicStackBridge.dismissSafeBrowsingModule();

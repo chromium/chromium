@@ -20,7 +20,7 @@ import androidx.preference.PreferenceCategory;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.ui.widget.ButtonCompat;
@@ -70,8 +70,8 @@ public abstract class SafetyHubSubpageFragment extends SafetyHubBaseFragment {
                     @Override
                     public void onClick(View view) {
                         mBulkActionConfirmed = true;
-                        SettingsLauncherFactory.createSettingsLauncher()
-                                .finishCurrentFragment(SafetyHubSubpageFragment.this);
+                        SettingsNavigationFactory.createSettingsNavigation()
+                                .finishCurrentSettings(SafetyHubSubpageFragment.this);
                     }
                 });
         view.addView(bottomView);

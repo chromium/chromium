@@ -1290,9 +1290,9 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             // Save the paused fragment before finishing the current fragment as it may cause the
             // paused fragment to resume.
             GroupedWebsitesSettings groupFragment = GroupedWebsitesSettings.getPausedInstance();
-            getSettingsLauncher().finishCurrentFragment(this);
+            getSettingsNavigation().finishCurrentSettings(this);
             if (mFromGrouped && groupFragment != null) {
-                getSettingsLauncher().finishCurrentFragment(groupFragment);
+                getSettingsNavigation().finishCurrentSettings(groupFragment);
             }
         }
     }
@@ -1379,9 +1379,9 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             // Save the paused fragment before finishing the current fragment as it may cause the
             // paused fragment to resume.
             GroupedWebsitesSettings groupFragment = GroupedWebsitesSettings.getPausedInstance();
-            getSettingsLauncher().finishCurrentFragment(this);
+            getSettingsNavigation().finishCurrentSettings(this);
             if (mFromGrouped && groupFragment != null) {
-                getSettingsLauncher().finishCurrentFragment(groupFragment);
+                getSettingsNavigation().finishCurrentSettings(groupFragment);
             }
         }
     }

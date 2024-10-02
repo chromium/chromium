@@ -20,12 +20,12 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.account_storage_toggle.AccountStorageToggleFragmentArgs;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
-import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
+import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -185,8 +185,8 @@ class AccountStorageNoticeCoordinator extends EmptyBottomSheetObserver {
                         ? SettingsFragment.MANAGE_SYNC
                         : SettingsFragment.GOOGLE_SERVICES;
         Intent intent =
-                SettingsLauncherFactory.createSettingsLauncher()
-                        .createSettingsActivityIntent(context, fragment, fragmentArgs);
+                SettingsNavigationFactory.createSettingsNavigation()
+                        .createSettingsIntent(context, fragment, fragmentArgs);
         mWindowAndroid.showIntent(intent, this::onSettingsClosed, /* errorId= */ null);
     }
 

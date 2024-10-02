@@ -26,7 +26,7 @@ import androidx.fragment.app.Fragment;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
@@ -169,6 +169,6 @@ public abstract class AutofillEditorBase extends Fragment
 
     /** Finishes the current page. */
     protected void finishPage() {
-        SettingsLauncherFactory.createSettingsLauncher().finishCurrentFragment(this);
+        SettingsNavigationFactory.createSettingsNavigation().finishCurrentSettings(this);
     }
 }

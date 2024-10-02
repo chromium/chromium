@@ -193,7 +193,7 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
                 // place for a slightly smoother user experience. However, due to the complexity
                 // involved in refreshing the already fetched data and a very marginal benefit, it
                 // may not be worth it.
-                getSettingsLauncher().finishCurrentFragment(this);
+                getSettingsNavigation().finishCurrentSettings(this);
             };
 
     @VisibleForTesting

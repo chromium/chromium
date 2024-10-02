@@ -17,7 +17,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDelegate;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs.FontSizePrefsObserver;
@@ -26,7 +26,7 @@ import org.chromium.components.browser_ui.accessibility.PageZoomUma;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
@@ -168,9 +168,9 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
                         initialArguments.putString(
                                 SingleCategorySettings.EXTRA_CATEGORY,
                                 SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.ZOOM));
-                        SettingsLauncher settingsLauncher =
-                                SettingsLauncherFactory.createSettingsLauncher();
-                        settingsLauncher.launchSettingsActivity(
+                        SettingsNavigation settingsNavigation =
+                                SettingsNavigationFactory.createSettingsNavigation();
+                        settingsNavigation.startSettings(
                                 ContextUtils.getApplicationContext(),
                                 AllSiteSettings.class,
                                 initialArguments);

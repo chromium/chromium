@@ -11,9 +11,9 @@ import android.os.Bundle;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.webapps.ChromeWebApkHost;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
@@ -25,13 +25,13 @@ import java.util.Collection;
 /**
  * Helper functions for launching site-settings for websites associated with a Trusted Web Activity.
  */
-public class TrustedWebActivitySettingsLauncher {
-    private static final String TAG = "TwaSettingsLauncher";
+public class TrustedWebActivitySettingsNavigation {
+    private static final String TAG = "TwaSettingsNavigation";
 
     /**
-     * Launches site-settings for a Trusted Web Activity app with a given package name. If the
-     * app has multiple origins associated with it, the user will see a list of origins and will be
-     * able to work with each of them.
+     * Launches site-settings for a Trusted Web Activity app with a given package name. If the app
+     * has multiple origins associated with it, the user will see a list of origins and will be able
+     * to work with each of them.
      */
     public static void launchForPackageName(Context context, String packageName) {
         Integer applicationUid = getApplicationUid(context, packageName);
@@ -102,15 +102,16 @@ public class TrustedWebActivitySettingsLauncher {
                 context.getString(R.string.twa_clear_data_site_selection_title));
         extras.putStringArrayList(AllSiteSettings.EXTRA_SELECTED_DOMAINS, new ArrayList<>(domains));
 
-        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
-        settingsLauncher.launchSettingsActivity(context, AllSiteSettings.class, extras);
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
+        settingsNavigation.startSettings(context, AllSiteSettings.class, extras);
     }
 
     /** Creates an intent to launch single website preferences for the specified {@param url}. */
     private static Intent createIntentForSingleWebsitePreferences(Context context, String url) {
         Bundle args = SingleWebsiteSettings.createFragmentArgsForSite(url);
-        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
-        return settingsLauncher.createSettingsActivityIntent(
-                context, SingleWebsiteSettings.class, args);
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
+        return settingsNavigation.createSettingsIntent(context, SingleWebsiteSettings.class, args);
     }
 }

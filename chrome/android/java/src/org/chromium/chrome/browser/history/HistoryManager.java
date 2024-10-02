@@ -37,13 +37,13 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.widget.DateDividedAdapter.ItemViewType;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
@@ -588,9 +588,10 @@ public class HistoryManager
     public void onClearBrowsingDataClicked() {
         mUmaRecorder.recordClearBrowsingData(mIsIncognito);
         // Opens the clear browsing data preference.
-        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
-        settingsLauncher.launchSettingsActivity(
-                mActivity, SettingsLauncher.SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE);
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
+        settingsNavigation.startSettings(
+                mActivity, SettingsNavigation.SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE);
     }
 
     // HistoryContentManager.Observer

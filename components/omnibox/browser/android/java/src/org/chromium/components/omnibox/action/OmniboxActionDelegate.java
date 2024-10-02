@@ -8,7 +8,7 @@ import android.content.Intent;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
+import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 
 /** An interface for handling interactions for Omnibox Action Chips. */
 public interface OmniboxActionDelegate {

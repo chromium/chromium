@@ -22,8 +22,8 @@ import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.site_settings.GroupedWebsitesSettings;
@@ -102,9 +102,10 @@ public class SiteSettingsTestUtils {
 
     private static SettingsActivity startSiteSettings(
             Class<? extends Fragment> fragmentClass, Bundle fragmentArgs) {
-        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
         Intent intent =
-                settingsLauncher.createSettingsActivityIntent(
+                settingsNavigation.createSettingsIntent(
                         ApplicationProvider.getApplicationContext(), fragmentClass, fragmentArgs);
         SettingsActivity settingsActivity =
                 ApplicationTestUtils.waitForActivityWithClass(

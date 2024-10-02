@@ -110,7 +110,7 @@ public class StorageAccessSubpageSettings extends BaseSiteSettingsFragment
 
         if (exceptions.isEmpty()) {
             // Return to parent fragment if there are no embedded exceptions.
-            getSettingsLauncher().finishCurrentFragment(this);
+            getSettingsNavigation().finishCurrentSettings(this);
             return;
         }
     }

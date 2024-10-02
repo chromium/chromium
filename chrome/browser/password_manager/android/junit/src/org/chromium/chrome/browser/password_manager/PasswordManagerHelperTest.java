@@ -68,10 +68,10 @@ import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper.PasswordCheckOperation;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
@@ -120,7 +120,7 @@ public class PasswordManagerHelperTest {
 
     @Mock private SyncService mSyncServiceMock;
 
-    @Mock private SettingsLauncher mSettingsLauncherMock;
+    @Mock private SettingsNavigation mSettingsNavigationMock;
 
     @Mock private PendingIntent mPendingIntentMock;
 
@@ -183,7 +183,7 @@ public class PasswordManagerHelperTest {
         CredentialManagerLauncherFactory.setFactoryForTesting(
                 mCredentialManagerLauncherFactoryMock);
 
-        SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncherMock);
+        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigationMock);
     }
 
     @Test
@@ -503,8 +503,8 @@ public class PasswordManagerHelperTest {
                 mCustomTabIntentHelper);
 
         verify(mockContext).startActivity(any());
-        verify(mSettingsLauncherMock)
-                .createSettingsActivityIntent(
+        verify(mSettingsNavigationMock)
+                .createSettingsIntent(
                         eq(mockContext), eq(SettingsFragment.PASSWORDS), any(Bundle.class));
     }
 
@@ -522,8 +522,8 @@ public class PasswordManagerHelperTest {
                 mCustomTabIntentHelper);
 
         verify(mockContext).startActivity(any());
-        verify(mSettingsLauncherMock)
-                .createSettingsActivityIntent(
+        verify(mSettingsNavigationMock)
+                .createSettingsIntent(
                         eq(mockContext), eq(SettingsFragment.PASSWORDS), any(Bundle.class));
     }
 

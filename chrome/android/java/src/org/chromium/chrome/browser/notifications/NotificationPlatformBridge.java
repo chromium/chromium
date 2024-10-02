@@ -45,7 +45,7 @@ import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.usage_stats.UsageStatsService;
 import org.chromium.chrome.browser.webapps.ChromeWebApkHost;
 import org.chromium.chrome.browser.webapps.WebApkServiceClient;
@@ -54,7 +54,7 @@ import org.chromium.components.browser_ui.notifications.BaseNotificationManagerP
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
@@ -441,8 +441,9 @@ public class NotificationPlatformBridge {
                 launchSingleWebsitePreferences
                         ? SingleWebsiteSettings.class
                         : SingleCategorySettings.class;
-        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
-        settingsLauncher.launchSettingsActivity(applicationContext, fragment, fragmentArguments);
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
+        settingsNavigation.startSettings(applicationContext, fragment, fragmentArguments);
     }
 
     /**
@@ -1051,9 +1052,10 @@ public class NotificationPlatformBridge {
         // TODO(peter): Generalize the NotificationPlatformBridge sufficiently to not need
         // to care about the individual notification types.
         // Set up a pending intent for going to the settings screen for |origin|.
-        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
         Intent settingsIntent =
-                settingsLauncher.createSettingsActivityIntent(
+                settingsNavigation.createSettingsIntent(
                         context,
                         SingleWebsiteSettings.class,
                         SingleWebsiteSettings.createFragmentArgsForSite(origin));

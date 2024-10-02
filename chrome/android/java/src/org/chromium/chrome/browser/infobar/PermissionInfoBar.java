@@ -12,8 +12,8 @@ import android.text.Spanned;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.infobars.ConfirmInfoBar;
@@ -176,8 +176,9 @@ public class PermissionInfoBar extends ConfirmInfoBar
         fragmentArguments.putString(
                 SingleCategorySettings.EXTRA_CATEGORY,
                 SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.NOTIFICATIONS));
-        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
-        settingsLauncher.launchSettingsActivity(
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
+        settingsNavigation.startSettings(
                 getContext(), SingleCategorySettings.class, fragmentArguments);
     }
 

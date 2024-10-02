@@ -35,11 +35,11 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteDialogDelegate.TimePeriodChangeObserver;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.TestActivity;
@@ -55,7 +55,7 @@ public class QuickDeleteDialogDelegateUnitTest {
     @Mock private Callback<Integer> mOnDismissCallbackMock;
     @Mock private TabModelSelector mTabModelSelectorMock;
     @Mock private Tab mTabMock;
-    @Mock private SettingsLauncher mSettingsLauncherMock;
+    @Mock private SettingsNavigation mSettingsNavigationMock;
     @Mock private TimePeriodChangeObserver mTimePeriodChangeObserverMock;
 
     private FakeModalDialogManager mModalDialogManager;
@@ -67,7 +67,7 @@ public class QuickDeleteDialogDelegateUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         when(mTabModelSelectorMock.getCurrentTab()).thenReturn(mTabMock);
-        SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncherMock);
+        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigationMock);
 
         mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
         mQuickDeleteView =

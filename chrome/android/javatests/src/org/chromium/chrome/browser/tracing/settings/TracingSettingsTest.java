@@ -41,14 +41,14 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tracing.TracingController;
 import org.chromium.chrome.browser.tracing.TracingNotificationManager;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
 import org.chromium.components.browser_ui.settings.ButtonPreference;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 
 import java.io.File;
@@ -330,9 +330,10 @@ public class TracingSettingsTest {
         Context context = ApplicationProvider.getApplicationContext();
         Assert.assertNotNull(categoriesPref.getExtras());
         Assert.assertFalse(categoriesPref.getExtras().isEmpty());
-        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
         Intent intent =
-                settingsLauncher.createSettingsActivityIntent(
+                settingsNavigation.createSettingsIntent(
                         context, TracingCategoriesSettings.class, categoriesPref.getExtras());
         mSettingsActivityTestRule.launchActivity(intent);
         SettingsActivity categoriesActivity = mSettingsActivityTestRule.getActivity();

@@ -9,15 +9,15 @@ import android.content.Intent;
 
 import androidx.preference.PreferenceFragmentCompat;
 
-import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.FragmentSettingsNavigation;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 
 /** Preference fragment for showing the Site Settings UI. */
 public abstract class BaseSiteSettingsFragment extends PreferenceFragmentCompat
-        implements FragmentSettingsLauncher {
+        implements FragmentSettingsNavigation {
     private SiteSettingsDelegate mSiteSettingsDelegate;
     private CustomTabIntentHelper mCustomTabIntentHelper;
-    private SettingsLauncher mSettingsLauncher;
+    private SettingsNavigation mSettingsNavigation;
 
     /**
      * Sets the SiteSettingsDelegate instance this Fragment should use.
@@ -75,12 +75,12 @@ public abstract class BaseSiteSettingsFragment extends PreferenceFragmentCompat
     }
 
     @Override
-    public void setSettingsLauncher(SettingsLauncher settingsLauncher) {
-        mSettingsLauncher = settingsLauncher;
+    public void setSettingsNavigation(SettingsNavigation settingsNavigation) {
+        mSettingsNavigation = settingsNavigation;
     }
 
-    /** Returns the associated {@link SettingsLauncher}. */
-    public SettingsLauncher getSettingsLauncher() {
-        return mSettingsLauncher;
+    /** Returns the associated {@link SettingsNavigation}. */
+    public SettingsNavigation getSettingsNavigation() {
+        return mSettingsNavigation;
     }
 }

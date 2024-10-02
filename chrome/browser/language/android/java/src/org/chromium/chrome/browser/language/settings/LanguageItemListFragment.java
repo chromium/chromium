@@ -27,7 +27,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -150,8 +150,8 @@ public abstract class LanguageItemListFragment extends Fragment
                 view -> { // Lambda for View.OnClickListener
                     recordAddLanguageImpression();
                     Intent intent =
-                            SettingsLauncherFactory.createSettingsLauncher()
-                                    .createSettingsActivityIntent(
+                            SettingsNavigationFactory.createSettingsNavigation()
+                                    .createSettingsIntent(
                                             getActivity(), SelectLanguageFragment.class);
                     intent.putExtra(
                             SelectLanguageFragment.INTENT_POTENTIAL_LANGUAGES,

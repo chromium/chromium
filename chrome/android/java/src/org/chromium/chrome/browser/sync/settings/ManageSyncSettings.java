@@ -45,7 +45,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -637,7 +637,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 // users have been migrated.
                 || eventDetails.getEventTypeFor(ConsentLevel.SYNC)
                         == PrimaryAccountChangeEvent.Type.CLEARED) {
-            finishCurrentFragment();
+            finishCurrentSettings();
         }
     }
 
@@ -664,7 +664,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                                                 : ConsentLevel.SYNC));
         // May happen if account is removed from the device while this screen is shown.
         if (signedInAccountName == null) {
-            finishCurrentFragment();
+            finishCurrentSettings();
             return;
         }
 
@@ -851,8 +851,8 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     private void onGoogleActivityControlsClicked(String signedInAccountName) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.LINKED_SERVICES_SETTING)
                 && isEeaChoiceCountry()) {
-            SettingsLauncherFactory.createSettingsLauncher()
-                    .launchSettingsActivity(getContext(), PersonalizeGoogleServicesSettings.class);
+            SettingsNavigationFactory.createSettingsNavigation()
+                    .startSettings(getContext(), PersonalizeGoogleServicesSettings.class);
             RecordUserAction.record("Signin_AccountSettings_PersonalizeGoogleServicesClicked");
         } else {
             GoogleActivityController.create()
@@ -1081,7 +1081,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         IdentityServicesProvider.get()
                 .getSigninManager(getProfile())
                 .signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS);
-        finishCurrentFragment();
+        finishCurrentSettings();
     }
 
     @Override
@@ -1169,7 +1169,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 profile, mUrlKeyedAnonymizedData.isChecked());
         UnifiedConsentServiceBridge.recordSyncSetupDataTypesHistogram(profile);
         // Settings will be applied when mSyncSetupInProgressHandle is released in onDestroy.
-        finishCurrentFragment();
+        finishCurrentSettings();
     }
 
     private void cancelSync() {
@@ -1185,7 +1185,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         } else {
             signinManager.signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS);
         }
-        finishCurrentFragment();
+        finishCurrentSettings();
     }
 
     private boolean isEeaChoiceCountry() {
@@ -1199,7 +1199,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
      *
      * <p>This method is idempotent, i.e. it does nothing if it was called before.
      */
-    private void finishCurrentFragment() {
-        SettingsLauncherFactory.createSettingsLauncher().finishCurrentFragment(this);
+    private void finishCurrentSettings() {
+        SettingsNavigationFactory.createSettingsNavigation().finishCurrentSettings(this);
     }
 }

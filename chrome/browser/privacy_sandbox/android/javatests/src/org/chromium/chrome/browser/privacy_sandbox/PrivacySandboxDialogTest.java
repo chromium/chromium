@@ -57,12 +57,12 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.RenderTestRule;
 
@@ -95,7 +95,7 @@ public final class PrivacySandboxDialogTest {
 
     private FakePrivacySandboxBridge mFakePrivacySandboxBridge;
 
-    @Mock private SettingsLauncher mSettingsLauncher;
+    @Mock private SettingsNavigation mSettingsNavigation;
 
     private Dialog mDialog;
     private String mTestPage;
@@ -112,7 +112,7 @@ public final class PrivacySandboxDialogTest {
         mFakePrivacySandboxBridge = new FakePrivacySandboxBridge();
         mocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, mFakePrivacySandboxBridge);
         PrivacySandboxDialogController.disableAnimationsForTesting(true);
-        SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncher);
+        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
         mUserActionTester = new UserActionTester();
     }
 
@@ -558,8 +558,8 @@ public final class PrivacySandboxDialogTest {
                 "Last dialog action",
                 PromptAction.NOTICE_OPEN_SETTINGS,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
-        Mockito.verify(mSettingsLauncher)
-                .launchSettingsActivity(
+        Mockito.verify(mSettingsNavigation)
+                .startSettings(
                         any(Context.class),
                         eq(PrivacySandboxSettingsFragment.class),
                         any(Bundle.class));
@@ -608,8 +608,8 @@ public final class PrivacySandboxDialogTest {
                 PromptAction.NOTICE_OPEN_SETTINGS,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
-        Mockito.verify(mSettingsLauncher)
-                .launchSettingsActivity(
+        Mockito.verify(mSettingsNavigation)
+                .startSettings(
                         any(Context.class),
                         eq(PrivacySandboxSettingsFragment.class),
                         any(Bundle.class));
@@ -642,7 +642,7 @@ public final class PrivacySandboxDialogTest {
                 PromptAction.RESTRICTED_NOTICE_OPEN_SETTINGS,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
-        Mockito.verify(mSettingsLauncher)
-                .launchSettingsActivity(any(Context.class), eq(AdMeasurementFragment.class));
+        Mockito.verify(mSettingsNavigation)
+                .startSettings(any(Context.class), eq(AdMeasurementFragment.class));
     }
 }

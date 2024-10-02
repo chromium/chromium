@@ -27,7 +27,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
-import org.chromium.chrome.browser.autofill.settings.SettingsLauncherHelper;
+import org.chromium.chrome.browser.autofill.settings.SettingsNavigationHelper;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -68,7 +68,7 @@ import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomS
 import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -471,9 +471,9 @@ public class MainSettings extends ChromeBaseSettingsFragment
                             .isSyncDisabledByEnterprisePolicy()) {
                         SyncSettingsUtils.showSyncDisabledByAdministratorToast(context);
                     } else if (isSyncConsentAvailable) {
-                        SettingsLauncher settingsLauncher =
-                                SettingsLauncherFactory.createSettingsLauncher();
-                        settingsLauncher.launchSettingsActivity(context, ManageSyncSettings.class);
+                        SettingsNavigation settingsNavigation =
+                                SettingsNavigationFactory.createSettingsNavigation();
+                        settingsNavigation.startSettings(context, ManageSyncSettings.class);
                     } else {
                         // TODO(crbug.com/40067770): Remove after rolling out
                         // REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS.
@@ -518,8 +518,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
             preference.setFragment(null);
             preference.setOnPreferenceClickListener(
                     unused -> {
-                        SettingsLauncherFactory.createSettingsLauncher()
-                                .launchSettingsActivity(
+                        SettingsNavigationFactory.createSettingsNavigation()
+                                .startSettings(
                                         getContext(),
                                         AutofillOptionsFragment.class,
                                         AutofillOptionsFragment.createRequiredArgs(
@@ -533,12 +533,13 @@ public class MainSettings extends ChromeBaseSettingsFragment
         findPreference(PREF_AUTOFILL_PAYMENTS)
                 .setOnPreferenceClickListener(
                         preference ->
-                                SettingsLauncherHelper.showAutofillCreditCardSettings(
+                                SettingsNavigationHelper.showAutofillCreditCardSettings(
                                         getActivity()));
         findPreference(PREF_AUTOFILL_ADDRESSES)
                 .setOnPreferenceClickListener(
                         preference ->
-                                SettingsLauncherHelper.showAutofillProfileSettings(getActivity()));
+                                SettingsNavigationHelper.showAutofillProfileSettings(
+                                        getActivity()));
         PasswordsPreference passwordsPreference = findPreference(PREF_PASSWORDS);
         passwordsPreference.setProfile(getProfile());
         passwordsPreference.setOnPreferenceClickListener(

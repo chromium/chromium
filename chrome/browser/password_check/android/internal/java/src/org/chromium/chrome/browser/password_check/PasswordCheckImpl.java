@@ -11,7 +11,7 @@ import android.os.Bundle;
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.password_check.PasswordCheckBridge.PasswordCheckObserver;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 
 /** This class is responsible for managing the saved passwords check for signed-in users. */
 class PasswordCheckImpl implements PasswordCheck, PasswordCheckObserver {
@@ -34,8 +34,8 @@ class PasswordCheckImpl implements PasswordCheck, PasswordCheckObserver {
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putInt(
                 PasswordCheckFragmentView.PASSWORD_CHECK_REFERRER, passwordCheckReferrer);
-        SettingsLauncherFactory.createSettingsLauncher()
-                .launchSettingsActivity(context, PasswordCheckFragmentView.class, fragmentArgs);
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(context, PasswordCheckFragmentView.class, fragmentArgs);
     }
 
     @Override

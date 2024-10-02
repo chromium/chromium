@@ -86,12 +86,12 @@ import org.chromium.chrome.browser.safety_check.PasswordsCheckPreferenceProperti
 import org.chromium.chrome.browser.safety_check.SafetyCheckMediator.SafetyCheckInteractions;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.SafeBrowsingState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesState;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -139,7 +139,7 @@ public class SafetyCheckMediatorTest {
     @Mock private SafetyCheckUpdatesDelegate mUpdatesDelegate;
     @Mock private SigninAndHistorySyncActivityLauncher mSigninLauncher;
     @Mock private SyncConsentActivityLauncher mSyncLauncher;
-    @Mock private SettingsLauncher mSettingsLauncher;
+    @Mock private SettingsNavigation mSettingsNavigation;
     @Mock private SyncService mSyncService;
     @Mock private Handler mHandler;
     @Mock private PasswordCheck mPasswordCheck;
@@ -273,7 +273,7 @@ public class SafetyCheckMediatorTest {
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         configureMockSyncService();
 
-        SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncher);
+        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
 
         PasswordManagerBackendSupportHelper.setInstanceForTesting(mBackendSupportHelperMock);
         when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
@@ -842,7 +842,7 @@ public class SafetyCheckMediatorTest {
 
             Intent settingsLauncherIntent = new Intent();
             settingsLauncherIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            when(mSettingsLauncher.createSettingsActivityIntent(any(), anyInt(), any()))
+            when(mSettingsNavigation.createSettingsIntent(any(), anyInt(), any()))
                     .thenReturn(settingsLauncherIntent);
             intending(anyIntent())
                     .respondWith(new ActivityResult(Activity.RESULT_OK, new Intent()));
@@ -864,8 +864,8 @@ public class SafetyCheckMediatorTest {
         verify(mCredentialManagerLauncher, times(mUseGmsApi ? 1 : 0))
                 .getLocalCredentialManagerIntent(
                         eq(ManagePasswordsReferrer.SAFETY_CHECK), any(), any());
-        verify(mSettingsLauncher, times(mUseGmsApi ? 0 : 1))
-                .createSettingsActivityIntent(any(), anyInt(), any());
+        verify(mSettingsNavigation, times(mUseGmsApi ? 0 : 1))
+                .createSettingsIntent(any(), anyInt(), any());
     }
 
     @Test

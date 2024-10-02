@@ -91,7 +91,7 @@ public class ClearDataDialogActivity extends AppCompatActivity {
             assert false : "Invalid extras for ClearDataDialogActivity";
             return;
         }
-        TrustedWebActivitySettingsLauncher.launch(this, origins, domains);
+        TrustedWebActivitySettingsNavigation.launch(this, origins, domains);
     }
 
     private void recordDecision(boolean accepted) {

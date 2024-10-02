@@ -257,17 +257,17 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     @Override
     public boolean onPreferenceStartFragment(
             PreferenceFragmentCompat caller, Preference preference) {
-        startFragment(preference.getFragment(), preference.getExtras());
+        startSettings(preference.getFragment(), preference.getExtras());
         return true;
     }
 
     /**
-     * Starts a new Settings activity showing the desired fragment.
+     * Starts a new settings showing the desired fragment.
      *
      * @param fragmentClass The Class of the fragment to show.
      * @param args Arguments to pass to Fragment.instantiate(), or null.
      */
-    public void startFragment(@Nullable String fragmentClass, @Nullable Bundle args) {
+    public void startSettings(@Nullable String fragmentClass, @Nullable Bundle args) {
         Intent intent = SettingsIntentUtil.createIntent(this, fragmentClass, args);
         startActivity(intent);
     }
@@ -391,7 +391,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         }
 
         if (item.getItemId() == android.R.id.home) {
-            finishCurrentFragment(mainFragment);
+            finishCurrentSettings(mainFragment);
             return true;
         } else if (item.getItemId() == R.id.menu_id_general_help) {
             HelpAndFeedbackLauncherImpl.getForProfile(mProfile)
@@ -484,13 +484,14 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
      *
      * <p>If the given fragment is not the current one, this method does nothing.
      *
-     * <p>This method is package-private because it is used by {@link SettingsLauncherImpl}. Use
-     * {@link SettingsLauncher} to call this method from fragments, instead of calling it directly.
+     * <p>This method is package-private because it is used by {@link SettingsNavigationImpl}. Use
+     * {@link SettingsNavigation} to call this method from fragments, instead of calling it
+     * directly.
      *
      * @param fragment The expected current fragment.
      */
     @SuppressLint("ReferenceEquality")
-    void finishCurrentFragment(Fragment fragment) {
+    void finishCurrentSettings(Fragment fragment) {
         if (getMainFragment() != fragment) {
             return;
         }

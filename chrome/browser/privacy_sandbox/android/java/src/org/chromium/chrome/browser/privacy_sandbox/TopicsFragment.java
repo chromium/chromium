@@ -131,7 +131,7 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
     }
 
     private void onFledgeSettingsLinkClicked(View view) {
-        launchSettingsActivity(FledgeFragment.class);
+        startSettings(FledgeFragment.class);
     }
 
     private void onCookieSettingsLink(View view) {

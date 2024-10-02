@@ -37,7 +37,7 @@ import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
@@ -241,16 +241,15 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                 new NoUnderlineClickableSpan(
                         getContext(),
                         v -> {
-                            SettingsLauncherFactory.createSettingsLauncher()
-                                    .launchSettingsActivity(
-                                            getActivity(), GoogleServicesSettings.class);
+                            SettingsNavigationFactory.createSettingsNavigation()
+                                    .startSettings(getActivity(), GoogleServicesSettings.class);
                         });
         NoUnderlineClickableSpan accountSettingsLink =
                 new NoUnderlineClickableSpan(
                         getContext(),
                         v -> {
-                            SettingsLauncherFactory.createSettingsLauncher()
-                                    .launchSettingsActivity(
+                            SettingsNavigationFactory.createSettingsNavigation()
+                                    .startSettings(
                                             getActivity(),
                                             ManageSyncSettings.class,
                                             ManageSyncSettings.createArguments(false));

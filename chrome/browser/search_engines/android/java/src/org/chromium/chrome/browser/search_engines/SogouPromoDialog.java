@@ -22,7 +22,7 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.widget.PromoDialog;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -68,9 +68,8 @@ public class SogouPromoDialog extends PromoDialog {
                         activity,
                         (widget) -> {
                             mChoice = UserChoice.SETTINGS;
-                            SettingsLauncherFactory.createSettingsLauncher()
-                                    .launchSettingsActivity(
-                                            getContext(), SearchEngineSettings.class);
+                            SettingsNavigationFactory.createSettingsNavigation()
+                                    .startSettings(getContext(), SearchEngineSettings.class);
                             dismiss();
                         });
         setOnDismissListener(this);

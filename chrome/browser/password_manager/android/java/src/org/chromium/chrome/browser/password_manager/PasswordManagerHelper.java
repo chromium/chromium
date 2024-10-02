@@ -41,9 +41,9 @@ import org.chromium.chrome.browser.password_manager.settings.PasswordAccessLossE
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
+import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.DataType;
@@ -237,9 +237,8 @@ public class PasswordManagerHelper {
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putInt(MANAGE_PASSWORDS_REFERRER, referrer);
         context.startActivity(
-                SettingsLauncherFactory.createSettingsLauncher()
-                        .createSettingsActivityIntent(
-                                context, SettingsFragment.PASSWORDS, fragmentArgs));
+                SettingsNavigationFactory.createSettingsNavigation()
+                        .createSettingsIntent(context, SettingsFragment.PASSWORDS, fragmentArgs));
     }
 
     /**

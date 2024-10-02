@@ -48,7 +48,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.ServiceWorkerPaymentAppBridge;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.autofill.IbanRecordType;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.MandatoryReauthAuthenticationFlowEvent;
@@ -56,7 +56,7 @@ import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.payments.AndroidPaymentAppFactory;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -583,8 +583,9 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
      * @param preference The {@link Preference} for the local card.
      */
     private void showLocalCardEditPage(Preference preference) {
-        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
-        settingsLauncher.launchSettingsActivity(
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
+        settingsNavigation.startSettings(
                 getActivity(), AutofillLocalCardEditor.class, preference.getExtras());
     }
 
@@ -651,8 +652,9 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
         Bundle args = preference.getExtras();
         args.putString(
                 FinancialAccountsManagementFragment.TITLE_KEY, preference.getTitle().toString());
-        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
-        settingsLauncher.launchSettingsActivity(
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
+        settingsNavigation.startSettings(
                 getActivity(), FinancialAccountsManagementFragment.class, args);
         return true;
     }

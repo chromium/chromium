@@ -23,7 +23,7 @@ import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.MainSettings;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
@@ -41,7 +41,7 @@ import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -381,8 +381,9 @@ public class IdentityDiscController
                         .launchActivityIfAllowed(mContext, SigninAccessPoint.NTP_SIGNED_OUT_ICON);
             }
         } else {
-            SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
-            settingsLauncher.launchSettingsActivity(mContext, MainSettings.class);
+            SettingsNavigation settingsNavigation =
+                    SettingsNavigationFactory.createSettingsNavigation();
+            settingsNavigation.startSettings(mContext, MainSettings.class);
         }
     }
 

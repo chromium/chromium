@@ -23,19 +23,19 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PasswordExportLauncherTest {
-    @Mock private SettingsLauncher mSettingsLauncherMock;
+    @Mock private SettingsNavigation mSettingsNavigationMock;
 
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncherMock);
+        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigationMock);
     }
 
     @Test
@@ -43,8 +43,8 @@ public class PasswordExportLauncherTest {
         Context mockContext = mock(Context.class);
         PasswordExportLauncher.showMainSettingsAndStartExport(mockContext);
         ArgumentCaptor<Bundle> bundleArgumentCaptor = ArgumentCaptor.forClass(Bundle.class);
-        verify(mSettingsLauncherMock)
-                .createSettingsActivityIntent(
+        verify(mSettingsNavigationMock)
+                .createSettingsIntent(
                         eq(mockContext), eq(SettingsFragment.MAIN), bundleArgumentCaptor.capture());
         Bundle bundle = bundleArgumentCaptor.getValue();
         assertTrue(bundle.containsKey(START_PASSWORDS_EXPORT));

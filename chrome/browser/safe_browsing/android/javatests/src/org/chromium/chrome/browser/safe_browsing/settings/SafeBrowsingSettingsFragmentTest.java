@@ -39,9 +39,9 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton;
 import org.chromium.components.policy.test.annotations.Policies;
@@ -61,7 +61,7 @@ public class SafeBrowsingSettingsFragmentTest {
     public SettingsActivityTestRule<SafeBrowsingSettingsFragment> mTestRule =
             new SettingsActivityTestRule<>(SafeBrowsingSettingsFragment.class);
 
-    @Mock private SettingsLauncher mSettingsLauncher;
+    @Mock private SettingsNavigation mSettingsNavigation;
 
     @Mock private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
 
@@ -74,7 +74,7 @@ public class SafeBrowsingSettingsFragmentTest {
         MockitoAnnotations.initMocks(this);
     }
 
-    private void launchSettingsActivity() {
+    private void startSettings() {
         mTestRule.startSettingsActivity();
         mSafeBrowsingSettingsFragment = mTestRule.getFragment();
         mSafeBrowsingPreference =
@@ -118,7 +118,7 @@ public class SafeBrowsingSettingsFragmentTest {
     @SmallTest
     @Feature({"SafeBrowsing"})
     public void testOnStartup() {
-        launchSettingsActivity();
+        startSettings();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     @SafeBrowsingState int currentState = getSafeBrowsingState();
@@ -148,7 +148,7 @@ public class SafeBrowsingSettingsFragmentTest {
     @SmallTest
     @Feature({"SafeBrowsing"})
     public void testCheckRadioButtons() {
-        launchSettingsActivity();
+        startSettings();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertFalse(mManagedDisclaimerText.isVisible());
@@ -197,7 +197,7 @@ public class SafeBrowsingSettingsFragmentTest {
                     ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
                     setSafeBrowsingState(SafeBrowsingState.ENHANCED_PROTECTION);
                 });
-        launchSettingsActivity();
+        startSettings();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getNoProtectionButton().onClick(null);
@@ -243,7 +243,7 @@ public class SafeBrowsingSettingsFragmentTest {
                     ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
                     setSafeBrowsingState(SafeBrowsingState.ENHANCED_PROTECTION);
                 });
-        launchSettingsActivity();
+        startSettings();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getNoProtectionButton().onClick(null);
@@ -289,7 +289,7 @@ public class SafeBrowsingSettingsFragmentTest {
                     ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
                     setSafeBrowsingState(SafeBrowsingState.NO_SAFE_BROWSING);
                 });
-        launchSettingsActivity();
+        startSettings();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getNoProtectionButton().onClick(null);
@@ -304,13 +304,13 @@ public class SafeBrowsingSettingsFragmentTest {
     @SmallTest
     @Feature({"SafeBrowsing"})
     public void testEnhancedProtectionAuxButtonClicked() {
-        launchSettingsActivity();
+        startSettings();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncher);
+                    SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
                     getEnhancedProtectionButton().getAuxButtonForTests().performClick();
-                    Mockito.verify(mSettingsLauncher)
-                            .launchSettingsActivity(
+                    Mockito.verify(mSettingsNavigation)
+                            .startSettings(
                                     mSafeBrowsingSettingsFragment.getContext(),
                                     EnhancedProtectionSettingsFragment.class);
                 });
@@ -320,13 +320,13 @@ public class SafeBrowsingSettingsFragmentTest {
     @SmallTest
     @Feature({"SafeBrowsing"})
     public void testStandardProtectionAuxButtonClicked() {
-        launchSettingsActivity();
+        startSettings();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncher);
+                    SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
                     getStandardProtectionButton().getAuxButtonForTests().performClick();
-                    Mockito.verify(mSettingsLauncher)
-                            .launchSettingsActivity(
+                    Mockito.verify(mSettingsNavigation)
+                            .startSettings(
                                     mSafeBrowsingSettingsFragment.getContext(),
                                     StandardProtectionSettingsFragment.class);
                 });
@@ -341,7 +341,7 @@ public class SafeBrowsingSettingsFragmentTest {
                 () -> {
                     ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
                 });
-        launchSettingsActivity();
+        startSettings();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(isSafeBrowsingManaged());
@@ -368,7 +368,7 @@ public class SafeBrowsingSettingsFragmentTest {
                 () -> {
                     ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
                 });
-        launchSettingsActivity();
+        startSettings();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(isSafeBrowsingManaged());
@@ -390,7 +390,7 @@ public class SafeBrowsingSettingsFragmentTest {
                 () -> {
                     ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
                 });
-        launchSettingsActivity();
+        startSettings();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(isSafeBrowsingManaged());
@@ -408,7 +408,7 @@ public class SafeBrowsingSettingsFragmentTest {
                 () -> {
                     ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
                 });
-        launchSettingsActivity();
+        startSettings();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(isSafeBrowsingManaged());
@@ -421,7 +421,7 @@ public class SafeBrowsingSettingsFragmentTest {
     @SmallTest
     @Feature({"SafeBrowsing"})
     public void testHelpButtonClicked() {
-        launchSettingsActivity();
+        startSettings();
         HelpAndFeedbackLauncherFactory.setInstanceForTesting(mHelpAndFeedbackLauncher);
         onView(withId(R.id.menu_id_targeted_help)).perform(click());
         ThreadUtils.runOnUiThreadBlocking(
@@ -444,7 +444,7 @@ public class SafeBrowsingSettingsFragmentTest {
                 () -> {
                     ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
                 });
-        launchSettingsActivity();
+        startSettings();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     String standardProtectionDescription =
@@ -468,7 +468,7 @@ public class SafeBrowsingSettingsFragmentTest {
                 () -> {
                     ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
                 });
-        launchSettingsActivity();
+        startSettings();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     String standardProtectionDescription =

@@ -44,8 +44,8 @@ import org.chromium.chrome.browser.night_mode.WebContentsDarkModeMessageControll
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeMessageControllerUnitTest.ShadowWebContentsDarkModeController;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -160,7 +160,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
     @Mock Activity mMockActivity;
     @Mock Profile mMockProfile;
     @Mock WebContents mMockWebContents;
-    @Mock SettingsLauncher mMockSettingsLauncher;
+    @Mock SettingsNavigation mMockSettingsNavigation;
     @Mock HelpAndFeedbackLauncher mMockFeedbackLauncher;
 
     @Mock Resources mMockResources;
@@ -187,7 +187,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
         mMessageDispatcher = new FakeMessageDispatcher();
         mModalDialogManager = new FakeModalDialogManager();
 
-        SettingsLauncherFactory.setInstanceForTesting(mMockSettingsLauncher);
+        SettingsNavigationFactory.setInstanceForTesting(mMockSettingsNavigation);
         HelpAndFeedbackLauncherFactory.setInstanceForTesting(mMockFeedbackLauncher);
         TrackerFactory.setTrackerForTests(mMockTracker);
         ShadowWebContentsDarkModeController.sIsFeatureEnabled = true;
@@ -212,7 +212,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
 
     private void doTestSendMessage_OptOut_Sent(boolean clicked) {
         // Set state based on opt-in/out arm. Since message is sent, shouldTriggerHelpUI is true.
-        reset(mMockWebContents, mMockSettingsLauncher, mMockTracker);
+        reset(mMockWebContents, mMockSettingsNavigation, mMockTracker);
         setOptOut(true);
         String enabledFeature = USER_ED_FEATURE;
         String messageTitle = TEST_OPT_OUT_TITLE;
@@ -242,7 +242,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
 
     private void doTestSendMessage_OptIn_Sent(boolean clicked) {
         // Set state based on opt-in/out arm. Since message is sent, shouldTriggerHelpUI is true.
-        reset(mMockWebContents, mMockSettingsLauncher, mMockTracker);
+        reset(mMockWebContents, mMockSettingsNavigation, mMockTracker);
         setOptOut(false);
         String enabledFeature = USER_ED_OPT_IN_FEATURE;
         String messageTitle = TEST_OPT_IN_TITLE;
@@ -310,9 +310,8 @@ public class WebContentsDarkModeMessageControllerUnitTest {
     }
 
     private void verifyLaunchSettings(int numTimes) {
-        verify(mMockSettingsLauncher, times(numTimes))
-                .launchSettingsActivity(
-                        eq(mMockActivity), eq(ThemeSettingsFragment.class), notNull());
+        verify(mMockSettingsNavigation, times(numTimes))
+                .startSettings(eq(mMockActivity), eq(ThemeSettingsFragment.class), notNull());
     }
 
     // Message sent tests.

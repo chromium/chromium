@@ -25,22 +25,22 @@ import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.safety_hub.SafetyHubFragment;
 import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 
 /** Implementation class for launching a {@link SettingsActivity}. */
-public class SettingsLauncherImpl implements SettingsLauncher {
+public class SettingsNavigationImpl implements SettingsNavigation {
 
-    /** Instantiated through SettingsLauncherFactory. */
-    SettingsLauncherImpl() {}
+    /** Instantiated through SettingsNavigationFactory. */
+    SettingsNavigationImpl() {}
 
     @Override
-    public void launchSettingsActivity(Context context) {
-        launchSettingsActivity(context, SettingsFragment.MAIN);
+    public void startSettings(Context context) {
+        startSettings(context, SettingsFragment.MAIN);
     }
 
     @Override
-    public void launchSettingsActivity(Context context, @SettingsFragment int settingsFragment) {
+    public void startSettings(Context context, @SettingsFragment int settingsFragment) {
         Bundle fragmentArgs = null;
         switch (settingsFragment) {
             case SettingsFragment.CLEAR_BROWSING_DATA:
@@ -68,32 +68,31 @@ public class SettingsLauncherImpl implements SettingsLauncher {
             case SettingsFragment.MANAGE_SYNC:
                 break;
         }
-        launchSettingsActivity(context, getFragmentClassFromEnum(settingsFragment), fragmentArgs);
+        startSettings(context, getFragmentClassFromEnum(settingsFragment), fragmentArgs);
     }
 
     @Override
-    public void launchSettingsActivity(
-            Context context, @Nullable Class<? extends Fragment> fragment) {
-        launchSettingsActivity(context, fragment, null);
+    public void startSettings(Context context, @Nullable Class<? extends Fragment> fragment) {
+        startSettings(context, fragment, null);
     }
 
     @Override
-    public void launchSettingsActivity(
+    public void startSettings(
             Context context,
             @Nullable Class<? extends Fragment> fragment,
             @Nullable Bundle fragmentArgs) {
-        Intent intent = createSettingsActivityIntent(context, fragment, fragmentArgs);
+        Intent intent = createSettingsIntent(context, fragment, fragmentArgs);
         IntentUtils.safeStartActivity(context, intent);
     }
 
     @Override
-    public Intent createSettingsActivityIntent(
+    public Intent createSettingsIntent(
             Context context, @Nullable Class<? extends Fragment> fragment) {
-        return createSettingsActivityIntent(context, fragment, null);
+        return createSettingsIntent(context, fragment, null);
     }
 
     @Override
-    public Intent createSettingsActivityIntent(
+    public Intent createSettingsIntent(
             Context context,
             @Nullable Class<? extends Fragment> fragment,
             @Nullable Bundle fragmentArgs) {
@@ -102,10 +101,9 @@ public class SettingsLauncherImpl implements SettingsLauncher {
     }
 
     @Override
-    public Intent createSettingsActivityIntent(
+    public Intent createSettingsIntent(
             Context context, @SettingsFragment int fragment, @Nullable Bundle fragmentArgs) {
-        return createSettingsActivityIntent(
-                context, getFragmentClassFromEnum(fragment), fragmentArgs);
+        return createSettingsIntent(context, getFragmentClassFromEnum(fragment), fragmentArgs);
     }
 
     private static @Nullable Class<? extends Fragment> getFragmentClassFromEnum(
@@ -143,10 +141,10 @@ public class SettingsLauncherImpl implements SettingsLauncher {
     }
 
     @Override
-    public void finishCurrentFragment(Fragment fragment) {
+    public void finishCurrentSettings(Fragment fragment) {
         Activity activity = fragment.getActivity();
         if (activity != null) {
-            ((SettingsActivity) activity).finishCurrentFragment(fragment);
+            ((SettingsActivity) activity).finishCurrentSettings(fragment);
         }
     }
 }

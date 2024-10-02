@@ -130,7 +130,7 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
 
     private void onLearnMoreClicked(View view) {
         RecordUserAction.record("Settings.PrivacySandbox.Fledge.LearnMoreClicked");
-        launchSettingsActivity(FledgeLearnMoreFragment.class);
+        startSettings(FledgeLearnMoreFragment.class);
     }
 
     private void onManagingAdPrivacyClicked(View view) {
@@ -138,7 +138,7 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
     }
 
     private void onFledgeSettingsLinkClicked(View view) {
-        launchSettingsActivity(TopicsFragment.class);
+        startSettings(TopicsFragment.class);
     }
 
     private void onCookieSettingsLink(View view) {

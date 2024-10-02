@@ -100,7 +100,7 @@ import org.chromium.chrome.browser.permissions.PermissionTestRule.PermissionUpda
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
@@ -112,7 +112,7 @@ import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
 import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.site_settings.ContentSettingException;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.site_settings.GroupedWebsitesSettings;
@@ -180,7 +180,7 @@ public class SiteSettingsTest {
                     .setBugComponent(Component.UI_BROWSER_MOBILE_SETTINGS)
                     .build();
 
-    @Mock private SettingsLauncher mSettingsLauncher;
+    @Mock private SettingsNavigation mSettingsNavigation;
 
     @Rule public JniMocker mocker = new JniMocker();
 
@@ -719,8 +719,8 @@ public class SiteSettingsTest {
                             websitePreferences.findPreference(
                                     SingleCategorySettings.TRI_STATE_COOKIE_TOGGLE);
 
-                    Mockito.clearInvocations(mSettingsLauncher);
-                    websitePreferences.setSettingsLauncher(mSettingsLauncher);
+                    Mockito.clearInvocations(mSettingsNavigation);
+                    websitePreferences.setSettingsNavigation(mSettingsNavigation);
 
                     SiteSettingsTestUtils.getCookieRadioButtonFrom(
                                     cookies, expectedCookieControlMode)
@@ -731,8 +731,8 @@ public class SiteSettingsTest {
                     fragmentArgs.putInt(
                             RWSCookieSettings.EXTRA_COOKIE_PAGE_STATE, expectedCookieControlMode);
 
-                    Mockito.verify(mSettingsLauncher)
-                            .launchSettingsActivity(
+                    Mockito.verify(mSettingsNavigation)
+                            .startSettings(
                                     eq(websitePreferences.getContext()),
                                     eq(RWSCookieSettings.class),
                                     refEq(fragmentArgs));
@@ -2280,10 +2280,11 @@ public class SiteSettingsTest {
 
         triggerEmbargoForOrigin(url);
 
-        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
         Context context = ApplicationProvider.getApplicationContext();
         Intent intent =
-                settingsLauncher.createSettingsActivityIntent(
+                settingsNavigation.createSettingsIntent(
                         context,
                         SingleWebsiteSettings.class,
                         SingleWebsiteSettings.createFragmentArgsForSite(url));
@@ -2407,10 +2408,11 @@ public class SiteSettingsTest {
                     FederatedIdentityTestUtils.embargoFedCmForRelyingParty(new GURL(rpUrl));
                 });
 
-        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
         Context context = ApplicationProvider.getApplicationContext();
         Intent intent =
-                settingsLauncher.createSettingsActivityIntent(
+                settingsNavigation.createSettingsIntent(
                         context,
                         SingleWebsiteSettings.class,
                         SingleWebsiteSettings.createFragmentArgsForSite(rpUrl));

@@ -24,7 +24,7 @@ import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomiza
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.url.GURL;
@@ -88,8 +88,8 @@ public class HomepageManager
      * @param context {@link Context} used for launching a settings activity.
      */
     public void onMenuClick(Context context) {
-        SettingsLauncherFactory.createSettingsLauncher()
-                .launchSettingsActivity(context, HomepageSettings.class);
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(context, HomepageSettings.class);
     }
 
     /** Notify any listeners about a homepage state change. */

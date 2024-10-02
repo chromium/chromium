@@ -26,7 +26,7 @@ import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.search_engines.SogouPromoDialog;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
@@ -65,8 +65,8 @@ public class LocaleManagerDelegate {
                 @Override
                 public void onAction(Object actionData) {
                     Context context = ContextUtils.getApplicationContext();
-                    SettingsLauncherFactory.createSettingsLauncher()
-                            .launchSettingsActivity(context, SearchEngineSettings.class);
+                    SettingsNavigationFactory.createSettingsNavigation()
+                            .startSettings(context, SearchEngineSettings.class);
                 }
             };
 

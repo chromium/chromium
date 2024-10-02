@@ -290,14 +290,14 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                         .with(
                                 SafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER,
                                 v -> {
-                                    launchSettingsActivity(SafetyHubPermissionsFragment.class);
+                                    startSettings(SafetyHubPermissionsFragment.class);
                                     recordRevokedPermissionsInteraction(
                                             PermissionsModuleInteractions.OPEN_REVIEW_UI);
                                 })
                         .with(
                                 SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
                                 v -> {
-                                    launchSettingsActivity(SiteSettings.class);
+                                    startSettings(SiteSettings.class);
                                     recordRevokedPermissionsInteraction(
                                             PermissionsModuleInteractions.GO_TO_SETTINGS);
                                 })
@@ -354,7 +354,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                         .with(
                                 SafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER,
                                 v -> {
-                                    launchSettingsActivity(SafetyHubNotificationsFragment.class);
+                                    startSettings(SafetyHubNotificationsFragment.class);
                                     recordNotificationsInteraction(
                                             NotificationsModuleInteractions.OPEN_UI_REVIEW);
                                 })
@@ -385,14 +385,14 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                         .with(
                                 SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
                                 v -> {
-                                    launchSettingsActivity(SafeBrowsingSettingsFragment.class);
+                                    startSettings(SafeBrowsingSettingsFragment.class);
                                     recordDashboardInteractions(
                                             DashboardInteractions.GO_TO_SAFE_BROWSING_SETTINGS);
                                 })
                         .with(
                                 SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
                                 v -> {
-                                    launchSettingsActivity(SafeBrowsingSettingsFragment.class);
+                                    startSettings(SafeBrowsingSettingsFragment.class);
                                     recordDashboardInteractions(
                                             DashboardInteractions.GO_TO_SAFE_BROWSING_SETTINGS);
                                 })

@@ -187,7 +187,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
                 new ModalDialogManager(mAppModalPresenter, ModalDialogManager.ModalDialogType.APP);
 
         FaviconProvider faviconProvider = (url, faviconSizePx, callback) -> {};
-        Callback<Context> settingsLauncher = context -> {};
+        Callback<Context> settingsNavigation = context -> {};
         ObservableSupplierImpl<Boolean> isPrefetchEnabledSupplier = new ObservableSupplierImpl<>();
         isPrefetchEnabledSupplier.set(true);
 
@@ -196,7 +196,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
                         getActivity(),
                         config,
                         isPrefetchEnabledSupplier,
-                        settingsLauncher,
+                        settingsNavigation,
                         mSnackbarManager,
                         mModalDialogManager,
                         mTracker,

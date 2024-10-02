@@ -30,11 +30,11 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepageTestRule;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.toolbar.home_button.HomeButton;
 import org.chromium.chrome.browser.toolbar.home_button.HomeButtonCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
@@ -49,7 +49,7 @@ public class HomeButtonTest extends BlankUiTestActivityTestCase {
 
     @Rule public HomepageTestRule mHomepageTestRule = new HomepageTestRule();
 
-    @Mock private SettingsLauncher mSettingsLauncher;
+    @Mock private SettingsNavigation mSettingsNavigation;
 
     private HomeButtonCoordinator mHomeButtonCoordinator;
     private int mIdHomeButton;
@@ -85,7 +85,7 @@ public class HomeButtonTest extends BlankUiTestActivityTestCase {
                                     homeButton,
                                     HomepageManager.getInstance()::onMenuClick,
                                     () -> false);
-                    SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncher);
+                    SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
 
                     content.addView(homeButton);
                 });
@@ -102,7 +102,6 @@ public class HomeButtonTest extends BlankUiTestActivityTestCase {
 
         // Test click on context menu item
         onView(withText(R.string.options_homepage_edit_title)).perform(click());
-        Mockito.verify(mSettingsLauncher)
-                .launchSettingsActivity(getActivity(), HomepageSettings.class);
+        Mockito.verify(mSettingsNavigation).startSettings(getActivity(), HomepageSettings.class);
     }
 }

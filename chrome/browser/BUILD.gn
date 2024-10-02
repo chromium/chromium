@@ -2728,8 +2728,8 @@ static_library("browser") {
       "android/preferences/autofill/autofill_payment_methods_delegate.h",
       "android/preferences/autofill/autofill_profile_bridge.cc",
       "android/preferences/autofill/autofill_profile_bridge.h",
-      "android/preferences/autofill/settings_launcher_helper.cc",
-      "android/preferences/autofill/settings_launcher_helper.h",
+      "android/preferences/autofill/settings_navigation_helper.cc",
+      "android/preferences/autofill/settings_navigation_helper.h",
       "android/preferences/browser_prefs_android.cc",
       "android/preferences/browser_prefs_android.h",
       "android/preferences/clipboard_android.cc",
@@ -3154,8 +3154,8 @@ static_library("browser") {
       "safe_browsing/android/password_reuse_controller_android.h",
       "safe_browsing/android/safe_browsing_referring_app_bridge_android.cc",
       "safe_browsing/android/safe_browsing_referring_app_bridge_android.h",
-      "safe_browsing/android/safe_browsing_settings_launcher_android.cc",
-      "safe_browsing/android/safe_browsing_settings_launcher_android.h",
+      "safe_browsing/android/safe_browsing_settings_navigation_android.cc",
+      "safe_browsing/android/safe_browsing_settings_navigation_android.h",
       "search_resumption/search_resumption_module_bridge.cc",
       "search_resumption/search_resumption_module_bridge.h",
       "search_resumption/start_suggest_service_factory.cc",
@@ -3443,7 +3443,7 @@ static_library("browser") {
       "//chrome/browser/facilitated_payments",
 
       # "TODO(crbug.com:365919643): Remove this circular dependency when
-      # //c/b/android/preferences/autofill/settings_launcher_helper.h" get modularized.
+      # //c/b/android/preferences/autofill/settings_navigation_helper.h" get modularized.
       "//chrome/browser/ui/fast_checkout:impl",
 
       "//chrome/browser/android/bookmarks:impl",

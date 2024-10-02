@@ -39,10 +39,10 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 
@@ -61,7 +61,7 @@ public final class SearchEngineChoiceNotificationTest {
     @Mock private TemplateUrl mAlternativeSearchEngine;
     @Mock private Profile mProfile;
     @Captor private ArgumentCaptor<Snackbar> mSnackbarArgument;
-    @Mock private SettingsLauncher mSettingsLauncher;
+    @Mock private SettingsNavigation mSettingsNavigation;
 
     @Before
     public void setUp() {
@@ -71,7 +71,7 @@ public final class SearchEngineChoiceNotificationTest {
         // Sets up appropriate responses from Template URL service.
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
-        SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncher);
+        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
         doReturn(TEST_ALTERNATIVE_ENGINE).when(mAlternativeSearchEngine).getKeyword();
         doReturn(SearchEngineType.SEARCH_ENGINE_DUCKDUCKGO)
                 .when(mTemplateUrlService)
@@ -199,9 +199,9 @@ public final class SearchEngineChoiceNotificationTest {
     public void snackbarClicked() {
         SearchEngineChoiceNotification.receiveSearchEngineChoiceRequest();
 
-        // We do not use a mock for SettingsLauncher here since the test needs to
+        // We do not use a mock for SettingsNavigation here since the test needs to
         // verify that the launcher actually starts an activity.
-        SettingsLauncherFactory.setInstanceForTesting(null);
+        SettingsNavigationFactory.setInstanceForTesting(null);
         SearchEngineChoiceNotification.handleSearchEngineChoice(mContext, mSnackbarManager);
         verify(mSnackbarManager, times(1)).showSnackbar(mSnackbarArgument.capture());
 

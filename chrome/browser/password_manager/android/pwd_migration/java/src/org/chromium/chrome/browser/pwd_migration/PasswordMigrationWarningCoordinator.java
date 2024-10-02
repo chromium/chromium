@@ -27,7 +27,7 @@ import org.chromium.chrome.browser.password_manager.settings.PasswordListObserve
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningMediator.MigrationWarningOptionsHandler;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.ScreenType;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -110,8 +110,8 @@ public class PasswordMigrationWarningCoordinator
 
     @Override
     public void openSyncSettings() {
-        SettingsLauncherFactory.createSettingsLauncher()
-                .launchSettingsActivity(mContext, mSyncSettingsFragment);
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(mContext, mSyncSettingsFragment);
     }
 
     @Override

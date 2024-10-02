@@ -26,7 +26,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -364,8 +364,8 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
     private void launchSelectLanguage(
             @LanguagesManager.LanguageListType int languageListType, int requestCode) {
         Intent intent =
-                SettingsLauncherFactory.createSettingsLauncher()
-                        .createSettingsActivityIntent(getActivity(), SelectLanguageFragment.class);
+                SettingsNavigationFactory.createSettingsNavigation()
+                        .createSettingsIntent(getActivity(), SelectLanguageFragment.class);
         intent.putExtra(SelectLanguageFragment.INTENT_POTENTIAL_LANGUAGES, languageListType);
         startActivityForResult(intent, requestCode);
     }
@@ -379,8 +379,8 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
         listPreference.setOnPreferenceClickListener(
                 preference -> {
                     Intent intent =
-                            SettingsLauncherFactory.createSettingsLauncher()
-                                    .createSettingsActivityIntent(
+                            SettingsNavigationFactory.createSettingsNavigation()
+                                    .createSettingsIntent(
                                             getActivity(), listPreference.getFragmentClass());
                     startActivity(intent);
                     return true;
