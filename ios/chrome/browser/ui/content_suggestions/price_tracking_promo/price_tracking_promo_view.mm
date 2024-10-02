@@ -27,6 +27,9 @@ const CGFloat kHorizontalStackSpacing = 16.0f;
 // Inset for product image fallback from the UIImageView boundary.
 const CGFloat kProductImageFallbackInset = 10.0f;
 
+// Inset for product image from the UIImageView boundary.
+const CGFloat kProductImageInset = 0.0f;
+
 // Radius of background circle of product image fallback.
 const CGFloat kProductImageFallbackCornerRadius = 25.0;
 
@@ -45,9 +48,10 @@ const CGFloat kSeparatorHeight = 0.5;
   UILabel* _titleLabel;
   UILabel* _descriptionLabel;
   UIButton* _allowButton;
-  UIImageView* _fallbackProductImageView;
+  UIImageView* _productImageView;
   // To create a background circle around the fallback product image.
-  UIView* _fallbackProductImageBackgroundCircle;
+  UIImageView* _fallbackProductImageView;
+  UIView* _productImage;
   UIStackView* _contentStack;
   UIStackView* _textStack;
   UIView* _separator;
@@ -96,31 +100,43 @@ const CGFloat kSeparatorHeight = 0.5;
 
   // TODO(crbug.com/361106168) use product image from most recent subscription
   // if available.
-  _fallbackProductImageView = [[UIImageView alloc] init];
-  _fallbackProductImageView.image = CustomSymbolWithPointSize(
-      kDownTrendSymbol, kProductImageFallbackPointSize);
-  _fallbackProductImageView.contentMode = UIViewContentModeScaleAspectFit;
-  _fallbackProductImageView.translatesAutoresizingMaskIntoConstraints = NO;
-  _fallbackProductImageView.layer.borderWidth = 0;
 
-  [NSLayoutConstraint activateConstraints:@[
-    [_fallbackProductImageView.widthAnchor
-        constraintEqualToConstant:kProductImageFallbackSize],
-    [_fallbackProductImageView.widthAnchor
-        constraintEqualToAnchor:_fallbackProductImageView.heightAnchor],
-  ]];
+  _productImage = [[UIView alloc] init];
+  UIImage* retrievedProductImage =
+      [UIImage imageWithData:config.productImageData
+                       scale:[UIScreen mainScreen].scale];
+  if (retrievedProductImage) {
+    _productImageView = [[UIImageView alloc] init];
+    _productImageView.image = retrievedProductImage;
+    _productImageView.contentMode = UIViewContentModeScaleAspectFit;
+    _productImageView.translatesAutoresizingMaskIntoConstraints = NO;
+    _productImageView.layer.borderWidth = 0;
+    [_productImage addSubview:_productImageView];
+    AddSameConstraintsWithInset(_productImageView, _productImage,
+                                kProductImageInset);
+  } else {
+    _fallbackProductImageView = [[UIImageView alloc] init];
+    _fallbackProductImageView.image = CustomSymbolWithPointSize(
+        kDownTrendSymbol, kProductImageFallbackPointSize);
+    _fallbackProductImageView.contentMode = UIViewContentModeScaleAspectFit;
+    _fallbackProductImageView.translatesAutoresizingMaskIntoConstraints = NO;
+    _fallbackProductImageView.layer.borderWidth = 0;
 
-  _fallbackProductImageBackgroundCircle = [[UIView alloc] init];
-  _fallbackProductImageBackgroundCircle.layer.cornerRadius =
-      kProductImageFallbackCornerRadius;
-  _fallbackProductImageBackgroundCircle.backgroundColor =
-      [UIColor colorNamed:kBlueHaloColor];
+    [NSLayoutConstraint activateConstraints:@[
+      [_fallbackProductImageView.widthAnchor
+          constraintEqualToConstant:kProductImageFallbackSize],
+      [_fallbackProductImageView.widthAnchor
+          constraintEqualToAnchor:_fallbackProductImageView.heightAnchor],
+    ]];
 
-  [_fallbackProductImageBackgroundCircle addSubview:_fallbackProductImageView];
+    _productImage.layer.cornerRadius = kProductImageFallbackCornerRadius;
+    _productImage.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
 
-  AddSameConstraintsWithInset(_fallbackProductImageView,
-                              _fallbackProductImageBackgroundCircle,
-                              kProductImageFallbackInset);
+    [_productImage addSubview:_fallbackProductImageView];
+
+    AddSameConstraintsWithInset(_fallbackProductImageView, _productImage,
+                                kProductImageFallbackInset);
+  }
 
   _allowButton = [[UIButton alloc] init];
   _allowButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -157,9 +173,8 @@ const CGFloat kSeparatorHeight = 0.5;
         constraintEqualToAnchor:_textStack.trailingAnchor],
   ]];
 
-  _contentStack = [[UIStackView alloc] initWithArrangedSubviews:@[
-    _fallbackProductImageBackgroundCircle, _textStack
-  ]];
+  _contentStack = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ _productImage, _textStack ]];
   _contentStack.translatesAutoresizingMaskIntoConstraints = NO;
   _contentStack.spacing = kHorizontalStackSpacing;
   _contentStack.alignment = UIStackViewAlignmentTop;
