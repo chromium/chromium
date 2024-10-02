@@ -44,6 +44,50 @@ namespace drive::util {
 using user_manager::User;
 using user_manager::UserManager;
 
+namespace {
+
+ConnectionStatus GetDeviceOnlineStatus() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  using enum ConnectionStatus;
+
+  if (!ash::NetworkHandler::IsInitialized()) {
+    VLOG(1) << "GetDeviceOnlineStatus: no network handler";
+    return kNoNetwork;
+  }
+
+  ash::NetworkStateHandler* const handler =
+      ash::NetworkHandler::Get()->network_state_handler();
+  DCHECK(handler);
+
+  const ash::NetworkState* const network = handler->DefaultNetwork();
+  if (!network) {
+    VLOG(1) << "GetDeviceOnlineStatus: no network";
+    return kNoNetwork;
+  }
+
+  if (!network->IsOnline()) {
+    VLOG(1) << "GetDeviceOnlineStatus: not ready: network is "
+            << network->connection_state();
+    return kNotReady;
+  }
+
+  using PortalState = ash::NetworkState::PortalState;
+  if (const PortalState portal_state = network->GetPortalState();
+      portal_state != PortalState::kOnline) {
+    VLOG(1) << "GetDeviceOnlineStatus: not ready: portal is " << portal_state;
+    return kNotReady;
+  }
+
+  if (handler->default_network_is_metered()) {
+    VLOG(1) << "GetDeviceOnlineStatus: metered";
+    return kMetered;
+  }
+
+  return kConnected;
+}
+
+}  // namespace
+
 DriveIntegrationService* GetIntegrationServiceByProfile(Profile* profile) {
   DriveIntegrationService* service =
       DriveIntegrationServiceFactory::FindForProfile(profile);
@@ -227,7 +271,8 @@ void SetDriveConnectionStatusForTesting(const ConnectionStatus status) {
   has_connection_status_for_testing = true;
 }
 
-ConnectionStatus GetDriveConnectionStatus(Profile* const profile) {
+ConnectionStatus GetDriveConnectionStatus(Profile* const profile,
+                                          bool* is_online) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   using enum ConnectionStatus;
 
@@ -237,49 +282,25 @@ ConnectionStatus GetDriveConnectionStatus(Profile* const profile) {
     return connection_status_for_testing;
   }
 
+  ConnectionStatus online_status = GetDeviceOnlineStatus();
+  if (is_online != nullptr) {
+    *is_online = online_status == kConnected || online_status == kMetered;
+  }
+
   if (!GetIntegrationServiceByProfile(profile)) {
     VLOG(1) << "GetDriveConnectionStatus: no Drive integration service";
     return kNoService;
   }
 
-  if (!ash::NetworkHandler::IsInitialized()) {
-    VLOG(1) << "GetDriveConnectionStatus: no network handler";
-    return kNoNetwork;
-  }
-
-  ash::NetworkStateHandler* const handler =
-      ash::NetworkHandler::Get()->network_state_handler();
-  DCHECK(handler);
-
-  const ash::NetworkState* const network = handler->DefaultNetwork();
-  if (!network) {
-    VLOG(1) << "GetDriveConnectionStatus: no network";
-    return kNoNetwork;
-  }
-
-  if (!network->IsOnline()) {
-    VLOG(1) << "GetDriveConnectionStatus: not ready: network is "
-            << network->connection_state();
-    return kNotReady;
-  }
-
-  using PortalState = ash::NetworkState::PortalState;
-  if (const PortalState portal_state = network->GetPortalState();
-      portal_state != PortalState::kOnline) {
-    VLOG(1) << "GetDriveConnectionStatus: not ready: portal is "
-            << portal_state;
-    return kNotReady;
-  }
-
   DCHECK(profile);
-  if (profile->GetPrefs()->GetBoolean(prefs::kDisableDriveOverCellular) &&
-      handler->default_network_is_metered()) {
-    VLOG(1) << "GetDriveConnectionStatus: metered";
-    return kMetered;
+  if (online_status == kMetered &&
+      !profile->GetPrefs()->GetBoolean(prefs::kDisableDriveOverCellular)) {
+    VLOG(1) << "GetDriveConnectionStatus: metered, but still enabled";
+    return kConnected;
   }
 
-  VLOG(1) << "GetDriveConnectionStatus: connected";
-  return kConnected;
+  VLOG(1) << "GetDriveConnectionStatus: " << online_status;
+  return online_status;
 }
 
 bool IsPinnableGDocMimeType(const std::string& mime_type) {
