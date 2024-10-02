@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.tab_group_sync.messaging.InstantMessage;
+import org.chromium.components.tab_group_sync.messaging.InstantNotificationLevel;
 import org.chromium.components.tab_group_sync.messaging.InstantNotificationType;
 import org.chromium.components.tab_group_sync.messaging.MessagingBackendService;
 import org.chromium.components.tab_group_sync.messaging.MessagingBackendService.InstantMessageDelegate;
@@ -59,10 +60,13 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
 
     @Override
     public void displayInstantaneousMessage(InstantMessage message) {
-        if (message.type == InstantNotificationType.SYSTEM) {
+        @InstantNotificationType int type = message.type;
+        if (type == InstantNotificationType.CONFLICT_TAB_REMOVED) {
+            // TODO(https://crbug.com/369164214): Implement (or move below).
+        }
+        if (message.level == InstantNotificationLevel.SYSTEM) {
             // TODO(https://crbug.com/369164214): Implement.
-        } else if (message.type == InstantNotificationType.BROWSER
-                || message.type == InstantNotificationType.CONFLICT_TAB_REMOVED) {
+        } else if (message.level == InstantNotificationLevel.BROWSER) {
             if (mAttachedWindows.size() == 0) {
                 return;
             }

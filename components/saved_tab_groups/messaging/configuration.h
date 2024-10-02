@@ -90,10 +90,14 @@ struct InstantMessageConfig : public MessageConfigBase {
       UserAction user_action,
       UserRequirement user_requirement,
       BrowserStateRequirement display_requirement,
+      InstantNotificationLevel notification_level,
       InstantNotificationType notification_type,
       DelayPolicy delay_policy,
       uint64_t delay_policy_ttl = DEFAULT_INSTANT_MESSAGE_SECONDS_TTL);
   ~InstantMessageConfig() override;
+
+  // What level of notification should be used for the message.
+  InstantNotificationLevel notification_level;
 
   // What type of notification should be used for the message.
   InstantNotificationType notification_type;

@@ -12,6 +12,7 @@ import org.jni_zero.JNINamespace;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.messaging.InstantMessage;
+import org.chromium.components.tab_group_sync.messaging.InstantNotificationLevel;
 import org.chromium.components.tab_group_sync.messaging.InstantNotificationType;
 import org.chromium.components.tab_group_sync.messaging.MessageAttribution;
 import org.chromium.components.tab_group_sync.messaging.PersistentMessage;
@@ -92,6 +93,7 @@ class ConversionUtils {
             @Nullable GroupMember affectedUser,
             GroupMember triggeringUser,
             @UserAction int action,
+            @InstantNotificationLevel int level,
             @InstantNotificationType int type) {
         InstantMessage message = new InstantMessage();
         message.attribution =
@@ -104,6 +106,7 @@ class ConversionUtils {
                         affectedUser,
                         triggeringUser);
         message.action = action;
+        message.level = level;
         message.type = type;
 
         return message;

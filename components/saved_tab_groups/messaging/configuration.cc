@@ -25,6 +25,7 @@ InstantMessageConfig::InstantMessageConfig(
     UserAction user_action,
     UserRequirement user_requirement,
     BrowserStateRequirement display_requirement,
+    InstantNotificationLevel level,
     InstantNotificationType type,
     DelayPolicy delay_policy,
     uint64_t delay_policy_ttl)
@@ -33,6 +34,7 @@ InstantMessageConfig::InstantMessageConfig(
                         user_requirement,
                         delay_policy,
                         delay_policy_ttl),
+      notification_level(level),
       notification_type(type) {}
 
 InstantMessageConfig::~InstantMessageConfig() = default;

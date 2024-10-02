@@ -114,7 +114,7 @@ ScopedJavaLocalRef<jobject> InstantMessageToJava(JNIEnv* env,
       ToJavaTabId(message.attribution.local_tab_id),
       OptionalUuidToLowercaseJavaString(env, message.attribution.sync_tab_id),
       jaffected_user, jtriggering_user, static_cast<int>(message.action),
-      static_cast<int>(message.type));
+      static_cast<int>(message.level), static_cast<int>(message.type));
 }
 
 }  // namespace tab_groups::messaging::android

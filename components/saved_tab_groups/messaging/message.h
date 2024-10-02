@@ -36,10 +36,20 @@ enum class UserAction {
 // (and only once) to the user.
 // GENERATED_JAVA_ENUM_PACKAGE: (
 //   org.chromium.components.tab_group_sync.messaging)
+enum class InstantNotificationLevel {
+  UNDEFINED,
+  SYSTEM,   // Show notification using OS notification.
+  BROWSER,  // Show a browser level notification
+};
+
+// The notification type provides an explicit hint to the frontend about how
+// they need to handle the notification, instead of the frontend needing to
+// infer what it needs to do. Fallback option here is `UNDEFINED` for either
+// trivial or easily implicit notification types.
+// GENERATED_JAVA_ENUM_PACKAGE: (
+//   org.chromium.components.tab_group_sync.messaging)
 enum class InstantNotificationType {
   UNDEFINED,
-  SYSTEM,                // Show notification using OS notification.
-  BROWSER,               // Show a browser level notification
   CONFLICT_TAB_REMOVED,  // A special notification when a tab is removed while
                          // the user is focused on the tab.
 };
@@ -99,6 +109,9 @@ struct InstantMessage {
 
   // The type of action associated with the message.
   UserAction action;
+
+  // The level of instant notification to show.
+  InstantNotificationLevel level;
 
   // The type of instant notification to show.
   InstantNotificationType type;

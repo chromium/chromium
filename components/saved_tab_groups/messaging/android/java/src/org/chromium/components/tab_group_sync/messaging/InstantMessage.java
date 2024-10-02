@@ -12,5 +12,6 @@ package org.chromium.components.tab_group_sync.messaging;
 public class InstantMessage {
     public MessageAttribution attribution;
     @UserAction public int action;
+    @InstantNotificationLevel public int level;
     @InstantNotificationType public int type;
 }
