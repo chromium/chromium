@@ -5632,6 +5632,13 @@
        {}
       ]
      ],
+     "feimage-svg-image-with-nested-data-url-crash.html": [
+      "54ae7f02a096b8d38ddd06776ad339e3463f286e",
+      [
+       null,
+       {}
+      ]
+     ],
      "feimage-target-child-reference-crash.html": [
       "eef96ef094d913fb9423616af9177ddfd932796c",
       [
@@ -243844,6 +243851,35 @@
         }
        ]
       ],
+      "custom-ident-implies-contain.html": [
+       "6524d2c2680cd1ebcd00d5335adde259b321a6cd",
+       [
+        null,
+        [
+         [
+          "/css/css-view-transitions/nested/nested-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             255
+            ],
+            [
+             0,
+             515
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
       "nearest-direct.tentative.html": [
        "a42e5a847c053b2b248208df64be87512b24716e",
        [
@@ -243875,6 +243911,35 @@
       ],
       "nearest-ignores-nearest-name.tentative.html": [
        "ddae634f87a0ace4216ea66cbb72bc7734df3e10",
+       [
+        null,
+        [
+         [
+          "/css/css-view-transitions/nested/nested-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             255
+            ],
+            [
+             0,
+             515
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "nearest-implies-contain.html": [
+       "94f8b8d1b7e84bd4055a202729c41efa70cb9a5a",
        [
         null,
         [
@@ -375765,7 +375830,7 @@
         []
        ],
        "text.yaml": [
-        "29a765be1111b420d67bcdea66f2c8f75eff22a6",
+        "69922c250afba22773028b790179c4d998a684bc",
         []
        ],
        "the-canvas-state.yaml": [
@@ -495732,7 +495797,7 @@
       ]
      ],
      "dir-pseudo-on-input-element.html": [
-      "b1427bf42d6636b42314427a37db724597b24f4a",
+      "8e3ba51f5bb49a0b29492169db4e7ad68ddf2296",
       [
        null,
        {}
@@ -539946,7 +540011,7 @@
    "fledge": {
     "tentative": {
      "abort.https.window.js": [
-      "b99d60dd5282cd252b932f9d1ae1fe99230a5f8d",
+      "db6aae4604575fd0f096efeec45c86fe94e11e3d",
       [
        "fledge/tentative/abort.https.window.html",
        {
@@ -539954,6 +540019,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -539973,7 +540042,7 @@
       ]
      ],
      "additional-bids.https.window.js": [
-      "965f9a60c7e6630b00be480f20e95ecf21e610a5",
+      "3ba0b49cbc089e2c3789bbf0bf2d75f59c0145e1",
       [
        "fledge/tentative/additional-bids.https.window.html?1-last",
        {
@@ -539981,6 +540050,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -540008,7 +540081,7 @@
       ]
      ],
      "auction-config-passed-to-worklets.https.window.js": [
-      "7780957739e435825f186500f56a6e102e9c2c32",
+      "59c5477facf21294914036687e4558fba64866ed",
       [
        "fledge/tentative/auction-config-passed-to-worklets.https.window.html?1-5",
        {
@@ -540016,6 +540089,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -540067,6 +540144,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -540112,6 +540193,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -540163,6 +540248,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -540211,6 +540300,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -540251,7 +540344,7 @@
       ]
      ],
      "auction-config.https.window.js": [
-      "d85271ee2c1e7d32185eb02617d22e9a1b11e2a9",
+      "349f0119cabdc615bddc50ad8b83ed47566318e2",
       [
        "fledge/tentative/auction-config.https.window.html?1-5",
        {
@@ -540259,6 +540352,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -540342,6 +540439,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -540419,6 +540520,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -540502,6 +540607,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -540579,6 +540688,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -540662,6 +540775,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -540739,6 +540856,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -540822,6 +540943,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -540899,6 +541024,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -540982,6 +541111,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -541059,6 +541192,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -541142,6 +541279,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -541222,6 +541363,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -541294,7 +541439,7 @@
       ]
      ],
      "clear-origin-joined-ad-interest-groups.https.window.js": [
-      "7d6e715ac45d979b541cfb50f2044ef34178df26",
+      "097978a7858523c759a70ac9843baec8eee65dc4",
       [
        "fledge/tentative/clear-origin-joined-ad-interest-groups.https.window.html?1-4",
        {
@@ -541302,6 +541447,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -541349,6 +541498,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -541390,6 +541543,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -541437,6 +541594,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -541473,7 +541634,7 @@
       ]
      ],
      "component-ads.https.window.js": [
-      "8493025429ed83b49f5117f0b3f237e03ccf64a5",
+      "6fec80102bb94da42a4fffa6bb3f5d5d8ded7d33",
       [
        "fledge/tentative/component-ads.https.window.html?1-5",
        {
@@ -541481,6 +541642,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -541528,6 +541693,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -541569,6 +541738,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -541616,6 +541789,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -541652,7 +541829,7 @@
       ]
      ],
      "component-auction.https.window.js": [
-      "bf804e68579937f8192ba6bf377e0ed6fdedf501",
+      "054ad8c742ef92f1314211b4252704eca8b96860",
       [
        "fledge/tentative/component-auction.https.window.html?1-5",
        {
@@ -541660,6 +541837,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -541707,6 +541888,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -541748,6 +541933,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -541795,6 +541984,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -541831,7 +542024,7 @@
       ]
      ],
      "cross-origin.https.window.js": [
-      "eed74c522f2a8f25c1a695a16ee2e9a7ffa14da0",
+      "9669f2790bcfa492a5419c9f7f16d39b12da0f2c",
       [
        "fledge/tentative/cross-origin.https.window.html?1-4",
        {
@@ -541839,6 +542032,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -541886,6 +542083,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -541927,6 +542128,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -541974,6 +542179,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -542010,7 +542219,7 @@
       ]
      ],
      "currency.https.window.js": [
-      "99943cecbf962db6b732297abc328bb4198fc932",
+      "f1b2bba87340340fdf04b5d4c065fe06707f53a1",
       [
        "fledge/tentative/currency.https.window.html?1-4",
        {
@@ -542018,6 +542227,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -542085,6 +542298,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -542146,6 +542363,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -542213,6 +542434,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -542274,6 +542499,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -542341,6 +542570,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -542402,6 +542635,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -542469,6 +542706,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -542533,6 +542774,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -542589,7 +542834,7 @@
       ]
      ],
      "deprecated-render-url-replacements.https.window.js": [
-      "4f8bc1cc7f0f5cd12b78a8cb05f787841b63f120",
+      "75377ca7aa348486fad8ed589e7d947f2dcb3b64",
       [
        "fledge/tentative/deprecated-render-url-replacements.https.window.html?1-5",
        {
@@ -542597,6 +542842,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -542644,6 +542893,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -542685,6 +542938,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -542732,6 +542989,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -542768,7 +543029,7 @@
       ]
      ],
      "direct-from-seller-signals.https.window.js": [
-      "d0c0e550c4232bd4dad1661b0b418084111a48a6",
+      "0358a8ec0086713c0382377f52eae0304f5ae570",
       [
        "fledge/tentative/direct-from-seller-signals.https.window.html?1-4",
        {
@@ -542776,6 +543037,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -542839,6 +543104,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -542896,6 +543165,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -542959,6 +543232,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -543016,6 +543293,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -543079,6 +543360,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -543139,6 +543424,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -543196,6 +543485,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -543265,7 +543558,7 @@
       ]
      ],
      "generate-bid-browser-signals.https.window.js": [
-      "c7078ae08ad3331a326b2d195f56691247f4b872",
+      "75a8b8368d48859854cfbe9ccf75deec47e526cb",
       [
        "fledge/tentative/generate-bid-browser-signals.https.window.html?1-4",
        {
@@ -543273,6 +543566,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -543336,6 +543633,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -543393,6 +543694,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -543456,6 +543761,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -543513,6 +543822,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -543576,6 +543889,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -543633,6 +543950,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -543696,6 +544017,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -543748,7 +544073,7 @@
       ]
      ],
      "get-interest-group-auction-data.https.window.js": [
-      "ec7a873fd511547682bdbed9c97df53ae12e33d3",
+      "3788045c8c21556114f91c432a5d4d4f3e74fd0e",
       [
        "fledge/tentative/get-interest-group-auction-data.https.window.html?1-4",
        {
@@ -543756,6 +544081,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -543811,6 +544140,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -543860,6 +544193,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -543915,6 +544252,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -543966,7 +544307,7 @@
       ]
      ],
      "interest-group-passed-to-generate-bid.https.window.js": [
-      "2fb346bbe3ba14f0f7577de0111aba270cc87955",
+      "172cbab466440b4f2d8ffe3a1f937e9b4520461d",
       [
        "fledge/tentative/interest-group-passed-to-generate-bid.https.window.html?1-5",
        {
@@ -543974,6 +544315,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -544073,6 +544418,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -544166,6 +544515,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -544265,6 +544618,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -544358,6 +544715,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -544457,6 +544818,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -544550,6 +544915,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -544649,6 +545018,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -544742,6 +545115,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -544841,6 +545218,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -544934,6 +545315,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -545033,6 +545418,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -545126,6 +545515,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -545225,6 +545618,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -545318,6 +545715,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -545417,6 +545818,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -545513,6 +545918,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -545601,7 +546010,7 @@
       ]
      ],
      "interest-group-update.https.window.js": [
-      "59b3736b096fc7b70ece2b417edf99fb77f1b1fc",
+      "ceac2c79a6e93635f5f4ebb9e7e26256cb695a7b",
       [
        "fledge/tentative/interest-group-update.https.window.html?1-4",
        {
@@ -545609,6 +546018,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -545660,6 +546073,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -545705,6 +546122,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -545756,6 +546177,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -545804,6 +546229,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -545844,7 +546273,7 @@
       ]
      ],
      "join-leave-ad-interest-group-in-fenced-frame.https.window.js": [
-      "e6836ab2f45a873a3d5bd3de9f74c92424782bec",
+      "1e2824666cc7c2b8c1fd8c19e2414bdea07f9714",
       [
        "fledge/tentative/join-leave-ad-interest-group-in-fenced-frame.https.window.html?1-4",
        {
@@ -545852,6 +546281,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -545895,6 +546328,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -545935,6 +546372,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -545967,7 +546408,7 @@
       ]
      ],
      "join-leave-ad-interest-group.https.window.js": [
-      "02148ef36b76b80178ee99775c4ae1dea534c01b",
+      "68a4e9d09c941493b8dd8c85c5a535a5d962d761",
       [
        "fledge/tentative/join-leave-ad-interest-group.https.window.html?1-10",
        {
@@ -545975,6 +546416,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -546042,6 +546487,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -546103,6 +546552,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -546170,6 +546623,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -546231,6 +546688,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -546298,6 +546759,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -546359,6 +546824,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -546426,6 +546895,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -546490,6 +546963,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -546546,7 +547023,7 @@
       ]
      ],
      "kanon-status-below-threshold.https.window.js": [
-      "787283d687ff55e5a2b448764370416bfa90285e",
+      "6f3c2f572a198469607a27b51328c9ff8364d7a0",
       [
        "fledge/tentative/kanon-status-below-threshold.https.window.html",
        {
@@ -546554,6 +547031,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -546572,7 +547053,7 @@
       ]
      ],
      "kanon-status-not-calculated.https.window.js": [
-      "4a750cd3529df529c63f0fa1cf4d083abeacc542",
+      "87a66c106fbff5388e05905539840556ceb41e35",
       [
        "fledge/tentative/kanon-status-not-calculated.https.window.html",
        {
@@ -546580,6 +547061,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -546793,7 +547278,7 @@
       ]
      ],
      "no-winner.https.window.js": [
-      "6e02139c810c4eec7b4e0e721ede858cde56b1c0",
+      "2632a95deeeb85eb9bc7be26194260af218c59ad",
       [
        "fledge/tentative/no-winner.https.window.html?1-5",
        {
@@ -546801,6 +547286,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -546872,6 +547361,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -546937,6 +547430,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -547008,6 +547505,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -547073,6 +547574,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -547144,6 +547649,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -547209,6 +547718,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -547280,6 +547793,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -547345,6 +547862,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -547416,6 +547937,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -547476,7 +548001,7 @@
       ]
      ],
      "register-ad-beacon.https.window.js": [
-      "3643e4466277144a389b08d3f029f294aa0a4480",
+      "d74f0dab5e56601c808d7cd28dc6dea78aa5b628",
       [
        "fledge/tentative/register-ad-beacon.https.window.html?1-5",
        {
@@ -547484,6 +548009,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -547527,6 +548056,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -547567,6 +548100,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -547599,7 +548136,7 @@
       ]
      ],
      "reporting-arguments.https.window.js": [
-      "db6ef2d35a5fff6b2ab405c78b5200427b9c8717",
+      "a3b546f596476d95d36e6d0a6c7dd858c2a62e27",
       [
        "fledge/tentative/reporting-arguments.https.window.html?1-5",
        {
@@ -547607,6 +548144,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -547654,6 +548195,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -547695,6 +548240,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -547742,6 +548291,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -547778,7 +548331,7 @@
       ]
      ],
      "reporting-ids.https.window.js": [
-      "bcc02b09785af213dcb14c62f00c376d7d957876",
+      "43c78987f1e8610c5aff66f72ec37d2e58330dca",
       [
        "fledge/tentative/reporting-ids.https.window.html?1-5",
        {
@@ -547786,6 +548339,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -547825,6 +548382,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -547853,7 +548414,7 @@
       ]
      ],
      "round-a-value.https.window.js": [
-      "90523e2256c3a5582ef188d41ab0adcc107ffd93",
+      "2195b45ea5f81893699a6732f102d492f3d12bec",
       [
        "fledge/tentative/round-a-value.https.window.html",
        {
@@ -547861,6 +548422,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -547880,7 +548445,7 @@
       ]
      ],
      "score-ad-browser-signals.https.window.js": [
-      "f20412cfc7857279ff7aabfbfd68d825be5d8051",
+      "ac9d7e337c2466a2d4897e86563cee6d768e63c2",
       [
        "fledge/tentative/score-ad-browser-signals.https.window.html",
        {
@@ -547888,6 +548453,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -547911,7 +548480,7 @@
       ]
      ],
      "send-report-to.https.window.js": [
-      "e3cf0a95f17c171444d79a2b0f16d0fe1f1acbd4",
+      "163443cb76d450e5a559fefcbd48ac26266e33dc",
       [
        "fledge/tentative/send-report-to.https.window.html?1-5",
        {
@@ -547919,6 +548488,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -547958,6 +548531,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -547986,7 +548563,7 @@
       ]
      ],
      "server-response.https.window.js": [
-      "b0981ca0fe88c79cc1b5e831048da425c31e4ac8",
+      "adc079f015ac43748643f4e9016b12028a84336e",
       [
        "fledge/tentative/server-response.https.window.html?1-4",
        {
@@ -547994,6 +548571,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -548085,6 +548666,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -548170,6 +548755,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -548261,6 +548850,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -548346,6 +548939,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -548437,6 +549034,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -548522,6 +549123,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -548613,6 +549218,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -548698,6 +549307,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -548789,6 +549402,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -548874,6 +549491,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -548965,6 +549586,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -549053,6 +549678,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -549133,7 +549762,7 @@
       ]
      ],
      "service-worker-request-visibility.https.window.js": [
-      "91214f01ef1e521f8d9f7d514129693288e5cf19",
+      "8b8618420e56e30d2a9e4428f24f22cc7d9053b9",
       [
        "fledge/tentative/service-worker-request-visibility.https.window.html?1-last",
        {
@@ -549141,6 +549770,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -549168,7 +549801,7 @@
       ]
      ],
      "tie.https.window.js": [
-      "c87d10f2016fa94d6a1e722fa9dfe1d3bb5c4def",
+      "f528df8fb020382907a63d372452010217bf2b55",
       [
        "fledge/tentative/tie.https.window.html",
        {
@@ -549176,6 +549809,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -549195,7 +549832,7 @@
       ]
      ],
      "trusted-bidding-signals.https.window.js": [
-      "205c6895a06b3235ef3d448d16fad85743d14e31",
+      "1775b3e77a365c5d6973c790465c783804950445",
       [
        "fledge/tentative/trusted-bidding-signals.https.window.html?1-5",
        {
@@ -549203,6 +549840,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -549298,6 +549939,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -549387,6 +550032,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -549482,6 +550131,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -549571,6 +550224,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -549666,6 +550323,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -549755,6 +550416,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -549850,6 +550515,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -549939,6 +550608,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -550034,6 +550707,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -550123,6 +550800,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -550218,6 +550899,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -550307,6 +550992,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -550402,6 +551091,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -550491,6 +551184,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -550586,6 +551283,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -550670,7 +551371,7 @@
       ]
      ],
      "trusted-scoring-signals.https.window.js": [
-      "46570da3e41a26dac8d7fb3e2007d8a7df87b51c",
+      "d664b4f308e5471da4249153846ecd94015083b8",
       [
        "fledge/tentative/trusted-scoring-signals.https.window.html?1-5",
        {
@@ -550678,6 +551379,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -550753,6 +551458,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -550822,6 +551531,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -550897,6 +551610,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -550966,6 +551683,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -551041,6 +551762,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -551110,6 +551835,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -551185,6 +551914,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -551254,6 +551987,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -551329,6 +552066,10 @@
          ],
          [
           "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ],
          [
@@ -551398,6 +552139,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -571149,6 +571894,20 @@
          {}
         ]
        ],
+       "2d.text.measure.text-clusters-exceptions.tentative.html": [
+        "1c5352bd5edcfc251b672dbd6990b7012810164a",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.measure.text-clusters-split.tentative.html": [
+        "63c7cce72be7c1ede567c2f00001d7a57addadbc",
+        [
+         null,
+         {}
+        ]
+       ],
        "2d.text.measure.width.basic.html": [
         "be11d5b2898c70f165f9266abc6b6d99db73815a",
         [
@@ -584793,6 +585552,34 @@
         "95a8c8b4955c80963553f0607a37063809a02da8",
         [
          null,
+         {}
+        ]
+       ],
+       "2d.text.measure.text-clusters-exceptions.tentative.html": [
+        "0df29ba458f3eb8228bec01180566ef254ab9289",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.measure.text-clusters-exceptions.tentative.worker.js": [
+        "fd99cb0a0f3766dc3ac49373444b49bf244199ec",
+        [
+         "html/canvas/offscreen/text/2d.text.measure.text-clusters-exceptions.tentative.worker.html",
+         {}
+        ]
+       ],
+       "2d.text.measure.text-clusters-split.tentative.html": [
+        "6a5fd475795e140ff8b8533b8d070baf97f0ebfe",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.measure.text-clusters-split.tentative.worker.js": [
+        "f98c323e0e2311a25dbb2b90a192ccf6f3c8968d",
+        [
+         "html/canvas/offscreen/text/2d.text.measure.text-clusters-split.tentative.worker.html",
          {}
         ]
        ],
