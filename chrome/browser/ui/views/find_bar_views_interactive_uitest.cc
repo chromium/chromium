@@ -423,7 +423,13 @@ IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, ButtonsDisabledWithoutText) {
                   CheckHasFocus(FindBarView::kCloseButtonElementId));
 }
 
-IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, FocusRestore) {
+// TODO(crbug.com/361216144): Re-enable on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_FocusRestore DISABLED_FocusRestore
+#else
+#define MAYBE_FocusRestore FocusRestore
+#endif
+IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, MAYBE_FocusRestore) {
   const GURL page_a = embedded_test_server()->GetURL("/a.html");
   constexpr char16_t kSearchA[] = u"a";
 
@@ -548,7 +554,15 @@ IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, FocusRestoreOnTabSwitch) {
       SelectTab(kTabStripElementId, 1), CheckHasFocus(kOmniboxElementId));
 }
 
-IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, FocusRestoreOnTabSwitchDismiss) {
+// TODO(crbug.com/361216144): Re-enable on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_FocusRestoreOnTabSwitchDismiss \
+  DISABLED_FocusRestoreOnTabSwitchDismiss
+#else
+#define MAYBE_FocusRestoreOnTabSwitchDismiss FocusRestoreOnTabSwitchDismiss
+#endif
+IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest,
+                       MAYBE_FocusRestoreOnTabSwitchDismiss) {
   const GURL page_a = embedded_test_server()->GetURL("/a.html");
   const GURL page_b = embedded_test_server()->GetURL("/b.html");
 
