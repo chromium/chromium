@@ -839,17 +839,6 @@ bool PartitionAllocSupport::ShouldEnablePartitionAllocWithAdvancedChecks(
 #endif  // !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
-#if PA_BUILDFLAG( \
-    ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT)
-allocator_shim::AllocatorDispatch g_dispatch_for_advanced_checks = {
-    .realloc_function =
-        &allocator_shim::internal::PartitionReallocWithAdvancedChecks,
-    .free_function = &allocator_shim::internal::PartitionFreeWithAdvancedChecks,
-    .next = nullptr,
-};
-#endif  // PA_BUILDFLAG(
-        // ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT)
-
 // static
 PartitionAllocSupport::BrpConfiguration
 PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
@@ -1135,8 +1124,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   bool enable_pa_with_advanced_checks =
       ShouldEnablePartitionAllocWithAdvancedChecks(process_type);
   if (enable_pa_with_advanced_checks) {
-    allocator_shim::InstallDispatchToPartitionAllocWithAdvancedChecks(
-        &g_dispatch_for_advanced_checks);
+    allocator_shim::InstallCustomDispatchForPartitionAllocWithAdvancedChecks();
   }
 #endif  // PA_BUILDFLAG(
         // ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT)
