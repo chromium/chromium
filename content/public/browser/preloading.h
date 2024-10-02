@@ -232,6 +232,12 @@ enum class PreloadingEligibility {
   // Preloading was ineligible because the network is too slow.
   kSlowNetwork = 20,
 
+  // Preloading was ineligible because the V8 optimizer was disabled by the site
+  // settings. It's known that prerendering a page that has the COOP crashes
+  // when the V8 optimizer is disabled. See https://crbug.com/40076091 for
+  // details.
+  kV8OptimizerDisabled = 21,
+
   // See corresponding values in PrefetchStatus for documentation.
   kUserHasCookies = 55,
   kUserHasServiceWorker = 56,

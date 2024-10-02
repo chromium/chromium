@@ -12409,6 +12409,7 @@ experimental domain Preload
       WindowClosed
       SlowNetwork
       OtherPrerenderedPageActivated
+      V8OptimizerDisabled
 
   # Fired when a preload enabled state is updated.
   event preloadEnabledStateUpdated

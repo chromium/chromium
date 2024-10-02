@@ -322,6 +322,8 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
       NOTREACHED();
     case PrerenderFinalStatus::kSlowNetwork:
       return PreloadingEligibility::kSlowNetwork;
+    case PrerenderFinalStatus::kV8OptimizerDisabled:
+      return PreloadingEligibility::kV8OptimizerDisabled;
   }
 
   NOTREACHED();
@@ -695,6 +697,17 @@ FrameTreeNodeId PrerenderHostRegistry::CreateAndStartHost(
             *initiator_rfh->frame_tree())) {
       builder.RejectAsNotEligible(
           attributes, PrerenderFinalStatus::kPrerenderingDisabledByDevTools);
+      return FrameTreeNodeId();
+    }
+
+    // Don't start prerendering when the V8 optimizer is disabled by the site
+    // settings. This is because prerendering a page that has the COOP crashes
+    // when the V8 optimizer is disabled. See https://crbug.com/40076091 for
+    // details.
+    if (GetContentClient()->browser()->AreV8OptimizationsDisabledForSite(
+            web_contents()->GetBrowserContext(), attributes.prerendering_url)) {
+      builder.RejectAsNotEligible(attributes,
+                                  PrerenderFinalStatus::kV8OptimizerDisabled);
       return FrameTreeNodeId();
     }
 

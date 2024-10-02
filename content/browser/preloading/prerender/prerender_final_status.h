@@ -166,7 +166,12 @@ enum class PrerenderFinalStatus {
   kSlowNetwork = 83,
   kOtherPrerenderedPageActivated = 84,
 
-  kMaxValue = kOtherPrerenderedPageActivated,
+  // When the V8 optimizer is disabled by the site settings, prerendering a page
+  // that has the COOP crashes (see https://crbug.com/40076091 for details). To
+  // avoid it, prerendering is disabled in that case.
+  kV8OptimizerDisabled = 85,
+
+  kMaxValue = kV8OptimizerDisabled,
 };
 // LINT.ThenChange()
 
