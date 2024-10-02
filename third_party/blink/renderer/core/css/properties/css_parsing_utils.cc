@@ -7467,6 +7467,7 @@ AtomicString ConsumeCounterStyleNameInPrelude(CSSParserTokenStream& stream,
   }
 
   if (context.Mode() != kUASheetMode) {
+    // NOTE: Keep in sync with ListStyleType::ApplyValue().
     if (name_token.Id() == CSSValueID::kDecimal ||
         name_token.Id() == CSSValueID::kDisc ||
         name_token.Id() == CSSValueID::kCircle ||

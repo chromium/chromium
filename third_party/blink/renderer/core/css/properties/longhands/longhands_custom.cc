@@ -5811,7 +5811,20 @@ void ListStyleType::ApplyValue(StyleResolverState& state,
 
   DCHECK(value.IsCustomIdentValue());
   const auto& custom_ident_value = To<CSSCustomIdentValue>(value);
-  state.SetHasTreeScopedReference();
+  // “The non-overridable counter-style names are the keywords decimal,
+  // disc, square, circle, disclosure-open, and disclosure-closed.”
+  //
+  // NOTE: Keep in sync with ConsumeCounterStyleNameInPrelude().
+  //
+  // https://drafts.csswg.org/css-counter-styles/#the-counter-style-rule
+  if (custom_ident_value.Value() != keywords::kDecimal &&
+      custom_ident_value.Value() != keywords::kDisc &&
+      custom_ident_value.Value() != keywords::kSquare &&
+      custom_ident_value.Value() != keywords::kCircle &&
+      custom_ident_value.Value() != keywords::kDisclosureOpen &&
+      custom_ident_value.Value() != keywords::kDisclosureClosed) {
+    state.SetHasTreeScopedReference();
+  }
   builder.SetListStyleType(ListStyleTypeData::CreateCounterStyle(
       custom_ident_value.Value(), custom_ident_value.GetTreeScope()));
 }
