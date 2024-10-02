@@ -13594,6 +13594,24 @@
             ]
         }
     ],
+    "MacPlatformLocationProvider": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "LocationProviderManagerMode": "NetworkOnly"
+                    },
+                    "enable_features": [
+                        "LocationProviderManager"
+                    ]
+                }
+            ]
+        }
+    ],
     "MacWebContentsOcclusionV2": [
         {
             "platforms": [
