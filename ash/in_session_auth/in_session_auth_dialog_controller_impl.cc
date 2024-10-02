@@ -22,6 +22,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/auth_panel/impl/auth_factor_store.h"
 #include "chromeos/ash/components/auth_panel/impl/auth_panel.h"
@@ -134,6 +135,7 @@ void InSessionAuthDialogControllerImpl::ShowAuthDialog(
       features::IsUseAuthPanelInSessionEnabled()) {
     Shell::Get()->active_session_auth_controller()->ShowAuthDialog(
         std::make_unique<PasswordManagerAuthRequest>(
+            base::UTF8ToUTF16(prompt.value_or("")),
             std::move(on_auth_complete)));
   } else if (reason == Reason::kAccessAuthenticationSettings &&
              features::IsUseAuthPanelInSessionEnabled()) {

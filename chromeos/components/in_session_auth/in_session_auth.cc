@@ -10,6 +10,7 @@
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/functional/overloaded.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/osauth/impl/request/password_manager_auth_request.h"
 #include "chromeos/ash/components/osauth/impl/request/settings_auth_request.h"
 #include "chromeos/ash/components/osauth/impl/request/webauthn_auth_request.h"
@@ -52,10 +53,12 @@ void InSessionAuth::BindReceiver(
 
 std::unique_ptr<ash::AuthRequest> InSessionAuth::AuthRequestFromReason(
     ash::AuthRequest::Reason reason,
+    std::u16string prompt,
     RequestTokenCallback callback) {
   switch (reason) {
     case ash::AuthRequest::Reason::kPasswordManager:
       return std::make_unique<ash::PasswordManagerAuthRequest>(
+          prompt,
           base::BindOnce(&InSessionAuth::OnAuthComplete,
                          weak_factory_.GetWeakPtr(), std::move(callback)));
     case ash::AuthRequest::Reason::kSettings:
@@ -85,7 +88,9 @@ void InSessionAuth::RequestToken(chromeos::auth::mojom::Reason reason,
       // New Code path
       [&](ash::AuthRequest::Reason reason) {
         ash::ActiveSessionAuthController::Get()->ShowAuthDialog(
-            AuthRequestFromReason(reason, std::move(callback)));
+            AuthRequestFromReason(reason,
+                                  base::UTF8ToUTF16(prompt.value_or("")),
+                                  std::move(callback)));
       });
 
   std::visit(visitor, ToAshReason(reason));
