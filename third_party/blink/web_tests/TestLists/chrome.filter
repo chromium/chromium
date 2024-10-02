@@ -10,6 +10,9 @@
 # crbug.com/336866597 set_spc_transaction_mode not implemented for content shell
 external/wpt/secure-payment-confirmation/*
 
+# crbug.com/338470959 set_rph_registration_mode not implemented for headless shell
+external/wpt/html/webappapis/system-state-and-capabilities/*
+
 # crbug.com/40279363 run_bounce_tracking_mitigations and the bounce tracking
 # mitigations feature are not implemented for content shell yet.
 wpt_internal/nav-tracking-mitigations/stateful-client-bounce.sub.https.html
