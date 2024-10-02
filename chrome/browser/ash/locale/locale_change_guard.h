@@ -20,6 +20,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
+class PrefService;
 class Profile;
 
 namespace ash {
@@ -30,7 +31,7 @@ namespace ash {
 class LocaleChangeGuard final : public session_manager::SessionManagerObserver,
                                 public DeviceSettingsService::Observer {
  public:
-  explicit LocaleChangeGuard(Profile* profile);
+  LocaleChangeGuard(Profile* profile, PrefService* local_state);
 
   LocaleChangeGuard(const LocaleChangeGuard&) = delete;
   LocaleChangeGuard& operator=(const LocaleChangeGuard&) = delete;
@@ -88,6 +89,7 @@ class LocaleChangeGuard final : public session_manager::SessionManagerObserver,
   std::string from_locale_;
   std::string to_locale_;
   raw_ptr<Profile> profile_;
+  raw_ptr<PrefService> local_state_;
   bool reverted_ = false;
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>

@@ -1526,8 +1526,10 @@ void ProfileImpl::ChangeAppLocale(const std::string& new_locale,
       if (!pref_locale.empty()) {
         DCHECK(LocaleNotChanged(pref_locale, new_locale));
 
-        if (!locale_change_guard_)
-          locale_change_guard_ = std::make_unique<ash::LocaleChangeGuard>(this);
+        if (!locale_change_guard_) {
+          locale_change_guard_ =
+              std::make_unique<ash::LocaleChangeGuard>(this, local_state);
+        }
         locale_change_guard_->set_locale_changed_during_login(true);
 
         std::string accepted_locale =
@@ -1591,8 +1593,10 @@ void ProfileImpl::ChangeAppLocale(const std::string& new_locale,
 }
 
 void ProfileImpl::OnLogin() {
-  if (!locale_change_guard_)
-    locale_change_guard_ = std::make_unique<ash::LocaleChangeGuard>(this);
+  if (!locale_change_guard_) {
+    locale_change_guard_ = std::make_unique<ash::LocaleChangeGuard>(
+        this, g_browser_process->local_state());
+  }
   locale_change_guard_->OnLogin();
 }
 

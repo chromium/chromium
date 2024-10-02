@@ -40,7 +40,8 @@ const char* const kSkipShowNotificationLanguages[4] = {"en", "de", "fr", "it"};
 
 }  // anonymous namespace
 
-LocaleChangeGuard::LocaleChangeGuard(Profile* profile) : profile_(profile) {
+LocaleChangeGuard::LocaleChangeGuard(Profile* profile, PrefService* local_state)
+    : profile_(profile), local_state_(local_state) {
   DCHECK(profile_);
   DeviceSettingsService::Get()->AddObserver(this);
 }
@@ -83,18 +84,22 @@ void LocaleChangeGuard::OnUserSessionStarted(bool is_primary_user) {
 }
 
 void LocaleChangeGuard::OwnershipStatusChanged() {
-  if (!DeviceSettingsService::Get()->HasPrivateOwnerKey())
+  if (!DeviceSettingsService::Get()->HasPrivateOwnerKey()) {
     return;
-  PrefService* local_state = g_browser_process->local_state();
-  if (!local_state)
+  }
+
+  if (!local_state_) {
     return;
+  }
+
   PrefService* prefs = profile_->GetPrefs();
   DCHECK(prefs);
   std::string owner_locale =
       prefs->GetString(language::prefs::kApplicationLocale);
   language::ConvertToActualUILocale(&owner_locale);
-  if (!owner_locale.empty())
-    local_state->SetString(prefs::kOwnerLocale, owner_locale);
+  if (!owner_locale.empty()) {
+    local_state_->SetString(prefs::kOwnerLocale, owner_locale);
+  }
 }
 
 void LocaleChangeGuard::Check() {
