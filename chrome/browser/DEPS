@@ -309,7 +309,7 @@ include_rules = [
   "+components/tpcd/metadata",
   "+components/tpcd/support",
   "+components/safe_search_api",
-  "+components/saved_tab_groups",
+  "+components/saved_tab_groups/public",
   "+components/schema_org",
   "+components/shared_highlighting/core/common",
   "+components/search",

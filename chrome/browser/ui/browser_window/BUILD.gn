@@ -35,6 +35,6 @@ source_set("impl") {
     "//components/commerce/core:feature_list",
     "//components/lens:features",
     "//components/profile_metrics",
-    "//components/saved_tab_groups:model",
+    "//components/saved_tab_groups/public",
   ]
 }

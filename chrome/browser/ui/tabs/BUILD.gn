@@ -427,7 +427,7 @@ if (!is_android) {
       "//components/policy/core/browser",
       "//components/policy/core/common",
       "//components/policy/core/common:test_support",
-      "//components/saved_tab_groups:features",
+      "//components/saved_tab_groups/public:features",
       "//components/tab_groups",
       "//components/webapps/common",
       "//content/public/browser",

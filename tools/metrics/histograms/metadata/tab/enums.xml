@@ -99,7 +99,7 @@ chromium-metrics-reviews@google.com.
       label="Group closed when the last tab in the strip was closed"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/saved_tab_groups/types.h:ClosingSource) -->
+<!-- LINT.ThenChange(//components/saved_tab_groups/public/types.h:ClosingSource) -->
 
 <!-- LINT.IfChange(GroupOpenReason) -->
 
@@ -116,7 +116,7 @@ chromium-metrics-reviews@google.com.
       label="Invoked from session restore after autosave of a V1 group"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/saved_tab_groups/types.h:OpeningSource) -->
+<!-- LINT.ThenChange(//components/saved_tab_groups/public/types.h:OpeningSource) -->
 
 <enum name="HistoricalSaverCloseType">
   <int value="0" label="Tab"/>
@@ -213,7 +213,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Tab selected"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/saved_tab_groups/types.h:TabGroupEvent) -->
+<!-- LINT.ThenChange(//components/saved_tab_groups/public/types.h:TabGroupEvent) -->
 
 <enum name="TabOrganizationTriggerOutcome">
   <int value="0" label="Accepted">User clicked through the nudge UI.</int>

@@ -40,7 +40,7 @@ source_set("model") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/reading_list/core",
-    "//components/saved_tab_groups:core",
+    "//components/saved_tab_groups/public",
     "//components/search_engines",
     "//components/send_tab_to_self",
     "//components/sessions",

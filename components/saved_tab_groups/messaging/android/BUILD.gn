@@ -47,7 +47,7 @@ android_library("java") {
   deps = [
     "//base:base_java",
     "//components/data_sharing/public:public_java",
-    "//components/saved_tab_groups:java",
+    "//components/saved_tab_groups/public:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
   ]

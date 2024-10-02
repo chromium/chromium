@@ -18,7 +18,8 @@ source_set("utils") {
     "//base:base",
     "//chrome/browser/profiles",
     "//components/prefs",
-    "//components/saved_tab_groups:model",
+    "//components/saved_tab_groups/public:features",
+    "//components/saved_tab_groups/public:prefs",
   ]
 
   if (is_android) {
@@ -37,6 +38,7 @@ if (is_android) {
       "//chrome/browser/flags:java",
       "//chrome/browser/profiles/android:java",
       "//components/saved_tab_groups:java",
+      "//components/saved_tab_groups/public:java",
       "//content/public/android:content_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
@@ -75,8 +77,8 @@ if (is_android) {
       "//components/embedder_support/android:util_java",
       "//components/feature_engagement/public:public_java",
       "//components/prefs/android:java",
-      "//components/saved_tab_groups:java",
       "//components/saved_tab_groups/messaging/android:java",
+      "//components/saved_tab_groups/public:java",
       "//components/tab_groups:tab_groups_java",
       "//content/public/android:content_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
@@ -104,7 +106,7 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
-      "//components/saved_tab_groups:java",
+      "//components/saved_tab_groups/public:java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//url:url_java",
     ]
@@ -146,7 +148,7 @@ if (is_android) {
       "//components/embedder_support/android:util_java",
       "//components/feature_engagement:feature_engagement_java",
       "//components/prefs/android:java",
-      "//components/saved_tab_groups:java",
+      "//components/saved_tab_groups/public:java",
       "//components/tab_groups:tab_groups_java",
       "//content/public/android:content_java",
       "//third_party/android_deps:robolectric_all_java",
@@ -171,7 +173,7 @@ if (is_android) {
       "//chrome/browser/flags:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/test/android:chrome_java_integration_test_support",
-      "//components/saved_tab_groups:java",
+      "//components/saved_tab_groups/public:java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/hamcrest:hamcrest_core_java",
       "//third_party/hamcrest:hamcrest_library_java",

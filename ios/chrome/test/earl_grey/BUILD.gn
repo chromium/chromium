@@ -31,7 +31,6 @@ source_set("hooks") {
     "//components/plus_addresses:test_support",
     "//components/policy/core/common:test_support",
     "//components/saved_tab_groups:core",
-    "//components/saved_tab_groups:fake_tab_group_sync_service",
     "//components/saved_tab_groups:test_support",
     "//components/signin/internal/identity_manager",
     "//components/signin/internal/identity_manager:test_support",

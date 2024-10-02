@@ -12,7 +12,7 @@ source_set("coordinator") {
   ]
   deps = [
     "//base",
-    "//components/saved_tab_groups:core",
+    "//components/saved_tab_groups/public",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/saved_tab_groups/model",

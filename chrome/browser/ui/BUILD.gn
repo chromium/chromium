@@ -1834,6 +1834,7 @@ static_library("ui") {
       "//components/safety_check",
       "//components/saved_tab_groups:core",
       "//components/saved_tab_groups:tab_group_sync_bridge",
+      "//components/saved_tab_groups/public",
       "//components/search_engines:generate_search_engine_icons",
       "//components/search_provider_logos",
       "//components/services/app_service",

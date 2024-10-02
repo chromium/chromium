@@ -10,10 +10,6 @@ if (is_android) {
 
 source_set("core") {
   sources = [
-    "delegate/empty_tab_group_sync_delegate.cc",
-    "delegate/empty_tab_group_sync_delegate.h",
-    "delegate/tab_group_sync_delegate.h",
-    "public/tab_group_sync_service.h",
     "startup_helper.cc",
     "startup_helper.h",
     "tab_group_sync_coordinator.h",
@@ -27,7 +23,9 @@ source_set("core") {
     "//base",
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
+    "//components/saved_tab_groups/delegate",
     "//components/saved_tab_groups/proto",
+    "//components/saved_tab_groups/public",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/sync",
@@ -52,40 +50,8 @@ source_set("core") {
   public_deps = [ ":model" ]
 }
 
-source_set("features") {
-  sources = [
-    "public/features.cc",
-    "public/features.h",
-  ]
-  deps = [ "//base" ]
-  public_deps = []
-}
-
-source_set("prefs") {
-  sources = [
-    "public/pref_names.cc",
-    "public/pref_names.h",
-  ]
-  deps = [
-    ":features",
-    "//base",
-    "//components/pref_registry",
-    "//components/prefs",
-    "//components/signin/public/base",
-  ]
-  public_deps = []
-}
-
 source_set("model") {
   sources = [
-    "public/saved_tab_group.cc",
-    "public/saved_tab_group.h",
-    "public/saved_tab_group_tab.cc",
-    "public/saved_tab_group_tab.h",
-    "public/types.cc",
-    "public/types.h",
-    "public/utils.cc",
-    "public/utils.h",
     "saved_tab_group_model.cc",
     "saved_tab_group_model.h",
     "saved_tab_group_model_observer.h",
@@ -103,19 +69,9 @@ source_set("model") {
     "//url",
   ]
   public_deps = [
-    ":features",
-    ":prefs",
-  ]
-}
-
-source_set("string_utils") {
-  sources = [
-    "public/string_utils.cc",
-    "public/string_utils.h",
-  ]
-  deps = [
-    "//components/strings",
-    "//ui/base",
+    "//components/saved_tab_groups/delegate",
+    "//components/saved_tab_groups/public:features",
+    "//components/saved_tab_groups/public:prefs",
   ]
 }
 
@@ -124,16 +80,11 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncConversionsBridge.java",
       "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncServiceImpl.java",
-      "public/android/java/src/org/chromium/components/tab_group_sync/EventDetails.java",
-      "public/android/java/src/org/chromium/components/tab_group_sync/LocalTabGroupId.java",
-      "public/android/java/src/org/chromium/components/tab_group_sync/SavedTabGroup.java",
-      "public/android/java/src/org/chromium/components/tab_group_sync/SavedTabGroupTab.java",
-      "public/android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncService.java",
-      "public/android/java/src/org/chromium/components/tab_group_sync/TabGroupUiActionHandler.java",
     ]
 
     deps = [
       "//base:base_java",
+      "//components/saved_tab_groups/public:java",
       "//components/tab_groups:tab_groups_java",
       "//net/android:net_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
@@ -141,10 +92,7 @@ if (is_android) {
       "//url:gurl_java",
     ]
 
-    srcjar_deps = [
-      ":jni_headers",
-      ":tab_group_sync_enums_java",
-    ]
+    srcjar_deps = [ ":jni_headers" ]
   }
 
   generate_jni("jni_headers") {
@@ -159,17 +107,13 @@ if (is_android) {
     ]
   }
 
-  java_cpp_enum("tab_group_sync_enums_java") {
-    visibility = [ ":*" ]
-    sources = [ "public/types.h" ]
-  }
-
   android_library("native_java_unittests_java") {
     testonly = true
     deps = [
       ":java",
       "//base:base_java",
       "//base:base_java_test_support",
+      "//components/saved_tab_groups/public:java",
       "//components/tab_groups:tab_groups_java",
       "//third_party/jni_zero:jni_zero_java",
       "//third_party/junit",
@@ -196,6 +140,7 @@ if (is_android) {
       "//base:base_java_test_support",
       "//base:base_junit_test_support",
       "//components/saved_tab_groups/messaging/android:java",
+      "//components/saved_tab_groups/public:java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/junit",
     ]
@@ -205,8 +150,6 @@ if (is_android) {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "public/saved_tab_group_unittest.cc",
-    "public/string_utils_unittest.cc",
     "saved_tab_group_model_unittest.cc",
     "saved_tab_group_proto_conversion_unittest.cc",
     "saved_tab_group_sync_bridge_unittest.cc",
@@ -220,7 +163,6 @@ source_set("unit_tests") {
   deps = [
     ":core",
     ":model",
-    ":string_utils",
     ":tab_group_sync_bridge",
     ":test_support",
     "//base",
@@ -252,6 +194,8 @@ source_set("unit_tests") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "test_support/fake_tab_group_sync_service.cc",
+    "test_support/fake_tab_group_sync_service.h",
     "test_support/mock_tab_group_sync_delegate.cc",
     "test_support/mock_tab_group_sync_delegate.h",
     "test_support/mock_tab_group_sync_service.cc",
@@ -261,27 +205,14 @@ source_set("test_support") {
   ]
   deps = [
     ":core",
-    ":fake_tab_group_sync_service",
     ":model",
     "//base",
     "//base/test:test_support",
+    "//components/saved_tab_groups/public",
     "//components/sync_device_info",
     "//components/tab_groups",
     "//testing/gtest",
     "//url",
-  ]
-}
-
-source_set("fake_tab_group_sync_service") {
-  sources = [
-    "test_support/fake_tab_group_sync_service.cc",
-    "test_support/fake_tab_group_sync_service.h",
-  ]
-  deps = [
-    ":core",
-    ":model",
-    "//base",
-    "//components/saved_tab_groups/proto",
   ]
 }
 

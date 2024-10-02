@@ -800,7 +800,7 @@ source_set("extensions") {
     "//components/optimization_guide/core:features",
     "//components/safe_browsing/content/browser",
     "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
-    "//components/saved_tab_groups:model",
+    "//components/saved_tab_groups/public",
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/security_state/content",
     "//components/site_engagement/core/mojom:mojo_bindings",

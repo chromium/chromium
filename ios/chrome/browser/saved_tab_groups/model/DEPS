@@ -1,6 +1,8 @@
 include_rules = [
   "+components/data_sharing/public",
-  "+components/saved_tab_groups",
+  "+components/saved_tab_groups/delegate",
+  "+components/saved_tab_groups/public",
+  "+components/saved_tab_groups/test_support",
   "+ios/chrome/browser/optimization_guide/model",
   "+ios/chrome/browser/signin/model/identity_manager_factory.h",
   "+ios/chrome/browser/sync/model/data_type_store_service_factory.h",
@@ -8,3 +10,10 @@ include_rules = [
   "+ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h",
   "+ios/chrome/browser/sessions/model",
 ]
+
+specific_include_rules = {
+  "tab_group_sync_service_factory\.mm": [
+    "+components/saved_tab_groups",
+  ]
+}
+

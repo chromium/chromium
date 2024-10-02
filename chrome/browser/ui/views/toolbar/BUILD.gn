@@ -73,7 +73,7 @@ source_set("toolbar") {
     "//components/bookmarks/browser",
     "//components/flags_ui",
     "//components/prefs",
-    "//components/saved_tab_groups:model",
+    "//components/saved_tab_groups/public",
     "//components/user_education/common",
     "//skia",
     "//ui/actions:actions_headers",

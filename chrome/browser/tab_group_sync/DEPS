@@ -1,4 +1,16 @@
+include_rules = [
+  "+components/saved_tab_groups",
+]
+
 specific_include_rules = {
+  'tab_group_sync_service_factory.cc': [
+    "+components/saved_tab_groups",
+  ],
+
+  'android/*': [
+    "+components/saved_tab_groups/android",
+  ],
+
   '.*TestHelper\.java': [
     "+chrome/android",
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
