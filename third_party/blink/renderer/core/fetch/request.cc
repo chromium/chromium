@@ -427,14 +427,42 @@ Request* Request::CreateRequestWithRequestOrString(
     // In case referrerPolicy = "", the SecurityPolicy method below will not
     // actually set referrer_policy, so we'll default to
     // network::mojom::ReferrerPolicy::kDefault.
-    network::mojom::ReferrerPolicy referrer_policy;
-    if (!SecurityPolicy::ReferrerPolicyFromString(
-            init->referrerPolicy(), kDoNotSupportReferrerPolicyLegacyKeywords,
-            &referrer_policy)) {
-      DCHECK_EQ(init->referrerPolicy(), g_empty_string);
-      referrer_policy = network::mojom::ReferrerPolicy::kDefault;
+    network::mojom::ReferrerPolicy referrer_policy =
+        network::mojom::ReferrerPolicy::kDefault;
+    switch (init->referrerPolicy().AsEnum()) {
+      case V8ReferrerPolicy::Enum::k:
+        referrer_policy = network::mojom::ReferrerPolicy::kDefault;
+        break;
+      case V8ReferrerPolicy::Enum::kNoReferrer:
+        referrer_policy = network::mojom::ReferrerPolicy::kNever;
+        break;
+      case V8ReferrerPolicy::Enum::kNoReferrerWhenDowngrade:
+        referrer_policy =
+            network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade;
+        break;
+      case V8ReferrerPolicy::Enum::kSameOrigin:
+        referrer_policy = network::mojom::ReferrerPolicy::kSameOrigin;
+        break;
+      case V8ReferrerPolicy::Enum::kOrigin:
+        referrer_policy = network::mojom::ReferrerPolicy::kOrigin;
+        break;
+      case V8ReferrerPolicy::Enum::kStrictOrigin:
+        referrer_policy = network::mojom::ReferrerPolicy::kStrictOrigin;
+        break;
+      case V8ReferrerPolicy::Enum::kOriginWhenCrossOrigin:
+        referrer_policy =
+            network::mojom::ReferrerPolicy::kOriginWhenCrossOrigin;
+        break;
+      case V8ReferrerPolicy::Enum::kStrictOriginWhenCrossOrigin:
+        referrer_policy =
+            network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin;
+        break;
+      case V8ReferrerPolicy::Enum::kUnsafeUrl:
+        referrer_policy = network::mojom::ReferrerPolicy::kAlways;
+        break;
+      default:
+        NOTREACHED();
     }
-
     request->SetReferrerPolicy(referrer_policy);
   }
 
@@ -476,7 +504,8 @@ Request* Request::CreateRequestWithRequestOrString(
   // "If |credentials| is non-null, set |request|'s credentials mode to
   // |credentials|."
   if (init->hasCredentials()) {
-    request->SetCredentials(ParseCredentialsMode(init->credentials()).value());
+    request->SetCredentials(
+        V8RequestCredentialsToCredentialsMode(init->credentials().AsEnum()));
   } else if (!input_request) {
     request->SetCredentials(network::mojom::CredentialsMode::kSameOrigin);
   }
@@ -896,16 +925,17 @@ Request* Request::Create(
   return MakeGarbageCollected<Request>(script_state, data, signal);
 }
 
-std::optional<network::mojom::CredentialsMode> Request::ParseCredentialsMode(
-    const String& credentials_mode) {
-  if (credentials_mode == "omit")
-    return network::mojom::CredentialsMode::kOmit;
-  if (credentials_mode == "same-origin")
-    return network::mojom::CredentialsMode::kSameOrigin;
-  if (credentials_mode == "include")
-    return network::mojom::CredentialsMode::kInclude;
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+network::mojom::CredentialsMode Request::V8RequestCredentialsToCredentialsMode(
+    V8RequestCredentials::Enum credentials_mode) {
+  switch (credentials_mode) {
+    case V8RequestCredentials::Enum::kOmit:
+      return network::mojom::CredentialsMode::kOmit;
+    case V8RequestCredentials::Enum::kSameOrigin:
+      return network::mojom::CredentialsMode::kSameOrigin;
+    case V8RequestCredentials::Enum::kInclude:
+      return network::mojom::CredentialsMode::kInclude;
+  }
+  NOTREACHED();
 }
 
 Request::Request(ScriptState* script_state,

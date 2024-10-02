@@ -163,14 +163,10 @@ SharedWorker* SharedWorker::CreateImpl(
       SharedWorkerOptions* worker_options =
           name_or_options->GetAsSharedWorkerOptions();
       options->name = worker_options->name();
-      std::optional<mojom::blink::ScriptType> type_result =
-          Script::ParseScriptType(worker_options->type());
-      DCHECK(type_result);
-      options->type = type_result.value();
-      std::optional<network::mojom::CredentialsMode> credentials_result =
-          Request::ParseCredentialsMode(worker_options->credentials());
-      DCHECK(credentials_result);
-      options->credentials = credentials_result.value();
+      options->type =
+          Script::V8WorkerTypeToScriptType(worker_options->type().AsEnum());
+      options->credentials = Request::V8RequestCredentialsToCredentialsMode(
+          worker_options->credentials().AsEnum());
       if (worker_options->hasSameSiteCookies()) {
         switch (worker_options->sameSiteCookies().AsEnum()) {
           case V8SharedWorkerSameSiteCookies::Enum::kAll:

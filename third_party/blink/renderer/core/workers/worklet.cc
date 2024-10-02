@@ -93,7 +93,7 @@ ScriptPromise<IDLUndefined> Worklet::addModule(
       ->PostTask(
           FROM_HERE,
           WTF::BindOnce(&Worklet::FetchAndInvokeScript, WrapPersistent(this),
-                        module_url_record, options->credentials(),
+                        module_url_record, options->credentials().AsEnum(),
                         WrapPersistent(pending_tasks)));
   return promise;
 }
@@ -124,16 +124,15 @@ WorkletGlobalScopeProxy* Worklet::FindAvailableGlobalScope() {
 // algorithm:
 // https://drafts.css-houdini.org/worklets/#dom-worklet-addmodule
 void Worklet::FetchAndInvokeScript(const KURL& module_url_record,
-                                   const String& credentials,
+                                   V8RequestCredentials::Enum credentials,
                                    WorkletPendingTasks* pending_tasks) {
   DCHECK(IsMainThread());
   if (!GetExecutionContext())
     return;
 
   // Step 6: "Let credentialOptions be the credentials member of options."
-  std::optional<network::mojom::CredentialsMode> credentials_mode =
-      Request::ParseCredentialsMode(credentials);
-  DCHECK(credentials_mode);
+  network::mojom::CredentialsMode credentials_mode =
+      Request::V8RequestCredentialsToCredentialsMode(credentials);
 
   // Step 7: "Let outsideSettings be the relevant settings object of this."
   auto* outside_settings_object =
@@ -182,7 +181,7 @@ void Worklet::FetchAndInvokeScript(const KURL& module_url_record,
   // moduleResponsesMap is already passed via CreateGlobalScope().
   // TODO(nhiroki): Queue a task instead of executing this here.
   for (const auto& proxy : proxies_) {
-    proxy->FetchAndInvokeScript(module_url_record, *credentials_mode,
+    proxy->FetchAndInvokeScript(module_url_record, credentials_mode,
                                 *outside_settings_object,
                                 *outside_resource_timing_notifier,
                                 outside_settings_task_runner, pending_tasks);

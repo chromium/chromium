@@ -275,10 +275,8 @@ void DedicatedWorker::Start() {
     // https://html.spec.whatwg.org/C/#workeroptions
     auto credentials_mode = network::mojom::CredentialsMode::kSameOrigin;
     if (options_->type() == script_type_names::kModule) {
-      std::optional<network::mojom::CredentialsMode> result =
-          Request::ParseCredentialsMode(options_->credentials());
-      DCHECK(result);
-      credentials_mode = result.value();
+      credentials_mode = Request::V8RequestCredentialsToCredentialsMode(
+          options_->credentials().AsEnum());
     }
 
     mojo::PendingRemote<mojom::blink::BlobURLToken> blob_url_token;

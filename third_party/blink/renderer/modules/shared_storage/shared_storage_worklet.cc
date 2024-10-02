@@ -232,10 +232,9 @@ void SharedStorageWorklet::AddModuleHelper(
 
   shared_storage_origin_ = std::move(shared_storage_origin);
 
-  const String& credentials = options->credentials();
-  std::optional<network::mojom::CredentialsMode> credentials_mode =
-      Request::ParseCredentialsMode(credentials);
-  CHECK(credentials_mode);
+  network::mojom::CredentialsMode credentials_mode =
+      Request::V8RequestCredentialsToCredentialsMode(
+          options->credentials().AsEnum());
 
   std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
       origin_trial_features =
@@ -244,7 +243,7 @@ void SharedStorageWorklet::AddModuleHelper(
   SharedStorageWindowSupplement::From(To<LocalDOMWindow>(*execution_context))
       ->GetSharedStorageDocumentService()
       ->CreateWorklet(
-          script_source_url, shared_storage_security_origin, *credentials_mode,
+          script_source_url, shared_storage_security_origin, credentials_mode,
           origin_trial_features ? *origin_trial_features
                                 : Vector<mojom::blink::OriginTrialFeature>(),
           worklet_host_.BindNewEndpointAndPassReceiver(

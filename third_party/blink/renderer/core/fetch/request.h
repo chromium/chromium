@@ -11,6 +11,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_request_credentials.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/fetch/body.h"
@@ -63,8 +64,8 @@ class CORE_EXPORT Request final : public ScriptWrappable, public Body {
   Request(const Request&) = delete;
   Request& operator=(const Request&) = delete;
 
-  static std::optional<network::mojom::CredentialsMode> ParseCredentialsMode(
-      const String& credentials_mode);
+  static network::mojom::CredentialsMode V8RequestCredentialsToCredentialsMode(
+      V8RequestCredentials::Enum credentials_mode);
 
   // From Request.idl:
   String method() const;

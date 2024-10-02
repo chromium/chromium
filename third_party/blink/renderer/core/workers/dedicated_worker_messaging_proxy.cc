@@ -132,9 +132,9 @@ void DedicatedWorkerMessagingProxy::StartWorkerGlobalScope(
     // settings."
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kModuleDedicatedWorker);
-    std::optional<network::mojom::CredentialsMode> credentials_mode =
-        Request::ParseCredentialsMode(options->credentials());
-    DCHECK(credentials_mode);
+    network::mojom::CredentialsMode credentials_mode =
+        Request::V8RequestCredentialsToCredentialsMode(
+            options->credentials().AsEnum());
 
     auto* resource_timing_notifier =
         WorkerResourceTimingNotifierImpl::CreateForOutsideResourceFetcher(
@@ -143,7 +143,7 @@ void DedicatedWorkerMessagingProxy::StartWorkerGlobalScope(
     GetWorkerThread()->FetchAndRunModuleScript(
         script_url, std::move(worker_main_script_load_params),
         /*policy_container=*/nullptr, outside_settings_object.CopyData(),
-        resource_timing_notifier, *credentials_mode, reject_coep_unsafe_none);
+        resource_timing_notifier, credentials_mode, reject_coep_unsafe_none);
   } else {
     NOTREACHED_IN_MIGRATION();
   }
