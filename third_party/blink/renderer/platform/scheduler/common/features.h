@@ -75,13 +75,6 @@ PLATFORM_EXPORT BASE_DECLARE_FEATURE(kPrioritizeCompositingAfterDelayTrials);
 PLATFORM_EXPORT base::TimeDelta
 GetLoadingPhaseBufferTimeAfterFirstMeaningfulPaint();
 
-// Finch flag for preventing rendering starvation during threaded scrolling.
-// With this feature enabled, the compositor task queue priority remains low
-// during compositor gestures, e.g. scrolling, but main thread compositor tasks
-// are prioritized if a frame has not been produced recently (a configurable
-// duration), until the next BeginMainFrame.
-PLATFORM_EXPORT BASE_DECLARE_FEATURE(kThreadedScrollPreventRenderingStarvation);
-
 // Returns the threshold to consider rendering starved during threaded
 // scrolling. If `kThreadedScrollPreventRenderingStarvation` is enabled, this
 // returns value of the associated "threshold_ms" FeatureParam; otherwise this

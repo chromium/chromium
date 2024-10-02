@@ -2144,6 +2144,9 @@ extern const char kTextBasedAudioDescriptionDescription[];
 extern const char kTextInShelfName[];
 extern const char kTextInShelfDescription[];
 
+extern const char kThreadedScrollPreventRenderingStarvationName[];
+extern const char kThreadedScrollPreventRenderingStarvationDescription[];
+
 extern const char kTintCompositedContentName[];
 extern const char kTintCompositedContentDescription[];
 

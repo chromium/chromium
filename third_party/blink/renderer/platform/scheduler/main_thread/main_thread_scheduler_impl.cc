@@ -2620,14 +2620,14 @@ TaskPriority MainThreadSchedulerImpl::ComputeCompositorPriority() const {
   // scrolling is to deprioritize compositor TQ tasks (low priority) and not
   // apply delay-based anti-starvation. This can lead to degraded user
   // experience due to increased checkerboarding or scrolling blank content.
-  // When `kThreadedScrollPreventRenderingStarvation` is enabled, we use a
-  // configurable value to control the delay-based anti-starvation to mitigate
-  // these issues.
+  // When `features::kThreadedScrollPreventRenderingStarvation` is enabled, we
+  // use a configurable value to control the delay-based anti-starvation to
+  // mitigate these issues.
   //
   // Note: for other use cases, the computed priority is higher, so they are
   // not prone to rendering starvation in the same way.
   if (!base::FeatureList::IsEnabled(
-          kThreadedScrollPreventRenderingStarvation)) {
+          features::kThreadedScrollPreventRenderingStarvation)) {
     return *use_case_priority;
   } else {
     CHECK_LE(*targeted_main_frame_priority, *use_case_priority);
@@ -2711,11 +2711,12 @@ void MainThreadSchedulerImpl::UpdateRenderingPrioritizationStateOnTaskCompleted(
         task_timing.wall_duration();
   }
 
-  // With `kThreadedScrollPreventRenderingStarvation` enabled, no rendering
-  // anti-starvation policy should kick in until the configurable threshold is
-  // reached when in `UseCase::kCompositorGesture`.
+  // With `features::kThreadedScrollPreventRenderingStarvation` enabled, no
+  // rendering anti-starvation policy should kick in until the configurable
+  // threshold is reached when in `UseCase::kCompositorGesture`.
   base::TimeDelta render_blocking_starvation_threshold =
-      base::FeatureList::IsEnabled(kThreadedScrollPreventRenderingStarvation) &&
+      base::FeatureList::IsEnabled(
+          features::kThreadedScrollPreventRenderingStarvation) &&
               current_use_case() == UseCase::kCompositorGesture &&
               kRenderBlockingStarvationThreshold <
                   scheduling_settings_

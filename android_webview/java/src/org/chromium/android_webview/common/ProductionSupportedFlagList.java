@@ -465,9 +465,9 @@ public final class ProductionSupportedFlagList {
                 "Hit test on touch start in blink"),
         Flag.baseFeature(BaseFeatures.ALIGN_WAKE_UPS, "Align delayed wake ups at 125 Hz"),
         Flag.baseFeature(
-                BlinkSchedulerFeatures.THREADED_SCROLL_PREVENT_RENDERING_STARVATION,
+                BlinkFeatures.THREADED_SCROLL_PREVENT_RENDERING_STARVATION,
                 "Enable rendering starvation-prevention during threaded scrolling."
-                        + " See https://crbug.com/1315279."),
+                        + " See https://crbug.com/40833407."),
         Flag.baseFeature(
                 BlinkSchedulerFeatures.PRIORITIZE_COMPOSITING_AFTER_DELAY_TRIALS,
                 "Controls the delay after which main thread compositing tasks "

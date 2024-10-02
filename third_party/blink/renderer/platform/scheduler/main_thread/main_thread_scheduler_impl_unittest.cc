@@ -3463,7 +3463,7 @@ class ThreadedScrollPreventRenderingStarvationTest
   ThreadedScrollPreventRenderingStarvationTest() {
     feature_list_.Reset();
     feature_list_.InitWithFeaturesAndParameters(
-        {{kThreadedScrollPreventRenderingStarvation,
+        {{features::kThreadedScrollPreventRenderingStarvation,
           base::FieldTrialParams(
               {{"threshold_ms", base::NumberToString(GetParam())}})}},
         {});

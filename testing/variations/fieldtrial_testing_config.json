@@ -23192,9 +23192,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_100",
+                    "name": "Enabled_100ms",
                     "params": {
-                        "timeout_ms": "100"
+                        "threshold_ms": "100"
                     },
                     "enable_features": [
                         "ThreadedScrollPreventRenderingStarvation"

@@ -104,15 +104,13 @@ base::TimeDelta GetLoadingPhaseBufferTimeAfterFirstMeaningfulPaint() {
       GetLoadingPhaseBufferTimeAfterFirstMeaningfulPaintMillis());
 }
 
-BASE_FEATURE(kThreadedScrollPreventRenderingStarvation,
-             "ThreadedScrollPreventRenderingStarvation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 base::TimeDelta GetThreadedScrollRenderingStarvationThreshold() {
   static const base::FeatureParam<int>
       kThreadedScrollRenderingStarvationThreshold{
-          &kThreadedScrollPreventRenderingStarvation, "threshold_ms", 100};
-  if (base::FeatureList::IsEnabled(kThreadedScrollPreventRenderingStarvation)) {
+          &features::kThreadedScrollPreventRenderingStarvation, "threshold_ms",
+          100};
+  if (base::FeatureList::IsEnabled(
+          features::kThreadedScrollPreventRenderingStarvation)) {
     return base::Milliseconds(
         kThreadedScrollRenderingStarvationThreshold.Get());
   }

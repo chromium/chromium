@@ -3680,6 +3680,12 @@ const char kTextInShelfName[] = "Internal test: text in shelf";
 const char kTextInShelfDescription[] =
     "Extend text in shelf timeout to learn about user education";
 
+const char kThreadedScrollPreventRenderingStarvationName[] =
+    "threaded-scroll-prevent-rendering-starvation";
+const char kThreadedScrollPreventRenderingStarvationDescription[] =
+    "Prevents main thread rendering starvation during threaded scrolling based "
+    "on a given threshold.";
+
 const char kTintCompositedContentName[] = "Tint composited content";
 const char kTintCompositedContentDescription[] =
     "Tint contents composited using Viz with a shade of red to help debug and "
