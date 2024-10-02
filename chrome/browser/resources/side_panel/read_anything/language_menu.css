@@ -77,3 +77,7 @@ cr-icon {
 .notification-error-true {
   color: var(--color-sys-error);
 }
+
+#notificationText {
+  white-space: normal;
+}
