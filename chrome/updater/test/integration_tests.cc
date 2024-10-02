@@ -288,14 +288,17 @@ class IntegrationTest : public ::testing::Test {
 
   void ExpectClean() { test_commands_->ExpectClean(); }
 
-  void EnterTestMode(const GURL& update_url,
-                     const GURL& crash_upload_url,
-                     const GURL& device_management_url,
-                     const GURL& app_logo_url,
-                     const base::TimeDelta& idle_timeout) {
-    test_commands_->EnterTestMode(update_url, crash_upload_url,
-                                  device_management_url, app_logo_url,
-                                  idle_timeout);
+  void EnterTestMode(
+      const GURL& update_url,
+      const GURL& crash_upload_url,
+      const GURL& device_management_url,
+      const GURL& app_logo_url,
+      const base::TimeDelta& idle_timeout,
+      const base::TimeDelta& server_keep_alive_time = base::Seconds(2),
+      const base::TimeDelta& ceca_connection_timeout = base::Seconds(10)) {
+    test_commands_->EnterTestMode(
+        update_url, crash_upload_url, device_management_url, app_logo_url,
+        idle_timeout, server_keep_alive_time, ceca_connection_timeout);
   }
 
   void ExitTestMode() { test_commands_->ExitTestMode(); }
@@ -2179,6 +2182,34 @@ TEST_F(IntegrationTestDeviceManagement, FetchPolicy_SkipCompanionAppInstall) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 #endif  // INCLUDE_ENTERPRISE_COMPANION_IN_INSTALLER
+
+TEST_F(IntegrationTestDeviceManagement,
+       LongLivedUpdaterIsHealthyWithBrokenCompanionApp) {
+  EnterTestMode(test_server_->update_url(), test_server_->crash_upload_url(),
+                test_server_->device_management_url(), {},
+                /*idle_timeout=*/base::Minutes(5),
+                /*server_keep_alive_time=*/base::Seconds(3),
+                /*ceca_connection_timeout=*/base::Seconds(1));
+  ASSERT_NO_FATAL_FAILURE(InstallBrokenEnterpriseCompanionApp());
+
+  DMPushEnrollmentToken(kEnrollmentToken);
+  ApplicationSettings app;
+  app.set_app_guid(kApp1.appid);
+  app.set_update(enterprise_management::AUTOMATIC_UPDATES_ONLY);
+  OmahaSettingsClientProto omaha_settings;
+  omaha_settings.mutable_application_settings()->Add(std::move(app));
+  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
+                                            kEnrollmentToken, kDMToken);
+  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
+                                           omaha_settings);
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_TRUE(WaitForUpdaterExit());
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+  ASSERT_NO_FATAL_FAILURE(UninstallBrokenEnterpriseCompanionApp());
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
 
 // During the updater's installation, the updater should fall back to it's own
 // policy fetching implementation if the enterprise companion app is broken.

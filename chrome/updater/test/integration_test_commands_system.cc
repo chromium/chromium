@@ -18,6 +18,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/test_switches.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -141,18 +142,25 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("expect_candidate_uninstalled");
   }
 
-  void EnterTestMode(const GURL& update_url,
-                     const GURL& crash_upload_url,
-                     const GURL& device_management_url,
-                     const GURL& app_logo_url,
-                     const base::TimeDelta& idle_timeout) const override {
-    RunCommand("enter_test_mode",
-               {Param("update_url", update_url.spec()),
-                Param("crash_upload_url", crash_upload_url.spec()),
-                Param("device_management_url", device_management_url.spec()),
-                Param("app_logo_url", app_logo_url.spec()),
-                Param("idle_timeout",
-                      base::NumberToString(idle_timeout.InSeconds()))});
+  void EnterTestMode(
+      const GURL& update_url,
+      const GURL& crash_upload_url,
+      const GURL& device_management_url,
+      const GURL& app_logo_url,
+      const base::TimeDelta& idle_timeout,
+      const base::TimeDelta& server_keep_alive_time,
+      const base::TimeDelta& ceca_connection_timeout) const override {
+    RunCommand(
+        "enter_test_mode",
+        {Param("update_url", update_url.spec()),
+         Param("crash_upload_url", crash_upload_url.spec()),
+         Param("device_management_url", device_management_url.spec()),
+         Param("app_logo_url", app_logo_url.spec()),
+         Param("idle_timeout", base::NumberToString(idle_timeout.InSeconds())),
+         Param("server_keep_alive_time",
+               base::NumberToString(server_keep_alive_time.InSeconds())),
+         Param("ceca_connection_timeout",
+               base::NumberToString(ceca_connection_timeout.InSeconds()))});
   }
 
   void ExitTestMode() const override { RunCommand("exit_test_mode"); }

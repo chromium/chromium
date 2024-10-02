@@ -84,6 +84,10 @@ class ExternalConstantsBuilder {
   ExternalConstantsBuilder& SetEnableDiffUpdates(bool enable_diffs);
   ExternalConstantsBuilder& ClearEnableDiffUpdates();
 
+  ExternalConstantsBuilder& SetCecaConnectionTimeout(
+      const base::TimeDelta& ceca_connection_timeout);
+  ExternalConstantsBuilder& ClearCecaConnectionTimeout();
+
   // Write the external constants overrides file in the default location
   // with the values that have been previously set, replacing any file
   // previously there. The builder remains usable, does not forget its state,

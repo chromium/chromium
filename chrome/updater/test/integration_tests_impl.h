@@ -32,6 +32,7 @@ class GURL;
 
 namespace base {
 class CommandLine;
+class TimeDelta;
 class Value;
 class Version;
 }  // namespace base
@@ -146,7 +147,9 @@ void EnterTestMode(const GURL& update_url,
                    const GURL& crash_upload_url,
                    const GURL& device_management_url,
                    const GURL& app_logo_url,
-                   const base::TimeDelta& idle_timeout);
+                   const base::TimeDelta& idle_timeout,
+                   const base::TimeDelta& server_keep_alive_time,
+                   const base::TimeDelta& ceca_connection_timeout);
 
 // Takes the updater our of the test mode by deleting the external constants
 // JSON file.

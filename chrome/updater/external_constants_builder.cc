@@ -203,6 +203,19 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::ClearEnableDiffUpdates() {
   return *this;
 }
 
+ExternalConstantsBuilder& ExternalConstantsBuilder::SetCecaConnectionTimeout(
+    const base::TimeDelta& ceca_connection_timeout) {
+  overrides_.Set(kDevOverrideKeyCecaConnectionTimeout,
+                 static_cast<int>(ceca_connection_timeout.InSeconds()));
+  return *this;
+}
+
+ExternalConstantsBuilder&
+ExternalConstantsBuilder::ClearCecaConnectionTimeout() {
+  overrides_.Remove(kDevOverrideKeyCecaConnectionTimeout);
+  return *this;
+}
+
 bool ExternalConstantsBuilder::Overwrite() {
   const std::optional<base::FilePath> override_path =
       GetOverrideFilePath(GetUpdaterScope());
@@ -267,6 +280,9 @@ bool ExternalConstantsBuilder::Modify() {
   }
   if (!overrides_.contains(kDevOverrideKeyEnableDiffUpdates)) {
     SetEnableDiffUpdates(verifier->EnableDiffUpdates());
+  }
+  if (!overrides_.contains(kDevOverrideKeyCecaConnectionTimeout)) {
+    SetCecaConnectionTimeout(verifier->CecaConnectionTimeout());
   }
 
   return Overwrite();

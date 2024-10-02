@@ -77,7 +77,8 @@ ScopedServer::~ScopedServer() {
 void ScopedServer::ConfigureTestMode(IntegrationTestCommands* commands) {
   CHECK(commands);
   commands->EnterTestMode(update_url(), crash_upload_url(),
-                          device_management_url(), {}, base::Minutes(5));
+                          device_management_url(), {}, base::Minutes(5),
+                          base::Seconds(2), base::Seconds(10));
 }
 
 void ScopedServer::ExpectOnce(request::MatcherGroup request_matcher_group,

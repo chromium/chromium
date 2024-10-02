@@ -197,8 +197,9 @@ void PolicyService::DoFetchPolicies(base::OnceCallback<void(int)> callback,
 
   fetch_policies_callback_ = std::move(callback);
   auto fetcher = base::MakeRefCounted<FallbackPolicyFetcher>(
-      CreateOutOfProcessPolicyFetcher(usage_stats_enabled_,
-                                      external_constants_->IsMachineManaged()),
+      CreateOutOfProcessPolicyFetcher(
+          usage_stats_enabled_, external_constants_->IsMachineManaged(),
+          external_constants_->CecaConnectionTimeout()),
       CreateInProcessPolicyFetcher(external_constants_->DeviceManagementURL(),
                                    PolicyServiceProxyConfiguration::Get(this),
                                    external_constants_->IsMachineManaged()));

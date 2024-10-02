@@ -20,6 +20,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
+#include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "chrome/updater/activity.h"
 #include "chrome/updater/activity_impl_util_posix.h"
@@ -158,7 +159,9 @@ void EnterTestMode(const GURL& update_url,
                    const GURL& crash_upload_url,
                    const GURL& device_management_url,
                    const GURL& app_logo_url,
-                   const base::TimeDelta& idle_timeout) {
+                   const base::TimeDelta& idle_timeout,
+                   const base::TimeDelta& server_keep_alive_time,
+                   const base::TimeDelta& ceca_connection_timeout) {
   ASSERT_TRUE(ExternalConstantsBuilder()
                   .SetUpdateURL({update_url.spec()})
                   .SetCrashUploadURL(crash_upload_url.spec())
@@ -166,10 +169,11 @@ void EnterTestMode(const GURL& update_url,
                   .SetAppLogoURL(app_logo_url.spec())
                   .SetUseCUP(false)
                   .SetInitialDelay(base::Milliseconds(100))
-                  .SetServerKeepAliveTime(base::Seconds(2))
+                  .SetServerKeepAliveTime(server_keep_alive_time)
                   .SetCrxVerifierFormat(crx_file::VerifierFormat::CRX3)
                   .SetOverinstallTimeout(TestTimeouts::action_timeout())
                   .SetIdleCheckPeriod(idle_timeout)
+                  .SetCecaConnectionTimeout(ceca_connection_timeout)
                   .Modify());
 }
 

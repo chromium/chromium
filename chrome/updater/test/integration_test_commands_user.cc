@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -78,14 +79,17 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::ExpectCandidateUninstalled(updater_scope_);
   }
 
-  void EnterTestMode(const GURL& update_url,
-                     const GURL& crash_upload_url,
-                     const GURL& device_management_url,
-                     const GURL& app_logo_url,
-                     const base::TimeDelta& idle_timeout) const override {
-    updater::test::EnterTestMode(update_url, crash_upload_url,
-                                 device_management_url, app_logo_url,
-                                 idle_timeout);
+  void EnterTestMode(
+      const GURL& update_url,
+      const GURL& crash_upload_url,
+      const GURL& device_management_url,
+      const GURL& app_logo_url,
+      const base::TimeDelta& idle_timeout,
+      const base::TimeDelta& server_keep_alive_time,
+      const base::TimeDelta& ceca_connection_timeout) const override {
+    updater::test::EnterTestMode(
+        update_url, crash_upload_url, device_management_url, app_logo_url,
+        idle_timeout, server_keep_alive_time, ceca_connection_timeout);
   }
 
   void ExitTestMode() const override {

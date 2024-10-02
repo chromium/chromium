@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "chrome/updater/policy/manager.h"
 #include "chrome/updater/policy/service.h"
 #include "url/gurl.h"
@@ -61,7 +62,8 @@ class FallbackPolicyFetcher : public PolicyFetcher {
 // enterprise companion app.
 [[nodiscard]] scoped_refptr<PolicyFetcher> CreateOutOfProcessPolicyFetcher(
     bool usage_stats_enabled,
-    std::optional<bool> override_is_managed_device);
+    std::optional<bool> override_is_managed_device,
+    base::TimeDelta override_ceca_connection_timeout);
 
 // Creates an in-process policy fether.
 //   `server_url`: the DM server endpoint.

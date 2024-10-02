@@ -62,6 +62,10 @@ class DefaultExternalConstants : public ExternalConstants {
 
   bool EnableDiffUpdates() const override { return false; }
 
+  base::TimeDelta CecaConnectionTimeout() const override {
+    return kCecaConnectionTimeout;
+  }
+
  private:
   ~DefaultExternalConstants() override = default;
 };

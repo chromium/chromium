@@ -260,7 +260,8 @@ InProcessPolicyFetcher::OnFetchPolicyRequestComplete(
 class OutOfProcessPolicyFetcher : public PolicyFetcher {
  public:
   OutOfProcessPolicyFetcher(bool usage_stats_enabled,
-                            std::optional<bool> override_is_managed_device);
+                            std::optional<bool> override_is_managed_device,
+                            base::TimeDelta connection_timeout);
 
   // Overrides for `PolicyFetcher`.
   void FetchPolicies(PolicyFetchCompleteCallback callback) override;
@@ -281,13 +282,16 @@ class OutOfProcessPolicyFetcher : public PolicyFetcher {
   PolicyFetchCompleteCallback fetch_complete_callback_;
   const bool usage_stats_enabled_;
   const std::optional<bool> override_is_managed_device_;
+  const base::TimeDelta connection_timeout_;
 };
 
 OutOfProcessPolicyFetcher::OutOfProcessPolicyFetcher(
     bool usage_stats_enabled,
-    std::optional<bool> override_is_managed_device)
+    std::optional<bool> override_is_managed_device,
+    base::TimeDelta connection_timeout)
     : usage_stats_enabled_(usage_stats_enabled),
-      override_is_managed_device_(override_is_managed_device) {}
+      override_is_managed_device_(override_is_managed_device),
+      connection_timeout_(connection_timeout) {}
 
 OutOfProcessPolicyFetcher::~OutOfProcessPolicyFetcher() = default;
 
@@ -307,7 +311,7 @@ void OutOfProcessPolicyFetcher::FetchPolicies(
 
 void OutOfProcessPolicyFetcher::OnInstallIfNeededComplete() {
   enterprise_companion::ConnectAndLaunchServer(
-      base::DefaultClock::GetInstance(), base::Seconds(60),
+      base::DefaultClock::GetInstance(), connection_timeout_,
       usage_stats_enabled_,
       base::BindOnce(&OutOfProcessPolicyFetcher::OnConnected,
                      base::WrapRefCounted(this)));
@@ -377,9 +381,11 @@ scoped_refptr<PolicyFetcher> CreateInProcessPolicyFetcher(
 
 scoped_refptr<PolicyFetcher> CreateOutOfProcessPolicyFetcher(
     bool usage_stats_enabled,
-    std::optional<bool> override_is_managed_device) {
+    std::optional<bool> override_is_managed_device,
+    base::TimeDelta override_ceca_connection_timeout) {
   return base::MakeRefCounted<OutOfProcessPolicyFetcher>(
-      usage_stats_enabled, std::move(override_is_managed_device));
+      usage_stats_enabled, std::move(override_is_managed_device),
+      override_ceca_connection_timeout);
 }
 
 }  // namespace updater

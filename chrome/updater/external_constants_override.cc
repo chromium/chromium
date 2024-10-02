@@ -247,6 +247,19 @@ bool ExternalConstantsOverrider::EnableDiffUpdates() const {
   return value->GetBool();
 }
 
+base::TimeDelta ExternalConstantsOverrider::CecaConnectionTimeout() const {
+  if (!override_values_.contains(kDevOverrideKeyCecaConnectionTimeout)) {
+    return next_provider_->CecaConnectionTimeout();
+  }
+
+  const base::Value* value =
+      override_values_.Find(kDevOverrideKeyCecaConnectionTimeout);
+  CHECK(value->is_int()) << "Unexpected type of override["
+                         << kDevOverrideKeyCecaConnectionTimeout
+                         << "]: " << base::Value::GetTypeName(value->type());
+  return base::Seconds(value->GetInt());
+}
+
 // static
 scoped_refptr<ExternalConstantsOverrider>
 ExternalConstantsOverrider::FromDefaultJSONFile(
