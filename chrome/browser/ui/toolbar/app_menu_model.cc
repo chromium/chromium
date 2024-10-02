@@ -882,9 +882,8 @@ void ToolsMenuModel::Build(Browser* browser) {
   }
 
   if (base::FeatureList::IsEnabled(features::kTabstripDeclutter)) {
-    // TODO(crbug.com/369638354): Use the correct icon once finalized.
     AddItemWithStringIdAndVectorIcon(this, IDC_DECLUTTER_TABS,
-                                     IDS_DECLUTTER_MENU, kAutoTabGroupsIcon);
+                                     IDS_DECLUTTER_MENU, kTabCloseInactiveIcon);
     SetIsNewFeatureAt(
         GetIndexOfCommandId(IDC_DECLUTTER_TABS).value(),
         browser->window()->MaybeShowNewBadgeFor(features::kTabstripDeclutter));

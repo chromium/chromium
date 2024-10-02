@@ -17,14 +17,14 @@ export function getHtml(this: TabOrganizationSelectorElement) {
         top="true"
         heading="$i18n{autoTabGroupsSelectorHeading}"
         subheading="$i18n{autoTabGroupsSelectorSubheading}"
-        icon="cr:group"
+        icon="tab-search:auto-tab-groups"
         @click="${this.onAutoTabGroupsClick_}">
     </tab-organization-selector-button>
     <tab-organization-selector-button id="declutterButton"
         bottom="true"
         heading="${this.declutterHeading_}"
         subheading="$i18n{declutterSelectorSubheading}"
-        icon="cr:delete"
+        icon="tab-search:declutter"
         ?disabled="${this.disableDeclutter_}"
         @click="${this.onDeclutterClick_}">
     </tab-organization-selector-button>
