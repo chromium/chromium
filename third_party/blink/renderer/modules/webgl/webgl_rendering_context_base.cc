@@ -23,11 +23,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 
 #include <memory>
@@ -267,7 +262,7 @@ ScopedRGBEmulationColorMask::ScopedRGBEmulationColorMask(
       requires_emulation_(drawing_buffer->RequiresAlphaChannelToBePreserved()) {
   if (requires_emulation_) {
     context_->active_scoped_rgb_emulation_color_masks_++;
-    memcpy(color_mask_, color_mask, 4 * sizeof(GLboolean));
+    memcpy(color_mask_.data(), color_mask, 4 * sizeof(GLboolean));
     context_->ContextGL()->ColorMask(color_mask_[0], color_mask_[1],
                                      color_mask_[2], false);
   }
@@ -1014,19 +1009,19 @@ void WebGLRenderingContextBase::
 namespace {
 
 // Exposed by GL_ANGLE_depth_texture
-static const GLenum kSupportedInternalFormatsOESDepthTex[] = {
+static constexpr std::array<GLenum, 2> kSupportedInternalFormatsOESDepthTex = {
     GL_DEPTH_COMPONENT,
     GL_DEPTH_STENCIL,
 };
 
 // Exposed by GL_EXT_sRGB
-static const GLenum kSupportedInternalFormatsEXTsRGB[] = {
+static constexpr std::array<GLenum, 2> kSupportedInternalFormatsEXTsRGB = {
     GL_SRGB,
     GL_SRGB_ALPHA_EXT,
 };
 
 // ES3 enums supported by both CopyTexImage and TexImage.
-static const GLenum kSupportedInternalFormatsES3[] = {
+static constexpr auto kSupportedInternalFormatsES3 = std::to_array<GLenum>({
     GL_R8,           GL_RG8,      GL_RGB565,   GL_RGB8,       GL_RGBA4,
     GL_RGB5_A1,      GL_RGBA8,    GL_RGB10_A2, GL_RGB10_A2UI, GL_SRGB8,
     GL_SRGB8_ALPHA8, GL_R8I,      GL_R8UI,     GL_R16I,       GL_R16UI,
@@ -1034,99 +1029,120 @@ static const GLenum kSupportedInternalFormatsES3[] = {
     GL_RG16UI,       GL_RG32I,    GL_RG32UI,   GL_RGBA8I,     GL_RGBA8UI,
     GL_RGBA16I,      GL_RGBA16UI, GL_RGBA32I,  GL_RGBA32UI,   GL_RGB32I,
     GL_RGB32UI,      GL_RGB8I,    GL_RGB8UI,   GL_RGB16I,     GL_RGB16UI,
-};
+});
 
 // ES3 enums only supported by TexImage
-static const GLenum kSupportedInternalFormatsTexImageES3[] = {
-    GL_R8_SNORM,
-    GL_R16F,
-    GL_R32F,
-    GL_RG8_SNORM,
-    GL_RG16F,
-    GL_RG32F,
-    GL_RGB8_SNORM,
-    GL_R11F_G11F_B10F,
-    GL_RGB9_E5,
-    GL_RGB16F,
-    GL_RGB32F,
-    GL_RGBA8_SNORM,
-    GL_RGBA16F,
-    GL_RGBA32F,
-    GL_DEPTH_COMPONENT16,
-    GL_DEPTH_COMPONENT24,
-    GL_DEPTH_COMPONENT32F,
-    GL_DEPTH24_STENCIL8,
-    GL_DEPTH32F_STENCIL8,
-};
+static constexpr auto kSupportedInternalFormatsTexImageES3 =
+    std::to_array<GLenum>({
+        GL_R8_SNORM,
+        GL_R16F,
+        GL_R32F,
+        GL_RG8_SNORM,
+        GL_RG16F,
+        GL_RG32F,
+        GL_RGB8_SNORM,
+        GL_R11F_G11F_B10F,
+        GL_RGB9_E5,
+        GL_RGB16F,
+        GL_RGB32F,
+        GL_RGBA8_SNORM,
+        GL_RGBA16F,
+        GL_RGBA32F,
+        GL_DEPTH_COMPONENT16,
+        GL_DEPTH_COMPONENT24,
+        GL_DEPTH_COMPONENT32F,
+        GL_DEPTH24_STENCIL8,
+        GL_DEPTH32F_STENCIL8,
+    });
 
 // Exposed by EXT_texture_norm16
-static constexpr GLenum kSupportedInternalFormatsEXTTextureNorm16ES3[] = {
-    GL_R16_EXT,         GL_RG16_EXT,        GL_RGB16_EXT,
-    GL_RGBA16_EXT,      GL_R16_SNORM_EXT,   GL_RG16_SNORM_EXT,
-    GL_RGB16_SNORM_EXT, GL_RGBA16_SNORM_EXT};
+static constexpr auto kSupportedInternalFormatsEXTTextureNorm16ES3 =
+    std::to_array<GLenum>({GL_R16_EXT, GL_RG16_EXT, GL_RGB16_EXT, GL_RGBA16_EXT,
+                           GL_R16_SNORM_EXT, GL_RG16_SNORM_EXT,
+                           GL_RGB16_SNORM_EXT, GL_RGBA16_SNORM_EXT});
 
-static constexpr GLenum kSupportedFormatsEXTTextureNorm16ES3[] = {GL_RED,
-                                                                  GL_RG};
+static constexpr std::array<GLenum, 2> kSupportedFormatsEXTTextureNorm16ES3 = {
+    GL_RED, GL_RG};
 
-static constexpr GLenum kSupportedTypesEXTTextureNorm16ES3[] = {
+static constexpr std::array<GLenum, 2> kSupportedTypesEXTTextureNorm16ES3 = {
     GL_SHORT, GL_UNSIGNED_SHORT};
 
 // Exposed by EXT_color_buffer_float
-static const GLenum kSupportedInternalFormatsCopyTexImageFloatES3[] = {
-    GL_R16F,   GL_R32F,    GL_RG16F,   GL_RG32F,         GL_RGB16F,
-    GL_RGB32F, GL_RGBA16F, GL_RGBA32F, GL_R11F_G11F_B10F};
+static constexpr auto kSupportedInternalFormatsCopyTexImageFloatES3 =
+    std::to_array<GLenum>({GL_R16F, GL_R32F, GL_RG16F, GL_RG32F, GL_RGB16F,
+                           GL_RGB32F, GL_RGBA16F, GL_RGBA32F,
+                           GL_R11F_G11F_B10F});
 
 // Exposed by EXT_color_buffer_half_float
-static const GLenum kSupportedInternalFormatsCopyTexImageHalfFloatES3[] = {
-    GL_R16F,
-    GL_RG16F,
-    GL_RGB16F,
-    GL_RGBA16F,
+static constexpr std::array<GLenum, 4>
+    kSupportedInternalFormatsCopyTexImageHalfFloatES3 = {
+        GL_R16F,
+        GL_RG16F,
+        GL_RGB16F,
+        GL_RGBA16F,
 };
 
 // ES3 enums supported by TexImageSource
-static const GLenum kSupportedInternalFormatsTexImageSourceES3[] = {
-    GL_R8,      GL_R16F,           GL_R32F,         GL_R8UI,     GL_RG8,
-    GL_RG16F,   GL_RG32F,          GL_RG8UI,        GL_RGB8,     GL_SRGB8,
-    GL_RGB565,  GL_R11F_G11F_B10F, GL_RGB9_E5,      GL_RGB16F,   GL_RGB32F,
-    GL_RGB8UI,  GL_RGBA8,          GL_SRGB8_ALPHA8, GL_RGB5_A1,  GL_RGBA4,
-    GL_RGBA16F, GL_RGBA32F,        GL_RGBA8UI,      GL_RGB10_A2,
-};
+static constexpr auto kSupportedInternalFormatsTexImageSourceES3 =
+    std::to_array<GLenum>({
+        GL_R8,      GL_R16F,           GL_R32F,         GL_R8UI,     GL_RG8,
+        GL_RG16F,   GL_RG32F,          GL_RG8UI,        GL_RGB8,     GL_SRGB8,
+        GL_RGB565,  GL_R11F_G11F_B10F, GL_RGB9_E5,      GL_RGB16F,   GL_RGB32F,
+        GL_RGB8UI,  GL_RGBA8,          GL_SRGB8_ALPHA8, GL_RGB5_A1,  GL_RGBA4,
+        GL_RGBA16F, GL_RGBA32F,        GL_RGBA8UI,      GL_RGB10_A2,
+    });
 
 // ES2 enums
 // Internalformat must equal format in ES2.
-static const GLenum kSupportedFormatsES2[] = {
-    GL_RGB, GL_RGBA, GL_LUMINANCE_ALPHA, GL_LUMINANCE, GL_ALPHA,
-};
+static constexpr auto kSupportedFormatsES2 = std::to_array<GLenum>({
+    GL_RGB,
+    GL_RGBA,
+    GL_LUMINANCE_ALPHA,
+    GL_LUMINANCE,
+    GL_ALPHA,
+});
 
 // Exposed by GL_ANGLE_depth_texture
-static const GLenum kSupportedFormatsOESDepthTex[] = {
+static constexpr std::array<GLenum, 2> kSupportedFormatsOESDepthTex = {
     GL_DEPTH_COMPONENT,
     GL_DEPTH_STENCIL,
 };
 
 // Exposed by GL_EXT_sRGB
-static const GLenum kSupportedFormatsEXTsRGB[] = {
+static constexpr std::array<GLenum, 2> kSupportedFormatsEXTsRGB = {
     GL_SRGB,
     GL_SRGB_ALPHA_EXT,
 };
 
 // ES3 enums
-static const GLenum kSupportedFormatsES3[] = {
-    GL_RED,           GL_RED_INTEGER,  GL_RG,
-    GL_RG_INTEGER,    GL_RGB,          GL_RGB_INTEGER,
-    GL_RGBA,          GL_RGBA_INTEGER, GL_DEPTH_COMPONENT,
+static constexpr auto kSupportedFormatsES3 = std::to_array<GLenum>({
+    GL_RED,
+    GL_RED_INTEGER,
+    GL_RG,
+    GL_RG_INTEGER,
+    GL_RGB,
+    GL_RGB_INTEGER,
+    GL_RGBA,
+    GL_RGBA_INTEGER,
+    GL_DEPTH_COMPONENT,
     GL_DEPTH_STENCIL,
-};
+});
 
 // ES3 enums supported by TexImageSource
-static const GLenum kSupportedFormatsTexImageSourceES3[] = {
-    GL_RED, GL_RED_INTEGER, GL_RG,   GL_RG_INTEGER,
-    GL_RGB, GL_RGB_INTEGER, GL_RGBA, GL_RGBA_INTEGER,
-};
+static constexpr auto kSupportedFormatsTexImageSourceES3 =
+    std::to_array<GLenum>({
+        GL_RED,
+        GL_RED_INTEGER,
+        GL_RG,
+        GL_RG_INTEGER,
+        GL_RGB,
+        GL_RGB_INTEGER,
+        GL_RGBA,
+        GL_RGBA_INTEGER,
+    });
 
 // ES2 enums
-static const GLenum kSupportedTypesES2[] = {
+static constexpr std::array<GLenum, 4> kSupportedTypesES2 = {
     GL_UNSIGNED_BYTE,
     GL_UNSIGNED_SHORT_5_6_5,
     GL_UNSIGNED_SHORT_4_4_4_4,
@@ -1134,24 +1150,24 @@ static const GLenum kSupportedTypesES2[] = {
 };
 
 // Exposed by GL_OES_texture_float
-static const GLenum kSupportedTypesOESTexFloat[] = {
+static constexpr std::array<GLenum, 1> kSupportedTypesOESTexFloat = {
     GL_FLOAT,
 };
 
 // Exposed by GL_OES_texture_half_float
-static const GLenum kSupportedTypesOESTexHalfFloat[] = {
+static constexpr std::array<GLenum, 1> kSupportedTypesOESTexHalfFloat = {
     GL_HALF_FLOAT_OES,
 };
 
 // Exposed by GL_ANGLE_depth_texture
-static const GLenum kSupportedTypesOESDepthTex[] = {
+static constexpr std::array<GLenum, 3> kSupportedTypesOESDepthTex = {
     GL_UNSIGNED_SHORT,
     GL_UNSIGNED_INT,
     GL_UNSIGNED_INT_24_8,
 };
 
 // ES3 enums
-static const GLenum kSupportedTypesES3[] = {
+static constexpr auto kSupportedTypesES3 = std::to_array<GLenum>({
     GL_BYTE,
     GL_UNSIGNED_SHORT,
     GL_SHORT,
@@ -1164,10 +1180,10 @@ static const GLenum kSupportedTypesES3[] = {
     GL_UNSIGNED_INT_5_9_9_9_REV,
     GL_UNSIGNED_INT_24_8,
     GL_FLOAT_32_UNSIGNED_INT_24_8_REV,
-};
+});
 
 // ES3 enums supported by TexImageSource
-static const GLenum kSupportedTypesTexImageSourceES3[] = {
+static constexpr std::array<GLenum, 4> kSupportedTypesTexImageSourceES3 = {
     GL_HALF_FLOAT,
     GL_FLOAT,
     GL_UNSIGNED_INT_10F_11F_11F_REV,
@@ -1220,9 +1236,9 @@ WebGLRenderingContextBase::WebGLRenderingContextBase(
 
   context_group_->AddContext(this);
 
-  max_viewport_dims_[0] = max_viewport_dims_[1] = 0;
+  max_viewport_dims_ = {};
   context_provider->ContextGL()->GetIntegerv(GL_MAX_VIEWPORT_DIMS,
-                                             max_viewport_dims_);
+                                             max_viewport_dims_.data());
   InitializeWebGLContextLimits(context_provider.get());
 
   scoped_refptr<DrawingBuffer> buffer =
@@ -2447,7 +2463,7 @@ void WebGLRenderingContextBase::clear(GLbitfield mask) {
     // effects even without the user requesting to clear any buffers.
   }
 
-  ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_,
+  ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_.data(),
                                                    drawing_buffer_.get());
 
   if (ClearIfComposited(kClearCallerDrawOrClear, mask) != kCombinedClear) {
@@ -4448,14 +4464,17 @@ ScriptValue WebGLRenderingContextBase::getUniform(
                                               base::span(value).first(length)));
           }
           case GL_BOOL: {
-            GLint value[4] = {0};
-            ContextGL()->GetUniformiv(ObjectOrZero(program), location, value);
+            std::array<GLint, 4> value = {0};
+            ContextGL()->GetUniformiv(ObjectOrZero(program), location,
+                                      value.data());
+
             if (length > 1) {
-              bool bool_value[4] = {false};
+              std::array<bool, 4> bool_value = {};
               for (unsigned j = 0; j < length; j++)
                 bool_value[j] = static_cast<bool>(value[j]);
-              return WebGLAny(script_state, bool_value, length);
+              return WebGLAny(script_state, bool_value.data(), length);
             }
+
             return WebGLAny(script_state, static_cast<bool>(value[0]));
           }
           default:
@@ -5505,7 +5524,7 @@ bool WebGLRenderingContextBase::ValidateTexFunc(
                       params.zoffset))
       return false;
   } else {
-    // For SourceArrayBufferView, function validateTexFuncData() would handle
+    // For SourceArrayBufferView, function ValidateTexFuncData() would handle
     // whether to validate the SettableTexFormat
     // by checking if the ArrayBufferView is null or not.
     if (params.source_type != kSourceArrayBufferView) {
@@ -5653,16 +5672,14 @@ void WebGLRenderingContextBase::TexImageHelperDOMArrayBufferView(
   }
   if (!ValidateTexFuncData(params, pixels, null_disposition, src_offset))
     return;
-  uint8_t* data = reinterpret_cast<uint8_t*>(
-      pixels ? pixels->BaseAddressMaybeShared() : nullptr);
-  if (src_offset) {
-    DCHECK(pixels);
-    // No need to check overflow because validateTexFuncData() already did.
-    data += src_offset * pixels->TypeSize();
-  }
+  // No need to check overflow because validateTexFuncData() already did.
+  base::span<const uint8_t> data = pixels
+                                       ? pixels->ByteSpanMaybeShared().subspan(
+                                             src_offset * pixels->TypeSize())
+                                       : base::span<const uint8_t>();
   Vector<uint8_t> temp_data;
   bool change_unpack_params = false;
-  if (data && *params.width && *params.height &&
+  if (!data.empty() && *params.width && *params.height &&
       (unpack_flip_y_ || unpack_premultiply_alpha_)) {
     DCHECK(params.function_id == kTexImage2D ||
            params.function_id == kTexSubImage2D);
@@ -5679,24 +5696,24 @@ void WebGLRenderingContextBase::TexImageHelperDOMArrayBufferView(
     }
     if (!WebGLImageConversion::ExtractTextureData(
             *params.width, *params.height, params.format, params.type,
-            unpack_params, unpack_flip_y_, unpack_premultiply_alpha_, data,
-            temp_data)) {
+            unpack_params, unpack_flip_y_, unpack_premultiply_alpha_,
+            data.data(), temp_data)) {
       SynthesizeGLError(GL_INVALID_OPERATION, func_name,
                         "Invalid params.format/params.type combination.");
       return;
     }
-    data = temp_data.data();
+    data = temp_data;
     change_unpack_params = true;
   }
   if (params.function_id == kTexImage3D ||
       params.function_id == kTexSubImage3D) {
-    TexImageBase(params, data);
+    TexImageBase(params, data.data());
     return;
   }
 
   ScopedUnpackParametersResetRestore temporary_reset_unpack(
       this, change_unpack_params);
-  TexImageBase(params, data);
+  TexImageBase(params, data.data());
 }
 
 void WebGLRenderingContextBase::texImage2D(
@@ -7367,13 +7384,14 @@ ScriptValue WebGLRenderingContextBase::GetBooleanArrayParameter(
     NOTIMPLEMENTED();
     return WebGLAny(script_state, nullptr, 0);
   }
-  GLboolean value[4] = {0};
-  if (!isContextLost())
-    ContextGL()->GetBooleanv(pname, value);
-  bool bool_value[4];
+  std::array<GLboolean, 4> value = {0};
+  if (!isContextLost()) {
+    ContextGL()->GetBooleanv(pname, value.data());
+  }
+  std::array<bool, 4> bool_value = {};
   for (int ii = 0; ii < 4; ++ii)
     bool_value[ii] = static_cast<bool>(value[ii]);
-  return WebGLAny(script_state, bool_value, 4);
+  return WebGLAny(script_state, bool_value.data(), 4);
 }
 
 ScriptValue WebGLRenderingContextBase::GetFloatParameter(
@@ -7436,9 +7454,9 @@ ScriptValue WebGLRenderingContextBase::GetUnsignedIntParameter(
 ScriptValue WebGLRenderingContextBase::GetWebGLFloatArrayParameter(
     ScriptState* script_state,
     GLenum pname) {
-  GLfloat value[4] = {0};
+  std::array<GLfloat, 4> value = {0};
   if (!isContextLost())
-    ContextGL()->GetFloatv(pname, value);
+    ContextGL()->GetFloatv(pname, value.data());
   unsigned length = 0;
   switch (pname) {
     case GL_ALIASED_POINT_SIZE_RANGE:
@@ -7467,9 +7485,9 @@ ScriptValue WebGLRenderingContextBase::GetWebGLFloatArrayParameter(
 ScriptValue WebGLRenderingContextBase::GetWebGLIntArrayParameter(
     ScriptState* script_state,
     GLenum pname) {
-  GLint value[4] = {0};
+  std::array<GLint, 4> value = {0};
   if (!isContextLost())
-    ContextGL()->GetIntegerv(pname, value);
+    ContextGL()->GetIntegerv(pname, value.data());
   unsigned length = 0;
   switch (pname) {
     case GL_MAX_VIEWPORT_DIMS:

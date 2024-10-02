@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webgl/webgl2_rendering_context_base.h"
 
 #include <memory>
@@ -146,9 +141,8 @@ bool ValidateSubSourceAndGetData(DOMArrayBufferView* view,
   if (!byte_length) {
     byte_length = view->byteLength() - byte_offset;
   }
-  uint8_t* data = static_cast<uint8_t*>(view->BaseAddressMaybeShared());
-  data += byte_offset;
-  *out_base_address = data;
+  const auto data = view->ByteSpanMaybeShared().subspan(byte_offset);
+  *out_base_address = data.data();
   *out_byte_length = byte_length;
   return true;
 }
@@ -178,7 +172,7 @@ class PointableStringArray {
 }  // namespace
 
 // These enums are from manual pages for glTexStorage2D/glTexStorage3D.
-const GLenum kSupportedInternalFormatsStorage[] = {
+static constexpr auto kSupportedInternalFormatsStorage = std::to_array<GLenum>({
     GL_R8,
     GL_R8_SNORM,
     GL_R16F,
@@ -233,7 +227,7 @@ const GLenum kSupportedInternalFormatsStorage[] = {
     GL_DEPTH_COMPONENT32F,
     GL_DEPTH24_STENCIL8,
     GL_DEPTH32F_STENCIL8,
-};
+});
 
 WebGL2RenderingContextBase::WebGL2RenderingContextBase(
     CanvasRenderingContextHost* host,
@@ -668,6 +662,7 @@ ScriptValue WebGL2RenderingContextBase::getInternalformatParameter(
   }
 }
 
+// TODO(crbug.com/351564777): should be UNSAFE_BUFFER_USAGE.
 void WebGL2RenderingContextBase::RecordInternalFormatParameter(
     GLenum internalformat,
     GLint* values,
@@ -675,10 +670,13 @@ void WebGL2RenderingContextBase::RecordInternalFormatParameter(
   if (!IdentifiabilityStudySettings::Get()->ShouldSampleType(
           IdentifiableSurface::Type::kWebGLInternalFormatParameter))
     return;
+  // SAFETY: required from caller.
+  const base::span<GLint> values_span =
+      UNSAFE_BUFFERS(base::span(values, base::checked_cast<size_t>(length)));
   const auto& ukm_params = GetUkmParameters();
   IdentifiableTokenBuilder builder;
-  for (GLint i = 0; i < length; i++) {
-    builder.AddValue(values[i]);
+  for (const auto& value : values_span) {
+    builder.AddValue(value);
   }
   IdentifiabilityMetricBuilder(ukm_params.source_id)
       .Add(IdentifiableSurface::FromTypeAndToken(
@@ -2473,7 +2471,7 @@ void WebGL2RenderingContextBase::compressedTexImage2D(
   }
   ContextGL()->CompressedTexImage2D(
       target, level, internalformat, width, height, border, src_length_override,
-      static_cast<uint8_t*>(data->BaseAddressMaybeShared()) + src_offset);
+      data->ByteSpanMaybeShared().subspan(src_offset).data());
 }
 
 void WebGL2RenderingContextBase::compressedTexImage2D(GLenum target,
@@ -2562,7 +2560,7 @@ void WebGL2RenderingContextBase::compressedTexSubImage2D(
   ContextGL()->CompressedTexSubImage2D(
       target, level, xoffset, yoffset, width, height, format,
       src_length_override,
-      static_cast<uint8_t*>(data->BaseAddressMaybeShared()) + src_offset);
+      data->ByteSpanMaybeShared().subspan(src_offset).data());
 }
 
 void WebGL2RenderingContextBase::compressedTexSubImage2D(GLenum target,
@@ -2632,7 +2630,7 @@ void WebGL2RenderingContextBase::compressedTexImage3D(
   ContextGL()->CompressedTexImage3D(
       target, level, internalformat, width, height, depth, border,
       src_length_override,
-      static_cast<uint8_t*>(data->BaseAddressMaybeShared()) + src_offset);
+      data->ByteSpanMaybeShared().subspan(src_offset).data());
 }
 
 void WebGL2RenderingContextBase::compressedTexImage3D(GLenum target,
@@ -2706,7 +2704,7 @@ void WebGL2RenderingContextBase::compressedTexSubImage3D(
   ContextGL()->CompressedTexSubImage3D(
       target, level, xoffset, yoffset, zoffset, width, height, depth, format,
       src_length_override,
-      static_cast<uint8_t*>(data->BaseAddressMaybeShared()) + src_offset);
+      data->ByteSpanMaybeShared().subspan(src_offset).data());
 }
 
 void WebGL2RenderingContextBase::compressedTexSubImage3D(GLenum target,
@@ -3329,47 +3327,47 @@ void WebGL2RenderingContextBase::drawBuffers(const Vector<GLenum>& buffers) {
   if (isContextLost())
     return;
 
-  GLsizei n = buffers.size();
-  const GLenum* bufs = buffers.data();
-  for (GLsizei i = 0; i < n; ++i) {
-    switch (bufs[i]) {
+  for (const auto& buf : buffers) {
+    switch (buf) {
       case GL_NONE:
       case GL_BACK:
       case GL_COLOR_ATTACHMENT0:
         break;
       default:
-        if (bufs[i] > GL_COLOR_ATTACHMENT0 &&
-            bufs[i] < static_cast<GLenum>(GL_COLOR_ATTACHMENT0 +
-                                          MaxColorAttachments()))
+        if (buf > GL_COLOR_ATTACHMENT0 &&
+            buf < static_cast<GLenum>(GL_COLOR_ATTACHMENT0 +
+                                      MaxColorAttachments())) {
           break;
+        }
         SynthesizeGLError(GL_INVALID_ENUM, "drawBuffers", "invalid buffer");
         return;
     }
   }
   if (!framebuffer_binding_) {
-    if (n != 1) {
+    if (buffers.size() != 1) {
       SynthesizeGLError(GL_INVALID_OPERATION, "drawBuffers",
                         "the number of buffers is not 1");
       return;
     }
-    if (bufs[0] != GL_BACK && bufs[0] != GL_NONE) {
+    if (buffers[0] != GL_BACK && buffers[0] != GL_NONE) {
       SynthesizeGLError(GL_INVALID_OPERATION, "drawBuffers", "BACK or NONE");
       return;
     }
     // Because the backbuffer is simulated on all current WebKit ports, we need
     // to change BACK to COLOR_ATTACHMENT0.
-    GLenum value = (bufs[0] == GL_BACK) ? GL_COLOR_ATTACHMENT0 : GL_NONE;
+    GLenum value = (buffers[0] == GL_BACK) ? GL_COLOR_ATTACHMENT0 : GL_NONE;
     ContextGL()->DrawBuffersEXT(1, &value);
-    SetBackDrawBuffer(bufs[0]);
+    SetBackDrawBuffer(buffers[0]);
   } else {
+    const GLint n = base::checked_cast<GLint>(buffers.size());
     if (n > MaxDrawBuffers()) {
       SynthesizeGLError(GL_INVALID_VALUE, "drawBuffers",
                         "more than max draw buffers");
       return;
     }
     for (GLsizei i = 0; i < n; ++i) {
-      if (bufs[i] != GL_NONE &&
-          bufs[i] != static_cast<GLenum>(GL_COLOR_ATTACHMENT0_EXT + i)) {
+      if (buffers[i] != GL_NONE &&
+          buffers[i] != static_cast<GLenum>(GL_COLOR_ATTACHMENT0_EXT + i)) {
         SynthesizeGLError(GL_INVALID_OPERATION, "drawBuffers",
                           "COLOR_ATTACHMENTi_EXT or NONE");
         return;
@@ -3438,14 +3436,15 @@ void WebGL2RenderingContextBase::clearBufferiv(GLenum buffer,
     return;
   }
 
-  ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_,
+  ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_.data(),
                                                    drawing_buffer_.get());
 
   // Flush any pending implicit clears. This cannot be done after the
   // user-requested clearBuffer call because of scissor test side effects.
   ClearIfComposited(kClearCallerDrawOrClear);
-
-  ContextGL()->ClearBufferiv(buffer, drawbuffer, value.data() + src_offset);
+  // SAFETY: Already validated by ValidateClearBuffer()
+  ContextGL()->ClearBufferiv(buffer, drawbuffer,
+                             value.subspan(src_offset).data());
 }
 
 void WebGL2RenderingContextBase::clearBufferuiv(GLenum buffer,
@@ -3457,13 +3456,14 @@ void WebGL2RenderingContextBase::clearBufferuiv(GLenum buffer,
     return;
   }
 
-  ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_,
+  ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_.data(),
                                                    drawing_buffer_.get());
 
   // This call is not applicable to the default framebuffer attachments
   // as they cannot have UINT type. Ignore any pending implicit clears.
 
-  ContextGL()->ClearBufferuiv(buffer, drawbuffer, value.data() + src_offset);
+  ContextGL()->ClearBufferuiv(buffer, drawbuffer,
+                              value.subspan(src_offset).data());
 }
 
 void WebGL2RenderingContextBase::clearBufferfv(GLenum buffer,
@@ -3481,14 +3481,15 @@ void WebGL2RenderingContextBase::clearBufferfv(GLenum buffer,
   // needed here. However, as support for extended color spaces is
   // added, the type of the back buffer might change, so do the
   // emulation for all clearBuffer entry points instead of just here.
-  ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_,
+  ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_.data(),
                                                    drawing_buffer_.get());
 
   // Flush any pending implicit clears. This cannot be done after the
   // user-requested clearBuffer call because of scissor test side effects.
   ClearIfComposited(kClearCallerDrawOrClear);
 
-  ContextGL()->ClearBufferfv(buffer, drawbuffer, value.data() + src_offset);
+  ContextGL()->ClearBufferfv(buffer, drawbuffer,
+                             value.subspan(src_offset).data());
 
   // This might have been used to clear the color buffer of the default back
   // buffer. Notification is required to update the canvas.
