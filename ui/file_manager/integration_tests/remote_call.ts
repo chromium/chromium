@@ -94,11 +94,13 @@ export class RemoteCall {
       }
       window.currentStep = new Promise(resolve => {
         finishCurrentStep = () => {
+          // eslint-disable-next-line no-console
           console.groupEnd();
           window.currentStep = null;
           resolve();
         };
       });
+      // eslint-disable-next-line no-console
       console.group('Executing: ' + func + ' on ' + appId + ' with args: ');
       console.info(args);
       if (window.autostep !== true) {
@@ -1017,7 +1019,7 @@ export class RemoteCallFilesApp extends RemoteCall {
 
       const actualText =
           await this.waitForElement(appId, ['xf-nudge', '#text']);
-      console.log(actualText);
+      console.info(actualText);
       chrome.test.assertEq(actualText.text, expectedText);
 
       return true;
@@ -1152,7 +1154,7 @@ export class RemoteCallFilesApp extends RemoteCall {
 
   /** Fakes the response from spaced when it retrieves the free space. */
   async setSpacedFreeSpace(freeSpace: bigint) {
-    console.log(freeSpace);
+    console.info(freeSpace);
     await sendTestMessage(
         {name: 'setSpacedFreeSpace', freeSpace: String(freeSpace)});
   }

@@ -324,16 +324,6 @@ module.exports = {
     }
   },
 
-  // 1-month exception for //ui/file_manager. This can be removed in November
-  // 2024. http://b/370371134.
-  {
-    'files' : ['ui/file_manager/**/*.[jt]s'],
-    'rules' : {
-      'no-console' : 'off',
-      'no-restricted-syntax': 'off',
-    },
-  },
-
   // 1-month exception for //chrome/browser/resources/ash/settings. This can be
   // removed November 15 2024.
   {

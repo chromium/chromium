@@ -14,7 +14,7 @@ import {EntryList} from '../../common/js/files_app_entry_types.js';
 import {isSkyvaultV2Enabled} from '../../common/js/flags.js';
 import {recordInterval, recordSmallCount, startInterval} from '../../common/js/metrics.js';
 import {getEntryLabel, str} from '../../common/js/translations.js';
-import {iconSetToCSSBackgroundImageValue} from '../../common/js/util.js';
+import {debug, iconSetToCSSBackgroundImageValue} from '../../common/js/util.js';
 import {COMPUTERS_DIRECTORY_PATH, RootType, SHARED_DRIVES_DIRECTORY_PATH, shouldProvideIcons, Source, VolumeType} from '../../common/js/volume_manager_types.js';
 import {ACTIONS_MODEL_METADATA_PREFETCH_PROPERTY_NAMES, DLP_METADATA_PREFETCH_PROPERTY_NAMES, FILE_SELECTION_METADATA_PREFETCH_PROPERTY_NAMES, ICON_TYPES, LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES} from '../../foreground/js/constants.js';
 import type {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
@@ -121,7 +121,7 @@ function clearCachedEntriesReducer(state: State): State {
 
     delete entries[key];
     if (isDebugStore) {
-      console.log(`Clear entry: ${key}`);
+      console.info(`Clear entry: ${key}`);
     }
   }
 
@@ -643,7 +643,7 @@ export async function*
   let state = getStore().getState();
   let fileData = getFileData(state, fileKey);
   if (!fileData) {
-    console.debug(`failed to find FileData for ${fileKey}`);
+    debug(`failed to find FileData for ${fileKey}`);
     console.warn(`readSubDirectoriesInternal: failed to find FileData`);
     return;
   }

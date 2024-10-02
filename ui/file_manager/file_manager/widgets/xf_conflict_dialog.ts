@@ -59,8 +59,8 @@ export class XfConflictDialog extends HTMLElement {
     this.attachShadow({mode: 'open'}).appendChild(fragment);
 
     this.dialog_ = this.getDialogElement();
-    this.resolve_ = console.log;
-    this.reject_ = console.log;
+    this.resolve_ = console.info;
+    this.reject_ = console.info;
   }
 
   /**

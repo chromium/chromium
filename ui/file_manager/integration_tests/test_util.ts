@@ -149,12 +149,12 @@ export async function sendBrowserTestCommand(
       }
       return result;
     } catch (error: any) {
-      console.log(error.stack || error);
+      console.info(error.stack || error);
       return tryAgain;
     }
   });
   if (debug) {
-    console.log('BrowserTest ' + command.name + ': ' + result);
+    console.info('BrowserTest ' + command.name + ': ' + result);
   }
   return result;
 }
