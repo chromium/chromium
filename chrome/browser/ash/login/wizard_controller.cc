@@ -2436,7 +2436,11 @@ void WizardController::OnCryptohomeRecoverySetupScreenExit(
     CryptohomeRecoverySetupScreen::Result result) {
   OnScreenExit(CryptohomeRecoverySetupScreenView::kScreenId,
                CryptohomeRecoverySetupScreen::GetResultString(result));
-  ShowPasswordSelectionScreen();
+  if (ash::switches::IsOobePinOnlyPrototypeEnabled()) {
+    ShowPinSetupScreen();
+  } else {
+    ShowPasswordSelectionScreen();
+  }
 }
 
 void WizardController::OnPasswordSelectionScreenExit(
@@ -2588,7 +2592,21 @@ void WizardController::OnFingerprintSetupScreenExit(
 void WizardController::OnPinSetupScreenExit(PinSetupScreen::Result result) {
   OnScreenExit(PinSetupScreenView::kScreenId,
                PinSetupScreen::GetResultString(result));
-  FinishAuthFactorsSetup();
+  if (ash::switches::IsOobePinOnlyPrototypeEnabled()) {
+    switch (result) {
+      case PinSetupScreen::Result::kNotApplicableAsPrimaryFactor:
+        ShowPasswordSelectionScreen();
+        break;
+      case PinSetupScreen::Result::kDone:
+      case PinSetupScreen::Result::kUserSkip:
+      case PinSetupScreen::Result::kNotApplicable:
+      case PinSetupScreen::Result::kTimedOut:
+        FinishAuthFactorsSetup();
+        break;
+    }
+  } else {
+    FinishAuthFactorsSetup();
+  }
 }
 
 void WizardController::ObtainContextAndLoginAuthenticated() {

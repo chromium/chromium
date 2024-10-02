@@ -84,6 +84,7 @@ std::string PinSetupScreen::GetResultString(Result result) {
     case Result::kTimedOut:
       return "TimedOut";
     case Result::kNotApplicable:
+    case Result::kNotApplicableAsPrimaryFactor:
       return BaseScreen::kNotApplicable;
   }
   // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
@@ -97,6 +98,12 @@ PinSetupScreen::PinSetupScreen(base::WeakPtr<PinSetupScreenView> view,
       auth_performer_(UserDataAuthClient::Get()),
       cryptohome_pin_engine_(&auth_performer_) {
   DCHECK(view_);
+
+  if (ash::switches::IsOobePinOnlyPrototypeEnabled()) {
+    setup_mode_ = PinSetupMode::kSetupAsPrimaryFactor;
+  } else {
+    setup_mode_ = PinSetupMode::kSetupAsSecondaryFactor;
+  }
 
   quick_unlock::PinBackend::GetInstance()->HasLoginSupport(base::BindOnce(
       &PinSetupScreen::OnHasLoginSupport, weak_ptr_factory_.GetWeakPtr()));
@@ -143,16 +150,32 @@ std::optional<PinSetupScreen::SkipReason> PinSetupScreen::GetSkipReason(
     return SkipReason::kUsupportedHardware;
   }
 
+  // Further checks for the PIN-only setup mode. It needs to login support and
+  // it is only available for consumers.
+  if (setup_mode_ == PinSetupMode::kSetupAsPrimaryFactor &&
+      ash::switches::IsOobePinOnlyPrototypeEnabled()) {
+    if (!has_login_support) {
+      return SkipReason::kNotSupportedAsPrimaryFactor;
+    }
+    // TODO(b/365059362): Skip for managed users.
+  }
+
   // Will not be skipped.
   return std::nullopt;
 }
 
 bool PinSetupScreen::MaybeSkip(WizardContext& context) {
-  // The screen is about to be shown/skipped. Determine the mode for the screen.
-  DetermineSetupMode();
+  DetermineHardwareSupport();
 
   const auto skip_reason = GetSkipReason(context);
   if (skip_reason.has_value()) {
+    if (setup_mode_ == PinSetupMode::kSetupAsPrimaryFactor &&
+        ash::switches::IsOobePinOnlyPrototypeEnabled()) {
+      setup_mode_ = PinSetupMode::kSetupAsSecondaryFactor;
+      exit_callback_.Run(Result::kNotApplicableAsPrimaryFactor);
+      return true;
+    }
+
     ClearAuthData(context);
     // TODO(b/365059362): Create new metric to track the detailed skip reason.
     exit_callback_.Run(Result::kNotApplicable);
@@ -166,7 +189,6 @@ void PinSetupScreen::ShowImpl() {
   // The following are considered invariants when the screen is shown. These
   // values must have either been set at this point, or the screen should have
   // been skipped.
-  CHECK(setup_mode_.has_value());
   CHECK(hardware_support_.has_value());
   CHECK(context()->extra_factors_token);
 
@@ -183,7 +205,7 @@ void PinSetupScreen::ShowImpl() {
       user_manager::UserManager::Get()->IsLoggedInAsChildUser();
 
   const bool using_pin_as_main_factor =
-      setup_mode_.value() == PinSetupMode::kSetupAsPrimaryFactor;
+      setup_mode_ == PinSetupMode::kSetupAsPrimaryFactor;
   const bool has_login_support =
       hardware_support_.value() == HardwareSupport::kLoginCompatible;
   if (view_) {
@@ -217,27 +239,13 @@ void PinSetupScreen::OnUserAction(const base::Value::List& args) {
   BaseScreen::OnUserAction(args);
 }
 
-void PinSetupScreen::DetermineSetupMode() {
-  // The initial setup mode is only determined once, when the screen is shown
-  // for the first time.
-  if (setup_mode_.has_value()) {
-    return;
-  }
-
+void PinSetupScreen::DetermineHardwareSupport() {
   // If cryptohome takes very long to respond, the hardware support status may
   // still be undetermined. (This is very unusual and is being tracked in
   // b/369749485). In that case, assume that there is no support for login.
   if (!hardware_support_.has_value()) {
     LOG(WARNING) << "Could not determine hardware support support for login";
     hardware_support_ = HardwareSupport::kUnlockOnly;
-  }
-
-  // When hardware support is available, PIN will be offered as a main factor.
-  if (hardware_support_.value() == HardwareSupport::kLoginCompatible &&
-      ash::switches::IsOobePinOnlyPrototypeEnabled()) {
-    setup_mode_ = PinSetupMode::kSetupAsPrimaryFactor;
-  } else {
-    setup_mode_ = PinSetupMode::kSetupAsSecondaryFactor;
   }
 }
 

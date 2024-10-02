@@ -267,7 +267,8 @@ class PinSetupScreenTest : public OobeBaseTest {
   void ExpectExitResultAndMetric(PinSetupScreen::Result result) {
     EXPECT_EQ(screen_result_.value(), result);
 
-    if (result == PinSetupScreen::Result::kNotApplicable) {
+    if (result == PinSetupScreen::Result::kNotApplicable ||
+        result == PinSetupScreen::Result::kNotApplicableAsPrimaryFactor) {
       histogram_tester_.ExpectTotalCount(kPinSetupScreenCompletionTime,
                                          /*expected_count=*/0);
     } else {
@@ -551,6 +552,29 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor,
   test::OobeJS().ExpectElementText(
       l10n_util::GetStringUTF8(IDS_DISCOVER_PIN_SETUP_PIN_AS_MAIN_FACTOR_SKIP),
       kSkipButtonCore);
+}
+
+class PinSetupScreenTestAsMainFactorWithoutLoginSupport
+    : public PinSetupScreenTestAsMainFactor {
+ public:
+  PinSetupScreenTestAsMainFactorWithoutLoginSupport() {
+    SetHardwareSupport(false);
+  }
+
+  ~PinSetupScreenTestAsMainFactorWithoutLoginSupport() override = default;
+};
+
+// Tests that the screen is not shown as a main factor when not supported. When
+// that is the case, the password selection screen should be shown next.
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactorWithoutLoginSupport,
+                       NotShownWhenNotSupported) {
+  ShowPinSetupScreen();
+  WaitForScreenExit();
+
+  // Wait for the password selection screen to be surfaced.
+  ExpectExitResultAndMetric(
+      PinSetupScreen::Result::kNotApplicableAsPrimaryFactor);
+  OobeScreenWaiter(PasswordSelectionScreenHandler::kScreenId).Wait();
 }
 
 }  // namespace ash

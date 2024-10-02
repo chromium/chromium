@@ -28,7 +28,8 @@ class PinSetupScreen : public BaseScreen {
     kUserSkip = 1,
     kNotApplicable = 2,
     kTimedOut = 3,
-    kMaxValue = kTimedOut,
+    kNotApplicableAsPrimaryFactor = 4,
+    kMaxValue = kNotApplicableAsPrimaryFactor,
   };
 
   // Detailed reason describing why the screen is being skipped.
@@ -39,6 +40,7 @@ class PinSetupScreen : public BaseScreen {
     kExpiredToken,
     kManagedGuestSessionOrEphemeralLogin,
     kUsupportedHardware,
+    kNotSupportedAsPrimaryFactor,
   };
 
   // This enum is tied directly to a UMA enum defined in
@@ -89,9 +91,7 @@ class PinSetupScreen : public BaseScreen {
     return exit_callback_;
   }
 
-  PinSetupMode get_setup_mode_for_testing() const {
-    return setup_mode_.value();
-  }
+  PinSetupMode get_setup_mode_for_testing() const { return setup_mode_; }
 
  protected:
   // BaseScreen:
@@ -105,14 +105,13 @@ class PinSetupScreen : public BaseScreen {
   std::optional<PinSetupScreen::SkipReason> GetSkipReason(
       WizardContext& context);
 
-  // Determines whether the screen will be used for setting PIN as a main
-  // factor, or as an auxiliary one.
-  void DetermineSetupMode();
+  // Finalizes the hardware support status.
+  void DetermineHardwareSupport();
 
   // Hardware support and screen mode. The main logic bits driving how the
   // screen is surfaced to the user. See enum definition for details.
   std::optional<HardwareSupport> hardware_support_;
-  std::optional<PinSetupMode> setup_mode_;
+  PinSetupMode setup_mode_;
 
   base::WeakPtr<PinSetupScreenView> view_;
   ScreenExitCallback exit_callback_;
