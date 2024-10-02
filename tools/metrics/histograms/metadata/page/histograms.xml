@@ -1250,15 +1250,20 @@ chromium-metrics-reviews@google.com.
     are calculated based on the metrics recorded by the JavaScript, which is
     done after the naivagation commit phase in Search. The metric is emitted
     when the navigation is completed or the app is backgrounded on Android. This
-    is onlly recorded in the outermost main frame.
+    is only recorded in the outermost main frame.
 
     Note that this event is randomly sampled based on the JavaScript in the
     page, recorded at the frequency of 1%.
   </summary>
   <token key="Event">
-    <variant name="HeadChunkContentTime" summary="to process header chunk"/>
+    <variant name="HeadChunkContentTime"
+        summary="to process header chunk (2024-10-01: fixed to include the
+                 time from response start time to header chunk start time)"/>
+    <variant name="HeadChunkStartTime" summary="to reach the head chunk start"/>
     <variant name="SearchContentTime"
         summary="from the server response time to receive the body chunk"/>
+    <variant name="ServerResponseTime"
+        summary="from the navigation start to receive the HTTP headers"/>
     <variant name="TimeBetweenHCTAndSCT"
         summary="between HeadChunkContentTime and SearchContentTime"/>
   </token>
