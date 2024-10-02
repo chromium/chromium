@@ -106,8 +106,6 @@ void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
     } else {
       restriction_level = OnTaskBlocklist::RestrictionLevel::kNoRestrictions;
     }
-    // TODO (b/358197253): Stop the window tracker briefly while adding the new
-    // tabs before resuming it.
     system_web_app_launch_helper_->AddTab(
         url, restriction_level,
         base::BindOnce(&OnTaskSessionManager::OnTabAdded,
@@ -126,6 +124,8 @@ void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
   if (const SessionID window_id =
           system_web_app_manager_->GetActiveSystemWebAppWindowID();
       window_id.is_valid()) {
+    // TODO (b/370871395): Move `SetWindowTrackerForSystemWebAppWindow` to
+    // `OnTaskSystemWebAppManager`.
     system_web_app_manager_->SetWindowTrackerForSystemWebAppWindow(window_id);
     bool is_lock_mode = bundle.locked();
     system_web_app_manager_->SetPinStateForSystemWebAppWindow(
@@ -207,6 +207,8 @@ void OnTaskSessionManager::SystemWebAppLaunchHelper::OnBocaSWALaunched(
   if (const SessionID window_id =
           system_web_app_manager_->GetActiveSystemWebAppWindowID();
       window_id.is_valid()) {
+    // TODO (b/370871395): Move `SetWindowTrackerForSystemWebAppWindow` to
+    // `OnTaskSystemWebAppManager`.
     system_web_app_manager_->SetWindowTrackerForSystemWebAppWindow(window_id);
     system_web_app_manager_->SetPinStateForSystemWebAppWindow(
         /*pinned=*/true, window_id);

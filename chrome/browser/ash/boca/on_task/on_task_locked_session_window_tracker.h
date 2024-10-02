@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -62,6 +63,12 @@ class LockedSessionWindowTracker : public KeyedService,
   // or new tabs that are opened when a navigation
   void ObserveWebContents(content::WebContents* web_content);
 
+  bool can_start_navigation_throttle() {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    return can_start_navigation_throttle_;
+  }
+  virtual void set_can_start_navigation_throttle(bool is_ready);
+
   bool oauth_in_progress() { return oauth_in_progress_; }
   void set_oauth_in_progress(bool in_progress) {
     oauth_in_progress_ = in_progress;
@@ -95,6 +102,7 @@ class LockedSessionWindowTracker : public KeyedService,
   void CleanupWindowTracker();
 
   bool can_open_new_popup_ = true;
+  bool can_start_navigation_throttle_ = true;
   bool oauth_in_progress_ = false;
   const std::unique_ptr<OnTaskBlocklist> on_task_blocklist_;
   raw_ptr<Browser> browser_ = nullptr;

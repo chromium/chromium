@@ -72,11 +72,13 @@ OnTaskLockedSessionNavigationThrottle::MaybeCreateThrottleFor(
       LockedSessionWindowTrackerFactory::GetForBrowserContext(
           handle->GetWebContents()->GetBrowserContext());
   // We do not need to create the throttle when we are not currently observing a
-  // window that needs to be in locked mode, or if the navigation is occurring
-  // outside the outermost main frame (such as subframes on the page so
-  // resources can still load), or if it is a same document navigation (where we
-  // are not navigating to a new page).
-  if (!window_tracker || !window_tracker->browser()) {
+  // window that needs to be in locked mode, or if the navigation throttle is
+  // not ready to start (where we are adding new tabs), or if the navigation is
+  // occurring outside the outermost main frame (such as subframes on the page
+  // so resources can still load), or if it is a same document navigation (where
+  // we are not navigating to a new page).
+  if (!window_tracker || !window_tracker->browser() ||
+      !window_tracker->can_start_navigation_throttle()) {
     return nullptr;
   }
 

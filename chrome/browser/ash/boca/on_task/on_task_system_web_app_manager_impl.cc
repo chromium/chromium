@@ -87,8 +87,7 @@ void OnTaskSystemWebAppManagerImpl::CloseSystemWebAppWindow(
     SessionID window_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   Browser* const browser = GetBrowserWindowWithID(window_id);
-  LockedSessionWindowTracker* const window_tracker =
-      LockedSessionWindowTrackerFactory::GetForBrowserContext(profile_);
+  LockedSessionWindowTracker* const window_tracker = GetWindowTracker();
   if (window_tracker) {
     window_tracker->InitializeBrowserInfoForTracking(nullptr);
   }
@@ -139,8 +138,7 @@ void OnTaskSystemWebAppManagerImpl::SetWindowTrackerForSystemWebAppWindow(
   if (!browser) {
     return;
   }
-  LockedSessionWindowTracker* const window_tracker =
-      LockedSessionWindowTrackerFactory::GetForBrowserContext(profile_);
+  LockedSessionWindowTracker* const window_tracker = GetWindowTracker();
   if (!window_tracker) {
     return;
   }
@@ -155,18 +153,20 @@ SessionID OnTaskSystemWebAppManagerImpl::CreateBackgroundTabWithUrl(
   if (!browser) {
     return SessionID::InvalidValue();
   }
+  LockedSessionWindowTracker* const window_tracker = GetWindowTracker();
+  if (!window_tracker) {
+    return SessionID::InvalidValue();
+  }
+  // Stop the window tracker while adding tabs before resuming it.
+  window_tracker->set_can_start_navigation_throttle(false);
   NavigateParams navigate_params(browser, url, ui::PAGE_TRANSITION_FROM_API);
   navigate_params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
   base::WeakPtr<content::NavigationHandle> navigation_handle =
       Navigate(&navigate_params);
   content::WebContents* const tab = navigation_handle->GetWebContents();
-  LockedSessionWindowTracker* const window_tracker =
-      LockedSessionWindowTrackerFactory::GetForBrowserContext(profile_);
-  if (!window_tracker) {
-    return SessionID::InvalidValue();
-  }
   window_tracker->on_task_blocklist()->SetParentURLRestrictionLevel(
       tab, url, restriction_level);
+  window_tracker->set_can_start_navigation_throttle(true);
   return sessions::SessionTabHelper::IdForTab(tab);
 }
 
@@ -177,11 +177,12 @@ void OnTaskSystemWebAppManagerImpl::RemoveTabsWithTabIds(
   if (!browser) {
     return;
   }
-  LockedSessionWindowTracker* const window_tracker =
-      LockedSessionWindowTrackerFactory::GetForBrowserContext(profile_);
+  LockedSessionWindowTracker* const window_tracker = GetWindowTracker();
   if (!window_tracker) {
     return;
   }
+  // Stop the window tracker while removing tabs before resuming it.
+  window_tracker->set_can_start_navigation_throttle(false);
   // TODO (b/358197253): Add logic to prevent force closing tabs that are
   // actively being used by consumers.
   for (int idx = browser->tab_strip_model()->count() - 1; idx >= 0; --idx) {
@@ -192,6 +193,19 @@ void OnTaskSystemWebAppManagerImpl::RemoveTabsWithTabIds(
       browser->tab_strip_model()->DetachAndDeleteWebContentsAt(idx);
     }
   }
+  window_tracker->set_can_start_navigation_throttle(true);
+}
+
+void OnTaskSystemWebAppManagerImpl::SetWindowTrackerForTesting(
+    LockedSessionWindowTracker* window_tracker) {
+  window_tracker_for_testing_ = window_tracker;
+}
+
+LockedSessionWindowTracker* OnTaskSystemWebAppManagerImpl::GetWindowTracker() {
+  if (window_tracker_for_testing_) {
+    return window_tracker_for_testing_;
+  }
+  return LockedSessionWindowTrackerFactory::GetForBrowserContext(profile_);
 }
 
 }  // namespace ash::boca

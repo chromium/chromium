@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -25,11 +26,29 @@
 
 using ::testing::IsNull;
 using ::testing::NotNull;
+using ::testing::Sequence;
 
 namespace ash::boca {
 namespace {
 
 constexpr char kTestUrl[] = "https://www.test.com";
+
+// Mock implementation of the `LockedSessionWindowTracker`.
+class LockedSessionWindowTrackerMock : public LockedSessionWindowTracker {
+ public:
+  explicit LockedSessionWindowTrackerMock(Profile* profile)
+      : LockedSessionWindowTracker(std::make_unique<OnTaskBlocklist>(
+            std::make_unique<policy::URLBlocklistManager>(
+                profile->GetPrefs(),
+                policy::policy_prefs::kUrlBlocklist,
+                policy::policy_prefs::kUrlAllowlist))) {}
+  ~LockedSessionWindowTrackerMock() override = default;
+
+  MOCK_METHOD(void,
+              set_can_start_navigation_throttle,
+              (bool is_ready),
+              (override));
+};
 
 class OnTaskSystemWebAppManagerImplBrowserTest : public InProcessBrowserTest {
  protected:
@@ -145,7 +164,18 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   // Boca homepage is by default opened.
   EXPECT_EQ(boca_app_browser->tab_strip_model()->count(), 1);
 
+  // Stop the window tracker while adding the new tabs before resuming it.
+  LockedSessionWindowTrackerMock window_tracker(profile());
+  Sequence s;
+  EXPECT_CALL(window_tracker, set_can_start_navigation_throttle(false))
+      .Times(1)
+      .InSequence(s);
+  EXPECT_CALL(window_tracker, set_can_start_navigation_throttle(true))
+      .Times(1)
+      .InSequence(s);
+
   // Create tab from the url and verify that Boca has the tab.
+  system_web_app_manager.SetWindowTrackerForTesting(&window_tracker);
   system_web_app_manager.CreateBackgroundTabWithUrl(
       boca_app_browser->session_id(), GURL(kTestUrl),
       OnTaskBlocklist::RestrictionLevel::kLimitedNavigation);
@@ -157,9 +187,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   EXPECT_EQ(web_contents->GetLastCommittedURL(), GURL(kTestUrl));
 
   // Verify that the restriction is applied to the tab.
-  LockedSessionWindowTracker* const window_tracker =
-      LockedSessionWindowTrackerFactory::GetForBrowserContext(profile());
-  OnTaskBlocklist* const blocklist = window_tracker->on_task_blocklist();
+  OnTaskBlocklist* const blocklist = window_tracker.on_task_blocklist();
   EXPECT_EQ(
       blocklist
           ->parent_tab_to_nav_filters()[sessions::SessionTabHelper::IdForTab(
@@ -180,7 +208,18 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   // Boca homepage is by default opened.
   EXPECT_EQ(boca_app_browser->tab_strip_model()->count(), 1);
 
+  // Stop the window tracker while adding the new tabs before resuming it.
+  LockedSessionWindowTrackerMock window_tracker(profile());
+  Sequence s;
+  EXPECT_CALL(window_tracker, set_can_start_navigation_throttle(false))
+      .Times(1)
+      .InSequence(s);
+  EXPECT_CALL(window_tracker, set_can_start_navigation_throttle(true))
+      .Times(1)
+      .InSequence(s);
+
   // Create tab from the url and verify that Boca has the tab.
+  system_web_app_manager.SetWindowTrackerForTesting(&window_tracker);
   const SessionID tab_id = system_web_app_manager.CreateBackgroundTabWithUrl(
       boca_app_browser->session_id(), GURL(kTestUrl),
       OnTaskBlocklist::RestrictionLevel::kLimitedNavigation);
@@ -190,6 +229,14 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   content::TestNavigationObserver observer(web_contents_1);
   observer.Wait();
   EXPECT_EQ(web_contents_1->GetLastCommittedURL(), GURL(kTestUrl));
+
+  // Stop the window tracker while removing the new tabs before resuming it.
+  EXPECT_CALL(window_tracker, set_can_start_navigation_throttle(false))
+      .Times(1)
+      .InSequence(s);
+  EXPECT_CALL(window_tracker, set_can_start_navigation_throttle(true))
+      .Times(1)
+      .InSequence(s);
 
   // Remove tab with the tab id and verify that Boca no longer has the tab.
   const base::flat_set<SessionID> tab_ids_to_remove = {tab_id};

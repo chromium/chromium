@@ -109,6 +109,12 @@ void LockedSessionWindowTracker::ObserveWebContents(
   Observe(web_content);
 }
 
+void LockedSessionWindowTracker::set_can_start_navigation_throttle(
+    bool is_ready) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  can_start_navigation_throttle_ = is_ready;
+}
+
 OnTaskBlocklist* LockedSessionWindowTracker::on_task_blocklist() {
   return on_task_blocklist_.get();
 }
@@ -126,7 +132,9 @@ void LockedSessionWindowTracker::CleanupWindowTracker() {
     browser_->tab_strip_model()->RemoveObserver(this);
     browser_list_observation_.Reset();
   }
-  on_task_blocklist_->CleanupBlocklist();
+  if (on_task_blocklist_) {
+    on_task_blocklist_->CleanupBlocklist();
+  }
   browser_ = nullptr;
   can_open_new_popup_ = true;
   oauth_in_progress_ = false;
