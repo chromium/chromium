@@ -11,56 +11,14 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
-#include "chrome/browser/ash/crostini/crostini_manager_factory.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace crostini {
 
 namespace {
-
-class CrostiniPackageServiceFactory : public ProfileKeyedServiceFactory {
- public:
-  static CrostiniPackageService* GetForProfile(Profile* profile) {
-    return static_cast<CrostiniPackageService*>(
-        GetInstance()->GetServiceForBrowserContext(profile, true));
-  }
-
-  static CrostiniPackageServiceFactory* GetInstance() {
-    static base::NoDestructor<CrostiniPackageServiceFactory> factory;
-    return factory.get();
-  }
-
- private:
-  friend class base::NoDestructor<CrostiniPackageServiceFactory>;
-
-  CrostiniPackageServiceFactory()
-      : ProfileKeyedServiceFactory(
-            "CrostiniPackageService",
-            ProfileSelections::Builder()
-                .WithRegular(ProfileSelection::kOriginalOnly)
-                // TODO(crbug.com/40257657): Check if this service is needed in
-                // Guest mode.
-                .WithGuest(ProfileSelection::kOriginalOnly)
-                // TODO(crbug.com/41488885): Check if this service is needed for
-                // Ash Internals.
-                .WithAshInternals(ProfileSelection::kOriginalOnly)
-                .Build()) {
-    DependsOn(CrostiniManagerFactory::GetInstance());
-  }
-
-  ~CrostiniPackageServiceFactory() override = default;
-
-  // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override {
-    Profile* profile = Profile::FromBrowserContext(context);
-    return new CrostiniPackageService(profile);
-  }
-};
 
 PackageOperationStatus InstallStatusToOperationStatus(
     InstallLinuxPackageProgressStatus status) {
@@ -122,11 +80,6 @@ struct CrostiniPackageService::QueuedUninstall {
   // Notification displaying "uninstall queued"
   std::unique_ptr<CrostiniPackageNotification> notification;
 };
-
-CrostiniPackageService* CrostiniPackageService::GetForProfile(
-    Profile* profile) {
-  return CrostiniPackageServiceFactory::GetForProfile(profile);
-}
 
 CrostiniPackageService::CrostiniPackageService(Profile* profile)
     : profile_(profile) {
@@ -617,11 +570,6 @@ std::string CrostiniPackageService::GetUniqueNotificationId() {
 
 CrostiniManager::RestartId CrostiniPackageService::GetRestartIdForTesting() {
   return restart_id_for_testing_;
-}
-
-// static
-void CrostiniPackageService::EnsureFactoryBuilt() {
-  CrostiniPackageServiceFactory::GetInstance();
 }
 
 }  // namespace crostini

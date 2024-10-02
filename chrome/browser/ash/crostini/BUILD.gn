@@ -51,6 +51,8 @@ static_library("crostini") {
     "crostini_package_operation_status.h",
     "crostini_package_service.cc",
     "crostini_package_service.h",
+    "crostini_package_service_factory.cc",
+    "crostini_package_service_factory.h",
     "crostini_port_forwarder.cc",
     "crostini_port_forwarder.h",
     "crostini_pref_names.cc",

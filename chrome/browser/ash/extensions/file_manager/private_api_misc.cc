@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/crostini/crostini_export_import.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_package_service.h"
+#include "chrome/browser/ash/crostini/crostini_package_service_factory.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/private_api_util.h"
@@ -874,12 +875,14 @@ FileManagerPrivateInternalGetLinuxPackageInfoFunction::Run() {
       file_manager::util::GetFileSystemContextForRenderFrameHost(
           profile, render_frame_host());
 
-  crostini::CrostiniPackageService::GetForProfile(profile)->GetLinuxPackageInfo(
-      crostini::DefaultContainerId(),
-      file_system_context->CrackURLInFirstPartyContext(GURL(params->url)),
-      base::BindOnce(&FileManagerPrivateInternalGetLinuxPackageInfoFunction::
-                         OnGetLinuxPackageInfo,
-                     this));
+  crostini::CrostiniPackageServiceFactory::GetForProfile(profile)
+      ->GetLinuxPackageInfo(
+          crostini::DefaultContainerId(),
+          file_system_context->CrackURLInFirstPartyContext(GURL(params->url)),
+          base::BindOnce(
+              &FileManagerPrivateInternalGetLinuxPackageInfoFunction::
+                  OnGetLinuxPackageInfo,
+              this));
   return RespondLater();
 }
 
@@ -911,7 +914,7 @@ FileManagerPrivateInternalInstallLinuxPackageFunction::Run() {
       file_manager::util::GetFileSystemContextForRenderFrameHost(
           profile, render_frame_host());
 
-  crostini::CrostiniPackageService::GetForProfile(profile)
+  crostini::CrostiniPackageServiceFactory::GetForProfile(profile)
       ->QueueInstallLinuxPackage(
           crostini::DefaultContainerId(),
           file_system_context->CrackURLInFirstPartyContext(GURL(params->url)),
