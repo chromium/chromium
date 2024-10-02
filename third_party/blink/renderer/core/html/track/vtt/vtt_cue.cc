@@ -29,6 +29,7 @@
 
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_direction_setting.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_autokeyword_double.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
@@ -82,10 +83,6 @@ const auto kDisplayAlignmentMap = std::to_array<CSSValueID>(
 static_assert(std::size(kDisplayAlignmentMap) == V8AlignSetting::kEnumSize,
               "displayAlignmentMap should have the same number of elements as "
               "VTTCue::NumberOfAlignments");
-
-const String& HorizontalKeyword() {
-  return g_empty_string;
-}
 
 const String& VerticalGrowingLeftKeyword() {
   DEFINE_STATIC_LOCAL(const String, verticalrl, ("rl"));
@@ -169,30 +166,33 @@ void VTTCue::CueDidChange(CueMutationAffectsOrder affects_order) {
   display_tree_should_change_ = true;
 }
 
-const String& VTTCue::vertical() const {
+V8DirectionSetting VTTCue::vertical() const {
   switch (writing_direction_) {
     case WritingDirection::kHorizontal:
-      return HorizontalKeyword();
+      return V8DirectionSetting(V8DirectionSetting::Enum::k);
     case WritingDirection::kVerticalGrowingLeft:
-      return VerticalGrowingLeftKeyword();
+      return V8DirectionSetting(V8DirectionSetting::Enum::kRl);
     case WritingDirection::kVerticalGrowingRight:
-      return VerticalGrowingRightKeyword();
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return g_empty_string;
+      return V8DirectionSetting(V8DirectionSetting::Enum::kLr);
   }
+  NOTREACHED();
 }
 
-void VTTCue::setVertical(const String& value) {
+void VTTCue::setVertical(const V8DirectionSetting& value) {
   WritingDirection direction = writing_direction_;
-  if (value == HorizontalKeyword())
-    direction = WritingDirection::kHorizontal;
-  else if (value == VerticalGrowingLeftKeyword())
-    direction = WritingDirection::kVerticalGrowingLeft;
-  else if (value == VerticalGrowingRightKeyword())
-    direction = WritingDirection::kVerticalGrowingRight;
-  else
-    NOTREACHED_IN_MIGRATION();
+  switch (value.AsEnum()) {
+    case V8DirectionSetting::Enum::k:
+      direction = WritingDirection::kHorizontal;
+      break;
+    case V8DirectionSetting::Enum::kRl:
+      direction = WritingDirection::kVerticalGrowingLeft;
+      break;
+    case V8DirectionSetting::Enum::kLr:
+      direction = WritingDirection::kVerticalGrowingRight;
+      break;
+    default:
+      NOTREACHED();
+  }
 
   if (direction == writing_direction_)
     return;
