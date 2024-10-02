@@ -3739,7 +3739,8 @@ void WebContentsImpl::OnWebContentsDestroyed(WebContentsImpl* web_contents) {
 
 void WebContentsImpl::OnRenderWidgetHostDestroyed(
     RenderWidgetHost* render_widget_host) {
-  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::OnWebContentsDestroyed");
+  OPTIONAL_TRACE_EVENT0("content",
+                        "WebContentsImpl::OnRenderWidgetHostDestroyed");
 
   RemoveRenderWidgetHostDestructionObserver(render_widget_host);
 
