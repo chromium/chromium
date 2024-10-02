@@ -1650,7 +1650,11 @@ source_set("unit_test_support") {
     "//third_party/blink/renderer/platform:test_support",
   ]
 
-  data = [ "//third_party/blink/renderer/platform/testing/data/third_party/Noto/NotoNaskhArabic-regular.woff2" ]
+  data = [
+    "//third_party/blink/renderer/platform/testing/data/third_party/Roboto/roboto-regular.woff2",
+    "//third_party/blink/renderer/platform/testing/data/third_party/Noto/NotoNaskhArabic-regular.woff2",
+    "//third_party/blink/web_tests/external/wpt/fonts/mplus-1p-regular.woff",
+  ]
 }
 
 # Fuzzer for blink::StyleSheetContents

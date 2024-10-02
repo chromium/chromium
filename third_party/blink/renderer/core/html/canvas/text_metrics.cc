@@ -383,55 +383,6 @@ const DOMRectReadOnly* TextMetrics::getActualBoundingBox(
   return DOMRectReadOnly::FromRectF(bounding_box);
 }
 
-unsigned TextMetrics::caretPositionFromPoint(double x) {
-  if (runs_with_offset_.empty()) {
-    return 0;
-  }
-
-  // x is visual direction from the alignment point, regardless of the text
-  // direction. Note x can be negative, to enable positions to the left of the
-  // alignment point.
-  float target_x = text_align_dx_ + x;
-
-  // If to the left (or right), return the leftmost (or rightmost) index
-  if (target_x <= 0) {
-    const auto& run_with_offset = runs_with_offset_.front();
-    if (IsLtr(run_with_offset.direction_)) {
-      // The 0 offset within the run is leftmost
-      return run_with_offset.character_offset_;
-    } else {
-      // The highest offset is leftmost.
-      return run_with_offset.num_characters_ +
-             run_with_offset.character_offset_;
-    }
-  }
-  if (target_x >= width_) {
-    const auto& run_with_offset = runs_with_offset_.back();
-    if (IsLtr(run_with_offset.direction_)) {
-      // The max offset within the run is rightmost
-      return run_with_offset.num_characters_ +
-             run_with_offset.character_offset_;
-    } else {
-      // The 0 offset is rightmost.
-      return run_with_offset.character_offset_;
-    }
-  }
-
-  ShapeTextIfNeeded();
-
-  for (HeapVector<RunWithOffset>::reverse_iterator riter =
-           runs_with_offset_.rbegin();
-       riter != runs_with_offset_.rend(); riter++) {
-    if (riter->x_position_ <= target_x) {
-      float run_x = target_x - riter->x_position_;
-      unsigned run_offset = riter->shape_result_->CaretOffsetForHitTest(
-          run_x, StringView(riter->text_), BreakGlyphsOption(true));
-      return run_offset + riter->character_offset_;
-    }
-  }
-  return 0;
-}
-
 namespace {
 float getTextAlignDelta(float width,
                         const TextAlign& text_align,
@@ -575,6 +526,86 @@ HeapVector<Member<TextCluster>> TextMetrics::getTextClustersImpl(
     clusters_for_range.push_back(cluster);
   }
   return clusters_for_range;
+}
+
+unsigned TextMetrics::caretPositionFromPoint(double x) {
+  if (runs_with_offset_.empty()) {
+    return 0;
+  }
+
+  // x is visual direction from the alignment point, regardless of the text
+  // direction. Note x can be negative, to enable positions to the left of the
+  // alignment point.
+  float target_x = text_align_dx_ + x;
+
+  // If to the left (or right), clamp to the left (or right) point
+  if (target_x <= 0) {
+    target_x = 0;
+  }
+  if (target_x >= width_) {
+    target_x = width_;
+  }
+
+  ShapeTextIfNeeded();
+
+  for (HeapVector<RunWithOffset>::reverse_iterator riter =
+           runs_with_offset_.rbegin();
+       riter != runs_with_offset_.rend(); riter++) {
+    if (riter->x_position_ <= target_x) {
+      float run_x = target_x - riter->x_position_;
+      unsigned run_offset = riter->shape_result_->CaretOffsetForHitTest(
+          run_x, StringView(riter->text_), BreakGlyphsOption(true));
+      if (direction_ != riter->direction_) {
+        return CorrectForMixedBidi(riter, run_offset);
+      }
+      return run_offset + riter->character_offset_;
+    }
+  }
+  return 0;
+}
+
+unsigned TextMetrics::CorrectForMixedBidi(
+    HeapVector<RunWithOffset>::reverse_iterator& riter,
+    unsigned run_offset) {
+  DCHECK(direction_ != riter->direction_);
+  // Do our best to handle mixed direction strings. The decisions to adjust
+  // are based on trying to get reasonable selection behavior when there
+  // are LTR runs embedded in an RTL string or vice versa.
+  if (IsRtl(direction_)) {
+    if (run_offset == 0) {
+      // Position is at the left edge of a LTR run within an RTL string.
+      // Move it to the start of the next RTL run on its left.
+      auto next_run = riter + 1;
+      if (next_run != runs_with_offset_.rend()) {
+        return next_run->character_offset_;
+      }
+    } else if (run_offset == riter->num_characters_) {
+      // Position is at the right end of an LTR run embedded in RTL. Move
+      // it to the last position of the RTL run to the right, which is the first
+      // position of the LTR run, unless there is no run to the right.
+      if (riter != runs_with_offset_.rbegin()) {
+        return riter->character_offset_;
+      }
+    }
+  } else {
+    if (run_offset == 0) {
+      // Position is at the right edge of a RTL run within an LTR string.
+      // Move it to the start of the next LTR run on its right.
+      if (riter != runs_with_offset_.rbegin()) {
+        riter--;
+        return riter->character_offset_;
+      }
+    } else if (run_offset == riter->num_characters_) {
+      // Position is at the left end of an RTL run embedded in LTR. Move
+      // it to the last position of the left side LTR run, unless there is
+      // no run to the left.
+      auto next_run = riter + 1;
+      if (next_run != runs_with_offset_.rend()) {
+        return next_run->character_offset_ + next_run->num_characters_;
+      }
+    }
+  }
+  return run_offset + riter->character_offset_;
 }
 
 }  // namespace blink

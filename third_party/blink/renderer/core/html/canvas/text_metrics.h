@@ -109,6 +109,8 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
               const String&);
 
   void ShapeTextIfNeeded();
+  unsigned CorrectForMixedBidi(HeapVector<RunWithOffset>::reverse_iterator&,
+                               unsigned);
 
   HeapVector<Member<TextCluster>> getTextClustersImpl(
       uint32_t start,
