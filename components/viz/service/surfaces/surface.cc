@@ -484,7 +484,11 @@ std::optional<uint64_t> Surface::GetUncommitedFrameIndexNewerThan(
 void Surface::ResetPendingCopySurfaceId() {
   CHECK(pending_copy_surface_id_.is_valid());
   pending_copy_surface_id_ = SurfaceId();
-  RecomputeActiveReferencedSurfaces();
+  // It's an error to compute the surface references if the current surface does
+  // not have an active frame.
+  if (HasActiveFrame()) {
+    RecomputeActiveReferencedSurfaces();
+  }
 }
 
 void Surface::UpdateReferencedAllocationGroups(
