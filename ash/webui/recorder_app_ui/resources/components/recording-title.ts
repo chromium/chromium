@@ -57,11 +57,6 @@ export class RecordingTitle extends ReactiveLitElement {
     }
 
     recording-title-suggestion {
-      /*
-       * TODO: b/361221415 - Remove the old properties when stable Chrome
-       * supports new one.
-       */
-      inset-area: bottom span-right;
       position: absolute;
       position-anchor: --title-textfield;
       position-area: bottom span-right;
