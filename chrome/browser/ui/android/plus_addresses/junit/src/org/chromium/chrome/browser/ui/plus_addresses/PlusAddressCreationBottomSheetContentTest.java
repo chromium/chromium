@@ -13,6 +13,7 @@ import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.ERROR_STATE_INFO;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.LEGACY_ERROR_REPORTING_INSTRUCTION_VISIBLE;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PLUS_ADDRESS_LOADING_VIEW_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PROPOSED_PLUS_ADDRESS;
 
 import android.text.style.ClickableSpan;
@@ -32,15 +33,19 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
+import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowView;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.ContentPriority;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.widget.LoadingView;
 import org.chromium.url.GURL;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -49,6 +54,7 @@ import org.chromium.url.GURL;
         shadows = {ShadowView.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 @Batch(Batch.UNIT_TESTS)
+@EnableFeatures(ChromeFeatureList.PLUS_ADDRESS_ANDROID_ENHANCED_LOADING_STATES_ENABLED)
 public class PlusAddressCreationBottomSheetContentTest {
     private static final PlusAddressCreationNormalStateInfo FIRST_TIME_USAGE_INFO =
             new PlusAddressCreationNormalStateInfo(
@@ -90,6 +96,9 @@ public class PlusAddressCreationBottomSheetContentTest {
 
     @Before
     public void setUp() {
+        // Disabling animations is necessary to avoid running into issues with
+        // delayed hiding of loading views.
+        LoadingView.setDisableAnimationForTest(true);
         mView =
                 new PlusAddressCreationBottomSheetContent(
                         RuntimeEnvironment.application, mBottomSheetController);
@@ -110,6 +119,8 @@ public class PlusAddressCreationBottomSheetContentTest {
                 mView.mProposedPlusAddress.getText(),
                 FIRST_TIME_USAGE_INFO.getProposedPlusAddressPlaceholder());
 
+        assertEquals(mView.mProposedPlusAddressIcon.getVisibility(), View.GONE);
+        assertEquals(mView.mProposedPlusAddressLoadingView.getVisibility(), View.VISIBLE);
         assertEquals(mView.mRefreshIcon.getVisibility(), View.VISIBLE);
         // Refresh icon should be disabled before the first proposed plus address is displayed.
         assertFalse(mView.mRefreshIcon.isEnabled());
@@ -142,6 +153,8 @@ public class PlusAddressCreationBottomSheetContentTest {
                 mView.mProposedPlusAddress.getText(),
                 SECOND_TIME_USAGE_INFO.getProposedPlusAddressPlaceholder());
 
+        assertEquals(mView.mProposedPlusAddressIcon.getVisibility(), View.GONE);
+        assertEquals(mView.mProposedPlusAddressLoadingView.getVisibility(), View.VISIBLE);
         assertEquals(mView.mRefreshIcon.getVisibility(), View.VISIBLE);
         // Refresh icon should be disabled before the first proposed plus address is displayed.
         assertFalse(mView.mRefreshIcon.isEnabled());
@@ -168,6 +181,23 @@ public class PlusAddressCreationBottomSheetContentTest {
                 model, mView, PlusAddressCreationViewBinder::bindPlusAddressCreationBottomSheet);
 
         assertEquals(mView.mRefreshIcon.getVisibility(), View.GONE);
+    }
+
+    @Test
+    @SmallTest
+    public void testSetPlusAddressLoadingViewVisible() {
+        PropertyModel model =
+                PlusAddressCreationCoordinator.createDefaultModel(
+                        SECOND_TIME_USAGE_INFO, mDelegate, /* refreshSupported= */ false);
+        PropertyModelChangeProcessor.create(
+                model, mView, PlusAddressCreationViewBinder::bindPlusAddressCreationBottomSheet);
+        assertEquals(mView.mProposedPlusAddressIcon.getVisibility(), View.GONE);
+        assertEquals(mView.mProposedPlusAddressLoadingView.getVisibility(), View.VISIBLE);
+
+        model.set(PLUS_ADDRESS_LOADING_VIEW_VISIBLE, false);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertEquals(mView.mProposedPlusAddressLoadingView.getVisibility(), View.GONE);
+        verify(mDelegate).onPlusAddressLoadingViewHidden();
     }
 
     @Test

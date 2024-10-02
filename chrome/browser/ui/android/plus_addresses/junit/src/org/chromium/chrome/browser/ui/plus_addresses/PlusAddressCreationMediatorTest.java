@@ -12,7 +12,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.ERROR_STATE_INFO;
-import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PROPOSED_PLUS_ADDRESS;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PLUS_ADDRESS_LOADING_VIEW_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.VISIBLE;
 
@@ -113,10 +113,10 @@ public final class PlusAddressCreationMediatorTest {
     }
 
     @Test
-    public void testUpdateProposedPlusAddress_callsBottomSheetSetProposedPlusAddress() {
+    public void testUpdateProposedPlusAddress_hidesPlusAddressLoadingView() {
         mMediator.updateProposedPlusAddress(PLUS_ADDRESS);
 
-        assertEquals(mModel.get(PROPOSED_PLUS_ADDRESS), PLUS_ADDRESS);
+        assertEquals(mModel.get(PLUS_ADDRESS_LOADING_VIEW_VISIBLE), false);
     }
 
     @Test

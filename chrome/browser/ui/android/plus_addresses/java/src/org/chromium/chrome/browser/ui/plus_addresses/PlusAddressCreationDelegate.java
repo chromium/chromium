@@ -8,17 +8,30 @@ import org.chromium.url.GURL;
 
 /** The set of operations that inform the C++ side of actions taken. */
 public interface PlusAddressCreationDelegate {
+    /** Called when the sninner before the generated plus address gets hidden. */
+    public void onPlusAddressLoadingViewHidden();
+
+    /** Called when the user clicks the refresh button next to the generated plus address. */
     public void onRefreshClicked();
 
+    /** Called when the user clicks the confirm button. */
     public void onConfirmRequested();
 
+    /** Called when the user clicks the "Try again" button on the error screen. */
     public void onTryAgain();
 
+    /**
+     * Called when the user wants to close the bottom sheet by clicking the "Cancel" button on the
+     * bottom sheet.
+     */
     public void onCanceled();
 
+    /** Called by the backend when the generated plus address was confirmed. */
     public void onConfirmFinished();
 
+    /** Called when the user closes the bottom sheet by swiping it down, etc. */
     public void onPromptDismissed();
 
+    /** Called when the user clicks on a link in the bottom sheet description. */
     public void openUrl(GURL url);
 }

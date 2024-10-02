@@ -10,6 +10,8 @@ import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationP
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.ERROR_STATE_INFO;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.LEGACY_ERROR_REPORTING_INSTRUCTION_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.LOADING_INDICATOR_VISIBLE;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PLUS_ADDRESS_ICON_VISIBLE;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PLUS_ADDRESS_LOADING_VIEW_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PROPOSED_PLUS_ADDRESS;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_ENABLED;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_VISIBLE;
@@ -56,6 +58,7 @@ import org.chromium.url.GURL;
     private final TabModel mTabModel;
     private final PlusAddressCreationViewBridge mBridge;
     private PropertyModel mModel;
+    private String mProposedPlusAddress;
 
     /**
      * Creates the mediator.
@@ -98,9 +101,28 @@ import org.chromium.url.GURL;
     }
 
     void updateProposedPlusAddress(String plusAddress) {
-        mModel.set(PROPOSED_PLUS_ADDRESS, plusAddress);
-        mModel.set(REFRESH_ICON_ENABLED, true);
-        mModel.set(CONFIRM_BUTTON_ENABLED, true);
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.PLUS_ADDRESS_ANDROID_ENHANCED_LOADING_STATES_ENABLED)) {
+            mProposedPlusAddress = plusAddress;
+            mModel.set(PLUS_ADDRESS_LOADING_VIEW_VISIBLE, false);
+        } else {
+            mModel.set(PROPOSED_PLUS_ADDRESS, plusAddress);
+            mModel.set(REFRESH_ICON_ENABLED, true);
+            mModel.set(CONFIRM_BUTTON_ENABLED, true);
+        }
+    }
+
+    @Override
+    public void onPlusAddressLoadingViewHidden() {
+        // Loading view gets hidden during the initial property binding if the feature is disabled.
+        // Proposed plus address should not be updated in this case.
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.PLUS_ADDRESS_ANDROID_ENHANCED_LOADING_STATES_ENABLED)) {
+            mModel.set(PLUS_ADDRESS_ICON_VISIBLE, true);
+            mModel.set(PROPOSED_PLUS_ADDRESS, mProposedPlusAddress);
+            mModel.set(REFRESH_ICON_ENABLED, true);
+            mModel.set(CONFIRM_BUTTON_ENABLED, true);
+        }
     }
 
     void showError(@Nullable PlusAddressCreationErrorStateInfo errorStateInfo) {
@@ -138,6 +160,11 @@ import org.chromium.url.GURL;
                         R.string.plus_address_model_refresh_temporary_label_content_android));
         mModel.set(REFRESH_ICON_ENABLED, false);
         mModel.set(CONFIRM_BUTTON_ENABLED, false);
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.PLUS_ADDRESS_ANDROID_ENHANCED_LOADING_STATES_ENABLED)) {
+            mModel.set(PLUS_ADDRESS_ICON_VISIBLE, false);
+            mModel.set(PLUS_ADDRESS_LOADING_VIEW_VISIBLE, true);
+        }
         mBridge.onRefreshClicked();
     }
 

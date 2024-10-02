@@ -12,6 +12,8 @@ import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationP
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.LEGACY_ERROR_REPORTING_INSTRUCTION_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.LOADING_INDICATOR_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.NORMAL_STATE_INFO;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PLUS_ADDRESS_ICON_VISIBLE;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PLUS_ADDRESS_LOADING_VIEW_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PROPOSED_PLUS_ADDRESS;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_ENABLED;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_VISIBLE;
@@ -60,6 +62,10 @@ class PlusAddressCreationViewBinder {
             // This property doesn't require any binding logic.
         } else if (propertyKey == VISIBLE) {
             view.setVisible(model.get(VISIBLE));
+        } else if (propertyKey == PLUS_ADDRESS_ICON_VISIBLE) {
+            view.setPlusAddressIconVisible(model.get(PLUS_ADDRESS_ICON_VISIBLE));
+        } else if (propertyKey == PLUS_ADDRESS_LOADING_VIEW_VISIBLE) {
+            view.setPlusAddressLoadingViewVisible(model.get(PLUS_ADDRESS_LOADING_VIEW_VISIBLE));
         } else if (propertyKey == PROPOSED_PLUS_ADDRESS) {
             view.setProposedPlusAddress(model.get(PROPOSED_PLUS_ADDRESS));
         } else if (propertyKey == REFRESH_ICON_ENABLED) {

@@ -131,9 +131,15 @@ public class PlusAddressCreationModuleTest {
         PlusAddressCreationBottomSheetContent view = openBottomSheet();
 
         // Confirmation button is disabled before the first plus address is displayed.
+        ImageView plusAddressLogo =
+                view.getContentView().findViewById(R.id.proposed_plus_address_logo);
+        LoadingView plusAddressLoadingView =
+                view.getContentView().findViewById(R.id.proposed_plus_address_loading_view);
         Button confirmButton = view.getContentView().findViewById(R.id.plus_address_confirm_button);
         ImageView refreshIcon = view.getContentView().findViewById(R.id.refresh_plus_address_icon);
 
+        assertEquals(plusAddressLogo.getVisibility(), View.GONE);
+        assertEquals(plusAddressLoadingView.getVisibility(), View.VISIBLE);
         assertFalse(refreshIcon.isEnabled());
         assertFalse(confirmButton.isEnabled());
         refreshIcon.performClick();
@@ -141,17 +147,23 @@ public class PlusAddressCreationModuleTest {
 
         // Confirmation button should become enabled after the first plus address is set.
         mCoordinator.updateProposedPlusAddress(PROPOSED_PLUS_ADDRESS);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertEquals(plusAddressLogo.getVisibility(), View.VISIBLE);
+        assertEquals(plusAddressLoadingView.getVisibility(), View.GONE);
         assertTrue(confirmButton.isEnabled());
         assertTrue(refreshIcon.isEnabled());
 
         // Refresh the plus address first time.
         refreshIcon.performClick();
+        assertEquals(plusAddressLogo.getVisibility(), View.GONE);
+        assertEquals(plusAddressLoadingView.getVisibility(), View.VISIBLE);
         assertFalse(confirmButton.isEnabled());
         assertFalse(refreshIcon.isEnabled());
         verify(mBridge).onRefreshClicked();
 
         // Simulate that the plus address was reserved and refresh the plus address again.
         mCoordinator.updateProposedPlusAddress(PROPOSED_PLUS_ADDRESS);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         refreshIcon.performClick();
         assertFalse(confirmButton.isEnabled());
         assertFalse(refreshIcon.isEnabled());
@@ -166,6 +178,7 @@ public class PlusAddressCreationModuleTest {
         ImageView refreshIcon = view.getContentView().findViewById(R.id.refresh_plus_address_icon);
 
         mCoordinator.updateProposedPlusAddress(PROPOSED_PLUS_ADDRESS);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         assertTrue(refreshIcon.isEnabled());
 
         refreshIcon.performClick();
@@ -194,6 +207,7 @@ public class PlusAddressCreationModuleTest {
 
         // Set the plus address to enable the Confirm button.
         mCoordinator.updateProposedPlusAddress(PROPOSED_PLUS_ADDRESS);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         assertTrue(modalConfirmButton.isEnabled());
 
         // Assume a Confirm request was made and failed.
@@ -210,6 +224,7 @@ public class PlusAddressCreationModuleTest {
         Button confirmButton = view.getContentView().findViewById(R.id.plus_address_confirm_button);
 
         mCoordinator.updateProposedPlusAddress(PROPOSED_PLUS_ADDRESS);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         assertTrue(refreshIcon.isEnabled());
         assertTrue(confirmButton.isEnabled());
 
@@ -388,6 +403,10 @@ public class PlusAddressCreationModuleTest {
         assertEquals(normalStateContainer.getVisibility(), View.VISIBLE);
         assertEquals(errorStateContainer.getVisibility(), View.GONE);
 
+        ImageView plusAddressLogo =
+                view.getContentView().findViewById(R.id.proposed_plus_address_logo);
+        LoadingView plusAddressLoadingView =
+                view.getContentView().findViewById(R.id.proposed_plus_address_loading_view);
         Button confirmButton = view.getContentView().findViewById(R.id.plus_address_confirm_button);
         Button cancelButton = view.getContentView().findViewById(R.id.plus_address_cancel_button);
         TextView proposedPlusAddress =
@@ -395,6 +414,8 @@ public class PlusAddressCreationModuleTest {
         ImageView refreshIcon = view.getContentView().findViewById(R.id.refresh_plus_address_icon);
         LoadingView loadingView =
                 view.getContentView().findViewById(R.id.plus_address_creation_loading_view);
+        assertEquals(plusAddressLogo.getVisibility(), View.GONE);
+        assertEquals(plusAddressLoadingView.getVisibility(), View.VISIBLE);
         assertFalse(confirmButton.isEnabled());
         assertTrue(cancelButton.isEnabled());
         assertEquals(
@@ -414,6 +435,10 @@ public class PlusAddressCreationModuleTest {
         assertEquals(normalStateContainer.getVisibility(), View.VISIBLE);
         assertEquals(errorStateContainer.getVisibility(), View.GONE);
 
+        ImageView plusAddressLogo =
+                view.getContentView().findViewById(R.id.proposed_plus_address_logo);
+        LoadingView plusAddressLoadingView =
+                view.getContentView().findViewById(R.id.proposed_plus_address_loading_view);
         Button confirmButton = view.getContentView().findViewById(R.id.plus_address_confirm_button);
         Button cancelButton = view.getContentView().findViewById(R.id.plus_address_cancel_button);
         TextView proposedPlusAddressView =
@@ -421,6 +446,8 @@ public class PlusAddressCreationModuleTest {
         ImageView refreshIcon = view.getContentView().findViewById(R.id.refresh_plus_address_icon);
         LoadingView loadingView =
                 view.getContentView().findViewById(R.id.plus_address_creation_loading_view);
+        assertEquals(plusAddressLogo.getVisibility(), View.VISIBLE);
+        assertEquals(plusAddressLoadingView.getVisibility(), View.GONE);
         assertEquals(confirmButton.getVisibility(), View.GONE);
         assertEquals(cancelButton.getVisibility(), View.VISIBLE);
         assertEquals(proposedPlusAddressView.getText(), proposedPlusAddress);
@@ -435,6 +462,7 @@ public class PlusAddressCreationModuleTest {
 
         if (info.wasPlusAddressReserved()) {
             mCoordinator.updateProposedPlusAddress(proposedPlusAddress);
+            ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         }
 
         // Simulate that the error occurred.

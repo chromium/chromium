@@ -45,6 +45,11 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
     // Contains the plus address icon, the proposed plus address text view and the refresh icon
     // if plus address refresh is supported.
     final ViewGroup mProposedPlusAddressContainer;
+    // Shows plus address logo before the plus address text view to the user.
+    final ImageView mProposedPlusAddressIcon;
+    // Shows a loading view, which is visible only when the plus address is being reserved or
+    // refreshed.
+    final LoadingView mProposedPlusAddressLoadingView;
     // Displays the proposed plus address to the user. This UI string can be updated if plus address
     // refresh is supported and user didn't reach the allocation limit.
     final TextView mProposedPlusAddress;
@@ -91,6 +96,21 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
 
         mProposedPlusAddressContainer =
                 mContentView.findViewById(R.id.proposed_plus_address_container);
+        mProposedPlusAddressIcon = mContentView.findViewById(R.id.proposed_plus_address_logo);
+        mProposedPlusAddressLoadingView =
+                mContentView.findViewById(R.id.proposed_plus_address_loading_view);
+        mProposedPlusAddressLoadingView.addObserver(
+                new LoadingView.Observer() {
+                    @Override
+                    public void onShowLoadingUIComplete() {}
+
+                    @Override
+                    public void onHideLoadingUIComplete() {
+                        if (mDelegate != null) {
+                            mContentView.post(mDelegate::onPlusAddressLoadingViewHidden);
+                        }
+                    }
+                });
         mProposedPlusAddress = mContentView.findViewById(R.id.proposed_plus_address);
         mProposedPlusAddress.setTypeface(Typeface.MONOSPACE);
 
@@ -137,6 +157,18 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
             mBottomSheetController.requestShowContent(this, /* animate= */ true);
         } else {
             mBottomSheetController.hideContent(this, /* animate= */ true);
+        }
+    }
+
+    void setPlusAddressIconVisible(boolean visible) {
+        mProposedPlusAddressIcon.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    void setPlusAddressLoadingViewVisible(boolean visible) {
+        if (visible) {
+            mProposedPlusAddressLoadingView.showLoadingUI(/* skipDelay= */ true);
+        } else {
+            mProposedPlusAddressLoadingView.hideLoadingUI();
         }
     }
 

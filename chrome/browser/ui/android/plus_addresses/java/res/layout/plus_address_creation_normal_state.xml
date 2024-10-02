@@ -53,15 +53,25 @@ found in the LICENSE file.
 
     <ImageView
         android:id="@+id/proposed_plus_address_logo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/plus_address_logo_icon_size"
+        android:layout_height="@dimen/plus_address_logo_icon_size"
         android:layout_weight="0"
         android:src="@drawable/ic_plus_addresses_logo_24dp"
         app:tint="@macro/default_icon_color"
         android:tintMode="src_in"
         android:importantForAccessibility="no"
         android:layout_gravity="center_vertical"
-        android:layout_marginEnd="16dp"/>
+        android:layout_marginEnd="@dimen/plus_address_logo_icon_padding"/>
+
+    <org.chromium.ui.widget.LoadingView
+        android:id="@+id/proposed_plus_address_loading_view"
+        android:layout_width="@dimen/plus_address_logo_icon_size"
+        android:layout_height="@dimen/plus_address_logo_icon_size"
+        android:layout_weight="0"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="@dimen/plus_address_logo_icon_padding"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/proposed_plus_address"
