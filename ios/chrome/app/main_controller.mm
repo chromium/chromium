@@ -56,7 +56,6 @@
 #import "ios/chrome/app/profile/profile_controller.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/safe_mode_app_state_agent.h"
-#import "ios/chrome/app/search_engine_choice_app_agent.h"
 #import "ios/chrome/app/spotlight/spotlight_manager.h"
 #import "ios/chrome/app/startup/chrome_app_startup_parameters.h"
 #import "ios/chrome/app/startup/chrome_main_starter.h"
@@ -871,7 +870,6 @@ SEQUENCE_CHECKER(_sequenceChecker);
   // Create app state agents.
   [appState addAgent:[[AppMetricsAppStateAgent alloc] init]];
   [appState addAgent:[[SafeModeAppAgent alloc] init]];
-  [appState addAgent:[[SearchEngineChoiceAppAgent alloc] init]];
   [appState addAgent:[[VariationsAppStateAgent alloc] init]];
   [appState addAgent:[[IdentityConfirmationAppAgent alloc] init]];
 

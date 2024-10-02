@@ -47,14 +47,14 @@
   // Agents attached to this profile state.
   NSMutableArray<id<ProfileStateAgent>>* _agents;
 
+  // List of connected scenes.
+  NSMutableArray<SceneState*>* _connectedSceneStates;
+
   // Observers registered with this profile state.
   ProfileStateObserverList* _observers;
 
   // YES if `-sceneStateDidEnableUI` been called.
   BOOL _firstSceneHasInitializedUI;
-
-  // Set of connected scenes.
-  std::set<SceneState*> _connectedSceneStates;
 }
 
 #pragma mark - NSObject
@@ -63,6 +63,7 @@
   if ((self = [super init])) {
     _appState = appState;
     _agents = [[NSMutableArray alloc] init];
+    _connectedSceneStates = [[NSMutableArray alloc] init];
     _observers = [ProfileStateObserverList observers];
   }
   return self;
@@ -77,6 +78,28 @@
 - (void)setProfile:(ProfileIOS*)profile {
   CHECK(profile);
   _profile = profile->AsWeakPtr();
+}
+
+- (SceneState*)foregroundActiveScene {
+  if (self.initStage < ProfileInitStage::InitStageUIReady) {
+    return nil;
+  }
+
+  for (SceneState* sceneState in _connectedSceneStates) {
+    if (sceneState.activationLevel == SceneActivationLevelForegroundActive) {
+      return sceneState;
+    }
+  }
+
+  return nil;
+}
+
+- (NSArray<SceneState*>*)connectedScenes {
+  if (self.initStage < ProfileInitStage::InitStageUIReady) {
+    return nil;
+  }
+
+  return [_connectedSceneStates copy];
 }
 
 - (NSArray<id<ProfileStateAgent>>*)connectedAgents {
@@ -109,13 +132,12 @@
                  fromInitStage:fromStage];
 
   if (initStage == ProfileInitStage::InitStageUIReady) {
-    for (SceneState* sceneState : _connectedSceneStates) {
+    for (SceneState* sceneState in _connectedSceneStates) {
       [_observers profileState:self sceneConnected:sceneState];
       if (sceneState.activationLevel >= SceneActivationLevelForegroundActive) {
         [_observers profileState:self sceneDidBecomeActive:sceneState];
       }
     }
-    _connectedSceneStates.clear();
   }
 }
 
@@ -160,7 +182,7 @@
 
 - (void)sceneStateConnected:(SceneState*)sceneState {
   [sceneState addObserver:self];
-  _connectedSceneStates.insert(sceneState);
+  [_connectedSceneStates addObject:sceneState];
   if (self.initStage >= ProfileInitStage::InitStageUIReady) {
     [_observers profileState:self sceneConnected:sceneState];
   }
@@ -185,11 +207,7 @@
     const ProfileInitStage initStage = self.initStage;
     if (initStage >= ProfileInitStage::InitStageUIReady) {
       [_observers profileState:self sceneDidBecomeActive:sceneState];
-    } else {
-      _connectedSceneStates.insert(sceneState);
     }
-  } else {
-    _connectedSceneStates.erase(sceneState);
   }
 }
 

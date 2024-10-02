@@ -29,6 +29,12 @@
 // This will be null until `initStage` >= `InitStageProfileLoaded`.
 @property(nonatomic, assign) ProfileIOS* profile;
 
+// The foreground and active scene, if there is one.
+@property(nonatomic, readonly) SceneState* foregroundActiveScene;
+
+// The list of all connected scenes.
+@property(nonatomic, readonly) NSArray<SceneState*>* connectedScenes;
+
 // All agents that have been attached. Use -addAgent: and -removeAgent: to
 // add and remove agents.
 @property(nonatomic, readonly) NSArray<id<ProfileStateAgent>>* connectedAgents;

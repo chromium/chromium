@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/app/search_engine_choice_app_agent.h"
+#import "ios/chrome/app/search_engine_choice_profile_agent.h"
 
 #import <memory>
 
 #import "base/check.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/profile/profile_init_stage.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -33,10 +34,11 @@ enum class SkipScreenDecision {
 
 }  // namespace
 
-@interface SearchEngineChoiceAppAgent () <SearchEngineChoiceCoordinatorDelegate>
+@interface SearchEngineChoiceProfileAgent () <
+    SearchEngineChoiceCoordinatorDelegate>
 @end
 
-@implementation SearchEngineChoiceAppAgent {
+@implementation SearchEngineChoiceProfileAgent {
   // The coordinator of the search engine choice screen.
   SearchEngineChoiceCoordinator* _searchEngineChoiceCoordinator;
   // UI blocker used by the search engine selection screen.
@@ -47,12 +49,11 @@ enum class SkipScreenDecision {
   SkipScreenDecision _skipScreenDecision;
 }
 
-#pragma mark - SceneObservingAppAgent
+#pragma mark - SceneObservingProfileAgent
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
-  [super sceneState:sceneState transitionedToActivationLevel:level];
-  if (self.appState.initStage != InitStageChoiceScreen) {
+  if (self.profileState.initStage != ProfileInitStage::InitStageChoiceScreen) {
     return;
   }
 
@@ -73,17 +74,17 @@ enum class SkipScreenDecision {
   }
 }
 
-#pragma mark - AppStateObserver
+#pragma mark - ProfileStateObserver
 
-- (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
-  [super appState:appState didTransitionFromInitStage:previousInitStage];
-  if (appState.initStage != InitStageChoiceScreen) {
+- (void)profileState:(ProfileState*)profileState
+    didTransitionToInitStage:(ProfileInitStage)nextInitStage
+               fromInitStage:(ProfileInitStage)fromInitStage {
+  if (self.profileState.initStage != ProfileInitStage::InitStageChoiceScreen) {
     return;
   }
 
   // Try to present the Choice Screen on the first active SceneState.
-  if (SceneState* sceneState = appState.foregroundActiveScene) {
+  if (SceneState* sceneState = profileState.foregroundActiveScene) {
     [self maybeShowChoiceScreen:sceneState];
   }
 }
@@ -96,8 +97,9 @@ enum class SkipScreenDecision {
   [self stopPresentingChoiceScreen];
 
   // Advance to the next stage when the screen is dismissed by the user.
-  if (self.appState.initStage == InitStageChoiceScreen) {
-    [self.appState queueTransitionToNextInitStage];
+  if (self.profileState.initStage == ProfileInitStage::InitStageChoiceScreen) {
+    [self.profileState queueTransitionToNextInitStage];
+    [self.profileState removeAgent:self];
   }
 }
 
@@ -106,7 +108,7 @@ enum class SkipScreenDecision {
 // Returns whether the app was started via an external intent (i.e. any
 // connected scene was given an external intent).
 - (BOOL)startupHadExternalIntent {
-  for (SceneState* sceneState in self.appState.connectedScenes) {
+  for (SceneState* sceneState in self.profileState.connectedScenes) {
     if (sceneState.startupHadExternalIntent) {
       return YES;
     }
@@ -118,7 +120,8 @@ enum class SkipScreenDecision {
 // Tries to present the choice screen on `sceneState`. If the screen is not
 // presented for any reason, then advance the application init state.
 - (void)maybeShowChoiceScreen:(SceneState*)sceneState {
-  DCHECK_EQ(self.appState.initStage, InitStageChoiceScreen);
+  DCHECK_EQ(self.profileState.initStage,
+            ProfileInitStage::InitStageChoiceScreen);
   DCHECK_EQ(sceneState.activationLevel, SceneActivationLevelForegroundActive);
 
   // If the Choice Screen is already presented on another SceneState, then
@@ -150,7 +153,8 @@ enum class SkipScreenDecision {
             /*is_first_run_entrypoint=*/false,
             [self startupHadExternalIntent])) {
       _skipScreenDecision = SkipScreenDecision::kSkip;
-      [self.appState queueTransitionToNextInitStage];
+      [self.profileState queueTransitionToNextInitStage];
+      [self.profileState removeAgent:self];
       return;
     }
 
@@ -180,7 +184,8 @@ enum class SkipScreenDecision {
 // was presenting the Search Engine Choice Screen, move the presentation
 // to the next active SceneState, if any.
 - (void)sceneStateDisconnected:(SceneState*)sceneState {
-  DCHECK_EQ(self.appState.initStage, InitStageChoiceScreen);
+  DCHECK_EQ(self.profileState.initStage,
+            ProfileInitStage::InitStageChoiceScreen);
   if (!_searchEngineChoiceCoordinator) {
     // Nothing to do if the Search Engine Choice Screen is not presented.
     return;
@@ -196,7 +201,7 @@ enum class SkipScreenDecision {
   }
 
   [self stopPresentingChoiceScreen];
-  if (SceneState* nextSceneState = self.appState.foregroundActiveScene) {
+  if (SceneState* nextSceneState = self.profileState.foregroundActiveScene) {
     [self maybeShowChoiceScreen:nextSceneState];
   }
 }

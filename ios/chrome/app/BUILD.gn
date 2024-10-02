@@ -413,30 +413,24 @@ source_set("docking_promo_app_agent") {
   ]
 }
 
-source_set("search_engine_choice_app_agent") {
+source_set("search_engine_choice_profile_agent") {
   sources = [
-    "search_engine_choice_app_agent.h",
-    "search_engine_choice_app_agent.mm",
+    "search_engine_choice_profile_agent.h",
+    "search_engine_choice_profile_agent.mm",
   ]
   deps = [
-    ":tests_hook",
     "//base",
     "//components/search_engines",
-    "//ios/chrome/app/application_delegate:app_state_header",
-    "//ios/chrome/app/application_delegate:application_delegate_internal",
-    "//ios/chrome/app/application_delegate:observing_app_state_agent",
-    "//ios/chrome/browser/policy/model",
-    "//ios/chrome/browser/promos_manager/model",
-    "//ios/chrome/browser/promos_manager/model:constants",
-    "//ios/chrome/browser/promos_manager/model:factory",
+    "//ios/chrome/app/profile",
     "//ios/chrome/browser/search_engine_choice/model",
     "//ios/chrome/browser/search_engines/model",
-    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_observer",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/signin/model:signin_util",
+    "//ios/chrome/browser/ui/scoped_ui_blocker",
     "//ios/chrome/browser/ui/search_engine_choice",
-    "//ios/public/provider/chrome/browser/signin:choice_api",
   ]
 }
 
@@ -478,7 +472,6 @@ source_set("app_internal") {
     ":launch_screen_ui",
     ":mode",
     ":safe_mode_app_state_agent",
-    ":search_engine_choice_app_agent",
     ":tests_hook",
     ":variations_app_state_agent",
     "//base",
