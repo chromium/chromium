@@ -1,109 +1,35 @@
-<style include="cr-hidden-style">
-  :host {
-    --border-bottom-height: 1px;
-    --button-row-height: calc(2 * var(--padding-top-bottom) +
-        var(--cr-button-height));
-    --drawer-transition: 0.3s cubic-bezier(.25, .1, .25, 1);
-    --padding-top-bottom: 10px;
-  }
-
-  cr-tooltip-icon {
-    margin-inline-end: 20px;
-  }
-
-  #devDrawer[expanded] #buttonStrip {
-    top: 0;
-  }
-
-  #devDrawer {
-    background: #fff;
-    border-bottom: 1px solid var(--google-grey-300);
-    height: 0;
-    overflow-x: hidden;
-    overflow-y: auto;
-    position: relative;
-    transition: height var(--drawer-transition);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    #devDrawer {
-      background: none;
-      border-bottom-color: var(--cr-separator-color);
-    }
-  }
-
-  #devDrawer[expanded] {
-    height: calc(var(--button-row-height) + var(--border-bottom-height));
-  }
-
-  #buttonStrip {
-    margin-inline-end: auto;
-    margin-inline-start: 24px;
-    padding: var(--padding-top-bottom) 0;
-    position: absolute;
-    top: calc(var(--button-row-height) * -1);
-    transition: top var(--drawer-transition);
-    /* Prevent selection of the blank space between buttons. */
-    user-select: none;
-    width: 100%;
-  }
-
-  #buttonStrip cr-button {
-    margin-inline-end: 16px;
-  }
-
-  .more-actions {
-    align-items: center;
-    display: flex;
-    justify-content: flex-end;
-    white-space: nowrap;
-  }
-
-  .more-actions span {
-    margin-inline-end: 16px;
-  }
-
-  cr-toolbar {
-    --cr-toolbar-center-basis: 680px;
-    --cr-toolbar-field-max-width: var(--cr-toolbar-center-basis);
-    --cr-toolbar-field-width: 100%;
-    --cr-toolbar-header-white-space: nowrap;
-  }
-</style>
 <cr-toolbar id="toolbar" page-name="$i18n{toolbarTitle}"
     search-prompt="$i18n{search}" clear-label="$i18n{clearSearch}" autofocus
-    menu-label="$i18n{mainMenu}" narrow="{{narrow}}" narrow-threshold="1000"
-    show-menu="[[narrow]]">
+    menu-label="$i18n{mainMenu}" ?narrow="${this.narrow}"
+    @narrow-changed="${this.onNarrowChanged_}" narrow-threshold="1000"
+    ?show-menu="${this.narrow}">
   <div class="more-actions">
     <span id="devModeLabel">$i18n{toolbarDevMode}</span>
-    <cr-tooltip-icon hidden="[[!shouldDisableDevMode_(
-        devModeControlledByPolicy, isChildAccount)]]"
-        tooltip-text="[[getTooltipText_(isChildAccount)]]"
-        icon-class="[[getIcon_(isChildAccount)]]"
-        icon-aria-label="[[getTooltipText_(isChildAccount)]]">
+    <cr-tooltip-icon ?hidden="${!this.shouldDisableDevMode_()}"
+        tooltip-text="${this.getTooltipText_()}"
+        icon-class="${this.getIcon_()}"
+        icon-aria-label="${this.getTooltipText_()}">
     </cr-tooltip-icon>
-    <cr-toggle id="devMode" on-change="onDevModeToggleChange_"
-        disabled="[[shouldDisableDevMode_(
-            devModeControlledByPolicy, isChildAccount)]]"
-        checked="[[inDevMode]]" aria-labelledby="devModeLabel">
+    <cr-toggle id="devMode" @change="${this.onDevModeToggleChange_}"
+        ?disabled="${this.shouldDisableDevMode_()}"
+        ?checked="${this.inDevMode}" aria-labelledby="devModeLabel">
     </cr-toggle>
   </div>
 </cr-toolbar>
-<template is="dom-if" if="[[showPackDialog_]]" restamp>
-  <extensions-pack-dialog delegate="[[delegate]]"
-      on-close="onPackDialogClose_">
-  </extensions-pack-dialog>
-</template>
-<div id="devDrawer" expanded$="[[expanded_]]">
+${this.showPackDialog_ ? html`
+  <extensions-pack-dialog .delegate="${this.delegate}"
+      @close="${this.onPackDialogClose_}">
+  </extensions-pack-dialog>` : ''}
+<div id="devDrawer" ?expanded="${this.expanded_}">
   <div id="buttonStrip">
-    <cr-button hidden$="[[!canLoadUnpacked]]" id="loadUnpacked"
-        on-click="onLoadUnpackedClick_">
+    <cr-button ?hidden="${!this.canLoadUnpacked_()}" id="loadUnpacked"
+        @click="${this.onLoadUnpackedClick_}">
       $i18n{toolbarLoadUnpacked}
     </cr-button>
-    <cr-button id="packExtensions" on-click="onPackClick_">
+    <cr-button id="packExtensions" @click="${this.onPackClick_}">
       $i18n{toolbarPack}
     </cr-button>
-    <cr-button id="updateNow" on-click="onUpdateNowClick_"
+    <cr-button id="updateNow" @click="${this.onUpdateNowClick_}"
         title="$i18n{toolbarUpdateNowTooltip}">
       $i18n{toolbarUpdateNow}
     </cr-button>

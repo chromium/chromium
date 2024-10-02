@@ -1,73 +1,23 @@
-<style include="cr-icons cr-hidden-style cr-nav-menu-item-style
-cr-shared-style">
-  :host {
-    --sidebar-inactive-color: #5a5a5a;
-    color: var(--sidebar-inactive-color);
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    overflow-x: hidden;
-    overflow-y: auto;
-    width: var(--sidebar-width);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :host {
-      --sidebar-inactive-color: var(--cr-primary-text-color);
-    }
-  }
-
-  #sectionMenu {
-    padding-top: 8px;
-  }
-
-  .separator {
-    border-top: var(--cr-separator-line);
-    margin: 8px 0;
-  }
-
-  #moreExtensions {
-    align-items: center;
-    display: flex;
-    margin-bottom: 8px;
-  }
-
-  #web-store-icon {
-    --iron-icon-height: 24px;
-    --iron-icon-width: 24px;
-    margin-inline-end: 18px;
-    margin-inline-start: -2px;
-  }
-
-  #discover-more-text {
-    line-height: 19px;
-    margin-inline-end: 10px;
-  }
-
-  #discover-more-text a {
-    color: var(--cr-link-color);
-  }
-</style>
 <cr-menu-selector id="sectionMenu"
     selected-attribute="selected"
     attr-for-selected="data-path"
-    selected="[[selectedPath_]]">
+    .selected="${this.selectedPath_}">
   <!-- Values for "data-path" attribute must match the "Page" enum. -->
   <a role="menuitem" class="cr-nav-menu-item" id="sectionsExtensions" href="/"
-      on-click="onLinkClick_" data-path="items-list">
+      @click="${this.onLinkClick_}" data-path="items-list">
     <cr-icon icon="extensions-icons:my_extensions"></cr-icon>
     $i18n{sidebarExtensions}
     <cr-ripple></cr-ripple>
   </a>
   <a role="menuitem" class="cr-nav-menu-item" id="sectionsSitePermissions"
-      hidden="[[!enableEnhancedSiteControls]]" href="/sitePermissions"
-      on-click="onLinkClick_" data-path="site-permissions">
+      ?hidden="${!this.enableEnhancedSiteControls}" href="/sitePermissions"
+      @click="${this.onLinkClick_}" data-path="site-permissions">
     <cr-icon icon="extensions-icons:site_permissions"></cr-icon>
     $i18n{sitePermissions}
     <cr-ripple></cr-ripple>
   </a>
   <a role="menuitem" class="cr-nav-menu-item" id="sectionsShortcuts"
-      href="/shortcuts" on-click="onLinkClick_"
+      href="/shortcuts" @click="${this.onLinkClick_}"
       data-path="keyboard-shortcuts">
     <cr-icon icon="extensions-icons:keyboard_shortcuts"></cr-icon>
     $i18n{keyboardShortcuts}
@@ -79,7 +29,7 @@ cr-shared-style">
   <cr-icon id="web-store-icon" icon="extensions-icons:web_store">
   </cr-icon>
   <span id="discover-more-text" class="cr-secondary-text"
-      on-click="onMoreExtensionsClick_"
-      inner-h-t-m-l="[[discoverMoreText_]]"></span>
+      @click="${this.onMoreExtensionsClick_}"
+      .innerHTML="${this.computeDiscoverMoreText_()}"></span>
   <cr-ripple></cr-ripple>
 </div>

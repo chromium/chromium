@@ -88,6 +88,8 @@ build_webui("build") {
     "shared_style_lit.css",
     "shared_vars.css",
     "shortcut_input.css",
+    "sidebar.css",
+    "toolbar.css",
   ]
 
   ts_composite = true
