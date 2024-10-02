@@ -75,6 +75,10 @@ class WebIdlSchemaTest(unittest.TestCase):
         },
         getReturns(schema, 'returnsDOMString'),
     )
+    self.assertEqual({
+        'name': 'returnsCustomType',
+        '$ref': 'ExampleType'
+    }, getReturns(schema, 'returnsCustomType'))
 
   # Tests function parameters are processed as expected.
   def testFunctionParameters(self):
@@ -110,6 +114,15 @@ class WebIdlSchemaTest(unittest.TestCase):
         'name': 'last',
         'type': 'string'
     }], getFunctionParameters(schema, 'takesOptionalInnerArgument'))
+    self.assertEqual([{
+        'name': 'customTypeArgument',
+        '$ref': 'ExampleType'
+    }], getFunctionParameters(schema, 'takesCustomType'))
+    self.assertEqual([{
+        'name': 'optionalCustomTypeArgument',
+        'optional': True,
+        '$ref': 'ExampleType'
+    }], getFunctionParameters(schema, 'takesOptionalCustomType'))
 
 
   # Tests that Dictionaries defined on the top level of the IDL file are

@@ -26,6 +26,11 @@ interface TestWebIdl {
       DOMString argument1, optional double argument2);
   static void takesOptionalInnerArgument(
       DOMString first, optional DOMString optionalInner, DOMString last);
+
+  static ExampleType returnsCustomType();
+  static void takesCustomType(ExampleType customTypeArgument);
+  static void takesOptionalCustomType(
+  optional ExampleType optionalCustomTypeArgument);
 };
 
 partial interface Browser {
