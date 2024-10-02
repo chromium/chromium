@@ -4365,6 +4365,7 @@ if (!is_android) {
         "//chrome/browser/controlled_frame:test_support",
         "//chrome/browser/devtools:test_support",
         "//chrome/browser/extensions:test_support",
+        "//chrome/browser/hid",
         "//chrome/browser/ui/global_error:test_support",
 
         # TODO(357784804): Remove this explicit dependency on `//c/b/ui/zoom`
@@ -8144,6 +8145,7 @@ test("unit_tests") {
       "//chrome/browser/companion/core/proto",
       "//chrome/browser/content_settings:unit_tests",
       "//chrome/browser/enterprise/connectors/analysis:features",
+      "//chrome/browser/hid",
       "//chrome/browser/image_editor:image_editor_component_util",
       "//chrome/browser/image_fetcher",
       "//chrome/browser/importer:unit_tests",

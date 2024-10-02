@@ -1714,6 +1714,7 @@ static_library("ui") {
       "//chrome/browser/enterprise/watermark:watermark_view_lib",
       "//chrome/browser/feedback:feedback_enum",
       "//chrome/browser/headless:command_processor",
+      "//chrome/browser/hid",
       "//chrome/browser/image_editor",
       "//chrome/browser/image_editor:image_editor_component_util",
       "//chrome/browser/lens/region_search",
