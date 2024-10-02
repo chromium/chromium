@@ -162,7 +162,7 @@ ProductSpecificationsDisclosureDialog::ProductSpecificationsDisclosureDialog(
   set_dialog_size(kDialogSize);
   set_can_close(true);
   set_allow_default_context_menu(false);
-  set_dialog_modal_type(ui::mojom::ModalType::kChild);
+  set_dialog_modal_type(ui::mojom::ModalType::kNone);
   set_dialog_args(base::WriteJson(dialog_args.ToValue()).value());
 }
 
