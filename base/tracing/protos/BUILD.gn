@@ -15,6 +15,8 @@ proto_library("chrome_track_event") {
   generate_cc = false
   generate_python = false
   generate_descriptor = "chrome_track_event.descriptor"
+  deps =
+      [ "//third_party/perfetto/protos/perfetto/trace/track_event:descriptor" ]
 }
 
 protozero_library("chrome_track_event_zero") {
@@ -23,6 +25,8 @@ protozero_library("chrome_track_event_zero") {
   import_dirs = [ "//third_party/perfetto/" ]
   generator_plugin_options = "wrapper_namespace=pbzero"
   omit_protozero_dep = true
+  deps =
+      [ "//third_party/perfetto/protos/perfetto/trace/track_event:descriptor" ]
 }
 
 grit("chrome_track_event_resources") {
