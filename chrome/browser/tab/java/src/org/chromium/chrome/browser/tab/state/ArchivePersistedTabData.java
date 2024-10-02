@@ -78,7 +78,7 @@ public class ArchivePersistedTabData extends PersistedTabData {
 
     @Override
     boolean deserialize(@Nullable ByteBuffer bytes) {
-        if (bytes == null || bytes.limit() == 0) return false;
+        if (bytes == null || !bytes.hasRemaining()) return false;
 
         try {
             mArchivedTimeMs = ArchivePersistedTabDataProto.parseFrom(bytes).getArchivedTimeMs();

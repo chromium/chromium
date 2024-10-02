@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 
+import java.nio.ByteBuffer;
 import java.util.concurrent.TimeoutException;
 
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -99,5 +100,35 @@ public class ArchivePersistedTabDataTest {
                             });
                 });
         helpers[2].waitForCallback(0);
+    }
+
+    @SmallTest
+    @Test
+    public void testDeserializationFailure() throws TimeoutException {
+        CallbackHelper helper = new CallbackHelper();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ArchivePersistedTabData.from(
+                            sActivityTestRule.getActivity().getActivityTab(),
+                            (res) -> {
+                                Assert.assertNotNull(res);
+                                ByteBuffer bytes = null;
+                                Assert.assertFalse(
+                                        "Null byte buffer should early return",
+                                        res.deserialize(bytes));
+                                bytes = ByteBuffer.allocate(0);
+                                Assert.assertFalse(
+                                        "Empty byte buffer should early return",
+                                        res.deserialize(bytes));
+                                bytes = ByteBuffer.allocate(100);
+                                Assert.assertFalse(
+                                        "Non-empty byte buffer which isn't a proto should throw a"
+                                                + " caught exception and return",
+                                        res.deserialize(bytes));
+                                Assert.assertFalse(res.deserialize(bytes));
+                                helper.notifyCalled();
+                            });
+                });
+        helper.waitForCallback(0);
     }
 }
