@@ -30,7 +30,8 @@ public class CachedFlagUnitTest {
 
     @After
     public void tearDown() {
-        CachedFlagUtils.resetFlagsForTesting();
+        ValuesReturned.clearForTesting();
+        ValuesOverridden.removeOverrides();
     }
 
     @Test(expected = AssertionError.class)
@@ -81,7 +82,8 @@ public class CachedFlagUnitTest {
         assertIsEnabledMatches(A_OFF_B_ON, featureA, featureB);
 
         // Pretend the app was restarted. The SharedPrefs should remain.
-        CachedFlagUtils.resetFlagsForTesting();
+        ValuesReturned.clearForTesting();
+        ValuesOverridden.removeOverrides();
 
         // Simulate ChromeFeatureList retrieving new, different values for the flags.
         FeatureList.setTestFeatures(A_ON_B_ON);
@@ -98,7 +100,8 @@ public class CachedFlagUnitTest {
         assertIsEnabledMatches(A_OFF_B_ON, featureA, featureB);
 
         // Pretend the app was restarted again.
-        CachedFlagUtils.resetFlagsForTesting();
+        ValuesReturned.clearForTesting();
+        ValuesOverridden.removeOverrides();
 
         // The SharedPrefs should retain the latest values.
         assertIsEnabledMatches(A_ON_B_ON, featureA, featureB);

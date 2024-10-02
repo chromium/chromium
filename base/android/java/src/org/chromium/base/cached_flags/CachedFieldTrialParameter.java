@@ -111,22 +111,11 @@ public abstract class CachedFieldTrialParameter {
     }
 
     /**
-     * @return A human-readable string uniquely identifying the field trial parameter.
-     */
-    private static String generateFullName(String featureName, String parameterName) {
-        return featureName + ":" + parameterName;
-    }
-
-    static String generateSharedPreferenceKey(String featureName, String parameterName) {
-        return CachedFlagsSharedPreferences.FLAGS_FIELD_TRIAL_PARAM_CACHED.createKey(
-                generateFullName(featureName, parameterName));
-    }
-
-    /**
      * @return The SharedPreferences key to cache the field trial parameter.
      */
     String getSharedPreferenceKey() {
-        return generateSharedPreferenceKey(getFeatureName(), getParameterName());
+        return CachedFlagsSharedPreferences.generateParamSharedPreferenceKey(
+                getFeatureName(), getParameterName());
     }
 
     /**
@@ -136,14 +125,4 @@ public abstract class CachedFieldTrialParameter {
      * loaded yet.
      */
     abstract void writeCacheValueToEditor(SharedPreferences.Editor editor);
-
-    /**
-     * Forces a field trial parameter value for testing. This is only for the annotation processor
-     * to use. Tests should use "PARAMETER.setForTesting()" instead.
-     */
-    public static void setForTesting(
-            String featureName, String variationName, String stringVariationValue) {
-        String preferenceKey = generateSharedPreferenceKey(featureName, variationName);
-        ValuesOverridden.setOverrideForTesting(preferenceKey, stringVariationValue);
-    }
 }

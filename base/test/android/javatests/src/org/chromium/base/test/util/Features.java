@@ -8,8 +8,8 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureParam;
 import org.chromium.base.Flag;
-import org.chromium.base.cached_flags.CachedFlag;
-import org.chromium.base.cached_flags.CachedFlagUtils;
+import org.chromium.base.cached_flags.ValuesOverridden;
+import org.chromium.base.cached_flags.ValuesReturned;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -47,7 +47,8 @@ public class Features {
 
     static void resetCachedFlags() {
         // TODO(agrieve): Allow cached flags & field trials to be set in @BeforeClass.
-        CachedFlagUtils.resetFlagsForTesting();
+        ValuesReturned.clearForTesting();
+        ValuesOverridden.removeOverrides();
         FieldTrials.getInstance().reset();
         Flag.resetAllInMemoryCachedValuesForTesting();
         FeatureParam.resetAllInMemoryCachedValuesForTesting();
@@ -57,7 +58,7 @@ public class Features {
         // TODO(agrieve): Use ScopedFeatureList to update native feature states even after
         //     native feature list has been initialized.
         FeatureList.setTestFeaturesNoResetForTesting(flagStates);
-        CachedFlag.setFeaturesForTesting(flagStates);
+        ValuesReturned.setFeaturesForTesting(flagStates);
         // Apply "--force-fieldtrials" passed by @CommandLineFlags.
         FieldTrials.getInstance().applyFieldTrials(CommandLine.getInstance());
     }

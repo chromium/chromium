@@ -42,16 +42,4 @@ public class CachedFlagUtils {
         }
         editor.apply();
     }
-
-    /**
-     * Do not call this from tests.
-     *
-     * <p>Test runners already reset this state.
-     *
-     * <p>Exceptions are tests that test the flags infrastructure.
-     */
-    public static void resetFlagsForTesting() {
-        ValuesReturned.clearForTesting();
-        ValuesOverridden.removeOverrides();
-    }
 }

@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** Keeps track of values returned for cached flags and field trial parameters. */
-abstract class ValuesReturned {
+public abstract class ValuesReturned {
     @GuardedBy("sBoolValues")
     static final Map<String, Boolean> sBoolValues = new HashMap<>();
 
@@ -23,7 +23,12 @@ abstract class ValuesReturned {
     @GuardedBy("sDoubleValues")
     static final Map<String, Double> sDoubleValues = new HashMap<>();
 
-    static void clearForTesting() {
+    /**
+     * Forget the values returned this run for tests. New values will be calculated when needed.
+     *
+     * <p>Do not call this directly from tests.
+     */
+    public static void clearForTesting() {
         synchronized (sBoolValues) {
             sBoolValues.clear();
         }
@@ -35,6 +40,23 @@ abstract class ValuesReturned {
         }
         synchronized (sDoubleValues) {
             sDoubleValues.clear();
+        }
+    }
+
+    /**
+     * Sets the feature flags to use in JUnit and instrumentation tests.
+     *
+     * <p>Do not call this from tests; use @EnableFeatures/@DisableFeatures annotations instead.
+     */
+    public static void setFeaturesForTesting(Map<String, Boolean> features) {
+        synchronized (sBoolValues) {
+            for (Map.Entry<String, Boolean> entry : features.entrySet()) {
+                String featureName = entry.getKey();
+                Boolean flagValue = entry.getValue();
+                String sharedPreferencesKey =
+                        CachedFlagsSharedPreferences.FLAGS_CACHED.createKey(featureName);
+                sBoolValues.put(sharedPreferencesKey, flagValue);
+            }
         }
     }
 }

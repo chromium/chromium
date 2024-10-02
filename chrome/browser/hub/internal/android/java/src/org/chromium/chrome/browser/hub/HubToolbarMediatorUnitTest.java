@@ -35,7 +35,6 @@ import androidx.test.filters.SmallTest;
 
 import com.google.common.collect.ImmutableSet;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,7 +44,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
-import org.chromium.base.cached_flags.CachedFlagUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -121,11 +119,6 @@ public class HubToolbarMediatorUnitTest {
 
         mTabSwitcherReferenceButtonDataSupplier1.set(mDisplayButtonData);
         mIncognitoTabSwitcherReferenceButtonDataSupplier2.set(mDisplayButtonData);
-    }
-
-    @After
-    public void tearDown() {
-        CachedFlagUtils.resetFlagsForTesting();
     }
 
     @Test

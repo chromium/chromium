@@ -150,25 +150,6 @@ public class CachedFlag extends Flag {
         return mPreferenceKey;
     }
 
-    /**
-     * Sets the feature flags to use in JUnit and instrumentation tests.
-     *
-     * @deprecated Do not call this from tests; use @EnableFeatures/@DisableFeatures annotations
-     *     instead.
-     */
-    @Deprecated
-    public static void setFeaturesForTesting(Map<String, Boolean> features) {
-        synchronized (ValuesReturned.sBoolValues) {
-            for (Map.Entry<String, Boolean> entry : features.entrySet()) {
-                String featureName = entry.getKey();
-                Boolean flagValue = entry.getValue();
-                String sharedPreferencesKey =
-                        CachedFlagsSharedPreferences.FLAGS_CACHED.createKey(featureName);
-                ValuesReturned.sBoolValues.put(sharedPreferencesKey, flagValue);
-            }
-        }
-    }
-
     /** Create a Map of feature names -> {@link CachedFlag} from multiple lists of CachedFlags. */
     public static Map<String, CachedFlag> createCachedFlagMap(
             List<List<CachedFlag>> allCachedFlagsLists) {

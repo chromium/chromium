@@ -8,36 +8,12 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.AnyThread;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import org.chromium.base.FeatureMap;
 
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /** AllCachedFieldTrialParameters caches all the parameters for a feature. */
 public class AllCachedFieldTrialParameters extends CachedFieldTrialParameter {
-    /** Decodes a previously encoded map. Returns empty map on parse error. */
-    private static Map<String, String> decodeJsonEncodedMap(String value) {
-        Map<String, String> resultingMap = new HashMap<String, String>();
-        try {
-            final JSONObject json = new JSONObject(value);
-            Iterator<String> keys = json.keys();
-            while (keys.hasNext()) {
-                final String key = keys.next();
-                resultingMap.put(key, json.getString(key));
-            }
-            return resultingMap;
-        } catch (JSONException e) {
-        }
-        return new HashMap<>();
-    }
-
-    private static String encodeParams(Map<String, String> params) {
-        return new JSONObject(params).toString();
-    }
 
     public AllCachedFieldTrialParameters(FeatureMap featureMap, String featureName) {
         // As this includes all parameters, the parameterName is empty.
@@ -47,7 +23,7 @@ public class AllCachedFieldTrialParameters extends CachedFieldTrialParameter {
     /** Returns a map of field trial parameter to value. */
     @AnyThread
     public Map<String, String> getParams() {
-        return decodeJsonEncodedMap(getConsistentStringValue());
+        return CachedFlagsSharedPreferences.decodeJsonEncodedMap(getConsistentStringValue());
     }
 
     @AnyThread
@@ -81,13 +57,15 @@ public class AllCachedFieldTrialParameters extends CachedFieldTrialParameter {
     void writeCacheValueToEditor(final SharedPreferences.Editor editor) {
         final Map<String, String> params =
                 mFeatureMap.getFieldTrialParamsForFeature(getFeatureName());
-        editor.putString(getSharedPreferenceKey(), encodeParams(params));
+        editor.putString(
+                getSharedPreferenceKey(), CachedFlagsSharedPreferences.encodeParams(params));
     }
 
     /** Sets the parameters for the specified feature when used in tests. */
     public static void setForTesting(String featureName, Map<String, String> params) {
-        String preferenceKey = generateSharedPreferenceKey(featureName, "");
-        String overrideValue = encodeParams(params);
+        String preferenceKey =
+                CachedFlagsSharedPreferences.generateParamSharedPreferenceKey(featureName, "");
+        String overrideValue = CachedFlagsSharedPreferences.encodeParams(params);
         ValuesOverridden.setOverrideForTesting(preferenceKey, overrideValue);
     }
 }

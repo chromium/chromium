@@ -10,13 +10,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** Keeps track of values overridden for testing for cached flags and field trial parameters. */
-class ValuesOverridden {
+public abstract class ValuesOverridden {
     @CheckDiscard(
             "Should only exist in tests and in debug builds, should be optimized out in "
                     + "Release.")
     private static Map<String, String> sOverridesTestFeatures;
 
-    static void setOverrideForTesting(String preferenceKey, String overrideValue) {
+    /**
+     * Set an |overrideValue| to be used in place of the disk value of a |preferenceKey| in tests.
+     *
+     * <p>Don't use directly from tests.
+     */
+    public static void setOverrideForTesting(String preferenceKey, String overrideValue) {
         if (sOverridesTestFeatures == null) {
             sOverridesTestFeatures = new HashMap<>();
         }
@@ -46,7 +51,12 @@ class ValuesOverridden {
         return stringValue != null ? Double.valueOf(stringValue) : null;
     }
 
-    static void removeOverrides() {
+    /**
+     * Remove all override values set.
+     *
+     * <p>Don't use directly from tests.
+     */
+    public static void removeOverrides() {
         sOverridesTestFeatures = null;
     }
 }

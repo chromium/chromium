@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.chromium.base.test.util.BaseFlagTestRule;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -18,9 +17,10 @@ import org.junit.runner.RunWith;
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.FeatureMap;
+import org.chromium.base.cached_flags.CachedFlagsSafeMode.Behavior;
 import org.chromium.base.task.test.PausedExecutorTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.cached_flags.CachedFlagsSafeMode.Behavior;
+import org.chromium.base.test.util.BaseFlagTestRule;
 
 import java.util.Arrays;
 
@@ -712,7 +712,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
     }
 
     private static void clearMemory() {
-        CachedFlagUtils.resetFlagsForTesting();
+        ValuesReturned.clearForTesting();
+        ValuesOverridden.removeOverrides();
         CachedFlagsSafeMode.getInstance().clearMemoryForTesting();
     }
 }

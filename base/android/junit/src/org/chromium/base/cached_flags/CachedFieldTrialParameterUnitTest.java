@@ -145,7 +145,8 @@ public class CachedFieldTrialParameterUnitTest {
         CachedFlagUtils.cacheFieldTrialParameters(PARAMS_TO_CACHE);
 
         // Simulate a second run
-        CachedFlagUtils.resetFlagsForTesting();
+        ValuesReturned.clearForTesting();
+        ValuesOverridden.removeOverrides();
 
         // Set different values in native which shouldn't be used
         TestValues testValues = new TestValues();
@@ -175,7 +176,10 @@ public class CachedFieldTrialParameterUnitTest {
         INT_PARAM.setForTesting(INT_PARAM_TEST_OVERRIDE);
         DOUBLE_PARAM.setForTesting(DOUBLE_PARAM_TEST_OVERRIDE);
         STRING2_PARAM.setForTesting(STRING2_PARAM_TEST_OVERRIDE);
-        AllCachedFieldTrialParameters.setForTesting(FEATURE_B, ALL_PARAM_TEST_OVERRIDE);
+        String preferenceKey =
+                CachedFlagsSharedPreferences.generateParamSharedPreferenceKey(FEATURE_B, "");
+        String overrideValue = CachedFlagsSharedPreferences.encodeParams(ALL_PARAM_TEST_OVERRIDE);
+        ValuesOverridden.setOverrideForTesting(preferenceKey, overrideValue);
 
         // Should not take priority over the overrides
         CachedFlagUtils.cacheFieldTrialParameters(PARAMS_TO_CACHE);

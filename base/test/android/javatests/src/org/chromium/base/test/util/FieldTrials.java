@@ -6,9 +6,9 @@ package org.chromium.base.test.util;
 
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
-import org.chromium.base.cached_flags.AllCachedFieldTrialParameters;
-import org.chromium.base.cached_flags.CachedFieldTrialParameter;
-import org.chromium.base.cached_flags.CachedFlag;
+import org.chromium.base.cached_flags.CachedFlagsSharedPreferences;
+import org.chromium.base.cached_flags.ValuesOverridden;
+import org.chromium.base.cached_flags.ValuesReturned;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,7 +18,7 @@ import java.util.Set;
 
 /**
  * Helps with setting Field Trial parameters during instrumentation tests. It parses the field
- * trials info from CommandLine, and applies the overrides to {@link CachedFlag}.
+ * trials info from CommandLine, and applies the overrides to CachedFlag.
  */
 public class FieldTrials {
     // TODO(crbug.com/40257556): Allow setting field trial via annotation.
@@ -109,6 +109,35 @@ public class FieldTrials {
         }
     }
 
+    private void updateCachedFlags() {
+        for (Map.Entry<String, Map<String, String>> entry : mTrialToParamValueMap.entrySet()) {
+            String trialName = entry.getKey();
+            Set<String> featureSet = mTrialToFeatureNameMap.get(trialName);
+            if (featureSet == null) continue;
+            for (String featureName : featureSet) {
+                Map<String, String> params = entry.getValue();
+
+                // Override value for each CachedFieldTrialParameter
+                for (Map.Entry<String, String> param : params.entrySet()) {
+                    String variationName = param.getKey();
+                    String preferenceKey =
+                            CachedFlagsSharedPreferences.generateParamSharedPreferenceKey(
+                                    featureName, variationName);
+                    String overrideValue = param.getValue();
+                    ValuesOverridden.setOverrideForTesting(preferenceKey, overrideValue);
+                }
+
+                // Override value for AllCachedFieldTrialParameters
+                String allParamsPreferenceKey =
+                        CachedFlagsSharedPreferences.generateParamSharedPreferenceKey(
+                                featureName, "");
+                String allParamsOverrideValue = CachedFlagsSharedPreferences.encodeParams(params);
+                ValuesOverridden.setOverrideForTesting(
+                        allParamsPreferenceKey, allParamsOverrideValue);
+            }
+        }
+    }
+
     /**
      * Applies the <feature, param, value> info to CachedFeatureFlags, and enables these features in
      * CachedFeatureFlags.
@@ -127,7 +156,7 @@ public class FieldTrials {
             for (String enabledFeature : enableFeaturesSet) {
                 enabledFeaturesMap.put(cleanupFeatureName(enabledFeature), true);
             }
-            CachedFlag.setFeaturesForTesting(enabledFeaturesMap);
+            ValuesReturned.setFeaturesForTesting(enabledFeaturesMap);
         }
 
         if (forceFieldTrials == null || forceFieldTrialParams == null || enableFeatures == null) {
@@ -137,20 +166,7 @@ public class FieldTrials {
         try {
             updateTrialToParamValueMap(forceFieldTrialParams.split(","));
             updateTrialFeatureMap(forceFieldTrials.split("/"), enableFeaturesSet);
-
-            for (Map.Entry<String, Map<String, String>> entry : mTrialToParamValueMap.entrySet()) {
-                String trialName = entry.getKey();
-                Set<String> featureSet = mTrialToFeatureNameMap.get(trialName);
-                if (featureSet == null) continue;
-                for (String featureName : featureSet) {
-                    Map<String, String> params = entry.getValue();
-                    for (Map.Entry<String, String> param : params.entrySet()) {
-                        CachedFieldTrialParameter.setForTesting(
-                                featureName, param.getKey(), param.getValue());
-                    }
-                    AllCachedFieldTrialParameters.setForTesting(featureName, params);
-                }
-            }
+            updateCachedFlags();
         } catch (Exception e) {
             assert false
                     : e.toString()
