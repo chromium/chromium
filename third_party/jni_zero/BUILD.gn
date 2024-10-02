@@ -98,6 +98,7 @@ if (enable_java_templates && is_android) {
       "java/src/org/jni_zero/JniUtil.java",
       "java/src/org/jni_zero/NativeClassQualifiedName.java",
       "java/src/org/jni_zero/NativeMethods.java",
+      "java/src/org/jni_zero/UsedReflectively.java",
     ]
     proguard_configs = [ "proguard.flags" ]
   }
