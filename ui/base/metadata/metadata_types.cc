@@ -174,7 +174,7 @@ ClassMetaData::ClassMemberIterator ClassMetaData::end() {
   return ClassMemberIterator(nullptr);
 }
 
-void ClassMetaData::SetTypeName(const std::string_view type_name) {
+void ClassMetaData::SetTypeName(std::string_view type_name) {
   type_name_ = type_name;
 }
 

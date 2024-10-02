@@ -102,8 +102,8 @@ class MockOriginTrialsDelegate
 
   void ClearPersistedTokens() override { persisted_trials_.clear(); }
 
-  void AddPersistedTrialForTest(const std::string_view url,
-                                const std::string_view trial_name) {
+  void AddPersistedTrialForTest(std::string_view url,
+                                std::string_view trial_name) {
     url::Origin key = url::Origin::Create(GURL(url));
     persisted_trials_[key].emplace(trial_name);
   }

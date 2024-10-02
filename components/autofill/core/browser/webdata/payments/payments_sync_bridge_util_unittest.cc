@@ -222,7 +222,7 @@ class PaymentsSyncBridgeUtilCardBenefitsTest
   ~PaymentsSyncBridgeUtilCardBenefitsTest() override = default;
 
   sync_pb::AutofillWalletSpecifics PrepareCardSpecificForBenefit(
-      const std::string_view card_tag,
+      std::string_view card_tag,
       const int64_t instrument_id) {
     sync_pb::AutofillWalletSpecifics wallet_specifics_card =
         CreateAutofillWalletSpecificsForCard(

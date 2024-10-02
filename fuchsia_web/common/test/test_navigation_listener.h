@@ -47,7 +47,7 @@ class TestNavigationListener final
 
   // Calls RunUntilNavigationStateMatches with a NavigationState that has
   // |expected_title| and the normal page type.
-  void RunUntilTitleEquals(const std::string_view expected_title);
+  void RunUntilTitleEquals(std::string_view expected_title);
 
   // Calls RunUntilNavigationStateMatches with a NavigationState that has
   // |expected_url|, |expected_title|, and the normal page type.

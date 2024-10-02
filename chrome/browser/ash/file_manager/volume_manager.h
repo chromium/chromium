@@ -297,7 +297,7 @@ class VolumeManager
       return GetKey(a) < GetKey(b);
     }
 
-    static std::string_view GetKey(const std::string_view a) { return a; }
+    static std::string_view GetKey(std::string_view a) { return a; }
 
     static std::string_view GetKey(const std::unique_ptr<Volume>& volume) {
       DCHECK(volume);

@@ -67,7 +67,7 @@ PublicKeyCredentialUserEntity* PublicKeyCredentialUserEntityFromJSON(
 }
 
 PublicKeyCredentialDescriptor* PublicKeyCredentialDescriptorFromJSON(
-    const std::string_view field_name,
+    std::string_view field_name,
     const PublicKeyCredentialDescriptorJSON& json,
     ExceptionState& exception_state) {
   auto* result = PublicKeyCredentialDescriptor::Create();
@@ -95,7 +95,7 @@ PublicKeyCredentialDescriptor* PublicKeyCredentialDescriptorFromJSON(
 
 VectorOf<PublicKeyCredentialDescriptor>
 PublicKeyCredentialDescriptorVectorFromJSON(
-    const std::string_view field_name,
+    std::string_view field_name,
     const VectorOf<PublicKeyCredentialDescriptorJSON> json,
     ExceptionState& exception_state) {
   VectorOf<PublicKeyCredentialDescriptor> result;

@@ -1021,8 +1021,8 @@ void ConvertToContentUrls(
 }
 
 bool ReplacePrefix(std::string* const s,
-                   const std::string_view prefix,
-                   const std::string_view replacement) {
+                   std::string_view prefix,
+                   std::string_view replacement) {
   DCHECK(s);
   if (s->starts_with(prefix) &&
       (prefix.ends_with('/') || s->size() <= prefix.size() ||
@@ -1035,7 +1035,7 @@ bool ReplacePrefix(std::string* const s,
 }
 
 std::string GetPathDisplayTextForSettings(Profile* const profile,
-                                          const std::string_view path) {
+                                          std::string_view path) {
   std::string result(path);
   DriveIntegrationService* service =
       DriveIntegrationServiceFactory::FindForProfile(profile);

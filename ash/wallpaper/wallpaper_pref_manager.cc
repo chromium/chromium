@@ -247,7 +247,7 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
   }
 
   std::optional<SkColor> GetCachedKMeanColor(
-      const std::string_view location) const override {
+      std::string_view location) const override {
     return GetSingleCachedColor(prefs::kWallpaperMeanColors, location);
   }
 
@@ -260,7 +260,7 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
     CacheSingleColor(prefs::kWallpaperCelebiColors, location, celebi_color);
   }
   std::optional<SkColor> GetCelebiColor(
-      const std::string_view location) const override {
+      std::string_view location) const override {
     return GetSingleCachedColor(prefs::kWallpaperCelebiColors, location);
   }
   void RemoveCelebiColor(const AccountId& account_id) override {

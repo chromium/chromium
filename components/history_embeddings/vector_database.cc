@@ -31,7 +31,7 @@ namespace {
 // boost if we do text cleaning and folding of passages in advance.
 void CountTermsInPassage(std::vector<size_t>& term_counts,
                          const std::vector<std::string>& query_terms,
-                         const std::string_view passage,
+                         std::string_view passage,
                          const size_t max_count) {
   DCHECK_EQ(term_counts.size(), query_terms.size());
   DCHECK(base::IsStringASCII(passage));

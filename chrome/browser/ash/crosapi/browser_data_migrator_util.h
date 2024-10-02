@@ -503,13 +503,13 @@ bool MigrateSyncDataLevelDB(const base::FilePath& original_path,
 // If the entry is a list in any other format, if it doesn't exist,
 // or if it's not container type, no changes will be performed.
 void UpdatePreferencesKeyByType(base::Value::Dict* root_dict,
-                                const std::string_view key,
+                                std::string_view key,
                                 ChromeType chrome_type);
 
 // Given a `original_contents` string containing the original Preferences
 // file, return the migrated Ash and Lacros versions of Preferences.
 std::optional<PreferencesContents> MigratePreferencesContents(
-    const std::string_view original_contents);
+    std::string_view original_contents);
 
 // Migrate Preferences to Ash and Lacros.
 bool MigratePreferences(const base::FilePath& original_path,

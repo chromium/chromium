@@ -611,8 +611,8 @@ MountPoint::MountPoint(MountPoint&&) = default;
 MountPoint& MountPoint::operator=(MountPoint&&) = default;
 
 MountPoint::MountPoint() = default;
-MountPoint::MountPoint(const std::string_view source_path,
-                       const std::string_view mount_path,
+MountPoint::MountPoint(std::string_view source_path,
+                       std::string_view mount_path,
                        const MountType mount_type,
                        const MountError mount_error,
                        const int progress_percent,

@@ -1032,7 +1032,7 @@ bool BrowserDataBackMigrator::MergeLacrosPreferences(
 
 // static
 bool BrowserDataBackMigrator::IsLacrosOnlyExtension(
-    const std::string_view extension_id) {
+    std::string_view extension_id) {
   return !base::Contains(browser_data_migrator_util::kExtensionsAshOnly,
                          extension_id) &&
          !base::Contains(

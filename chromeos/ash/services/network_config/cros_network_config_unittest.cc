@@ -1701,9 +1701,8 @@ TEST_F(CrosNetworkConfigTest, GetDeviceStateListFlashing) {
 }
 
 TEST_F(CrosNetworkConfigTest, GetManagedPropertiesCellularProvider) {
-  auto set_home_provider = [this](const std::string_view name,
-                                  const std::string_view code,
-                                  const std::string_view country) {
+  auto set_home_provider = [this](std::string_view name, std::string_view code,
+                                  std::string_view country) {
     base::Value::Dict home_provider;
     home_provider.Set("name", name);
     home_provider.Set("code", code);
@@ -1715,9 +1714,9 @@ TEST_F(CrosNetworkConfigTest, GetManagedPropertiesCellularProvider) {
     base::RunLoop().RunUntilIdle();
   };
 
-  auto check_home_provider = [this](const std::string_view name,
-                                    const std::string_view code,
-                                    const std::string_view country) {
+  auto check_home_provider = [this](std::string_view name,
+                                    std::string_view code,
+                                    std::string_view country) {
     mojom::ManagedPropertiesPtr properties =
         GetManagedProperties(kCellularGuid);
     ASSERT_TRUE(properties);

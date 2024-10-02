@@ -43,7 +43,7 @@
 namespace extensions {
 namespace {
 
-std::string Redact(const std::string_view path) {
+std::string Redact(std::string_view path) {
   return LOG_IS_ON(INFO) ? base::StrCat({"'", path, "'"}) : "(redacted)";
 }
 

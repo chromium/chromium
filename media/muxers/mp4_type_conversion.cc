@@ -9,7 +9,7 @@
 namespace media {
 
 // Support ISO-639-2/T language.
-uint16_t ConvertIso639LanguageCodeToU16(const std::string_view language) {
+uint16_t ConvertIso639LanguageCodeToU16(std::string_view language) {
   // Handle undefined or unsupported format.
   if (language.size() != 3) {
     return kUndefinedLanguageCode;

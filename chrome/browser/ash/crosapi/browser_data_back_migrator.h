@@ -297,7 +297,7 @@ class BrowserDataBackMigrator : public BrowserDataBackMigratorBase {
 
   // Decides whether preferences for the given `extension_id` should be migrated
   // back from Lacros to Ash.
-  static bool IsLacrosOnlyExtension(const std::string_view extension_id);
+  static bool IsLacrosOnlyExtension(std::string_view extension_id);
 
   // Copy the LevelDB database from Lacros to the temporary directory to be used
   // as basis for the merge.

@@ -207,7 +207,7 @@ ScopedNativeMessagingErrorTimeoutOverrideForTest::
   g_native_messaging_host_timeout_override = nullptr;
 }
 
-bool IsValidConnectionId(const std::string_view connection_id) {
+bool IsValidConnectionId(std::string_view connection_id) {
   return connection_id.size() <= 20 &&
          base::ContainsOnlyChars(
              connection_id,

@@ -106,8 +106,8 @@ class MockOriginTrialsDelegate
       std::optional<ukm::SourceId> source_id) override {}
   void ClearPersistedTokens() override { persisted_trials_.clear(); }
 
-  void AddPersistedTrialForTest(const std::string_view url,
-                                const std::string_view trial_name) {
+  void AddPersistedTrialForTest(std::string_view url,
+                                std::string_view trial_name) {
     url::Origin key = url::Origin::Create(GURL(url));
     persisted_trials_[key].emplace(trial_name);
   }
@@ -123,7 +123,7 @@ class CriticalOriginTrialsThrottleTest : public ::testing::Test {
 
   ~CriticalOriginTrialsThrottleTest() override = default;
 
-  std::string CreateHeaderLines(const std::string_view prefix,
+  std::string CreateHeaderLines(std::string_view prefix,
                                 const base::span<std::string> values) {
     std::string line;
     for (const std::string& value : values)
@@ -132,7 +132,7 @@ class CriticalOriginTrialsThrottleTest : public ::testing::Test {
     return line;
   }
 
-  void StartRequest(const std::string_view url, ResourceType resource_type) {
+  void StartRequest(std::string_view url, ResourceType resource_type) {
     network::ResourceRequest request;
     request.url = GURL(url);
     request.resource_type = static_cast<int>(resource_type);
@@ -141,7 +141,7 @@ class CriticalOriginTrialsThrottleTest : public ::testing::Test {
   }
 
   blink::URLLoaderThrottle::RestartWithURLReset BeforeWillProcess(
-      const std::string_view url,
+      std::string_view url,
       const base::span<std::string> origin_trial_tokens = {},
       const base::span<std::string> critical_origin_trials = {}) {
     network::mojom::URLResponseHead response_head;

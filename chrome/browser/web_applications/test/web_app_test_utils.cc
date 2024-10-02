@@ -1139,7 +1139,7 @@ void CheckServiceWorkerStatus(const GURL& url,
   run_loop.Run();
 }
 
-void SetWebAppSettingsListPref(Profile* profile, const std::string_view pref) {
+void SetWebAppSettingsListPref(Profile* profile, std::string_view pref) {
   auto result = base::JSONReader::ReadAndReturnValueWithError(
       pref, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
   DCHECK(result.has_value()) << result.error().message;

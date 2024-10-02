@@ -54,8 +54,8 @@ namespace {
 
 // Write file to disk.
 base::FilePath WriteFile(const base::FilePath& directory,
-                         const std::string_view name,
-                         const std::string_view content) {
+                         std::string_view name,
+                         std::string_view content) {
   const base::FilePath path = directory.Append(std::string_view(name));
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::WriteFile(path, content);

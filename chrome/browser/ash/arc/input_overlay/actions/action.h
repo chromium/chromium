@@ -43,7 +43,7 @@ void LogTouchEvents(const std::list<ui::TouchEvent>& events);
 // }
 std::optional<std::pair<ui::DomCode, int>> ParseKeyboardKey(
     const base::Value::Dict& value,
-    const std::string_view key_name);
+    std::string_view key_name);
 
 // Return true if the `input_element` is bound.
 bool IsInputBound(const InputElement& input_element);

@@ -16,7 +16,7 @@ class PaymentLinkValidator {
   PaymentLinkValidator(const PaymentLinkValidator&) = delete;
   PaymentLinkValidator& operator=(const PaymentLinkValidator&) = delete;
 
-  bool IsValid(const std::string_view url) const;
+  bool IsValid(std::string_view url) const;
 
  private:
   const std::vector<std::string> valid_prefixes_;

@@ -58,13 +58,13 @@ leveldb::ReadOptions CreateReadOptions() {
   content_id.content_domain(), ",", base::NumberToString(content_id.type()), \
       ",", base::NumberToString(content_id.id())
 
-std::string StreamDataKey(const std::string_view stream_key) {
+std::string StreamDataKey(std::string_view stream_key) {
   return base::StrCat({kStreamDataPrefix, stream_key});
 }
 std::string StreamDataKey(const StreamType& stream_type) {
   return StreamDataKey(feedstore::StreamKey(stream_type));
 }
-std::string ContentKey(const std::string_view stream_type,
+std::string ContentKey(std::string_view stream_type,
                        const feedwire::ContentId& content_id) {
   return base::StrCat(
       {"c/", stream_type, "/", CONTENT_ID_STRING_PARTS(content_id)});
@@ -73,7 +73,7 @@ std::string ContentKey(const StreamType& stream_type,
                        const feedwire::ContentId& content_id) {
   return ContentKey(feedstore::StreamKey(stream_type), content_id);
 }
-std::string SharedStateKey(const std::string_view stream_type,
+std::string SharedStateKey(std::string_view stream_type,
                            const feedwire::ContentId& content_id) {
   return base::StrCat(
       {"s/", stream_type, "/", CONTENT_ID_STRING_PARTS(content_id)});

@@ -171,7 +171,7 @@ class ComposeSession
 
   // Notifies the session that a new dialog is opening and starts. Saves the
   // |selected_text| for use as an initial prompt and refreshes innertext.
-  void InitializeWithText(const std::string_view selected_text);
+  void InitializeWithText(std::string_view selected_text);
 
   // If all pre-conditions are acknowledged starts refreshing page context. If
   // autocompose is enabled and has not been tried yet this session will also

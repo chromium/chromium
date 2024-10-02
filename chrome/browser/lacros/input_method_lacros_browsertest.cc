@@ -157,9 +157,9 @@ struct Modifiers {
   }
 };
 
-auto IsKeyboardEvent(const std::string_view type,
-                     const std::string_view key,
-                     const std::string_view code,
+auto IsKeyboardEvent(std::string_view type,
+                     std::string_view key,
+                     std::string_view code,
                      int key_code,
                      Modifiers modifiers = {}) {
   return base::test::IsJson(content::JsReplace(
@@ -177,29 +177,28 @@ auto IsKeyboardEvent(const std::string_view type,
       modifiers.meta, modifiers.shift));
 }
 
-auto IsKeyDownEvent(const std::string_view key,
-                    const std::string_view code,
+auto IsKeyDownEvent(std::string_view key,
+                    std::string_view code,
                     int key_code,
                     Modifiers modifiers = {}) {
   return IsKeyboardEvent("keydown", key, code, key_code, modifiers);
 }
 
-auto IsKeyUpEvent(const std::string_view key,
-                  const std::string_view code,
+auto IsKeyUpEvent(std::string_view key,
+                  std::string_view code,
                   int key_code,
                   Modifiers modifiers = {}) {
   return IsKeyboardEvent("keyup", key, code, key_code, modifiers);
 }
 
-auto IsKeyPressEvent(const std::string_view key,
-                     const std::string_view code,
+auto IsKeyPressEvent(std::string_view key,
+                     std::string_view code,
                      int key_code,
                      Modifiers modifiers = {}) {
   return IsKeyboardEvent("keypress", key, code, key_code, modifiers);
 }
 
-auto IsCompositionEvent(const std::string_view type,
-                        const std::string_view data) {
+auto IsCompositionEvent(std::string_view type, std::string_view data) {
   return base::test::IsJson(content::JsReplace(
       R"({
         "type": $1,
@@ -212,7 +211,7 @@ auto IsCompositionStartEvent() {
   return IsCompositionEvent("compositionstart", "");
 }
 
-auto IsCompositionUpdateEvent(const std::string_view data) {
+auto IsCompositionUpdateEvent(std::string_view data) {
   return IsCompositionEvent("compositionupdate", data);
 }
 
@@ -222,8 +221,8 @@ auto IsCompositionEndEvent() {
 
 enum class CompositionState { kComposing, kNotComposing };
 
-auto IsInputEvent(const std::string_view type,
-                  const std::string_view input_type,
+auto IsInputEvent(std::string_view type,
+                  std::string_view input_type,
                   const std::optional<std::string_view> data,
                   CompositionState composition_state) {
   const bool is_composing = composition_state == CompositionState::kComposing;
@@ -249,13 +248,13 @@ auto IsInputEvent(const std::string_view type,
       type, input_type, *data, is_composing));
 }
 
-auto IsBeforeInputEvent(const std::string_view input_type,
+auto IsBeforeInputEvent(std::string_view input_type,
                         const std::optional<std::string_view> data,
                         CompositionState composition_state) {
   return IsInputEvent("beforeinput", input_type, data, composition_state);
 }
 
-auto IsInputEvent(const std::string_view input_type,
+auto IsInputEvent(std::string_view input_type,
                   const std::optional<std::string_view> data,
                   CompositionState composition_state) {
   return IsInputEvent("input", input_type, data, composition_state);

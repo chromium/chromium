@@ -394,7 +394,7 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
                                                 bool url_is_trustworthy);
 
   // Checks for values that could be misinterpreted as a cookie name prefix.
-  static bool HasHiddenPrefixName(const std::string_view cookie_value);
+  static bool HasHiddenPrefixName(std::string_view cookie_value);
 
   // CookieBase:
   base::TimeDelta GetLaxAllowUnsafeThresholdAge() const override;

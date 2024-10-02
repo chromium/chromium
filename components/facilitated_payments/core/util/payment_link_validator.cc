@@ -18,7 +18,7 @@ PaymentLinkValidator::PaymentLinkValidator()
 
 PaymentLinkValidator::~PaymentLinkValidator() = default;
 
-bool PaymentLinkValidator::IsValid(const std::string_view url) const {
+bool PaymentLinkValidator::IsValid(std::string_view url) const {
   return std::any_of(
       valid_prefixes_.begin(), valid_prefixes_.end(),
       [&url](const std::string& prefix) { return url.find(prefix) == 0; });

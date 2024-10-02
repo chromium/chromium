@@ -16,8 +16,7 @@ namespace {
 
 // Returns true if |hostname| is a subdomain of |pattern| (including if they are
 // equal).
-bool IsSubdomain(const std::string_view hostname,
-                 const std::string_view pattern) {
+bool IsSubdomain(std::string_view hostname, std::string_view pattern) {
   if (hostname == pattern) {
     return true;
   }

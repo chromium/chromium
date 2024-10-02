@@ -309,7 +309,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
 
   // Notify all subscribers of new text pasted to the clipboard when there is a
   // source URL.
-  void NotifyCopyWithUrl(const std::string_view text,
+  void NotifyCopyWithUrl(std::string_view text,
                          const GURL& frame,
                          const GURL& main_frame);
 

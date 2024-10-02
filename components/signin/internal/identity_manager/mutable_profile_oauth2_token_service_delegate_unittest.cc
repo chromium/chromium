@@ -1468,7 +1468,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, TokenReencryption) {
   // cleanup at the end of the scope of the test.
   auto SetUpTestAndReturnScopedCleanup =
       [this](bool new_encryption_enabled, bool expect_reencrypt,
-             const std::string_view key_prefix,
+             std::string_view key_prefix,
              base::HistogramBase::Count expected_writes)
       -> base::ScopedClosureRunner {
     auto histograms = std::make_unique<base::HistogramTester>();

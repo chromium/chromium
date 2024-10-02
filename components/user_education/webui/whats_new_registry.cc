@@ -165,7 +165,7 @@ const std::vector<std::string_view> WhatsNewRegistry::GetRolledFeatureNames()
   return feature_names;
 }
 
-void WhatsNewRegistry::SetEditionUsed(const std::string_view edition_name) {
+void WhatsNewRegistry::SetEditionUsed(std::string_view edition_name) {
   // Verify edition exists.
   auto edition = std::find_if(editions_.begin(), editions_.end(),
                               [&edition_name](WhatsNewEdition const& edition) {

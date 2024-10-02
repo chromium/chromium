@@ -92,7 +92,7 @@ class SegmentationUkmHelperTest : public testing::Test {
     SegmentationUkmHelper::GetInstance()->Initialize();
   }
 
-  void ExpectUkmMetrics(const std::string_view entry_name,
+  void ExpectUkmMetrics(std::string_view entry_name,
                         const std::vector<std::string_view>& keys,
                         const std::vector<int64_t>& values,
                         ukm::SourceId source_id = ukm::kInvalidSourceId) {
@@ -110,7 +110,7 @@ class SegmentationUkmHelperTest : public testing::Test {
     }
   }
 
-  void ExpectEmptyUkmMetrics(const std::string_view entry_name) {
+  void ExpectEmptyUkmMetrics(std::string_view entry_name) {
     EXPECT_EQ(0u, test_recorder_.GetEntriesByName(entry_name).size());
   }
 

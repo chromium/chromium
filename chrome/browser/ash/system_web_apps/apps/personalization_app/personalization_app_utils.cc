@@ -250,7 +250,7 @@ bool IsEligibleForSeaPenTextInput(Profile* profile) {
          CanAccessMantaFeaturesWithoutMinorRestrictions(profile);
 }
 
-GURL GetJpegDataUrl(const std::string_view encoded_jpg_data) {
+GURL GetJpegDataUrl(std::string_view encoded_jpg_data) {
   return GURL(base::StrCat(
       {"data:image/jpeg;base64,", base::Base64Encode(encoded_jpg_data)}));
 }

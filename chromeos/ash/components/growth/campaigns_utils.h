@@ -27,7 +27,7 @@ std::string GetEventName(CampaignEvent event, std::string_view id);
 // E.g. Gmail PWA and ARC apps could be grouped by `Gmail` group id.
 // Some campaigns may use the app group id to do configuration.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH_UTILS)
-std::string_view GetAppGroupId(const std::string_view app_id);
+std::string_view GetAppGroupId(std::string_view app_id);
 
 // Returns the app group id by URL.
 // E.g. Gmail website can be grouped with other Gmail PWA and ARC apps by

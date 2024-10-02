@@ -87,7 +87,7 @@ const char kMockClassNameForCrashAfterTwoRequestsSyncWithoutResponses[] =
 base::expected<
     std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>,
     std::string>
-CreateClientBlocking(const std::string_view mockClassName) {
+CreateClientBlocking(std::string_view mockClassName) {
   base::expected<
       std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>,
       std::string>
@@ -116,7 +116,7 @@ CreateClientBlocking(const std::string_view mockClassName) {
 //
 // A task environment must already be set up.
 std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
-CreateAndExpectClientBlocking(const std::string_view mockClassName) {
+CreateAndExpectClientBlocking(std::string_view mockClassName) {
   base::expected<
       std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>,
       std::string>

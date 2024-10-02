@@ -159,7 +159,7 @@ class WhatsNewRegistry {
   const std::vector<std::string_view> GetRolledFeatureNames() const;
 
   // Set a "used version" for an edition.
-  void SetEditionUsed(const std::string_view edition);
+  void SetEditionUsed(std::string_view edition);
 
   // Cleanup data from storage for housekeeping.
   void ClearUnregisteredModules();

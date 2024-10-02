@@ -23,7 +23,7 @@ const base::Value::Dict& WhatsNewStorageServiceImpl::ReadEditionData() const {
 }
 
 int WhatsNewStorageServiceImpl::GetModuleQueuePosition(
-    const std::string_view module_name) const {
+    std::string_view module_name) const {
   const base::Value::List& module_data = ReadModuleData();
   auto order = std::find_if(module_data.begin(), module_data.end(),
                             [&](auto& ordered_module_name) {
@@ -33,7 +33,7 @@ int WhatsNewStorageServiceImpl::GetModuleQueuePosition(
 }
 
 std::optional<int> WhatsNewStorageServiceImpl::GetUsedVersion(
-    const std::string_view edition_name) const {
+    std::string_view edition_name) const {
   const base::Value* version = ReadEditionData().Find(edition_name);
   return version == nullptr ? std::nullopt : std::optional(version->GetInt());
 }
@@ -50,27 +50,25 @@ WhatsNewStorageServiceImpl::FindEditionForCurrentVersion() const {
 }
 
 void WhatsNewStorageServiceImpl::SetModuleEnabled(
-    const std::string_view module_name) {
+    std::string_view module_name) {
   // Ensure active feature is in local state.
   if (!base::Contains(*enabled_order_(), module_name)) {
     enabled_order_()->Append(module_name);
   }
 }
 
-void WhatsNewStorageServiceImpl::ClearModule(
-    const std::string_view module_name) {
+void WhatsNewStorageServiceImpl::ClearModule(std::string_view module_name) {
   // Remove rolled feature from prefs. Order no longer matters for
   // rolled modules.
   enabled_order_()->EraseValue(base::Value(module_name));
 }
 
 bool WhatsNewStorageServiceImpl::IsUsedEdition(
-    const std::string_view edition_name) const {
+    std::string_view edition_name) const {
   return GetUsedVersion(edition_name) != std::nullopt;
 }
 
-void WhatsNewStorageServiceImpl::SetEditionUsed(
-    const std::string_view edition_name) {
+void WhatsNewStorageServiceImpl::SetEditionUsed(std::string_view edition_name) {
   // Edition should not be previously used.
   auto stored_version = GetUsedVersion(edition_name);
   if (stored_version.has_value()) {
@@ -89,8 +87,7 @@ void WhatsNewStorageServiceImpl::SetEditionUsed(
   used_editions_()->Set(edition_name, CHROME_VERSION_MAJOR);
 }
 
-void WhatsNewStorageServiceImpl::ClearEdition(
-    const std::string_view edition_name) {
+void WhatsNewStorageServiceImpl::ClearEdition(std::string_view edition_name) {
   // Remove edition from prefs.
   used_editions_()->Remove(edition_name);
 }

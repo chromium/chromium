@@ -158,7 +158,7 @@ void AddAndLoginUser(const AccountId& account_id, user_manager::UserType type) {
 }
 
 testing::Matcher<ash::personalization_app::mojom::SeaPenThumbnailPtr>
-MatchesSeaPenImage(const std::string_view expected_jpg_bytes,
+MatchesSeaPenImage(std::string_view expected_jpg_bytes,
                    const uint32_t expected_id) {
   return testing::AllOf(
       testing::Pointee(testing::Field(

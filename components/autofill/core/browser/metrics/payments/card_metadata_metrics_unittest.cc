@@ -88,7 +88,7 @@ class CardMetadataFormEventMetricsTest
   void TearDown() override { TearDownHelper(); }
 
   std::string GetHistogramName(const std::string& issuer_or_network,
-                               const std::string_view event) {
+                               std::string_view event) {
     return base::StrCat({"Autofill.CreditCard.",
                          GetCardIssuerIdOrNetworkSuffix(issuer_or_network) != ""
                              ? GetCardIssuerIdOrNetworkSuffix(issuer_or_network)

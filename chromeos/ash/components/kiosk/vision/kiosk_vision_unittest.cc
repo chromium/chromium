@@ -72,7 +72,7 @@ DlcserviceClient::InstallResult InstallKioskVisionDlc(
 dlcservice::DlcsWithContent GetExistingDlcs(FakeDlcserviceClient& service) {
   base::test::TestFuture<const dlcservice::DlcsWithContent&> future;
   service.GetExistingDlcs(
-      base::BindOnce([](const std::string_view err,
+      base::BindOnce([](std::string_view err,
                         const dlcservice::DlcsWithContent& dlcs) {
         return dlcs;
       }).Then(future.GetCallback()));

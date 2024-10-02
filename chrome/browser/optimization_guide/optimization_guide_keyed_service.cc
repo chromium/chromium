@@ -827,7 +827,7 @@ void OptimizationGuideKeyedService::RemoveModelExecutionSettingsEnabledObserver(
 void OptimizationGuideKeyedService::
     RecordModelExecutionFeatureSyntheticFieldTrial(
         optimization_guide::UserVisibleFeatureKey feature,
-        const std::string_view feature_name) {
+        std::string_view feature_name) {
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       base::StrCat({"SyntheticModelExecutionFeature", feature_name}),
       ShouldFeatureBeCurrentlyEnabledForUser(feature) ? "Enabled" : "Disabled",

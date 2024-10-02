@@ -23,7 +23,7 @@
 namespace network {
 namespace {
 
-mojom::ParsedHeadersPtr ParseHeaders(const std::string_view headers) {
+mojom::ParsedHeadersPtr ParseHeaders(std::string_view headers) {
   std::string raw_headers = net::HttpUtil::AssembleRawHeaders(headers);
   auto parsed = base::MakeRefCounted<net::HttpResponseHeaders>(raw_headers);
   return network::PopulateParsedHeaders(parsed.get(), GURL("https://a.com"));

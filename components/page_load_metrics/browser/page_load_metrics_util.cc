@@ -46,8 +46,8 @@ PageAbortReason GetAbortReasonForEndReason(PageEndReason end_reason) {
 }
 
 // Common helper for QueryContainsComponent and QueryContainsComponentPrefix.
-bool QueryContainsComponentHelper(const std::string_view query,
-                                  const std::string_view component,
+bool QueryContainsComponentHelper(std::string_view query,
+                                  std::string_view component,
                                   bool component_is_prefix) {
   if (query.empty() || component.empty() ||
       component.length() > query.length()) {
@@ -363,13 +363,13 @@ bool IsZstdUrl(const GURL& url) {
          url.DomainIs("whatsapp.com") || url.DomainIs("messenger.com");
 }
 
-bool QueryContainsComponent(const std::string_view query,
-                            const std::string_view component) {
+bool QueryContainsComponent(std::string_view query,
+                            std::string_view component) {
   return QueryContainsComponentHelper(query, component, false);
 }
 
-bool QueryContainsComponentPrefix(const std::string_view query,
-                                  const std::string_view component) {
+bool QueryContainsComponentPrefix(std::string_view query,
+                                  std::string_view component) {
   return QueryContainsComponentHelper(query, component, true);
 }
 

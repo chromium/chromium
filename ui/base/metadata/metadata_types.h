@@ -182,7 +182,7 @@ class COMPONENT_EXPORT(UI_BASE_METADATA) ClassMetaData {
   ClassMemberIterator end();
 
  protected:
-  void SetTypeName(const std::string_view type_name);
+  void SetTypeName(std::string_view type_name);
 
  private:
   // `type_name_` is a static string stored in the binary.

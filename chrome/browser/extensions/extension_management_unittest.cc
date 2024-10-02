@@ -224,7 +224,7 @@ class ExtensionManagementServiceTest : public testing::Test {
     return GetBlockedAPIPermissions(kNonExistingExtension, update_url);
   }
 
-  void SetExampleDictPref(const std::string_view example_dict_preference) {
+  void SetExampleDictPref(std::string_view example_dict_preference) {
     auto result = base::JSONReader::ReadAndReturnValueWithError(
         example_dict_preference,
         base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);

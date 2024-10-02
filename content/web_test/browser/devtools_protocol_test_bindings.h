@@ -40,8 +40,8 @@ class DevToolsProtocolTestBindings : public WebContentsObserver,
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
   void WebContentsDestroyed() override;
 
-  void ParseLog(const std::string_view log);
-  void HandleMessagesFromLog(const std::string_view protocol_message_string);
+  void ParseLog(std::string_view log);
+  void HandleMessagesFromLog(std::string_view protocol_message_string);
   void HandleMessageFromTest(base::Value::Dict message);
 
   scoped_refptr<DevToolsAgentHost> agent_host_;

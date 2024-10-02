@@ -52,7 +52,7 @@ enum class MimeType {
   kMaxValue = kTextVtt,  // For UMA histograms.
 };
 
-MimeType TranslateMimeTypeToHistogramEnum(const std::string_view mime_type) {
+MimeType TranslateMimeTypeToHistogramEnum(std::string_view mime_type) {
   constexpr auto kCaseInsensitive = base::CompareCase::INSENSITIVE_ASCII;
   if (base::StartsWith(mime_type, "application/dash+xml", kCaseInsensitive)) {
     return MimeType::kApplicationDashXml;

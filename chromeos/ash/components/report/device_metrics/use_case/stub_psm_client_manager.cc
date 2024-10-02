@@ -79,11 +79,11 @@ StubPsmClientManagerDelegate::ProcessQueryResponse(
 }
 
 void StubPsmClientManagerDelegate::set_ec_cipher_key(
-    const std::string_view ec_cipher_key) {
+    std::string_view ec_cipher_key) {
   ec_cipher_key_ = ec_cipher_key;
 }
 
-void StubPsmClientManagerDelegate::set_seed(const std::string_view seed) {
+void StubPsmClientManagerDelegate::set_seed(std::string_view seed) {
   seed_ = seed;
 }
 

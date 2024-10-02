@@ -49,7 +49,7 @@ class MockWhatsNewStorageService : public whats_new::WhatsNewStorageService {
               (const, override));
   MOCK_METHOD(std::optional<int>,
               GetUsedVersion,
-              (const std::string_view edition_name),
+              (std::string_view edition_name),
               (const override));
   MOCK_METHOD(std::optional<std::string_view>,
               FindEditionForCurrentVersion,

@@ -6042,7 +6042,7 @@ namespace {
 // Adds a standard set of data to an upload for chunked upload integration
 // tests.
 void AddDataToUpload(ChunkedUploadDataStream::Writer* writer) {
-  const auto append = [writer](const std::string_view str, bool is_done) {
+  const auto append = [writer](std::string_view str, bool is_done) {
     writer->AppendData(base::as_byte_span(str), is_done);
   };
   append("a", false);

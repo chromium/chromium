@@ -64,7 +64,7 @@ OriginTrialTokenStatus IsTokenValid(
 // at |current_time| given the |trial_name|.
 // Manual completion trials add an expiry grace period, which has to be taken
 // into account to answer this question.
-bool IsTokenExpired(const std::string_view trial_name,
+bool IsTokenExpired(std::string_view trial_name,
                     const base::Time token_expiry_time,
                     const base::Time current_time) {
   // Check token expiry.
@@ -92,10 +92,10 @@ bool IsTokenExpired(const std::string_view trial_name,
 // token has not been disabled.
 OriginTrialTokenStatus ValidateTokenEnabled(
     const OriginTrialPolicy& policy,
-    const std::string_view trial_name,
+    std::string_view trial_name,
     const base::Time token_expiry_time,
     const TrialToken::UsageRestriction usage_restriction,
-    const std::string_view token_signature,
+    std::string_view token_signature,
     const base::Time current_time) {
   if (IsTokenExpired(trial_name, token_expiry_time, current_time))
     return OriginTrialTokenStatus::kExpired;
@@ -293,10 +293,10 @@ TrialTokenResult TrialTokenValidator::ValidateToken(
 }
 
 bool TrialTokenValidator::RevalidateTokenAndTrial(
-    const std::string_view trial_name,
+    std::string_view trial_name,
     const base::Time token_expiry_time,
     const TrialToken::UsageRestriction usage_restriction,
-    const std::string_view token_signature,
+    std::string_view token_signature,
     const base::Time current_time) const {
   OriginTrialPolicy* policy = PolicyGetter().Run();
 

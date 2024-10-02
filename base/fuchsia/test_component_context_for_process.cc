@@ -80,8 +80,7 @@ sys::OutgoingDirectory* TestComponentContextForProcess::additional_services() {
   return context_services_->outgoing_directory();
 }
 
-void TestComponentContextForProcess::AddService(
-    const std::string_view service) {
+void TestComponentContextForProcess::AddService(std::string_view service) {
   zx_status_t status = context_services_->AddService(service);
   ZX_CHECK(status == ZX_OK, status) << "AddService(" << service << ") failed";
 }

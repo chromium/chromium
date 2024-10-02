@@ -97,7 +97,7 @@ class ObjectPermissionContextBase : public KeyedService {
   // This method may be extended by a subclass to return
   // objects not stored in |host_content_settings_map_|.
   virtual std::unique_ptr<Object> GetGrantedObject(const url::Origin& origin,
-                                                   const std::string_view key);
+                                                   std::string_view key);
 
   // Returns the list of objects that |origin| has been granted permission to
   // access. This method may be extended by a subclass to return objects not
@@ -149,7 +149,7 @@ class ObjectPermissionContextBase : public KeyedService {
   // objects returned by GetGrantedObjects but not stored in
   // |host_content_settings_map_|.
   virtual void RevokeObjectPermission(const url::Origin& origin,
-                                      const std::string_view key);
+                                      std::string_view key);
 
   // Revokes a given `origin`'s permissions for access to all of its
   // corresponding objects.

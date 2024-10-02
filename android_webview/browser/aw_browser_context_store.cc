@@ -167,7 +167,7 @@ base::FilePath AwBrowserContextStore::GetRelativePathForTesting(
 }
 
 AwBrowserContextStore::Entry* AwBrowserContextStore::CreateNewContext(
-    const std::string_view name) {
+    std::string_view name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto emplace_result = contexts_.emplace(std::string(name), Entry());
   // Check it was new

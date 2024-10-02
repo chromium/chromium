@@ -330,7 +330,7 @@ bool CanUseEntry(const PrefetchedSignedExchangeCacheEntry& entry,
 
 // Deserializes a SHA256HashValue from a string. On error, returns false.
 // This method support the form of "sha256-<base64-hash-value>".
-bool ExtractSHA256HashValueFromString(const std::string_view value,
+bool ExtractSHA256HashValueFromString(std::string_view value,
                                       net::SHA256HashValue* out) {
   if (!base::StartsWith(value, "sha256-"))
     return false;

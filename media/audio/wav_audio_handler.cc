@@ -135,7 +135,7 @@ bool ParseFmtChunk(base::span<const uint8_t> data, WavAudioParameters* params) {
 }
 
 // The `wav_data` is encoded in little endian, as will be `audio_data_out`.
-bool ParseWavData(const std::string_view wav_data,
+bool ParseWavData(std::string_view wav_data,
                   std::string_view* audio_data_out,
                   WavAudioParameters* params_out) {
   DCHECK(audio_data_out);

@@ -25,7 +25,7 @@
 // specific log buffer.
 class CrossDeviceScopedLogMessage {
  public:
-  CrossDeviceScopedLogMessage(const std::string_view file,
+  CrossDeviceScopedLogMessage(std::string_view file,
                               int line,
                               logging::LogSeverity severity,
                               Feature feature);

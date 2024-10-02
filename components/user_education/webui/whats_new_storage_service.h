@@ -27,7 +27,7 @@ class WhatsNewStorageService {
 
   // Get the version this edition was used. Return nullopt if unused.
   virtual std::optional<int> GetUsedVersion(
-      const std::string_view edition_name) const = 0;
+      std::string_view edition_name) const = 0;
 
   // Find the name of the edition used for the current version, if any.
   virtual std::optional<std::string_view> FindEditionForCurrentVersion()
@@ -35,23 +35,22 @@ class WhatsNewStorageService {
 
   // Find the module's position in the queue of enabled modules.
   // Returns -1 if the module is not in the queue.
-  virtual int GetModuleQueuePosition(
-      const std::string_view module_name) const = 0;
+  virtual int GetModuleQueuePosition(std::string_view module_name) const = 0;
 
   // Returns whether an edition has ever been used for version.
-  virtual bool IsUsedEdition(const std::string_view edition_name) const = 0;
+  virtual bool IsUsedEdition(std::string_view edition_name) const = 0;
 
   // Add a module to the ordered list of enabled modules.
-  virtual void SetModuleEnabled(const std::string_view module_name) = 0;
+  virtual void SetModuleEnabled(std::string_view module_name) = 0;
 
   // Clear module from stored data.
-  virtual void ClearModule(const std::string_view module_name) = 0;
+  virtual void ClearModule(std::string_view module_name) = 0;
 
   // Set a "used version" for an edition.
-  virtual void SetEditionUsed(const std::string_view edition_name) = 0;
+  virtual void SetEditionUsed(std::string_view edition_name) = 0;
 
   // Clear edition from stored data.
-  virtual void ClearEdition(const std::string_view edition_name) = 0;
+  virtual void ClearEdition(std::string_view edition_name) = 0;
 
   // Reset all stored data for manual testing.
   // This should only be called from the internal testing page.

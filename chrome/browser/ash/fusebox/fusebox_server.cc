@@ -78,7 +78,7 @@ CallbackType HistogramWrap(
       rpc_method_name, std::move(callback));
 }
 
-bool UseTempFile(const std::string_view fs_url_as_string) {
+bool UseTempFile(std::string_view fs_url_as_string) {
   // MTP (the protocol) does not support incremental writes. When creating an
   // MTP file (via FuseBox), we need to supply its contents as a whole. Up
   // until that transfer, spool incremental writes to a temporary file.
@@ -86,7 +86,7 @@ bool UseTempFile(const std::string_view fs_url_as_string) {
                           file_manager::util::kFuseBoxSubdirPrefixMTP);
 }
 
-bool UseEmptyTruncateWorkaround(const std::string_view fs_url_as_string,
+bool UseEmptyTruncateWorkaround(std::string_view fs_url_as_string,
                                 int64_t length) {
   // Not all storage::AsyncFileUtil back-ends implement the CreateFile or
   // Truncate methods. When they don't, and truncating to a zero length, work

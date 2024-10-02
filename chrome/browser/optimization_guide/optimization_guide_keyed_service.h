@@ -286,7 +286,7 @@ class OptimizationGuideKeyedService
   // `feature_name`.
   void RecordModelExecutionFeatureSyntheticFieldTrial(
       optimization_guide::UserVisibleFeatureKey feature,
-      const std::string_view feature_name);
+      std::string_view feature_name);
 
   raw_ptr<content::BrowserContext> browser_context_;
 

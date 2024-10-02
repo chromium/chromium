@@ -23,11 +23,11 @@ namespace ip_protection {
 
 namespace {
 
-bool HasSubdomainCoverage(const std::string_view domain) {
+bool HasSubdomainCoverage(std::string_view domain) {
   return domain.starts_with(".") || domain.starts_with("*");
 }
 
-void AddRulesToMatcher(const std::string_view domain,
+void AddRulesToMatcher(std::string_view domain,
                        const bool include_subdomains,
                        net::SchemeHostPortMatcher& matcher) {
   auto domain_rule =

@@ -52,7 +52,7 @@ class MockCreateRewriterClient
 };
 
 optimization_guide::OptimizationGuideModelStreamingExecutionResult
-CreateExecutionResult(const std::string_view output, bool is_complete) {
+CreateExecutionResult(std::string_view output, bool is_complete) {
   optimization_guide::proto::ComposeResponse response;
   *response.mutable_output() = output;
   std::string serialized_metadata;

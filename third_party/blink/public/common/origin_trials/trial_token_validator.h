@@ -120,10 +120,10 @@ class BLINK_COMMON_EXPORT TrialTokenValidator {
   // ensure that it was a valid token for the origin to which we are applying
   // it.
   virtual bool RevalidateTokenAndTrial(
-      const std::string_view trial_name,
+      std::string_view trial_name,
       const base::Time token_expiry_time,
       const TrialToken::UsageRestriction token_usage_restriction,
-      const std::string_view token_signature,
+      std::string_view token_signature,
       const base::Time current_time) const;
 
   // Return the set of features enabled by the given `trial_name`.

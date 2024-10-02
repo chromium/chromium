@@ -146,8 +146,7 @@ const char* kObsoleteKeys[] = {
 
 // Checks for platform-specific known users matching given |user_email|. If
 // data matches a known account, returns it.
-std::optional<AccountId> GetPlatformKnownUserId(
-    const std::string_view user_email) {
+std::optional<AccountId> GetPlatformKnownUserId(std::string_view user_email) {
   if (user_email == kStubUserEmail) {
     return StubAccountId();
   }

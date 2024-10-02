@@ -33,7 +33,7 @@ allocation_recorder::Payload CreatePayloadWithProcessingFailures(
 // Create a payload with the ProcessingFailures set from the passed
 // |error_message|.
 inline allocation_recorder::Payload CreatePayloadWithProcessingFailures(
-    const std::string_view error_message) {
+    std::string_view error_message) {
   return CreatePayloadWithProcessingFailures(
       base::make_span(&error_message, 1ul));
 }

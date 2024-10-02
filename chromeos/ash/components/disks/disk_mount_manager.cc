@@ -37,7 +37,7 @@ namespace {
 
 using base::BindOnce;
 
-std::string Redact(const std::string_view s) {
+std::string Redact(std::string_view s) {
   return LOG_IS_ON(INFO) ? base::StrCat({"'", s, "'"}) : "(redacted)";
 }
 

@@ -40,7 +40,7 @@ GetInputMethodManagerState() {
   return ash::input_method::InputMethodManager::Get()->GetActiveIMEState();
 }
 
-bool HasCapability(const std::string_view capability) {
+bool HasCapability(std::string_view capability) {
   return false;
 }
 

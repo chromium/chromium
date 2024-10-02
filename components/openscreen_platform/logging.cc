@@ -33,7 +33,7 @@ namespace {
 
 }  // namespace
 
-bool IsLoggingOn(LogLevel level, const std::string_view file) {
+bool IsLoggingOn(LogLevel level, std::string_view file) {
   if (level == LogLevel::kVerbose) {
     return ::logging::GetVlogLevelHelper(file.data(), file.size()) > 0;
   }

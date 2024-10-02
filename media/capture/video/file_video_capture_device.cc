@@ -56,7 +56,7 @@ static const char kY4MSimpleFrameDelimiter[] = "FRAME";
 static const int kY4MSimpleFrameDelimiterSize = 6;
 static const float kMJpegFrameRate = 30.0f;
 
-int ParseY4MInt(const std::string_view token) {
+int ParseY4MInt(std::string_view token) {
   int temp_int;
   CHECK(base::StringToInt(token, &temp_int)) << token;
   return temp_int;
@@ -64,7 +64,7 @@ int ParseY4MInt(const std::string_view token) {
 
 // Extract numerator and denominator out of a token that must have the aspect
 // numerator:denominator, both integer numbers.
-void ParseY4MRational(const std::string_view token,
+void ParseY4MRational(std::string_view token,
                       int* numerator,
                       int* denominator) {
   size_t index_divider = token.find(':');

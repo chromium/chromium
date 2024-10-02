@@ -303,7 +303,7 @@ std::string SchemeHostPort::SerializeInternal(url::Parsed* parsed) const {
   return result;
 }
 
-bool SchemeHostPort::ShouldDiscardHostAndPort(const std::string_view scheme) {
+bool SchemeHostPort::ShouldDiscardHostAndPort(std::string_view scheme) {
   return IsAndroidWebViewHackEnabledScheme(scheme) &&
          IsUsingStandardCompliantNonSpecialSchemeURLParsing();
 }

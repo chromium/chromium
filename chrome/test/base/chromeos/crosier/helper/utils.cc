@@ -95,7 +95,7 @@ void ReadBuffer(const base::ScopedFD& sock, void* buf, int byte_size) {
   }
 }
 
-void SendString(const base::ScopedFD& sock, const std::string_view str) {
+void SendString(const base::ScopedFD& sock, std::string_view str) {
   SendBuffer(sock, str.data(), str.size());
 
   char terminator = 0;

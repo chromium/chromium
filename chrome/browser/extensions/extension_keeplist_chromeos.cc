@@ -46,8 +46,7 @@ namespace {
 // Additional ids of extensions and extension apps used for testing
 // can be passed by ash commandline switches, but this is ONLY allowed
 // for testing use.
-std::vector<std::string> GetIdsFromCmdlineSwitch(
-    const std::string_view ash_switch) {
+std::vector<std::string> GetIdsFromCmdlineSwitch(std::string_view ash_switch) {
   std::vector<std::string> ids;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(ash_switch)) {
     ids = base::SplitString(

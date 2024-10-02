@@ -74,7 +74,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) DiskMountManager {
       return GetKey(a) < GetKey(b);
     }
 
-    static std::string_view GetKey(const std::string_view a) { return a; }
+    static std::string_view GetKey(std::string_view a) { return a; }
 
     static std::string_view GetKey(const std::unique_ptr<Disk>& disk) {
       DCHECK(disk);
@@ -95,7 +95,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) DiskMountManager {
       return GetKey(a) < GetKey(b);
     }
 
-    static std::string_view GetKey(const std::string_view a) { return a; }
+    static std::string_view GetKey(std::string_view a) { return a; }
 
     static std::string_view GetKey(const MountPoint& mp) {
       return mp.mount_path;

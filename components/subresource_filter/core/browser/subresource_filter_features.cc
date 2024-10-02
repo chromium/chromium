@@ -66,8 +66,7 @@ std::string TakeVariationParamOrReturnEmpty(
   return value;
 }
 
-mojom::ActivationLevel ParseActivationLevel(
-    const std::string_view activation_level) {
+mojom::ActivationLevel ParseActivationLevel(std::string_view activation_level) {
   if (base::EqualsCaseInsensitiveASCII(activation_level,
                                        kActivationLevelEnabled))
     return mojom::ActivationLevel::kEnabled;
@@ -77,7 +76,7 @@ mojom::ActivationLevel ParseActivationLevel(
   return mojom::ActivationLevel::kDisabled;
 }
 
-ActivationScope ParseActivationScope(const std::string_view activation_scope) {
+ActivationScope ParseActivationScope(std::string_view activation_scope) {
   if (base::EqualsCaseInsensitiveASCII(activation_scope,
                                        kActivationScopeAllSites))
     return ActivationScope::ALL_SITES;
@@ -113,7 +112,7 @@ double ParsePerformanceMeasurementRate(const std::string& rate) {
   return value < 1 ? value : 1;
 }
 
-int ParseInt(const std::string_view value) {
+int ParseInt(std::string_view value) {
   int result = 0;
   base::StringToInt(value, &result);
   return result;

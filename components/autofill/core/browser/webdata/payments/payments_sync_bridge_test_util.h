@@ -38,7 +38,7 @@ sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForIban(
     const std::string& client_tag);
 
 sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForBankAccount(
-    const std::string_view client_tag,
+    std::string_view client_tag,
     std::string nickname,
     const GURL& display_icon_url,
     std::string bank_name,
@@ -46,7 +46,7 @@ sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForBankAccount(
     sync_pb::BankAccountDetails::AccountType account_type);
 
 sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForEwalletAccount(
-    const std::string_view client_tag,
+    std::string_view client_tag,
     std::string nickname,
     const GURL& display_icon_url,
     std::string ewallet_name,

@@ -151,7 +151,7 @@ constexpr char kKeyPrefix[] = "_chrome-extension://";
 constexpr char kIndexedDBBlobExtension[] = ".indexeddb.blob";
 constexpr char kIndexedDBLevelDBExtension[] = ".indexeddb.leveldb";
 
-bool ShouldRemoveExtensionByType(const std::string_view extension_id,
+bool ShouldRemoveExtensionByType(std::string_view extension_id,
                                  ChromeType chrome_type) {
   switch (chrome_type) {
     case ChromeType::kAsh:
@@ -770,7 +770,7 @@ bool MigrateSyncDataLevelDB(const base::FilePath& original_path,
 }
 
 void UpdatePreferencesKeyByType(base::Value::Dict* root_dict,
-                                const std::string_view key,
+                                std::string_view key,
                                 ChromeType chrome_type) {
   base::Value* value = root_dict->FindByDottedPath(key);
   if (!value)
@@ -784,7 +784,7 @@ void UpdatePreferencesKeyByType(base::Value::Dict* root_dict,
 }
 
 std::optional<PreferencesContents> MigratePreferencesContents(
-    const std::string_view original_contents) {
+    std::string_view original_contents) {
   // Parse the original JSON file from Ash.
   std::optional<base::Value> ash_root =
       base::JSONReader::Read(original_contents);

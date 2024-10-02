@@ -86,7 +86,7 @@ class POLICY_EXPORT PolicyLogger {
     Log(const Severity log_severity,
         const Source log_source,
         const std::string& message,
-        const std::string_view file,
+        std::string_view file,
         const int line);
     Log(const Log&) = delete;
     Log& operator=(const Log&) = delete;
@@ -126,7 +126,7 @@ class POLICY_EXPORT PolicyLogger {
               const PolicyLogger::Log::Severity log_severity,
               const int log_verbosity,
               const PolicyLogger::Log::Source log_source,
-              const std::string_view file,
+              std::string_view file,
               const int line);
     LogHelper(const LogHelper&) = delete;
     LogHelper& operator=(const LogHelper&) = delete;

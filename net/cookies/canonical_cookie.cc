@@ -1099,7 +1099,7 @@ int CanonicalCookie::GetAndAdjustPortForTrustworthyUrls(
 }
 
 // static
-bool CanonicalCookie::HasHiddenPrefixName(const std::string_view cookie_value) {
+bool CanonicalCookie::HasHiddenPrefixName(std::string_view cookie_value) {
   // Skip BWS as defined by HTTPSEM as SP or HTAB (0x20 or 0x9).
   std::string_view value_without_BWS =
       base::TrimString(cookie_value, " \t", base::TRIM_LEADING);

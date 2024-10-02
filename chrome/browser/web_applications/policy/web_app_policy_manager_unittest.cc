@@ -325,7 +325,7 @@ ExternalInstallOptions GetCustomAppIconInstallOptions(
   return options;
 }
 
-void SetWebAppSettingsListPref(Profile* profile, const std::string_view pref) {
+void SetWebAppSettingsListPref(Profile* profile, std::string_view pref) {
   ASSERT_OK_AND_ASSIGN(
       auto result,
       base::JSONReader::ReadAndReturnValueWithError(
@@ -334,8 +334,7 @@ void SetWebAppSettingsListPref(Profile* profile, const std::string_view pref) {
   profile->GetPrefs()->Set(prefs::kWebAppSettings, std::move(result));
 }
 
-void SetWebAppInstallForceListPref(Profile* profile,
-                                   const std::string_view pref) {
+void SetWebAppInstallForceListPref(Profile* profile, std::string_view pref) {
   ASSERT_OK_AND_ASSIGN(
       auto result,
       base::JSONReader::ReadAndReturnValueWithError(
