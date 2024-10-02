@@ -34,12 +34,15 @@ namespace web_app {
 // 4. The web app system handles the navigation and opens a new app window as
 // part of a navigation that created an auxiliary browsing context. This is not
 // an app launch, and as such, launch parameters are not enqueued.
+// 5. A new web app was launched, but that behavior is not useful for
+// redirection purposes, since it was triggered out of a redirection flow.
 enum class NavigationHandlingInitialResult {
   kBrowserTab = 0,
   kAppWindowNavigationCaptured = 1,
-  kAppWindowLaunchHandling = 2,
+  kAppWindowForcedNewContext = 2,
   kAppWindowAuxContext = 3,
-  kMaxValue = kAppWindowAuxContext
+  kNotHandledByNavigationHandling = 4,
+  kMaxValue = kNotHandledByNavigationHandling
 };
 
 // Information that will be used to make decisions regarding redirection.
@@ -49,6 +52,7 @@ enum class NavigationHandlingInitialResult {
 // std::nullopt otherwise.
 // 2. The initial result of navigation handling by the web app system.
 // 3. The initial `WindowOpenDisposition` of the navigation.
+// TODO(crbug.com/370856876): Create a class and add correctness checks.
 struct NavigationCapturingRedirectionInfo {
   NavigationCapturingRedirectionInfo();
   ~NavigationCapturingRedirectionInfo();
@@ -56,7 +60,9 @@ struct NavigationCapturingRedirectionInfo {
       const NavigationCapturingRedirectionInfo& navigation_info);
 
   std::optional<webapps::AppId> app_id_initial_browser;
-  NavigationHandlingInitialResult initial_nav_handling_result;
+  NavigationHandlingInitialResult initial_nav_handling_result =
+      NavigationHandlingInitialResult::kBrowserTab;
+  std::optional<webapps::AppId> first_navigation_app_id;
   WindowOpenDisposition disposition = WindowOpenDisposition::UNKNOWN;
 };
 

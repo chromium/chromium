@@ -732,19 +732,15 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   // TODO(crbug.com/364657540): Revisit integration with web_application system
   // later if needed.
   int singleton_index;
-  std::optional<web_app::AppNavigationResult> app_navigation_result;
+  web_app::AppNavigationResult app_navigation_result;
 #if !BUILDFLAG(IS_ANDROID)
-  // Store the disposition before modifications, for web_app navigation logic.
-  WindowOpenDisposition original_disposition = params->disposition;
   app_navigation_result = web_app::MaybeHandleAppNavigation(*params);
 #endif  // !BUILDFLAG(IS_ANDROID)
-  if (app_navigation_result.has_value()) {
-    params->browser = app_navigation_result->browser;
-    singleton_index = app_navigation_result->tab_index;
-  } else {
-    std::tie(params->browser, singleton_index) =
-        GetBrowserAndTabForDisposition(*params);
-  }
+
+  std::tie(params->browser, singleton_index) =
+      app_navigation_result.browser_tab_override.has_value()
+          ? app_navigation_result.browser_tab_override.value()
+          : GetBrowserAndTabForDisposition(*params);
 
   if (!params->browser) {
     return nullptr;
@@ -990,18 +986,9 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
 // At this point, the `params->navigated_or_inserted_contents` is guaranteed to
 // be non null, so perform tasks if the navigation has been captured by a web
 // app, like enqueueing launch params.
-// The `params->browser` might change as a result of a navigation, so obtain the
-// `source_app_id` from the source browser, which retains a reference.
 #if !BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/336371044): Accessing the app_id from the WebAppTabHelper
-  // does not work here. Investigate why to support apps that open in a new tab.
-  std::optional<webapps::AppId> source_app_id;
-  if (source_browser && source_browser->app_controller()) {
-    source_app_id = source_browser->app_controller()->app_id();
-  }
   web_app::OnWebAppNavigationAfterWebContentsCreation(
-      std::move(app_navigation_result), *params, navigation_handle,
-      original_disposition, source_app_id);
+      std::move(app_navigation_result), *params, navigation_handle);
 #endif  // !BUILDFLAG(IS_ANDROID)
   return navigation_handle;
 }

@@ -50,22 +50,22 @@ enum class LaunchedAppType {
   kMaxValue = kCrafted,
 };
 
-// Returns information useful for the browser to show UI affordances, provided a
-// web app handles the navigation.
+// Returns information useful for the browser to show UI affordances if a web
+// app handles the navigation.
 struct AppNavigationResult {
-  // The browser instance to perform navigation in.
-  Browser* browser = nullptr;
-  // If navigation needs to happen in a tab inside the browser, this stores the
-  // index of the tab.
-  int tab_index = -1;
+  // The browser instance to perform navigation in, and the tab inside the
+  // browser if overridden by the web app system. If std::nullopt, performs the
+  // default navigation behavior in browser_navigator.cc.
+  std::optional<std::tuple<Browser*, int>> browser_tab_override;
+
   // Set to true if web contents in navigation are found. This will perform
   // tasks like enqueuing launch params and showing IPH bubble for
   // navigation handling.
   bool perform_app_handling_tasks_in_web_contents = false;
-  // The result of navigation handling by the web app system. Useful for making
-  // future decisions if the navigation redirects.
-  NavigationHandlingInitialResult initial_result =
-      NavigationHandlingInitialResult::kBrowserTab;
+
+  // Information necessary for handling redirection after a response is received
+  // as part of a navigation.
+  NavigationCapturingRedirectionInfo redirection_info;
 
   // Debug information persisted to chrome://web-app-internals.
   base::Value::Dict debug_value;
@@ -156,16 +156,12 @@ void LaunchWebApp(apps::AppLaunchParams params,
                   WithAppResources& app_resources,
                   LaunchWebAppDebugValueCallback callback);
 
-// Returns whether the navigation should be handled by a web app. If so, returns
-// an optional AppNavigationResult with the details pertinent to how to handle
-// it. See https://wicg.github.io/web-app-launch/#launchqueue-interface. This
-// function may create a browser instance, an app window or a new tab as needed.
-//
-// A value of std::nullopt means that the web app system cannot handle the
-// navigation, and as such, would allow the "normal" workflow to identify a
-// browser to perform navigation in to proceed. See Navigate() for more
-// information.
-std::optional<AppNavigationResult> MaybeHandleAppNavigation(
+// Returns an AppNavigationResult with pertinent details on how to handle a
+// navigation if the web app system can do so. If not, the
+// `browser_tab_override` is set to be std::nullopt so that ::Navigate() inside
+// the browser_navigator code can pick this up. This function may create a
+// browser instance, an app window or a new tab as needed.
+AppNavigationResult MaybeHandleAppNavigation(
     const NavigateParams& navigate_params);
 
 // Will enqueue the given url in the launch params for this web contents. Does
@@ -175,15 +171,15 @@ void EnqueueLaunchParams(content::WebContents* contents,
                          const GURL& url,
                          bool wait_for_navigation_to_complete);
 
-// Handle navigation-related tasks for the app, like enqueuing launch params
-// and showing a navigation capturing IPH bubble, after the appropriate
-// app-scoped WebContents has been identified and prepared for navigation.
+// Handle navigation-related tasks for the app, like enqueuing launch params,
+// showing a navigation capturing IPH bubble and storing information necessary
+// for handling redirections in the current `WebContents` or `NavigationHandle`,
+// after the appropriate app-scoped `WebContents` has been identified and
+// prepared for navigation.
 void OnWebAppNavigationAfterWebContentsCreation(
-    std::optional<web_app::AppNavigationResult> app_navigation_result,
+    web_app::AppNavigationResult app_navigation_result,
     const NavigateParams& params,
-    base::WeakPtr<content::NavigationHandle> navigation_handle,
-    WindowOpenDisposition original_disposition,
-    std::optional<webapps::AppId> source_app_id);
+    base::WeakPtr<content::NavigationHandle> navigation_handle);
 
 }  // namespace web_app
 

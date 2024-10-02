@@ -59,9 +59,9 @@ class NavigationCompletionAwaiter : public content::WebContentsObserver,
 
   void AwaitNavigationCompletion() { Wait(); }
 
-  NavigationCapturingRedirectionInfo GetRedirectionInfoForNavigation() {
-    CHECK(redirection_info_.has_value());
-    return redirection_info_.value();
+  std::optional<NavigationCapturingRedirectionInfo>
+  GetRedirectionInfoForNavigation() {
+    return redirection_info_;
   }
 
   // AllTabsObserver override:
@@ -180,15 +180,18 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingDataTransferBrowserTest,
       contents, test::ClickMethod::kLeftClick, kToSiteBTargetBlankNoopener);
   nav_awaiter.AwaitNavigationCompletion();
   ASSERT_NE(nullptr, app_browser);
+  ASSERT_TRUE(nav_awaiter.GetRedirectionInfoForNavigation().has_value());
 
   NavigationCapturingRedirectionInfo redirection_info =
-      std::move(nav_awaiter.GetRedirectionInfoForNavigation());
+      std::move(*nav_awaiter.GetRedirectionInfoForNavigation());
   // Triggered from a tab and not an app window.
   EXPECT_FALSE(redirection_info.app_id_initial_browser.has_value());
   EXPECT_EQ(NavigationHandlingInitialResult::kAppWindowNavigationCaptured,
             redirection_info.initial_nav_handling_result);
   EXPECT_EQ(WindowOpenDisposition::NEW_FOREGROUND_TAB,
             redirection_info.disposition);
+  EXPECT_TRUE(redirection_info.first_navigation_app_id.has_value());
+  EXPECT_EQ(app_id, *redirection_info.first_navigation_app_id);
 
   // Post navigation, the WebContentsUserData instances should be cleaned up.
   EXPECT_THAT(GetForwarderForWebContents(
@@ -204,9 +207,10 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingDataTransferBrowserTest,
   test::SimulateClickOnElement(contents, kToSiteATargetBlankWithOpener,
                                test::ClickMethod::kLeftClick);
   nav_awaiter.AwaitNavigationCompletion();
+  ASSERT_TRUE(nav_awaiter.GetRedirectionInfoForNavigation().has_value());
 
   NavigationCapturingRedirectionInfo redirection_info =
-      std::move(nav_awaiter.GetRedirectionInfoForNavigation());
+      std::move(*nav_awaiter.GetRedirectionInfoForNavigation());
 
   // Triggered from a tab and not an app window.
   EXPECT_FALSE(redirection_info.app_id_initial_browser.has_value());
@@ -214,6 +218,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingDataTransferBrowserTest,
             redirection_info.initial_nav_handling_result);
   EXPECT_EQ(WindowOpenDisposition::NEW_FOREGROUND_TAB,
             redirection_info.disposition);
+  EXPECT_FALSE(redirection_info.first_navigation_app_id.has_value());
 
   // Post navigation, the WebContentsUserData instances should be cleaned up.
   EXPECT_THAT(GetForwarderForWebContents(contents), testing::IsNull());
@@ -232,19 +237,22 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingDataTransferBrowserTest,
       contents, test::ClickMethod::kShiftClick, kToSiteBTargetBlankWithOpener);
   nav_awaiter.AwaitNavigationCompletion();
   ASSERT_NE(nullptr, app_browser);
+  ASSERT_TRUE(nav_awaiter.GetRedirectionInfoForNavigation().has_value());
 
   NavigationCapturingRedirectionInfo redirection_info =
-      std::move(nav_awaiter.GetRedirectionInfoForNavigation());
+      std::move(*nav_awaiter.GetRedirectionInfoForNavigation());
 
   // Triggered from an app window for app_id_a.
-  EXPECT_TRUE(redirection_info.app_id_initial_browser.has_value());
+  ASSERT_TRUE(redirection_info.app_id_initial_browser.has_value());
   EXPECT_EQ(app_id_a, redirection_info.app_id_initial_browser.value());
   // Navigation capturing only extends to left clicks creating a capturable
   // experience, and does not extend to user modified clicks like shift and
   // middle clicks.
-  EXPECT_EQ(NavigationHandlingInitialResult::kAppWindowLaunchHandling,
+  EXPECT_EQ(NavigationHandlingInitialResult::kAppWindowForcedNewContext,
             redirection_info.initial_nav_handling_result);
   EXPECT_EQ(WindowOpenDisposition::NEW_WINDOW, redirection_info.disposition);
+  ASSERT_TRUE(redirection_info.first_navigation_app_id.has_value());
+  EXPECT_EQ(app_id_b, *redirection_info.first_navigation_app_id);
 
   EXPECT_THAT(GetForwarderForWebContents(
                   app_browser->tab_strip_model()->GetActiveWebContents()),
@@ -263,21 +271,40 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingDataTransferBrowserTest,
       contents, test::ClickMethod::kMiddleClick, kToSiteATargetBlankWithOpener);
   nav_awaiter.AwaitNavigationCompletion();
   ASSERT_NE(nullptr, app_browser);
+  ASSERT_TRUE(nav_awaiter.GetRedirectionInfoForNavigation().has_value());
 
   NavigationCapturingRedirectionInfo redirection_info =
-      std::move(nav_awaiter.GetRedirectionInfoForNavigation());
+      std::move(*nav_awaiter.GetRedirectionInfoForNavigation());
 
   // Triggered from an app window for app_id.
-  EXPECT_TRUE(redirection_info.app_id_initial_browser.has_value());
+  ASSERT_TRUE(redirection_info.app_id_initial_browser.has_value());
   EXPECT_EQ(app_id, redirection_info.app_id_initial_browser.value());
-  EXPECT_EQ(NavigationHandlingInitialResult::kAppWindowLaunchHandling,
+  EXPECT_EQ(NavigationHandlingInitialResult::kAppWindowForcedNewContext,
             redirection_info.initial_nav_handling_result);
   EXPECT_EQ(WindowOpenDisposition::NEW_BACKGROUND_TAB,
             redirection_info.disposition);
+  ASSERT_TRUE(redirection_info.first_navigation_app_id.has_value());
+  EXPECT_EQ(app_id, *redirection_info.first_navigation_app_id);
 
   EXPECT_THAT(GetForwarderForWebContents(
                   app_browser->tab_strip_model()->GetActiveWebContents()),
               testing::IsNull());
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationCapturingDataTransferBrowserTest,
+                       AuxContentsDoNotEnqueueRedirectionInfo) {
+  const webapps::AppId app_id_a = InstallTestWebApp(GetStartUrl());
+  const webapps::AppId app_id_b = InstallTestWebApp(GetDestinationUrl());
+  content::WebContents* contents = OpenStartPageInApp(app_id_a);
+  ASSERT_NE(nullptr, contents);
+
+  NavigationCompletionAwaiter nav_awaiter(contents);
+  Browser* app_browser = TriggerNavigationCapturingNewAppWindow(
+      contents, test::ClickMethod::kLeftClick, kToSiteBTargetBlankWithOpener);
+  nav_awaiter.AwaitNavigationCompletion();
+
+  ASSERT_NE(nullptr, app_browser);
+  ASSERT_FALSE(nav_awaiter.GetRedirectionInfoForNavigation().has_value());
 }
 
 }  // namespace
