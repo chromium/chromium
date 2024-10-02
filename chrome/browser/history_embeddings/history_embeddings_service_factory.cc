@@ -127,7 +127,7 @@ HistoryEmbeddingsServiceFactory::BuildServiceInstanceForBrowserContext(
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
 
   std::unique_ptr<history_embeddings::Answerer> answerer;
-  if (history_embeddings::kEnableAnswers.Get()) {
+  if (history_embeddings::IsHistoryEmbeddingsAnswersEnabled()) {
     if (history_embeddings::kUseMlAnswerer.Get()) {
       answerer = std::make_unique<history_embeddings::MlAnswerer>(
           optimization_guide_keyed_service);

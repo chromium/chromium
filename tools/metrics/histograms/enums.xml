@@ -23357,6 +23357,7 @@ from previous Chrome versions.
   <int value="1254761280" label="LacrosForkZygotesAtLoginScreen:enabled"/>
   <int value="1255712526" label="FedCmUseOtherAccount:enabled"/>
   <int value="1255967063" label="IsolatedSandboxedIframesName:enabled"/>
+  <int value="1256929916" label="HistoryEmbeddingsAnswers:disabled"/>
   <int value="1257482622" label="PageAlmostIdle:enabled"/>
   <int value="1257533754" label="UseDownloadOfflineContentProvider:disabled"/>
   <int value="1257663962" label="CommercePriceTracking:disabled"/>
@@ -23410,6 +23411,7 @@ from previous Chrome versions.
   <int value="1278193003" label="SegmentationSurveyPage:disabled"/>
   <int value="1278244152" label="AutofillFillMerchantPromoCodeFields:enabled"/>
   <int value="1278299178" label="PermissionPredictionsV3:enabled"/>
+  <int value="1278438893" label="HistoryEmbeddingsAnswers:enabled"/>
   <int value="1278508900"
       label="AutofillEnableNewStreetLevelFieldTypes:enabled"/>
   <int value="1278512661" label="SmartDimNewMlAgent:disabled"/>

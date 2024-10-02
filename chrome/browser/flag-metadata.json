@@ -5100,8 +5100,13 @@
   },
   {
     "name": "history-embeddings",
-    "owners": [ "tommycli@chromium.org", "orinj@chromium.org", "manukh@chromium.org", "johntlee@chromium.org" ],
-    "expiry_milestone": 135
+    "owners": [ "mahmadi@chromium.org", "orinj@chromium.org", "manukh@chromium.org", "johntlee@chromium.org" ],
+    "expiry_milestone": 145
+  },
+  {
+    "name": "history-embeddings-answers",
+    "owners": [ "mahmadi@chromium.org", "orinj@chromium.org", "manukh@chromium.org", "johntlee@chromium.org" ],
+    "expiry_milestone": 145
   },
   {
     "name": "history-journeys",

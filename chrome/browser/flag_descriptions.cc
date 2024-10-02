@@ -2244,6 +2244,11 @@ const char kHistoryEmbeddingsName[] = "History Embeddings";
 const char kHistoryEmbeddingsDescription[] =
     "When enabled, the history embeddings feature may operate.";
 
+const char kHistoryEmbeddingsAnswersName[] = "History Embeddings Answers";
+const char kHistoryEmbeddingsAnswersDescription[] =
+    "When enabled, the history embeddings feature may answer some queries. "
+    "Has no effect if the History Embeddings feature is disabled.";
+
 const char kTabAudioMutingName[] = "Tab audio muting UI control";
 const char kTabAudioMutingDescription[] =
     "When enabled, the audio indicators in the tab strip double as tab audio "

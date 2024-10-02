@@ -105,7 +105,7 @@ void HistoryEmbeddingsHandler::PublishResultToPage(
   mojom_search_result->query = native_search_result.query;
 
   bool has_answer = false;
-  if (history_embeddings::kEnableAnswers.Get()) {
+  if (history_embeddings::IsHistoryEmbeddingsAnswersEnabled()) {
     mojom_search_result->answer_status = AnswererAnswerStatusToMojoAnswerStatus(
         native_search_result.answerer_result.status);
     if (!native_search_result.AnswerText().empty()) {

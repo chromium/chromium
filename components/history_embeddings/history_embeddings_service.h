@@ -391,7 +391,7 @@ class HistoryEmbeddingsService : public KeyedService,
   std::unique_ptr<Embedder> embedder_;
 
   // The answerer used to answer queries with context. May be nullptr if
-  // the kEnableAnswers parameter is false.
+  // the kHistoryEmbeddingsAnswers feature is disabled.
   std::unique_ptr<Answerer> answerer_;
 
   // The intent classifier used to determine query intent and answerability.

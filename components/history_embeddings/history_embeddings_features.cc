@@ -20,6 +20,13 @@ BASE_FEATURE(kHistoryEmbeddings,
              "HistoryEmbeddings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Note: This feature has no parameters. Since it entirely depends on the
+// above kHistoryEmbeddings feature, all parameters are owned by that
+// feature to avoid confusion about which feature owns which parameters.
+BASE_FEATURE(kHistoryEmbeddingsAnswers,
+             "HistoryEmbeddingsAnswers",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<bool> kShowSourcePassages(&kHistoryEmbeddings,
                                                    "ShowSourcePassages",
                                                    false);
@@ -68,7 +75,7 @@ const base::FeatureParam<double> kSearchScoreThreshold(&kHistoryEmbeddings,
                                                        -1);
 
 // This one defaults true because we generally want it whenever v2 is enabled
-// and it will only be used if applicable (EnableAnswers true).
+// and it will only be used if applicable.
 const base::FeatureParam<bool> kEnableIntentClassifier(&kHistoryEmbeddings,
                                                        "EnableIntentClassifier",
                                                        true);
@@ -81,10 +88,6 @@ const base::FeatureParam<int> kMockIntentClassifierDelayMS(
     &kHistoryEmbeddings,
     "MockIntentClassifierDelayMS",
     0);
-
-const base::FeatureParam<bool> kEnableAnswers(&kHistoryEmbeddings,
-                                              "EnableAnswers",
-                                              false);
 
 const base::FeatureParam<bool> kUseMlAnswerer(&kHistoryEmbeddings,
                                               "UseMlAnswerer",
@@ -192,6 +195,11 @@ bool IsHistoryEmbeddingsEnabled() {
 #else
   return base::FeatureList::IsEnabled(kHistoryEmbeddings);
 #endif
+}
+
+bool IsHistoryEmbeddingsAnswersEnabled() {
+  return IsHistoryEmbeddingsEnabled() &&
+         base::FeatureList::IsEnabled(kHistoryEmbeddingsAnswers);
 }
 
 }  // namespace history_embeddings

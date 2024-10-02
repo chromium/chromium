@@ -6499,6 +6499,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(history_embeddings::kHistoryEmbeddings,
                                     kHistoryEmbeddingsVariations,
                                     "HistoryEmbeddings")},
+    {"history-embeddings-answers",
+     flag_descriptions::kHistoryEmbeddingsAnswersName,
+     flag_descriptions::kHistoryEmbeddingsAnswersDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(history_embeddings::kHistoryEmbeddingsAnswers)},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
 
@@ -11562,15 +11566,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSupervisedProfileSignInIphName,
      flag_descriptions::kSupervisedProfileSignInIphDescription,
      kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(
-         supervised_user::kSupervisedUserProfileSigninIPH)},
+     FEATURE_VALUE_TYPE(supervised_user::kSupervisedUserProfileSigninIPH)},
 
     {"supervised-profile-kite-badging",
      flag_descriptions::kSupervisedProfileShowKiteBadgeName,
      flag_descriptions::kSupervisedProfileShowKiteBadgeDescription,
      kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(
-         supervised_user::kShowKiteForSupervisedUsers)},
+     FEATURE_VALUE_TYPE(supervised_user::kShowKiteForSupervisedUsers)},
 #endif
 
     {"use-frame-interval-decider",

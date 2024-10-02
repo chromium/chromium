@@ -10,7 +10,15 @@
 
 namespace history_embeddings {
 
+// This is the main feature switch for history embeddings search, and when it is
+// disabled, answering functionality will not be available either.
 BASE_DECLARE_FEATURE(kHistoryEmbeddings);
+
+// This feature specifies whether to answer queries using an answerer; it can be
+// considered a toggle for v2 answering functionality. Parameters are all kept
+// under the primary kHistoryEmbeddings feature. The kHistoryEmbeddingsAnswers
+// feature state is not applicable if kHistoryEmbeddings is disabled.
+BASE_DECLARE_FEATURE(kHistoryEmbeddingsAnswers);
 
 // Displays source passages in the UI on chrome://history for debug purposes.
 extern const base::FeatureParam<bool> kShowSourcePassages;
@@ -64,10 +72,6 @@ extern const base::FeatureParam<bool> kUseMlIntentClassifier;
 // Specifies the delay in milliseconds to use for the mock intent classifier for
 // local development.
 extern const base::FeatureParam<int> kMockIntentClassifierDelayMS;
-
-// Specifies whether to answer queries using an answerer (mock or ML). This
-// can be considered a toggle for v2 functionality.
-extern const base::FeatureParam<bool> kEnableAnswers;
 
 // Specifies whether to use the ML Answerer (if false, the mock is used).
 extern const base::FeatureParam<bool> kUseMlAnswerer;
@@ -149,6 +153,9 @@ extern const base::FeatureParam<int> kWordMatchMaxTermCount;
 // feature flags are enabled and does not check the user's opt-in preference.
 // See chrome/browser/history_embeddings/history_embeddings_utils.h.
 bool IsHistoryEmbeddingsEnabled();
+
+// Whether the history answers feature is enabled.
+bool IsHistoryEmbeddingsAnswersEnabled();
 
 }  // namespace history_embeddings
 

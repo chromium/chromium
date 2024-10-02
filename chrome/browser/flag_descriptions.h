@@ -1285,6 +1285,9 @@ extern const char kHideIncognitoMediaMetadataDescription[];
 extern const char kHistoryEmbeddingsName[];
 extern const char kHistoryEmbeddingsDescription[];
 
+extern const char kHistoryEmbeddingsAnswersName[];
+extern const char kHistoryEmbeddingsAnswersDescription[];
+
 extern const char kHttpsFirstBalancedModeName[];
 extern const char kHttpsFirstBalancedModeDescription[];
 

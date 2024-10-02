@@ -42,7 +42,7 @@ bool IsHistoryEmbeddingsSettingVisible(Profile* profile) {
 
 void PopulateSourceForWebUI(content::WebUIDataSource* source) {
   source->AddBoolean("enableHistoryEmbeddingsAnswers",
-                     history_embeddings::kEnableAnswers.Get());
+                     history_embeddings::IsHistoryEmbeddingsAnswersEnabled());
   source->AddBoolean("enableHistoryEmbeddingsImages",
                      history_embeddings::kEnableImagesForResults.Get());
   static constexpr webui::LocalizedString kHistoryEmbeddingsStrings[] = {

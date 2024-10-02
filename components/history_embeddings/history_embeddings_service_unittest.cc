@@ -91,8 +91,8 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
     feature_list_.InitWithFeaturesAndParameters(
         {{kHistoryEmbeddings,
           {{"SearchPassageMinimumWordCount", "3"},
-           {"EnableAnswers", "true"},
            {"WordMatchMinEmbeddingScore", "0"}}},
+         {kHistoryEmbeddingsAnswers, {}},
 #if BUILDFLAG(IS_CHROMEOS)
          {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}}
 #endif  // BUILDFLAG(IS_CHROMEOS)

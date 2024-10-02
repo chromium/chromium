@@ -89,8 +89,9 @@ class HistoryEmbeddingsHandlerTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{history_embeddings::kHistoryEmbeddings,
-                               {{"EnableAnswers", "true"}}},
+        /*enabled_features=*/{{history_embeddings::kHistoryEmbeddings, {}},
+                              {history_embeddings::kHistoryEmbeddingsAnswers,
+                               {}},
                               {feature_engagement::kIPHHistorySearchFeature,
                                {}},
 #if BUILDFLAG(IS_CHROMEOS)

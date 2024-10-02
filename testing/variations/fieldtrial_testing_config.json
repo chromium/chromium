@@ -11280,7 +11280,8 @@
                         "SearchQueryMinimumWordCount": "2"
                     },
                     "enable_features": [
-                        "HistoryEmbeddings"
+                        "HistoryEmbeddings",
+                        "HistoryEmbeddingsAnswers"
                     ]
                 }
             ]
