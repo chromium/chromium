@@ -675,10 +675,7 @@ test("gpu_unittests") {
   }
 
   if (is_android) {
-    deps += [
-      "//ui/android:ui_java",
-      "//ui/gl:gl_jni_headers",
-    ]
+    deps += [ "//ui/android:ui_java" ]
   }
 
   if (use_dawn) {
