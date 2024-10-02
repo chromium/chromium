@@ -122,6 +122,7 @@ constexpr char kOpClipTypeName[] = "clip";
 constexpr char kOpConcatTypeName[] = "concat";
 constexpr char kOpConv2dTypeName[] = "conv";
 constexpr char kOpConvTranspose2dTypeName[] = "conv_transpose";
+constexpr char kOpCumulativeSumTypeName[] = "cumsum";
 constexpr char kOpEluTypeName[] = "elu";
 constexpr char kOpExpandTypeName[] = "tile";
 constexpr char kOpGatherTypeName[] = "gather_along_axis";
@@ -651,8 +652,7 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        /*concat_inputs=*/kFloatsAndInt32,
        /*conv2d_input=*/DataTypeConstraint::kFloat16To32,
        /*conv_transpose2d_input=*/DataTypeConstraint::kFloat16To32,
-       // CumulativeSum is not implemented.
-       /*cumulative_sum_input=*/{},
+       /*cumulative_sum_input=*/kFloatsAndInt32,
        // DequantizeLinear is not implemented.
        /*dequantize_linear_input=*/{},
        /*dequantize_linear_scale=*/{},
@@ -865,6 +865,10 @@ GraphBuilderCoreml::BuildCoreMLModel() {
         RETURN_IF_ERROR(AddOperationForConv2d(*operation->get_conv2d(), block));
         break;
       }
+      case mojom::Operation::Tag::kCumulativeSum: {
+        AddOperationForCumulativeSum(*operation->get_cumulative_sum(), block);
+        break;
+      }
       case mojom::Operation::Tag::kElementWiseBinary: {
         const mojom::ElementWiseBinaryPtr& op =
             operation->get_element_wise_binary();
@@ -1016,7 +1020,6 @@ GraphBuilderCoreml::BuildCoreMLModel() {
         RETURN_IF_ERROR(AddOperationForWhere(*operation->get_where(), block));
         break;
       }
-      case mojom::Operation::Tag::kCumulativeSum:
       case mojom::Operation::Tag::kDequantizeLinear:
       case mojom::Operation::Tag::kGatherElements:
       case mojom::Operation::Tag::kGatherNd:
@@ -1613,6 +1616,31 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForConv2d(
 
   PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
   return base::ok();
+}
+
+void GraphBuilderCoreml::AddOperationForCumulativeSum(
+    const mojom::CumulativeSum& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+  CHECK(context_properties_.data_type_limits.cumulative_sum_input.Has(
+      MILDataTypeToOperandType(input_operand_info.mil_data_type)));
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpCumulativeSumTypeName);
+  SetInputWithName(*op->mutable_inputs(), kOpParamX,
+                   input_operand_info.coreml_name);
+
+  static constexpr char kParamExclusive[] = "exclusive";
+  static constexpr char kParamReverse[] = "reverse";
+
+  SetInputsWithValues(
+      *op->mutable_inputs(),
+      {{kOpParamAxis, CreateScalarImmediateValue(
+                          base::checked_cast<int32_t>(operation.axis))},
+       {kParamExclusive, CreateScalarImmediateValue(operation.exclusive)},
+       {kParamReverse, CreateScalarImmediateValue(operation.reversed)}});
+  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
 }
 
 base::expected<void, mojom::ErrorPtr>

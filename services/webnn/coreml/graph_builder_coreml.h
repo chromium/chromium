@@ -216,6 +216,9 @@ class GraphBuilderCoreml {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForConv2d(
       const mojom::Conv2d& operation,
       CoreML::Specification::MILSpec::Block& block);
+  void AddOperationForCumulativeSum(
+      const mojom::CumulativeSum& operation,
+      CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   AddOperationForElementwiseBinary(
       uint64_t lhs_operand_id,
