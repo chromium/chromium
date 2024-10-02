@@ -72,10 +72,10 @@ bool TestClient::IsValidLink(const std::string& url) {
   return !url.empty();
 }
 
-#if BUILDFLAG(ENABLE_PDF)
+#if BUILDFLAG(ENABLE_PDF_INK2)
 bool TestClient::IsInAnnotationMode() const {
   return false;
 }
-#endif  // BUILDFLAG(ENABLE_PDF)
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 }  // namespace chrome_pdf

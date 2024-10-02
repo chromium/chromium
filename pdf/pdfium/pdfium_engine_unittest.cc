@@ -130,9 +130,9 @@ class MockTestClient : public TestClient {
   MOCK_METHOD(bool, IsPrintPreview, (), (const override));
   MOCK_METHOD(void, DocumentFocusChanged, (bool), (override));
   MOCK_METHOD(void, SetLinkUnderCursor, (const std::string&), (override));
-#if BUILDFLAG(ENABLE_PDF)
+#if BUILDFLAG(ENABLE_PDF_INK2)
   MOCK_METHOD(bool, IsInAnnotationMode, (), (const override));
-#endif  // BUILDFLAG(ENABLE_PDF)
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 };
 
 }  // namespace

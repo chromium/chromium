@@ -40,7 +40,6 @@
 #include "pdf/pdf_features.h"
 #include "pdf/test/mock_web_associated_url_loader.h"
 #include "pdf/test/mouse_event_builder.h"
-#include "pdf/test/pdf_ink_test_helpers.h"
 #include "pdf/test/test_helpers.h"
 #include "pdf/test/test_pdfium_engine.h"
 #include "printing/metafile_skia.h"
@@ -86,6 +85,10 @@
 #include "ui/gfx/range/range.h"
 #include "ui/latency/latency_info.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+#include "pdf/test/pdf_ink_test_helpers.h"
+#endif
 
 namespace chrome_pdf {
 
