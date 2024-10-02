@@ -423,6 +423,9 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="27"
       label="Context menu item for 'Search with Google Lens' that leads to
              Lens Overlay, entered via keyboard (Video)"/>
+  <int value="28"
+      label="Lens Overlay Location Bar entry point that leads to Lens
+             Overlay, entered via keyboard (Image)"/>
 </enum>
 
 <!-- LINT.ThenChange(//ios/chrome/browser/ui/lens/lens_entrypoint.h:IOSLensEntrypoint) -->

@@ -31,6 +31,7 @@ constexpr char kChromeOpenNewTabSidePanel[] = "cnts";
 constexpr char kChromeFullscreenSearchMenuItem[] = "cfs";
 constexpr char kChromeVideoFrameSearchContextMenuItem[] = "cvfs";
 constexpr char kCompanionRegionSearch[] = "cscidr";
+constexpr char kChromeLensOverlayLocationBar[] = "crmntob";
 
 constexpr char kSurfaceQueryParameter[] = "s";
 // The value of Surface.CHROMIUM expected by Lens Web
@@ -75,6 +76,8 @@ std::string GetEntryPointQueryString(lens::EntryPoint entry_point) {
       return kChromeVideoFrameSearchContextMenuItem;
     case lens::COMPANION_REGION_SEARCH:
       return kCompanionRegionSearch;
+    case lens::CHROME_LENS_OVERLAY_LOCATION_BAR:
+      return kChromeLensOverlayLocationBar;
     case lens::UNKNOWN:
       return "";
   }

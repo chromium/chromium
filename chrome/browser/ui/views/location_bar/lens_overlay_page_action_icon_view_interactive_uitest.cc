@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 // #include "build/build_config.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/lens_overlay_page_action_icon_view.h"
@@ -14,10 +15,15 @@
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "url/url_constants.h"
 
+using ::testing::MatchesRegex;
+
 namespace {
+
+constexpr char kDocumentWithNamedElement[] = "/select.html";
 
 class LensOverlayPageActionIconViewTestBase : public InProcessBrowserTest {
  public:
@@ -27,6 +33,21 @@ class LensOverlayPageActionIconViewTestBase : public InProcessBrowserTest {
   LensOverlayPageActionIconViewTestBase& operator=(
       const LensOverlayPageActionIconViewTestBase&) = delete;
   ~LensOverlayPageActionIconViewTestBase() override = default;
+
+  void SetUp() override {
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    embedded_test_server()->StartAcceptingConnections();
+    InProcessBrowserTest::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
 
   LensOverlayPageActionIconView* lens_overlay_icon_view() {
     views::View* const icon_view =
@@ -85,6 +106,46 @@ IN_PROC_BROWSER_TEST_F(LensOverlayPageActionIconViewTest,
   EXPECT_TRUE(focus_manager->GetFocusedView());
   run_loop.Run();
   EXPECT_TRUE(icon_view->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayPageActionIconViewTest,
+                       OpensNewTabWhenEnteredThroughKeyboard) {
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
+  // Navigate to a non-NTP page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
+  // We need to wait for paint in order to take a screenshot of the page.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return browser()
+        ->tab_strip_model()
+        ->GetActiveTab()
+        ->contents()
+        ->CompletedFirstVisuallyNonEmptyPaint();
+  }));
+
+  LensOverlayPageActionIconView* icon_view = lens_overlay_icon_view();
+  views::FocusManager* focus_manager = icon_view->GetFocusManager();
+  focus_manager->ClearFocus();
+  EXPECT_FALSE(focus_manager->GetFocusedView());
+  EXPECT_FALSE(icon_view->GetVisible());
+
+  // Focus in the location bar should show the icon.
+  base::RunLoop run_loop;
+  icon_view->set_update_callback_for_testing(run_loop.QuitClosure());
+  location_bar()->FocusLocation(false);
+  EXPECT_TRUE(focus_manager->GetFocusedView());
+  run_loop.Run();
+  EXPECT_TRUE(icon_view->GetVisible());
+
+  // Executing the lens overlay icon view with keyboard source should open a new
+  // tab.
+  ui_test_utils::TabAddedWaiter tab_add(browser());
+  icon_view->execute_with_keyboard_source_for_testing();
+  auto* new_tab_contents = tab_add.Wait();
+
+  EXPECT_TRUE(new_tab_contents);
+  content::WaitForLoadStop(new_tab_contents);
+  EXPECT_THAT(new_tab_contents->GetLastCommittedURL().query(),
+              MatchesRegex("ep=crmntob&re=df&s=4&st=\\d+&lm=.+"));
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayPageActionIconViewTest,

@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
-#include "chrome/browser/ui/views/lens/lens_side_panel_helper.h"
 #include "components/lens/lens_entrypoints.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_metadata.mojom.h"
@@ -23,6 +22,10 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+#include "chrome/browser/ui/views/lens/lens_side_panel_helper.h"
+#endif
 
 namespace lens {
 
@@ -71,6 +74,7 @@ void LensRegionSearchController::Start(
   if (use_fullscreen_capture) {
     screenshot_flow_->StartFullscreenCapture(std::move(callback));
   } else {
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
     // Create user education bubble anchored to the toolbar container.
     // This is only done for non-fulllscreen capture.
     bubble_widget_ = lens::OpenLensRegionSearchInstructions(
@@ -80,6 +84,7 @@ void LensRegionSearchController::Start(
         base::BindOnce(&LensRegionSearchController::Escape,
                        base::Unretained(this)));
     bubble_widget_->Show();
+#endif
     screenshot_flow_->Start(std::move(callback));
   }
 }
@@ -200,9 +205,20 @@ void LensRegionSearchController::OnCaptureCompleted(
 
   if (is_google_default_search_provider_) {
     lens::EntryPoint lens_entry_point =
-        entry_point_ == lens::AmbientSearchEntryPoint::COMPANION_REGION_SEARCH
-            ? lens::EntryPoint::COMPANION_REGION_SEARCH
-            : lens::EntryPoint::CHROME_REGION_SEARCH_MENU_ITEM;
+        lens::EntryPoint::CHROME_REGION_SEARCH_MENU_ITEM;
+    switch (entry_point_) {
+      case lens::AmbientSearchEntryPoint::COMPANION_REGION_SEARCH:
+        lens_entry_point = lens::EntryPoint::COMPANION_REGION_SEARCH;
+        break;
+      case lens::AmbientSearchEntryPoint::
+          LENS_OVERLAY_LOCATION_BAR_ACCESSIBILITY_FALLBACK:
+        lens_entry_point = lens::EntryPoint::CHROME_LENS_OVERLAY_LOCATION_BAR;
+        break;
+      default:
+        // The other possible values of `entry_point_` should not be possible
+        // and are considered invalid.
+        break;
+    }
     core_tab_helper->SearchWithLens(image, lens_entry_point,
                                     force_open_in_new_tab_);
   } else {

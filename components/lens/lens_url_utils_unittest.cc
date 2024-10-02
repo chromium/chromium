@@ -279,6 +279,16 @@ TEST(LensUrlUtilsTest, AppendFullscreenSearchQueryParameterTest) {
   EXPECT_THAT(url.query(), MatchesRegex("ep=cfs&re=avsf&s=4&st=\\d+"));
 }
 
+TEST(LensUrlUtilsTest, AppendLensOverlayLocationBarQueryParameterTest) {
+  lens::EntryPoint lens_ep = lens::EntryPoint::CHROME_LENS_OVERLAY_LOCATION_BAR;
+  lens::RenderingEnvironment re =
+      lens::RenderingEnvironment::ONELENS_DESKTOP_WEB_FULLSCREEN;
+  GURL original_url = GURL("https://lens.google.com/");
+  GURL url = lens::AppendOrReplaceQueryParametersForLensRequest(
+      original_url, lens_ep, re, /*is_side_panel_request=*/false);
+  EXPECT_THAT(url.query(), MatchesRegex("ep=crmntob&re=df&s=4&st=\\d+"));
+}
+
 TEST(LensUrlUtilsTest, AppendUnknownEntryPointTest) {
   lens::RenderingEnvironment re =
       lens::RenderingEnvironment::ONELENS_DESKTOP_WEB_FULLSCREEN;
