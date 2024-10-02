@@ -29,13 +29,6 @@ namespace wk_navigation_util {
 // Session restoration algorithm has this limitation on maximum session size.
 extern const int kMaxSessionSize;
 
-// URL fragment prefix used to encode the session history to inject in a
-// restore_session.html URL.
-extern const char kRestoreSessionSessionHashPrefix[];
-
-// URL fragment prefix used to encode target URL in a restore_session.html URL.
-extern const char kRestoreSessionTargetUrlHashPrefix[];
-
 // The "Referer" [sic] HTTP header.
 extern NSString* const kReferrerHeaderName;
 

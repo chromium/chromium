@@ -98,7 +98,6 @@ void RecordSessionRestorationFetcherHasDataForSource(
 namespace web {
 
 const char kRestoreNavigationItemCount[] = "IOS.RestoreNavigationItemCount";
-const char kRestoreNavigationTime[] = "IOS.RestoreNavigationTime";
 
 NavigationManager::WebLoadParams::WebLoadParams(const GURL& url) : url(url) {}
 
@@ -501,7 +500,7 @@ void NavigationManagerImpl::RemoveTransientURLRewriters() {
 void NavigationManagerImpl::UpdatePendingItemUrl(const GURL& url) const {
   // If there is no pending item, navigation is probably happening within the
   // back forward history. Don't modify the item list.
-  NavigationItemImpl* pending_item = GetPendingItemInCurrentOrRestoredSession();
+  NavigationItemImpl* pending_item = GetPendingItemImpl();
   if (!pending_item || url == pending_item->GetURL())
     return;
 
@@ -516,7 +515,7 @@ void NavigationManagerImpl::UpdatePendingItemUrl(const GURL& url) const {
 }
 
 NavigationItemImpl* NavigationManagerImpl::GetCurrentItemImpl() const {
-  NavigationItemImpl* pending_item = GetPendingItemInCurrentOrRestoredSession();
+  NavigationItemImpl* pending_item = GetPendingItemImpl();
   if (pending_item)
     return pending_item;
 
@@ -591,7 +590,7 @@ NavigationItem* NavigationManagerImpl::GetVisibleItem() const {
 
   // Only return pending_item_ for new (non-history), user-initiated
   // navigations in order to prevent URL spoof attacks.
-  NavigationItemImpl* pending_item = GetPendingItemInCurrentOrRestoredSession();
+  NavigationItemImpl* pending_item = GetPendingItemImpl();
   if (pending_item) {
     bool is_user_initiated = pending_item->NavigationInitiationType() ==
                              NavigationInitiationType::BROWSER_INITIATED;
@@ -666,7 +665,17 @@ int NavigationManagerImpl::GetLastCommittedItemIndex() const {
 }
 
 NavigationItem* NavigationManagerImpl::GetPendingItem() const {
-  return GetPendingItemInCurrentOrRestoredSession();
+  return GetPendingItemImpl();
+}
+
+NavigationItemImpl* NavigationManagerImpl::GetPendingItemImpl() const {
+  if (pending_item_index_ == -1) {
+    if (!pending_item_) {
+      return delegate_->GetPendingItem();
+    }
+    return pending_item_.get();
+  }
+  return GetNavigationItemImplAtIndex(pending_item_index_);
 }
 
 void NavigationManagerImpl::DiscardNonCommittedItems() {
@@ -690,7 +699,7 @@ void NavigationManagerImpl::LoadURLWithParams(
 
   // Mark pending item as created from hash change if necessary. This is needed
   // because window.hashchange message may not arrive on time.
-  NavigationItemImpl* pending_item = GetPendingItemInCurrentOrRestoredSession();
+  NavigationItemImpl* pending_item = GetPendingItemImpl();
   if (pending_item) {
     NavigationItem* last_committed_item = GetLastCommittedItem();
     GURL last_committed_url =
@@ -969,17 +978,6 @@ void NavigationManagerImpl::Restore(
   RestoreItemsState(RestoreItemListType::kBackList, std::move(back_items));
   RestoreItemsState(RestoreItemListType::kForwardList,
                     std::move(forward_items));
-}
-
-NavigationItemImpl*
-NavigationManagerImpl::GetPendingItemInCurrentOrRestoredSession() const {
-  if (pending_item_index_ == -1) {
-    if (!pending_item_) {
-      return delegate_->GetPendingItem();
-    }
-    return pending_item_.get();
-  }
-  return GetNavigationItemImplAtIndex(pending_item_index_);
 }
 
 NavigationItemImpl* NavigationManagerImpl::GetNavigationItemImplAtIndex(

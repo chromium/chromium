@@ -527,7 +527,7 @@ class CRWWebControllerResponseTest : public CRWWebControllerTest {
     NavigationItemImpl* pending_item =
         web_controller()
             .webStateImpl->GetNavigationManagerImpl()
-            .GetPendingItemInCurrentOrRestoredSession();
+            .GetPendingItemImpl();
     const bool has_post_data =
         pending_item && pending_item->GetPostData() != nil;
 
@@ -719,7 +719,7 @@ TEST_F(CRWWebControllerResponseTest, DownloadForPostRequest) {
   AddPendingItem(url, ui::PAGE_TRANSITION_TYPED);
   web_controller()
       .webStateImpl->GetNavigationManagerImpl()
-      .GetPendingItemInCurrentOrRestoredSession()
+      .GetPendingItemImpl()
       ->SetPostData([NSData data]);
   [web_controller() loadCurrentURLWithRendererInitiatedNavigation:NO];
   NSURLResponse* response = [[NSHTTPURLResponse alloc]

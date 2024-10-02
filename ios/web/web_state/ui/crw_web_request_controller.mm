@@ -268,8 +268,7 @@ enum class BackForwardNavigationType {
 
   // Add or update pending item before any WebStateObserver callbacks.
   // See https://crbug.com/842151 for a scenario where this is important.
-  web::NavigationItem* item =
-      self.navigationManagerImpl->GetPendingItemInCurrentOrRestoredSession();
+  web::NavigationItem* item = self.navigationManagerImpl->GetPendingItem();
   if (item) {
     // Update the existing pending entry.
     // Typically on PAGE_TRANSITION_CLIENT_REDIRECT.
@@ -294,8 +293,7 @@ enum class BackForwardNavigationType {
                           : web::NavigationInitiationType::BROWSER_INITIATED,
         isPostNavigation, /*is_error_navigation=*/false,
         web::HttpsUpgradeType::kNone);
-    item =
-        self.navigationManagerImpl->GetPendingItemInCurrentOrRestoredSession();
+    item = self.navigationManagerImpl->GetPendingItem();
   }
 
   bool redirect = transition & ui::PAGE_TRANSITION_IS_REDIRECT_MASK;

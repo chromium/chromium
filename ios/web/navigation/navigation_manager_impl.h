@@ -42,10 +42,6 @@ class NavigationManagerDelegate;
 // restored items can be smaller.
 extern const char kRestoreNavigationItemCount[];
 
-// Name of UMA histogram to log the time spent on asynchronous session
-// restoration.
-extern const char kRestoreNavigationTime[];
-
 // WKBackForwardList-based implementation of NavigationManager.
 // Generally mirrors upstream's NavigationController.
 //
@@ -202,6 +198,9 @@ class NavigationManagerImpl final : public NavigationManager {
   // moved out of CRWWebController.
   NavigationItemImpl* GetCurrentItemImpl() const;
 
+  // Implementation for corresponding NavigationManager getters.
+  NavigationItemImpl* GetPendingItemImpl() const;
+
   // Returns the last committed NavigationItem, which may be null if there
   // are no committed entries or session restoration is in-progress.
   NavigationItemImpl* GetLastCommittedItemImpl() const;
@@ -246,9 +245,6 @@ class NavigationManagerImpl final : public NavigationManager {
   std::vector<NavigationItem*> GetForwardItems() const final;
   void Restore(int last_committed_item_index,
                std::vector<std::unique_ptr<NavigationItem>> items) final;
-
-  // Implementation for corresponding NavigationManager getters.
-  NavigationItemImpl* GetPendingItemInCurrentOrRestoredSession() const;
 
   // Identical to GetItemAtIndex() but returns the underlying NavigationItemImpl
   // instead of the public NavigationItem interface.

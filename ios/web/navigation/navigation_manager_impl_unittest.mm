@@ -145,13 +145,6 @@ class NavigationManagerTest : public PlatformTest {
         std::make_unique<NavigationManagerImpl>(&browser_state_, &delegate_);
   }
 
-  // Returns the value of the "#session=" URL hash component from `url`.
-  static std::string ExtractRestoredSession(const GURL& url) {
-    std::string decoded = base::UnescapeBinaryURLComponent(url.ref());
-    return decoded.substr(
-        strlen(wk_navigation_util::kRestoreSessionSessionHashPrefix));
-  }
-
   NavigationManagerImpl* navigation_manager() { return manager_.get(); }
 
   MockNavigationManagerDelegate& navigation_manager_delegate() {
@@ -1319,8 +1312,7 @@ TEST_F(NavigationManagerTest, ReloadWithUserAgentType) {
 
   navigation_manager()->ReloadWithUserAgentType(UserAgentType::DESKTOP);
 
-  NavigationItem* pending_item =
-      navigation_manager()->GetPendingItemInCurrentOrRestoredSession();
+  NavigationItem* pending_item = navigation_manager()->GetPendingItem();
   EXPECT_EQ(url, pending_item->GetURL());
   EXPECT_EQ(virtual_url, pending_item->GetVirtualURL());
   EXPECT_EQ(UserAgentType::DESKTOP, pending_item->GetUserAgentType());
@@ -1351,8 +1343,7 @@ TEST_F(NavigationManagerTest, ReloadWithUserAgentTypeOnRedirect) {
 
   navigation_manager()->ReloadWithUserAgentType(UserAgentType::DESKTOP);
 
-  NavigationItem* pending_item =
-      navigation_manager()->GetPendingItemInCurrentOrRestoredSession();
+  NavigationItem* pending_item = navigation_manager()->GetPendingItem();
   EXPECT_EQ(url, pending_item->GetURL());
 }
 
@@ -1371,8 +1362,7 @@ TEST_F(NavigationManagerTest, ReloadWithUserAgentTypeOnNewTabRedirect) {
 
   navigation_manager()->ReloadWithUserAgentType(UserAgentType::DESKTOP);
 
-  NavigationItem* pending_item =
-      navigation_manager()->GetPendingItemInCurrentOrRestoredSession();
+  NavigationItem* pending_item = navigation_manager()->GetPendingItem();
   EXPECT_EQ(url, pending_item->GetURL());
 }
 
@@ -2659,8 +2649,7 @@ TEST_F(NavigationManagerDetachedModeTest, NotSerializable) {
       web::NavigationInitiationType::BROWSER_INITIATED,
       /*is_post_navigation=*/false, /*is_error_navigation=*/false,
       web::HttpsUpgradeType::kNone);
-  EXPECT_FALSE(manager_->GetPendingItemInCurrentOrRestoredSession()
-                   ->ShouldSkipSerialization());
+  EXPECT_FALSE(manager_->GetPendingItemImpl()->ShouldSkipSerialization());
 
   manager_->SetWKWebViewNextPendingUrlNotSerializable(GURL("http://www.1.com"));
   manager_->AddPendingItem(
@@ -2668,16 +2657,14 @@ TEST_F(NavigationManagerDetachedModeTest, NotSerializable) {
       web::NavigationInitiationType::BROWSER_INITIATED,
       /*is_post_navigation=*/false, /*is_error_navigation=*/false,
       web::HttpsUpgradeType::kNone);
-  EXPECT_TRUE(manager_->GetPendingItemInCurrentOrRestoredSession()
-                  ->ShouldSkipSerialization());
+  EXPECT_TRUE(manager_->GetPendingItemImpl()->ShouldSkipSerialization());
 
   manager_->AddPendingItem(
       GURL("http://www.1.com"), Referrer(), ui::PAGE_TRANSITION_TYPED,
       web::NavigationInitiationType::BROWSER_INITIATED,
       /*is_post_navigation=*/false, /*is_error_navigation=*/false,
       web::HttpsUpgradeType::kNone);
-  EXPECT_FALSE(manager_->GetPendingItemInCurrentOrRestoredSession()
-                   ->ShouldSkipSerialization());
+  EXPECT_FALSE(manager_->GetPendingItemImpl()->ShouldSkipSerialization());
 }
 
 // Tests that GetVisibleWebViewURL() returns a cached GURL.

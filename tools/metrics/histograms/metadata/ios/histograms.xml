@@ -3709,20 +3709,6 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
-<histogram name="IOS.RestoreNavigationTime" units="ms"
-    expires_after="2025-09-12">
-  <owner>gambard@chromium.org</owner>
-  <owner>justincohen@chromium.org</owner>
-  <summary>
-    [iOS] Time spent on restoring committed Navigation Manager's items. Recorded
-    once per restoration, as a cumulative time across all items. Restoration is
-    triggered in the following cases (the list is not exhaustive): app cold
-    start, remote tab was open, cookies were cleared, recently closed tab was
-    restored. This metric will be used for monitoring session restoration
-    performance which relies on system's WKWebView.
-  </summary>
-</histogram>
-
 <histogram name="IOS.SadTab.FileIsPDF" enum="Boolean"
     expires_after="2025-07-21">
   <owner>ajuma@chromium.org</owner>

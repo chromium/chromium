@@ -18,8 +18,7 @@ NavigationItemImpl* GetItemWithUniqueID(
     return context->GetItem();
 
   int unique_id = context->GetNavigationItemUniqueID();
-  NavigationItemImpl* pending_item =
-      navigation_manager->GetPendingItemInCurrentOrRestoredSession();
+  NavigationItemImpl* pending_item = navigation_manager->GetPendingItemImpl();
   if (pending_item && pending_item->GetUniqueID() == unique_id)
     return pending_item;
 

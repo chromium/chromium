@@ -29,8 +29,6 @@ namespace wk_navigation_util {
 // state calls.
 const int kMaxSessionSize = 75;
 
-const char kRestoreSessionSessionHashPrefix[] = "session=";
-const char kRestoreSessionTargetUrlHashPrefix[] = "targetUrl=";
 NSString* const kReferrerHeaderName = @"Referer";
 
 int GetSafeItemRange(int last_committed_item_index,
