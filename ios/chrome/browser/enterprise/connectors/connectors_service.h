@@ -9,6 +9,10 @@
 #import "components/enterprise/connectors/core/connectors_service_base.h"
 #import "components/keyed_service/core/keyed_service.h"
 
+namespace policy {
+class UserCloudPolicyManager;
+}  // namespace policy
+
 namespace enterprise_connectors {
 
 // iOS-specific implementation of `ConnectorsServiceBase`, to be used to access
@@ -17,7 +21,8 @@ namespace enterprise_connectors {
 // - OnSecurityEventEnterpriseConnectors
 class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
  public:
-  explicit ConnectorsService(PrefService* pref_service);
+  ConnectorsService(PrefService* pref_service,
+                    policy::UserCloudPolicyManager* user_cloud_policy_manager);
 
   // ConnectorsServiceBase:
   bool IsConnectorEnabled(AnalysisConnector connector) const override;
@@ -30,11 +35,15 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
   const PrefService* GetPrefs() const override;
   ConnectorsManagerBase* GetConnectorsManagerBase() override;
   const ConnectorsManagerBase* GetConnectorsManagerBase() const override;
+  policy::CloudPolicyManager* GetManagedUserCloudPolicyManager() const override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ConnectorsServiceTest, GetPrefs);
+  FRIEND_TEST_ALL_PREFIXES(ConnectorsServiceTest, GetProfileDmToken);
+  FRIEND_TEST_ALL_PREFIXES(ConnectorsServiceTest, GetBrowserDmToken);
 
   raw_ptr<PrefService> prefs_;
+  raw_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
 };
 
 }  // namespace enterprise_connectors

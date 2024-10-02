@@ -12,9 +12,12 @@ source_set("connectors") {
 
   deps = [
     "//base",
+    "//components/enterprise",
     "//components/enterprise/connectors/core",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
+    "//components/policy/core/common",
+    "//components/policy/core/common:common_constants",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/web/public",
@@ -30,10 +33,14 @@ source_set("unit_tests") {
 
   deps = [
     "//base",
+    "//components/enterprise:test_support",
+    "//components/enterprise/connectors/core",
+    "//components/policy/core/common:test_support",
     "//components/prefs:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
+    "//services/network:test_support",
     "//testing/gtest",
   ]
 }

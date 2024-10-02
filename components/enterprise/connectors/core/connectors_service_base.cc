@@ -5,6 +5,7 @@
 #include "components/enterprise/connectors/core/connectors_service_base.h"
 
 #include "components/enterprise/connectors/core/connectors_prefs.h"
+#include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/prefs/pref_service.h"
 
 namespace enterprise_connectors {
@@ -98,5 +99,20 @@ std::optional<ReportingSettings> ConnectorsServiceBase::GetReportingSettings(
 
   return settings;
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+std::optional<std::string> ConnectorsServiceBase::GetProfileDmToken() const {
+  policy::CloudPolicyManager* policy_manager =
+      GetManagedUserCloudPolicyManager();
+  if (policy_manager && policy_manager->core() &&
+      policy_manager->core()->store() &&
+      policy_manager->core()->store()->has_policy() &&
+      policy_manager->core()->store()->policy()->has_request_token()) {
+    return policy_manager->core()->store()->policy()->request_token();
+  }
+
+  return std::nullopt;
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace enterprise_connectors

@@ -40,7 +40,6 @@
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_store.h"
-#include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -492,23 +491,6 @@ std::optional<std::string> ConnectorsService::GetBrowserDmToken() const {
   return dm_token.value();
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-std::optional<std::string> ConnectorsService::GetProfileDmToken() const {
-  Profile* profile = Profile::FromBrowserContext(context_);
-
-  policy::CloudPolicyManager* policy_manager = profile->GetCloudPolicyManager();
-  if (policy_manager && policy_manager->core() &&
-      policy_manager->core()->store() &&
-      policy_manager->core()->store()->has_policy() &&
-      policy_manager->core()->store()->policy()->has_request_token()) {
-    return policy_manager->core()->store()->policy()->request_token();
-  }
-
-  return std::nullopt;
-}
-
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
 policy::PolicyScope ConnectorsService::GetPolicyScope(
     const char* scope_pref) const {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -561,6 +543,11 @@ ConnectorsManagerBase* ConnectorsService::GetConnectorsManagerBase() {
 const ConnectorsManagerBase* ConnectorsService::GetConnectorsManagerBase()
     const {
   return connectors_manager_.get();
+}
+
+policy::CloudPolicyManager*
+ConnectorsService::GetManagedUserCloudPolicyManager() const {
+  return Profile::FromBrowserContext(context_)->GetCloudPolicyManager();
 }
 
 std::unique_ptr<ClientMetadata> ConnectorsService::BuildClientMetadata(

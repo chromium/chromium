@@ -72,6 +72,12 @@ class TestConnectorsService : public ConnectorsServiceBase {
   PrefService* GetPrefs() override { return &prefs_; }
   const PrefService* GetPrefs() const override { return &prefs_; }
 
+  policy::CloudPolicyManager* GetManagedUserCloudPolicyManager()
+      const override {
+    NOTREACHED();
+    // return nullptr;
+  }
+
  private:
   bool connectors_enabled_ = false;
   std::optional<DmToken> machine_dm_token_;
