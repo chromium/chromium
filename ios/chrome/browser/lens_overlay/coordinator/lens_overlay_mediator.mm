@@ -19,7 +19,9 @@
 #import "ios/chrome/browser/orchestrator/ui_bundled/edit_view_animatee.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_coordinator.h"
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_result.h"
@@ -47,6 +49,8 @@
 @end
 
 @implementation LensOverlayMediator {
+  /// Whether the browser is off the record.
+  BOOL _isIncognito;
   /// Bridges C++ WebStateObserver methods to this mediator.
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
   /// Search engine observer.
@@ -61,9 +65,10 @@
   BOOL _skipLoadingNextLensResultURL;
 }
 
-- (instancetype)init {
+- (instancetype)initWithIsIncognito:(BOOL)isIncognito {
   self = [super init];
   if (self) {
+    _isIncognito = isIncognito;
     _webStateObserverBridge =
         std::make_unique<web::WebStateObserverBridge>(self);
     _historyStack = [[NSMutableArray alloc] init];
@@ -145,9 +150,21 @@
               destinationURL:(const GURL&)destinationURL
             thumbnailRemoved:(BOOL)thumbnailRemoved {
   [self defocusOmnibox];
-  // Setting the query text generates new results.
-  [self.lensHandler setQueryText:base::SysUTF16ToNSString(text)
-                  clearSelection:thumbnailRemoved];
+  // Start new unimodal searches in a new tab.
+  if (thumbnailRemoved || _currentLensResult.isTextSelection) {
+    OpenNewTabCommand* command =
+        [[OpenNewTabCommand alloc] initWithURL:destinationURL
+                                      referrer:web::Referrer()
+                                   inIncognito:_isIncognito
+                                  inBackground:NO
+                                      appendTo:OpenPosition::kCurrentTab];
+    [self.applicationHandler openURLInNewTab:command];
+    [self resetOmniboxToCurrentLensResult];
+  } else {
+    // Setting the query text generates new results.
+    [self.lensHandler setQueryText:base::SysUTF16ToNSString(text)
+                    clearSelection:thumbnailRemoved];
+  }
 }
 
 #pragma mark LensToolbarMutator
@@ -275,6 +292,13 @@
 }
 
 #pragma mark - Private
+
+/// Resets the omnibox state to the `_currentLensResult` text and thumbnail.
+- (void)resetOmniboxToCurrentLensResult {
+  [self.omniboxCoordinator updateOmniboxState];
+  [self.omniboxCoordinator
+      setThumbnailImage:_currentLensResult.selectionPreviewImage];
+}
 
 /// Adds the URL navigation to the `historyStack`.
 - (void)addURLToHistory:(const GURL&)URL {

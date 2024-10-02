@@ -78,7 +78,7 @@ namespace {
 class LensOverlayMediatorTest : public PlatformTest {
  public:
   LensOverlayMediatorTest() {
-    mediator_ = [[LensOverlayMediator alloc] init];
+    mediator_ = [[LensOverlayMediator alloc] initWithIsIncognito:NO];
     mediator_.templateURLService =
         search_engines_test_environment_.template_url_service();
     mock_omnibox_coordinator_ =

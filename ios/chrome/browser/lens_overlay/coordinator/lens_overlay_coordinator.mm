@@ -218,7 +218,11 @@ const CGFloat kMenuSymbolSize = 18;
   if (_mediator) {
     return;
   }
-  _mediator = [[LensOverlayMediator alloc] init];
+  Browser* browser = self.browser;
+  _mediator = [[LensOverlayMediator alloc]
+      initWithIsIncognito:browser->GetProfile()->IsOffTheRecord()];
+  _mediator.applicationHandler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
 
   // Results UI is lazily initialized; see comment in LensOverlayResultConsumer
   // section.

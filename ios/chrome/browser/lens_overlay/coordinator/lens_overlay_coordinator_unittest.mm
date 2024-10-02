@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -36,6 +37,7 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/device_form_factor.h"
 
 using base::test::ios::kWaitForUIElementTimeout;
@@ -92,6 +94,11 @@ class LensOverlayCoordinatorTest : public PlatformTest {
 
     [dispatcher_ startDispatchingToTarget:coordinator_
                               forProtocol:@protocol(LensOverlayCommands)];
+
+    application_handler_ = OCMProtocolMock(@protocol(ApplicationCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:application_handler_
+                     forProtocol:@protocol(ApplicationCommands)];
 
     // Tab helper
     web_state_ = std::make_unique<web::FakeWebState>();
@@ -173,6 +180,7 @@ class LensOverlayCoordinatorTest : public PlatformTest {
   UIViewController* root_view_controller_ = nil;
   id dispatcher_;
   raw_ptr<LensOverlayTabHelper> tab_helper_;
+  id<ApplicationCommands> application_handler_;
 
   void DeliverMemoryWarningNotification() {
     [[NSNotificationCenter defaultCenter]
