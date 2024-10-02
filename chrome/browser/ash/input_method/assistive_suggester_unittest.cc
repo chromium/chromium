@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/input_method/assistive_suggester.h"
 
 #include "ash/clipboard/clipboard_history_controller_impl.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
@@ -14,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -26,7 +24,6 @@
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/account_id/account_id.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -409,47 +406,6 @@ TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsDisabledByUser) {
   histogram_tester_.ExpectUniqueSample(
       "InputMethod.Assistive.MultiWord.InputState",
       AssistiveTextInputState::kFeatureBlockedByPreference, 1);
-}
-
-TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsEnabledByLacros) {
-  base::test::ScopedFeatureList feature_list;
-  std::vector<base::test::FeatureRef> enabled =
-      ash::standalone_browser::GetFeatureRefs();
-  enabled.push_back(features::kAssistMultiWord);
-  feature_list.InitWithFeatures(enabled, {});
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-      ash::switches::kEnableLacrosForTesting);
-
-  // Set up a user, necessary for Lacros.
-  auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
-  auto* primary_user =
-      fake_user_manager->AddUser(AccountId::FromUserEmail("test@test"));
-  fake_user_manager->UserLoggedIn(primary_user->GetAccountId(),
-                                  primary_user->username_hash(),
-                                  /*browser_restart=*/false,
-                                  /*is_child=*/false);
-  auto scoped_user_manager = std::make_unique<user_manager::ScopedUserManager>(
-      std::move(fake_user_manager));
-  ASSERT_TRUE(crosapi::browser_util::IsLacrosEnabled());
-
-  // TODO(b/242472734): Allow enabled suggestions passed without replace.
-  assistive_suggester_ = std::make_unique<AssistiveSuggester>(
-      suggestion_handler_.get(), profile_.get(),
-      std::make_unique<FakeSuggesterSwitch>(
-          EnabledSuggestions{.multi_word_suggestions = true}));
-
-  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/true,
-                        /*diacritics_on_longpress_enabled=*/false);
-
-  assistive_suggester_->OnActivate(kUsEnglishEngineId);
-  assistive_suggester_->OnFocus(5, empty_context);
-
-  histogram_tester_.ExpectTotalCount(
-      "InputMethod.Assistive.MultiWord.InputState", 1);
-  histogram_tester_.ExpectUniqueSample(
-      "InputMethod.Assistive.MultiWord.InputState",
-      AssistiveTextInputState::kFeatureEnabled, 1);
 }
 
 TEST_F(AssistiveSuggesterTest,
