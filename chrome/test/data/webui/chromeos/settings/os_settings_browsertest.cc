@@ -839,8 +839,9 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampDeviceTestSplitAndBacklightEnabled,
   RunSettingsTest("device_page/per_device_keyboard_test.js");
 }
 
+// TODO(b/367799335): Re-enable this test.
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampDeviceTestAltAndSplitAndBacklightEnabled,
-                       DevicePagePerDeviceKeyboardRemapKeys) {
+                       DISABLED_DevicePagePerDeviceKeyboardRemapKeys) {
   RunSettingsTest("device_page/per_device_keyboard_remap_keys_test.js");
 }
 
