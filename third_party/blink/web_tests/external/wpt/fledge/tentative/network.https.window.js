@@ -212,7 +212,7 @@ subsetTest(promise_test, async test => {
 subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
   let cookieFrame = await createFrame(test, OTHER_ORIGIN1);
-  await runInFrame(test, cookieFrame, `test_driver.set_test_context(window.parent); await setCookie(test_instance)`);
+  await runInFrame(test, cookieFrame, `await setCookie(test_instance)`);
 
   await joinGroupAndRunBasicFledgeTestExpectingWinner(
       test,
@@ -315,7 +315,7 @@ subsetTest(promise_test, async test => {
 subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
   let cookieFrame = await createFrame(test, OTHER_ORIGIN1);
-  await runInFrame(test, cookieFrame, `test_driver.set_test_context(window.parent); await setCookie(test_instance)`);
+  await runInFrame(test, cookieFrame, `await setCookie(test_instance)`);
 
   let renderURL = createRenderURL(uuid, /*script=*/null, /*signalsParam=*/'headers,cors');
 
