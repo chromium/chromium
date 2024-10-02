@@ -50,7 +50,6 @@ import "chromeos/crosapi/mojom/extension_info_private.mojom";
 import "chromeos/crosapi/mojom/extension_keeplist.mojom";
 import "chromeos/crosapi/mojom/extension_printer.mojom";
 import "chromeos/crosapi/mojom/eye_dropper.mojom";
-import "chromeos/crosapi/mojom/feedback.mojom";
 import "chromeos/crosapi/mojom/field_trial.mojom";
 import "chromeos/crosapi/mojom/file_change_service_bridge.mojom";
 import "chromeos/crosapi/mojom/file_manager.mojom";
@@ -731,9 +730,7 @@ interface Crosapi {
   // Added in M120.
   [MinVersion=120] BindEyeDropper@122(pending_receiver<EyeDropper> receiver);
 
-  // Binds the Feedback interface for showing feedback UI.
-  // Added in M87.
-  [MinVersion=3] BindFeedback@5(pending_receiver<Feedback> receiver);
+  // Id 5 (BindFeedback@5) was removed.
 
   // Binds the FieldTrial interface for reading active trial field group.
   // Added in M95.

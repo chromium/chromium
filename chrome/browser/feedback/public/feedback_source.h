@@ -12,14 +12,6 @@
 // before the last. Also, 'FeedbackSource' in
 // 'tools/metrics/histograms/enums.xml' MUST be kept in sync with the enum
 // below.
-// Note: Many feedback sources are being deprecated, or don't apply for Lacros
-// (e.g. Ash only). Therefore, we won't support all the values listed below in
-// Lacros. "enum LacrosFeedbackSource" in chromeos/crosapi/mojom/feedback.mojom
-// lists all the feedback sources we allow in Lacros to the current. When you
-// need to show feedack from Lacros with a new feedback source, please add it to
-// LacrosFeedbackSource, handles the mojom serialization accordingly, and add a
-// new test case in:
-// chrome/browser/feedback/show_feedback_page_lacros_browsertest.cc.
 namespace feedback {
 
 enum FeedbackSource {
@@ -54,7 +46,7 @@ enum FeedbackSource {
   kFeedbackSourceQuickOffice,
   kFeedbackSourceOsSettingsSearch,
   kFeedbackSourceAutofillContextMenu,
-  kFeedbackSourceUnknownLacrosSource,
+  kFeedbackSourceUnknownLacrosSource_DEPRECATED,
   kFeedbackSourceWindowLayoutMenu,
   kFeedbackSourcePriceInsights,
   kFeedbackSourceCookieControls,

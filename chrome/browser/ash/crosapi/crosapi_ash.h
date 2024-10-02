@@ -91,7 +91,6 @@ class EmojiPickerAsh;
 class ExtensionInfoPrivateAsh;
 class ExtensionPrinterServiceAsh;
 class EyeDropperAsh;
-class FeedbackAsh;
 class FieldTrialServiceAsh;
 class FileChangeServiceBridgeAsh;
 class FileManagerAsh;
@@ -271,7 +270,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::AppPublisher> receiver) override;
   void BindEyeDropper(
       mojo::PendingReceiver<mojom::EyeDropper> receiver) override;
-  void BindFeedback(mojo::PendingReceiver<mojom::Feedback> receiver) override;
   void BindFieldTrialService(
       mojo::PendingReceiver<mojom::FieldTrialService> receiver) override;
   void BindFileChangeServiceBridge(
@@ -732,7 +730,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<ExtensionInfoPrivateAsh> extension_info_private_ash_;
   std::unique_ptr<ExtensionPrinterServiceAsh> extension_printer_service_ash_;
   std::unique_ptr<EyeDropperAsh> eye_dropper_ash_;
-  std::unique_ptr<FeedbackAsh> feedback_ash_;
   std::unique_ptr<FieldTrialServiceAsh> field_trial_service_ash_;
   std::unique_ptr<FileChangeServiceBridgeAsh> file_change_service_bridge_ash_;
   std::unique_ptr<FileManagerAsh> file_manager_ash_;

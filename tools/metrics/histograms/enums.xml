@@ -11437,7 +11437,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="28" label="Quick Office"/>
   <int value="29" label="Settings Search"/>
   <int value="30" label="Autofill Context Menu"/>
-  <int value="31" label="Unknown Feedback Source From Lacros"/>
+  <int value="31" label="DEPRECATED: Unknown Feedback Source From Lacros"/>
   <int value="32" label="Window Layout Menu"/>
   <int value="33" label="Price Insights"/>
   <int value="34" label="Cookie Controls"/>

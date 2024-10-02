@@ -49,8 +49,6 @@
 #include "base/i18n/time_formatting.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/metrics/chromeos_metrics_provider.h"
@@ -90,11 +88,6 @@ constexpr char kChromeVersionTag[] = "CHROME VERSION";
 constexpr char kSkiaGraphiteStatusKey[] = "skia_graphite_status";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr char kLacrosChromeVersionPrefix[] = "Lacros ";
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr char kAshChromeVersionPrefix[] = "Ash ";
 constexpr char kArcPolicyComplianceReportKey[] =
     "CHROMEOS_ARC_POLICY_COMPLIANCE_REPORT";
 constexpr char kArcDpcVersionKey[] = "CHROMEOS_ARC_DPC_VERSION";
@@ -108,7 +101,6 @@ constexpr char kLTSChromeVersionPrefix[] = "LTS ";
 constexpr char kArcStatusKey[] = "CHROMEOS_ARC_STATUS";
 constexpr char kMonitorInfoKey[] = "monitor_info";
 constexpr char kAccountTypeKey[] = "account_type";
-constexpr char kLacrosStatus[] = "lacros_status";
 constexpr char kDemoModeConfigKey[] = "demo_mode_config";
 constexpr char kOnboardingTime[] = "ONBOARDING_TIME";
 constexpr char kFreeDiskSpace[] = "FREE_DISK_SPACE";
@@ -312,18 +304,6 @@ std::string GetChromeVersionString() {
       ash::CrosSettings::Get()->GetString(ash::kReleaseLtsTag, &value);
   if (is_lts)
     browser_version = kLTSChromeVersionPrefix + browser_version;
-
-  // If lacros-chrome is allowed & supported, and launched before, which
-  // is indicated by |browser_version| in BrowserManager being set to non-empty
-  // string during lacros startup, attach its version in the chrome
-  // version string.
-  if (crosapi::browser_util::IsLacrosEnabled() &&
-      !crosapi::BrowserManager::Get()->browser_version().empty()) {
-    std::string lacros_version =
-        crosapi::BrowserManager::Get()->browser_version();
-    return kLacrosChromeVersionPrefix + lacros_version + ", " +
-           kAshChromeVersionPrefix + browser_version;
-  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return browser_version;
 }
@@ -461,9 +441,6 @@ void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
     PopulateArcPolicyStatus(response.get());
   }
   response->emplace(kAccountTypeKey, GetPrimaryAccountTypeString());
-  response->emplace(kLacrosStatus, crosapi::browser_util::IsLacrosEnabled()
-                                       ? "enabled"
-                                       : "disabled");
   response->emplace(kDemoModeConfigKey, ash::DemoSession::DemoConfigToString(
                                             ash::DemoSession::GetDemoConfig()));
   response->emplace(

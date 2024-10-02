@@ -57,7 +57,6 @@
 #include "chrome/browser/ash/crosapi/extension_info_private_ash.h"
 #include "chrome/browser/ash/crosapi/extension_printer_service_ash.h"
 #include "chrome/browser/ash/crosapi/eye_dropper_ash.h"
-#include "chrome/browser/ash/crosapi/feedback_ash.h"
 #include "chrome/browser/ash/crosapi/field_trial_service_ash.h"
 #include "chrome/browser/ash/crosapi/file_change_service_bridge_ash.h"
 #include "chrome/browser/ash/crosapi/file_manager_ash.h"
@@ -154,7 +153,6 @@
 #include "chromeos/crosapi/mojom/embedded_accessibility_helper.mojom.h"
 #include "chromeos/crosapi/mojom/extension_printer.mojom.h"
 #include "chromeos/crosapi/mojom/eye_dropper.mojom.h"
-#include "chromeos/crosapi/mojom/feedback.mojom.h"
 #include "chromeos/crosapi/mojom/file_change_service_bridge.mojom.h"
 #include "chromeos/crosapi/mojom/file_manager.mojom.h"
 #include "chromeos/crosapi/mojom/firewall_hole.mojom.h"
@@ -265,7 +263,6 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       extension_printer_service_ash_(
           std::make_unique<ExtensionPrinterServiceAsh>()),
       eye_dropper_ash_(std::make_unique<EyeDropperAsh>()),
-      feedback_ash_(std::make_unique<FeedbackAsh>()),
       field_trial_service_ash_(std::make_unique<FieldTrialServiceAsh>()),
       file_manager_ash_(std::make_unique<FileManagerAsh>()),
       file_system_access_cloud_identifier_provider_ash_(
@@ -640,10 +637,6 @@ void CrosapiAsh::BindExtensionPublisher(
 void CrosapiAsh::BindEyeDropper(
     mojo::PendingReceiver<mojom::EyeDropper> receiver) {
   eye_dropper_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindFeedback(mojo::PendingReceiver<mojom::Feedback> receiver) {
-  feedback_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindFieldTrialService(
