@@ -24,6 +24,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -1017,44 +1018,39 @@ void HttpResponseHeaders::AddNonCacheableHeaders(HeaderSet* result) const {
   const char kPrefix[] = "no-cache=\"";
   const size_t kPrefixLen = sizeof(kPrefix) - 1;
 
-  std::string value;
+  std::optional<std::string_view> value;
   size_t iter = 0;
-  while (EnumerateHeader(&iter, kCacheControl, &value)) {
+  while ((value = EnumerateHeader(&iter, kCacheControl))) {
     // If the value is smaller than the prefix and a terminal quote, skip
     // it.
-    if (value.size() <= kPrefixLen ||
-        value.compare(0, kPrefixLen, kPrefix) != 0) {
+    if (value->size() <= kPrefixLen ||
+        value->compare(0, kPrefixLen, kPrefix) != 0) {
       continue;
     }
     // if it doesn't end with a quote, then treat as malformed
-    if (value[value.size() - 1] != '\"')
+    if (value->back() != '\"') {
       continue;
+    }
 
     // process the value as a comma-separated list of items. Each
     // item can be wrapped by linear white space.
-    std::string::const_iterator item = value.begin() + kPrefixLen;
-    std::string::const_iterator end = value.end() - 1;
-    while (item != end) {
-      // Find the comma to compute the length of the current item,
-      // and the position of the next one.
-      std::string::const_iterator item_next = std::find(item, end, ',');
-      std::string::const_iterator item_end = end;
-      if (item_next != end) {
-        // Skip over comma for next position.
-        item_end = item_next;
-        item_next++;
-      }
-      // trim off leading and trailing whitespace in this item.
-      HttpUtil::TrimLWS(&item, &item_end);
 
-      // assuming the header is not empty, lowercase and insert into set
-      if (item_end > item) {
-        result->insert(
-            base::ToLowerASCII(std::string_view(&*item, item_end - item)));
-      }
+    // Remove the prefix and close quote.
+    std::string_view remaining =
+        value->substr(kPrefixLen, value->size() - kPrefixLen - 1);
+    // Use base::KEEP_WHITESPACE despite trimming each item so can use the HTTP
+    // definition of whitespace.
+    std::vector<std::string_view> items = base::SplitStringPiece(
+        remaining, /*separators=*/",", base::KEEP_WHITESPACE,
+        base::SPLIT_WANT_NONEMPTY);
+    for (std::string_view item : items) {
+      // Trim off leading and trailing whitespace in this item.
+      item = HttpUtil::TrimLWS(item);
 
-      // Continue to next item.
-      item = item_next;
+      // If the header is not empty, lowercase and insert into set.
+      if (!item.empty()) {
+        result->insert(base::ToLowerASCII(item));
+      }
     }
   }
 }
@@ -1552,20 +1548,21 @@ int64_t HttpResponseHeaders::GetContentLength() const {
 int64_t HttpResponseHeaders::GetInt64HeaderValue(
     const std::string& header) const {
   size_t iter = 0;
-  std::string content_length_val;
-  if (!EnumerateHeader(&iter, header, &content_length_val))
+  std::optional<std::string_view> content_length =
+      EnumerateHeader(&iter, header);
+  if (!content_length || content_length->empty()) {
     return -1;
+  }
 
-  if (content_length_val.empty())
+  if ((*content_length)[0] == '+') {
     return -1;
-
-  if (content_length_val[0] == '+')
-    return -1;
+  }
 
   int64_t result;
-  bool ok = base::StringToInt64(content_length_val, &result);
-  if (!ok || result < 0)
+  bool ok = base::StringToInt64(*content_length, &result);
+  if (!ok || result < 0) {
     return -1;
+  }
 
   return result;
 }
@@ -1575,15 +1572,15 @@ bool HttpResponseHeaders::GetContentRangeFor206(
     int64_t* last_byte_position,
     int64_t* instance_length) const {
   size_t iter = 0;
-  std::string content_range_spec;
-  if (!EnumerateHeader(&iter, kContentRange, &content_range_spec)) {
+  std::optional<std::string_view> content_range =
+      EnumerateHeader(&iter, kContentRange);
+  if (!content_range) {
     *first_byte_position = *last_byte_position = *instance_length = -1;
     return false;
   }
 
   return HttpUtil::ParseContentRangeHeaderFor206(
-      content_range_spec, first_byte_position, last_byte_position,
-      instance_length);
+      *content_range, first_byte_position, last_byte_position, instance_length);
 }
 
 base::Value::Dict HttpResponseHeaders::NetLogParams(
