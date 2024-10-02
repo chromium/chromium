@@ -58,7 +58,8 @@ class AutofillPredictionImprovementsManager
   std::vector<autofill::Suggestion> GetSuggestions(
       const std::vector<autofill::Suggestion>& autofill_suggestions,
       const autofill::FormFieldData& field) override;
-  bool IsFormEligible(const autofill::FormStructure& form) override;
+  bool IsFormAndFieldEligible(const autofill::FormStructure& form,
+                              const autofill::AutofillField& field) override;
   bool IsUserEligible() override;
   bool ShouldProvidePredictionImprovements(const GURL& url) override;
   void UserFeedbackReceived(

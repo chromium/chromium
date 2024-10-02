@@ -16,6 +16,7 @@ class UserAnnotationsEntry;
 
 namespace autofill {
 
+class AutofillField;
 class FormData;
 class FormFieldData;
 class FormStructure;
@@ -53,8 +54,10 @@ class AutofillPredictionImprovementsDelegate {
       const std::vector<Suggestion>& autofill_suggestions,
       const FormFieldData& field) = 0;
 
-  // Returns whether `form` is eligible for the improved prediction experience.
-  virtual bool IsFormEligible(const FormStructure& form) = 0;
+  // Returns whether `form` and `field` are eligible for the improved prediction
+  // experience.
+  virtual bool IsFormAndFieldEligible(const FormStructure& form,
+                                      const AutofillField& field) = 0;
 
   // Returns whether the current user is eligible for the improved prediction
   // experience.

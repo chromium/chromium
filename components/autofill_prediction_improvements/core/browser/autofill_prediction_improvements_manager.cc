@@ -308,13 +308,12 @@ bool AutofillPredictionImprovementsManager::HasImprovedPredictionsForField(
   return cache_->contains(field.global_id());
 }
 
-bool AutofillPredictionImprovementsManager::IsFormEligible(
-    const autofill::FormStructure& form) {
-  if (!IsFormEligibleForFillingByFieldCriteria(form)) {
-    return false;
-  }
-
-  return ShouldProvidePredictionImprovements(form.main_frame_origin().GetURL());
+bool AutofillPredictionImprovementsManager::IsFormAndFieldEligible(
+    const autofill::FormStructure& form,
+    const autofill::AutofillField& field) {
+  return IsFieldEligibleByTypeCriteria(field) &&
+         IsFormEligibleForFillingByFieldCriteria(form) &&
+         ShouldProvidePredictionImprovements(form.main_frame_origin().GetURL());
 }
 
 bool AutofillPredictionImprovementsManager::IsUserEligible() {

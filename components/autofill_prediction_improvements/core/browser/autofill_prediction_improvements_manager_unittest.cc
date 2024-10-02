@@ -956,11 +956,12 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
 
   autofill::FormData form_data;
   autofill::FormStructure form(form_data);
+  autofill::AutofillField field;
 
   AutofillPredictionImprovementsManager manager{&client_, &decider_,
                                                 &strike_database_};
 
-  EXPECT_FALSE(manager.IsFormEligible(form));
+  EXPECT_FALSE(manager.IsFormAndFieldEligible(form, field));
 }
 
 TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
@@ -985,7 +986,8 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
   AutofillPredictionImprovementsManager manager{&client_, &decider_,
                                                 &strike_database_};
 
-  EXPECT_TRUE(manager.IsFormEligible(form));
+  EXPECT_TRUE(
+      manager.IsFormAndFieldEligible(form, prediction_improvement_field));
 }
 
 TEST_F(ShouldProvideAutofillPredictionImprovementsTest, NotEligibleUser) {
