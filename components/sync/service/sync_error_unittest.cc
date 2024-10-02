@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/model/sync_error.h"
+#include "components/sync/service/sync_error.h"
 
 #include "base/location.h"
 #include "base/logging.h"
@@ -27,10 +27,10 @@ TEST_F(SyncErrorTest, Default) {
   base::Location location = FROM_HERE;
   std::string msg = "test";
   DataType type = PREFERENCES;
-  SyncError error(location, SyncError::DATATYPE_ERROR, msg, type);
+  SyncError error(location, SyncError::MODEL_ERROR, msg, type);
   ASSERT_TRUE(error.IsSet());
   EXPECT_EQ(location.line_number(), error.location().line_number());
-  EXPECT_EQ("datatype error was encountered: ", error.GetMessagePrefix());
+  EXPECT_EQ("model error was encountered: ", error.GetMessagePrefix());
   EXPECT_EQ(msg, error.message());
   EXPECT_EQ(type, error.data_type());
   EXPECT_EQ(SyncError::SYNC_ERROR_SEVERITY_ERROR, error.GetSeverity());
@@ -134,9 +134,9 @@ TEST_F(SyncErrorTest, ToString) {
   std::string msg = "test";
   DataType type = PREFERENCES;
   std::string expected = std::string(DataTypeToDebugString(type)) +
-                         " datatype error was encountered: " + msg;
+                         " model error was encountered: " + msg;
   LOG(INFO) << "Expect " << expected;
-  SyncError error(location, SyncError::DATATYPE_ERROR, msg, type);
+  SyncError error(location, SyncError::MODEL_ERROR, msg, type);
   EXPECT_TRUE(error.IsSet());
   EXPECT_THAT(error.ToString(), HasSubstr(expected));
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/model/sync_error.h"
+#include "components/sync/service/sync_error.h"
 
 #include <ostream>
 
@@ -58,7 +58,7 @@ void SyncError::Clear() {
 void SyncError::Reset(const base::Location& location,
                       const std::string& message,
                       DataType data_type) {
-  Init(location, message, data_type, DATATYPE_ERROR);
+  Init(location, message, data_type, MODEL_ERROR);
   PrintLogError();
 }
 
@@ -102,7 +102,8 @@ SyncError::Severity SyncError::GetSeverity() const {
     case DATATYPE_POLICY_ERROR:
       return SYNC_ERROR_SEVERITY_INFO;
     case UNSET:
-    case DATATYPE_ERROR:
+    case MODEL_ERROR:
+    case CONFIGURATION_ERROR:
     case CRYPTO_ERROR:
       return SYNC_ERROR_SEVERITY_ERROR;
   }
@@ -111,8 +112,11 @@ SyncError::Severity SyncError::GetSeverity() const {
 std::string SyncError::GetMessagePrefix() const {
   std::string type_message;
   switch (error_type_) {
-    case DATATYPE_ERROR:
-      type_message = "datatype error was encountered: ";
+    case MODEL_ERROR:
+      type_message = "model error was encountered: ";
+      break;
+    case CONFIGURATION_ERROR:
+      type_message = "configuration error was encountered: ";
       break;
     case CRYPTO_ERROR:
       type_message = "cryptographer error was encountered: ";

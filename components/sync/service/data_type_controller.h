@@ -21,16 +21,15 @@
 #include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/sync_error.h"
 #include "components/sync/service/configure_context.h"
 #include "components/sync/service/data_type_local_data_batch_uploader.h"
+#include "components/sync/service/sync_error.h"
 
 namespace syncer {
 
 struct ConfigureContext;
 struct DataTypeActivationResponse;
 struct TypeEntitiesCount;
-class SyncError;
 
 // DataTypeController are responsible for managing the state of a single data
 // type. They are not thread safe and should only be used on the UI thread.

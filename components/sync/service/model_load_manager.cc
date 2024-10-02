@@ -18,8 +18,8 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
-#include "components/sync/model/sync_error.h"
 #include "components/sync/service/data_type_controller.h"
+#include "components/sync/service/sync_error.h"
 
 namespace syncer {
 
@@ -290,7 +290,7 @@ void ModelLoadManager::LoadModelsForType(DataTypeController* dtc) {
   // before the type actually stopped.
   if (dtc->state() == DataTypeController::FAILED) {
     ModelLoadCallback(dtc->type(),
-                      SyncError(FROM_HERE, SyncError::DATATYPE_ERROR,
+                      SyncError(FROM_HERE, SyncError::MODEL_ERROR,
                                 "Data type in FAILED state.", dtc->type()));
     return;
   }

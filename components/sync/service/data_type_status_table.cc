@@ -43,9 +43,9 @@ bool DataTypeStatusTable::UpdateFailedDataType(DataType type,
                                                const SyncError& error) {
   switch (error.error_type()) {
     case SyncError::UNSET:
-      NOTREACHED_IN_MIGRATION();
-      break;
-    case SyncError::DATATYPE_ERROR:
+      NOTREACHED();
+    case SyncError::MODEL_ERROR:
+    case SyncError::CONFIGURATION_ERROR:
       return data_type_errors_.emplace(type, error).second;
     case SyncError::DATATYPE_POLICY_ERROR:
       return data_type_policy_errors_.emplace(type, error).second;
@@ -54,8 +54,7 @@ bool DataTypeStatusTable::UpdateFailedDataType(DataType type,
     case SyncError::UNREADY_ERROR:
       return unready_errors_.emplace(type, error).second;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void DataTypeStatusTable::Reset() {

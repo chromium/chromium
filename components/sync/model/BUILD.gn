@@ -59,8 +59,6 @@ static_library("model") {
     "sync_change_processor.h",
     "sync_data.cc",
     "sync_data.h",
-    "sync_error.cc",
-    "sync_error.h",
     "sync_metadata_store.h",
     "sync_metadata_store_change_list.cc",
     "sync_metadata_store_change_list.h",

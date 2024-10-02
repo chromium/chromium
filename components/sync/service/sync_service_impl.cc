@@ -45,13 +45,13 @@
 #include "components/sync/engine/shutdown_reason.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
-#include "components/sync/model/sync_error.h"
 #include "components/sync/service/backend_migrator.h"
 #include "components/sync/service/configure_context.h"
 #include "components/sync/service/data_type_manager_impl.h"
 #include "components/sync/service/local_data_description.h"
 #include "components/sync/service/sync_auth_manager.h"
 #include "components/sync/service/sync_engine_factory.h"
+#include "components/sync/service/sync_error.h"
 #include "components/sync/service/sync_feature_status_for_migrations_recorder.h"
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync/service/sync_prefs_policy_handler.h"
@@ -464,7 +464,7 @@ DataTypeSet SyncServiceImpl::GetRegisteredDataTypesForTest() const {
   return data_type_manager_->GetRegisteredDataTypes();
 }
 
-bool SyncServiceImpl::HasAnyDatatypeErrorForTest(DataTypeSet types) const {
+bool SyncServiceImpl::HasAnyModelErrorForTest(DataTypeSet types) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_IS_TEST();
   CHECK(data_type_manager_);

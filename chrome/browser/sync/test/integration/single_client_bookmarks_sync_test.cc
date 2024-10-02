@@ -172,7 +172,7 @@ class BookmarksDataTypeErrorChecker : public SingleClientStatusChangeChecker {
 
   bool IsExitConditionSatisfied(std::ostream* os) override {
     *os << "Waiting for Bookmarks data type error.";
-    return service()->HasAnyDatatypeErrorForTest({syncer::BOOKMARKS});
+    return service()->HasAnyModelErrorForTest({syncer::BOOKMARKS});
   }
 };
 
@@ -1555,7 +1555,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_FALSE(GetClient(kSingleProfileIndex)
                    ->service()
-                   ->HasAnyDatatypeErrorForTest({syncer::BOOKMARKS}));
+                   ->HasAnyModelErrorForTest({syncer::BOOKMARKS}));
 
   // Add 2 new bookmarks to exceed the limit.
   const BookmarkNode* bookmark_bar_node =
@@ -1610,7 +1610,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
 
   ASSERT_FALSE(GetClient(kSingleProfileIndex)
                    ->service()
-                   ->HasAnyDatatypeErrorForTest({syncer::BOOKMARKS}));
+                   ->HasAnyModelErrorForTest({syncer::BOOKMARKS}));
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   // We now have 5 local bookmarks(3 permanent + 2 added), which exceeds our
@@ -1656,7 +1656,7 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_FALSE(GetClient(kSingleProfileIndex)
                    ->service()
-                   ->HasAnyDatatypeErrorForTest({syncer::BOOKMARKS}));
+                   ->HasAnyModelErrorForTest({syncer::BOOKMARKS}));
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   // We should now have 6 local bookmarks, (3 permanent + 2 locally added + 1
@@ -1694,7 +1694,7 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_FALSE(GetClient(kSingleProfileIndex)
                    ->service()
-                   ->HasAnyDatatypeErrorForTest({syncer::BOOKMARKS}));
+                   ->HasAnyModelErrorForTest({syncer::BOOKMARKS}));
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   // Create a bookmark on the server under BookmarkBar.
@@ -1744,7 +1744,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
 
   ASSERT_FALSE(GetClient(kSingleProfileIndex)
                    ->service()
-                   ->HasAnyDatatypeErrorForTest({syncer::BOOKMARKS}));
+                   ->HasAnyModelErrorForTest({syncer::BOOKMARKS}));
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   // Update of size 5 exceeds the limit.
@@ -2701,7 +2701,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(SetupSync());
   ASSERT_FALSE(GetClient(kSingleProfileIndex)
                    ->service()
-                   ->HasAnyDatatypeErrorForTest({syncer::BOOKMARKS}));
+                   ->HasAnyModelErrorForTest({syncer::BOOKMARKS}));
 
   // Add 2 new bookmarks to exceed the limit.
   const BookmarkNode* bookmark_bar_node =
@@ -2740,7 +2740,7 @@ IN_PROC_BROWSER_TEST_F(
                   .Has(syncer::BOOKMARKS));
   EXPECT_FALSE(GetClient(kSingleProfileIndex)
                    ->service()
-                   ->HasAnyDatatypeErrorForTest({syncer::BOOKMARKS}));
+                   ->HasAnyModelErrorForTest({syncer::BOOKMARKS}));
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -75,22 +75,6 @@ MATCHER(ConfigureAborted, "") {
   return arg.status == DataTypeManager::ABORTED;
 }
 
-MATCHER(IsCryptoError, "") {
-  return arg.error_type() == SyncError::CRYPTO_ERROR;
-}
-
-MATCHER(IsDataTypeError, "") {
-  return arg.error_type() == SyncError::DATATYPE_ERROR;
-}
-
-MATCHER(IsPolicyError, "") {
-  return arg.error_type() == SyncError::DATATYPE_POLICY_ERROR;
-}
-
-MATCHER(IsUnreadyError, "") {
-  return arg.error_type() == SyncError::UNREADY_ERROR;
-}
-
 // Fake DataTypeConfigurer implementation that allows the test body to control
 // when downloads complete and whether failures occurred.
 class FakeDataTypeConfigurer : public DataTypeConfigurer {

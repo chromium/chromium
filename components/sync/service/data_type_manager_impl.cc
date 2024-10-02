@@ -156,7 +156,7 @@ DataTypeManagerImpl::DataTypeManagerImpl(
 
     if (state == DataTypeController::FAILED) {
       existing_errors[type] =
-          SyncError(FROM_HERE, SyncError::DATATYPE_ERROR,
+          SyncError(FROM_HERE, SyncError::MODEL_ERROR,
                     "Preexisting controller error on Sync startup", type);
     }
 
@@ -198,7 +198,7 @@ void DataTypeManagerImpl::SetConfigurer(DataTypeConfigurer* configurer) {
   // TODO(crbug.com/40901755): Verify whether it's actually necessary/desired to
   // fully reset the `data_type_status_table_` here. It makes sense for some
   // types of errors (like crypto errors), but maybe not for others (like
-  // datatype errors). If we do want to reset it here, maybe the status table
+  // model errors). If we do want to reset it here, maybe the status table
   // should move to SyncEngine, so that the lifetimes match up.
   ResetDataTypeErrors();
 }
@@ -557,7 +557,7 @@ void DataTypeManagerImpl::Restart() {
   for (const auto& [type, controller] : controllers_) {
     if (controller->state() == DataTypeController::FAILED) {
       existing_errors[type] =
-          SyncError(FROM_HERE, SyncError::DATATYPE_ERROR,
+          SyncError(FROM_HERE, SyncError::MODEL_ERROR,
                     "Preexisting controller error on configuration", type);
     }
   }
@@ -711,7 +711,7 @@ void DataTypeManagerImpl::ConfigurationCompleted(
   if (!failed_configuration_types.empty()) {
     DataTypeStatusTable::TypeErrorMap errors;
     for (DataType type : failed_configuration_types) {
-      SyncError error(FROM_HERE, SyncError::DATATYPE_ERROR,
+      SyncError error(FROM_HERE, SyncError::CONFIGURATION_ERROR,
                       "Backend failed to download and configure type.", type);
       errors[type] = error;
     }

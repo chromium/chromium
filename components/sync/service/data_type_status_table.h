@@ -8,7 +8,7 @@
 #include <map>
 
 #include "components/sync/base/data_type.h"
-#include "components/sync/model/sync_error.h"
+#include "components/sync/service/sync_error.h"
 
 namespace syncer {
 
@@ -55,7 +55,8 @@ class DataTypeStatusTable {
   // unready types.
   DataTypeSet GetFailedTypes() const;
 
-  // Returns the types that are failing due to datatype errors.
+  // Returns the types that are failing due to model errors, configuration
+  // errors or policy errors.
   DataTypeSet GetFatalErrorTypes() const;
 
   // Returns the types that are failing due to cryptographer errors.

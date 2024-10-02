@@ -179,7 +179,7 @@ void DataTypeController::LoadModels(
       &ReportErrorOnModelThread, base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindRepeating(&DataTypeController::ReportModelError,
                           weak_ptr_factory_.GetWeakPtr(),
-                          SyncError::DATATYPE_ERROR));
+                          SyncError::MODEL_ERROR));
   request.authenticated_account_id = configure_context.authenticated_account_id;
   request.cache_guid = configure_context.cache_guid;
   request.sync_mode = configure_context.sync_mode;

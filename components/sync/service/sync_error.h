@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_MODEL_SYNC_ERROR_H_
-#define COMPONENTS_SYNC_MODEL_SYNC_ERROR_H_
+#ifndef COMPONENTS_SYNC_SERVICE_SYNC_ERROR_H_
+#define COMPONENTS_SYNC_SERVICE_SYNC_ERROR_H_
 
 #include <memory>
 #include <string>
@@ -25,18 +25,21 @@ class SyncError {
   // in the datatype being disabled) from actionable sync errors (which might
   // have more complicated results).
   enum ErrorType {
-    UNSET,                 // No error.
-    DATATYPE_ERROR,        // A datatype error was encountered, and the datatype
-                           // should be disabled and purged completely. Note
-                           // that datatype errors may be reset, triggering a
-                           // re-enable.
-    CRYPTO_ERROR,          // A cryptographer error was detected, and the
-                           // datatype should be associated after it is
-                           // resolved.
-    UNREADY_ERROR,         // A datatype is not ready to start yet, so should be
-                           // neither purged nor enabled until it is ready.
-    DATATYPE_POLICY_ERROR  // A datatype should be disabled and purged due to
-                           // configuration constraints.
+    // No error.
+    UNSET,
+    // A datatype model reported an error.
+    MODEL_ERROR,
+    // The configuration procedure (usually the initial download) failed.
+    CONFIGURATION_ERROR,
+    // A cryptographer error was detected (i.e. the datatype is encrypted and
+    // encryption keys are missing).
+    CRYPTO_ERROR,
+    // A datatype is not ready to start yet, so should be neither purged nor
+    // enabled until it is ready.
+    UNREADY_ERROR,
+    // A datatype should be disabled and purged due to configuration
+    // constraints.
+    DATATYPE_POLICY_ERROR,
   };
 
   // Severity is used to indicate how an error should be logged and
@@ -116,4 +119,4 @@ class SyncError {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_MODEL_SYNC_ERROR_H_
+#endif  // COMPONENTS_SYNC_SERVICE_SYNC_ERROR_H_

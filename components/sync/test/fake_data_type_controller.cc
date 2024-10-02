@@ -9,7 +9,7 @@
 
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/sync_error.h"
+#include "components/sync/service/sync_error.h"
 
 namespace syncer {
 

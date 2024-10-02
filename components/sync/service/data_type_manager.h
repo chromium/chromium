@@ -13,8 +13,8 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/engine/configure_reason.h"
-#include "components/sync/model/sync_error.h"
 #include "components/sync/model/type_entities_count.h"
+#include "components/sync/service/sync_error.h"
 #include "components/sync/service/type_status_map_for_debugging.h"
 
 namespace syncer {

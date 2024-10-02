@@ -9,7 +9,6 @@
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_data.h"
-#include "components/sync/model/sync_error.h"
 
 namespace base {
 class Location;
