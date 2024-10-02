@@ -14,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/strings/grit/components_strings.h"
@@ -97,7 +98,7 @@ void RebootNotificationController::CloseRebootNotification() const {
   if (!ShouldNotifyUser())
     return;
   NotificationDisplayService* notification_display_service =
-      NotificationDisplayService::GetForProfile(
+      NotificationDisplayServiceFactory::GetForProfile(
           ProfileManager::GetActiveUserProfile());
   notification_display_service->Close(NotificationHandler::Type::TRANSIENT,
                                       ash::kPendingRebootNotificationId);
@@ -123,7 +124,7 @@ void RebootNotificationController::ShowNotification(
       message_center::SystemNotificationWarningLevel::NORMAL);
 
   NotificationDisplayService* notification_display_service =
-      NotificationDisplayService::GetForProfile(
+      NotificationDisplayServiceFactory::GetForProfile(
           ProfileManager::GetActiveUserProfile());
   // Close old notification.
   notification_display_service->Close(NotificationHandler::Type::TRANSIENT, id);

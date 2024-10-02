@@ -12,6 +12,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/test/browser_test.h"
@@ -42,7 +43,7 @@ class OfdsConfigPrivateApiBrowserTest : public ExtensionApiTest {
   auto GetAllNotifications() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     base::test::TestFuture<std::set<std::string>, bool> get_displayed_future;
-    NotificationDisplayService::GetForProfile(profile())->GetDisplayed(
+    NotificationDisplayServiceFactory::GetForProfile(profile())->GetDisplayed(
         get_displayed_future.GetCallback());
 #else
     base::test::TestFuture<const std::vector<std::string>&>
@@ -60,7 +61,7 @@ class OfdsConfigPrivateApiBrowserTest : public ExtensionApiTest {
   void ClearAllNotifications() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     NotificationDisplayService* service =
-        NotificationDisplayService::GetForProfile(profile());
+        NotificationDisplayServiceFactory::GetForProfile(profile());
 #else
     base::test::TestFuture<const std::vector<std::string>&>
         get_displayed_future;

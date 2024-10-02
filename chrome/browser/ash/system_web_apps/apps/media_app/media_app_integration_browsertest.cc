@@ -45,6 +45,7 @@
 #include "chrome/browser/error_reporting/mock_chrome_js_error_report_processor.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
@@ -303,10 +304,12 @@ class NotificationWatcher : public NotificationDisplayService::Observer {
     network_portal_detector.SimulateDefaultNetworkState(
         ash::NetworkPortalDetectorMixin::NetworkStatus::kOnline);
 
-    NotificationDisplayService::GetForProfile(profile_)->AddObserver(this);
+    NotificationDisplayServiceFactory::GetForProfile(profile_)->AddObserver(
+        this);
   }
   ~NotificationWatcher() override {
-    NotificationDisplayService::GetForProfile(profile_)->RemoveObserver(this);
+    NotificationDisplayServiceFactory::GetForProfile(profile_)->RemoveObserver(
+        this);
   }
   std::string NextSeenNotificationId() {
     if (seen_notification_id_.empty()) {

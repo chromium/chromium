@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/ui/views/crostini/crostini_package_install_failure_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -325,7 +326,7 @@ void CrostiniPackageNotification::UpdateDisplayedNotification() {
   }
 
   NotificationDisplayService* display_service =
-      NotificationDisplayService::GetForProfile(profile_);
+      NotificationDisplayServiceFactory::GetForProfile(profile_);
   display_service->Display(NotificationHandler::Type::TRANSIENT, *notification_,
                            /*metadata=*/nullptr);
 }

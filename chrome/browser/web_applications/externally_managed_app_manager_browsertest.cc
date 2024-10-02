@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -954,7 +955,7 @@ class PlaceholderUpdateRelaunchBrowserTest
   auto GetAllNotifications() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     base::test::TestFuture<std::set<std::string>, bool> get_displayed_future;
-    NotificationDisplayService::GetForProfile(profile())->GetDisplayed(
+    NotificationDisplayServiceFactory::GetForProfile(profile())->GetDisplayed(
         get_displayed_future.GetCallback());
 #else
     base::test::TestFuture<const std::vector<std::string>&>
@@ -1009,7 +1010,7 @@ IN_PROC_BROWSER_TEST_F(
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   notification_observation_.Observe(
-      NotificationDisplayService::GetForProfile(profile()));
+      NotificationDisplayServiceFactory::GetForProfile(profile()));
 
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
       &ExternallyManagedAppManagerBrowserTest::SimulateRedirectHandler,

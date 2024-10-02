@@ -34,6 +34,7 @@
 #include "chrome/browser/extensions/api/notifications/extension_notification_handler.h"
 #include "chrome/browser/extensions/api/notifications/notifications_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/profile_notification.h"
 #include "chrome/browser/profiles/profile.h"
@@ -336,13 +337,13 @@ IN_PROC_BROWSER_TEST_F(AppNotificationsWebNotificationTest,
   auto metadata = std::make_unique<PersistentNotificationMetadata>();
   metadata->service_worker_scope = GetScope1();
 
-  NotificationDisplayService::GetForProfile(profile())->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
       NotificationHandler::Type::WEB_PERSISTENT, *notification,
       std::move(metadata));
   ASSERT_TRUE(HasBadge(profile(), app_id1).value());
   ASSERT_FALSE(HasBadge(profile(), app_id2).value());
 
-  NotificationDisplayService::GetForProfile(profile())->Close(
+  NotificationDisplayServiceFactory::GetForProfile(profile())->Close(
       NotificationHandler::Type::WEB_PERSISTENT, notification_id);
   ASSERT_FALSE(HasBadge(profile(), app_id1).value());
   ASSERT_FALSE(HasBadge(profile(), app_id2).value());
@@ -352,13 +353,13 @@ IN_PROC_BROWSER_TEST_F(AppNotificationsWebNotificationTest,
   metadata = std::make_unique<PersistentNotificationMetadata>();
   metadata->service_worker_scope = GetScope2();
 
-  NotificationDisplayService::GetForProfile(profile())->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
       NotificationHandler::Type::WEB_PERSISTENT, *notification,
       std::move(metadata));
   ASSERT_FALSE(HasBadge(profile(), app_id1).value());
   ASSERT_TRUE(HasBadge(profile(), app_id2).value());
 
-  NotificationDisplayService::GetForProfile(profile())->Close(
+  NotificationDisplayServiceFactory::GetForProfile(profile())->Close(
       NotificationHandler::Type::WEB_PERSISTENT, notification_id);
   ASSERT_FALSE(HasBadge(profile(), app_id1).value());
   ASSERT_FALSE(HasBadge(profile(), app_id2).value());
@@ -384,7 +385,7 @@ IN_PROC_BROWSER_TEST_F(AppNotificationsWebNotificationTest,
   auto metadata = std::make_unique<PersistentNotificationMetadata>();
   metadata->service_worker_scope = GetScope2();
 
-  NotificationDisplayService::GetForProfile(profile())->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
       NotificationHandler::Type::WEB_PERSISTENT, *notification,
       std::move(metadata));
 
@@ -395,7 +396,7 @@ IN_PROC_BROWSER_TEST_F(AppNotificationsWebNotificationTest,
   ASSERT_FALSE(HasBadge(profile(), app_id2).value());
 
   // Remove the notification. It should not affect the notification badge.
-  NotificationDisplayService::GetForProfile(profile())->Close(
+  NotificationDisplayServiceFactory::GetForProfile(profile())->Close(
       NotificationHandler::Type::WEB_PERSISTENT, notification_id);
   ASSERT_FALSE(HasBadge(profile(), app_id1).value());
   ASSERT_FALSE(HasBadge(profile(), app_id2).value());
@@ -407,7 +408,7 @@ IN_PROC_BROWSER_TEST_F(AppNotificationsWebNotificationTest,
   metadata = std::make_unique<PersistentNotificationMetadata>();
   metadata->service_worker_scope = GetScope2();
 
-  NotificationDisplayService::GetForProfile(profile())->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
       NotificationHandler::Type::WEB_PERSISTENT, *notification,
       std::move(metadata));
   ASSERT_FALSE(HasBadge(profile(), app_id1).value());
@@ -422,7 +423,7 @@ IN_PROC_BROWSER_TEST_F(AppNotificationsWebNotificationTest,
   ASSERT_FALSE(HasBadge(profile(), app_id2).value());
 
   // Remove the notification.
-  NotificationDisplayService::GetForProfile(profile())->Close(
+  NotificationDisplayServiceFactory::GetForProfile(profile())->Close(
       NotificationHandler::Type::WEB_PERSISTENT, notification_id);
   ASSERT_FALSE(HasBadge(profile(), app_id1).value());
   ASSERT_FALSE(HasBadge(profile(), app_id2).value());
@@ -434,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(AppNotificationsWebNotificationTest,
   metadata = std::make_unique<PersistentNotificationMetadata>();
   metadata->service_worker_scope = GetScope1();
 
-  NotificationDisplayService::GetForProfile(profile())->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
       NotificationHandler::Type::WEB_PERSISTENT, *notification,
       std::move(metadata));
 
@@ -447,7 +448,7 @@ IN_PROC_BROWSER_TEST_F(AppNotificationsWebNotificationTest,
   metadata = std::make_unique<PersistentNotificationMetadata>();
   metadata->service_worker_scope = GetScope2();
 
-  NotificationDisplayService::GetForProfile(profile())->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
       NotificationHandler::Type::WEB_PERSISTENT, *notification,
       std::move(metadata));
 
@@ -455,13 +456,13 @@ IN_PROC_BROWSER_TEST_F(AppNotificationsWebNotificationTest,
   ASSERT_TRUE(HasBadge(profile(), app_id2).value());
 
   // Remove notifications.
-  NotificationDisplayService::GetForProfile(profile())->Close(
+  NotificationDisplayServiceFactory::GetForProfile(profile())->Close(
       NotificationHandler::Type::WEB_PERSISTENT, notification_id1);
 
   ASSERT_FALSE(HasBadge(profile(), app_id1).value());
   ASSERT_TRUE(HasBadge(profile(), app_id2).value());
 
-  NotificationDisplayService::GetForProfile(profile())->Close(
+  NotificationDisplayServiceFactory::GetForProfile(profile())->Close(
       NotificationHandler::Type::WEB_PERSISTENT, notification_id2);
 
   ASSERT_FALSE(HasBadge(profile(), app_id1).value());
@@ -480,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(AppNotificationsWebNotificationTest,
   const std::string notification_id = "notification-id";
   auto notification = CreateNotification(notification_id, origin);
 
-  NotificationDisplayService::GetForProfile(profile())->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
       NotificationHandler::Type::WEB_NON_PERSISTENT, *notification,
       /*metadata=*/nullptr);
   ASSERT_TRUE(HasBadge(profile(), app_id1).value());
@@ -505,7 +506,7 @@ IN_PROC_BROWSER_TEST_F(AppNotificationsWebNotificationTest,
   const std::string notification_id = "notification-id";
   auto notification = CreateNotification(notification_id, origin);
 
-  NotificationDisplayService::GetForProfile(profile())->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
       NotificationHandler::Type::WEB_NON_PERSISTENT, *notification,
       /*metadata=*/nullptr);
   ASSERT_TRUE(HasBadge(profile(), app_id1).value());
@@ -525,7 +526,7 @@ IN_PROC_BROWSER_TEST_F(AppNotificationsWebNotificationTest,
   const std::string notification_id1 = "notification-id1";
   auto notification = CreateNotification(notification_id1, origin);
 
-  NotificationDisplayService::GetForProfile(profile())->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
       NotificationHandler::Type::WEB_NON_PERSISTENT, *notification,
       /*metadata=*/nullptr);
 
@@ -542,7 +543,7 @@ IN_PROC_BROWSER_TEST_F(AppNotificationsWebNotificationTest,
   const std::string notification_id2 = "notification-id2";
   notification = CreateNotification(notification_id2, origin);
 
-  NotificationDisplayService::GetForProfile(profile())->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
       NotificationHandler::Type::WEB_NON_PERSISTENT, *notification,
       /*metadata=*/nullptr);
 
@@ -566,7 +567,7 @@ IN_PROC_BROWSER_TEST_F(AppNotificationsWebNotificationTest,
   const std::string notification_id3 = "notification-id3";
   notification = CreateNotification(notification_id3, origin);
 
-  NotificationDisplayService::GetForProfile(profile())->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
       NotificationHandler::Type::WEB_NON_PERSISTENT, *notification,
       /*metadata=*/nullptr);
   ASSERT_TRUE(HasBadge(profile(), app_id1).value());
@@ -631,7 +632,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBadgingTest,
   auto metadata = std::make_unique<PersistentNotificationMetadata>();
   metadata->service_worker_scope = GetScope1();
 
-  NotificationDisplayService::GetForProfile(profile())->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
       NotificationHandler::Type::WEB_PERSISTENT, *notification,
       std::move(metadata));
   ASSERT_TRUE(HasBadge(profile(), app_id).value());
@@ -639,7 +640,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBadgingTest,
   badge_manager_->ClearBadgeForTesting(app_id, &test_recorder);
   ASSERT_FALSE(HasBadge(profile(), app_id).value());
 
-  NotificationDisplayService::GetForProfile(profile())->Close(
+  NotificationDisplayServiceFactory::GetForProfile(profile())->Close(
       NotificationHandler::Type::WEB_PERSISTENT, notification_id);
   ASSERT_FALSE(HasBadge(profile(), app_id).value());
 }
@@ -661,7 +662,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBadgingTest, NotificationBeforeClearBadge) {
   {
     auto metadata = std::make_unique<PersistentNotificationMetadata>();
     metadata->service_worker_scope = GetScope1();
-    NotificationDisplayService::GetForProfile(profile())->Display(
+    NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
         NotificationHandler::Type::WEB_PERSISTENT, *notification,
         std::move(metadata));
   }
@@ -680,7 +681,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBadgingTest, NotificationBeforeClearBadge) {
   {
     auto metadata = std::make_unique<PersistentNotificationMetadata>();
     metadata->service_worker_scope = GetScope1();
-    NotificationDisplayService::GetForProfile(profile())->Display(
+    NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
         NotificationHandler::Type::WEB_PERSISTENT, *notification,
         std::move(metadata));
   }
@@ -712,7 +713,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBadgingTest, NotificationAfterClearBadge) {
   {
     auto metadata = std::make_unique<PersistentNotificationMetadata>();
     metadata->service_worker_scope = GetScope1();
-    NotificationDisplayService::GetForProfile(profile())->Display(
+    NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
         NotificationHandler::Type::WEB_PERSISTENT, *notification,
         std::move(metadata));
   }
@@ -724,7 +725,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBadgingTest, NotificationAfterClearBadge) {
   {
     auto metadata = std::make_unique<PersistentNotificationMetadata>();
     metadata->service_worker_scope = GetScope1();
-    NotificationDisplayService::GetForProfile(profile())->Display(
+    NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
         NotificationHandler::Type::WEB_PERSISTENT, *notification,
         std::move(metadata));
   }
@@ -760,14 +761,14 @@ IN_PROC_BROWSER_TEST_F(WebAppBadgingTest, NotificationAfterShowBadge) {
   {
     auto metadata = std::make_unique<PersistentNotificationMetadata>();
     metadata->service_worker_scope = GetScope1();
-    NotificationDisplayService::GetForProfile(profile())->Display(
+    NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
         NotificationHandler::Type::WEB_PERSISTENT, *notification,
         std::move(metadata));
   }
 
   ASSERT_TRUE(HasBadge(profile(), app_id).value());
 
-  NotificationDisplayService::GetForProfile(profile())->Close(
+  NotificationDisplayServiceFactory::GetForProfile(profile())->Close(
       NotificationHandler::Type::WEB_PERSISTENT, notification_id);
 
   ASSERT_FALSE(HasBadge(profile(), app_id).value());

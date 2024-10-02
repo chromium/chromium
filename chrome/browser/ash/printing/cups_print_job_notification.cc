@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/printing/cups_print_job_notification_utils.h"
 #include "chrome/browser/chromeos/printing/printer_error_codes.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/pref_names.h"
@@ -132,7 +133,7 @@ CupsPrintJobNotification::GetNotificationDataForTesting() {
 }
 
 void CupsPrintJobNotification::CleanUpNotification() {
-  NotificationDisplayService::GetForProfile(profile_)->Close(
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
       NotificationHandler::Type::TRANSIENT, notification_id_);
   notification_manager_->OnPrintJobNotificationRemoved(this);
 }
@@ -160,7 +161,7 @@ void CupsPrintJobNotification::UpdateNotification() {
   if ((print_job_->state() != CupsPrintJob::State::STATE_STARTED &&
        print_job_->state() != CupsPrintJob::State::STATE_PAGE_DONE) ||
       !closed_in_middle_) {
-    NotificationDisplayService::GetForProfile(profile_)->Display(
+    NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
         NotificationHandler::Type::TRANSIENT, *notification_,
         /*metadata=*/nullptr);
     if (print_job_->state() == CupsPrintJob::State::STATE_DOCUMENT_DONE) {

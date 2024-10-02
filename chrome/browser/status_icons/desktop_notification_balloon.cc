@@ -9,6 +9,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -50,6 +51,6 @@ void DesktopNotificationBalloon::DisplayBalloon(
       contents, icon, std::u16string(), GURL(), notifier_id, {},
       new message_center::NotificationDelegate());
 
-  NotificationDisplayService::GetForProfile(profile)->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile)->Display(
       NotificationHandler::Type::TRANSIENT, notification, /*metadata=*/nullptr);
 }

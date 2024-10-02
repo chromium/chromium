@@ -9,6 +9,7 @@
 #include "ash/webui/eche_app_ui/eche_alert_generator.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
@@ -148,27 +149,27 @@ void EcheAppNotificationController::ShowScreenLockNotification(
 void EcheAppNotificationController::ShowNotification(
     std::unique_ptr<message_center::Notification> notification) {
   notification->SetSystemPriority();
-  NotificationDisplayService::GetForProfile(profile_)->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
       NotificationHandler::Type::TRANSIENT, *notification,
       /*metadata=*/nullptr);
 }
 
 void EcheAppNotificationController::CloseNotification(
     const std::string& notification_id) {
-  NotificationDisplayService::GetForProfile(profile_)->Close(
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
       NotificationHandler::Type::TRANSIENT, notification_id);
 }
 
 void EcheAppNotificationController::
     CloseConnectionOrLaunchErrorNotifications() {
-  NotificationDisplayService::GetForProfile(profile_)->Close(
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
       NotificationHandler::Type::TRANSIENT, kEcheAppRetryConnectionNotifierId);
-  NotificationDisplayService::GetForProfile(profile_)->Close(
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
       NotificationHandler::Type::TRANSIENT, kEcheAppInactivityNotifierId);
-  NotificationDisplayService::GetForProfile(profile_)->Close(
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
       NotificationHandler::Type::TRANSIENT,
       kEcheAppFromWebWithoutButtonNotifierId);
-  NotificationDisplayService::GetForProfile(profile_)->Close(
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
       NotificationHandler::Type::TRANSIENT, kEcheAppNetworkSettingNotifierId);
 }
 

@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/grit/generated_resources.h"
@@ -70,7 +71,7 @@ void ShowArcMigrationGuideNotification(Profile* profile) {
       message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
   notification.set_renotify(true);
 
-  NotificationDisplayService::GetForProfile(profile)->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile)->Display(
       NotificationHandler::Type::TRANSIENT, notification,
       /*metadata=*/nullptr);
 }

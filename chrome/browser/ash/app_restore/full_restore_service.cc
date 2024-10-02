@@ -48,6 +48,7 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/app_session_service_factory.h"
 #include "chrome/browser/sessions/session_service_factory.h"
@@ -432,7 +433,7 @@ void FullRestoreService::MaybeCloseNotification(bool allow_save) {
   crashed_lock_.reset();
 
   if (notification_ && !is_shut_down_) {
-    NotificationDisplayService::GetForProfile(profile_)->Close(
+    NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
         NotificationHandler::Type::TRANSIENT, notification_->id());
     accelerator_controller_observer_.Reset();
   }
@@ -795,7 +796,7 @@ void FullRestoreService::MaybeShowRestoreNotification(
   notification_->set_priority(message_center::SYSTEM_PRIORITY);
 
   auto* notification_display_service =
-      NotificationDisplayService::GetForProfile(profile_);
+      NotificationDisplayServiceFactory::GetForProfile(profile_);
   DCHECK(notification_display_service);
   notification_display_service->Display(NotificationHandler::Type::TRANSIENT,
                                         *notification_,

@@ -10,6 +10,7 @@
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
@@ -76,7 +77,7 @@ CastNotificationControllerLacros::CastNotificationControllerLacros(
     Profile* profile)
     : CastNotificationControllerLacros(
           profile,
-          NotificationDisplayService::GetForProfile(profile),
+          NotificationDisplayServiceFactory::GetForProfile(profile),
           MediaRouterFactory::GetApiForBrowserContext(profile)) {}
 
 CastNotificationControllerLacros::CastNotificationControllerLacros(

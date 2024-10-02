@@ -26,6 +26,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -78,7 +79,7 @@ void CloseBalloon(const std::string& extension_id, Profile* profile) {
   if (g_disable_close_balloon_for_testing)
     return;
 
-  NotificationDisplayService::GetForProfile(profile)->Close(
+  NotificationDisplayServiceFactory::GetForProfile(profile)->Close(
       NotificationHandler::Type::TRANSIENT,
       kCrashedNotificationPrefix + extension_id);
 }
@@ -745,7 +746,7 @@ void BackgroundContentsService::NotificationImageReady(
     scoped_refptr<message_center::NotificationDelegate> delegate,
     const gfx::Image& icon) {
   NotificationDisplayService* notification_service =
-      NotificationDisplayService::GetForProfile(profile_);
+      NotificationDisplayServiceFactory::GetForProfile(profile_);
   CHECK(notification_service);
 
   if (g_browser_process->IsShuttingDown()) {

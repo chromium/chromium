@@ -37,6 +37,7 @@
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -819,7 +820,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, Notification) {
   auto metadata = std::make_unique<PersistentNotificationMetadata>();
   metadata->service_worker_scope = app_url.GetWithoutFilename();
 
-  NotificationDisplayService::GetForProfile(profile())->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
       NotificationHandler::Type::WEB_PERSISTENT, *notification,
       std::move(metadata));
   mock_app_publisher.Wait();

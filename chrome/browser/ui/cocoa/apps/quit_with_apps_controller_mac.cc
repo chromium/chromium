@@ -12,6 +12,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -44,7 +45,7 @@ const int kQuitAllAppsButtonIndex = 0;
 const int kDontShowAgainButtonIndex = 1;
 
 void CloseNotification(Profile* profile) {
-  NotificationDisplayService::GetForProfile(profile)->Close(
+  NotificationDisplayServiceFactory::GetForProfile(profile)->Close(
       NotificationHandler::Type::TRANSIENT,
       QuitWithAppsController::kQuitWithAppsNotificationID);
 }
@@ -155,7 +156,7 @@ bool QuitWithAppsController::ShouldQuit() {
   if (notification_profile_)
     CloseNotification(notification_profile_);
   notification_profile_ = profiles[0];
-  NotificationDisplayService::GetForProfile(notification_profile_)
+  NotificationDisplayServiceFactory::GetForProfile(notification_profile_)
       ->Display(NotificationHandler::Type::TRANSIENT, *notification_,
                 /*metadata=*/nullptr);
 

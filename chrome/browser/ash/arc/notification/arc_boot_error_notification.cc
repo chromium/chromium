@@ -83,7 +83,7 @@ void ShowLowDiskSpaceErrorNotification(content::BrowserContext* context) {
               profile)),
       kNotificationStorageFullIcon,
       message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
-  NotificationDisplayService::GetForProfile(profile)->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile)->Display(
       NotificationHandler::Type::TRANSIENT, notification,
       /*metadata=*/nullptr);
 }

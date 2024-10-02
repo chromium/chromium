@@ -2168,7 +2168,8 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, CannotShowDuplicateSetupDialogs) {
   navigation_observer_dialog.Wait();
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
 
-  NotificationDisplayService::GetForProfile(profile())->AddObserver(this);
+  NotificationDisplayServiceFactory::GetForProfile(profile())->AddObserver(
+      this);
 
   // Fails to launch a second setup dialog for the same file.
   base::test::TestFuture<TaskResult, std::string> failed_future;
@@ -2230,7 +2231,8 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, CannotShowDuplicateMoveConfirmation) {
   navigation_observer_dialog.Wait();
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
 
-  NotificationDisplayService::GetForProfile(profile())->AddObserver(this);
+  NotificationDisplayServiceFactory::GetForProfile(profile())->AddObserver(
+      this);
 
   // Fails to launch a second move confirmation dialog for the same file.
   base::test::TestFuture<TaskResult, std::string> failed_future;
@@ -2359,7 +2361,8 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
   ASSERT_TRUE(event_router);
   event_router->AddCloudOpenTask(odfs_docx_test_file_url_1_);
 
-  NotificationDisplayService::GetForProfile(profile())->AddObserver(this);
+  NotificationDisplayServiceFactory::GetForProfile(profile())->AddObserver(
+      this);
 
   // Fail to execute a duplicate CloudOpenTask for the file.
   base::test::TestFuture<TaskResult, std::string> failed_future;
@@ -2480,7 +2483,8 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
       base::File::Error::FILE_ERROR_ACCESS_DENIED);
   provided_file_system_->SetReauthenticationRequired(true);
 
-  NotificationDisplayService::GetForProfile(profile())->AddObserver(this);
+  NotificationDisplayServiceFactory::GetForProfile(profile())->AddObserver(
+      this);
 
   web_app_publisher_->ClearPastLaunches();
 
@@ -2510,7 +2514,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
       ash::cloud_upload::OfficeOneDriveOpenErrors::kGetActionsReauthRequired,
       1);
 
-  NotificationDisplayService::GetForProfile(browser()->profile())
+  NotificationDisplayServiceFactory::GetForProfile(browser()->profile())
       ->RemoveObserver(this);
 }
 
@@ -2526,7 +2530,8 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FailToOpenFileFromODFSOtherAccessError) {
       base::File::Error::FILE_ERROR_ACCESS_DENIED);
   provided_file_system_->SetReauthenticationRequired(false);
 
-  NotificationDisplayService::GetForProfile(profile())->AddObserver(this);
+  NotificationDisplayServiceFactory::GetForProfile(profile())->AddObserver(
+      this);
 
   web_app_publisher_->ClearPastLaunches();
 
@@ -2554,7 +2559,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FailToOpenFileFromODFSOtherAccessError) {
       ash::cloud_upload::kOneDriveErrorMetricName,
       ash::cloud_upload::OfficeOneDriveOpenErrors::kGetActionsAccessDenied, 1);
 
-  NotificationDisplayService::GetForProfile(browser()->profile())
+  NotificationDisplayServiceFactory::GetForProfile(browser()->profile())
       ->RemoveObserver(this);
 }
 

@@ -20,6 +20,7 @@
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/google_one/google_one_offer_iph_tab_helper_constants.h"
@@ -58,7 +59,7 @@ class DriveIphTabHelperNotificationDelegate
 
     tracker_->NotifyEvent(kIPHGoogleOneOfferNotificationGetPerkEventName);
 
-    NotificationDisplayService::GetForProfile(profile_)->Close(
+    NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
         NotificationHandler::Type::TRANSIENT, kIPHGoogleOneOfferNotificationId);
   }
 
@@ -189,7 +190,7 @@ void GoogleOneOfferIphTabHelper::PrimaryPageChanged(content::Page& page) {
 
   const message_center::Notification notification =
       CreateGoogleOneOfferNotification(tracker, profile);
-  NotificationDisplayService::GetForProfile(profile)->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile)->Display(
       NotificationHandler::Type::TRANSIENT, notification, nullptr);
 }
 

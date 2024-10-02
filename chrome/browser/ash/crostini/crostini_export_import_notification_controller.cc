@@ -11,6 +11,7 @@
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "chrome/browser/ash/crostini/crostini_export_import.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -85,7 +86,7 @@ CrostiniExportImportNotificationController::
 void CrostiniExportImportNotificationController::ForceRedisplay() {
   hidden_ = false;
 
-  NotificationDisplayService::GetForProfile(profile_)->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
       NotificationHandler::Type::TRANSIENT, *notification_,
       /*metadata=*/nullptr);
 }
@@ -186,7 +187,7 @@ void CrostiniExportImportNotificationController::SetStatusCancelledUI() {
   delegate_->SetCallback(
       CrostiniExportImportClickCloseDelegate::ButtonClickCallback());
 
-  NotificationDisplayService::GetForProfile(profile_)->Close(
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
       NotificationHandler::Type::TRANSIENT, notification_->id());
 }
 

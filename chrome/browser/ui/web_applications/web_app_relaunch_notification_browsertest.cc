@@ -12,6 +12,7 @@
 #include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
@@ -65,7 +66,7 @@ class WebAppRelaunchNotificationBrowserTest
   auto GetAllNotifications() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     base::test::TestFuture<std::set<std::string>, bool> get_displayed_future;
-    NotificationDisplayService::GetForProfile(profile())->GetDisplayed(
+    NotificationDisplayServiceFactory::GetForProfile(profile())->GetDisplayed(
         get_displayed_future.GetCallback());
 #else
     base::test::TestFuture<const std::vector<std::string>&>
@@ -83,7 +84,7 @@ class WebAppRelaunchNotificationBrowserTest
   void ClearAllNotifications() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     NotificationDisplayService* service =
-        NotificationDisplayService::GetForProfile(profile());
+        NotificationDisplayServiceFactory::GetForProfile(profile());
 #else
     base::test::TestFuture<const std::vector<std::string>&>
         get_displayed_future;
@@ -116,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(WebAppRelaunchNotificationBrowserTest,
                        ShowNotificationOnRelaunch) {
   ClearAllNotifications();
   notification_observation_.Observe(
-      NotificationDisplayService::GetForProfile(profile()));
+      NotificationDisplayServiceFactory::GetForProfile(profile()));
 
   EXPECT_CALL(
       *this,
@@ -158,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(WebAppRelaunchNotificationBrowserTest,
                        TwoAppsInParallelShowNotificationsOnRelaunch) {
   ClearAllNotifications();
   notification_observation_.Observe(
-      NotificationDisplayService::GetForProfile(profile()));
+      NotificationDisplayServiceFactory::GetForProfile(profile()));
 
   EXPECT_CALL(
       *this,

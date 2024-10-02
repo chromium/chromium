@@ -57,7 +57,7 @@ std::unique_ptr<message_center::Notification> CreateNotificationPtr(
 
 // Closes the notification with `kSkyVaultMigrationNotificationId`.
 void CloseNotification(Profile* profile) {
-  NotificationDisplayService::GetForProfile(profile)->Close(
+  NotificationDisplayServiceFactory::GetForProfile(profile)->Close(
       NotificationHandler::Type::TRANSIENT, kSkyVaultMigrationNotificationId);
 }
 
@@ -119,7 +119,7 @@ void MigrationNotificationManager::ShowMigrationProgressNotification(
   auto notification = CreateNotificationPtr(title, message,
                                             /*callback=*/base::DoNothing());
 
-  NotificationDisplayService::GetForProfile(profile())->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
       NotificationHandler::Type::TRANSIENT, *notification,
       /*metadata=*/nullptr);
 }
@@ -150,7 +150,7 @@ void MigrationNotificationManager::ShowMigrationCompletedNotification(
                                                 profile(), destination_path));
   notification->set_buttons({message_center::ButtonInfo(button)});
 
-  NotificationDisplayService::GetForProfile(profile())->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
       NotificationHandler::Type::TRANSIENT, *notification,
       /*metadata=*/nullptr);
 }
@@ -181,7 +181,7 @@ void MigrationNotificationManager::ShowMigrationErrorNotification(
       base::BindRepeating(&HandleNotificationClick, profile(), error_log_path));
   notification->set_buttons({message_center::ButtonInfo(button)});
 
-  NotificationDisplayService::GetForProfile(profile())->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
       NotificationHandler::Type::TRANSIENT, *notification,
       /*metadata=*/nullptr);
 }
@@ -204,7 +204,7 @@ void MigrationNotificationManager::ShowConfigurationErrorNotification(
   auto notification = CreateNotificationPtr(title, message,
                                             /*callback=*/base::DoNothing());
 
-  NotificationDisplayService::GetForProfile(profile())->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
       NotificationHandler::Type::TRANSIENT, *notification,
       /*metadata=*/nullptr);
 }

@@ -29,6 +29,7 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ash/video_conference/video_conference_ash_feature_client.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/settings/app_management/app_management_uma.h"
@@ -342,7 +343,7 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
         base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
             weak_ptr_factory_.GetMutableWeakPtr()));
 
-    NotificationDisplayService::GetForProfile(profile_)->Display(
+    NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
         NotificationHandler::Type::TRANSIENT, notification,
         /*metadata=*/nullptr);
   }
@@ -351,7 +352,7 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
     CHECK(features::IsVideoConferenceEnabled());
     CHECK_NE(type, kNoNotification);
 
-    NotificationDisplayService::GetForProfile(profile_)->Close(
+    NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
         NotificationHandler::Type::TRANSIENT,
         GetNotificationId(vm_type_, type));
   }

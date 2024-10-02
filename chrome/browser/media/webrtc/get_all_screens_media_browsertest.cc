@@ -19,6 +19,7 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -632,7 +633,7 @@ class MultiCaptureNotificationTest : public InProcessBrowserTest {
   auto GetAllNotifications() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     base::test::TestFuture<std::set<std::string>, bool> get_displayed_future;
-    NotificationDisplayService::GetForProfile(browser()->profile())
+    NotificationDisplayServiceFactory::GetForProfile(browser()->profile())
         ->GetDisplayed(get_displayed_future.GetCallback());
 #else
     base::test::TestFuture<const std::vector<std::string>&>
@@ -650,7 +651,7 @@ class MultiCaptureNotificationTest : public InProcessBrowserTest {
   void ClearAllNotifications() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     NotificationDisplayService* service =
-        NotificationDisplayService::GetForProfile(browser()->profile());
+        NotificationDisplayServiceFactory::GetForProfile(browser()->profile());
 #else
     base::test::TestFuture<const std::vector<std::string>&>
         get_displayed_future;

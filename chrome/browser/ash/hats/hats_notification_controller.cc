@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
+
 #include <optional>
 
 #include "ash/constants/ash_features.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
@@ -357,7 +359,7 @@ void HatsNotificationController::Click(
   // Remove the notification.
   NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
   notification_.reset(nullptr);
-  NotificationDisplayService::GetForProfile(profile_)->Close(
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
       NotificationHandler::Type::TRANSIENT, kNotificationId);
 }
 
@@ -408,14 +410,14 @@ void HatsNotificationController::PortalStateChanged(
           message_center::SystemNotificationWarningLevel::NORMAL);
     }
 
-    NotificationDisplayService::GetForProfile(profile_)->Display(
+    NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
         NotificationHandler::Type::TRANSIENT, *notification_,
         /*metadata=*/nullptr);
 
     state_ = HatsState::kNotificationDisplayed;
   } else if (notification_) {
     // Hide the notification if device loses its connection to the internet.
-    NotificationDisplayService::GetForProfile(profile_)->Close(
+    NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
         NotificationHandler::Type::TRANSIENT, kNotificationId);
   }
 }

@@ -15,6 +15,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
@@ -181,7 +182,8 @@ void SyncErrorNotifier::OnStateChanged(syncer::SyncService* service) {
     return;
   }
 
-  auto* display_service = NotificationDisplayService::GetForProfile(profile_);
+  auto* display_service =
+      NotificationDisplayServiceFactory::GetForProfile(profile_);
   if (!should_display_notification) {
     notification_displayed_ = false;
     display_service->Close(NotificationHandler::Type::TRANSIENT,

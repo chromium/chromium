@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -65,7 +66,7 @@ UsbPrinterNotification::~UsbPrinterNotification() = default;
 
 void UsbPrinterNotification::CloseNotification() {
   NotificationDisplayService* display_service =
-      NotificationDisplayService::GetForProfile(profile_);
+      NotificationDisplayServiceFactory::GetForProfile(profile_);
   display_service->Close(NotificationHandler::Type::TRANSIENT,
                          notification_id_);
 }
@@ -97,7 +98,7 @@ void UsbPrinterNotification::Click(const std::optional<int>& button_index,
 
 void UsbPrinterNotification::ShowNotification() {
   NotificationDisplayService* display_service =
-      NotificationDisplayService::GetForProfile(profile_);
+      NotificationDisplayServiceFactory::GetForProfile(profile_);
   display_service->Display(NotificationHandler::Type::TRANSIENT, *notification_,
                            /*metadata=*/nullptr);
   visible_ = true;

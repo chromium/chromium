@@ -32,6 +32,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sync/desk_sync_service_factory.h"
@@ -391,7 +392,7 @@ void FloatingWorkspaceService::MaybeCloseNotification() {
     return;
   }
   auto* notification_display_service =
-      NotificationDisplayService::GetForProfile(profile_);
+      NotificationDisplayServiceFactory::GetForProfile(profile_);
   notification_display_service->Close(NotificationHandler::Type::TRANSIENT,
                                       notification_->id());
   notification_ = nullptr;
@@ -1015,7 +1016,7 @@ void FloatingWorkspaceService::SendNotification(const std::string& id) {
     }
   }
   auto* notification_display_service =
-      NotificationDisplayService::GetForProfile(profile_);
+      NotificationDisplayServiceFactory::GetForProfile(profile_);
   notification_display_service->Display(NotificationHandler::Type::TRANSIENT,
                                         *notification_,
                                         /*metadata=*/nullptr);

@@ -158,11 +158,12 @@ class OneDriveUploadHandlerTest : public InProcessBrowserTest,
 
   void SetUpObservers() {
     // Subscribe to Notification updates to track copy/move ODFS notifications.
-    NotificationDisplayService::GetForProfile(profile())->AddObserver(this);
+    NotificationDisplayServiceFactory::GetForProfile(profile())->AddObserver(
+        this);
   }
 
   void RemoveObservers() {
-    NotificationDisplayService::GetForProfile(browser()->profile())
+    NotificationDisplayServiceFactory::GetForProfile(browser()->profile())
         ->RemoveObserver(this);
   }
 

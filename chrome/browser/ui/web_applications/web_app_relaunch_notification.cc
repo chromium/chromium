@@ -14,6 +14,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -85,7 +86,7 @@ void NotifyAppRelaunchState(const webapps::AppId& placeholder_app_id,
 
   switch (relaunch_state) {
     case web_app::AppRelaunchState::kAppClosingForRelaunch:
-      NotificationDisplayService::GetForProfile(profile.get())
+      NotificationDisplayServiceFactory::GetForProfile(profile.get())
           ->Display(NotificationHandler::Type::TRANSIENT,
                     std::move(CreateNotification(placeholder_app_id,
                                                  final_app_id, final_app_name)),
@@ -112,7 +113,7 @@ void NotifyAppRelaunchState(const webapps::AppId& placeholder_app_id,
                 // The `NotificationDisplayService::Close` function can be
                 // called even if
                 // the notification is not shown anymore.
-                NotificationDisplayService::GetForProfile(profile.get())
+                NotificationDisplayServiceFactory::GetForProfile(profile.get())
                     ->Close(NotificationHandler::Type::TRANSIENT,
                             CreateNotificationId(app_id));
               },

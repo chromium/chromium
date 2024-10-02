@@ -15,6 +15,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_browsertest_base.h"
@@ -305,7 +306,7 @@ class QuickAnswersBrowserTest : public QuickAnswersBrowserTestBase {
         rich_notification_data,
         base::MakeRefCounted<message_center::NotificationDelegate>());
 
-    NotificationDisplayService::GetForProfile(
+    NotificationDisplayServiceFactory::GetForProfile(
         chrome_test_utils::GetProfile(this))
         ->Display(NotificationHandler::Type::TRANSIENT, notification,
                   /*metadata=*/nullptr);

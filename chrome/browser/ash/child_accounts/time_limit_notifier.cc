@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
@@ -62,7 +63,7 @@ void ShowNotification(std::u16string title,
       base::MakeRefCounted<message_center::NotificationDelegate>(),
       chromeos::kNotificationSupervisedUserIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
-  NotificationDisplayService::GetForProfile(
+  NotificationDisplayServiceFactory::GetForProfile(
       Profile::FromBrowserContext(context))
       ->Display(NotificationHandler::Type::TRANSIENT, notification,
                 /*metadata=*/nullptr);
