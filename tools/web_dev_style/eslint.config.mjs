@@ -15,7 +15,6 @@ export default [
       // Ignore because eslint doesn't understand // <if expr>
       'chrome/browser/resources/gaia_auth_host/authenticator.js',
       'chrome/browser/resources/gaia_auth_host/password_change_authenticator.js',
-      'chrome/browser/resources/gaia_auth_host/saml_username_autofill.js',
 
       // No point linting auto-generated files.
       'tools/typescript/definitions/**/*',
@@ -92,7 +91,8 @@ export default [
       ],
 
       'no-restricted-properties': [
-        'error', {
+        'error',
+        {
           property: '__lookupGetter__',
           message: 'Use Object.getOwnPropertyDescriptor',
         },
@@ -113,18 +113,6 @@ export default [
           property: 'exportPath',
           message: 'Use ES modules or cr.define() instead',
         },
-        {
-          object: 'MockInteractions',
-          property: 'tap',
-          message:
-              'Do not use on-tap handlers in prod code, and use the native click() method in tests. See more context at crbug.com/812035.',
-        },
-        {
-          object: 'test',
-          property: 'only',
-          message:
-              'test.only() silently disables other tests in the same suite(). Did you forget deleting it before uploading? Use test.skip() instead to explicitly disable certain test() cases.',
-        }
       ],
 
       'no-restricted-syntax': [
@@ -428,6 +416,29 @@ export default [
         }
       ],
     },
+  },
+  {
+    // Conceptually these rules can be applied to the whole code base, but
+    // they're only current applicable to WebUI tests. Moving them here is a
+    // performance optimization.
+    files: ['chrome/test/data/webui/**/*.[jt]s'],
+    rules: {
+      'no-restricted-properties': [
+        'error',
+        {
+          object: 'MockInteractions',
+          property: 'tap',
+          message:
+              'Do not use on-tap handlers in prod code, and use the native click() method in tests. See more context at crbug.com/812035.',
+        },
+        {
+          object: 'test',
+          property: 'only',
+          message:
+              'test.only() silently disables other tests in the same suite(). Did you forget deleting it before uploading? Use test.skip() instead to explicitly disable certain test() cases.',
+        },
+      ]
+    }
   },
   {
     // 1-month exception for //ui/file_manager. This can be removed in November
