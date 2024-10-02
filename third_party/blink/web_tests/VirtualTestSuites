@@ -3461,7 +3461,7 @@
     ],
     "args": ["--enable-features=SelectParserRelaxation",
              "--disable-features=CustomizableSelect"],
-    "expires": "Oct 1, 2024",
+    "expires": "Feb 1, 2025",
     "owners": ["jarhar@chromium.org", "dom-dev@google.com"]
   },
   {
@@ -3488,7 +3488,7 @@
       "html5lib/generated"
     ],
     "args": ["--disable-features=CustomizableSelect,SelectParserRelaxation"],
-    "expires": "Oct 1, 2024",
+    "expires": "Feb 1, 2025",
     "owners": ["jarhar@chromium.org", "dom-dev@google.com"]
   },
   "css-custom-state-deprecated-syntax-enabled is the configuration that is",
