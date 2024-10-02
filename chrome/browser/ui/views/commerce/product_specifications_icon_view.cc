@@ -104,7 +104,8 @@ const gfx::VectorIcon& ProductSpecificationsIconView::GetVectorIcon() const {
 void ProductSpecificationsIconView::UpdateImpl() {
   bool should_show = ShouldShow();
   if (should_show) {
-    // TODO(b/325660810): Add logics to flip button visual state.
+    // TODO(b/369238920): Delete the SetVisualState after the add to comparison
+    // table toast is launched.
     SetVisualState(IsInProductSpecificationsSet());
     MaybeShowPageActionLabel();
   } else {

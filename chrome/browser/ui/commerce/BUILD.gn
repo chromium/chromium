@@ -97,6 +97,7 @@ source_set("unit_tests") {
   deps = [
     ":commerce",
     "//base/test:test_support",
+    "//chrome/browser/ui/toasts:toasts",
     "//chrome/test:test_support",
     "//components/commerce/core:account_checker_test_support",
     "//components/commerce/core:feature_list",

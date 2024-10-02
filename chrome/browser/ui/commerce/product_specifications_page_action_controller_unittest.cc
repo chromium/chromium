@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
+#include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_account_checker.h"
@@ -50,7 +51,9 @@ std::optional<ProductGroup> CreateProductGroup() {
 }
 }  // namespace
 
-class ProductSpecificationsPageActionControllerUnittest : public testing::Test {
+class ProductSpecificationsPageActionControllerUnittest
+    : public testing::Test,
+      public ::testing::WithParamInterface<bool> {
  public:
   ProductSpecificationsPageActionControllerUnittest()
       : prefs_(std::make_unique<TestingPrefServiceSimple>()) {}
@@ -271,46 +274,6 @@ TEST_F(ProductSpecificationsPageActionControllerUnittest,
   ASSERT_FALSE(controller_->WantsExpandedUi());
 }
 
-TEST_F(ProductSpecificationsPageActionControllerUnittest, IconExecute) {
-  // Set up ClusterManager to trigger page action.
-  auto product_group = CreateProductGroup();
-  mock_cluster_manager_->SetResponseForGetProductGroupForCandidateProduct(
-      product_group);
-  shopping_service_->SetResponseForGetProductInfoForUrl(
-      CreateProductInfo(kClusterId));
-
-  // Set up the similar product specifications set.
-  const base::Uuid& uuid = base::Uuid::GenerateRandomV4();
-  ProductSpecificationsSet set = ProductSpecificationsSet(
-      product_group->uuid.AsLowercaseString(), 0, 0, {GURL(kTestUrl2)}, "set1");
-  ON_CALL(*mock_product_specifications_service_, GetSetByUuid)
-      .WillByDefault(testing::Return(std::move(set)));
-
-  // Trigger page action.
-  controller_->ResetForNewNavigation(GURL(kTestUrl1));
-  base::RunLoop().RunUntilIdle();
-  ASSERT_TRUE(controller_->ShouldShowForNavigation().has_value());
-  ASSERT_TRUE(controller_->ShouldShowForNavigation().value());
-  ASSERT_FALSE(controller_->IsInRecommendedSet());
-
-  // First click would add the product to the product specifications set.
-  std::vector<UrlInfo> expected_urls = {UrlInfo(GURL(kTestUrl2), u""),
-                                        UrlInfo(GURL(kTestUrl1), u"")};
-  EXPECT_CALL(*mock_product_specifications_service_,
-              SetUrls(product_group->uuid, expected_urls))
-      .Times(1);
-  controller_->OnIconClicked();
-  ASSERT_TRUE(controller_->IsInRecommendedSet());
-
-  // Second click would remove the product from the product specifications set.
-  expected_urls = {UrlInfo(GURL(kTestUrl2), u"")};
-  EXPECT_CALL(*mock_product_specifications_service_,
-              SetUrls(product_group->uuid, expected_urls))
-      .Times(1);
-  controller_->OnIconClicked();
-  ASSERT_FALSE(controller_->IsInRecommendedSet());
-}
-
 TEST_F(ProductSpecificationsPageActionControllerUnittest,
        OnProductSpecificationsSetAdded) {
   // Set up ClusterManager to trigger page action.
@@ -466,4 +429,64 @@ TEST_F(ProductSpecificationsPageActionControllerUnittest,
   ASSERT_TRUE(controller_->ShouldShowForNavigation().has_value());
   ASSERT_FALSE(controller_->ShouldShowForNavigation().value());
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ProductSpecificationsPageActionControllerUnittest,
+                         testing::Bool());
+
+TEST_P(ProductSpecificationsPageActionControllerUnittest, IconExecute) {
+  base::test::ScopedFeatureList test_features;
+  std::vector<base::test::FeatureRef> enabled_features = {
+      commerce::kProductSpecifications};
+  if (GetParam()) {
+    enabled_features.push_back(toast_features::kToastFramework);
+    enabled_features.push_back(commerce::kCompareConfirmationToast);
+  }
+  test_features.InitWithFeatures(enabled_features, /*disabled_features*/ {});
+
+  // Set up ClusterManager to trigger page action.
+  auto product_group = CreateProductGroup();
+  mock_cluster_manager_->SetResponseForGetProductGroupForCandidateProduct(
+      product_group);
+  shopping_service_->SetResponseForGetProductInfoForUrl(
+      CreateProductInfo(kClusterId));
+
+  // Set up the similar product specifications set.
+  const base::Uuid& uuid = base::Uuid::GenerateRandomV4();
+  ProductSpecificationsSet set = ProductSpecificationsSet(
+      product_group->uuid.AsLowercaseString(), 0, 0, {GURL(kTestUrl2)}, "set1");
+  ON_CALL(*mock_product_specifications_service_, GetSetByUuid)
+      .WillByDefault(testing::Return(std::move(set)));
+
+  // Trigger page action.
+  controller_->ResetForNewNavigation(GURL(kTestUrl1));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(controller_->ShouldShowForNavigation().has_value());
+  ASSERT_TRUE(controller_->ShouldShowForNavigation().value());
+  ASSERT_FALSE(controller_->IsInRecommendedSet());
+
+  // First click would add the product to the product specifications set.
+  std::vector<UrlInfo> expected_urls = {UrlInfo(GURL(kTestUrl2), u""),
+                                        UrlInfo(GURL(kTestUrl1), u"")};
+  EXPECT_CALL(*mock_product_specifications_service_,
+              SetUrls(product_group->uuid, expected_urls))
+      .Times(1);
+  controller_->OnIconClicked();
+  ASSERT_TRUE(controller_->IsInRecommendedSet());
+
+  if (GetParam()) {
+    ASSERT_FALSE(controller_->ShouldShowForNavigation().value());
+  } else {
+    // Second click would remove the product from the product specifications
+    // set.
+    ASSERT_TRUE(controller_->ShouldShowForNavigation().value());
+    expected_urls = {UrlInfo(GURL(kTestUrl2), u"")};
+    EXPECT_CALL(*mock_product_specifications_service_,
+                SetUrls(product_group->uuid, expected_urls))
+        .Times(1);
+    controller_->OnIconClicked();
+    ASSERT_FALSE(controller_->IsInRecommendedSet());
+  }
+}
+
 }  // namespace commerce

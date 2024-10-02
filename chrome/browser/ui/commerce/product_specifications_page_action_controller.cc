@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
@@ -65,7 +66,12 @@ ProductSpecificationsPageActionController::ShouldShowForNavigation() {
           product_group_for_page_->uuid);
 
   return existing_set.has_value() &&
-         existing_set->url_infos().size() < kMaxTableSize;
+         existing_set->url_infos().size() < kMaxTableSize &&
+         (base::FeatureList::IsEnabled(commerce::kProductSpecifications) &&
+                  base::FeatureList::IsEnabled(
+                      commerce::kCompareConfirmationToast)
+              ? !is_in_recommended_set_
+              : true);
 }
 
 bool ProductSpecificationsPageActionController::WantsExpandedUi() {
@@ -165,8 +171,6 @@ void ProductSpecificationsPageActionController::OnIconClicked() {
   }
   product_specifications_service_->SetUrls(product_group_for_page_->uuid,
                                            std::move(existing_url_infos));
-
-  // TODO(b/369238920): Hide the ProductSpecificationIconView.
 
   NotifyHost();
 }
