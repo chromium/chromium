@@ -819,10 +819,6 @@ extern const char kNotificationSettingsMenuItemDescription[];
 extern const char kRemoveExcessNTPsExperimentName[];
 extern const char kRemoveExcessNTPsExperimentDescription[];
 
-// Title and description for the flag to remove unsafe restore.
-extern const char kRemoveOldWebStateRestoreName[];
-extern const char kRemoveOldWebStateRestoreDescription[];
-
 // Title and description for the flag to revamp Page Info in iOS.
 extern const char kRevampPageInfoIosName[];
 extern const char kRevampPageInfoIosDescription[];
