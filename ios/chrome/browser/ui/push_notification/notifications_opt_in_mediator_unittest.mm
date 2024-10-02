@@ -36,14 +36,13 @@ using set_up_list_prefs::SetUpListItemState;
 class NotificationsOptInMediatorTest : public PlatformTest {
  protected:
   void SetUp() override {
-    ChromeBrowserState* browser_state =
-        profile_manager_.AddProfileWithBuilder(CreateBrowserStateBuilder());
+    ProfileIOS* profile =
+        profile_manager_.AddProfileWithBuilder(CreateProfileBuilder());
 
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state, std::make_unique<FakeAuthenticationServiceDelegate>());
-    auth_service_ =
-        AuthenticationServiceFactory::GetForBrowserState(browser_state);
-    prefs_ = browser_state->GetPrefs();
+    AuthenticationServiceFactory::CreateAndInitializeForProfile(
+        profile, std::make_unique<FakeAuthenticationServiceDelegate>());
+    auth_service_ = AuthenticationServiceFactory::GetForProfile(profile);
+    prefs_ = profile->GetPrefs();
     scoped_feature_list_.InitWithFeatures(
         {kIOSTipsNotifications, kContentPushNotifications}, {});
     consumer_ = OCMStrictProtocolMock(@protocol(NotificationsOptInConsumer));
@@ -73,9 +72,9 @@ class NotificationsOptInMediatorTest : public PlatformTest {
     update->Set(key, on);
   }
 
-  // Builds a browser state.
-  TestChromeBrowserState::Builder CreateBrowserStateBuilder() {
-    TestChromeBrowserState::Builder builder;
+  // Builds a profile.
+  TestProfileIOS::Builder CreateProfileBuilder() {
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());

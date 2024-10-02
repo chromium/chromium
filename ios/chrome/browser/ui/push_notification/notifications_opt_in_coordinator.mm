@@ -48,16 +48,15 @@
 - (void)start {
   _viewController = [[NotificationsOptInViewController alloc] init];
   NotificationsOptInMediator* mediator = [[NotificationsOptInMediator alloc]
-      initWithAuthenticationService:AuthenticationServiceFactory::
-                                        GetForBrowserState(
-                                            self.browser->GetBrowserState())];
+      initWithAuthenticationService:AuthenticationServiceFactory::GetForProfile(
+                                        self.browser->GetProfile())];
   mediator.consumer = _viewController;
   mediator.presenter = self;
   _viewController.delegate = mediator;
   _viewController.notificationsDelegate = mediator;
   _viewController.presentationController.delegate = self;
   _viewController.isContentNotificationEnabled =
-      IsContentNotificationEnabled(self.browser->GetBrowserState());
+      IsContentNotificationEnabled(self.browser->GetProfile());
   [mediator configureConsumer];
   self.mediator = mediator;
   [self.baseViewController presentViewController:_viewController
@@ -86,9 +85,9 @@
         }
       };
   // If there are 0 identities, kInstantSignin requires less taps.
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
   AuthenticationOperation operation =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState)
+      ChromeAccountManagerServiceFactory::GetForProfile(profile)
               ->HasIdentities()
           ? AuthenticationOperation::kSigninOnly
           : AuthenticationOperation::kInstantSignin;
