@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_action_handler_base.h"
 
 namespace ui {
@@ -40,9 +41,7 @@ void AXActionHandlerRegistry::RemoveObserver(
 }
 
 void AXActionHandlerRegistry::PerformAction(const AXActionData& action_data) {
-  for (AXActionHandlerObserver& observer : observers_) {
-    observer.PerformAction(action_data);
-  }
+  observers_.Notify(&AXActionHandlerObserver::PerformAction, action_data);
 }
 
 AXActionHandlerRegistry::FrameID AXActionHandlerRegistry::GetFrameID(
@@ -99,8 +98,7 @@ void AXActionHandlerRegistry::RemoveAXTreeID(AXTreeID ax_tree_id) {
   if (action_it != id_to_action_handler_.end())
     id_to_action_handler_.erase(action_it);
 
-  for (AXActionHandlerObserver& observer : observers_)
-    observer.TreeRemoved(ax_tree_id);
+  observers_.Notify(&AXActionHandlerObserver::TreeRemoved, ax_tree_id);
 }
 
 AXActionHandlerRegistry::AXActionHandlerRegistry() = default;
