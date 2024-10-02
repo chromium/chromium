@@ -1265,6 +1265,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.Presentation.VSyncCallbackDelay" units="microseconds"
+    expires_after="2025-04-01">
+  <owner>magchen@chromium.org</owner>
+  <owner>vmiura@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    The VSync callback delay from the system CVDisplayLink or CADisplaylink
+    source to CrGpuMain. Recorded once per frame when OnVSyncPresentation is
+    called. This histogram is ~1/1000 sub-sampled under the CPU reduction
+    experiment. The recorded delay is capped to the maximum of 33 ms.
+
+    This metric is only for Mac clients with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="GPU.ProcessLifetimeEvents.HardwareAccelerated"
     enum="GPUProcessLifetimeEvent" expires_after="2025-02-10">
   <owner>vmiura@chromium.org</owner>
@@ -1764,6 +1779,22 @@ chromium-metrics-reviews@google.com.
     This is logged once per session of the variable refresh rate (VRR) feature
     being enabled. This counts the number of BeginFrames which are issued using
     VRR.
+  </summary>
+</histogram>
+
+<histogram name="Viz.BeginFrameSource.VSyncCallbackDelay" units="microseconds"
+    expires_after="2025-04-01">
+  <owner>magchen@chromium.org</owner>
+  <owner>vmiura@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    The VSync callback delay from the system CVDisplayLink or CADisplaylink
+    source to VizCompositorThread. Recorded once per frame when
+    OnDisplayLinkCallback is called. This histogram is ~1/1000 sub-sampled under
+    the CPU reduction experiment. The recorded delay is capped to the maximum of
+    33 ms.
+
+    This metric is only for Mac clients with high-resolution clocks.
   </summary>
 </histogram>
 

@@ -11,6 +11,7 @@
 #include <sstream>
 
 #include "base/command_line.h"
+#include "base/cpu_reduction_experiment.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
@@ -51,6 +52,20 @@ BASE_FEATURE(kNewPresentationFeedbackTimeStamps,
              "NewPresentationFeedbackTimeStamps",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
+
+// Record the delay from the system CVDisplayLink or CADisplaylink source to
+// CrGpuMain OnVSyncPresentation().
+void RecordVSyncCallbackDelay(base::TimeDelta delay) {
+  if (!base::ShouldLogHistogramForCpuReductionExperiment()) {
+    return;
+  }
+
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "GPU.Presentation.VSyncCallbackDelay", delay,
+      /*min=*/base::Microseconds(10),
+      /*max=*/base::Milliseconds(33), /*bucket_count=*/50);
+}
+
 }  // namespace
 
 ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL(
@@ -317,6 +332,10 @@ void ImageTransportSurfaceOverlayMacEGL::OnVSyncPresentation(
   if (params.display_times_valid) {
     next_display_time_ = params.display_timebase;
     frame_interval_ = params.display_interval;
+  }
+
+  if (params.callback_times_valid) {
+    RecordVSyncCallbackDelay(base::TimeTicks::Now() - params.callback_timebase);
   }
 
   if (ca_layer_tree_coordinator_->NumPendingSwaps()) {

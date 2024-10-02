@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/cpu_reduction_experiment.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 
@@ -50,6 +51,19 @@ enum class DisplayLinkResult {
 void RecordDisplayLinkCreateStatus(DisplayLinkResult result) {
   UMA_HISTOGRAM_ENUMERATION("Viz.ExternalBeginFrameSourceMac.DisplayLink",
                             result);
+}
+
+// Record the delay from the system CVDisplayLink or CADisplaylink source to
+// VizCompositorThread OnDisplayLinkCallback().
+void RecordVSyncCallbackDelay(base::TimeDelta delay) {
+  if (!base::ShouldLogHistogramForCpuReductionExperiment()) {
+    return;
+  }
+
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "Viz.BeginFrameSource.VSyncCallbackDelay", delay,
+      /*min=*/base::Microseconds(10),
+      /*max=*/base::Milliseconds(33), /*bucket_count=*/50);
 }
 
 }  // namespace
@@ -256,7 +270,6 @@ void ExternalBeginFrameSourceMac::OnDisplayLinkCallback(
                                           : nominal_refresh_period_;
   }
 
-  // For the trace only.
   auto callback_delay =
       params.callback_times_valid ? (now - frame_time) : base::Microseconds(0);
   auto time_to_display = params.display_times_valid
@@ -265,6 +278,7 @@ void ExternalBeginFrameSourceMac::OnDisplayLinkCallback(
   TRACE_EVENT2("viz", "ExternalBeginFrameSourceMac::OnDisplayLinkCallback",
                "time_to_display", time_to_display.InMicroseconds(),
                "callback_delay", callback_delay.InMicroseconds());
+  RecordVSyncCallbackDelay(callback_delay);
 
   bool display_link_frame_interval_changed =
       !AlmostEqual(nominal_refresh_period_, interval);
