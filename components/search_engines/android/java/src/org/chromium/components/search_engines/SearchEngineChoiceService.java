@@ -12,10 +12,10 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -69,12 +69,16 @@ public class SearchEngineChoiceService {
     public static SearchEngineChoiceService getInstance() {
         ThreadUtils.checkUiThread();
         if (sInstance == null) {
-            var context = ContextUtils.getApplicationContext();
-            var delegate =
-                    SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)
-                                    && SearchEnginesFeatureUtils.clayBlockingUseFakeBackend()
-                            ? new FakeSearchEngineCountryDelegate(/* enableLogging= */ true)
-                            : new SearchEngineCountryDelegateImpl(context);
+            SearchEngineCountryDelegate delegate;
+            if (SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)
+                    && SearchEnginesFeatureUtils.clayBlockingUseFakeBackend()) {
+                delegate = new FakeSearchEngineCountryDelegate(/* enableLogging= */ true);
+            } else {
+                delegate = ServiceLoaderUtil.maybeCreate(SearchEngineCountryDelegate.class);
+                if (delegate == null) {
+                    delegate = new NoOpSearchEngineCountryDelegate();
+                }
+            }
             sInstance = new SearchEngineChoiceService(delegate);
         }
         return sInstance;

@@ -130,7 +130,6 @@ android_library("unit_device_javatests") {
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/flags:java",
     "//chrome/test/android:chrome_java_unit_test_support",
-    "//components/search_engines/android:delegate_java",
     "//components/search_engines/android:java",
     "//components/search_engines/android:test_utils_java",
     "//content/public/test/android:content_java_test_support",

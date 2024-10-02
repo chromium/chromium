@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 package org.chromium.components.search_engines;
 
-import android.content.Context;
 
 import androidx.annotation.MainThread;
 
@@ -12,10 +11,9 @@ import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 
 /** Placeholder implementation for public code. */
-public class SearchEngineCountryDelegateImpl extends SearchEngineCountryDelegate {
+public class NoOpSearchEngineCountryDelegate extends SearchEngineCountryDelegate {
     @MainThread
-    public SearchEngineCountryDelegateImpl(Context context) {
-        super(context);
+    public NoOpSearchEngineCountryDelegate() {
         ThreadUtils.assertOnUiThread();
     }
 
