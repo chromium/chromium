@@ -235,12 +235,16 @@ void ShadowRoot::ChildrenChanged(const ChildrenChange& change) {
     // nothing when not in the active document).
     DCHECK(!InActiveDocument());
   } else if (change.IsChildElementChange()) {
+    Element* changed_element = To<Element>(change.sibling_changed);
+    bool removed = change.type == ChildrenChangeType::kElementRemoved;
     CheckForSiblingStyleChanges(
-        change.type == ChildrenChangeType::kElementRemoved
-            ? kSiblingElementRemoved
-            : kSiblingElementInserted,
-        To<Element>(change.sibling_changed), change.sibling_before_change,
+        removed ? kSiblingElementRemoved : kSiblingElementInserted,
+        changed_element, change.sibling_before_change,
         change.sibling_after_change);
+    GetDocument()
+        .GetStyleEngine()
+        .ScheduleInvalidationsForHasPseudoAffectedByInsertionOrRemoval(
+            this, change.sibling_before_change, *changed_element, removed);
   }
 
   // In the case of input types like button where the child element is not

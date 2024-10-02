@@ -250,6 +250,14 @@ scoped_refptr<InvalidationSet> CopyInvalidationSet(
   return copy;
 }
 
+bool IsSimpleSelectorValidAfterHost(const CSSSelector* simple_selector) {
+  // TODO(blee@igalia.com) Need to support logical combinations after :host
+  // (e.g. ':host:not(:has(.a))')
+  return simple_selector->Match() == CSSSelector::kPseudoElement ||
+         simple_selector->IsHostPseudoClass() ||
+         simple_selector->GetPseudoType() == CSSSelector::kPseudoHas;
+}
+
 }  // anonymous namespace
 
 template <RuleInvalidationDataVisitorType VisitorType>
@@ -352,6 +360,10 @@ RuleInvalidationDataVisitor<VisitorType>::CollectMetadataFromSelector(
        current = current->NextSimpleSelector()) {
     switch (current->GetPseudoType()) {
       case CSSSelector::kPseudoHas:
+        if (found_host_pseudo && !current->IsLastInComplexSelector() &&
+            !IsSimpleSelectorValidAfterHost(current->NextSimpleSelector())) {
+          return SelectorPreMatch::kNeverMatches;
+        }
         break;
       case CSSSelector::kPseudoFirstLine:
         metadata.uses_first_line_rules = true;
@@ -365,9 +377,7 @@ RuleInvalidationDataVisitor<VisitorType>::CollectMetadataFromSelector(
           return SelectorPreMatch::kNeverMatches;
         }
         if (!current->IsLastInComplexSelector() &&
-            current->NextSimpleSelector()->Match() !=
-                CSSSelector::kPseudoElement &&
-            !current->NextSimpleSelector()->IsHostPseudoClass()) {
+            !IsSimpleSelectorValidAfterHost(current->NextSimpleSelector())) {
           return SelectorPreMatch::kNeverMatches;
         }
         found_host_pseudo = true;
@@ -885,6 +895,9 @@ void RuleInvalidationDataVisitor<VisitorType>::
     AddFeaturesToInvalidationSetsForHasPseudoClass(
         simple_selector, &compound, sibling_features, descendant_features,
         in_nth_child);
+    if (simple_selector.HasArgumentMatchInShadowTree()) {
+      descendant_features.invalidation_flags.SetTreeBoundaryCrossing(true);
+    }
   }
 
   if (InvalidationSetType* invalidation_set = InvalidationSetForSimpleSelector(

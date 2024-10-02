@@ -1422,6 +1422,11 @@ void CSSSelector::SetContainsComplexLogicalCombinationsInsideHasPseudoClass() {
   data_.rare_data_->bits_.has_.contains_complex_logical_combinations_ = true;
 }
 
+void CSSSelector::SetHasArgumentMatchInShadowTree() {
+  CreateRareData();
+  data_.rare_data_->bits_.has_.argument_match_in_shadow_tree_ = true;
+}
+
 static bool ValidateSubSelector(const CSSSelector* selector) {
   switch (selector->Match()) {
     case CSSSelector::kTag:

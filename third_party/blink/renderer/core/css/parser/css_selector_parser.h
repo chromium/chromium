@@ -267,6 +267,7 @@ class CORE_EXPORT CSSSelectorParser {
   // complex selector in :has() argument while parsing.
   bool found_complex_logical_combinations_in_has_argument_ = false;
   bool is_inside_logical_combination_in_has_argument_ = false;
+  bool found_host_in_compound_ = false;
 
   bool in_supports_parsing_ = false;
 

@@ -851,8 +851,8 @@ bool SelectorChecker::MatchesAnyInList(const SelectorCheckingContext& context,
 
 namespace {
 
-Element* TraverseToParent(Element* element) {
-  return element->parentElement();
+Element* TraverseToParentOrShadowHost(Element* element) {
+  return element->ParentOrShadowHostElement();
 }
 
 Element* TraverseToPreviousSibling(Element* element) {
@@ -933,11 +933,11 @@ inline bool CacheMatchedElementsAndReturnMatchedResult(
     case CSSSelector::kRelativeDescendant:
       return CacheMatchedElementsAndReturnMatchedResultForIndirectRelation(
           has_anchor_element, has_argument_leftmost_compound_matches,
-          cache_scope_context, TraverseToParent);
+          cache_scope_context, TraverseToParentOrShadowHost);
     case CSSSelector::kRelativeChild:
       return CacheMatchedElementsAndReturnMatchedResultForDirectRelation(
           has_anchor_element, has_argument_leftmost_compound_matches,
-          cache_scope_context, TraverseToParent);
+          cache_scope_context, TraverseToParentOrShadowHost);
     case CSSSelector::kRelativeDirectAdjacent:
       return CacheMatchedElementsAndReturnMatchedResultForDirectRelation(
           has_anchor_element, has_argument_leftmost_compound_matches,
@@ -1088,7 +1088,7 @@ void SetAffectedByHasForArgumentMatchedElement(
 
       DCHECK_GT(current_depth_, 0);
       current_depth_--;
-      current_element_ = current_element_->parentElement();
+      current_element_ = current_element_->ParentOrShadowHostElement();
       DCHECK(current_element_);
     }
 
@@ -1300,11 +1300,26 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
   sub_context.is_inside_has_pseudo_class = true;
   sub_context.pseudo_has_in_rightmost_compound = context.in_rightmost_compound;
   bool update_affected_by_has_flags = mode_ == kResolvingStyle;
+  bool match_in_shadow_tree = context.selector->HasArgumentMatchInShadowTree();
+
+  if (match_in_shadow_tree && !has_anchor_element->GetShadowRoot()) {
+    NOTREACHED_IN_MIGRATION();
+    return false;
+  }
 
   DCHECK(context.selector->SelectorList());
   for (const CSSSelector* selector = context.selector->SelectorList()->First();
        selector; selector = CSSSelectorList::Next(*selector)) {
-    CheckPseudoHasArgumentContext argument_context(selector);
+    CheckPseudoHasArgumentContext argument_context(selector,
+                                                   match_in_shadow_tree);
+
+    // In case of matching a :has() argument on a shadow root subtree, skip
+    // matching if the argument contains the sibling relationship to the :has()
+    // anchor element because the shadow root cannot have sibling element.
+    if (argument_context.TraversalScope() == kInvalidShadowRootTraversalScope) {
+      continue;
+    }
+
     CSSSelector::RelationType leftmost_relation =
         argument_context.LeftmostRelation();
     CheckPseudoHasCacheScope::Context cache_scope_context(&document,

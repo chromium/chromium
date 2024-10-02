@@ -1306,6 +1306,8 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeCompoundSelector(
   wtf_size_t start_pos = output_.size();
   base::AutoReset<CSSSelector::PseudoType> reset_restricting(
       &restricting_pseudo_element_, restricting_pseudo_element_);
+  base::AutoReset<bool> reset_found_host_in_compound(&found_host_in_compound_,
+                                                     false);
 
   // See if the compound selector starts with a tag name, universal selector
   // or the likes (these can only be at the beginning). Note that we don't
@@ -1641,6 +1643,9 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream) {
     if (selector.GetPseudoType() == CSSSelector::kPseudoUnknown) {
       return false;
     }
+    if (selector.GetPseudoType() == CSSSelector::kPseudoHost) {
+      found_host_in_compound_ = true;
+    }
     output_.push_back(std::move(selector));
     return true;
   }
@@ -1686,6 +1691,8 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream) {
     }
     case CSSSelector::kPseudoHost:
     case CSSSelector::kPseudoHostContext:
+      found_host_in_compound_ = true;
+      [[fallthrough]];
     case CSSSelector::kPseudoAny:
     case CSSSelector::kPseudoCue: {
       DisallowPseudoElementsScope scope(this);
@@ -1735,6 +1742,9 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream) {
       }
       if (found_complex_logical_combinations_in_has_argument_) {
         selector.SetContainsComplexLogicalCombinationsInsideHasPseudoClass();
+      }
+      if (found_host_in_compound_) {
+        selector.SetHasArgumentMatchInShadowTree();
       }
       output_.push_back(std::move(selector));
       return true;

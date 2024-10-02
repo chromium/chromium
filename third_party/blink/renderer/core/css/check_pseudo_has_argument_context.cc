@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/css/check_pseudo_has_fast_reject_filter.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 
 namespace blink {
 
@@ -243,8 +244,9 @@ void CheckPseudoHasArgumentCompoundIterator::operator++() {
 }  // namespace
 
 CheckPseudoHasArgumentContext::CheckPseudoHasArgumentContext(
-    const CSSSelector* selector)
-    : has_argument_(selector) {
+    const CSSSelector* selector,
+    bool match_in_shadow_tree)
+    : has_argument_(selector), match_in_shadow_tree_(match_in_shadow_tree) {
   depth_limit_ = 0;
   adjacent_distance_limit_ = 0;
   bool contains_child_or_descendant_combinator = false;
@@ -376,6 +378,20 @@ CheckPseudoHasArgumentContext::CheckPseudoHasArgumentContext(
       NOTREACHED_IN_MIGRATION();
       break;
   }
+
+  if (match_in_shadow_tree_) {
+    switch (traversal_scope_) {
+      case kSubtree:
+        traversal_scope_ = kShadowRootSubtree;
+        break;
+      case kFixedDepthDescendants:
+        traversal_scope_ = kShadowRootFixedDepthDescendants;
+        break;
+      default:
+        traversal_scope_ = kInvalidShadowRootTraversalScope;
+        break;
+    }
+  }
 }
 
 CheckPseudoHasArgumentTraversalIterator::
@@ -383,7 +399,16 @@ CheckPseudoHasArgumentTraversalIterator::
         Element& has_anchor_element,
         CheckPseudoHasArgumentContext& context)
     : has_anchor_element_(&has_anchor_element),
+      match_in_shadow_tree_(context.MatchInShadowTree()),
       depth_limit_(context.DepthLimit()) {
+  if (match_in_shadow_tree_) {
+    if (!has_anchor_element.GetShadowRoot() ||
+        context.TraversalScope() == kInvalidShadowRootTraversalScope) {
+      DCHECK_EQ(current_element_, nullptr);
+      return;
+    }
+  }
+
   if (!context.AdjacentDistanceFixed()) {
     // Set the last_element_ as the next sibling of the :has() anchor element,
     // and move to the last sibling of the :has() anchor element, and move again
@@ -404,12 +429,16 @@ CheckPseudoHasArgumentTraversalIterator::
     // Set the last_element_ as the first child of the :has() anchor element,
     // and move to the last descendant of the :has() anchor element without
     // exceeding the depth limit.
-    last_element_ = ElementTraversal::FirstChild(*has_anchor_element_);
+    ContainerNode* has_anchor_node = has_anchor_element_;
+    if (match_in_shadow_tree_) {
+      has_anchor_node = has_anchor_element_->GetShadowRoot();
+    }
+    last_element_ = ElementTraversal::FirstChild(*has_anchor_node);
     if (!last_element_) {
       DCHECK_EQ(current_element_, nullptr);
       return;
     }
-    current_element_ = LastWithin(has_anchor_element_);
+    current_element_ = LastWithin(has_anchor_node);
     DCHECK(current_element_);
   } else {
     // Set last_element_ as the next sibling of the :has() anchor element, set
@@ -442,17 +471,18 @@ CheckPseudoHasArgumentTraversalIterator::
   }
 }
 
-Element* CheckPseudoHasArgumentTraversalIterator::LastWithin(Element* element) {
+Element* CheckPseudoHasArgumentTraversalIterator::LastWithin(
+    ContainerNode* container_node) {
   // If the current depth is at the depth limit, return null.
   if (current_depth_ == depth_limit_) {
     return nullptr;
   }
 
   // Return the last element of the pre-order traversal starting from the passed
-  // in element without exceeding the depth limit.
+  // in container node without exceeding the depth limit.
   Element* last_descendant = nullptr;
-  for (Element* descendant = ElementTraversal::LastChild(*element); descendant;
-       descendant = ElementTraversal::LastChild(*descendant)) {
+  for (Element* descendant = ElementTraversal::LastChild(*container_node);
+       descendant; descendant = ElementTraversal::LastChild(*descendant)) {
     last_descendant = descendant;
     if (++current_depth_ == depth_limit_) {
       break;

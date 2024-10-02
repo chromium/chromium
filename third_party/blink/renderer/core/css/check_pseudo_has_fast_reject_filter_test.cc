@@ -48,7 +48,8 @@ class CheckPseudoHasFastRejectFilterTest : public PageTestBase {
     EXPECT_EQ(selector_list->First()->GetPseudoType(), CSSSelector::kPseudoHas);
 
     CheckPseudoHasArgumentContext context(
-        selector_list->First()->SelectorList()->First());
+        selector_list->First()->SelectorList()->First(),
+        /* match_in_shadow_tree */ false);
 
     return filter.FastReject(context.GetPseudoHasArgumentHashes());
   }

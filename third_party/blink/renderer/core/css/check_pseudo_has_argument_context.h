@@ -59,7 +59,21 @@ enum CheckPseudoHasArgumentTraversalScope {
   //                   :has(~ .a > .b ~ .c), :has(+ .a ~ .b > .c ~ .d),
   kAllNextSiblingsFixedDepthDescendants,
 
-  kTraversalScopeMax = kAllNextSiblingsFixedDepthDescendants,
+  // Case 9: Same as case 1, but the :has() argument selector needs to match
+  //         elements in the shadow tree. (e.g. :host:has(.a))
+  kShadowRootSubtree,
+
+  // Case 10: Same as case 6, but the :has() argument selector needs to match
+  //          elements in the shadow tree. (e.g. :host:has(> .a))
+  kShadowRootFixedDepthDescendants,
+
+  // Case 11: :has() argument selector starts with direct or indirect adjacent
+  //          combinator and the selector needs match in the shadow tree of the
+  //          :host, in which case the adjacent combinators could never match.
+  //          (e.g. :host:has(~ .a), :host:has(+ .a))
+  kInvalidShadowRootTraversalScope,
+
+  kTraversalScopeMax = kInvalidShadowRootTraversalScope,
 };
 
 // Unique value of each traversal type. The value can be used as a key of
@@ -75,7 +89,8 @@ class CORE_EXPORT CheckPseudoHasArgumentContext {
   STACK_ALLOCATED();
 
  public:
-  explicit CheckPseudoHasArgumentContext(const CSSSelector* selector);
+  explicit CheckPseudoHasArgumentContext(const CSSSelector* selector,
+                                         bool match_in_shadow_tree);
 
   inline bool AdjacentDistanceFixed() const {
     return adjacent_distance_limit_ != kInfiniteAdjacentDistance;
@@ -83,6 +98,16 @@ class CORE_EXPORT CheckPseudoHasArgumentContext {
   inline int AdjacentDistanceLimit() const { return adjacent_distance_limit_; }
   inline bool DepthFixed() const { return depth_limit_ != kInfiniteDepth; }
   inline int DepthLimit() const { return depth_limit_; }
+
+  // Returns true if we are matching styles for a shadow host via a :host rule
+  // with :has(). In that case :has() is matching descendants in the shadow
+  // tree, not the light tree descendants of the host.
+  inline bool MatchInShadowTree() const {
+    DCHECK(!match_in_shadow_tree_ || traversal_scope_ == kShadowRootSubtree ||
+           traversal_scope_ == kShadowRootFixedDepthDescendants ||
+           traversal_scope_ == kInvalidShadowRootTraversalScope);
+    return match_in_shadow_tree_;
+  }
 
   inline CSSSelector::RelationType LeftmostRelation() const {
     return leftmost_relation_;
@@ -256,6 +281,7 @@ class CORE_EXPORT CheckPseudoHasArgumentContext {
   CheckPseudoHasArgumentTraversalScope traversal_scope_;
   SiblingsAffectedByHasFlags siblings_affected_by_has_flags_;
   const CSSSelector* has_argument_;
+  bool match_in_shadow_tree_;
 
   Vector<unsigned> pseudo_has_argument_hashes_;
 
@@ -313,9 +339,10 @@ class CORE_EXPORT CheckPseudoHasArgumentTraversalIterator {
   inline Element* ScopeElement() const { return has_anchor_element_; }
 
  private:
-  inline Element* LastWithin(Element*);
+  inline Element* LastWithin(ContainerNode*);
 
   Element* const has_anchor_element_;
+  bool match_in_shadow_tree_;
   int depth_limit_;
   Element* last_element_{nullptr};
   Element* sibling_at_fixed_distance_{nullptr};
