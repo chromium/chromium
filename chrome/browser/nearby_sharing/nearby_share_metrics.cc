@@ -325,6 +325,8 @@ std::string GetUpgradedMediumSubcategoryName(
       return ".WebRtcUpgrade";
     case nearby::connections::mojom::Medium::kWifiLan:
       return ".WifiLanUpgrade";
+    case nearby::connections::mojom::Medium::kWifiDirect:
+      return ".WifiDirectUpgrade";
     case nearby::connections::mojom::Medium::kUnknown:
     case nearby::connections::mojom::Medium::kMdns:
     case nearby::connections::mojom::Medium::kBluetooth:
@@ -332,7 +334,6 @@ std::string GetUpgradedMediumSubcategoryName(
     case nearby::connections::mojom::Medium::kBle:
     case nearby::connections::mojom::Medium::kWifiAware:
     case nearby::connections::mojom::Medium::kNfc:
-    case nearby::connections::mojom::Medium::kWifiDirect:
     case nearby::connections::mojom::Medium::kBleL2Cap:
     case nearby::connections::mojom::Medium::kUsb:
     case nearby::connections::mojom::Medium::kWebRtcNonCellular:
