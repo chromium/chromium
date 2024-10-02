@@ -228,6 +228,11 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
                               jint old_unique_id,
                               jint new_unique_id);
 
+  // Sets the sequential focus starting point. This sends a message to the
+  // renderer. The sequential focus starting point sets the node on which
+  // tab/shift tab should continue without actually changing input focus.
+  void SetSequentialFocusStartingPoint(JNIEnv* env, jint unique_id);
+
   // Returns true if the object is a slider.
   bool IsSlider(JNIEnv* env, jint id);
 

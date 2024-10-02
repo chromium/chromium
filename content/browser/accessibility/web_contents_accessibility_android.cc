@@ -1394,6 +1394,16 @@ void WebContentsAccessibilityAndroid::MoveAccessibilityFocus(
     node->manager()->LoadInlineTextBoxes(*node);
 }
 
+void WebContentsAccessibilityAndroid::SetSequentialFocusStartingPoint(
+    JNIEnv* env,
+    jint unique_id) {
+  BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
+  if (!node) {
+    return;
+  }
+  node->manager()->SetSequentialFocusNavigationStartingPoint(*node);
+}
+
 bool WebContentsAccessibilityAndroid::IsSlider(JNIEnv* env, jint unique_id) {
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
   if (!node)
