@@ -238,8 +238,15 @@ void ClientSideDetectionService::SendModelToRenderers() {
        !it.IsAtEnd(); it.Advance()) {
     if (delegate_->ShouldSendModelToBrowserContext(
             it.GetCurrentValue()->GetBrowserContext())) {
-      SetPhishingModel(it.GetCurrentValue(),
-                       /*new_renderer_process_host=*/false);
+      auto* rph = it.GetCurrentValue();
+      if (rph->IsReady()) {
+        SetPhishingModel(rph, /*new_renderer_process_host=*/false);
+      } else {
+        if (rph->IsInitializedAndNotDead() &&
+            !observed_render_process_hosts_.IsObservingSource(rph)) {
+          observed_render_process_hosts_.AddObservation(rph);
+        }
+      }
     }
   }
   if (client_side_phishing_model_) {
@@ -571,7 +578,28 @@ void ClientSideDetectionService::SetURLLoaderFactoryForTesting(
 void ClientSideDetectionService::OnRenderProcessHostCreated(
     content::RenderProcessHost* rph) {
   if (delegate_->ShouldSendModelToBrowserContext(rph->GetBrowserContext())) {
-    SetPhishingModel(rph, /*new_renderer_process_host=*/true);
+    // The |rph| is ready, so the model can immediately be send.
+    if (rph->IsReady()) {
+      SetPhishingModel(rph, /*new_renderer_process_host=*/true);
+    } else if (!observed_render_process_hosts_.IsObservingSource(rph)) {
+      // Postpone sending the model until the |rph| is ready.
+      observed_render_process_hosts_.AddObservation(rph);
+    }
+  }
+}
+
+void ClientSideDetectionService::RenderProcessHostDestroyed(
+    content::RenderProcessHost* rph) {
+  if (observed_render_process_hosts_.IsObservingSource(rph)) {
+    observed_render_process_hosts_.RemoveObservation(rph);
+  }
+}
+
+void ClientSideDetectionService::RenderProcessReady(
+    content::RenderProcessHost* rph) {
+  SetPhishingModel(rph, /*new_renderer_process_host=*/true);
+  if (observed_render_process_hosts_.IsObservingSource(rph)) {
+    observed_render_process_hosts_.RemoveObservation(rph);
   }
 }
 

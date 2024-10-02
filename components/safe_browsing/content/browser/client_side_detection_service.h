@@ -27,6 +27,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -36,6 +37,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
+#include "content/public/browser/render_process_host_observer.h"
 #include "net/base/ip_address.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -64,7 +66,8 @@ enum class SBClientDetectionClassifyThresholdsResult {
 // requests. This owns two ModelLoader objects.
 class ClientSideDetectionService
     : public KeyedService,
-      public content::RenderProcessHostCreationObserver {
+      public content::RenderProcessHostCreationObserver,
+      public content::RenderProcessHostObserver {
  public:
   // void(GURL phishing_url, bool is_phishing,
   // std::optional<net::HttpStatusCode> response_code).
@@ -278,6 +281,9 @@ class ClientSideDetectionService
   // content::RenderProcessHostCreationObserver:
   void OnRenderProcessHostCreated(content::RenderProcessHost* rph) override;
 
+  //  content::RenderProcessHostObserver
+  void RenderProcessHostDestroyed(content::RenderProcessHost* rph) override;
+  void RenderProcessReady(content::RenderProcessHost* rph) override;
   // If we fail to load the report times, we will not know how many pings the
   // user has sent already. In this case, we will assume the user has sent
   // enough pings and skip the phishing URL check.
@@ -335,6 +341,9 @@ class ClientSideDetectionService
   base::CallbackListSubscription update_model_subscription_;
 
   std::unique_ptr<ClientSidePhishingModel> client_side_phishing_model_;
+  base::ScopedMultiSourceObservation<content::RenderProcessHost,
+                                     content::RenderProcessHostObserver>
+      observed_render_process_hosts_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
 
