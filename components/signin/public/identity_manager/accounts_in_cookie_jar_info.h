@@ -33,6 +33,9 @@ class AccountsInCookieJarInfo {
   // The current list of signed out accounts from the cookie jar.
   const std::vector<gaia::ListedAccount>& GetSignedOutAccounts() const;
 
+  friend bool operator==(const AccountsInCookieJarInfo& lhs,
+                         const AccountsInCookieJarInfo& rhs) = default;
+
  private:
   bool accounts_are_fresh_ = true;
   std::vector<gaia::ListedAccount> signed_in_accounts_;

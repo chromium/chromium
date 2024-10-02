@@ -41,10 +41,6 @@ class AccountManagerFacade;
 }
 #endif
 
-namespace gaia {
-struct ListedAccount;
-}  // namespace gaia
-
 namespace network {
 class SharedURLLoaderFactory;
 class TestURLLoaderFactory;
@@ -647,8 +643,7 @@ class IdentityManager : public KeyedService,
 
   // GaiaCookieManagerService callbacks:
   void OnGaiaAccountsInCookieUpdated(
-      const std::vector<gaia::ListedAccount>& signed_in_accounts,
-      const std::vector<gaia::ListedAccount>& signed_out_accounts,
+      const AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error);
   void OnGaiaCookieDeletedByUserAction();
 

@@ -23,6 +23,7 @@
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -69,8 +70,7 @@ class GaiaCookieManagerService
   typedef base::OnceCallback<void(const GoogleServiceAuthError&)>
       LogOutFromCookieCompletedCallback;
 
-  typedef base::RepeatingCallback<void(const std::vector<gaia::ListedAccount>&,
-                                       const std::vector<gaia::ListedAccount>&,
+  typedef base::RepeatingCallback<void(const signin::AccountsInCookieJarInfo&,
                                        const GoogleServiceAuthError&)>
       GaiaAccountsInCookieUpdatedCallback;
   typedef base::RepeatingCallback<void()> GaiaCookieDeletedByUserActionCallback;
@@ -218,14 +218,11 @@ class GaiaCookieManagerService
                            SetAccountsInCookieCompletedCallback
                                set_accounts_in_cookies_completed_callback);
 
-  // Returns if the listed accounts are up to date or not. The out parameter
-  // will be assigned the current cached accounts (whether they are not up to
-  // date or not). If the accounts are not up to date, a ListAccounts fetch is
-  // sent GAIA and Observer::OnGaiaAccountsInCookieUpdated will be called.  If
-  // either of |accounts| or |signed_out_accounts| is null, the corresponding
-  // accounts returned from /ListAccounts are ignored.
-  bool ListAccounts(std::vector<gaia::ListedAccount>* accounts,
-                    std::vector<gaia::ListedAccount>* signed_out_accounts);
+  // Returns an object that has methods to get listed accounts and check whether
+  // they are up to date or not. If the accounts are not up to date, a
+  // ListAccounts fetch is sent GAIA and Observer::OnGaiaAccountsInCookieUpdated
+  // will be called.
+  signin::AccountsInCookieJarInfo ListAccounts();
 
   // Triggers a ListAccounts fetch. This is public so that callers that know
   // that a check which GAIA should be done can force it.

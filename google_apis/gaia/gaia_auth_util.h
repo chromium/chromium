@@ -31,6 +31,9 @@ struct COMPONENT_EXPORT(GOOGLE_APIS) ListedAccount {
   ListedAccount();
   ListedAccount(const ListedAccount& other);
   ~ListedAccount();
+
+  friend bool operator==(const ListedAccount& lhs,
+                         const ListedAccount& rhs) = default;
 };
 
 // Perform basic canonicalization of |email_address|, taking into account that

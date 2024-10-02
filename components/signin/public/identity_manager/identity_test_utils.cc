@@ -605,7 +605,7 @@ void SetCookieAccounts(
   // TODO(crbug.com/40273636): Investigate replacing this by
   // `cookie_manager->ForceOnCookieChangeProcessing()`.
   cookie_manager->CancelAll();
-  cookie_manager->ListAccounts(nullptr, nullptr);
+  cookie_manager->ListAccounts();
 
   run_loop.Run();
 }
