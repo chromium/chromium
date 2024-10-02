@@ -319,6 +319,14 @@ export class ProductSpecificationsElement extends PolymerElement {
       const {set} = await this.shoppingApi_.getProductSpecificationsSetByUuid(
           {value: idParam});
       if (set) {
+        const {disclosureShown} =
+            await this.shoppingApi_.maybeShowProductSpecificationDisclosure(
+                /* urls= */[], /* name= */ '', idParam);
+        if (disclosureShown) {
+          this.showEmptyState_ = true;
+          this.id_ = null;
+          return;
+        }
         document.title = set.name;
         this.setName_ = set.name;
         this.populateTable_(set.urls.map(url => (url.url)));
@@ -592,7 +600,8 @@ export class ProductSpecificationsElement extends PolymerElement {
     }
     const {disclosureShown} =
         await this.shoppingApi_.maybeShowProductSpecificationDisclosure(
-            urls.map(url => ({url})), this.setName_ ? this.setName_ : '');
+            urls.map(url => ({url})), this.setName_ ? this.setName_ : '',
+            /* set_id= */ '');
     // If the disclosure is shown, we won't update the current set.
     if (!disclosureShown) {
       this.modifyUrls_(urls);

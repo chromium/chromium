@@ -138,6 +138,7 @@ suite('DisclosureAppTest', () => {
       in_new_tab: false,
       name: 'test_name',
       urls: ['https://foo.com', 'https://bar.com'],
+      set_id: '',
     };
     const testJson = JSON.stringify(testObject);
     chrome.getVariableValue = (message) => {
@@ -218,6 +219,7 @@ suite('DisclosureAppTest', () => {
       in_new_tab: false,
       name: '',
       urls: ['https://foo.com', 'https://bar.com'],
+      set_id: '',
     };
     const testJson = JSON.stringify(testObject);
     chrome.getVariableValue = (message) => {
@@ -240,6 +242,56 @@ suite('DisclosureAppTest', () => {
 
     // Restore chrome.getVariableValue.
     chrome.getVariableValue = chromeGetVariableValue;
+  });
+
+  test('click accept button to open existing set', async () => {
+    // Overwrite `chrome.getVariableValue` for testing.
+    const set_id = '123';
+    const chromeGetVariableValue = chrome.getVariableValue;
+    const testObject = {
+      in_new_tab: false,
+      name: '',
+      urls: [],
+      set_id: set_id,
+    };
+    const testJson = JSON.stringify(testObject);
+    chrome.getVariableValue = (message) => {
+      if (message === 'dialogArguments') {
+        return testJson;
+      }
+      return '';
+    };
+
+    // Overwrite `chrome.send` for testing.
+    const chromeSend = chrome.send;
+    let receivedMessage = 'none';
+    // chrome.send is used for test implementation, so we retain its function.
+    const mockChromeSend = (message: string, args: any) => {
+      receivedMessage = message;
+      chromeSend(message, args);
+    };
+    chrome.send = mockChromeSend;
+
+    const acceptButton = $$<HTMLElement>(app, 'cr-button.action-button');
+    assertTrue(!!acceptButton);
+    acceptButton.click();
+
+    // Open product spec set with the default name.
+    assertEquals(
+        0, shoppingServiceApi.getCallCount('addProductSpecificationsSet'));
+    assertEquals(
+        1,
+        shoppingServiceApi.getCallCount('showProductSpecificationsSetForUuid'));
+    const showSetArgs =
+        shoppingServiceApi.getArgs('showProductSpecificationsSetForUuid');
+    assertEquals(set_id, showSetArgs[0][0].value);
+
+    // Received signal to close dialog.
+    assertEquals(receivedMessage, 'dialogClose');
+
+    // Restore chrome.getVariableValue and chrome.send.
+    chrome.getVariableValue = chromeGetVariableValue;
+    chrome.send = chromeSend;
   });
 
   test('decline button shows the correct text', async () => {

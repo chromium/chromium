@@ -164,6 +164,7 @@ void ProductSpecificationsEntryPointController::OnEntryPointExecuted() {
       static_cast<int>(shopping_service::mojom::
                            ProductSpecificationsDisclosureVersion::kV1)) {
     DialogArgs dialog_args(urls_in_set, current_entry_point_info_->title,
+                           /*set_id=*/"",
                            /*in_new_tab=*/true);
     ProductSpecificationsDisclosureDialog::ShowDialog(
         browser_->GetProfile(),

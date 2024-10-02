@@ -236,8 +236,10 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
         'setProductSpecificationDisclosureAcceptVersion', version);
   }
 
-  maybeShowProductSpecificationDisclosure(urls: Url[], name: string) {
-    this.methodCalled('maybeShowProductSpecificationDisclosure', urls, name);
+  maybeShowProductSpecificationDisclosure(
+      urls: Url[], name: string, setId: string) {
+    this.methodCalled(
+        'maybeShowProductSpecificationDisclosure', urls, name, setId);
     return Promise.resolve({disclosureShown: false});
   }
 
