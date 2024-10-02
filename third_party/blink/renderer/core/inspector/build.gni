@@ -39,6 +39,8 @@ blink_core_sources_inspector = [
   "inspector_base_agent.h",
   "inspector_css_agent.cc",
   "inspector_css_agent.h",
+  "inspector_css_parser_observer.cc",
+  "inspector_css_parser_observer.h",
   "inspector_dom_agent.cc",
   "inspector_dom_agent.h",
   "inspector_dom_debugger_agent.cc",
