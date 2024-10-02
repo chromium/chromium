@@ -736,33 +736,6 @@ void AuthenticatorPaaskSheetModel::OnManageDevices() {
   dialog_model()->OnManageDevicesClicked();
 }
 
-// AuthenticatorAndroidAccessorySheetModel ------------------------------------
-
-AuthenticatorAndroidAccessorySheetModel::
-    AuthenticatorAndroidAccessorySheetModel(
-        AuthenticatorRequestDialogModel* dialog_model)
-    : AuthenticatorSheetModelBase(dialog_model,
-                                  OtherMechanismButtonVisibility::kVisible) {
-  vector_illustrations_.emplace(kPasskeyAoaIcon, kPasskeyAoaDarkIcon);
-}
-
-AuthenticatorAndroidAccessorySheetModel::
-    ~AuthenticatorAndroidAccessorySheetModel() = default;
-
-bool AuthenticatorAndroidAccessorySheetModel::IsActivityIndicatorVisible()
-    const {
-  return true;
-}
-
-std::u16string AuthenticatorAndroidAccessorySheetModel::GetStepTitle() const {
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLEV2_AOA_TITLE);
-}
-
-std::u16string AuthenticatorAndroidAccessorySheetModel::GetStepDescription()
-    const {
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLEV2_AOA_DESCRIPTION);
-}
-
 // AuthenticatorClientPinEntrySheetModel
 // -----------------------------------------
 

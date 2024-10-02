@@ -105,10 +105,6 @@ component("fido") {
     # Android implementation of FIDO is delegated to GMSCore.
     if (!is_android) {
       sources += [
-        "aoa/android_accessory_device.cc",
-        "aoa/android_accessory_device.h",
-        "aoa/android_accessory_discovery.cc",
-        "aoa/android_accessory_discovery.h",
         "appid_exclude_probe_task.cc",
         "appid_exclude_probe_task.h",
         "attestation_statement_formats.cc",

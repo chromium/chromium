@@ -296,20 +296,6 @@ class AuthenticatorPaaskSheetModel : public AuthenticatorSheetModelBase {
   void OnManageDevices() override;
 };
 
-class AuthenticatorAndroidAccessorySheetModel
-    : public AuthenticatorSheetModelBase {
- public:
-  explicit AuthenticatorAndroidAccessorySheetModel(
-      AuthenticatorRequestDialogModel* dialog_model);
-  ~AuthenticatorAndroidAccessorySheetModel() override;
-
- private:
-  // AuthenticatorSheetModelBase:
-  bool IsActivityIndicatorVisible() const override;
-  std::u16string GetStepTitle() const override;
-  std::u16string GetStepDescription() const override;
-};
-
 class AuthenticatorClientPinEntrySheetModel
     : public AuthenticatorSheetModelBase {
  public:

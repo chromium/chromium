@@ -10,7 +10,6 @@
 #include "build/chromeos_buildflags.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
-#include "device/fido/aoa/android_accessory_discovery.h"
 #include "device/fido/cable/fido_cable_discovery.h"
 #include "device/fido/cable/v2_discovery.h"
 #include "device/fido/enclave/enclave_discovery.h"
@@ -108,15 +107,8 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
 #endif
       return discoveries;
     }
-    case FidoTransportProtocol::kAndroidAccessory:
-      if (usb_device_manager_) {
-        auto ret = SingleDiscovery(std::make_unique<AndroidAccessoryDiscovery>(
-            std::move(usb_device_manager_.value()),
-            std::move(aoa_request_description_)));
-        usb_device_manager_.reset();
-        return ret;
-      }
-      return {};
+    case FidoTransportProtocol::kDeprecatedAoa:
+      NOTREACHED() << "Android Open Accessory is deprecated.";
   }
   NOTREACHED() << "Unhandled transport type";
 }
@@ -143,13 +135,6 @@ void FidoDiscoveryFactory::set_cable_data(
   request_type_ = request_type;
   cable_data_ = std::move(cable_data);
   qr_generator_key_ = std::move(qr_generator_key);
-}
-
-void FidoDiscoveryFactory::set_android_accessory_params(
-    mojo::Remote<device::mojom::UsbDeviceManager> usb_device_manager,
-    std::string aoa_request_description) {
-  usb_device_manager_.emplace(std::move(usb_device_manager));
-  aoa_request_description_ = std::move(aoa_request_description);
 }
 
 void FidoDiscoveryFactory::set_cable_pairing_callback(

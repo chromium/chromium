@@ -116,11 +116,6 @@ BASE_DECLARE_FEATURE(kWebAuthnRecoverFromICloudRecoveryKey);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnCacheSecurityDomain);
 
-// Whether to enable the Android Open Accessory protocol, a.k.a
-// "caBLE-over-cable".
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnAndroidOpenAccessory);
-
 // Send enclave requests with 5 seconds delay. For development purposes only.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnEnclaveAuthenticatorDelay);

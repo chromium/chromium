@@ -145,8 +145,6 @@ class Profile;
   /* Turns on the BLE adapter automatically. Valid action when at step: */    \
   /* kBlePowerOnAutomatic. */                                                 \
   AUTHENTICATOR_REQUEST_EVENT_0(PowerOnBleAdapter)                            \
-  /* Show guidance about caBLE USB fallback. */                               \
-  AUTHENTICATOR_REQUEST_EVENT_0(ShowCableUsbFallback)                         \
   /* Called when loading the enclave times out. */                            \
   AUTHENTICATOR_REQUEST_EVENT_0(OnLoadingEnclaveTimeout)                      \
   /* Restarts the UX flow. */                                                 \
@@ -229,7 +227,6 @@ struct AuthenticatorRequestDialogModel
     // Phone as a security key.
     kPhoneConfirmationSheet,
     kCableActivate,
-    kAndroidAccessory,
     kCableV2QRCode,
     kCableV2Connecting,
     kCableV2Connected,
@@ -459,9 +456,7 @@ struct AuthenticatorRequestDialogModel
 
   // cable_ui_type contains the type of UI to display for a caBLE transaction.
   std::optional<CableUIType> cable_ui_type;
-  // cable_should_suggest_usb is true if the caBLE "v1" UI was triggered by
-  // a caBLEv2 server-linked request and attaching a USB cable is an option.
-  bool cable_should_suggest_usb = false;
+
   std::optional<std::string> cable_qr_string;
   // The name of the paired phone that was passed to `ContactPhone()`. It is
   // shown on the UI sheet that prompts the user to check their phone for

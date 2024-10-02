@@ -94,8 +94,7 @@ constexpr int GetMessageIdForTransportDescription(
 #endif
     case AuthenticatorTransport::kHybrid:
       return IDS_WEBAUTHN_TRANSPORT_CABLE;
-    case AuthenticatorTransport::kAndroidAccessory:
-      return IDS_WEBAUTHN_TRANSPORT_AOA;
+    case AuthenticatorTransport::kDeprecatedAoa:
     case AuthenticatorTransport::kBluetoothLowEnergy:
     case AuthenticatorTransport::kNearFieldCommunication:
       NOTREACHED_IN_MIGRATION();
@@ -120,8 +119,7 @@ constexpr int GetMessageIdForTransportShortDescription(
       return IDS_WEBAUTHN_TRANSPORT_POPUP_INTERNAL;
     case AuthenticatorTransport::kHybrid:
       return IDS_WEBAUTHN_TRANSPORT_POPUP_CABLE;
-    case AuthenticatorTransport::kAndroidAccessory:
-      return IDS_WEBAUTHN_TRANSPORT_POPUP_AOA;
+    case AuthenticatorTransport::kDeprecatedAoa:
     case AuthenticatorTransport::kBluetoothLowEnergy:
     case AuthenticatorTransport::kNearFieldCommunication:
       NOTREACHED_IN_MIGRATION();
@@ -146,8 +144,7 @@ constexpr const gfx::VectorIcon& GetTransportIcon(
       return kLaptopIcon;
     case AuthenticatorTransport::kHybrid:
       return kSmartphoneIcon;
-    case AuthenticatorTransport::kAndroidAccessory:
-      return kUsbCableIcon;
+    case AuthenticatorTransport::kDeprecatedAoa:
     case AuthenticatorTransport::kBluetoothLowEnergy:
     case AuthenticatorTransport::kNearFieldCommunication:
       NOTREACHED_IN_MIGRATION();
@@ -988,16 +985,6 @@ void AuthenticatorRequestDialogController::
   std::move(after_off_the_record_interstitial_).Run();
 }
 
-void AuthenticatorRequestDialogController::ShowCableUsbFallback() {
-  DCHECK_EQ(model_->step(), Step::kCableActivate);
-  SetCurrentStep(Step::kAndroidAccessory);
-}
-
-void AuthenticatorRequestDialogController::ShowCable() {
-  DCHECK_EQ(model_->step(), Step::kAndroidAccessory);
-  SetCurrentStep(Step::kCableActivate);
-}
-
 void AuthenticatorRequestDialogController::CancelAuthenticatorRequest() {
   if (model_->step() == Step::kGPMChangeArbitraryPin ||
       model_->step() == Step::kGPMChangePin) {
@@ -1656,7 +1643,6 @@ void AuthenticatorRequestDialogController::StartGuidedFlowForTransport(
   DCHECK(model_->step() == Step::kMechanismSelection ||
          model_->step() == Step::kUsbInsertAndActivate ||
          model_->step() == Step::kCableActivate ||
-         model_->step() == Step::kAndroidAccessory ||
          model_->step() == Step::kConditionalMediation ||
          model_->step() == Step::kCreatePasskey ||
          model_->step() == Step::kPreSelectAccount ||
@@ -1674,9 +1660,6 @@ void AuthenticatorRequestDialogController::StartGuidedFlowForTransport(
       EnsureBleAdapterIsPoweredAndContinue(
           base::BindOnce(&AuthenticatorRequestDialogController::SetCurrentStep,
                          weak_factory_.GetWeakPtr(), Step::kCableActivate));
-      break;
-    case AuthenticatorTransport::kAndroidAccessory:
-      SetCurrentStep(Step::kAndroidAccessory);
       break;
     default:
       break;
@@ -2068,10 +2051,6 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
         break;
 
       case AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_SERVER_LINK:
-        transports_to_list_if_active.push_back(
-            AuthenticatorTransport::kAndroidAccessory);
-        [[fallthrough]];
-
       case AuthenticatorRequestDialogModel::CableUIType::CABLE_V1: {
         if (base::Contains(transport_availability_.available_transports,
                            kCable)) {
@@ -2440,13 +2419,6 @@ void AuthenticatorRequestDialogController::
   model_->is_off_the_record = transport_availability_.is_off_the_record_context;
   model_->platform_has_biometrics =
       transport_availability_.platform_has_biometrics;
-  if (model_->cable_ui_type) {
-    model_->cable_should_suggest_usb =
-        *model_->cable_ui_type !=
-            AuthenticatorRequestDialogModel::CableUIType::CABLE_V1 &&
-        base::Contains(transport_availability_.available_transports,
-                       AuthenticatorTransport::kAndroidAccessory);
-  }
 }
 
 void AuthenticatorRequestDialogController::OnUserConfirmedPriorityMechanism() {

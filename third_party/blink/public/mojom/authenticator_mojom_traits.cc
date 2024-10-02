@@ -22,7 +22,7 @@ EnumTraits<blink::mojom::AuthenticatorTransport,
       return blink::mojom::AuthenticatorTransport::HYBRID;
     case ::device::FidoTransportProtocol::kInternal:
       return blink::mojom::AuthenticatorTransport::INTERNAL;
-    case ::device::FidoTransportProtocol::kAndroidAccessory:
+    case ::device::FidoTransportProtocol::kDeprecatedAoa:
       return blink::mojom::AuthenticatorTransport::HYBRID;
   }
   NOTREACHED_IN_MIGRATION();

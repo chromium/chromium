@@ -136,15 +136,8 @@ class MockCableDiscoveryFactory : public device::FidoDiscoveryFactory {
     qr_key = qr_generator_key;
   }
 
-  void set_android_accessory_params(
-      mojo::Remote<device::mojom::UsbDeviceManager>,
-      std::string aoa_request_description) override {
-    this->aoa_configured = true;
-  }
-
   std::vector<device::CableDiscoveryData> cable_data;
   std::optional<std::array<uint8_t, device::cablev2::kQRKeySize>> qr_key;
-  bool aoa_configured = false;
 };
 
 class ChromeAuthenticatorRequestDelegateTest
@@ -437,7 +430,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
       MockCableDiscoveryFactory discovery_factory;
       ChromeAuthenticatorRequestDelegate delegate(main_rfh());
       delegate.SetRelyingPartyId(/*rp_id=*/"example.com");
-      delegate.SetPassEmptyUsbDeviceManagerForTesting(true);
       delegate.ConfigureDiscoveries(
           url::Origin::Create(GURL(test.origin)), test.origin,
           content::AuthenticatorRequestClientDelegate::RequestSource::
@@ -453,13 +445,11 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
         case Result::kNone:
           EXPECT_FALSE(discovery_factory.qr_key.has_value());
           EXPECT_TRUE(discovery_factory.cable_data.empty());
-          EXPECT_TRUE(discovery_factory.aoa_configured);
           break;
 
         case Result::kV1:
           EXPECT_FALSE(discovery_factory.qr_key.has_value());
           EXPECT_FALSE(discovery_factory.cable_data.empty());
-          EXPECT_TRUE(discovery_factory.aoa_configured);
           EXPECT_EQ(delegate.dialog_model()->cable_ui_type,
                     AuthenticatorRequestDialogModel::CableUIType::CABLE_V1);
           break;
@@ -467,7 +457,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
         case Result::kServerLink:
           EXPECT_TRUE(discovery_factory.qr_key.has_value());
           EXPECT_FALSE(discovery_factory.cable_data.empty());
-          EXPECT_TRUE(discovery_factory.aoa_configured);
           EXPECT_EQ(delegate.dialog_model()->cable_ui_type,
                     AuthenticatorRequestDialogModel::CableUIType::
                         CABLE_V2_SERVER_LINK);
@@ -476,7 +465,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
         case Result::k3rdParty:
           EXPECT_TRUE(discovery_factory.qr_key.has_value());
           EXPECT_TRUE(discovery_factory.cable_data.empty());
-          EXPECT_TRUE(discovery_factory.aoa_configured);
           EXPECT_EQ(delegate.dialog_model()->cable_ui_type,
                     AuthenticatorRequestDialogModel::CableUIType::
                         CABLE_V2_2ND_FACTOR);
@@ -495,7 +483,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, NoExtraDiscoveriesWithoutUI) {
 
     ChromeAuthenticatorRequestDelegate delegate(main_rfh());
     delegate.SetRelyingPartyId(rp_id);
-    delegate.SetPassEmptyUsbDeviceManagerForTesting(true);
     if (disable_ui) {
       delegate.DisableUI();
     }
@@ -511,7 +498,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, NoExtraDiscoveriesWithoutUI) {
         /*is_enclave_authenticator_available=*/false, &discovery_factory);
 
     EXPECT_EQ(discovery_factory.qr_key.has_value(), !disable_ui);
-    EXPECT_EQ(discovery_factory.aoa_configured, !disable_ui);
 
     // `discovery_factory.nswindow_` won't be set in any case because it depends
     // on the `RenderFrameHost` having a `BrowserWindow`, which it doesn't in
@@ -742,7 +728,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys) {
   ChromeWebAuthnCredentialsDelegateFactory::CreateForWebContents(
       web_contents());
   ChromeAuthenticatorRequestDelegate delegate(main_rfh());
-  delegate.SetPassEmptyUsbDeviceManagerForTesting(true);
   delegate.SetRelyingPartyId(relying_party);
 
   // Set up a paired phone from sync.
@@ -814,7 +799,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys_NoSyncPairedPhones) {
   ChromeWebAuthnCredentialsDelegateFactory::CreateForWebContents(
       web_contents());
   ChromeAuthenticatorRequestDelegate delegate(main_rfh());
-  delegate.SetPassEmptyUsbDeviceManagerForTesting(true);
   delegate.SetRelyingPartyId(kRpId);
 
   // Return an empty list of synced devices.
@@ -861,7 +845,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys_ShadowedPasskeys) {
   ChromeWebAuthnCredentialsDelegateFactory::CreateForWebContents(
       web_contents());
   ChromeAuthenticatorRequestDelegate delegate(main_rfh());
-  delegate.SetPassEmptyUsbDeviceManagerForTesting(true);
   delegate.SetRelyingPartyId(kRpId);
 
   // Set up a paired phone from sync.

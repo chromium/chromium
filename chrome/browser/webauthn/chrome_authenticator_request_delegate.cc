@@ -1270,16 +1270,6 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
     }
   }
 
-  mojo::Remote<device::mojom::UsbDeviceManager> usb_device_manager;
-  if (!pass_empty_usb_device_manager_ &&
-      base::FeatureList::IsEnabled(device::kWebAuthnAndroidOpenAccessory)) {
-    content::GetDeviceService().BindUsbDeviceManager(
-        usb_device_manager.BindNewPipeAndPassReceiver());
-  }
-  discovery_factory->set_android_accessory_params(
-      std::move(usb_device_manager),
-      l10n_util::GetStringUTF8(IDS_WEBAUTHN_CABLEV2_AOA_REQUEST_DESCRIPTION));
-
   if (cable_extension_accepted || non_extension_cablev2_enabled) {
     std::optional<bool> extension_is_v2;
     if (cable_extension_provided) {
@@ -1506,11 +1496,6 @@ void ChromeAuthenticatorRequestDelegate::OnManageDevicesClicked() {
     params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
     Navigate(&params);
   }
-}
-
-void ChromeAuthenticatorRequestDelegate::SetPassEmptyUsbDeviceManagerForTesting(
-    bool value) {
-  pass_empty_usb_device_manager_ = value;
 }
 
 void ChromeAuthenticatorRequestDelegate::SetTrustedVaultConnectionForTesting(

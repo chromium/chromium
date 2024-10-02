@@ -158,10 +158,6 @@ class AuthenticatorRequestDialogController
   void StartPlatformAuthenticatorFlow();
 
   void OnOffTheRecordInterstitialAccepted() override;
-  void ShowCableUsbFallback() override;
-
-  // Show caBLE activation sheet.
-  void ShowCable();
 
   void CancelAuthenticatorRequest() override;
   void OnRequestComplete() override;

@@ -95,7 +95,7 @@ uint32_t ToWinTransportsMask(
       case FidoTransportProtocol::kHybrid:
         result |= WEBAUTHN_CTAP_TRANSPORT_HYBRID;
         break;
-      case FidoTransportProtocol::kAndroidAccessory:
+      case FidoTransportProtocol::kDeprecatedAoa:
         // AOA is unsupported by the Windows API.
         break;
     }

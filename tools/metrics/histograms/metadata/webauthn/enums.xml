@@ -257,7 +257,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Bluetooth Low Energy"/>
   <int value="3" label="Cloud-assisted BLE"/>
   <int value="4" label="Internal"/>
-  <int value="5" label="Android Accessory"/>
+  <int value="5" label="Android Accessory (Deprecated)"/>
 </enum>
 
 <enum name="WebAuthenticationGetAssertionOutcome">

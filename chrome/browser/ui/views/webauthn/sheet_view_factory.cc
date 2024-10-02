@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/views/webauthn/authenticator_gpm_arbitrary_pin_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_gpm_pin_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_multi_source_picker_sheet_view.h"
-#include "chrome/browser/ui/views/webauthn/authenticator_paask_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_priority_mechanism_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_qr_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
@@ -216,13 +215,8 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
           std::make_unique<AuthenticatorPhoneConfirmationSheet>(dialog_model));
       break;
     case Step::kCableActivate:
-      sheet_view = std::make_unique<AuthenticatorPaaskSheetView>(
-          std::make_unique<AuthenticatorPaaskSheetModel>(dialog_model));
-      break;
-    case Step::kAndroidAccessory:
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
-          std::make_unique<AuthenticatorAndroidAccessorySheetModel>(
-              dialog_model));
+          std::make_unique<AuthenticatorPaaskSheetModel>(dialog_model));
       break;
     case Step::kCableV2QRCode:
       sheet_view = std::make_unique<AuthenticatorQRSheetView>(
