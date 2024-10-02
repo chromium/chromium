@@ -698,8 +698,14 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestClickElementTest,
                   WaitForWebContentsReady(kWebContents2Id, url2));
 }
 
+// TODO(crbug.com/370724585): Re-enable this test.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ShiftClickElementOpensLink DISABLED_ShiftClickElementOpensLink
+#else
+#define MAYBE_ShiftClickElementOpensLink ShiftClickElementOpensLink
+#endif
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestClickElementTest,
-                       ShiftClickElementOpensLink) {
+                       MAYBE_ShiftClickElementOpensLink) {
   const GURL url = embedded_test_server()->GetURL(kDocumentWithClickDetection);
   const GURL url2 = embedded_test_server()->GetURL(kDocumentWithLinks);
   const DeepQuery kLink = {"#link"};
