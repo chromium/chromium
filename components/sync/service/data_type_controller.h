@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -23,7 +24,6 @@
 #include "components/sync/model/model_error.h"
 #include "components/sync/service/configure_context.h"
 #include "components/sync/service/data_type_local_data_batch_uploader.h"
-#include "components/sync/service/sync_error.h"
 
 namespace syncer {
 
@@ -53,12 +53,11 @@ class DataTypeController {
   // Note: This seems like it should be a OnceCallback, but it can actually be
   // called multiple times in the case of errors.
   using ModelLoadCallback =
-      base::RepeatingCallback<void(DataType, const SyncError&)>;
+      base::RepeatingCallback<void(const std::optional<ModelError>&)>;
 
   using StopCallback = base::OnceClosure;
 
-  using AllNodesCallback =
-      base::OnceCallback<void(const DataType, base::Value::List)>;
+  using AllNodesCallback = base::OnceCallback<void(base::Value::List)>;
 
   using TypeMap = std::map<DataType, std::unique_ptr<DataTypeController>>;
   using TypeVector = std::vector<std::unique_ptr<DataTypeController>>;
@@ -169,8 +168,7 @@ class DataTypeController {
       std::unique_ptr<DataTypeControllerDelegate> delegate_for_full_sync_mode,
       std::unique_ptr<DataTypeControllerDelegate> delegate_for_transport_mode);
 
-  void ReportModelError(SyncError::ErrorType error_type,
-                        const ModelError& error);
+  void ReportModelError(const ModelError& error);
 
   // Allows subclasses to DCHECK that they're on the correct sequence.
   // TODO(crbug.com/41390876): Rename this to CalledOnValidSequence.
@@ -186,7 +184,7 @@ class DataTypeController {
   void RecordRunFailure() const;
   void OnDelegateStarted(
       std::unique_ptr<DataTypeActivationResponse> activation_response);
-  void TriggerCompletionCallbacks(const SyncError& error);
+  void TriggerCompletionCallbacks(const std::optional<ModelError>& error);
   void ClearMetadataIfStopped();
 
   // The type this object is responsible for controlling.

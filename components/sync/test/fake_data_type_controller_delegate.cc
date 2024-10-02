@@ -99,7 +99,7 @@ void FakeDataTypeControllerDelegate::HasUnsyncedData(
 
 void FakeDataTypeControllerDelegate::GetAllNodesForDebugging(
     DataTypeControllerDelegate::AllNodesCallback callback) {
-  std::move(callback).Run(type_, base::Value::List());
+  std::move(callback).Run(base::Value::List());
 }
 
 void FakeDataTypeControllerDelegate::RecordMemoryUsageAndCountsHistograms() {}

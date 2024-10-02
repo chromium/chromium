@@ -444,7 +444,7 @@ void DataTypeManagerImpl::GetAllNodesForDebugging(
     if (type == NIGORI) {
       // The controller for NIGORI is stored in the engine on sync thread.
       configurer_->GetNigoriNodeForDebugging(base::BindOnce(
-          &GetAllNodesRequestBarrier::OnReceivedNodesForType, barrier));
+          &GetAllNodesRequestBarrier::OnReceivedNodesForType, barrier, type));
       continue;
     }
 
@@ -461,7 +461,7 @@ void DataTypeManagerImpl::GetAllNodesForDebugging(
       barrier->OnReceivedNodesForType(type, base::Value::List());
     } else {
       controller->GetAllNodes(base::BindOnce(
-          &GetAllNodesRequestBarrier::OnReceivedNodesForType, barrier));
+          &GetAllNodesRequestBarrier::OnReceivedNodesForType, barrier, type));
     }
   }
 }

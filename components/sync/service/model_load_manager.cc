@@ -211,16 +211,19 @@ void ModelLoadManager::Stop(SyncStopMetadataFate metadata_fate) {
   preferred_types_without_errors_.Clear();
 }
 
-void ModelLoadManager::ModelLoadCallback(DataType type,
-                                         const SyncError& error) {
+void ModelLoadManager::ModelLoadCallback(
+    DataType type,
+    const std::optional<ModelError>& error) {
   DVLOG(1) << "ModelLoadManager: ModelLoadCallback for "
            << DataTypeToDebugString(type);
 
-  if (error.IsSet()) {
+  if (error.has_value()) {
     DVLOG(1) << "ModelLoadManager: Type encountered an error.";
     preferred_types_without_errors_.Remove(type);
     DataTypeController* dtc = controllers_->find(type)->second.get();
-    StopDatatypeImpl(error, SyncStopMetadataFate::KEEP_METADATA, dtc,
+    StopDatatypeImpl(SyncError(error->location(), SyncError::MODEL_ERROR,
+                               error->message(), type),
+                     SyncStopMetadataFate::KEEP_METADATA, dtc,
                      base::DoNothing());
     NotifyDelegateIfReadyForConfigure();
     return;
@@ -290,17 +293,17 @@ void ModelLoadManager::LoadModelsForType(DataTypeController* dtc) {
   // before the type actually stopped.
   if (dtc->state() == DataTypeController::FAILED) {
     ModelLoadCallback(dtc->type(),
-                      SyncError(FROM_HERE, SyncError::MODEL_ERROR,
-                                "Data type in FAILED state.", dtc->type()));
+                      ModelError(FROM_HERE, "Data type in FAILED state."));
     return;
   }
 
   // TODO(crbug.com/41492467): Avoid calling LoadModelsForType() multiple times
   // upon stop, and re-introduce a CHECK for state to be NOT_RUNNING only.
   if (dtc->state() == DataTypeController::NOT_RUNNING) {
-    dtc->LoadModels(*configure_context_,
-                    base::BindRepeating(&ModelLoadManager::ModelLoadCallback,
-                                        weak_ptr_factory_.GetWeakPtr()));
+    dtc->LoadModels(
+        *configure_context_,
+        base::BindRepeating(&ModelLoadManager::ModelLoadCallback,
+                            weak_ptr_factory_.GetWeakPtr(), dtc->type()));
   }
 }
 

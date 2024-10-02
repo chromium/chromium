@@ -22,6 +22,9 @@ class ElapsedTimer;
 
 namespace syncer {
 
+class ModelError;
+class SyncError;
+
 // Timeout duration for loading data types in ModelLoadManager. Exposed for
 // testing.
 extern const base::TimeDelta kSyncLoadModelsTimeoutDuration;
@@ -88,7 +91,7 @@ class ModelLoadManager {
 
   // Callback that will be invoked when the model for `type` finishes loading.
   // This callback is passed to the controller's `LoadModels` method.
-  void ModelLoadCallback(DataType type, const SyncError& error);
+  void ModelLoadCallback(DataType type, const std::optional<ModelError>& error);
 
   // A helper to stop an individual datatype.
   void StopDatatypeImpl(const SyncError& error,

@@ -706,7 +706,7 @@ void BookmarkDataTypeProcessor::GetAllNodesForDebugging(
     }
   }
 
-  std::move(callback).Run(syncer::BOOKMARKS, std::move(all_nodes));
+  std::move(callback).Run(std::move(all_nodes));
 }
 
 void BookmarkDataTypeProcessor::AppendNodeAndChildrenForDebugging(

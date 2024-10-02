@@ -26,8 +26,7 @@ struct TypeEntitiesCount;
 // (which lives on the UI thread).
 class DataTypeControllerDelegate {
  public:
-  using AllNodesCallback =
-      base::OnceCallback<void(DataType, base::Value::List)>;
+  using AllNodesCallback = base::OnceCallback<void(base::Value::List)>;
   using StartCallback =
       base::OnceCallback<void(std::unique_ptr<DataTypeActivationResponse>)>;
 

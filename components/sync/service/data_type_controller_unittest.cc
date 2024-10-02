@@ -29,7 +29,9 @@ namespace {
 
 using testing::_;
 using testing::DoAll;
+using testing::Eq;
 using testing::InSequence;
+using testing::Ne;
 using testing::NiceMock;
 using testing::NotNull;
 using testing::SaveArg;
@@ -40,10 +42,6 @@ const char kAccountId[] = "SomeAccountId";
 
 const char kStartFailuresHistogram[] = "Sync.DataTypeStartFailures2";
 const char kRunFailuresHistogram[] = "Sync.DataTypeRunFailures2";
-
-MATCHER(ErrorIsSet, "") {
-  return arg.IsSet();
-}
 
 // Class used to expose ReportModelError() publicly.
 class TestDataTypeController : public DataTypeController {
@@ -130,7 +128,7 @@ TEST_F(DataTypeControllerTest, LoadModelsOnBackendThread) {
   ASSERT_TRUE(start_callback);
 
   // Mimic completion for OnSyncStarting().
-  EXPECT_CALL(load_models_done, Run(kTestDataType, _));
+  EXPECT_CALL(load_models_done, Run(/*error=*/Eq(std::nullopt)));
   std::move(start_callback).Run(std::make_unique<DataTypeActivationResponse>());
   EXPECT_EQ(DataTypeController::MODEL_LOADED, controller()->state());
 }
@@ -183,7 +181,7 @@ TEST_F(DataTypeControllerTest, ConnectWithError) {
   base::HistogramTester histogram_tester;
   // Mimic completion for OnSyncStarting(), with an error.
   EXPECT_CALL(*delegate(), OnSyncStopping).Times(0);
-  EXPECT_CALL(load_models_done, Run(_, ErrorIsSet()));
+  EXPECT_CALL(load_models_done, Run(/*error=*/Ne(std::nullopt)));
   activation_request.error_handler.Run(ModelError(FROM_HERE, "Test error"));
   // TODO(mastiz): We shouldn't need RunUntilIdle() here, but
   // DataTypeController currently uses task-posting for errors.
@@ -435,8 +433,7 @@ TEST_F(DataTypeControllerTest, ReportErrorWhileStarting) {
   // The delegate should receive no OnSyncStopping() while starting despite
   // the subclass issuing ReportModelError().
   EXPECT_CALL(*delegate(), OnSyncStopping).Times(0);
-  controller()->ReportModelError(syncer::SyncError::DATATYPE_POLICY_ERROR,
-                                 ModelError(FROM_HERE, "Test error"));
+  controller()->ReportModelError(ModelError(FROM_HERE, "Test error"));
   EXPECT_EQ(DataTypeController::FAILED, controller()->state());
 
   // Mimic completion for OnSyncStarting().
@@ -472,8 +469,7 @@ TEST_F(DataTypeControllerTest, StopAndReportErrorWhileStarting) {
   // loading completes.
   EXPECT_CALL(stop_completion, Run());
   EXPECT_CALL(*delegate(), OnSyncStopping).Times(0);
-  controller()->ReportModelError(syncer::SyncError::DATATYPE_POLICY_ERROR,
-                                 ModelError(FROM_HERE, "Test error"));
+  controller()->ReportModelError(ModelError(FROM_HERE, "Test error"));
   EXPECT_EQ(DataTypeController::FAILED, controller()->state());
 
   // Mimic completion for OnSyncStarting().

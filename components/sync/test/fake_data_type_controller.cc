@@ -41,8 +41,7 @@ FakeDataTypeControllerDelegate* FakeDataTypeController::model(
 
 void FakeDataTypeController::SimulateControllerError(
     const base::Location& location) {
-  ReportModelError(SyncError::DATATYPE_POLICY_ERROR,
-                   ModelError(location, "Test error"));
+  ReportModelError(ModelError(location, "Test error"));
 }
 
 DataTypeController::PreconditionState
