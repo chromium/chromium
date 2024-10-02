@@ -1007,6 +1007,12 @@
       <message name="IDS_ACCESSIBILITY_CAPTIONS_TITLE" desc="Title of the preference that allows the user to update caption settings.">
         Captions
       </message>
+      <message name="IDS_JUMP_START_OMNIBOX_TITLE" desc="When this preference is enabled, Chrome start-up time is reduced, and the user is taken directly to an active Omnibox">
+        Jump-start Omnibox
+      </message>
+      <message name="IDS_JUMP_START_OMNIBOX_SUMMARY" desc="When this preference is enabled, Chrome start-up time is reduced, and the user is taken directly to an active Omnibox">
+        Launch Chrome with the Omnibox focused, reducing start-up time on low-end devices.
+      </message>
 
       <!-- Text Size Contrast -->
       <!-- TODO(crbug.com/40064612): Add descriptions and make the strings translateable. -->

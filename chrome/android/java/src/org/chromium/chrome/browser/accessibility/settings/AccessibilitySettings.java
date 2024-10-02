@@ -31,6 +31,7 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
@@ -54,6 +55,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
     private ChromeSwitchPreference mPageZoomIncludeOSAdjustment;
     private ChromeSwitchPreference mPageZoomAlwaysShowPref;
     private ChromeSwitchPreference mForceEnableZoomPref;
+    private ChromeSwitchPreference mJumpStartOmnibox;
     private boolean mRecordFontSizeChangeOnStop;
     private AccessibilitySettingsDelegate mDelegate;
     private double mPageZoomLatestDefaultZoomPrefValue;
@@ -137,6 +139,12 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         mForceEnableZoomPref = (ChromeSwitchPreference) findPreference(PREF_FORCE_ENABLE_ZOOM);
         mForceEnableZoomPref.setOnPreferenceChangeListener(this);
         mForceEnableZoomPref.setChecked(mFontSizePrefs.getForceEnableZoom());
+
+        mJumpStartOmnibox =
+                (ChromeSwitchPreference) findPreference(OmniboxFeatures.KEY_JUMP_START_OMNIBOX);
+        mJumpStartOmnibox.setOnPreferenceChangeListener(this);
+        mJumpStartOmnibox.setChecked(OmniboxFeatures.isJumpStartOmniboxEnabled());
+        mJumpStartOmnibox.setVisible(OmniboxFeatures.sJumpStartOmnibox.isEnabled());
 
         ChromeSwitchPreference readerForAccessibilityPref =
                 (ChromeSwitchPreference) findPreference(PREF_READER_FOR_ACCESSIBILITY);
@@ -233,6 +241,8 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
             PageZoomUtils.setShouldAlwaysShowZoomMenuItem((Boolean) newValue);
         } else if (PREF_PAGE_ZOOM_INCLUDE_OS_ADJUSTMENT.equals(preference.getKey())) {
             // TODO(mschillaci): Implement the override behavior for OS level.
+        } else if (OmniboxFeatures.KEY_JUMP_START_OMNIBOX.equals(preference.getKey())) {
+            OmniboxFeatures.setJumpStartOmniboxEnabled((Boolean) newValue);
         }
         return true;
     }

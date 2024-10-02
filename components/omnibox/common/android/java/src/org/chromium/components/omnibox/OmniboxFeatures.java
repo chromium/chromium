@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
@@ -34,6 +35,9 @@ public class OmniboxFeatures {
 
     // Timeout requests after 30 minutes if we somehow fail to remove our listener.
     private static final int DEFAULT_GEOLOCATION_REQUEST_TIMEOUT_MIN = 30;
+
+    // Preference key preserving the state of the Jump Start Omnibox feature.
+    public static final String KEY_JUMP_START_OMNIBOX = "jump_start_omnibox";
 
     // Auto-populated list of Omnibox cached feature flags.
     // Each flag created via newFlag() will be automatically added to this list.
@@ -68,6 +72,9 @@ public class OmniboxFeatures {
 
     public static final CachedFlag sElegantTextHeight =
             newFlag(OmniboxFeatureList.OMNIBOX_ELEGANT_TEXT_HEIGHT, false);
+
+    public static final CachedFlag sJumpStartOmnibox =
+            newFlag(OmniboxFeatureList.JUMP_START_OMNIBOX, false);
 
     /** See {@link #shouldRetainOmniboxOnFocus()}. */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -106,6 +113,9 @@ public class OmniboxFeatures {
 
     /** See {@link #setShouldRetainOmniboxOnFocusForTesting(boolean)}. */
     private static Boolean sShouldRetainOmniboxOnFocusForTesting;
+
+    /** When enabled, Jump Start Omnibox is activated and can engage if the feature is enabled. */
+    private static Boolean sActivateJumpStartOmnibox;
 
     /**
      * Create an instance of a CachedFeatureFlag.
@@ -271,5 +281,28 @@ public class OmniboxFeatures {
                 && DeviceFormFactor.isTablet()
                 && DeviceInput.supportsAlphabeticKeyboard()
                 && DeviceInput.supportsPrecisionPointer();
+    }
+
+    /** Returns whether Jump Start Omnibox feature can engage. */
+    public static boolean isJumpStartOmniboxEnabled() {
+        if (!sJumpStartOmnibox.isEnabled()) return false;
+
+        if (sActivateJumpStartOmnibox == null) {
+            sActivateJumpStartOmnibox =
+                    ContextUtils.getAppSharedPreferences()
+                            .getBoolean(KEY_JUMP_START_OMNIBOX, isLowMemoryDevice());
+        }
+        return sActivateJumpStartOmnibox;
+    }
+
+    /** Specifies whether Jump Start Omnibox feature can engage. */
+    public static void setJumpStartOmniboxEnabled(boolean enableJumpStartOmnibox) {
+        assert sJumpStartOmnibox.isEnabled();
+
+        sActivateJumpStartOmnibox = enableJumpStartOmnibox;
+        ContextUtils.getAppSharedPreferences()
+                .edit()
+                .putBoolean(KEY_JUMP_START_OMNIBOX, enableJumpStartOmnibox)
+                .apply();
     }
 }
