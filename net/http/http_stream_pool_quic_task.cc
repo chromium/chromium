@@ -12,6 +12,7 @@
 #include "net/base/connection_endpoint_metadata.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_error_details.h"
+#include "net/base/net_errors.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/http/http_network_session.h"
@@ -67,6 +68,9 @@ void HttpStreamPool::QuicTask::MaybeAttempt() {
   std::optional<QuicEndpoint> quic_endpoint = GetQuicEndpointToAttempt();
   if (!quic_endpoint.has_value()) {
     if (manager_->is_service_endpoint_request_finished()) {
+      if (!start_result_.has_value()) {
+        start_result_ = ERR_DNS_NO_MATCHING_SUPPORTED_ALPN;
+      }
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&QuicTask::OnSessionAttemptComplete,
                                     weak_ptr_factory_.GetWeakPtr(),

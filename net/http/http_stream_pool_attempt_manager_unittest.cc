@@ -3526,6 +3526,13 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicFailBeforeTls) {
 
   requester.WaitForResult();
   EXPECT_THAT(requester.result(), Optional(IsError(ERR_SOCKET_NOT_CONNECTED)));
+
+  // QUIC should not be marked as broken because TLS attempt also failed.
+  const AlternativeService alternative_service(
+      NextProto::kProtoQUIC,
+      HostPortPair::FromSchemeHostPort(requester.GetStreamKey().destination()));
+  EXPECT_FALSE(http_server_properties()->IsAlternativeServiceBroken(
+      alternative_service, NetworkAnonymizationKey()));
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, QuicFailAfterTls) {
@@ -3568,6 +3575,55 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicFailAfterTls) {
                   ->GetQuicTaskResultForTesting(),
               Optional(IsError(ERR_CONNECTION_REFUSED)));
   EXPECT_THAT(requester.result(), Optional(IsError(ERR_CONNECTION_REFUSED)));
+
+  // QUIC should not be marked as broken because TLS attempt also failed.
+  const AlternativeService alternative_service(
+      NextProto::kProtoQUIC,
+      HostPortPair::FromSchemeHostPort(requester.GetStreamKey().destination()));
+  EXPECT_FALSE(http_server_properties()->IsAlternativeServiceBroken(
+      alternative_service, NetworkAnonymizationKey()));
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, QuicFailNonBrokenErrors) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+
+  const int kErrors[] = {ERR_NETWORK_CHANGED, ERR_INTERNET_DISCONNECTED};
+  for (const int net_error : kErrors) {
+    // Reset HttpServerProperties.
+    InitializeSession();
+
+    MockQuicData quic_data(quic_version());
+    quic_data.AddConnect(ASYNC, net_error);
+    quic_data.AddSocketDataToFactory(socket_factory());
+
+    SequencedSocketData tcp_data;
+    socket_factory()->AddSocketDataProvider(&tcp_data);
+    SSLSocketDataProvider ssl(ASYNC, OK);
+    socket_factory()->AddSSLSocketDataProvider(&ssl);
+
+    resolver()
+        ->AddFakeRequest()
+        ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+        .CompleteStartSynchronously(OK);
+
+    StreamRequester requester;
+    requester.set_destination(kDefaultDestination)
+        .set_quic_version(quic_version())
+        .RequestStream(pool());
+    requester.WaitForResult();
+    EXPECT_THAT(requester.result(), Optional(IsOk()));
+    EXPECT_NE(requester.negotiated_protocol(), NextProto::kProtoQUIC);
+
+    // QUIC should not be marked as broken because QUIC attempt failed with
+    // a protocol independent error.
+    const AlternativeService alternative_service(
+        NextProto::kProtoQUIC, HostPortPair::FromSchemeHostPort(
+                                   requester.GetStreamKey().destination()));
+    EXPECT_FALSE(http_server_properties()->IsAlternativeServiceBroken(
+        alternative_service, NetworkAnonymizationKey()))
+        << ErrorToString(net_error);
+  }
 }
 
 // Test that NetErrorDetails is populated when a QUIC session is created but
@@ -3742,6 +3798,13 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicEndpointNotFoundNoDnsAlpn) {
   // No matching ALPN should not update
   // `is_quic_known_to_work_on_current_network()`.
   EXPECT_TRUE(quic_session_pool()->is_quic_known_to_work_on_current_network());
+
+  // QUIC should not be marked as broken.
+  const AlternativeService alternative_service(
+      NextProto::kProtoQUIC,
+      HostPortPair::FromSchemeHostPort(requester.GetStreamKey().destination()));
+  EXPECT_FALSE(http_server_properties()->IsAlternativeServiceBroken(
+      alternative_service, NetworkAnonymizationKey()));
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, QuicPreconnect) {
@@ -4003,6 +4066,13 @@ TEST_F(HttpStreamPoolAttemptManagerTest, DelayStreamAttemptQuicFail) {
       .RequestStream(pool());
   RunUntilIdle();
   EXPECT_THAT(requester.result(), Optional(IsOk()));
+
+  // QUIC should be marked as broken.
+  const AlternativeService alternative_service(
+      NextProto::kProtoQUIC,
+      HostPortPair::FromSchemeHostPort(requester.GetStreamKey().destination()));
+  EXPECT_TRUE(http_server_properties()->IsAlternativeServiceBroken(
+      alternative_service, NetworkAnonymizationKey()));
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, DelayStreamAttemptDelayPassed) {

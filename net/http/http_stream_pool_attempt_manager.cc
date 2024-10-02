@@ -448,6 +448,8 @@ void HttpStreamPool::AttemptManager::OnQuicTaskComplete(
   net_error_details_ = std::move(details);
   quic_task_.reset();
 
+  MaybeMarkQuicBroken();
+
   const bool has_jobs = !jobs_.empty() || !notified_jobs_.empty();
 
   if (rv == OK) {
@@ -458,13 +460,15 @@ void HttpStreamPool::AttemptManager::OnQuicTaskComplete(
     }
   }
 
-  if (rv != OK && (all_tcp_based_attempts_failed_ || group_->force_quic())) {
+  if (rv != OK &&
+      (tcp_based_attempt_state_ == TcpBasedAttemptState::kAllAttemptsFailed ||
+       group_->force_quic())) {
     error_to_notify_ = rv;
     NotifyFailure();
     return;
   }
 
-  if (should_block_stream_attempt_) {
+  if (rv != OK || should_block_stream_attempt_) {
     should_block_stream_attempt_ = false;
     stream_attempt_delay_timer_.Stop();
     MaybeAttemptConnection();
@@ -702,13 +706,19 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
   std::optional<IPEndPoint> ip_endpoint = GetIPEndPointToAttempt();
   if (!ip_endpoint.has_value()) {
     if (service_endpoint_request_finished_ && in_flight_attempts_.empty()) {
-      all_tcp_based_attempts_failed_ = true;
+      tcp_based_attempt_state_ = TcpBasedAttemptState::kAllAttemptsFailed;
     }
-    if (all_tcp_based_attempts_failed_ && !quic_task_) {
+    if (tcp_based_attempt_state_ == TcpBasedAttemptState::kAllAttemptsFailed &&
+        !quic_task_) {
       // Tried all endpoints.
+      MaybeMarkQuicBroken();
       NotifyFailure();
     }
     return;
+  }
+
+  if (tcp_based_attempt_state_ == TcpBasedAttemptState::kNotStarted) {
+    tcp_based_attempt_state_ = TcpBasedAttemptState::kAttempting;
   }
 
   // There might be multiple pending jobs. Make attempts as much as needed
@@ -1204,6 +1214,12 @@ void HttpStreamPool::AttemptManager::OnInFlightAttemptComplete(
     return;
   }
 
+  CHECK_NE(tcp_based_attempt_state_, TcpBasedAttemptState::kAllAttemptsFailed);
+  if (tcp_based_attempt_state_ == TcpBasedAttemptState::kAttempting) {
+    tcp_based_attempt_state_ = TcpBasedAttemptState::kSucceededAtLeastOnce;
+    MaybeMarkQuicBroken();
+  }
+
   LoadTimingInfo::ConnectTiming connect_timing =
       in_flight_attempt->attempt->connect_timing();
   connect_timing.domain_lookup_start = dns_resolution_start_time_;
@@ -1365,6 +1381,35 @@ bool HttpStreamPool::AttemptManager::CanUseExistingQuicSession() {
   return pool()->CanUseExistingQuicSession(stream_key(), quic_session_key(),
                                            enable_ip_based_pooling_,
                                            enable_alternative_services_);
+}
+
+void HttpStreamPool::AttemptManager::MaybeMarkQuicBroken() {
+  if (!quic_task_result_.has_value() ||
+      tcp_based_attempt_state_ == TcpBasedAttemptState::kAttempting) {
+    return;
+  }
+
+  if (*quic_task_result_ == OK ||
+      *quic_task_result_ == ERR_DNS_NO_MATCHING_SUPPORTED_ALPN ||
+      *quic_task_result_ == ERR_NETWORK_CHANGED ||
+      *quic_task_result_ == ERR_INTERNET_DISCONNECTED) {
+    return;
+  }
+
+  // No brokenness to report if we didn't attempt TCP-based connection or all
+  // TCP-based attempts failed.
+  if (tcp_based_attempt_state_ == TcpBasedAttemptState::kNotStarted ||
+      tcp_based_attempt_state_ == TcpBasedAttemptState::kAllAttemptsFailed) {
+    return;
+  }
+
+  const url::SchemeHostPort& destination = stream_key().destination();
+  http_network_session()
+      ->http_server_properties()
+      ->MarkAlternativeServiceBroken(
+          AlternativeService(NextProto::kProtoQUIC, destination.host(),
+                             destination.port()),
+          stream_key().network_anonymization_key());
 }
 
 void HttpStreamPool::AttemptManager::MaybeComplete() {

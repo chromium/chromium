@@ -44,6 +44,10 @@ class HttpStreamPool::QuicTask : public QuicSessionAttempt::Delegate {
   const QuicSessionAliasKey& GetKey() override;
   const NetLogWithSource& GetNetLog() override;
 
+  // Returns the first non-pending result of a QUIC session attempt start, if
+  // any. Never returns ERR_IO_PENDING.
+  std::optional<int> start_result() const { return start_result_; }
+
  private:
   const HttpStreamKey& stream_key() const;
 
@@ -68,6 +72,8 @@ class HttpStreamPool::QuicTask : public QuicSessionAttempt::Delegate {
   const QuicSessionAliasKey quic_session_alias_key_;
   const quic::ParsedQuicVersion quic_version_;
   const NetLogWithSource net_log_;
+
+  std::optional<int> start_result_;
 
   // TODO(crbug.com/346835898): Support multiple attempts.
   std::unique_ptr<QuicSessionAttempt> session_attempt_;

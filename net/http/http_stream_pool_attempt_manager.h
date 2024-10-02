@@ -175,6 +175,14 @@ class HttpStreamPool::AttemptManager
     kReachedPoolLimit,
   };
 
+  // The state of TCP/TLS connection attempts.
+  enum class TcpBasedAttemptState {
+    kNotStarted,
+    kAttempting,
+    kSucceededAtLeastOnce,
+    kAllAttemptsFailed,
+  };
+
   using JobQueue = PriorityQueue<raw_ptr<Job>>;
 
   struct InFlightAttempt;
@@ -317,6 +325,10 @@ class HttpStreamPool::AttemptManager
 
   bool CanUseExistingQuicSession();
 
+  // Mark QUIC brokenness if QUIC attempts failed but TCP/TLS attempts succeeded
+  // or not attempted.
+  void MaybeMarkQuicBroken();
+
   void MaybeComplete();
 
   const raw_ptr<Group> group_;
@@ -397,8 +409,9 @@ class HttpStreamPool::AttemptManager
   // IPEndPoint to attempt.
   std::set<IPEndPoint> slow_ip_endpoints_;
 
-  // Set to true when all TCP/TLS attempts failed.
-  bool all_tcp_based_attempts_failed_ = false;
+  // The current state of TCP/TLS connection attempts.
+  TcpBasedAttemptState tcp_based_attempt_state_ =
+      TcpBasedAttemptState::kNotStarted;
 
   // Initialized when one of an attempt is negotiated to use HTTP/2.
   base::WeakPtr<SpdySession> spdy_session_;
