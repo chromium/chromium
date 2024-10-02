@@ -671,15 +671,6 @@
     "args": ["--isolated-context-origins=https://web-platform.test"],
     "expires": "never"
   },
-  {
-    "prefix": "display-compositor-pixel-dump",
-    "owners": ["fserb@chromium.org", "ansung@google.com"],
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [],
-    "args": ["--enable-display-compositor-pixel-dump",
-             "--enable-accelerated-2d-canvas"],
-    "expires": "Jul 1, 2023"
-  },
 
   "The Wasm code cache test requires access to V8 internals, so only the",
   "virtual test should be run. Additionally the tiering budget is reduced to",
