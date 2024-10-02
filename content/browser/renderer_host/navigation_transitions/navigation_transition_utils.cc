@@ -318,7 +318,7 @@ bool NavigationTransitionUtils::
     return false;
   }
 
-  if (!navigation_request.IsInMainFrame()) {
+  if (!navigation_request.IsInPrimaryMainFrame()) {
     // See crbug.com/40896219: We will present the fallback UX for navigations
     // in the subframes.
     if (!last_committed_entry->navigation_transition_data()
@@ -326,7 +326,7 @@ bool NavigationTransitionUtils::
              .has_value()) {
       last_committed_entry->navigation_transition_data()
           .set_cache_hit_or_miss_reason(
-              CacheHitOrMissReason::kCacheMissSubframe);
+              CacheHitOrMissReason::kCacheMissNonPrimaryMainFrame);
     }
     InvokeTestCallbackForNoScreenshot(navigation_request);
     return false;
