@@ -28,14 +28,15 @@
 namespace updater {
 namespace {
 
-bool ShouldSkipCheck(scoped_refptr<Configurator> config) {
+bool ShouldSkipCheck(scoped_refptr<Configurator> config,
+                     const std::string& task_name) {
   // To spread out synchronized load, sometimes use a higher delay.
   const base::TimeDelta check_delay =
       config->NextCheckDelay() * (base::RandDouble() < 0.1 ? 1.2 : 1);
 
   // Skip if periodic updates are disabled altogether.
   if (check_delay.is_zero()) {
-    VLOG(0) << "Skipping checking for updates: NextCheckDelay is 0.";
+    VLOG(0) << "Skipping " << task_name << ": NextCheckDelay is 0.";
     return true;
   }
 
@@ -44,7 +45,7 @@ bool ShouldSkipCheck(scoped_refptr<Configurator> config) {
       base::Time::NowFromSystemTime() -
       config->GetUpdaterPersistedData()->GetLastChecked();
   if (time_since_update.is_positive() && time_since_update < check_delay) {
-    VLOG(0) << "Skipping checking for updates: last update was "
+    VLOG(0) << "Skipping " << task_name << ": last update was "
             << time_since_update.InMinutes()
             << " minutes ago. check_delay == " << check_delay.InMinutes();
     return true;
@@ -58,8 +59,12 @@ bool ShouldSkipCheck(scoped_refptr<Configurator> config) {
 
 CheckForUpdatesTask::CheckForUpdatesTask(scoped_refptr<Configurator> config,
                                          UpdaterScope scope,
+                                         const std::string& task_name,
+                                         base::TimeDelta task_delay,
                                          UpdateChecker update_checker)
     : config_(config),
+      task_name_(task_name),
+      task_delay_(task_delay),
       update_checker_(std::move(update_checker)),
       update_client_(update_client::UpdateClientFactory(config_)) {}
 
@@ -68,7 +73,7 @@ CheckForUpdatesTask::~CheckForUpdatesTask() = default;
 void CheckForUpdatesTask::Run(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (ShouldSkipCheck(config_)) {
+  if (ShouldSkipCheck(config_, task_name_)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(callback));
     return;
@@ -79,11 +84,12 @@ void CheckForUpdatesTask::Run(base::OnceClosure callback) {
       base::BindOnce(
           std::move(update_checker_),
           base::BindOnce(
-              [](base::OnceClosure closure, UpdateService::Result result) {
-                VLOG(0) << "Check for update task complete: " << result;
+              [](base::OnceClosure closure, const std::string& task_name,
+                 UpdateService::Result result) {
+                VLOG(0) << task_name << " task complete: " << result;
                 std::move(closure).Run();
               },
-              std::move(callback))),
+              std::move(callback), task_name_)),
       config_->InitialDelay());
 }
 

@@ -741,18 +741,20 @@ void UpdateServiceImplImpl::RunPeriodicTasks(base::OnceClosure callback) {
             std::move(callback)));
       },
       base::WrapRefCounted(this)));
-  new_tasks.push_back(
-      base::BindOnce(&CheckForUpdatesTask::Run,
-                     base::MakeRefCounted<CheckForUpdatesTask>(
-                         config_, GetUpdaterScope(),
-                         base::BindOnce(&UpdateServiceImplImpl::ForceInstall,
-                                        this, base::DoNothing()))));
-  new_tasks.push_back(
-      base::BindOnce(&CheckForUpdatesTask::Run,
-                     base::MakeRefCounted<CheckForUpdatesTask>(
-                         config_, GetUpdaterScope(),
-                         base::BindOnce(&UpdateServiceImplImpl::UpdateAll, this,
-                                        base::DoNothing()))));
+  new_tasks.push_back(base::BindOnce(
+      &CheckForUpdatesTask::Run,
+      base::MakeRefCounted<CheckForUpdatesTask>(
+          config_, GetUpdaterScope(),
+          /*task_name=*/"ForceInstall", /*task_delay=*/base::Seconds(0),
+          base::BindOnce(&UpdateServiceImplImpl::ForceInstall, this,
+                         base::DoNothing()))));
+  new_tasks.push_back(base::BindOnce(
+      &CheckForUpdatesTask::Run,
+      base::MakeRefCounted<CheckForUpdatesTask>(
+          config_, GetUpdaterScope(),
+          /*task_name=*/"UpdateAll", /*task_delay=*/config_->InitialDelay(),
+          base::BindOnce(&UpdateServiceImplImpl::UpdateAll, this,
+                         base::DoNothing()))));
   new_tasks.push_back(base::BindOnce(
       &AutoRunOnOsUpgradeTask::Run,
       base::MakeRefCounted<AutoRunOnOsUpgradeTask>(
