@@ -8,6 +8,7 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
+#include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -45,6 +46,34 @@ bool HasExtensionByName(std::string_view name, const ExtensionSet& extensions) {
   return false;
 }
 
+// Each test may have a different desired stage. Store them here so the test
+// harness properly instantiates them.
+MV2ExperimentStage GetExperimentStageForTest(std::string_view test_name) {
+  static constexpr struct {
+    const char* test_name;
+    MV2ExperimentStage stage;
+  } test_stages[] = {
+      {"PRE_PRE_PRE_AcknowledgementResetBetweenExperiments",
+       MV2ExperimentStage::kDisableWithReEnable},
+      {"PRE_PRE_AcknowledgementResetBetweenExperiments",
+       MV2ExperimentStage::kDisableWithReEnable},
+      {"PRE_AcknowledgementResetBetweenExperiments",
+       MV2ExperimentStage::kDisableWithReEnable},
+      {"AcknowledgementResetBetweenExperiments",
+       MV2ExperimentStage::kUnsupported},
+  };
+
+  for (const auto& test_stage : test_stages) {
+    if (test_stage.test_name == test_name) {
+      return test_stage.stage;
+    }
+  }
+
+  NOTREACHED()
+      << "Unknown test name '" << test_name << "'. "
+      << "You need to add a new test stage entry into this collection.";
+}
+
 }  // namespace
 
 class Mv2DisabledDialogControllerInteractiveUITest
@@ -54,8 +83,14 @@ class Mv2DisabledDialogControllerInteractiveUITest
   ~Mv2DisabledDialogControllerInteractiveUITest() override = default;
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionManifestV2Disabled);
+    // Each test may need a different value for the experiment stages, since
+    // many need some kind of pre-experiment set up, then test the behavior on
+    // subsequent startups. Initialize each test according to its preferred
+    // stage.
+    MV2ExperimentStage experiment_stage = GetExperimentStageForTest(
+        testing::UnitTest::GetInstance()->current_test_info()->name());
+    SetupFeatures(experiment_stage);
+
     InteractiveBrowserTest::SetUp();
   }
 
@@ -126,8 +161,41 @@ class Mv2DisabledDialogControllerInteractiveUITest
     return extension;
   }
 
+  MV2ExperimentStage GetActiveExperimentStage() {
+    return experiment_manager()->GetCurrentExperimentStage();
+  }
+
   ExtensionRegistry* extension_registry() {
     return ExtensionRegistry::Get(browser()->profile());
+  }
+
+  ManifestV2ExperimentManager* experiment_manager() {
+    return ManifestV2ExperimentManager::Get(browser()->profile());
+  }
+
+ protected:
+  void SetupFeatures(MV2ExperimentStage experiment_stage) {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    switch (experiment_stage) {
+      case MV2ExperimentStage::kWarning:
+      case MV2ExperimentStage::kNone:
+        NOTREACHED() << "Unhandled stage.";
+      case MV2ExperimentStage::kDisableWithReEnable:
+        enabled_features.push_back(
+            extensions_features::kExtensionManifestV2Disabled);
+        disabled_features.push_back(
+            extensions_features::kExtensionManifestV2Unsupported);
+        break;
+      case MV2ExperimentStage::kUnsupported:
+        enabled_features.push_back(
+            extensions_features::kExtensionManifestV2Unsupported);
+        disabled_features.push_back(
+            extensions_features::kExtensionManifestV2Disabled);
+        break;
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
  private:
@@ -136,10 +204,42 @@ class Mv2DisabledDialogControllerInteractiveUITest
   ScopedInstallVerifierBypassForTest install_verifier_bypass_;
 };
 
+class Mv2DisabledDialogControllerInteractiveUITestWithParam
+    : public Mv2DisabledDialogControllerInteractiveUITest,
+      public testing::WithParamInterface<MV2ExperimentStage> {
+ public:
+  void SetUp() override {
+    MV2ExperimentStage experiment_stage = GetParam();
+    SetupFeatures(experiment_stage);
+
+    InteractiveBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    Mv2DisabledDialogControllerInteractiveUITestWithParam,
+    ::testing::Values(MV2ExperimentStage::kDisableWithReEnable,
+                      MV2ExperimentStage::kUnsupported),
+    [](const testing::TestParamInfo<MV2ExperimentStage>& info) {
+      switch (info.param) {
+        case MV2ExperimentStage::kNone:
+        case MV2ExperimentStage::kWarning:
+          NOTREACHED();
+        case MV2ExperimentStage::kDisableWithReEnable:
+          return "DisableExperiment";
+        case MV2ExperimentStage::kUnsupported:
+          return "UnsupportedExperiment";
+      }
+    });
+
 // Tests that extensions in disable dialog are uninstalled when the remove
 // button is selected.
 // Stage 1: Install an MV2 extension.
-IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
+IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
                        PRE_PRE_OnRemoveSelected) {
   scoped_refptr<const Extension> extension = AddMV2Extension("MV2 Extension");
 
@@ -150,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
 }
 // Stage 2: Select the remove option in the disable dialog, which should
 // uninstall the extension.
-IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
+IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
                        PRE_OnRemoveSelected) {
   RunTestSequence(
       // Extension is disabled due to the MV2 deprecation stage.
@@ -177,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
           false));
 }
 // Stage 3: Dialog is not shown again, since user acknowledged it.
-IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
+IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
                        OnRemoveSelected) {
   RunTestSequence(
       EnsureNotPresent(kExtensionsMv2DisabledDialogRemoveButtonElementId));
@@ -186,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
 // Tests that the extensions page is opened when the manage button is selected,
 // and the extension is left disabled.
 // Stage 1: Install an MV2 extension.
-IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
+IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
                        PRE_PRE_OnManageSelected) {
   scoped_refptr<const Extension> extension = AddMV2Extension("MV2 Extension");
 
@@ -197,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
 }
 // Stage 2: Select the manage option in the disable dialog, which should open
 // the extensions page.
-IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
+IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
                        PRE_OnManageSelected) {
   RunTestSequence(
       InstrumentTab(kTabId),
@@ -225,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
           true));
 }
 // Stage 3: Dialog is not shown again, since user acknowledged it.
-IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
+IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
                        OnManageSelected) {
   RunTestSequence(
       EnsureNotPresent(kExtensionsMv2DisabledDialogManageButtonElementId));
@@ -234,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
 // Tests the dialog is shown again on new sessions if the user didn't take an
 // action on the previous one (e.g dialog was closed for other reasons).
 // Stage 1: Install an MV2 extension.
-IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
+IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
                        PRE_PRE_NoUserAction) {
   scoped_refptr<const Extension> extension = AddMV2Extension("MV2 Extension");
 
@@ -244,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
       extension_registry()->enabled_extensions().Contains(extension->id()));
 }
 // Stage 2: Take no action on the dialog.
-IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
+IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
                        PRE_NoUserAction) {
   RunTestSequence(
       // Extension is disabled due to the MV2 deprecation stage.
@@ -263,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
 }
 // Stage 3: Dialog is shown again, since user didn't take an action the previous
 // time it was shown.
-IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
+IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
                        NoUserAction) {
   RunTestSequence(
       // Extension is disabled due to the MV2 deprecation stage.
@@ -279,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
 
 // Tests that only MV2 disabled extensions that can be uninstalled are included
 // in the dialog.
-IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
+IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
                        PolicyInstalledExtensions) {
   const ExtensionId internal_extension_id =
       AddMV2Extension("Internal Extension", mojom::ManifestLocation::kInternal)
@@ -313,9 +413,7 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
       EnsureNotPresent(kExtensionsMv2DisabledDialogRemoveButtonElementId),
       // Disable extensions affected by the MV2 deprecation.
       Do([this]() {
-        ManifestV2ExperimentManager* experiment_manager =
-            ManifestV2ExperimentManager::Get(browser()->profile());
-        experiment_manager->DisableAffectedExtensionsForTesting();
+        experiment_manager()->DisableAffectedExtensionsForTesting();
       }),
       // Verify both extensions were disabled.
       CheckResult(
@@ -382,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
 // Tests that icons loaded asynchronously trigger the dialog after load is
 // finished.
 // Stage 1: Load an MV2 extension with an icon.
-IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
+IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
                        PRE_IconsLoaded) {
   scoped_refptr<const Extension> extension_A =
       AddMV2ExtensionWithIcon("Extension A", "icon1.png");
@@ -400,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
       extension_registry()->enabled_extensions().Contains(extension_C->id()));
 }
 // Stage 2: Dialog should be visible and have icon.
-IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
+IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
                        IconsLoaded) {
   RunTestSequence(
       // Extensions are disabled due to the MV2 deprecation stage.
@@ -444,7 +542,7 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
 
 // Tests that the correct extension info is passed to the dialog.
 // Stage 1: Load two MV2 extensions.
-IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
+IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
                        PRE_CorrectExtensionInfo) {
   scoped_refptr<const Extension> extension_A =
       AddMV2ExtensionWithIcon("Extension A", "icon1.png");
@@ -457,7 +555,7 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
       extension_registry()->enabled_extensions().Contains(extension_B->id()));
 }
 // Stage 2: Verify extension info passed to dialog is correct.
-IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
+IN_PROC_BROWSER_TEST_P(Mv2DisabledDialogControllerInteractiveUITestWithParam,
                        CorrectExtensionInfo) {
   RunTestSequence(
       // Wait for dialog to be visible. Other checks on this test will be done
@@ -485,6 +583,68 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
   EXPECT_EQ(affected_extensions[1].name, "Extension B");
   EXPECT_FALSE(affected_extensions[0].icon.IsEmpty());
   EXPECT_FALSE(affected_extensions[0].icon.IsEmpty());
+}
+
+// Tests that the disabled dialog is shown again for a new experiment stage even
+// if it was acknowledged on a previous experiment stage.
+// Stage 1: Install an MV2 extension during 'disabled with re-enabled'
+// experiment stage.
+IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
+                       PRE_PRE_PRE_AcknowledgementResetBetweenExperiments) {
+  EXPECT_EQ(GetActiveExperimentStage(),
+            MV2ExperimentStage::kDisableWithReEnable);
+
+  scoped_refptr<const Extension> extension = AddMV2Extension("MV2 Extension");
+
+  // Extension is not affected by the MV2 deprecation, yet. Thus, dialog is not
+  // visible.
+  RunTestSequence(
+      CheckResult(
+          [&]() {
+            return extension_registry()->enabled_extensions().Contains(
+                extension->id());
+          },
+          true),
+      EnsureNotPresent(kExtensionsMv2DisabledDialogRemoveButtonElementId));
+}
+// Stage 2: Dialog is visible and user acknowledges it during 'disabled with
+// re-enabled' experiment stage.
+IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
+                       PRE_PRE_AcknowledgementResetBetweenExperiments) {
+  EXPECT_EQ(GetActiveExperimentStage(),
+            MV2ExperimentStage::kDisableWithReEnable);
+
+  RunTestSequence(
+      CheckResult(
+          [&]() {
+            return HasExtensionByName(
+                "MV2 Extension", extension_registry()->disabled_extensions());
+          },
+          true),
+      // We cannot add an element identifier to the dialog when it's built using
+      // DialogModel::Builder. Thus, we check for its existence by checking the
+      // visibility of one of its elements.
+      WaitForShow(kExtensionsMv2DisabledDialogRemoveButtonElementId),
+      PressButton(views::BubbleFrameView::kCloseButtonElementId),
+      WaitForHide(kExtensionsMv2DisabledDialogRemoveButtonElementId));
+}
+// Stage 3: Dialog is not shown again during 'disabled with re-enabled'
+// experiment stage.
+IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
+                       PRE_AcknowledgementResetBetweenExperiments) {
+  EXPECT_EQ(GetActiveExperimentStage(),
+            MV2ExperimentStage::kDisableWithReEnable);
+
+  RunTestSequence(
+      EnsureNotPresent(kExtensionsMv2DisabledDialogRemoveButtonElementId));
+}
+// Stage 4: Dialog is shown again for 'unsupported' experiment stage.
+IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
+                       AcknowledgementResetBetweenExperiments) {
+  EXPECT_EQ(GetActiveExperimentStage(), MV2ExperimentStage::kUnsupported);
+
+  RunTestSequence(
+      WaitForShow(kExtensionsMv2DisabledDialogRemoveButtonElementId));
 }
 
 }  // namespace extensions

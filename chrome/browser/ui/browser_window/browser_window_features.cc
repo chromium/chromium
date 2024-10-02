@@ -144,11 +144,15 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
 
     auto* experiment_manager =
         extensions::ManifestV2ExperimentManager::Get(browser->profile());
-    if (experiment_manager &&
-        experiment_manager->GetCurrentExperimentStage() ==
-            extensions::MV2ExperimentStage::kDisableWithReEnable) {
-      mv2_disabled_dialog_controller_ =
-          std::make_unique<extensions::Mv2DisabledDialogController>(browser);
+    if (experiment_manager) {
+      extensions::MV2ExperimentStage experiment_stage =
+          experiment_manager->GetCurrentExperimentStage();
+      if (experiment_stage ==
+              extensions::MV2ExperimentStage::kDisableWithReEnable ||
+          experiment_stage == extensions::MV2ExperimentStage::kUnsupported) {
+        mv2_disabled_dialog_controller_ =
+            std::make_unique<extensions::Mv2DisabledDialogController>(browser);
+      }
     }
   }
 
