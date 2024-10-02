@@ -63,6 +63,17 @@ COMPONENT_EXPORT(AX_PLATFORM)
 // the internal accessibility tree as opposed to the platform tree.
 - (ax::mojom::Role)internalRole;
 
+// Returns all accessibility attribute names. This is analogous to the
+// deprecated NSAccessibility accessibilityAttributeNames method, which
+// functions identically when the migration flag is off (see
+// kMacAccessibilityAPIMigration). This is used for ax dump testing that
+// essentially tests the deprecated API.
+- (NSMutableArray*)internalAccessibilityAttributeNames;
+
+// Returns true if the given attribute is under migration flag (see
+// kMacAccessibilityAPIMigration).
+- (BOOL)isMigratingAttribute:(NSString*)attribute;
+
 @property(nonatomic, readonly) NSRect boundsInScreen;
 @property(nonatomic, readonly) ui::AXPlatformNodeBase* node;
 @property(nonatomic, readonly) ui::AXPlatformNodeDelegate* nodeDelegate;

@@ -15,6 +15,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "skia/ext/skia_utils_mac.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_range.h"
@@ -252,6 +253,42 @@ void CollectAncestorRoles(
 @synthesize node = _node;
 // Required for AXCustomContentProvider, which defines the property.
 @synthesize accessibilityCustomContent = _accessibilityCustomContent;
+
+- (NSSet<NSString*>*)migratingAttributes {
+  static NSSet<NSString*>* set = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    set = [NSSet<NSString*> set];
+  });
+  return set;
+}
+
+- (NSSet<NSString*>*)migratingMethods {
+  static NSSet<NSString*>* set = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    set = [NSSet<NSString*> set];
+  });
+  return set;
+}
+
+- (BOOL)isMigratingAttribute:(NSString*)attribute {
+  if (features::IsMacAccessibilityAPIMigrationEnabled()) {
+    return [[self migratingAttributes] containsObject:attribute];
+    ;
+  }
+  return NO;
+}
+
+- (BOOL)respondsToSelector:(SEL)selector {
+  if (!features::IsMacAccessibilityAPIMigrationEnabled()) {
+    if ([[self migratingMethods]
+            containsObject:NSStringFromSelector(selector)]) {
+      return NO;
+    }
+  }
+  return [super respondsToSelector:selector];
+}
 
 - (ui::AXPlatformNodeDelegate*)nodeDelegate {
   return _node ? _node->GetDelegate() : nil;
@@ -1091,10 +1128,9 @@ void CollectAncestorRoles(
     _node->GetDelegate()->AccessibilityPerformAction(data);
 }
 
-// This method, while deprecated, is still called internally by AppKit.
-- (NSArray*)accessibilityAttributeNames {
+- (NSMutableArray*)internalAccessibilityAttributeNames {
   if (!_node)
-    return @[];
+    return [NSMutableArray array];
 
   // These attributes are required on all accessibility objects.
   NSArray* const kAllRoleAttributes = @[
@@ -1326,6 +1362,28 @@ void CollectAncestorRoles(
   return axAttributes;
 }
 
+// This API is deprecated.
+// This method, while deprecated, is still called internally by AppKit.
+- (NSArray*)accessibilityAttributeNames {
+  TRACE_EVENT1("accessibility",
+               "AXPlatformNodeCocoa::accessibilityAttributeNames",
+               "role=", ui::ToString([self internalRole]));
+
+  NSMutableArray* attributes = [self internalAccessibilityAttributeNames];
+
+  // Exclude migrating attributes from being exposed.
+  if (features::IsMacAccessibilityAPIMigrationEnabled()) {
+    [attributes filterUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(
+                                                      id evaluatedObject,
+                                                      NSDictionary* bindings) {
+                  return ![[self migratingAttributes]
+                      containsObject:evaluatedObject];
+                }]];
+  }
+
+  return attributes;
+}
+
 - (NSArray*)accessibilityParameterizedAttributeNames {
   if (!_node)
     return @[];
@@ -1347,9 +1405,14 @@ void CollectAncestorRoles(
 // Despite it being deprecated, AppKit internally calls this function sometimes
 // in unclear circumstances. It is implemented in terms of the new a11y API
 // here.
+// This API is deprecated.
 - (void)accessibilitySetValue:(id)value forAttribute:(NSString*)attribute {
   if (!_node)
     return;
+
+  if ([self isMigratingAttribute:attribute]) {
+    return;
+  }
 
   if ([attribute isEqualToString:NSAccessibilityValueAttribute]) {
     [self setAccessibilityValue:value];

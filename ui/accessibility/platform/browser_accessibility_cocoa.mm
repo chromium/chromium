@@ -2379,10 +2379,7 @@ bool ui::IsNSRange(id value) {
 }
 
 // Returns the list of accessibility attributes that this object supports.
-- (NSArray*)accessibilityAttributeNames {
-  TRACE_EVENT1("accessibility",
-               "BrowserAccessibilityCocoa::accessibilityAttributeNames",
-               "role=", ui::ToString([self internalRole]));
+- (NSMutableArray*)internalAccessibilityAttributeNames {
   if (![self instanceActive])
     return nil;
 
@@ -2506,8 +2503,7 @@ bool ui::IsNSRange(id value) {
   // TODO(aboxhall): expose NSAccessibilityServesAsTitleForUIElementsAttribute
   // for elements which are referred to by labelledby or are labels
 
-  NSArray* super_ret = [super accessibilityAttributeNames];
-  [ret addObjectsFromArray:super_ret];
+  [ret addObjectsFromArray:[super internalAccessibilityAttributeNames]];
   return ret;
 }
 
@@ -2530,6 +2526,7 @@ bool ui::IsNSRange(id value) {
 
 // Returns whether or not the specified attribute can be set by the
 // accessibility API via |accessibilitySetValue:forAttribute:|.
+// This API is deprecated.
 - (BOOL)accessibilityIsAttributeSettable:(NSString*)attribute {
   TRACE_EVENT2("accessibility",
                "BrowserAccessibilityCocoa::accessibilityIsAttributeSettable",
@@ -2537,6 +2534,10 @@ bool ui::IsNSRange(id value) {
                "attribute=", base::SysNSStringToUTF8(attribute));
   if (![self instanceActive])
     return NO;
+
+  if ([self isMigratingAttribute:attribute]) {
+    return NO;
+  }
 
   if ([attribute isEqualToString:NSAccessibilityFocusedAttribute]) {
     if ([self internalRole] == ax::mojom::Role::kDateTime)
@@ -2679,6 +2680,7 @@ bool ui::IsNSRange(id value) {
 }
 
 // Sets the value for an accessibility attribute via the accessibility API.
+// This API is deprecated.
 - (void)accessibilitySetValue:(id)value forAttribute:(NSString*)attribute {
   TRACE_EVENT2("accessibility",
                "BrowserAccessibilityCocoa::accessibilitySetValue:forAttribute",
@@ -2686,6 +2688,10 @@ bool ui::IsNSRange(id value) {
                "attribute=", base::SysNSStringToUTF8(attribute));
   if (![self instanceActive])
     return;
+
+  if ([self isMigratingAttribute:attribute]) {
+    return;
+  }
 
   if ([attribute isEqualToString:NSAccessibilityFocusedAttribute]) {
     NSNumber* focusedNumber = value;
