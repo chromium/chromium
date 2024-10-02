@@ -753,19 +753,17 @@ void ScrollableArea::ScrollOffsetChanged(const ScrollOffset& offset,
   GetScrollAnimator().SetCurrentOffset(offset);
 }
 
-bool ScrollableArea::ScrollBehaviorFromString(
-    const String& behavior_string,
-    mojom::blink::ScrollBehavior& behavior) {
-  if (behavior_string == "auto")
-    behavior = mojom::blink::ScrollBehavior::kAuto;
-  else if (behavior_string == "instant")
-    behavior = mojom::blink::ScrollBehavior::kInstant;
-  else if (behavior_string == "smooth")
-    behavior = mojom::blink::ScrollBehavior::kSmooth;
-  else
-    return false;
-
-  return true;
+mojom::blink::ScrollBehavior ScrollableArea::V8EnumToScrollBehavior(
+    V8ScrollBehavior::Enum behavior) {
+  switch (behavior) {
+    case V8ScrollBehavior::Enum::kAuto:
+      return mojom::blink::ScrollBehavior::kAuto;
+    case V8ScrollBehavior::Enum::kInstant:
+      return mojom::blink::ScrollBehavior::kInstant;
+    case V8ScrollBehavior::Enum::kSmooth:
+      return mojom::blink::ScrollBehavior::kSmooth;
+  }
+  NOTREACHED();
 }
 
 void ScrollableArea::RegisterScrollCompleteCallback(ScrollCallback callback) {

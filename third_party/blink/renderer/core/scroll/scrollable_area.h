@@ -37,6 +37,7 @@
 #include "third_party/blink/public/common/input/web_gesture_device.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_scroll_behavior.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/loader/history_item.h"
@@ -163,8 +164,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   virtual PhysicalOffset LocalToScrollOriginOffset() const = 0;
 
-  static bool ScrollBehaviorFromString(const String&,
-                                       mojom::blink::ScrollBehavior&);
+  static mojom::blink::ScrollBehavior V8EnumToScrollBehavior(
+      V8ScrollBehavior::Enum);
 
   // Register a callback that will be invoked when the next scroll completes -
   // this includes the scroll animation time.
