@@ -30,7 +30,6 @@
 
 #include <algorithm>
 
-#include "base/debug/dump_without_crashing.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
@@ -694,8 +693,8 @@ DocumentMarkerController::MarkersAroundPosition(
   const PositionInFlatTree& end = SearchAroundPositionEnd(position);
 
   if (start > end) {
-    // TODO(crbug/1114021): Investigate why this might happen.
-    base::debug::DumpWithoutCrashing();
+    // TODO(crbug.com/1114021, crbug.com/40892570): This is unexpected, happens
+    // frequently, but no good idea how to diagnose it.
     return node_marker_pairs;
   }
 
