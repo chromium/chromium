@@ -182,6 +182,17 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
+                       ShowNotBlockedByCurrentPageEligibility) {
+  EXPECT_CALL(*controller(), ShouldExecuteEntryPointShow()).Times(0);
+
+  ShowButton();
+
+  ASSERT_TRUE(product_specifications_button()
+                  ->expansion_animation_for_testing()
+                  ->IsShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
                        ImmediatelyHidesWhenButtonDismissed) {
   EXPECT_CALL(*controller(), OnEntryPointDismissed()).Times(1);
   EXPECT_CALL(*controller(), OnEntryPointHidden()).Times(1);
