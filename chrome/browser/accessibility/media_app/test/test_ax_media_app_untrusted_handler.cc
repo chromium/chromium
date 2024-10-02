@@ -24,10 +24,10 @@ TestAXMediaAppUntrustedHandler::~TestAXMediaAppUntrustedHandler() = default;
 
 std::string TestAXMediaAppUntrustedHandler::GetDocumentTreeToStringForTesting()
     const {
-  if (!document_.ax_tree()) {
+  if (!document_ || !document_->ax_tree()) {
     return {};
   }
-  return document_.ax_tree()->ToString();
+  return document_->ax_tree()->ToString();
 }
 
 void TestAXMediaAppUntrustedHandler::
@@ -37,9 +37,13 @@ void TestAXMediaAppUntrustedHandler::
 }
 
 void TestAXMediaAppUntrustedHandler::
-    CreateFakeOpticalCharacterRecognizerForTesting(bool return_empty) {
+    CreateFakeOpticalCharacterRecognizerForTesting(bool return_empty,
+                                                   bool is_successful) {
   ocr_.reset();
-  ocr_ = screen_ai::FakeOpticalCharacterRecognizer::Create(return_empty);
+  if (is_successful) {
+    ocr_ = screen_ai::FakeOpticalCharacterRecognizer::Create(return_empty);
+  }
+  OnOCRServiceInitialized(is_successful);
 }
 
 void TestAXMediaAppUntrustedHandler::FlushForTesting() {
@@ -47,8 +51,7 @@ void TestAXMediaAppUntrustedHandler::FlushForTesting() {
 }
 
 bool TestAXMediaAppUntrustedHandler::IsOcrServiceEnabled() const {
-  return is_ocr_service_enabled_for_testing_ ||
-         AXMediaAppUntrustedHandler::IsOcrServiceEnabled();
+  return AXMediaAppUntrustedHandler::IsOcrServiceEnabled();
 }
 
 void TestAXMediaAppUntrustedHandler::PushDirtyPageForTesting(

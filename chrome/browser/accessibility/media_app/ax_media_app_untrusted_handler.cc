@@ -10,12 +10,10 @@
 #include <numeric>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/auto_reset.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -38,11 +36,16 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_action_handler_registry.h"
-#include "ui/accessibility/ax_enums.mojom-shared.h"
+#include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree.h"
+#include "ui/accessibility/ax_tree_id.h"
+#include "ui/accessibility/ax_tree_manager.h"
+#include "ui/accessibility/ax_tree_serializer.h"
+#include "ui/accessibility/ax_updates_and_events.h"
+#include "ui/accessibility/platform/inspect/ax_inspect.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -84,14 +87,6 @@ AXMediaAppUntrustedHandler::AXMediaAppUntrustedHandler(
     : browser_context_(context),
       native_window_(native_window),
       media_app_page_(std::move(page)) {
-  auto* profile =
-      Profile::FromBrowserContext(base::to_address(browser_context_));
-  ocr_ = screen_ai::OpticalCharacterRecognizer::CreateWithStatusCallback(
-      profile, screen_ai::mojom::OcrClientType::kMediaApp,
-      base::BindOnce(&AXMediaAppUntrustedHandler::OnOCRServiceInitialized,
-                     weak_ptr_factory_.GetWeakPtr()));
-
-  // Observe the screenreader (ChromeVox) setting.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (auto* accessibility_manager = ash::AccessibilityManager::Get()) {
     // Unretained is safe because `this` owns the subscription.
@@ -100,17 +95,15 @@ AXMediaAppUntrustedHandler::AXMediaAppUntrustedHandler(
             &AXMediaAppUntrustedHandler::OnAshAccessibilityModeChanged,
             base::Unretained(this)));
   }
-#else   // BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
   ax_mode_observation_.Observe(&ui::AXPlatform::GetInstance());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif
+  if (IsAccessibilityEnabled()) {
+    ToggleAccessibilityState();
+  }
 }
 
 AXMediaAppUntrustedHandler::~AXMediaAppUntrustedHandler() {
-  for (auto& page : pages_) {
-    ui::AXActionHandlerRegistry::GetInstance()->RemoveAXTreeID(
-        page.second->GetTreeID());
-  }
-
   if (!start_reading_time_.is_null() && !latest_reading_time_.is_null() &&
       start_reading_time_ < latest_reading_time_) {
     // Record time difference between `start_reading_time_` and
@@ -129,36 +122,40 @@ AXMediaAppUntrustedHandler::~AXMediaAppUntrustedHandler() {
         "Accessibility.PdfOcr.MediaApp.PercentageReadingProgression",
         reading_progression_in_ratio * 100);
   }
+
+  RemoveAllAXTreesFromAccessibilityService();
 }
 
-void AXMediaAppUntrustedHandler::SetPdfOcrEnabledState() {
-  media_app_page_->SetPdfOcrEnabled(IsAccessibilityEnabled());
-}
-
-bool AXMediaAppUntrustedHandler::IsOcrServiceEnabled() const {
-  return ocr_ ? ocr_->is_ready() : false;
-}
-
-void AXMediaAppUntrustedHandler::OnOCRServiceInitialized(bool successful) {
-  if (!successful) {
+void AXMediaAppUntrustedHandler::OnOCRServiceInitialized(bool is_successful) {
+  if (!is_successful) [[unlikely]] {
+    // Regardless of the previous `ocr_status_`, a failure should always stop
+    // any use of the Service, overwriting the document contents with the
+    // appropriate error message, in order to prevent further edits to the
+    // content.
     ocr_status_ = OcrStatus::kInitializationFailed;
     ShowOcrServiceFailedToInitializeMessage();
     return;
   }
-  if (!dirty_page_ids_.empty()) {
-    OcrNextDirtyPageIfAny();
+  // The OCR Service might have been initialized before, since accessibility
+  // could have been turned off temporarily and then back on. During such
+  // events, we release the memory used by the Service, but do not change
+  // `ocr_status_`.
+  if (ocr_status_ == OcrStatus::kUninitialized) {
+    ocr_status_ = OcrStatus::kInProgressWithNoTextExtractedYet;
   }
   if (media_app_) [[unlikely]] {
     // `media_app_` is only used for testing.
     CHECK_IS_TEST();
-    media_app_->OcrServiceEnabledChanged(true);
-  } else {
-    SetPdfOcrEnabledState();
+    media_app_->OcrServiceEnabledChanged(is_successful);
+  }
+  if (!dirty_page_ids_.empty()) {
+    OcrNextDirtyPageIfAny();
   }
 }
 
 bool AXMediaAppUntrustedHandler::IsAccessibilityEnabled() const {
-  return accessibility_state_utils::IsScreenReaderEnabled();
+  return accessibility_state_utils::IsScreenReaderEnabled() ||
+         accessibility_state_utils::IsSelectToSpeakEnabled();
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -168,36 +165,37 @@ void AXMediaAppUntrustedHandler::OnAshAccessibilityModeChanged(
           ash::AccessibilityNotificationType::kToggleSpokenFeedback ||
       details.notification_type ==
           ash::AccessibilityNotificationType::kToggleSelectToSpeak) {
-    SetPdfOcrEnabledState();
+    ToggleAccessibilityState();
   }
   if (media_app_) [[unlikely]] {
     // `media_app_` is only used for testing.
     CHECK_IS_TEST();
-    media_app_->AccessibilityEnabledChanged(
-        accessibility_state_utils::IsScreenReaderEnabled());
+    media_app_->AccessibilityEnabledChanged(IsAccessibilityEnabled());
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void AXMediaAppUntrustedHandler::OnAXModeAdded(ui::AXMode mode) {
+  ToggleAccessibilityState();
   if (media_app_) [[unlikely]] {
     // `media_app_` is only used for testing.
     CHECK_IS_TEST();
-    media_app_->AccessibilityEnabledChanged(
-        accessibility_state_utils::IsScreenReaderEnabled());
+    media_app_->AccessibilityEnabledChanged(IsAccessibilityEnabled());
     return;
   }
-  SetPdfOcrEnabledState();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void AXMediaAppUntrustedHandler::PerformAction(
     const ui::AXActionData& action_data) {
-  if (!document_.GetRoot()) {
+  if (!IsAccessibilityEnabled()) {
     return;
   }
-  DCHECK(document_.ax_tree());
+  if (!document_ || !document_->GetRoot()) {
+    return;
+  }
+  DCHECK(document_->ax_tree());
   switch (action_data.action) {
     case ax::mojom::Action::kBlur:
     case ax::mojom::Action::kClearAccessibilityFocus:
@@ -212,7 +210,7 @@ void AXMediaAppUntrustedHandler::PerformAction(
       return;  // Irrelevant for Backlight.
     case ax::mojom::Action::kScrollBackward:
     case ax::mojom::Action::kScrollUp: {
-      float y_min = static_cast<float>(document_.GetRoot()->GetIntAttribute(
+      float y_min = static_cast<float>(document_->GetRoot()->GetIntAttribute(
           ax::mojom::IntAttribute::kScrollYMin));
       viewport_box_.set_y(
           std::max(viewport_box_.y() - viewport_box_.height(), y_min));
@@ -227,7 +225,7 @@ void AXMediaAppUntrustedHandler::PerformAction(
     }
     case ax::mojom::Action::kScrollForward:
     case ax::mojom::Action::kScrollDown: {
-      float y_max = static_cast<float>(document_.GetRoot()->GetIntAttribute(
+      float y_max = static_cast<float>(document_->GetRoot()->GetIntAttribute(
           ax::mojom::IntAttribute::kScrollYMax));
       viewport_box_.set_y(
           std::min(viewport_box_.y() + viewport_box_.height(), y_max));
@@ -241,7 +239,7 @@ void AXMediaAppUntrustedHandler::PerformAction(
       return;
     }
     case ax::mojom::Action::kScrollLeft: {
-      float x_min = static_cast<float>(document_.GetRoot()->GetIntAttribute(
+      float x_min = static_cast<float>(document_->GetRoot()->GetIntAttribute(
           ax::mojom::IntAttribute::kScrollXMin));
       viewport_box_.set_x(
           std::max(viewport_box_.x() - viewport_box_.width(), x_min));
@@ -255,7 +253,7 @@ void AXMediaAppUntrustedHandler::PerformAction(
       return;
     }
     case ax::mojom::Action::kScrollRight: {
-      float x_max = static_cast<float>(document_.GetRoot()->GetIntAttribute(
+      float x_max = static_cast<float>(document_->GetRoot()->GetIntAttribute(
           ax::mojom::IntAttribute::kScrollXMax));
       viewport_box_.set_x(
           std::min(viewport_box_.x() + viewport_box_.width(), x_max));
@@ -276,8 +274,8 @@ void AXMediaAppUntrustedHandler::PerformAction(
         CHECK_IS_TEST();
       }
 
-      // Records the time that the user starts navigating content and the most
-      // recent time that the user navigates it as well.
+      // that the user starts navigating content and the most recent time that
+      // the user navigates it as well.
       if (start_reading_time_.is_null()) {
         start_reading_time_ = base::TimeTicks::Now();
         latest_reading_time_ = start_reading_time_;
@@ -287,8 +285,9 @@ void AXMediaAppUntrustedHandler::PerformAction(
       }
 
       DCHECK_NE(action_data.target_node_id, ui::kInvalidAXNodeID);
-      // Some pages might not be in the document yet, because of page batching.
-      DCHECK_GE(pages_.size(), document_.GetRoot()->GetUnignoredChildCount() -
+      // Some pages might not be in the document yet, because of page
+      // batching.
+      DCHECK_GE(pages_.size(), document_->GetRoot()->GetUnignoredChildCount() -
                                    (has_landmark_node_ ? 1u : 0u) -
                                    (has_postamble_page_ ? 1u : 0u));
       for (const auto& page : pages_) {
@@ -326,7 +325,7 @@ void AXMediaAppUntrustedHandler::PerformAction(
         gfx::RectF global_bounds =
             page_manager->ax_tree()->RelativeToTreeBounds(
                 target_node, /*node_bounds=*/gfx::RectF());
-        global_bounds.Offset(document_.GetRoot()
+        global_bounds.Offset(document_->GetRoot()
                                  ->GetUnignoredChildAtIndex(page_index)
                                  ->data()
                                  .relative_bounds.bounds.OffsetFromOrigin());
@@ -385,6 +384,30 @@ void AXMediaAppUntrustedHandler::PerformAction(
   }
 }
 
+void AXMediaAppUntrustedHandler::AccessibilityEventReceived(
+    const ui::AXUpdatesAndEvents& details) {
+  if (!document_ || !GetMediaAppWebContents() ||
+      !GetMediaAppWebContents()
+           ->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
+    return;
+  }
+  // Accessibility for the Media App's 'RenderFrameHost' may not become ready as
+  // soon as the assistive software is turned on. Hence we use any event on the
+  // host as a proxy for determining whether the host's accessibility is ready.
+  if (const ui::AXNode* parent_node = document_->GetParentNodeFromParentTree();
+      !parent_node || !parent_node->data().HasChildTreeID()) {
+    StitchDocumentTree();
+    DCHECK(document_serializer_);
+    // It turns out that the document serializer does not send the updated tree
+    // data containing the Media App's render frame host's tree ID, so stitching
+    // won't work unless we first reset it.
+    document_serializer_->Reset();
+    SendAXTreeToAccessibilityService(*document_, *document_serializer_);
+  } else {
+    StopWatchingForAccessibilityEvents();
+  }
+}
+
 void AXMediaAppUntrustedHandler::PageMetadataUpdated(
     const std::vector<ash::media_app_ui::mojom::PageMetadataPtr>
         page_metadata) {
@@ -422,7 +445,7 @@ void AXMediaAppUntrustedHandler::PageMetadataUpdated(
     }
     // Only one page goes through OCR at a time, so start the process here.
     OcrNextDirtyPageIfAny();
-    GenerateDocumentTree();
+    ShowDocumentTree();
   }
 
   // Update all page numbers and rects.
@@ -461,7 +484,7 @@ void AXMediaAppUntrustedHandler::PageMetadataUpdated(
       page_info.page_num = 0;
     }
   }
-  GenerateDocumentTree();
+  ShowDocumentTree();
 }
 
 void AXMediaAppUntrustedHandler::PageContentsUpdated(
@@ -643,6 +666,71 @@ std::vector<ui::AXNodeData> AXMediaAppUntrustedHandler::CreatePostamblePage()
   return {page, paragraph, static_text, inline_text_box};
 }
 
+void AXMediaAppUntrustedHandler::ToggleAccessibilityState() {
+  if (IsAccessibilityEnabled()) {
+    StartWatchingForAccessibilityEvents();
+    SendAllAXTreesToAccessibilityService();
+    InitializeOcrService();
+  } else {
+    StopWatchingForAccessibilityEvents();
+    DisconnectFromOcrService();
+    RemoveAllAXTreesFromAccessibilityService();
+  }
+  media_app_page_->SetPdfOcrEnabled(IsAccessibilityEnabled());
+}
+
+void AXMediaAppUntrustedHandler::SendAllAXTreesToAccessibilityService() {
+  RemoveDocumentTree();
+  switch (ocr_status_) {
+    case OcrStatus::kUninitialized:
+      return;
+    case OcrStatus::kInitializationFailed:
+      ShowOcrServiceFailedToInitializeMessage();
+      break;
+    case OcrStatus::kInProgressWithNoTextExtractedYet:
+    case OcrStatus::kInProgressWithTextExtracted:
+    case OcrStatus::kCompletedWithNoTextExtracted:
+    case OcrStatus::kCompletedWithTextExtracted:
+      for (auto& [page_id, tree_manager] : pages_) {
+        DCHECK(tree_manager);
+        const auto iter = page_serializers_.find(page_id);
+        DCHECK(iter != std::cend(page_serializers_));
+        std::unique_ptr<TreeSerializer>& serializer = iter->second;
+        DCHECK(serializer);
+        DCHECK(page_sources_.contains(page_id));
+        auto new_serializer = std::make_unique<TreeSerializer>(
+            page_sources_.at(page_id).get(), /* crash_on_error */ true);
+        serializer.swap(new_serializer);
+        ui::AXActionHandlerRegistry::GetInstance()->SetAXTreeID(
+            tree_manager->GetTreeID(), this);
+        SendAXTreeToAccessibilityService(*tree_manager, *serializer);
+      }
+      ShowDocumentTree();
+      break;
+  }
+}
+
+void AXMediaAppUntrustedHandler::RemoveAllAXTreesFromAccessibilityService() {
+  for (auto& [page_id, tree_manager] : pages_) {
+    DCHECK(tree_manager);
+    // Keep the OCR results to avoid recomputing them in case accessibility is
+    // turned on again.
+    ui::AXActionHandlerRegistry::GetInstance()->RemoveAXTreeID(
+        tree_manager->GetTreeID());
+  }
+  RemoveDocumentTree();
+}
+
+void AXMediaAppUntrustedHandler::RemoveDocumentTree() {
+  if (!document_) {
+    return;
+  }
+  RemoveAXTreeID();
+  document_serializer_.reset();
+  document_source_.reset();
+  document_.reset();
+}
+
 void AXMediaAppUntrustedHandler::SendAXTreeToAccessibilityService(
     const ui::AXTreeManager& manager,
     TreeSerializer& serializer) {
@@ -670,15 +758,48 @@ void AXMediaAppUntrustedHandler::SendAXTreeToAccessibilityService(
 #endif  // defined(USE_AURA)
 }
 
+void AXMediaAppUntrustedHandler::InitializeOcrService() {
+  if (IsOcrServiceEnabled()) {
+    return;
+  }
+  auto* profile =
+      Profile::FromBrowserContext(base::to_address(browser_context_));
+  ocr_ = screen_ai::OpticalCharacterRecognizer::CreateWithStatusCallback(
+      profile, screen_ai::mojom::OcrClientType::kMediaApp,
+      base::BindOnce(&AXMediaAppUntrustedHandler::OnOCRServiceInitialized,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AXMediaAppUntrustedHandler::DisconnectFromOcrService() {
+  ocr_.reset();
+  // To avoid redoing OCR on the content if accessibility is temporarily turned
+  // off / on, we keep the existing OCR results and do not reset the
+  // `ocr_state_`.
+}
+
+void AXMediaAppUntrustedHandler::StartWatchingForAccessibilityEvents() {
+  if (auto* web_contents = GetMediaAppWebContents()) {
+    // Accessibility for the Media App's 'RenderFrameHost' may not become ready
+    // as soon as the assistive software is turned on. Hence we use any event on
+    // the host as a proxy for determining whether the host's accessibility is
+    // ready, in order to stitch in our content.
+    Observe(web_contents);
+  }
+}
+
+void AXMediaAppUntrustedHandler::StopWatchingForAccessibilityEvents() {
+  Observe(nullptr);
+}
+
 void AXMediaAppUntrustedHandler::ViewportUpdated(const gfx::RectF& viewport_box,
                                                  float scale_factor) {
   viewport_box_ = viewport_box;
   scale_factor_ = scale_factor;
-  if (!document_.GetRoot()) {
+  if (!document_ || !document_->GetRoot()) {
     return;
   }
-  DCHECK(document_.ax_tree());
-  ui::AXNodeData document_root_data = document_.GetRoot()->data();
+  DCHECK(document_->ax_tree());
+  ui::AXNodeData document_root_data = document_->GetRoot()->data();
   document_root_data.AddIntAttribute(
       ax::mojom::IntAttribute::kScrollXMax,
       base::checked_cast<int32_t>(
@@ -695,10 +816,10 @@ void AXMediaAppUntrustedHandler::ViewportUpdated(const gfx::RectF& viewport_box,
   ui::AXTreeUpdate document_update;
   document_update.root_id = document_root_data.id;
   document_update.nodes = {document_root_data};
-  if (!document_.ax_tree()->Unserialize(document_update)) {
-    mojo::ReportBadMessage(document_.ax_tree()->error());
+  if (!document_->ax_tree()->Unserialize(document_update)) {
+    mojo::ReportBadMessage(document_->ax_tree()->error());
   }
-  SendAXTreeToAccessibilityService(document_, *document_serializer_);
+  SendAXTreeToAccessibilityService(*document_, *document_serializer_);
 }
 
 void AXMediaAppUntrustedHandler::UpdatePageLocation(
@@ -745,7 +866,10 @@ void AXMediaAppUntrustedHandler::ShowOcrServiceFailedToInitializeMessage() {
   UpdateDocumentTree(document_update);
 }
 
-void AXMediaAppUntrustedHandler::GenerateDocumentTree() {
+void AXMediaAppUntrustedHandler::ShowDocumentTree() {
+  if (ocr_status_ == OcrStatus::kUninitialized) {
+    return;
+  }
   ui::AXNodeData document_root_data;
   document_root_data.id = kDocumentRootNodeId;
   document_root_data.role = ax::mojom::Role::kPdfRoot;
@@ -867,14 +991,16 @@ void AXMediaAppUntrustedHandler::UpdateDocumentTree(
     return;
   }
 
-  if (document_.ax_tree()) {
-    if (!document_.ax_tree()->Unserialize(document_update)) {
-      mojo::ReportBadMessage(document_.ax_tree()->error());
+  if (document_ && document_->ax_tree()) {
+    if (!document_->ax_tree()->Unserialize(document_update)) {
+      mojo::ReportBadMessage(document_->ax_tree()->error());
       return;
     }
   } else {
     document_update.has_tree_data = true;
     if (auto* render_frame_host = GetMediaAppRenderFrameHost()) {
+      DCHECK_NE(render_frame_host->GetAXTreeID(), ui::AXTreeIDUnknown())
+          << "Accessibility should have been enabled by this point.";
       document_update.tree_data.parent_tree_id =
           render_frame_host->GetAXTreeID();
     }
@@ -887,10 +1013,12 @@ void AXMediaAppUntrustedHandler::UpdateDocumentTree(
         base::WrapUnique<TreeSource>(document_tree->CreateTreeSource());
     document_serializer_ = std::make_unique<TreeSerializer>(
         document_source_.get(), /* crash_on_error */ true);
-    document_.SetTree(std::move(document_tree));
+    document_ = std::make_unique<ui::AXTreeManager>();
+    document_->SetTree(std::move(document_tree));
+    SetAXTreeID(document_tree_id_);
     StitchDocumentTree();
   }
-  SendAXTreeToAccessibilityService(document_, *document_serializer_);
+  SendAXTreeToAccessibilityService(*document_, *document_serializer_);
 }
 
 void AXMediaAppUntrustedHandler::StitchDocumentTree() {
@@ -898,13 +1026,44 @@ void AXMediaAppUntrustedHandler::StitchDocumentTree() {
   if (!render_frame_host || !render_frame_host->IsRenderFrameLive()) {
     return;
   }
+  if (render_frame_host->GetAXTreeID() == ui::AXTreeIDUnknown()) {
+    return;
+  }
+  if (!document_ || !document_->ax_tree()) {
+    return;
+  }
   ui::AXActionData action_data;
   action_data.action = ax::mojom::Action::kStitchChildTree;
-  DCHECK(document_.ax_tree());
-  action_data.target_tree_id = document_.GetParentTreeID();
+  action_data.target_tree_id = render_frame_host->GetAXTreeID();
   action_data.target_role = ax::mojom::Role::kGraphicsDocument;
-  action_data.child_tree_id = document_.GetTreeID();
+  action_data.child_tree_id = document_->GetTreeID();
   render_frame_host->AccessibilityPerformAction(action_data);
+
+  ui::AXTreeUpdate document_update;
+  document_update.has_tree_data = true;
+  document_update.tree_data = document_->GetTreeData();
+  document_update.tree_data.parent_tree_id = render_frame_host->GetAXTreeID();
+  if (!document_->ax_tree()->Unserialize(document_update)) {
+    mojo::ReportBadMessage(document_->ax_tree()->error());
+    return;
+  }
+}
+
+bool AXMediaAppUntrustedHandler::IsOcrServiceEnabled() const {
+  switch (ocr_status_) {
+    case OcrStatus::kUninitialized:
+    case OcrStatus::kInitializationFailed:
+      DCHECK(!ocr_ || !ocr_->is_ready());
+      return false;
+    case OcrStatus::kInProgressWithNoTextExtractedYet:
+    case OcrStatus::kInProgressWithTextExtracted:
+    case OcrStatus::kCompletedWithNoTextExtracted:
+    case OcrStatus::kCompletedWithTextExtracted:
+      // OCR results might be in progress or completed, but accessibility might
+      // have been turned off temporarily. In this case, we would release the
+      // OCR Service to save memory.
+      return ocr_ && ocr_->is_ready();
+  }
 }
 
 void AXMediaAppUntrustedHandler::PushDirtyPage(
@@ -933,10 +1092,6 @@ void AXMediaAppUntrustedHandler::OcrNextDirtyPageIfAny() {
   if (!IsOcrServiceEnabled()) {
     return;
   }
-  CHECK_NE(ocr_status_, OcrStatus::kInitializationFailed);
-  if (ocr_status_ == OcrStatus::kUninitialized) {
-    ocr_status_ = OcrStatus::kInProgressWithNoTextExtractedYet;
-  }
   if (pages_ocred_on_initial_load_ == page_metadata_.size()) {
     has_postamble_page_ = false;
     if (ocr_status_ == OcrStatus::kInProgressWithNoTextExtractedYet) {
@@ -950,7 +1105,7 @@ void AXMediaAppUntrustedHandler::OcrNextDirtyPageIfAny() {
   if (dirty_page_ids_.empty() ||
       (pages_ocred_on_initial_load_ &&
        pages_ocred_on_initial_load_ % ComputePagesPerBatch() == 0u)) {
-    GenerateDocumentTree();
+    ShowDocumentTree();
     if (dirty_page_ids_.empty()) {
       return;
     }
@@ -1015,7 +1170,7 @@ void AXMediaAppUntrustedHandler::OnPageOcred(
     ui::AXNodeData paragraph;
     paragraph.id = 1;
     paragraph.role = ax::mojom::Role::kParagraph;
-    // The paragraph's bounds are set by `GenerateDocumentTree`, so no need to
+    // The paragraph's bounds are set by `ShowDocumentTree`, so no need to
     // set them here.
     paragraph.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
                                true);

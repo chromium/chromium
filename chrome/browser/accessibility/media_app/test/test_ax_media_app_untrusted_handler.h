@@ -13,6 +13,7 @@
 #include "chrome/browser/accessibility/media_app/ax_media_app.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app_untrusted_handler.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_manager.h"
 
 namespace content {
@@ -23,7 +24,6 @@ class BrowserContext;
 
 namespace ui {
 
-class AXTreeID;
 class AXNode;
 
 }  // namespace ui
@@ -47,11 +47,11 @@ class TestAXMediaAppUntrustedHandler : public AXMediaAppUntrustedHandler {
   void EnablePendingSerializedUpdatesForTesting();
 
   const ui::AXNode* GetDocumentRootNodeForTesting() const {
-    return document_.GetRoot();
+    return document_ ? document_->GetRoot() : nullptr;
   }
 
   const ui::AXTreeID& GetDocumentTreeIDForTesting() const {
-    return document_.GetTreeID();
+    return document_ ? document_->GetTreeID() : ui::AXTreeIDUnknown();
   }
 
   std::map<const std::string, AXMediaAppPageMetadata>&
@@ -69,10 +69,6 @@ class TestAXMediaAppUntrustedHandler : public AXMediaAppUntrustedHandler {
     return *pending_serialized_updates_for_testing_;
   }
 
-  void SetIsOcrServiceEnabledForTesting() {
-    is_ocr_service_enabled_for_testing_ = true;
-  }
-
   // Whether to allow tests to manually allow the OcrNextDirtyPageIfAny() method
   // to be called to better control the order of execution.
   void SetDelayCallingOcrNextDirtyPage(bool enabled) {
@@ -87,18 +83,18 @@ class TestAXMediaAppUntrustedHandler : public AXMediaAppUntrustedHandler {
 
   void DisablePostamblePageForTesting() { has_postamble_page_ = false; }
 
-  void CreateFakeOpticalCharacterRecognizerForTesting(bool return_empty);
+  void CreateFakeOpticalCharacterRecognizerForTesting(bool return_empty,
+                                                      bool is_successful);
   void FlushForTesting();
+  bool IsOcrServiceEnabled() const override;
 
   void PushDirtyPageForTesting(const std::string& dirty_page_id);
   std::string PopDirtyPageForTesting();
 
-  // AXMediaAppUntrustedHandler:
-  bool IsOcrServiceEnabled() const override;
+ protected:
   void OcrNextDirtyPageIfAny() override;
 
  private:
-  bool is_ocr_service_enabled_for_testing_ = false;
   bool delay_calling_ocr_next_dirty_page_ = false;
 };
 

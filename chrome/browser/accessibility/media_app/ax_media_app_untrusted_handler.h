@@ -21,14 +21,17 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/accessibility/ax_action_handler_base.h"
+#include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_mode_observer.h"
@@ -54,13 +57,16 @@ class WebContents;
 }  // namespace content
 
 namespace screen_ai {
+
 class OpticalCharacterRecognizer;
-}
+
+}  // namespace screen_ai
 
 namespace ui {
 
 struct AXActionData;
 class AXNode;
+struct AXUpdatesAndEvents;
 class RectF;
 
 }  // namespace ui
@@ -76,9 +82,10 @@ struct AXMediaAppPageMetadata : ash::media_app_ui::mojom::PageMetadata {
 class AXMediaAppUntrustedHandler
     : public media_app_ui::mojom::OcrUntrustedPageHandler,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-      private ui::AXModeObserver,
+      public ui::AXModeObserver,
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-      private ui::AXActionHandlerBase {
+      public ui::AXActionHandlerBase,
+      public content::WebContentsObserver {
  public:
   using TreeSource =
       ui::AXTreeSource<const ui::AXNode*, ui::AXTreeData*, ui::AXNodeData>;
@@ -106,25 +113,24 @@ class AXMediaAppUntrustedHandler
       const AXMediaAppUntrustedHandler&) = delete;
   ~AXMediaAppUntrustedHandler() override;
 
-  // Informs the MediaApp whether the PDF OCR feature is enabled, i.e. the user
-  // has an accessibility service such as ChromeVox activated.
-  void SetPdfOcrEnabledState();
-
-  virtual bool IsOcrServiceEnabled() const;
   bool IsAccessibilityEnabled() const;
 
-  void OnOCRServiceInitialized(bool successful);
+  void OnOCRServiceInitialized(bool is_successful);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnAshAccessibilityModeChanged(
       const ash::AccessibilityStatusEventDetails& details);
-#else
-  // ui::AXModeObserver:
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  //  ui::AXModeObserver:
   void OnAXModeAdded(ui::AXMode mode) override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif
 
   // ui::AXActionHandlerBase:
   void PerformAction(const ui::AXActionData& action_data) override;
+
+  // content::WebContentsObserver:
+  void AccessibilityEventReceived(
+      const ui::AXUpdatesAndEvents& details) override;
 
   // ash::media_app_ui::mojom::OcrUntrustedPageHandler:
   void PageMetadataUpdated(
@@ -135,6 +141,7 @@ class AXMediaAppUntrustedHandler
                        float scale_factor) override;
 
  protected:
+  virtual bool IsOcrServiceEnabled() const;
   void PushDirtyPage(const std::string& dirty_page_id);
   std::string PopDirtyPage();
   virtual void OcrNextDirtyPageIfAny();
@@ -145,7 +152,7 @@ class AXMediaAppUntrustedHandler
   raw_ptr<AXMediaApp> media_app_;
   bool has_landmark_node_ = true;
   bool has_postamble_page_ = true;
-  ui::AXTreeManager document_;
+  std::unique_ptr<ui::AXTreeManager> document_;
   std::unique_ptr<TreeSource> document_source_;
   std::unique_ptr<TreeSerializer> document_serializer_;
   std::map<const std::string, AXMediaAppPageMetadata> page_metadata_;
@@ -161,10 +168,18 @@ class AXMediaAppUntrustedHandler
   size_t ComputePagesPerBatch() const;
   std::vector<ui::AXNodeData> CreateStatusNodesWithLandmark() const;
   std::vector<ui::AXNodeData> CreatePostamblePage() const;
+  void ToggleAccessibilityState();
+  void SendAllAXTreesToAccessibilityService();
+  void RemoveAllAXTreesFromAccessibilityService();
+  void RemoveDocumentTree();
   void SendAXTreeToAccessibilityService(const ui::AXTreeManager& manager,
                                         TreeSerializer& serializer);
+  void InitializeOcrService();
+  void DisconnectFromOcrService();
+  void StartWatchingForAccessibilityEvents();
+  void StopWatchingForAccessibilityEvents();
   void ShowOcrServiceFailedToInitializeMessage();
-  void GenerateDocumentTree();
+  void ShowDocumentTree();
   void UpdateDocumentTree(ui::AXTreeUpdate& document_update);
   void UpdatePageLocation(const std::string& page_id,
                           const gfx::RectF& page_location);
@@ -185,7 +200,7 @@ class AXMediaAppUntrustedHandler
   // Observes whether spoken feedback is enabled in Ash.
   base::CallbackListSubscription accessibility_status_subscription_;
 #else
-  // Observes the presence of any accessibility service in LaCrOS.
+  //  Observes the presence of any accessibility service in LaCrOS.
   base::ScopedObservation<ui::AXPlatform, ui::AXModeObserver>
       ax_mode_observation_{this};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

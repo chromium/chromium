@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/webui/media_app_ui/media_app_ui_untrusted.mojom.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
@@ -121,12 +120,9 @@ class AXMediaAppUntrustedHandlerTest : public InProcessBrowserTest {
         *browser()->profile(), browser()->window()->GetNativeWindow(),
         std::move(pageRemote));
     ASSERT_NE(nullptr, handler_.get());
-    // TODO(b/309860428): Delete MediaApp interface - after we implement all
-    // Mojo APIs, it should not be needed any more.
     handler_->SetMediaAppForTesting(&fake_media_app_);
-    handler_->SetIsOcrServiceEnabledForTesting();
     handler_->CreateFakeOpticalCharacterRecognizerForTesting(
-        /*return_empty=*/false);
+        /*return_empty=*/false, /*is_successful=*/true);
   }
 
   void TearDownOnMainThread() override {
@@ -141,6 +137,10 @@ class AXMediaAppUntrustedHandlerTest : public InProcessBrowserTest {
       const uint64_t num_pages) const;
   std::vector<PageMetadataPtr> ClonePageMetadataPtrs(
       const std::vector<PageMetadataPtr>& metadata) const;
+  void EnableScreenReaderForTesting();
+  void DisableScreenReaderForTesting();
+  void EnableSelectToSpeakForTesting();
+  void DisableSelectToSpeakForTesting();
   void WaitForOcringPages(uint64_t number_of_pages) const;
 
   FakeAXMediaApp fake_media_app_;
@@ -175,6 +175,40 @@ AXMediaAppUntrustedHandlerTest::ClonePageMetadataPtrs(
   return fake_page_metadata;
 }
 
+void AXMediaAppUntrustedHandlerTest::EnableScreenReaderForTesting() {
+  accessibility_state_utils::OverrideIsScreenReaderEnabledForTesting(true);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  AccessibilityManager::Get()->EnableSpokenFeedback(true);
+#else
+  content::ScopedAccessibilityModeOverride scoped_mode(ui::kAXModeComplete);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+void AXMediaAppUntrustedHandlerTest::DisableScreenReaderForTesting() {
+  accessibility_state_utils::OverrideIsScreenReaderEnabledForTesting(false);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  AccessibilityManager::Get()->EnableSpokenFeedback(false);
+#else
+  content::ScopedAccessibilityModeOverride scoped_mode(ui::kNone);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+void AXMediaAppUntrustedHandlerTest::EnableSelectToSpeakForTesting() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  AccessibilityManager::Get()->SetSelectToSpeakEnabled(true);
+#else
+  content::ScopedAccessibilityModeOverride scoped_mode(ui::kAXModeComplete);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+void AXMediaAppUntrustedHandlerTest::DisableSelectToSpeakForTesting() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  AccessibilityManager::Get()->SetSelectToSpeakEnabled(false);
+#else
+  content::ScopedAccessibilityModeOverride scoped_mode(ui::kAXModeComplete);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
 void AXMediaAppUntrustedHandlerTest::WaitForOcringPages(
     uint64_t number_of_pages) const {
   for (uint64_t i = 0; i < number_of_pages; ++i) {
@@ -188,30 +222,30 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, IsAccessibilityEnabled) {
   EXPECT_FALSE(handler_->IsAccessibilityEnabled());
   EXPECT_FALSE(fake_media_app_.IsAccessibilityEnabled());
 
-  accessibility_state_utils::OverrideIsScreenReaderEnabledForTesting(true);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  AccessibilityManager::Get()->EnableSpokenFeedback(true);
-#else
-  content::ScopedAccessibilityModeOverride scoped_mode(ui::kAXModeComplete);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
+  EnableScreenReaderForTesting();
   EXPECT_TRUE(handler_->IsAccessibilityEnabled());
   EXPECT_TRUE(fake_media_app_.IsAccessibilityEnabled());
 
-  accessibility_state_utils::OverrideIsScreenReaderEnabledForTesting(false);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  AccessibilityManager::Get()->EnableSpokenFeedback(false);
-#else
-  content::ScopedAccessibilityModeOverride scoped_mode(ui::kNone);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  DisableScreenReaderForTesting();
+  EXPECT_FALSE(handler_->IsAccessibilityEnabled());
+  EXPECT_FALSE(fake_media_app_.IsAccessibilityEnabled());
 
+  EnableSelectToSpeakForTesting();
+  EXPECT_TRUE(handler_->IsAccessibilityEnabled());
+  EXPECT_TRUE(fake_media_app_.IsAccessibilityEnabled());
+
+  DisableSelectToSpeakForTesting();
   EXPECT_FALSE(handler_->IsAccessibilityEnabled());
   EXPECT_FALSE(fake_media_app_.IsAccessibilityEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                        OcrServiceInitializedFailed) {
-  handler_->OnOCRServiceInitialized(/*successful*/ false);
+  handler_->CreateFakeOpticalCharacterRecognizerForTesting(
+      /*return_empty=*/false, /*is_successful=*/false);
+  EnableScreenReaderForTesting();
+  EXPECT_FALSE(handler_->IsOcrServiceEnabled());
+  EXPECT_TRUE(handler_->IsAccessibilityEnabled());
   EXPECT_EQ(
       "AXTree has_parent_tree title=PDF document\n"
       "id=10000 banner <div> child_ids=10001 offset_container_id=1 (-1, "
@@ -232,11 +266,49 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
       "download text extraction files. Please try again later. "
       "offset_container_id=10002 (0, 0)-(1, 1) text_align=left\n",
       handler_->GetDocumentTreeToStringForTesting());
+
+  DisableScreenReaderForTesting();
+  EXPECT_FALSE(handler_->IsOcrServiceEnabled());
+  EXPECT_FALSE(handler_->IsAccessibilityEnabled());
+  EXPECT_EQ("", handler_->GetDocumentTreeToStringForTesting());
+
+  handler_->CreateFakeOpticalCharacterRecognizerForTesting(
+      /*return_empty=*/false, /*is_successful=*/false);
+  EnableSelectToSpeakForTesting();
+  handler_->OnOCRServiceInitialized(/*successful*/ false);
+  EXPECT_FALSE(handler_->IsOcrServiceEnabled());
+  EXPECT_TRUE(handler_->IsAccessibilityEnabled());
+  EXPECT_EQ(
+      "AXTree has_parent_tree title=PDF document\n"
+      "id=10000 banner <div> child_ids=10001 offset_container_id=1 (-1, "
+      "-1)-(1, 1) text_align=left is_page_breaking_object=true "
+      "is_line_breaking_object=true has_aria_attribute=true\n"
+      "  id=10001 status <div> child_ids=10002 offset_container_id=10000 (0, "
+      "0)-(1, 1) text_align=left container_relevant=additions text "
+      "container_live=polite relevant=additions text live=polite "
+      "container_atomic=true container_busy=false atomic=true "
+      "is_line_breaking_object=true has_aria_attribute=true\n"
+      "    id=10002 staticText name=This PDF is inaccessible. Couldn't "
+      "download text extraction files. Please try again later. child_ids=10003 "
+      "offset_container_id=10001 (0, 0)-(1, 1) text_align=left "
+      "container_relevant=additions text container_live=polite "
+      "relevant=additions text live=polite container_atomic=true "
+      "container_busy=false atomic=true is_line_breaking_object=true\n"
+      "      id=10003 inlineTextBox name=This PDF is inaccessible. Couldn't "
+      "download text extraction files. Please try again later. "
+      "offset_container_id=10002 (0, 0)-(1, 1) text_align=left\n",
+      handler_->GetDocumentTreeToStringForTesting());
+
+  DisableSelectToSpeakForTesting();
+  EXPECT_FALSE(handler_->IsAccessibilityEnabled());
+  EXPECT_EQ("", handler_->GetDocumentTreeToStringForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageMetadataUpdated) {
   handler_->DisableStatusNodesForTesting();
   handler_->DisablePostamblePageForTesting();
+  EnableScreenReaderForTesting();
+  ASSERT_TRUE(handler_->IsOcrServiceEnabled());
   const std::vector<std::string> kPageIds{"four", "ids", "in", "list"};
   const size_t kTestNumPages = kPageIds.size();
   constexpr gfx::RectF kRect(0, 0, 10, 15);
@@ -285,10 +357,51 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageMetadataUpdated) {
       "  id=5 region name=Page 4 name_from=attribute has_child_tree (0, "
       "0)-(10, 15) restriction=readonly is_page_breaking_object=true\n",
       handler_->GetDocumentTreeToStringForTesting());
+
+  DisableScreenReaderForTesting();
+  // Turning off accessibility will release OCR Service resources to save up
+  // memory.
+  EXPECT_FALSE(handler_->IsOcrServiceEnabled());
+  // OCR results should not be removed if accessibility is turned off, so that
+  // they will reappear instantly as soon as it is turned on again.
+  ASSERT_EQ(kTestNumPages, pages.size());
+  for (size_t i = 0; const auto& [page_id, page] : pages) {
+    EXPECT_EQ(page_id, kPageIds[i++]);
+    EXPECT_NE(nullptr, page.get());
+    EXPECT_NE(nullptr, page->ax_tree());
+  }
+  EXPECT_EQ("", handler_->GetDocumentTreeToStringForTesting());
+
+  handler_->CreateFakeOpticalCharacterRecognizerForTesting(
+      /*return_empty=*/false, /*is_successful=*/true);
+  EnableScreenReaderForTesting();
+  EXPECT_TRUE(handler_->IsOcrServiceEnabled());
+  ASSERT_EQ(kTestNumPages, pages.size());
+  for (size_t i = 0; const auto& [page_id, page] : pages) {
+    EXPECT_EQ(page_id, kPageIds[i++]);
+    EXPECT_NE(nullptr, page.get());
+    EXPECT_NE(nullptr, page->ax_tree());
+  }
+  EXPECT_EQ(
+      "AXTree has_parent_tree title=PDF document\n"
+      "id=1 pdfRoot FOCUSABLE name=PDF document containing 4 pages "
+      "name_from=attribute clips_children child_ids=2,3,4,5 (0, 0)-(10, 15) "
+      "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
+      "scrollable=true is_line_breaking_object=true\n"
+      "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, "
+      "0)-(10, 15) restriction=readonly is_page_breaking_object=true\n"
+      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, "
+      "0)-(10, 15) restriction=readonly is_page_breaking_object=true\n"
+      "  id=4 region name=Page 3 name_from=attribute has_child_tree (0, "
+      "0)-(10, 15) restriction=readonly is_page_breaking_object=true\n"
+      "  id=5 region name=Page 4 name_from=attribute has_child_tree (0, "
+      "0)-(10, 15) restriction=readonly is_page_breaking_object=true\n",
+      handler_->GetDocumentTreeToStringForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                        CheckUMAMetricsForPageMetadataUpdated) {
+  EnableScreenReaderForTesting();
   base::HistogramTester histograms;
   const size_t kTestNumPages = 3u;
   std::vector<PageMetadataPtr> fake_metadata =
@@ -335,6 +448,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                        CheckUMAMetricsForMostDetectedLanguageInOcrData) {
+  EnableScreenReaderForTesting();
   base::HistogramTester histograms;
   constexpr size_t kTestNumPages = 3u;
   std::vector<PageMetadataPtr> fake_metadata =
@@ -362,6 +476,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                        PageMetadataUpdatedNoDuplicatePageIds) {
   handler_->DisableStatusNodesForTesting();
   handler_->DisablePostamblePageForTesting();
+  EnableScreenReaderForTesting();
   constexpr std::string kDuplicateId = "duplicate";
   std::vector<PageMetadataPtr> fake_metadata;
   PageMetadataPtr page1 = ash::media_app_ui::mojom::PageMetadata::New();
@@ -386,6 +501,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                        PageMetadataUpdatedWithDeleteAndUndoDelete) {
   handler_->DisableStatusNodesForTesting();
   handler_->DisablePostamblePageForTesting();
+  EnableScreenReaderForTesting();
   // Note that the region nodes under the document root node have the (0,0)
   // offset. Each page will be correctly offset as the root node of its (child)
   // tree has a correct offset.
@@ -497,9 +613,114 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
+                       PageMetadataUpdatedWithDeleteWhileAccessibilityIsOff) {
+  handler_->DisableStatusNodesForTesting();
+  handler_->DisablePostamblePageForTesting();
+  // Note that the region nodes under the document root node have the (0,0)
+  // offset. Each page will be correctly offset as the root node of its (child)
+  // tree has a correct offset.
+  const std::string kDocumentTree(
+      "AXTree has_parent_tree title=PDF document\n"
+      "id=1 pdfRoot FOCUSABLE name=PDF document containing 3 pages "
+      "name_from=attribute clips_children child_ids=2,3,4 (0, 0)-(10, 15) "
+      "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
+      "scrollable=true is_line_breaking_object=true\n"
+      "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, "
+      "0)-(10, 15) restriction=readonly is_page_breaking_object=true\n"
+      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, "
+      "0)-(10, 15) restriction=readonly is_page_breaking_object=true\n"
+      "  id=4 region name=Page 3 name_from=attribute has_child_tree (0, "
+      "0)-(10, 15) restriction=readonly is_page_breaking_object=true\n");
+
+  const std::string kDocumentTreeWithDeletedPage(
+      "AXTree has_parent_tree title=PDF document\n"
+      "id=1 pdfRoot FOCUSABLE name=PDF document containing 2 pages "
+      "name_from=attribute clips_children child_ids=2,3 (0, 0)-(10, 15) "
+      "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
+      "scrollable=true is_line_breaking_object=true\n"
+      "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, "
+      "0)-(10, 15) restriction=readonly is_page_breaking_object=true\n"
+      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, "
+      "0)-(10, 15) restriction=readonly is_page_breaking_object=true\n");
+
+  constexpr gfx::RectF kRect(0, 0, 10, 15);
+  const std::vector<std::string> kPageIds{"pageX", "pageY", "pageZ"};
+  const size_t kTestNumPages = kPageIds.size();
+  std::vector<PageMetadataPtr> fake_metadata;
+  for (size_t i = 0; i < kTestNumPages; ++i) {
+    PageMetadataPtr page = ash::media_app_ui::mojom::PageMetadata::New();
+    page->id = kPageIds[i];
+    page->rect = kRect;
+    fake_metadata.push_back(std::move(page));
+  }
+  handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
+  EnableScreenReaderForTesting();
+  WaitForOcringPages(kTestNumPages);
+
+  const std::map<const std::string, AXMediaAppPageMetadata>&
+      page_metadata_before_deletion = handler_->GetPageMetadataForTesting();
+  ASSERT_EQ(page_metadata_before_deletion.size(), kTestNumPages);
+  for (size_t i = 1; i <= kTestNumPages; ++i) {
+    EXPECT_EQ(page_metadata_before_deletion.at(kPageIds[i - 1]).page_num, i);
+  }
+
+  const std::map<const std::string, std::unique_ptr<ui::AXTreeManager>>&
+      pages_before_deletion = handler_->GetPagesForTesting();
+  ASSERT_EQ(kTestNumPages, pages_before_deletion.size());
+  for (size_t i = 0; const auto& [page_id, page] : pages_before_deletion) {
+    EXPECT_EQ(page_id, kPageIds[i++]);
+    EXPECT_NE(nullptr, page.get());
+    EXPECT_NE(nullptr, page->ax_tree());
+  }
+  EXPECT_EQ(kDocumentTree, handler_->GetDocumentTreeToStringForTesting());
+
+  // Disabling accessibility should remove the main document as all
+  // accessibility trees would be distructed, except the ones holding the OCR
+  // results. The latter is by design so as not to have to perform OCR again if
+  // accessibility is turned on again.
+  DisableScreenReaderForTesting();
+  EXPECT_EQ("", handler_->GetDocumentTreeToStringForTesting());
+
+  // Delete "pageY" by excluding it from the metadata.
+  std::vector<PageMetadataPtr> fake_metadataWithDeletedPage;
+  for (size_t i = 0; i < kTestNumPages; ++i) {
+    if (kPageIds[i] == "pageY") {
+      continue;
+    }
+    PageMetadataPtr page = ash::media_app_ui::mojom::PageMetadata::New();
+    page->id = kPageIds[i];
+    page->rect = kRect;
+    fake_metadataWithDeletedPage.push_back(std::move(page));
+  }
+  handler_->PageMetadataUpdated(std::move(fake_metadataWithDeletedPage));
+
+  std::map<const std::string, AXMediaAppPageMetadata>&
+      page_metadata_after_deletion = handler_->GetPageMetadataForTesting();
+  ASSERT_EQ(page_metadata_after_deletion.size(), kTestNumPages);
+  EXPECT_EQ(page_metadata_after_deletion.at("pageX").page_num, 1u);
+  EXPECT_EQ(page_metadata_after_deletion.at("pageY").page_num, 0u);
+  EXPECT_EQ(page_metadata_after_deletion.at("pageZ").page_num, 2u);
+
+  // Any intervening changes, i.e. the deletion of a page, should appear in the
+  // accessibility tree.
+  EnableScreenReaderForTesting();
+  const std::map<const std::string, std::unique_ptr<ui::AXTreeManager>>&
+      pages_after_deletion = handler_->GetPagesForTesting();
+  ASSERT_EQ(kTestNumPages, pages_after_deletion.size());
+  for (size_t i = 0; const auto& [page_id, page] : pages_after_deletion) {
+    EXPECT_EQ(page_id, kPageIds[i++]);
+    EXPECT_NE(nullptr, page.get());
+    EXPECT_NE(nullptr, page->ax_tree());
+  }
+  EXPECT_EQ(kDocumentTreeWithDeletedPage,
+            handler_->GetDocumentTreeToStringForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                        PageMetadataUpdatedWithNewPages) {
   handler_->DisableStatusNodesForTesting();
   handler_->DisablePostamblePageForTesting();
+  EnableScreenReaderForTesting();
   mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
   const std::vector<std::string> kPageIds{"pageX", "pageY"};
@@ -512,7 +733,6 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
     page->rect = rect;
     fake_metadata.push_back(std::move(page));
   }
-
   handler_->PageMetadataUpdated(std::move(fake_metadata));
 
   std::map<const std::string, AXMediaAppPageMetadata>& actual_page_metadata =
@@ -525,7 +745,6 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
   gfx::RectF rect(0, 0, 10, 15);
   page->rect = rect;
   fake_metadata.push_back(std::move(page));
-
   handler_->PageMetadataUpdated(std::move(fake_metadata));
 
   base::RunLoop().RunUntilIdle();
@@ -535,8 +754,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, DirtyPageOcrOrder) {
   handler_->DisableStatusNodesForTesting();
   handler_->DisablePostamblePageForTesting();
-  mojo::FakeMessageDispatchContext fake_dispatch_context;
-  mojo::test::BadMessageObserver bad_message_observer;
+  EnableScreenReaderForTesting();
   const std::vector<std::string> kPageIds{"pageW", "pageX", "pageY", "pageZ"};
   const size_t kTestNumPages = kPageIds.size();
   std::vector<PageMetadataPtr> fake_metadata;
@@ -548,7 +766,6 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, DirtyPageOcrOrder) {
     fake_metadata.push_back(std::move(page));
   }
   handler_->SetDelayCallingOcrNextDirtyPage(true);
-
   handler_->PageMetadataUpdated(std::move(fake_metadata));
 
   // All pages should now be marked dirty, and OCRed in the order they were
@@ -571,6 +788,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                        PageMetadataUpdatedPagesRelocated) {
   handler_->DisableStatusNodesForTesting();
   handler_->DisablePostamblePageForTesting();
+  EnableScreenReaderForTesting();
   const size_t kTestNumPages = 3u;
   std::vector<PageMetadataPtr> fake_metadata =
       CreateFakePageMetadata(kTestNumPages);
@@ -646,10 +864,11 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                        PageMetadataUpdatedPageHasNoOcrResults) {
-  handler_->CreateFakeOpticalCharacterRecognizerForTesting(
-      /*return_empty=*/true);
   handler_->DisableStatusNodesForTesting();
   handler_->DisablePostamblePageForTesting();
+  EnableScreenReaderForTesting();
+  handler_->CreateFakeOpticalCharacterRecognizerForTesting(
+      /*return_empty=*/true, /*is_successful=*/true);
   const size_t kTestNumPages = 2u;
   std::vector<PageMetadataPtr> fake_metadata =
       CreateFakePageMetadata(kTestNumPages);
@@ -710,6 +929,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                        PageContentsUpdatedEdit) {
   handler_->DisableStatusNodesForTesting();
   handler_->DisablePostamblePageForTesting();
+  EnableScreenReaderForTesting();
   const size_t kTestNumPages = 3u;
   std::vector<PageMetadataPtr> fake_metadata =
       CreateFakePageMetadata(kTestNumPages);
@@ -737,6 +957,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                        PageMetadataUpdated_PageRotated) {
   handler_->DisableStatusNodesForTesting();
   handler_->DisablePostamblePageForTesting();
+  EnableScreenReaderForTesting();
   constexpr size_t kTestNumPages = 4u;
   std::vector<PageMetadataPtr> fake_metadata =
       CreateFakePageMetadata(kTestNumPages);
@@ -816,6 +1037,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                        PageMetadataUpdated_PageRotatedBeforeOcr) {
   handler_->DisableStatusNodesForTesting();
   handler_->DisablePostamblePageForTesting();
+  EnableScreenReaderForTesting();
   constexpr size_t kTestNumPages = 2u;
   std::vector<PageMetadataPtr> fake_metadata =
       CreateFakePageMetadata(kTestNumPages);
@@ -881,6 +1103,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                        PageMetadataUpdated_PagesReordered) {
   handler_->DisableStatusNodesForTesting();
   handler_->DisablePostamblePageForTesting();
+  EnableScreenReaderForTesting();
   constexpr size_t kTestNumPages = 3u;
   std::vector<PageMetadataPtr> fake_metadata =
       CreateFakePageMetadata(kTestNumPages);
@@ -954,6 +1177,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, StitchDocumentTree) {
   handler_->DisableStatusNodesForTesting();
   handler_->DisablePostamblePageForTesting();
+  EnableScreenReaderForTesting();
   const char* html = R"HTML(
       <!DOCTYPE html>
       <html>
@@ -1046,6 +1270,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
   handler_->DisablePostamblePageForTesting();
   handler_->SetMinPagesPerBatchForTesting(4u);
   handler_->EnablePendingSerializedUpdatesForTesting();
+  EnableScreenReaderForTesting();
   constexpr size_t kTestNumPages = 3u;
   std::vector<PageMetadataPtr> fake_metadata =
       CreateFakePageMetadata(kTestNumPages);
@@ -1163,6 +1388,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, ScrollUpAndDown) {
   handler_->DisableStatusNodesForTesting();
   handler_->DisablePostamblePageForTesting();
+  EnableScreenReaderForTesting();
   constexpr size_t kTestNumPages = 3u;
   std::vector<PageMetadataPtr> fake_metadata =
       CreateFakePageMetadata(kTestNumPages);
@@ -1220,6 +1446,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, ScrollUpAndDown) {
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, ScrollLeftAndRight) {
   handler_->DisableStatusNodesForTesting();
   handler_->DisablePostamblePageForTesting();
+  EnableScreenReaderForTesting();
   constexpr float kTestViewportWidth = kTestPageWidth / 3.0f;
   constexpr float kTestViewportHeight = kTestPageHeight;
   constexpr size_t kTestNumPages = 3u;
@@ -1278,6 +1505,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, ScrollLeftAndRight) {
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, ScrollToMakeVisible) {
   handler_->DisableStatusNodesForTesting();
   handler_->DisablePostamblePageForTesting();
+  EnableScreenReaderForTesting();
   constexpr float kPageX = 0.0f;
   constexpr float kPageY = 0.0f;
   constexpr float kViewportWidth = 2.0f;
@@ -1386,6 +1614,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                        ScrollToMakeVisiblePagesReordered) {
   handler_->DisableStatusNodesForTesting();
   handler_->DisablePostamblePageForTesting();
+  EnableScreenReaderForTesting();
   constexpr size_t kTestNumPages = 2u;
   constexpr float kViewportWidth = 2.0f;
   constexpr float kViewportHeight = 4.0f;
@@ -1442,6 +1671,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
   base::HistogramTester histograms;
   handler_->DisableStatusNodesForTesting();
   handler_->DisablePostamblePageForTesting();
+  EnableScreenReaderForTesting();
   const size_t kTestNumPages = 2u;
   std::vector<PageMetadataPtr> fake_metadata =
       CreateFakePageMetadata(kTestNumPages);
@@ -1487,6 +1717,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
   base::HistogramTester histograms;
   handler_->DisableStatusNodesForTesting();
   handler_->DisablePostamblePageForTesting();
+  EnableScreenReaderForTesting();
   const size_t kTestNumPages = 1u;
   std::vector<PageMetadataPtr> fake_metadata =
       CreateFakePageMetadata(kTestNumPages);
@@ -1522,6 +1753,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
   base::HistogramTester histograms;
   handler_->DisableStatusNodesForTesting();
   handler_->DisablePostamblePageForTesting();
+  EnableScreenReaderForTesting();
   const size_t kTestNumPages = 1u;
   std::vector<PageMetadataPtr> fake_metadata =
       CreateFakePageMetadata(kTestNumPages);
@@ -1556,6 +1788,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
   base::HistogramTester histograms;
   handler_->DisableStatusNodesForTesting();
   handler_->DisablePostamblePageForTesting();
+  EnableScreenReaderForTesting();
   const size_t kTestNumPages = 2u;
   std::vector<PageMetadataPtr> fake_metadata =
       CreateFakePageMetadata(kTestNumPages);
@@ -1592,6 +1825,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
   base::HistogramTester histograms;
   handler_->DisableStatusNodesForTesting();
   handler_->DisablePostamblePageForTesting();
+  EnableScreenReaderForTesting();
   const size_t kTestNumPages = 1u;
   std::vector<PageMetadataPtr> fake_metadata =
       CreateFakePageMetadata(kTestNumPages);
@@ -1613,6 +1847,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageBatching) {
   handler_->DisableStatusNodesForTesting();
   handler_->DisablePostamblePageForTesting();
+  EnableScreenReaderForTesting();
   const size_t kTestNumPages = 4u;
   handler_->SetMinPagesPerBatchForTesting(2u);
   std::vector<PageMetadataPtr> fake_metadata =
@@ -1742,6 +1977,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageBatching) {
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, StatusNodes) {
   handler_->DisablePostamblePageForTesting();
+  EnableScreenReaderForTesting();
   const size_t kTestNumPages = 2u;
   std::vector<PageMetadataPtr> fake_metadata =
       CreateFakePageMetadata(kTestNumPages);
@@ -1787,8 +2023,9 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, StatusNodes) {
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                        StatusNodesNoTextExtracted) {
   handler_->DisablePostamblePageForTesting();
+  EnableScreenReaderForTesting();
   handler_->CreateFakeOpticalCharacterRecognizerForTesting(
-      /*return_empty*/ true);
+      /*return_empty*/ true, /*is_successful=*/true);
   const size_t kTestNumPages = 2u;
   std::vector<PageMetadataPtr> fake_metadata =
       CreateFakePageMetadata(kTestNumPages);
@@ -1831,6 +2068,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                        RelativeBoundsWithOffsetAndScale) {
+  EnableScreenReaderForTesting();
   constexpr size_t kTestNumPages = 1u;
   constexpr float kViewportWidth = 100.0f;
   constexpr float kViewportHeight = 200.0f;
@@ -1872,6 +2110,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PostamblePage) {
   handler_->DisableStatusNodesForTesting();
+  EnableScreenReaderForTesting();
   const size_t kTestNumPages = 3u;
   std::vector<PageMetadataPtr> fake_metadata =
       CreateFakePageMetadata(kTestNumPages);
