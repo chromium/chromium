@@ -107,14 +107,6 @@ void HostStarterBase::OnUserTokensRetrieved(const std::string& user_email,
     start_host_params_.owner_email = base::ToLowerASCII(user_email);
   }
 
-  // TODO(garykac): Setup host based on the scope.
-  std::vector<std::string> scopes = SplitString(
-      scope_str, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  LOG(INFO) << "User scopes:";
-  for (auto s : scopes) {
-    LOG(INFO) << "   " << s;
-  }
-
   // We don't need a `refresh_token` for the user so ignore it even if the
   // authorization_code was created with the offline param.
   RegisterNewHost(key_pair_->GetPublicKey(), access_token);

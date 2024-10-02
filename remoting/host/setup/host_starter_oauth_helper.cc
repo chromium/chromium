@@ -64,51 +64,27 @@ void HostStarterOAuthHelper::OnGetTokensResponse(
   access_token_ = access_token;
   refresh_token_ = refresh_token;
 
-  // Get information (email, scopes) associated with the access token.
-  oauth_client_->GetTokenInfo(access_token, 1, this);
+  // Get the email corresponding to the access token.
+  oauth_client_->GetUserEmail(access_token, 1, this);
 }
 
-void HostStarterOAuthHelper::OnGetTokenInfoResponse(
-    const base::Value::Dict& token_info) {
+void HostStarterOAuthHelper::OnGetUserEmailResponse(
+    const std::string& user_email) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (token_info.FindString("error")) {
-    std::move(error_callback_)
-        .Run(*token_info.FindString("error"), Result::OAUTH_ERROR);
-    return;
-  }
-
-  const std::string* email = token_info.FindString("email");
-  if (!email) {
-    std::move(error_callback_)
-        .Run(base::StringPrintf(
-                 "missing email for authorization_code; expected: `%s`",
-                 expected_user_email_.c_str()),
-             Result::OAUTH_ERROR);
-    return;
-  }
   if (!expected_user_email_.empty() &&
-      !base::EqualsCaseInsensitiveASCII(expected_user_email_, *email)) {
+      !base::EqualsCaseInsensitiveASCII(expected_user_email_, user_email)) {
     // Verify that the token retrieved matches the expected user email.
     std::move(error_callback_)
         .Run(base::StringPrintf(
                  "authorization_code was created for `%s` which does not "
                  "match the expected account: `%s`",
-                 email->c_str(), expected_user_email_.c_str()),
+                 user_email.c_str(), expected_user_email_.c_str()),
              Result::PERMISSION_DENIED);
     return;
   }
 
-  const std::string* scopes = token_info.FindString("scope");
-  if (!scopes) {
-    std::move(error_callback_)
-        .Run(base::StringPrintf("missing scopes for user: `%s`",
-                                expected_user_email_.c_str()),
-             Result::OAUTH_ERROR);
-    return;
-  }
-
-  std::move(done_callback_).Run(*email, access_token_, refresh_token_, *scopes);
+  std::move(done_callback_).Run(user_email, access_token_, refresh_token_, "");
 }
 
 void HostStarterOAuthHelper::OnOAuthError() {
