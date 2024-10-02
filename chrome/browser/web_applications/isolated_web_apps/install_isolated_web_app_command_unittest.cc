@@ -841,9 +841,6 @@ TEST_P(InstallIsolatedWebAppCommandBundleTest, InstallsWhenThereIsNoError) {
                   EXPECT_TRUE(DirectoryExists(iwa_root_dir));
                   EXPECT_TRUE(base::IsDirectoryEmpty(iwa_root_dir));
                   break;
-                case IwaSourceBundleModeAndFileOp::kDevModeReference:
-                  EXPECT_FALSE(DirectoryExists(iwa_root_dir));
-                  break;
               }
             },
             [](const IwaSourceProxy&) { FAIL(); }},
@@ -941,15 +938,6 @@ INSTANTIATE_TEST_SUITE_P(
                 },
             .expected_management_type =
                 WebAppManagement::Type::kIwaShimlessRma},
-        BundleInstallSourceParam{
-            .install_source =
-                [](const base::FilePath& path) {
-                  return IsolatedWebAppInstallSource::FromDevUi(
-                      IwaSourceBundleDevModeWithFileOp(
-                          path, IwaSourceBundleDevFileOp::kReference));
-                },
-            .expected_management_type =
-                WebAppManagement::Type::kIwaUserInstalled},
         BundleInstallSourceParam{
             .install_source =
                 [](const base::FilePath& path) {

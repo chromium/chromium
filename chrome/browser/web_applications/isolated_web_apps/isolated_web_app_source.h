@@ -78,7 +78,6 @@ std::ostream& operator<<(std::ostream& os, const IwaSourceProxy& source);
 enum class IwaSourceBundleModeAndFileOp {
   kDevModeCopy,
   kDevModeMove,
-  kDevModeReference,
 
   kProdModeCopy,
   kProdModeMove,
@@ -90,7 +89,6 @@ std::ostream& operator<<(std::ostream& os,
 enum class IwaSourceBundleDevFileOp {
   kCopy,
   kMove,
-  kReference,
 };
 std::ostream& operator<<(std::ostream& os, IwaSourceBundleDevFileOp file_op);
 

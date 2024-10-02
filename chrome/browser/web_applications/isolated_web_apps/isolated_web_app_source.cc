@@ -25,8 +25,6 @@ IwaSourceBundleModeAndFileOp ToBundleModeAndFileOp(
       return IwaSourceBundleModeAndFileOp::kDevModeCopy;
     case IwaSourceBundleDevFileOp::kMove:
       return IwaSourceBundleModeAndFileOp::kDevModeMove;
-    case IwaSourceBundleDevFileOp::kReference:
-      return IwaSourceBundleModeAndFileOp::kDevModeReference;
   }
 }
 
@@ -64,8 +62,6 @@ std::ostream& operator<<(std::ostream& os,
       return os << "dev_copy";
     case IwaSourceBundleModeAndFileOp::kDevModeMove:
       return os << "dev_move";
-    case IwaSourceBundleModeAndFileOp::kDevModeReference:
-      return os << "dev_reference";
     case IwaSourceBundleModeAndFileOp::kProdModeCopy:
       return os << "prod_copy";
     case IwaSourceBundleModeAndFileOp::kProdModeMove:
@@ -79,8 +75,6 @@ std::ostream& operator<<(std::ostream& os, IwaSourceBundleDevFileOp file_op) {
       return os << "copy";
     case IwaSourceBundleDevFileOp::kMove:
       return os << "move";
-    case IwaSourceBundleDevFileOp::kReference:
-      return os << "reference";
   }
 }
 
@@ -249,8 +243,6 @@ bool IwaSourceBundleWithModeAndFileOp::dev_mode() const {
     case ModeAndFileOp::kDevModeCopy:
       return true;
     case ModeAndFileOp::kDevModeMove:
-      return true;
-    case ModeAndFileOp::kDevModeReference:
       return true;
     case ModeAndFileOp::kProdModeCopy:
       return false;

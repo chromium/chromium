@@ -20,6 +20,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/notreached.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
@@ -795,21 +796,13 @@ struct VerifyRelocationVisitor {
       case IwaSourceBundleModeAndFileOp::kProdModeMove:
         EXPECT_FALSE(base::PathExists(source_path_));
         break;
-      case IwaSourceBundleModeAndFileOp::kDevModeReference:
-        FAIL();
     }
     EXPECT_NE(path, source_path_);
     EXPECT_EQ(path.DirName().DirName(), profile_dir_.Append(kIwaDirName));
     EXPECT_EQ(path.BaseName(), base::FilePath(kMainSwbnFileName));
   }
 
-  void operator()(const IwaStorageUnownedBundle& location) {
-    // Unowned bundles should not be relocated.
-    EXPECT_EQ(bundle_mode_and_file_op_,
-              IwaSourceBundleModeAndFileOp::kDevModeReference);
-    EXPECT_EQ(location.path(), source_path_);
-    EXPECT_TRUE(base::PathExists(location.path()));
-  }
+  void operator()(const IwaStorageUnownedBundle& location) { FAIL(); }
 
   void operator()(const IwaStorageProxy& location) { FAIL(); }
 
@@ -896,8 +889,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(IwaSourceBundleModeAndFileOp::kDevModeCopy,
                       IwaSourceBundleModeAndFileOp::kDevModeMove,
                       IwaSourceBundleModeAndFileOp::kProdModeCopy,
-                      IwaSourceBundleModeAndFileOp::kProdModeMove,
-                      IwaSourceBundleModeAndFileOp::kDevModeReference),
+                      IwaSourceBundleModeAndFileOp::kProdModeMove),
     [](const testing::TestParamInfo<
         InstallIsolatedWebAppCommandHelperRelocationTest::ParamType>& info) {
       return base::ToString(info.param);

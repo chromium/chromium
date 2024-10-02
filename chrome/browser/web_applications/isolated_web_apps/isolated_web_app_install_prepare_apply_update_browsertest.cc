@@ -73,7 +73,7 @@ class IsolatedWebAppInstallPrepareApplyUpdateCommandBrowserTest
       const base::FilePath& bundle_path) const {
     return IwaSourceBundleWithModeAndFileOp(
         bundle_path, is_dev_mode_
-                         ? IwaSourceBundleModeAndFileOp::kDevModeReference
+                         ? IwaSourceBundleModeAndFileOp::kDevModeMove
                          : IwaSourceBundleModeAndFileOp::kProdModeMove);
   }
 

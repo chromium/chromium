@@ -208,9 +208,6 @@ void UpdateBundlePathAndCreateStorageLocation(
                 copy_or_move(bundle.path(), /*dev_mode=*/false,
                              Operation::kMove);
                 break;
-              case IwaSourceBundleModeAndFileOp::kDevModeReference:
-                std::move(callback).Run(IwaStorageUnownedBundle{bundle.path()});
-                break;
             }
           },
           [&](const IwaSourceProxy& proxy) {
