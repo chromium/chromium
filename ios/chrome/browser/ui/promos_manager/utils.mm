@@ -67,19 +67,18 @@ bool IsUIAvailableForPromo(SceneState* scene_state) {
   // (8) User Policy notification has priority over showing promos.
   // This will only prevent showing a promo before policy notification but might
   // show a promo within same user session.
-  ChromeBrowserState* browser_state =
-      scene_state.browserProviderInterface.currentBrowserProvider.browser
-          ->GetBrowserState();
+  ProfileIOS* profile = scene_state.browserProviderInterface
+                            .currentBrowserProvider.browser->GetProfile();
   AuthenticationService* auth_service =
-      AuthenticationServiceFactory::GetForBrowserState(browser_state);
+      AuthenticationServiceFactory::GetForProfile(profile);
   // Don't show promo until auth service is initialized and we are sure that
   // there is no conflict.
   if (!auth_service) {
     return NO;
   }
-  PrefService* pref_service = browser_state->GetPrefs();
+  PrefService* pref_service = profile->GetPrefs();
   policy::UserCloudPolicyManager* user_policy_manager =
-      browser_state->GetUserCloudPolicyManager();
+      profile->GetUserCloudPolicyManager();
   return !IsUserPolicyNotificationNeeded(auth_service, pref_service,
                                          user_policy_manager);
 }

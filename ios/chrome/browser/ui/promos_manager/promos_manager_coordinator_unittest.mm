@@ -55,18 +55,17 @@ class PromosManagerCoordinatorTest : public PlatformTest {
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     RegisterProfilePrefs(testing_prefs->registry());
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               SyncServiceFactory::GetDefaultFactory());
     builder.SetPrefService(std::move(testing_prefs));
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
 
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+    AuthenticationServiceFactory::CreateAndInitializeForProfile(
+        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
 
     view_controller_ = [[UIViewController alloc] init];
     [scoped_key_window_.Get() setRootViewController:view_controller_];
@@ -77,13 +76,11 @@ class PromosManagerCoordinatorTest : public PlatformTest {
 
     AppState* app_state = OCMClassMock([AppState class]);
     OCMStub([(AppState*)app_state initStage]).andReturn(InitStageFinal);
-    scene_state_ =
-        [[FakeSceneState alloc] initWithAppState:app_state
-                                    browserState:browser_state_.get()];
+    scene_state_ = [[FakeSceneState alloc] initWithAppState:app_state
+                                                    profile:profile_.get()];
     scene_state_.scene = static_cast<UIWindowScene*>(
         [[[UIApplication sharedApplication] connectedScenes] anyObject]);
-    browser_ =
-        std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
   }
 
   // Initializes a new `PromosManagerCoordinator` for testing.
@@ -115,7 +112,7 @@ class PromosManagerCoordinatorTest : public PlatformTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   PromosManagerCoordinator* coordinator_;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   ScopedKeyWindow scoped_key_window_;
   UIViewController* view_controller_;
