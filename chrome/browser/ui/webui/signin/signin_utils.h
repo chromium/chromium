@@ -9,13 +9,16 @@
 #include <variant>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "components/signin/public/identity_manager/account_info.h"
 
 struct AccountInfo;
 class Browser;
 class Profile;
+struct AccountInfo;
 
 namespace content {
 class RenderFrameHost;
@@ -59,6 +62,30 @@ using SigninChoiceCallback = base::OnceCallback<void(SigninChoice)>;
 using SigninChoiceCallbackVariant =
     std::variant<SigninChoiceCallback,
                  signin::SigninChoiceWithConfirmationCallback>;
+
+struct EnterpriseProfileCreationDialogParams {
+  EnterpriseProfileCreationDialogParams(
+      AccountInfo account_info,
+      bool is_oidc_account,
+      bool profile_creation_required_by_policy,
+      bool show_link_data_option,
+      SigninChoiceCallbackVariant process_user_choice_callback,
+      base::OnceClosure done_callback,
+      base::OnceClosure retry_callback = base::DoNothing());
+  ~EnterpriseProfileCreationDialogParams();
+  EnterpriseProfileCreationDialogParams(
+      const EnterpriseProfileCreationDialogParams&) = delete;
+  EnterpriseProfileCreationDialogParams& operator=(
+      const EnterpriseProfileCreationDialogParams&) = delete;
+
+  AccountInfo account_info;
+  bool is_oidc_account;
+  bool profile_creation_required_by_policy;
+  bool show_link_data_option;
+  SigninChoiceCallbackVariant process_user_choice_callback;
+  base::OnceClosure done_callback;
+  base::OnceClosure retry_callback;
+};
 
 // Gets a webview within an auth page that has the specified parent frame name
 // (i.e. <webview name="foobar"></webview>).

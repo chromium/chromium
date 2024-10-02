@@ -194,6 +194,9 @@ void OidcAuthenticationSigninInterceptor::MaybeInterceptOidcAuthentication(
           base::Unretained(this)),
       base::BindOnce(
           &OidcAuthenticationSigninInterceptor::FinalizeSigninInterception,
+          base::Unretained(this)),
+      base::BindOnce(
+          &OidcAuthenticationSigninInterceptor::StartOidcRegistration,
           base::Unretained(this)));
 }
 

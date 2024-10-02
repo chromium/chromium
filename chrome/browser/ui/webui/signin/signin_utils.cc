@@ -31,6 +31,25 @@ const int kMinorModeRestrictionsFetchDeadlineMs = 1000;
 
 }  // namespace
 
+EnterpriseProfileCreationDialogParams::EnterpriseProfileCreationDialogParams(
+    AccountInfo account_info,
+    bool is_oidc_account,
+    bool profile_creation_required_by_policy,
+    bool show_link_data_option,
+    SigninChoiceCallbackVariant process_user_choice_callback,
+    base::OnceClosure done_callback,
+    base::OnceClosure retry_callback)
+    : account_info(account_info),
+      is_oidc_account(is_oidc_account),
+      profile_creation_required_by_policy(profile_creation_required_by_policy),
+      show_link_data_option(show_link_data_option),
+      process_user_choice_callback(std::move(process_user_choice_callback)),
+      done_callback(std::move(done_callback)),
+      retry_callback(std::move(retry_callback)) {}
+
+EnterpriseProfileCreationDialogParams::
+    ~EnterpriseProfileCreationDialogParams() = default;
+
 content::RenderFrameHost* GetAuthFrame(content::WebContents* web_contents,
                                        const std::string& parent_frame_name) {
   content::RenderFrameHost* frame = nullptr;

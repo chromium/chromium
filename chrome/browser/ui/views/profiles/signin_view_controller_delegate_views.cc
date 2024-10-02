@@ -180,17 +180,13 @@ SigninViewControllerDelegateViews::CreateProfileCustomizationWebView(
 std::unique_ptr<views::WebView>
 SigninViewControllerDelegateViews::CreateManagedUserNoticeConfirmationWebView(
     Browser* browser,
-    const AccountInfo& account_info,
-    bool is_oidc_account,
-    bool profile_creation_required_by_policy,
-    bool show_link_data_option,
-    signin::SigninChoiceCallbackVariant process_user_choice_callback,
-    base::OnceClosure done_callback) {
+    std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
+        create_param) {
   bool enable_updated_dialog = base::FeatureList::IsEnabled(
       features::kEnterpriseUpdatedProfileCreationScreen);
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
   enable_updated_dialog |=
-      is_oidc_account &&
+      create_param->is_oidc_account &&
       base::FeatureList::IsEnabled(
           profile_management::features::kOidcAuthProfileManagement);
 #endif
@@ -212,11 +208,10 @@ SigninViewControllerDelegateViews::CreateManagedUserNoticeConfirmationWebView(
   DCHECK(web_dialog_ui);
   web_dialog_ui->Initialize(
       browser,
-      is_oidc_account
+      create_param->is_oidc_account
           ? ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC
           : ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation,
-      account_info, profile_creation_required_by_policy, show_link_data_option,
-      std::move(process_user_choice_callback), std::move(done_callback));
+      std::move(create_param));
 
   return web_view;
 }
@@ -507,19 +502,12 @@ SigninViewControllerDelegate::CreateProfileCustomizationDelegate(
 SigninViewControllerDelegate*
 SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
     Browser* browser,
-    const AccountInfo& account_info,
-    bool is_oidc_account,
-    bool profile_creation_required_by_policy,
-    bool show_link_data_option,
-    signin::SigninChoiceCallbackVariant process_user_choice_callback,
-    base::OnceClosure done_callback) {
+    std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
+        create_param) {
   return new SigninViewControllerDelegateViews(
       SigninViewControllerDelegateViews::
-          CreateManagedUserNoticeConfirmationWebView(
-              browser, account_info, is_oidc_account,
-              profile_creation_required_by_policy, show_link_data_option,
-              std::move(process_user_choice_callback),
-              std::move(done_callback)),
+          CreateManagedUserNoticeConfirmationWebView(browser,
+                                                     std::move(create_param)),
       browser, ui::mojom::ModalType::kWindow, true, false);
 }
 #endif

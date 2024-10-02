@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/signin/public/base/signin_buildflags.h"
 
-struct AccountInfo;
 class Browser;
 struct CoreAccountId;
 enum class SyncConfirmationStyle;
@@ -89,12 +88,8 @@ class SigninViewControllerDelegate {
   // should delete itself when the window it's managing is closed.
   static SigninViewControllerDelegate* CreateManagedUserNoticeDelegate(
       Browser* browser,
-      const AccountInfo& account_info,
-      bool is_oidc_account,
-      bool force_new_profile,
-      bool show_link_data_option,
-      signin::SigninChoiceCallbackVariant process_user_choice_callback,
-      base::OnceClosure done_callback);
+      std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
+          create_param);
 #endif
 
   void AddObserver(Observer* observer);

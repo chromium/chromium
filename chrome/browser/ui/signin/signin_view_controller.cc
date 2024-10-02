@@ -485,20 +485,14 @@ void SigninViewController::ShowModalSyncConfirmationDialog(
 }
 
 void SigninViewController::ShowModalManagedUserNoticeDialog(
-    const AccountInfo& account_info,
-    bool is_oidc_account,
-    bool force_new_profile,
-    bool show_link_data_option,
-    signin::SigninChoiceCallbackVariant process_user_choice_callback,
-    base::OnceClosure done_callback) {
+    std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
+        create_param) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
   CloseModalSignin();
   dialog_ = std::make_unique<SigninModalDialogImpl>(
       SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
-          browser_, account_info, is_oidc_account, force_new_profile,
-          show_link_data_option, std::move(process_user_choice_callback),
-          std::move(done_callback)),
+          browser_, std::move(create_param)),
       GetOnModalDialogClosedCallback());
 #else
   NOTREACHED_IN_MIGRATION() << "Managed user notice dialog modal not supported";

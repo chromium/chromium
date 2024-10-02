@@ -98,36 +98,35 @@ std::string GetManagedDeviceTitle() {
 ManagedUserProfileNoticeHandler::ManagedUserProfileNoticeHandler(
     Browser* browser,
     ManagedUserProfileNoticeUI::ScreenType type,
-    bool profile_creation_required_by_policy,
-    bool show_link_data_option,
-    const AccountInfo& account_info,
-    signin::SigninChoiceCallbackVariant process_user_choice_callback,
-    base::OnceClosure done_callback)
+    std::unique_ptr<signin::EnterpriseProfileCreationDialogParams> create_param)
     : browser_(browser),
       type_(type),
-      profile_creation_required_by_policy_(profile_creation_required_by_policy),
+      profile_creation_required_by_policy_(
+          create_param->profile_creation_required_by_policy),
 #if !BUILDFLAG(IS_CHROMEOS)
-      show_link_data_option_(show_link_data_option),
+      show_link_data_option_(create_param->show_link_data_option),
 #endif
-      email_(type_ == ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC
+      email_(create_param->is_oidc_account
                  ? std::u16string()
-                 : base::UTF8ToUTF16(account_info.email)),
+                 : base::UTF8ToUTF16(create_param->account_info.email)),
       domain_name_(
-          type_ == ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC
+          create_param->is_oidc_account
               ? std::string()
-              : gaia::ExtractDomainName(account_info.email)),
-      account_id_(account_info.account_id),
-      done_callback_(std::move(done_callback)) {
+              : gaia::ExtractDomainName(create_param->account_info.email)),
+      account_id_(create_param->account_info.account_id),
+      done_callback_(std::move(create_param->done_callback)),
+      retry_callback_(std::move(create_param->retry_callback)) {
   if (std::holds_alternative<signin::SigninChoiceWithConfirmationCallback>(
-          process_user_choice_callback)) {
+          create_param->process_user_choice_callback)) {
     process_user_choice_with_confirmation_callback_ =
         std::move(std::get<signin::SigninChoiceWithConfirmationCallback>(
-            process_user_choice_callback));
+            create_param->process_user_choice_callback));
     CHECK(process_user_choice_with_confirmation_callback_);
   }
   if (std::holds_alternative<signin::SigninChoiceCallback>(
-          process_user_choice_callback)) {
-    CHECK(std::get<signin::SigninChoiceCallback>(process_user_choice_callback));
+          create_param->process_user_choice_callback)) {
+    CHECK(std::get<signin::SigninChoiceCallback>(
+        create_param->process_user_choice_callback));
     process_user_choice_with_confirmation_callback_ = base::BindOnce(
         [](signin::SigninChoiceCallback callback, signin::SigninChoice choice,
            signin::SigninChoiceOperationDoneCallback done) {
@@ -136,7 +135,7 @@ ManagedUserProfileNoticeHandler::ManagedUserProfileNoticeHandler(
               signin::SigninChoiceOperationResult::SIGNIN_SILENT_SUCCESS);
         },
         std::move(std::get<signin::SigninChoiceCallback>(
-            process_user_choice_callback)));
+            create_param->process_user_choice_callback)));
   }
   CHECK(browser_ ||
         type_ !=

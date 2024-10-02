@@ -22,7 +22,6 @@
 
 class Browser;
 class ManagedUserProfileNoticeHandler;
-struct AccountInfo;
 
 namespace content {
 class WebUI;
@@ -69,14 +68,10 @@ class ManagedUserProfileNoticeUI : public content::WebUIController {
   // selected, will indicate that the user wants the current profile to be used
   // as dedicated profile for the new account, linking the current data with
   // synced data from the new account.
-  void Initialize(
-      Browser* browser,
-      ScreenType type,
-      const AccountInfo& account_info,
-      bool profile_creation_required_by_policy,
-      bool show_link_data_option,
-      signin::SigninChoiceCallbackVariant process_user_choice_callback,
-      base::OnceClosure done_callback);
+  void Initialize(Browser* browser,
+                  ScreenType type,
+                  std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
+                      create_param);
 
   // Allows tests to trigger page events.
   ManagedUserProfileNoticeHandler* GetHandlerForTesting();

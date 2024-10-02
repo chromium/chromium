@@ -41,6 +41,7 @@ source_set("signin_utils") {
     "//build:chromeos_buildflags",
     "//components/signin/public/base",
     "//components/signin/public/base:signin_buildflags",
+    "//components/signin/public/identity_manager:identity_manager",
     "//url",
   ]
 

@@ -47,6 +47,7 @@ class MockDelegate : public ProfileTokenWebSigninInterceptor::Delegate {
               (content::WebContents*,
                const WebSigninInterceptor::Delegate::BubbleParameters&,
                signin::SigninChoiceWithConfirmationCallback,
+               base::OnceClosure,
                base::OnceClosure),
               (override));
   MOCK_METHOD(void,

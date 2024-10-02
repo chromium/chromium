@@ -52,11 +52,8 @@ class ManagedUserProfileNoticeHandler
   ManagedUserProfileNoticeHandler(
       Browser* browser,
       ManagedUserProfileNoticeUI::ScreenType type,
-      bool profile_creation_required_by_policy,
-      bool show_link_data_option,
-      const AccountInfo& account_info,
-      signin::SigninChoiceCallbackVariant process_user_choice_callback,
-      base::OnceClosure done_callback);
+      std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
+          create_param);
   ~ManagedUserProfileNoticeHandler() override;
 
   ManagedUserProfileNoticeHandler(const ManagedUserProfileNoticeHandler&) =
@@ -152,6 +149,7 @@ class ManagedUserProfileNoticeHandler
   signin::SigninChoiceWithConfirmationCallback
       process_user_choice_with_confirmation_callback_;
   base::OnceClosure done_callback_;
+  base::OnceClosure retry_callback_;
   bool canceling_ = false;
   base::WeakPtrFactory<ManagedUserProfileNoticeHandler> weak_ptr_factory_{this};
 };

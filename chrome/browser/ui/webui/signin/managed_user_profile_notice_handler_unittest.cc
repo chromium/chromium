@@ -76,16 +76,12 @@ class ManagedUserProfileNoticeHandlerTestBase
 
   void InitializeHandler(
       ManagedUserProfileNoticeUI::ScreenType screen_type,
-      bool profile_creation_required_by_policy,
-      bool show_link_data_option,
-      signin::SigninChoiceCallbackVariant process_user_choice_callback,
-      base::OnceClosure done_callback) {
+      std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
+          dialog_params) {
     message_handler_.reset();
 
     message_handler_ = std::make_unique<ManagedUserProfileNoticeHandler>(
-        /*browser=*/nullptr, screen_type, profile_creation_required_by_policy,
-        show_link_data_option, account_info_,
-        std::move(process_user_choice_callback), std::move(done_callback));
+        /*browser=*/nullptr, screen_type, std::move(dialog_params));
     message_handler_->set_web_ui_for_test(web_ui());
     message_handler_->RegisterMessages();
   }
@@ -98,6 +94,7 @@ class ManagedUserProfileNoticeHandlerTestBase
   }
 
   content::TestWebUI* web_ui() { return web_ui_.get(); }
+  AccountInfo& account_info() { return account_info_; }
   ManagedUserProfileNoticeHandler* handler() { return message_handler_.get(); }
 
  private:
@@ -176,9 +173,13 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest, HandleProceed) {
   base::MockCallback<base::OnceClosure> mock_done_callback;
   InitializeHandler(
       ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
-      GetParam().profile_creation_required_by_policy,
-      /*show_link_data_option=*/false, mock_process_user_choice_callback.Get(),
-      mock_done_callback.Get());
+      std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+          account_info(),
+          /*is_oidc_account=*/false,
+          GetParam().profile_creation_required_by_policy,
+          /*show_link_data_option=*/false,
+          /*process_user_choice_callback=*/
+          mock_process_user_choice_callback.Get(), mock_done_callback.Get()));
 
   base::Value::List args;
   args.Append(GetParam().state);
@@ -197,9 +198,13 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest,
   base::MockCallback<base::OnceClosure> mock_done_callback;
   InitializeHandler(
       ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
-      GetParam().profile_creation_required_by_policy,
-      /*show_link_data_option=*/true, mock_process_user_choice_callback.Get(),
-      mock_done_callback.Get());
+      std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+          account_info(),
+          /*is_oidc_account=*/false,
+          GetParam().profile_creation_required_by_policy,
+          /*show_link_data_option=*/true,
+          /*process_user_choice_callback=*/
+          mock_process_user_choice_callback.Get(), mock_done_callback.Get()));
 
   base::Value::List args;
   args.Append(GetParam().state);
@@ -233,9 +238,13 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest,
   base::MockCallback<base::OnceClosure> mock_done_callback;
   InitializeHandler(
       ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
-      GetParam().profile_creation_required_by_policy,
-      /*show_link_data_option=*/false, mock_process_user_choice_callback.Get(),
-      mock_done_callback.Get());
+      std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+          account_info(),
+          /*is_oidc_account=*/false,
+          GetParam().profile_creation_required_by_policy,
+          /*show_link_data_option=*/false,
+          /*process_user_choice_callback=*/
+          mock_process_user_choice_callback.Get(), mock_done_callback.Get()));
 
   base::Value::List args;
   args.Append(ManagedUserProfileNoticeHandler::State::kDisclosure);
@@ -265,9 +274,13 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest,
   base::MockCallback<base::OnceClosure> mock_done_callback;
   InitializeHandler(
       ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
-      GetParam().profile_creation_required_by_policy,
-      /*show_link_data_option=*/false, mock_process_user_choice_callback.Get(),
-      mock_done_callback.Get());
+      std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+          account_info(),
+          /*is_oidc_account=*/false,
+          GetParam().profile_creation_required_by_policy,
+          /*show_link_data_option=*/false,
+          /*process_user_choice_callback=*/
+          mock_process_user_choice_callback.Get(), mock_done_callback.Get()));
 
   base::Value::List args;
   args.Append(ManagedUserProfileNoticeHandler::State::kDisclosure);
@@ -306,9 +319,13 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest,
   base::MockCallback<base::OnceClosure> mock_done_callback;
   InitializeHandler(
       ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
-      GetParam().profile_creation_required_by_policy,
-      /*show_link_data_option=*/false, mock_process_user_choice_callback.Get(),
-      mock_done_callback.Get());
+      std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+          account_info(),
+          /*is_oidc_account=*/false,
+          GetParam().profile_creation_required_by_policy,
+          /*show_link_data_option=*/false,
+          /*process_user_choice_callback=*/
+          mock_process_user_choice_callback.Get(), mock_done_callback.Get()));
 
   base::Value::List args;
   args.Append(ManagedUserProfileNoticeHandler::State::kDisclosure);
@@ -552,9 +569,13 @@ TEST_F(ManagedUserProfileNoticeHandleCancelTest, HandleCancelNoUseAfterFree) {
   base::MockCallback<base::OnceClosure> mock_done_callback;
   InitializeHandler(
       ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
-      /*profile_creation_required_by_policy=*/true,
-      /*show_link_data_option=*/true, mock_process_user_choice_callback.Get(),
-      mock_done_callback.Get());
+      std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+          account_info(),
+          /*is_oidc_account=*/false,
+          /*profile_creation_required_by_policy=*/true,
+          /*show_link_data_option=*/true,
+          /*process_user_choice_callback=*/
+          mock_process_user_choice_callback.Get(), mock_done_callback.Get()));
 
   EXPECT_CALL(mock_process_user_choice_callback,
               Run(signin::SIGNIN_CHOICE_CANCEL))

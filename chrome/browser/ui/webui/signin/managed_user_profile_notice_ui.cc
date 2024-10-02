@@ -199,32 +199,25 @@ ManagedUserProfileNoticeUI::~ManagedUserProfileNoticeUI() = default;
 void ManagedUserProfileNoticeUI::Initialize(
     Browser* browser,
     ManagedUserProfileNoticeUI::ScreenType type,
-    const AccountInfo& account_info,
-    bool profile_creation_required_by_policy,
-    bool show_link_data_option,
-    signin::SigninChoiceCallbackVariant process_user_choice_callback,
-    base::OnceClosure done_callback) {
-  auto handler = std::make_unique<ManagedUserProfileNoticeHandler>(
-      browser, type, profile_creation_required_by_policy, show_link_data_option,
-      account_info, std::move(process_user_choice_callback),
-      std::move(done_callback));
-  handler_ = handler.get();
-
+    std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
+        create_param) {
   base::Value::Dict update_data;
   if (type ==
       ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation) {
     update_data.Set("isModalDialog", true);
 
-    int title_id = profile_creation_required_by_policy
+    int title_id = create_param->profile_creation_required_by_policy
                        ? IDS_ENTERPRISE_WELCOME_PROFILE_REQUIRED_TITLE
                        : IDS_ENTERPRISE_WELCOME_PROFILE_WILL_BE_MANAGED_TITLE;
     update_data.Set("enterpriseProfileWelcomeTitle",
                     l10n_util::GetStringUTF16(title_id));
 
-    update_data.Set("showLinkDataCheckbox", show_link_data_option);
+    update_data.Set("showLinkDataCheckbox",
+                    create_param->show_link_data_option);
     update_data.Set("initialState",
                     ManagedUserProfileNoticeHandler::State::kValueProposition);
-    update_data.Set("enforcedByPolicy", profile_creation_required_by_policy);
+    update_data.Set("enforcedByPolicy",
+                    create_param->profile_creation_required_by_policy);
   } else if (type == ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC) {
     update_data.Set("initialState",
                     ManagedUserProfileNoticeHandler::State::kDisclosure);
@@ -243,17 +236,21 @@ void ManagedUserProfileNoticeUI::Initialize(
                 profile_management::features::kOidcAuthProfileManagement));
 #endif
   }
-  if (account_info.IsManaged()) {
+  if (create_param->account_info.IsManaged()) {
     update_data.Set(
         "profileDisclosureSubtitle",
         l10n_util::GetStringFUTF16(
             IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_KNOWN_DOMAIN_SUBTITLE,
-            base::UTF8ToUTF16(
-                enterprise_util::GetDomainFromEmail(account_info.email))));
+            base::UTF8ToUTF16(enterprise_util::GetDomainFromEmail(
+                create_param->account_info.email))));
   }
   content::WebUIDataSource::Update(
       Profile::FromWebUI(web_ui()),
       chrome::kChromeUIManagedUserProfileNoticeHost, std::move(update_data));
+
+  auto handler = std::make_unique<ManagedUserProfileNoticeHandler>(
+      browser, type, std::move(create_param));
+  handler_ = handler.get();
 
   web_ui()->AddMessageHandler(std::move(handler));
 }

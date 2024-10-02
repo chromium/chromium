@@ -72,6 +72,7 @@ class MockDiceWebSigninInterceptorDelegate
               (content::WebContents*,
                const WebSigninInterceptor::Delegate::BubbleParameters&,
                signin::SigninChoiceWithConfirmationCallback,
+               base::OnceClosure,
                base::OnceClosure),
               (override));
   void ShowFirstRunExperienceInNewProfile(

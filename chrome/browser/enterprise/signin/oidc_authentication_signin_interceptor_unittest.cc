@@ -313,6 +313,7 @@ class MockDelegate : public OidcAuthenticationSigninInterceptor::Delegate {
               (content::WebContents*,
                const WebSigninInterceptor::Delegate::BubbleParameters&,
                signin::SigninChoiceWithConfirmationCallback,
+               base::OnceClosure,
                base::OnceClosure),
               (override));
   MOCK_METHOD(void,
@@ -523,13 +524,13 @@ class OidcAuthenticationSigninInterceptorTest
                 return nullptr;
               }));
     } else if (expect_dialog_to_show) {
-      EXPECT_CALL(*delegate_, ShowOidcInterceptionDialog(_, _, _, _))
+      EXPECT_CALL(*delegate_, ShowOidcInterceptionDialog(_, _, _, _, _))
           .Times(1)
           .WillRepeatedly(Invoke(
               [&](content::WebContents*,
                   const WebSigninInterceptor::Delegate::BubbleParameters&,
                   signin::SigninChoiceWithConfirmationCallback callback,
-                  base::OnceClosure done_callback) {
+                  base::OnceClosure done_callback, base::OnceClosure) {
                 auto fake_bubble_handle = std::make_unique<FakeBubbleHandle>(
                     choice, std::move(callback), std::move(done_callback),
                     expected_operation_result);
@@ -537,7 +538,8 @@ class OidcAuthenticationSigninInterceptorTest
                 return fake_bubble_handle;
               }));
     } else {
-      EXPECT_CALL(*delegate_, ShowOidcInterceptionDialog(_, _, _, _)).Times(0);
+      EXPECT_CALL(*delegate_, ShowOidcInterceptionDialog(_, _, _, _, _))
+          .Times(0);
     }
 
     base::RunLoop run_loop;

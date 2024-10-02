@@ -21,7 +21,6 @@
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/window/dialog_delegate.h"
 
-struct AccountInfo;
 class Browser;
 class GURL;
 enum class SyncConfirmationStyle;
@@ -80,12 +79,8 @@ class SigninViewControllerDelegateViews
   static std::unique_ptr<views::WebView>
   CreateManagedUserNoticeConfirmationWebView(
       Browser* browser,
-      const AccountInfo& account_info,
-      bool is_oidc_account,
-      bool profile_creation_required_by_policy,
-      bool show_link_data_option,
-      signin::SigninChoiceCallbackVariant process_user_choice_callback,
-      base::OnceClosure done_callback);
+      std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
+          create_param);
 #endif
 
   // views::DialogDelegateView:

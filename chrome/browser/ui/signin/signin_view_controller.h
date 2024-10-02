@@ -188,12 +188,8 @@ class SigninViewController {
   // `done_callback` is the callback when the flow is complete, this is
   // where The UI cleanups should be handled.
   void ShowModalManagedUserNoticeDialog(
-      const AccountInfo& account_info,
-      bool is_oidc_account,
-      bool profile_creation_required_by_policy,
-      bool show_link_data_option,
-      signin::SigninChoiceCallbackVariant process_user_choice_callback,
-      base::OnceClosure done_callback);
+      std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
+          create_param);
 
   // Shows the modal sign-in error dialog as a browser-modal dialog on top of
   // the |browser_|'s window.

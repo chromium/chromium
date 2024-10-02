@@ -53,7 +53,8 @@ class TestDiceWebSigninInterceptorDelegate
       content::WebContents* web_contents,
       const BubbleParameters& bubble_parameters,
       signin::SigninChoiceWithConfirmationCallback callback,
-      base::OnceClosure dialog_closed_closure) override {
+      base::OnceClosure dialog_closed_closure,
+      base::OnceClosure retry_callback) override {
     std::move(callback)
         .Then(std::move(dialog_closed_closure))
         .Run(signin::SIGNIN_CHOICE_CANCEL, base::DoNothing());
