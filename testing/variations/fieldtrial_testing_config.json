@@ -16120,7 +16120,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "PMProcessPriorityPolicy"
+                        "PMProcessPriorityPolicy",
+                        "PriorityOverridePendingViews"
                     ]
                 }
             ]

@@ -1063,21 +1063,38 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, PriorityOverride) {
   EXPECT_EQ(process->GetPriority(), base::Process::Priority::kBestEffort);
   EXPECT_EQ(observer.TakeValue().value(), process->GetPriority());
 
-  // Add a pending view, and expect the process to *stay* backgrounded.
-  process->AddPendingView();
+  // Add a media stream, and expect the process to *stay* backgrounded.
+  process->OnMediaStreamAdded();
   EXPECT_TRUE(process->HasPriorityOverride());
   EXPECT_EQ(process->GetPriority(), base::Process::Priority::kBestEffort);
   EXPECT_EQ(observer.TakeValue().value(), process->GetPriority());
 
-  // Clear the override. The pending view should cause the process to go back to
+  // TODO(pmonette): Pending views will be taken into account if
+  // kPriorityOverridePendingViews is enabled.
+  base::Process::Priority kExpectedPriorityPendingViews =
+      base::FeatureList::IsEnabled(features::kPriorityOverridePendingViews)
+          ? base::Process::Priority::kUserBlocking
+          : base::Process::Priority::kBestEffort;
+
+  process->AddPendingView();
+  EXPECT_TRUE(process->HasPriorityOverride());
+  EXPECT_EQ(process->GetPriority(), kExpectedPriorityPendingViews);
+  EXPECT_EQ(observer.TakeValue().value(), process->GetPriority());
+
+  process->RemovePendingView();
+  EXPECT_TRUE(process->HasPriorityOverride());
+  EXPECT_EQ(process->GetPriority(), base::Process::Priority::kBestEffort);
+  EXPECT_EQ(observer.TakeValue().value(), process->GetPriority());
+
+  // Clear the override. The media stream should cause the process to go back to
   // being foregrounded.
   process->ClearPriorityOverride();
   EXPECT_FALSE(process->HasPriorityOverride());
   EXPECT_EQ(process->GetPriority(), base::Process::Priority::kUserBlocking);
   EXPECT_EQ(observer.TakeValue().value(), process->GetPriority());
 
-  // Clear the pending view so the test doesn't explode.
-  process->RemovePendingView();
+  // Clear the media stream so the test doesn't explode.
+  process->OnMediaStreamRemoved();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

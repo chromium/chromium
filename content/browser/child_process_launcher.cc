@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/i18n/icu_util.h"
@@ -20,6 +21,7 @@
 #include "base/types/expected.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/common/content_features.h"
@@ -275,6 +277,12 @@ ChildProcessLauncher::Client* ChildProcessLauncher::ReplaceClientForTest(
 bool RenderProcessPriority::is_background() const {
 #if !BUILDFLAG(IS_ANDROID)
   if (priority_override) {
+    // TODO(pmonette): Migrate this logic to the performance manager's voting
+    // system if it has a positive impact.
+    if (base::FeatureList::IsEnabled(features::kPriorityOverridePendingViews) &&
+        boost_for_pending_views) {
+      return false;
+    }
     return *priority_override == base::Process::Priority::kBestEffort;
   }
 #endif
@@ -285,6 +293,12 @@ bool RenderProcessPriority::is_background() const {
 base::Process::Priority RenderProcessPriority::GetProcessPriority() const {
 #if !BUILDFLAG(IS_ANDROID)
   if (priority_override) {
+    // TODO(pmonette): Migrate this logic to the performance manager's voting
+    // system if it has a positive impact.
+    if (base::FeatureList::IsEnabled(features::kPriorityOverridePendingViews) &&
+        boost_for_pending_views) {
+      return base::Process::Priority::kUserBlocking;
+    }
     return *priority_override;
   }
 #endif

@@ -392,6 +392,12 @@ BASE_FEATURE(kPreloadingConfig,
              "PreloadingConfig",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// This feature makes it so that having pending views increase the priority of a
+// RenderProcessHost even when there is a priority override.
+BASE_FEATURE(kPriorityOverridePendingViews,
+             "PriorityOverridePendingViews",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables exposure of the core milestone 1 (M1) APIs in the renderer without an
 // origin trial token: Attribution Reporting, FLEDGE, Topics.
 BASE_FEATURE(kPrivacySandboxAdsAPIsM1Override,
