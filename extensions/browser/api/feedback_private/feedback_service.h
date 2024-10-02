@@ -117,10 +117,6 @@ class FeedbackService : public base::RefCountedThreadSafe<FeedbackService> {
       feedback::BinaryLogFilesReader::BinaryLogsResponse binary_logs);
   void OnExtraLogsFetched(const FeedbackParams& params,
                           scoped_refptr<feedback::FeedbackData> feedback_data);
-  void OnLacrosHistogramsFetched(
-      const FeedbackParams& params,
-      scoped_refptr<feedback::FeedbackData> feedback_data,
-      const std::string& compressed_histograms);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   raw_ptr<content::BrowserContext, AcrossTasksDanglingUntriaged>

@@ -121,7 +121,6 @@ class FakeFeedbackPrivateDelegate : public FeedbackPrivateDelegate {
       extensions::FetchExtraLogsCallback callback) const override;
   extensions::api::feedback_private::LandingPageType GetLandingPageType(
       const feedback::FeedbackData& feedback_data) const override;
-  void GetLacrosHistograms(GetHistogramsCallback callback) override;
   std::string GetSignedInUserEmail(
       content::BrowserContext* context) const override;
   void NotifyFeedbackDelayed() const override;
@@ -173,11 +172,6 @@ extensions::api::feedback_private::LandingPageType
 FakeFeedbackPrivateDelegate::GetLandingPageType(
     const feedback::FeedbackData& feedback_data) const {
   return extensions::api::feedback_private::LandingPageType::kNoLandingPage;
-}
-
-void FakeFeedbackPrivateDelegate::GetLacrosHistograms(
-    GetHistogramsCallback callback) {
-  std::move(callback).Run(std::string());
 }
 
 std::string FakeFeedbackPrivateDelegate::GetSignedInUserEmail(

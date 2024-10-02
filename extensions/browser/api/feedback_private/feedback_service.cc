@@ -65,8 +65,6 @@ constexpr char kBluetoothLogsAttachmentNameOld[] = "bluetooth_logs.old.bz2";
 constexpr char kBluetoothQualityReportAttachmentName[] =
     "bluetooth_quality_report";
 
-constexpr char kLacrosHistogramsFilename[] = "lacros_histograms.zip";
-
 void AddAttachment(scoped_refptr<feedback::FeedbackData> feedback_data,
                    const base::FilePath& root_path,
                    const std::string& file_path,
@@ -102,8 +100,6 @@ std::string_view GetAttachmentName(debugd::FeedbackBinaryLogType log_type) {
   }
 }
 #endif
-
-constexpr char kLacrosLogEntryPrefix[] = "Lacros ";
 
 void RedactFeedbackData(scoped_refptr<feedback::FeedbackData> feedback_data) {
   redaction::RedactionTool redactor(nullptr);
@@ -278,20 +274,6 @@ void FeedbackService::FetchExtraLogs(
 void FeedbackService::OnExtraLogsFetched(
     const FeedbackParams& params,
     scoped_refptr<feedback::FeedbackData> feedback_data) {
-  delegate_->GetLacrosHistograms(
-      base::BindOnce(&FeedbackService::OnLacrosHistogramsFetched, this, params,
-                     feedback_data));
-}
-
-void FeedbackService::OnLacrosHistogramsFetched(
-    const FeedbackParams& params,
-    scoped_refptr<feedback::FeedbackData> feedback_data,
-    const std::string& compressed_histograms) {
-  if (!compressed_histograms.empty()) {
-    feedback_data->AddFile(kLacrosHistogramsFilename,
-                           std::move(compressed_histograms));
-  }
-
   auto barrier_closure =
       base::BarrierClosure((params.send_bluetooth_logs ? 2 : 0) +
                                (params.send_wifi_debug_logs ? 1 : 0),
@@ -347,10 +329,6 @@ void FeedbackService::OnAllLogsFetched(
   if (!params.send_tab_titles) {
     feedback_data->RemoveLog(
         feedback::FeedbackReport::kMemUsageWithTabTitlesKey);
-    // On Lacros, the key has a prefix "Lacros ".
-    feedback_data->RemoveLog(
-        base::StrCat({kLacrosLogEntryPrefix,
-                      feedback::FeedbackReport::kMemUsageWithTabTitlesKey}));
   }
   feedback_data->CompressSystemInfo();
 

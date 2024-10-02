@@ -35,7 +35,6 @@ class ShellFeedbackPrivateDelegate : public FeedbackPrivateDelegate {
                       FetchExtraLogsCallback callback) const override;
   api::feedback_private::LandingPageType GetLandingPageType(
       const feedback::FeedbackData& feedback_data) const override;
-  void GetLacrosHistograms(GetHistogramsCallback callback) override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   std::string GetSignedInUserEmail(
       content::BrowserContext* context) const override;

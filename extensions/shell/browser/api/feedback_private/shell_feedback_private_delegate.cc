@@ -56,12 +56,6 @@ ShellFeedbackPrivateDelegate::GetLandingPageType(
     const feedback::FeedbackData& feedback_data) const {
   return api::feedback_private::LandingPageType::kNoLandingPage;
 }
-
-void ShellFeedbackPrivateDelegate::GetLacrosHistograms(
-    GetHistogramsCallback callback) {
-  NOTIMPLEMENTED();
-  std::move(callback).Run(std::string());
-}
 #endif
 
 std::string ShellFeedbackPrivateDelegate::GetSignedInUserEmail(
