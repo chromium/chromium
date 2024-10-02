@@ -94,7 +94,7 @@ public class DefaultBrowserPromoCardTest {
                         mTestTracker,
                         mOnDisplayChangedCallback);
 
-        ((ImageButton) card.getView().findViewById(R.id.close_button)).performClick();
+        ((ImageButton) card.getView().findViewById(R.id.promo_close_button)).performClick();
 
         Assert.assertFalse(card.isPromoShowing());
         verify(mOnDisplayChangedCallback, times(1)).run();
@@ -113,7 +113,7 @@ public class DefaultBrowserPromoCardTest {
                         mTestTracker,
                         mOnDisplayChangedCallback);
 
-        ((Button) card.getView().findViewById(R.id.open_settings_button)).performClick();
+        ((Button) card.getView().findViewById(R.id.promo_primary_button)).performClick();
         verify(mActivity, times(1)).startActivity(any(), any());
         verify(mTestTracker, times(1)).notifyEvent("default_browser_promo_setting_card_used");
     }

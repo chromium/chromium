@@ -20,6 +20,8 @@ public class PromoCardProperties {
     // Visible related properties
     public static final WritableBooleanPropertyKey HAS_SECONDARY_BUTTON =
             new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey HAS_CLOSE_BUTTON =
+            new WritableBooleanPropertyKey();
 
     // View related properties
     public static final WritableObjectPropertyKey<Drawable> IMAGE =
@@ -46,6 +48,9 @@ public class PromoCardProperties {
     public static final WritableObjectPropertyKey<Callback<View>> SECONDARY_BUTTON_CALLBACK =
             new WritableObjectPropertyKey<>();
 
+    public static final WritableObjectPropertyKey<Callback<View>> CLOSE_BUTTON_CALLBACK =
+            new WritableObjectPropertyKey<>();
+
     // Impression related properties
     /**
      * If true, track the impression on the primary button. Otherwise, track impression on the
@@ -68,6 +73,7 @@ public class PromoCardProperties {
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 HAS_SECONDARY_BUTTON,
+                HAS_CLOSE_BUTTON,
                 IMAGE,
                 ICON_TINT,
                 TITLE,
@@ -76,6 +82,7 @@ public class PromoCardProperties {
                 SECONDARY_BUTTON_TEXT,
                 PRIMARY_BUTTON_CALLBACK,
                 SECONDARY_BUTTON_CALLBACK,
+                CLOSE_BUTTON_CALLBACK,
                 IS_IMPRESSION_ON_PRIMARY_BUTTON,
                 IMPRESSION_SEEN_CALLBACK
             };

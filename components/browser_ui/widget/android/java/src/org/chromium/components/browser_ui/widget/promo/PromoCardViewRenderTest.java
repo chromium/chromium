@@ -135,6 +135,29 @@ public class PromoCardViewRenderTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
+    public void testLarge_ShowCloseButton() throws Exception {
+        Drawable illustration =
+                AppCompatResources.getDrawable(getActivity(), R.drawable.test_illustration);
+        mModel.set(PromoCardProperties.IMAGE, illustration);
+        mModel.set(PromoCardProperties.HAS_CLOSE_BUTTON, true);
+        setPromoCard(LayoutStyle.LARGE);
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    int visibility =
+                            mPromoCardCoordinator
+                                    .getView()
+                                    .findViewById(R.id.promo_close_button)
+                                    .getVisibility();
+                    Criteria.checkThat(visibility, Matchers.is(View.VISIBLE));
+                });
+
+        mRenderTestRule.render(mPromoCardCoordinator.getView(), "promo_card_close_shown");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
     public void testCompact() throws Exception {
         setPromoCard(LayoutStyle.COMPACT);
         mRenderTestRule.render(mPromoCardCoordinator.getView(), "promo_card_compact");

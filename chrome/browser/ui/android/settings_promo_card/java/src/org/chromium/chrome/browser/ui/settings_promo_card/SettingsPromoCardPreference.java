@@ -36,7 +36,7 @@ public class SettingsPromoCardPreference extends Preference {
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
         setVisible(false);
-        if (mProvider != null) {
+        if (mProvider != null && mProvider.isPromoShowing()) {
             ViewGroup container = (ViewGroup) holder.itemView;
             container.removeAllViews();
             container.addView(mProvider.getView());
