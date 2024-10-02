@@ -137,6 +137,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
@@ -538,7 +539,7 @@ public class TabListMediatorUnitTest {
 
         mMediator.resetWithListOfTabs(tabs, false);
 
-        String defaultTitle = TabGroupTitleEditor.getDefaultTitle(mActivity, tabs.size());
+        String defaultTitle = TabGroupTitleUtils.getDefaultTitle(mActivity, tabs.size());
         assertThat(mModel.get(0).model.get(TabProperties.TITLE), equalTo(defaultTitle));
     }
 
@@ -3830,7 +3831,7 @@ public class TabListMediatorUnitTest {
         createTabGroup(group1, TAB2_ID, TAB_GROUP_ID);
         setupSyncedGroup(/* isShared= */ true);
 
-        String defaultTitle = TabGroupTitleEditor.getDefaultTitle(mActivity, group1.size());
+        String defaultTitle = TabGroupTitleUtils.getDefaultTitle(mActivity, group1.size());
         final @TabGroupColorId int defaultColor = TabGroupColorId.GREY;
         final @StringRes int colorDesc =
                 ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(defaultColor);

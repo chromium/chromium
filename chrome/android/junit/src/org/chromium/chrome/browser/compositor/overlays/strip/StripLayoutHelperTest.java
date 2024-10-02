@@ -93,9 +93,9 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
-import org.chromium.chrome.browser.tasks.tab_management.TabGroupTitleEditor;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -4526,7 +4526,7 @@ public class StripLayoutHelperTest {
     @Test
     public void testSetLayerTitleCache() {
         // Setup. Group 2nd and 3rd tab.
-        String expectedTitle = TabGroupTitleEditor.getDefaultTitle(mContext, 2);
+        String expectedTitle = TabGroupTitleUtils.getDefaultTitle(mContext, 2);
         initializeTest(false, false, 0);
         groupTabs(1, 3);
 

@@ -82,6 +82,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupUtils;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
@@ -1290,9 +1291,9 @@ class TabListMediator implements TabListNotificationHandler {
                 mCurrentTabModelFilterSupplier.addObserver(mOnTabModelFilterChanged));
 
         mTabGroupTitleEditor =
-                new TabGroupTitleEditor(mContext) {
+                new TabGroupTitleEditor() {
                     @Override
-                    protected void updateTabGroupTitle(Tab tab, String title) {
+                    public void updateTabGroupTitle(Tab tab, String title) {
                         // Only update title in PropertyModel for tab switcher.
                         if (!mActionsOnAllRelatedTabs) return;
                         Tab currentGroupSelectedTab =
@@ -1309,21 +1310,21 @@ class TabListMediator implements TabListNotificationHandler {
                     }
 
                     @Override
-                    protected void deleteTabGroupTitle(int tabRootId) {
+                    public void deleteTabGroupTitle(int tabRootId) {
                         TabGroupModelFilter filter =
                                 (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
                         filter.deleteTabGroupTitle(tabRootId);
                     }
 
                     @Override
-                    protected String getTabGroupTitle(int tabRootId) {
+                    public String getTabGroupTitle(int tabRootId) {
                         TabGroupModelFilter filter =
                                 (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
                         return filter.getTabGroupTitle(tabRootId);
                     }
 
                     @Override
-                    protected void storeTabGroupTitle(int tabRootId, String title) {
+                    public void storeTabGroupTitle(int tabRootId, String title) {
                         TabGroupModelFilter filter =
                                 (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
                         filter.setTabGroupTitle(tabRootId, title);
@@ -2206,7 +2207,7 @@ class TabListMediator implements TabListNotificationHandler {
             if (useDefault) {
                 TabGroupModelFilter filter =
                         (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
-                return TabGroupTitleEditor.getDefaultTitle(
+                return TabGroupTitleUtils.getDefaultTitle(
                         mContext, filter.getRelatedTabCountForRootId(tab.getRootId()));
             } else {
                 return "";
@@ -2905,7 +2906,7 @@ class TabListMediator implements TabListNotificationHandler {
                 String descriptionTitle = title;
                 if (descriptionTitle.isEmpty()) {
                     descriptionTitle =
-                            TabGroupTitleEditor.getDefaultTitle(mContext, numOfRelatedTabs);
+                            TabGroupTitleUtils.getDefaultTitle(mContext, numOfRelatedTabs);
                 }
                 if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
                         || !hasCollaboration(tab)) {

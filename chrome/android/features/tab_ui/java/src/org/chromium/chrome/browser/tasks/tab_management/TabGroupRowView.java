@@ -22,6 +22,7 @@ import androidx.annotation.StringRes;
 import androidx.core.util.Pair;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -72,7 +73,7 @@ public class TabGroupRowView extends LinearLayout {
     void setTitleData(Pair<String, Integer> titleData) {
         String title = titleData.first;
         if (TextUtils.isEmpty(title)) {
-            title = TabGroupTitleEditor.getDefaultTitle(getContext(), titleData.second);
+            title = TabGroupTitleUtils.getDefaultTitle(getContext(), titleData.second);
         }
         mTitleTextView.setText(title);
         Resources resources = getResources();

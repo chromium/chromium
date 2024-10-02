@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.IconPosition;
@@ -699,7 +700,7 @@ public class TabGridDialogMediator
                         R.plurals.accessibility_dialog_back_button, tabsCount, tabsCount));
         mModel.set(
                 TabGridDialogProperties.HEADER_TITLE,
-                TabGroupTitleEditor.getDefaultTitle(mActivity, tabsCount));
+                TabGroupTitleUtils.getDefaultTitle(mActivity, tabsCount));
     }
 
     private void updateColorProperties(Context context, boolean isIncognito) {
@@ -1069,12 +1070,13 @@ public class TabGridDialogMediator
 
         int tabsCount = getRelatedTabs(mCurrentTabId).size();
         if (mCurrentGroupModifiedTitle.length() == 0
-                || mTabGroupTitleEditor.isDefaultTitle(mCurrentGroupModifiedTitle, tabsCount)) {
+                || TabGroupTitleUtils.isDefaultTitle(
+                        mActivity, mCurrentGroupModifiedTitle, tabsCount)) {
             // When dialog title is empty or was unchanged, delete previously stored title and
             // restore default title.
             mTabGroupTitleEditor.deleteTabGroupTitle(currentTab.getRootId());
 
-            String originalTitle = TabGroupTitleEditor.getDefaultTitle(mActivity, tabsCount);
+            String originalTitle = TabGroupTitleUtils.getDefaultTitle(mActivity, tabsCount);
             mModel.set(
                     TabGridDialogProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION,
                     mActivity

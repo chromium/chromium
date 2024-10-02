@@ -79,9 +79,9 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
-import org.chromium.chrome.browser.tasks.tab_management.TabGroupTitleEditor;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
@@ -2874,7 +2874,7 @@ public class StripLayoutHelper
     private String getDefaultGroupTitleTextIfEmpty(int rootId, @Nullable String titleText) {
         if (TextUtils.isEmpty(titleText)) {
             int numTabs = mTabGroupModelFilter.getRelatedTabCountForRootId(rootId);
-            titleText = TabGroupTitleEditor.getDefaultTitle(mContext, numTabs);
+            titleText = TabGroupTitleUtils.getDefaultTitle(mContext, numTabs);
         }
         return titleText;
     }

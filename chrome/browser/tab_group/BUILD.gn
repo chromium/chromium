@@ -7,6 +7,8 @@ import("//build/config/android/rules.gni")
 import("//chrome/browser/buildflags.gni")
 
 android_library("java") {
+  resources_package = "org.chromium.chrome.browser.tasks.tab_groups"
+
   sources = [
     "java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroup.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupCollapsedUtils.java",
@@ -21,6 +23,9 @@ android_library("java") {
     "//base:base_cached_flags_java",
     "//base:base_java",
     "//base:base_shared_preferences_java",
+
+    # TODO(https://crbug.com/370773585): Move these.
+    "//chrome/android/features/tab_ui:java_strings_grd",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
@@ -61,6 +66,7 @@ robolectric_library("junit") {
     "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_collection_collection_java",
+    "//third_party/androidx:androidx_test_core_java",
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",

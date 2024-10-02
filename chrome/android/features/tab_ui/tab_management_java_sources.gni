@@ -268,7 +268,6 @@ tab_management_junit_java_sources = [
   "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/TabGridViewBinderUnitTest.java",
   "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupColorFaviconProviderTest.java",
   "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupCreationDialogManagerUnitTest.java",
-  "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupTitleEditorUnitTest.java",
   "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupUiMediatorUnitTest.java",
   "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupVisualDataDialogManagerUnitTest.java",
   "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupVisualDataManagerUnitTest.java",

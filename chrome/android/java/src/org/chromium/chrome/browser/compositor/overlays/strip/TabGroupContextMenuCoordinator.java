@@ -35,13 +35,13 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerType;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupOverflowMenuCoordinator;
-import org.chromium.chrome.browser.tasks.tab_management.TabGroupTitleEditor;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -225,7 +225,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 // Get user assigned group title or the default title "N tabs" if no title is
                 // assigned.
                 String tabGroupDisplayName =
-                        TabGroupTitleEditor.getDisplayableTitle(
+                        TabGroupTitleUtils.getDisplayableTitle(
                                 activity, tabGroupModelFilter, tabId);
 
                 // Create the group share flow and display the share bottom sheet.
@@ -426,7 +426,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     }
 
     private String getDefaultTitle() {
-        return TabGroupTitleEditor.getDefaultTitle(
+        return TabGroupTitleUtils.getDefaultTitle(
                 mContext, mTabGroupModelFilter.getRelatedTabCountForRootId(mGroupRootId));
     }
 

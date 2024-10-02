@@ -7,14 +7,21 @@ package org.chromium.chrome.browser.tasks.tab_groups;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -32,21 +39,24 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabGroupTitleUtilsUnitTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     private static final String TAB_GROUP_TITLES_FILE_NAME = "tab_group_titles";
 
     private static final int TAB_ID = 456;
     private static final String TAB_TITLE = "Tab";
 
-    @Mock Context mContext;
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock SharedPreferences mSharedPreferences;
     @Mock SharedPreferences.Editor mEditor;
     @Mock SharedPreferences.Editor mPutStringEditor;
     @Mock SharedPreferences.Editor mRemoveEditor;
+    @Mock TabGroupModelFilter mTabGroupModelFilter;
+
+    Context mContext;
 
     @Before
     public void setUp() {
+        mContext = spy(ApplicationProvider.getApplicationContext());
         doReturn(mSharedPreferences)
                 .when(mContext)
                 .getSharedPreferences(TAB_GROUP_TITLES_FILE_NAME, Context.MODE_PRIVATE);
@@ -94,5 +104,44 @@ public class TabGroupTitleUtilsUnitTest {
 
         verify(mEditor).remove(eq(String.valueOf(TAB_ID)));
         verify(mRemoveEditor).apply();
+    }
+
+    @Test
+    public void testDefaultTitle() {
+        int relatedTabCount = 5;
+
+        String expectedTitle =
+                mContext.getResources()
+                        .getQuantityString(
+                                R.plurals.bottom_tab_grid_title_placeholder,
+                                relatedTabCount,
+                                relatedTabCount);
+        assertEquals(expectedTitle, TabGroupTitleUtils.getDefaultTitle(mContext, relatedTabCount));
+    }
+
+    @Test
+    public void testIsDefaultTitle() {
+        int fourTabsCount = 4;
+        String fourTabsTitle = TabGroupTitleUtils.getDefaultTitle(mContext, fourTabsCount);
+        assertTrue(TabGroupTitleUtils.isDefaultTitle(mContext, fourTabsTitle, fourTabsCount));
+        assertFalse(TabGroupTitleUtils.isDefaultTitle(mContext, fourTabsTitle, 3));
+        assertFalse(TabGroupTitleUtils.isDefaultTitle(mContext, "Foo", fourTabsCount));
+    }
+
+    @Test
+    public void testGetDisplayableTitle_Explicit() {
+        String title = "t1";
+        when(mTabGroupModelFilter.getTabGroupTitle(anyInt())).thenReturn(title);
+        assertEquals(
+                title, TabGroupTitleUtils.getDisplayableTitle(mContext, mTabGroupModelFilter, 12));
+    }
+
+    @Test
+    public void testGetDisplayableTitle_Fallback() {
+        int tabCount = 4567;
+        when(mTabGroupModelFilter.getTabGroupTitle(anyInt())).thenReturn("");
+        when(mTabGroupModelFilter.getRelatedTabCountForRootId(anyInt())).thenReturn(tabCount);
+        String title = TabGroupTitleUtils.getDisplayableTitle(mContext, mTabGroupModelFilter, 12);
+        assertTrue(title.contains(String.valueOf(tabCount)));
     }
 }
