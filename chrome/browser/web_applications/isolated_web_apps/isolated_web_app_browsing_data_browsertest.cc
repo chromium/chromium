@@ -408,15 +408,20 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest, CacheCleared) {
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
 
-  // Create both a persistent and a non-persistent partitions.
-  ASSERT_TRUE(CreateControlledFrame(
-      web_contents,
-      cache_test_server->GetURL("/page_with_cached_subresource.html"),
-      "persist:partition_name_0"));
-  ASSERT_TRUE(CreateControlledFrame(
-      web_contents,
-      cache_test_server->GetURL("/page_with_cached_subresource.html"),
-      "partition_name_1"));
+  // Load a cached resource in an iframe to put something in the IWA main
+  // StoragePartition cache.
+  GURL cache_url = https_server()->GetURL(
+      "/set-header?"
+      "Cache-Control: max-age=60&"
+      "Cross-Origin-Resource-Policy: cross-origin");
+  CreateIframe(web_contents->GetPrimaryMainFrame(), "child", cache_url,
+               /*permissions_policy=*/"");
+
+  // Create both a persistent and a non-persistent Controlled Frame partitions.
+  ASSERT_TRUE(CreateControlledFrame(web_contents, cache_url,
+                                    "persist:partition_name_0"));
+  ASSERT_TRUE(
+      CreateControlledFrame(web_contents, cache_url, "partition_name_1"));
 
   std::vector<content::StoragePartitionConfig> storage_partition_configs{
       url_info.storage_partition_config(profile()),
@@ -430,10 +435,6 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest, CacheCleared) {
     content::StoragePartition* partition =
         profile()->GetStoragePartition(config, false);
     ASSERT_TRUE(partition);
-    // TODO(b/370587492): Fill the cache in the main storage partition as well
-    if (config.partition_name().empty()) {
-      continue;
-    }
     ASSERT_GT(GetCacheSize(partition), 0);
   }
 
@@ -583,30 +584,32 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
   Browser* browser1 = LaunchWebAppBrowserAndWait(url_info1.app_id());
   content::WebContents* web_contents1 =
       browser1->tab_strip_model()->GetActiveWebContents();
-  // Create both a persistent and a non-persistent partitions.
-  ASSERT_TRUE(CreateControlledFrame(
-      web_contents1,
-      cache_test_server->GetURL("/page_with_cached_subresource.html"),
-      "persist:partition_name_0"));
-  ASSERT_TRUE(CreateControlledFrame(
-      web_contents1,
-      cache_test_server->GetURL("/page_with_cached_subresource.html"),
-      "partition_name_1"));
+  // Create cache data in the IWA's main, persistent, and non-persistent
+  // Controlled Frame StoragePartition.
+  GURL cache_url = https_server()->GetURL(
+      "/set-header?"
+      "Cache-Control: max-age=60&"
+      "Cross-Origin-Resource-Policy: cross-origin");
+  CreateIframe(web_contents1->GetPrimaryMainFrame(), "child", cache_url,
+               /*permissions_policy=*/"");
+  ASSERT_TRUE(CreateControlledFrame(web_contents1, cache_url,
+                                    "persist:partition_name_0"));
+  ASSERT_TRUE(
+      CreateControlledFrame(web_contents1, cache_url, "partition_name_1"));
 
   // Set up IWA 2.
   IsolatedWebAppUrlInfo url_info2 = InstallIsolatedWebApp();
   Browser* browser2 = LaunchWebAppBrowserAndWait(url_info2.app_id());
   content::WebContents* web_contents2 =
       browser2->tab_strip_model()->GetActiveWebContents();
-  // Create both a persistent and a non-persistent partitions.
-  ASSERT_TRUE(CreateControlledFrame(
-      web_contents2,
-      cache_test_server->GetURL("/page_with_cached_subresource.html"),
-      "persist:partition_name_0"));
-  ASSERT_TRUE(CreateControlledFrame(
-      web_contents2,
-      cache_test_server->GetURL("/page_with_cached_subresource.html"),
-      "partition_name_1"));
+  // Create cache data in the IWA's main, persistent, and non-persistent
+  // Controlled Frame StoragePartition.
+  CreateIframe(web_contents2->GetPrimaryMainFrame(), "child", cache_url,
+               /*permissions_policy=*/"");
+  ASSERT_TRUE(CreateControlledFrame(web_contents2, cache_url,
+                                    "persist:partition_name_0"));
+  ASSERT_TRUE(
+      CreateControlledFrame(web_contents2, cache_url, "partition_name_1"));
   // Making IWA 2 a stub.
   {
     ScopedRegistryUpdate update =
@@ -666,10 +669,6 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
     ASSERT_EQ(GetAllCookies(partition).size(), 2UL);
     // Each partition should have cache.
 
-    // TODO(b/370587492): Fill the cache in the main storage partition as well
-    if (config.partition_name().empty()) {
-      continue;
-    }
     ASSERT_GT(GetCacheSize(partition), 0);
   }
 
