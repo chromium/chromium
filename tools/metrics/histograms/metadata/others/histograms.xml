@@ -172,6 +172,8 @@ chromium-metrics-reviews@google.com.
 <variants name="PageImageServiceClientId">
   <variant name="" summary="all requests"/>
   <variant name=".Bookmarks" summary="from Bookmarks"/>
+  <variant name=".HistoryEmbeddings"
+      summary="from the AI results inside History"/>
   <variant name=".Journeys" summary="from Journeys inside History"/>
   <variant name=".JourneysSidePanel" summary="from Journeys inside Side Panel"/>
   <variant name=".NtpQuests" summary="from the Quests module on the NTP"/>
