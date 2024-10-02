@@ -549,6 +549,7 @@ source_set("test_support") {
     "test/test_zxdg_output_manager.h",
     "test/wayland_connection_test_api.cc",
     "test/wayland_connection_test_api.h",
+    "test/wayland_window_drag_controller_test_api.h",
   ]
 
   deps = [

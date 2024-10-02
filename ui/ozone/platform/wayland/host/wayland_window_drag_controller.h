@@ -96,42 +96,15 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   // destroyed).
   bool IsActiveDragAndDropSession() const;
 
-  void DumpState(std::ostream& out) const;
-
-  // Makes IsExtendedDragAvailable() always return true.
-  void set_extended_drag_available_for_testing(bool available) {
-    extended_drag_available_for_testing_ = available;
-  }
-
-  WaylandWindow* drag_target_window_for_testing() {
-    return drag_target_window_;
-  }
-  WaylandWindow* dragged_window_for_testing() { return dragged_window_; }
-  WaylandWindow* origin_window_for_testing() { return origin_window_; }
-  WaylandWindow* pointer_grab_owner_for_testing() {
-    return pointer_grab_owner_;
-  }
-
   std::optional<mojom::DragEventSource> drag_source() { return drag_source_; }
 
-  const gfx::Vector2d& drag_offset_for_testing() const { return drag_offset_; }
-
-  bool has_received_enter_for_testing() const { return has_received_enter_; }
+  void DumpState(std::ostream& out) const;
 
  private:
   class ExtendedDragSource;
   class XdgToplevelDrag;
 
-  friend class WaylandWindowDragControllerTest;
-  FRIEND_TEST_ALL_PREFIXES(WaylandWindowDragControllerTest,
-                           HandleDraggedWindowDestructionAfterMoveLoop);
-  FRIEND_TEST_ALL_PREFIXES(WaylandWindowDragControllerTest,
-                           HandleWindowsDestructionDuringMoveLoop);
-  FRIEND_TEST_ALL_PREFIXES(WaylandWindowDragControllerTest,
-                           HandleTargetWindowDestruction_DetachedState);
-  FRIEND_TEST_ALL_PREFIXES(WaylandWindowDragControllerTest,
-                           HandleTargetWindowDestruction_AttachedState);
-  FRIEND_TEST_ALL_PREFIXES(WaylandWindowDragControllerTest, GetSerial);
+  friend class WaylandWindowDragControllerTestApi;
 
   // WaylandDataDevice::DragDelegate:
   bool IsDragSource() const override;
