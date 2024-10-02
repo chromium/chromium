@@ -165,16 +165,6 @@ who = "George Burgess IV <gbiv@google.com>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 version = "0.1.0"
 
-[[audits.chromeos.audits.syn]]
-who = "Ying Hsu <yinghsu@chromium.org>"
-criteria = ["safe-to-run", "does-not-implement-crypto"]
-version = "2.0.58"
-
-[[audits.chromeos.audits.syn]]
-who = "Hung-Hsien Chen <hunghsienchen@chromium.org>"
-criteria = ["safe-to-run", "does-not-implement-crypto"]
-delta = "2.0.58 -> 2.0.77"
-
 [audits.fuchsia.criteria.ub-risk-0]
 description = """
 No unsafe code.

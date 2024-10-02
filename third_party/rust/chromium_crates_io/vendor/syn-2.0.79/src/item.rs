@@ -1411,14 +1411,16 @@ pub(crate) mod parsing {
                     &content,
                     allow_crate_root_in_path && !this_tree_starts_with_crate_root,
                 )? {
-                    Some(tree) => items.push_value(tree),
-                    None => has_any_crate_root_in_path = true,
+                    Some(tree) if !has_any_crate_root_in_path => items.push_value(tree),
+                    _ => has_any_crate_root_in_path = true,
                 }
                 if content.is_empty() {
                     break;
                 }
                 let comma: Token![,] = content.parse()?;
-                items.push_punct(comma);
+                if !has_any_crate_root_in_path {
+                    items.push_punct(comma);
+                }
             }
             if has_any_crate_root_in_path {
                 Ok(None)

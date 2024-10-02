@@ -1284,7 +1284,7 @@ pub(crate) mod parsing {
                 if precedence == Precedence::Compare {
                     if let Expr::Binary(lhs) = &lhs {
                         if Precedence::of_binop(&lhs.op) == Precedence::Compare {
-                            break;
+                            return Err(input.error("comparison operators cannot be chained"));
                         }
                     }
                 }
@@ -1346,7 +1346,7 @@ pub(crate) mod parsing {
                 if precedence == Precedence::Compare {
                     if let Expr::Binary(lhs) = &lhs {
                         if Precedence::of_binop(&lhs.op) == Precedence::Compare {
-                            break;
+                            return Err(input.error("comparison operators cannot be chained"));
                         }
                     }
                 }
@@ -1390,6 +1390,7 @@ pub(crate) mod parsing {
         loop {
             let next = peek_precedence(input);
             if next > precedence || next == precedence && precedence == Precedence::Assign {
+                let cursor = input.cursor();
                 rhs = parse_expr(
                     input,
                     rhs,
@@ -1397,10 +1398,18 @@ pub(crate) mod parsing {
                     allow_struct,
                     next,
                 )?;
+                if cursor == input.cursor() {
+                    // Bespoke grammar restrictions separate from precedence can
+                    // cause parsing to not advance, such as `..a` being
+                    // disallowed in the left-hand side of binary operators,
+                    // even ones that have lower precedence than `..`.
+                    break;
+                }
             } else {
-                return Ok(Box::new(rhs));
+                break;
             }
         }
+        Ok(Box::new(rhs))
     }
 
     fn peek_precedence(input: ParseStream) -> Precedence {

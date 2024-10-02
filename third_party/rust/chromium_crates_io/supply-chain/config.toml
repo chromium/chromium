@@ -284,7 +284,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."strum_macros:0.25.3"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."syn:2.0.77"]
+[policy."syn:2.0.79"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."termcolor:1.4.1"]
@@ -426,7 +426,7 @@ Exemption updated to 1.0.18 in May 2024.
 """
 
 [[exemptions.syn]]
-version = "2.0.77"
+version = "2.0.79"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
@@ -452,6 +452,7 @@ Exemption updated to 2.0.72 when updating the crate in July 2024.
 Exemption updated to 2.0.74 when updating the crate in August 2024.
 Exemption updated to 2.0.76 when updating the crate in August 2024.
 Exemption updated to 2.0.77 when updating the crate in September 2024.
+Exemption updated to 2.0.79 when updating the crate in October 2024.
 """
 
 [[exemptions.zerocopy]]
