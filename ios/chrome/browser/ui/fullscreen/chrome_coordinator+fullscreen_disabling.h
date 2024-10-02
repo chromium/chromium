@@ -12,7 +12,7 @@
 @interface ChromeCoordinator (FullscreenDisabling)
 
 // Increments and decrements the fullscreen disable counter for the
-// FullscreenController associated with this coordinator's ChromeBrowserState.
+// FullscreenController associated with this coordinator's ProfileIOS.
 - (void)didStartFullscreenDisablingUI;
 - (void)didStopFullscreenDisablingUI;
 
