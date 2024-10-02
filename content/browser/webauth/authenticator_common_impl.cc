@@ -684,14 +684,8 @@ void UpdateVirtualAuthenticatorUserCreds(RenderFrameHost* render_frame_host,
   }
   for (VirtualAuthenticator* authenticator :
        virtual_authenticator_manager->GetAuthenticators()) {
-    for (auto& registration : authenticator->registrations()) {
-      if (registration.second.user && registration.second.rp &&
-          registration.second.rp->id == relying_party_id &&
-          registration.second.user->id == user_id) {
-        registration.second.user->name = name;
-        registration.second.user->display_name = display_name;
-      }
-    }
+    authenticator->UpdateUserDetails(relying_party_id, user_id, name,
+                                     display_name);
   }
 }
 

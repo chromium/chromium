@@ -38,6 +38,12 @@ class CONTENT_EXPORT VirtualAuthenticator
     virtual void OnCredentialCreated(
         VirtualAuthenticator* authenticator,
         const device::VirtualFidoDevice::Credential& credential) = 0;
+    virtual void OnCredentialDeleted(
+        VirtualAuthenticator* authenticator,
+        base::span<const uint8_t> credential_id) = 0;
+    virtual void OnCredentialUpdated(
+        VirtualAuthenticator* authenticator,
+        const device::VirtualFidoDevice::Credential& credential) = 0;
     virtual void OnAssertion(
         VirtualAuthenticator* authenticator,
         const device::VirtualFidoDevice::Credential& credential) = 0;
@@ -81,6 +87,13 @@ class CONTENT_EXPORT VirtualAuthenticator
   // Remove a credential identified by |key_handle|. Returns true if the
   // credential was found and removed, false otherwise.
   bool RemoveRegistration(const std::vector<uint8_t>& key_handle);
+
+  // Updates the name and display name of registrations matching
+  // |relying_party_id| and |user_id|.
+  void UpdateUserDetails(std::string_view relying_party_id,
+                         base::span<const uint8_t> user_id,
+                         std::string_view name,
+                         std::string_view display_name);
 
   // Sets whether tests of user presence succeed or not for new requests sent to
   // this authenticator. The default is true.
@@ -170,6 +183,9 @@ class CONTENT_EXPORT VirtualAuthenticator
 
   // device::VirtualFidoDevice::Observer:
   void OnCredentialCreated(
+      const device::VirtualFidoDevice::Credential& credential) override;
+  void OnCredentialDeleted(base::span<const uint8_t> credential_id) override;
+  void OnCredentialUpdated(
       const device::VirtualFidoDevice::Credential& credential) override;
   void OnAssertion(
       const device::VirtualFidoDevice::Credential& credential) override;

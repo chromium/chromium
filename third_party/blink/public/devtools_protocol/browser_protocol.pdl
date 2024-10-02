@@ -12096,6 +12096,20 @@ experimental domain WebAuthn
       AuthenticatorId authenticatorId
       Credential credential
 
+  # Triggered when a credential is deleted, e.g. through
+  # PublicKeyCredential.signalUnknownCredential().
+  event credentialDeleted
+    parameters
+      AuthenticatorId authenticatorId
+      binary credentialId
+
+  # Triggered when a credential is updated, e.g. through
+  # PublicKeyCredential.signalCurrentUserDetails().
+  event credentialUpdated
+    parameters
+      AuthenticatorId authenticatorId
+      Credential credential
+
   # Triggered when a credential is used in a webauthn assertion.
   event credentialAsserted
     parameters

@@ -553,6 +553,21 @@ void WebAuthnHandler::OnCredentialCreated(
       BuildCredentialFromRegistration(credential.first, credential.second));
 }
 
+void WebAuthnHandler::OnCredentialDeleted(
+    VirtualAuthenticator* authenticator,
+    base::span<const uint8_t> credential_id) {
+  frontend_->CredentialDeleted(authenticator->unique_id(),
+                               Binary::fromSpan(credential_id));
+}
+
+void WebAuthnHandler::OnCredentialUpdated(
+    VirtualAuthenticator* authenticator,
+    const device::VirtualFidoDevice::Credential& credential) {
+  frontend_->CredentialUpdated(
+      authenticator->unique_id(),
+      BuildCredentialFromRegistration(credential.first, credential.second));
+}
+
 void WebAuthnHandler::OnAssertion(
     VirtualAuthenticator* authenticator,
     const device::VirtualFidoDevice::Credential& credential) {

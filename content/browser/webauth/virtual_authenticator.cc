@@ -93,12 +93,36 @@ bool VirtualAuthenticator::AddResidentRegistration(
 }
 
 void VirtualAuthenticator::ClearRegistrations() {
-  state_->registrations.clear();
+  device::VirtualFidoDevice::State::RegistrationsMap erased;
+  state_->registrations.swap(erased);
+  for (const auto& registration : erased) {
+    state_->NotifyCredentialDeleted(registration.first);
+  }
 }
 
 bool VirtualAuthenticator::RemoveRegistration(
     const std::vector<uint8_t>& key_handle) {
-  return state_->registrations.erase(key_handle) != 0;
+  bool removed = state_->registrations.erase(key_handle) != 0;
+  if (removed) {
+    state_->NotifyCredentialDeleted(key_handle);
+  }
+  return removed;
+}
+
+void VirtualAuthenticator::UpdateUserDetails(std::string_view relying_party_id,
+                                             base::span<const uint8_t> user_id,
+                                             std::string_view name,
+                                             std::string_view display_name) {
+  for (auto& registration : state_->registrations) {
+    if (registration.second.user && registration.second.rp &&
+        registration.second.rp->id == relying_party_id &&
+        registration.second.user->id == user_id) {
+      registration.second.user->name = name;
+      registration.second.user->display_name = display_name;
+      state_->NotifyCredentialUpdated(
+          std::make_pair(registration.first, &registration.second));
+    }
+  }
 }
 
 void VirtualAuthenticator::SetUserPresence(bool is_user_present) {
@@ -266,6 +290,21 @@ void VirtualAuthenticator::OnCredentialCreated(
     observer.OnCredentialCreated(this, credential);
   }
 }
+
+void VirtualAuthenticator::OnCredentialDeleted(
+    base::span<const uint8_t> credential_id) {
+  for (Observer& observer : observers_) {
+    observer.OnCredentialDeleted(this, credential_id);
+  }
+}
+
+void VirtualAuthenticator::OnCredentialUpdated(
+    const device::VirtualFidoDevice::Credential& credential) {
+  for (Observer& observer : observers_) {
+    observer.OnCredentialUpdated(this, credential);
+  }
+}
+
 void VirtualAuthenticator::OnAssertion(
     const device::VirtualFidoDevice::Credential& credential) {
   for (Observer& observer : observers_) {
