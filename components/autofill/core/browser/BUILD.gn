@@ -1337,6 +1337,7 @@ source_set("unit_tests") {
   if (is_win || is_mac || is_android) {
     sources += [
       "metrics/payments/better_auth_metrics_unittest.cc",
+      "payments/credit_card_access_manager_better_auth_log_unittest.cc",
       "payments/credit_card_fido_authenticator_unittest.cc",
       "payments/mandatory_reauth_manager_unittest.cc",
     ]
