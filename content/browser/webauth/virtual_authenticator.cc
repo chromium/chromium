@@ -61,8 +61,9 @@ bool VirtualAuthenticator::AddRegistration(
   std::optional<std::unique_ptr<device::VirtualFidoDevice::PrivateKey>>
       fido_private_key =
           device::VirtualFidoDevice::PrivateKey::FromPKCS8(private_key);
-  if (!fido_private_key)
+  if (!fido_private_key) {
     return false;
+  }
 
   return state_->registrations
       .emplace(
@@ -78,18 +79,23 @@ bool VirtualAuthenticator::AddResidentRegistration(
     std::string rp_id,
     base::span<const uint8_t> private_key,
     int32_t counter,
-    std::vector<uint8_t> user_handle) {
+    std::vector<uint8_t> user_handle,
+    std::optional<std::string> user_name,
+    std::optional<std::string> user_display_name) {
   std::optional<std::unique_ptr<device::VirtualFidoDevice::PrivateKey>>
       fido_private_key =
           device::VirtualFidoDevice::PrivateKey::FromPKCS8(private_key);
-  if (!fido_private_key)
+  if (!fido_private_key) {
     return false;
+  }
 
   return state_->InjectResidentKey(
       std::move(key_handle),
       device::PublicKeyCredentialRpEntity(std::move(rp_id)),
-      device::PublicKeyCredentialUserEntity(std::move(user_handle)), counter,
-      std::move(*fido_private_key));
+      device::PublicKeyCredentialUserEntity(std::move(user_handle),
+                                            std::move(user_name),
+                                            std::move(user_display_name)),
+      counter, std::move(*fido_private_key));
 }
 
 void VirtualAuthenticator::ClearRegistrations() {

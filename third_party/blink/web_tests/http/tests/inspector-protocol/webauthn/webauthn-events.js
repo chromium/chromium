@@ -46,7 +46,8 @@
     testRunner.log("RP ID: " + event.params.credential.rpId);
     testRunner.log("Sign count: " + event.params.credential.signCount);
     testRunner.log("User handle: " + event.params.credential.userHandle);
-    // TODO(crbug.com/367915823): log user.name and user.displayName.
+    testRunner.log("User name: " + event.params.credential.userName);
+    testRunner.log("User display name: " + event.params.credential.userDisplayName);
   };
 
   // Wait for a credential added event.

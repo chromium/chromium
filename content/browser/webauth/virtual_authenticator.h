@@ -79,7 +79,9 @@ class CONTENT_EXPORT VirtualAuthenticator
                                std::string rp_id,
                                base::span<const uint8_t> private_key,
                                int32_t counter,
-                               std::vector<uint8_t> user_handle);
+                               std::vector<uint8_t> user_handle,
+                               std::optional<std::string> user_name,
+                               std::optional<std::string> user_display_name);
 
   // Removes all the credentials.
   void ClearRegistrations();

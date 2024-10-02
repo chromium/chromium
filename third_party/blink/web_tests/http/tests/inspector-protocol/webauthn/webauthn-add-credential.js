@@ -37,6 +37,8 @@
 
   // Register a resident credential.
   const userHandle = "nina";
+  const userName = "marisa";
+  const userDisplayName = "Marisa Kirisame";
   const residentCredentialId = "cred-2";
   testRunner.log(await dp.WebAuthn.addCredential({
     authenticatorId,
@@ -47,6 +49,8 @@
       signCount: 0,
       isResidentCredential: true,
       userHandle: btoa(userHandle),
+      userName,
+      userDisplayName,
     }
   }));
 
@@ -56,6 +60,12 @@
     id: new TextEncoder().encode("${residentCredentialId}"),
     transports: ["usb", "ble", "nfc"],
   })`));
+
+  // Verify that the user name and user display name match.
+  let credential =
+      (await dp.WebAuthn.getCredential({authenticatorId, credentialId: btoa(residentCredentialId)})).result.credential;
+  testRunner.log("userName: " + credential.userName);
+  testRunner.log("userDisplayName: " + credential.userDisplayName);
 
   testRunner.completeTest();
 })
