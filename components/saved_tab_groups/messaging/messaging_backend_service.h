@@ -10,7 +10,7 @@
 #include "base/supports_user_data.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/saved_tab_groups/messaging/message.h"
-#include "components/saved_tab_groups/types.h"
+#include "components/saved_tab_groups/public/types.h"
 
 namespace tab_groups::messaging {
 class InstantMessageDelegate;

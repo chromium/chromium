@@ -10,13 +10,13 @@
 #include "base/functional/bind.h"
 #include "base/uuid.h"
 #include "components/prefs/pref_service.h"
-#include "components/saved_tab_groups/saved_tab_group.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/saved_tab_group_tab.h"
+#include "components/saved_tab_groups/public/utils.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
-#include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/shared_tab_group_data_sync_bridge.h"
 #include "components/saved_tab_groups/sync_data_type_configuration.h"
-#include "components/saved_tab_groups/utils.h"
 #include "components/sync/base/data_type.h"
 
 namespace tab_groups {

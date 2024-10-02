@@ -7,7 +7,7 @@
 
 #include <stddef.h>
 
-#include "components/saved_tab_groups/types.h"
+#include "components/saved_tab_groups/public/types.h"
 
 namespace tab_groups {
 

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/tab_group_sync/tab_group_sync_utils.h"
 
-#include "components/saved_tab_groups/utils.h"
+#include "components/saved_tab_groups/public/utils.h"
 #include "content/public/browser/navigation_handle.h"
 #include "net/http/http_request_headers.h"
 

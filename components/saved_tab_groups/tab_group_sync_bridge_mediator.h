@@ -12,9 +12,9 @@
 #include "base/scoped_observation.h"
 #include "base/scoped_observation_traits.h"
 #include "base/uuid.h"
-#include "components/saved_tab_groups/saved_tab_group.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
-#include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/sync_bridge_tab_group_model_wrapper.h"
 
 class PrefService;

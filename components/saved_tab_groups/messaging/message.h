@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
 #include "components/data_sharing/public/group_data.h"
-#include "components/saved_tab_groups/types.h"
+#include "components/saved_tab_groups/public/types.h"
 #include "components/tab_groups/tab_group_id.h"
 
 namespace tab_groups::messaging {

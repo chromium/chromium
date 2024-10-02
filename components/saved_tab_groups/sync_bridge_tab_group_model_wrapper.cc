@@ -4,7 +4,7 @@
 
 #include "components/saved_tab_groups/sync_bridge_tab_group_model_wrapper.h"
 
-#include "components/saved_tab_groups/saved_tab_group.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/sync/base/data_type.h"
 

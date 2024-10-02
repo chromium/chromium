@@ -7,8 +7,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
-#include "components/saved_tab_groups/saved_tab_group.h"
-#include "components/saved_tab_groups/types.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/types.h"
 
 namespace tab_groups {
 

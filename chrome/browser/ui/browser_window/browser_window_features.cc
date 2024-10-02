@@ -38,7 +38,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/lens/lens_features.h"
 #include "components/profile_metrics/browser_profile_type.h"
-#include "components/saved_tab_groups/features.h"
+#include "components/saved_tab_groups/public/features.h"
 
 namespace {
 

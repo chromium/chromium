@@ -5,12 +5,12 @@
 #include "components/saved_tab_groups/startup_helper.h"
 
 #include "base/uuid.h"
-#include "components/saved_tab_groups/mock_tab_group_sync_delegate.h"
-#include "components/saved_tab_groups/mock_tab_group_sync_service.h"
-#include "components/saved_tab_groups/saved_tab_group.h"
-#include "components/saved_tab_groups/saved_tab_group_test_utils.h"
-#include "components/saved_tab_groups/tab_group_sync_delegate.h"
-#include "components/saved_tab_groups/types.h"
+#include "components/saved_tab_groups/delegate/tab_group_sync_delegate.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/types.h"
+#include "components/saved_tab_groups/test_support/mock_tab_group_sync_delegate.h"
+#include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
+#include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

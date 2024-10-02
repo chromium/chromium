@@ -10,7 +10,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/uuid.h"
-#include "components/saved_tab_groups/types.h"
+#include "components/saved_tab_groups/public/types.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;

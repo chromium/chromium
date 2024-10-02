@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_MODEL_IOS_TAB_GROUP_SYNC_UTIL_H_
 
 #import "base/memory/raw_ptr.h"
-#import "components/saved_tab_groups/types.h"
+#import "components/saved_tab_groups/public/types.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/navigation/navigation_context.h"

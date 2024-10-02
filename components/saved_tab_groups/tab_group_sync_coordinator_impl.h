@@ -9,11 +9,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
-#include "components/saved_tab_groups/saved_tab_group.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/types.h"
 #include "components/saved_tab_groups/startup_helper.h"
 #include "components/saved_tab_groups/tab_group_sync_coordinator.h"
-#include "components/saved_tab_groups/tab_group_sync_service.h"
-#include "components/saved_tab_groups/types.h"
 
 namespace tab_groups {
 

@@ -5,7 +5,7 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_tab_state.h"
 
 #include "chrome/common/chrome_render_frame.mojom.h"
-#include "components/saved_tab_groups/features.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 

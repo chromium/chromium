@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
-#include "components/saved_tab_groups/saved_tab_group_test_utils.h"
+#include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"

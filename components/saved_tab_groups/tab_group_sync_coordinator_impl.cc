@@ -5,10 +5,10 @@
 #include "components/saved_tab_groups/tab_group_sync_coordinator_impl.h"
 
 #include "base/uuid.h"
-#include "components/saved_tab_groups/saved_tab_group.h"
+#include "components/saved_tab_groups/delegate/tab_group_sync_delegate.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/types.h"
 #include "components/saved_tab_groups/startup_helper.h"
-#include "components/saved_tab_groups/tab_group_sync_delegate.h"
-#include "components/saved_tab_groups/types.h"
 
 namespace tab_groups {
 

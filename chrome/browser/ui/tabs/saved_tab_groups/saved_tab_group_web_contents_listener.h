@@ -7,7 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/token.h"
-#include "components/saved_tab_groups/saved_tab_group.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents_observer.h"

@@ -10,7 +10,7 @@
 #include "base/uuid.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/data_sharing/public/group_data.h"
-#include "components/saved_tab_groups/types.h"
+#include "components/saved_tab_groups/public/types.h"
 
 namespace data_sharing {
 

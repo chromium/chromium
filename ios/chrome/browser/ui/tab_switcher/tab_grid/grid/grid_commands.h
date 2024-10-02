@@ -10,7 +10,7 @@
 #import <set>
 
 #import "base/memory/weak_ptr.h"
-#import "components/saved_tab_groups/types.h"
+#import "components/saved_tab_groups/public/types.h"
 
 class TabGroup;
 

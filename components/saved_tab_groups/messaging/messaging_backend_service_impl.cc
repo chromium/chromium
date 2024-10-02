@@ -10,7 +10,7 @@
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "components/saved_tab_groups/messaging/message.h"
-#include "components/saved_tab_groups/types.h"
+#include "components/saved_tab_groups/public/types.h"
 
 namespace tab_groups::messaging {
 

@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_GROUPS_TAB_GROUP_SYNC_SERVICE_OBSERVER_BRIDGE_H_
 #define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_GROUPS_TAB_GROUP_SYNC_SERVICE_OBSERVER_BRIDGE_H_
 
-#import "components/saved_tab_groups/tab_group_sync_service.h"
+#import "components/saved_tab_groups/public/tab_group_sync_service.h"
 
 namespace tab_groups {
 class TabGroupSyncService;

@@ -31,7 +31,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/saved_tab_groups/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"

@@ -9,7 +9,7 @@
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
-#include "components/saved_tab_groups/features.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/controls/button/menu_button_controller.h"

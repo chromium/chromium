@@ -10,15 +10,15 @@ if (is_android) {
 
 source_set("core") {
   sources = [
-    "empty_tab_group_sync_delegate.cc",
-    "empty_tab_group_sync_delegate.h",
+    "delegate/empty_tab_group_sync_delegate.cc",
+    "delegate/empty_tab_group_sync_delegate.h",
+    "delegate/tab_group_sync_delegate.h",
+    "public/tab_group_sync_service.h",
     "startup_helper.cc",
     "startup_helper.h",
     "tab_group_sync_coordinator.h",
     "tab_group_sync_coordinator_impl.cc",
     "tab_group_sync_coordinator_impl.h",
-    "tab_group_sync_delegate.h",
-    "tab_group_sync_service.h",
     "tab_group_sync_service_impl.cc",
     "tab_group_sync_service_impl.h",
   ]
@@ -54,8 +54,8 @@ source_set("core") {
 
 source_set("features") {
   sources = [
-    "features.cc",
-    "features.h",
+    "public/features.cc",
+    "public/features.h",
   ]
   deps = [ "//base" ]
   public_deps = []
@@ -63,8 +63,8 @@ source_set("features") {
 
 source_set("prefs") {
   sources = [
-    "pref_names.cc",
-    "pref_names.h",
+    "public/pref_names.cc",
+    "public/pref_names.h",
   ]
   deps = [
     ":features",
@@ -78,21 +78,21 @@ source_set("prefs") {
 
 source_set("model") {
   sources = [
-    "saved_tab_group.cc",
-    "saved_tab_group.h",
+    "public/saved_tab_group.cc",
+    "public/saved_tab_group.h",
+    "public/saved_tab_group_tab.cc",
+    "public/saved_tab_group_tab.h",
+    "public/types.cc",
+    "public/types.h",
+    "public/utils.cc",
+    "public/utils.h",
     "saved_tab_group_model.cc",
     "saved_tab_group_model.h",
     "saved_tab_group_model_observer.h",
-    "saved_tab_group_tab.cc",
-    "saved_tab_group_tab.h",
     "stats.cc",
     "stats.h",
     "tab_group_sync_metrics_logger.cc",
     "tab_group_sync_metrics_logger.h",
-    "types.cc",
-    "types.h",
-    "utils.cc",
-    "utils.h",
   ]
   deps = [
     "//base",
@@ -110,8 +110,8 @@ source_set("model") {
 
 source_set("string_utils") {
   sources = [
-    "string_utils.cc",
-    "string_utils.h",
+    "public/string_utils.cc",
+    "public/string_utils.h",
   ]
   deps = [
     "//components/strings",
@@ -122,14 +122,14 @@ source_set("string_utils") {
 if (is_android) {
   android_library("java") {
     sources = [
-      "android/java/src/org/chromium/components/tab_group_sync/EventDetails.java",
-      "android/java/src/org/chromium/components/tab_group_sync/LocalTabGroupId.java",
-      "android/java/src/org/chromium/components/tab_group_sync/SavedTabGroup.java",
-      "android/java/src/org/chromium/components/tab_group_sync/SavedTabGroupTab.java",
       "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncConversionsBridge.java",
-      "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncService.java",
       "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncServiceImpl.java",
-      "android/java/src/org/chromium/components/tab_group_sync/TabGroupUiActionHandler.java",
+      "public/android/java/src/org/chromium/components/tab_group_sync/EventDetails.java",
+      "public/android/java/src/org/chromium/components/tab_group_sync/LocalTabGroupId.java",
+      "public/android/java/src/org/chromium/components/tab_group_sync/SavedTabGroup.java",
+      "public/android/java/src/org/chromium/components/tab_group_sync/SavedTabGroupTab.java",
+      "public/android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncService.java",
+      "public/android/java/src/org/chromium/components/tab_group_sync/TabGroupUiActionHandler.java",
     ]
 
     deps = [
@@ -161,7 +161,7 @@ if (is_android) {
 
   java_cpp_enum("tab_group_sync_enums_java") {
     visibility = [ ":*" ]
-    sources = [ "types.h" ]
+    sources = [ "public/types.h" ]
   }
 
   android_library("native_java_unittests_java") {
@@ -205,13 +205,13 @@ if (is_android) {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "public/saved_tab_group_unittest.cc",
+    "public/string_utils_unittest.cc",
     "saved_tab_group_model_unittest.cc",
     "saved_tab_group_proto_conversion_unittest.cc",
     "saved_tab_group_sync_bridge_unittest.cc",
-    "saved_tab_group_unittest.cc",
     "shared_tab_group_data_sync_bridge_unittest.cc",
     "startup_helper_unittest.cc",
-    "string_utils_unittest.cc",
     "tab_group_sync_bridge_mediator_unittest.cc",
     "tab_group_sync_coordinator_unittest.cc",
     "tab_group_sync_metrics_logger_unittest.cc",
@@ -252,12 +252,12 @@ source_set("unit_tests") {
 source_set("test_support") {
   testonly = true
   sources = [
-    "mock_tab_group_sync_delegate.cc",
-    "mock_tab_group_sync_delegate.h",
-    "mock_tab_group_sync_service.cc",
-    "mock_tab_group_sync_service.h",
-    "saved_tab_group_test_utils.cc",
-    "saved_tab_group_test_utils.h",
+    "test_support/mock_tab_group_sync_delegate.cc",
+    "test_support/mock_tab_group_sync_delegate.h",
+    "test_support/mock_tab_group_sync_service.cc",
+    "test_support/mock_tab_group_sync_service.h",
+    "test_support/saved_tab_group_test_utils.cc",
+    "test_support/saved_tab_group_test_utils.h",
   ]
   deps = [
     ":core",
@@ -274,8 +274,8 @@ source_set("test_support") {
 
 source_set("fake_tab_group_sync_service") {
   sources = [
-    "fake_tab_group_sync_service.cc",
-    "fake_tab_group_sync_service.h",
+    "test_support/fake_tab_group_sync_service.cc",
+    "test_support/fake_tab_group_sync_service.h",
   ]
   deps = [
     ":core",

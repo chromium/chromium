@@ -6,7 +6,7 @@
 
 #import "base/containers/contains.h"
 #import "base/test/ios/wait_util.h"
-#import "components/saved_tab_groups/mock_tab_group_sync_service.h"
+#import "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #import "components/unified_consent/pref_names.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/main/model/browser_web_state_list_delegate.h"

@@ -14,9 +14,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "components/data_sharing/public/features.h"
-#include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/messaging/messaging_backend_service_impl.h"
-#include "components/saved_tab_groups/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/features.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/sync/model/data_type_store_service.h"
 
 namespace tab_groups::messaging {

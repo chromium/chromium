@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/saved_tab_groups",
+  "+components/saved_tab_groups/delegate",
+  "+components/saved_tab_groups/public",
+]
