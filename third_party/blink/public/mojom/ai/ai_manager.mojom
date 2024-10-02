@@ -88,21 +88,6 @@ interface AIManagerCreateSummarizerClient {
   OnResult(pending_remote<blink.mojom.AISummarizer>? summarizer);
 };
 
-// The enum describes the possible roles in the initial prompt.
-enum AIAssistantInitialPromptRole {
-  kSystem = 0,
-  kUser = 1,
-  kAssistant = 2,
-
-  // Append new line here
-};
-
-// Each initial prompt contains a role and the actual content.
-struct AIAssistantInitialPrompt {
-  AIAssistantInitialPromptRole role;
-  string content;
-};
-
 // The manager that could create a new session for the model.
 interface AIManager {
   // Returns if it is possible to create a text session. For example, when

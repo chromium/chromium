@@ -29,6 +29,21 @@ struct AIAssistantInfo {
   AIAssistantSamplingParams sampling_params;
 };
 
+// The enum describes the possible roles in the initial prompt.
+enum AIAssistantInitialPromptRole {
+  kSystem = 0,
+  kUser = 1,
+  kAssistant = 2,
+
+  // Append new line here
+};
+
+// Each initial prompt contains a role and the actual content.
+struct AIAssistantInitialPrompt {
+  AIAssistantInitialPromptRole role;
+  string content;
+};
+
 // A session for a model that allows executing an input and streaming the output.
 interface AIAssistant {
   // Prompts the model on the given input.
