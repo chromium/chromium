@@ -192,7 +192,7 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
           // TODO(b/294481776): In the future, we will support channel selection
           // via policy and by the end user for unmanaged users. For now, we
           // always use the "default" channel.
-          UpdateChannelId::default_id());
+          UpdateChannel::default_channel());
   if (!latest_version_entry.has_value()) {
     FailWith(Error::kUpdateManifestNoApplicableVersion);
     return;

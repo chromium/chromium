@@ -10,7 +10,7 @@ namespace {
 base::Value::Dict AppPrefValue(
     std::string swb_id,
     std::string update_manifest_url,
-    std::optional<web_app::UpdateChannelId> update_channel) {
+    std::optional<web_app::UpdateChannel> update_channel) {
   base::Value::Dict entry_dict;
   entry_dict.Set(web_app::kPolicyUpdateManifestUrlKey,
                  std::move(update_manifest_url));
@@ -32,10 +32,10 @@ PolicyGenerator::~PolicyGenerator() = default;
 void PolicyGenerator::AddForceInstalledIwa(
     web_package::SignedWebBundleId id,
     GURL update_manifest_url,
-    std::optional<UpdateChannelId> channel) {
+    std::optional<UpdateChannel> channel) {
   app_policies_.emplace_back(
       std::move(id), std::move(update_manifest_url),
-      channel.has_value() ? channel.value() : UpdateChannelId::default_id());
+      channel.has_value() ? channel.value() : UpdateChannel::default_channel());
 }
 
 base::Value PolicyGenerator::Generate() {
@@ -70,7 +70,7 @@ base::Value PolicyGenerator::CreatePolicyEntry(
 PolicyGenerator::IwaForceInstalledPolicy::IwaForceInstalledPolicy(
     web_package::SignedWebBundleId id,
     GURL update_manifest_url,
-    UpdateChannelId channel)
+    UpdateChannel channel)
     : id_(std::move(id)),
       update_manifest_url_(std::move(update_manifest_url)),
       update_channel(channel) {}

@@ -214,8 +214,8 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
     PolicyGenerator policy_generator;
     for (const auto& [web_bundle_id, update_manifest_file_name,
                       update_channel_name] : update_manifest_entries) {
-      auto channel = UpdateChannelId::Create(update_channel_name)
-                         .value_or(UpdateChannelId::default_id());
+      auto channel = UpdateChannel::Create(update_channel_name)
+                         .value_or(UpdateChannel::default_channel());
       policy_generator.AddForceInstalledIwa(
           web_bundle_id,
           iwa_server_.GetURL(base::StrCat({"/", update_manifest_file_name})),

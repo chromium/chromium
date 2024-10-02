@@ -21,7 +21,7 @@ class PolicyGenerator {
   void AddForceInstalledIwa(
       web_package::SignedWebBundleId id,
       GURL update_manifest_url,
-      std::optional<UpdateChannelId> update_channel = std::nullopt);
+      std::optional<UpdateChannel> update_channel = std::nullopt);
 
   base::Value Generate();
 
@@ -34,12 +34,12 @@ class PolicyGenerator {
   struct IwaForceInstalledPolicy {
     IwaForceInstalledPolicy(web_package::SignedWebBundleId id,
                             GURL update_manifest_url,
-                            UpdateChannelId update_channel);
+                            UpdateChannel update_channel);
     IwaForceInstalledPolicy(const IwaForceInstalledPolicy& other);
     ~IwaForceInstalledPolicy();
     web_package::SignedWebBundleId id_;
     GURL update_manifest_url_;
-    UpdateChannelId update_channel;
+    UpdateChannel update_channel;
   };
 
   std::vector<IwaForceInstalledPolicy> app_policies_;

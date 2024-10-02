@@ -36,7 +36,7 @@ TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValue) {
   EXPECT_EQ(options.web_bundle_id().id(), kEd25519SignedWebBundleId);
   EXPECT_EQ(options.update_manifest_url(), GURL(kCorrectUpdateManifestUrl));
   EXPECT_EQ(options.update_channel().ToString(),
-            UpdateChannelId::default_id().ToString());
+            UpdateChannel::default_channel().ToString());
 }
 
 // We don't install apps signed by not a release key.

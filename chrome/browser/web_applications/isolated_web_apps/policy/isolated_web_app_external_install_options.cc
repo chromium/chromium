@@ -18,7 +18,7 @@ namespace web_app {
 IsolatedWebAppExternalInstallOptions::IsolatedWebAppExternalInstallOptions(
     GURL update_manifest_url,
     web_package::SignedWebBundleId web_bundle_id,
-    UpdateChannelId update_channel)
+    UpdateChannel update_channel)
     : update_manifest_url_(std::move(update_manifest_url)),
       web_bundle_id_(std::move(web_bundle_id)),
       update_channel_(update_channel) {
@@ -79,12 +79,12 @@ IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
       entry_dict.FindString(kPolicyUpdateChannelKey);
 
   if (!update_channel_raw) {
-    return IsolatedWebAppExternalInstallOptions(std::move(update_manifest_url),
-                                                std::move(web_bundle_id),
-                                                UpdateChannelId::default_id());
+    return IsolatedWebAppExternalInstallOptions(
+        std::move(update_manifest_url), std::move(web_bundle_id),
+        UpdateChannel::default_channel());
   }
 
-  auto update_channel = UpdateChannelId::Create(*update_channel_raw);
+  auto update_channel = UpdateChannel::Create(*update_channel_raw);
 
   if (update_channel.has_value()) {
     return IsolatedWebAppExternalInstallOptions(
@@ -92,6 +92,6 @@ IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
         std::move(update_channel.value()));
   }
 
-  return base::unexpected("Failed to create UpdateChannelId");
+  return base::unexpected("Failed to create UpdateChannel");
 }
 }  // namespace web_app

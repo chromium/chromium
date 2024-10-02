@@ -15,7 +15,7 @@ class Value;
 
 namespace web_app {
 
-class UpdateChannelId;
+class UpdateChannel;
 
 // This class contains all information to install an Isolated Web App via
 // enterprise policy.
@@ -37,13 +37,13 @@ class IsolatedWebAppExternalInstallOptions final {
   const web_package::SignedWebBundleId& web_bundle_id() const {
     return web_bundle_id_;
   }
-  const UpdateChannelId& update_channel() const { return update_channel_; }
+  const UpdateChannel& update_channel() const { return update_channel_; }
 
  private:
   IsolatedWebAppExternalInstallOptions(
       GURL update_manifest_url,
       web_package::SignedWebBundleId web_bundle_id,
-      UpdateChannelId update_channel);
+      UpdateChannel update_channel);
 
   // Update manifest contains the info about available versions of the IWA and
   // the URLs of the corresponding Web Bundle files.
@@ -52,7 +52,7 @@ class IsolatedWebAppExternalInstallOptions final {
   web_package::SignedWebBundleId web_bundle_id_;
   // Update Channel ID to specify the desired release channel. If not specified
   // in policy, it is set to "default".
-  UpdateChannelId update_channel_;
+  UpdateChannel update_channel_;
 };
 
 }  // namespace web_app
