@@ -54,6 +54,8 @@ class DeviceAuthenticatorControllerImpl implements DeviceAuthenticatorController
             return BiometricsAvailability.ANDROID_VERSION_NOT_SUPPORTED;
         }
         BiometricManager biometricManager = mContext.getSystemService(BiometricManager.class);
+        if (biometricManager == null) return BiometricsAvailability.OTHER_ERROR;
+
         switch (biometricManager.canAuthenticate()) {
             case BIOMETRIC_SUCCESS:
                 return hasScreenLockSetUp()
