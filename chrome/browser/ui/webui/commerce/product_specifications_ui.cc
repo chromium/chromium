@@ -29,6 +29,7 @@
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/feature_utils.h"
+#include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/webui/shopping_service_handler.h"
 #include "components/favicon_base/favicon_url_parser.h"
@@ -130,6 +131,7 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
   source->AddString("productSpecificationsManagementUrl",
                     kChromeUICompareListsUrl);
   source->AddString("compareLearnMoreUrl", kChromeUICompareLearnMoreUrl);
+  source->AddInteger("maxNameLength", kMaxNameLength);
 
   std::string email;
   signin::IdentityManager* identity_manager =

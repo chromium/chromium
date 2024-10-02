@@ -880,6 +880,41 @@ TEST_F(ProductSpecificationsServiceTest, TestSetNameMultiSpecifics) {
             FindProductSpecificationsSet(set_to_modify.uuid()).name());
 }
 
+TEST_F(ProductSpecificationsServiceTest, TestSetNameMultiSpecifics_MaxLength) {
+  std::string long_name = "";
+  for (size_t i = 0; i < kMaxNameLength * 2; i++) {
+    long_name += "A";
+  }
+
+  std::vector<ProductSpecificationsSet> sets;
+  for (int i = 0; i < 2; i++) {
+    sets.push_back(
+        service()
+            ->AddProductSpecificationsSet(
+                long_name, {UrlInfo(GURL("https://a.example.com"), u""),
+                            UrlInfo(GURL("https://b.example.com"), u"")})
+            .value());
+  }
+  base::RunLoop().RunUntilIdle();
+  CheckProductSpecificationsExists(sets);
+
+  ProductSpecificationsSet set_to_modify =
+      FindProductSpecificationsSet(sets[1].uuid());
+  EXPECT_EQ(kMaxNameLength,
+            FindProductSpecificationsSet(set_to_modify.uuid()).name().length());
+
+  EXPECT_CALL(*observer(), OnProductSpecificationsSetUpdate(
+                               HasProductSpecsNameUrl(set_to_modify.name(),
+                                                      set_to_modify.urls()),
+                               testing::_))
+      .Times(1);
+  service()->SetName(set_to_modify.uuid(), long_name);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(kMaxNameLength,
+            FindProductSpecificationsSet(set_to_modify.uuid()).name().length());
+}
+
 TEST_F(ProductSpecificationsServiceTest,
        TestSetNameMultiSpecificsTopLevelSpecificAbsent) {
   std::vector<ProductSpecificationsSet> sets;
