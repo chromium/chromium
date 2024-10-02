@@ -113,6 +113,7 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
   if (self) {
     CHECK(webState);
     CHECK(identity);
+    CHECK(driveService);
     CHECK(accountManagerService);
     _webState = webState->GetWeakPtr();
     _identity = identity;
@@ -132,6 +133,8 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
         ChooseFileTabHelper::GetOrCreateForWebState(webState);
     CHECK(tab_helper->IsChoosingFiles());
     _acceptedTypes = UTTypesAcceptedForEvent(tab_helper->GetChooseFileEvent());
+    _driveList = _driveService->CreateList(_identity);
+    _driveDownloader = _driveService->CreateFileDownloader(_identity);
   }
   return self;
 }
@@ -172,8 +175,10 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
   }
   _identity = selectedIdentity;
   [_consumer setSelectedUserIdentityEmail:_identity.userEmail];
-  [self clearSelection];
+  [self setSelectedItem:std::nullopt];
   [self configureConsumerIdentitiesMenu];
+  _driveList = _driveService->CreateList(_identity);
+  _driveDownloader = _driveService->CreateFileDownloader(_identity);
 }
 
 #pragma mark - DriveFilePickerMutator
@@ -186,22 +191,13 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
     // Unfocusing the search bar so the confirmation button can become visible.
     _searchBarFocused = NO;
     [self.consumer setSearchBarFocused:NO searchText:_searchText];
-    if ([_selectedIdentifier isEqual:driveItemIdentifier]) {
-      // If the file is already selected, there is nothing else to do.
-      return;
-    }
-    _selectedIdentifier = driveItemIdentifier;
-    _selectedIdentifierIsSearchItem = _shouldShowSearchItems;
-    [self.consumer setSelectedItemIdentifier:driveItemIdentifier];
-    [self downloadDriveItem:*driveItem];
+    [self setSelectedItem:driveItem];
     return;
   }
 
   // If the user tries to browse into a folder or other type of collection while
   // an item is already selected, clear the selection.
-  if (_selectedIdentifier != nil) {
-    [self clearSelection];
-  }
+  [self setSelectedItem:std::nullopt];
 
   if (driveItem && (driveItem->is_folder || driveItem->is_shared_drive)) {
     // If this is a real folder or shared drive, then open it.
@@ -477,7 +473,7 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
       !_shouldShowSearchItems) {
     // If the selected item was a search item and search items are hidden, clear
     // the selection.
-    [self clearSelection];
+    [self setSelectedItem:std::nullopt];
   }
   if (!_shouldShowSearchItems) {
     // If search items are hidden, then ensure the search bar is defocused and
@@ -494,34 +490,53 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
   [self loadItemsAppending:NO delayed:NO animated:YES];
 }
 
-// Clears the selected identifier and updates the consumer accordingly.
-- (void)clearSelection {
-  [self.consumer setDownloadStatus:DriveFileDownloadStatus::kNotStarted];
-  [self.consumer setSelectedItemIdentifier:nil];
-  if (_driveDownloader && _selectedIdentifierDownloadID) {
-    _driveDownloader->CancelDownload(_selectedIdentifierDownloadID);
+// Sets the selected item (can be none), cancels any previously started download
+// and potentially starts a new download. Updates the consumer accordingly.
+- (void)setSelectedItem:(std::optional<DriveItem>)item {
+  NSString* itemIdentifier = item ? item->identifier : nil;
+  if (_selectedIdentifier == itemIdentifier ||
+      [_selectedIdentifier isEqualToString:itemIdentifier]) {
+    // If the item is already selected, do nothing.
+    return;
   }
-  _selectedIdentifierDownloadID = nil;
-  _selectedIdentifier = nil;
-}
 
-- (void)downloadDriveItem:(const DriveItem&)driveItem {
-  [self.consumer setDownloadStatus:DriveFileDownloadStatus::kInProgress];
-  _driveDownloader = _driveService->CreateFileDownloader(_identity);
-  NSURL* fileURL = DriveFilePickerGenerateDownloadFileURL(driveItem.name);
+  // Clean-up any already existing download.
+  if (_selectedIdentifier) {
+    CHECK(_selectedIdentifierDownloadID);
+    _driveDownloader->CancelDownload(_selectedIdentifierDownloadID);
+    _selectedIdentifierDownloadID = nil;
+  }
+
+  // Update selected item and status in the consumer.
+  _selectedIdentifier = itemIdentifier;
+  _selectedIdentifierIsSearchItem =
+      _selectedIdentifier ? _shouldShowSearchItems : NO;
+  [self.consumer setSelectedItemIdentifier:_selectedIdentifier];
+  [self.consumer setDownloadStatus:_selectedIdentifier
+                                       ? DriveFileDownloadStatus::kInProgress
+                                       : DriveFileDownloadStatus::kNotStarted];
+
+  // If there is a new selected item, start to download it.
+  if (!item) {
+    return;
+  }
+  NSURL* fileURL = DriveFilePickerGenerateDownloadFileURL(item->name);
   CHECK(fileURL);
   __weak __typeof(self) weakSelf = self;
   _selectedIdentifierDownloadID = _driveDownloader->DownloadFile(
-      driveItem, fileURL,
+      *item, fileURL,
       base::BindRepeating(^(DriveFileDownloadID driveFileDownloadID,
                             const DriveFileDownloadProgress& progress){
       }),
-      base::BindOnce(^(DriveFileDownloadID driveFileDownloadID, BOOL sucess,
-                       NSError* error) {
-        [weakSelf handleDownloadResponse:driveFileDownloadID
-                                   error:error
-                                 fileURL:fileURL];
-      }));
+      base::BindOnce(
+          [](DriveFilePickerMediator* mediator, NSURL* downloadFileURL,
+             DriveFileDownloadID driveFileDownloadID, BOOL success,
+             NSError* error) {
+            [mediator handleDownloadResponse:driveFileDownloadID
+                                       error:error
+                                     fileURL:downloadFileURL];
+          },
+          weakSelf, fileURL));
 }
 
 - (void)handleDownloadResponse:(DriveFileDownloadID)driveFileDownloadID
@@ -541,6 +556,10 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
                   animated:(BOOL)animated {
   // If there is a timer programmed to fetch items, cancel it.
   _fetchTimer.Stop();
+  // Cancel any pending fetch query.
+  if (_driveList->IsExecutingQuery()) {
+    _driveList->CancelCurrentQuery();
+  }
 
   if (_collectionType != DriveFilePickerCollectionType::kRoot ||
       _shouldShowSearchItems) {
@@ -586,8 +605,6 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
     // If this is a new query, then `_pageToken` can be reset.
     _pageToken = nil;
   }
-
-  _driveList = _driveService->CreateList(_identity);
 
   DriveListQuery query = CreateDriveListQuery(
       _collectionType, _folderIdentifier, _filter, _sortingCriteria,
