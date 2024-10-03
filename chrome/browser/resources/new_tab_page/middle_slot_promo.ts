@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './mobile_promo.js';
+
 import {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -138,6 +140,7 @@ export interface MiddleSlotPromoElement {
     promoAndDismissContainer: HTMLElement,
     dismissPromoButtonToast: CrToastElement,
     dismissPromoButtonToastMessage: HTMLElement,
+    mobilePromo: HTMLElement,
     undoDismissPromoButton: HTMLElement,
   };
 }
@@ -160,6 +163,8 @@ export class MiddleSlotPromoElement extends CrLitElement {
 
   static override get properties() {
     return {
+      mobilePromoEnabled_: {type: Boolean},
+
       shownMiddleSlotPromoId_: {
         type: String,
         reflect: true,
@@ -169,11 +174,13 @@ export class MiddleSlotPromoElement extends CrLitElement {
     };
   }
 
-  private eventTracker_: EventTracker = new EventTracker();
+  protected mobilePromoEnabled_: boolean =
+      loadTimeData.getBoolean('mobilePromoEnabled');
   protected shownMiddleSlotPromoId_: string;
-  private blocklistedMiddleSlotPromoId_: string;
   private promo_: Promo;
 
+  private blocklistedMiddleSlotPromoId_: string;
+  private eventTracker_: EventTracker = new EventTracker();
   private setPromoListenerId_: number|null = null;
 
   override connectedCallback() {
@@ -205,10 +212,23 @@ export class MiddleSlotPromoElement extends CrLitElement {
     }
   }
 
+
+  // Up to one promo type can show at any given time. If the mobile promo is
+  // enabled, it should show whenever the "default" promo is hidden.
+  // Note: To avoid immediately showing a new promo after a user dismisses one,
+  // this behavior is not used in |onDismissPromoButtonClick_()| or
+  // |onUndoDismissPromoButtonClick_()|.
+  private updatePromoVisibility_(showDefaultPromo: boolean) {
+    this.$.promoAndDismissContainer.hidden = !showDefaultPromo;
+    if (this.mobilePromoEnabled_) {
+      this.$.mobilePromo.hidden = showDefaultPromo;
+    }
+  }
+
   private onPromoChange_() {
     renderPromo(this.promo_).then(promo => {
       if (!promo) {
-        this.$.promoAndDismissContainer.hidden = true;
+        this.updatePromoVisibility_(false);
       } else {
         const promoContainer =
             this.shadowRoot!.getElementById('promoContainer');
@@ -221,7 +241,7 @@ export class MiddleSlotPromoElement extends CrLitElement {
         const renderedPromoContainer = promo.container;
         assert(renderedPromoContainer);
         this.$.promoAndDismissContainer.prepend(renderedPromoContainer);
-        this.$.promoAndDismissContainer.hidden = false;
+        this.updatePromoVisibility_(true);
       }
       this.fire('ntp-middle-slot-promo-loaded');
     });

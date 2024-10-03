@@ -1,0 +1,68 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #scheme=relative
+ * #include=cr-icons-lit
+ * #css_wrapper_metadata_end */
+
+ :host {
+    background-color: var(--color-new-tab-page-module-background);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    height: 111px;
+    padding: 12px;
+    width: 271px;
+  }
+
+  #titleAndDismissContainer {
+    align-items: center;
+    display: flex;
+    height: 24px;
+    justify-content: space-between;
+  }
+
+  #title {
+    color: var(--color-new-tab-page-primary-foreground);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 20px;
+  }
+
+  #dismissButton {
+    --cr-icon-button-fill-color:
+        var(--color-new-tab-page-mobile-promo-dismiss-button, currentColor);
+    --cr-icon-button-icon-size: 18px;
+    --cr-icon-button-margin-end: 0px;
+    --cr-icon-button-size: 24px;
+  }
+
+  #descriptionAndQrCodeContainer {
+    display: flex;
+    gap: 8px;
+  }
+
+  #description {
+    align-self: center;
+    color: var(--color-new-tab-page-secondary-foreground);
+    line-height: 18px;
+    height: 54px;
+    width: 185px;
+  }
+
+  #qrCode {
+    /* TODO(b/371020885): Replace background with QR code. */
+    background: var(--color-new-tab-page-module-item-background);
+    border: 1px;
+    border-color: var(--color-new-tab-page-most-visited-tile-background);
+    border-radius: 8px;
+    display: flex;
+    height: 80px;
+    justify-content: center;
+    width: 78px;
+  }

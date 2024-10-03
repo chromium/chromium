@@ -12,11 +12,11 @@ import type {PageRemote, Promo} from 'chrome://new-tab-page/new_tab_page.mojom-w
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {Command, CommandHandlerRemote} from 'chrome://resources/js/browser_command.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from './test_support.js';
 
@@ -111,6 +111,8 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
 
   function assertHasContent(
       hasContent: boolean, middleSlotPromo: MiddleSlotPromoElement) {
+    assertEquals(
+        hasContent, isVisible(middleSlotPromo.$.promoAndDismissContainer));
     assertEquals(hasContent, !!$$(middleSlotPromo, '#promoContainer'));
   }
 
@@ -266,6 +268,28 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
       callbackRouterRemote.setPromo(promo as Promo);
       await callbackRouterRemote.$.flushForTesting();
       assertEquals(false, middleSlotPromo.$.promoAndDismissContainer.hidden);
+    });
+  });
+
+  suite('mobilePromoEnabled', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({
+        mobilePromoEnabled: true,
+      });
+    });
+
+    test(`mobile promo hides if default promo renders`, async () => {
+      const canShowPromo = true;
+      const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
+      assertTrue(isVisible(middleSlotPromo.$.promoAndDismissContainer));
+      assertFalse(isVisible(middleSlotPromo.$.mobilePromo));
+    });
+
+    test(`mobile promo shows if default promo doesn't render`, async () => {
+      const canShowPromo = false;
+      const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
+      assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
+      assertTrue(isVisible(middleSlotPromo.$.mobilePromo));
     });
   });
 });

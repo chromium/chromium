@@ -10,6 +10,9 @@
     </cr-icon-button>
   ` : ''}
 </div>
+${this.mobilePromoEnabled_ ? html`
+  <ntp-mobile-promo id="mobilePromo" hidden></ntp-mobile-promo>
+` : ''}
 <cr-toast id="dismissPromoButtonToast" duration="10000">
   <div id="dismissPromoButtonToastMessage">
     $i18n{undoDismissPromoButtonToast}

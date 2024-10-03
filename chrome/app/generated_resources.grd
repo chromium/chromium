@@ -8805,6 +8805,14 @@ Keep your key file in a safe place. You will need it to create new versions of y
         See more
       </message>
 
+      <!-- Mobile NTP Middle Slot Promo -->
+      <message name="IDS_NTP_MOBILE_PROMO_HEADER" desc="Header for a promo that shows on the Desktop NTP prompting user to scan a QR code with their mobile device">
+        Get Chrome on your mobile device
+      </message>
+      <message name="IDS_NTP_MOBILE_PROMO_DESCRIPTION" desc="Description for a promo that shows on the Desktop NTP prompting user to scan a QR code with their mobile device">
+        Scan the QR code to download Chrome for your iPhone and iPad to pick up where you left off.
+      </message>
+
       <!-- Extensions NTP Middle Slot Promo -->
       <message name="IDS_EXTENSIONS_PROMO_PERFORMANCE">
         Web browsing should be fast. Take a moment to <ph name="BEGIN_LINK">&lt;a href="chrome://extensions"&gt;</ph>check your extensions<ph name="END_LINK">&lt;/a&gt;</ph> now.

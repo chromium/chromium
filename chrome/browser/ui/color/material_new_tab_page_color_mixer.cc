@@ -73,6 +73,9 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
       ui::kColorSysTonalOutline};
   mixer[kColorNewTabPageModuleCalendarDividerColor] = {ui::kColorSysDivider};
 
+  mixer[kColorNewTabPageMobilePromoDismissButton] = {
+      ui::kColorSysOnSurfaceVariant};
+
   mixer[kColorNewTabPagePromoBackground] = {ui::kColorSysBase};
   mixer[kColorNewTabPagePrimaryForeground] = {ui::kColorSysOnSurface};
   mixer[kColorNewTabPageSecondaryForeground] = {ui::kColorSysOnSurfaceSubtle};
