@@ -2906,7 +2906,7 @@ void MediaStreamManager::GetRawDeviceIdsOpenedForFrame(
       FROM_HERE,
       base::BindOnce(&MediaStreamManager::GetRawDeviceIdsOpenedForFrameIds,
                      base::Unretained(this), type, std::move(callback),
-                     all_render_frame_host_ids));
+                     std::move(all_render_frame_host_ids)));
 }
 
 void MediaStreamManager::GetRawDeviceIdsOpenedForFrameIds(

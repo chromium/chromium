@@ -497,7 +497,7 @@ blink::mojom::PRFValuesPtr PRFResultsToValues(
 }
 
 void SetHints(AuthenticatorRequestClientDelegate* request_delegate,
-              const base::flat_set<blink::mojom::Hint> hints) {
+              const base::flat_set<blink::mojom::Hint>& hints) {
   // The first recognised transport takes priority.
   std::optional<device::FidoTransportProtocol> transport;
   for (const auto hint : hints) {
