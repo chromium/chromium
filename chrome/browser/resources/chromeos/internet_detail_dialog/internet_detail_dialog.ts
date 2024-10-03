@@ -24,16 +24,16 @@ import 'chrome://resources/ash/common/network/apn_list.js';
 import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator_mixin.js';
 import './strings.m.js';
 
+import {CrToastElement} from 'chrome://resources/ash/common/cr_elements/cr_toast/cr_toast.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {ApnList} from 'chrome://resources/ash/common/network/apn_list.js';
+import {ApnListElement} from 'chrome://resources/ash/common/network/apn_list.js';
 import {getApnDisplayName, isActiveSim} from 'chrome://resources/ash/common/network/cellular_utils.js';
 import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {CrToastElement} from 'chrome://resources/ash/common/cr_elements/cr_toast/cr_toast.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {ApnProperties, ConfigProperties, CrosNetworkConfigInterface, GlobalPolicy, IPConfigProperties, ManagedProperties, MAX_NUM_CUSTOM_APNS, ProxySettings, StartConnectResult} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType, OncSource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
@@ -738,7 +738,7 @@ export class InternetDetailDialogElement extends
     }
 
     assert(!!this.guid);
-    const apnList = this.shadowRoot!.querySelector<ApnList>('#apnList');
+    const apnList = this.shadowRoot!.querySelector<ApnListElement>('#apnList');
     assert(apnList);
     apnList.openApnDetailDialogInCreateMode();
   }
@@ -752,7 +752,7 @@ export class InternetDetailDialogElement extends
     }
 
     assert(!!this.guid);
-    const apnList = this.shadowRoot!.querySelector<ApnList>('#apnList');
+    const apnList = this.shadowRoot!.querySelector<ApnListElement>('#apnList');
     assert(apnList);
     apnList.openApnSelectionDialog();
   }

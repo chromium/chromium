@@ -6,7 +6,7 @@ import 'chrome://os-settings/lazy_load.js';
 
 import {ApnSubpageElement} from 'chrome://os-settings/lazy_load.js';
 import {Router, routes} from 'chrome://os-settings/os_settings.js';
-import {ApnList} from 'chrome://resources/ash/common/network/apn_list.js';
+import {ApnListElement} from 'chrome://resources/ash/common/network/apn_list.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {DeviceStateProperties, InhibitReason, ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
@@ -41,7 +41,7 @@ suite('<apn-subpage>', () => {
     };
   }
 
-  function getApnList(): ApnList|null {
+  function getApnList(): ApnListElement|null {
     return apnSubpage.shadowRoot!.querySelector('apn-list');
   }
 

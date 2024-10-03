@@ -10,7 +10,7 @@
 import './internet_shared.css.js';
 import 'chrome://resources/ash/common/network/apn_list.js';
 
-import {ApnList} from 'chrome://resources/ash/common/network/apn_list.js';
+import {ApnListElement} from 'chrome://resources/ash/common/network/apn_list.js';
 import {processDeviceState} from 'chrome://resources/ash/common/network/cellular_utils.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
@@ -28,7 +28,7 @@ import {getTemplate} from './apn_subpage.html.js';
 
 export interface ApnSubpageElement {
   $: {
-    apnList: ApnList,
+    apnList: ApnListElement,
   };
 }
 

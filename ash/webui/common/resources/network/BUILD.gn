@@ -12,7 +12,6 @@ js_type_check("closure_compile_module") {
 
   deps = [
     ":apn_detail_dialog",
-    ":apn_list",
     ":apn_list_item",
     ":apn_selection_dialog",
     ":apn_selection_dialog_list_item",
@@ -65,22 +64,6 @@ js_library("cr_policy_network_indicator_mojo") {
     "//ash/webui/common/resources:cr_policy_indicator_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-}
-
-js_library("apn_list") {
-  deps = [
-    ":apn_detail_dialog",
-    ":apn_selection_dialog",
-    ":onc_mojo",
-    "//ash/webui/common/resources:assert",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//ash/webui/common/resources/network:apn_list_item",
-    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = []
 }
 
 js_library("apn_list_item") {

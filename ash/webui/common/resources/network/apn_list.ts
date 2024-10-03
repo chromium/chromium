@@ -15,30 +15,23 @@ import '//resources/ash/common/network/apn_detail_dialog.js';
 import '//resources/ash/common/network/apn_selection_dialog.js';
 import '//resources/ash/common/cr_elements/icons.html.js';
 
-import {assert} from '//resources/ash/common/assert.js';
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
-import {ApnDetailDialog} from '//resources/ash/common/network/apn_detail_dialog.js';
-import {ApnDetailDialogMode, ApnEventData, isAttachApn, isDefaultApn} from '//resources/ash/common/network/cellular_utils.js';
-import {ApnProperties, ApnSource, ApnState, ApnType, ManagedCellularProperties} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {assert} from '//resources/js/assert.js';
+import {ApnProperties, ApnSource, ApnState, ManagedCellularProperties} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {PortalState} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {afterNextRender, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 
+import {ApnDetailDialog} from './apn_detail_dialog.js';
 import {getTemplate} from './apn_list.html.js';
+import {ApnDetailDialogMode, ApnEventData, isAttachApn, isDefaultApn} from './cellular_utils.js';
 
-/* @type {string} */
 const SHILL_INVALID_APN_ERROR = 'invalid-apn';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const ApnListBase = mixinBehaviors([I18nBehavior], PolymerElement);
+const ApnListElementBase = I18nMixin(PolymerElement);
 
-/** @polymer */
-export class ApnList extends ApnListBase {
+export class ApnListElement extends ApnListElementBase {
   static get is() {
-    return 'apn-list';
+    return 'apn-list' as const;
   }
 
   static get template() {
@@ -50,14 +43,12 @@ export class ApnList extends ApnListBase {
       /** The GUID of the network to display details for. */
       guid: String,
 
-      /**@type {!ManagedCellularProperties}*/
       managedCellularProperties: {
         type: Object,
       },
 
       errorState: String,
 
-      /** @type {?PortalState} */
       portalState: {
         type: Object,
       },
@@ -72,37 +63,28 @@ export class ApnList extends ApnListBase {
         value: false,
       },
 
-      /** @private */
       apns_: {
         type: Object,
         value: [],
         computed: 'computeApns_(managedCellularProperties)',
       },
 
-      /** @private */
       hasEnabledDefaultCustomApn_: {
         type: Boolean,
         computed:
             'computeHasEnabledDefaultCustomApn_(managedCellularProperties)',
       },
 
-      /** @private */
       shouldShowApnDetailDialog_: {
         type: Boolean,
         value: false,
       },
 
-      /**
-       * The mode in which the apn detail dialog is opened.
-       * @type {ApnDetailDialogMode}
-       * @private
-       */
       apnDetailDialogMode_: {
         type: Object,
         value: ApnDetailDialogMode.CREATE,
       },
 
-      /** @private */
       shouldShowApnSelectionDialog_: {
         type: Boolean,
         value: false,
@@ -110,11 +92,20 @@ export class ApnList extends ApnListBase {
     };
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onZeroStateCreateApnLinkClicked_(e) {
+  guid: string;
+  errorState: string;
+  managedCellularProperties: ManagedCellularProperties;
+  portalState: PortalState|null;
+  shouldOmitLinks: boolean;
+  shouldDisallowApnModification: boolean;
+  private apns_: [];
+  private hasEnabledDefaultCustomApn_: boolean;
+  private shouldShowApnDetailDialog_: boolean;
+  private apnDetailDialogMode_: ApnDetailDialogMode;
+  private shouldShowApnSelectionDialog_: boolean;
+
+  private onZeroStateCreateApnLinkClicked_(e: CustomEvent<{event: Event}>):
+      void {
     // A place holder href with the value "#" is used to have a compliant link.
     // This prevents the browser from navigating the window to "#"
     e.detail.event.preventDefault();
@@ -122,19 +113,15 @@ export class ApnList extends ApnListBase {
     this.openApnDetailDialogInCreateMode();
   }
 
-  openApnDetailDialogInCreateMode() {
+  openApnDetailDialogInCreateMode(): void {
     this.showApnDetailDialog_(ApnDetailDialogMode.CREATE, /* apn= */ undefined);
   }
 
-  openApnSelectionDialog() {
+  openApnSelectionDialog(): void {
     this.shouldShowApnSelectionDialog_ = true;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowZeroStateContent_() {
+  private shouldShowZeroStateContent_(): boolean {
     if (!this.managedCellularProperties) {
       return true;
     }
@@ -151,11 +138,7 @@ export class ApnList extends ApnListBase {
     return !this.getCustomApnList_().length;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowErrorMessage_() {
+  private shouldShowErrorMessage_(): boolean {
     // In some instances, there can be an |errorState| and also a connected APN.
     // Don't show the error message as the network is actually connected.
     if (this.managedCellularProperties &&
@@ -166,11 +149,7 @@ export class ApnList extends ApnListBase {
     return this.errorState === SHILL_INVALID_APN_ERROR;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getErrorMessage_() {
+  private getErrorMessage_(): string {
     if (!this.managedCellularProperties || !this.errorState) {
       return '';
     }
@@ -186,10 +165,8 @@ export class ApnList extends ApnListBase {
    * Returns an array with all the APN properties that need to be displayed.
    * TODO(b/162365553): Handle managedCellularProperties.apnList.policyValue
    * when policies are included.
-   * @return {Array<!ApnProperties>}
-   * @private
    */
-  computeApns_() {
+  private computeApns_(): ApnProperties[] {
     if (!this.managedCellularProperties) {
       return [];
     }
@@ -208,11 +185,8 @@ export class ApnList extends ApnListBase {
 
   /**
    * Returns true if the APN on this index is connected.
-   * @param {number} index index in the APNs array.
-   * @return {boolean}
-   * @private
    */
-  isApnConnected_(index) {
+  private isApnConnected_(index: number): boolean {
     return !!this.managedCellularProperties &&
         !!this.managedCellularProperties.connectedApn && index === 0;
   }
@@ -220,11 +194,8 @@ export class ApnList extends ApnListBase {
   /**
    * Returns true if currentApn is the only enabled default APN and there is
    * at least one enabled attach APN.
-   * @param {!ApnProperties} currentApn
-   * @return {boolean}
-   * @private
    */
-  shouldDisallowDisablingRemoving_(currentApn) {
+  private shouldDisallowDisablingRemoving_(currentApn: ApnProperties): boolean {
     assert(this.managedCellularProperties);
     if (!currentApn.id) {
       return true;
@@ -247,11 +218,8 @@ export class ApnList extends ApnListBase {
   /**
    * Returns true if there are no enabled default APNs and the current APN has
    * only an attach APN type.
-   * @param {!ApnProperties} currentApn
-   * @return {boolean}
-   * @private
    */
-  shouldDisallowEnabling_(currentApn) {
+  private shouldDisallowEnabling_(currentApn: ApnProperties): boolean {
     assert(this.managedCellularProperties);
     if (!currentApn.id) {
       return true;
@@ -264,76 +232,46 @@ export class ApnList extends ApnListBase {
     return isAttachApn(currentApn) && !isDefaultApn(currentApn);
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onShowApnDetailDialog_(event) {
+  private onShowApnDetailDialog_(event: CustomEvent<ApnEventData>): void {
     event.stopPropagation();
     if (this.shouldShowApnDetailDialog_) {
       return;
     }
-    const eventData = /** @type {!ApnEventData} */ (event.detail);
+    const eventData = event.detail;
     this.showApnDetailDialog_(eventData.mode, eventData.apn);
   }
 
-  /**
-   * @param {!ApnDetailDialogMode} mode
-   * @param {ApnProperties|undefined} apn
-   * @private
-   */
-  showApnDetailDialog_(mode, apn) {
+  private showApnDetailDialog_(
+      mode: ApnDetailDialogMode, apn: ApnProperties|undefined): void {
     this.shouldShowApnDetailDialog_ = true;
     this.apnDetailDialogMode_ = mode;
     // Added to ensure dom-if stamping.
     afterNextRender(this, () => {
-      const apnDetailDialog = /** @type {ApnDetailDialog} */ (
-          this.shadowRoot.querySelector('#apnDetailDialog'));
+      const apnDetailDialog =
+          this.shadowRoot!.querySelector<ApnDetailDialog>('#apnDetailDialog');
       assert(!!apnDetailDialog);
       apnDetailDialog.apnProperties = apn;
     });
   }
 
-  /**
-   *
-   * @param event {!Event}
-   * @private
-   */
-  onApnDetailDialogClose_(event) {
+  private onApnDetailDialogClose_(): void {
     this.shouldShowApnDetailDialog_ = false;
   }
 
-  /**
-   *
-   * @param event {!Event}
-   * @private
-   */
-  onApnSelectionDialogClose_(event) {
+  private onApnSelectionDialogClose_(): void {
     this.shouldShowApnSelectionDialog_ = false;
   }
 
-  /**
-   * @returns {Array<ApnProperties>}
-   * @private
-   */
-  getCustomApnList_() {
+  private getCustomApnList_(): ApnProperties[] {
     return this.managedCellularProperties?.customApnList ?? [];
   }
 
-  /**
-   * @returns {boolean}
-   * @private
-   */
-  computeHasEnabledDefaultCustomApn_() {
+  private computeHasEnabledDefaultCustomApn_(): boolean {
     return this.getCustomApnList_().some(
         (apn) => apn.state === ApnState.kEnabled && isDefaultApn(apn));
   }
 
-  /**
-   * @returns {Array<ApnProperties>}
-   * @private
-   */
-  getValidDatabaseApnList_() {
+  private getValidDatabaseApnList_(): ApnProperties[] {
     const databaseApnList =
         this.managedCellularProperties?.apnList?.activeValue ?? [];
     return databaseApnList.filter((apn) => {
@@ -350,4 +288,10 @@ export class ApnList extends ApnListBase {
   }
 }
 
-customElements.define(ApnList.is, ApnList);
+declare global {
+  interface HTMLElementTagNameMap {
+    [ApnListElement.is]: ApnListElement;
+  }
+}
+
+customElements.define(ApnListElement.is, ApnListElement);
