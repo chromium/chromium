@@ -33,22 +33,6 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
 
   function runTestSuiteInWorker() {
     var testSuite = [
-      function postOrderIndexBug() {
-        var builder = new HeapProfilerTestRunner.HeapSnapshotBuilder();
-        var node1 = new HeapProfilerTestRunner.HeapNode('Node1');
-        var node2 = new HeapProfilerTestRunner.HeapNode('Node2');
-        builder.rootNode.linkNode(node1, HeapProfilerTestRunner.HeapEdge.Type.internal);
-        builder.rootNode.linkNode(node2, HeapProfilerTestRunner.HeapEdge.Type.internal);
-        node2.linkNode(node1, HeapProfilerTestRunner.HeapEdge.Type.internal);
-        var snapshot = builder.createJSHeapSnapshot();
-        var postOrderIndexes = snapshot.buildPostOrderIndex().nodeOrdinal2PostOrderIndex;
-        var nodeOrdinals = snapshot.buildPostOrderIndex().postOrderIndex2NodeOrdinal;
-        TestRunner.assertEquals(
-            JSON.stringify(new Uint32Array([2, 0, 1])), JSON.stringify(postOrderIndexes), 'postOrderIndexes');
-        TestRunner.assertEquals(
-            JSON.stringify(new Uint32Array([1, 2, 0])), JSON.stringify(nodeOrdinals), 'nodeOrdinals');
-      },
-
       function heapSnapshotNodeSimpleTest() {
         var snapshot = HeapProfilerTestRunner.createJSHeapSnapshotMockObject();
         var nodeRoot = snapshot.createNode(snapshot.rootNodeIndex);
@@ -140,21 +124,10 @@ import * as ProfilerModule from 'devtools/panels/profiler/profiler.js';
           TestRunner.assertEquals(expected[i], actual[i], 'Edge indexes');
       },
 
-      function heapSnapshotPostOrderIndexTest() {
-        var snapshot = new HeapSnapshotWorker.HeapSnapshot.JSHeapSnapshot(
-            HeapProfilerTestRunner.createHeapSnapshotMock(), new HeapSnapshotWorker.HeapSnapshot.HeapSnapshotProgress());
-        var postOrderIndex2NodeOrdinal = snapshot.buildPostOrderIndex().postOrderIndex2NodeOrdinal;
-        var expected = [5, 3, 4, 2, 1, 0];
-        for (var i = 0; i < expected.length; ++i)
-          TestRunner.assertEquals(expected[i], postOrderIndex2NodeOrdinal[i], 'Post ordered indexes');
-      },
-
       function heapSnapshotDominatorsTreeTest() {
         var snapshot = new HeapSnapshotWorker.HeapSnapshot.JSHeapSnapshot(
             HeapProfilerTestRunner.createHeapSnapshotMock(), new HeapSnapshotWorker.HeapSnapshot.HeapSnapshotProgress());
-        var result = snapshot.buildPostOrderIndex();
-        var dominatorsTree =
-            snapshot.buildDominatorTree(result.postOrderIndex2NodeOrdinal, result.nodeOrdinal2PostOrderIndex);
+        var dominatorsTree = snapshot.dominatorsTree;
         var expected = [0, 0, 0, 0, 2, 3];
         for (var i = 0; i < expected.length; ++i)
           TestRunner.assertEquals(expected[i], dominatorsTree[i], 'Dominators Tree');

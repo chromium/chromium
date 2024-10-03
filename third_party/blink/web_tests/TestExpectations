@@ -8148,9 +8148,6 @@ crbug.com/368549362 external/wpt/webdriver/tests/bidi/browsing_context/navigatio
 crbug.com/358889281 [ Linux ] external/wpt/event-timing/TapToStopFling.html [ Failure Pass ]
 crbug.com/358889281 [ Win ] external/wpt/event-timing/TapToStopFling.html [ Failure Pass ]
 
-# Temporarily disable to land crrev.com/c/5861407
-crbug.com/363034702 http/tests/devtools/profiler/heap-snapshot.js [ Failure Pass ]
-
 # These will not pass until the linked task is resolved.
 crbug.com/368038561 external/wpt/css/css-scroll-snap-2/scroll-start-target/* [ Failure ]
 
