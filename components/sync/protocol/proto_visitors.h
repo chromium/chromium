@@ -1340,7 +1340,6 @@ VISIT_PROTO_FIELDS(const sync_pb::SharedTab& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::SharedTabGroupDataSpecifics& proto) {
   VISIT(guid);
-  VISIT(last_modification_author);
   VISIT(tab_group);
   VISIT(tab);
   VISIT(update_time_windows_epoch_micros);
