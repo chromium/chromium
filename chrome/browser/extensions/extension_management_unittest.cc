@@ -17,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/extensions/extension_management_internal.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/extensions/standard_management_policy_provider.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_prefs.h"
@@ -333,9 +335,13 @@ class ExtensionManagementServiceTest : public testing::Test {
   }
 
   scoped_refptr<const Extension> CreateForcedExtension(const std::string& id) {
-    scoped_refptr<const Extension> extension =
-        CreateExtensionHelper(ManifestLocation::kExternalPolicy, "0.1", id,
-                              kExampleUpdateUrl, Extension::FROM_WEBSTORE);
+    return CreateForcedExtension(id, Extension::FROM_WEBSTORE);
+  }
+
+  scoped_refptr<const Extension> CreateForcedExtension(const std::string& id,
+                                                       int flags) {
+    scoped_refptr<const Extension> extension = CreateExtensionHelper(
+        ManifestLocation::kExternalPolicy, "0.1", id, kExampleUpdateUrl, flags);
     base::Value::Dict forced_list_pref;
     ExternalPolicyLoader::AddExtension(forced_list_pref, id, kExampleUpdateUrl);
     SetPref(true, pref_names::kInstallForceList, forced_list_pref.Clone());
@@ -1446,6 +1452,41 @@ TEST_F(ExtensionManagementServiceTest, IsFileUrlNavigationAllowed) {
       kTargetExtension));
   EXPECT_EQ(IsFileUrlNavigationAllowed(kTargetExtension), true);
   EXPECT_EQ(IsFileUrlNavigationAllowed(kTargetExtension2), false);
+}
+
+TEST_F(ExtensionManagementServiceTest,
+       ShouldBlockForceInstalledOffstoreExtension) {
+  {
+    // Low trust environment. Verify that extension is not allowed on
+    // Windows and Mac.
+    policy::ScopedManagementServiceOverrideForTesting browser_management(
+        policy::ManagementServiceFactory::GetForPlatform(),
+        policy::EnterpriseManagementAuthority::NONE);
+    scoped_refptr<const Extension> forced_extension =
+        CreateForcedExtension(kTargetExtension3, Extension::NO_FLAGS);
+
+    bool expect_blocked =
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+        true;
+#else
+        false;
+#endif
+    EXPECT_EQ(extension_management_->ShouldBlockForceInstalledOffstoreExtension(
+                  *forced_extension),
+              expect_blocked);
+  }
+  {
+    // High trust environment. Verify that extension is allowed.
+    policy::ScopedManagementServiceOverrideForTesting browser_management(
+        policy::ManagementServiceFactory::GetForPlatform(),
+        policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
+    scoped_refptr<const Extension> forced_extension =
+        CreateForcedExtension(kTargetExtension3, Extension::NO_FLAGS);
+
+    EXPECT_FALSE(
+        extension_management_->ShouldBlockForceInstalledOffstoreExtension(
+            *forced_extension));
+  }
 }
 
 // Tests the flag value indicating that extensions are blocklisted by default.

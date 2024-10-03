@@ -59,7 +59,18 @@
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#endif
+
 namespace extensions {
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+// Disables off-store force-installed extensions in low trust environments.
+BASE_FEATURE(kDisableOffstoreForceInstalledExtensionsInLowTrustEnviroment,
+             "DisableOffstoreForceInstalledExtensionsInLowTrustEnviroment",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 ExtensionManagement::ExtensionManagement(Profile* profile)
     : profile_(profile), pref_service_(profile_->GetPrefs()) {
@@ -386,6 +397,42 @@ bool ExtensionManagement::IsAllowedByUnpublishedAvailabilityPolicy(
     return cws_info->is_live;
   }
   return true;
+}
+
+bool ExtensionManagement::ShouldBlockForceInstalledOffstoreExtension(
+    const Extension& extension) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  if (!base::FeatureList::IsEnabled(
+          kDisableOffstoreForceInstalledExtensionsInLowTrustEnviroment)) {
+    return false;
+  }
+  if (extension.from_webstore() || UpdatesFromWebstore(extension)) {
+    return false;
+  }
+  if (GetInstallationMode(&extension) !=
+      ExtensionManagement::INSTALLATION_FORCED) {
+    return false;
+  }
+  if (!Manifest::IsPolicyLocation(extension.location())) {
+    return false;
+  }
+
+  // The highest level of ManagementAuthorityTrustworthiness of either
+  // platform or browser are taken into account.
+  policy::ManagementAuthorityTrustworthiness platform_trustworthiness =
+      policy::ManagementServiceFactory::GetForPlatform()
+          ->GetManagementAuthorityTrustworthiness();
+  policy::ManagementAuthorityTrustworthiness browser_trustworthiness =
+      policy::ManagementServiceFactory::GetForProfile(profile_)
+          ->GetManagementAuthorityTrustworthiness();
+  policy::ManagementAuthorityTrustworthiness highest_trustworthiness =
+      std::max(platform_trustworthiness, browser_trustworthiness);
+
+  return highest_trustworthiness <
+         policy::ManagementAuthorityTrustworthiness::TRUSTED;
+#else
+  return false;
+#endif
 }
 
 APIPermissionSet ExtensionManagement::GetBlockedAPIPermissions(

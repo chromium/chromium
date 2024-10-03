@@ -404,9 +404,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "DeveloperPrivateAPI",
     "DeviceInfoSyncService",
     "DownloadCoreService",
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-    "EnterpriseManagementService",
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
     "EventRouter",
     "ExtensionActionAPI",
     "ExtensionActionManager",

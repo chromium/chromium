@@ -1310,6 +1310,23 @@ void ExtensionService::CheckManagementPolicy() {
           disable_reason::DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY;
     }
 
+    // Check if the `DISABLE_NOT_VERIFIED` reason is still applicable. This
+    // disable reason is used in multiple disabling flows (e.g., by
+    // InstallVerifier and StandardManagementPolicyProvider). Only clear the
+    // disable reason if none of these flows require the extension to be
+    // disabled.
+    // TODO(crbug.com/362756477): Refactor duplicated disable reason logic
+    // between CheckManagementPolicy() and policy providers.
+    disable_reason::DisableReason install_verifier_disable_reason =
+        disable_reason::DISABLE_NONE;
+    InstallVerifier::Get(GetBrowserContext())
+        ->MustRemainDisabled(extension.get(), &install_verifier_disable_reason,
+                             nullptr);
+    if (install_verifier_disable_reason == disable_reason::DISABLE_NONE &&
+        !management->ShouldBlockForceInstalledOffstoreExtension(*extension)) {
+      disable_reasons &= ~disable_reason::DISABLE_NOT_VERIFIED;
+    }
+
     if (!system_->management_policy()->MustRemainDisabled(extension.get(),
                                                           nullptr, nullptr)) {
       disable_reasons &= (~disable_reason::DISABLE_BLOCKED_BY_POLICY);

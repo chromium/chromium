@@ -16,19 +16,7 @@
 #include "extensions/strings/grit/extensions_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
-#include "components/safe_browsing/core/common/features.h"
-#endif
-
 namespace extensions {
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-// Disables off-store force-installed extensions in low trust environments.
-BASE_FEATURE(kDisableOffstoreForceInstalledExtensionsInLowTrustEnviroment,
-             "DisableOffstoreForceInstalledExtensionsInLowTrustEnviroment",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
 namespace {
 
@@ -217,33 +205,7 @@ bool StandardManagementPolicyProvider::MustRemainDisabled(
     return true;
   }
 
-  // Only trusted environments like domain-joined devices or cloud-managed user
-  // profiles are allowed to force-install off-store extensions. All other
-  // devices and users may still install policy extensions but they must be
-  // hosted within the web store. If an extension is not from the web store and
-  // indicates it is force-installed, disable it. See https://b/283274398.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  // The highest level of ManagementAuthorityTrustworthiness of either platform
-  // or browser are taken into account.
-  policy::ManagementAuthorityTrustworthiness platform_trustworthiness =
-      policy::ManagementServiceFactory::GetForPlatform()
-          ->GetManagementAuthorityTrustworthiness();
-  policy::ManagementAuthorityTrustworthiness browser_trustworthiness =
-      policy::ManagementServiceFactory::GetForProfile(profile_)
-          ->GetManagementAuthorityTrustworthiness();
-  policy::ManagementAuthorityTrustworthiness highest_trustworthiness =
-      std::max(platform_trustworthiness, browser_trustworthiness);
-  ExtensionManagement::InstallationMode installation_mode =
-      settings_->GetInstallationMode(extension);
-
-  if (base::FeatureList::IsEnabled(
-          kDisableOffstoreForceInstalledExtensionsInLowTrustEnviroment) &&
-      highest_trustworthiness <
-          policy::ManagementAuthorityTrustworthiness::TRUSTED &&
-      !(extension->from_webstore() ||
-        settings_->UpdatesFromWebstore(*extension)) &&
-      installation_mode == ExtensionManagement::INSTALLATION_FORCED &&
-      Manifest::IsPolicyLocation(extension->location())) {
+  if (settings_->ShouldBlockForceInstalledOffstoreExtension(*extension)) {
     if (reason) {
       *reason = disable_reason::DISABLE_NOT_VERIFIED;
     }
@@ -254,7 +216,6 @@ bool StandardManagementPolicyProvider::MustRemainDisabled(
     }
     return true;
   }
-#endif
 
   return false;
 }
