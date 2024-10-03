@@ -402,6 +402,10 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
   void set_aliased_by_document_open() { aliased_by_document_open_ = true; }
   bool aliased_by_document_open() const { return aliased_by_document_open_; }
 
+  bool block_local_access_from_local_origin() const {
+    return block_local_access_from_local_origin_;
+  }
+
  private:
   // Various serialisation and test routines that need direct nonce access.
   friend struct mojo::UrlOriginAdapter;
