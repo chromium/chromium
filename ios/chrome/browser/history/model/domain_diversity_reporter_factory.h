@@ -22,8 +22,6 @@ class PrefRegistrySyncable;
 class DomainDiversityReporterFactory : public BrowserStateKeyedServiceFactory {
  public:
   static DomainDiversityReporter* GetForProfile(ProfileIOS* profile);
-  // Deprecated: use GetForProfile(...).
-  static DomainDiversityReporter* GetForBrowserState(ProfileIOS* profile);
 
   static DomainDiversityReporterFactory* GetInstance();
 

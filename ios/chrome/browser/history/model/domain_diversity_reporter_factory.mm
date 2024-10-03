@@ -25,12 +25,6 @@ DomainDiversityReporter* DomainDiversityReporterFactory::GetForProfile(
 }
 
 // static
-DomainDiversityReporter* DomainDiversityReporterFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 DomainDiversityReporterFactory* DomainDiversityReporterFactory::GetInstance() {
   static base::NoDestructor<DomainDiversityReporterFactory> instance;
   return instance.get();
