@@ -301,7 +301,7 @@ const CGFloat kSeparatorHeight = 0.5;
   }
 
   if ([_title.text length] == 0) {
-    [_titleStackView removeFromSuperview];
+    _titleStackView.hidden = YES;
   }
 
   _separator.hidden = ![self shouldShowSeparator];
@@ -335,6 +335,7 @@ const CGFloat kSeparatorHeight = 0.5;
 
 - (void)resetView {
   _title.text = nil;
+  _titleStackView.hidden = NO;
   _subtitle.text = nil;
   _isPlaceholder = NO;
   if (_placeholderImage) {
