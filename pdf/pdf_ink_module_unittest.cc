@@ -30,6 +30,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/ink/src/ink/brush/brush.h"
+#include "third_party/ink/src/ink/brush/type_matchers.h"
 #include "third_party/ink/src/ink/geometry/affine_transform.h"
 #include "third_party/ink/src/ink/strokes/input/type_matchers.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -130,12 +131,13 @@ base::FilePath GetInkTestDataFilePath(std::string_view filename) {
   return base::FilePath(FILE_PATH_LITERAL("ink")).AppendASCII(filename);
 }
 
-// Matcher for ink::Stroke objects against their expected color and inputs.
-MATCHER_P(InkStrokeInputsEq, brush_color, "") {
+// Matcher for ink::Stroke objects against their expected brush and inputs.
+MATCHER_P(InkStrokeEq, expected_brush, "") {
   const auto& [actual_stroke, expected_inputs] = arg;
-  const auto matcher = ink::StrokeInputBatchEq(expected_inputs);
-  return actual_stroke->GetBrush().GetColor() == brush_color &&
-         testing::Matches(matcher)(actual_stroke->GetInputs());
+  const auto brush_matcher = ink::BrushEq(expected_brush);
+  const auto input_matcher = ink::StrokeInputBatchEq(expected_inputs);
+  return testing::Matches(brush_matcher)(actual_stroke->GetBrush()) &&
+         testing::Matches(input_matcher)(actual_stroke->GetInputs());
 }
 
 std::map<int, std::vector<raw_ref<const ink::Stroke>>> CollectVisibleStrokes(
@@ -1304,10 +1306,10 @@ TEST_F(PdfInkModuleGetVisibleStrokesTest, MultiplePageStrokes) {
   EXPECT_THAT(
       collected_strokes,
       ElementsAre(
-          Pair(0, Pointwise(InkStrokeInputsEq(brush->GetInkBrush().GetColor()),
+          Pair(0, Pointwise(InkStrokeEq(brush->GetInkBrush()),
                             {expected_page0_horz_line_input_batch.value(),
                              expected_page0_vert_line_input_batch.value()})),
-          Pair(1, Pointwise(InkStrokeInputsEq(brush->GetInkBrush().GetColor()),
+          Pair(1, Pointwise(InkStrokeEq(brush->GetInkBrush()),
                             {expected_page1_horz_line_input_batch.value()}))));
 }
 

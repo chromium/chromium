@@ -494,6 +494,7 @@ if (enable_pdf) {
 
       deps += [
         "//third_party/ink",
+        "//third_party/ink:brush_test_support",
         "//third_party/ink:input_test_support",
       ]
     }
