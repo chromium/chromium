@@ -5,6 +5,7 @@
 #include "ash/webui/boca_ui/boca_app_page_handler.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/webui/boca_ui/mojom/boca.mojom-forward.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom-shared.h"
@@ -242,7 +243,7 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithFullInput) {
       mojom::Identity::New("2", "b", "b@gmail.com", GURL("cdn://s2")));
 
   const auto config = mojom::Config::New(
-      session_duration, nullptr, std::move(students),
+      session_duration, std::nullopt, nullptr, std::move(students),
       GetCommonTestLockOnTaskConfig(), GetCommonCaptionConfig());
   // Page handler callback.
   base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
@@ -378,8 +379,9 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithCritialInputOnly) {
   base::test::TestFuture<bool> future_1;
 
   const auto config = mojom::Config::New(
-      session_duration, nullptr, std::vector<mojom::IdentityPtr>{},
-      mojom::OnTaskConfigPtr(nullptr), mojom::CaptionConfigPtr(nullptr));
+      session_duration, std::nullopt, nullptr,
+      std::vector<mojom::IdentityPtr>{}, mojom::OnTaskConfigPtr(nullptr),
+      mojom::CaptionConfigPtr(nullptr));
 
   ::boca::UserIdentity teacher;
   teacher.set_gaia_id(kGaiaId);
@@ -428,6 +430,10 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(WithArg<0>(Invoke([&](auto request) {
         auto session = std::make_unique<::boca::Session>();
+        auto* start_time = session->mutable_start_time();
+        start_time->set_seconds(1111111);
+        start_time->set_nanos(22000000);
+
         session->mutable_duration()->set_seconds(120);
         session->set_session_state(::boca::Session::ACTIVE);
         auto* teacher = session->mutable_teacher();
@@ -476,7 +482,8 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
   auto result = std::move(future_1.Take()->get_config());
 
   EXPECT_EQ(120, result->session_duration.InSeconds());
-
+  EXPECT_EQ(1111111.022,
+            result->session_start_time->InSecondsFSinceUnixEpoch());
   EXPECT_EQ("teacher", result->teacher->name);
   EXPECT_EQ("teacher@email.com", result->teacher->email);
   EXPECT_EQ("000", result->teacher->id);

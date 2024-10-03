@@ -54,6 +54,7 @@ struct Window {
 
 struct Config{
   mojo_base.mojom.TimeDelta session_duration;
+  mojo_base.mojom.JSTime? session_start_time;
   Identity? teacher;
   // Selected students to be joined for session.
   array<Identity> students;

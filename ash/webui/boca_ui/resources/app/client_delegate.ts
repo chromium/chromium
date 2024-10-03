@@ -7,7 +7,6 @@ import {Config, ControlledTab as ControlledTabMojom, Course, Identity as Identit
 import {CaptionConfig, ClientApiDelegate, ControlledTab, Identity, OnTaskConfig, SessionConfig} from './boca_app.js';
 
 const MICRO_SECS_IN_MINUTES: bigint = 60000000n;
-
 /**
  * A delegate implementation that provides API via privileged mojom API
  */
@@ -90,11 +89,15 @@ export class ClientDelegateFactory {
         if (!result.config) {
           return null;
         }
+
         const session = result.config;
         return {
           sessionConfig: {
             sessionDurationInMinutes: Number(
                 session.sessionDuration.microseconds / MICRO_SECS_IN_MINUTES),
+            sessionStartTime: session.sessionStartTime?.msec ?
+                new Date(session.sessionStartTime.msec) :
+                undefined,
             teacher: session.teacher ? {
               id: session.teacher.id,
               name: session.teacher.name,

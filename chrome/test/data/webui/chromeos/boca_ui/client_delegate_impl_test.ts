@@ -102,6 +102,9 @@ class MockRemoteHandler extends PageHandlerRemote {
           sessionDuration: {
             microseconds: 120000000n,
           },
+          sessionStartTime: {
+            msec: 1000000,
+          },
           teacher: {
             id: '0',
             name: 'teacher',
@@ -305,6 +308,7 @@ suite('ClientDelegateTest', function() {
         {
           sessionConfig: {
             sessionDurationInMinutes: 2,
+            sessionStartTime: new Date(1000000),
             teacher: {
               id: '0',
               name: 'teacher',

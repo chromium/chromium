@@ -213,10 +213,19 @@ void BocaAppHandler::GetSession(GetSessionCallback callback) {
                   session->teacher().email(),
                   GURL(session->teacher().photo_url()));
             }
+
+            base::Time start_time;
+            if (session->has_start_time()) {
+              const auto nanos = session->start_time().nanos();
+              const auto seconds = session->start_time().seconds();
+              start_time = base::Time::FromSecondsSinceUnixEpoch(
+                  seconds + static_cast<double>(nanos) /
+                                base::Time::kNanosecondsPerSecond);
+            }
             auto config = mojom::Config::New(
                 // Nanos are not used throughout session lifecycle so it's
                 // safe to only parse seconds.
-                base::Seconds(session->duration().seconds()),
+                base::Seconds(session->duration().seconds()), start_time,
                 std::move(teacher), std::move(students),
                 std::move(on_task_config), std::move(caption_config));
 
