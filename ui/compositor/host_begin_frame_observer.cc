@@ -61,9 +61,8 @@ void HostBeginFrameObserver::CoalescedBeginFrame() {
 
 // This may be deleted as part of `CallObservers`.
 void HostBeginFrameObserver::CallObservers(const viz::BeginFrameArgs& args) {
-  for (auto& simple_observer : *simple_begin_frame_observers_) {
-    simple_observer.OnBeginFrame(args.frame_time, args.interval);
-  }
+  simple_begin_frame_observers_->Notify(&SimpleBeginFrameObserver::OnBeginFrame,
+                                        args.frame_time, args.interval);
 }
 
 }  // namespace ui

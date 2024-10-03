@@ -229,8 +229,7 @@ Layer::~Layer() {
   CHECK(!in_send_damaged_rects_);
   CHECK(!sending_damaged_rects_for_descendants_);
 
-  for (auto& observer : observer_list_)
-    observer.LayerDestroyed(this);
+  observer_list_.Notify(&LayerObserver::LayerDestroyed, this);
 
   // Destroying the animator may cause observers to use the layer. Destroy the
   // animator first so that the layer is still around.
