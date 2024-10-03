@@ -1919,7 +1919,7 @@ void HostProcess::StartHost() {
 }
 
 void HostProcess::OnAuthFailed() {
-  ShutdownHost(kInvalidOauthCredentialsExitCode);
+  ShutdownHost(kInvalidOAuthCredentialsExitCode);
 }
 
 void HostProcess::OnZombieStateDetected() {

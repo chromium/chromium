@@ -22,7 +22,7 @@ enum HostExitCodes {
   // Error codes that do indicate a permanent error condition.
   kInvalidHostConfigurationExitCode = 100,
   kInvalidHostIdExitCode = 101,
-  kInvalidOauthCredentialsExitCode = 102,
+  kInvalidOAuthCredentialsExitCode = 102,
   kInvalidHostDomainExitCode = 103,
   kTerminatedByAgentProcessBroker = 104,
   kUsernameMismatchExitCode = 105,

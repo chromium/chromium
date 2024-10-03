@@ -15,7 +15,7 @@ const NameMapElement<HostExitCodes> kHostExitCodeStrings[] = {
     {kNoPermissionExitCode, "NO_PERMISSION"},
     {kInvalidHostConfigurationExitCode, "INVALID_HOST_CONFIGURATION"},
     {kInvalidHostIdExitCode, "INVALID_HOST_ID"},
-    {kInvalidOauthCredentialsExitCode, "INVALID_OAUTH_CREDENTIALS"},
+    {kInvalidOAuthCredentialsExitCode, "INVALID_OAUTH_CREDENTIALS"},
     {kInvalidHostDomainExitCode, "INVALID_HOST_DOMAIN"},
     {kTerminatedByAgentProcessBroker, "TERMINATED_BY_AGENT_PROCESS_BROKER"},
     {kUsernameMismatchExitCode, "USERNAME_MISMATCH"},

@@ -173,7 +173,7 @@ void OAuthTokenGetterImpl::CallWithToken(TokenCallback on_access_token) {
 
   if (intermediate_credentials_) {
     if (!IsResponsePending()) {
-      GetOauthTokensFromAuthCode();
+      GetOAuthTokensFromAuthCode();
     }
   } else {
     bool need_new_auth_token =
@@ -206,7 +206,7 @@ base::WeakPtr<OAuthTokenGetterImpl> OAuthTokenGetterImpl::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-void OAuthTokenGetterImpl::GetOauthTokensFromAuthCode() {
+void OAuthTokenGetterImpl::GetOAuthTokensFromAuthCode() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "Fetching OAuth token from Auth Code.";
   DCHECK(!IsResponsePending());

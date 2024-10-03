@@ -61,7 +61,7 @@ class OAuthTokenGetterImpl : public OAuthTokenGetter,
                             const std::string& user_email,
                             const std::string& access_token,
                             const std::string& scopes);
-  void GetOauthTokensFromAuthCode();
+  void GetOAuthTokensFromAuthCode();
   void RefreshAccessToken();
 
   bool IsResponsePending() const;
