@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_item.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_reader.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 
@@ -35,8 +36,9 @@ class ClipboardUnsanitizedFormats;
 // interacts with the `PermissionService` to check for read and write
 // permissions. It uses a `ClipboardItem` object to read/write supported MIME
 // types. Spec: https://w3c.github.io/clipboard-apis/#async-clipboard-api
-class ClipboardPromise final : public GarbageCollected<ClipboardPromise>,
-                               public ExecutionContextLifecycleObserver {
+class MODULES_EXPORT ClipboardPromise final
+    : public GarbageCollected<ClipboardPromise>,
+      public ExecutionContextLifecycleObserver {
  public:
   // Creates a promise for reading clipboard data.
   // Spec: https://w3c.github.io/clipboard-apis/#dom-clipboard-read

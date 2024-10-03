@@ -713,6 +713,7 @@ source_set("unit_tests") {
     "//third_party/blink/renderer/core:unit_tests",
     "//third_party/blink/renderer/modules/ad_auction:unit_tests",
     "//third_party/blink/renderer/modules/breakout_box:unit_tests",
+    "//third_party/blink/renderer/modules/clipboard:unit_tests",
     "//third_party/blink/renderer/modules/file_system_access:unit_tests",
     "//third_party/blink/renderer/modules/gamepad:unit_tests",
     "//third_party/blink/renderer/modules/hid:unit_tests",
