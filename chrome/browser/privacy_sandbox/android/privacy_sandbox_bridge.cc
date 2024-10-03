@@ -200,14 +200,14 @@ JNI_PrivacySandboxBridge_GetFirstPartySetOwner(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile,
     const JavaParamRef<jstring>& memberOrigin) {
-  auto fpsOwner = GetPrivacySandboxService(j_profile)->GetFirstPartySetOwner(
+  auto rwsOwner = GetPrivacySandboxService(j_profile)->GetFirstPartySetOwner(
       GURL(base::android::ConvertJavaStringToUTF8(env, memberOrigin)));
 
-  if (!fpsOwner.has_value()) {
+  if (!rwsOwner.has_value()) {
     return nullptr;
   }
 
-  return ConvertUTF8ToJavaString(env, fpsOwner->GetURL().host());
+  return ConvertUTF8ToJavaString(env, rwsOwner->GetURL().host());
 }
 
 static jboolean JNI_PrivacySandboxBridge_IsPartOfManagedFirstPartySet(

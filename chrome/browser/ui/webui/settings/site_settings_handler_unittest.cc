@@ -228,11 +228,11 @@ void ValidateSitesWithRws(
     auto schemeful_site = ConvertEtldToSchemefulSite(etld_plus1);
 
     if (related_website_sets.count(schemeful_site)) {
-      // Ensure that the `fpsOwner` is set correctly and aligned with
+      // Ensure that the `rwsOwner` is set correctly and aligned with
       // |related_website_sets| mapping of site group owners.
       std::string owner_etldplus1 =
           related_website_sets[schemeful_site].GetURL().host();
-      ASSERT_EQ(owner_etldplus1, *site_group.FindString("fpsOwner"));
+      ASSERT_EQ(owner_etldplus1, *site_group.FindString("rwsOwner"));
       if (owner_etldplus1 == "google.com") {
         ASSERT_EQ(2, *site_group.FindInt("rwsNumMembers"));
         ASSERT_EQ(false, *site_group.FindBool("rwsEnterpriseManaged"));
@@ -241,9 +241,9 @@ void ValidateSitesWithRws(
         ASSERT_EQ(true, *site_group.FindBool("rwsEnterpriseManaged"));
       }
     } else {
-      // The site is not part of a RWS therefore doesn't have `fpsOwner` or
+      // The site is not part of a RWS therefore doesn't have `rwsOwner` or
       // `rwsNumMembers` set. `FindString` and `FindInt` should return null.
-      ASSERT_FALSE(site_group.FindString("fpsOwner"));
+      ASSERT_FALSE(site_group.FindString("rwsOwner"));
       ASSERT_FALSE(site_group.FindInt("rwsNumMembers"));
       ASSERT_FALSE(site_group.FindBool("rwsEnterpriseManaged"));
     }
