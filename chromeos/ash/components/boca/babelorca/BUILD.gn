@@ -37,6 +37,8 @@ static_library("babelorca") {
     "token_manager.h",
     "token_manager_impl.cc",
     "token_manager_impl.h",
+    "transcript_builder.cc",
+    "transcript_builder.h",
     "transcript_sender.cc",
     "transcript_sender.h",
   ]
@@ -92,6 +94,7 @@ source_set("unit_tests") {
     "tachyon_response_unittest.cc",
     "tachyon_streaming_client_unittest.cc",
     "token_manager_impl_unittest.cc",
+    "transcript_builder_unittest.cc",
     "transcript_sender_unittest.cc",
   ]
 
