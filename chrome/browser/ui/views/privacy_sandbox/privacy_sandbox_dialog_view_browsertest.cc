@@ -89,16 +89,17 @@ class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
 };
 
 // TODO(crbug.com/41484188): Re-enable the test.
-IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest,
-                       DISABLED_InvokeUi_Consent) {
-  EXPECT_CALL(
+// TODO(chrstne): temporarily enabling the test to debug cause of flakiness.
+IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest, InvokeUi_Consent) {
+  // TODO(chrstne): uncomment out once the source of the flakiness is resolved.
+  /*EXPECT_CALL(
       *mock_service(),
       PromptActionOccurred(PrivacySandboxService::PromptAction::kConsentShown,
                            PrivacySandboxService::SurfaceType::kDesktop));
   EXPECT_CALL(*mock_service(),
               PromptActionOccurred(
                   PrivacySandboxService::PromptAction::kConsentClosedNoDecision,
-                  PrivacySandboxService::SurfaceType::kDesktop));
+                  PrivacySandboxService::SurfaceType::kDesktop));*/
   ShowAndVerifyUi();
 }
 
