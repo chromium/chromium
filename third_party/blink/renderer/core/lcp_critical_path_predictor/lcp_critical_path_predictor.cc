@@ -109,11 +109,13 @@ void LCPCriticalPathPredictor::Reset() {
   lcp_influencer_scripts_.clear();
   fetched_fonts_.clear();
   preconnected_origins_.clear();
+  unused_preloads_.clear();
 
   lcp_predicted_callbacks_.clear();
   are_predicted_callbacks_called_ = false;
   has_lcp_occurred_ = false;
   is_outermost_main_frame_document_loaded_ = false;
+  has_sent_unused_preloads_ = false;
 }
 
 void LCPCriticalPathPredictor::AddLCPPredictedCallback(LCPCallback callback) {
