@@ -63,12 +63,12 @@ struct Config{
 };
 
 struct CaptionConfig {
-  // If caption is enabled.
-  bool caption_enabled;
-  // If the caption is enabled for local device.
-  bool local;
-  // If transcription is enabled.
-  bool transcription_enabled;
+  // If captions are available for session consumers.
+  bool session_caption_enabled;
+  // If captions are enabled on the local device.
+  bool local_caption_enabled;
+  // If session consumers can translate the captions.
+  bool session_translation_enabled;
 };
 
 enum NavigationType {

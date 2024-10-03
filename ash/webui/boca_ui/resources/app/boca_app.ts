@@ -80,9 +80,9 @@ export declare interface OnTaskConfig {
  * Declare CaptionConfig
  */
 export declare interface CaptionConfig {
-  captionEnabled: boolean;
-  local: boolean;
-  transcriptionEnabled: boolean;
+  sessionCaptionEnabled: boolean;
+  localCaptionEnabled: boolean;
+  sessionTranslationEnabled: boolean;
 }
 
 /**

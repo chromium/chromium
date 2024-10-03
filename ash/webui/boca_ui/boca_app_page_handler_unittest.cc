@@ -489,8 +489,8 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
   EXPECT_EQ("000", result->teacher->id);
   EXPECT_EQ("cdn://s", result->teacher->photo_url->spec());
 
-  EXPECT_EQ(true, result->caption_config->caption_enabled);
-  EXPECT_EQ(true, result->caption_config->transcription_enabled);
+  EXPECT_EQ(true, result->caption_config->session_caption_enabled);
+  EXPECT_EQ(true, result->caption_config->session_translation_enabled);
 
   ASSERT_EQ(1u, result->students.size());
 

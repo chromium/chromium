@@ -86,9 +86,9 @@ class MockRemoteHandler extends PageHandlerRemote {
             ],
           },
           captionConfig: {
-            captionEnabled: true,
-            transcriptionEnabled: true,
-            local: true,
+            sessionCaptionEnabled: true,
+            localCaptionEnabled: true,
+            sessionTranslationEnabled: true,
           },
         },
         config);
@@ -147,9 +147,9 @@ class MockRemoteHandler extends PageHandlerRemote {
             ],
           },
           captionConfig: {
-            captionEnabled: true,
-            transcriptionEnabled: true,
-            local: true,
+            sessionCaptionEnabled: true,
+            localCaptionEnabled: true,
+            sessionTranslationEnabled: true,
           },
         },
       },
@@ -188,9 +188,9 @@ class MockRemoteHandler extends PageHandlerRemote {
       Promise<{error: UpdateSessionError | null}> {
     assertDeepEquals(
         {
-          captionEnabled: true,
-          transcriptionEnabled: true,
-          local: true,
+          sessionCaptionEnabled: true,
+          sessionTranslationEnabled: true,
+          localCaptionEnabled: true,
         },
         config);
     return Promise.resolve({error: null});
@@ -294,9 +294,9 @@ suite('ClientDelegateTest', function() {
             ],
           },
           captionConfig: {
-            captionEnabled: true,
-            local: true,
-            transcriptionEnabled: true,
+            sessionCaptionEnabled: true,
+            localCaptionEnabled: true,
+            sessionTranslationEnabled: true,
           },
         });
         assertTrue(result);
@@ -341,9 +341,9 @@ suite('ClientDelegateTest', function() {
               ],
             },
             captionConfig: {
-              captionEnabled: true,
-              local: true,
-              transcriptionEnabled: true,
+              sessionCaptionEnabled: true,
+              localCaptionEnabled: true,
+              sessionTranslationEnabled: true,
             },
           },
           activity: [],
@@ -381,9 +381,9 @@ suite('ClientDelegateTest', function() {
 
   test('client delegate should translate data for caption config', async () => {
     const result = await clientDelegateImpl.getInstance().updateCaptionConfig({
-      captionEnabled: true,
-      local: true,
-      transcriptionEnabled: true,
+      sessionCaptionEnabled: true,
+      localCaptionEnabled: true,
+      sessionTranslationEnabled: true,
     });
     assertTrue(result);
   });

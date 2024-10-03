@@ -55,8 +55,9 @@ std::unique_ptr<::boca::OnTaskConfig> OnTaskConfigMojomToProto(
 std::unique_ptr<::boca::CaptionsConfig> CaptionConfigMojomToProto(
     mojom::CaptionConfigPtr config) {
   auto captions_config = std::make_unique<::boca::CaptionsConfig>();
-  captions_config->set_captions_enabled(config->caption_enabled);
-  captions_config->set_translations_enabled(config->transcription_enabled);
+  captions_config->set_captions_enabled(config->session_caption_enabled);
+  captions_config->set_translations_enabled(
+      config->session_translation_enabled);
   return captions_config;
 }
 }  // namespace
@@ -183,9 +184,9 @@ void BocaAppHandler::GetSession(GetSessionCallback callback) {
             if (GetSessionConfigSafe(session.get()).has_captions_config()) {
               auto session_caption_config =
                   GetSessionConfigSafe(session.get()).captions_config();
-              caption_config->caption_enabled =
+              caption_config->session_caption_enabled =
                   session_caption_config.captions_enabled();
-              caption_config->transcription_enabled =
+              caption_config->session_translation_enabled =
                   session_caption_config.translations_enabled();
             }
 
@@ -334,8 +335,8 @@ void BocaAppHandler::UpdateCaptionConfig(mojom::CaptionConfigPtr config,
 void BocaAppHandler::NotifyLocalCaptionConfigUpdate(
     mojom::CaptionConfigPtr config) {
   ::boca::CaptionsConfig local_caption_config;
-  local_caption_config.set_captions_enabled(config->local);
-  local_caption_config.set_translations_enabled(config->local);
+  local_caption_config.set_captions_enabled(config->local_caption_enabled);
+  local_caption_config.set_translations_enabled(config->local_caption_enabled);
   BocaAppClient::Get()->GetSessionManager()->NotifyLocalCaptionEvents(
       std::move(local_caption_config));
 }
