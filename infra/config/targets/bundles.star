@@ -138,17 +138,6 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "android_14_device_gtests",
-    targets = [
-        "android_hardware_specific_gtests",
-        "android_limited_capacity_gtests",
-        "android_trichrome_smoke_tests",
-        "android_smoke_tests",
-        "chrome_public_tests",
-    ],
-)
-
-targets.bundle(
     name = "android_14_device_fyi_gtests",
     targets = [
         "system_webview_shell_instrumentation_tests",
@@ -160,6 +149,17 @@ targets.bundle(
             ],
         ),
         "webview_ui_instrumentation_tests",
+    ],
+)
+
+targets.bundle(
+    name = "android_14_device_gtests",
+    targets = [
+        "android_hardware_specific_gtests",
+        "android_limited_capacity_gtests",
+        "android_trichrome_smoke_tests",
+        "android_smoke_tests",
+        "chrome_public_tests",
     ],
 )
 
@@ -458,32 +458,6 @@ targets.bundle(
     ],
 )
 
-# TODO(crbug.com/40142574): Deprecate this group in favor of
-# android_pie_rel_gtests if/when android Pie capacity is fully restored.
-targets.bundle(
-    name = "android_pie_rel_reduced_capacity_gtests",
-    targets = [
-        "android_browsertests",
-        "blink_platform_unittests",
-        "cc_unittests",
-        "content_browsertests",
-        "viz_unittests",
-        "webview_instrumentation_test_apk_multiple_process_mode",
-    ],
-    per_test_modifications = {
-        "content_browsertests": targets.mixin(
-            swarming = targets.swarming(
-                shards = 20,
-            ),
-        ),
-        "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
-            swarming = targets.swarming(
-                shards = 5,
-            ),
-        ),
-    },
-)
-
 # Keep in sync with android_pie_rel_gtests, except for
 # vr_{android,platform}_specific_chromium_gtests which are not applicable
 # to android emulators on x86 & x64.
@@ -524,6 +498,32 @@ targets.bundle(
         "webview_instrumentation_test_apk_single_process_mode_gtests",
         "webview_ui_instrumentation_tests",
     ],
+)
+
+# TODO(crbug.com/40142574): Deprecate this group in favor of
+# android_pie_rel_gtests if/when android Pie capacity is fully restored.
+targets.bundle(
+    name = "android_pie_rel_reduced_capacity_gtests",
+    targets = [
+        "android_browsertests",
+        "blink_platform_unittests",
+        "cc_unittests",
+        "content_browsertests",
+        "viz_unittests",
+        "webview_instrumentation_test_apk_multiple_process_mode",
+    ],
+    per_test_modifications = {
+        "content_browsertests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 20,
+            ),
+        ),
+        "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
+            swarming = targets.swarming(
+                shards = 5,
+            ),
+        ),
+    },
 )
 
 targets.bundle(
@@ -598,6 +598,23 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "cast_receiver_gtests",
+    additional_compile_targets = [
+        "cast_test_lists",
+    ],
+    targets = [
+        "cast_audio_backend_unittests",
+        "cast_base_unittests",
+        "cast_cast_core_unittests",
+        "cast_media_unittests",
+        "cast_unittests",
+    ],
+    mixins = [
+        "linux-jammy",
+    ],
+)
+
+targets.bundle(
     name = "cast_receiver_junit_tests",
     additional_compile_targets = [
         "cast_junit_test_lists",
@@ -613,23 +630,6 @@ targets.bundle(
         "x86-64",
         "linux-jammy",
         "junit-swarming-emulator",
-    ],
-)
-
-targets.bundle(
-    name = "cast_receiver_gtests",
-    additional_compile_targets = [
-        "cast_test_lists",
-    ],
-    targets = [
-        "cast_audio_backend_unittests",
-        "cast_base_unittests",
-        "cast_cast_core_unittests",
-        "cast_media_unittests",
-        "cast_unittests",
-    ],
-    mixins = [
-        "linux-jammy",
     ],
 )
 
@@ -664,18 +664,20 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "chromium_linux_cast_receiver",
+    name = "chromium_android_cast_receiver",
     additional_compile_targets = [
-        "cast_shell",
-        "core_runtime_simple",
-        "core_runtime_starboard",
+        "cast_browser_apk",
     ],
 )
 
 targets.bundle(
-    name = "chromium_android_cast_receiver",
-    additional_compile_targets = [
-        "cast_browser_apk",
+    name = "chromium_android_cast_receiver_arm64_gtests",
+    targets = [
+        "cast_android_cma_backend_unittests",
+        "cast_receiver_gtests",
+    ],
+    mixins = [
+        "tangorpro",
     ],
 )
 
@@ -691,13 +693,11 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "chromium_android_cast_receiver_arm64_gtests",
-    targets = [
-        "cast_android_cma_backend_unittests",
-        "cast_receiver_gtests",
-    ],
-    mixins = [
-        "tangorpro",
+    name = "chromium_linux_cast_receiver",
+    additional_compile_targets = [
+        "cast_shell",
+        "core_runtime_simple",
+        "core_runtime_starboard",
     ],
 )
 
@@ -760,13 +760,6 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "cronet_dbg_isolated_scripts",
-    targets = [
-        "cronet_sizes_suite",
-    ],
-)
-
-targets.bundle(
     name = "chromium_web_tests_brfetch_isolated_scripts",
     targets = [
         "brfetch_blink_web_tests",
@@ -817,6 +810,13 @@ targets.bundle(
         "cronet_tests_android",
         "cronet_unittests_android",
         "net_unittests",
+    ],
+)
+
+targets.bundle(
+    name = "cronet_dbg_isolated_scripts",
+    targets = [
+        "cronet_sizes_suite",
     ],
 )
 
