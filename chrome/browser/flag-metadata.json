@@ -4504,8 +4504,8 @@
   },
   {
     "name": "explicit-browser-signin-ui-on-desktop",
-    "owners": [ "droger@chromium.org", "gabolvr@google.com", "uno-desktop@google.com" ],
-    "expiry_milestone": 130
+    "owners": [ "droger@chromium.org", "rsult@google.com", "uno-desktop@google.com" ],
+    "expiry_milestone": 135
   },
   {
     "name": "expose-out-of-process-video-decoding-to-lacros",
