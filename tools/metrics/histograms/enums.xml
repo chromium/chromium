@@ -15255,6 +15255,7 @@ from previous Chrome versions.
   <int value="-2073402331"
       label="BrokerFileOperationsOnDiskCacheInNetworkService:disabled"/>
   <int value="-2073265579" label="EnablePreferencesAccountStorage:disabled"/>
+  <int value="-2072877761" label="WaylandUiScale:disabled"/>
   <int value="-2072754800" label="HelpAppAppsList:disabled"/>
   <int value="-2072471036" label="OobeHidDetectionRevamp:disabled"/>
   <int value="-2072181147" label="WebContentsCaptureHiDPI:enabled"/>
@@ -24055,6 +24056,7 @@ from previous Chrome versions.
   <int value="1529231831" label="ClassifyUrlOnProcessResponseEvent:disabled"/>
   <int value="1529285725"
       label="VirtualKeyboardGlobalEmojiPreferences:disabled"/>
+  <int value="1529665865" label="WaylandUiScale:enabled"/>
   <int value="1529979182" label="EnablePasswordSelection:enabled"/>
   <int value="1530113113" label="disable-pushstate-throttle"/>
   <int value="1530177325" label="LanguagesPreference:disabled"/>

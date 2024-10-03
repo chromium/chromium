@@ -4665,6 +4665,9 @@ extern const char kWaylandPerWindowScalingDescription[];
 
 extern const char kWaylandTextInputV3Name[];
 extern const char kWaylandTextInputV3Description[];
+
+extern const char kWaylandUiScalingName[];
+extern const char kWaylandUiScalingDescription[];
 #endif  // BUILDFLAG(IS_LINUX)
 
 // All views-based platforms --------------------------------------------------
