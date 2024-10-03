@@ -389,6 +389,9 @@
   'ci_only': {
     'ci_only': True,
   },
+  'cros-cbx-dut': {
+    'cros_cbx': True,
+  },
   'dawn_end2end_gpu_test': {
     'args': [
       '--use-gpu-in-tests',

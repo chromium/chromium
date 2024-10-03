@@ -1586,6 +1586,13 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "cros-cbx-dut",
+    skylab = targets.skylab(
+        cros_cbx = True,
+    ),
+)
+
+targets.mixin(
     name = "timeout_15m",
     swarming = targets.swarming(
         hard_timeout_sec = 900,
