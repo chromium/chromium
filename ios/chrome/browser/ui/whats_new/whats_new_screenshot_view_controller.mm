@@ -6,6 +6,7 @@
 
 #import "base/values.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -87,20 +88,29 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
     [self configureLabelView];
   }
   [self layoutAlertScreen];
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits =
+        TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.self ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(toggleDarkModeOnTraitChange)];
+  }
 }
 
 - (void)dismiss {
   [self.whatsNewHandler dismissWhatsNew];
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  BOOL darkModeEnabled =
-      (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
+  if (@available(iOS 17, *)) {
+    return;
+  }
 
-  self.screenshotViewWrapper.animationView.hidden = darkModeEnabled;
-  self.screenshotViewWrapperDarkMode.animationView.hidden = !darkModeEnabled;
+  [self toggleDarkModeOnTraitChange];
 }
+#endif
 
 #pragma mark - Private
 
@@ -230,6 +240,15 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
   self.screenshotViewWrapperDarkMode.animationView.hidden
       ? [self.screenshotViewWrapperDarkMode stop]
       : [self.screenshotViewWrapperDarkMode play];
+}
+
+// Toggle dark mode view when UITraitUserInterfaceStyle is changed on device.
+- (void)toggleDarkModeOnTraitChange {
+  BOOL darkModeEnabled =
+      (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
+
+  self.screenshotViewWrapper.animationView.hidden = darkModeEnabled;
+  self.screenshotViewWrapperDarkMode.animationView.hidden = !darkModeEnabled;
 }
 
 @end
