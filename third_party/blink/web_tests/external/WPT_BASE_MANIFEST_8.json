@@ -177326,7 +177326,7 @@
       ]
      ],
      "has-slotted-flattened-002.tentative.html": [
-      "bc14cad643ddd7cff7d64ce7467c7ab64ac03f6c",
+      "f37b6217789954240d4577b05bd5669950d72477",
       [
        null,
        [
@@ -342037,16 +342037,8 @@
       "a446b39f4cba898e1c14f7c62b74456acba91901",
       []
      ],
-     "has-slotted-changing-001.tentative-expected.txt": [
-      "7b2e72e1fd51aee683f77efdc8b265ee41253d4e",
-      []
-     ],
-     "has-slotted-changing-002.tentative-expected.txt": [
-      "0b7fda639357a7627336e5206ad422ede4000eca",
-      []
-     ],
      "has-slotted-functional-changing-001.tentative-expected.txt": [
-      "06421a19dcdc12bc98bf6eb6aa6b2f97b2ecc400",
+      "491d6e747559ea92977f6f67467f7b93a25f9268",
       []
      ],
      "has-slotted-functional-changing-002.tentative-expected.txt": [
@@ -360129,7 +360121,7 @@
        []
       ],
       "parse-has-slotted.tentative-expected.txt": [
-       "f6eacc9e6bad6af5c87ff294f04a3360ecc6a959",
+       "50ffe19aeb7d7154117453bdc9862624555ae40b",
        []
       ],
       "parse-is-where-expected.txt": [
@@ -368929,7 +368921,7 @@
        []
       ],
       "subordinate-frame.sub.html": [
-       "ea1f0c44d6286a3188acab7a83d0c2411bc23f48",
+       "4aeccd00c6db2043c37e7a02fbfe71767a8642cf",
        []
       ],
       "subordinate-frame.sub.html.headers": [
@@ -375830,7 +375822,7 @@
         []
        ],
        "text.yaml": [
-        "69922c250afba22773028b790179c4d998a684bc",
+        "4c2ae798596ee9d1a20fd8220b29992b5c72bd05",
         []
        ],
        "the-canvas-state.yaml": [
@@ -461445,7 +461437,7 @@
       ]
      ],
      "import-conditions.html": [
-      "9c1e5c6e8768eecc881414c281fec2b971fb84d9",
+      "fba3632bef331f41bf3602ff0af1e26f6a8c6f4a",
       [
        null,
        {}
@@ -477091,7 +477083,7 @@
       ]
      ],
      "has-slotted-changing-001.tentative.html": [
-      "f4c99cdb5dcc2c9576c079fe0dbd2c92829bfa20",
+      "5c6cce72bb7ccd9cd9b78a76bd83e4b61083adc5",
       [
        null,
        {
@@ -477100,7 +477092,7 @@
       ]
      ],
      "has-slotted-changing-002.tentative.html": [
-      "98ad6019ab021df4f0d036529a16b2180f7cba6f",
+      "98c15f30c8f0968316331af9cad7521d3e02adb9",
       [
        null,
        {
@@ -523532,7 +523524,7 @@
      ]
     ],
     "fedcm-storage-access-api-autogrant.tentative.https.sub.html": [
-     "6cbd7851414f1a7fa5745b4cbc82b38a8926bd27",
+     "66486b01523b98354c5c42eac6846540783871b5",
      [
       null,
       {
@@ -547083,7 +547075,7 @@
       ]
      ],
      "network.https.window.js": [
-      "c9d66c1409925212f3cfda66590371bcf7d5d79e",
+      "0b41662155a67ba5e14c383d7f7075f9d808cecf",
       [
        "fledge/tentative/network.https.window.html?1-5",
        {
@@ -571797,7 +571789,7 @@
         ]
        ],
        "2d.text.measure.caret-position.tentative.html": [
-        "adba1b73b13018fbd211494bc9fe65613fa2ca6a",
+        "4b223c8a0a356833ef0d8ad51e8cb3a915a328eb",
         [
          null,
          {}
@@ -585374,7 +585366,7 @@
         ]
        ],
        "2d.text.measure.caret-position.tentative.html": [
-        "aa52eede31697b4e419622cc1239826dff295ffa",
+        "3c1873aaf1f27b17da19860c693b0ce006cc6da2",
         [
          null,
          {}
@@ -602932,6 +602924,16 @@
          [
           null,
           {}
+         ]
+        ],
+        "select-type-to-search.tentative.html": [
+         "2cb7ca491080ee84a5e1070cb622172231947b1c",
+         [
+          null,
+          {
+           "testdriver": true,
+           "timeout": "long"
+          }
          ]
         ],
         "selectedoption.tentative.html": [
