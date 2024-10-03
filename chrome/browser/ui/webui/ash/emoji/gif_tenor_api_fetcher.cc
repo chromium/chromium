@@ -18,10 +18,10 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/common/channel_info.h"
+#include "base/version_info/channel.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/emoji/tenor_types.mojom.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
-#include "components/version_info/channel.h"
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -104,7 +104,7 @@ std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
       /*post_data=*/"",
       /*headers=*/std::vector<std::string>(),
       /*cors_exempt_headers=*/std::vector<std::string>(),
-      /*annotation_tag=*/annotation_tag, chrome::GetChannel());
+      /*annotation_tag=*/annotation_tag, ash::GetChannel());
 }
 
 const base::Value::List* FindList(
