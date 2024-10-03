@@ -304306,7 +304306,7 @@
      []
     ],
     "clipboard-item.https-expected.txt": [
-     "f19e5132f455e8b729bffb0c0628bdbc4849b014",
+     "224c1438a5cba15548ebda12f91ec063998aa176",
      []
     ],
     "detached-iframe": {
@@ -366494,19 +366494,19 @@
     "api": {
      "abort": {
       "general.any-expected.txt": [
-       "7436fe4e4234b37bdecf8284da2fec5458266529",
+       "b07c8732c6af804f3288a6c5c167a98666771cef",
        []
       ],
       "general.any.serviceworker-expected.txt": [
-       "7436fe4e4234b37bdecf8284da2fec5458266529",
+       "b07c8732c6af804f3288a6c5c167a98666771cef",
        []
       ],
       "general.any.sharedworker-expected.txt": [
-       "7436fe4e4234b37bdecf8284da2fec5458266529",
+       "b07c8732c6af804f3288a6c5c167a98666771cef",
        []
       ],
       "general.any.worker-expected.txt": [
-       "7436fe4e4234b37bdecf8284da2fec5458266529",
+       "b07c8732c6af804f3288a6c5c167a98666771cef",
        []
       ],
       "request.any-expected.txt": [
@@ -366659,19 +366659,19 @@
       }
      },
      "idlharness.any-expected.txt": [
-      "c13b71e3f36dbfdceeb5c6ba23f302a4d52afede",
+      "a6d9009716f5cb19ee68d269cb17a28c59ca3cba",
       []
      ],
      "idlharness.any.serviceworker-expected.txt": [
-      "c13b71e3f36dbfdceeb5c6ba23f302a4d52afede",
+      "a6d9009716f5cb19ee68d269cb17a28c59ca3cba",
       []
      ],
      "idlharness.any.sharedworker-expected.txt": [
-      "c13b71e3f36dbfdceeb5c6ba23f302a4d52afede",
+      "a6d9009716f5cb19ee68d269cb17a28c59ca3cba",
       []
      ],
      "idlharness.any.worker-expected.txt": [
-      "c13b71e3f36dbfdceeb5c6ba23f302a4d52afede",
+      "a6d9009716f5cb19ee68d269cb17a28c59ca3cba",
       []
      ],
      "policies": {
@@ -366915,22 +366915,6 @@
       ],
       "request-consume-empty.any.worker-expected.txt": [
        "027d2eeb03b9f25945f9e551137781998bf26b37",
-       []
-      ],
-      "request-consume.any-expected.txt": [
-       "04659366a2201943c3fc25cebdcd93101831c39b",
-       []
-      ],
-      "request-consume.any.serviceworker-expected.txt": [
-       "04659366a2201943c3fc25cebdcd93101831c39b",
-       []
-      ],
-      "request-consume.any.sharedworker-expected.txt": [
-       "04659366a2201943c3fc25cebdcd93101831c39b",
-       []
-      ],
-      "request-consume.any.worker-expected.txt": [
-       "04659366a2201943c3fc25cebdcd93101831c39b",
        []
       ],
       "request-disturbed.any-expected.txt": [
@@ -367183,10 +367167,6 @@
         ]
        }
       },
-      "response-blob-realm.any-expected.txt": [
-       "2bc1365d7dd379df00990831990a92532e19cbc5",
-       []
-      ],
       "response-body-read-task-handling-expected.txt": [
        "fa5dfb70f656636873396e491831e67b00140496",
        []
@@ -367224,35 +367204,19 @@
        []
       ],
       "response-error-from-stream.any-expected.txt": [
-       "e3e10ef4c2bd28bb1c08d85150afb72f03c0bdcc",
+       "c1bef5cbccab20a7d5a410b031089a1b23c86bb9",
        []
       ],
       "response-error-from-stream.any.serviceworker-expected.txt": [
-       "e3e10ef4c2bd28bb1c08d85150afb72f03c0bdcc",
+       "c1bef5cbccab20a7d5a410b031089a1b23c86bb9",
        []
       ],
       "response-error-from-stream.any.sharedworker-expected.txt": [
-       "e3e10ef4c2bd28bb1c08d85150afb72f03c0bdcc",
+       "c1bef5cbccab20a7d5a410b031089a1b23c86bb9",
        []
       ],
       "response-error-from-stream.any.worker-expected.txt": [
-       "e3e10ef4c2bd28bb1c08d85150afb72f03c0bdcc",
-       []
-      ],
-      "response-stream-bad-chunk.any-expected.txt": [
-       "4cb6ae29ef1289a0110d58021b47526ccab05ff9",
-       []
-      ],
-      "response-stream-bad-chunk.any.serviceworker-expected.txt": [
-       "4cb6ae29ef1289a0110d58021b47526ccab05ff9",
-       []
-      ],
-      "response-stream-bad-chunk.any.sharedworker-expected.txt": [
-       "4cb6ae29ef1289a0110d58021b47526ccab05ff9",
-       []
-      ],
-      "response-stream-bad-chunk.any.worker-expected.txt": [
-       "4cb6ae29ef1289a0110d58021b47526ccab05ff9",
+       "c1bef5cbccab20a7d5a410b031089a1b23c86bb9",
        []
       ],
       "response-stream-disturbed-by-pipe.any-expected.txt": [
@@ -375835,7 +375799,7 @@
         []
        ],
        "path-objects.yaml": [
-        "874f7a25c3d8d386a006e3cded7874975ac6a60d",
+        "b861bb39f34ff76e129a06d8d5e5077c7cb5ffbe",
         []
        ],
        "pixel-manipulation.yaml": [
@@ -442773,7 +442737,7 @@
      ]
     ],
     "clipboard-item.https.html": [
-     "78acd1104a96bc78942fa93427bccdaf68f2ba9f",
+     "41f6ab95b81b7bcbcba1221d40d0357a9ca31c0d",
      [
       null,
       {}
@@ -569382,6 +569346,13 @@
          {}
         ]
        ],
+       "2d.path.closed.arc.html": [
+        "9e33d457461061ccd5311504f92808968eb9cdf8",
+        [
+         null,
+         {}
+        ]
+       ],
        "2d.path.ellipse.basics.html": [
         "03bd3a41f027cebb9eaef414508d493bbd5d7426",
         [
@@ -569650,6 +569621,13 @@
        ],
        "2d.path.moveTo.nonfinite.html": [
         "0af3462011abffa33ba6f4277332f8b5439c36aa",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.open.arc.html": [
+        "c0dc086ac3210eaf98f408d7ec57c78199047987",
         [
          null,
          {}
@@ -580677,6 +580655,20 @@
          {}
         ]
        ],
+       "2d.path.closed.arc.html": [
+        "21f111e2aa29079d398c8e21566034701de5d6a6",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.closed.arc.worker.js": [
+        "8bc039172253458283afd8254d0248ebe71ce965",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.closed.arc.worker.html",
+         {}
+        ]
+       ],
        "2d.path.ellipse.basics.html": [
         "0158d5428f93ea5338a5b51bcba823c94ceebc86",
         [
@@ -581234,6 +581226,20 @@
         "97e2bd72e34f7ef11634b9eebacf7aff12c9a1f6",
         [
          "html/canvas/offscreen/path-objects/2d.path.moveTo.nonfinite.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.open.arc.html": [
+        "416f06c2173c17b43307c7050b7787992cad72fe",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.open.arc.worker.js": [
+        "25d762dfaee0e593f5020f783156ad9eb0d57458",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.open.arc.worker.html",
          {}
         ]
        ],
