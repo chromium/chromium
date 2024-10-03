@@ -7,6 +7,8 @@ include_rules = [
   # directory to #include its own files.
   "+chrome/browser/ui/ash/shell_delegate",
 
+  "+cc/input/touch_action.h",
+
   # Existing dependencies within //chrome. There is an active effort to
   # refactor ash codes in //chrome to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
