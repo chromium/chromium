@@ -669,6 +669,10 @@ using feed::FeedUserActionType;
   }
 }
 
+- (void)recordCarouselScrolled:(int)scrollDistance {
+  [self recordEngagement:scrollDistance interacted:NO];
+}
+
 - (void)recordUniformityFlagValue:(BOOL)flag {
   base::UmaHistogramBoolean(kDiscoverUniformityFlag, flag);
 }

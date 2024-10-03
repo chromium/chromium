@@ -225,6 +225,10 @@ class PrefService;
 // Records a user action for the Following feed sort type being selected.
 - (void)recordFollowingFeedSortTypeSelected:(FollowingFeedSortType)sortType;
 
+// Records when the user has scrolled `scrollDistance` in a carousel within a
+// cell.
+- (void)recordCarouselScrolled:(int)scrollDistance;
+
 // Records the value of the uniformity flag value from Discover.
 - (void)recordUniformityFlagValue:(BOOL)flag;
 
