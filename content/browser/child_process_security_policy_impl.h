@@ -413,8 +413,9 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
 
   // Whenever the browser process drops a file icon on a tab, it should call
   // this method to grant the child process the capability to request this one
-  // file:// URL, but not all urls of the file:// scheme.
-  void GrantRequestSpecificFileURL(int child_id, const GURL& url);
+  // file:// URL (or content:// URL in android), but not all urls of the file://
+  // scheme.
+  void GrantRequestOfSpecificFile(int child_id, const base::FilePath& file);
 
   // Revokes all permissions granted to the given file.
   void RevokeAllPermissionsForFile(int child_id, const base::FilePath& file);

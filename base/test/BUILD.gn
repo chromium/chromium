@@ -510,6 +510,7 @@ if (is_android) {
     srcjar_deps = [ ":test_support_java_aidl" ]
     sources = [
       "android/java/src/org/chromium/base/GarbageCollectionTestUtils.java",
+      "android/java/src/org/chromium/base/InMemoryContentProvider.java",
       "android/java/src/org/chromium/base/MainReturnCodeResult.java",
       "android/java/src/org/chromium/base/MultiprocessTestClientLauncher.java",
       "android/java/src/org/chromium/base/MultiprocessTestClientService.java",

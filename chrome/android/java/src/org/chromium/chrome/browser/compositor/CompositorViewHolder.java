@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -233,6 +234,9 @@ public class CompositorViewHolder extends FrameLayout
     // Permissions are requested on a drop event, and are released when another drag starts
     // (drag-started event) or when the current page navigates to a new URL or the tab changes.
     private DragAndDropPermissions mDragAndDropPermissions;
+    // The URI when a drop contains a single URI. If the tab changes and is loading this URI, we do
+    // not clear the permissions.
+    private Uri mDropUri;
 
     private final EventOffsetHandler mEventOffsetHandler =
             new EventOffsetHandler(
@@ -762,6 +766,9 @@ public class CompositorViewHolder extends FrameLayout
                 releaseDragAndDropPermissions();
             } else if (e.getAction() == DragEvent.ACTION_DROP) {
                 mDragAndDropPermissions = mActivity.requestDragAndDropPermissions(e);
+                if (e.getClipData() != null && e.getClipData().getItemCount() == 1) {
+                    mDropUri = e.getClipData().getItemAt(0).getUri();
+                }
             }
         }
         boolean ret = super.dispatchDragEvent(e);
@@ -1570,7 +1577,10 @@ public class CompositorViewHolder extends FrameLayout
             mOnscreenContentProvider.onWebContentsChanged(getWebContents());
         }
 
-        releaseDragAndDropPermissions();
+        // Clear drop permissions when tab changes unless this is a new tab loading from the drop.
+        if (mDropUri == null || !tab.getUrl().getSpec().equals(mDropUri.toString())) {
+            releaseDragAndDropPermissions();
+        }
     }
 
     private void updateViewStateListener(ContentView newContentView) {
@@ -1830,5 +1840,6 @@ public class CompositorViewHolder extends FrameLayout
             mDragAndDropPermissions.release();
             mDragAndDropPermissions = null;
         }
+        mDropUri = null;
     }
 }

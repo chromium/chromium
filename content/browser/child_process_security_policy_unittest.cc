@@ -41,6 +41,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/test/storage_partition_test_helpers.h"
 #include "content/test/test_content_browser_client.h"
+#include "net/base/filename_util.h"
 #include "storage/browser/file_system/file_permission_policy.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/isolated_context.h"
@@ -115,11 +116,14 @@ class ChildProcessSecurityPolicyTest : public testing::Test {
     // allowing WebUI bindings is hard-wired to this particular scheme.
     test_browser_client_.AddScheme(kChromeUIScheme);
 
-    // Claim to always handle file:// URLs like the browser would.
-    // net::URLRequest::IsHandledURL() no longer claims support for default
-    // protocols as this is the responsibility of the browser (which is
-    // responsible for adding the appropriate ProtocolHandler).
+    // Claim to always handle file:// and android content:// URLs like the
+    // browser would. net::URLRequest::IsHandledURL() no longer claims support
+    // for default protocols as this is the responsibility of the browser (which
+    // is responsible for adding the appropriate ProtocolHandler).
     test_browser_client_.AddScheme(url::kFileScheme);
+#if BUILDFLAG(IS_ANDROID)
+    test_browser_client_.AddScheme(url::kContentScheme);
+#endif
     SiteIsolationPolicy::DisableFlagCachingForTesting();
 
     auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
@@ -736,6 +740,8 @@ TEST_F(ChildProcessSecurityPolicyTest, SpecificFile) {
       ChildProcessSecurityPolicyImpl::GetInstance();
 
   GURL icon_url("file:///tmp/foo.png");
+  base::FilePath icon_path;
+  ASSERT_TRUE(net::FileURLToFilePath(icon_url, &icon_path));
   GURL sensitive_url("file:///etc/passwd");
 
   p->AddForTesting(kRendererID, browser_context());
@@ -748,7 +754,7 @@ TEST_F(ChildProcessSecurityPolicyTest, SpecificFile) {
   EXPECT_FALSE(p->CanCommitURL(kRendererID, icon_url));
   EXPECT_FALSE(p->CanCommitURL(kRendererID, sensitive_url));
 
-  p->GrantRequestSpecificFileURL(kRendererID, icon_url);
+  p->GrantRequestOfSpecificFile(kRendererID, icon_path);
   EXPECT_TRUE(p->CanRequestURL(kRendererID, icon_url));
   EXPECT_FALSE(p->CanRequestURL(kRendererID, sensitive_url));
   EXPECT_TRUE(p->CanRedirectToURL(icon_url));
@@ -763,6 +769,55 @@ TEST_F(ChildProcessSecurityPolicyTest, SpecificFile) {
   EXPECT_TRUE(p->CanRedirectToURL(sensitive_url));
   EXPECT_TRUE(p->CanCommitURL(kRendererID, icon_url));
   EXPECT_TRUE(p->CanCommitURL(kRendererID, sensitive_url));
+
+  p->Remove(kRendererID);
+}
+
+TEST_F(ChildProcessSecurityPolicyTest, ContentUri) {
+  ChildProcessSecurityPolicyImpl* p =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+
+  GURL content_uri("content://authority/foo.png");
+  GURL content_uri_sensitive("content://authority/bar.jpg");
+
+  p->AddForTesting(kRendererID, browser_context());
+  LockProcessIfNeeded(kRendererID, browser_context(), content_uri_sensitive);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Since android handles content:// URLs, CanRequestURL() is false for a URL
+  // which was not registered with GrantRequestOfSpecificFile().
+  EXPECT_FALSE(p->CanRequestURL(kRendererID, content_uri));
+  EXPECT_FALSE(p->CanRequestURL(kRendererID, content_uri_sensitive));
+#else
+  EXPECT_TRUE(p->CanRequestURL(kRendererID, content_uri));
+  EXPECT_TRUE(p->CanRequestURL(kRendererID, content_uri_sensitive));
+#endif
+  EXPECT_TRUE(p->CanRedirectToURL(content_uri));
+  EXPECT_TRUE(p->CanRedirectToURL(content_uri_sensitive));
+  EXPECT_FALSE(p->CanCommitURL(kRendererID, content_uri));
+  EXPECT_FALSE(p->CanCommitURL(kRendererID, content_uri_sensitive));
+
+  p->GrantRequestOfSpecificFile(
+      kRendererID,
+      base::FilePath::FromUTF8Unsafe(content_uri.possibly_invalid_spec()));
+  EXPECT_TRUE(p->CanRequestURL(kRendererID, content_uri));
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_FALSE(p->CanRequestURL(kRendererID, content_uri_sensitive));
+#else
+  EXPECT_TRUE(p->CanRequestURL(kRendererID, content_uri_sensitive));
+#endif
+  EXPECT_TRUE(p->CanRedirectToURL(content_uri));
+  EXPECT_TRUE(p->CanRedirectToURL(content_uri_sensitive));
+  EXPECT_FALSE(p->CanCommitURL(kRendererID, content_uri));
+  EXPECT_FALSE(p->CanCommitURL(kRendererID, content_uri_sensitive));
+
+  p->GrantCommitURL(kRendererID, content_uri);
+  EXPECT_TRUE(p->CanRequestURL(kRendererID, content_uri));
+  EXPECT_TRUE(p->CanRequestURL(kRendererID, content_uri_sensitive));
+  EXPECT_TRUE(p->CanRedirectToURL(content_uri));
+  EXPECT_TRUE(p->CanRedirectToURL(content_uri_sensitive));
+  EXPECT_TRUE(p->CanCommitURL(kRendererID, content_uri));
+  EXPECT_TRUE(p->CanCommitURL(kRendererID, content_uri_sensitive));
 
   p->Remove(kRendererID);
 }

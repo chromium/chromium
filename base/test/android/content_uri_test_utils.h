@@ -20,6 +20,11 @@ namespace test::android {
 bool GetContentUriFromCacheDirFilePath(const FilePath& file_name,
                                        FilePath* content_uri);
 
+// Similar to GetContentUriFromCacheDirFilePath() but files are first read into
+// memory any file descriptor will not be backed by a local file. This mimics
+// how an in-memory or network-backed ContentProvider will behave.
+bool GetInMemoryContentUriFromCacheDirFilePath(const FilePath& file_name,
+                                               FilePath* content_uri);
 }  // namespace test::android
 }  // namespace base
 

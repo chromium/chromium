@@ -260,8 +260,7 @@ std::string PrepareDataTransferFilenamesForChildProcess(
     // which will happen at this point, so generously grant both access
     // and request permissions to the specific file to cover both cases.
     // We do not give it the permission to request all file:// URLs.
-    security_policy->GrantRequestSpecificFileURL(
-        child_id, net::FilePathToFileURL(filename.path));
+    security_policy->GrantRequestOfSpecificFile(child_id, filename.path);
 
     // If the renderer already has permission to read these paths, we don't need
     // to re-grant them. This prevents problems with DnD for files in the CrOS

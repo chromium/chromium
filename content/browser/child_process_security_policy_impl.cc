@@ -536,6 +536,12 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
       }
     }
 
+#if BUILDFLAG(IS_ANDROID)
+    if (url.SchemeIs(url::kContentScheme)) {
+      return base::Contains(request_file_set_, base::FilePath(url.spec()));
+    }
+#endif
+
     // Otherwise, delegate to CanCommitURL. Unmentioned schemes are disallowed.
     // TODO(dcheng): It would be nice to avoid constructing the origin twice.
     return CanCommitURL(url);
@@ -1042,24 +1048,18 @@ void ChildProcessSecurityPolicyImpl::GrantCommitURL(int child_id,
   }
 }
 
-void ChildProcessSecurityPolicyImpl::GrantRequestSpecificFileURL(
+void ChildProcessSecurityPolicyImpl::GrantRequestOfSpecificFile(
     int child_id,
-    const GURL& url) {
-  if (!url.SchemeIs(url::kFileScheme))
+    const base::FilePath& path) {
+  base::AutoLock lock(lock_);
+  auto state = security_state_.find(child_id);
+  if (state == security_state_.end()) {
     return;
-
-  {
-    base::AutoLock lock(lock_);
-    auto state = security_state_.find(child_id);
-    if (state == security_state_.end())
-      return;
-
-    // When the child process has been commanded to request a file:// URL,
-    // then we grant it the capability for that URL only.
-    base::FilePath path;
-    if (net::FileURLToFilePath(url, &path))
-      state->second->GrantRequestOfSpecificFile(path);
   }
+
+  // When the child process has been commanded to request a file:// URL,
+  // then we grant it the capability for that URL only.
+  state->second->GrantRequestOfSpecificFile(path);
 }
 
 void ChildProcessSecurityPolicyImpl::GrantReadFile(int child_id,

@@ -17,6 +17,8 @@ component("system") {
     "data_pipe_utils.h",
     "file_data_source.cc",
     "file_data_source.h",
+    "file_stream_data_source.cc",
+    "file_stream_data_source.h",
     "filtered_data_source.cc",
     "filtered_data_source.h",
     "functions.cc",

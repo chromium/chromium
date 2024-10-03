@@ -622,11 +622,10 @@ class FileURLLoader : public network::mojom::URLLoader {
 
     auto file_data_source = std::make_unique<mojo::FileDataSource>(
         base::File(path, base::File::FLAG_OPEN | base::File::FLAG_READ));
-    mojo::DataPipeProducer::DataSource* data_source = file_data_source.get();
 
     std::vector<char> initial_read_buffer(net::kMaxBytesToSniff);
     auto read_result =
-        data_source->Read(0u, base::span<char>(initial_read_buffer));
+        file_data_source->Read(0u, base::span<char>(initial_read_buffer));
     if (read_result.result != MOJO_RESULT_OK) {
       // This can happen when the file is unreadable (which can happen during
       // corruption). We need to be sure to inform the observer that we've

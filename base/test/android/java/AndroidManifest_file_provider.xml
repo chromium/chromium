@@ -15,5 +15,10 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths_file_provider" />
         </provider>
+        <provider android:name="org.chromium.base.InMemoryContentProvider"
+            android:authorities="org.chromium.native_test.inmemory"
+            android:exported="false"
+            android:grantUriPermissions="true">
+        </provider>
     </application>
 </manifest>

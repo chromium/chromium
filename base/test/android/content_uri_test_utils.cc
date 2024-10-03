@@ -23,4 +23,18 @@ bool GetContentUriFromCacheDirFilePath(const FilePath& file_name,
   return true;
 }
 
+bool GetInMemoryContentUriFromCacheDirFilePath(const FilePath& file_name,
+                                               FilePath* content_uri) {
+  base::FilePath cache_dir;
+  if (!base::android::GetCacheDirectory(&cache_dir)) {
+    return false;
+  }
+  base::FilePath uri("content://org.chromium.native_test.inmemory/cache/");
+  if (!cache_dir.AppendRelativePath(file_name, &uri)) {
+    return false;
+  }
+  *content_uri = uri;
+  return true;
+}
+
 }  // namespace base::test::android
