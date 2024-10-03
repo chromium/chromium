@@ -629,10 +629,9 @@ def write_conditions(entry_id, is_exception, exception_id, entry,
   write_machine_model_info(entry_id, is_exception, exception_id,
                            machine_model_name, machine_model_version,
                            data_file, data_helper_file)
-  write_intel_gpu_series_list(entry_id, is_exception, exception_id,
-                              intel_gpu_series_list,
-                              data_file, data_helper_file)
-  write_version(intel_gpu_generation, 'intel_gpu_generation', data_file)
+  write_intel_conditions(entry_id, is_exception, exception_id,
+                         intel_gpu_series_list, intel_gpu_generation,
+                         data_file, data_helper_file)
   # group a bunch of less used conditions
   if (gl_version != None or pixel_shader_version != None or in_process_gpu or
       gl_reset_notification_strategy != None or direct_rendering_version != None
@@ -646,61 +645,6 @@ def write_conditions(entry_id, is_exception, exception_id, entry,
                           data_file, data_helper_file)
   else:
     data_file.write('nullptr,  // more conditions\n')
-
-
-def write_intel_gpu_series_list(entry_id, is_exception, exception_id,
-                                intel_gpu_series_list,
-                                data_file, data_helper_file):
-  if intel_gpu_series_list:
-    var_name = 'kIntelGpuSeriesForEntry' + str(entry_id)
-    if is_exception:
-      var_name += 'Exception' + str(exception_id)
-    data_helper_file.write('const IntelGpuSeriesType %s[%d] = {\n' %
-                           (var_name, len(intel_gpu_series_list)))
-    intel_gpu_series_map = {
-      'broadwater': 'kBroadwater',
-      'eaglelake': 'kEaglelake',
-      'ironlake': 'kIronlake',
-      'sandybridge': 'kSandybridge',
-      'baytrail': 'kBaytrail',
-      'ivybridge': 'kIvybridge',
-      'haswell': 'kHaswell',
-      'cherrytrail': 'kCherrytrail',
-      'broadwell': 'kBroadwell',
-      'apollolake': 'kApollolake',
-      'skylake': 'kSkylake',
-      'geminilake': 'kGeminilake',
-      'amberlake': 'kAmberlake',
-      'kabylake': 'kKabylake',
-      'coffeelake': 'kCoffeelake',
-      'whiskeylake': 'kWhiskeylake',
-      'cometlake': 'kCometlake',
-      'cannonlake': 'kCannonlake',
-      'icelake': 'kIcelake',
-      'elkhartlake': 'kElkhartlake',
-      'jasperlake': 'kJasperlake',
-      'tigerlake': 'kTigerlake',
-      'rocketlake': 'kRocketlake',
-      'dg1': 'kDG1',
-      'alderlake': 'kAlderlake',
-      'alchemist': 'kAlchemist',
-      'raptorlake': 'kRaptorlake',
-      'meteorlake': 'kMeteorlake',
-      'arrowlake': 'kArrowlake',
-      'lunarlake': 'kLunarlake',
-      'battlemage': 'kBattlemage'
-    }
-    for series in intel_gpu_series_list:
-      assert series in intel_gpu_series_map
-      data_helper_file.write('IntelGpuSeriesType::%s,\n' %
-                             intel_gpu_series_map[series])
-    data_helper_file.write('};\n\n')
-
-    data_file.write('std::size(%s),  // intel_gpu_series size\n' % var_name)
-    data_file.write('%s,  // intel_gpu_series\n' % var_name)
-  else:
-    data_file.write('0,  // intel_gpu_series size\n')
-    data_file.write('nullptr,  // intel_gpu_series\n')
 
 
 def write_entry_more_data(entry_id, is_exception, exception_id, gl_type,
@@ -739,6 +683,85 @@ def write_entry_more_data(entry_id, is_exception, exception_id, gl_type,
   data_helper_file.write('};\n\n')
   # reference more data in entry
   data_file.write('&%s,  // more data\n' % var_name)
+
+
+def write_intel_conditions(entry_id, is_exception, exception_id,
+                           intel_gpu_series_list, intel_gpu_generation,
+                           data_file, data_helper_file):
+  # write intel conditions
+
+  if not intel_gpu_series_list and not intel_gpu_generation:
+    data_file.write('nullptr,  // Intel conditions\n')
+    return
+
+  var_name_series = None
+  if intel_gpu_series_list:
+    var_name_series = 'kIntelGpuSeriesForEntry' + str(entry_id)
+    if is_exception:
+      var_name_series += 'Exception' + str(exception_id)
+    data_helper_file.write(
+        'const std::array<IntelGpuSeriesType, %d> %s = {{\n' %
+        (len(intel_gpu_series_list), var_name_series))
+    intel_gpu_series_map = {
+      'broadwater': 'kBroadwater',
+      'eaglelake': 'kEaglelake',
+      'ironlake': 'kIronlake',
+      'sandybridge': 'kSandybridge',
+      'baytrail': 'kBaytrail',
+      'ivybridge': 'kIvybridge',
+      'haswell': 'kHaswell',
+      'cherrytrail': 'kCherrytrail',
+      'broadwell': 'kBroadwell',
+      'apollolake': 'kApollolake',
+      'skylake': 'kSkylake',
+      'geminilake': 'kGeminilake',
+      'amberlake': 'kAmberlake',
+      'kabylake': 'kKabylake',
+      'coffeelake': 'kCoffeelake',
+      'whiskeylake': 'kWhiskeylake',
+      'cometlake': 'kCometlake',
+      'cannonlake': 'kCannonlake',
+      'icelake': 'kIcelake',
+      'elkhartlake': 'kElkhartlake',
+      'jasperlake': 'kJasperlake',
+      'tigerlake': 'kTigerlake',
+      'rocketlake': 'kRocketlake',
+      'dg1': 'kDG1',
+      'alderlake': 'kAlderlake',
+      'alchemist': 'kAlchemist',
+      'raptorlake': 'kRaptorlake',
+      'meteorlake': 'kMeteorlake',
+      'arrowlake': 'kArrowlake',
+      'lunarlake': 'kLunarlake',
+      'battlemage': 'kBattlemage'
+    }
+    for series in intel_gpu_series_list:
+      assert series in intel_gpu_series_map
+      data_helper_file.write('IntelGpuSeriesType::%s,\n' %
+                             intel_gpu_series_map[series])
+    data_helper_file.write('}};\n\n')
+
+  # Generate a unique name for jumbo build which concatenates multiple
+  # translation units into one to speed compilation.
+  basename = os.path.basename(data_helper_file.name)
+  # & 0xffffffff converts to unsigned to keep consistent across Python versions
+  # and platforms as per https://docs.python.org/3/library/zlib.html
+  suffix = '_%s' % (zlib.crc32(basename.encode()) & 0xffffffff)
+  var_name = 'kIntelConditionsForEntry' + str(entry_id) + suffix
+  if is_exception:
+    var_name += 'Exception' + str(exception_id)
+  data_helper_file.write(
+      'const GpuControlList::IntelConditions %s = {\n' % var_name)
+  if var_name_series:
+    data_helper_file.write(
+        'base::span(%s),  // intel_gpu_series_list\n' % var_name_series)
+  else:
+    data_helper_file.write(
+        'base::span<const IntelGpuSeriesType>(),  // intel_gpu_series_list\n')
+  write_version(intel_gpu_generation, 'intel_gpu_generation', data_helper_file)
+  data_helper_file.write('};\n\n')
+
+  data_file.write('&%s,  // Intel conditions\n' % var_name)
 
 
 def write_entry(entry, total_feature_set, feature_name_prefix,

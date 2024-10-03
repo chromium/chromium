@@ -44,12 +44,8 @@ class GpuBlocklistTest : public testing::Test {
             nullptr,                               // driver info
             nullptr,                               // GL strings
             nullptr,                               // machine model info
-            0,                                     // gpu_series size
-            nullptr,                               // gpu_series
-            {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-             GpuControlList::kVersionSchemaCommon, nullptr,
-             nullptr},  // intel_gpu_generation
-            nullptr,    // more conditions
+            nullptr,                               // Intel conditions
+            nullptr,                               // more conditions
         },
         base::span<GpuControlList::Conditions>(),  // exceptions
     }}};

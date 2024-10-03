@@ -418,6 +418,39 @@ bool GpuControlList::More::Contains(const GPUInfo& gpu_info) const {
   return true;
 }
 
+bool GpuControlList::IntelConditions::Contains(
+    const std::vector<GPUInfo::GPUDevice>& candidates,
+    const GPUInfo& gpu_info) const {
+  if (intel_gpu_series_list.size() > 0) {
+    DCHECK(!intel_gpu_generation.IsSpecified());
+    for (auto& candidate : candidates) {
+      IntelGpuSeriesType candidate_series =
+          GetIntelGpuSeriesType(candidate.vendor_id, candidate.device_id);
+      if (candidate_series == IntelGpuSeriesType::kUnknown) {
+        continue;
+      }
+      for (auto intel_gpu_series : intel_gpu_series_list) {
+        if (candidate_series == intel_gpu_series) {
+          return true;
+        }
+      }
+    }
+  } else {
+    DCHECK(intel_gpu_generation.IsSpecified());
+    for (auto& candidate : candidates) {
+      std::string candidate_generation =
+          GetIntelGpuGeneration(candidate.vendor_id, candidate.device_id);
+      if (candidate_generation.empty()) {
+        continue;
+      }
+      if (intel_gpu_generation.Contains(candidate_generation)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 bool GpuControlList::Conditions::Contains(OsType target_os_type,
                                           const std::string& target_os_version,
                                           const GPUInfo& gpu_info) const {
@@ -457,33 +490,10 @@ bool GpuControlList::Conditions::Contains(OsType target_os_type,
         candidates.push_back(gpu_info.gpu);
   }
 
-  if (vendor_id != 0 || intel_gpu_series_list_size > 0 ||
-      intel_gpu_generation.IsSpecified()) {
+  if (vendor_id != 0 || intel_conditions) {
     bool found = false;
-    if (intel_gpu_series_list_size > 0) {
-      for (size_t ii = 0; !found && ii < candidates.size(); ++ii) {
-        IntelGpuSeriesType candidate_series = GetIntelGpuSeriesType(
-            candidates[ii].vendor_id, candidates[ii].device_id);
-        if (candidate_series == IntelGpuSeriesType::kUnknown)
-          continue;
-        for (size_t jj = 0; jj < intel_gpu_series_list_size; ++jj) {
-          if (candidate_series == intel_gpu_series_list[jj]) {
-            found = true;
-            break;
-          }
-        }
-      }
-    } else if (intel_gpu_generation.IsSpecified()) {
-      for (auto& candidate : candidates) {
-        std::string candidate_generation =
-            GetIntelGpuGeneration(candidate.vendor_id, candidate.device_id);
-        if (candidate_generation.empty())
-          continue;
-        if (intel_gpu_generation.Contains(candidate_generation)) {
-          found = true;
-          break;
-        }
-      }
+    if (intel_conditions) {
+      found = intel_conditions->Contains(candidates, gpu_info);
     } else {
       if (device_size == 0) {
         for (auto& candidate : candidates) {

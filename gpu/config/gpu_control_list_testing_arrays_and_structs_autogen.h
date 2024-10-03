@@ -1768,9 +1768,16 @@ const std::array<int, 1> kFeatureListForGpuControlTestingEntry60 = {
     TEST_FEATURE_0,
 };
 
-const IntelGpuSeriesType kIntelGpuSeriesForEntry60[2] = {
+const std::array<IntelGpuSeriesType, 2> kIntelGpuSeriesForEntry60 = {{
     IntelGpuSeriesType::kSkylake,
     IntelGpuSeriesType::kKabylake,
+}};
+
+const GpuControlList::IntelConditions kIntelConditionsForEntry60_1440601243 = {
+    base::span(kIntelGpuSeriesForEntry60),  // intel_gpu_series_list
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr,
+     nullptr},  // intel_gpu_generation
 };
 
 const GpuControlList::More kMoreForEntry60_1440601243 = {
@@ -1796,8 +1803,15 @@ const std::array<int, 1> kFeatureListForGpuControlTestingEntry61 = {
     TEST_FEATURE_0,
 };
 
-const IntelGpuSeriesType kIntelGpuSeriesForEntry61[1] = {
+const std::array<IntelGpuSeriesType, 1> kIntelGpuSeriesForEntry61 = {{
     IntelGpuSeriesType::kKabylake,
+}};
+
+const GpuControlList::IntelConditions kIntelConditionsForEntry61_1440601243 = {
+    base::span(kIntelGpuSeriesForEntry61),  // intel_gpu_series_list
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr,
+     nullptr},  // intel_gpu_generation
 };
 
 const GpuControlList::More kMoreForEntry61_1440601243 = {
@@ -1823,8 +1837,15 @@ const std::array<int, 1> kFeatureListForGpuControlTestingEntry62 = {
     TEST_FEATURE_0,
 };
 
-const IntelGpuSeriesType kIntelGpuSeriesForEntry62[1] = {
+const std::array<IntelGpuSeriesType, 1> kIntelGpuSeriesForEntry62 = {{
     IntelGpuSeriesType::kKabylake,
+}};
+
+const GpuControlList::IntelConditions kIntelConditionsForEntry62_1440601243 = {
+    base::span(kIntelGpuSeriesForEntry62),  // intel_gpu_series_list
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr,
+     nullptr},  // intel_gpu_generation
 };
 
 const GpuControlList::More kMoreForEntry62_1440601243 = {
@@ -1850,8 +1871,15 @@ const std::array<int, 1> kFeatureListForGpuControlTestingEntry63 = {
     TEST_FEATURE_0,
 };
 
-const IntelGpuSeriesType kIntelGpuSeriesForEntry63[1] = {
+const std::array<IntelGpuSeriesType, 1> kIntelGpuSeriesForEntry63 = {{
     IntelGpuSeriesType::kKabylake,
+}};
+
+const GpuControlList::IntelConditions kIntelConditionsForEntry63_1440601243 = {
+    base::span(kIntelGpuSeriesForEntry63),  // intel_gpu_series_list
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr,
+     nullptr},  // intel_gpu_generation
 };
 
 const GpuControlList::More kMoreForEntry63_1440601243 = {
@@ -1877,8 +1905,15 @@ const std::array<int, 1> kFeatureListForGpuControlTestingEntry64 = {
     TEST_FEATURE_0,
 };
 
-const IntelGpuSeriesType kIntelGpuSeriesForEntry64[1] = {
+const std::array<IntelGpuSeriesType, 1> kIntelGpuSeriesForEntry64 = {{
     IntelGpuSeriesType::kKabylake,
+}};
+
+const GpuControlList::IntelConditions kIntelConditionsForEntry64_1440601243 = {
+    base::span(kIntelGpuSeriesForEntry64),  // intel_gpu_series_list
+    {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, nullptr,
+     nullptr},  // intel_gpu_generation
 };
 
 const GpuControlList::More kMoreForEntry64_1440601243 = {
@@ -1923,8 +1958,17 @@ const GpuControlList::More kMoreForEntry65_1440601243 = {
     GpuControlList::kDontCare,  // subpixel_font_rendering
 };
 
-const IntelGpuSeriesType kIntelGpuSeriesForEntry65Exception0[1] = {
+const std::array<IntelGpuSeriesType, 1> kIntelGpuSeriesForEntry65Exception0 = {{
     IntelGpuSeriesType::kKabylake,
+}};
+
+const GpuControlList::IntelConditions
+    kIntelConditionsForEntry65_1440601243Exception0 = {
+        base::span(
+            kIntelGpuSeriesForEntry65Exception0),  // intel_gpu_series_list
+        {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+         GpuControlList::kVersionSchemaCommon, nullptr,
+         nullptr},  // intel_gpu_generation
 };
 
 const GpuControlList::More kMoreForEntry65_1440601243Exception0 = {
@@ -2003,6 +2047,13 @@ const std::array<int, 1> kFeatureListForGpuControlTestingEntry68 = {
     TEST_FEATURE_0,
 };
 
+const GpuControlList::IntelConditions kIntelConditionsForEntry68_1440601243 = {
+    base::span<const IntelGpuSeriesType>(),  // intel_gpu_series_list
+    {GpuControlList::kLT, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, "9",
+     nullptr},  // intel_gpu_generation
+};
+
 const GpuControlList::More kMoreForEntry68_1440601243 = {
     GpuControlList::kGLTypeNone,  // gl_type
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -2024,6 +2075,13 @@ const GpuControlList::More kMoreForEntry68_1440601243 = {
 
 const std::array<int, 1> kFeatureListForGpuControlTestingEntry69 = {
     TEST_FEATURE_0,
+};
+
+const GpuControlList::IntelConditions kIntelConditionsForEntry69_1440601243 = {
+    base::span<const IntelGpuSeriesType>(),  // intel_gpu_series_list
+    {GpuControlList::kLT, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, "9",
+     nullptr},  // intel_gpu_generation
 };
 
 const GpuControlList::More kMoreForEntry69_1440601243 = {
@@ -2049,6 +2107,13 @@ const std::array<int, 1> kFeatureListForGpuControlTestingEntry70 = {
     TEST_FEATURE_0,
 };
 
+const GpuControlList::IntelConditions kIntelConditionsForEntry70_1440601243 = {
+    base::span<const IntelGpuSeriesType>(),  // intel_gpu_series_list
+    {GpuControlList::kLT, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, "9",
+     nullptr},  // intel_gpu_generation
+};
+
 const GpuControlList::More kMoreForEntry70_1440601243 = {
     GpuControlList::kGLTypeNone,  // gl_type
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -2072,6 +2137,13 @@ const std::array<int, 1> kFeatureListForGpuControlTestingEntry71 = {
     TEST_FEATURE_0,
 };
 
+const GpuControlList::IntelConditions kIntelConditionsForEntry71_1440601243 = {
+    base::span<const IntelGpuSeriesType>(),  // intel_gpu_series_list
+    {GpuControlList::kLT, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, "9",
+     nullptr},  // intel_gpu_generation
+};
+
 const GpuControlList::More kMoreForEntry71_1440601243 = {
     GpuControlList::kGLTypeNone,  // gl_type
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -2093,6 +2165,13 @@ const GpuControlList::More kMoreForEntry71_1440601243 = {
 
 const std::array<int, 1> kFeatureListForGpuControlTestingEntry72 = {
     TEST_FEATURE_0,
+};
+
+const GpuControlList::IntelConditions kIntelConditionsForEntry72_1440601243 = {
+    base::span<const IntelGpuSeriesType>(),  // intel_gpu_series_list
+    {GpuControlList::kLT, GpuControlList::kVersionStyleNumerical,
+     GpuControlList::kVersionSchemaCommon, "9",
+     nullptr},  // intel_gpu_generation
 };
 
 const GpuControlList::More kMoreForEntry72_1440601243 = {

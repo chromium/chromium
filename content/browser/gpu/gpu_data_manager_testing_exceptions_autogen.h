@@ -25,12 +25,8 @@ const std::array<GpuControlList::Conditions, 1> kExceptionsForEntry5 = {{
         nullptr,                                          // driver info
         &kGLStringsForGpuManagerTestingEntry5Exception0,  // GL strings
         nullptr,                                          // machine model info
-        0,        // intel_gpu_series size
-        nullptr,  // intel_gpu_series
-        {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
-         GpuControlList::kVersionSchemaCommon, nullptr,
-         nullptr},                            // intel_gpu_generation
-        &kMoreForEntry5_572251052Exception0,  // more data
+        nullptr,                                          // Intel conditions
+        &kMoreForEntry5_572251052Exception0,              // more data
     },
 }};
 

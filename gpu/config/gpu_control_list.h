@@ -197,6 +197,14 @@ class GPU_EXPORT GpuControlList {
     uint32_t revision = 0u;
   };
 
+  struct GPU_EXPORT IntelConditions {
+    base::span<const IntelGpuSeriesType> intel_gpu_series_list;
+    Version intel_gpu_generation;
+
+    bool Contains(const std::vector<GPUInfo::GPUDevice>& candidates,
+                  const GPUInfo& gpu_info) const;
+  };
+
   struct GPU_EXPORT Conditions {
     OsType os_type;
     Version os_version;
@@ -212,9 +220,7 @@ class GPU_EXPORT GpuControlList {
     RAW_PTR_EXCLUSION const DriverInfo* driver_info;
     RAW_PTR_EXCLUSION const GLStrings* gl_strings;
     RAW_PTR_EXCLUSION const MachineModelInfo* machine_model_info;
-    size_t intel_gpu_series_list_size;
-    RAW_PTR_EXCLUSION const IntelGpuSeriesType* intel_gpu_series_list;
-    Version intel_gpu_generation;
+    RAW_PTR_EXCLUSION const IntelConditions* intel_conditions;
     RAW_PTR_EXCLUSION const More* more;
 
     bool Contains(OsType os_type,
