@@ -89,10 +89,6 @@
 #include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "components/trusted_vault/features.h"
-#endif
-
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 #include "chrome/browser/web_applications/os_integration/mac/app_shim_registry.h"
@@ -168,8 +164,6 @@ void ProfileMenuView::BuildMenu() {
     BuildFeatureButtons();
   }
 
-//  ChromeOS doesn't support multi-profile.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (!(profile->IsGuestSession())) {
     SetProfileManagementHeading(l10n_util::GetStringUTF16(
         switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
@@ -182,7 +176,6 @@ void ProfileMenuView::BuildMenu() {
       BuildProfileManagementFeatureButtons();
     }
   }
-#endif
 
   if (web_app::AppBrowserController::IsWebApp(browser())) {
     browser()->window()->NotifyFeatureEngagementEvent(
@@ -293,10 +286,6 @@ void ProfileMenuView::OnSyncSettingsButtonClicked() {
 }
 
 void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On ChromeOS, sync errors are fixed by re-signing into the OS.
-  chrome::AttemptUserExit();
-#else
   RecordClick(ActionableItem::kSyncErrorButton);
   if (!perform_menu_actions())
     return;
@@ -334,15 +323,6 @@ void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
       break;
     case AvatarSyncErrorType::kTrustedVaultKeyMissingForEverythingError:
     case AvatarSyncErrorType::kTrustedVaultKeyMissingForPasswordsError:
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      if (base::FeatureList::IsEnabled(
-              trusted_vault::kChromeOSTrustedVaultUseWebUIDialog)) {
-        OpenDialogForSyncKeyRetrieval(
-            browser()->profile(),
-            syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
-        break;
-      }
-#endif
       OpenTabForSyncKeyRetrieval(
           browser(), syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
       break;
@@ -350,20 +330,10 @@ void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
         kTrustedVaultRecoverabilityDegradedForEverythingError:
     case AvatarSyncErrorType::
         kTrustedVaultRecoverabilityDegradedForPasswordsError:
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      if (base::FeatureList::IsEnabled(
-              trusted_vault::kChromeOSTrustedVaultUseWebUIDialog)) {
-        OpenDialogForSyncKeyRecoverabilityDegraded(
-            browser()->profile(),
-            syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
-        break;
-      }
-#endif
       OpenTabForSyncKeyRecoverabilityDegraded(
           browser(), syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
       break;
     case AvatarSyncErrorType::kPassphraseError:
-#if !BUILDFLAG(IS_CHROMEOS)
       if (base::FeatureList::IsEnabled(switches::kImprovedSigninUIOnDesktop)) {
         ShowSyncPassphraseDialog(
             *browser(), base::BindRepeating(
@@ -374,13 +344,10 @@ void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
         chrome::ShowSettingsSubPage(browser(), chrome::kSyncSetupSubPage);
       }
       break;
-#endif
-    // Intentional fallthrough on ChromeOS.
     case AvatarSyncErrorType::kSettingsUnconfirmedError:
       chrome::ShowSettingsSubPage(browser(), chrome::kSyncSetupSubPage);
       break;
   }
-#endif
 }
 
 void ProfileMenuView::OnSigninButtonClicked(
@@ -404,7 +371,6 @@ void ProfileMenuView::OnSigninButtonClicked(
                                                    account, access_point);
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void ProfileMenuView::OnSignoutButtonClicked() {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(browser()->profile());
@@ -418,22 +384,14 @@ void ProfileMenuView::OnSignoutButtonClicked() {
   if (!perform_menu_actions())
     return;
   GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   browser()->signin_view_controller()->SignoutOrReauthWithPrompt(
       signin_metrics::AccessPoint::
           ACCESS_POINT_PROFILE_MENU_SIGNOUT_CONFIRMATION_PROMPT,
       signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu,
       signin_metrics::SourceForRefreshTokenOperation::
           kUserMenu_SignOutAllAccounts);
-#else
-  CHECK(!browser()->profile()->IsMainProfile());
-  identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
-      signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu);
-#endif
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void ProfileMenuView::OnOtherProfileSelected(
     const base::FilePath& profile_path) {
   RecordClick(ActionableItem::kOtherProfileButton);
@@ -444,7 +402,6 @@ void ProfileMenuView::OnOtherProfileSelected(
     GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
     profiles::SwitchToProfile(profile_path, /*always_create=*/false);
   } else {
-#if !BUILDFLAG(IS_CHROMEOS)
     // Open the same web app for another profile.
     // On non-macOS the only allowlisted case is PasswordManager WebApp, which
     // uses a different code path from other PWAs as it needs to not only
@@ -472,10 +429,6 @@ void ProfileMenuView::OnOtherProfileSelected(
             // before the widget is destroyed.
             base::Unretained(GetWidget())));
     app_profile_switcher_->SwitchToProfile(profile_path);
-#else
-    // WebApps can only be installed for the main profile on ChromeOS.
-    NOTREACHED_IN_MIGRATION();
-#endif
   }
 }
 
@@ -501,7 +454,6 @@ void ProfileMenuView::OnEditProfileButtonClicked() {
     return;
   chrome::ShowSettingsSubPage(browser(), chrome::kManageProfileSubPage);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void ProfileMenuView::OnCookiesClearedOnExitLinkClicked() {
   RecordClick(ActionableItem::kCookiesClearedOnExitLink);
@@ -530,8 +482,6 @@ void ProfileMenuView::BuildIdentity() {
 
   std::u16string profile_name;
   std::optional<EditButtonParams> edit_button_params;
-// Profile names are not supported on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   profile_name = profile_attributes->GetLocalProfileName();
   if (!web_app::AppBrowserController::IsWebApp(browser()) &&
       !switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
@@ -542,7 +492,6 @@ void ProfileMenuView::BuildIdentity() {
         base::BindRepeating(&ProfileMenuView::OnEditProfileButtonClicked,
                             base::Unretained(this)));
   }
-#endif
 
   SkColor background_color =
       profile_attributes->GetProfileThemeColors().profile_highlight_color;
@@ -742,10 +691,6 @@ void ProfileMenuView::BuildSyncInfo() {
     button_type = ActionableItem::kEnableSyncForWebOnlyAccountButton;
     show_account_card = true;
   } else {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // There is always an account on ChromeOS.
-    NOTREACHED();
-#else
     // Not signed in state.
     if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
       access_point = signin_metrics::AccessPoint::
@@ -759,7 +704,6 @@ void ProfileMenuView::BuildSyncInfo() {
       button_text = l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON);
     }
     button_type = ActionableItem::kSigninButton;
-#endif
   }
 
   CHECK(!description.empty());
@@ -851,7 +795,6 @@ void ProfileMenuView::BuildFeatureButtons() {
         vector_icons::kCloseChromeRefreshIcon);
   }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
   const bool has_primary_account =
       !profile->IsGuestSession() && has_sync_consent;
 
@@ -861,10 +804,6 @@ void ProfileMenuView::BuildFeatureButtons() {
 
   bool add_sign_out_button = has_unconsented_account && !has_primary_account &&
                              !hide_signout_button_for_managed_profiles;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Clearing the primary account is not allowed in the main profile.
-  add_sign_out_button &= !profile->IsMainProfile();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   // The sign-out button is always at the bottom.
   if (add_sign_out_button) {
     std::u16string signout_button_text;
@@ -888,16 +827,10 @@ void ProfileMenuView::BuildFeatureButtons() {
                             base::Unretained(this)),
         kSignOutIcon);
   }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void ProfileMenuView::BuildAvailableProfiles() {
   bool profiles_selectable = true;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  profiles_selectable = profiles::AreSecondaryProfilesAllowed();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 #if BUILDFLAG(IS_MAC)
   const bool is_regular_web_app =
       web_app::AppBrowserController::IsWebApp(browser()) &&
@@ -961,10 +894,6 @@ void ProfileMenuView::BuildAvailableProfiles() {
 
 void ProfileMenuView::BuildProfileManagementFeatureButtons() {
   bool profiles_selectable = true;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  profiles_selectable = profiles::AreSecondaryProfilesAllowed();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
     if (profiles_selectable || profiles::IsProfileCreationAllowed()) {
       AddProfileManagementFeaturesSeparator();
@@ -1012,4 +941,3 @@ void ProfileMenuView::BuildProfileManagementFeatureButtons() {
     }
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

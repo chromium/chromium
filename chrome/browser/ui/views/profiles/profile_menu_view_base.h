@@ -14,6 +14,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -119,6 +120,8 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
       const std::u16string& subtitle = std::u16string(),
       const std::u16string& management_label = std::u16string(),
       const ui::ThemedVectorIcon& avatar_header_art = ui::ThemedVectorIcon());
+
+#if !BUILDFLAG(IS_CHROMEOS)
   // Displays the sync info section as a rounded rectangle with text on top and
   // a button on the bottom. Clicking the button triggers |action|. |account| is
   // only used for the sign-in promo for a web-only signed in account.
@@ -127,6 +130,8 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
                                      const base::RepeatingClosure& action,
                                      bool show_sync_badge,
                                      AccountInfo account = AccountInfo());
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
   // Displays the sync info section as a rectangle with text. Clicking the
   // rectangle triggers |action|.
   void BuildSyncInfoWithoutCallToAction(const std::u16string& text,

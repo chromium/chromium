@@ -115,15 +115,6 @@
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/account_manager/fake_account_manager_ui_dialog_waiter.h"
-#include "chrome/browser/signin/signin_ui_delegate_impl_lacros.h"
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/startup/browser_init_params.h"
-#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
-#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
-#endif
-
 namespace {
 
 constexpr char kTestEmail[] = "foo@example.com";
@@ -380,17 +371,9 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, CloseIPH) {
 class ProfileMenuViewSignoutTest : public ProfileMenuViewTestBase,
                                    public SigninBrowserTestBase {
  public:
-  ProfileMenuViewSignoutTest()
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      // Signout is not allowed on the main profile.
-      : SigninBrowserTestBase(/*use_main_profile=*/false){}
-#else
-      = default;
-#endif
+  ProfileMenuViewSignoutTest() = default;
 
-        CoreAccountId account_id() const {
-    return account_id_;
-  }
+  CoreAccountId account_id() const { return account_id_; }
 
   bool Signout() {
     OpenProfileMenu();
@@ -401,7 +384,6 @@ class ProfileMenuViewSignoutTest : public ProfileMenuViewTestBase,
     return true;
   }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   GURL GetExpectedLogoutURL(bool uno_enabled) const {
     if (uno_enabled) {
       return GaiaUrls::GetInstance()->LogOutURLWithContinueURL(GURL());
@@ -409,7 +391,6 @@ class ProfileMenuViewSignoutTest : public ProfileMenuViewTestBase,
       return GaiaUrls::GetInstance()->service_logout_url();
     }
   }
-#endif
 
   // SigninBrowserTestBase:
   void SetUpOnMainThread() override {
@@ -435,18 +416,6 @@ class ProfileMenuViewSignoutTest : public ProfileMenuViewTestBase,
   CoreAccountId account_id_;
   raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
 };
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-IN_PROC_BROWSER_TEST_F(ProfileMenuViewSignoutTest, Signout) {
-  ASSERT_TRUE(Signout());
-  EXPECT_FALSE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  EXPECT_FALSE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-}
-#endif
-
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Wrapper class to add parametrized
 // `switches::kExplicitBrowserSigninUIOnDesktop` feature tests.
@@ -627,7 +596,6 @@ INSTANTIATE_TEST_SUITE_P(
     ProfileMenuViewSignoutTestWithNetwork,
     testing::Combine(testing::Bool(), testing::Bool()),
     &ProfileMenuViewSignoutTestWithNetwork::GenerateTestSuffix);
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Test suite that sets up a primary sync account in an error state and
 // simulates a click on the sync error button.
@@ -674,21 +642,6 @@ class ProfileMenuViewSyncErrorButtonTest : public ProfileMenuViewTestBase,
   CoreAccountInfo account_info_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-IN_PROC_BROWSER_TEST_F(ProfileMenuViewSyncErrorButtonTest, OpenReauthDialog) {
-  FakeAccountManagerUI* account_manager_ui = GetFakeAccountManagerUI();
-  ASSERT_TRUE(account_manager_ui);
-  FakeAccountManagerUIDialogWaiter dialog_waiter(
-      account_manager_ui, FakeAccountManagerUIDialogWaiter::Event::kReauth);
-
-  ASSERT_TRUE(Reauth());
-
-  dialog_waiter.Wait();
-  EXPECT_TRUE(account_manager_ui->IsDialogShown());
-  EXPECT_EQ(1,
-            account_manager_ui->show_account_reauthentication_dialog_calls());
-}
-#else
 IN_PROC_BROWSER_TEST_F(ProfileMenuViewSyncErrorButtonTest, OpenReauthTab) {
   // Start from a page that is not the NTP.
   ASSERT_TRUE(
@@ -710,120 +663,6 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSyncErrorButtonTest, OpenReauthTab) {
       reauth_page->GetURL().spec(),
       testing::StartsWith(GaiaUrls::GetInstance()->add_account_url().spec()));
 }
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// Test suite that sets up a non-sync account in an error state and simulates a
-// click on the sync button.
-// This is only relevant on Lacros, as this state does not exist on desktop.
-class ProfileMenuViewSigninErrorButtonTest : public ProfileMenuViewTestBase,
-                                             public InProcessBrowserTest {
- public:
-  class MockSigninUiDelegate
-      : public signin_ui_util::SigninUiDelegateImplLacros {
-   public:
-    MOCK_METHOD(void,
-                ShowTurnSyncOnUI,
-                (Profile * profile,
-                 signin_metrics::AccessPoint access_point,
-                 signin_metrics::PromoAction promo_action,
-                 const CoreAccountId& account_id,
-                 TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode,
-                 bool is_sync_promo),
-                ());
-  };
-
-  ProfileMenuViewSigninErrorButtonTest()
-      : delegate_auto_reset_(
-            signin_ui_util::SetSigninUiDelegateForTesting(&mock_delegate_)) {}
-
-  CoreAccountInfo account_info() const { return account_info_; }
-
-  // InProcessBrowserTest:
-  void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-    SetTargetBrowser(browser());
-
-    // Add an account, non-syncing and in authentication error.
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(browser()->profile());
-    account_info_ = signin::MakePrimaryAccountAvailable(
-        identity_manager, kTestEmail, signin::ConsentLevel::kSignin);
-    signin::UpdatePersistentErrorOfRefreshTokenForAccount(
-        identity_manager, account_info_.account_id,
-        GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-            GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                CREDENTIALS_REJECTED_BY_SERVER));
-    ASSERT_TRUE(
-        identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-            account_info_.account_id));
-  }
-
-  void ClickTurnOnSync() {
-    OpenProfileMenu();
-    // This test does not check that the sync button is displayed in the menu,
-    // but this is tested in ProfileMenuClickTest.
-    base::HistogramTester histogram_tester;
-    static_cast<ProfileMenuView*>(profile_menu_view())
-        ->OnSigninButtonClicked(
-            account_info(),
-            ProfileMenuViewBase::ActionableItem::kSigninAccountButton,
-            signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
-    histogram_tester.ExpectUniqueSample(
-        "Profile.Menu.ClickedActionableItem",
-        ProfileMenuViewBase::ActionableItem::kSigninAccountButton,
-        /*expected_bucket_count=*/1);
-  }
-
- protected:
-  CoreAccountInfo account_info_;
-
-  testing::StrictMock<MockSigninUiDelegate> mock_delegate_;
-  base::AutoReset<signin_ui_util::SigninUiDelegate*> delegate_auto_reset_;
-};
-
-IN_PROC_BROWSER_TEST_F(ProfileMenuViewSigninErrorButtonTest, OpenReauthDialog) {
-  FakeAccountManagerUI* account_manager_ui = GetFakeAccountManagerUI();
-  ASSERT_TRUE(account_manager_ui);
-  FakeAccountManagerUIDialogWaiter dialog_waiter(
-      account_manager_ui, FakeAccountManagerUIDialogWaiter::Event::kReauth);
-
-  ClickTurnOnSync();
-
-  // Reauth is shown first.
-  dialog_waiter.Wait();
-  EXPECT_TRUE(account_manager_ui->IsDialogShown());
-  EXPECT_EQ(1,
-            account_manager_ui->show_account_reauthentication_dialog_calls());
-
-  base::RunLoop loop;
-  EXPECT_CALL(
-      mock_delegate_,
-      ShowTurnSyncOnUI(
-          browser()->profile(),
-          signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
-          signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
-          account_info().account_id,
-          TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
-          /*sync_promo=*/false))
-      .WillOnce([&loop]() { loop.Quit(); });
-
-  // Complete reauth.
-  // Fake that this account was successfully reauthenticated via the UI.
-  crosapi::AccountManagerMojoService* mojo_service =
-      MaybeGetAshAccountManagerMojoServiceForTests();
-  DCHECK(mojo_service);
-  account_manager::AccountKey kAccountKey{account_info_.gaia,
-                                          account_manager::AccountType::kGaia};
-  mojo_service->OnAccountUpsertionFinishedForTesting(
-      account_manager::AccountUpsertionResult::FromAccount(
-          {kAccountKey, account_info_.email}));
-  account_manager_ui->CloseDialog();
-
-  // Wait until the Sync confirmation is shown.
-  loop.Run();
-}
-#endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
 
@@ -952,13 +791,6 @@ class ProfileMenuClickTest : public SyncTest,
     SetTargetBrowser(browser());
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void UseSecondaryProfile() {
-    profile_ = CreateAdditionalProfile();
-    SetTargetBrowser(CreateBrowser(profile_));
-  }
-#endif
-
   Profile* GetProfile() {
     return profile_ ? profile_.get() : browser()->profile();
   }
@@ -1029,7 +861,6 @@ class ProfileMenuClickTest : public SyncTest,
         GetExpectedActionableItemAtIndex(GetParam()),
         /*expected_bucket_count=*/1);
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
     if (supervised_user::IsPrimaryAccountSubjectToParentalControls(
             identity_manager()) == signin::Tribool::kTrue) {
       histogram_tester_.ExpectUniqueSample(
@@ -1042,7 +873,6 @@ class ProfileMenuClickTest : public SyncTest,
           GetExpectedActionableItemAtIndex(GetParam()),
           /*expected_bucket_count=*/0);
     }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
   base::CallbackListSubscription test_signin_client_subscription_;
@@ -1434,10 +1264,6 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
   RunTest();
 }
 
-// Lacros doesn't allow to disable sign-in in regular profiles yet.
-// TODO(crbug.com/40772644): re-enable this test once kSigninAllowed is
-// no longer force set to true on Lacros.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // List of actionable items in the correct order as they appear in the menu with
 // Uno disabled. If a new button is added to the menu, it should also be added
 // to this list.
@@ -1506,7 +1332,6 @@ IN_PROC_BROWSER_TEST_P(ProfileMenuClickTest_SigninDisallowed_UnoEnabled,
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kSigninAllowedOnNextStartup, false);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // List of actionable items in the correct order as they appear in the menu with
 // Uno disabled. If a new button is added to the menu, it should also be added
@@ -1519,10 +1344,7 @@ constexpr ProfileMenuViewBase::ActionableItem
         ProfileMenuViewBase::ActionableItem::kAddressesButton,
         ProfileMenuViewBase::ActionableItem::kSigninAccountButton,
         ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-        // Signout is not allowed in the main profile.
         ProfileMenuViewBase::ActionableItem::kSignoutButton,
-#endif
         ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
         ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
         ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
@@ -1560,10 +1382,7 @@ constexpr ProfileMenuViewBase::ActionableItem
         ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
         ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
         ProfileMenuViewBase::ActionableItem::kExitProfileButton,
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-        // Signout is not allowed in the main profile.
         ProfileMenuViewBase::ActionableItem::kSignoutButton,
-#endif
         ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
         ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
         ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
@@ -1601,10 +1420,7 @@ constexpr ProfileMenuViewBase::ActionableItem
         ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
         ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
         ProfileMenuViewBase::ActionableItem::kExitProfileButton,
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-        // Signout is not allowed in the main profile.
         ProfileMenuViewBase::ActionableItem::kSignoutButton,
-#endif
         ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
         ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
         ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
@@ -1647,9 +1463,6 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
   RunTest();
 }
 
-// The kHideGuestModeForSupervisedUsers does not exist on Lacros, as Guest mode
-// hiding for supervised users is inherited from OS-level signals.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 constexpr ProfileMenuViewBase::ActionableItem
     kActionableItems_GuestProfileButtonAvailable_SignedInNotSupervised[] = {
         ProfileMenuViewBase::ActionableItem::kEditProfileButton,
@@ -1721,120 +1534,6 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
 
   RunTest();
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// List of actionable items in the correct order as they appear in the menu.
-// If a new button is added to the menu, it should also be added to this list.
-constexpr ProfileMenuViewBase::ActionableItem
-    kActionableItems_SecondaryProfileWithUnconsentedPrimaryAccount[] = {
-        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
-        ProfileMenuViewBase::ActionableItem::kPasswordsButton,
-        ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
-        ProfileMenuViewBase::ActionableItem::kAddressesButton,
-        ProfileMenuViewBase::ActionableItem::kSigninAccountButton,
-        ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
-        ProfileMenuViewBase::ActionableItem::kSignoutButton,
-        ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
-        ProfileMenuViewBase::ActionableItem::kOtherProfileButton,
-        ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
-        ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
-        // The first button is added again to finish the cycle and test that
-        // there are no other buttons at the end.
-        ProfileMenuViewBase::ActionableItem::kEditProfileButton};
-
-PROFILE_MENU_CLICK_TEST(
-    kActionableItems_SecondaryProfileWithUnconsentedPrimaryAccount,
-    ProfileMenuClickTest_SecondaryProfileWithUnconsentedPrimaryAccount) {
-  UseSecondaryProfile();
-  secondary_account_helper::SignInUnconsentedAccount(
-      GetProfile(), &test_url_loader_factory_, "user@example.com");
-  UnconsentedPrimaryAccountChecker(identity_manager()).Wait();
-  // Check that the setup was successful.
-  ASSERT_FALSE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  ASSERT_TRUE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-
-  RunTest();
-}
-
-// List of actionable items in the correct order as they appear in the menu.
-// If a new button is added to the menu, it should also be added to this list.
-constexpr ProfileMenuViewBase::ActionableItem
-    kActionableItems_UnconsentedPrimaryAccountError[] = {
-        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
-        ProfileMenuViewBase::ActionableItem::kPasswordsButton,
-        ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
-        ProfileMenuViewBase::ActionableItem::kAddressesButton,
-        ProfileMenuViewBase::ActionableItem::kSigninAccountButton,
-        ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
-        ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
-        ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
-        ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
-        // The first button is added again to finish the cycle and test that
-        // there are no other buttons at the end.
-        ProfileMenuViewBase::ActionableItem::kEditProfileButton};
-
-PROFILE_MENU_CLICK_TEST(kActionableItems_UnconsentedPrimaryAccountError,
-                        ProfileMenuClickTest_UnconsentedPrimaryAccountError) {
-  AccountInfo account_info =
-      signin::MakeAccountAvailable(identity_manager(), "user@example.com");
-  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
-      identity_manager(), account_info.account_id,
-      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-              CREDENTIALS_REJECTED_BY_SERVER));
-  identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
-      account_info.account_id, signin::ConsentLevel::kSignin);
-
-  // Check that the setup was successful.
-  ASSERT_FALSE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  ASSERT_EQ(account_info, identity_manager()->GetPrimaryAccountInfo(
-                              signin::ConsentLevel::kSignin));
-  ASSERT_TRUE(
-      identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
-          account_info.account_id));
-
-  RunTest();
-}
-
-// List of actionable items in the correct order as they appear in the menu.
-// If a new button is added to the menu, it should also be added to this list.
-// The two additional profiles created in the PRE_ test should be disabled and
-// thus, not appear in  this list.
-constexpr ProfileMenuViewBase::ActionableItem
-    kActionableItems_SecondaryProfilesDisabled[] = {
-        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
-        ProfileMenuViewBase::ActionableItem::kPasswordsButton,
-        ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
-        ProfileMenuViewBase::ActionableItem::kAddressesButton,
-        ProfileMenuViewBase::ActionableItem::kSigninButton,
-        // The first button is added again to finish the cycle and test that
-        // there are no other buttons at the end.
-        ProfileMenuViewBase::ActionableItem::kEditProfileButton};
-
-PROFILE_MENU_CLICK_TEST(kActionableItems_SecondaryProfilesDisabled,
-                        ProfileMenuClickTest_SecondaryProfilesDisabled) {
-  // Check that the setup was successful.
-  ASSERT_FALSE(g_browser_process->local_state()->GetBoolean(
-      prefs::kLacrosSecondaryProfilesAllowed));
-
-  RunTest();
-}
-
-IN_PROC_BROWSER_TEST_P(ProfileMenuClickTest_SecondaryProfilesDisabled,
-                       PRE_ProfileMenuClickTest_SecondaryProfilesDisabled) {
-  // Add two additional profiles, which later shouldn't be clickable.
-  CreateAdditionalProfile();
-  CreateAdditionalProfile();
-
-  g_browser_process->local_state()->SetBoolean(
-      prefs::kLacrosSecondaryProfilesAllowed, false);
-}
-
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // List of actionable items in the correct order as they appear in the menu.
 // If a new button is added to the menu, it should also be added to this list.
@@ -1871,33 +1570,6 @@ PROFILE_MENU_CLICK_TEST(kActionableItems_GuestProfile,
 
   RunTest();
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-
-class ProfileMenuClickTestGuestSession : public ProfileMenuClickTest {
- public:
-  // Enable the guest session.
-  void CreatedBrowserMainParts(
-      content::BrowserMainParts* browser_main_parts) override {
-    crosapi::mojom::BrowserInitParamsPtr init_params =
-        chromeos::BrowserInitParams::GetForTests()->Clone();
-    init_params->session_type = crosapi::mojom::SessionType::kGuestSession;
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-    ProfileMenuClickTest::CreatedBrowserMainParts(browser_main_parts);
-  }
-};
-
-// This tests the device guest session, which is not the same as the browser
-// guest mode.
-PROFILE_MENU_CLICK_TEST_F(ProfileMenuClickTestGuestSession,
-                          kActionableItems_GuestProfile,
-                          ProfileMenuClickTest_GuestSession) {
-  SetTargetBrowser(browser());
-
-  RunTest();
-}
-
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if !BUILDFLAG(IS_CHROMEOS)
 class ProfileMenuClickTestWebApp : public ProfileMenuClickTest {
@@ -1951,6 +1623,7 @@ PROFILE_MENU_CLICK_TEST_F(ProfileMenuClickTestWebApp,
   SetTargetBrowser(toolbar_helper().app_browser());
   RunTest();
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
 // List of actionable items in the correct order as they appear in the menu.
@@ -1978,6 +1651,7 @@ PROFILE_MENU_CLICK_TEST_F(ProfileMenuClickTestWebApp,
 }
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS)
 class ProfileMenuViewWebAppTest : public ProfileMenuViewTestBase,
                                   public web_app::WebAppBrowserTestBase {
  protected:
@@ -2034,6 +1708,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebAppTest,
             new_web_contents);
   EXPECT_EQ(new_web_contents->GetVisibleURL(), GURL(kPasswordManagerPWAUrl));
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebAppTest, SelectingOtherProfile) {
@@ -2104,6 +1779,4 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebAppTest, ProfileMenuVisibility) {
   ASSERT_TRUE(toolbar_profile2->GetAvatarToolbarButton());
   EXPECT_TRUE(toolbar_profile2->GetAvatarToolbarButton()->GetVisible());
 }
-#endif
-
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_MAC)

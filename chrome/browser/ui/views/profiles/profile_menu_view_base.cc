@@ -83,10 +83,14 @@ namespace {
 
 // Helpers --------------------------------------------------------------------
 
+#if !BUILDFLAG(IS_CHROMEOS)
+constexpr int kAccountCardMargin = 4;
+constexpr int kSyncInfoInsidePadding = 12;
+#endif
+
 constexpr int kMenuWidth = 328;
 constexpr int kMaxImageSize = ProfileMenuViewBase::kIdentityImageSize;
 constexpr int kDefaultMargin = 8;
-constexpr int kAccountCardMargin = 4;
 constexpr int kBadgeSize = 16;
 constexpr int kCircularImageButtonSize = 28;
 constexpr int kCircularImageButtonRefreshSize = 32;
@@ -110,7 +114,6 @@ constexpr int kMinimumScrollableContentHeight = 40;
 // the menu items.
 constexpr int kMenuEdgeMargin = 16;
 
-constexpr int kSyncInfoInsidePadding = 12;
 constexpr int kSyncInfoRefreshInsidePadding = 16;
 
 // The bottom background edge should match the center of the identity image.
@@ -119,10 +122,8 @@ constexpr auto kBackgroundInsets =
 
 constexpr char kProfileMenuClickedActionableItemHistogram[] =
     "Profile.Menu.ClickedActionableItem";
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 constexpr char kProfileMenuClickedActionableItemSupervisedHistogram[] =
     "Profile.Menu.ClickedActionableItem_Supervised";
-#endif
 
 gfx::ImageSkia SizeImage(const gfx::ImageSkia& image, int size) {
   return gfx::ImageSkiaOperations::CreateResizedImage(
@@ -146,7 +147,7 @@ class CircleImageSource : public gfx::CanvasImageSource {
   void Draw(gfx::Canvas* canvas) override;
 
  private:
-  SkColor color_;
+  const SkColor color_;
 };
 
 void CircleImageSource::Draw(gfx::Canvas* canvas) {
@@ -665,9 +666,7 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
   auto avatar_image_view =
       std::make_unique<AvatarImageView>(image_model, management_badge, this);
 
-// TODO(crbug.com/40118868): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   // crbug.com/1161166: Orca does not read the accessible window title of the
   // bubble, so we duplicate it in the top-level menu item. To be revisited
   // after considering other options, including fixes on the AT side.
@@ -711,6 +710,7 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
                                title, subtitle, management_label);
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
 void ProfileMenuViewBase::BuildSyncInfoWithCallToAction(
     const std::u16string& description,
     const std::u16string& button_text,
@@ -804,8 +804,6 @@ void ProfileMenuViewBase::BuildSyncInfoWithCallToAction(
         .SetDefault(
             views::kMarginsKey,
             gfx::Insets::VH(kAccountCardMargin, kDescriptionIconSpacing));
-
-#if !BUILDFLAG(IS_CHROMEOS)
     gfx::Image account_icon = account.account_image;
     if (account_icon.IsEmpty()) {
       account_icon = ui::ResourceBundle::GetSharedInstance().GetImageNamed(
@@ -813,7 +811,6 @@ void ProfileMenuViewBase::BuildSyncInfoWithCallToAction(
     }
     account_container->AddChildView(std::make_unique<BadgedProfilePhoto>(
         BadgedProfilePhoto::BADGE_TYPE_NONE, account_icon));
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
     auto* label_wrapper =
         account_container->AddChildView(std::make_unique<views::View>());
@@ -851,6 +848,7 @@ void ProfileMenuViewBase::BuildSyncInfoWithCallToAction(
       &ProfileMenuViewBase::BuildSyncInfoCallToActionBackground,
       base::Unretained(this));
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 void ProfileMenuViewBase::BuildSyncInfoWithoutCallToAction(
     const std::u16string& text,
@@ -1060,8 +1058,6 @@ void ProfileMenuViewBase::RecordClick(ActionableItem item) {
   // TODO(tangltom): Separate metrics for incognito and guest menu.
   base::UmaHistogramEnumeration(kProfileMenuClickedActionableItemHistogram,
                                 item);
-
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   // Additionally output a version of the metric for supervised users, to allow
   // more fine-grained analysis.
   signin::IdentityManager* identity_manager =
@@ -1072,7 +1068,6 @@ void ProfileMenuViewBase::RecordClick(ActionableItem item) {
     base::UmaHistogramEnumeration(
         kProfileMenuClickedActionableItemSupervisedHistogram, item);
   }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 int ProfileMenuViewBase::GetMaxHeight() const {

@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/profiles/profile_menu_view.h"
 
 #include "base/test/scoped_feature_list.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -32,20 +31,12 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/startup/browser_init_params.h"
-#endif
-
 namespace {
 
 enum class ProfileTypePixelTestParam {
   kRegular,
   kIncognito,
   kGuest,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  kDeviceGuestSession,
-#endif
 };
 
 enum class SigninStatusPixelTestParam {
@@ -91,10 +82,6 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
      .profile_type_param = ProfileTypePixelTestParam::kGuest},
     {.pixel_test_param = {.test_suffix = "Incognito"},
      .profile_type_param = ProfileTypePixelTestParam::kIncognito},
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    {.pixel_test_param = {.test_suffix = "LacrosDeviceGuestSession"},
-     .profile_type_param = ProfileTypePixelTestParam::kDeviceGuestSession},
-#endif
     {.pixel_test_param = {.test_suffix = "DarkTheme_WithoutUnoDesign",
                           .use_dark_theme = true},
      .profile_menu_uno_redesign = false},
@@ -237,23 +224,6 @@ class ProfileMenuViewPixelTest
     CloseBrowserAsynchronously(tmp_browser);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Enable the guest session.
-  void CreatedBrowserMainParts(
-      content::BrowserMainParts* browser_main_parts) override {
-    if (GetProfileType() != ProfileTypePixelTestParam::kDeviceGuestSession) {
-      return;
-    }
-    crosapi::mojom::BrowserInitParamsPtr init_params =
-        chromeos::BrowserInitParams::GetForTests()->Clone();
-
-    init_params->session_type = crosapi::mojom::SessionType::kGuestSession;
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-    ProfilesPixelTestBaseT<DialogBrowserTest>::CreatedBrowserMainParts(
-        browser_main_parts);
-  }
-#endif
-
   void SetUpOnMainThread() override {
     ProfilesPixelTestBaseT<DialogBrowserTest>::SetUpOnMainThread();
 
@@ -278,11 +248,6 @@ class ProfileMenuViewPixelTest
         ASSERT_TRUE(new_browser);
         ASSERT_TRUE(new_browser->profile()->IsGuestSession());
         break;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      case ProfileTypePixelTestParam::kDeviceGuestSession:
-        // Nothing to do, the current browser should already be guest.
-        ASSERT_TRUE(browser()->profile()->IsGuestSession());
-#endif
     }
 
     // Close the initial browser and set the new one as default.
