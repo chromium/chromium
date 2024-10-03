@@ -3382,6 +3382,9 @@ public class ExternalNavigationHandlerTest {
         @Override
         public void returnAsActivityResult(GURL url) {}
 
+        @Override
+        public void maybeRecordExternalNavigationSchemeHistogram(GURL url) {}
+
         public void reset() {
             startIncognitoIntentCalled = false;
         }

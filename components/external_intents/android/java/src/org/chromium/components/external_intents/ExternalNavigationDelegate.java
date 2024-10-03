@@ -150,4 +150,12 @@ public interface ExternalNavigationDelegate {
      * @param url The {@link GURL} to return as activtiy result.
      */
     void returnAsActivityResult(GURL url);
+
+    /**
+     * Records the scheme of the external navigation if this is likely a CCT launched for auth
+     * purposes.
+     *
+     * @param url The {@link GURL} of the external navigation.
+     */
+    void maybeRecordExternalNavigationSchemeHistogram(GURL url);
 }

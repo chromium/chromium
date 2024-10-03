@@ -26,6 +26,12 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="CustomTabsAuthScheme">
+  <int value="0" label="Other/Custom"/>
+  <int value="1" label="HTTP"/>
+  <int value="2" label="HTTPS"/>
+</enum>
+
 <enum name="CustomTabsBrandingAppIdType">
   <summary>Used by CustomTabs.Branding.AppIdType</summary>
   <int value="0" label="INVALID"/>

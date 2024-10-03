@@ -60,6 +60,7 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
         }
 
         CustomTabAuthUrlHeuristics.recordUrlParamsHistogram(intentDataProvider.getUrlToLoad());
+        CustomTabAuthUrlHeuristics.recordRedirectUriSchemeHistogram(intentDataProvider);
     }
 
     // TODO(yfriedman): Remove & inline once CustomTabs junit tests can be created from a provided

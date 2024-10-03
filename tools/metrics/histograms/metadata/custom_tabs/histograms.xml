@@ -35,6 +35,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.AuthTab.ExternalNavigationScheme"
+    enum="CustomTabsAuthScheme" expires_after="2025-02-02">
+  <owner>sinansahin@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Records the scheme of the external navigation URL for Custom Tabs that were
+    launched with a redirect_uri param. Not recorded for Auth Tabs. Recorded
+    when a URL is sent as an intent to the system. Android only.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.AuthTab.RedirectUriScheme"
+    enum="CustomTabsAuthScheme" expires_after="2025-02-02">
+  <owner>sinansahin@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Records the scheme of the redirect_uri param within the URL used to launch
+    the Custom Tab. Recorded when the Custom Tab receives and handles the
+    initial intent. Android only.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.AuthView.UrlParams" units="bit field"
     expires_after="2025-02-02">
   <owner>sinansahin@google.com</owner>

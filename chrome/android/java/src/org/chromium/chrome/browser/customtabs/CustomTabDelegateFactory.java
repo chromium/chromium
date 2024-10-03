@@ -11,6 +11,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
@@ -19,6 +20,7 @@ import androidx.browser.trusted.TrustedWebActivityDisplayMode.ImmersiveMode;
 
 import dagger.Lazy;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.cc.input.BrowserControlsState;
@@ -76,8 +78,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 /**
- * A {@link TabDelegateFactory} class to be used in all {@link Tab} owned
- * by a {@link CustomTabActivity}.
+ * A {@link TabDelegateFactory} class to be used in all {@link Tab} owned by a {@link
+ * CustomTabActivity}.
  */
 @ActivityScope
 public class CustomTabDelegateFactory implements TabDelegateFactory {
@@ -166,6 +168,24 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         public void returnAsActivityResult(GURL url) {
             assert mIntentDataProvider.isAuthTab();
             mAuthTabVerifier.get().returnAsActivityResult(url);
+        }
+
+        @Override
+        public void maybeRecordExternalNavigationSchemeHistogram(GURL url) {
+            if (mIntentDataProvider.isAuthTab()) return;
+
+            // Only record for Custom Tabs that we think are launched for auth purposes.
+            Uri urlToLoad = Uri.parse(mIntentDataProvider.getUrlToLoad());
+            if (!urlToLoad.isHierarchical()) return;
+
+            String redirectUri = urlToLoad.getQueryParameter("redirect_uri");
+            if (TextUtils.isEmpty(redirectUri)) return;
+
+            int schemeEnum = CustomTabAuthUrlHeuristics.getAuthSchemeEnum(url.getScheme());
+            RecordHistogram.recordEnumeratedHistogram(
+                    "CustomTabs.AuthTab.ExternalNavigationScheme",
+                    schemeEnum,
+                    CustomTabAuthUrlHeuristics.AuthScheme.COUNT);
         }
 
         public void resumeDelayedVerificationForTesting() {

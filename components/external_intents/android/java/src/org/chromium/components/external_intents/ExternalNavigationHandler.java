@@ -591,6 +591,11 @@ public class ExternalNavigationHandler {
         }
         if (debug()) printDebugShouldOverrideUrlLoadingResultType(result);
 
+        if (result.getResultType() == OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT
+                || result.getResultType()
+                        == OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION) {
+            mDelegate.maybeRecordExternalNavigationSchemeHistogram(params.getUrl());
+        }
         if (result.getResultType() == OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION) {
             params.onAsyncActionStarted();
         }

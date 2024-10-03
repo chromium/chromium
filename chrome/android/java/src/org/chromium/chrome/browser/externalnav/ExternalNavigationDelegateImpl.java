@@ -243,4 +243,7 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     public void returnAsActivityResult(GURL url) {
         throw new UnsupportedOperationException("Returning as activity result is not supported.");
     }
+
+    @Override
+    public void maybeRecordExternalNavigationSchemeHistogram(GURL url) {}
 }
