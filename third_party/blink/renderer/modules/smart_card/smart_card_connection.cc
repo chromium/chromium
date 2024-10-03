@@ -95,25 +95,25 @@ class TransactionFulfilledFunction : public ScriptFunction::Callable {
       : connection_(connection) {}
 
   ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
-    ExceptionState exception_state(script_state->GetIsolate(),
-                                   v8::ExceptionContext::kOperation,
-                                   "SmartCardConnection", "startTransaction");
-
     if (value.IsUndefined() || value.IsNull()) {
       connection_->OnTransactionCallbackDone(SmartCardDisposition::kReset);
       return ScriptValue();
     }
 
+    v8::Isolate* isolate = script_state->GetIsolate();
+    v8::TryCatch try_catch(isolate);
     V8SmartCardDisposition v8_disposition =
         NativeValueTraits<V8SmartCardDisposition>::NativeValue(
-            script_state->GetIsolate(), value.V8Value(), exception_state);
+            isolate, value.V8Value(), PassThroughException(isolate));
 
-    if (exception_state.HadException()) {
-      ApplyContextToException(script_state, exception_state.GetException(),
-                              exception_state.GetContext());
-      ScriptValue exception_value(script_state->GetIsolate(),
-                                  exception_state.GetException());
-      connection_->OnTransactionCallbackFailed(exception_value);
+    if (try_catch.HasCaught()) {
+      auto exception = try_catch.Exception();
+      ApplyContextToException(
+          script_state, exception,
+          ExceptionContext(v8::ExceptionContext::kOperation,
+                           "SmartCardConnection", "startTransaction"));
+      connection_->OnTransactionCallbackFailed(ScriptValue(isolate, exception));
+      try_catch.ReThrow();
       return ScriptValue();
     }
 

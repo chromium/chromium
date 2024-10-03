@@ -120,17 +120,14 @@ TEST(NativeValueTraitsImplTest, IDLRecord) {
                                 "})")
             .As<v8::Proxy>();
 
-    ExceptionState exception_state_from_proxy(
-        scope.GetIsolate(), v8::ExceptionContext::kOperation,
-        "NativeValueTraitsImplTest", "IDLRecordTest");
+    v8::TryCatch try_catch(scope.GetIsolate());
     const auto& record_from_proxy =
         NativeValueTraits<IDLRecord<IDLString, IDLLong>>::NativeValue(
-            scope.GetIsolate(), proxy, exception_state_from_proxy);
+            scope.GetIsolate(), proxy,
+            PassThroughException(scope.GetIsolate()));
     EXPECT_EQ(0U, record_from_proxy.size());
-    EXPECT_TRUE(exception_state_from_proxy.HadException());
-    EXPECT_TRUE(exception_state_from_proxy.Message().empty());
-    v8::Local<v8::Value> v8_exception =
-        exception_state_from_proxy.GetException();
+    EXPECT_TRUE(try_catch.HasCaught());
+    v8::Local<v8::Value> v8_exception = try_catch.Exception();
     EXPECT_TRUE(v8_exception->IsString());
     EXPECT_TRUE(
         V8String(scope.GetIsolate(), "bogus!")

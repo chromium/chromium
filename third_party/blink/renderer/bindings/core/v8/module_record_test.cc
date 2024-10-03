@@ -127,11 +127,12 @@ TEST_F(ModuleRecordTest, compileSuccess) {
 
 TEST_F(ModuleRecordTest, compileFail) {
   V8TestingScope scope;
+  v8::TryCatch try_catch(scope.GetIsolate());
   const KURL js_url("https://example.com/foo.js");
   v8::Local<v8::Module> module = ModuleTestBase::CompileModule(
-      scope.GetScriptState(), "123 = 456", js_url, scope.GetExceptionState());
+      scope.GetScriptState(), "123 = 456", js_url);
   ASSERT_TRUE(module.IsEmpty());
-  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_TRUE(try_catch.HasCaught());
 }
 
 TEST_F(ModuleRecordTest, moduleRequests) {
@@ -249,7 +250,7 @@ TEST_F(ModuleRecordTest, EvaluationErrorIsRemembered) {
   const KURL js_url_c("https://example.com/c.js");
   v8::Local<v8::Module> module = ModuleTestBase::CompileModule(
       scope.GetScriptState(), "import 'failure'; export const c = 123;",
-      js_url_c, scope.GetExceptionState());
+      js_url_c);
   ASSERT_FALSE(module.IsEmpty());
   ASSERT_TRUE(ModuleRecord::Instantiate(state, module, js_url_c).IsEmpty());
   ScriptEvaluationResult evaluation_result2 =

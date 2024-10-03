@@ -2953,13 +2953,15 @@ ScriptValue NavigatorAuction::AuctionHandle::AuctionHandleFunction::Call(
   if (!script_state->ContextIsValid()) {
     return ScriptValue();
   }
-  ExceptionState exception_state(script_state->GetIsolate(),
-                                 v8::ExceptionContext::kOperation,
-                                 "NavigatorAuction", "runAdAuction");
-  CallImpl(script_state, value, exception_state);
-  if (exception_state.HadException()) {
-    ApplyContextToException(script_state, exception_state.GetException(),
-                            exception_state.GetContext());
+  v8::TryCatch try_catch(script_state->GetIsolate());
+  CallImpl(script_state, value,
+           PassThroughException(script_state->GetIsolate()));
+  if (try_catch.HasCaught()) {
+    ApplyContextToException(
+        script_state, try_catch.Exception(),
+        ExceptionContext(v8::ExceptionContext::kOperation, "NavigatorAuction",
+                         "runAdAuction"));
+    try_catch.ReThrow();
   }
   return ScriptValue();
 }

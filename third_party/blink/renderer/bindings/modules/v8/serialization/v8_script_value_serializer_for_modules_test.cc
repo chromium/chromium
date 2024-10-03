@@ -103,14 +103,14 @@ v8::Local<v8::Value> RoundTripForModules(
 }
 
 // Checks for a DOM exception, including a rethrown one.
-testing::AssertionResult HadDOMExceptionInModulesTest(
-    const StringView& name,
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
-  if (!exception_state.HadException())
+testing::AssertionResult HadDOMExceptionInModulesTest(const StringView& name,
+                                                      ScriptState* script_state,
+                                                      v8::TryCatch& try_catch) {
+  if (!try_catch.HasCaught()) {
     return testing::AssertionFailure() << "no exception thrown";
+  }
   DOMException* dom_exception = V8DOMException::ToWrappable(
-      script_state->GetIsolate(), exception_state.GetException());
+      script_state->GetIsolate(), try_catch.Exception());
   if (!dom_exception) {
     return testing::AssertionFailure()
            << "exception thrown was not a DOMException";
@@ -1173,9 +1173,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripDOMFileSystem) {
 TEST(V8ScriptValueSerializerForModulesTest, RoundTripDOMFileSystemNotClonable) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "Window",
-                                 "postMessage");
+  v8::TryCatch try_catch(scope.GetIsolate());
 
   auto* fs = MakeGarbageCollected<DOMFileSystem>(
       scope.GetExecutionContext(), "http_example.com_0:Persistent",
@@ -1184,10 +1182,11 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripDOMFileSystemNotClonable) {
   ASSERT_FALSE(fs->Clonable());
   v8::Local<v8::Value> wrapper =
       ToV8Traits<DOMFileSystem>::ToV8(scope.GetScriptState(), fs);
-  EXPECT_FALSE(V8ScriptValueSerializer(scope.GetScriptState())
-                   .Serialize(wrapper, exception_state));
-  EXPECT_TRUE(HadDOMExceptionInModulesTest(
-      "DataCloneError", scope.GetScriptState(), exception_state));
+  EXPECT_FALSE(
+      V8ScriptValueSerializer(scope.GetScriptState())
+          .Serialize(wrapper, PassThroughException(scope.GetIsolate())));
+  EXPECT_TRUE(HadDOMExceptionInModulesTest("DataCloneError",
+                                           scope.GetScriptState(), try_catch));
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, DecodeDOMFileSystem) {
@@ -1310,9 +1309,7 @@ TEST(V8ScriptValueSerializerForModulesTest, TransferVideoFrame) {
 TEST(V8ScriptValueSerializerForModulesTest, ClosedVideoFrameThrows) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "Window",
-                                 "postMessage");
+  v8::TryCatch try_catch(scope.GetIsolate());
 
   const gfx::Size kFrameSize(600, 480);
   scoped_refptr<media::VideoFrame> media_frame =
@@ -1326,10 +1323,11 @@ TEST(V8ScriptValueSerializerForModulesTest, ClosedVideoFrameThrows) {
   // Serializing the closed frame should throw an error.
   v8::Local<v8::Value> wrapper =
       ToV8Traits<VideoFrame>::ToV8(scope.GetScriptState(), blink_frame);
-  EXPECT_FALSE(V8ScriptValueSerializer(scope.GetScriptState())
-                   .Serialize(wrapper, exception_state));
-  EXPECT_TRUE(HadDOMExceptionInModulesTest(
-      "DataCloneError", scope.GetScriptState(), exception_state));
+  EXPECT_FALSE(
+      V8ScriptValueSerializer(scope.GetScriptState())
+          .Serialize(wrapper, PassThroughException(scope.GetIsolate())));
+  EXPECT_TRUE(HadDOMExceptionInModulesTest("DataCloneError",
+                                           scope.GetScriptState(), try_catch));
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, RoundTripAudioData) {
@@ -1438,9 +1436,7 @@ TEST(V8ScriptValueSerializerForModulesTest, TransferAudioData) {
 TEST(V8ScriptValueSerializerForModulesTest, ClosedAudioDataThrows) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "Window",
-                                 "postMessage");
+  v8::TryCatch try_catch(scope.GetIsolate());
 
   auto audio_buffer = media::AudioBuffer::CreateEmptyBuffer(
       media::ChannelLayout::CHANNEL_LAYOUT_STEREO,
@@ -1455,10 +1451,11 @@ TEST(V8ScriptValueSerializerForModulesTest, ClosedAudioDataThrows) {
   // Serializing the closed frame should throw an error.
   v8::Local<v8::Value> wrapper =
       ToV8Traits<AudioData>::ToV8(scope.GetScriptState(), audio_data);
-  EXPECT_FALSE(V8ScriptValueSerializer(scope.GetScriptState())
-                   .Serialize(wrapper, exception_state));
-  EXPECT_TRUE(HadDOMExceptionInModulesTest(
-      "DataCloneError", scope.GetScriptState(), exception_state));
+  EXPECT_FALSE(
+      V8ScriptValueSerializer(scope.GetScriptState())
+          .Serialize(wrapper, PassThroughException(scope.GetIsolate())));
+  EXPECT_TRUE(HadDOMExceptionInModulesTest("DataCloneError",
+                                           scope.GetScriptState(), try_catch));
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, TransferMediaStreamTrack) {
@@ -1600,14 +1597,13 @@ TEST(V8ScriptValueSerializerForModulesTest,
   V8TestingScope scope;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
   ScriptState* script_state = scope.GetScriptState();
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "Window",
-                                 "postMessage");
   MediaStreamComponent* video_component = MakeTabCaptureVideoComponentForTest(
       &scope.GetFrame(), base::UnguessableToken::Create());
-  MediaStreamComponent* audio_component =
-      MakeTabCaptureAudioComponentForTest(base::UnguessableToken::Create());
-  for (MediaStreamComponent* component : {video_component, audio_component}) {
+  // audio_component cases are disabled due to DCHECKs, see crbug.com/371234481.
+  // MediaStreamComponent* audio_component =
+  //    MakeTabCaptureAudioComponentForTest(base::UnguessableToken::Create());
+  for (MediaStreamComponent* component :
+       {video_component, /* audio_component */}) {
     MediaStreamTrack* original_track =
         MakeGarbageCollected<BrowserCaptureMediaStreamTrack>(
             scope.GetExecutionContext(), component,
@@ -1616,6 +1612,7 @@ TEST(V8ScriptValueSerializerForModulesTest,
     MediaStreamTrack* cloned_track =
         original_track->clone(scope.GetExecutionContext());
     for (MediaStreamTrack* track : {original_track, cloned_track}) {
+      v8::TryCatch try_catch(scope.GetIsolate());
       Transferables transferables;
       transferables.media_stream_tracks.push_back(track);
       v8::Local<v8::Value> wrapper =
@@ -1624,9 +1621,9 @@ TEST(V8ScriptValueSerializerForModulesTest,
       serialize_options.transferables = &transferables;
       EXPECT_FALSE(
           V8ScriptValueSerializerForModules(script_state, serialize_options)
-              .Serialize(wrapper, exception_state));
+              .Serialize(wrapper, PassThroughException(scope.GetIsolate())));
       EXPECT_TRUE(HadDOMExceptionInModulesTest("DataCloneError", script_state,
-                                               exception_state));
+                                               try_catch));
     }
   }
 }
@@ -1671,14 +1668,12 @@ TEST(V8ScriptValueSerializerForModulesTest,
   V8ScriptValueSerializer::Options serialize_options;
   serialize_options.transferables = &transferables;
   ScriptState* script_state = scope.GetScriptState();
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "Window",
-                                 "postMessage");
+  v8::TryCatch try_catch(scope.GetIsolate());
   EXPECT_FALSE(
       V8ScriptValueSerializerForModules(script_state, serialize_options)
-          .Serialize(wrapper, exception_state));
-  EXPECT_TRUE(HadDOMExceptionInModulesTest("DataCloneError", script_state,
-                                           exception_state));
+          .Serialize(wrapper, PassThroughException(scope.GetIsolate())));
+  EXPECT_TRUE(
+      HadDOMExceptionInModulesTest("DataCloneError", script_state, try_catch));
 }
 
 TEST(V8ScriptValueSerializerForModulesTest,
@@ -1726,14 +1721,12 @@ TEST(V8ScriptValueSerializerForModulesTest,
   V8ScriptValueSerializer::Options serialize_options;
   serialize_options.transferables = &transferables;
   ScriptState* script_state = scope.GetScriptState();
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "Window",
-                                 "postMessage");
+  v8::TryCatch try_catch(scope.GetIsolate());
   EXPECT_FALSE(
       V8ScriptValueSerializerForModules(script_state, serialize_options)
-          .Serialize(wrapper, exception_state));
-  EXPECT_TRUE(HadDOMExceptionInModulesTest("DataCloneError", script_state,
-                                           exception_state));
+          .Serialize(wrapper, PassThroughException(scope.GetIsolate())));
+  EXPECT_TRUE(
+      HadDOMExceptionInModulesTest("DataCloneError", script_state, try_catch));
 }
 
 TEST(V8ScriptValueSerializerForModulesTest,
@@ -1781,14 +1774,12 @@ TEST(V8ScriptValueSerializerForModulesTest,
   V8ScriptValueSerializer::Options serialize_options;
   serialize_options.transferables = &transferables;
   ScriptState* script_state = scope.GetScriptState();
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "Window",
-                                 "postMessage");
+  v8::TryCatch try_catch(scope.GetIsolate());
   EXPECT_FALSE(
       V8ScriptValueSerializerForModules(script_state, serialize_options)
-          .Serialize(wrapper, exception_state));
-  EXPECT_TRUE(HadDOMExceptionInModulesTest("DataCloneError", script_state,
-                                           exception_state));
+          .Serialize(wrapper, PassThroughException(scope.GetIsolate())));
+  EXPECT_TRUE(
+      HadDOMExceptionInModulesTest("DataCloneError", script_state, try_catch));
 }
 
 TEST(V8ScriptValueSerializerForModulesTest,
@@ -1797,9 +1788,7 @@ TEST(V8ScriptValueSerializerForModulesTest,
   V8TestingScope scope;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
   ScriptState* script_state = scope.GetScriptState();
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "Window",
-                                 "postMessage");
+  v8::TryCatch try_catch(scope.GetIsolate());
 
   MediaStreamComponent* component = MakeTabCaptureVideoComponentForTest(
       &scope.GetFrame(), base::UnguessableToken::Create());
@@ -1819,9 +1808,9 @@ TEST(V8ScriptValueSerializerForModulesTest,
   serialize_options.transferables = &transferables;
   EXPECT_FALSE(
       V8ScriptValueSerializerForModules(script_state, serialize_options)
-          .Serialize(wrapper, exception_state));
-  EXPECT_TRUE(HadDOMExceptionInModulesTest("DataCloneError", script_state,
-                                           exception_state));
+          .Serialize(wrapper, PassThroughException(scope.GetIsolate())));
+  EXPECT_TRUE(
+      HadDOMExceptionInModulesTest("DataCloneError", script_state, try_catch));
 }
 
 TEST(V8ScriptValueSerializerForModulesTest,
@@ -1830,9 +1819,7 @@ TEST(V8ScriptValueSerializerForModulesTest,
   V8TestingScope scope;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
   ScriptState* script_state = scope.GetScriptState();
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "Window",
-                                 "postMessage");
+  v8::TryCatch try_catch(scope.GetIsolate());
 
   MediaStreamComponent* component = MakeTabCaptureVideoComponentForTest(
       &scope.GetFrame(), base::UnguessableToken::Create());
@@ -1851,10 +1838,11 @@ TEST(V8ScriptValueSerializerForModulesTest,
       ToV8Traits<MediaStreamTrack>::ToV8(scope.GetScriptState(), blink_track);
   V8ScriptValueSerializer::Options serialize_options;
   serialize_options.transferables = &transferables;
-  EXPECT_FALSE(V8ScriptValueSerializer(script_state, serialize_options)
-                   .Serialize(wrapper, exception_state));
-  EXPECT_TRUE(HadDOMExceptionInModulesTest("DataCloneError", script_state,
-                                           exception_state));
+  EXPECT_FALSE(
+      V8ScriptValueSerializer(script_state, serialize_options)
+          .Serialize(wrapper, PassThroughException(scope.GetIsolate())));
+  EXPECT_TRUE(
+      HadDOMExceptionInModulesTest("DataCloneError", script_state, try_catch));
   EXPECT_FALSE(blink_track->Ended());
 }
 
@@ -1864,9 +1852,7 @@ TEST(V8ScriptValueSerializerForModulesTest,
   V8TestingScope scope;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
   ScriptState* script_state = scope.GetScriptState();
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "Window",
-                                 "postMessage");
+  v8::TryCatch try_catch(scope.GetIsolate());
 
   auto mock_source = std::make_unique<MediaStreamVideoCapturerSource>(
       scope.GetFrame().GetTaskRunner(TaskType::kInternalMediaRealTime),
@@ -1907,9 +1893,9 @@ TEST(V8ScriptValueSerializerForModulesTest,
   serialize_options.transferables = &transferables;
   EXPECT_FALSE(
       V8ScriptValueSerializerForModules(script_state, serialize_options)
-          .Serialize(wrapper, exception_state));
-  EXPECT_TRUE(HadDOMExceptionInModulesTest("DataCloneError", script_state,
-                                           exception_state));
+          .Serialize(wrapper, PassThroughException(scope.GetIsolate())));
+  EXPECT_TRUE(
+      HadDOMExceptionInModulesTest("DataCloneError", script_state, try_catch));
   EXPECT_FALSE(blink_track->Ended());
 }
 
@@ -2028,17 +2014,17 @@ TEST(V8ScriptValueSerializerForModulesTest,
   transferables.array_buffers.push_back(ab);
   V8ScriptValueSerializer::Options serialize_options;
   serialize_options.transferables = &transferables;
-  ExceptionState exception_state(isolate, v8::ExceptionContext::kOperation,
-                                 "Window", "postMessage");
+  v8::TryCatch try_catch(isolate);
   EXPECT_FALSE(
       V8ScriptValueSerializerForModules(script_state, serialize_options)
-          .Serialize(v8_ab, exception_state));
-  EXPECT_TRUE(exception_state.HadException());
-  EXPECT_THAT(ToCoreString(isolate, exception_state.GetException()
-                                        ->ToString(scope.GetContext())
-                                        .ToLocalChecked())
-                  .Ascii(),
-              testing::StartsWith("TypeError"));
+          .Serialize(v8_ab, PassThroughException(scope.GetIsolate())));
+  EXPECT_TRUE(try_catch.HasCaught());
+  EXPECT_THAT(
+      ToCoreString(
+          isolate,
+          try_catch.Exception()->ToString(scope.GetContext()).ToLocalChecked())
+          .Ascii(),
+      testing::StartsWith("TypeError"));
   EXPECT_FALSE(v8_ab->WasDetached());
 }
 

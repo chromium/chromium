@@ -1174,16 +1174,16 @@ void PaymentRequest::OnUpdatePaymentDetails(
   update_payment_details_timer_.Stop();
 
   v8::Isolate* isolate = resolver->GetScriptState()->GetIsolate();
-  ExceptionState exception_state(isolate, v8::ExceptionContext::kConstructor,
-                                 "PaymentDetailsUpdate");
+  v8::TryCatch try_catch(isolate);
   PaymentDetailsUpdate* details =
       NativeValueTraits<PaymentDetailsUpdate>::NativeValue(
-          isolate, details_script_value.V8Value(), exception_state);
-  if (exception_state.HadException()) {
-    ApplyContextToException(resolver->GetScriptState(),
-                            exception_state.GetException(),
-                            exception_state.GetContext());
-    resolver->Reject(exception_state.GetException());
+          isolate, details_script_value.V8Value(),
+          PassThroughException(isolate));
+  if (try_catch.HasCaught()) {
+    ApplyContextToException(resolver->GetScriptState(), try_catch.Exception(),
+                            ExceptionContext(v8::ExceptionContext::kConstructor,
+                                             "PaymentDetailsUpdate"));
+    resolver->Reject(try_catch.Exception());
     ClearResolversAndCloseMojoConnection();
     return;
   }
@@ -1192,12 +1192,12 @@ void PaymentRequest::OnUpdatePaymentDetails(
       payments::mojom::blink::PaymentDetails::New();
   ValidateAndConvertPaymentDetailsUpdate(
       details, options_, validated_details, shipping_option_, ignore_total_,
-      *GetExecutionContext(), exception_state);
-  if (exception_state.HadException()) {
-    ApplyContextToException(resolver->GetScriptState(),
-                            exception_state.GetException(),
-                            exception_state.GetContext());
-    resolver->Reject(exception_state.GetException());
+      *GetExecutionContext(), PassThroughException(isolate));
+  if (try_catch.HasCaught()) {
+    ApplyContextToException(resolver->GetScriptState(), try_catch.Exception(),
+                            ExceptionContext(v8::ExceptionContext::kConstructor,
+                                             "PaymentDetailsUpdate"));
+    resolver->Reject(try_catch.Exception());
     ClearResolversAndCloseMojoConnection();
     return;
   }

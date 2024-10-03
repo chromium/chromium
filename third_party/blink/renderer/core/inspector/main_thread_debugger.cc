@@ -446,14 +446,14 @@ void MainThreadDebugger::QuerySelectorCallback(
     return;
   ScriptState* script_state =
       ScriptState::ForRelevantRealm(info.GetIsolate(), info.This());
-  ExceptionState exception_state(info.GetIsolate(),
-                                 v8::ExceptionContext::kOperation,
-                                 "CommandLineAPI", "$");
-  Element* element =
-      container_node->QuerySelector(AtomicString(selector), exception_state);
-  if (exception_state.HadException()) {
-    ApplyContextToException(script_state, exception_state.GetException(),
-                            exception_state.GetContext());
+  v8::TryCatch try_catch(info.GetIsolate());
+  Element* element = container_node->QuerySelector(
+      AtomicString(selector), PassThroughException(info.GetIsolate()));
+  if (try_catch.HasCaught()) {
+    ApplyContextToException(script_state, try_catch.Exception(),
+                            ExceptionContext(v8::ExceptionContext::kOperation,
+                                             "CommandLineAPI", "$"));
+    try_catch.ReThrow();
     return;
   }
   if (element) {
@@ -476,16 +476,16 @@ void MainThreadDebugger::QuerySelectorAllCallback(
     return;
   ScriptState* script_state =
       ScriptState::ForRelevantRealm(info.GetIsolate(), info.This());
-  ExceptionState exception_state(info.GetIsolate(),
-                                 v8::ExceptionContext::kOperation,
-                                 "CommandLineAPI", "$$");
+  v8::TryCatch try_catch(info.GetIsolate());
   // ToV8(elementList) doesn't work here, since we need a proper Array instance,
   // not NodeList.
-  StaticElementList* element_list =
-      container_node->QuerySelectorAll(AtomicString(selector), exception_state);
-  if (exception_state.HadException()) {
-    ApplyContextToException(script_state, exception_state.GetException(),
-                            exception_state.GetContext());
+  StaticElementList* element_list = container_node->QuerySelectorAll(
+      AtomicString(selector), PassThroughException(info.GetIsolate()));
+  if (try_catch.HasCaught()) {
+    ApplyContextToException(script_state, try_catch.Exception(),
+                            ExceptionContext(v8::ExceptionContext::kOperation,
+                                             "CommandLineAPI", "$$"));
+    try_catch.ReThrow();
     return;
   }
   if (!element_list) {
@@ -509,8 +509,9 @@ void MainThreadDebugger::XpathSelectorCallback(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
   if (info.Length() < 1)
     return;
+  v8::Isolate* isolate = info.GetIsolate();
   const String& selector =
-      ToCoreStringWithUndefinedOrNullCheck(info.GetIsolate(), info[0]);
+      ToCoreStringWithUndefinedOrNullCheck(isolate, info[0]);
   if (selector.empty())
     return;
   Node* node = SecondArgumentAsNode(info);
@@ -518,37 +519,38 @@ void MainThreadDebugger::XpathSelectorCallback(
     return;
 
   ScriptState* script_state =
-      ScriptState::ForRelevantRealm(info.GetIsolate(), info.This());
-  ExceptionState exception_state(info.GetIsolate(),
-                                 v8::ExceptionContext::kOperation,
-                                 "CommandLineAPI", "$x");
+      ScriptState::ForRelevantRealm(isolate, info.This());
+  v8::TryCatch try_catch(isolate);
   XPathResult* result = XPathEvaluator::Create()->evaluate(
       nullptr, selector, node, nullptr, XPathResult::kAnyType, ScriptValue(),
-      exception_state);
-  if (exception_state.HadException()) {
-    if (exception_state.HadException()) {
-      ApplyContextToException(script_state, exception_state.GetException(),
-                              exception_state.GetContext());
-    }
+      PassThroughException(isolate));
+  if (try_catch.HasCaught()) {
+    ApplyContextToException(script_state, try_catch.Exception(),
+                            ExceptionContext(v8::ExceptionContext::kOperation,
+                                             "CommandLineAPI", "$x"));
+    try_catch.ReThrow();
     return;
   }
   if (!result) {
     return;
   }
+
   if (result->resultType() == XPathResult::kNumberType) {
-    bindings::V8SetReturnValue(info, result->numberValue(exception_state));
+    bindings::V8SetReturnValue(
+        info, result->numberValue(PassThroughException(isolate)));
   } else if (result->resultType() == XPathResult::kStringType) {
-    bindings::V8SetReturnValue(info, result->stringValue(exception_state),
-                               info.GetIsolate(),
-                               bindings::V8ReturnValue::kNonNullable);
+    bindings::V8SetReturnValue(
+        info, result->stringValue(PassThroughException(isolate)), isolate,
+        bindings::V8ReturnValue::kNonNullable);
   } else if (result->resultType() == XPathResult::kBooleanType) {
-    bindings::V8SetReturnValue(info, result->booleanValue(exception_state));
+    bindings::V8SetReturnValue(
+        info, result->booleanValue(PassThroughException(isolate)));
   } else {
-    v8::Isolate* isolate = info.GetIsolate();
     v8::Local<v8::Context> context = isolate->GetCurrentContext();
     v8::Local<v8::Array> nodes = v8::Array::New(isolate);
     wtf_size_t index = 0;
-    while (Node* next_node = result->iterateNext(exception_state)) {
+    while (Node* next_node =
+               result->iterateNext(PassThroughException(isolate))) {
       v8::Local<v8::Value> value =
           ToV8Traits<Node>::ToV8(script_state, next_node);
       if (!CreateDataPropertyInArray(context, nodes, index++, value)
@@ -556,9 +558,11 @@ void MainThreadDebugger::XpathSelectorCallback(
         return;
       }
     }
-    if (exception_state.HadException()) {
-      ApplyContextToException(script_state, exception_state.GetException(),
-                              exception_state.GetContext());
+    if (try_catch.HasCaught()) {
+      ApplyContextToException(script_state, try_catch.Exception(),
+                              ExceptionContext(v8::ExceptionContext::kOperation,
+                                               "CommandLineAPI", "$x"));
+      try_catch.ReThrow();
       return;
     }
     info.GetReturnValue().Set(nodes);
