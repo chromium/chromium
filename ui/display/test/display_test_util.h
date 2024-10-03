@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "ui/display/display.h"
@@ -23,8 +24,8 @@ namespace display {
 // avoid leaking the state to other tests.
 class ScopedSetInternalDisplayIds {
  public:
-  explicit ScopedSetInternalDisplayIds(const base::flat_set<int64_t> ids) {
-    SetInternalDisplayIds(ids);
+  explicit ScopedSetInternalDisplayIds(base::flat_set<int64_t> ids) {
+    SetInternalDisplayIds(std::move(ids));
   }
   explicit ScopedSetInternalDisplayIds(int64_t id) {
     SetInternalDisplayIds({id});
