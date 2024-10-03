@@ -66,26 +66,20 @@ Commands assume the working directory is //infra/config.
 1. If any builder group was fully migrated, manually remove the corresponding
   .json file from //testing/buildbot.
 
-1. Regenerate .json files in //testing/buildbot that have had builders removed
-  by running
+1. Execute //infra/config/migration/post-migrate-targets.py.
 
     ```sh
-    ../../testing/buildbot/generate_buildbot_json.py
+    ./migration/post-migrate-targets.py
     ```
 
-1. Test suites and mixins that are no longer referenced by
-  //testing/buildbot/waterfalls.pyl require additional updates to the starlark.
-  Suites need to be converted to bundles and mixins need to set
-  `generate_pyl_entry=False`.
+    This will regenerate the .json files in //testing/buildbot, replace test
+    suite definitions with bundle definitions for any test suites no longer
+    referenced in //testing/buildbot, mark mixins and variants that are no
+    longer referenced from //testing/buildbot so that they no longer generate
+    pyl entries and regenerate all of the config files.
 
-    To find the necessary updates, run
-
-    ```sh
-    ../../testing/buildbot/generate_buildbot_json.py --check
-    ```
-
-    Unused mixins will only be reported when there are no unused test suites, so
-    you should run it until it produces no output.
+1. Some manual work will need to be done to transfer any comments on the removed
+   test suite declarations to the corresponding bundle declarations.
 
 1. Binaries that are no longer referenced by any builder in
   //testing/waterfalls.pyl should be added to the exclude list in

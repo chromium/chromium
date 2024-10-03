@@ -69,6 +69,13 @@ import typing
 Value: typing.TypeAlias = 'str | ValueBuilder'
 
 
+def to_output(value: Value) -> str | None:
+  """get the output for a starlark venue."""
+  if isinstance(value, ValueBuilder):
+    return value.output()
+  return value
+
+
 def convert_direct(value: typing.Any) -> Value:
   """Convert a python value to a starlark value.
 
