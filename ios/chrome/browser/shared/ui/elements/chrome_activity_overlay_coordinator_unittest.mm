@@ -20,10 +20,9 @@ TEST_F(ChromeActivityOverlayCoordinatorTest, StartAndStop) {
   @autoreleasepool {
     base::test::TaskEnvironment task_environment_;
     UIViewController* base_view_controller = [[UIViewController alloc] init];
-    std::unique_ptr<TestChromeBrowserState> browser_state =
-        TestChromeBrowserState::Builder().Build();
+    std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
     std::unique_ptr<Browser> browser =
-        std::make_unique<TestBrowser>(browser_state.get());
+        std::make_unique<TestBrowser>(profile.get());
     ChromeActivityOverlayCoordinator* coordinator =
         [[ChromeActivityOverlayCoordinator alloc]
             initWithBaseViewController:base_view_controller
