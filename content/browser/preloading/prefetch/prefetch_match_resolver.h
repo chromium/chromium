@@ -302,6 +302,59 @@ std::vector<T*> CollectPotentialMatchPrefetchContainers(
   return result;
 }
 
+// Do not use it outside of this header.
+//
+// Returns "availability" of a `PrefetchContainer`.
+//
+// "Available" here is not a technical term. It means that the
+// `PrefetchContainer` is able to be used or has the possibility in the near
+// future. See implementation for the detailed conditions.
+template <class T>
+  requires MatchCandidate<T>
+bool IsCandidateAvailable(const T& candidate) {
+  if (candidate.HasPrefetchBeenConsideredToServe()) {
+    DVLOG(1) << "CollectMatchCandidatesGeneric: skipped because already "
+                "considered to serve: candidate = "
+             << candidate;
+    return false;
+  }
+
+  switch (candidate.GetServableState(PrefetchCacheableDuration())) {
+    case PrefetchContainer::ServableState::kNotServable:
+      DVLOG(1) << "CollectMatchCandidatesGeneric: skipped because not "
+                  "servable: candidate = "
+               << candidate;
+      return false;
+    case PrefetchContainer::ServableState::kServable:
+    case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
+      break;
+  }
+
+  if (candidate.IsDecoy()) {
+    DVLOG(1) << "CollectMatchCandidatesGeneric: skipped because prefetch is a "
+                "decoy: candidate = "
+             << candidate;
+    return false;
+  }
+
+  // Note: This codepath is only be reached in practice if we create a
+  // second NavigationRequest to this prefetch's URL. The first
+  // NavigationRequest would call GetPrefetch, which might set this
+  // PrefetchContainer's status to kPrefetchNotUsedCookiesChanged.
+  CHECK(candidate.HasPrefetchStatus());
+  if (candidate.GetPrefetchStatus() ==
+      PrefetchStatus::kPrefetchNotUsedCookiesChanged) {
+    DVLOG(1) << "CollectMatchCandidatesGeneric: skipped because cookies for "
+                "url have changed since prefetch completed: candidate = "
+             << candidate;
+    return false;
+  }
+
+  DVLOG(1) << "CollectMatchCandidatesGeneric: matched: candidate = "
+           << candidate;
+  return true;
+}
+
 // Collects `PrefetchContainer`s that are expected to match to `navigated_key`.
 //
 // This is defined with the template for testing the first phase of
@@ -316,59 +369,19 @@ std::vector<T*> CollectMatchCandidatesGeneric(
   std::vector<T*> candidates =
       CollectPotentialMatchPrefetchContainers(prefetches, navigated_key);
 
-  for (T* prefetch_container : candidates) {
-    prefetch_container->SetServingPageMetrics(serving_page_metrics_container);
-    prefetch_container->UpdateServingPageMetrics();
+  for (T* candidate : candidates) {
+    candidate->SetServingPageMetrics(serving_page_metrics_container);
+    candidate->UpdateServingPageMetrics();
   }
 
-  std::erase_if(candidates, [](const auto* prefetch_container) {
-    if (prefetch_container->HasPrefetchBeenConsideredToServe()) {
-      DVLOG(1) << "CollectMatchCandidatesGeneric: skipped "
-               << "because already considered to serve: "
-               << *prefetch_container;
-      return true;
+  std::vector<T*> candidates_available;
+  for (auto* candidate : candidates) {
+    if (IsCandidateAvailable(*candidate)) {
+      candidates_available.push_back(candidate);
     }
+  }
 
-    switch (prefetch_container->GetServableState(PrefetchCacheableDuration())) {
-      case PrefetchContainer::ServableState::kNotServable:
-        DVLOG(1) << "CollectMatchCandidatesGeneric: skipped "
-                    "because not servable: "
-                 << *prefetch_container;
-        return true;
-      case PrefetchContainer::ServableState::kServable:
-      case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
-        break;
-    }
-
-    if (prefetch_container->IsDecoy()) {
-      DVLOG(1) << "CollectMatchCandidatesGeneric: "
-                  "skipped because "
-                  "prefetch is a decoy: "
-               << *prefetch_container;
-      return true;
-    }
-
-    // Note: This codepath is only be reached in practice if we create a
-    // second NavigationRequest to this prefetch's URL. The first
-    // NavigationRequest would call GetPrefetch, which might set this
-    // PrefetchContainer's status to kPrefetchNotUsedCookiesChanged.
-    CHECK(prefetch_container->HasPrefetchStatus());
-    if (prefetch_container->GetPrefetchStatus() ==
-        PrefetchStatus::kPrefetchNotUsedCookiesChanged) {
-      DVLOG(1) << "CollectMatchCandidatesGeneric: "
-                  "skipped because "
-                  "cookies for url have changed since prefetch completed: "
-               << *prefetch_container;
-      return true;
-    }
-
-    DVLOG(1) << "CollectMatchCandidatesGeneric:"
-                " matched: "
-             << *prefetch_container;
-    return false;
-  });
-
-  return candidates;
+  return candidates_available;
 }
 
 }  // namespace content
