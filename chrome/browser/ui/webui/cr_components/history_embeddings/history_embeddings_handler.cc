@@ -89,6 +89,8 @@ void HistoryEmbeddingsHandler::Search(
       history_embeddings::kSearchResultItemCount.Get(),
       base::BindRepeating(&HistoryEmbeddingsHandler::OnReceivedSearchResult,
                           weak_ptr_factory_.GetWeakPtr()));
+  VLOG(3) << "HistoryEmbeddingsHandler::Search started for '"
+          << last_result_.query << "'";
 }
 
 void HistoryEmbeddingsHandler::PublishResultToPageForTesting(
@@ -155,8 +157,14 @@ void HistoryEmbeddingsHandler::OnReceivedSearchResult(
     history_embeddings::SearchResult native_search_result) {
   // Ignore results for outdated queries; only update results for current query.
   if (!native_search_result.IsContinuationOf(last_result_)) {
+    VLOG(3) << "HistoryEmbeddingsHandler::OnReceivedSearchResult for '"
+            << native_search_result.query
+            << "' (dropped as not a continuation of '" << last_result_.query
+            << "')";
     return;
   }
+  VLOG(3) << "HistoryEmbeddingsHandler::OnReceivedSearchResult for '"
+          << native_search_result.query << "' (published as continuation)";
   last_result_ = std::move(native_search_result);
   PublishResultToPage(last_result_);
 }

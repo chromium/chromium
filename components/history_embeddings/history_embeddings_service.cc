@@ -986,6 +986,7 @@ void HistoryEmbeddingsService::OnPrimarySearchResultReady(
   //  real ML intent classifier is working.
   if (answerer_ && intent_classifier_) {
     std::string query = result.query;
+    VLOG(3) << "ComputeQueryIntent for '" << query << "'";
     intent_classifier_->ComputeQueryIntent(
         std::move(query),
         base::BindOnce(&HistoryEmbeddingsService::OnQueryIntentComputed,
@@ -1004,6 +1005,7 @@ void HistoryEmbeddingsService::OnQueryIntentComputed(
     SearchResult result,
     ComputeIntentStatus status,
     bool query_is_answerable) {
+  VLOG(3) << "OnQueryIntentComputed for '" << result.query << "'";
   const bool answerable = status == ComputeIntentStatus::SUCCESS &&
                           query_is_answerable && answerer_;
   base::UmaHistogramBoolean("History.Embeddings.QueryAnswerable", answerable);
@@ -1032,8 +1034,10 @@ void HistoryEmbeddingsService::OnQueryIntentComputed(
               index));
     }
   }
+  std::string query = result.query;
+  VLOG(3) << "ComputeAnswer for '" << query << "'";
   answerer_->ComputeAnswer(
-      result.query, std::move(context),
+      std::move(query), std::move(context),
       base::BindOnce(&HistoryEmbeddingsService::OnAnswerComputed,
                      weak_ptr_factory_.GetWeakPtr(), callback,
                      std::move(result)));
