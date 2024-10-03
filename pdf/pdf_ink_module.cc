@@ -191,6 +191,10 @@ bool PdfInkModule::DrawThumbnail(SkCanvas& canvas, int page_index) {
   return true;
 }
 
+PdfInkModule::PageInkStrokeIterator PdfInkModule::GetVisibleStrokesIterator() {
+  return PageInkStrokeIterator(strokes_);
+}
+
 bool PdfInkModule::HandleInputEvent(const blink::WebInputEvent& event) {
   if (!enabled()) {
     return false;
@@ -868,6 +872,73 @@ size_t PdfInkModule::StrokeIdGenerator::GetIdAndAdvance() {
 
 void PdfInkModule::StrokeIdGenerator::ResetIdTo(size_t id) {
   next_stroke_id_ = id;
+}
+
+PdfInkModule::PageInkStrokeIterator::PageInkStrokeIterator(
+    const PdfInkModule::DocumentStrokesMap& strokes)
+    : strokes_(strokes), pages_iterator_(strokes_->cbegin()) {
+  // Set up internal iterators for the first visible stroke, if there is one.
+  AdvanceToNextPageWithVisibleStrokes();
+}
+
+PdfInkModule::PageInkStrokeIterator::~PageInkStrokeIterator() = default;
+
+std::optional<PdfInkModule::PageInkStroke>
+PdfInkModule::PageInkStrokeIterator::GetNextStrokeAndAdvance() {
+  if (pages_iterator_ == strokes_->cend()) {
+    return std::nullopt;
+  }
+
+  // `page_strokes_iterator_` is set up when finding the page, and is updated
+  // after establishing the stroke to return.  So the return value is based
+  // upon the current position of the iterator.  Callers should not get here
+  // if the end of the strokes has been reached for the current page.
+  CHECK(page_strokes_iterator_ != pages_iterator_->second.cend());
+  CHECK(page_strokes_iterator_->should_draw);
+  const ink::Stroke& page_stroke = page_strokes_iterator_->stroke;
+  int page_index = pages_iterator_->first;
+  AdvanceForCurrentPage();
+
+  if (page_strokes_iterator_ == pages_iterator_->second.cend()) {
+    // This was the last stroke for the current page, so advancing requires
+    // moving on to another page and reinitializing `page_strokes_iterator_`.
+    ++pages_iterator_;
+    AdvanceToNextPageWithVisibleStrokes();
+  }
+
+  return PageInkStroke{page_index, raw_ref<const ink::Stroke>(page_stroke)};
+}
+
+void PdfInkModule::PageInkStrokeIterator::
+    AdvanceToNextPageWithVisibleStrokes() {
+  for (; pages_iterator_ != strokes_->cend(); ++pages_iterator_) {
+    // Initialize and scan to the location of the first (if any) visible
+    // stroke for this page.
+    for (page_strokes_iterator_ = pages_iterator_->second.cbegin();
+         page_strokes_iterator_ != pages_iterator_->second.cend();
+         ++page_strokes_iterator_) {
+      if (page_strokes_iterator_->should_draw) {
+        // This page has visible strokes, and `page_strokes_iterator_` has
+        // been initialized to the position of the first visible stroke.
+        return;
+      }
+    }
+  }
+
+  // No pages with visible strokes found.
+}
+
+void PdfInkModule::PageInkStrokeIterator::AdvanceForCurrentPage() {
+  CHECK(pages_iterator_ != strokes_->cend());
+
+  // Advance the iterator to next visible stroke in this page (if any) before
+  // returning.
+  do {
+    ++page_strokes_iterator_;
+    if (page_strokes_iterator_ == pages_iterator_->second.cend()) {
+      break;
+    }
+  } while (!page_strokes_iterator_->should_draw);
 }
 
 }  // namespace chrome_pdf

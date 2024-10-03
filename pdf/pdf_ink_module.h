@@ -82,6 +82,47 @@ class PdfInkModule {
   // strokes for that page.
   using DocumentStrokeInputPointsMap = std::map<int, PageStrokeInputPoints>;
 
+  struct PageInkStroke {
+    int page_index;
+    raw_ref<const ink::Stroke> stroke;
+  };
+
+  // Iterator to get visible strokes.  Once created, the caller should ensure
+  // that there is no further PdfInkModule interactions until the iterator has
+  // been destroyed.
+  class PageInkStrokeIterator {
+   public:
+    explicit PageInkStrokeIterator(const DocumentStrokesMap& strokes);
+    PageInkStrokeIterator(const PageInkStrokeIterator&) = delete;
+    PageInkStrokeIterator& operator=(const PageInkStrokeIterator&) = delete;
+    ~PageInkStrokeIterator();
+
+    // Gets the next visible stroke if there is one, and advances the internal
+    // iterator to the next visible stroke.
+    std::optional<PageInkStroke> GetNextStrokeAndAdvance();
+
+   private:
+    // Helper to advance to the next page which has visible strokes.  If there
+    // is another page with visible strokes, performs the iterators
+    // initialization to be able to get the visible strokes for it.  Leaves
+    // `pages_iterator_` at end position if there are no more pages with
+    // visible strokes.
+    void AdvanceToNextPageWithVisibleStrokes();
+
+    // Helper to advance to the next visible stroke for the current page, if
+    // there is one.  Leaves `page_strokes_iterator_` at end position if there
+    // are no more visible strokes.
+    void AdvanceForCurrentPage();
+
+    const raw_ref<const DocumentStrokesMap> strokes_;
+
+    // Iterator for getting pages with visible strokes.
+    DocumentStrokesMap::const_iterator pages_iterator_;
+
+    // Iterator for getting visible strokes of a particular page.
+    PageStrokes::const_iterator page_strokes_iterator_;
+  };
+
   explicit PdfInkModule(PdfInkModuleClient& client);
   PdfInkModule(const PdfInkModule&) = delete;
   PdfInkModule& operator=(const PdfInkModule&) = delete;
@@ -97,6 +138,11 @@ class PdfInkModule {
   // the region for the page at `page_index`, so this only draws strokes for
   // that page, regardless of page visibility.
   bool DrawThumbnail(SkCanvas& canvas, int page_index);
+
+  // Gets an iterator for the visible strokes across all pages.
+  // Modifying the set of visible strokes while using the iterator is not
+  // supported and can result in undefined behavior.
+  PageInkStrokeIterator GetVisibleStrokesIterator();
 
   // Returns whether the event was handled or not.
   bool HandleInputEvent(const blink::WebInputEvent& event);

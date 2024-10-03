@@ -4,6 +4,7 @@
 
 #include "pdf/pdf_ink_module.h"
 
+#include <array>
 #include <set>
 #include <string_view>
 #include <vector>
@@ -19,6 +20,7 @@
 #include "base/values.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_ink_brush.h"
+#include "pdf/pdf_ink_conversions.h"
 #include "pdf/pdf_ink_module_client.h"
 #include "pdf/pdf_ink_transform.h"
 #include "pdf/test/mouse_event_builder.h"
@@ -29,6 +31,7 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/ink/src/ink/brush/brush.h"
 #include "third_party/ink/src/ink/geometry/affine_transform.h"
+#include "third_party/ink/src/ink/strokes/input/type_matchers.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -44,6 +47,7 @@ using testing::ElementsAre;
 using testing::ElementsAreArray;
 using testing::InSequence;
 using testing::Pair;
+using testing::Pointwise;
 using testing::SizeIs;
 
 namespace chrome_pdf {
@@ -68,9 +72,26 @@ constexpr gfx::PointF kTwoPageVerticalLayoutPointOutsidePages(10.0f, 0.0f);
 constexpr gfx::PointF kTwoPageVerticalLayoutPoint1InsidePage0(10.0f, 10.0f);
 constexpr gfx::PointF kTwoPageVerticalLayoutPoint2InsidePage0(15.0f, 15.0f);
 constexpr gfx::PointF kTwoPageVerticalLayoutPoint3InsidePage0(20.0f, 15.0f);
+constexpr gfx::PointF kTwoPageVerticalLayoutPoint4InsidePage0(10.0f, 20.0f);
 constexpr gfx::PointF kTwoPageVerticalLayoutPoint1InsidePage1(10.0f, 75.0f);
 constexpr gfx::PointF kTwoPageVerticalLayoutPoint2InsidePage1(15.0f, 80.0f);
 constexpr gfx::PointF kTwoPageVerticalLayoutPoint3InsidePage1(20.0f, 80.0f);
+
+// Canonical points after stroking horizontal & vertical lines with some
+// commonly used points.
+// Horizontal line uses: kTwoPageVerticalLayoutPoint2InsidePage0 to
+//                       kTwoPageVerticalLayoutPoint3InsidePage0
+//                   or: kTwoPageVerticalLayoutPoint2InsidePage1 to
+//                       kTwoPageVerticalLayoutPoint3InsidePage1
+// Vertical line uses:   kTwoPageVerticalLayoutPoint1InsidePage0 to
+//                       kTwoPageVerticalLayoutPoint4InsidePage0
+constexpr gfx::PointF kTwoPageVerticalLayoutHorzLinePoint0Canonical(10.0f,
+                                                                    10.0f);
+constexpr gfx::PointF kTwoPageVerticalLayoutHorzLinePoint1Canonical(15.0f,
+                                                                    10.0f);
+constexpr gfx::PointF kTwoPageVerticalLayoutVertLinePoint0Canonical(5.0f, 5.0f);
+constexpr gfx::PointF kTwoPageVerticalLayoutVertLinePoint1Canonical(5.0f,
+                                                                    15.0f);
 
 // The inputs for a stroke that starts in first page, leaves the bounds of that
 // page, but then moves back into the page results in one stroke with two
@@ -86,8 +107,48 @@ constexpr gfx::PointF kTwoPageVerticalLayoutPageExitAndReentrySegment2[] = {
     gfx::PointF(10.0f, 0.0f), gfx::PointF(10.0f, 5.0f),
     gfx::PointF(15.0f, 10.0f)};
 
+// The stroke inputs for vertical and horizontal lines in the pages.  The
+// `.time` fields intentionally get a common value, to match the behavior of
+// `MouseEventBuilder`.
+constexpr auto kTwoPageVerticalLayoutHorzLinePage0Inputs =
+    std::to_array<PdfInkInputData>({
+        {kTwoPageVerticalLayoutHorzLinePoint0Canonical, base::Seconds(0)},
+        {kTwoPageVerticalLayoutHorzLinePoint1Canonical, base::Seconds(0)},
+    });
+constexpr auto kTwoPageVerticalLayoutVertLinePage0Inputs =
+    std::to_array<PdfInkInputData>({
+        {kTwoPageVerticalLayoutVertLinePoint0Canonical, base::Seconds(0)},
+        {kTwoPageVerticalLayoutVertLinePoint1Canonical, base::Seconds(0)},
+    });
+constexpr auto kTwoPageVerticalLayoutHorzLinePage1Inputs =
+    std::to_array<PdfInkInputData>({
+        {kTwoPageVerticalLayoutHorzLinePoint0Canonical, base::Seconds(0)},
+        {kTwoPageVerticalLayoutHorzLinePoint1Canonical, base::Seconds(0)},
+    });
+
 base::FilePath GetInkTestDataFilePath(std::string_view filename) {
   return base::FilePath(FILE_PATH_LITERAL("ink")).AppendASCII(filename);
+}
+
+// Matcher for ink::Stroke objects against their expected color and inputs.
+MATCHER_P(InkStrokeInputsEq, brush_color, "") {
+  const auto& [actual_stroke, expected_inputs] = arg;
+  const auto matcher = ink::StrokeInputBatchEq(expected_inputs);
+  return actual_stroke->GetBrush().GetColor() == brush_color &&
+         testing::Matches(matcher)(actual_stroke->GetInputs());
+}
+
+std::map<int, std::vector<raw_ref<const ink::Stroke>>> CollectVisibleStrokes(
+    PdfInkModule::PageInkStrokeIterator strokes_iter) {
+  std::map<int, std::vector<raw_ref<const ink::Stroke>>> visible_stroke_shapes;
+  for (auto page_stroke = strokes_iter.GetNextStrokeAndAdvance();
+       page_stroke.has_value();
+       page_stroke = strokes_iter.GetNextStrokeAndAdvance()) {
+    visible_stroke_shapes[page_stroke.value().page_index].push_back(
+        page_stroke.value().stroke);
+  }
+
+  return visible_stroke_shapes;
 }
 
 class FakeClient : public PdfInkModuleClient {
@@ -1196,6 +1257,58 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoOnTwoPages) {
               ElementsAre(kPage0Matcher, kPage1Matcher));
   EXPECT_THAT(VisibleStrokeInputPositions(),
               ElementsAre(kPage0Matcher, kPage1Matcher));
+}
+
+using PdfInkModuleGetVisibleStrokesTest = PdfInkModuleStrokeTest;
+
+TEST_F(PdfInkModuleGetVisibleStrokesTest, NoPageStrokes) {
+  std::map<int, std::vector<raw_ref<const ink::Stroke>>>
+      collected_stroke_shapes =
+          CollectVisibleStrokes(ink_module().GetVisibleStrokesIterator());
+  ASSERT_EQ(collected_stroke_shapes.size(), 0u);
+}
+
+TEST_F(PdfInkModuleGetVisibleStrokesTest, MultiplePageStrokes) {
+  EnableAnnotationMode();
+  InitializeVerticalTwoPageLayout();
+
+  // Multiple strokes on one page, plus a stroke on another page.
+  ApplyStrokeWithMouseAtPoints(
+      kTwoPageVerticalLayoutPoint2InsidePage0,
+      base::span_from_ref(kTwoPageVerticalLayoutPoint3InsidePage0),
+      kTwoPageVerticalLayoutPoint3InsidePage0);
+  ApplyStrokeWithMouseAtPoints(
+      kTwoPageVerticalLayoutPoint1InsidePage0,
+      base::span_from_ref(kTwoPageVerticalLayoutPoint4InsidePage0),
+      kTwoPageVerticalLayoutPoint4InsidePage0);
+  ApplyStrokeWithMouseAtPoints(
+      kTwoPageVerticalLayoutPoint2InsidePage1,
+      base::span_from_ref(kTwoPageVerticalLayoutPoint3InsidePage1),
+      kTwoPageVerticalLayoutPoint3InsidePage1);
+
+  std::optional<ink::StrokeInputBatch> expected_page0_horz_line_input_batch =
+      CreateInkInputBatch(kTwoPageVerticalLayoutHorzLinePage0Inputs);
+  ASSERT_TRUE(expected_page0_horz_line_input_batch.has_value());
+  std::optional<ink::StrokeInputBatch> expected_page0_vert_line_input_batch =
+      CreateInkInputBatch(kTwoPageVerticalLayoutVertLinePage0Inputs);
+  ASSERT_TRUE(expected_page0_vert_line_input_batch.has_value());
+  std::optional<ink::StrokeInputBatch> expected_page1_horz_line_input_batch =
+      CreateInkInputBatch(kTwoPageVerticalLayoutHorzLinePage1Inputs);
+  ASSERT_TRUE(expected_page1_horz_line_input_batch.has_value());
+
+  const PdfInkBrush* brush = ink_module().GetPdfInkBrushForTesting();
+  ASSERT_TRUE(brush);
+
+  std::map<int, std::vector<raw_ref<const ink::Stroke>>> collected_strokes =
+      CollectVisibleStrokes(ink_module().GetVisibleStrokesIterator());
+  EXPECT_THAT(
+      collected_strokes,
+      ElementsAre(
+          Pair(0, Pointwise(InkStrokeInputsEq(brush->GetInkBrush().GetColor()),
+                            {expected_page0_horz_line_input_batch.value(),
+                             expected_page0_vert_line_input_batch.value()})),
+          Pair(1, Pointwise(InkStrokeInputsEq(brush->GetInkBrush().GetColor()),
+                            {expected_page1_horz_line_input_batch.value()}))));
 }
 
 }  // namespace
