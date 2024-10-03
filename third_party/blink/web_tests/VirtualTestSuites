@@ -1939,7 +1939,7 @@
       "--disable-features=KeepAliveInBrowserMigration"
     ],
     "owners": ["nhiroki@chromium.org", "yoichio@chromium.org"],
-    "expires": "Oct 1, 2024"
+    "expires": "Apr 1, 2025"
   },
   {
     "prefix": "prerender2-fallback-prefetch-spec-rules",
@@ -2236,10 +2236,11 @@
     "args": [
       "--enable-features=LCPPFontURLPredictor"
     ],
-    "expires": "Oct 16, 2024",
+    "expires": "Apr 1, 2025",
     "owners": [
       "yyanagisawa@chromium.org",
-      "kouhei@chromium.org"
+      "kouhei@chromium.org",
+      "yoichio@chromium.org"
     ]
   },
   {
@@ -2256,9 +2257,10 @@
     "args": [
       "--enable-features=LCPPDeferUnusedPreload:load_timing/lcp_timing_predictor"
     ],
-    "expires": "Oct 16, 2024",
+    "expires": "Apr 1, 2025",
     "owners": [
-      "sisidovski@chromium.org"
+      "sisidovski@chromium.org",
+      "yoichio@chromium.org"
     ]
   },
   {
@@ -2275,10 +2277,11 @@
     "args": [
       "--enable-features=LCPScriptObserver"
     ],
-    "expires": "Sep 10, 2024",
+    "expires": "Apr 1, 2025",
     "owners": [
       "alexnj@chromium.org",
-      "kouhei@chromium.org"
+      "kouhei@chromium.org",
+      "yoichio@chromium.org"
     ]
   },
   {
