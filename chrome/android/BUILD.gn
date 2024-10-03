@@ -292,7 +292,6 @@ if (current_toolchain == default_toolchain) {
 
   java_group("delegate_public_impl_java") {
     deps = [
-      "//chrome/android/modules/readaloud/public:provider_public_java",
       "//chrome/browser/locale:delegate_public_impl_java",
       "//chrome/browser/touch_to_fill/password_manager/android/internal:resource_provider_public_impl_java",
       "//chrome/browser/ui/android/cars:delegate_public_impl_java",

@@ -65,7 +65,6 @@ import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.Player;
 import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooks;
 import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooksFactory;
-import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooksProvider;
 import org.chromium.chrome.modules.readaloud.contentjs.Extractor;
 import org.chromium.chrome.modules.readaloud.contentjs.Highlighter;
 import org.chromium.chrome.modules.readaloud.contentjs.Highlighter.Mode;
@@ -971,8 +970,9 @@ public class ReadAloudController
             if (factory != null) {
                 mPlaybackHooks = factory.getForProfile(mProfileSupplier.get());
             } else {
-                mPlaybackHooks =
-                        ReadAloudPlaybackHooksProvider.getForProfile(mProfileSupplier.get());
+                // If no downstream factory exists, use an empty instantiation
+                // of the interface using defaults.
+                mPlaybackHooks = new ReadAloudPlaybackHooks() {};
             }
             mPlayerCoordinator = mPlaybackHooks.createPlayer(/* delegate= */ this);
             mPlayerCoordinator.addObserver(this);
