@@ -1061,8 +1061,6 @@ const char kHiddenNetworkMigrationInterval[] =
 // follow the format "--hidden-network-migration-age=#", and should be >= 0.
 const char kHiddenNetworkMigrationAge[] = "hidden-network-migration-age";
 
-const char kPickerFeatureKey[] = "picker-feature-key";
-
 // Sets the channel from which the PPD files are loaded.
 const char kPrintingPpdChannel[] = "printing-ppd-channel";
 const char kPrintingPpdChannelProduction[] = "production";

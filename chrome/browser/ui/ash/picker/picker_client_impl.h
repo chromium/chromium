@@ -74,7 +74,6 @@ class PickerClientImpl
                                  RecentFilesCallback callback) override;
   void GetSuggestedLinkResults(size_t max_results,
                                SuggestedLinksCallback callback) override;
-  bool IsFeatureAllowedForDogfood() override;
   void FetchFileThumbnail(const base::FilePath& path,
                           const gfx::Size& size,
                           FetchFileThumbnailCallback callback) override;

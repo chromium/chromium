@@ -50,7 +50,6 @@ class ASH_EXPORT MockPickerClient : public PickerClient {
               GetSuggestedLinkResults,
               (size_t, SuggestedLinksCallback),
               (override));
-  MOCK_METHOD(bool, IsFeatureAllowedForDogfood, (), (override));
   MOCK_METHOD(void,
               FetchFileThumbnail,
               (const base::FilePath& path,

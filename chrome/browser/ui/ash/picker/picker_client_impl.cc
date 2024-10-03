@@ -58,7 +58,6 @@
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
-#include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/aura/window.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -433,10 +432,6 @@ void PickerClientImpl::GetSuggestedLinkResults(
     size_t max_results,
     SuggestedLinksCallback callback) {
   link_suggester_->GetSuggestedLinks(max_results, std::move(callback));
-}
-
-bool PickerClientImpl::IsFeatureAllowedForDogfood() {
-  return gaia::IsGoogleInternalAccountEmail(profile_->GetProfileUserName());
 }
 
 void PickerClientImpl::FetchFileThumbnail(const base::FilePath& path,

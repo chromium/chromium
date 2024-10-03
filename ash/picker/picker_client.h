@@ -80,8 +80,6 @@ class ASH_EXPORT PickerClient {
   virtual void GetSuggestedLinkResults(size_t max_results,
                                        SuggestedLinksCallback callback) = 0;
 
-  virtual bool IsFeatureAllowedForDogfood() = 0;
-
   virtual void FetchFileThumbnail(const base::FilePath& path,
                                   const gfx::Size& size,
                                   FetchFileThumbnailCallback callback) = 0;

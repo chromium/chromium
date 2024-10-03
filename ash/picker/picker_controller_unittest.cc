@@ -162,7 +162,6 @@ class TestPickerClient : public MockPickerClient {
     controller_->SetClient(this);
     // Set default behaviours. These can be overridden with `WillOnce` and
     // `WillRepeatedly`.
-    ON_CALL(*this, IsFeatureAllowedForDogfood).WillByDefault(Return(true));
     ON_CALL(*this, GetPrefs).WillByDefault(Return(prefs_));
   }
   ~TestPickerClient() override { controller_->SetClient(nullptr); }
@@ -174,9 +173,9 @@ class TestPickerClient : public MockPickerClient {
   raw_ptr<sync_preferences::TestingPrefServiceSyncable> prefs_ = nullptr;
 };
 
-class PickerControllerTestBase : public AshTestBase {
+class PickerControllerTest : public AshTestBase {
  public:
-  PickerControllerTestBase()
+  PickerControllerTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
@@ -219,13 +218,6 @@ class PickerControllerTestBase : public AshTestBase {
   std::unique_ptr<NiceMock<TestPickerClient>> client_;
   std::unique_ptr<metrics::structured::TestStructuredMetricsRecorder>
       metrics_recorder_;
-};
-
-class PickerControllerTest : public PickerControllerTestBase {
-  void SetUp() override {
-    PickerControllerTestBase::SetUp();
-    PickerController::DisableFeatureKeyCheck();
-  }
 };
 
 TEST_F(PickerControllerTest, ToggleWidgetShowsWidgetIfClosed) {
@@ -1080,30 +1072,6 @@ TEST_F(PickerControllerTest,
   prefs().SetInteger(prefs::kPickerCapsLockSelectedCountPrefName, 0);
   EXPECT_EQ(controller().GetCapsLockPosition(),
             PickerCapsLockPosition::kBottom);
-}
-
-class PickerControllerKeyEnabledTest : public PickerControllerTestBase {};
-
-TEST_F(PickerControllerKeyEnabledTest,
-       DISABLED_ToggleWidgetShowsWidgetForDogfoodWhenClientAllowed) {
-  base::test::ScopedFeatureList features(ash::features::kPickerDogfood);
-
-  EXPECT_CALL(client(), IsFeatureAllowedForDogfood).WillOnce(Return(true));
-
-  controller().ToggleWidget();
-
-  EXPECT_TRUE(controller().widget_for_testing());
-}
-
-TEST_F(PickerControllerKeyEnabledTest,
-       DISABLED_ToggleWidgetDoesNotShowWidgetWhenClientDisallowsDogfood) {
-  base::test::ScopedFeatureList features(ash::features::kPickerDogfood);
-
-  EXPECT_CALL(client(), IsFeatureAllowedForDogfood).WillOnce(Return(false));
-
-  controller().ToggleWidget();
-
-  EXPECT_FALSE(controller().widget_for_testing());
 }
 
 struct ActionTestCase {

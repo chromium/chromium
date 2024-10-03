@@ -58,9 +58,6 @@ void ModifierSplitBypassChecker::ForceEnableFeatures() {
   Shell::Get()
       ->input_device_settings_controller()
       ->ForceKeyboardSettingRefreshWhenFeatureEnabled();
-  if (features::IsPickerUpdateEnabled()) {
-    Shell::Get()->picker_controller()->DisableFeatureKeyCheck();
-  }
 
   // Reset observing as we are no longer interested in seeing when new keyboards
   // connect.

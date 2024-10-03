@@ -81,23 +81,7 @@ namespace ash {
 
 namespace {
 
-bool g_should_check_key = false;
 bool g_feature_tour_enabled = true;
-
-// The hash value for the feature key of the Picker feature, used for
-// development.
-constexpr std::string_view kPickerFeatureDevKeyHash(
-    "\xE1\xC0\x09\x7F\xBE\x03\xBF\x48\xA7\xA0\x30\x53\x07\x4F\xFB\xC5\x6D\xD4"
-    "\x22\x5F",
-    base::kSHA1Length);
-
-// The hash value for the feature key of the Picker feature, used in some tests.
-constexpr std::string_view kPickerFeatureTestKeyHash(
-    "\xE7\x2C\x99\xD7\x99\x89\xDB\xA5\x9D\x06\x4A\xED\xDF\xE5\x30\xA7\x8C\x76"
-    "\x00\x89",
-    base::kSHA1Length);
-
-enum class PickerFeatureKeyType { kNone, kDev, kTest };
 
 // When spoken feedback is enabled, closing the widget after an insert is
 // delayed by this amount.
@@ -109,26 +93,6 @@ constexpr float kCapsLockRatioThresholdForBottom = 0.2;
 
 constexpr std::string_view kSupportUrl =
     "https://support.google.com/chromebook?p=dugong";
-
-PickerFeatureKeyType MatchPickerFeatureKeyHash() {
-  static const PickerFeatureKeyType key_type = []() {
-    // Command line looks like:
-    //  out/Default/chrome --user-data-dir=/tmp/tmp123
-    //  --picker-feature-key="INSERT KEY HERE" --enable-features=PickerFeature
-    const std::string provided_key_hash = base::SHA1HashString(
-        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            switches::kPickerFeatureKey));
-    if (provided_key_hash == kPickerFeatureDevKeyHash) {
-      return PickerFeatureKeyType::kDev;
-    }
-    if (provided_key_hash == kPickerFeatureTestKeyHash) {
-      return PickerFeatureKeyType::kTest;
-    }
-    return PickerFeatureKeyType::kNone;
-  }();
-
-  return key_type;
-}
 
 ui::TextInputClient* GetFocusedTextInputClient() {
   const ui::InputMethod* input_method =
@@ -295,29 +259,7 @@ PickerController::~PickerController() {
 }
 
 bool PickerController::IsFeatureEnabled() {
-  if (!features::IsPickerUpdateEnabled()) {
-    return false;
-  }
-
-  if (!g_should_check_key) {
-    return true;
-  }
-
-  if (base::FeatureList::IsEnabled(ash::features::kPickerDogfood) &&
-      client_->IsFeatureAllowedForDogfood()) {
-    return true;
-  }
-
-  if (MatchPickerFeatureKeyHash() == PickerFeatureKeyType::kNone) {
-    LOG(ERROR) << "Provided feature key does not match with the expected one.";
-    return false;
-  }
-
-  return true;
-}
-
-void PickerController::DisableFeatureKeyCheck() {
-  g_should_check_key = false;
+  return features::IsPickerUpdateEnabled();
 }
 
 void PickerController::DisableFeatureTourForTesting() {

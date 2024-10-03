@@ -77,9 +77,6 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   // published.
   static constexpr base::TimeDelta kBurnInPeriod = base::Milliseconds(200);
 
-  // Disables the feature key checking.
-  static void DisableFeatureKeyCheck();
-
   // Whether the feature is currently enabled or not based on the secret key and
   // other factors.
   bool IsFeatureEnabled();
