@@ -57,6 +57,14 @@ void FakeUpstartClient::StartJob(const std::string& job,
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
+void FakeUpstartClient::StartJobWithTimeout(
+    const std::string& job,
+    const std::vector<std::string>& upstart_env,
+    chromeos::VoidDBusMethodCallback callback,
+    int timeout_ms) {
+  StartJob(job, upstart_env, std::move(callback));
+}
+
 void FakeUpstartClient::StartJobWithErrorDetails(
     const std::string& job,
     const std::vector<std::string>& upstart_env,
