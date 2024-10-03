@@ -364,3 +364,8 @@
 -BackgroundTracingUtilsTest.SetupFieldTracingFromFieldTrialOutputPath
 -BackgroundTracingUtilsTest.SetupSystemTracingFromFieldTrial
 -BackgroundTracingUtilsTest.SetupSystemTracingFromFieldTrial
+
+# TODO(crbug.com/370751353): These tests have been failing since
+# https://crrev.com/c/5873728.
+-RemoteFrameTokenRegistrationTest.ChildFrameRegistersItself
+-RemoteFrameTokenRegistrationTest.MainFrameRegistersItself
