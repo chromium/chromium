@@ -29,9 +29,14 @@ class ArcServiceLauncher;
 class ContainerAppKiller;
 }  // namespace arc
 
-namespace chromeos::default_app_order {
+namespace chromeos {
+class MahiWebContentsManager;
+
+namespace default_app_order {
 class ExternalLoader;
-}  // namespace chromeos::default_app_order
+}  // namespace default_app_order
+
+}  // namespace chromeos
 
 namespace crosapi {
 class BrowserManager;
@@ -263,6 +268,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
 
   std::unique_ptr<cros_healthd::internal::DataCollector>
       cros_healthd_data_collector_;
+
+  std::unique_ptr<chromeos::MahiWebContentsManager> mahi_web_contents_manager_;
 
   // Set when PreProfileInit() is called. If PreMainMessageLoopRun() exits
   // early, this will be false during PostMainMessageLoopRun(), etc.

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_MAHI_MAHI_WEB_CONTENTS_MANAGER_H_
-#define CHROME_BROWSER_CHROMEOS_MAHI_MAHI_WEB_CONTENTS_MANAGER_H_
+#ifndef CHROME_BROWSER_CHROMEOS_MAHI_MAHI_WEB_CONTENTS_MANAGER_IMPL_H_
+#define CHROME_BROWSER_CHROMEOS_MAHI_MAHI_WEB_CONTENTS_MANAGER_IMPL_H_
 
 #include <memory>
 #include <string>
@@ -16,6 +16,7 @@
 #include "chrome/browser/chromeos/mahi/mahi_content_extraction_delegate.h"
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chromeos/components/mahi/public/cpp/mahi_browser_util.h"
+#include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
 #include "chromeos/crosapi/mojom/mahi.mojom-forward.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -29,7 +30,6 @@ class WebContents;
 
 namespace mahi {
 
-class ScopedMahiWebContentsManagerForTesting;
 class MockMahiWebContentsManager;
 class FakeMahiWebContentsManager;
 
@@ -79,59 +79,31 @@ class MahiPDFObserver : public content::WebContentsObserver {
 //    information to ChromeOS backend as needed.
 // 2. Decides the distillability of a web page and extract contents from a
 //    requested web page.
-class MahiWebContentsManager {
+class MahiWebContentsManagerImpl : public chromeos::MahiWebContentsManager {
  public:
-  MahiWebContentsManager(const MahiWebContentsManager&) = delete;
-  MahiWebContentsManager& operator=(const MahiWebContentsManager&) = delete;
+  MahiWebContentsManagerImpl(const MahiWebContentsManagerImpl&) = delete;
+  MahiWebContentsManagerImpl& operator=(const MahiWebContentsManagerImpl&) =
+      delete;
+  MahiWebContentsManagerImpl();
+  ~MahiWebContentsManagerImpl() override;
 
-  static MahiWebContentsManager* Get();
-
-  void Initialize();
-
-  // Called when the focused tab finish loading.
-  // Virtual so we can override in tests.
-  virtual void OnFocusedPageLoadComplete(content::WebContents* web_contents);
-
-  // Clears the focused web content state, and notifies mahi manager.
-  // Passes the `top_level_window` downstream if it is set. This may suppress
-  // the notification if it is a media app window that is observed by media app
-  // content manager.
+  // chromeos::MahiWebContentsManager:
+  void Initialize() override;
+  void OnFocusedPageLoadComplete(content::WebContents* web_contents) override;
   void ClearFocusedWebContentState(
-      raw_ptr<aura::Window> top_level_window = nullptr);
-
-  // Clears the focused web content and its state if the focused content is
-  // destroyed.
-  void WebContentsDestroyed(content::WebContents* web_contents);
-
-  // Called when the browser context menu has been clicked by the user.
-  // `question` is used only if `ButtonType` is kQA.
-  // Virtual so we can override in tests.
-  virtual void OnContextMenuClicked(int64_t display_id,
-                                    chromeos::mahi::ButtonType button_type,
-                                    const std::u16string& question,
-                                    const gfx::Rect& mahi_menu_bounds);
-
-  // Returns boolean to indicate if the current focused page is distillable. The
-  // default return is false, for the cases when the focused page's
-  // distillability has not been checked yet.
-  bool IsFocusedPageDistillable();
-
-  // Virtual so that can be overridden in test.
-  virtual bool GetPrefValue() const;
-  void set_mahi_pref_lacros(bool value) { mahi_pref_lacros_ = value; }
+      raw_ptr<aura::Window> top_level_window) override;
+  void WebContentsDestroyed(content::WebContents* web_contents) override;
+  void OnContextMenuClicked(int64_t display_id,
+                            chromeos::mahi::ButtonType button_type,
+                            const std::u16string& question,
+                            const gfx::Rect& mahi_menu_bounds) override;
+  bool IsFocusedPageDistillable() override;
+  bool GetPrefValue() const override;
 
  private:
-  friend base::NoDestructor<MahiWebContentsManager>;
   // Friends to access some test-only functions.
-  friend class ScopedMahiWebContentsManagerForTesting;
   friend class MockMahiWebContentsManager;
   friend class FakeMahiWebContentsManager;
-
-  static void SetInstanceForTesting(MahiWebContentsManager* manager);
-  static void ResetInstanceForTesting();
-
-  MahiWebContentsManager();
-  virtual ~MahiWebContentsManager();
 
   void OnGetInnerText(
       const base::UnguessableToken& page_id,
@@ -177,8 +149,6 @@ class MahiWebContentsManager {
   std::unique_ptr<MahiBrowserClientImpl> client_;
   bool is_initialized_ = false;
 
-  bool mahi_pref_lacros_ = false;
-
   // The state of the web content which get focus in the browser.
   WebContentState focused_web_content_state_{/*url=*/GURL(), /*title=*/u""};
   raw_ptr<content::WebContents> focused_web_contents_;
@@ -189,9 +159,9 @@ class MahiWebContentsManager {
   // Observer to observe accessibility changed on PDFs.
   std::unique_ptr<MahiPDFObserver> pdf_observer_;
 
-  base::WeakPtrFactory<MahiWebContentsManager> weak_pointer_factory_{this};
+  base::WeakPtrFactory<MahiWebContentsManagerImpl> weak_pointer_factory_{this};
 };
 
 }  // namespace mahi
 
-#endif  // CHROME_BROWSER_CHROMEOS_MAHI_MAHI_WEB_CONTENTS_MANAGER_H_
+#endif  // CHROME_BROWSER_CHROMEOS_MAHI_MAHI_WEB_CONTENTS_MANAGER_IMPL_H_

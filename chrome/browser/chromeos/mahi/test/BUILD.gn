@@ -16,8 +16,6 @@ static_library("test_support") {
     "mock_mahi_crosapi.h",
     "mock_mahi_web_contents_manager.cc",
     "mock_mahi_web_contents_manager.h",
-    "scoped_mahi_web_contents_manager_for_testing.cc",
-    "scoped_mahi_web_contents_manager_for_testing.h",
   ]
 
   deps = [

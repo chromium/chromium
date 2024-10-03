@@ -11,9 +11,9 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_constants.h"
 #include "chromeos/components/mahi/public/cpp/mahi_util.h"
+#include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -77,7 +77,7 @@ class MahiCondensedMenuButton : public views::LabelButton {
  private:
   void OnButtonClicked() {
     // TODO(b/324647147): Add separate button type for condensed menu.
-    ::mahi::MahiWebContentsManager::Get()->OnContextMenuClicked(
+    chromeos::MahiWebContentsManager::Get()->OnContextMenuClicked(
         display::Screen::GetScreen()
             ->GetDisplayNearestWindow(GetWidget()->GetNativeWindow())
             .id(),

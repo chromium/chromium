@@ -9,13 +9,12 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
 #include "chrome/browser/chromeos/mahi/test/mock_mahi_web_contents_manager.h"
-#include "chrome/browser/chromeos/mahi/test/scoped_mahi_web_contents_manager_for_testing.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_activity_simulator.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/test_browser_window.h"
+#include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -49,7 +48,7 @@ class MahiTabHelperTest : public ChromeRenderViewHostTestHarness {
     chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
 #endif
     scoped_mahi_web_contents_manager_ =
-        std::make_unique<ScopedMahiWebContentsManagerForTesting>(
+        std::make_unique<chromeos::ScopedMahiWebContentsManagerOverride>(
             &mock_mahi_web_contents_manager_);
 
     // Initialize browser.
@@ -72,7 +71,7 @@ class MahiTabHelperTest : public ChromeRenderViewHostTestHarness {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   MockMahiWebContentsManager mock_mahi_web_contents_manager_;
-  std::unique_ptr<ScopedMahiWebContentsManagerForTesting>
+  std::unique_ptr<chromeos::ScopedMahiWebContentsManagerOverride>
       scoped_mahi_web_contents_manager_;
 
   TabActivitySimulator tab_activity_simulator_;

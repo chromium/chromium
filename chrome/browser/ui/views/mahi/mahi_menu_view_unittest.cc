@@ -9,13 +9,12 @@
 
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
 #include "chrome/browser/chromeos/mahi/test/fake_mahi_web_contents_manager.h"
-#include "chrome/browser/chromeos/mahi/test/scoped_mahi_web_contents_manager_for_testing.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_constants.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "chromeos/components/mahi/public/cpp/mahi_browser_util.h"
+#include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -92,7 +91,7 @@ TEST_F(MahiMenuViewTest, Bounds) {
 TEST_F(MahiMenuViewTest, SettingsButtonClicked) {
   base::HistogramTester histogram;
   MockMahiWebContentsManager mock_mahi_web_contents_manager;
-  ::mahi::ScopedMahiWebContentsManagerForTesting
+  chromeos::ScopedMahiWebContentsManagerOverride
       scoped_mahi_web_contents_manager(&mock_mahi_web_contents_manager);
 
   std::unique_ptr<views::Widget> menu_widget =
@@ -124,7 +123,7 @@ TEST_F(MahiMenuViewTest, SettingsButtonClicked) {
 TEST_F(MahiMenuViewTest, SummaryButtonClicked) {
   MockMahiWebContentsManager mock_mahi_web_contents_manager;
   auto scoped_mahi_web_contents_manager =
-      std::make_unique<::mahi::ScopedMahiWebContentsManagerForTesting>(
+      std::make_unique<chromeos::ScopedMahiWebContentsManagerOverride>(
           &mock_mahi_web_contents_manager);
 
   auto menu_widget =
@@ -180,7 +179,7 @@ TEST_F(MahiMenuViewTest, OutlineButtonHiddenByDefault) {
 TEST_F(MahiMenuViewTest, OutlineButtonClicked) {
   MockMahiWebContentsManager mock_mahi_web_contents_manager;
   auto scoped_mahi_web_contents_manager =
-      std::make_unique<::mahi::ScopedMahiWebContentsManagerForTesting>(
+      std::make_unique<chromeos::ScopedMahiWebContentsManagerOverride>(
           &mock_mahi_web_contents_manager);
 
   auto menu_widget =
@@ -254,7 +253,7 @@ TEST_F(MahiMenuViewTest, SubmitQuestionButtonEnabledAfterTextInput) {
 TEST_F(MahiMenuViewTest, QuestionSubmitted) {
   MockMahiWebContentsManager mock_mahi_web_contents_manager;
   auto scoped_mahi_web_contents_manager =
-      std::make_unique<::mahi::ScopedMahiWebContentsManagerForTesting>(
+      std::make_unique<chromeos::ScopedMahiWebContentsManagerOverride>(
           &mock_mahi_web_contents_manager);
 
   auto menu_widget = std::make_unique<ActiveWidget>();
@@ -307,7 +306,7 @@ TEST_F(MahiMenuViewTest, QuestionSubmitted) {
 TEST_F(MahiMenuViewTest, EmptyQuestionNotSubmitted) {
   MockMahiWebContentsManager mock_mahi_web_contents_manager;
   auto scoped_mahi_web_contents_manager =
-      std::make_unique<::mahi::ScopedMahiWebContentsManagerForTesting>(
+      std::make_unique<chromeos::ScopedMahiWebContentsManagerOverride>(
           &mock_mahi_web_contents_manager);
 
   auto menu_widget = std::make_unique<ActiveWidget>();

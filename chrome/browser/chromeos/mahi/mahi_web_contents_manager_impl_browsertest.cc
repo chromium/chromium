@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
+#include "chrome/browser/chromeos/mahi/mahi_web_contents_manager_impl.h"
 
 #include <memory>
 #include <string>
@@ -20,7 +20,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/mahi/test/fake_mahi_web_contents_manager.h"
 #include "chrome/browser/chromeos/mahi/test/mock_mahi_crosapi.h"
-#include "chrome/browser/chromeos/mahi/test/scoped_mahi_web_contents_manager_for_testing.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -105,7 +104,7 @@ class MahiWebContentsManagerBrowserTest : public InProcessBrowserTest {
         std::make_unique<FakeMahiWebContentsManager>();
     fake_mahi_web_contents_manager_->Initialize();
     scoped_mahi_web_contents_manager_ =
-        std::make_unique<ScopedMahiWebContentsManagerForTesting>(
+        std::make_unique<chromeos::ScopedMahiWebContentsManagerOverride>(
             fake_mahi_web_contents_manager_.get());
 
 // Replace the production Mahi browser delegate with a mock for testing
@@ -194,7 +193,7 @@ class MahiWebContentsManagerBrowserTest : public InProcessBrowserTest {
       &browser_delegate_};
 
   std::unique_ptr<FakeMahiWebContentsManager> fake_mahi_web_contents_manager_;
-  std::unique_ptr<ScopedMahiWebContentsManagerForTesting>
+  std::unique_ptr<chromeos::ScopedMahiWebContentsManagerOverride>
       scoped_mahi_web_contents_manager_;
 };
 

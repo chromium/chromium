@@ -12,7 +12,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/mahi/test/fake_mahi_web_contents_manager.h"
-#include "chrome/browser/chromeos/mahi/test/scoped_mahi_web_contents_manager_for_testing.h"
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "chrome/browser/ui/views/mahi/mahi_condensed_menu_view.h"
@@ -49,7 +48,7 @@ class MahiMenuControllerTest : public ChromeViewsTestBase {
         std::make_unique<MahiMenuController>(read_write_cards_ui_controller_);
 
     scoped_mahi_web_contents_manager_ =
-        std::make_unique<::mahi::ScopedMahiWebContentsManagerForTesting>(
+        std::make_unique<chromeos::ScopedMahiWebContentsManagerOverride>(
             &fake_mahi_web_contents_manager_);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -113,7 +112,7 @@ class MahiMenuControllerTest : public ChromeViewsTestBase {
   std::unique_ptr<MahiMenuController> menu_controller_;
 
   ::mahi::FakeMahiWebContentsManager fake_mahi_web_contents_manager_;
-  std::unique_ptr<::mahi::ScopedMahiWebContentsManagerForTesting>
+  std::unique_ptr<chromeos::ScopedMahiWebContentsManagerOverride>
       scoped_mahi_web_contents_manager_;
 };
 

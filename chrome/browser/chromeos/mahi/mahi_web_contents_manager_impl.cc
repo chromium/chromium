@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
+#include "chrome/browser/chromeos/mahi/mahi_web_contents_manager_impl.h"
 
 #include <memory>
 #include <optional>
@@ -58,7 +58,6 @@ namespace mahi {
 
 namespace {
 
-MahiWebContentsManager* g_mahi_web_content_manager_for_testing = nullptr;
 using chromeos::mahi::ButtonType;
 
 // The character count threshold for a distillable page.
@@ -162,32 +161,23 @@ void MahiPDFObserver::OnTimerFired() {
   std::move(callback_).Run(updates_);
 }
 
-// static
-MahiWebContentsManager* MahiWebContentsManager::Get() {
-  if (g_mahi_web_content_manager_for_testing) {
-    return g_mahi_web_content_manager_for_testing;
-  }
-  static base::NoDestructor<MahiWebContentsManager> instance;
-  return instance.get();
-}
+MahiWebContentsManagerImpl::MahiWebContentsManagerImpl() = default;
 
-MahiWebContentsManager::MahiWebContentsManager() = default;
-
-MahiWebContentsManager::~MahiWebContentsManager() {
+MahiWebContentsManagerImpl::~MahiWebContentsManagerImpl() {
   focused_web_contents_ = nullptr;
 }
 
-void MahiWebContentsManager::Initialize() {
+void MahiWebContentsManagerImpl::Initialize() {
   client_ = std::make_unique<
       MahiBrowserClientImpl>(/*request_content_callback=*/
                              base::BindRepeating(
-                                 &MahiWebContentsManager::RequestContent,
+                                 &MahiWebContentsManagerImpl::RequestContent,
                                  weak_pointer_factory_.GetWeakPtr()));
 
   is_initialized_ = true;
 }
 
-void MahiWebContentsManager::OnFocusedPageLoadComplete(
+void MahiWebContentsManagerImpl::OnFocusedPageLoadComplete(
     content::WebContents* web_contents) {
   if (!is_initialized_) {
     return;
@@ -229,12 +219,12 @@ void MahiWebContentsManager::OnFocusedPageLoadComplete(
 
   content_extraction::GetInnerText(
       *rfh, /*node_id=*/std::nullopt,
-      base::BindOnce(&MahiWebContentsManager::OnGetInnerText,
+      base::BindOnce(&MahiWebContentsManagerImpl::OnGetInnerText,
                      weak_pointer_factory_.GetWeakPtr(),
                      focused_web_content_state_.page_id, start_time));
 }
 
-void MahiWebContentsManager::ClearFocusedWebContentState(
+void MahiWebContentsManagerImpl::ClearFocusedWebContentState(
     raw_ptr<aura::Window> top_level_window) {
   focused_web_contents_ = nullptr;
   is_pdf_focused_web_contents_ = false;
@@ -250,14 +240,14 @@ void MahiWebContentsManager::ClearFocusedWebContentState(
   client_->OnFocusedPageChanged(focused_web_content_state_);
 }
 
-void MahiWebContentsManager::WebContentsDestroyed(
+void MahiWebContentsManagerImpl::WebContentsDestroyed(
     content::WebContents* web_contents) {
   if (focused_web_contents_ == web_contents) {
     ClearFocusedWebContentState(web_contents->GetTopLevelNativeWindow());
   }
 }
 
-void MahiWebContentsManager::OnContextMenuClicked(
+void MahiWebContentsManagerImpl::OnContextMenuClicked(
     int64_t display_id,
     ButtonType button_type,
     const std::u16string& question,
@@ -271,14 +261,14 @@ void MahiWebContentsManager::OnContextMenuClicked(
                                 button_type);
 }
 
-bool MahiWebContentsManager::IsFocusedPageDistillable() {
+bool MahiWebContentsManagerImpl::IsFocusedPageDistillable() {
   if (!focused_web_content_state_.is_distillable.has_value()) {
     return false;
   }
   return focused_web_content_state_.is_distillable.value();
 }
 
-bool MahiWebContentsManager::GetPrefValue() const {
+bool MahiWebContentsManagerImpl::GetPrefValue() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* session_controller = ash::Shell::Get()->session_controller();
 
@@ -294,18 +284,7 @@ bool MahiWebContentsManager::GetPrefValue() const {
 #endif
 }
 
-// static
-void MahiWebContentsManager::SetInstanceForTesting(
-    MahiWebContentsManager* test_manager) {
-  g_mahi_web_content_manager_for_testing = test_manager;
-}
-
-// static
-void MahiWebContentsManager::ResetInstanceForTesting() {
-  g_mahi_web_content_manager_for_testing = nullptr;
-}
-
-void MahiWebContentsManager::OnGetInnerText(
+void MahiWebContentsManagerImpl::OnGetInnerText(
     const base::UnguessableToken& page_id,
     const base::Time& start_time,
     std::unique_ptr<content_extraction::InnerTextResult> result) {
@@ -326,7 +305,7 @@ void MahiWebContentsManager::OnGetInnerText(
   client_->OnFocusedPageChanged(focused_web_content_state_);
 }
 
-void MahiWebContentsManager::OnGetSnapshot(
+void MahiWebContentsManagerImpl::OnGetSnapshot(
     const base::UnguessableToken& page_id,
     content::WebContents* web_contents,
     const base::Time& start_time,
@@ -342,7 +321,7 @@ void MahiWebContentsManager::OnGetSnapshot(
       focused_web_content_state_, client_->client_id(), std::move(callback));
 }
 
-void MahiWebContentsManager::RequestContent(
+void MahiWebContentsManagerImpl::RequestContent(
     const base::UnguessableToken& page_id,
     GetContentCallback callback) {
   if (focused_web_content_state_.page_id != page_id || !focused_web_contents_) {
@@ -363,12 +342,12 @@ void MahiWebContentsManager::RequestContent(
   }
 }
 
-void MahiWebContentsManager::RequestWebContent(
+void MahiWebContentsManagerImpl::RequestWebContent(
     const base::UnguessableToken& page_id,
     GetContentCallback callback) {
   base::Time start_time = base::Time::Now();
   focused_web_contents_->RequestAXTreeSnapshot(
-      base::BindOnce(&MahiWebContentsManager::OnGetSnapshot,
+      base::BindOnce(&MahiWebContentsManagerImpl::OnGetSnapshot,
                      weak_pointer_factory_.GetWeakPtr(),
                      focused_web_content_state_.page_id, focused_web_contents_,
                      start_time, std::move(callback)),
@@ -377,7 +356,7 @@ void MahiWebContentsManager::RequestWebContent(
       content::WebContents::AXTreeSnapshotPolicy::kAll);
 }
 
-void MahiWebContentsManager::RequestPDFContent(
+void MahiWebContentsManagerImpl::RequestPDFContent(
     const base::UnguessableToken& page_id,
     GetContentCallback callback) {
   content::RenderFrameHost* rfh_pdf =
@@ -408,11 +387,11 @@ void MahiWebContentsManager::RequestPDFContent(
   pdf_observer_ = std::make_unique<MahiPDFObserver>(
       web_contents_to_observe, ui::kAXModeWebContentsOnly,
       rfh_pdf->GetAXTreeID(),
-      base::BindOnce(&MahiWebContentsManager::OnGetAXTreeUpdatesForPDF,
+      base::BindOnce(&MahiWebContentsManagerImpl::OnGetAXTreeUpdatesForPDF,
                      weak_pointer_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void MahiWebContentsManager::OnGetAXTreeUpdatesForPDF(
+void MahiWebContentsManagerImpl::OnGetAXTreeUpdatesForPDF(
     GetContentCallback callback,
     const std::vector<ui::AXTreeUpdate>& updates) {
   content_extraction_delegate_->ExtractContent(
@@ -423,12 +402,13 @@ void MahiWebContentsManager::OnGetAXTreeUpdatesForPDF(
   pdf_observer_.reset();
 }
 
-gfx::ImageSkia MahiWebContentsManager::GetFavicon(
+gfx::ImageSkia MahiWebContentsManagerImpl::GetFavicon(
     content::WebContents* web_contents) const {
   return favicon::TabFaviconFromWebContents(web_contents).AsImageSkia();
 }
 
-bool MahiWebContentsManager::ShouldSkip(content::WebContents* web_contents) {
+bool MahiWebContentsManagerImpl::ShouldSkip(
+    content::WebContents* web_contents) {
   const auto url = web_contents->GetURL();
 
   static constexpr auto kSkipUrls = base::MakeFixedFlatSet<std::string_view>(

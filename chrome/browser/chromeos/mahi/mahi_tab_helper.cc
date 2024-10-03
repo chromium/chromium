@@ -6,7 +6,7 @@
 
 #include <string_view>
 
-#include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
+#include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 
 namespace mahi {
@@ -31,11 +31,13 @@ void MahiTabHelper::OnWebContentsFocused(
   // Otherwise, it would be handled by
   // `DocumentOnLoadCompletedInPrimaryMainFrame`.
   if (web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
-    MahiWebContentsManager::Get()->OnFocusedPageLoadComplete(web_contents());
+    chromeos::MahiWebContentsManager::Get()->OnFocusedPageLoadComplete(
+        web_contents());
   } else {
     // Clears the previous focused page state so that it won't be shown before
     // the new page finishes loading.
-    MahiWebContentsManager::Get()->ClearFocusedWebContentState();
+    chromeos::MahiWebContentsManager::Get()->ClearFocusedWebContentState(
+        /*top_level_window=*/nullptr);
   }
 }
 
@@ -49,11 +51,12 @@ void MahiTabHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
   if (!focused_) {
     return;
   }
-  MahiWebContentsManager::Get()->OnFocusedPageLoadComplete(web_contents());
+  chromeos::MahiWebContentsManager::Get()->OnFocusedPageLoadComplete(
+      web_contents());
 }
 
 void MahiTabHelper::WebContentsDestroyed() {
-  MahiWebContentsManager::Get()->WebContentsDestroyed(web_contents());
+  chromeos::MahiWebContentsManager::Get()->WebContentsDestroyed(web_contents());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(MahiTabHelper);

@@ -13,7 +13,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/launcher_search/search_util.h"
-#include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
+#include "chrome/browser/chromeos/mahi/mahi_web_contents_manager_impl.h"
 #include "chrome/browser/chromeos/printing/print_preview/print_preview_webcontents_manager.h"
 #include "chrome/browser/chromeos/reporting/metric_reporting_manager_lacros_factory.h"
 #include "chrome/browser/chromeos/smart_reader/smart_reader_client_impl.h"
@@ -317,7 +317,7 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   if (chromeos::features::IsMahiEnabled() &&
       chromeos::LacrosService::Get()
           ->IsAvailable<crosapi::mojom::MahiBrowserDelegate>()) {
-    mahi::MahiWebContentsManager::Get()->Initialize();
+    chromeos::MahiWebContentsManager::Get()->Initialize();
   }
 
   if (base::FeatureList::IsEnabled(::features::kPrintPreviewCrosPrimary) &&

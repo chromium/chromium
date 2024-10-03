@@ -14,8 +14,8 @@ static_library("mahi") {
     "mahi_content_extraction_delegate.h",
     "mahi_tab_helper.cc",
     "mahi_tab_helper.h",
-    "mahi_web_contents_manager.cc",
-    "mahi_web_contents_manager.h",
+    "mahi_web_contents_manager_impl.cc",
+    "mahi_web_contents_manager_impl.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -61,6 +61,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui",
     "//chrome/browser/ui/tabs:test_support",
     "//chrome/test:test_support",
+    "//chromeos/components/mahi/public/cpp",
     "//chromeos/constants",
     "//testing/gmock",
     "//testing/gtest",
@@ -72,7 +73,7 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [ "mahi_web_contents_manager_browsertest.cc" ]
+  sources = [ "mahi_web_contents_manager_impl_browsertest.cc" ]
 
   deps = [
     ":mahi",

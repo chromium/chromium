@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_CHROMEOS_MAHI_TEST_MOCK_MAHI_WEB_CONTENTS_MANAGER_H_
 #define CHROME_BROWSER_CHROMEOS_MAHI_TEST_MOCK_MAHI_WEB_CONTENTS_MANAGER_H_
 
-#include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
+#include "chrome/browser/chromeos/mahi/mahi_web_contents_manager_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace mahi {
 
-class MockMahiWebContentsManager : public MahiWebContentsManager {
+class MockMahiWebContentsManager : public MahiWebContentsManagerImpl {
  public:
   MockMahiWebContentsManager();
   ~MockMahiWebContentsManager() override;

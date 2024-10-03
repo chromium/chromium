@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_CHROMEOS_MAHI_TEST_FAKE_MAHI_WEB_CONTENTS_MANAGER_H_
 #define CHROME_BROWSER_CHROMEOS_MAHI_TEST_FAKE_MAHI_WEB_CONTENTS_MANAGER_H_
 
-#include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
+#include "chrome/browser/chromeos/mahi/mahi_web_contents_manager_impl.h"
 #include "chromeos/components/mahi/public/cpp/mahi_browser_util.h"
+#include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
 #include "chromeos/crosapi/mojom/mahi.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/gfx/image/image_skia.h"
@@ -17,7 +18,7 @@ namespace mahi {
 // mojom connections to the utility process and ash chrome. It also provide
 // access to the local variables, such as the web content states, so that we can
 // easily check them in the test.
-class FakeMahiWebContentsManager : public MahiWebContentsManager {
+class FakeMahiWebContentsManager : public MahiWebContentsManagerImpl {
  public:
   FakeMahiWebContentsManager();
 

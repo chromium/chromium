@@ -22,6 +22,8 @@ component("cpp") {
     "mahi_switches.h",
     "mahi_util.cc",
     "mahi_util.h",
+    "mahi_web_contents_manager.cc",
+    "mahi_web_contents_manager.h",
   ]
 
   deps = [
