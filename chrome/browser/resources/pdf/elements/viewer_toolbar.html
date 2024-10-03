@@ -1,6 +1,6 @@
 <div id="toolbar">
   <div id="start">
-    <cr-icon-button id="sidenavToggle" iron-icon="cr20:menu"
+    <cr-icon-button id="sidenavToggle" iron-icon="${this.menuIcon_()}"
         title="$i18n{menu}" aria-label="$i18n{menu}"
         aria-expanded="${this.getAriaExpanded_()}"
 <if expr="enable_ink">
@@ -97,7 +97,7 @@
         ?hidden="${!this.printingEnabled}" title="$i18n{tooltipPrint}"
         aria-label="$i18n{tooltipPrint}" @click="${this.onPrintClick_}">
     </cr-icon-button>
-    <cr-icon-button id="more" iron-icon="cr:more-vert"
+    <cr-icon-button id="more" iron-icon="${this.moreIcon_()}"
         title="$i18n{moreActions}" aria-label="$i18n{moreActions}"
         @click="${this.onMoreClick_}"></cr-icon-button>
   </div>
