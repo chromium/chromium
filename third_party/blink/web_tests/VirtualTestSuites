@@ -1767,7 +1767,9 @@
       "dom/domparsing/document-render-blocking-no-block.html",
       "external/wpt/css/css-transitions/render-blocking",
       "external/wpt/html/browsers/browsing-the-web/history-traversal/pagereveal",
-      "external/wpt/html/dom/render-blocking"
+      "external/wpt/html/dom/render-blocking",
+      "external/wpt/dom/nodes/moveBefore/tentative/preserve-render-blocking-script.html",
+      "external/wpt/dom/nodes/moveBefore/tentative/preserve-render-blocking-style.html"
     ],
     "exclusive_tests": "ALL",
     "args": ["--enable-features=NoForcedFrameUpdatesForWebTests",

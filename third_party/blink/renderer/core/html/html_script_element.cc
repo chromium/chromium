@@ -144,7 +144,8 @@ Node::InsertionNotificationRequest HTMLScriptElement::InsertedInto(
 void HTMLScriptElement::RemovedFrom(ContainerNode& insertion_point) {
   HTMLElement::RemovedFrom(insertion_point);
   loader_->Removed();
-  if (GetDocument().GetRenderBlockingResourceManager()) {
+  if (GetDocument().GetRenderBlockingResourceManager() &&
+      !GetDocument().StatePreservingAtomicMoveInProgress()) {
     GetDocument().GetRenderBlockingResourceManager()->RemovePendingScript(
         *this);
   }

@@ -262,6 +262,10 @@ void LinkStyle::SetDisabledState(bool disabled) {
 LinkStyle::LoadReturnValue LinkStyle::LoadStylesheetIfNeeded(
     const LinkLoadParameters& params,
     const WTF::TextEncoding& charset) {
+  if (GetDocument().StatePreservingAtomicMoveInProgress()) {
+    return kNotNeeded;
+  }
+
   if (disabled_state_ == kDisabled || !owner_->RelAttribute().IsStyleSheet() ||
       !StyleSheetTypeIsSupported(params.type) || !ShouldLoadResource() ||
       !params.href.IsValid())
