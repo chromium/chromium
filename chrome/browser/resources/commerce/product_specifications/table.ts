@@ -66,6 +66,12 @@ export class TableElement extends PolymerElement {
   override connectedCallback(): void {
     super.connectedCallback();
     this.dragAndDropManager_.init(this);
+    // Prevent cursor from switching to not-allowed on Windows during drag and
+    // drop.
+    this.$.table.addEventListener(
+        'dragenter', (e: DragEvent) => e.preventDefault());
+    this.$.table.addEventListener(
+        'dragleave', (e: DragEvent) => e.preventDefault());
   }
 
   override disconnectedCallback(): void {
