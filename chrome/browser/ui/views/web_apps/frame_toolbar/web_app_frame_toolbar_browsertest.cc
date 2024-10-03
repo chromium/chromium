@@ -2196,6 +2196,35 @@ IN_PROC_BROWSER_TEST_F(
   }));
 }
 
+IN_PROC_BROWSER_TEST_F(
+    WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
+    WindowSetResizableDoNotBlockRequestFullscreen) {
+  InstallAndLaunchWebApp();
+  helper()->GrantWindowManagementPermission();
+  auto* browser_view = helper()->browser_view();
+  auto* web_contents = browser_view->GetActiveWebContents();
+
+  SetResizableAndWait(web_contents, false, false);
+  EXPECT_FALSE(helper()->browser_view()->IsFullscreen());
+  {
+    ui_test_utils::FullscreenWaiter waiter(helper()->app_browser(),
+                                           {.tab_fullscreen = true});
+    EXPECT_TRUE(ExecJs(web_contents,
+                       "(async () => {await "
+                       "document.documentElement.requestFullscreen();})()"));
+    waiter.Wait();
+  }
+  EXPECT_TRUE(helper()->browser_view()->IsFullscreen());
+  {
+    ui_test_utils::FullscreenWaiter waiter(helper()->app_browser(),
+                                           {.tab_fullscreen = false});
+    EXPECT_TRUE(ExecJs(web_contents,
+                       "(async () => {await document.exitFullscreen();})()"));
+    waiter.Wait();
+  }
+  EXPECT_FALSE(helper()->browser_view()->IsFullscreen());
+}
+
 #if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
