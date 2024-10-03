@@ -2,7 +2,7 @@ Name: hyphenation-patterns
 Short Name: hyphenation-patterns
 URL: https://android.googlesource.com/platform/external/hyphenation-patterns/
 Version: 0
-Date: 20230124
+Date: 2023-01-24
 Revision: 06ce8d348f9145e41e8f52ff9f83470fe3563084
 Security Critical: no
 Shipped: yes

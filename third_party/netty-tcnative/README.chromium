@@ -2,7 +2,7 @@ Name: Tomcat Native Fork for Netty
 Short Name: netty-tcnative
 URL: https://github.com/netty/netty-tcnative.git
 Version: 2.0.0.Final
-Date: March 9, 2017
+Date: 2017-03-09
 Revision: 28d9d70090f1b18927f4554621648cc1922d6e05
 License: Apache 2.0
 License File: LICENSE

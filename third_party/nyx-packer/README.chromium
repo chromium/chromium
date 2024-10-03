@@ -2,7 +2,7 @@ Name: Nyx Packer
 Short Name: nyx-packer
 URL: https://github.com/nyx-fuzz/packer
 Version: 0
-Date: 2022/08/05
+Date: 2022-08-05
 Revision: a2403befd860415725d0b6d64df69fd000aca541
 License: MIT and GPL2
 License File: LICENSE

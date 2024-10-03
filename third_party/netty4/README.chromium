@@ -3,7 +3,7 @@ Short Name: netty
 URL: http://netty.io/
 SHA: 3b0025e08168eebc97b232fef333a716dc4d42bd  netty-4.1.9.Final.tar.bz2
 Version: 4.1.9.Final
-Date: March 10, 2017
+Date: 2017-03-10
 License: Apache 2.0
 License File: LICENSE
 Security Critical: no

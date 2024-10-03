@@ -2,7 +2,7 @@ Name: Android Platform engineering tools
 Short Name: android platform development
 URL: https://android.googlesource.com/platform/development
 Version: unknown
-Date: 2014/05/02
+Date: 2014-05-02
 Revision: 1b10ec4
 License: Apache 2.0
 License File: LICENSE
