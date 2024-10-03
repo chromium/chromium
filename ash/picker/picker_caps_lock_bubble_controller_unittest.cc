@@ -13,6 +13,7 @@
 #include "ui/base/ime/ash/fake_ime_keyboard.h"
 #include "ui/base/ime/fake_text_input_client.h"
 #include "ui/base/ime/text_input_type.h"
+#include "ui/events/base_event_utils.h"
 
 namespace ash {
 namespace {
@@ -67,6 +68,44 @@ TEST_F(PickerCapsLockBubbleControllerTest,
   EXPECT_TRUE(controller.bubble_view_for_testing());
   task_environment()->FastForwardBy(base::Seconds(2));
   EXPECT_FALSE(controller.bubble_view_for_testing());
+}
+
+TEST_F(PickerCapsLockBubbleControllerTest, InputEventClosesBubble) {
+  input_method::FakeImeKeyboard ime_keyboard;
+  PickerCapsLockBubbleController controller(&ime_keyboard);
+  ui::FakeTextInputClient input_field(
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod(),
+      {.type = ui::TEXT_INPUT_TYPE_TEXT});
+  input_field.Focus();
+  ime_keyboard.SetCapsLockEnabled(true);
+  task_environment()->FastForwardBy(base::Seconds(1));
+  EXPECT_TRUE(controller.bubble_view_for_testing());
+
+  ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(5, 5),
+                       gfx::Point(5, 5), ui::EventTimeForNow(),
+                       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  controller.OnMouseEvent(&event);
+
+  EXPECT_FALSE(controller.bubble_view_for_testing());
+}
+
+TEST_F(PickerCapsLockBubbleControllerTest,
+       InputEventDoesNotCloseBubbleIfTooEarly) {
+  input_method::FakeImeKeyboard ime_keyboard;
+  PickerCapsLockBubbleController controller(&ime_keyboard);
+  ui::FakeTextInputClient input_field(
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod(),
+      {.type = ui::TEXT_INPUT_TYPE_TEXT});
+  input_field.Focus();
+  ime_keyboard.SetCapsLockEnabled(true);
+  EXPECT_TRUE(controller.bubble_view_for_testing());
+
+  ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(5, 5),
+                       gfx::Point(5, 5), ui::EventTimeForNow(),
+                       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  controller.OnMouseEvent(&event);
+
+  EXPECT_TRUE(controller.bubble_view_for_testing());
 }
 
 }  // namespace
