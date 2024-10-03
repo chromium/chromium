@@ -162,10 +162,14 @@ HlsManifestDemuxerEngine::~HlsManifestDemuxerEngine() = default;
 HlsManifestDemuxerEngine::HlsManifestDemuxerEngine(
     base::SequenceBound<HlsDataSourceProvider> dsp,
     scoped_refptr<base::SequencedTaskRunner> media_task_runner,
+    base::RepeatingCallback<void(const MediaTrack&)> add_track,
+    base::RepeatingCallback<void(const MediaTrack&)> remove_track,
     bool was_already_tainted,
     GURL root_playlist_uri,
     MediaLog* media_log)
     : media_task_runner_(std::move(media_task_runner)),
+      add_track_(std::move(add_track)),
+      remove_track_(std::move(remove_track)),
       root_playlist_uri_(std::move(root_playlist_uri)),
       media_log_(media_log->Clone()),
       network_access_(std::make_unique<HlsNetworkAccessImpl>(std::move(dsp))),

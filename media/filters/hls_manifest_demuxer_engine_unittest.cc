@@ -390,6 +390,8 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
  public:
   MOCK_METHOD(void, MockInitComplete, (PipelineStatus status), ());
   MOCK_METHOD(void, SeekFinished, (), ());
+  MOCK_METHOD(void, AddMediaTrack, (const MediaTrack&), ());
+  MOCK_METHOD(void, RemoveMediaTrack, (const MediaTrack&), ());
 
   HlsManifestDemuxerEngineTest()
       : media_log_(std::make_unique<NiceMock<media::MockMediaLog>>()),
@@ -406,6 +408,10 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
 
     engine_ = std::make_unique<HlsManifestDemuxerEngine>(
         std::move(dsp), base::SingleThreadTaskRunner::GetCurrentDefault(),
+        base::BindRepeating(&HlsManifestDemuxerEngineTest::AddMediaTrack,
+                            base::Unretained(this)),
+        base::BindRepeating(&HlsManifestDemuxerEngineTest::RemoveMediaTrack,
+                            base::Unretained(this)),
         false, GURL("http://media.example.com/manifest.m3u8"),
         media_log_.get());
   }

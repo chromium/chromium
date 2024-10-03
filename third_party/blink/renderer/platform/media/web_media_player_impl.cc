@@ -1624,13 +1624,17 @@ void WebMediaPlayerImpl::OnEncryptedMediaInitData(
       base::saturated_cast<unsigned int>(init_data.size()));
 }
 
-#if BUILDFLAG(ENABLE_FFMPEG)
+#if BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
 
 void WebMediaPlayerImpl::AddMediaTrack(const media::MediaTrack& track) {
   client_->AddMediaTrack(track);
 }
 
-#endif  // BUILDFLAG(ENABLE_FFMPEG)
+void WebMediaPlayerImpl::RemoveMediaTrack(const media::MediaTrack& track) {
+  client_->RemoveMediaTrack(track);
+}
+
+#endif  // BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
 

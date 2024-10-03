@@ -280,6 +280,7 @@ PipelineStatus PipelineIntegrationTestBase::StartPipelineWithHlsManifest(
 
   auto engine = std::make_unique<HlsManifestDemuxerEngine>(
       std::move(hls_dsp), task_environment_.GetMainThreadTaskRunner(),
+      base::DoNothing(), base::DoNothing(),
       /*name=*/false, manifest_root, &media_log_);
   demuxer_ = std::make_unique<ManifestDemuxer>(
       task_environment_.GetMainThreadTaskRunner(), base::DoNothing(),

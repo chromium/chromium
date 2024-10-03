@@ -446,9 +446,10 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void UpdateLoadedUrl(const GURL& url) override;
   void DemuxerRequestsSeek(base::TimeDelta seek_time) override;
 
-#if BUILDFLAG(ENABLE_FFMPEG)
+#if BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
   void AddMediaTrack(const media::MediaTrack&) override;
-#endif  // BUILDFLAG(ENABLE_FFMPEG)
+  void RemoveMediaTrack(const media::MediaTrack&) override;
+#endif  // BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
   void GetUrlData(const GURL& gurl,
