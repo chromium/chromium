@@ -122,13 +122,18 @@ def _GenerateBundleApks(info,
       optimize_for=optimize_for)
 
 
-def _InstallBundle(devices, apk_helper_instance, modules, fake_modules):
+def _InstallBundle(devices,
+                   apk_helper_instance,
+                   modules,
+                   fake_modules,
+                   locales=None):
 
   def Install(device):
     device.Install(apk_helper_instance,
                    permissions=[],
                    modules=modules,
                    fake_modules=fake_modules,
+                   additional_locales=locales,
                    allow_downgrade=True,
                    reinstall=True)
 
@@ -1529,6 +1534,11 @@ class _InstallCommand(_Command):
   def _RegisterExtraArgs(self, group):
     if self.is_bundle:
       group.add_argument(
+          '--locales',
+          action='append',
+          help=
+          'Locale splits to install (english is in base, so always installed).')
+      group.add_argument(
           '-m',
           '--module',
           action='append',
@@ -1557,7 +1567,8 @@ class _InstallCommand(_Command):
       modules = list(
           set(self.args.module) - set(self.args.no_module) -
           set(self.args.fake))
-      _InstallBundle(self.devices, self.apk_helper, modules, self.args.fake)
+      _InstallBundle(self.devices, self.apk_helper, modules, self.args.fake,
+                     self.args.locales)
     else:
       _InstallApk(self.devices, self.apk_helper, self.install_dict)
     if self.args.is_official_build:
