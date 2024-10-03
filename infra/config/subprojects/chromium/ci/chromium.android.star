@@ -3869,7 +3869,9 @@ ci.builder(
                     # https://crbug.com/1414886
                     "--gtest_filter=-OfferNotificationControllerAndroidBrowserTestForMessagesUi.MessageShown",
                 ],
-                ci_only = True,
+                swarming = targets.swarming(
+                    shards = 12,
+                ),
             ),
             "android_sync_integration_tests": targets.mixin(
                 swarming = targets.swarming(
