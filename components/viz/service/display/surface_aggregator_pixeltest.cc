@@ -350,7 +350,8 @@ TEST_P(SurfaceAggregatorPixelTest, DrawAndEraseDelegatedInkTrail) {
 
   delegated_ink_helper.CreateAndSendMetadata(kFirstPoint, 7.7f,
                                              SkColors::kWhite, kFirstTimestamp,
-                                             gfx::RectF(0, 0, 200, 200));
+                                             gfx::RectF(0, 0, 200, 200),
+                                             /*render_pass_id=*/1);
 
   gfx::Rect rect(this->device_viewport_size_);
   CompositorRenderPassId id{1};

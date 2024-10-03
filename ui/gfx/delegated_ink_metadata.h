@@ -50,14 +50,16 @@ class GFX_EXPORT DelegatedInkMetadata {
                        base::TimeTicks timestamp,
                        const RectF& area,
                        base::TimeTicks frame_time,
-                       bool hovering)
+                       bool hovering,
+                       std::uint64_t render_pass_id)
       : point_(pt),
         diameter_(diameter),
         color_(color),
         timestamp_(timestamp),
         presentation_area_(area),
         frame_time_(frame_time),
-        is_hovering_(hovering) {}
+        is_hovering_(hovering),
+        render_pass_id_(render_pass_id) {}
   DelegatedInkMetadata(const DelegatedInkMetadata& other) = default;
   DelegatedInkMetadata& operator=(const DelegatedInkMetadata& other) = default;
 
@@ -67,8 +69,11 @@ class GFX_EXPORT DelegatedInkMetadata {
   base::TimeTicks timestamp() const { return timestamp_; }
   const RectF& presentation_area() const { return presentation_area_; }
   base::TimeTicks frame_time() const { return frame_time_; }
+  std::uint64_t render_pass_id() const { return render_pass_id_; }
   bool is_hovering() const { return is_hovering_; }
-
+  void set_render_pass_id(std::uint64_t render_pass_id) {
+    render_pass_id_ = render_pass_id;
+  }
   void set_frame_time(base::TimeTicks frame_time) { frame_time_ = frame_time; }
   uint64_t trace_id() const {
     // Use mask to distinguish from DelegatedInkPoint::trace_id().
@@ -102,6 +107,11 @@ class GFX_EXPORT DelegatedInkMetadata {
   // capabilities is hovering over the screen when updateInkTrailStartPoint is
   // called.
   bool is_hovering_ = false;
+
+  // Id of the render pass that will have the delegated ink drawn on top of.
+  // This is used when delegated ink is rendered by Skia. Only used within the
+  // gpu process - not serialized over mojo.
+  std::uint64_t render_pass_id_ = 0;
 };
 
 }  // namespace gfx

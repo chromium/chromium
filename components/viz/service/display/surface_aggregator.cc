@@ -942,12 +942,16 @@ void SurfaceAggregator::EmitSurfaceContent(
   }
 
   if (frame_metadata.delegated_ink_metadata) {
+    AggregatedRenderPassId render_pass_with_delegated_ink =
+        merge_pass ? dest_pass->id
+                   : resolved_frame.GetRootRenderPassData().remapped_id();
     // Copy delegated ink metadata from the compositor frame metadata. This
     // prevents the delegated ink trail from flickering if a compositor frame
     // is not generated due to a delayed main frame.
     TransformAndStoreDelegatedInkMetadata(
         dest_pass->transform_to_root_target * combined_transform,
-        frame_metadata.delegated_ink_metadata.get());
+        frame_metadata.delegated_ink_metadata.get(),
+        render_pass_with_delegated_ink);
   }
 
   // TODO(fsamuel): Move this to a separate helper function.
@@ -1554,7 +1558,8 @@ void SurfaceAggregator::CopyPasses(ResolvedFrameData& resolved_frame) {
     TransformAndStoreDelegatedInkMetadata(
         root_resolved_pass.render_pass().transform_to_root_target *
             surface_transform,
-        frame_metadata.delegated_ink_metadata.get());
+        frame_metadata.delegated_ink_metadata.get(),
+        resolved_frame.GetRootRenderPassData().remapped_id());
   }
 
   bool apply_surface_transform_to_root_pass = true;
@@ -2509,7 +2514,8 @@ bool SurfaceAggregator::IsRootSurface(const Surface* surface) const {
 // aggregated frame, after which the member is then cleared.
 void SurfaceAggregator::TransformAndStoreDelegatedInkMetadata(
     const gfx::Transform& parent_quad_to_root_target_transform,
-    const gfx::DelegatedInkMetadata* metadata) {
+    const gfx::DelegatedInkMetadata* metadata,
+    const AggregatedRenderPassId render_pass_with_delegated_ink) {
   if (delegated_ink_metadata_) {
     // This member could already be populated in two scenarios:
     //   1. The delegated ink metadata was committed to a frame's metadata that
@@ -2534,7 +2540,8 @@ void SurfaceAggregator::TransformAndStoreDelegatedInkMetadata(
       metadata->presentation_area());
   delegated_ink_metadata_ = std::make_unique<gfx::DelegatedInkMetadata>(
       point, metadata->diameter(), metadata->color(), metadata->timestamp(),
-      area, metadata->frame_time(), metadata->is_hovering());
+      area, metadata->frame_time(), metadata->is_hovering(),
+      render_pass_with_delegated_ink.GetUnsafeValue());
 
   TRACE_EVENT_INSTANT2(
       "viz", "SurfaceAggregator::TransformAndStoreDelegatedInkMetadata",

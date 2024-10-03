@@ -1720,7 +1720,7 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
         ink_points_[pointer_id][index].point(), diameter, color.toSkColor(),
         ink_points_[pointer_id][index].timestamp(), presentation_area,
         base::TimeTicks::Now(),
-        /*hovering*/ false);
+        /*hovering*/ false, /*render_pass_id=*/0);
     SendMetadata(metadata);
     return metadata;
   }
@@ -1983,7 +1983,8 @@ TEST_F(SkiaDelegatedInkRendererTest,
   // *WithPrediction* shouldn't record anything due to no valid pointer id.
   SendMetadata(gfx::DelegatedInkMetadata(
       gfx::PointF(100, 100), 5.6f, SK_ColorBLACK, base::TimeTicks::Min(),
-      gfx::RectF(), base::TimeTicks::Min(), /*hovering*/ false));
+      gfx::RectF(), base::TimeTicks::Min(), /*hovering*/ false,
+      /*render_pass_id=*/0));
   FinalizePathAndCheckHistograms(base::Milliseconds(0), base::TimeDelta::Min());
   EXPECT_EQ(kNumPointsForPointerId0 - kInkPointForMetadata,
             StoredPointsForPointerId(kPointerIds[0]));
@@ -1998,7 +1999,7 @@ TEST_F(SkiaDelegatedInkRendererTest,
   SendMetadata(gfx::DelegatedInkMetadata(
       gfx::PointF(100, 100), 5.6f, SK_ColorBLACK,
       base::TimeTicks::Now() + base::Milliseconds(1000), gfx::RectF(),
-      base::TimeTicks::Now(), /*hovering*/ false));
+      base::TimeTicks::Now(), /*hovering*/ false, /*render_pass_id=*/0));
   FinalizePathAndCheckHistograms(base::Milliseconds(0), base::TimeDelta::Min());
   for (int i : kPointerIds)
     EXPECT_EQ(0, StoredPointsForPointerId(i));
@@ -2088,7 +2089,7 @@ TEST_F(SkiaDelegatedInkRendererTest, DrawTrailWhenMetadataIsCloseEnough) {
   gfx::DelegatedInkMetadata metadata(
       gfx::PointF(point.x() - 1.0f, point.y() - 1.0f), 45.f, SK_ColorBLACK,
       timestamp, gfx::RectF(0, 0, 100, 100), base::TimeTicks::Now(),
-      /*hovering*/ false);
+      /*hovering*/ false, /*render_pass_id=*/0);
   SendMetadata(metadata);
 
   // If the metadata was close enough, then a trail should be drawn with all
@@ -2103,7 +2104,7 @@ TEST_F(SkiaDelegatedInkRendererTest, DrawTrailWhenMetadataIsCloseEnough) {
   metadata = gfx::DelegatedInkMetadata(
       gfx::PointF(point2.x() - 1.01f, point2.y() - 1.0f), 45.f, SK_ColorBLACK,
       timestamp2, gfx::RectF(0, 0, 100, 100), base::TimeTicks::Now(),
-      /*hovering*/ false);
+      /*hovering*/ false, /*render_pass_id=*/0);
   SendMetadata(metadata);
 
   ink_renderer()->FinalizePathForDraw();
@@ -2129,7 +2130,7 @@ TEST_F(SkiaDelegatedInkRendererTest, SkiaDelegatedInkOutstandingPointsToDraw) {
   SendMetadata(gfx::DelegatedInkMetadata(
       gfx::PointF(point.x(), point.y()), 45.f, SK_ColorBLACK, timestamp,
       gfx::RectF(0, 0, 100, 100), base::TimeTicks::Now(),
-      /*hovering=*/false));
+      /*hovering=*/false, /*render_pass_id=*/0));
   ink_renderer()->ReportPointsDrawn();
   histogram_tester.ExpectUniqueSample(kHistogramName, 1, 1);
 
@@ -2167,7 +2168,7 @@ TEST_F(SkiaDelegatedInkRendererTest, SkiaDelegatedInkTimeToDrawMillis) {
   SendMetadata(gfx::DelegatedInkMetadata(
       gfx::PointF(point.x(), point.y()), 45.f, SK_ColorBLACK, timestamp,
       gfx::RectF(0, 0, 100, 100), base::TimeTicks::Now(),
-      /*hovering=*/false));
+      /*hovering=*/false, /*render_pass_id=*/0));
   ink_renderer()->ReportPointsDrawn();
   histogram_tester.ExpectTotalCount(kHistogramName, 1);
 
@@ -2193,7 +2194,7 @@ TEST_F(SkiaDelegatedInkRendererTest,
   const auto create_metadata = [](gfx::PointF& p, base::TimeTicks& t) {
     return gfx::DelegatedInkMetadata(p, /*diameter=*/45.f, SK_ColorBLACK, t,
                                      gfx::RectF(0, 0, 100, 100), t,
-                                     /*hovering=*/false);
+                                     /*hovering=*/false, /*render_pass_id=*/0);
   };
   SetUpRenderers();
 
@@ -2336,7 +2337,8 @@ TEST_P(DelegatedInkDisplayTest, MetadataOnlySentToSkiaRendererOrOutputSurface) {
 
   gfx::DelegatedInkMetadata metadata(
       gfx::PointF(5, 5), 3.5f, SK_ColorBLACK, base::TimeTicks::Now(),
-      gfx::RectF(0, 0, 20, 20), base::TimeTicks::Now(), false);
+      gfx::RectF(0, 0, 20, 20), base::TimeTicks::Now(), false,
+      /*render_pass_id=*/0);
 
   SubmitCompositorFrameWithInkMetadata(
       &pass_list, id_allocator_.GetCurrentLocalSurfaceId(), metadata);
