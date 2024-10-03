@@ -226,11 +226,10 @@ class CallValueBuilder(_CompoundValueBuilder):
     return ')'
 
   def _entries(self, indent: str) -> typing.Iterable[str] | None:
-    next_indent = indent + self._INDENT
     param_output_streams = {}
     for param_name, param_value in self._params.items():
       output_stream = self._get_output_stream_for_contained_value(
-          param_value, next_indent)
+          param_value, indent)
       if output_stream is not None:
         param_output_streams[param_name] = output_stream
 
@@ -277,11 +276,9 @@ class DictValueBuilder(_CompoundValueBuilder):
     return '}'
 
   def _entries(self, indent: str) -> typing.Iterable[str] | None:
-    next_indent = indent + self._INDENT
     item_output_streams = {}
     for key, value in self._items.items():
-      output_stream = self._get_output_stream_for_contained_value(
-          value, next_indent)
+      output_stream = self._get_output_stream_for_contained_value(value, indent)
       if output_stream is not None:
         item_output_streams[key] = output_stream
 
@@ -328,11 +325,10 @@ class ListValueBuilder(_CompoundValueBuilder):
     return ']'
 
   def _entries(self, indent: str = '') -> typing.Iterable[str] | None:
-    next_indent = indent + self._INDENT
     element_output_streams = []
     for element in self._elements:
       output_stream = self._get_output_stream_for_contained_value(
-          element, next_indent)
+          element, indent)
       if output_stream is not None:
         element_output_streams.append(output_stream)
 

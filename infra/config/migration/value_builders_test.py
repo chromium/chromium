@@ -4,7 +4,6 @@
 # found in the LICENSE file.
 """Unit test for value_builders module."""
 
-import dataclasses
 import textwrap
 import typing
 import unittest
@@ -12,16 +11,24 @@ import unittest
 import value_builders
 
 
-@dataclasses.dataclass
-class TestValueBuilder(value_builders.ValueBuilder):
+class TestValueBuilder(value_builders._CompoundValueBuilder):
 
-  test_output: str | None = None
+  def __init__(self):
+    super().__init__()
+    self.entries: list[str] | None = None
 
-  def _output_stream(self, indent: str) -> typing.Iterable[str] | None:
-    del indent
-    if self.test_output is None:
+  @property
+  def _prefix(self):
+    return '<'
+
+  @property
+  def _suffix(self):
+    return '>'
+
+  def _entries(self, indent: str) -> typing.Iterable[str] | None:
+    if not self.entries:
       return None
-    return [self.test_output]
+    return [f'{indent}{e},\n' for e in self.entries]
 
 
 class ValueBuildersTest(unittest.TestCase):
@@ -81,12 +88,15 @@ class ValueBuildersTest(unittest.TestCase):
         builder.output(),
     )
 
-    test_value_builder.test_output = 'x'
+    test_value_builder.entries = ['x', 'z']
 
     self.assertEqual(
         textwrap.dedent("""\
             func(
-              foo = x,
+              foo = <
+                x,
+                z,
+              >,
               bar = y,
             )"""),
         builder.output(),
@@ -146,12 +156,15 @@ class ValueBuildersTest(unittest.TestCase):
         builder.output(),
     )
 
-    test_value_builder.test_output = 'x'
+    test_value_builder.entries = ['x', 'z']
 
     self.assertEqual(
         textwrap.dedent("""\
             {
-              "foo": x,
+              "foo": <
+                x,
+                z,
+              >,
               "bar": y,
             }"""),
         builder.output(),
@@ -211,12 +224,15 @@ class ValueBuildersTest(unittest.TestCase):
         builder.output(),
     )
 
-    test_value_builder.test_output = 'foo'
+    test_value_builder.entries = ['foo', 'baz']
 
     self.assertEqual(
         textwrap.dedent("""\
             [
-              foo,
+              <
+                foo,
+                baz,
+              >,
               bar,
             ]"""),
         builder.output(),
