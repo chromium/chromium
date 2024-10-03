@@ -33,7 +33,7 @@
     dp.Input.dispatchMouseEvent({
       type: 'mousePressed',
       button: 'middle',
-      buttons: 2,
+      buttons: 4,
       clickCount: 1,
       x: 5,
       y: 5,
@@ -41,7 +41,7 @@
     dp.Input.dispatchMouseEvent({
       type: 'mouseReleased',
       button: 'middle',
-      buttons: 2,
+      buttons: 4,
       clickCount: 1,
       x: 5,
       y: 5,
