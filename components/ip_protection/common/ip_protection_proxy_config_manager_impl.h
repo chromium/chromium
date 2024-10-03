@@ -58,7 +58,7 @@ class IpProtectionProxyConfigManagerImpl
 
   void SetProxyListForTesting(
       std::optional<std::vector<net::ProxyChain>> proxy_list,
-      std::optional<ip_protection::GeoHint> geo_hint) {
+      std::optional<GeoHint> geo_hint) {
     current_geo_id_ = GetGeoIdFromGeoHint(geo_hint);
     proxy_list_ = *proxy_list;
     have_fetched_proxy_list_ = true;

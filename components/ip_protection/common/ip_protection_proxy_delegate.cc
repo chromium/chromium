@@ -32,7 +32,7 @@ namespace ip_protection {
 
 IpProtectionProxyDelegate::IpProtectionProxyDelegate(
     MaskedDomainListManager* masked_domain_list_manager,
-    std::unique_ptr<ip_protection::IpProtectionCore> ipp_core)
+    std::unique_ptr<IpProtectionCore> ipp_core)
     : masked_domain_list_manager_(masked_domain_list_manager),
       ipp_core_(std::move(ipp_core)) {
   CHECK(masked_domain_list_manager_);
@@ -58,19 +58,19 @@ ProxyResolutionResult IpProtectionProxyDelegate::ClassifyRequest(
   const std::string& always_proxy = net::features::kIpPrivacyAlwaysProxy.Get();
   if (!always_proxy.empty()) {
     if (url.host() == always_proxy) {
-      return ip_protection::ProxyResolutionResult::kAttemptProxy;
+      return ProxyResolutionResult::kAttemptProxy;
     }
-    return ip_protection::ProxyResolutionResult::kNoMdlMatch;
+    return ProxyResolutionResult::kNoMdlMatch;
   }
 
   // Check eligibility of this request.
   if (!masked_domain_list_manager_->IsPopulated()) {
     vlog("proxy allow list not populated");
-    return ip_protection::ProxyResolutionResult::kMdlNotPopulated;
+    return ProxyResolutionResult::kMdlNotPopulated;
   } else if (!masked_domain_list_manager_->Matches(url,
                                                    network_anonymization_key)) {
     vlog("proxy allow list did not match");
-    return ip_protection::ProxyResolutionResult::kNoMdlMatch;
+    return ProxyResolutionResult::kNoMdlMatch;
   } else {
     vlog("proxy allow list matched");
   }
@@ -93,28 +93,27 @@ ProxyResolutionResult IpProtectionProxyDelegate::ClassifyRequest(
   // Protection should be used, remove this check.
   if (!base::FeatureList::IsEnabled(net::features::kEnableIpProtectionProxy)) {
     vlog("ip protection proxy cannot be enabled");
-    return ip_protection::ProxyResolutionResult::kFeatureDisabled;
+    return ProxyResolutionResult::kFeatureDisabled;
   }
 
   if (!ipp_core_->IsIpProtectionEnabled()) {
     vlog("ip protection proxy is not currently enabled");
-    return ip_protection::ProxyResolutionResult::kSettingDisabled;
+    return ProxyResolutionResult::kSettingDisabled;
   }
   const bool auth_tokens_are_available = ipp_core_->AreAuthTokensAvailable();
   const bool proxy_list_is_available = ipp_core_->IsProxyListAvailable();
   if (!auth_tokens_are_available && !proxy_list_is_available) {
     vlog("neither proxy list nor auth token available");
-    return ip_protection::ProxyResolutionResult::
-        kTokensAndProxyListNotAvailable;
+    return ProxyResolutionResult::kTokensAndProxyListNotAvailable;
   } else if (!auth_tokens_are_available) {
     vlog("no auth token available from cache");
-    return ip_protection::ProxyResolutionResult::kTokensNotAvailable;
+    return ProxyResolutionResult::kTokensNotAvailable;
   } else if (!proxy_list_is_available) {
     vlog("no proxy list available from cache");
-    return ip_protection::ProxyResolutionResult::kProxyListNotAvailable;
+    return ProxyResolutionResult::kProxyListNotAvailable;
   }
 
-  return ip_protection::ProxyResolutionResult::kAttemptProxy;
+  return ProxyResolutionResult::kAttemptProxy;
 }
 
 void IpProtectionProxyDelegate::OnResolveProxy(
@@ -123,11 +122,10 @@ void IpProtectionProxyDelegate::OnResolveProxy(
     const std::string& method,
     const net::ProxyRetryInfoMap& proxy_retry_info,
     net::ProxyInfo* result) {
-  ip_protection::ProxyResolutionResult resolution_result =
+  ProxyResolutionResult resolution_result =
       ClassifyRequest(url, network_anonymization_key, result);
-  ip_protection::Telemetry().ProxyResolution(resolution_result);
-  if (resolution_result !=
-      ip_protection::ProxyResolutionResult::kAttemptProxy) {
+  Telemetry().ProxyResolution(resolution_result);
+  if (resolution_result != ProxyResolutionResult::kAttemptProxy) {
     return;
   }
 
@@ -206,8 +204,7 @@ void IpProtectionProxyDelegate::OnFallback(const net::ProxyChain& bad_chain,
   // If the bad proxy was an IP Protection proxy, refresh the list of IP
   // protection proxies immediately.
   if (bad_chain.is_for_ip_protection()) {
-    ip_protection::Telemetry().ProxyChainFallback(
-        bad_chain.ip_protection_chain_id());
+    Telemetry().ProxyChainFallback(bad_chain.ip_protection_chain_id());
     ipp_core_->RequestRefreshProxyList();
   }
 }
@@ -220,7 +217,7 @@ net::Error IpProtectionProxyDelegate::OnBeforeTunnelRequest(
     VLOG(2) << "NSPD::OnBeforeTunnelRequest() - " << message;
   };
   if (proxy_chain.is_for_ip_protection()) {
-    std::optional<ip_protection::BlindSignedAuthToken> token =
+    std::optional<BlindSignedAuthToken> token =
         ipp_core_->GetAuthToken(chain_index);
     if (token) {
       vlog("adding auth token");

@@ -34,27 +34,26 @@ class IpProtectionCoreHostHelper {
   virtual ~IpProtectionCoreHostHelper() = default;
 
   // Creates a blind-signed auth token by converting token fetched using the
-  // `quiche::BlindSignAuth` library to a `ip_protection::BlindSignedAuthToken`.
-  static std::optional<ip_protection::BlindSignedAuthToken>
-  CreateBlindSignedAuthToken(const quiche::BlindSignToken& bsa_token);
+  // `quiche::BlindSignAuth` library to a `BlindSignedAuthToken`.
+  static std::optional<BlindSignedAuthToken> CreateBlindSignedAuthToken(
+      const quiche::BlindSignToken& bsa_token);
 
   // Creates a `quiche::BlindSignToken()` in the format that the BSA library
   // will return them.
   static quiche::BlindSignToken CreateBlindSignTokenForTesting(
       std::string token_value,
       base::Time expiration,
-      const ip_protection::GeoHint& geo_hint);
+      const GeoHint& geo_hint);
 
   static privacy::ppn::PrivacyPassTokenData CreatePrivacyPassTokenForTesting(
       std::string token_value);
 
   // Converts a mock token value and expiration time into the struct that will
   // be passed to the network service.
-  static std::optional<ip_protection::BlindSignedAuthToken>
-  CreateMockBlindSignedAuthTokenForTesting(
-      std::string token_value,
-      base::Time expiration,
-      const ip_protection::GeoHint& geo_hint);
+  static std::optional<BlindSignedAuthToken>
+  CreateMockBlindSignedAuthTokenForTesting(std::string token_value,
+                                           base::Time expiration,
+                                           const GeoHint& geo_hint);
 
   // Service types used for GetProxyConfigRequest.
   static constexpr char kChromeIpBlinding[] = "chromeipblinding";

@@ -21,7 +21,7 @@ class IpProtectionConfigGetterMojoImpl final : public IpProtectionConfigGetter {
   ~IpProtectionConfigGetterMojoImpl() override;
 
   void TryGetAuthTokens(uint32_t batch_size,
-                        ip_protection::ProxyLayer proxy_layer,
+                        ProxyLayer proxy_layer,
                         TryGetAuthTokensCallback callback) override;
   void GetProxyList(GetProxyListCallback callback) override;
   bool IsAvailable() override;
@@ -30,11 +30,10 @@ class IpProtectionConfigGetterMojoImpl final : public IpProtectionConfigGetter {
   void OnGotProxyList(
       GetProxyListCallback callback,
       const std::optional<std::vector<net::ProxyChain>>& proxy_list,
-      const std::optional<ip_protection::GeoHint>& geo_hint);
+      const std::optional<GeoHint>& geo_hint);
   void OnGotAuthTokens(
       TryGetAuthTokensCallback callback,
-      const std::optional<std::vector<ip_protection::BlindSignedAuthToken>>&
-          tokens,
+      const std::optional<std::vector<BlindSignedAuthToken>>& tokens,
       std::optional<::base::Time> expiration_time);
 
   bool is_available_ = false;

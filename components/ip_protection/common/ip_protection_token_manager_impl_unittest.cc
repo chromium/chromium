@@ -54,14 +54,12 @@ const bool kDisableTokenCacheByGeo = false;
 const GeoHint kMountainViewGeo = {.country_code = "US",
                                   .iso_region = "US-CA",
                                   .city_name = "MOUNTAIN VIEW"};
-const std::string kMountainViewGeoId =
-    ip_protection::GetGeoIdFromGeoHint(kMountainViewGeo);
+const std::string kMountainViewGeoId = GetGeoIdFromGeoHint(kMountainViewGeo);
 
 const GeoHint kSunnyvaleGeo = {.country_code = "US",
                                .iso_region = "US-CA",
                                .city_name = "SUNNYVALE"};
-const std::string kSunnyvaleGeoId =
-    ip_protection::GetGeoIdFromGeoHint(kSunnyvaleGeo);
+const std::string kSunnyvaleGeoId = GetGeoIdFromGeoHint(kSunnyvaleGeo);
 
 struct ExpectedTryGetAuthTokensCall {
   // The expected batch_size argument for the call.

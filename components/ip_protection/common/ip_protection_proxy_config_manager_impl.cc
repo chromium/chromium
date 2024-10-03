@@ -156,7 +156,7 @@ void IpProtectionProxyConfigManagerImpl::OnGotProxyList(
     // 3. The new geo is different than the existing geo.
     if (enable_token_caching_by_geo_ && !proxy_list->empty()) {
       CHECK(geo_hint.has_value());
-      current_geo_id_ = ip_protection::GetGeoIdFromGeoHint(std::move(geo_hint));
+      current_geo_id_ = GetGeoIdFromGeoHint(std::move(geo_hint));
       ip_protection_core_->GeoObserved(current_geo_id_);
     }
   }

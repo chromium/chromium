@@ -4,6 +4,8 @@
 
 #include "components/ip_protection/common/ip_protection_control_mojo.h"
 
+#include "components/ip_protection/common/ip_protection_control.h"
+
 namespace ip_protection {
 
 IpProtectionControlMojo::IpProtectionControlMojo(

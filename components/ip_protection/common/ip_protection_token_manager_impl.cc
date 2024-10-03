@@ -287,7 +287,7 @@ void IpProtectionTokenManagerImpl::OnGotAuthTokens(
   // contains a single `geo_hint`.
   std::string geo_id_from_token =
       enable_token_caching_by_geo_
-          ? ip_protection::GetGeoIdFromGeoHint(tokens->front().geo_hint)
+          ? GetGeoIdFromGeoHint(tokens->front().geo_hint)
           : kDefaultGeo;
 
   // Metric should only be recorded under the following conditions:

@@ -21,7 +21,6 @@
 
 namespace ip_protection {
 namespace {
-using ::ip_protection::UrlMatcherWithBypassResult;
 using ::masked_domain_list::PublicSuffixListRule;
 using ::masked_domain_list::Resource;
 using ::masked_domain_list::ResourceOwner;
@@ -267,7 +266,7 @@ void MaskedDomainListManager::UpdateMaskedDomainList(
     }
   }
   AddPublicSuffixListRules(psl_private_domains);
-  ip_protection::Telemetry().MdlEstimatedMemoryUsage(EstimateMemoryUsage());
+  Telemetry().MdlEstimatedMemoryUsage(EstimateMemoryUsage());
 }
 
 bool MaskedDomainListManager::MatchesPublicSuffixList(

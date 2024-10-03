@@ -28,8 +28,7 @@ IpProtectionTokenDirectFetcher::IpProtectionTokenDirectFetcher(
   url_loader_factory_ = network::SharedURLLoaderFactory::Create(
       std::move(pending_url_loader_factory));
   ip_protection_config_http_ =
-      std::make_unique<ip_protection::IpProtectionConfigHttp>(
-          url_loader_factory_.get());
+      std::make_unique<IpProtectionConfigHttp>(url_loader_factory_.get());
 
   if (blind_sign_auth_for_testing) {
     blind_sign_auth_ = std::move(blind_sign_auth_for_testing);

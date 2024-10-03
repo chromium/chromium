@@ -35,7 +35,7 @@ ProxyChainId ChainIdToEnum(int chain_id) {
   static_assert(net::ProxyChain::kMaxIpProtectionChainId ==
                     static_cast<int>(ProxyChainId::kMaxValue),
                 "maximum `chain_id` must match between `net::ProxyChain` and "
-                "`ip_protection::ProxyChainId`");
+                "`ProxyChainId`");
   CHECK(chain_id >= static_cast<int>(ProxyChainId::kUnknown) &&
         chain_id <= static_cast<int>(ProxyChainId::kMaxValue));
   return static_cast<ProxyChainId>(chain_id);
@@ -43,9 +43,9 @@ ProxyChainId ChainIdToEnum(int chain_id) {
 
 std::string ProxyLayerToString(ProxyLayer proxy_layer) {
   switch (proxy_layer) {
-    case ip_protection::ProxyLayer::kProxyA:
+    case ProxyLayer::kProxyA:
       return "ProxyA";
-    case ip_protection::ProxyLayer::kProxyB:
+    case ProxyLayer::kProxyB:
       return "ProxyB";
   }
 }

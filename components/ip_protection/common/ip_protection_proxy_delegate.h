@@ -29,9 +29,8 @@ class IpProtectionProxyDelegate : public net::ProxyDelegate {
   // Both masked_domain_list_manager and ipp_core must be
   // non-null. The masked_domain_list_manager (MaskedDomainList) feature
   // must be enabled.
-  IpProtectionProxyDelegate(
-      MaskedDomainListManager* masked_domain_list_manager,
-      std::unique_ptr<ip_protection::IpProtectionCore> ipp_core);
+  IpProtectionProxyDelegate(MaskedDomainListManager* masked_domain_list_manager,
+                            std::unique_ptr<IpProtectionCore> ipp_core);
 
   IpProtectionProxyDelegate(const IpProtectionProxyDelegate&) = delete;
   IpProtectionProxyDelegate& operator=(const IpProtectionProxyDelegate&) =
@@ -77,7 +76,7 @@ class IpProtectionProxyDelegate : public net::ProxyDelegate {
 
   const raw_ptr<MaskedDomainListManager> masked_domain_list_manager_;
 
-  const std::unique_ptr<ip_protection::IpProtectionCore> ipp_core_;
+  const std::unique_ptr<IpProtectionCore> ipp_core_;
 
   base::WeakPtrFactory<IpProtectionProxyDelegate> weak_factory_{this};
 };

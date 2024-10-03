@@ -14,9 +14,9 @@ namespace ip_protection {
 class IpProtectionGeoUtilsTest : public testing::Test {};
 
 TEST_F(IpProtectionGeoUtilsTest, GetGeoIdFromGeoHint_ValidInput) {
-  ip_protection::GeoHint geo_hint = {.country_code = "US",
-                                     .iso_region = "US-CA",
-                                     .city_name = "MOUNTAIN VIEW"};
+  GeoHint geo_hint = {.country_code = "US",
+                      .iso_region = "US-CA",
+                      .city_name = "MOUNTAIN VIEW"};
 
   std::string geo_id = GetGeoIdFromGeoHint(std::move(geo_hint));
 
@@ -24,7 +24,7 @@ TEST_F(IpProtectionGeoUtilsTest, GetGeoIdFromGeoHint_ValidInput) {
 }
 
 TEST_F(IpProtectionGeoUtilsTest, GetGeoIdFromGeoHint_CountryCodeOnly) {
-  ip_protection::GeoHint geo_hint = {
+  GeoHint geo_hint = {
       .country_code = "US",
   };
 
@@ -34,7 +34,7 @@ TEST_F(IpProtectionGeoUtilsTest, GetGeoIdFromGeoHint_CountryCodeOnly) {
 }
 
 TEST_F(IpProtectionGeoUtilsTest, GetGeoIdFromGeoHint_EmptyGeoHintPtr) {
-  std::optional<ip_protection::GeoHint> geo_hint;
+  std::optional<GeoHint> geo_hint;
 
   std::string geo_id = GetGeoIdFromGeoHint(std::move(geo_hint));
 
@@ -48,28 +48,26 @@ TEST_F(IpProtectionGeoUtilsTest, GetGeoIdFromGeoHint_NullOptGeoHint) {
 }
 
 TEST_F(IpProtectionGeoUtilsTest, GetGeoHintFromGeoIdForTesting_CompleteGeoId) {
-  std::optional<ip_protection::GeoHint> geo_hint =
+  std::optional<GeoHint> geo_hint =
       GetGeoHintFromGeoIdForTesting("US,US-CA,MOUNTAIN VIEW");
 
-  ip_protection::GeoHint expected_geo_hint = {.country_code = "US",
-                                              .iso_region = "US-CA",
-                                              .city_name = "MOUNTAIN VIEW"};
+  GeoHint expected_geo_hint = {.country_code = "US",
+                               .iso_region = "US-CA",
+                               .city_name = "MOUNTAIN VIEW"};
 
   EXPECT_TRUE(geo_hint == expected_geo_hint);
 }
 
 TEST_F(IpProtectionGeoUtilsTest,
        GetGeoHintFromGeoIdForTesting_CountryOnlyGeoId) {
-  std::optional<ip_protection::GeoHint> geo_hint =
-      GetGeoHintFromGeoIdForTesting("US");
-  ip_protection::GeoHint expected_geo_hint = {.country_code = "US"};
+  std::optional<GeoHint> geo_hint = GetGeoHintFromGeoIdForTesting("US");
+  GeoHint expected_geo_hint = {.country_code = "US"};
 
   EXPECT_TRUE(geo_hint == expected_geo_hint);
 }
 
 TEST_F(IpProtectionGeoUtilsTest, GetGeoHintFromGeoIdForTesting_EmptyGeoId) {
-  std::optional<ip_protection::GeoHint> geo_hint =
-      GetGeoHintFromGeoIdForTesting("");
+  std::optional<GeoHint> geo_hint = GetGeoHintFromGeoIdForTesting("");
 
   EXPECT_TRUE(!geo_hint.has_value());
 }

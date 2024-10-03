@@ -43,10 +43,6 @@ using net::test::IsOk;
 namespace ip_protection {
 namespace {
 
-using ::ip_protection::MaskedDomainListManager;
-using ::ip_protection::ProtectionEligibility;
-using ::ip_protection::ProxyResolutionResult;
-
 constexpr char kHttpsUrl[] = "https://example.com";
 constexpr char kHttpUrl[] = "http://example.com";
 constexpr char kLocalhost[] = "http://localhost";
@@ -62,20 +58,19 @@ constexpr char kIsProxyListAvailableHistogram[] =
 constexpr char kAvailabilityHistogram[] =
     "NetworkService.IpProtection.ProtectionIsAvailableForRequest";
 
-class MockIpProtectionCore : public ip_protection::IpProtectionCore {
+class MockIpProtectionCore : public IpProtectionCore {
  public:
   bool IsIpProtectionEnabled() override { return is_ip_protection_enabled_; }
 
   bool AreAuthTokensAvailable() override { return auth_token_.has_value(); }
-  std::optional<ip_protection::BlindSignedAuthToken> GetAuthToken(
+  std::optional<BlindSignedAuthToken> GetAuthToken(
       size_t chain_index) override {
     return std::move(auth_token_);
   }
 
   // Set the auth token that will be returned from the next call to
   // `GetAuthToken()`.
-  void SetNextAuthToken(
-      std::optional<ip_protection::BlindSignedAuthToken> auth_token) {
+  void SetNextAuthToken(std::optional<BlindSignedAuthToken> auth_token) {
     auth_token_ = std::move(auth_token);
   }
 
@@ -117,7 +112,7 @@ class MockIpProtectionCore : public ip_protection::IpProtectionCore {
 
  private:
   bool is_ip_protection_enabled_ = true;
-  std::optional<ip_protection::BlindSignedAuthToken> auth_token_;
+  std::optional<BlindSignedAuthToken> auth_token_;
   std::optional<std::vector<net::ProxyChain>> proxy_list_;
   std::vector<net::ProxyChain> proxy_chain_list_;
   base::OnceClosure on_force_refresh_proxy_list_;
@@ -187,7 +182,7 @@ class IpProtectionProxyDelegateTest : public testing::Test {
  protected:
   std::unique_ptr<IpProtectionProxyDelegate> CreateDelegate(
       MaskedDomainListManager* masked_domain_list_manager,
-      std::unique_ptr<ip_protection::IpProtectionCore> ipp_core) {
+      std::unique_ptr<IpProtectionCore> ipp_core) {
     return std::make_unique<IpProtectionProxyDelegate>(
         masked_domain_list_manager, std::move(ipp_core));
   }
@@ -208,8 +203,8 @@ class IpProtectionProxyDelegateTest : public testing::Test {
     return net::ProxyChain::ForIpProtection(servers, chain_id);
   }
 
-  ip_protection::BlindSignedAuthToken MakeAuthToken(std::string content) {
-    ip_protection::BlindSignedAuthToken token;
+  BlindSignedAuthToken MakeAuthToken(std::string content) {
+    BlindSignedAuthToken token;
     token.token = std::move(content);
     return token;
   }

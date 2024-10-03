@@ -44,8 +44,7 @@ class IpProtectionTokenDirectFetcher : public IpProtectionTokenFetcher {
   // `ip_protection_config_http_`, so we ensure it stays alive by storing its
   // scoped_refptr here.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  std::unique_ptr<ip_protection::IpProtectionConfigHttp>
-      ip_protection_config_http_;
+  std::unique_ptr<IpProtectionConfigHttp> ip_protection_config_http_;
   std::unique_ptr<quiche::BlindSignAuthInterface> blind_sign_auth_;
 
   SEQUENCE_CHECKER(sequence_checker_);

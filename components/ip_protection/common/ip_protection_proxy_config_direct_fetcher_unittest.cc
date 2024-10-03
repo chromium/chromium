@@ -42,7 +42,7 @@ class MockIpProtectionProxyConfigRetriever
     : public IpProtectionProxyConfigDirectFetcher::Retriever {
  public:
   using MockGetProxyConfig = base::RepeatingCallback<
-      base::expected<ip_protection::GetProxyConfigResponse, std::string>()>;
+      base::expected<GetProxyConfigResponse, std::string>()>;
   // Construct a mock retriever that will call the given closure for each call
   // to GetProxyConfig.
   explicit MockIpProtectionProxyConfigRetriever(
@@ -55,12 +55,10 @@ class MockIpProtectionProxyConfigRetriever
 
   // Construct a mock retriever that always returns the same response.
   explicit MockIpProtectionProxyConfigRetriever(
-      std::optional<ip_protection::GetProxyConfigResponse>
-          proxy_config_response)
+      std::optional<GetProxyConfigResponse> proxy_config_response)
       : MockIpProtectionProxyConfigRetriever(base::BindLambdaForTesting(
             [proxy_config_response = std::move(proxy_config_response)]()
-                -> base::expected<ip_protection::GetProxyConfigResponse,
-                                  std::string> {
+                -> base::expected<GetProxyConfigResponse, std::string> {
               if (!proxy_config_response.has_value()) {
                 return base::unexpected("uhoh");
               }
@@ -117,9 +115,9 @@ TEST_F(IpProtectionProxyConfigDirectFetcherRetrieverTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       net::features::kEnableIpProtectionProxy, std::move(parameters));
-  ip_protection::GetProxyConfigResponse response_proto;
+  GetProxyConfigResponse response_proto;
 
-  ip_protection::GetProxyConfigResponse_ProxyChain* proxyChain =
+  GetProxyConfigResponse_ProxyChain* proxyChain =
       response_proto.add_proxy_chain();
   proxyChain->set_proxy_a("proxyA");
   proxyChain->set_proxy_b("proxyB");
@@ -142,12 +140,11 @@ TEST_F(IpProtectionProxyConfigDirectFetcherRetrieverTest,
             network::URLLoaderCompletionStatus(net::OK));
       }));
 
-  base::test::TestFuture<
-      base::expected<ip_protection::GetProxyConfigResponse, std::string>>
+  base::test::TestFuture<base::expected<GetProxyConfigResponse, std::string>>
       result_future;
   retriever_->RetrieveProxyConfig(result_future.GetCallback());
 
-  base::expected<ip_protection::GetProxyConfigResponse, std::string> result =
+  base::expected<GetProxyConfigResponse, std::string> result =
       result_future.Get();
 
   ASSERT_TRUE(result.has_value());
@@ -165,19 +162,18 @@ TEST_F(IpProtectionProxyConfigDirectFetcherRetrieverTest,
   test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
       [&](const network::ResourceRequest& request) { FAIL(); }));
 
-  base::test::TestFuture<
-      base::expected<ip_protection::GetProxyConfigResponse, std::string>>
+  base::test::TestFuture<base::expected<GetProxyConfigResponse, std::string>>
       result_future;
   retriever_->RetrieveProxyConfig(result_future.GetCallback());
 
-  base::expected<ip_protection::GetProxyConfigResponse, std::string> result =
+  base::expected<GetProxyConfigResponse, std::string> result =
       result_future.Get();
 
   ASSERT_FALSE(result.has_value());
 }
 
 TEST_F(IpProtectionProxyConfigDirectFetcherRetrieverTest, GetProxyConfigEmpty) {
-  ip_protection::GetProxyConfigResponse response_proto;
+  GetProxyConfigResponse response_proto;
   std::string response_str = response_proto.SerializeAsString();
 
   auto head = network::mojom::URLResponseHead::New();
@@ -185,12 +181,11 @@ TEST_F(IpProtectionProxyConfigDirectFetcherRetrieverTest, GetProxyConfigEmpty) {
       token_server_get_proxy_config_url_, std::move(head), response_str,
       network::URLLoaderCompletionStatus(net::OK));
 
-  base::test::TestFuture<
-      base::expected<ip_protection::GetProxyConfigResponse, std::string>>
+  base::test::TestFuture<base::expected<GetProxyConfigResponse, std::string>>
       result_future;
   retriever_->RetrieveProxyConfig(result_future.GetCallback());
 
-  base::expected<ip_protection::GetProxyConfigResponse, std::string> result =
+  base::expected<GetProxyConfigResponse, std::string> result =
       result_future.Get();
 
   ASSERT_TRUE(result.has_value());
@@ -204,12 +199,11 @@ TEST_F(IpProtectionProxyConfigDirectFetcherRetrieverTest, GetProxyConfigFails) {
       token_server_get_proxy_config_url_, std::move(head), "uhoh",
       network::URLLoaderCompletionStatus(net::HTTP_BAD_REQUEST));
 
-  base::test::TestFuture<
-      base::expected<ip_protection::GetProxyConfigResponse, std::string>>
+  base::test::TestFuture<base::expected<GetProxyConfigResponse, std::string>>
       result_future;
   retriever_->RetrieveProxyConfig(result_future.GetCallback());
 
-  base::expected<ip_protection::GetProxyConfigResponse, std::string> result =
+  base::expected<GetProxyConfigResponse, std::string> result =
       result_future.Get();
 
   ASSERT_FALSE(result.has_value());
@@ -219,12 +213,12 @@ class IpProtectionProxyConfigDirectFetcherTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   base::test::TestFuture<const std::optional<std::vector<net::ProxyChain>>&,
-                         const std::optional<ip_protection::GeoHint>&>
+                         const std::optional<GeoHint>&>
       proxy_list_future_;
 };
 
 TEST_F(IpProtectionProxyConfigDirectFetcherTest, GetProxyConfigProxyChains) {
-  ip_protection::GetProxyConfigResponse response;
+  GetProxyConfigResponse response;
   auto* chain = response.add_proxy_chain();
   chain->set_proxy_a("proxy1");
   chain->set_proxy_b("proxy1b");
@@ -262,7 +256,7 @@ TEST_F(IpProtectionProxyConfigDirectFetcherTest, GetProxyConfigProxyChains) {
 
 TEST_F(IpProtectionProxyConfigDirectFetcherTest,
        GetProxyConfigProxyChainsWithPorts) {
-  ip_protection::GetProxyConfigResponse response;
+  GetProxyConfigResponse response;
   auto* chain = response.add_proxy_chain();
   chain->set_proxy_a("proxy1");
   chain->set_proxy_b("proxy1b");
@@ -310,7 +304,7 @@ TEST_F(IpProtectionProxyConfigDirectFetcherTest,
 }
 
 TEST_F(IpProtectionProxyConfigDirectFetcherTest, GetProxyConfigProxyInvalid) {
-  ip_protection::GetProxyConfigResponse response;
+  GetProxyConfigResponse response;
   auto* chain = response.add_proxy_chain();
   chain->set_proxy_a("]INVALID[");
   chain->set_proxy_b("not-invalid");
@@ -344,7 +338,7 @@ TEST_F(IpProtectionProxyConfigDirectFetcherTest, GetProxyConfigProxyInvalid) {
 
 TEST_F(IpProtectionProxyConfigDirectFetcherTest,
        GetProxyConfigProxyInvalidChainId) {
-  ip_protection::GetProxyConfigResponse response;
+  GetProxyConfigResponse response;
   auto* chain = response.add_proxy_chain();
   chain->set_proxy_a("proxya");
   chain->set_proxy_b("proxyb");
@@ -377,7 +371,7 @@ TEST_F(IpProtectionProxyConfigDirectFetcherTest,
 
 TEST_F(IpProtectionProxyConfigDirectFetcherTest,
        GetProxyConfigProxyCountryLevelGeo) {
-  ip_protection::GetProxyConfigResponse response;
+  GetProxyConfigResponse response;
   auto* chain = response.add_proxy_chain();
   chain->set_proxy_a("proxy1");
   chain->set_proxy_b("proxy1b");
@@ -403,7 +397,7 @@ TEST_F(IpProtectionProxyConfigDirectFetcherTest,
           {"proxy2", "proxy2b"}, 2)};
 
   // Country level geo only.
-  ip_protection::GeoHint exp_geo_hint;
+  GeoHint exp_geo_hint;
   exp_geo_hint.country_code = "US";
 
   // Extract tuple elements for individual comparison.
@@ -420,7 +414,7 @@ TEST_F(IpProtectionProxyConfigDirectFetcherTest,
        GetProxyConfigProxyGeoMissingFailure) {
   // The error case in this situation should be a valid response with a missing
   // geo hint and non-empty proxy chain vector.
-  ip_protection::GetProxyConfigResponse response;
+  GetProxyConfigResponse response;
   auto* chain = response.add_proxy_chain();
   chain->set_proxy_a("proxy1");
   chain->set_proxy_b("proxy1b");

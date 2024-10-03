@@ -238,10 +238,9 @@ void IpProtectionCoreImpl::OnNetworkChanged(
 
 void IpProtectionCoreImpl::VerifyIpProtectionConfigGetterForTesting(
     VerifyIpProtectionConfigGetterForTestingCallback callback) {
-  auto* ipp_token_manager_impl =
-      static_cast<ip_protection::IpProtectionTokenManagerImpl*>(
-          GetIpProtectionTokenManagerForTesting(  // IN-TEST
-              ip_protection::ProxyLayer::kProxyA));
+  auto* ipp_token_manager_impl = static_cast<IpProtectionTokenManagerImpl*>(
+      GetIpProtectionTokenManagerForTesting(  // IN-TEST
+          ProxyLayer::kProxyA));
   CHECK(ipp_token_manager_impl);
 
   // If active cache management is enabled (the default), disable it and do a
@@ -315,22 +314,20 @@ bool IpProtectionCoreImpl::IsIpProtectionEnabledForTesting() {
 
 void IpProtectionCoreImpl::OnIpProtectionConfigAvailableForTesting(
     VerifyIpProtectionConfigGetterForTestingCallback callback) {
-  auto* ipp_token_manager_impl =
-      static_cast<ip_protection::IpProtectionTokenManagerImpl*>(
-          GetIpProtectionTokenManagerForTesting(  // IN-TEST
-              ip_protection::ProxyLayer::kProxyA));
+  auto* ipp_token_manager_impl = static_cast<IpProtectionTokenManagerImpl*>(
+      GetIpProtectionTokenManagerForTesting(  // IN-TEST
+          ProxyLayer::kProxyA));
   auto* ipp_proxy_config_manager_impl =
-      static_cast<ip_protection::IpProtectionProxyConfigManagerImpl*>(
+      static_cast<IpProtectionProxyConfigManagerImpl*>(
           GetIpProtectionProxyConfigManagerForTesting());  // IN-TEST
   CHECK(ipp_proxy_config_manager_impl);
   ipp_proxy_config_manager_impl->SetProxyListForTesting(  // IN-TEST
       std::vector{net::ProxyChain::ForIpProtection(
           std::vector{net::ProxyServer::FromSchemeHostAndPort(
               net::ProxyServer::SCHEME_HTTPS, "proxy-a", std::nullopt)})},
-      ip_protection::GetGeoHintFromGeoIdForTesting(
+      GetGeoHintFromGeoIdForTesting(  // IN-TEST
           ipp_token_manager_impl->CurrentGeo()));
-  std::optional<ip_protection::BlindSignedAuthToken> result =
-      GetAuthToken(0);  // kProxyA.
+  std::optional<BlindSignedAuthToken> result = GetAuthToken(0);  // kProxyA.
   if (result.has_value()) {
     std::move(callback).Run(std::move(result.value()), std::nullopt);
     return;

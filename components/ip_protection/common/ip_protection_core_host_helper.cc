@@ -24,7 +24,7 @@
 namespace ip_protection {
 
 // static
-std::optional<ip_protection::BlindSignedAuthToken>
+std::optional<BlindSignedAuthToken>
 IpProtectionCoreHostHelper::CreateBlindSignedAuthToken(
     const quiche::BlindSignToken& bsa_token) {
   // If a GeoHint's country code is empty, the token is invalid. Return a
@@ -49,13 +49,13 @@ IpProtectionCoreHostHelper::CreateBlindSignedAuthToken(
   }
 
   // Set GeoHint on BlindSignedAuthToken.
-  ip_protection::GeoHint geo_hint = {
+  GeoHint geo_hint = {
       .country_code = bsa_token.geo_hint.country_code,
       .iso_region = bsa_token.geo_hint.region,
       .city_name = bsa_token.geo_hint.city,
   };
 
-  return std::make_optional<ip_protection::BlindSignedAuthToken>(
+  return std::make_optional<BlindSignedAuthToken>(
       {.token = std::move(token_header_value),
        .expiration = expiration,
        .geo_hint = std::move(geo_hint)});
@@ -84,7 +84,7 @@ quiche::BlindSignToken
 IpProtectionCoreHostHelper::CreateBlindSignTokenForTesting(
     std::string token_value,
     base::Time expiration,
-    const ip_protection::GeoHint& geo_hint) {
+    const GeoHint& geo_hint) {
   privacy::ppn::PrivacyPassTokenData privacy_pass_token_data =
       CreatePrivacyPassTokenForTesting(std::move(token_value));  // IN-TEST
   quiche::BlindSignToken blind_sign_token;
@@ -104,11 +104,11 @@ IpProtectionCoreHostHelper::CreateBlindSignTokenForTesting(
   return blind_sign_token;
 }
 
-std::optional<ip_protection::BlindSignedAuthToken>
+std::optional<BlindSignedAuthToken>
 IpProtectionCoreHostHelper::CreateMockBlindSignedAuthTokenForTesting(
     std::string token_value,
     base::Time expiration,
-    const ip_protection::GeoHint& geo_hint) {
+    const GeoHint& geo_hint) {
   quiche::BlindSignToken blind_sign_token = CreateBlindSignTokenForTesting(
       token_value, expiration, geo_hint);  // IN-TEST
   return CreateBlindSignedAuthToken(std::move(blind_sign_token));

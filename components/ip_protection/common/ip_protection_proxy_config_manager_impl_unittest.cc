@@ -84,7 +84,7 @@ class MockIpProtectionConfigGetter : public IpProtectionConfigGetter {
 
     std::move(callback).Run(
         expected_call.proxy_chains,
-        ip_protection::GetGeoHintFromGeoIdForTesting(expected_call.geo_id));
+        GetGeoHintFromGeoIdForTesting(expected_call.geo_id));
 
     expected_get_proxy_list_calls_.pop_front();
   }

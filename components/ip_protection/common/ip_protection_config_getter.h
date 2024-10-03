@@ -19,9 +19,9 @@ class IpProtectionConfigGetter {
  public:
   virtual ~IpProtectionConfigGetter() = default;
 
-  using TryGetAuthTokensCallback = base::OnceCallback<void(
-      std::optional<std::vector<ip_protection::BlindSignedAuthToken>>,
-      std::optional<::base::Time>)>;
+  using TryGetAuthTokensCallback =
+      base::OnceCallback<void(std::optional<std::vector<BlindSignedAuthToken>>,
+                              std::optional<::base::Time>)>;
 
   // Try to get a batch of IP Protection tokens.
   //
@@ -38,12 +38,12 @@ class IpProtectionConfigGetter {
   // base::SequencedTaskRunnerHandle::Get() at the time of construction of
   // this object).
   virtual void TryGetAuthTokens(uint32_t batch_size,
-                                ip_protection::ProxyLayer proxy_layer,
+                                ProxyLayer proxy_layer,
                                 TryGetAuthTokensCallback callback) = 0;
 
   using GetProxyListCallback =
       base::OnceCallback<void(std::optional<std::vector<::net::ProxyChain>>,
-                              std::optional<ip_protection::GeoHint> geo_hint)>;
+                              std::optional<GeoHint> geo_hint)>;
 
   // Get the list of IP Protection proxy chains.
   //
