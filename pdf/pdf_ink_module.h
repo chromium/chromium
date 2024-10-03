@@ -40,6 +40,37 @@ class PdfInkBrush;
 class PdfInkModuleClient;
 
 class PdfInkModule {
+ private:
+  // Some initial definitions needed for internal working of public classes.
+
+  // A stroke that has been completed, its ID, and whether it should be drawn
+  // or not.
+  struct FinishedStrokeState {
+    FinishedStrokeState(ink::Stroke stroke, size_t id);
+    FinishedStrokeState(const FinishedStrokeState&) = delete;
+    FinishedStrokeState& operator=(const FinishedStrokeState&) = delete;
+    FinishedStrokeState(FinishedStrokeState&&) noexcept;
+    FinishedStrokeState& operator=(FinishedStrokeState&&) noexcept;
+    ~FinishedStrokeState();
+
+    // Coordinates for each stroke are stored in a canonical format specified in
+    // pdf_ink_transform.h.
+    ink::Stroke stroke;
+
+    // A unique ID to identify this stroke.
+    size_t id;
+
+    bool should_draw = true;
+  };
+
+  // Each page of a document can have many strokes.  Each stroke is restricted
+  // to just one page.
+  // The elements are stored with IDs in an increasing order.
+  using PageStrokes = std::vector<FinishedStrokeState>;
+
+  // Mapping of a 0-based page index to the strokes for that page.
+  using DocumentStrokesMap = std::map<int, PageStrokes>;
+
  public:
   using StrokeInputPoints = std::vector<gfx::PointF>;
 
@@ -119,34 +150,6 @@ class PdfInkModule {
     // specified in pdf_ink_transform.h.
     std::vector<ink::StrokeInputBatch> inputs;
   };
-
-  // A stroke that has been completed, its ID, and whether it should be drawn
-  // or not.
-  struct FinishedStrokeState {
-    FinishedStrokeState(ink::Stroke stroke, size_t id);
-    FinishedStrokeState(const FinishedStrokeState&) = delete;
-    FinishedStrokeState& operator=(const FinishedStrokeState&) = delete;
-    FinishedStrokeState(FinishedStrokeState&&) noexcept;
-    FinishedStrokeState& operator=(FinishedStrokeState&&) noexcept;
-    ~FinishedStrokeState();
-
-    // Coordinates for each stroke are stored in a canonical format specified in
-    // pdf_ink_transform.h.
-    ink::Stroke stroke;
-
-    // A unique ID to identify this stroke.
-    size_t id;
-
-    bool should_draw = true;
-  };
-
-  // Each page of a document can have many strokes.  Each stroke is restricted
-  // to just one page.
-  // The elements are stored with IDs in an increasing order.
-  using PageStrokes = std::vector<FinishedStrokeState>;
-
-  // Mapping of a 0-based page index to the strokes for that page.
-  using DocumentStrokesMap = std::map<int, PageStrokes>;
 
   class StrokeIdGenerator {
    public:
