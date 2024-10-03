@@ -211,26 +211,20 @@ void GetGpuDriverOverlayInfo(bool* supports_overlays,
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device = g_d3d11_device;
   if (!d3d11_device) {
-    DLOG(ERROR) << "Failed to retrieve D3D11 device";
+    LOG(ERROR) << __func__ << ": Failed to retrieve D3D11 device";
     return;
   }
 
   Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
-  if (FAILED(d3d11_device.As(&dxgi_device))) {
-    DLOG(ERROR) << "Failed to retrieve DXGI device";
-    return;
-  }
+  CHECK_EQ(d3d11_device.As(&dxgi_device), S_OK);
 
   Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
-  if (FAILED(dxgi_device->GetAdapter(&dxgi_adapter))) {
-    DLOG(ERROR) << "Failed to retrieve DXGI adapter";
-    return;
-  }
+  CHECK_EQ(dxgi_device->GetAdapter(&dxgi_adapter), S_OK);
 
   // This will fail if the D3D device is "Microsoft Basic Display Adapter".
   Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device;
   if (FAILED(d3d11_device.As(&video_device))) {
-    DLOG(ERROR) << "Failed to retrieve video device";
+    LOG(ERROR) << __func__ << ": Failed to retrieve video device";
     return;
   }
 
@@ -367,8 +361,8 @@ void UpdateOverlaySupport() {
     } else if (override_format == kSwapChainFormatBGRA) {
       overlay_format_used = DXGI_FORMAT_B8G8R8A8_UNORM;
     } else {
-      DLOG(ERROR) << "Invalid value for switch "
-                  << switches::kDirectCompositionVideoSwapChainFormat;
+      LOG(ERROR) << "Invalid value for switch "
+                 << switches::kDirectCompositionVideoSwapChainFormat;
     }
   }
 
@@ -409,7 +403,8 @@ std::vector<DXGI_OUTPUT_DESC1> GetDirectCompositionOutputDescs() {
   Microsoft::WRL::ComPtr<IDXGIFactory1> factory;
   hr = CreateDXGIFactory1(IID_PPV_ARGS(&factory));
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to create DXGI factory.";
+    LOG(ERROR) << "CreateDXGIFactory1 failed: "
+               << logging::SystemErrorCodeToString(hr);
     return output_descs;
   }
 
@@ -420,7 +415,9 @@ std::vector<DXGI_OUTPUT_DESC1> GetDirectCompositionOutputDescs() {
       break;
     }
     if (FAILED(hr)) {
-      DLOG(ERROR) << "Unexpected error creating DXGI adapter.";
+      LOG(ERROR)
+          << "Unexpected error creating DXGI adapter, EnumAdapters failed: "
+          << logging::SystemErrorCodeToString(hr);
       break;
     }
 
@@ -431,20 +428,24 @@ std::vector<DXGI_OUTPUT_DESC1> GetDirectCompositionOutputDescs() {
         break;
       }
       if (FAILED(hr)) {
-        DLOG(ERROR) << "Unexpected error creating DXGI adapter.";
+        LOG(ERROR)
+            << "Unexpected error creating DXGI adapter, EnumOutputs failed: "
+            << logging::SystemErrorCodeToString(hr);
         break;
       }
 
       Microsoft::WRL::ComPtr<IDXGIOutput6> output6;
       hr = output->QueryInterface(IID_PPV_ARGS(&output6));
       if (FAILED(hr)) {
-        DLOG(WARNING) << "IDXGIOutput6 is required for HDR detection.";
+        LOG(WARNING) << "IDXGIOutput6 is required for HDR detection.";
         continue;
       }
 
       DXGI_OUTPUT_DESC1 desc;
-      if (FAILED(output6->GetDesc1(&desc))) {
-        DLOG(ERROR) << "Unexpected error getting output descriptor.";
+      hr = output6->GetDesc1(&desc);
+      if (FAILED(hr)) {
+        LOG(ERROR) << "Unexpected error getting output descriptor: "
+                   << logging::SystemErrorCodeToString(hr);
         continue;
       }
 
@@ -493,7 +494,7 @@ void UpdateVideoProcessorAutoHDRSupport() {
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device = g_d3d11_device;
   if (!d3d11_device) {
-    DLOG(ERROR) << "Failed to get device";
+    LOG(ERROR) << __func__ << ": Failed to retrieve D3D11 device";
     SetSupportsVideoProcessorAutoHDR(false);
     return;
   }
@@ -504,21 +505,21 @@ void UpdateVideoProcessorAutoHDRSupport() {
   // this function must be called on GpuMain thread.
   d3d11_device->GetImmediateContext(&d3d11_context);
   if (!d3d11_context) {
-    DLOG(ERROR) << "Failed to get context";
+    LOG(ERROR) << __func__ << ": Failed to get immediate context";
     SetSupportsVideoProcessorAutoHDR(false);
     return;
   }
 
   Microsoft::WRL::ComPtr<ID3D11VideoContext> d3d11_video_context;
   if (FAILED(d3d11_context.As(&d3d11_video_context))) {
-    DLOG(ERROR) << "Failed to retrieve video context";
+    LOG(ERROR) << __func__ << ": Failed to retrieve video context";
     SetSupportsVideoProcessorAutoHDR(false);
     return;
   }
 
   Microsoft::WRL::ComPtr<ID3D11VideoDevice> d3d11_video_device;
   if (FAILED(d3d11_device.As(&d3d11_video_device))) {
-    DLOG(ERROR) << "Failed to retrieve video device";
+    LOG(ERROR) << __func__ << ": Failed to retrieve video device";
     SetSupportsVideoProcessorAutoHDR(false);
     return;
   }
@@ -535,18 +536,24 @@ void UpdateVideoProcessorAutoHDRSupport() {
   desc.OutputHeight = 1080;
   desc.Usage = D3D11_VIDEO_USAGE_PLAYBACK_NORMAL;
 
+  HRESULT hr = S_OK;
+
   Microsoft::WRL::ComPtr<ID3D11VideoProcessorEnumerator> d3d11_video_enumerator;
-  if (FAILED(d3d11_video_device->CreateVideoProcessorEnumerator(
-          &desc, &d3d11_video_enumerator))) {
-    DLOG(ERROR) << "Failed to create video processor enumerator";
+  hr = d3d11_video_device->CreateVideoProcessorEnumerator(
+      &desc, &d3d11_video_enumerator);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "CreateVideoProcessorEnumerator failed: "
+               << logging::SystemErrorCodeToString(hr);
     SetSupportsVideoProcessorAutoHDR(false);
     return;
   }
 
   Microsoft::WRL::ComPtr<ID3D11VideoProcessor> d3d11_video_processor;
-  if (FAILED(d3d11_video_device->CreateVideoProcessor(
-          d3d11_video_enumerator.Get(), 0, &d3d11_video_processor))) {
-    DLOG(ERROR) << "Failed to create video processor";
+  hr = d3d11_video_device->CreateVideoProcessor(d3d11_video_enumerator.Get(), 0,
+                                                &d3d11_video_processor);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "CreateVideoProcessor failed: "
+               << logging::SystemErrorCodeToString(hr);
     SetSupportsVideoProcessorAutoHDR(false);
     return;
   }
@@ -558,12 +565,12 @@ void UpdateVideoProcessorAutoHDRSupport() {
       {0x9a, 0xb3, 0x1e, 0x59, 0xd0, 0xd5, 0x44, 0xb3}};
 
   UINT driver_supports_true_hdr = 0;
-  HRESULT hr = d3d11_video_context->VideoProcessorGetStreamExtension(
+  hr = d3d11_video_context->VideoProcessorGetStreamExtension(
       d3d11_video_processor.Get(), 0, &kNvidiaTrueHDRInterfaceGUID,
       sizeof(driver_supports_true_hdr), &driver_supports_true_hdr);
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to get stream extension with error 0x" << std::hex
-                << hr;
+    LOG(ERROR) << "VideoProcessorGetStreamExtension failed: "
+               << logging::SystemErrorCodeToString(hr);
     SetSupportsVideoProcessorAutoHDR(false);
     return;
   }
@@ -591,14 +598,14 @@ void InitializeDirectComposition(
   // are user mode drivers for display adapters from Magic Control Technology
   // Corporation.
   if (GetModuleHandle(TEXT("MCTU.dll")) || GetModuleHandle(TEXT("MCTUX.dll"))) {
-    DLOG(ERROR) << "Blocklisted due to third party modules";
+    LOG(ERROR) << "Blocklisted due to third party modules";
     return;
   }
 
   // Load DLL at runtime since older Windows versions don't have dcomp.
   HMODULE dcomp_module = ::GetModuleHandle(L"dcomp.dll");
   if (!dcomp_module) {
-    DLOG(ERROR) << "Failed to load dcomp.dll";
+    LOG(ERROR) << "Failed to load dcomp.dll";
     return;
   }
 
@@ -608,7 +615,7 @@ void InitializeDirectComposition(
       reinterpret_cast<PFN_DCOMPOSITION_CREATE_DEVICE3>(
           ::GetProcAddress(dcomp_module, "DCompositionCreateDevice3"));
   if (!create_device3_function) {
-    DLOG(ERROR) << "GetProcAddress failed for DCompositionCreateDevice3";
+    LOG(ERROR) << "GetProcAddress failed for DCompositionCreateDevice3";
     return;
   }
 
@@ -619,16 +626,16 @@ void InitializeDirectComposition(
   HRESULT hr =
       create_device3_function(dxgi_device.Get(), IID_PPV_ARGS(&desktop_device));
   if (FAILED(hr)) {
-    DLOG(ERROR) << "DCompositionCreateDevice3 failed with error 0x" << std::hex
-                << hr;
+    LOG(ERROR) << "DCompositionCreateDevice3 failed: "
+               << logging::SystemErrorCodeToString(hr);
     return;
   }
 
   Microsoft::WRL::ComPtr<IDCompositionDevice3> dcomp_device;
   hr = desktop_device.As(&dcomp_device);
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to retrieve IDCompositionDevice3 with error 0x"
-                << std::hex << hr;
+    LOG(ERROR) << "Failed to retrieve IDCompositionDevice3: "
+               << logging::SystemErrorCodeToString(hr);
     return;
   }
 
@@ -720,19 +727,23 @@ bool VideoProcessorAutoHDRSupported() {
 bool CheckVideoProcessorFormatSupport(DXGI_FORMAT dxgi_format) {
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device = g_d3d11_device;
   if (!d3d11_device) {
-    DLOG(ERROR) << "Failed to retrieve D3D11 device";
+    LOG(ERROR) << __func__ << ": Failed to retrieve D3D11 device";
     return false;
   }
 
   Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device;
   if (FAILED(d3d11_device.As(&video_device))) {
-    DLOG(ERROR) << "Failed to retrieve video device";
+    LOG(ERROR) << __func__ << ": Failed to retrieve video device";
     return false;
   }
 
+  HRESULT hr = S_OK;
+
   UINT device = 0;
-  if (!SUCCEEDED(d3d11_device->CheckFormatSupport(dxgi_format, &device))) {
-    DLOG(ERROR) << "Failed to check supported format";
+  hr = d3d11_device->CheckFormatSupport(dxgi_format, &device);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "CheckFormatSupport failed: "
+               << logging::SystemErrorCodeToString(hr);
     return false;
   }
 
@@ -749,21 +760,23 @@ bool CheckVideoProcessorFormatSupport(DXGI_FORMAT dxgi_format) {
   desc.Usage = D3D11_VIDEO_USAGE_PLAYBACK_NORMAL;
 
   Microsoft::WRL::ComPtr<ID3D11VideoProcessorEnumerator> video_enumerator;
-  if (!SUCCEEDED(video_device->CreateVideoProcessorEnumerator(
-          &desc, &video_enumerator))) {
-    DLOG(ERROR) << "Failed to create video processor enumerator";
+  hr = video_device->CreateVideoProcessorEnumerator(&desc, &video_enumerator);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "CreateVideoProcessorEnumerator failed: "
+               << logging::SystemErrorCodeToString(hr);
     return false;
   }
 
   if (!video_enumerator) {
-    DLOG(ERROR) << "Failed to locate video enumerator";
+    LOG(ERROR) << "Failed to locate video enumerator";
     return false;
   }
 
   UINT enumerator = 0;
-  if (!SUCCEEDED(video_enumerator->CheckVideoProcessorFormat(dxgi_format,
-                                                             &enumerator))) {
-    DLOG(ERROR) << "Failed to check video processor format";
+  hr = video_enumerator->CheckVideoProcessorFormat(dxgi_format, &enumerator);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "CheckVideoProcessorFormat failed: "
+               << logging::SystemErrorCodeToString(hr);
     video_enumerator.Reset();
     return false;
   }
@@ -887,8 +900,8 @@ bool DXGISwapChainTearingSupported() {
   static const bool supported = [] {
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device = g_d3d11_device;
     if (!d3d11_device) {
-      DLOG(ERROR) << "Not using swap chain tearing because failed to retrieve "
-                     "D3D11 device from ANGLE";
+      LOG(ERROR) << "Not using swap chain tearing because failed to retrieve "
+                    "D3D11 device from ANGLE";
       return false;
     }
     Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
@@ -899,8 +912,8 @@ bool DXGISwapChainTearingSupported() {
     DCHECK(dxgi_adapter);
     Microsoft::WRL::ComPtr<IDXGIFactory5> dxgi_factory;
     if (FAILED(dxgi_adapter->GetParent(IID_PPV_ARGS(&dxgi_factory)))) {
-      DLOG(ERROR) << "Not using swap chain tearing because failed to retrieve "
-                     "IDXGIFactory5 interface";
+      LOG(ERROR) << "Not using swap chain tearing because failed to retrieve "
+                    "IDXGIFactory5 interface";
       return false;
     }
 
@@ -909,7 +922,7 @@ bool DXGISwapChainTearingSupported() {
     if (FAILED(dxgi_factory->CheckFeatureSupport(
             DXGI_FEATURE_PRESENT_ALLOW_TEARING, &present_allow_tearing,
             sizeof(present_allow_tearing)))) {
-      DLOG(ERROR)
+      LOG(ERROR)
           << "Not using swap chain tearing because CheckFeatureSupport failed";
       return false;
     }
@@ -989,8 +1002,8 @@ bool DirectCompositionTextureSupported() {
   HRESULT hr = dcomp_device.As(&dcomp_device4);
   if (FAILED(hr)) {
     // Not a recent enough Windows system
-    DLOG(ERROR) << "QueryInterface to IDCompositionDevice4 failed: "
-                << logging::SystemErrorCodeToString(hr);
+    LOG(ERROR) << "QueryInterface to IDCompositionDevice4 failed: "
+               << logging::SystemErrorCodeToString(hr);
     return false;
   }
 
@@ -998,13 +1011,13 @@ bool DirectCompositionTextureSupported() {
   hr = dcomp_device4->CheckCompositionTextureSupport(
       d3d11_device.Get(), &supports_composition_textures);
   if (FAILED(hr)) {
-    DLOG(ERROR) << "CheckCompositionTextureSupport failed: "
-                << logging::SystemErrorCodeToString(hr);
+    LOG(ERROR) << "CheckCompositionTextureSupport failed: "
+               << logging::SystemErrorCodeToString(hr);
     return false;
   }
 
   if (supports_composition_textures == FALSE) {
-    DLOG(ERROR) << "CheckCompositionTextureSupport reported unsupported";
+    LOG(ERROR) << "CheckCompositionTextureSupport reported unsupported";
     return false;
   }
 
