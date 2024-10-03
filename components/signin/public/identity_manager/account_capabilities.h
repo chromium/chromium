@@ -104,6 +104,12 @@ class AccountCapabilities {
   // Chrome applies parental controls to accounts with this capability.
   signin::Tribool is_subject_to_parental_controls() const;
 
+  // The user account is able to use speaker label in recorder app.
+  signin::Tribool can_use_speaker_label_in_recorder_app() const;
+
+  // The user account is able to use generative AI in recorder app.
+  signin::Tribool can_use_generative_ai_in_recorder_app() const;
+
   // Whether at least one of the capabilities is not
   // `signin::Tribool::kUnknown`.
   bool AreAnyCapabilitiesKnown() const;

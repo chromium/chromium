@@ -104,6 +104,16 @@ void AccountCapabilitiesTestMutator::set_is_subject_to_parental_controls(
       value;
 }
 
+void AccountCapabilitiesTestMutator::set_can_use_speaker_label_in_recorder_app(
+    bool value) {
+  capabilities_->capabilities_map_[kCanUseSpeakerLabelInRecorderApp] = value;
+}
+
+void AccountCapabilitiesTestMutator::set_can_use_generative_ai_in_recorder_app(
+    bool value) {
+  capabilities_->capabilities_map_[kCanUseGenerativeAiInRecorderApp] = value;
+}
+
 void AccountCapabilitiesTestMutator::SetAllSupportedCapabilities(bool value) {
   for (const std::string& name :
        AccountCapabilities::GetSupportedAccountCapabilityNames()) {

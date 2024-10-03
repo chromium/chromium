@@ -187,6 +187,22 @@ public class AccountCapabilities {
     }
 
     /**
+     * @return canUseSpeakerLabelInRecorderApp capability value.
+     */
+    public @Tribool int canUseSpeakerLabelInRecorderApp() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.CAN_USE_SPEAKER_LABEL_IN_RECORDER_APP);
+    }
+
+    /**
+     * @return canUseGenerativeAiInRecorderApp capability value.
+     */
+    public @Tribool int canUseGenerativeAiInRecorderApp() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.CAN_USE_GENERATIVE_AI_IN_RECORDER_APP);
+    }
+
+    /**
      * @param capabilityName the name of the capability to lookup.
      * @return the capability value associated to the name.
      */
