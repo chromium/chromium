@@ -678,19 +678,19 @@ TEST_P(PDFiumPageTextTest, TextRunBounds) {
 
   constexpr int kFirstRunStartIndex = 0;
   constexpr int kFirstRunEndIndex = 20;
-  constexpr int kPageIndex = 0;
+  PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
   std::optional<AccessibilityTextRunInfo> text_run_info_1 =
-      engine->GetTextRunInfo(kPageIndex, kFirstRunStartIndex);
+      page.GetTextRunInfo(kFirstRunStartIndex);
   ASSERT_TRUE(text_run_info_1.has_value());
 
   const auto& actual_text_run_1 = text_run_info_1.value();
   EXPECT_EQ(21u, actual_text_run_1.len);
 
-  EXPECT_TRUE(base::IsUnicodeWhitespace(
-      engine->GetCharUnicode(kPageIndex, kFirstRunStartIndex)));
+  EXPECT_TRUE(
+      base::IsUnicodeWhitespace(page.GetCharUnicode(kFirstRunStartIndex)));
   gfx::RectF text_run_bounds = actual_text_run_1.bounds;
-  EXPECT_TRUE(text_run_bounds.Contains(
-      engine->GetCharBounds(kPageIndex, kFirstRunStartIndex)));
+  EXPECT_TRUE(
+      text_run_bounds.Contains(page.GetCharBounds(kFirstRunStartIndex)));
 
   // Last non-space character should fall in the bounding box of the text run.
   // Text run looks like this:
@@ -700,14 +700,13 @@ TEST_P(PDFiumPageTextTest, TextRunBounds) {
   // Finally generated text run: " Hello, world! \r\n \r\n "
   constexpr int kFirstRunLastNonSpaceCharIndex = 13;
   EXPECT_FALSE(base::IsUnicodeWhitespace(
-      engine->GetCharUnicode(kPageIndex, kFirstRunLastNonSpaceCharIndex)));
+      page.GetCharUnicode(kFirstRunLastNonSpaceCharIndex)));
   EXPECT_TRUE(text_run_bounds.Contains(
-      engine->GetCharBounds(kPageIndex, kFirstRunLastNonSpaceCharIndex)));
+      page.GetCharBounds(kFirstRunLastNonSpaceCharIndex)));
 
-  EXPECT_TRUE(base::IsUnicodeWhitespace(
-      engine->GetCharUnicode(kPageIndex, kFirstRunEndIndex)));
-  gfx::RectF end_char_rect =
-      engine->GetCharBounds(kPageIndex, kFirstRunEndIndex);
+  EXPECT_TRUE(
+      base::IsUnicodeWhitespace(page.GetCharUnicode(kFirstRunEndIndex)));
+  gfx::RectF end_char_rect = page.GetCharBounds(kFirstRunEndIndex);
   EXPECT_FALSE(text_run_bounds.Contains(end_char_rect));
   // Equals to the length of the previous text run.
   constexpr int kSecondRunStartIndex = 21;
@@ -716,17 +715,17 @@ TEST_P(PDFiumPageTextTest, TextRunBounds) {
   // Note: The leading spaces in second text run are accounted for in the end
   // of first text run. Hence we won't see a space leading the second text run.
   std::optional<AccessibilityTextRunInfo> text_run_info_2 =
-      engine->GetTextRunInfo(kPageIndex, kSecondRunStartIndex);
+      page.GetTextRunInfo(kSecondRunStartIndex);
   ASSERT_TRUE(text_run_info_2.has_value());
 
   const auto& actual_text_run_2 = text_run_info_2.value();
   EXPECT_EQ(16u, actual_text_run_2.len);
 
-  EXPECT_FALSE(base::IsUnicodeWhitespace(
-      engine->GetCharUnicode(kPageIndex, kSecondRunStartIndex)));
+  EXPECT_FALSE(
+      base::IsUnicodeWhitespace(page.GetCharUnicode(kSecondRunStartIndex)));
   text_run_bounds = actual_text_run_2.bounds;
-  EXPECT_TRUE(text_run_bounds.Contains(
-      engine->GetCharBounds(kPageIndex, kSecondRunStartIndex)));
+  EXPECT_TRUE(
+      text_run_bounds.Contains(page.GetCharBounds(kSecondRunStartIndex)));
 
   // Last non-space character should fall in the bounding box of the text run.
   // Text run looks like this:
@@ -734,14 +733,14 @@ TEST_P(PDFiumPageTextTest, TextRunBounds) {
   // Finally generated text run: "Goodbye, world! "
   constexpr int kSecondRunLastNonSpaceCharIndex = 35;
   EXPECT_FALSE(base::IsUnicodeWhitespace(
-      engine->GetCharUnicode(kPageIndex, kSecondRunLastNonSpaceCharIndex)));
+      page.GetCharUnicode(kSecondRunLastNonSpaceCharIndex)));
   EXPECT_TRUE(text_run_bounds.Contains(
-      engine->GetCharBounds(kPageIndex, kSecondRunLastNonSpaceCharIndex)));
+      page.GetCharBounds(kSecondRunLastNonSpaceCharIndex)));
 
-  EXPECT_TRUE(base::IsUnicodeWhitespace(
-      engine->GetCharUnicode(kPageIndex, kSecondRunEndIndex)));
-  EXPECT_FALSE(text_run_bounds.Contains(
-      engine->GetCharBounds(kPageIndex, kSecondRunEndIndex)));
+  EXPECT_TRUE(
+      base::IsUnicodeWhitespace(page.GetCharUnicode(kSecondRunEndIndex)));
+  EXPECT_FALSE(
+      text_run_bounds.Contains(page.GetCharBounds(kSecondRunEndIndex)));
 }
 
 TEST_P(PDFiumPageTextTest, GetTextRunInfo) {
@@ -796,14 +795,15 @@ TEST_P(PDFiumPageTextTest, GetTextRunInfo) {
   }
 
   // Test negative char index returns nullopt
+  PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
   std::optional<AccessibilityTextRunInfo> text_run_info_result =
-      engine->GetTextRunInfo(0, -1);
+      page.GetTextRunInfo(-1);
   ASSERT_FALSE(text_run_info_result.has_value());
 
   // Test valid char index returns expected text run info and expected text
   // style info
   for (const auto& expected_text_run : expected_text_runs) {
-    text_run_info_result = engine->GetTextRunInfo(0, current_char_index);
+    text_run_info_result = page.GetTextRunInfo(current_char_index);
     ASSERT_TRUE(text_run_info_result.has_value());
     const auto& actual_text_run = text_run_info_result.value();
     CompareTextRuns(expected_text_run, actual_text_run);
@@ -811,9 +811,8 @@ TEST_P(PDFiumPageTextTest, GetTextRunInfo) {
   }
 
   // Test char index outside char range returns nullopt
-  PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
   EXPECT_EQ(page.GetCharCount(), current_char_index);
-  text_run_info_result = engine->GetTextRunInfo(0, current_char_index);
+  text_run_info_result = page.GetTextRunInfo(current_char_index);
   ASSERT_FALSE(text_run_info_result.has_value());
 }
 
@@ -848,10 +847,11 @@ TEST_P(PDFiumPageTextTest, HighlightTextRunInfo) {
         gfx::RectF(198.66667f, 201.33333f, 21.333328f, 12.000015f);
   }
 
+  PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
   int current_char_index = 0;
   for (const auto& expected_text_run : expected_text_runs) {
     std::optional<AccessibilityTextRunInfo> text_run_info_result =
-        engine->GetTextRunInfo(0, current_char_index);
+        page.GetTextRunInfo(current_char_index);
     ASSERT_TRUE(text_run_info_result.has_value());
     const auto& actual_text_run = text_run_info_result.value();
     CompareTextRuns(expected_text_run, actual_text_run);

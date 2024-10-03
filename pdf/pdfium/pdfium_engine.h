@@ -79,11 +79,6 @@ class Thumbnail;
 enum class AccessibilityScrollAlignment;
 struct AccessibilityActionData;
 struct AccessibilityFocusInfo;
-struct AccessibilityHighlightInfo;
-struct AccessibilityImageInfo;
-struct AccessibilityLinkInfo;
-struct AccessibilityTextFieldInfo;
-struct AccessibilityTextRunInfo;
 struct DocumentAttachmentInfo;
 struct DocumentMetadata;
 struct PageCharacterIndex;
@@ -290,9 +285,6 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // Gets the current layout orientation.
   PageOrientation GetCurrentOrientation() const;
 
-  // Gets the rectangle of the page not including the shadow.
-  gfx::Rect GetPageBoundsRect(int index);
-
   // Gets the rectangle of the page excluding any additional areas.
   virtual gfx::Rect GetPageContentsRect(int index);
 
@@ -300,57 +292,11 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // border areas and bottom separator.
   virtual gfx::Rect GetPageScreenRect(int page_index) const;
 
-  // Return a page's bounding box rectangle, or an empty rectangle if
-  // `page_index` is invalid.
-  gfx::RectF GetPageBoundingBox(int page_index);
-
   // Set color / grayscale rendering modes.
   virtual void SetGrayscale(bool grayscale);
 
-  // Get the number of characters on a given page.
-  int GetCharCount(int page_index);
-
-  // Get the bounds in page pixels of a character on a given page.
-  gfx::RectF GetCharBounds(int page_index, int char_index);
-
-  // Get a given unicode character on a given page.
-  uint32_t GetCharUnicode(int page_index, int char_index);
-
-  // Given a start char index, find the longest continuous run of text that's
-  // in a single direction and with the same text style. Return a filled out
-  // AccessibilityTextRunInfo on success or std::nullopt on failure. e.g. When
-  // `start_char_index` is out of bounds.
-  std::optional<AccessibilityTextRunInfo> GetTextRunInfo(int page_index,
-                                                         int start_char_index);
-
-  // For all the links on page `page_index`, get their urls, underlying text
-  // ranges and bounding boxes.
-  std::vector<AccessibilityLinkInfo> GetLinkInfo(
-      int page_index,
-      const std::vector<AccessibilityTextRunInfo>& text_runs);
-
-  // For all the images in page `page_index`, get their alt texts and bounding
-  // boxes. If the alt text is empty or unavailable, and if the user has
-  // requested that the OCR service tag the PDF so that it is made accessible,
-  // transfer the raw image pixels in the `image_data` field. Otherwise do not
-  // populate the `image_data` field.
-  std::vector<AccessibilityImageInfo> GetImageInfo(int page_index,
-                                                   uint32_t text_run_count);
-
   // Returns the image as a 32-bit bitmap format for OCR.
   SkBitmap GetImageForOcr(int page_index, int image_index);
-
-  // For all the highlights in page `page_index`, get their underlying text
-  // ranges and bounding boxes.
-  std::vector<AccessibilityHighlightInfo> GetHighlightInfo(
-      int page_index,
-      const std::vector<AccessibilityTextRunInfo>& text_runs);
-
-  // For all the text fields in page `page_index`, get their properties like
-  // name, value, bounding boxes etc.
-  std::vector<AccessibilityTextFieldInfo> GetTextFieldInfo(
-      int page_index,
-      uint32_t text_run_count);
 
   // Gets the PDF document's print scaling preference. True if the document can
   // be scaled to fit.

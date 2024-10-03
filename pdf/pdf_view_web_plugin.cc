@@ -1487,8 +1487,10 @@ void PdfViewWebPlugin::HandleGetPageBoundingBoxMessage(
   base::Value::Dict reply =
       PrepareReplyMessage("getPageBoundingBoxReply", message);
 
-  gfx::RectF bounding_box = engine_->GetPageBoundingBox(page_index);
-  gfx::Rect page_bounds = engine_->GetPageBoundsRect(page_index);
+  PDFiumPage* page = engine_->GetPage(page_index);
+  CHECK(page);
+  gfx::RectF bounding_box = page->GetBoundingBox();
+  gfx::Rect page_bounds = page->rect();
 
   // Flip the origin from bottom-left to top-left.
   bounding_box.set_y(static_cast<float>(page_bounds.height()) -

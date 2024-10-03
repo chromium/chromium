@@ -663,8 +663,11 @@ TEST_P(AccessibilityTest, SetSelectionAndScroll) {
     action_data.selection_start_index.char_index = sel_action.start_char_index;
     action_data.selection_end_index.page_index = sel_action.end_page_index;
     action_data.selection_end_index.char_index = sel_action.end_char_index;
-    gfx::Rect char_bounds = gfx::ToEnclosingRect(engine->GetCharBounds(
-        sel_action.start_page_index, sel_action.start_char_index));
+
+    PDFiumPage& page =
+        GetPDFiumPageForTest(*engine, sel_action.start_page_index);
+    gfx::Rect char_bounds =
+        gfx::ToEnclosingRect(page.GetCharBounds(sel_action.start_char_index));
     action_data.target_rect = {{char_bounds.x(), char_bounds.y() + 400 * index},
                                char_bounds.size()};
 
