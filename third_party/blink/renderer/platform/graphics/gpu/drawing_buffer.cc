@@ -659,11 +659,11 @@ bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
       // Context is likely lost.
       return false;
     }
-    gl_->CopySubTextureCHROMIUM(back_color_buffer_->texture_id(), 0,
-                                color_buffer_for_mailbox->texture_target,
-                                color_buffer_for_mailbox->texture_id(), 0, 0, 0,
-                                0, 0, size_.width(), size_.height(), GL_FALSE,
-                                GL_FALSE, GL_FALSE);
+    gl_->CopySubTextureCHROMIUM(
+        back_color_buffer_->texture_id(), 0,
+        color_buffer_for_mailbox->shared_image->GetTextureTarget(),
+        color_buffer_for_mailbox->texture_id(), 0, 0, 0, 0, 0, size_.width(),
+        size_.height(), GL_FALSE, GL_FALSE, GL_FALSE);
   }
 
   // Signal we will no longer access |color_buffer_for_mailbox| before exporting
@@ -696,7 +696,7 @@ bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
 
     *out_resource = viz::TransferableResource::MakeGpu(
         color_buffer_for_mailbox->shared_image,
-        color_buffer_for_mailbox->texture_target,
+        color_buffer_for_mailbox->shared_image->GetTextureTarget(),
         color_buffer_for_mailbox->produce_sync_token, size_,
         color_buffer_for_mailbox->format,
         color_buffer_for_mailbox->is_overlay_candidate,
@@ -864,7 +864,7 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportLowLatencyCanvasResource(
   viz::TransferableResource resource;
 
   resource.set_mailbox(color_buffer->shared_image->mailbox());
-  resource.set_texture_target(color_buffer->texture_target);
+  resource.set_texture_target(color_buffer->shared_image->GetTextureTarget());
   resource.size = color_buffer->size;
   resource.format = color_buffer->format;
   resource.is_overlay_candidate = color_buffer->is_overlay_candidate;
@@ -936,7 +936,6 @@ DrawingBuffer::ColorBuffer::ColorBuffer(
       shared_image(std::move(shared_image)),
       shared_image_texture_(std::move(shared_image_texture)) {
   CHECK(this->shared_image);
-  texture_target = this->shared_image->GetTextureTarget();
 }
 
 DrawingBuffer::ColorBuffer::~ColorBuffer() {
@@ -1107,7 +1106,7 @@ void DrawingBuffer::CopyStagingTextureToBackColorBufferIfNeeded() {
       requested_alpha_type_ == kUnpremul_SkAlphaType;
   const GLboolean do_unpremultiply_alpha = GL_FALSE;
   gl_->CopySubTextureCHROMIUM(
-      staging_texture_, 0, back_color_buffer_->texture_target,
+      staging_texture_, 0, back_color_buffer_->shared_image->GetTextureTarget(),
       back_color_buffer_->texture_id(), 0, 0, 0, 0, 0, size_.width(),
       size_.height(), do_flip_y, do_premultiply_alpha, do_unpremultiply_alpha);
 }
@@ -1153,7 +1152,8 @@ bool DrawingBuffer::CopyToPlatformInternal(gpu::InterfaceBase* dst_interface,
         const GLboolean do_premultiply_alpha = GL_FALSE;
         const GLboolean do_unpremultiply_alpha = GL_FALSE;
         gl_->CopySubTextureCHROMIUM(
-            staging_texture_, 0, back_color_buffer_->texture_target,
+            staging_texture_, 0,
+            back_color_buffer_->shared_image->GetTextureTarget(),
             back_color_buffer_->texture_id(), 0, 0, 0, 0, 0, size_.width(),
             size_.height(), do_flip_y, do_premultiply_alpha,
             do_unpremultiply_alpha);
@@ -1890,9 +1890,10 @@ sk_sp<SkData> DrawingBuffer::PaintRenderingResultsToDataArray(
     gl_->GenFramebuffers(1, &fbo);
     gl_->BindFramebuffer(GL_FRAMEBUFFER, fbo);
     front_color_buffer_->BeginAccess(gpu::SyncToken(), /*readonly=*/true);
-    gl_->FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                              front_color_buffer_->texture_target,
-                              front_color_buffer_->texture_id(), 0);
+    gl_->FramebufferTexture2D(
+        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+        front_color_buffer_->shared_image->GetTextureTarget(),
+        front_color_buffer_->texture_id(), 0);
   } else {
     gl_->BindFramebuffer(GL_FRAMEBUFFER, fbo_);
   }
@@ -1907,8 +1908,9 @@ sk_sp<SkData> DrawingBuffer::PaintRenderingResultsToDataArray(
     // The front buffer was used as the source of the pixels via |fbo|; clean up
     // |fbo| and release access to the front buffer's SharedImage now that the
     // readback is finished.
-    gl_->FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                              front_color_buffer_->texture_target, 0, 0);
+    gl_->FramebufferTexture2D(
+        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+        front_color_buffer_->shared_image->GetTextureTarget(), 0, 0);
     gl_->DeleteFramebuffers(1, &fbo);
     front_color_buffer_->EndAccess();
   }
@@ -1995,7 +1997,8 @@ void DrawingBuffer::ResolveAndPresentSwapChainIfNeeded() {
     // If premultiply alpha is false rendering results are in
     // |staging_texture_|.
     GLenum dest_texture_target =
-        staging_texture_ ? GL_TEXTURE_2D : back_color_buffer_->texture_target;
+        staging_texture_ ? GL_TEXTURE_2D
+                         : back_color_buffer_->shared_image->GetTextureTarget();
     GLuint dest_texture_id =
         staging_texture_ ? staging_texture_ : back_color_buffer_->texture_id();
     front_color_buffer_->BeginAccess(gpu::SyncToken(), /*readonly=*/true);
@@ -2252,7 +2255,7 @@ void DrawingBuffer::AttachColorBufferToReadFramebuffer() {
     texture_target = GL_TEXTURE_2D;
   } else {
     id = back_color_buffer_->texture_id();
-    texture_target = back_color_buffer_->texture_target;
+    texture_target = back_color_buffer_->shared_image->GetTextureTarget();
   }
 
   gl_->BindTexture(texture_target, id);

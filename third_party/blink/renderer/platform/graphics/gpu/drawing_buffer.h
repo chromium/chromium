@@ -447,7 +447,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     const gfx::ColorSpace color_space;
     const viz::SharedImageFormat format;
     const SkAlphaType alpha_type;
-    GLenum texture_target;
     const bool is_overlay_candidate;
 
     // The shared image used to send this buffer to the compositor.
