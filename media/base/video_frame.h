@@ -599,6 +599,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 
   // Returns true if the underlying SharedImage or GMB can be mapped truly
   // asynchronously: with an unblocking request to the GPU process.
+  // Only call if `HasMappableGpuBuffer() == true`.
   bool AsyncMappingIsNonBlocking() const;
 
   // Gets the GpuMemoryBufferHandle backing the VideoFrame. Note that most of

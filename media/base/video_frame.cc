@@ -1344,11 +1344,15 @@ void VideoFrame::MapGMBOrSharedImageAsync(
 }
 
 bool VideoFrame::AsyncMappingIsNonBlocking() const {
-  return wrapped_frame_ ? wrapped_frame_->AsyncMappingIsNonBlocking()
-                        : (gpu_memory_buffer_ &&
-                           gpu_memory_buffer_->AsyncMappingIsNonBlocking()) ||
-                              (shared_image_ &&
-                               shared_image_->AsyncMappingIsNonBlocking());
+  if (wrapped_frame_) {
+    return wrapped_frame_->AsyncMappingIsNonBlocking();
+  }
+  CHECK(HasMappableGpuBuffer());
+  if (is_mappable_si_enabled_) {
+    CHECK(shared_image_);
+    return shared_image_->AsyncMappingIsNonBlocking();
+  }
+  return gpu_memory_buffer_->AsyncMappingIsNonBlocking();
 }
 
 gfx::GpuMemoryBufferHandle VideoFrame::GetGpuMemoryBufferHandle() const {
