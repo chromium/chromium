@@ -330,7 +330,8 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
   scoped_refptr<gpu::ClientSharedImage>
   GetBackingClientSharedImageForExternalWrite(
       gpu::SyncToken* internal_access_sync_token,
-      gpu::SharedImageUsageSet required_shared_image_usages) override {
+      gpu::SharedImageUsageSet required_shared_image_usages,
+      bool* was_copy_performed /*=nullptr*/) override {
     // This may cause the current resource and all cached resources to become
     // unusable. WillDrawInternal() will detect this case, drop all cached
     // resources, and copy the current resource to a newly-created resource
@@ -346,7 +347,12 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     // has a precondition that there should be no current write access on the
     // resource.
     EndWriteAccess();
+
+    const CanvasResource* const original_resource = resource_.get();
     WillDrawInternal(false);
+    if (was_copy_performed != nullptr) {
+      *was_copy_performed = resource_.get() != original_resource;
+    }
 
     // NOTE: The above invocation of WillDrawInternal() ensures that this
     // invocation of GetSyncToken() will generate a new sync token.

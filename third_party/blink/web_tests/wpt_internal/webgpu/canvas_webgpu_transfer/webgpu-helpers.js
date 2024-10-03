@@ -279,7 +279,11 @@ function test_transferToGPUTexture_balanced_access(device, canvas) {
 
   // Begin and end a WebGPU access session several times.
   for (let count = 0; count < 10; ++count) {
-    const tex = ctx.transferToGPUTexture({device: device});
+    // The initial transfer incurs a copy as the canvas resource's SharedImage
+    // doesn't have WebGPU usage by default. All transfers after that should be
+    // zero-copy.
+    requireZeroCopy = count > 0;
+    const tex = ctx.transferToGPUTexture({device: device, requireZeroCopy: requireZeroCopy});
     ctx.transferBackFromGPUTexture();
   }
 }

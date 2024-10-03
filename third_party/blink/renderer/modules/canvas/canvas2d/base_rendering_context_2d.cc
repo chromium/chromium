@@ -46,6 +46,8 @@
 #include "cc/paint/paint_image.h"
 #include "cc/paint/record_paint_canvas.h"
 #include "cc/paint/refcounted_buffer.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_metadata.h"
@@ -3806,6 +3808,25 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
   constexpr wgpu::TextureUsage kSupportedUsageFlags =
       wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::CopyDst |
       wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::RenderAttachment;
+
+  // If `transferToGPUTexture` is called twice without an intervening call to
+  // `transferBackFromGPUTexture`, the semantics are that the current ongoing
+  // transfer should be discarded and the new transfer given the 2D canvas in
+  // its current state (defined to be blank post-initiation of the first
+  // transfer but then incorporating any canvas 2D operations that have
+  // subsequently occurred on the canvas). Implement that semantics here.
+  // Note that the canvas will have been made blank by the removal of the
+  // CanvasResourceProvider at the initiation of the first transfer but will
+  // then incorporate any canvas 2D operations that have subsequently occurred
+  // on the canvas via the usage of the CanvasResourceProvider that those
+  // operations would have caused to be created as the source for the new
+  // transfer below.
+  if (webgpu_access_texture_) {
+    webgpu_access_texture_->destroy();
+    webgpu_access_texture_ = nullptr;
+    resource_provider_from_webgpu_access_.reset();
+  }
+
   wgpu::TextureUsage tex_usage =
       AsDawnFlags<wgpu::TextureUsage>(access_options->usage());
   if (tex_usage & ~kSupportedUsageFlags) {
@@ -3817,8 +3838,7 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
   // Prepare to flush the canvas to a WebGPU texture.
   FinalizeFrame(FlushReason::kWebGPUTexture);
 
-  // We will need to access the canvas' resource provider in order to snapshot
-  // its image below.
+  // We will need to access the canvas' resource provider.
   CanvasRenderingContextHost* host = GetCanvasRenderingContextHost();
   if (!host) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -3843,42 +3863,52 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
     return nullptr;
   }
 
-  // Snapshot the image from the CanvasResourceProvider.
-  // We use Snapshot instead of GetImage here to ensure that we get an image,
-  // even if the canvas is empty.
-  // TODO(crbug.com/340922308): when possible, we should steal the existing
-  // texture from the resource provider, instead of cloning it.
-  scoped_refptr<StaticBitmapImage> image =
-      provider->Snapshot(FlushReason::kWebGPUTexture);
-  if (!image) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Unable to snapshot the canvas image.");
-    return nullptr;
+  // Get the SharedImage backing this canvas resource, signaling that an
+  // external write will occur. This call will ensure that a copy occurs if
+  // needed for CopyOnWrite or for creation of a SharedImage with WebGPU usage
+  // and will end the canvas access.
+  gpu::SyncToken canvas_access_sync_token;
+  bool performed_copy = false;
+  scoped_refptr<gpu::ClientSharedImage> client_si =
+      host->ResourceProvider()->GetBackingClientSharedImageForExternalWrite(
+          &canvas_access_sync_token,
+          gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+              gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE,
+          &performed_copy);
+  if (access_options->requireZeroCopy() && performed_copy) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Transferring canvas to GPU was not zero-copy.");
   }
 
-  SkImageInfo image_info = image->GetSkImageInfo();
+  // If the backing SharedImage is not available (e.g., because the GPU context
+  // has been lost), zero-copy transfer is not possible.
+  if (!client_si) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Unable to transfer canvas to GPU.");
+  }
+
+  wgpu::TextureFormat dawn_format =
+      AsDawnType(viz::ToClosestSkColorType(true, client_si->format()));
+  wgpu::TextureDescriptor desc = {
+      .usage = tex_usage,
+      .size = {base::checked_cast<uint32_t>(client_si->size().width()),
+               base::checked_cast<uint32_t>(client_si->size().height())},
+      .format = dawn_format,
+  };
+
+  // Create a WebGPU texture backed by the resource's SharedImage.
   scoped_refptr<WebGPUMailboxTexture> texture =
-      WebGPUMailboxTexture::FromStaticBitmapImage(
-          blink_device->GetDawnControlClient(), blink_device->GetHandle(),
-          tex_usage, image, image_info,
-          gfx::Rect(image_info.width(), image_info.height()),
-          /*is_dummy_mailbox_texture=*/false);
-  if (!texture) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Unable to transfer canvas to WebGPU.");
-    return nullptr;
-  }
-
-  // If `transferToGPUTexture` is called twice without an intervening call to
-  // `transferBackFromGPUTexture`, the previously-generated texture is
-  // immediately destroyed.
-  if (webgpu_access_texture_) {
-    webgpu_access_texture_->destroy();
-  }
+      WebGPUMailboxTexture::FromExistingMailbox(
+          blink_device->GetDawnControlClient(), blink_device->GetHandle(), desc,
+          client_si->mailbox(),
+          // Ensure that WebGPU waits for the 2D canvas service-side operations
+          // on this resource to complete.
+          canvas_access_sync_token);
 
   webgpu_access_texture_ = MakeGarbageCollected<GPUTexture>(
-      blink_device, AsDawnType(image_info.colorType()), tex_usage,
-      std::move(texture), access_options->getLabelOr(String()));
+      blink_device, dawn_format, tex_usage, std::move(texture),
+      access_options->getLabelOr(String()));
 
   // We take away the canvas' resource provider here, which will cause the
   // canvas to be treated as a brand new surface if additional draws occur.
@@ -3892,46 +3922,6 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
   resource_provider_from_webgpu_access_->ClearRecycledResources();
 
   return webgpu_access_texture_;
-}
-
-bool BaseRenderingContext2D::CopyGPUTextureToResourceProvider(
-    GPUTexture& texture,
-    CanvasResourceProvider& resource_provider) {
-  // Get the GPU mailbox associated with the WebGPU access texture. This texture
-  // always originates from `transferToWebGPU`, so we should always find a
-  // shared-image mailbox here.
-  scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
-      texture.GetMailboxTexture();
-  CHECK(mailbox_texture);
-
-  const gpu::Mailbox& mailbox = mailbox_texture->GetMailbox();
-
-  // Dissociating the mailbox texture from WebGPU forces the GPU queue to drain,
-  // and yields a sync token for OverwriteImage.
-  gpu::SyncToken ready_sync_token = mailbox_texture->Dissociate();
-  if (!ready_sync_token.HasData()) {
-    return false;
-  }
-
-  // Overwrite the resource provider's shared image with the WebGPU texture.
-  const bool unpack_flip_y = !resource_provider.IsOriginTopLeft();
-  gfx::Rect copy_rect(texture.width(), texture.height());
-
-  gpu::SyncToken completion_sync_token;
-  if (!resource_provider.OverwriteImage(mailbox, copy_rect, unpack_flip_y,
-                                        /*unpack_premultiply_alpha=*/false,
-                                        ready_sync_token,
-                                        completion_sync_token)) {
-    return false;
-  }
-
-  // Ensure that the mailbox texture lives until OverwriteImage fully completes.
-  // Note that `mailbox_texture->Dissociate` above has already set a completion
-  // sync token on the mailbox texture (our `ready_sync_token`), but we are
-  // deliberately replacing it here with a newer sync token that also includes
-  // completion of the image overwrite operation.
-  mailbox_texture->SetCompletionSyncToken(completion_sync_token);
-  return true;
 }
 
 void BaseRenderingContext2D::transferBackFromGPUTexture(
@@ -3985,12 +3975,15 @@ void BaseRenderingContext2D::transferBackFromGPUTexture(
       std::move(resource_provider_from_webgpu_access_));
   resource_provider->SetCanvasResourceHost(host);
 
-  // Copy the contents of the GPUTexture into this ResourceProvider.
-  if (!CopyGPUTextureToResourceProvider(*webgpu_access_texture_,
-                                        *resource_provider)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Unable to replace canvas image.");
-  }
+  // Disassociate the WebGPU texture from the SharedImage to end its
+  // SharedImage access.
+  gpu::SyncToken webgpu_completion_sync_token =
+      webgpu_access_texture_->GetMailboxTexture()->Dissociate();
+
+  // Signal to the resource provider that the external write to the resource has
+  // completed to ensure that it waits on the WebGPU service-side operations to
+  // complete before any further canvas operations occur.
+  resource_provider->EndExternalWrite(webgpu_completion_sync_token);
 
   // Destroy the WebGPU texture to prevent it from being used after
   // `transferBackFromGPUTexture`.

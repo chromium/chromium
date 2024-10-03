@@ -1,4 +1,5 @@
 include_rules = [
+    "+components/viz/common/resources/shared_image_format_utils.h",
     "+gpu/command_buffer/common",
     "+media/base",
     "+services/metrics/public/cpp/ukm_recorder.h",

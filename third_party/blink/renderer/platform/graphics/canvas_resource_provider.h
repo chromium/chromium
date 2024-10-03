@@ -230,13 +230,15 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // wait unnecessary (in which case the client should pass `nullptr` for the
   // token together with an explanation at the callsite).
   // `required_shared_image_usages` is a set of usages that the passed-back
-  // ClientSharedImage must support. The provider will copy its current
-  // resource to one that is created with the required usages if its current
-  // resource does not have those usages.
+  // ClientSharedImage must support. A copy will be performed if either (a) the
+  // display compositor is reading the current resource or (b) the current
+  // resource does not support `required_shared_image_usages.` In these cases,
+  // `was_copy_performed` will be set to true if it is non-null.
   virtual scoped_refptr<gpu::ClientSharedImage>
   GetBackingClientSharedImageForExternalWrite(
       gpu::SyncToken* internal_access_sync_token,
-      gpu::SharedImageUsageSet required_shared_image_usages) {
+      gpu::SharedImageUsageSet required_shared_image_usages,
+      bool* was_copy_performed = nullptr) {
     return nullptr;
   }
 
