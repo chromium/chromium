@@ -1584,6 +1584,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                 mAuxiliarySearchController =
                                         AuxiliarySearchControllerFactory
                                                 .createAuxiliarySearchController(
+                                                        this,
                                                         profileProvider.getOriginalProfile(),
                                                         mTabModelSelector);
                                 if (mAuxiliarySearchController != null) {

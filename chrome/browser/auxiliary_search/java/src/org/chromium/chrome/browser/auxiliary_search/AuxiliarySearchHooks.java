@@ -19,17 +19,8 @@ public interface AuxiliarySearchHooks {
 
     /** Create a AuxiliarySearchController. */
     @Nullable
-    default AuxiliarySearchController createAuxiliarySearchController(
-            Profile profile, TabModelSelector tabModelSelector) {
-        return null;
-    }
-
-    /** Create a AuxiliarySearchController. */
-    @Nullable
-    default AuxiliarySearchController createAuxiliarySearchController(
+    AuxiliarySearchController createAuxiliarySearchController(
             @NonNull Context context,
             @NonNull Profile profile,
-            @NonNull TabModelSelector tabModelSelector) {
-        return null;
-    }
+            @NonNull TabModelSelector tabModelSelector);
 }

@@ -200,7 +200,7 @@ public class AuxiliarySearchProviderTest {
                 .when(mMockAuxiliarySearchBridgeJni)
                 .getNonSensitiveTabs(eq(FAKE_NATIVE_PROVIDER), any(), any(Callback.class));
 
-        mAuxiliarySearchProvider.getTabsSearchableDataProtoAsync(
+        mAuxiliarySearchProvider.getTabsSearchableDataProtoWithFaviconAsync(
                 new Callback<AuxiliarySearchTabGroup>() {
                     @Override
                     public void onResult(AuxiliarySearchTabGroup tabGroup) {
@@ -223,7 +223,8 @@ public class AuxiliarySearchProviderTest {
                         }
                         assertEquals(returnedTabsNumbers.size(), 100);
                     }
-                });
+                },
+                null);
     }
 
     @Test

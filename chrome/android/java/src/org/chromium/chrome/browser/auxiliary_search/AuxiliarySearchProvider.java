@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchBookmarkGroup;
@@ -88,34 +87,11 @@ public class AuxiliarySearchProvider {
         mMaxFaviconNumber = MAX_FAVICON_NUMBER.getValue();
     }
 
-    // TODO(b/370478696): Remove this method once the internal caller is updated.
-    public AuxiliarySearchProvider(Profile profile, TabModelSelector tabModelSelector) {
-        this(ContextUtils.getApplicationContext(), profile, tabModelSelector);
-    }
-
     /**
      * @return AuxiliarySearchGroup for bookmarks.
      */
     public AuxiliarySearchBookmarkGroup getBookmarksSearchableDataProto() {
         return mAuxiliarySearchBridge.getBookmarksSearchableData();
-    }
-
-    /**
-     * @param callback {@link Callback} to pass back the AuxiliarySearchGroup for {@link Tab}s.
-     */
-    public void getTabsSearchableDataProtoAsync(Callback<AuxiliarySearchTabGroup> callback) {
-        long minAccessTime = System.currentTimeMillis() - mTabMaxAgeMillis;
-        List<Tab> listTab = getTabsByMinimalAccessTime(minAccessTime);
-
-        mAuxiliarySearchBridge.getNonSensitiveTabs(
-                listTab,
-                tabs -> {
-                    onNonSensitiveTabsAvailable(
-                            mFaviconHelper,
-                            callback,
-                            /* faviconImageFetchedCallback= */ null,
-                            tabs);
-                });
     }
 
     /**
