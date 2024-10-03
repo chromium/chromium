@@ -345,8 +345,6 @@ const CGFloat kMenuSymbolSize = 18;
 }
 
 - (void)onContainerViewControllerPresented {
-  [self adjustSelectionOcclusionInsets];
-
   BOOL shouldShowConsentFlow =
       !self.termsOfServiceAccepted ||
       base::FeatureList::IsEnabled(kLensOverlayForceShowOnboardingScreen);
@@ -959,6 +957,15 @@ const CGFloat kMenuSymbolSize = 18;
   ];
   sheet.prefersGrabberVisible = YES;
   sheet.preferredCornerRadius = 14;
+
+  // Adjust the occlusion insets so that selections in the bottom half of the
+  // screen are repositioned, to avoid being hidden by the bottom sheet.
+  //
+  // Note(crbug.com/370930119): The adjustment has to be done right before the
+  // bottom sheet is presented. Otherwise the coachmark will appear displaced.
+  // This is a known limitation on the Lens side, as there is currently no
+  // independent way of adjusting the insets for the coachmark alone.
+  [self adjustSelectionOcclusionInsets];
 
   // Presenting the bottom sheet adds a gesture recognizer on the main window
   // which in turn causes the touches on Lens Overlay to get canceled.
