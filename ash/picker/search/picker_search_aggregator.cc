@@ -50,6 +50,7 @@ PickerSectionType SectionTypeFromSearchSource(PickerSearchSource source) {
       return PickerSectionType::kDriveFiles;
     case PickerSearchSource::kEditorWrite:
     case PickerSearchSource::kEditorRewrite:
+    case PickerSearchSource::kLobster:
       return PickerSectionType::kContentEditor;
   }
 }

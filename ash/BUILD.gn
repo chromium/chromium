@@ -1115,6 +1115,8 @@ component("ash") {
     "picker/search/picker_date_search.h",
     "picker/search/picker_editor_search.cc",
     "picker/search/picker_editor_search.h",
+    "picker/search/picker_lobster_search.cc",
+    "picker/search/picker_lobster_search.h",
     "picker/search/picker_math_search.cc",
     "picker/search/picker_math_search.h",
     "picker/search/picker_search_aggregator.cc",

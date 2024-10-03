@@ -107,6 +107,10 @@ const TestCase kContentEditorSectionTestCases[] = {
         .source = PickerSearchSource::kEditorRewrite,
         .section_type = PickerSectionType::kContentEditor,
     },
+    TestCase{
+        .source = PickerSearchSource::kLobster,
+        .section_type = PickerSectionType::kContentEditor,
+    },
 };
 
 INSTANTIATE_TEST_SUITE_P(NamedSections,
@@ -526,7 +530,10 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                                u"write")),
                            VariantWith<PickerTextResult>(Field(
                                "primary_text", &PickerTextResult::primary_text,
-                               u"rewrite"))))))))
+                               u"rewrite")),
+                           VariantWith<PickerTextResult>(Field(
+                               "primary_text", &PickerTextResult::primary_text,
+                               u"lobster"))))))))
       .Times(1);
 
   PickerSearchAggregator aggregator(
@@ -566,6 +573,9 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kEditorRewrite,
                                        {PickerTextResult(u"rewrite")},
+                                       /*has_more_results=*/false);
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kLobster,
+                                       {PickerTextResult(u"lobster")},
                                        /*has_more_results=*/false);
   task_environment().FastForwardBy(kBurnInPeriod);
 }
@@ -763,6 +773,9 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kEditorRewrite,
                                        {PickerTextResult(u"rewrite")},
+                                       /*has_more_results=*/false);
+  aggregator.HandleSearchSourceResults(PickerSearchSource::kLobster,
+                                       {PickerTextResult(u"lobster")},
                                        /*has_more_results=*/false);
 }
 

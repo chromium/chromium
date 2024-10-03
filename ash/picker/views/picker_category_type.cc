@@ -14,6 +14,8 @@ ASH_EXPORT PickerCategoryType GetPickerCategoryType(PickerCategory category) {
       return PickerCategoryType::kEditorWrite;
     case PickerCategory::kEditorRewrite:
       return PickerCategoryType::kEditorRewrite;
+    case PickerCategory::kLobster:
+      return PickerCategoryType::kEditorWrite;
     case PickerCategory::kLinks:
     case PickerCategory::kEmojisGifs:
     case PickerCategory::kEmojis:

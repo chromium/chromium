@@ -38,6 +38,8 @@ class ASH_EXPORT PickerClient {
   using ShowEditorCallback =
       base::OnceCallback<void(std::optional<std::string> preset_query_id,
                               std::optional<std::string> freeform_text)>;
+  using ShowLobsterCallback =
+      base::OnceCallback<void(std::optional<std::string> query)>;
   using SuggestedEditorResultsCallback =
       base::OnceCallback<void(std::vector<PickerSearchResult>)>;
   using RecentFilesCallback =
@@ -62,6 +64,8 @@ class ASH_EXPORT PickerClient {
   // Caches the current input field context and returns a callback to show
   // Editor. If Editor is not available, this returns a null callback.
   virtual ShowEditorCallback CacheEditorContext() = 0;
+
+  virtual ShowLobsterCallback GetShowLobsterCallback() = 0;
 
   virtual void GetSuggestedEditorResults(
       SuggestedEditorResultsCallback callback) = 0;

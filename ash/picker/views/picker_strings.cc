@@ -35,6 +35,12 @@ std::u16string GetLabelForPickerCategory(PickerCategory category) {
 #else
       return u"";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    case PickerCategory::kLobster:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      return l10n_util::GetStringUTF16(IDS_PICKER_LOBSTER_SELECTION_LABEL);
+#else
+      return u"";
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case PickerCategory::kLinks:
       return l10n_util::GetStringUTF16(IDS_PICKER_LINKS_CATEGORY_LABEL);
     case PickerCategory::kEmojisGifs:
@@ -77,6 +83,7 @@ std::u16string GetSearchFieldPlaceholderTextForPickerCategory(
           IDS_PICKER_UNITS_MATHS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT);
     case PickerCategory::kEditorWrite:
     case PickerCategory::kEditorRewrite:
+    case PickerCategory::kLobster:
     case PickerCategory::kEmojisGifs:
     case PickerCategory::kEmojis:
       NOTREACHED_NORETURN();
@@ -100,6 +107,14 @@ std::u16string GetSectionTitleForPickerCategoryType(
 #else
       return u"";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    case PickerCategoryType::kLobster:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_EDITOR_WRITE_CATEGORY_TYPE_SECTION_TITLE);
+#else
+      return u"";
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
     case PickerCategoryType::kGeneral:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_GENERAL_CATEGORY_TYPE_SECTION_TITLE);

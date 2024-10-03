@@ -109,6 +109,8 @@ cros_events::PickerAction ConvertToCrosEventAction(
       return cros_events::PickerAction::OPEN_EDITOR_WRITE;
     case PickerCategory::kEditorRewrite:
       return cros_events::PickerAction::OPEN_EDITOR_REWRITE;
+    case PickerCategory::kLobster:
+      return cros_events::PickerAction::OPEN_LOBSTER;
     case PickerCategory::kLinks:
       return cros_events::PickerAction::OPEN_LINKS;
     case PickerCategory::kEmojisGifs:
@@ -169,6 +171,7 @@ cros_events::PickerResultSource GetResultSource(
             NOTREACHED();
           },
           [](const PickerEditorResult& data) -> ReturnType { NOTREACHED(); },
+          [](const PickerLobsterResult& data) -> ReturnType { NOTREACHED(); },
           [](const PickerNewWindowResult& data) -> ReturnType {
             return cros_events::PickerResultSource::UNKNOWN;
           },
@@ -229,6 +232,7 @@ cros_events::PickerResultType GetResultType(
             NOTREACHED();
           },
           [](const PickerEditorResult& data) -> ReturnType { NOTREACHED(); },
+          [](const PickerLobsterResult& data) -> ReturnType { NOTREACHED(); },
           [](const PickerNewWindowResult& data) -> ReturnType {
             return cros_events::PickerResultType::UNKNOWN;
           },

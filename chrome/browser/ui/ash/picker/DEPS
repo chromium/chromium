@@ -17,6 +17,7 @@ include_rules = [
   "+chrome/browser/ash/drive",
   "+chrome/browser/ash/fileapi",
   "+chrome/browser/ash/file_manager",
+  "+chrome/browser/ash/lobster",
   "+chrome/browser/ash/input_method",
   "+chrome/browser/ash/login/session",
   "+chrome/browser/bookmarks",

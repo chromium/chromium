@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/lobster/lobster_controller.h"
 #include "ash/picker/picker_category.h"
 #include "ash/picker/picker_client.h"
 #include "ash/picker/picker_web_paste_target.h"
@@ -63,6 +64,7 @@ class PickerClientImpl
   void StopCrosQuery() override;
   bool IsEligibleForEditor() override;
   ShowEditorCallback CacheEditorContext() override;
+  ShowLobsterCallback GetShowLobsterCallback() override;
   void GetSuggestedEditorResults(
       SuggestedEditorResultsCallback callback) override;
   void GetRecentLocalFileResults(size_t max_files,
@@ -108,6 +110,8 @@ class PickerClientImpl
   void ShowEditor(std::optional<std::string> preset_query_id,
                   std::optional<std::string> freeform_text);
 
+  void ShowLobster(std::optional<std::string> query);
+
   ash::input_method::EditorLiveRegionAnnouncer announcer_;
 
   raw_ptr<ash::PickerController> controller_ = nullptr;
@@ -124,6 +128,8 @@ class PickerClientImpl
   std::unique_ptr<PickerFileSuggester> file_suggester_;
   std::unique_ptr<PickerLinkSuggester> link_suggester_;
   std::unique_ptr<PickerThumbnailLoader> thumbnail_loader_;
+
+  std::unique_ptr<ash::LobsterController::Trigger> lobster_trigger_;
 
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::UserSessionStateObserver>

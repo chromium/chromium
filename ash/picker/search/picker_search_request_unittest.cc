@@ -1038,6 +1038,63 @@ INSTANTIATE_TEST_SUITE_P(
                     std::make_pair(PickerCategory::kEditorRewrite,
                                    PickerSearchSource::kEditorRewrite)));
 
+class PickerSearchRequestLobsterTest
+    : public PickerSearchRequestTest,
+      public testing::WithParamInterface<
+          std::pair<PickerCategory, PickerSearchSource>> {};
+
+TEST_P(PickerSearchRequestLobsterTest, ShowsResultsFromLobsterSearch) {
+  const auto& [category, source] = GetParam();
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(search_results_callback,
+              Call(source, ElementsAre(VariantWith<PickerLobsterResult>(_)),
+                   /*has_more_results=*/false))
+      .Times(1);
+
+  PickerSearchRequest request(
+      u"quick brown fox jumped over lazy dog", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)),
+      base::DoNothing(), &client(), {.available_categories = {{category}}});
+}
+
+TEST_P(PickerSearchRequestLobsterTest,
+       DoNotShowResultsFromLobsterSearchIfNotAvailable) {
+  const auto& [category, source] = GetParam();
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(search_results_callback, Call(source, _, _)).Times(0);
+
+  PickerSearchRequest request(
+      u"quick brown fox jumped over lazy dog", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)),
+      base::DoNothing(), &client(), {});
+}
+
+TEST_P(PickerSearchRequestLobsterTest, RecordsLobsterMetrics) {
+  const auto& [category, source] = GetParam();
+  base::HistogramTester histogram;
+  NiceMock<MockSearchResultsCallback> search_results_callback;
+
+  PickerSearchRequest request(
+      u"quick brown fox jumped over lazy dog", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)),
+      base::DoNothing(), &client(), {.available_categories = {{category}}});
+
+  histogram.ExpectTotalCount("Ash.Picker.Search.LobsterProvider.QueryTime", 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PickerSearchRequestLobsterTest,
+    testing::Values(std::make_pair(PickerCategory::kLobster,
+                                   PickerSearchSource::kLobster),
+                    std::make_pair(PickerCategory::kLobster,
+                                   PickerSearchSource::kLobster)));
+
 TEST_F(PickerSearchRequestTest, DoneClosureCalledImmediatelyWhenNoSearch) {
   // This actually calls category search.
   NiceMock<MockSearchResultsCallback> search_results_callback;

@@ -5,9 +5,14 @@
 #include "ash/picker/views/picker_icons.h"
 
 #include "ash/picker/picker_category.h"
+#include "build/branding_buildflags.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/vector_icon_types.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chromeos/ash/resources/internal/icons/vector_icons.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace ash {
 namespace {
@@ -20,6 +25,12 @@ const gfx::VectorIcon& GetVectorIconForPickerCategory(PickerCategory category) {
     case PickerCategory::kEditorRewrite:
       // TODO: b/322926823 - Use correct icons.
       return kPencilIcon;
+    case PickerCategory::kLobster:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      return kLobsterIcon;
+#else
+      return kPencilIcon;
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case PickerCategory::kEmojisGifs:
     case PickerCategory::kEmojis:
       return kPickerEmojiIcon;

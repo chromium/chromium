@@ -109,7 +109,10 @@ PickerZeroStateView::PickerZeroStateView(
   for (PickerCategory category : available_categories) {
     // kEditorRewrite is not visible in the zero-state, since it's replaced with
     // the rewrite suggestions.
-    if (category == PickerCategory::kEditorRewrite) {
+    // TODO: b/369701127 - Shows kLobster entry once its implementation is
+    // ready.
+    if (category == PickerCategory::kEditorRewrite ||
+        category == PickerCategory::kLobster) {
       continue;
     }
 

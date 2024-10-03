@@ -195,6 +195,19 @@ PickerEditorResult::~PickerEditorResult() = default;
 
 bool PickerEditorResult::operator==(const PickerEditorResult&) const = default;
 
+PickerLobsterResult::PickerLobsterResult(std::u16string display_name)
+    : display_name(std::move(display_name)) {}
+
+PickerLobsterResult::PickerLobsterResult(const PickerLobsterResult&) = default;
+
+PickerLobsterResult& PickerLobsterResult::operator=(
+    const PickerLobsterResult&) = default;
+
+PickerLobsterResult::~PickerLobsterResult() = default;
+
+bool PickerLobsterResult::operator==(const PickerLobsterResult&) const =
+    default;
+
 PickerNewWindowResult::PickerNewWindowResult(Type type) : type(type) {}
 
 PickerNewWindowResult::PickerNewWindowResult(const PickerNewWindowResult&) =

@@ -1232,6 +1232,7 @@
     <variant value="0">UNKNOWN</variant>
     <variant value="1">OPEN_EDITOR_WRITE</variant>
     <variant value="2">OPEN_EDITOR_REWRITE</variant>
+    <variant value="2">OPEN_LOBSTER</variant>
     <variant value="3">OPEN_LINKS</variant>
     <variant value="4">OPEN_EXPRESSIONS</variant>
     <variant value="5">OPEN_CLIPBOARD</variant>

@@ -249,6 +249,9 @@ class FakePickerViewDelegate : public PickerViewDelegate {
                   std::optional<std::string> freeform_text) override {
     showed_editor_ = true;
   }
+  void ShowLobster(std::optional<std::string> freeform_text) override {
+    showed_lobster_ = true;
+  }
 
   PickerAssetFetcher* GetAssetFetcher() override { return &asset_fetcher_; }
 
@@ -290,6 +293,10 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   }
   bool showed_editor() const { return showed_editor_; }
 
+  // TODO: b/348279987 - Adds unit test once the Lobster entry point is added to
+  // zero state.
+  bool showed_lobster() const { return showed_lobster_; }
+
  private:
   Options options_;
   MockPickerAssetFetcher asset_fetcher_;
@@ -299,6 +306,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   std::optional<ui::EmojiPickerCategory> emoji_picker_category_;
   std::optional<std::u16string> emoji_picker_query_;
   bool showed_editor_ = false;
+  bool showed_lobster_ = false;
 };
 
 PickerView* GetPickerViewFromWidget(views::Widget& widget) {

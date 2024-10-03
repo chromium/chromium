@@ -79,6 +79,7 @@ auto AsView(Matcher matcher) {
 constexpr base::span<const PickerCategory> kAllCategories = {(PickerCategory[]){
     PickerCategory::kEditorWrite,
     PickerCategory::kEditorRewrite,
+    PickerCategory::kLobster,
     PickerCategory::kLinks,
     PickerCategory::kEmojisGifs,
     PickerCategory::kClipboard,
@@ -467,6 +468,21 @@ TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsBehindSubmenu) {
                               &PickerItemWithSubmenuView::GetTextForTesting,
                               l10n_util::GetStringUTF16(
                                   IDS_PICKER_CHANGE_TONE_MENU_LABEL))))))));
+}
+
+// TODO: b/369701127 - Remove this test once Lobster UI implementation is ready.
+TEST_F(PickerZeroStateViewTest, DoesntShowLobsterCategory) {
+  MockZeroStateViewDelegate mock_delegate;
+  EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults)
+      .WillOnce(
+          [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
+            std::move(callback).Run({});
+          });
+  PickerZeroStateView view(&mock_delegate, {{PickerCategory::kLobster}},
+                           kPickerWidth, &asset_fetcher_, &submenu_controller_,
+                           &preview_controller_);
+
+  EXPECT_THAT(view.primary_section_view_for_testing(), IsNull());
 }
 
 TEST_F(PickerZeroStateViewTest, ShowsCaseTransformationBehindSubmenu) {

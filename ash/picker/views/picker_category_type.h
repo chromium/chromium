@@ -15,6 +15,7 @@ enum class ASH_EXPORT PickerCategoryType {
   kNone,
   kEditorWrite,
   kEditorRewrite,
+  kLobster,
   kGeneral,
   kMore,
   kCaseTransformations,

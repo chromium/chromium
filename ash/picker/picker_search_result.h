@@ -204,6 +204,17 @@ struct ASH_EXPORT PickerEditorResult {
   bool operator==(const PickerEditorResult&) const;
 };
 
+struct ASH_EXPORT PickerLobsterResult {
+  std::u16string display_name;
+
+  PickerLobsterResult(std::u16string display_name);
+  PickerLobsterResult(const PickerLobsterResult&);
+  PickerLobsterResult& operator=(const PickerLobsterResult&);
+  ~PickerLobsterResult();
+
+  bool operator==(const PickerLobsterResult&) const;
+};
+
 struct ASH_EXPORT PickerNewWindowResult {
   enum Type {
     kDoc,
@@ -266,6 +277,7 @@ using PickerSearchResult = std::variant<PickerTextResult,
                                         PickerDriveFileResult,
                                         PickerCategoryResult,
                                         PickerEditorResult,
+                                        PickerLobsterResult,
                                         PickerNewWindowResult,
                                         PickerCapsLockResult,
                                         PickerCaseTransformResult>;

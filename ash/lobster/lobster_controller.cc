@@ -81,6 +81,8 @@ std::unique_ptr<LobsterController::Trigger> LobsterController::CreateTrigger() {
 void LobsterController::StartSession(std::unique_ptr<LobsterClient> client,
                                      std::optional<std::string> query) {
   active_session_ = std::make_unique<LobsterSessionImpl>(std::move(client));
+
+  active_session_->LoadUI(query);
 }
 
 }  // namespace ash

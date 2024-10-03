@@ -130,6 +130,7 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
                        std::u16string_view query) override;
   void ShowEditor(std::optional<std::string> preset_query_id,
                   std::optional<std::string> freeform_text) override;
+  void ShowLobster(std::optional<std::string> freeform_text) override;
   PickerAssetFetcher* GetAssetFetcher() override;
   PickerSessionMetrics& GetSessionMetrics() override;
   PickerActionType GetActionForResult(
@@ -175,6 +176,7 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
             ui::TextInputClient* focused_client,
             input_method::ImeKeyboard* ime_keyboard,
             PickerModel::EditorStatus editor_status,
+            PickerModel::LobsterStatus lobster_status,
             PickerEmojiSuggester::GetNameCallback get_name);
     ~Session();
   };
@@ -205,6 +207,9 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   base::OnceCallback<void(std::optional<std::string> preset_query_id,
                           std::optional<std::string> freeform_text)>
       show_editor_callback_;
+
+  base::OnceCallback<void(std::optional<std::string> freeform_text)>
+      show_lobster_callback_;
 
   // Timer used to delay closing the Widget for accessibility.
   base::OneShotTimer close_widget_delay_timer_;

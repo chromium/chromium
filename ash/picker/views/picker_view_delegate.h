@@ -82,6 +82,8 @@ class ASH_EXPORT PickerViewDelegate {
   virtual void ShowEditor(std::optional<std::string> preset_query_id,
                           std::optional<std::string> freeform_text) = 0;
 
+  virtual void ShowLobster(std::optional<std::string> freeform_text) = 0;
+
   // Returns the current action for `result`.
   virtual PickerActionType GetActionForResult(
       const PickerSearchResult& result) = 0;

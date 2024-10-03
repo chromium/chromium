@@ -205,6 +205,9 @@ InsertionContent GetInsertionContentForResult(
           [](const PickerEditorResult& data) -> ReturnType {
             return std::monostate();
           },
+          [](const PickerLobsterResult& data) -> ReturnType {
+            return std::monostate();
+          },
           [](const PickerNewWindowResult& data) -> ReturnType {
             return std::monostate();
           },
@@ -458,6 +461,7 @@ void PickerController::OpenResult(const PickerSearchResult& result) {
           [](const PickerCategoryResult& data) { NOTREACHED(); },
           [](const PickerSearchRequestResult& data) { NOTREACHED(); },
           [](const PickerEditorResult& data) { NOTREACHED(); },
+          [](const PickerLobsterResult& data) { NOTREACHED(); },
           [&](const PickerNewWindowResult& data) {
             session_->session_metrics.SetOutcome(
                 PickerSessionMetrics::SessionOutcome::kCreate);
@@ -495,6 +499,12 @@ void PickerController::ShowEditor(std::optional<std::string> preset_query_id,
   if (!show_editor_callback_.is_null()) {
     std::move(show_editor_callback_)
         .Run(std::move(preset_query_id), std::move(freeform_text));
+  }
+}
+
+void PickerController::ShowLobster(std::optional<std::string> freeform_text) {
+  if (!show_lobster_callback_.is_null()) {
+    std::move(show_lobster_callback_).Run(std::move(freeform_text));
   }
 }
 
@@ -551,6 +561,9 @@ PickerActionType PickerController::GetActionForResult(
           [](const PickerEditorResult& data) {
             return PickerActionType::kCreate;
           },
+          [](const PickerLobsterResult& data) {
+            return PickerActionType::kCreate;
+          },
           [](const PickerNewWindowResult& data) {
             return PickerActionType::kDo;
           },
@@ -600,8 +613,9 @@ PickerController::Session::Session(
     ui::TextInputClient* focused_client,
     input_method::ImeKeyboard* ime_keyboard,
     PickerModel::EditorStatus editor_status,
+    PickerModel::LobsterStatus lobster_status,
     PickerEmojiSuggester::GetNameCallback get_name)
-    : model(prefs, focused_client, ime_keyboard, editor_status),
+    : model(prefs, focused_client, ime_keyboard, editor_status, lobster_status),
       emoji_history_model(prefs),
       emoji_suggester(&emoji_history_model, std::move(get_name)),
       session_metrics(prefs) {
@@ -616,6 +630,7 @@ PickerController::Session::~Session() {
 void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp,
                                   WidgetTriggerSource trigger_source) {
   show_editor_callback_ = client_->CacheEditorContext();
+  show_lobster_callback_ = client_->GetShowLobsterCallback();
 
   ui::TextInputClient* focused_client = GetFocusedTextInputClient();
   input_method::ImeKeyboard& keyboard = GetImeKeyboard();
@@ -631,6 +646,8 @@ void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp,
       GetPrefs(), focused_client, &keyboard,
       show_editor_callback_.is_null() ? PickerModel::EditorStatus::kDisabled
                                       : PickerModel::EditorStatus::kEnabled,
+      show_lobster_callback_.is_null() ? PickerModel::LobsterStatus::kDisabled
+                                       : PickerModel::LobsterStatus::kEnabled,
       base::BindRepeating(
           [](base::WeakPtr<PickerController> weak_controller,
              std::string_view emoji) -> std::string {

@@ -23,6 +23,7 @@
 #include "ash/picker/search/picker_action_search.h"
 #include "ash/picker/search/picker_date_search.h"
 #include "ash/picker/search/picker_editor_search.h"
+#include "ash/picker/search/picker_lobster_search.h"
 #include "ash/picker/search/picker_math_search.h"
 #include "ash/picker/search/picker_search_source.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -72,6 +73,8 @@ const char* SearchSourceToHistogram(PickerSearchSource source) {
     case PickerSearchSource::kEditorWrite:
     case PickerSearchSource::kEditorRewrite:
       return "Ash.Picker.Search.EditorProvider.QueryTime";
+    case PickerSearchSource::kLobster:
+      return "Ash.Picker.Search.LobsterProvider.QueryTime";
   }
   NOTREACHED() << "Unexpected search source " << base::to_underlying(source);
 }
@@ -198,6 +201,13 @@ PickerSearchRequest::PickerSearchRequest(std::u16string_view query,
           PickerSearchSource::kEditorRewrite,
           PickerEditorSearch(PickerEditorResult::Mode::kRewrite, query));
     }
+
+    if (base::Contains(available_categories, PickerCategory::kLobster)) {
+      // Editor results are currently synchronous.
+      MarkSearchStarted(PickerSearchSource::kLobster);
+      HandleLobsterSearchResults(PickerSearchSource::kLobster,
+                                 PickerLobsterSearch(query));
+    }
   }
 
   can_call_done_closure_ = true;
@@ -317,6 +327,19 @@ void PickerSearchRequest::HandleEditorSearchResults(
   }
 
   // Editor results are never truncated.
+  HandleSearchSourceResults(source, std::move(results),
+                            /*has_more_results=*/false);
+}
+
+void PickerSearchRequest::HandleLobsterSearchResults(
+    PickerSearchSource source,
+    std::optional<PickerSearchResult> result) {
+  std::vector<PickerSearchResult> results;
+  if (result.has_value()) {
+    results.push_back(std::move(*result));
+  }
+
+  // Lobster results are never truncated.
   HandleSearchSourceResults(source, std::move(results),
                             /*has_more_results=*/false);
 }

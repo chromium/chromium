@@ -243,6 +243,7 @@ std::u16string GetNoResultsFoundDescription(PickerCategory category) {
       return l10n_util::GetStringUTF16(IDS_PICKER_NO_RESULTS_TEXT);
     case PickerCategory::kEditorWrite:
     case PickerCategory::kEditorRewrite:
+    case PickerCategory::kLobster:
     case PickerCategory::kEmojisGifs:
     case PickerCategory::kEmojis:
       NOTREACHED_NORETURN();
@@ -414,6 +415,9 @@ void PickerView::SelectSearchResult(const PickerSearchResult& result) {
                  std::get_if<PickerEditorResult>(&result)) {
     delegate_->ShowEditor(
         editor_data->preset_query_id,
+        base::UTF16ToUTF8(search_field_view_->GetQueryText()));
+  } else if (std::get_if<PickerLobsterResult>(&result)) {
+    delegate_->ShowLobster(
         base::UTF16ToUTF8(search_field_view_->GetQueryText()));
   } else {
     delegate_->GetSessionMetrics().SetSelectedResult(
@@ -739,6 +743,16 @@ void PickerView::SelectCategoryWithQuery(PickerCategory category,
         PickerSessionMetrics::SessionOutcome::kRedirected);
     delegate_->ShowEditor(/*preset_query_id*/ std::nullopt,
                           /*freeform_text=*/std::nullopt);
+    return;
+  }
+
+  if (category == PickerCategory::kLobster) {
+    if (auto* widget = GetWidget()) {
+      widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
+    }
+    session_metrics.SetOutcome(
+        PickerSessionMetrics::SessionOutcome::kRedirected);
+    delegate_->ShowLobster(/*query=*/std::nullopt);
     return;
   }
 

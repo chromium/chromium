@@ -123,6 +123,7 @@ void PickerSuggestionsController::GetSuggestionsForCategory(
   switch (category) {
     case PickerCategory::kEditorWrite:
     case PickerCategory::kEditorRewrite:
+    case PickerCategory::kLobster:
       NOTREACHED_NORETURN();
     case PickerCategory::kLinks:
       // TODO: b/366237507 - Request only kMaxRecentLinks results once

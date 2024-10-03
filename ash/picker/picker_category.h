@@ -14,6 +14,7 @@ enum class ASH_EXPORT PickerCategory {
   // Editor categories:
   kEditorWrite,
   kEditorRewrite,
+  kLobster,
   // General categories:
   kLinks,
   kEmojisGifs,

@@ -332,6 +332,15 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
             }
             return item_view;
           },
+          [&](const PickerLobsterResult& data) -> ReturnType {
+            auto item_view = std::make_unique<PickerListItemView>(
+                std::move(select_result_callback));
+
+            const PickerCategory category = PickerCategory::kLobster;
+            item_view->SetPrimaryText(GetLabelForPickerCategory(category));
+            item_view->SetLeadingIcon(GetIconForPickerCategory(category));
+            return item_view;
+          },
           [&](const PickerNewWindowResult& data) -> ReturnType {
             auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));

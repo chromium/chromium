@@ -71,6 +71,8 @@ class ASH_EXPORT PickerSearchRequest {
   void HandleClipboardSearchResults(std::vector<PickerSearchResult> results);
   void HandleEditorSearchResults(PickerSearchSource source,
                                  std::optional<PickerSearchResult> result);
+  void HandleLobsterSearchResults(PickerSearchSource source,
+                                  std::optional<PickerSearchResult> result);
 
   // Sets the search for the source to be started right now.
   // `CHECK` fails if a search was already started.

@@ -13,9 +13,12 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/lobster/lobster_controller.h"
 #include "ash/picker/picker_controller.h"
 #include "ash/picker/picker_search_result.h"
 #include "ash/picker/picker_web_paste_target.h"
+#include "ash/public/cpp/lobster/lobster_system_state.h"
+#include "ash/shell.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/containers/span.h"
@@ -37,6 +40,7 @@
 #include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
+#include "chrome/browser/ash/lobster/lobster_service_provider.h"
 #include "chrome/browser/chromeos/launcher_search/search_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/picker/picker_file_suggester.h"
@@ -293,6 +297,7 @@ void PickerClientImpl::StartCrosSearch(
   switch (*category) {
     case ash::PickerCategory::kEditorWrite:
     case ash::PickerCategory::kEditorRewrite:
+    case ash::PickerCategory::kLobster:
     case ash::PickerCategory::kEmojisGifs:
     case ash::PickerCategory::kEmojis:
     case ash::PickerCategory::kClipboard:
@@ -367,6 +372,23 @@ PickerClientImpl::ShowEditorCallback PickerClientImpl::CacheEditorContext() {
 
   return base::BindOnce(&PickerClientImpl::ShowEditor,
                         weak_factory_.GetWeakPtr());
+}
+
+PickerClientImpl::ShowLobsterCallback
+PickerClientImpl::GetShowLobsterCallback() {
+  if (!ash::features::IsLobsterEnabled()) {
+    return {};
+  }
+  LobsterService* lobster_service =
+      LobsterServiceProvider::GetForProfile(profile_);
+
+  if (lobster_service &&
+      lobster_service->system_state_provider()->GetSystemState().status ==
+          ash::LobsterStatus::kEnabled) {
+    return base::BindOnce(&PickerClientImpl::ShowLobster,
+                          weak_factory_.GetWeakPtr());
+  }
+  return {};
 }
 
 void PickerClientImpl::GetSuggestedEditorResults(
@@ -540,6 +562,7 @@ PickerClientImpl::CreateSearchProviderForCategory(
   switch (category) {
     case ash::PickerCategory::kEditorWrite:
     case ash::PickerCategory::kEditorRewrite:
+    case ash::PickerCategory::kLobster:
     case ash::PickerCategory::kEmojisGifs:
     case ash::PickerCategory::kEmojis:
     case ash::PickerCategory::kClipboard:
@@ -565,5 +588,23 @@ void PickerClientImpl::ShowEditor(std::optional<std::string> preset_query_id,
   if (editor_mediator != nullptr) {
     editor_mediator->HandleTrigger(std::move(preset_query_id),
                                    std::move(freeform_text));
+  }
+}
+
+void PickerClientImpl::ShowLobster(std::optional<std::string> query) {
+  if (!ash::features::IsLobsterEnabled() ||
+      !ash::LobsterController::IsEnabled()) {
+    return;
+  }
+
+  ash::LobsterController* lobster_controller =
+      ash::Shell::Get()->lobster_controller();
+  if (lobster_controller == nullptr) {
+    return;
+  }
+
+  lobster_trigger_ = lobster_controller->CreateTrigger();
+  if (lobster_trigger_ != nullptr) {
+    lobster_trigger_->Fire(query);
   }
 }

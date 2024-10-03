@@ -17,7 +17,8 @@ enum class PickerSearchSource {
   kClipboard,
   kEditorWrite,
   kEditorRewrite,
-  kMaxValue = kEditorRewrite,
+  kLobster,
+  kMaxValue = kLobster,
 };
 }
 
