@@ -481,6 +481,9 @@ crbug.com/40935289 [ angle-vulkan arm fuchsia no-clang-coverage web-engine-shell
 # Mac ASAN Devtools Serialization crashes
 crbug.com/338574390 [ mac intel-0x3e9b asan angle-metal passthrough ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Failure ]
 
+# Flaky failure on Pixel 6
+crbug.com/371019880 [ android android-pixel-6 ] Pixel_Video_HEVC [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
