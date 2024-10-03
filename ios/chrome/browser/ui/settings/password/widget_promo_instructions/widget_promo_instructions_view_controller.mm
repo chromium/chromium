@@ -58,15 +58,28 @@
   _imageViewZeroHeightConstraint =
       [imageView.heightAnchor constraintEqualToConstant:0];
   [self updateImageViewVisibility];
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits =
+        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.self ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(updateImageViewVisibility)];
+  }
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
   if (self.traitCollection.verticalSizeClass !=
       previousTraitCollection.verticalSizeClass) {
     [self updateImageViewVisibility];
   }
 }
+#endif
 
 #pragma mark - Private
 
