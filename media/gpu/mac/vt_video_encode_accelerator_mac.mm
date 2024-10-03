@@ -56,6 +56,7 @@ constexpr gfx::Size kDefaultSupportedResolution = gfx::Size(640, 480);
 // instead of query a "supportedProfile" list.
 constexpr gfx::Size kMaxSupportedResolution = gfx::Size(4096, 2304);
 
+#if !BUILDFLAG(IS_IOS)
 // The ID of the encoder that may be selected when we enable low latency via
 // `kVTVideoEncoderSpecification_EnableLowLatencyRateControl`. Low latency is
 // in general only possible with a hardware encoder in VideoToolbox, so we
@@ -64,6 +65,7 @@ constexpr gfx::Size kMaxSupportedResolution = gfx::Size(4096, 2304);
 // `kVTVideoEncoderList_IsHardwareAccelerated` is set for this encoder.
 constexpr std::string_view kRealtimeHardwareH264EncoderID =
     "com.apple.videotoolbox.videoencoder.h264.rtvc";
+#endif
 
 constexpr VideoCodecProfile kSupportedProfiles[] = {
     H264PROFILE_BASELINE,
@@ -313,8 +315,8 @@ VTVideoEncodeAccelerator::GetSupportedH264Profiles() {
         profile.scalability_modes = always_supported_scalability_modes;
         profile.is_software_codec = true;
         profiles.push_back(profile);
-      }
 #endif  // BUILDFLAG(IS_MAC)
+      }
     }
   }
   return profiles;
