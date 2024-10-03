@@ -744,6 +744,17 @@ TEST_F(PickerControllerTest, ShowEditorCallsCallbackFromClient) {
   EXPECT_THAT(show_editor_future.Get(), FieldsAre("preset", "freeform"));
 }
 
+TEST_F(PickerControllerTest, ShowLobsterCallsCallbackFromClient) {
+  base::test::TestFuture<std::optional<std::string>> show_lobster_future;
+  EXPECT_CALL(client(), GetShowLobsterCallback)
+      .WillOnce(Return(show_lobster_future.GetCallback()));
+
+  controller().ToggleWidget();
+  controller().ShowLobster(/*freeform_text=*/"freeform");
+
+  EXPECT_THAT(show_lobster_future.Get(), "freeform");
+}
+
 TEST_F(PickerControllerTest, GetResultsForCategoryReturnsEmptyForEmptyResults) {
   base::test::TestFuture<std::vector<PickerSearchResultsSection>> future;
   EXPECT_CALL(client(), GetSuggestedLinkResults)

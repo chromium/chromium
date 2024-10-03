@@ -86,6 +86,27 @@ TEST_F(PickerSuggestionsControllerTest,
 }
 
 TEST_F(PickerSuggestionsControllerTest,
+       GetSuggestionsWithSelectionReturnsLobsterResult) {
+  NiceMock<MockPickerClient> client;
+  PickerSuggestionsController controller;
+  ui::FakeTextInputClient input_field({.type = ui::TEXT_INPUT_TYPE_TEXT});
+  input_field.SetTextAndSelection(u"a", gfx::Range(0, 1));
+  input_method::FakeImeKeyboard keyboard;
+  PickerModel model(/*prefs=*/nullptr, &input_field, &keyboard,
+                    PickerModel::EditorStatus::kEnabled,
+                    PickerModel::LobsterStatus::kEnabled);
+
+  base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
+  EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
+  EXPECT_CALL(callback, Run(IsSupersetOf({
+                            PickerLobsterResult(u""),
+                        })))
+      .Times(1);
+
+  controller.GetSuggestions(client, model, callback.Get());
+}
+
+TEST_F(PickerSuggestionsControllerTest,
        GetSuggestionsWhenFocusedDoesNotReturnNewWindowResults) {
   NiceMock<MockPickerClient> client;
   PickerSuggestionsController controller;

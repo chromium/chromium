@@ -64,6 +64,12 @@ void PickerSuggestionsController::GetSuggestions(PickerClient& client,
     client.GetSuggestedEditorResults(callback);
   }
 
+  if (base::Contains(model.GetAvailableCategories(),
+                     PickerCategory::kLobster) &&
+      model.GetMode() == PickerModeType::kHasSelection) {
+    callback.Run({PickerLobsterResult(/*display_name=*/u"")});
+  }
+
   if (model.GetMode() == PickerModeType::kHasSelection) {
     std::vector<PickerSearchResult> case_transform_results;
     for (PickerCaseTransformResult::Type type : {

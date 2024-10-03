@@ -444,9 +444,14 @@ void PickerController::ShowEditor(std::optional<std::string> preset_query_id,
   }
 }
 
+// TODO: b:370885630 - Considers making selected_text as an argument of this
+// method.
 void PickerController::ShowLobster(std::optional<std::string> freeform_text) {
   if (!show_lobster_callback_.is_null()) {
-    std::move(show_lobster_callback_).Run(std::move(freeform_text));
+    std::move(show_lobster_callback_)
+        .Run(session_ != nullptr && session_->model.selected_text() != u""
+                 ? base::UTF16ToUTF8(session_->model.selected_text())
+                 : std::move(freeform_text));
   }
 }
 

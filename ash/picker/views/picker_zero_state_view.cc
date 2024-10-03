@@ -329,6 +329,12 @@ void PickerZeroStateView::OnFetchSuggestedResults(
           tone_submenu->AddEntry(result, std::move(callback));
           break;
       }
+    } else if (std::holds_alternative<PickerLobsterResult>(result)) {
+      primary_section_view_->AddResult(
+          result, preview_controller_,
+          PickerSectionView::LocalFileResultStyle::kList,
+          base::BindRepeating(&PickerZeroStateView::OnResultSelected,
+                              weak_ptr_factory_.GetWeakPtr(), result));
     } else if (std::holds_alternative<PickerCaseTransformResult>(result)) {
       if (case_transform_submenu == nullptr) {
         case_transform_submenu =

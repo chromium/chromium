@@ -56,8 +56,9 @@ TEST(PickerModel, AvailableCategoriesWithSelectedTextHasCorrectOrdering) {
   PickerModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
                     PickerModel::EditorStatus::kEnabled,
                     PickerModel::LobsterStatus::kEnabled);
-  EXPECT_THAT(model.GetAvailableCategories(),
-              ElementsAre(PickerCategory::kEditorRewrite));
+  EXPECT_THAT(
+      model.GetAvailableCategories(),
+      ElementsAre(PickerCategory::kEditorRewrite, PickerCategory::kLobster));
 }
 
 TEST(PickerModel, AvailableCategoriesContainsEditorWriteWhenEnabled) {

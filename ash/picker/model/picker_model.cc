@@ -87,6 +87,10 @@ std::vector<PickerCategory> PickerModel::GetAvailableCategories() const {
       if (editor_status_ == EditorStatus::kEnabled) {
         categories.push_back(PickerCategory::kEditorRewrite);
       }
+
+      if (lobster_status_ == LobsterStatus::kEnabled) {
+        categories.push_back(PickerCategory::kLobster);
+      }
       return categories;
     }
     case PickerModeType::kNoSelection: {
