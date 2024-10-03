@@ -21,8 +21,8 @@ namespace {
 // Returns the reading list model.
 ReadingListModel* GetReadingListModel(NSError** error) {
   ReadingListModel* model =
-      ReadingListModelFactory::GetInstance()->GetForBrowserState(
-          chrome_test_util::GetOriginalBrowserState());
+      ReadingListModelFactory::GetInstance()->GetForProfile(
+          chrome_test_util::GetOriginalProfile());
   if (!base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), ^{
         return model->loaded();
       })) {

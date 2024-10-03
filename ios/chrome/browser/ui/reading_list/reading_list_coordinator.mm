@@ -129,17 +129,16 @@
 
   // Similar to the bookmarks, the content and sign-in promo state should remain
   // the same in the incognito mode.
-  ChromeBrowserState* browserState =
-      self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
 
   // Create the mediator.
   ReadingListModel* model =
-      ReadingListModelFactory::GetInstance()->GetForBrowserState(browserState);
-  _syncService = SyncServiceFactory::GetForBrowserState(browserState);
+      ReadingListModelFactory::GetInstance()->GetForProfile(profile);
+  _syncService = SyncServiceFactory::GetForProfile(profile);
   ReadingListListItemFactory* itemFactory =
       [[ReadingListListItemFactory alloc] init];
   FaviconLoader* faviconLoader =
-      IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
+      IOSChromeFaviconLoaderFactory::GetForProfile(profile);
   self.mediator = [[ReadingListMediator alloc] initWithModel:model
                                                  syncService:_syncService
                                                faviconLoader:faviconLoader
@@ -147,9 +146,9 @@
   // Initialize services.
   _applicationCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
-  _authService = AuthenticationServiceFactory::GetForBrowserState(browserState);
-  _identityManager = IdentityManagerFactory::GetForProfile(browserState);
-  _prefService = browserState->GetPrefs();
+  _authService = AuthenticationServiceFactory::GetForProfile(profile);
+  _identityManager = IdentityManagerFactory::GetForProfile(profile);
+  _prefService = profile->GetPrefs();
 
   // Create the table.
   self.tableViewController = [[ReadingListTableViewController alloc] init];
@@ -193,14 +192,14 @@
 
   // Send the "Viewed Reading List" event to the feature_engagement::Tracker
   // when the user opens their reading list.
-  feature_engagement::TrackerFactory::GetForBrowserState(browserState)
-      ->NotifyEvent(feature_engagement::events::kViewedReadingList);
+  feature_engagement::TrackerFactory::GetForProfile(profile)->NotifyEvent(
+      feature_engagement::events::kViewedReadingList);
 
   // Create the sign-in promo view mediator.
   _identityManagerObserverBridge.reset(
       new signin::IdentityManagerObserverBridge(_identityManager, self));
   ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
+      ChromeAccountManagerServiceFactory::GetForProfile(profile);
   _signinPromoViewMediator = [[SigninPromoViewMediator alloc]
       initWithAccountManagerService:accountManagerService
                         authService:_authService
@@ -374,7 +373,7 @@
       self.browser->GetWebStateList()->GetActiveWebState();
   bool is_ntp = activeWebState->GetVisibleURL() == kChromeUINewTabURL;
   new_tab_page_uma::RecordNTPAction(
-      self.browser->GetBrowserState()->IsOffTheRecord(), is_ntp,
+      self.browser->GetProfile()->IsOffTheRecord(), is_ntp,
       new_tab_page_uma::ACTION_OPENED_READING_LIST_ENTRY);
 
   // Prepare the table for dismissal.
@@ -413,7 +412,7 @@
   if (!entry)
     return;
 
-  BOOL offTheRecord = self.browser->GetBrowserState()->IsOffTheRecord();
+  BOOL offTheRecord = self.browser->GetProfile()->IsOffTheRecord();
 
   if (entry->DistilledState() == ReadingListEntry::PROCESSED) {
     const GURL entryURL = entry->URL();
