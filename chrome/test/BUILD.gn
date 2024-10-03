@@ -1380,7 +1380,10 @@ source_set("platform_browser_tests") {
 
   if (enable_allocation_trace_recorder_integration_tests) {
     sources += [ "../browser/allocation_recorder_browsertest.cc" ]
-    deps += [ "//components/allocation_recorder/testing" ]
+    deps += [
+      "//components/allocation_recorder/testing",
+      "//components/memory_system",
+    ]
 
     if (is_mac) {
       deps += [ "//chrome/app_shim" ]

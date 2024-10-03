@@ -283,17 +283,22 @@ bool MemorySystem::Impl::DispatcherIncludesPoissonAllocationSampler(
 #if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
 bool MemorySystem::Impl::DispatcherIncludesAllocationTraceRecorder(
     const DispatcherParameters& dispatcher_parameters) {
-#if BUILDFLAG(FORCE_ALLOCATION_TRACE_RECORDER)
-  return true;
-#else
+  if (!base::FeatureList::IsEnabled(features::kAllocationTraceRecorder)) {
+    return false;
+  }
+
+  if (features::kAllocationTraceRecorderForceAllProcesses.Get()) {
+    // Note: Force enable Allocation Trace Recorder in all processes, even if
+    // MTE (Memory Tagging Extension) is not present or is unavailable.
+    return true;
+  }
+
   switch (dispatcher_parameters.allocation_trace_recorder_inclusion) {
     case DispatcherParameters::AllocationTraceRecorderInclusion::kDynamic:
-      return base::CPU::GetInstanceNoAllocation().has_mte() &&
-             base::FeatureList::IsEnabled(features::kAllocationTraceRecorder);
+      return base::CPU::GetInstanceNoAllocation().has_mte();
     case DispatcherParameters::AllocationTraceRecorderInclusion::kIgnore:
       return false;
   }
-#endif
 }
 #endif
 

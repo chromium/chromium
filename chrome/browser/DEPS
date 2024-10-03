@@ -213,6 +213,7 @@ include_rules = [
   "+components/manta",
   "+components/media_effects",
   "+components/memory_pressure",
+  "+components/memory_system",
   "+components/messages/android",
   "+components/metal_util",
   "+components/metrics",
