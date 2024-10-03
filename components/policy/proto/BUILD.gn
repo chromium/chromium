@@ -22,6 +22,8 @@ proto_library("policy_common_definitions_compile_proto") {
   visibility = [
     ":proto_internal",
     ":proto_internal_gen",
+    "//chrome/browser/privacy:chrome_settings",
+    "//chrome/browser/privacy:chrome_settings_gen",
     "//components/policy:chrome_settings_proto_generated_compile_proto",
     "//components/policy:cloud_policy_proto_generated_compile_proto",
     "//components/policy:cloud_policy_proto_generated_compile_proto_gen",
