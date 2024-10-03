@@ -731,3 +731,15 @@
 -SensorBackForwardCacheBrowserTest.GyroscopePausedWhileCached
 -SensorBackForwardCacheBrowserTest.LinearAccelerationPausedWhileCached
 -SensorBackForwardCacheBrowserTest.LinearAccelerationPausedWhileCached
+
+# TODO(crbug.com/370751355): These tests have been failing since
+# https://crrev.com/c/5642354.
+-All/SitePerProcessWithMainFrameThresholdLocalhostTest.AllowReuseLocalHost/1
+-All/SitePerProcessWithMainFrameThresholdTest.ReuseProcessUpToThreshold/0
+-All/SitePerProcessWithMainFrameThresholdTest.ReuseProcessUpToThreshold/0
+-All/SitePerProcessWithMainFrameThresholdTest.ReuseProcessUpToThreshold/1
+-All/SitePerProcessWithMainFrameThresholdTest.ReuseProcessUpToThreshold/1
+-All/SitePerProcessWithMainFrameThresholdWithTotalLimitTest.ExcessiveAllocation/0
+-All/SitePerProcessWithMainFrameThresholdWithTotalLimitTest.ExcessiveAllocation/0
+-All/SitePerProcessWithMainFrameThresholdWithTotalLimitTest.ExcessiveAllocation/1
+-All/SitePerProcessWithMainFrameThresholdWithTotalLimitTest.ExcessiveAllocation/1
