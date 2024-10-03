@@ -46,17 +46,15 @@ void CloseAllTabsForBrowser(Browser* browser) {
   DCHECK(browser);
   const int close_flags = WebStateList::CLOSE_USER_ACTION;
   CloseAllWebStates(*browser->GetWebStateList(), close_flags);
-  ChromeBrowserState* browser_state = browser->GetBrowserState();
-  SessionRestorationServiceFactory::GetForBrowserState(browser_state)
-      ->SaveSessions();
+  ProfileIOS* profile = browser->GetProfile();
+  SessionRestorationServiceFactory::GetForProfile(profile)->SaveSessions();
 }
 
 }  // namespace
 
 BOOL IsIncognitoMode() {
   return GetForegroundActiveScene()
-      .browserProviderInterface.currentBrowserProvider.browser
-      ->GetBrowserState()
+      .browserProviderInterface.currentBrowserProvider.browser->GetProfile()
       ->IsOffTheRecord();
 }
 

@@ -36,13 +36,13 @@ SceneController* GetForegroundActiveSceneController();
 // Returns the number of regular Browsers for the default profile.
 NSUInteger RegularBrowserCount();
 
-// Returns the current, non-incognito ChromeBrowserState.
+// Returns the current, non-incognito ProfileIOS.
 // TODO(crbug.com/358299863): Remove when fully migrated.
-ChromeBrowserState* GetOriginalBrowserState();
+ProfileIOS* GetOriginalBrowserState();
 
-// Returns the current incognito ChromeBrowserState
+// Returns the current incognito ProfileIOS
 // TODO(crbug.com/358299863): Remove when fully migrated.
-ChromeBrowserState* GetCurrentIncognitoBrowserState();
+ProfileIOS* GetCurrentIncognitoBrowserState();
 
 // Returns the current, non-incognito Profile.
 ProfileIOS* GetOriginalProfile();

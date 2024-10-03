@@ -45,10 +45,9 @@ NSMutableSet* invokedCompletionUUID = nil;
 }
 
 + (void)blockSigninIPH {
-  ChromeBrowserState* browserState =
-      chrome_test_util::GetOriginalBrowserState();
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(browserState);
+      feature_engagement::TrackerFactory::GetForProfile(profile);
   tracker->NotifyUsedEvent(
       feature_engagement::kIPHiOSReplaceSyncPromosWithSignInPromos);
 }

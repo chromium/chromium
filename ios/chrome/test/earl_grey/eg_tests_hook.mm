@@ -184,7 +184,7 @@ std::unique_ptr<TrustedVaultClientBackend> CreateTrustedVaultClientBackend() {
 }
 
 std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   if (!IsTabGroupSyncEnabled() ||
@@ -193,8 +193,7 @@ std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
   }
   auto sync_service = std::make_unique<IOSFakeTabGroupSyncService>();
 
-  BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(browser_state);
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
 
   std::unique_ptr<tab_groups::TabGroupLocalUpdateObserver>
       local_update_observer =

@@ -93,16 +93,16 @@ SceneController* GetForegroundActiveSceneController() {
 
 NSUInteger RegularBrowserCount() {
   return static_cast<NSUInteger>(
-      BrowserListFactory::GetForBrowserState(GetOriginalProfile())
+      BrowserListFactory::GetForProfile(GetOriginalProfile())
           ->BrowsersOfType(BrowserList::BrowserType::kRegularAndInactive)
           .size());
 }
 
-ChromeBrowserState* GetOriginalBrowserState() {
+ProfileIOS* GetOriginalBrowserState() {
   return GetOriginalProfile();
 }
 
-ChromeBrowserState* GetCurrentIncognitoBrowserState() {
+ProfileIOS* GetCurrentIncognitoBrowserState() {
   return GetCurrentIncognitoProfile();
 }
 

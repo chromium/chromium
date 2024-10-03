@@ -758,11 +758,11 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 #pragma mark - ContentSettings
 
 // Gets the current value of the popup content setting preference for the
-// original browser state.
+// original profile.
 - (ContentSetting)popupPrefValue;
 
 // Sets the popup content setting preference to the given value for the original
-// browser state.
+// profile.
 - (void)setPopupPrefValue:(ContentSetting)value;
 
 // Resets the desktop content setting to its default value.
@@ -816,34 +816,34 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 // Sets the integer value for the local state pref with `prefName`. `value`
 // can be either a casted enum or any other numerical value. Local State
-// contains the preferences that are shared between all browser states.
+// contains the preferences that are shared between all profiles.
 - (void)setIntegerValue:(int)value
       forLocalStatePref:(const std::string&)prefName;
 
 // Sets the time value for the local state pref with `prefName`. `value` Local
-// State contains the preferences that are shared between all browser states.
+// State contains the preferences that are shared between all profiles.
 - (void)setTimeValue:(base::Time)value
     forLocalStatePref:(const std::string&)prefName;
 
-// Sets the time value for the user pref in the original browser state.
+// Sets the time value for the user pref in the original profile.
 - (void)setTimeValue:(base::Time)value
          forUserPref:(const std::string&)UTF8PrefName;
 
 // Sets the string value for the local state pref with `prefName`. `value` Local
-// State contains the preferences that are shared between all browser states.
+// State contains the preferences that are shared between all profiles.
 - (void)setStringValue:(const std::string&)value
      forLocalStatePref:(const std::string&)prefName;
 
 // Sets the bool value for the local state pref with `prefName`. Local
-// State contains the preferences that are shared between all browser states.
+// State contains the preferences that are shared between all profiles.
 - (void)setBoolValue:(BOOL)value forLocalStatePref:(const std::string&)prefName;
 
-// Gets the value of a user pref in the original browser state.
+// Gets the value of a user pref in the original profile.
 - (bool)userBooleanPref:(const std::string&)prefName;
 - (int)userIntegerPref:(const std::string&)prefName;
 - (std::string)userStringPref:(const std::string&)prefName;
 
-// Sets the value of a user pref in the original browser state.
+// Sets the value of a user pref in the original profile.
 - (void)setStringValue:(NSString*)value
            forUserPref:(const std::string&)UTF8PrefName;
 - (void)setBoolValue:(BOOL)value forUserPref:(const std::string&)UTF8PrefName;
@@ -854,7 +854,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // value).
 - (bool)prefWithNameIsDefaultValue:(const std::string&)prefName;
 
-// Clears the user pref of `prefName` in the original browser state.
+// Clears the user pref of `prefName` in the original profile.
 - (void)clearUserPrefWithName:(const std::string&)prefName;
 
 // Resets the BrowsingDataPrefs, which defines if its selected or not when

@@ -72,7 +72,7 @@ std::unique_ptr<TrustedVaultClientBackend> CreateTrustedVaultClientBackend() {
 }
 
 std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
   return nullptr;
 }
 
