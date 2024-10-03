@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_permission_state.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -35,7 +36,7 @@ ScriptPromise<IDLUndefined> InternalsPermission::setPermission(
     ScriptState* script_state,
     Internals&,
     const ScriptValue& raw_descriptor,
-    const String& state,
+    const V8PermissionState& state,
     ExceptionState& exception_state) {
   mojom::blink::PermissionDescriptorPtr descriptor =
       ParsePermissionDescriptor(script_state, raw_descriptor, exception_state);
@@ -74,7 +75,7 @@ ScriptPromise<IDLUndefined> InternalsPermission::setPermission(
   auto promise = resolver->Promise();
   auto* raw_permission_automation = permission_automation.get();
   raw_permission_automation->SetPermission(
-      std::move(descriptor), ToPermissionStatus(state.Utf8()), url,
+      std::move(descriptor), ToPermissionStatus(state.AsCStr()), url,
       embedding_url,
       WTF::BindOnce(
           // While we only really need |resolver|, we also take the

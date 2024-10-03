@@ -911,10 +911,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
                                ExceptionState& exception_state) {
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   auto* isolate = script_state->GetIsolate();
-
-  // Handle format; the string was validated by the V8 binding.
-  auto typed_fmt = V8VideoPixelFormat::Create(init->format());
-  auto media_fmt = ToMediaPixelFormat(typed_fmt->AsEnum());
+  auto media_fmt = ToMediaPixelFormat(init->format().AsEnum());
 
   if (!IsFormatEnabled(media_fmt)) {
     exception_state.ThrowTypeError("Unsupported format.");

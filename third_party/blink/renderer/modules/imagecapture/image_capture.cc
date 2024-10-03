@@ -542,13 +542,15 @@ MeteringMode ParseMeteringMode(const String& blink_mode) {
   NOTREACHED();
 }
 
-FillLightMode ParseFillLightMode(const String& blink_mode) {
-  if (blink_mode == "off")
-    return FillLightMode::OFF;
-  if (blink_mode == "auto")
-    return FillLightMode::AUTO;
-  if (blink_mode == "flash")
-    return FillLightMode::FLASH;
+FillLightMode V8EnumToFillLightMode(V8FillLightMode::Enum blink_mode) {
+  switch (blink_mode) {
+    case V8FillLightMode::Enum::kOff:
+      return FillLightMode::OFF;
+    case V8FillLightMode::Enum::kAuto:
+      return FillLightMode::AUTO;
+    case V8FillLightMode::Enum::kFlash:
+      return FillLightMode::FLASH;
+  }
   NOTREACHED();
 }
 
@@ -1639,7 +1641,7 @@ ScriptPromise<Blob> ImageCapture::takePhoto(
 
   settings->has_fill_light_mode = photo_settings->hasFillLightMode();
   if (settings->has_fill_light_mode) {
-    const String fill_light_mode = photo_settings->fillLightMode();
+    auto fill_light_mode = photo_settings->fillLightMode();
     if (photo_capabilities_ && photo_capabilities_->hasFillLightMode() &&
         photo_capabilities_->fillLightMode().Find(fill_light_mode) ==
             kNotFound) {
@@ -1647,7 +1649,7 @@ ScriptPromise<Blob> ImageCapture::takePhoto(
           DOMExceptionCode::kNotSupportedError, "Unsupported fillLightMode"));
       return promise;
     }
-    settings->fill_light_mode = ParseFillLightMode(fill_light_mode);
+    settings->fill_light_mode = V8EnumToFillLightMode(fill_light_mode.AsEnum());
   }
 
   service_->SetPhotoOptions(

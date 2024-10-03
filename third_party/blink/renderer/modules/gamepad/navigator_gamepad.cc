@@ -103,7 +103,8 @@ void RecordGamepadsForIdentifiabilityStudy(
           .AddToken(IdentifiabilityBenignStringToken(gp->mapping()))
           .AddValue(gp->timestamp());
       if (auto* vb = gp->vibrationActuator()) {
-        builder.AddToken(IdentifiabilityBenignStringToken(vb->type()));
+        builder.AddToken(
+            IdentifiabilityBenignStringToken(vb->type().AsString()));
       }
     }
   }

@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/platform/web_connection_type.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_effective_connection_type.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/testing/internals.h"
@@ -18,7 +19,7 @@ void InternalsNetInfo::setNetworkConnectionInfoOverride(
     Internals& internals,
     bool on_line,
     const String& type,
-    const String& effective_type,
+    const V8EffectiveConnectionType& effective_type,
     uint32_t http_rtt_msec,
     double downlink_max_mbps,
     ExceptionState& exception_state) {
@@ -51,22 +52,21 @@ void InternalsNetInfo::setNetworkConnectionInfoOverride(
   }
   WebEffectiveConnectionType web_effective_type =
       WebEffectiveConnectionType::kTypeUnknown;
-  if (effective_type == "offline") {
-    web_effective_type = WebEffectiveConnectionType::kTypeOffline;
-  } else if (effective_type == "slow-2g") {
-    web_effective_type = WebEffectiveConnectionType::kTypeSlow2G;
-  } else if (effective_type == "2g") {
-    web_effective_type = WebEffectiveConnectionType::kType2G;
-  } else if (effective_type == "3g") {
-    web_effective_type = WebEffectiveConnectionType::kType3G;
-  } else if (effective_type == "4g") {
-    web_effective_type = WebEffectiveConnectionType::kType4G;
-  } else if (effective_type != "unknown") {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotFoundError,
-        ExceptionMessages::FailedToEnumerate("effective connection type",
-                                             effective_type));
-    return;
+  switch (effective_type.AsEnum()) {
+    case V8EffectiveConnectionType::Enum::kSlow2G:
+      web_effective_type = WebEffectiveConnectionType::kTypeSlow2G;
+      break;
+    case V8EffectiveConnectionType::Enum::k2G:
+      web_effective_type = WebEffectiveConnectionType::kType2G;
+      break;
+    case V8EffectiveConnectionType::Enum::k3G:
+      web_effective_type = WebEffectiveConnectionType::kType3G;
+      break;
+    case V8EffectiveConnectionType::Enum::k4G:
+      web_effective_type = WebEffectiveConnectionType::kType4G;
+      break;
+    default:
+      NOTREACHED();
   }
   GetNetworkStateNotifier().SetNetworkConnectionInfoOverride(
       on_line, webtype, web_effective_type, http_rtt_msec, downlink_max_mbps);

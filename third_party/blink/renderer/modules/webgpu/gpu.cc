@@ -229,8 +229,8 @@ void GPU::RecordAdapterForIdentifiability(
 
   IdentifiableTokenBuilder input_builder;
   if (options && options->hasPowerPreference()) {
-    input_builder.AddToken(
-        IdentifiabilityBenignStringToken(options->powerPreference()));
+    input_builder.AddToken(IdentifiabilityBenignStringToken(
+        options->powerPreference().AsString()));
   }
   const auto surface =
       IdentifiableSurface::FromTypeAndToken(type, input_builder.GetToken());

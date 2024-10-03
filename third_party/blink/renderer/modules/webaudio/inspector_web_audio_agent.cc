@@ -159,8 +159,8 @@ void InspectorWebAudioAgent::DidCreateAudioNode(AudioNode* node) {
           .setNumberOfInputs(node->numberOfInputs())
           .setNumberOfOutputs(node->numberOfOutputs())
           .setChannelCount(node->channelCount())
-          .setChannelCountMode(node->channelCountMode())
-          .setChannelInterpretation(node->channelInterpretation())
+          .setChannelCountMode(node->channelCountMode().AsString())
+          .setChannelInterpretation(node->channelInterpretation().AsString())
           .setContextId(node->ParentUuid())
           .build());
 }

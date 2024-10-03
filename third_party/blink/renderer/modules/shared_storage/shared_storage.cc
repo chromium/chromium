@@ -154,12 +154,13 @@ bool CanGetOutsideWorklet(ScriptState* script_state) {
   return frame->IsInFencedFrameTree();
 }
 
-SharedStorageDataOrigin ParseDataOrigin(const String& data_origin_value) {
-  if (data_origin_value == "context-origin") {
-    return SharedStorageDataOrigin::kContextOrigin;
-  }
-  if (data_origin_value == "script-origin") {
-    return SharedStorageDataOrigin::kScriptOrigin;
+SharedStorageDataOrigin EnumToDataOrigin(
+    V8SharedStorageDataOrigin::Enum data_origin_value) {
+  switch (data_origin_value) {
+    case V8SharedStorageDataOrigin::Enum::kContextOrigin:
+      return SharedStorageDataOrigin::kContextOrigin;
+    case V8SharedStorageDataOrigin::Enum::kScriptOrigin:
+      return SharedStorageDataOrigin::kScriptOrigin;
   }
   NOTREACHED();
 }
@@ -879,7 +880,7 @@ ScriptPromise<SharedStorageWorklet> SharedStorage::createWorklet(
           script_state);
   auto promise = resolver->Promise();
   SharedStorageDataOrigin data_origin_type =
-      ParseDataOrigin(options->dataOrigin());
+      EnumToDataOrigin(options->dataOrigin().AsEnum());
 
   // We intentionally allow the implicit downcast of `options` to a
   // `WorkletOptions*` here.

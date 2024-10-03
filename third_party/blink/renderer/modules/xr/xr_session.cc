@@ -153,16 +153,15 @@ std::unique_ptr<gfx::Transform> getPoseMatrix(
   return std::make_unique<gfx::Transform>(device_pose.ToTransform());
 }
 
-std::optional<device::mojom::blink::EntityTypeForHitTest>
-EntityTypeForHitTestFromString(const String& string) {
-  if (string == "plane")
-    return device::mojom::blink::EntityTypeForHitTest::PLANE;
-
-  if (string == "point")
-    return device::mojom::blink::EntityTypeForHitTest::POINT;
-
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+device::mojom::blink::EntityTypeForHitTest EntityTypeForHitTestFromEnum(
+    V8XRHitTestTrackableType::Enum type) {
+  switch (type) {
+    case V8XRHitTestTrackableType::Enum::kPlane:
+      return device::mojom::blink::EntityTypeForHitTest::PLANE;
+    case V8XRHitTestTrackableType::Enum::kPoint:
+      return device::mojom::blink::EntityTypeForHitTest::POINT;
+  }
+  NOTREACHED();
 }
 
 // Returns a vector of entity types from hit test options, without duplicates.
@@ -178,16 +177,8 @@ Vector<device::mojom::blink::EntityTypeForHitTest> GetEntityTypesForHitTest(
       options_init->hasEntityTypes()) {
     DVLOG(2) << __func__ << ": options_init->entityTypes().size()="
              << options_init->entityTypes().size();
-    for (const auto& entity_type_string : options_init->entityTypes()) {
-      auto maybe_entity_type =
-          EntityTypeForHitTestFromString(entity_type_string);
-
-      if (maybe_entity_type) {
-        result_set.insert(*maybe_entity_type);
-      } else {
-        DVLOG(1) << __func__ << ": entityTypes entry ignored:"
-                 << IDLEnumAsString(entity_type_string);
-      }
+    for (const auto& v8_entity_type : options_init->entityTypes()) {
+      result_set.insert(EntityTypeForHitTestFromEnum(v8_entity_type.AsEnum()));
     }
   } else {
     result_set.insert(device::mojom::blink::EntityTypeForHitTest::PLANE);
