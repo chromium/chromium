@@ -1137,22 +1137,6 @@ const KNOWN_SCREENS: ScreenDefType[] = [
     ],
   },
   {
-    id: 'lacros-data-migration',
-    kind: ScreenKind.OTHER,
-    defaultState: 'default',
-    handledSteps: 'skip-revealed',
-    states: [{
-      id: 'skip-revealed',
-      trigger: (screen: any) => {
-        screen.showSkipButton();
-      },
-    }],
-  },
-  {
-    id: 'lacros-data-backward-migration',
-    kind: ScreenKind.OTHER,
-  },
-  {
     id: 'terms-of-service',
     kind: ScreenKind.NORMAL,
     handledSteps: 'loading,loaded,error',

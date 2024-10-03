@@ -67,8 +67,6 @@ import './screens/osauth/cryptohome_recovery.js';
 // SCREENS USED DURING THE LOGIN FLOW
 import './screens/login/arc_vm_data_migration.js';
 import './screens/login/encryption_migration.js';
-import './screens/login/lacros_data_backward_migration.js';
-import './screens/login/lacros_data_migration.js';
 import './screens/login/management_transition.js';
 import './screens/login/offline_login.js';
 import './screens/login/update_required_card.js';
@@ -240,16 +238,6 @@ export const loginScreensList: OobeTypes.ScreensList = [
   },
   {tag: 'cryptohome-recovery-element', id: 'cryptohome-recovery'},
   {tag: 'encryption-migration-element', id: 'encryption-migration'},
-  {
-    tag: 'lacros-data-backward-migration-element',
-    id: 'lacros-data-backward-migration',
-    extra_classes: ['migrate'],
-  },
-  {
-    tag: 'lacros-data-migration-element',
-    id: 'lacros-data-migration',
-    extra_classes: ['migrate'],
-  },
   {
     tag: 'management-transition-element',
     id: 'management-transition',

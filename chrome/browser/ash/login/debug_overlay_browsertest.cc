@@ -23,7 +23,7 @@ constexpr char kScreensPanel[] = "DebuggerPanelScreens";
 
 constexpr int kCommonScreensCount = 53;
 constexpr int kOobeOnlyScreensCount = 10;
-constexpr int kLoginOnlyScreensCount = 6;
+constexpr int kLoginOnlyScreensCount = 4;
 
 constexpr int kOobeScreensCount = kCommonScreensCount + kOobeOnlyScreensCount;
 constexpr int kLoginScreensCount = kCommonScreensCount + kLoginOnlyScreensCount;

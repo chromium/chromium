@@ -100,7 +100,6 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
                                     bool online_password_mismatch) override;
   void RunLocalAuthentication(
       std::unique_ptr<UserContext> user_context) override;
-  void StartBrowserDataMigration() override;
   void AddObserver(LoginDisplayHost::Observer* observer) override;
   void RemoveObserver(LoginDisplayHost::Observer* observer) override;
   SigninUI* GetSigninUI() final;

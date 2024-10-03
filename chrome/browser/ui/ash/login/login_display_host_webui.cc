@@ -71,8 +71,6 @@
 #include "chrome/browser/ui/webui/ash/login/device_disabled_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/install_attributes_error_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/lacros_data_backward_migration_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/lacros_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/login/os_install_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
@@ -293,18 +291,6 @@ void ShowLoginWizardFinish(
     display_host = LoginDisplayHost::default_host();
   } else if (ShouldShowSigninScreen(first_screen)) {
     display_host = new LoginDisplayHostMojo(DisplayedScreen::SIGN_IN_SCREEN);
-  } else if (first_screen == LacrosDataMigrationScreenView::kScreenId) {
-    // TODO(crbug.com/40169227): Once lacros is officially released,
-    // `ShowLoginWizard()` will no longer be called with lacros screen id.
-    // Instead simply call `SigninUI::StartBrowserDataMigration()` as part of
-    // the login flow.
-    display_host = new LoginDisplayHostMojo(DisplayedScreen::SIGN_IN_SCREEN);
-    DCHECK(session_manager::SessionManager::Get());
-    session_manager::SessionManager::Get()->NotifyLoginOrLockScreenVisible();
-  } else if (first_screen == LacrosDataBackwardMigrationScreenView::kScreenId) {
-    display_host = new LoginDisplayHostMojo(DisplayedScreen::SIGN_IN_SCREEN);
-    DCHECK(session_manager::SessionManager::Get());
-    session_manager::SessionManager::Get()->NotifyLoginOrLockScreenVisible();
   } else if (first_screen == ArcVmDataMigrationScreenView::kScreenId) {
     display_host = new LoginDisplayHostMojo(DisplayedScreen::SIGN_IN_SCREEN);
     DCHECK(session_manager::SessionManager::Get());
@@ -1125,10 +1111,6 @@ void LoginDisplayHostWebUI::UseAlternativeAuthentication(
 
 void LoginDisplayHostWebUI::RunLocalAuthentication(
     std::unique_ptr<UserContext> user_context) {
-  NOTREACHED_IN_MIGRATION();
-}
-
-void LoginDisplayHostWebUI::StartBrowserDataMigration() {
   NOTREACHED_IN_MIGRATION();
 }
 

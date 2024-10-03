@@ -86,8 +86,6 @@
 #include "chrome/browser/ash/login/screens/hardware_data_collection_screen.h"
 #include "chrome/browser/ash/login/screens/hid_detection_screen.h"
 #include "chrome/browser/ash/login/screens/install_attributes_error_screen.h"
-#include "chrome/browser/ash/login/screens/lacros_data_backward_migration_screen.h"
-#include "chrome/browser/ash/login/screens/lacros_data_migration_screen.h"
 #include "chrome/browser/ash/login/screens/local_state_error_screen.h"
 #include "chrome/browser/ash/login/screens/locale_switch_screen.h"
 #include "chrome/browser/ash/login/screens/management_transition_screen.h"
@@ -190,8 +188,6 @@
 #include "chrome/browser/ui/webui/ash/login/hardware_data_collection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/hid_detection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/install_attributes_error_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/lacros_data_backward_migration_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/lacros_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/local_password_setup_handler.h"
 #include "chrome/browser/ui/webui/ash/login/local_state_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/locale_switch_screen_handler.h"
@@ -741,11 +737,6 @@ WizardController::CreateScreens() {
       oobe_ui->GetView<WrongHWIDScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnWrongHWIDScreenExit,
                           weak_factory_.GetWeakPtr())));
-  append(std::make_unique<LacrosDataMigrationScreen>(
-      oobe_ui->GetView<LacrosDataMigrationScreenHandler>()->AsWeakPtr()));
-  append(std::make_unique<LacrosDataBackwardMigrationScreen>(
-      oobe_ui->GetView<LacrosDataBackwardMigrationScreenHandler>()
-          ->AsWeakPtr()));
   append(std::make_unique<LocalStateErrorScreen>(
       oobe_ui->GetView<LocalStateErrorScreenHandler>()->AsWeakPtr()));
 
@@ -1344,14 +1335,6 @@ void WizardController::ShowDisplaySizeScreen() {
   } else {
     OnDisplaySizeScreenExit(DisplaySizeScreen::Result::kNotApplicable);
   }
-}
-
-void WizardController::ShowLacrosDataMigrationScreen() {
-  SetCurrentScreen(GetScreen(LacrosDataMigrationScreenView::kScreenId));
-}
-
-void WizardController::ShowLacrosDataBackwardMigrationScreen() {
-  SetCurrentScreen(GetScreen(LacrosDataBackwardMigrationScreenView::kScreenId));
 }
 
 void WizardController::ShowGuestTosScreen() {
@@ -3190,10 +3173,6 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowMarketingOptInScreen();
   } else if (screen_id == ManagementTransitionScreenView::kScreenId) {
     ShowManagementTransitionScreen();
-  } else if (screen_id == LacrosDataMigrationScreenView::kScreenId) {
-    ShowLacrosDataMigrationScreen();
-  } else if (screen_id == LacrosDataBackwardMigrationScreenView::kScreenId) {
-    ShowLacrosDataBackwardMigrationScreen();
   } else if (screen_id == GuestTosScreenView::kScreenId) {
     ShowGuestTosScreen();
   } else if (screen_id == ConsolidatedConsentScreenView::kScreenId) {

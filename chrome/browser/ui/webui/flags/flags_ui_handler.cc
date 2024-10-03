@@ -15,7 +15,6 @@
 #include "components/version_info/channel.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/settings/about_flags.h"
 #include "chrome/browser/browser_process.h"
@@ -237,14 +236,6 @@ void FlagsUIHandler::HandleRestartBrowser(const base::Value::List& args) {
   ash::about_flags::FeatureFlagsUpdate(*flags_storage_,
                                        Profile::FromWebUI(web_ui())->GetPrefs())
       .UpdateSessionManager();
-  // Call `ClearMigrationStep()` so that we can run migration for the following
-  // case.
-  // 1. User has lacros enabled.
-  // 2. User logs in and migration is completed.
-  // 3. User disabled lacros in session.
-  // 4. User re-enables lacros in session.
-  ash::BrowserDataMigratorImpl::ClearMigrationStep(
-      g_browser_process->local_state());
 #endif
   chrome::AttemptRestart();
 }

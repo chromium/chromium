@@ -62,7 +62,6 @@
 #include "chrome/browser/ui/webui/ash/login/enable_debugging_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/guest_tos_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/lacros_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/os_install_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/remote_activity_notification_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
@@ -373,11 +372,6 @@ void LoginDisplayHostMojo::OnLocalAuthenticationCompleted(
   }
   existing_user_controller_->ResumeAfterLocalAuthentication(
       std::move(user_context));
-}
-
-void LoginDisplayHostMojo::StartBrowserDataMigration() {
-  DCHECK(GetOobeUI());
-  wizard_controller_->AdvanceToScreen(LacrosDataMigrationScreenView::kScreenId);
 }
 
 void LoginDisplayHostMojo::HandleDisplayCaptivePortal() {

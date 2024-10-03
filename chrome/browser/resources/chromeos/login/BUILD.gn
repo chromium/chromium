@@ -138,8 +138,6 @@ build_webui("build") {
     "screens/login/arc_vm_data_migration.ts",
     "screens/login/checking_downloading_update.ts",
     "screens/login/encryption_migration.ts",
-    "screens/login/lacros_data_backward_migration.ts",
-    "screens/login/lacros_data_migration.ts",
     "screens/login/management_transition.ts",
     "screens/login/offline_login.ts",
     "screens/login/update_required_card.ts",

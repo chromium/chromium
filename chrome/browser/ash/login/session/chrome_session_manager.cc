@@ -28,7 +28,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/boot_times_recorder/boot_times_recorder.h"
-#include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/login/chrome_restart_request.h"
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -48,8 +47,6 @@
 #include "chrome/browser/ui/ash/login/login_display_host_webui.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/arc_vm_data_migration_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/lacros_data_backward_migration_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/lacros_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/shimless_rma_dialog/shimless_rma_dialog.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -416,25 +413,6 @@ void ChromeSessionManager::Initialize(
 
   if (base::FeatureList::IsEnabled(arc::kEnableArcVmDataMigration) &&
       MaybeStartArcVmDataMigration(user_manager_, profile)) {
-    return;
-  }
-
-  // This check has to happen before `StartKioskSession()` or
-  // `StartLoginOobeSession()` so that Ash can enter profile migration mode.
-  if (parsed_command_line.HasSwitch(switches::kBrowserDataMigrationForUser)) {
-    LOG(WARNING) << "Ash is running to do browser data migration.";
-    // Show UI for browser data migration. The migration itself will be started
-    // in `LacrosDataMigrationScreen::ShowImpl`.
-    ShowLoginWizard(LacrosDataMigrationScreenView::kScreenId);
-    return;
-  }
-
-  if (parsed_command_line.HasSwitch(
-          switches::kBrowserDataBackwardMigrationForUser)) {
-    LOG(WARNING) << "Ash is running to do browser data backward migration.";
-    // Show UI for browser data backward migration. The backward migration
-    // itself will be started in `LacrosDataBackwardMigrationScreen::ShowImpl`.
-    ShowLoginWizard(LacrosDataBackwardMigrationScreenView::kScreenId);
     return;
   }
 

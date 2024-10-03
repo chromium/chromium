@@ -80,18 +80,6 @@ interface ScreensFactory {
     pending_receiver<ash.screens_login.mojom.EncryptionMigrationPageHandler>
         handler) => (pending_receiver<ash.screens_login.mojom.EncryptionMigrationPage> pending) ;
 
-  // Establish a LacrosDataBackwardMigrationScreen pipe for handling the communication
-  // for the LacrosDataBackwardMigrationPageHandler and the LacrosDataBackwardMigrationPage component.
-  EstablishLacrosDataBackwardMigrationScreenPipe(
-    pending_receiver<ash.screens_login.mojom.LacrosDataBackwardMigrationPageHandler>
-        handler) => (pending_receiver<ash.screens_login.mojom.LacrosDataBackwardMigrationPage> pending) ;
-
-  // Establish a LacrosDataMigrationScreen pipe for handling the communication
-  // for the LacrosDataMigrationPageHandler and the LacrosDataMigrationPage component.
-  EstablishLacrosDataMigrationScreenPipe(
-      pending_receiver<ash.screens_login.mojom.LacrosDataMigrationPageHandler>
-          handler) => (pending_receiver<ash.screens_login.mojom.LacrosDataMigrationPage> pending) ;
-
   // ash.screens_osauth.mojom
 
   // Establish a LocalDataLossWarningScreen pipe for handling the communication
