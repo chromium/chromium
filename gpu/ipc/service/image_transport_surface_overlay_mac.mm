@@ -51,7 +51,6 @@ BASE_FEATURE(kAVFoundationOverlays,
 BASE_FEATURE(kNewPresentationFeedbackTimeStamps,
              "NewPresentationFeedbackTimeStamps",
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_MAC)
 
 // Record the delay from the system CVDisplayLink or CADisplaylink source to
 // CrGpuMain OnVSyncPresentation().
@@ -65,6 +64,7 @@ void RecordVSyncCallbackDelay(base::TimeDelta delay) {
       /*min=*/base::Microseconds(10),
       /*max=*/base::Milliseconds(33), /*bucket_count=*/50);
 }
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace
 
