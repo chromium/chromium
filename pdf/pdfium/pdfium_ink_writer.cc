@@ -125,7 +125,7 @@ bool WriteStrokeToPage(FPDF_PAGE page, const ink::Stroke& stroke) {
   bool close_result = FPDFPath_Close(path.get());
   CHECK(close_result);
 
-  bool add_mark_result =
+  FPDF_PAGEOBJECTMARK add_mark_result =
       FPDFPageObj_AddMark(path.get(), kInkAnnotationIdentifierKey);
   CHECK(add_mark_result);
 

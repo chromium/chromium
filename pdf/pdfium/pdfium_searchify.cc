@@ -136,23 +136,19 @@ void AddWordOnImage(FPDF_DOCUMENT document,
     word_string.push_back(' ');
   }
 
-  if (word_string.empty()) {
+  std::vector<uint32_t> charcodes = Utf8ToCharcodes(word_string);
+  if (charcodes.empty()) {
     DLOG(ERROR) << "Got empty word";
     return;
   }
-
-  std::vector<uint32_t> charcodes = Utf8ToCharcodes(word_string);
-  if (!FPDFText_SetCharcodes(text.get(), charcodes.data(), charcodes.size())) {
-    DLOG(ERROR) << "Failed to set charcodes";
-    return;
-  }
+  bool result =
+      FPDFText_SetCharcodes(text.get(), charcodes.data(), charcodes.size());
+  CHECK(result);
 
   // Make text invisible
-  if (!FPDFTextObj_SetTextRenderMode(text.get(),
-                                     FPDF_TEXTRENDERMODE_INVISIBLE)) {
-    DLOG(ERROR) << "Failed to make text invisible";
-    return;
-  }
+  result =
+      FPDFTextObj_SetTextRenderMode(text.get(), FPDF_TEXTRENDERMODE_INVISIBLE);
+  CHECK(result);
 
   const gfx::SizeF text_object_size = GetImageSize(text.get());
   CHECK_GT(text_object_size.width(), 0);
