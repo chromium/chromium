@@ -6,7 +6,7 @@ import {CustomCallbackMacro} from '/common/action_fulfillment/macros/custom_call
 import {KeyCombination, KeyPressMacro} from '/common/action_fulfillment/macros/key_press_macro.js';
 import {Macro} from '/common/action_fulfillment/macros/macro.js';
 import {MacroName} from '/common/action_fulfillment/macros/macro_names.js';
-import {MouseClickLeftDoubleMacro, MouseClickLongMacro, MouseClickMacro} from '/common/action_fulfillment/macros/mouse_click_macro.js';
+import {MouseClickLeftDoubleMacro, MouseClickMacro} from '/common/action_fulfillment/macros/mouse_click_macro.js';
 import {ToggleDictationMacro} from '/common/action_fulfillment/macros/toggle_dictation_macro.js';
 import {AsyncUtil} from '/common/async_util.js';
 import {KeyCode} from '/common/key_code.js';
@@ -39,7 +39,6 @@ export class GestureHandler {
   private gestureLastRecognized_: Map<FacialGesture, number> = new Map();
   private mouseController_: MouseController;
   private repeatDelayMs_ = GestureHandler.DEFAULT_REPEAT_DELAY_MS;
-  private repeatDragDelayMs_ = GestureHandler.DEFAULT_REPEAT_DRAG_DELAY_MS;
   private prefsListener_: (prefs: any) => void;
   private toggleInfoListener_: (enabled: boolean) => void;
   // The most recently detected gestures. We track this to know when a gesture
@@ -74,9 +73,6 @@ export class GestureHandler {
     // Executing these macros clears their state, so that we aren't left in a
     // mouse down or key down state.
     this.macrosToCompleteLater_.forEach((macro) => {
-      if (macro instanceof MouseClickLongMacro) {
-        macro.triggerRelease();
-      }
       macro.run();
     });
     this.macrosToCompleteLater_.clear();
@@ -161,30 +157,14 @@ export class GestureHandler {
     this.paused_ = newPaused;
   }
 
-  private isMidLongClick_(): boolean {
-    return [...this.macrosToCompleteLater_.values()].some(
-        (savedMacro: Macro) =>
-            savedMacro.getName() === MacroName.MOUSE_LONG_CLICK_LEFT);
-  }
-
-  private shouldIgnoreGesture_(gesture: FacialGesture, currentTime: number):
-      boolean {
-    const midLongClick = this.isMidLongClick_();
-    const repeatDelay = this.gestureToMacroName_.get(gesture) ===
-                MacroName.MOUSE_LONG_CLICK_LEFT &&
-            midLongClick ?
-        this.repeatDragDelayMs_ :
-        this.repeatDelayMs_;
-    return this.gestureLastRecognized_.has(gesture) &&
-        currentTime - this.gestureLastRecognized_.get(gesture)! < repeatDelay ||
-        (this.macrosToCompleteLater_.has(gesture) && !midLongClick);
-  }
-
   private gesturesToMacros_(gestures: FacialGesture[]): DetectMacrosResult {
     const macroNames: Map<MacroName, FacialGesture> = new Map();
     for (const gesture of gestures) {
       const currentTime = new Date().getTime();
-      if (this.shouldIgnoreGesture_(gesture, currentTime)) {
+      if (this.gestureLastRecognized_.has(gesture) &&
+              currentTime - this.gestureLastRecognized_.get(gesture)! <
+                  this.repeatDelayMs_ ||
+          this.macrosToCompleteLater_.has(gesture)) {
         // Avoid responding to the same macro repeatedly in too short a time
         // or if we are still waiting to complete them later (they shouldn't be
         // repeated until completed).
@@ -204,15 +184,19 @@ export class GestureHandler {
     for (const [macroName, gesture] of macroNames) {
       const macro = this.macroFromName_(macroName, gesture);
       if (macro) {
-        if (macro instanceof MouseClickMacro && this.isMidLongClick_()) {
+        if (macro instanceof MouseClickMacro) {
           // Don't add mouse click macros if we are in the middle of long click.
-          continue;
+          if ([...this.macrosToCompleteLater_.values()].some(
+                  (savedMacro: Macro) => savedMacro.getName() ===
+                      MacroName.MOUSE_LONG_CLICK_LEFT)) {
+            continue;
+          }
         }
         result.push(macro);
         displayStrings.push(BubbleController.getDisplayText(gesture, macro));
         if (macro.triggersAtActionStartAndEnd()) {
-          // Cache this macro to be run again later, e.g. for the mouse or key
-          // release.
+          // Cache this macro to be run a second time later,
+          // e.g. for the mouse or key release.
           this.macrosToCompleteLater_.set(gesture, macro);
         }
       }
@@ -240,16 +224,9 @@ export class GestureHandler {
         if (!macro) {
           return;
         }
-
-        if (macro instanceof MouseClickMacro ||
-            macro instanceof MouseClickLongMacro) {
+        if (macro instanceof MouseClickMacro) {
           macro.updateLocation(this.mouseController_.mouseLocation());
         }
-
-        if (macro instanceof MouseClickLongMacro) {
-          macro.triggerRelease();
-        }
-
         macrosForLater.push(macro);
         this.macrosToCompleteLater_.delete(previousGesture);
       }
@@ -272,21 +249,9 @@ export class GestureHandler {
         return new MouseClickMacro(
             this.mouseController_.mouseLocation(), /*leftClick=*/ false);
       case MacroName.MOUSE_LONG_CLICK_LEFT:
-        if (!this.isMidLongClick_()) {
-          return new MouseClickLongMacro(this.mouseController_.mouseLocation());
-        }
-
-        // There should be an existing macro cached to complete later, so
-        // update the location and return the cached macro to send a drag
-        // event.
-        const macro = this.macrosToCompleteLater_.get(gesture);
-        if (!(macro instanceof MouseClickLongMacro)) {
-          throw new Error(
-              `Expected MouseClickLongMacro to be cached for ${gesture}`);
-        }
-
-        macro.updateLocation(this.mouseController_.mouseLocation());
-        return macro;
+        return new MouseClickMacro(
+            this.mouseController_.mouseLocation(), /*leftClick=*/ true,
+            /*clickImmediately=*/ false);
       case MacroName.MOUSE_CLICK_LEFT_DOUBLE:
         return new MouseClickLeftDoubleMacro(
             this.mouseController_.mouseLocation());
@@ -361,9 +326,6 @@ export namespace GestureHandler {
   /** Minimum repeat rate of a gesture. */
   // TODO(b:322511275): Move to a pref in settings.
   export const DEFAULT_REPEAT_DELAY_MS = 500;
-
-  /** Minimum repeat rate of drag gesture during mouse long click action. */
-  export const DEFAULT_REPEAT_DRAG_DELAY_MS = 70;
 
   export const GESTURE_TO_KEY_COMBO_PREF =
       'settings.a11y.face_gaze.gestures_to_key_combos';
