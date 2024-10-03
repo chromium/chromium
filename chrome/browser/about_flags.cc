@@ -11846,6 +11846,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::
              kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancement)},
+#if BUILDFLAG(IS_ANDROID)
+    {"cct-sign-in-prompt", flag_descriptions::kCCTSignInPromptName,
+     flag_descriptions::kCCTSignInPromptDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(switches::kCctSignInPrompt)},
+#endif
 
     {"enable-bookmarks-selected-type-on-signin-for-testing",
      flag_descriptions::kEnableBookmarksSelectedTypeOnSigninForTestingName,

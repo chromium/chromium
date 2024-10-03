@@ -17266,6 +17266,7 @@ from previous Chrome versions.
   <int value="-1265863577"
       label="EnableBookmarksSelectedTypeOnSigninForTesting:enabled"/>
   <int value="-1265627803" label="WebAppEnableManifestId:enabled"/>
+  <int value="-1265374554" label="CctSignInPrompt:disabled"/>
   <int value="-1264634670" label="HideTabOnTabSwitcher:disabled"/>
   <int value="-1262730949" label="EnableDspHotword:enabled"/>
   <int value="-1262303946" label="SubresourceRedirectPreviews:disabled"/>
@@ -20975,6 +20976,7 @@ from previous Chrome versions.
   <int value="275314794" label="DeprecateUnload:disabled"/>
   <int value="275616740" label="ForceInitialSyncWhenDecryptionFails:disabled"/>
   <int value="275690549" label="AppManagementAppDetails:enabled"/>
+  <int value="275804776" label="CctSignInPrompt:enabled"/>
   <int value="277327534"
       label="AndroidTabDeclutterArchiveAllButActiveTab:enabled"/>
   <int value="277483398" label="ClipboardHistory:disabled"/>
