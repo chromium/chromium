@@ -86,9 +86,9 @@ TEST_F(ContentUriLocalFileStreamWriterTest, WriteAlwaysTruncates) {
   EXPECT_TRUE(
       this->CreateFileWithContent(std::string(this->kTestFileName), "foobar"));
 
-  base::FilePath content_uri;
-  ASSERT_TRUE(base::test::android::GetContentUriFromCacheDirFilePath(
-      Path(std::string(this->kTestFileName)), &content_uri));
+  base::FilePath content_uri =
+      *base::test::android::GetContentUriFromCacheDirFilePath(
+          Path(std::string(this->kTestFileName)));
 
   auto writer = FileStreamWriter::CreateForLocalFile(
       file_task_runner(), content_uri, 0, FileStreamWriter::OPEN_EXISTING_FILE);

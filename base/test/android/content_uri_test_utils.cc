@@ -9,32 +9,30 @@
 
 namespace base::test::android {
 
-bool GetContentUriFromCacheDirFilePath(const FilePath& file_name,
-                                       FilePath* content_uri) {
+std::optional<FilePath> GetContentUriFromCacheDirFilePath(
+    const FilePath& path) {
   base::FilePath cache_dir;
   if (!base::android::GetCacheDirectory(&cache_dir)) {
-    return false;
+    return std::nullopt;
   }
   base::FilePath uri("content://org.chromium.native_test.fileprovider/cache/");
-  if (!cache_dir.AppendRelativePath(file_name, &uri)) {
-    return false;
+  if (!cache_dir.AppendRelativePath(path, &uri)) {
+    return std::nullopt;
   }
-  *content_uri = uri;
-  return true;
+  return uri;
 }
 
-bool GetInMemoryContentUriFromCacheDirFilePath(const FilePath& file_name,
-                                               FilePath* content_uri) {
+std::optional<FilePath> GetInMemoryContentUriFromCacheDirFilePath(
+    const FilePath& path) {
   base::FilePath cache_dir;
   if (!base::android::GetCacheDirectory(&cache_dir)) {
-    return false;
+    return std::nullopt;
   }
   base::FilePath uri("content://org.chromium.native_test.inmemory/cache/");
-  if (!cache_dir.AppendRelativePath(file_name, &uri)) {
-    return false;
+  if (!cache_dir.AppendRelativePath(path, &uri)) {
+    return std::nullopt;
   }
-  *content_uri = uri;
-  return true;
+  return uri;
 }
 
 }  // namespace base::test::android

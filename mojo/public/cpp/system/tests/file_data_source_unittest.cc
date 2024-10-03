@@ -37,9 +37,8 @@ class FileDataSourceCppTest : public testing::Test {
 
     // Create FileDataSource for a file-backed, and in-memory content-URI.
 #if BUILDFLAG(IS_ANDROID)
-    base::FilePath content_uri_file;
-    ASSERT_TRUE(base::test::android::GetContentUriFromCacheDirFilePath(
-        path, &content_uri_file));
+    base::FilePath content_uri_file =
+        *base::test::android::GetContentUriFromCacheDirFilePath(path);
     base::File::Info info;
     ASSERT_TRUE(GetFileInfo(content_uri_file, &info));
     ASSERT_EQ(info.size, 6);
@@ -47,9 +46,8 @@ class FileDataSourceCppTest : public testing::Test {
         content_uri_file, base::File::FLAG_OPEN | base::File::FLAG_READ));
     EXPECT_EQ(cu_file_data_source_->GetLength(), 6u);
 
-    base::FilePath content_uri_in_memory;
-    ASSERT_TRUE(base::test::android::GetInMemoryContentUriFromCacheDirFilePath(
-        path, &content_uri_in_memory));
+    base::FilePath content_uri_in_memory =
+        *base::test::android::GetInMemoryContentUriFromCacheDirFilePath(path);
     ASSERT_TRUE(GetFileInfo(content_uri_in_memory, &info));
     ASSERT_EQ(info.size, 6);
     cu_memory_data_source_ = std::make_unique<FileDataSource>(base::File(

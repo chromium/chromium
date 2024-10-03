@@ -90,15 +90,12 @@ TEST(ContentUriUtilsTest, GetFileInfo) {
   ASSERT_TRUE(WriteFile(file, "123"));
   ASSERT_TRUE(CreateDirectory(dir));
 
-  FilePath content_uri_file;
-  ASSERT_TRUE(test::android::GetContentUriFromCacheDirFilePath(
-      file, &content_uri_file));
-  FilePath content_uri_dir;
-  ASSERT_TRUE(
-      test::android::GetContentUriFromCacheDirFilePath(dir, &content_uri_dir));
-  FilePath content_uri_not_exists;
-  ASSERT_TRUE(test::android::GetContentUriFromCacheDirFilePath(
-      not_exists, &content_uri_not_exists));
+  FilePath content_uri_file =
+      *test::android::GetContentUriFromCacheDirFilePath(file);
+  FilePath content_uri_dir =
+      *test::android::GetContentUriFromCacheDirFilePath(dir);
+  FilePath content_uri_not_exists =
+      *test::android::GetContentUriFromCacheDirFilePath(not_exists);
 
   EXPECT_TRUE(PathExists(content_uri_file));
   EXPECT_TRUE(PathExists(content_uri_dir));

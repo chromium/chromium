@@ -126,9 +126,8 @@ TEST_F(NativeFileUtilTest, EnsureFileExists) {
   // Delete file and recreate using content-URI rather than path.
   ASSERT_TRUE(base::DeleteFile(file_name));
 
-  base::FilePath content_uri;
-  ASSERT_TRUE(base::test::android::GetContentUriFromCacheDirFilePath(
-      file_name, &content_uri));
+  base::FilePath content_uri =
+      *base::test::android::GetContentUriFromCacheDirFilePath(file_name);
 
   EXPECT_EQ(base::File::FILE_OK,
             NativeFileUtil::EnsureFileExists(content_uri, &created));
@@ -261,9 +260,8 @@ TEST_F(NativeFileUtilTest, Truncate) {
   EXPECT_EQ(1020, GetSize(file_name));
 
 #if BUILDFLAG(IS_ANDROID)
-  base::FilePath content_uri;
-  ASSERT_TRUE(base::test::android::GetContentUriFromCacheDirFilePath(
-      file_name, &content_uri));
+  base::FilePath content_uri =
+      *base::test::android::GetContentUriFromCacheDirFilePath(file_name);
 
   // Content-URIs only support truncate to zero.
   base::WriteFile(file_name, "foobar");

@@ -947,12 +947,10 @@ TEST(LocalFileSystemCopyOrMoveOperationTest, CopyToExistingContentUri) {
   base::FilePath dest_path = temp_dir.GetPath().Append("dest");
   base::WriteFile(source_path, "foobar");
   base::WriteFile(dest_path, "will-be-truncated");
-  base::FilePath source_content_uri;
-  ASSERT_TRUE(base::test::android::GetContentUriFromCacheDirFilePath(
-      source_path, &source_content_uri));
-  base::FilePath dest_content_uri;
-  ASSERT_TRUE(base::test::android::GetContentUriFromCacheDirFilePath(
-      dest_path, &dest_content_uri));
+  base::FilePath source_content_uri =
+      *base::test::android::GetContentUriFromCacheDirFilePath(source_path);
+  base::FilePath dest_content_uri =
+      *base::test::android::GetContentUriFromCacheDirFilePath(dest_path);
 
   // Copy using content-URIs.
   auto storage_key =

@@ -1761,9 +1761,8 @@ TEST_F(FileUtilTest, ContentUriGetInfo) {
   // path and content_uri are the same file.
   FilePath path = temp_dir_.GetPath().Append("content_uri.txt");
   WriteFile(path, "file-content");
-  FilePath content_uri;
-  ASSERT_TRUE(
-      test::android::GetContentUriFromCacheDirFilePath(path, &content_uri));
+  FilePath content_uri =
+      *test::android::GetContentUriFromCacheDirFilePath(path);
 
   // GetInfo() should work the same for files and content-URIs.
   File::Info path_info;

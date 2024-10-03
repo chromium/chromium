@@ -188,9 +188,9 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
                               : base::FilePath::FromUTF8Unsafe("test");
 #if BUILDFLAG(IS_ANDROID)
     if (use_content_uri) {
-      base::FilePath content_uri;
-      ASSERT_TRUE(base::test::android::GetContentUriFromCacheDirFilePath(
-          test_file_path, &content_uri));
+      base::FilePath content_uri =
+          *base::test::android::GetContentUriFromCacheDirFilePath(
+              test_file_path);
       test_file_path = content_uri;
     }
 #endif
@@ -811,12 +811,10 @@ TEST_F(FileSystemAccessFileHandleImplTest, ContentUriRenameMoveNotSupported) {
   base::FilePath renamed_file = file.DirName().AppendASCII("new_name.txt");
   base::FilePath moved_file = dest_dir.AppendASCII("new_name.txt");
 
-  base::FilePath content_uri_dest_dir;
-  ASSERT_TRUE(base::test::android::GetContentUriFromCacheDirFilePath(
-      dest_dir, &content_uri_dest_dir));
-  base::FilePath content_uri_file;
-  ASSERT_TRUE(base::test::android::GetContentUriFromCacheDirFilePath(
-      file, &content_uri_file));
+  base::FilePath content_uri_dest_dir =
+      *base::test::android::GetContentUriFromCacheDirFilePath(dest_dir);
+  base::FilePath content_uri_file =
+      *base::test::android::GetContentUriFromCacheDirFilePath(file);
 
   auto dest_dir_handle = GetDirectoryHandleWithPermissions(
       content_uri_dest_dir, /*read_grant=*/allow_grant_,
