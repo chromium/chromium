@@ -62,12 +62,11 @@ class WebsiteParentApproval {
     /**
      * Whether or not local (i.e. on-device) approval is supported.
      *
-     * This method should be called before {@link requestLocalApproval()}.
+     * <p>This method should be called before {@link requestLocalApproval()}.
      */
     @CalledByNative
     private static boolean isLocalApprovalSupported() {
-        ParentAuthDelegate delegate = new ParentAuthDelegateImpl();
-        return delegate.isLocalAuthSupported();
+        return ParentAuthDelegateProvider.getInstance() != null;
     }
 
     /**
@@ -86,6 +85,7 @@ class WebsiteParentApproval {
             WindowAndroid windowAndroid, GURL url, Profile profile) {
         // First ask the parent to authenticate.
         ParentAuthDelegate delegate = ParentAuthDelegateProvider.getInstance();
+        assert delegate != null;
         FaviconHelper faviconHelper = new FaviconHelper();
         delegate.requestLocalAuth(
                 windowAndroid,
