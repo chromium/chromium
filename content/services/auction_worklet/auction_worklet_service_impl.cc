@@ -280,7 +280,7 @@ void AuctionWorkletServiceImpl::LoadBidderWorklet(
       wasm_helper_url, trusted_bidding_signals_url,
       trusted_bidding_signals_slot_size_param, top_window_origin,
       std::move(permissions_policy_state), experiment_group_id,
-      /*public_key=*/nullptr);
+      std::move(public_key));
   auto* bidder_worklet_ptr = bidder_worklet.get();
 
   mojo::ReceiverId receiver_id = bidder_worklets_.Add(

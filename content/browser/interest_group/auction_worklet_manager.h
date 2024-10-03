@@ -16,7 +16,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list_types.h"
+#include "base/types/expected.h"
 #include "content/browser/interest_group/auction_process_manager.h"
+#include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
 #include "content/browser/interest_group/subresource_url_builder.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
@@ -113,6 +115,11 @@ class CONTENT_EXPORT AuctionWorkletManager {
 
     // Returns the cookie deprecation label for facilitated testing.
     virtual std::optional<std::string> GetCookieDeprecationLabel() = 0;
+
+    virtual void GetBiddingAndAuctionServerKey(
+        const std::optional<url::Origin>& coordinator,
+        base::OnceCallback<void(base::expected<BiddingAndAuctionServerKey,
+                                               std::string>)> callback) = 0;
   };
 
   // Internal class that owns and creates worklets. It also tracks pending

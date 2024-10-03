@@ -2505,6 +2505,13 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   std::optional<std::string> GetCookieDeprecationLabel() override {
     return std::nullopt;
   }
+  void GetBiddingAndAuctionServerKey(
+      const std::optional<url::Origin>& coordinator,
+      base::OnceCallback<void(base::expected<BiddingAndAuctionServerKey,
+                                             std::string>)> callback) override {
+    // Not implemented because this method is not called in this test fixture.
+    NOTREACHED();
+  }
 
   // DebuggableAuctionWorkletTracker::Observer implementation
   void AuctionWorkletCreated(DebuggableAuctionWorklet* worklet,

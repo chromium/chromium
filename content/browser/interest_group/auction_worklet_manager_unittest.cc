@@ -19,9 +19,11 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "content/browser/interest_group/auction_metrics_recorder.h"
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/subresource_url_authorizations.h"
@@ -136,6 +138,19 @@ blink::DirectFromSellerSignals PopulateSubresources() {
   return result;
 }
 
+bool PublicKeyEvaluateHelper(
+    const auction_worklet::mojom::TrustedSignalsPublicKey* public_key,
+    base::expected<BiddingAndAuctionServerKey, std::string> expected_key) {
+  if (expected_key.has_value() && public_key) {
+    return expected_key->id == public_key->id &&
+           expected_key->key == public_key->key;
+  } else if (!expected_key.has_value() && !public_key) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 // Single-use helper for waiting for a load error and inspecting its data.
 class FatalLoadErrorHelper {
  public:
@@ -185,10 +200,12 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
       const std::optional<GURL>& wasm_url,
       const std::optional<GURL>& trusted_bidding_signals_url,
       const url::Origin& top_window_origin,
+      auction_worklet::mojom::TrustedSignalsPublicKeyPtr public_key,
       bool enable_dtor_pending_signals_check)
       : url_loader_factory_(std::move(pending_url_loader_factory)),
         script_source_url_(script_source_url),
         wasm_url_(wasm_url),
+        public_key_(std::move(public_key)),
         trusted_bidding_signals_url_(trusted_bidding_signals_url),
         top_window_origin_(top_window_origin),
         enable_dtor_pending_signals_check_(enable_dtor_pending_signals_check),
@@ -312,6 +329,9 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
 
   const GURL& script_source_url() const { return script_source_url_; }
   const std::optional<GURL>& wasm_url() const { return wasm_url_; }
+  const auction_worklet::mojom::TrustedSignalsPublicKey* public_key() {
+    return public_key_.get();
+  }
   const std::optional<GURL>& trusted_bidding_signals_url() const {
     return trusted_bidding_signals_url_;
   }
@@ -326,6 +346,7 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
 
   const GURL script_source_url_;
   const std::optional<GURL> wasm_url_;
+  const auction_worklet::mojom::TrustedSignalsPublicKeyPtr public_key_;
   const std::optional<GURL> trusted_bidding_signals_url_;
   const url::Origin top_window_origin_;
   const bool enable_dtor_pending_signals_check_;
@@ -624,6 +645,7 @@ class MockAuctionProcessManager
         std::move(bidder_worklet_receiver),
         std::move(pending_url_loader_factory), script_source_url,
         bidding_wasm_helper_url, trusted_bidding_signals_url, top_window_origin,
+        std::move(public_key),
         enable_bidder_worklet_dtor_pending_signals_check_);
 
     if (bidder_worklet_run_loop_) {
@@ -776,6 +798,13 @@ class AuctionWorkletManagerTest : public RenderViewHostTestHarness,
   }
   std::optional<std::string> GetCookieDeprecationLabel() override {
     return std::nullopt;
+  }
+  void GetBiddingAndAuctionServerKey(
+      const std::optional<url::Origin>& coordinator,
+      base::OnceCallback<void(base::expected<BiddingAndAuctionServerKey,
+                                             std::string>)> callback) override {
+    // Not implemented because this method is not called in this test.
+    NOTREACHED();
   }
 
  protected:
@@ -2261,6 +2290,33 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletUrlRequestProtection) {
   EXPECT_EQ("Unexpected request", TakeBadMessage());
 }
 
+// Test a bidder worklet can be correctly requested with a valid coordinator
+// when `kFledgeTrustedSignalsKVv2Support` is disabled. It depends on
+// `GetBiddingAndAuctionServerKey()` to cause a crash if it is called
+// unexpectedly.
+TEST_F(AuctionWorkletManagerTest, BidderWorkletWithKVv2FeatureDisabled) {
+  std::unique_ptr<AuctionWorkletManager::WorkletHandle> handle;
+  base::test::TestFuture<void> worklet_available;
+
+  auction_worklet_manager_->RequestBidderWorklet(
+      kAuction1, kDecisionLogicUrl, kWasmUrl, kTrustedSignalsUrl,
+      /*needs_cors_for_additional_bid=*/false,
+      /*experiment_group_id=*/std::nullopt,
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_bidding_signals_coordinator=*/
+      url::Origin::Create(GURL("https://origin.test/")),
+      worklet_available.GetCallback(), NeverInvokedFatalErrorCallback(), handle,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
+
+  ASSERT_TRUE(worklet_available.Wait());
+  EXPECT_TRUE(handle->GetBidderWorklet());
+  std::unique_ptr<MockBidderWorklet> bidder_worklet =
+      auction_process_manager_.WaitForBidderWorklet();
+  EXPECT_EQ(kDecisionLogicUrl, bidder_worklet->script_source_url());
+  EXPECT_EQ(kTrustedSignalsUrl, bidder_worklet->trusted_bidding_signals_url());
+  EXPECT_TRUE(!bidder_worklet->public_key());
+}
+
 // Minimal test that seller worklets' AuctionURLLoaderFactoryProxies are
 // correctly configured.
 TEST_F(AuctionWorkletManagerTest, SellerWorkletUrlRequestProtection) {
@@ -2670,6 +2726,342 @@ TEST_F(AuctionWorkletManagerTest,
 
   handle.reset();
   auction_process_manager_.CallOnLaunchedWithPidForAllHandles();
+}
+
+class AuctionWorkletManagerKVv2Test : public AuctionWorkletManagerTest {
+ public:
+  AuctionWorkletManagerKVv2Test() {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kFledgeTrustedSignalsKVv2Support);
+  }
+
+  ~AuctionWorkletManagerKVv2Test() override { DCHECK(!fetch_key_callback_); }
+
+  void GetBiddingAndAuctionServerKey(
+      const std::optional<url::Origin>& coordinator,
+      base::OnceCallback<void(base::expected<BiddingAndAuctionServerKey,
+                                             std::string>)> callback) override {
+    DCHECK(!fetch_key_callback_);
+
+    if (synchronous_fetch_) {
+      std::move(callback).Run(key_);
+    } else {
+      fetch_key_callback_ = std::move(callback);
+    }
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+  url::Origin coordinator_{
+      url::Origin::Create(GURL("https://coordinator.test/"))};
+
+  base::OnceCallback<void(
+      base::expected<BiddingAndAuctionServerKey, std::string>)>
+      fetch_key_callback_;
+
+  bool synchronous_fetch_ = true;
+  base::expected<BiddingAndAuctionServerKey, std::string> key_{
+      BiddingAndAuctionServerKey("public-key", /*id=*/0)};
+};
+
+TEST_F(AuctionWorkletManagerKVv2Test,
+       SingleBidderWorkletSyncFetchedKeyBeforeProcessAssigned) {
+  std::vector<base::expected<BiddingAndAuctionServerKey, std::string>>
+      expected_keys = {BiddingAndAuctionServerKey("public-key", /*id=*/0),
+                       base::unexpected("Failed to fetch public key.")};
+
+  for (const auto& key : expected_keys) {
+    key_ = key;
+    std::unique_ptr<AuctionWorkletManager::WorkletHandle> handle;
+    base::test::TestFuture<void> worklet_available;
+
+    auction_worklet_manager_->RequestBidderWorklet(
+        kAuction1, kDecisionLogicUrl, kWasmUrl, kTrustedSignalsUrl,
+        /*needs_cors_for_additional_bid=*/false,
+        /*experiment_group_id=*/std::nullopt,
+        /*trusted_bidding_signals_slot_size_param=*/"", coordinator_,
+        worklet_available.GetCallback(), NeverInvokedFatalErrorCallback(),
+        handle,
+        auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
+
+    ASSERT_TRUE(worklet_available.Wait());
+    EXPECT_TRUE(handle->GetBidderWorklet());
+    std::unique_ptr<MockBidderWorklet> bidder_worklet =
+        auction_process_manager_.WaitForBidderWorklet();
+    EXPECT_EQ(kDecisionLogicUrl, bidder_worklet->script_source_url());
+    EXPECT_EQ(kTrustedSignalsUrl,
+              bidder_worklet->trusted_bidding_signals_url());
+    EXPECT_TRUE(PublicKeyEvaluateHelper(bidder_worklet->public_key(), key_));
+  }
+}
+
+TEST_F(AuctionWorkletManagerKVv2Test,
+       SingleBidderWorkletAsyncFetchedKeyBeforeProcessAssigned) {
+  std::vector<base::expected<BiddingAndAuctionServerKey, std::string>>
+      expected_keys = {BiddingAndAuctionServerKey("public-key", /*id=*/0),
+                       base::unexpected("Failed to fetch public key.")};
+  auction_process_manager_.DeferOnLaunchedForHandles();
+  synchronous_fetch_ = false;
+
+  for (const auto& key : expected_keys) {
+    key_ = key;
+    std::unique_ptr<AuctionWorkletManager::WorkletHandle> handle;
+    base::test::TestFuture<void> worklet_available;
+
+    auction_worklet_manager_->RequestBidderWorklet(
+        kAuction1, kDecisionLogicUrl, kWasmUrl, kTrustedSignalsUrl,
+        /*needs_cors_for_additional_bid=*/false,
+        /*experiment_group_id=*/std::nullopt,
+        /*trusted_bidding_signals_slot_size_param=*/"", coordinator_,
+        worklet_available.GetCallback(), NeverInvokedFatalErrorCallback(),
+        handle,
+        auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
+    std::move(fetch_key_callback_).Run(key_);
+    auction_process_manager_.CallOnLaunchedWithPidForAllHandles();
+
+    ASSERT_TRUE(worklet_available.Wait());
+    EXPECT_TRUE(handle->GetBidderWorklet());
+    std::unique_ptr<MockBidderWorklet> bidder_worklet =
+        auction_process_manager_.WaitForBidderWorklet();
+    EXPECT_EQ(kDecisionLogicUrl, bidder_worklet->script_source_url());
+    EXPECT_EQ(kTrustedSignalsUrl,
+              bidder_worklet->trusted_bidding_signals_url());
+    EXPECT_TRUE(PublicKeyEvaluateHelper(bidder_worklet->public_key(), key_));
+  }
+}
+
+TEST_F(AuctionWorkletManagerKVv2Test,
+       SingleBidderWorkletAsyncFetchedKeyAfterProcessAssigned) {
+  std::vector<base::expected<BiddingAndAuctionServerKey, std::string>>
+      expected_keys = {BiddingAndAuctionServerKey("public-key", /*id=*/0),
+                       base::unexpected("Failed to fetch public key.")};
+  auction_process_manager_.DeferOnLaunchedForHandles();
+  synchronous_fetch_ = false;
+
+  for (const auto& key : expected_keys) {
+    key_ = key;
+    std::unique_ptr<AuctionWorkletManager::WorkletHandle> handle;
+    base::test::TestFuture<void> worklet_available;
+
+    auction_worklet_manager_->RequestBidderWorklet(
+        kAuction1, kDecisionLogicUrl, kWasmUrl, kTrustedSignalsUrl,
+        /*needs_cors_for_additional_bid=*/false,
+        /*experiment_group_id=*/std::nullopt,
+        /*trusted_bidding_signals_slot_size_param=*/"", coordinator_,
+        worklet_available.GetCallback(), NeverInvokedFatalErrorCallback(),
+        handle,
+        auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
+    auction_process_manager_.CallOnLaunchedWithPidForAllHandles();
+    std::move(fetch_key_callback_).Run(key_);
+
+    ASSERT_TRUE(worklet_available.Wait());
+    EXPECT_TRUE(handle->GetBidderWorklet());
+    std::unique_ptr<MockBidderWorklet> bidder_worklet =
+        auction_process_manager_.WaitForBidderWorklet();
+    EXPECT_EQ(kDecisionLogicUrl, bidder_worklet->script_source_url());
+    EXPECT_EQ(kTrustedSignalsUrl,
+              bidder_worklet->trusted_bidding_signals_url());
+    EXPECT_TRUE(PublicKeyEvaluateHelper(bidder_worklet->public_key(), key_));
+  }
+}
+
+// Make sure that worklets are not reused when parameters don't match.
+TEST_F(AuctionWorkletManagerKVv2Test,
+       DifferentBidderWorkletsWithDifferentCoordinators) {
+  // Load a KVv2 bidder worklet.
+  std::unique_ptr<AuctionWorkletManager::WorkletHandle> handle1;
+  base::test::TestFuture<void> worklet_available1;
+  auction_worklet_manager_->RequestBidderWorklet(
+      kAuction1, kDecisionLogicUrl, kWasmUrl, kTrustedSignalsUrl,
+      /*needs_cors_for_additional_bid=*/false,
+      /*experiment_group_id=*/std::nullopt,
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_bidding_signals_coordinator=*/
+      url::Origin::Create(GURL("https://a.test/")),
+      worklet_available1.GetCallback(), NeverInvokedFatalErrorCallback(),
+      handle1,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
+  ASSERT_TRUE(worklet_available1.Wait());
+  EXPECT_TRUE(handle1->GetBidderWorklet());
+  std::unique_ptr<MockBidderWorklet> bidder_worklet1 =
+      auction_process_manager_.WaitForBidderWorklet();
+  EXPECT_EQ(kDecisionLogicUrl, bidder_worklet1->script_source_url());
+  EXPECT_EQ(kTrustedSignalsUrl, bidder_worklet1->trusted_bidding_signals_url());
+  EXPECT_TRUE(PublicKeyEvaluateHelper(bidder_worklet1->public_key(), key_));
+  // Should only be one process.
+  EXPECT_EQ(1u, auction_process_manager_.GetBidderProcessCountForTesting());
+  EXPECT_THAT(handle1->GetDevtoolsAuctionIdsForTesting(),
+              UnorderedElementsAre(kAuction1));
+
+  // Load a KVv2 bidder worklet with a different coorinator. A new worklet
+  // should be created, using the same process.
+  const GURL kDifferentDecisionLogicUrl =
+      GURL("https://origin.test/different_script");
+  std::unique_ptr<AuctionWorkletManager::WorkletHandle> handle2;
+  base::test::TestFuture<void> worklet_available2;
+  auction_worklet_manager_->RequestBidderWorklet(
+      kAuction2, kDifferentDecisionLogicUrl, kWasmUrl, kTrustedSignalsUrl,
+      /*needs_cors_for_additional_bid=*/false,
+      /*experiment_group_id=*/std::nullopt,
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      url::Origin::Create(GURL("https://b.test/")),
+      worklet_available2.GetCallback(), NeverInvokedFatalErrorCallback(),
+      handle2,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
+  ASSERT_TRUE(worklet_available2.Wait());
+  EXPECT_TRUE(handle1->GetBidderWorklet());
+  EXPECT_NE(handle1->GetBidderWorklet(), handle2->GetBidderWorklet());
+  std::unique_ptr<MockBidderWorklet> bidder_worklet2 =
+      auction_process_manager_.WaitForBidderWorklet();
+  EXPECT_EQ(kDifferentDecisionLogicUrl, bidder_worklet2->script_source_url());
+  EXPECT_EQ(kTrustedSignalsUrl, bidder_worklet2->trusted_bidding_signals_url());
+  EXPECT_TRUE(PublicKeyEvaluateHelper(bidder_worklet2->public_key(), key_));
+  // Should still only be one process.
+  EXPECT_EQ(1u, auction_process_manager_.GetBidderProcessCountForTesting());
+  EXPECT_THAT(handle2->GetDevtoolsAuctionIdsForTesting(),
+              UnorderedElementsAre(kAuction2));
+}
+
+// Test that requests with the same parameters reuse bidder worklets.
+TEST_F(AuctionWorkletManagerKVv2Test, ReuseBidderWorklet) {
+  // Load a KVv2 bidder worklet.
+  std::unique_ptr<AuctionWorkletManager::WorkletHandle> handle1;
+  base::test::TestFuture<void> worklet_available1;
+
+  auction_worklet_manager_->RequestBidderWorklet(
+      kAuction1, kDecisionLogicUrl, kWasmUrl, kTrustedSignalsUrl,
+      /*needs_cors_for_additional_bid=*/false,
+      /*experiment_group_id=*/std::nullopt,
+      /*trusted_bidding_signals_slot_size_param=*/"", coordinator_,
+      worklet_available1.GetCallback(), NeverInvokedFatalErrorCallback(),
+      handle1,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
+
+  ASSERT_TRUE(worklet_available1.Wait());
+  EXPECT_TRUE(handle1->GetBidderWorklet());
+  std::unique_ptr<MockBidderWorklet> bidder_worklet1 =
+      auction_process_manager_.WaitForBidderWorklet();
+  EXPECT_EQ(kDecisionLogicUrl, bidder_worklet1->script_source_url());
+  EXPECT_EQ(kTrustedSignalsUrl, bidder_worklet1->trusted_bidding_signals_url());
+  EXPECT_TRUE(PublicKeyEvaluateHelper(bidder_worklet1->public_key(), key_));
+  handle1->GetBidderWorklet()->SendPendingSignalsRequests();
+  bidder_worklet1->WaitForSendPendingSignalsRequests(1);
+  // Should only be one process.
+  EXPECT_EQ(1u, auction_process_manager_.GetBidderProcessCountForTesting());
+  EXPECT_THAT(handle1->GetDevtoolsAuctionIdsForTesting(),
+              UnorderedElementsAre(kAuction1));
+
+  // Load a KVv2 bidder worklet with the same parameters. The worklet should be
+  // reused.
+  std::unique_ptr<AuctionWorkletManager::WorkletHandle> handle2;
+  base::test::TestFuture<void> worklet_available2;
+
+  auction_worklet_manager_->RequestBidderWorklet(
+      kAuction2, kDecisionLogicUrl, kWasmUrl, kTrustedSignalsUrl,
+      /*needs_cors_for_additional_bid=*/false,
+      /*experiment_group_id=*/std::nullopt,
+      /*trusted_bidding_signals_slot_size_param=*/"", coordinator_,
+      worklet_available2.GetCallback(), NeverInvokedFatalErrorCallback(),
+      handle2,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
+
+  ASSERT_TRUE(worklet_available2.Wait());
+  EXPECT_EQ(handle1->GetBidderWorklet(), handle2->GetBidderWorklet());
+  EXPECT_FALSE(auction_process_manager_.HasBidderWorkletRequest());
+  handle2->GetBidderWorklet()->SendPendingSignalsRequests();
+  bidder_worklet1->WaitForSendPendingSignalsRequests(2);
+  // Should still only be one process.
+  EXPECT_EQ(1u, auction_process_manager_.GetBidderProcessCountForTesting());
+  // ... but used by both auctions.
+  EXPECT_THAT(handle2->GetDevtoolsAuctionIdsForTesting(),
+              UnorderedElementsAre(kAuction1, kAuction2));
+
+  // Close original handle. Worklet should still be alive, and so should its
+  // process.
+  handle1.reset();
+  EXPECT_EQ(1u, auction_process_manager_.GetBidderProcessCountForTesting());
+  // We should no longer attribute its work to the first auction, however.
+  EXPECT_THAT(handle2->GetDevtoolsAuctionIdsForTesting(),
+              UnorderedElementsAre(kAuction2));
+
+  // Load a KVv2 bidder worklet with the same parameters. The worklet should
+  // still be reused again.
+  std::unique_ptr<AuctionWorkletManager::WorkletHandle> handle3;
+  base::test::TestFuture<void> worklet_available3;
+  auction_worklet_manager_->RequestBidderWorklet(
+      kAuction3, kDecisionLogicUrl, kWasmUrl, kTrustedSignalsUrl,
+      /*needs_cors_for_additional_bid=*/false,
+      /*experiment_group_id=*/std::nullopt,
+      /*trusted_bidding_signals_slot_size_param=*/"", coordinator_,
+      worklet_available3.GetCallback(), NeverInvokedFatalErrorCallback(),
+      handle3,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
+
+  ASSERT_TRUE(worklet_available3.Wait());
+  EXPECT_EQ(handle2->GetBidderWorklet(), handle3->GetBidderWorklet());
+  EXPECT_FALSE(auction_process_manager_.HasBidderWorkletRequest());
+  handle3->GetBidderWorklet()->SendPendingSignalsRequests();
+  bidder_worklet1->WaitForSendPendingSignalsRequests(3);
+  // Should still only be one process.
+  EXPECT_EQ(1u, auction_process_manager_.GetBidderProcessCountForTesting());
+  EXPECT_THAT(handle3->GetDevtoolsAuctionIdsForTesting(),
+              UnorderedElementsAre(kAuction2, kAuction3));
+
+  // Close both remaining handles.
+  handle2.reset();
+  handle3.reset();
+
+  // Process should be destroyed.
+  EXPECT_EQ(0u, auction_process_manager_.GetBidderProcessCountForTesting());
+
+  // Request another KVv2 bidder worklet. A new BidderWorklet in a new process
+  // should be created.
+  base::test::TestFuture<void> worklet_available4;
+  std::unique_ptr<AuctionWorkletManager::WorkletHandle> handle4;
+  auction_worklet_manager_->RequestBidderWorklet(
+      kAuction4, kDecisionLogicUrl, kWasmUrl, kTrustedSignalsUrl,
+      /*needs_cors_for_additional_bid=*/false,
+      /*experiment_group_id=*/std::nullopt,
+      /*trusted_bidding_signals_slot_size_param=*/"", coordinator_,
+      worklet_available4.GetCallback(), NeverInvokedFatalErrorCallback(),
+      handle4,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
+  ASSERT_TRUE(worklet_available4.Wait());
+  EXPECT_TRUE(handle4->GetBidderWorklet());
+  std::unique_ptr<MockBidderWorklet> bidder_worklet2 =
+      auction_process_manager_.WaitForBidderWorklet();
+  EXPECT_EQ(kDecisionLogicUrl, bidder_worklet2->script_source_url());
+  EXPECT_EQ(kTrustedSignalsUrl, bidder_worklet2->trusted_bidding_signals_url());
+  EXPECT_TRUE(PublicKeyEvaluateHelper(bidder_worklet2->public_key(), key_));
+  handle4->GetBidderWorklet()->SendPendingSignalsRequests();
+  bidder_worklet2->WaitForSendPendingSignalsRequests(1);
+  EXPECT_EQ(1u, auction_process_manager_.GetBidderProcessCountForTesting());
+  EXPECT_THAT(handle4->GetDevtoolsAuctionIdsForTesting(),
+              UnorderedElementsAre(kAuction4));
+}
+
+// Test a bidder worklet can be correctly requested when coordinator is empty
+// and `kFledgeTrustedSignalsKVv2Support` is enabled.
+TEST_F(AuctionWorkletManagerKVv2Test, BidderWorkletWithoutCoordinator) {
+  std::unique_ptr<AuctionWorkletManager::WorkletHandle> handle;
+  base::test::TestFuture<void> worklet_available;
+
+  auction_worklet_manager_->RequestBidderWorklet(
+      kAuction1, kDecisionLogicUrl, kWasmUrl, kTrustedSignalsUrl,
+      /*needs_cors_for_additional_bid=*/false,
+      /*experiment_group_id=*/std::nullopt,
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_bidding_signals_coordinator=*/std::nullopt,
+      worklet_available.GetCallback(), NeverInvokedFatalErrorCallback(), handle,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
+
+  ASSERT_TRUE(worklet_available.Wait());
+  EXPECT_TRUE(handle->GetBidderWorklet());
+  std::unique_ptr<MockBidderWorklet> bidder_worklet =
+      auction_process_manager_.WaitForBidderWorklet();
+  EXPECT_EQ(kDecisionLogicUrl, bidder_worklet->script_source_url());
+  EXPECT_EQ(kTrustedSignalsUrl, bidder_worklet->trusted_bidding_signals_url());
+  EXPECT_TRUE(!bidder_worklet->public_key());
 }
 
 }  // namespace

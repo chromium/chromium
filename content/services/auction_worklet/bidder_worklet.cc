@@ -351,6 +351,7 @@ BidderWorklet::BidderWorklet(
       url_loader_factory_(std::move(pending_url_loader_factory)),
       script_source_url_(script_source_url),
       wasm_helper_url_(wasm_helper_url),
+      public_key_(std::move(public_key)),
       top_window_origin_(top_window_origin),
       auction_network_events_handler_(
           std::move(auction_network_events_handler)) {
@@ -383,7 +384,8 @@ BidderWorklet::BidderWorklet(
                      auction_network_events_handler_),
                  /*automatically_send_requests=*/false, top_window_origin,
                  *trusted_bidding_signals_url, experiment_group_id,
-                 trusted_bidding_signals_slot_size_param, std::move(public_key),
+                 trusted_bidding_signals_slot_size_param,
+                 public_key_.is_null() ? nullptr : public_key_->Clone(),
                  v8_helpers_[GetNextThreadIndex()].get())
            : nullptr);
 

@@ -743,6 +743,14 @@ std::optional<std::string> AdAuctionServiceImpl::GetCookieDeprecationLabel() {
   }
 }
 
+void AdAuctionServiceImpl::GetBiddingAndAuctionServerKey(
+    const std::optional<url::Origin>& coordinator,
+    base::OnceCallback<void(
+        base::expected<BiddingAndAuctionServerKey, std::string>)> callback) {
+  GetInterestGroupManager().GetBiddingAndAuctionServerKey(
+      std::move(coordinator), std::move(callback));
+}
+
 AdAuctionServiceImpl::AdAuctionServiceImpl(
     RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<blink::mojom::AdAuctionService> receiver)

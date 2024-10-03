@@ -109,6 +109,10 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   scoped_refptr<SiteInstance> GetFrameSiteInstance() override;
   network::mojom::ClientSecurityStatePtr GetClientSecurityState() override;
   std::optional<std::string> GetCookieDeprecationLabel() override;
+  void GetBiddingAndAuctionServerKey(
+      const std::optional<url::Origin>& coordinator,
+      base::OnceCallback<void(base::expected<BiddingAndAuctionServerKey,
+                                             std::string>)> callback) override;
 
   using DocumentService::origin;
   using DocumentService::render_frame_host;
