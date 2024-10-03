@@ -12,7 +12,6 @@ module coral.mojom;
 import "url/mojom/url.mojom";
 
 // Represents metadata of a Chrome tab entity.
-[Stable]
 struct Tab {
   // This is the exact title string of a tab shown on UI.
   string title;
@@ -22,7 +21,6 @@ struct Tab {
 };
 
 // Represents metadata of an ARC app entity.
-[Stable]
 struct App {
   // This is the exact title string of an ARC app shown on UI.
   string title;
@@ -34,7 +32,7 @@ struct App {
 
 // Entity types that the coral service supports. For each of the entity type
 // coral service has a way of formatting them into embedding prompts.
-[Stable, Extensible]
+[Extensible]
 union Entity {
   // For backward compatibility. In mojom, when deserializing variants of an
   // extensible union that are introduced in newer versions than the version
@@ -51,7 +49,7 @@ union Entity {
 // Identifier that uniquely identifies an entity of each type. In CoralResponse,
 // to return the groupings we don't need to include all original metadata, but
 // just this identifier, to the client.
-[Stable, Extensible]
+[Extensible]
 union EntityKey {
   // For backward compatibility. In mojom, when deserializing variants of an
   // extensible union that are introduced in newer versions than the version
@@ -68,13 +66,11 @@ union EntityKey {
 };
 
 // Configurable options of the embedding engine.
-[Stable]
 struct EmbeddingOptions {};
 
 // Configurable options of the clustering engine.
 // TODO(b/358531135): Decide the cluster algorithm we want to use and add
 // the algorithm options.
-[Stable]
 struct ClusteringOptions {
   // 0 means min items in cluster is 0, which effectively means there is no
   // limit.
@@ -88,7 +84,6 @@ struct ClusteringOptions {
 };
 
 // Configurable options of the title generation engine.
-[Stable]
 struct TitleGenerationOptions {
   // Max characters allowed in the generated title. 0 is a special value
   // meaning there is no limitation of maximum number of characters.
@@ -98,9 +93,8 @@ struct TitleGenerationOptions {
   string? language_code;
 };
 
-[Stable, Extensible]
+[Extensible]
 enum CoralError {
-  // TODO(b/358531135): Add more error types and avoid using kUnknownError.
   [Default] kUnknownError,
   [MinVersion=1] kLoadModelFailed,
   [MinVersion=2] kInvalidArgs,
@@ -108,14 +102,12 @@ enum CoralError {
   [MinVersion=3] kClusteringError,
 };
 
-[Stable]
 struct Group {
   string title;
   // This is sorted by descending rank of importance.
   array<EntityKey> entities;
 };
 
-[Stable]
 struct GroupRequest {
   array<Entity> entities;
   EmbeddingOptions embedding_options;
@@ -123,13 +115,11 @@ struct GroupRequest {
   TitleGenerationOptions title_generation_options;
 };
 
-[Stable]
 struct GroupResponse {
   // This is sorted by descending rank of importance.
   array<Group> groups;
 };
 
-[Stable]
 union GroupResult {
   // Meaning that the request failed.
   CoralError error;
@@ -137,17 +127,14 @@ union GroupResult {
   GroupResponse response;
 };
 
-[Stable]
 struct CacheEmbeddingsRequest {
   array<Entity> entities;
   EmbeddingOptions embedding_options;
 };
 
 // Does not yet contain any fields.
-[Stable]
 struct CacheEmbeddingsResponse {};
 
-[Stable]
 union CacheEmbeddingsResult {
   // Meaning that the request failed.
   CoralError error;
@@ -158,7 +145,6 @@ union CacheEmbeddingsResult {
 // The ChromeOS odml daemon implements this service interface, utilizing the on
 // device models for backend logic. Ash Chrome is the client, implementing
 // UI features using this coral service.
-[Stable]
 interface CoralService {
   // Group the request entities into suitable groups with titles.
   Group@0(GroupRequest request) => (GroupResult result);
