@@ -49,15 +49,17 @@
       [NSCollectionLayoutItem itemWithLayoutSize:item_size];
 
   CGSize size = layoutEnvironment.container.contentSize;
+  CGFloat peekingInset = ModuleNarrowerWidthToAllowPeekingForTraitCollection(
+      layoutEnvironment.traitCollection);
+  if ([self.dataSource.snapshot
+          numberOfItemsInSection:kMagicStackSectionIdentifier] == 1) {
+    peekingInset = 0;
+  }
   // Group size of fixed width for a module and height matching that of the
   // CollectionView.
   NSCollectionLayoutSize* group_size = [NSCollectionLayoutSize
-      sizeWithWidthDimension:
-          [NSCollectionLayoutDimension
-              absoluteDimension:
-                  size.width -
-                  ModuleNarrowerWidthToAllowPeekingForTraitCollection(
-                      layoutEnvironment.traitCollection)]
+      sizeWithWidthDimension:[NSCollectionLayoutDimension
+                                 absoluteDimension:size.width - peekingInset]
              heightDimension:[NSCollectionLayoutDimension
                                  fractionalHeightDimension:1.]];
   if (sectionIndex ==
