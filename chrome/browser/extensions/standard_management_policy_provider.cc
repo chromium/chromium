@@ -205,6 +205,18 @@ bool StandardManagementPolicyProvider::MustRemainDisabled(
     return true;
   }
 
+  if (!settings_->IsAllowedByUnpackedDeveloperModePolicy(*extension)) {
+    if (reason) {
+      *reason = disable_reason::DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION;
+    }
+    if (error) {
+      // TODO(crbug.com/362756477): Replace temporary string with disable
+      // unsupported developer string once ready.
+      *error = u"Unpacked extension blocked by developer mode requirement.";
+    }
+    return true;
+  }
+
   if (settings_->ShouldBlockForceInstalledOffstoreExtension(*extension)) {
     if (reason) {
       *reason = disable_reason::DISABLE_NOT_VERIFIED;

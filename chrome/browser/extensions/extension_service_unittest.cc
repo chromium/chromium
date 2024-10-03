@@ -5167,6 +5167,60 @@ TEST_F(ExtensionServiceTest,
   EXPECT_FALSE(blocklist_prefs::IsExtensionBlocklisted(good_crx, prefs));
 }
 
+TEST_F(ExtensionServiceTest,
+       DisableAndReenableUnpackedExtensionBasedOnDeveloperMode) {
+  base::test::ScopedFeatureList feature_list(
+      extensions_features::kExtensionDisableUnsupportedDeveloper);
+  InitializeEmptyExtensionService();
+  // Turn developer mode ON.
+  util::SetDeveloperModeForProfile(profile(), true);
+
+  // Load an unpacked extension and verify enablement.
+  scoped_refptr<const Extension> unpacked_crx =
+      ChromeTestExtensionLoader(profile()).LoadExtension(
+          data_dir().AppendASCII("simple_with_file"));
+  EXPECT_EQ(ManifestLocation::kUnpacked, unpacked_crx->location());
+  EXPECT_TRUE(registry()->enabled_extensions().Contains(unpacked_crx->id()));
+  EXPECT_FALSE(registry()->disabled_extensions().Contains(unpacked_crx->id()));
+
+  // Turn developer mode OFF. Verify that the unpacked extension is disabled.
+  util::SetDeveloperModeForProfile(profile(), false);
+  EXPECT_FALSE(registry()->enabled_extensions().Contains(unpacked_crx->id()));
+  EXPECT_TRUE(registry()->disabled_extensions().Contains(unpacked_crx->id()));
+  EXPECT_EQ(
+      disable_reason::DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION,
+      ExtensionPrefs::Get(profile())->GetDisableReasons(unpacked_crx->id()));
+
+  // Turn developer mode ON. The unpacked extension should now be enabled.
+  util::SetDeveloperModeForProfile(profile(), true);
+  EXPECT_TRUE(registry()->enabled_extensions().Contains(unpacked_crx->id()));
+  EXPECT_FALSE(registry()->disabled_extensions().Contains(unpacked_crx->id()));
+}
+
+TEST_F(ExtensionServiceTest,
+       UnpackedExtensionStatusUnaffectedWhenFeatureIsOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      extensions_features::kExtensionDisableUnsupportedDeveloper);
+  InitializeEmptyExtensionService();
+  // Turn developer mode ON.
+  util::SetDeveloperModeForProfile(profile(), true);
+
+  // Load an unpacked extension and verify enablement.
+  scoped_refptr<const Extension> unpacked_crx =
+      ChromeTestExtensionLoader(profile()).LoadExtension(
+          data_dir().AppendASCII("simple_with_file"));
+  EXPECT_EQ(ManifestLocation::kUnpacked, unpacked_crx->location());
+  EXPECT_TRUE(registry()->enabled_extensions().Contains(unpacked_crx->id()));
+  EXPECT_FALSE(registry()->disabled_extensions().Contains(unpacked_crx->id()));
+
+  // Turn developer mode OFF. Verify that the unpacked extension is still
+  // enabled.
+  util::SetDeveloperModeForProfile(profile(), false);
+  EXPECT_TRUE(registry()->enabled_extensions().Contains(unpacked_crx->id()));
+  EXPECT_FALSE(registry()->disabled_extensions().Contains(unpacked_crx->id()));
+}
+
 TEST_F(ExtensionServiceTest, TerminateExtension) {
   InitializeEmptyExtensionService();
 

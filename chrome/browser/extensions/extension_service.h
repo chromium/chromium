@@ -658,6 +658,12 @@ class ExtensionService : public ExtensionServiceInterface,
       const std::string& extension_id,
       const std::optional<CrxInstallError>& error);
 
+  // Called when the Developer Mode preference is changed:
+  // - Disables unpacked extensions if developer mode is OFF.
+  // - Re-enables unpacked extensions if developer mode is ON and there are no
+  // other disable reasons associated with them.
+  void OnDeveloperModePrefChanged();
+
   raw_ptr<const base::CommandLine, DanglingUntriaged> command_line_ = nullptr;
 
   // The normal profile associated with this ExtensionService.
@@ -797,6 +803,8 @@ class ExtensionService : public ExtensionServiceInterface,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   AshExtensionKeeplistManager ash_keeplist_manager_;
 #endif
+
+  PrefChangeRegistrar pref_change_registrar_;
 
   base::WeakPtrFactory<ExtensionService> weak_ptr_factory_{this};
 

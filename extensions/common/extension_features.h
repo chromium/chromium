@@ -91,6 +91,9 @@ BASE_DECLARE_FEATURE(kCheckingNoExtensionIdInExtensionIpcs);
 // embedding Chrome App to request access to Human Interface Devices.
 BASE_DECLARE_FEATURE(kEnableWebHidInWebView);
 
+// If enabled, disables unpacked extensions if developer mode is off.
+BASE_DECLARE_FEATURE(kExtensionDisableUnsupportedDeveloper);
+
 // Determine if dynamic extension URLs are handled and redirected.
 BASE_DECLARE_FEATURE(kExtensionDynamicURLRedirection);
 

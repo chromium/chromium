@@ -172,6 +172,10 @@ class ExtensionManagement : public KeyedService {
 
   bool IsAllowedByUnpublishedAvailabilityPolicy(const Extension* extension);
 
+  // Returns false if the extension is loaded as unpacked and the developer mode
+  // is OFF.
+  bool IsAllowedByUnpackedDeveloperModePolicy(const Extension& extension);
+
   // Returns true if an off-store extension is force-installed in low trust
   // environments. Only trusted environments like domain-joined devices or
   // cloud-managed user profiles are allowed to force-install off-store

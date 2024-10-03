@@ -1454,6 +1454,21 @@ TEST_F(ExtensionManagementServiceTest, IsFileUrlNavigationAllowed) {
   EXPECT_EQ(IsFileUrlNavigationAllowed(kTargetExtension2), false);
 }
 
+TEST_F(ExtensionManagementServiceTest, IsAllowedByUnpackedDeveloperModePolicy) {
+  base::test::ScopedFeatureList feature_list(
+      extensions_features::kExtensionDisableUnsupportedDeveloper);
+  scoped_refptr<const Extension> unpacked_extension =
+      CreateOffstoreExtension(kNonExistingExtension);
+
+  SetPref(false, prefs::kExtensionsUIDeveloperMode, base::Value(false));
+  EXPECT_FALSE(extension_management_->IsAllowedByUnpackedDeveloperModePolicy(
+      *unpacked_extension));
+
+  SetPref(false, prefs::kExtensionsUIDeveloperMode, base::Value(true));
+  EXPECT_TRUE(extension_management_->IsAllowedByUnpackedDeveloperModePolicy(
+      *unpacked_extension));
+}
+
 TEST_F(ExtensionManagementServiceTest,
        ShouldBlockForceInstalledOffstoreExtension) {
   {

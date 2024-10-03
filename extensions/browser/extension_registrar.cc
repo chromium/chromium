@@ -242,7 +242,8 @@ void ExtensionRegistrar::DisableExtension(const ExtensionId& extension_id,
         extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED |
         extensions::disable_reason::DISABLE_REINSTALL |
         extensions::disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION |
-        extensions::disable_reason::DISABLE_NOT_VERIFIED;
+        extensions::disable_reason::DISABLE_NOT_VERIFIED |
+        extensions::disable_reason::DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION;
 
 #if BUILDFLAG(IS_CHROMEOS)
     // For controlled extensions, only allow disabling not ash-keeplisted

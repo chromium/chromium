@@ -486,6 +486,12 @@ ExtensionService::ExtensionService(
   SetCurrentDeveloperMode(
       util::GetBrowserContextId(profile),
       profile->GetPrefs()->GetBoolean(prefs::kExtensionsUIDeveloperMode));
+
+  pref_change_registrar_.Init(profile_->GetPrefs());
+  pref_change_registrar_.Add(
+      prefs::kExtensionsUIDeveloperMode,
+      base::BindRepeating(&ExtensionService::OnDeveloperModePrefChanged,
+                          base::Unretained(this)));
 }
 
 PendingExtensionManager* ExtensionService::pending_extension_manager() {
@@ -518,6 +524,7 @@ void ExtensionService::Shutdown() {
   external_install_manager_->Shutdown();
   corrupted_extension_reinstaller_.Shutdown();
   extension_registrar_.Shutdown();
+  pref_change_registrar_.Reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
@@ -1308,6 +1315,14 @@ void ExtensionService::CheckManagementPolicy() {
     } else {
       disable_reasons |=
           disable_reason::DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY;
+    }
+
+    if (management->IsAllowedByUnpackedDeveloperModePolicy(*extension)) {
+      disable_reasons &=
+          ~disable_reason::DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION;
+    } else {
+      disable_reasons |=
+          disable_reason::DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION;
     }
 
     // Check if the `DISABLE_NOT_VERIFIED` reason is still applicable. This
@@ -2462,6 +2477,10 @@ void ExtensionService::UninstallMigratedExtensions() {
           extension->id(), extension->location());
     }
   }
+}
+
+void ExtensionService::OnDeveloperModePrefChanged() {
+  CheckManagementPolicy();
 }
 
 }  // namespace extensions

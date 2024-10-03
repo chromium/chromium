@@ -55,8 +55,11 @@ enum DisableReason {
   DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY = 1 << 22,
   // Disabled because the extension uses an unsupported manifest version.
   DISABLE_UNSUPPORTED_MANIFEST_VERSION = 1 << 23,
+  // Disabled because the extension is a "developer extension" (for example, an
+  // unpacked extension) while the developer mode is OFF.
+  DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION = 1 << 24,
   // This should always be the last value.
-  DISABLE_REASON_LAST = 1LL << 24,
+  DISABLE_REASON_LAST = 1LL << 25,
 };
 
 static_assert(DISABLE_REASON_LAST - 1 <= std::numeric_limits<int>::max(),

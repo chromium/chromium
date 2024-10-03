@@ -399,6 +399,24 @@ bool ExtensionManagement::IsAllowedByUnpublishedAvailabilityPolicy(
   return true;
 }
 
+bool ExtensionManagement::IsAllowedByUnpackedDeveloperModePolicy(
+    const Extension& extension) {
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kExtensionDisableUnsupportedDeveloper)) {
+    return true;
+  }
+  if (!extension.is_extension()) {
+    return true;
+  }
+  if (extension.location() != mojom::ManifestLocation::kUnpacked) {
+    return true;
+  }
+
+  bool in_developer_mode =
+      profile_->GetPrefs()->GetBoolean(prefs::kExtensionsUIDeveloperMode);
+  return in_developer_mode;
+}
+
 bool ExtensionManagement::ShouldBlockForceInstalledOffstoreExtension(
     const Extension& extension) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

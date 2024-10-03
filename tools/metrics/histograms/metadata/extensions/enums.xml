@@ -146,6 +146,8 @@ chromium-metrics-reviews@google.com.
   <int value="1048576" label="DISABLE_NOT_ALLOWLISTED"/>
   <int value="2097152" label="DISABLE_NOT_ASH_KEEPLISTED"/>
   <int value="4194304" label="DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY"/>
+  <int value="8388608" label="DISABLE_UNSUPPORTED_MANIFEST_VERSION"/>
+  <int value="16777216" label="DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION"/>
 </enum>
 
 <enum name="ExtensionEvents">

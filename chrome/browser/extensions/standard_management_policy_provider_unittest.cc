@@ -12,6 +12,7 @@
 #include "chrome/browser/extensions/blocklist.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_management_internal.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
@@ -20,6 +21,7 @@
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
@@ -131,6 +133,17 @@ TEST_F(StandardManagementPolicyProviderTest,
   EXPECT_NE(std::u16string(), error16);
   EXPECT_TRUE(provider_.MustRemainEnabled(extension.get(), &error16));
   EXPECT_NE(std::u16string(), error16);
+}
+
+TEST_F(StandardManagementPolicyProviderTest, UnsupportedDeveloperExtension) {
+  base::test::ScopedFeatureList feature_list(
+      extensions_features::kExtensionDisableUnsupportedDeveloper);
+  // Disable developer mode.
+  util::SetDeveloperModeForProfile(&profile_, false);
+  auto extension = CreateExtension(ManifestLocation::kUnpacked);
+
+  std::u16string error16;
+  EXPECT_TRUE(provider_.MustRemainDisabled(extension.get(), nullptr, &error16));
 }
 
 // Tests the behavior of the ManagementPolicy provider methods for a component
