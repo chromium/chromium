@@ -1083,6 +1083,44 @@ TEST_F(FindBufferTest, FindRuby) {
     const auto results = buffer.FindMatches(u"お見舞い", FindOptions());
     EXPECT_EQ(1u, results.CountForTesting());
   }
+  {
+    FindBuffer buffer(WholeDocumentRange(), RubySupport::kEnabledIfNecessary);
+    EXPECT_EQ(0u, CaseInsensitiveMatchCount(buffer, u"お見まい"));
+  }
+}
+
+TEST_F(FindBufferTest, FindRubyNested) {
+  SetBodyContent(
+      "<p>の<ruby><ruby>超電磁砲<rt>レールガン</ruby><rt>railgun</ruby></p>");
+  {
+    FindBuffer buffer(WholeDocumentRange(), RubySupport::kEnabledIfNecessary);
+    EXPECT_EQ(1u, CaseInsensitiveMatchCount(buffer, u"の超"));
+  }
+  {
+    FindBuffer buffer(WholeDocumentRange(), RubySupport::kEnabledIfNecessary);
+    EXPECT_EQ(1u, CaseInsensitiveMatchCount(buffer, u"のれーる"));
+  }
+  {
+    FindBuffer buffer(WholeDocumentRange(), RubySupport::kEnabledIfNecessary);
+    EXPECT_EQ(1u, CaseInsensitiveMatchCount(buffer, u"のRAIL"));
+  }
+}
+
+TEST_F(FindBufferTest, FindRubyOnAnnotation) {
+  SetBodyContent(
+      "<p>の<ruby>超電磁砲<rt>レール<ruby>ガン<rt>gun</ruby></ruby></p>");
+  {
+    FindBuffer buffer(WholeDocumentRange(), RubySupport::kEnabledIfNecessary);
+    EXPECT_EQ(1u, CaseInsensitiveMatchCount(buffer, u"の超電磁砲"));
+  }
+  {
+    FindBuffer buffer(WholeDocumentRange(), RubySupport::kEnabledIfNecessary);
+    EXPECT_EQ(1u, CaseInsensitiveMatchCount(buffer, u"のれーるガン"));
+  }
+  {
+    FindBuffer buffer(WholeDocumentRange(), RubySupport::kEnabledIfNecessary);
+    EXPECT_EQ(1u, CaseInsensitiveMatchCount(buffer, u"のレールgun"));
+  }
 }
 
 }  // namespace blink
