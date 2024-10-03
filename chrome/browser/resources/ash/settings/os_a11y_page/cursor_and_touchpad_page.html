@@ -192,14 +192,22 @@
 </template>
 <template is="dom-if" if="[[isAccessibilityDisableTrackpadEnabled_]]">
   <div class="settings-box start-padding">
-      <div class="start settings-box-text" id="disableInternalTrackpadLabel">
-      $i18n{disableTrackpadLabel}
+    <div class="flex start settings-box-text">
+      <div id="disableInternalTrackpadLabel">
+          $i18n{disableTrackpadLabel}
+      </div>
+      <template is="dom-if" if="[[showTrackpadEnableMessage_(prefs.settings.a11y.disable_trackpad_mode.value)]]">
+        <div class="cr-secondary-text sub-label" id="reEnableTrackpadLabel" >
+           <span class="sub-label-text">$i18n{reEnableTrackpadLabel}</span>
+        </div>
+      </template>
     </div>
     <settings-dropdown-menu id="disableInternalTrackpadDropdown"
-        aria-labeledby="disableInternalTrackpadLabel"
-        pref="{{prefs.settings.a11y.disable_trackpad_mode}}"
-        menu-options="[[disableTrackpadOptions_]]"
-        deep-link-focus-id$="[[Setting.kAccessibilityDisableTrackpad]]">
+          aria-labeledby="disableInternalTrackpadLabel"
+          pref="{{prefs.settings.a11y.disable_trackpad_mode}}"
+          menu-options="[[disableTrackpadOptions_]]"
+          deep-link-focus-id$="[[Setting.kAccessibilityDisableTrackpad]]"
+          >
     </settings-dropdown-menu>
   </div>
 </template>

@@ -767,9 +767,12 @@ suite('<settings-cursor-and-touchpad-page>', () => {
               new CustomEvent('change'));
           const disableInternalTrackpadModePref =
               page.getPref('settings.a11y.disable_trackpad_mode');
+
           assertEquals(
               INTERNAL_TRACKPAD_ALWAYS_DISABLED,
               disableInternalTrackpadModePref.value);
+          assertTrue(isVisible(
+              page.shadowRoot!.querySelector('#reEnableTrackpadLabel')));
         });
 
     test(
@@ -790,6 +793,8 @@ suite('<settings-cursor-and-touchpad-page>', () => {
           assertEquals(
               INTERNAL_TRACKPAD_MOUSE_CONNECTED_DISABLED,
               disableInternalTrackpadModePref.value);
+          assertTrue(isVisible(
+              page.shadowRoot!.querySelector('#reEnableTrackpadLabel')));
         });
 
     test(
@@ -810,6 +815,10 @@ suite('<settings-cursor-and-touchpad-page>', () => {
           assertEquals(
               INTERNAL_TRACKPAD_NEVER_DISABLED,
               disableInternalTrackpadModePref.value);
+          assertFalse(isVisible(
+              page.shadowRoot!.querySelector('#reEnableTrackpadLabel')));
+          assertTrue(isVisible(
+              page.shadowRoot!.querySelector('#disableTrackpadLabel')));
         });
   } else {
     test('disable internal trackpad feature disabled', async () => {

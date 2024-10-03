@@ -38,7 +38,7 @@ import {getTemplate} from './cursor_and_touchpad_page.html.js';
 import {CursorAndTouchpadPageBrowserProxy, CursorAndTouchpadPageBrowserProxyImpl} from './cursor_and_touchpad_page_browser_proxy.js';
 
 const DEFAULT_BLACK_CURSOR_COLOR = 0;
-
+const INTERNAL_TRACKPAD_NEVER_DISABLED = 0;
 interface Option {
   name: string;
   value: number;
@@ -613,6 +613,10 @@ export class SettingsCursorAndTouchpadPageElement extends
         DEFAULT_BLACK_CURSOR_COLOR;
     this.set(
         'prefs.settings.a11y.cursor_color_enabled.value', a11yCursorColorOn);
+  }
+
+  private showTrackpadEnableMessage_(trackpadMode: number): boolean {
+    return trackpadMode !== INTERNAL_TRACKPAD_NEVER_DISABLED;
   }
 }
 
