@@ -316,7 +316,7 @@ public class CustomTabObserver extends EmptyTabObserver {
         }
     }
 
-    public void recordLargestContentfulPaint(long lcpUptimeMillis) {
+    private void recordLargestContentfulPaint(long lcpUptimeMillis) {
         if (mCustomTabsConnection == null) return;
         String histogram = null;
         long duration = 0;

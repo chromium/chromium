@@ -32,9 +32,13 @@ public class PageLoadMetricsObserver implements PageLoadMetrics.Observer {
     @Override
     public void onNewNavigation(
             WebContents webContents, long navigationId, boolean isFirstNavigationInWebContents) {
-        if (isFirstNavigationInWebContents && webContents == mTab.getWebContents()) {
+        if (webContents != mTab.getWebContents()) return;
+        if (isFirstNavigationInWebContents) {
             assert mNavigationId == null;
             mNavigationId = navigationId;
+        } else if (mNavigationId == null) {
+            // Missed the first navigation and a new one started, so skip metrics reporting.
+            mNavigationId = -1L;
         }
     }
 
@@ -153,6 +157,10 @@ public class PageLoadMetricsObserver implements PageLoadMetrics.Observer {
     }
 
     private boolean shouldNotifyPageLoadMetrics(WebContents webContents, long navigationId) {
+        // In pre-warm cases this observer is added late and will have missed the start of the
+        // navigation, so if |mNavigationId| is still uninitialized we can be pretty confident this
+        // is still just the first navigation.
+        if (mNavigationId == null) onNewNavigation(webContents, navigationId, true);
         return webContents == mTab.getWebContents()
                 && null != mNavigationId
                 && navigationId == mNavigationId;
