@@ -2608,6 +2608,10 @@ crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-rgb.html [ Cr
 crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-computed.html [ Crash Pass ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac11 ] external/wpt/compute-pressure/compute_pressure_rate_obfuscation_mitigation_triggered.https.window.html?globalScope=window [ Skip Timeout ]
+[ Mac14 ] external/wpt/webcodecs/video-encoder-flush.https.any.html?vp8 [ Timeout ]
+[ Mac14 ] external/wpt/webcodecs/video-encoder-h264.https.any.html?baseline [ Timeout ]
+[ Mac14 ] external/wpt/webcodecs/videoFrame-createImageBitmap.https.any.html [ Timeout ]
 crbug.com/370689422 [ Mac13 ] external/wpt/compute-pressure/compute_pressure_rate_obfuscation_mitigation_triggered.https.window.html?globalScope=window [ Skip Timeout ]
 crbug.com/370191721 external/wpt/css/css-scoping/has-slotted-003.tentative.html [ Failure ]
 crbug.com/370191721 external/wpt/css/css-scoping/has-slotted-flattened-003.tentative.html [ Failure ]
@@ -2641,6 +2645,7 @@ crbug.com/369668292 [ Mac14 ] virtual/threaded/external/wpt/css/css-view-transit
 crbug.com/369236541 external/wpt/css/css-text-decor/text-underline-position-auto-001.html [ Failure ]
 crbug.com/369236542 [ Mac13-arm64 ] virtual/fsa-incognito/external/wpt/fs/FileSystemDirectoryHandle-getDirectoryHandle.https.any.worker.html [ Timeout ]
 crbug.com/369270133 [ Mac12 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/animating-new-content-subset.html [ Failure ]
+crbug.com/369270133 [ Mac13 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/animating-new-content-subset.html [ Failure ]
 crbug.com/369270133 [ Mac14 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/animating-new-content-subset.html [ Failure ]
 crbug.com/369270133 [ Mac15 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/animating-new-content-subset.html [ Failure ]
 crbug.com/368657256 external/wpt/css/css-text-decor/text-emphasis-position-auto-001.html [ Failure ]
@@ -3295,6 +3300,7 @@ crbug.com/331556923 external/wpt/geolocation-API/enabled-by-permissions-policy.h
 crbug.com/331556923 external/wpt/geolocation-API/enabled-on-self-origin-by-permissions-policy.https.sub.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/webxr/ar-module/xrSession_interactionMode.https.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/webxr/dom-overlay/ar_dom_overlay.https.html [ Timeout ]
+crbug.com/626703 [ Mac13 ] external/wpt/webxr/dom-overlay/ar_dom_overlay.https.html [ Timeout ]
 crbug.com/626703 [ Mac14 ] external/wpt/webxr/dom-overlay/ar_dom_overlay.https.html [ Timeout ]
 crbug.com/626703 [ Mac15 ] external/wpt/webxr/dom-overlay/ar_dom_overlay.https.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/webxr/render_state_update.https.html [ Timeout ]
