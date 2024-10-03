@@ -13,6 +13,7 @@ import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polym
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {I18nMixin, loadTimeData} from '../../../i18n_setup.js';
+import {recordOccurence as recordOccurrence} from '../../../metrics_utils.js';
 import {ScoredURLUserAction} from '../../../most_relevant_tab_resumption.mojom-webui.js';
 import type {URLVisit} from '../../../url_visit_types.mojom-webui.js';
 import {FormFactor, VisitSource} from '../../../url_visit_types.mojom-webui.js';
@@ -131,6 +132,11 @@ private shouldShowDeviceIcon_:
                                    .handler.restoreModule(this.urlVisits),
       },
     }));
+  }
+
+  private onSeeMoreButtonClick_() {
+    this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
+    recordOccurrence('NewTabPage.TabResumption.SeeMoreClick');
   }
 
   private onDismissButtonClick_(e: DomRepeatEvent<URLVisit>) {

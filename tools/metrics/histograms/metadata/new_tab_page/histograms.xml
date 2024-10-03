@@ -1476,6 +1476,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.TabResumption.SeeMoreClick" units="count"
+    expires_after="2025-03-09">
+  <owner>mfacey@google.com</owner>
+  <owner>romanarora@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records the clicks on the See More button in the Tab Resumption module. Only
+    logged on the 1P NTP and when the Tab Resumption module is enabled.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.TabResumption.TabCount" units="count"
     expires_after="2025-01-12">
   <owner>mfacey@google.com</owner>
