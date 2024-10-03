@@ -49,6 +49,11 @@ bool ServiceWorkerRouterCondition::operator==(
   return get() == other.get();
 }
 
+bool ServiceWorkerRouterRaceSource::operator==(
+    const ServiceWorkerRouterRaceSource& other) const {
+  return target == other.target;
+}
+
 bool ServiceWorkerRouterCacheSource::operator==(
     const ServiceWorkerRouterCacheSource& other) const {
   return cache_name == other.cache_name;
