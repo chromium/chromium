@@ -49,8 +49,9 @@
       return modifier;
     }
 
+  // TODO: (crbug/371019414) Remove redundant <a href> for links below.
   // Sets href for links programmatically which replaces the <a href> below.
-   function eventListener(link, event) {
+   function onAnchorLinkClickOrContextMenu(link, event) {
       // Pass the ID as a query param, so we can show it on the destination
       // page.
       let param = '?' + link.id + '&' + getModifierString(event);
@@ -71,8 +72,8 @@
       // Middle clicks are simulated via a Ctrl+Left or Meta+Left click for
       // testing purposes, so the auxclick event is not implemented.
       for (let link of links) {
-        link.addEventListener("click", (event) => {eventListener(link, event)});
-        link.addEventListener("contextmenu", (event) => {eventListener(link, event)});
+        link.addEventListener("click", (event) => {onAnchorLinkClickOrContextMenu(link, event)});
+        link.addEventListener("contextmenu", (event) => {onAnchorLinkClickOrContextMenu(link, event)});
       }
       var buttons = document.querySelectorAll('.btnA, .btnB, .btnX');
       for (let button of buttons) {
