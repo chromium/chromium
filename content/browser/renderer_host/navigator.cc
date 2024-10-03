@@ -530,7 +530,39 @@ void Navigator::DidNavigate(
   // Store this information before DidNavigateFrame() potentially swaps RFHs.
   url::Origin old_frame_origin = old_frame_host->GetLastCommittedOrigin();
 
-  // Only allow paint holding for same-origin navigations.
+  // RenderFrameHostImpl::DidNavigate will update the url, and may cause the
+  // node to consider itself no longer on the initial empty document. Record
+  // whether we're leaving the initial empty document before that.
+  bool was_on_initial_empty_document =
+      frame_tree_node->is_on_initial_empty_document();
+
+  // Allow main frame paint holding in the following cases:
+  //  - We don't have an animated transition. See crbug.com/360844863.
+  //  - At least one of the following conditions is true:
+  //    - This is a navigation from the initial document. This part helps with
+  //      tests. See crbug.com/367623929.
+  //    - This is a same origin navigation (or we're not limiting cross-origin
+  //      paint holding)
+  //    - There is a user activation. This means that the user interacted with
+  //      the page. Commonly used attacks are done without user activation --
+  //      which will not enable paint holding. However, if the user interacts
+  //      with the page, we treat it as a valid case for paint holding.
+  //    - The client allows non-activated cross origin paintholding, which is
+  //      currently the case with webview.
+  //
+  // See https://issues.chromium.org/40942531 for reasons we limit paint
+  // holding.
+  ContentBrowserClient* client = GetContentClient()->browser();
+  const bool allow_main_frame_paint_holding =
+      !navigation_request->was_initiated_by_animated_transition() &&
+      (was_on_initial_empty_document ||
+       old_frame_origin.IsSameOriginWith(params.origin) ||
+       old_frame_host->HasStickyUserActivation() ||
+       client->AllowNonActivatedCrossOriginPaintHolding() ||
+       !base::FeatureList::IsEnabled(
+           features::kLimitCrossOriginNonActivatedPaintHolding));
+
+  // Only allow subframe paint holding for same origin.
   const bool allow_subframe_paint_holding =
       old_frame_origin.IsSameOriginWith(params.origin);
 
@@ -539,14 +571,15 @@ void Navigator::DidNavigate(
   // the frame we're navigating from, which might trigger those subframes to
   // run unload handlers.  Those unload handlers should still see the old
   // frame's origin.  See https://crbug.com/825283.
+  const bool allow_paint_holding = frame_tree_node->IsMainFrame()
+                                       ? allow_main_frame_paint_holding
+                                       : allow_subframe_paint_holding;
   frame_tree_node->render_manager()->DidNavigateFrame(
       render_frame_host, navigation_request->common_params().has_user_gesture,
       was_within_same_document,
       navigation_request->browsing_context_group_swap()
           .ShouldClearProxiesOnCommit(),
-      navigation_request->commit_params().frame_policy,
-      allow_subframe_paint_holding,
-      navigation_request->was_initiated_by_animated_transition());
+      navigation_request->commit_params().frame_policy, allow_paint_holding);
 
   // Reset the old frame host's weak pointer to auction initiator page when it
   // is a cross-document navigation and the frame does not go into bfcache.
@@ -619,12 +652,6 @@ void Navigator::DidNavigate(
   if (ui::PageTransitionIsMainFrame(params.transition)) {
     render_frame_host->GetPage().SetContentsMimeType(params.contents_mime_type);
   }
-
-  // RenderFrameHostImpl::DidNavigate will update the url, and may cause the
-  // node to consider itself no longer on the initial empty document. Record
-  // whether we're leaving the initial empty document before that.
-  bool was_on_initial_empty_document =
-      frame_tree_node->is_on_initial_empty_document();
 
   render_frame_host->DidNavigate(params, navigation_request.get(),
                                  was_within_same_document);

@@ -1800,4 +1800,8 @@ ContentBrowserClient::GetGlobalPerformanceScenarioRegion() {
   return base::ReadOnlySharedMemoryRegion();
 }
 
+bool ContentBrowserClient::AllowNonActivatedCrossOriginPaintHolding() {
+  return false;
+}
+
 }  // namespace content

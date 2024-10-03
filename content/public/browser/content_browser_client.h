@@ -3080,6 +3080,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   // ScopedReadOnlyScenarioMemory object with Scope::kGlobal
   // (see//third_party/blink/public/common/performance/performance_scenarios.h)
   virtual base::ReadOnlySharedMemoryRegion GetGlobalPerformanceScenarioRegion();
+
+  // Indicates whether this client allows paint holding in cross-origin
+  // navigations even if there was no user activation.
+  virtual bool AllowNonActivatedCrossOriginPaintHolding();
 };
 
 }  // namespace content
