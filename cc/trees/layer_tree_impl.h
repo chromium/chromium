@@ -1007,13 +1007,6 @@ class CC_EXPORT LayerTreeImpl {
   // Document transition requests to be transferred to Viz.
   std::vector<std::unique_ptr<ViewTransitionRequest>> view_transition_requests_;
 
-  // The cumulative time spent performing visual updates for all Surfaces before
-  // this one.
-  base::TimeDelta previous_surfaces_visual_update_duration_;
-  // The cumulative time spent performing visual updates for the current
-  // Surface.
-  base::TimeDelta visual_update_duration_;
-
   // See `CommitState::screenshot_destination_token`.
   base::UnguessableToken screenshot_destination_;
 
