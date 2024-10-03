@@ -37,6 +37,10 @@ class MockCommitDeferringCondition : public CommitDeferringCondition {
     return result_;
   }
 
+  const char* TraceEventName() const override {
+    return "MockCommitDeferringCondition";
+  }
+
   base::WeakPtr<MockCommitDeferringCondition> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }

@@ -3471,6 +3471,9 @@ class TestActivationManagerCondition : public CommitDeferringCondition {
   Result WillCommitNavigation(base::OnceClosure resume) override {
     return std::move(on_will_commit_navigation_).Run(*this, std::move(resume));
   }
+  const char* TraceEventName() const override {
+    return "TestActivationManagerCondition";
+  }
 
  private:
   WillCommitCallback on_will_commit_navigation_;

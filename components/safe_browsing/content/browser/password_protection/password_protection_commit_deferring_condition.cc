@@ -45,6 +45,10 @@ PasswordProtectionCommitDeferringCondition::WillCommitNavigation(
   return Result::kDefer;
 }
 
+const char* PasswordProtectionCommitDeferringCondition::TraceEventName() const {
+  return "PasswordProtectionCommitDeferringCondition";
+}
+
 void PasswordProtectionCommitDeferringCondition::ResumeNavigation() {
   navigation_was_resumed_ = true;
 

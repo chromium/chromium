@@ -37,6 +37,7 @@ class CONTENT_EXPORT ViewTransitionCommitDeferringCondition
   ~ViewTransitionCommitDeferringCondition() override;
 
   Result WillCommitNavigation(base::OnceClosure resume) override;
+  const char* TraceEventName() const override;
 
  private:
   explicit ViewTransitionCommitDeferringCondition(

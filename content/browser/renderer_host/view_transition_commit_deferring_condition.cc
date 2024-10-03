@@ -180,6 +180,10 @@ ViewTransitionCommitDeferringCondition::WillCommitNavigation(
   return Result::kDefer;
 }
 
+const char* ViewTransitionCommitDeferringCondition::TraceEventName() const {
+  return "ViewTransitionCommitDeferringCondition";
+}
+
 void ViewTransitionCommitDeferringCondition::OnSnapshotTimeout() {
   if (resume_navigation_) {
     std::move(resume_navigation_).Run();

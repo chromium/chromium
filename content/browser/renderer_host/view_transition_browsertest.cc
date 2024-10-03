@@ -42,6 +42,8 @@ class ViewTransitionBrowserTest : public ContentBrowserTest {
       return Result::kDefer;
     }
 
+    const char* TraceEventName() const override { return "TestCondition"; }
+
    private:
     raw_ptr<base::RunLoop> run_loop_;
   };

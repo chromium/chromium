@@ -179,6 +179,11 @@ PrerenderNoVarySearchHintCommitDeferringCondition::WillCommitNavigation(
   return Result::kDefer;
 }
 
+const char*
+PrerenderNoVarySearchHintCommitDeferringCondition::TraceEventName() const {
+  return "PrerenderNoVarySearchHintCommitDeferringCondition";
+}
+
 void PrerenderNoVarySearchHintCommitDeferringCondition::OnHeadersReceived() {
   // Verify all conditions are met:
   // * headers should have been received and
