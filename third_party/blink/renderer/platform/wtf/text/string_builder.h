@@ -157,7 +157,7 @@ class WTF_EXPORT StringBuilder {
   template <typename IntegerType>
   void AppendNumber(IntegerType number) {
     IntegerToStringConverter<IntegerType> converter(number);
-    Append(converter.Characters8(), converter.length());
+    Append(converter.Span());
   }
 
   void AppendNumber(bool);

@@ -190,7 +190,7 @@ class WTF_EXPORT AtomicString {
   template <typename IntegerType>
   static AtomicString Number(IntegerType number) {
     IntegerToStringConverter<IntegerType> converter(number);
-    return AtomicString(converter.Characters8(), converter.length());
+    return AtomicString(converter.Span());
   }
 
   static AtomicString Number(double, unsigned precision = 6);

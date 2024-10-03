@@ -211,7 +211,7 @@ class WTF_EXPORT String {
   template <typename IntegerType>
   static String Number(IntegerType number) {
     IntegerToStringConverter<IntegerType> converter(number);
-    return StringImpl::Create(converter.Characters8(), converter.length());
+    return StringImpl::Create(converter.Span());
   }
 
   [[nodiscard]] static String Number(float);
