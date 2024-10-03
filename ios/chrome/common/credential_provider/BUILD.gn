@@ -25,6 +25,8 @@ source_set("credential_provider") {
     "memory_credential_store.mm",
     "multi_store_credential_store.h",
     "multi_store_credential_store.mm",
+    "passkey_model_observer_bridge.h",
+    "passkey_model_observer_bridge.mm",
     "user_defaults_credential_store.h",
     "user_defaults_credential_store.mm",
   ]
@@ -32,6 +34,7 @@ source_set("credential_provider") {
     ":ui",
     "//base",
     "//components/sync/protocol",
+    "//components/webauthn/core/browser:passkey_model",
     "//ios/chrome/common:ios_app_bundle_id_prefix_buildflags",
     "//ios/chrome/common/app_group",
   ]

@@ -24,48 +24,9 @@
 #import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/constants.h"
+#import "ios/chrome/common/credential_provider/passkey_model_observer_bridge.h"
 
-namespace {
-
-// This class observes a passkey model which is not ready yet with the sole
-// purpose of re-triggering the passkey migration when the passkey model becomes
-// ready.
-class CredentialProviderMigratorPasskeyModelObserver
-    : public webauthn::PasskeyModel::Observer {
- public:
-  CredentialProviderMigratorPasskeyModelObserver(
-      CredentialProviderMigratorAppAgent* agent,
-      webauthn::PasskeyModel* passkey_model)
-      : agent_(agent), passkey_model_(passkey_model) {
-    passkey_model_->AddObserver(this);
-  }
-
-  bool isObserving(webauthn::PasskeyModel* passkey_model) const {
-    return passkey_model == passkey_model_;
-  }
-
- private:
-  // webauthn::PasskeyModel::Observer:
-  void OnPasskeysChanged(
-      const std::vector<webauthn::PasskeyModelChange>& changes) override {}
-  void OnPasskeyModelShuttingDown() override {}
-  void OnPasskeyModelIsReady(bool is_ready) override {
-    // When the initial credential migration was attempted, the passkey model
-    // wasn't ready. Now that it is ready, call that function again so that the
-    // passkeys get properly migrated.
-    [agent_ credentialMigrationForPasskeyModel:passkey_model_];
-  }
-
-  // The agent which can trigger the passkey migration.
-  __weak CredentialProviderMigratorAppAgent* agent_;
-
-  // The passkey model being observed.
-  raw_ptr<webauthn::PasskeyModel> passkey_model_;
-};
-
-}  // namespace
-
-@interface CredentialProviderMigratorAppAgent ()
+@interface CredentialProviderMigratorAppAgent () <PasskeyModelObserverDelegate>
 
 // Keep track of the migration status of each browser state.
 @property(nonatomic, strong) NSMutableSet<NSString*>* migratingTracker;
@@ -73,13 +34,19 @@ class CredentialProviderMigratorPasskeyModelObserver
 @end
 
 @implementation CredentialProviderMigratorAppAgent {
-  std::vector<std::unique_ptr<CredentialProviderMigratorPasskeyModelObserver>>
+  std::vector<std::unique_ptr<PasskeyModelObserverBridge>>
       _passkeyModelObservers;
 }
 
 // Migrate the password when Chrome comes to foreground.
 - (void)appDidEnterForeground {
   [self credentialMigrationForPasskeyModel:nullptr];
+}
+
+#pragma mark - PasskeyModelObserverDelegate
+
+- (void)passkeyModelIsReady:(webauthn::PasskeyModel*)passkeyModel {
+  [self credentialMigrationForPasskeyModel:passkeyModel];
 }
 
 #pragma mark - Private
@@ -161,7 +128,7 @@ class CredentialProviderMigratorPasskeyModelObserver
 // Returns whether we already own an observer for the provided passkey model.
 - (BOOL)isObservingPasskeyModel:(webauthn::PasskeyModel*)passkeyModel {
   for (const auto& passkeyModelObserver : _passkeyModelObservers) {
-    if (passkeyModelObserver->isObserving(passkeyModel)) {
+    if (passkeyModelObserver->IsObserving(passkeyModel)) {
       return YES;
     }
   }
@@ -170,16 +137,15 @@ class CredentialProviderMigratorPasskeyModelObserver
 
 // Adds an observer for the provided passkey model.
 - (void)addObserverForPasskeyModel:(webauthn::PasskeyModel*)passkeyModel {
-  _passkeyModelObservers.push_back(
-      std::make_unique<CredentialProviderMigratorPasskeyModelObserver>(
-          self, passkeyModel));
+  _passkeyModelObservers.emplace_back(
+      std::make_unique<PasskeyModelObserverBridge>(self, passkeyModel));
 }
 
 // Removes an observer for the provided passkey model.
 - (void)removeObserverForPasskeyModel:(webauthn::PasskeyModel*)passkeyModel {
   auto itEnd = _passkeyModelObservers.end();
   for (auto it = _passkeyModelObservers.begin(); it != itEnd; ++it) {
-    if ((*it)->isObserving(passkeyModel)) {
+    if ((*it)->IsObserving(passkeyModel)) {
       // Remove the observer both from the passkey model and from this object.
       passkeyModel->RemoveObserver(it->get());
       _passkeyModelObservers.erase(it);
