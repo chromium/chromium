@@ -37,4 +37,8 @@ void DisableUnloadTimerForTesting(RenderFrameHost* rfh) {
   static_cast<RenderFrameHostImpl*>(rfh)->DisableUnloadTimerForTesting();
 }
 
+void WebAuthnAssertionRequestSucceeded(RenderFrameHost* rfh) {
+  static_cast<RenderFrameHostImpl*>(rfh)->WebAuthnAssertionRequestSucceeded();
+}
+
 }  // namespace content

@@ -10,6 +10,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/dips/dips_utils.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/origin.h"
@@ -38,13 +40,17 @@ class OpenerHeuristicTabHelper
     ~PopupObserver() override;
 
     // Set the time that the user previously interacted with this pop-up's site.
-    void SetPastInteractionTime(TimestampRange interaction_times);
+    void SetPastInteractionTime(TimestampRange interaction_times,
+                                TimestampRange web_authn_assertion_times);
 
    private:
     // Emit the OpenerHeuristic.PopupPastInteraction UKM event if we have all
     // the necessary information, and create a storage access grant if
     // supported.
     void EmitPastInteractionIfReady();
+
+    // Type of interaction in third party sites
+    enum class InteractionType { UserActivation, Authentication };
 
     // Does three things:
 
@@ -58,6 +64,7 @@ class OpenerHeuristicTabHelper
     void EmitTopLevelAndCreateGrant(const GURL& tracker_url,
                                     OptionalBool has_iframe,
                                     bool is_current_interaction,
+                                    InteractionType interaction_type,
                                     bool should_record_popup_and_maybe_grant,
                                     base::TimeDelta grant_duration);
 
@@ -72,6 +79,11 @@ class OpenerHeuristicTabHelper
         content::NavigationHandle* navigation_handle) override;
     void FrameReceivedUserActivation(
         content::RenderFrameHost* render_frame_host) override;
+    void WebAuthnAssertionRequestSucceeded(
+        content::RenderFrameHost* render_frame_host) override;
+    void RecordInteractionAndCreateGrant(
+        content::RenderFrameHost* render_frame_host,
+        InteractionType interaction_type);
 
     const int32_t popup_id_;
     // The URL originally passed to window.open().

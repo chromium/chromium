@@ -14,9 +14,11 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/chrome_content_browser_client.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/dips/dips_bounce_detector.h"
 #include "chrome/browser/dips/dips_service_impl.h"
 #include "chrome/browser/dips/dips_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_metrics.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_service.h"
@@ -83,7 +85,8 @@ void OpenerHeuristicTabHelper::InitPopup(
 }
 
 void OpenerHeuristicTabHelper::GotPopupDipsState(const DIPSState& state) {
-  popup_observer_->SetPastInteractionTime(state.user_interaction_times());
+  popup_observer_->SetPastInteractionTime(state.user_interaction_times(),
+                                          state.web_authn_assertion_times());
 }
 
 void OpenerHeuristicTabHelper::PrimaryPageChanged(content::Page& page) {
@@ -173,16 +176,26 @@ OpenerHeuristicTabHelper::PopupObserver::PopupObserver(
 OpenerHeuristicTabHelper::PopupObserver::~PopupObserver() = default;
 
 void OpenerHeuristicTabHelper::PopupObserver::SetPastInteractionTime(
-    TimestampRange interaction_times) {
+    TimestampRange interaction_times,
+    TimestampRange web_authn_assertion_times) {
   CHECK(absl::holds_alternative<FieldNotSet>(time_since_interaction_))
       << "SetPastInteractionTime() called more than once";
 
-  if (interaction_times.has_value()) {
+  base::Time most_recent_user_activation =
+      interaction_times ? interaction_times.value().second : base::Time::Min();
+  base::Time most_recent_authentication =
+      web_authn_assertion_times ? web_authn_assertion_times.value().second
+                                : base::Time::Min();
+  base::Time most_recent_interaction =
+      most_recent_user_activation > most_recent_authentication
+          ? most_recent_user_activation
+          : most_recent_authentication;
+
+  if (most_recent_interaction != base::Time::Min()) {
     // Technically we should use the time when the pop-up first opened. But
     // since we only report this metric at hourly granularity, it shouldn't
     // matter.
-    time_since_interaction_ =
-        GetClock()->Now() - interaction_times.value().second;
+    time_since_interaction_ = GetClock()->Now() - most_recent_interaction;
   } else {
     time_since_interaction_ = NoInteraction();
   }
@@ -219,6 +232,7 @@ void OpenerHeuristicTabHelper::PopupObserver::EmitPastInteractionIfReady() {
 
   EmitTopLevelAndCreateGrant(
       initial_url_, has_iframe, /*is_current_interaction=*/false,
+      /*interaction_type=*/InteractionType::UserActivation,
       /*should_record_popup_and_maybe_grant=*/
       absl::holds_alternative<base::TimeDelta>(time_since_interaction_),
       /*grant_duration=*/
@@ -261,6 +275,19 @@ void OpenerHeuristicTabHelper::PopupObserver::DidFinishNavigation(
 
 void OpenerHeuristicTabHelper::PopupObserver::FrameReceivedUserActivation(
     RenderFrameHost* render_frame_host) {
+  RecordInteractionAndCreateGrant(render_frame_host,
+                                  InteractionType::UserActivation);
+}
+
+void OpenerHeuristicTabHelper::PopupObserver::WebAuthnAssertionRequestSucceeded(
+    RenderFrameHost* render_frame_host) {
+  RecordInteractionAndCreateGrant(render_frame_host,
+                                  InteractionType::Authentication);
+}
+
+void OpenerHeuristicTabHelper::PopupObserver::RecordInteractionAndCreateGrant(
+    RenderFrameHost* render_frame_host,
+    InteractionType interaction_type) {
   if (!render_frame_host->IsInPrimaryMainFrame()) {
     return;
   }
@@ -294,7 +321,7 @@ void OpenerHeuristicTabHelper::PopupObserver::FrameReceivedUserActivation(
 
   EmitTopLevelAndCreateGrant(
       interaction_url, has_iframe,
-      /*is_current_interaction=*/true,
+      /*is_current_interaction=*/true, interaction_type,
       /*should_record_popup_and_maybe_grant=*/true,
       /*grant_duration=*/
       tpcd::experiment::kTpcdWritePopupCurrentInteractionHeuristicsGrants
@@ -366,6 +393,7 @@ void OpenerHeuristicTabHelper::PopupObserver::EmitTopLevelAndCreateGrant(
     const GURL& popup_url,
     OptionalBool has_iframe,
     bool is_current_interaction,
+    InteractionType interaction_type,
     bool should_record_popup_and_maybe_grant,
     base::TimeDelta grant_duration) {
   uint64_t access_id = base::RandUint64();
@@ -378,9 +406,8 @@ void OpenerHeuristicTabHelper::PopupObserver::EmitTopLevelAndCreateGrant(
           .WithArgs(GetSiteForDIPS(opener_origin_), GetSiteForDIPS(popup_url),
                     access_id,
                     /*popup_time=*/GetClock()->Now(), is_current_interaction,
-                    /*is_authentication_interaction=*/
-                    false)
-          // TODO(b/40948689): use is_authentication_interaction in following CL
+                    /*is_authentication_interaction=*/interaction_type ==
+                        InteractionType::Authentication)
           .Then(base::BindOnce([](bool succeeded) { DCHECK(succeeded); }));
     }
 
