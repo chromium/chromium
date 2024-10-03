@@ -125,7 +125,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   private loadingResults_ = false;
   private loadingStateMinimumMs_ = LOADING_STATE_MINIMUM_MS;
   private queryResultMinAge_ = QUERY_RESULT_MINIMUM_AGE;
-  private searchResult_: SearchResult;
+  private searchResult_: SearchResult|null = null;
   private searchTimestamp_: number = 0;
   /**
    * When this is non-null, that means there's a SearchResult that's pending
@@ -142,6 +142,13 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   searchQuery: string;
   timeRangeStart?: Date;
   private searchResultChangedId_: number|null = null;
+  /**
+   * A promise of a setTimeout for the first set of search results to come back
+   * from a search. The loading state has a minimum time it needs to be on the
+   * screen before showing the first set of search results, and any subsequent
+   * search result for the same query is queued after it.
+   */
+  private searchResultPromise_: Promise<void>|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -181,6 +188,10 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   }
 
   private getAnswerOrError_(): string|undefined {
+    if (!this.searchResult_) {
+      return undefined;
+    }
+
     // TODO(b/348689167): Move strings into a grdp file.
     switch (this.searchResult_.answerStatus) {
       case AnswerStatus.kUnspecified:
@@ -269,6 +280,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   }
 
   private onRemoveFromHistoryClick_() {
+    assert(this.searchResult_);
     assert(this.actionMenuItem_);
     this.splice(
         'searchResult_.items',
@@ -305,8 +317,10 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     // immediately change when a new query is performed.
     this.numCharsForLastResultQuery_ = this.numCharsForQuery;
 
+    this.searchResultPromise_ = null;
     this.loadingResults_ = true;
     this.loadingAnswer_ = false;
+
     const query: SearchQuery = {
       query: this.searchQuery,
       timeRangeStart:
@@ -317,15 +331,26 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   }
 
   private searchResultChanged_(result: SearchResult) {
-    // Artificial delay for UX. Note, timeout is always used for consistency,
-    // and this can affect test behavior, so don't change to direct calls
-    // even if no additional delay is necessary.
-    setTimeout(
-        this.searchResultChangedImpl_.bind(this, result),
-        Math.max(
-            0,
-            this.searchTimestamp_ + this.loadingStateMinimumMs_ -
-                performance.now()));
+    if (this.searchResultPromise_) {
+      // If there is already a search result waiting to be processed, chain
+      // this result to it so that it immediately runs after the previous
+      // result was processed.
+      this.searchResultPromise_ = this.searchResultPromise_.then(
+          () => this.searchResultChangedImpl_(result));
+    } else {
+      // Artificial delay of loadingStateMinimumMs_ for UX.
+      this.searchResultPromise_ = new Promise((resolve) => {
+        setTimeout(
+            () => {
+              this.searchResultChangedImpl_(result);
+              resolve();
+            },
+            Math.max(
+                0,
+                this.searchTimestamp_ + this.loadingStateMinimumMs_ -
+                    performance.now()));
+      });
+    }
   }
 
   private searchResultChangedImpl_(result: SearchResult) {
@@ -344,10 +369,19 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   }
 
   private showAnswerSection_(): boolean {
-    // Intent has not been computed yet. Anything related to the answer should
-    // only be shown when intent computation has at least determined the query
-    // is answerable.
-    return this.searchResult_?.answerStatus !== AnswerStatus.kUnspecified;
+    if (!this.searchResult_) {
+      // If there is no search result yet, the search has just started and it
+      // is not yet known if an answer is being attempted.
+      return false;
+    } else if (this.searchResult_.query !== this.searchQuery) {
+      // The current search result and its answer is outdated.
+      return false;
+    } else {
+      // Intent has not been computed yet. Anything related to the answer should
+      // only be shown when intent computation has at least determined the query
+      // is answerable.
+      return this.searchResult_.answerStatus !== AnswerStatus.kUnspecified;
+    }
   }
 
   /**
@@ -369,7 +403,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
 
     // Record a metric if a user did not click any results.
     if (canLog && !userClickedResult) {
-      const nonEmptyResults: boolean =
+      const nonEmptyResults: boolean = !!this.searchResult_ &&
           this.searchResult_.items && this.searchResult_.items.length > 0;
       this.browserProxy_.recordSearchResultsMetrics(nonEmptyResults, false);
     }

@@ -259,7 +259,7 @@ a {
 <template is="dom-if" if="[[enableAnswers_]]">
   <div id="cardWithAnswers" class="card">
     <div class="answer-section"
-        hidden$="[[!showAnswerSection_(searchResult_.*)]]">
+        hidden$="[[!showAnswerSection_(searchQuery, searchResult_.*)]]">
       <h2 class="heading">[[i18n('historyEmbeddingsAnswerHeading')]]</h2>
       <div class="loading loading-answer" hidden$="[[!loadingAnswer_]]">
         <cr-loading-gradient>

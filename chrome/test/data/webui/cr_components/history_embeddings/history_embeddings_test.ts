@@ -170,6 +170,41 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
       }
     });
 
+    // If this test is flaky, the order of search results being processed by
+    // the component is not correct. See crbug.com/371049023.
+    test('MultipleResultsAtTheSameTime', async () => {
+      element.overrideLoadingStateMinimumMsForTesting(100);
+
+      // Perform a new search.
+      element.searchQuery = 'my new query';
+      await flushTasks();
+
+      // Two search results immediately after each other will sometimes have
+      // the same value for `performance.now()`. In these cases, the results
+      // should still be processed in the same order and not result in the
+      // loading status being the last processed result.
+      element.searchResultChangedForTesting({
+        query: 'my new query',
+        answerStatus: AnswerStatus.kLoading,
+        answer: '',
+        items: [...mockResults],
+      });
+      element.searchResultChangedForTesting({
+        query: 'my new query',
+        answerStatus: AnswerStatus.kUnanswerable,
+        answer: '',
+        items: [...mockResults],
+      });
+
+      // Wait for all timeouts to flush.
+      await new Promise(resolve => setTimeout(resolve, 100));
+      await flushTasks();
+
+      const loadingAnswersEl =
+          element.shadowRoot!.querySelector('.loading-answer');
+      assertFalse(isVisible(loadingAnswersEl));
+    });
+
     test('FiresClick', async () => {
       const resultsElements = getResultElements();
       const resultClickEventPromise = eventToPromise('result-click', element);
@@ -430,6 +465,12 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
       assertTrue(
           isVisible(answerSectionElement),
           'Answer should be visible to show answer.');
+
+      element.searchQuery = 'new query';
+      await flushTasks();
+      assertFalse(
+          isVisible(answerSectionElement),
+          'A new query should hide the previous answer.');
     });
 
     test('ShowsAnswer', async () => {
