@@ -6841,6 +6841,15 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_LOCK_SCREEN" desc="Title for the button that the user can tap to lock the device screen. This is the only way to exit a biometric lockout status.">
         Lock screen
       </message>
+      <message name="IDS_DEFAULT_BROWSER_PROMO_MESSAGE_TITLE" desc="Title that displayed in a prompt message that encourage user to set Chrome as the default browser.">
+        Make Chrome your default
+      </message>
+      <message name="IDS_DEFAULT_BROWSER_PROMO_MESSAGE_DESCRIPTION" desc="Text description that displayed in a prompt message that encourage user to set Chrome as the default browser.">
+        Quickly open links in messages and more
+      </message>
+      <message name="IDS_DEFAULT_BROWSER_PROMO_MESSAGE_SETTINGS_BUTTON" desc="Text that displayed on button that allows the user to open Android settings to set a default browser.">
+        Settings
+      </message>
     </messages>
   </release>
 </grit>

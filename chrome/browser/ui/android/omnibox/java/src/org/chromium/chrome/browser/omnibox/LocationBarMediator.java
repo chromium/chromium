@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeUtils;
+import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -1651,5 +1652,11 @@ class LocationBarMediator
      */
     public void updateUrlActionContainerEndMargin(boolean useDefaultUrlActionContainerEndMargin) {
         mLocationBarLayout.updateUrlActionContainerEndMargin(useDefaultUrlActionContainerEndMargin);
+    }
+
+    public void maybeShowDefaultBrowserPromo() {
+        DefaultBrowserPromoUtils.getInstance()
+                .maybeShowDefaultBrowserPromoMessages(
+                        mContext, mWindowAndroid, mProfileSupplier.get());
     }
 }

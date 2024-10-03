@@ -11,10 +11,16 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.messages.MessageDispatcher;
+import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.annotation.Retention;
@@ -91,6 +97,38 @@ public class DefaultBrowserPromoUtils {
                         activity, windowAndroid, mImpressionCounter, mStateProvider);
         manager.promoByRoleManager();
         return true;
+    }
+
+    /**
+     * Show the default browser promo message if conditions are met.
+     *
+     * @param context The context.
+     * @param windowAndroid The {@link WindowAndroid} for message to dispatch.
+     * @param profile A {@link Profile} for checking incognito and getting the {@link Tracker} to
+     *     tack promo impressions.
+     */
+    public void maybeShowDefaultBrowserPromoMessages(
+            Context context, WindowAndroid windowAndroid, Profile profile) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)) {
+            return;
+        }
+
+        if (profile == null || profile.isOffTheRecord()) {
+            return;
+        }
+
+        MessageDispatcher dispatcher = MessageDispatcherProvider.from(windowAndroid);
+        if (dispatcher == null) {
+            return;
+        }
+
+        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
+        if (shouldShowNonRoleManagerPromo(context)
+                && tracker.shouldTriggerHelpUI(FeatureConstants.DEFAULT_BROWSER_PROMO_MESSAGES)) {
+            DefaultBrowserPromoMessageController messageController =
+                    new DefaultBrowserPromoMessageController(context, tracker);
+            messageController.promo(dispatcher);
+        }
     }
 
     /**

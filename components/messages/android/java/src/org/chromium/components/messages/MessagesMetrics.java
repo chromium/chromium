@@ -403,6 +403,8 @@ public class MessagesMetrics {
                 return "PromptHatsQuickDelete";
             case MessageIdentifier.PROMPT_HATS_SAFETY_HUB:
                 return "PromptHatsSafetyHub";
+            case MessageIdentifier.DEFAULT_BROWSER_PROMO:
+                return "DefaultBrowserPromo";
             default:
                 return "Unknown";
         }

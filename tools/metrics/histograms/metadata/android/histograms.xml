@@ -132,6 +132,8 @@ chromium-metrics-reviews@google.com.
   <variant name="NewInstance" summary="a new instance"/>
 </variants>
 
+<!-- LINT.IfChange(MessageIdentifier) -->
+
 <variants name="MessageIdentifiers">
   <variant name=".AboutThisSite"/>
   <variant name=".AddToHomescreenIPH"/>
@@ -140,6 +142,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".AutoDarkWebContents"/>
   <variant name=".ChromeSurvey"/>
   <variant name=".CvcSave"/>
+  <variant name=".DefaultBrowserPromo"/>
   <variant name=".DesktopSiteGlobalDefaultOptOut"/>
   <variant name=".DesktopSiteGlobalOptIn"/>
   <variant name=".DesktopSiteWindowSetting"/>
@@ -181,6 +184,8 @@ chromium-metrics-reviews@google.com.
   <variant name=".VirtualCardEnrollFailure"/>
   <variant name=".VrServicesUpgrade"/>
 </variants>
+
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:MessageIdentifier) -->
 
 <variants name="ScrollScenarios">
   <variant name="FeedScrolling" summary="feed scroll."/>

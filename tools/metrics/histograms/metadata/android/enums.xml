@@ -1059,6 +1059,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Android Media Picker indirectly (ACTION_GET_CONTENT)"/>
 </enum>
 
+<!-- LINT.IfChange(MessageIdentifier) -->
+
 <enum name="MessageIdentifier">
   <int value="0" label="InvalidMessage"/>
   <int value="1" label="SavePassword"/>
@@ -1111,7 +1113,10 @@ chromium-metrics-reviews@google.com.
   <int value="50" label="VirtualCardEnrollFailure"/>
   <int value="51" label="PromptHatsQuickDelete"/>
   <int value="52" label="PromptHatsSafetyHub"/>
+  <int value="53" label="DefaultBrowserPromo"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/messages/android/message_enums.h:MessageIdentifier) -->
 
 <enum name="MinimizeAppAndCloseTabType">
   <int value="0" label="App is minimized but current tab is not closed"/>

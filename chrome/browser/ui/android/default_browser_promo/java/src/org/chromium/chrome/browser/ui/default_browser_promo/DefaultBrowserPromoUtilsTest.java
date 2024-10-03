@@ -6,39 +6,84 @@ package org.chromium.chrome.browser.ui.default_browser_promo;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.messages.ManagedMessageDispatcher;
+import org.chromium.components.messages.MessageBannerProperties;
+import org.chromium.components.messages.MessageIdentifier;
+import org.chromium.components.messages.MessagesFactory;
+import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit test for {@link DefaultBrowserPromoUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.Q)
 public class DefaultBrowserPromoUtilsTest {
-    @Mock DefaultBrowserPromoImpressionCounter mCounter;
-    @Mock DefaultBrowserStateProvider mProvider;
+    @Mock private DefaultBrowserPromoImpressionCounter mCounter;
+    @Mock private DefaultBrowserStateProvider mProvider;
+    @Mock private Tracker mMockTracker;
+    @Mock private Profile mProfile;
+    @Mock private ManagedMessageDispatcher mMockMessageDispatcher;
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    private Activity mActivity;
+    private WindowAndroid mWindowAndroid;
 
     DefaultBrowserPromoUtils mUtils;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        mActivity = Robolectric.buildActivity(Activity.class).get();
+        mWindowAndroid =
+                new ActivityWindowAndroid(
+                        mActivity, false, IntentRequestTracker.createFromActivity(mActivity));
+        TrackerFactory.setTrackerForTests(mMockTracker);
+        MessagesFactory.attachMessageDispatcher(mWindowAndroid, mMockMessageDispatcher);
+
         mUtils = new DefaultBrowserPromoUtils(mCounter, mProvider);
         setDepsMockWithDefaultValues();
+    }
+
+    @After
+    public void tearDown() {
+        MessagesFactory.detachMessageDispatcher(mMockMessageDispatcher);
+        TrackerFactory.setTrackerForTests(null);
+        mActivity.finish();
+        mWindowAndroid.destroy();
     }
 
     @Test
@@ -163,6 +208,82 @@ public class DefaultBrowserPromoUtilsTest {
         Assert.assertFalse(mUtils.shouldShowNonRoleManagerPromo(null));
     }
 
+    @Test
+    @DisableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)
+    public void testNoMessagePromo_featureDisabled() {
+        mUtils.maybeShowDefaultBrowserPromoMessages(mActivity, mWindowAndroid, mProfile);
+        verify(mMockMessageDispatcher, never()).enqueueWindowScopedMessage(any(), anyBoolean());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)
+    public void testNoMessagePromo_offTheRecordProfile() {
+        // No Profile.
+        mUtils.maybeShowDefaultBrowserPromoMessages(mActivity, mWindowAndroid, null);
+        verify(mMockMessageDispatcher, never()).enqueueWindowScopedMessage(any(), anyBoolean());
+
+        // Incognito profile
+        when(mProfile.isOffTheRecord()).thenReturn(true);
+        mUtils.maybeShowDefaultBrowserPromoMessages(mActivity, mWindowAndroid, mProfile);
+        verify(mMockMessageDispatcher, never()).enqueueWindowScopedMessage(any(), anyBoolean());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)
+    public void testNoMessagePromo_shouldShowRoleManagerPromo() {
+        Assert.assertTrue(mUtils.shouldShowRoleManagerPromo(mActivity, false));
+        Assert.assertFalse(mUtils.shouldShowNonRoleManagerPromo(mActivity));
+        mUtils.maybeShowDefaultBrowserPromoMessages(mActivity, mWindowAndroid, mProfile);
+        verify(mMockMessageDispatcher, never()).enqueueWindowScopedMessage(any(), anyBoolean());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)
+    public void testNoMessagePromo_featureEngagementBlocker() {
+        when(mProvider.isRoleAvailable(any())).thenReturn(false);
+        when(mMockTracker.shouldTriggerHelpUI(any())).thenReturn(false);
+
+        Assert.assertFalse(mUtils.shouldShowRoleManagerPromo(mActivity, false));
+        Assert.assertTrue(mUtils.shouldShowNonRoleManagerPromo(mActivity));
+
+        mUtils.maybeShowDefaultBrowserPromoMessages(mActivity, mWindowAndroid, mProfile);
+
+        verify(mMockMessageDispatcher, never()).enqueueWindowScopedMessage(any(), anyBoolean());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)
+    public void testShowMessagePromo() {
+        when(mProvider.isRoleAvailable(any())).thenReturn(false);
+        when(mMockTracker.shouldTriggerHelpUI(any())).thenReturn(true);
+
+        Assert.assertFalse(mUtils.shouldShowRoleManagerPromo(mActivity, false));
+        Assert.assertTrue(mUtils.shouldShowNonRoleManagerPromo(mActivity));
+
+        mUtils.maybeShowDefaultBrowserPromoMessages(mActivity, mWindowAndroid, mProfile);
+
+        ArgumentCaptor<PropertyModel> message = ArgumentCaptor.forClass(PropertyModel.class);
+        verify(mMockMessageDispatcher).enqueueWindowScopedMessage(message.capture(), eq(false));
+        Assert.assertEquals(
+                "Message identifier should match.",
+                MessageIdentifier.DEFAULT_BROWSER_PROMO,
+                message.getValue().get(MessageBannerProperties.MESSAGE_IDENTIFIER));
+        Assert.assertEquals(
+                "Message title should match.",
+                mActivity.getResources().getString(R.string.default_browser_promo_message_title),
+                message.getValue().get(MessageBannerProperties.TITLE));
+        Assert.assertEquals(
+                "Message primary button text should match.",
+                mActivity
+                        .getResources()
+                        .getString(R.string.default_browser_promo_message_settings_button),
+                message.getValue().get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
+        Assert.assertEquals(
+                "Message icon resource ID should match.",
+                R.drawable.ic_chrome,
+                message.getValue().get(MessageBannerProperties.ICON_RESOURCE_ID));
+    }
+
     private void setDepsMockWithDefaultValues() {
         when(mCounter.shouldShowPromo(anyBoolean())).thenCallRealMethod();
         when(mCounter.getMinSessionCount()).thenReturn(3);
@@ -181,6 +302,8 @@ public class DefaultBrowserPromoUtilsTest {
         when(mProvider.getDefaultWebBrowserActivityResolveInfo())
                 .thenReturn(createResolveInfo("android", 0));
         when(mProvider.getCurrentDefaultBrowserState(any())).thenCallRealMethod();
+
+        when(mProfile.isOffTheRecord()).thenReturn(false);
     }
 
     private ResolveInfo createResolveInfo(String packageName, int match) {

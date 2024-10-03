@@ -547,6 +547,11 @@ public class LocationBarCoordinator
     }
 
     @Override
+    public void maybeShowDefaultBrowserPromo() {
+        mLocationBarMediator.maybeShowDefaultBrowserPromo();
+    }
+
+    @Override
     public void clearOmniboxFocus() {
         mLocationBarMediator.clearOmniboxFocus();
     }

@@ -1620,4 +1620,57 @@ public class AutocompleteMediatorUnitTest {
         verify(mAutocompleteController, never())
                 .start(any(), anyInt(), any(), anyInt(), anyBoolean());
     }
+
+    @Test
+    @SmallTest
+    public void testDefaultBrowserPromo_notShownWithIncorrectSuggestionType() {
+        mMediator.setAutocompleteProfile(mProfile);
+        var url = new GURL("http://test");
+
+        for (@OmniboxSuggestionType int type = 0; type < OmniboxSuggestionType.NUM_TYPES; type++) {
+            if (type != OmniboxSuggestionType.CLIPBOARD_URL) {
+                var match = AutocompleteMatchBuilder.searchWithType(type).build();
+                mMediator.onSuggestionClicked(match, 0, url);
+                verify(
+                                mAutocompleteDelegate,
+                                never().description(
+                                                "Default browser prompt should not show on"
+                                                        + " OmniboxSuggestionType#"
+                                                        + type))
+                        .maybeShowDefaultBrowserPromo();
+            }
+        }
+    }
+
+    @Test
+    @SmallTest
+    public void testDefaultBrowserPromo_clipboardUrl() {
+        mMediator.setAutocompleteProfile(mProfile);
+
+        var url = new GURL("http://test");
+        var match =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.CLIPBOARD_URL)
+                        .build();
+        mMediator.onSuggestionClicked(match, 0, url);
+
+        verify(mAutocompleteDelegate).maybeShowDefaultBrowserPromo();
+    }
+
+    @Test
+    @SmallTest
+    public void testDefaultBrowserPromo_pastedUrl() {
+        mMediator.setAutocompleteProfile(mProfile);
+        var url = new GURL("http://test");
+        var match =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.URL_WHAT_YOU_TYPED)
+                        .build();
+
+        when(mTextStateProvider.wasLastEditPaste()).thenReturn(false);
+        mMediator.onSuggestionClicked(match, 0, url);
+        verify(mAutocompleteDelegate, never()).maybeShowDefaultBrowserPromo();
+
+        when(mTextStateProvider.wasLastEditPaste()).thenReturn(true);
+        mMediator.onSuggestionClicked(match, 0, url);
+        verify(mAutocompleteDelegate).maybeShowDefaultBrowserPromo();
+    }
 }

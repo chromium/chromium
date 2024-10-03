@@ -293,6 +293,19 @@ class AutocompleteMediator
     }
 
     /**
+     * Check if the suggestion is a link created from clipboard. It can be either a suggested
+     * clipboard URL, or pasting an URL into the omnibox.
+     *
+     * @param suggestion The AutocompleteMatch to check.
+     * @return Whether or not the suggestion is a link from clipboard.
+     */
+    private boolean isSuggestionLinkFromClipboard(AutocompleteMatch suggestion) {
+        return suggestion.getType() == OmniboxSuggestionType.CLIPBOARD_URL
+                || (suggestion.getType() == OmniboxSuggestionType.URL_WHAT_YOU_TYPED
+                        && mUrlBarEditingTextProvider.wasLastEditPaste());
+    }
+
+    /**
      * @return The number of current autocomplete suggestions.
      */
     public int getSuggestionCount() {
@@ -1014,6 +1027,10 @@ class AutocompleteMediator
                 // where we want the transition type to be LINK.
 
                 transition = PageTransition.LINK;
+            }
+
+            if (isSuggestionLinkFromClipboard(suggestion)) {
+                mDelegate.maybeShowDefaultBrowserPromo();
             }
 
             // Kick off an action to clear focus and dismiss the suggestions list.
