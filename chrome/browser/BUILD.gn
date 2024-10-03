@@ -4248,7 +4248,6 @@ static_library("browser") {
       "//chrome/browser/ui/global_media_controls",
       "//chrome/browser/ui/global_media_controls:impl",
       "//chrome/browser/ui/hid",
-      "//chrome/browser/ui/hid:impl",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/media_router",
       "//chrome/browser/ui/media_router:impl",
@@ -4409,10 +4408,6 @@ static_library("browser") {
       # TODO(crbug.com/369794212): Remove this circular dependency when //c/b/signin/identity_manager_factory.h
       # gets modularized.
       "//chrome/browser/ui/toolbar/cast:impl",
-
-      # TODO(crbug.com/370804668): Remove this circular dependency when //c/b/chooser_controller/title_util.h
-      # gets modularized.
-      "//chrome/browser/ui/hid:impl",
 
       "//chrome/browser/task_manager:impl",
       "//chrome/browser/ui/exclusive_access",

@@ -1748,7 +1748,6 @@ static_library("ui") {
       "//chrome/browser/ui/global_media_controls",
       "//chrome/browser/ui/global_media_controls:impl",
       "//chrome/browser/ui/hid",
-      "//chrome/browser/ui/hid:impl",
       "//chrome/browser/ui/media_router",
       "//chrome/browser/ui/media_router:impl",
       "//chrome/browser/ui/permission_bubble",
