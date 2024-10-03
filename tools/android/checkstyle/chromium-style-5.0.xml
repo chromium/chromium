@@ -246,8 +246,8 @@
     <module name="RegexpSinglelineJava">
       <property name="id" value="RemoveObserverMethodReference"/>
       <property name="severity" value="warning"/>
-      <property name="format" value="removeObserver\([a-zA-Z]+::"/>
-      <property name="message"  value="Each method reference creates a new instance. The instance given to addObserver needs to be remembered and supplied to removeObserver."/>
+      <property name="format" value="remove[A-Z][a-zA-Z]*\([a-zA-Z]+::"/>
+      <property name="message"  value="Each method reference creates a new instance. The specific object given to the addObserver-like-method needs to be remembered and given to the removeObserver-like-method."/>
     </module>
     <module name="RegexpSinglelineJava">
       <property name="id" value="MockitoInitMocks"/>
