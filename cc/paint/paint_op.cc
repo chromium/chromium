@@ -1463,6 +1463,31 @@ void DrawLineLiteOp::Raster(const DrawLineLiteOp* op,
   });
 }
 
+void DrawArcImpl(SkCanvas* canvas,
+                 const SkRect& oval,
+                 float start_angle_degrees,
+                 float sweep_angle_degrees,
+                 const SkPaint& paint,
+                 const PaintFlags& flags) {
+  if (!flags.isArcClosed()) {
+    // drawArc can only handle open arcs.
+    canvas->drawArc(oval, start_angle_degrees, sweep_angle_degrees, false,
+                    paint);
+    return;
+  }
+
+  if (SkScalarNearlyEqual(std::abs(sweep_angle_degrees), 360)) {
+    // Closed ellipses can be rendered using drawOval.
+    canvas->drawOval(oval, paint);
+  } else {
+    // Closed partial arcs -> general SkPath.
+    SkPath path;
+    path.arcTo(oval, start_angle_degrees, sweep_angle_degrees, false);
+    path.close();
+    canvas->drawPath(path, paint);
+  }
+}
+
 void DrawArcOp::RasterWithFlags(const DrawArcOp* op,
                                 const PaintFlags* flags,
                                 SkCanvas* canvas,
@@ -1473,16 +1498,7 @@ void DrawArcOp::RasterWithFlags(const DrawArcOp* op,
 void DrawArcOp::RasterWithFlagsImpl(const PaintFlags* flags,
                                     SkCanvas* canvas) const {
   flags->DrawToSk(canvas, [this, flags](SkCanvas* c, const SkPaint& p) {
-    if (flags->isArcClosed() &&
-        !SkScalarNearlyEqual(sweep_angle_degrees, SkIntToScalar(360)) &&
-        !SkScalarNearlyEqual(sweep_angle_degrees, SkIntToScalar(-360))) {
-      SkPath path;
-      path.arcTo(oval, start_angle_degrees, sweep_angle_degrees, false);
-      path.close();
-      c->drawPath(path, p);
-      return;
-    }
-    c->drawArc(oval, start_angle_degrees, sweep_angle_degrees, false, p);
+    DrawArcImpl(c, oval, start_angle_degrees, sweep_angle_degrees, p, *flags);
   });
 }
 
@@ -1491,18 +1507,8 @@ void DrawArcLiteOp::Raster(const DrawArcLiteOp* op,
                            const PlaybackParams& params) {
   PaintFlags flags(op->core_paint_flags);
   flags.DrawToSk(canvas, [op, &flags](SkCanvas* c, const SkPaint& p) {
-    if (flags.isArcClosed() &&
-        !SkScalarNearlyEqual(op->sweep_angle_degrees, SkIntToScalar(360)) &&
-        !SkScalarNearlyEqual(op->sweep_angle_degrees, SkIntToScalar(-360))) {
-      SkPath path;
-      path.arcTo(op->oval, op->start_angle_degrees, op->sweep_angle_degrees,
-                 false);
-      path.close();
-      c->drawPath(path, p);
-      return;
-    }
-    c->drawArc(op->oval, op->start_angle_degrees, op->sweep_angle_degrees,
-               false, p);
+    DrawArcImpl(c, op->oval, op->start_angle_degrees, op->sweep_angle_degrees,
+                p, flags);
   });
 }
 
