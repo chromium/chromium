@@ -265,6 +265,7 @@ test("enterprise_companion_integration_tests") {
     "//chrome/enterprise_companion/proto",
     "//chrome/updater:constants_test",
     "//chrome/updater:public_sources",
+    "//chrome/updater/protos:omaha_proto",
     "//components/named_mojo_ipc_server:named_mojo_ipc_server",
     "//components/policy/core/common",
     "//components/policy/core/common:common_constants",

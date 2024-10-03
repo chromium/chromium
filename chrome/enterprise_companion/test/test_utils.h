@@ -29,7 +29,7 @@ int WaitForProcess(base::Process&);
 // Asserts that the application has been properly registered with the updater.
 void ExpectUpdaterRegistration();
 
-// Sets applies the given proxy settings via Group Policy.
+// Sets the given proxy settings via Group Policy.
 void SetLocalProxyPolicies(
     std::optional<std::string> proxy_mode,
     std::optional<std::string> pac_url,

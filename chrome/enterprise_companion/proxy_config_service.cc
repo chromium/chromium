@@ -246,33 +246,37 @@ class ProxyConfigService final : public net::ProxyConfigService,
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     observer_list_.RemoveObserver(observer);
   }
+
+  bool UsesPolling() override { return true; }
+
   void OnLazyPoll() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     fallback_->OnLazyPoll();
+    std::optional<net::ProxyConfig> new_config = GetEffectiveConfig();
+
+    if ((last_config_.has_value() != new_config.has_value()) ||
+        (last_config_ && new_config &&
+         !last_config_.value().Equals(new_config.value()))) {
+      last_config_ = new_config;
+      observer_list_.Notify(
+          &Observer::OnProxyConfigChanged,
+          net::ProxyConfigWithAnnotation(*last_config_,
+                                         kPolicyProxyConfigTrafficAnnotation),
+          new_config ? ConfigAvailability::CONFIG_VALID
+                     : ConfigAvailability::CONFIG_PENDING);
+    }
   }
 
   ConfigAvailability GetLatestProxyConfig(
       net::ProxyConfigWithAnnotation* config) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    std::optional<net::ProxyConfig> policy_config = GetProxyConfigFromPolicy(
-        dm_storage_, system_policy_proxy_config_provider_.Run());
-    if (policy_config) {
-      VLOG(1) << "Determined proxy configuration from policies: "
-              << policy_config->ToValue();
+    OnLazyPoll();
+    if (last_config_) {
       *config = net::ProxyConfigWithAnnotation(
-          *policy_config, kPolicyProxyConfigTrafficAnnotation);
+          *last_config_, kPolicyProxyConfigTrafficAnnotation);
       return ConfigAvailability::CONFIG_VALID;
     }
-    ConfigAvailability fallback_availability =
-        fallback_->GetLatestProxyConfig(config);
-    if (fallback_availability == ConfigAvailability::CONFIG_VALID) {
-      VLOG(1) << "Determined proxy configuration from fallback: "
-              << config->value().ToValue();
-    } else {
-      VLOG(1) << "No proxy configuration from policies or the fallback is "
-                 "available.";
-    }
-    return fallback_availability;
+    return ConfigAvailability::CONFIG_PENDING;
   }
 
  private:
@@ -283,6 +287,7 @@ class ProxyConfigService final : public net::ProxyConfigService,
       system_policy_proxy_config_provider_;
   const std::unique_ptr<net::ProxyConfigService> fallback_;
   base::ObserverList<Observer>::Unchecked observer_list_;
+  std::optional<net::ProxyConfig> last_config_;
 
   // Overrides for Observer:
   void OnProxyConfigChanged(const net::ProxyConfigWithAnnotation&,
@@ -292,6 +297,29 @@ class ProxyConfigService final : public net::ProxyConfigService,
     ConfigAvailability availability = GetLatestProxyConfig(&config);
     observer_list_.Notify(&Observer::OnProxyConfigChanged, config,
                           availability);
+  }
+
+  std::optional<net::ProxyConfig> GetEffectiveConfig() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    std::optional<net::ProxyConfig> policy_config = GetProxyConfigFromPolicy(
+        dm_storage_, system_policy_proxy_config_provider_.Run());
+    if (policy_config) {
+      VLOG(1) << "Determined proxy configuration from policies: "
+              << policy_config->ToValue();
+      return policy_config;
+    }
+
+    net::ProxyConfigWithAnnotation fallback_config;
+    ConfigAvailability fallback_availability =
+        fallback_->GetLatestProxyConfig(&fallback_config);
+    if (fallback_availability == ConfigAvailability::CONFIG_VALID) {
+      VLOG(1) << "Determined proxy configuration from fallback: "
+              << fallback_config.value().ToValue();
+      return fallback_config.value();
+    }
+    VLOG(1) << "No proxy configuration from policies or the fallback is "
+               "available.";
+    return std::nullopt;
   }
 };
 
