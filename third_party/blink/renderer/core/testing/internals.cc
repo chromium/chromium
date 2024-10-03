@@ -3514,7 +3514,8 @@ void Internals::forceLoseCanvasContext(OffscreenCanvas* offscreencanvas,
                                        const String& context_type) {
   CanvasContextCreationAttributesCore attr;
   CanvasRenderingContext* context = offscreencanvas->GetCanvasRenderingContext(
-      document_->GetExecutionContext(), context_type, attr);
+      document_->GetExecutionContext(),
+      CanvasRenderingContext::RenderingAPIFromId(context_type), attr);
   if (!context)
     return;
   context->LoseContext(CanvasRenderingContext::kSyntheticLostContext);

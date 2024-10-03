@@ -24,7 +24,9 @@ namespace {
 OffscreenCanvasRenderingContext2D* GetContext(V8TestingScope& scope,
                                               OffscreenCanvas* host) {
   CanvasRenderingContext* context = host->GetCanvasRenderingContext(
-      scope.GetExecutionContext(), "2d", CanvasContextCreationAttributesCore());
+      scope.GetExecutionContext(),
+      CanvasRenderingContext::CanvasRenderingAPI::k2D,
+      CanvasContextCreationAttributesCore());
   CHECK(context->IsRenderingContext2D());
   return static_cast<OffscreenCanvasRenderingContext2D*>(context);
 }

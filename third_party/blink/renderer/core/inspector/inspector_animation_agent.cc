@@ -249,8 +249,8 @@ BuildObjectForAnimationEffect(KeyframeEffect* effect) {
           .setIterationStart(computed_timing->iterationStart())
           .setIterations(computed_timing->iterations())
           .setDuration(NormalizedDuration(computed_timing->duration()))
-          .setDirection(computed_timing->direction())
-          .setFill(computed_timing->fill())
+          .setDirection(computed_timing->direction().AsString())
+          .setFill(computed_timing->fill().AsString())
           .setEasing(easing)
           .build();
   if (effect->EffectTarget()) {

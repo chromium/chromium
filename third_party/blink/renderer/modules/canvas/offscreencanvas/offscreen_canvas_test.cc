@@ -129,8 +129,8 @@ void OffscreenCanvasTest::SetUp() {
     attrs.desynchronized = GetParam().desynchronized;
   }
   context_ = static_cast<OffscreenCanvasRenderingContext2D*>(
-      offscreen_canvas_->GetCanvasRenderingContext(GetWindow(), String("2d"),
-                                                   attrs));
+      offscreen_canvas_->GetCanvasRenderingContext(
+          GetWindow(), CanvasRenderingContext::CanvasRenderingAPI::k2D, attrs));
 
   test_web_shared_image_interface_provider_ =
       TestWebGraphicsSharedImageInterfaceProvider::Create();

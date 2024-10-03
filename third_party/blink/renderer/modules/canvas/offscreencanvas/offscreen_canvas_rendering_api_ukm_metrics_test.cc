@@ -40,8 +40,7 @@ class OffscreenCanvasRenderingAPIUkmMetricsTest : public PageTestBase {
     UpdateAllLifecyclePhasesForTest();
   }
 
-  void CheckContext(String context_type,
-                    CanvasRenderingContext::CanvasRenderingAPI expected_value) {
+  void CheckContext(CanvasRenderingContext::CanvasRenderingAPI context_type) {
     CanvasContextCreationAttributesCore attributes;
     offscreen_canvas_element_->GetCanvasRenderingContext(
         GetDocument().domWindow(), context_type, attributes);
@@ -54,7 +53,7 @@ class OffscreenCanvasRenderingAPIUkmMetricsTest : public PageTestBase {
         entry,
         ukm::builders::ClientRenderingAPI::
             kOffscreenCanvas_RenderingContextName,
-        static_cast<int>(expected_value));
+        static_cast<int>(context_type));
   }
 
  private:
@@ -66,13 +65,12 @@ OffscreenCanvasRenderingAPIUkmMetricsTest::
     OffscreenCanvasRenderingAPIUkmMetricsTest() = default;
 
 TEST_F(OffscreenCanvasRenderingAPIUkmMetricsTest, OffscreenCanvas2D) {
-  CheckContext("2d", CanvasRenderingContext::CanvasRenderingAPI::k2D);
+  CheckContext(CanvasRenderingContext::CanvasRenderingAPI::k2D);
 }
 
 TEST_F(OffscreenCanvasRenderingAPIUkmMetricsTest,
        OffscreenCanvasBitmapRenderer) {
-  CheckContext("bitmaprenderer",
-               CanvasRenderingContext::CanvasRenderingAPI::kBitmaprenderer);
+  CheckContext(CanvasRenderingContext::CanvasRenderingAPI::kBitmaprenderer);
 }
 
 // Skip tests for WebGL context for now

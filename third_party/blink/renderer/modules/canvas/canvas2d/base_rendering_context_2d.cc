@@ -1655,22 +1655,23 @@ void BaseRenderingContext2D::DrawPathInternal(
       CanvasPerformanceMonitor::DrawType::kPath);
 }
 
-static SkPathFillType ParseWinding(const String& winding_rule_string) {
-  if (winding_rule_string == "nonzero")
-    return SkPathFillType::kWinding;
-  if (winding_rule_string == "evenodd")
-    return SkPathFillType::kEvenOdd;
-
-  NOTREACHED_IN_MIGRATION();
-  return SkPathFillType::kEvenOdd;
+static SkPathFillType CanvasFillRuleToSkiaFillType(
+    const V8CanvasFillRule& winding_rule) {
+  switch (winding_rule.AsEnum()) {
+    case V8CanvasFillRule::Enum::kNonzero:
+      return SkPathFillType::kWinding;
+    case V8CanvasFillRule::Enum::kEvenodd:
+      return SkPathFillType::kEvenOdd;
+  }
+  NOTREACHED();
 }
 
 void BaseRenderingContext2D::fill() {
   FillImpl(SkPathFillType::kWinding);
 }
 
-void BaseRenderingContext2D::fill(const String& winding) {
-  FillImpl(ParseWinding(winding));
+void BaseRenderingContext2D::fill(const V8CanvasFillRule& winding) {
+  FillImpl(CanvasFillRuleToSkiaFillType(winding));
 }
 
 void BaseRenderingContext2D::FillImpl(SkPathFillType winding_rule) {
@@ -1685,8 +1686,9 @@ void BaseRenderingContext2D::fill(Path2D* dom_path) {
   FillPathImpl(dom_path, SkPathFillType::kWinding);
 }
 
-void BaseRenderingContext2D::fill(Path2D* dom_path, const String& winding) {
-  FillPathImpl(dom_path, ParseWinding(winding));
+void BaseRenderingContext2D::fill(Path2D* dom_path,
+                                  const V8CanvasFillRule& winding) {
+  FillPathImpl(dom_path, CanvasFillRuleToSkiaFillType(winding));
 }
 
 void BaseRenderingContext2D::FillPathImpl(Path2D* dom_path,
@@ -1819,7 +1821,7 @@ void BaseRenderingContext2D::strokeRect(double x,
 }
 
 void BaseRenderingContext2D::ClipInternal(const Path& path,
-                                          const String& winding_rule_string,
+                                          const V8CanvasFillRule& winding_rule,
                                           UsePaintCache use_paint_cache) {
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
   if (!c) {
@@ -1830,50 +1832,51 @@ void BaseRenderingContext2D::ClipInternal(const Path& path,
   }
 
   SkPath sk_path = path.GetSkPath();
-  sk_path.setFillType(ParseWinding(winding_rule_string));
+  sk_path.setFillType(CanvasFillRuleToSkiaFillType(winding_rule));
   GetState().ClipPath(sk_path, clip_antialiasing_);
   c->clipPath(sk_path, SkClipOp::kIntersect, clip_antialiasing_ == kAntiAliased,
               use_paint_cache);
 }
 
-void BaseRenderingContext2D::clip(const String& winding_rule_string) {
+void BaseRenderingContext2D::clip(const V8CanvasFillRule& winding_rule) {
   if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kClip,
-        IdentifiabilitySensitiveStringToken(winding_rule_string));
+        IdentifiabilitySensitiveStringToken(winding_rule.AsString()));
   }
-  ClipInternal(GetPath(), winding_rule_string, UsePaintCache::kDisabled);
+  ClipInternal(GetPath(), winding_rule, UsePaintCache::kDisabled);
 }
 
 void BaseRenderingContext2D::clip(Path2D* dom_path,
-                                  const String& winding_rule_string) {
+                                  const V8CanvasFillRule& winding_rule) {
   if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kClip__Path, dom_path->GetIdentifiableToken(),
-        IdentifiabilitySensitiveStringToken(winding_rule_string));
+        IdentifiabilitySensitiveStringToken(winding_rule.AsString()));
   }
-  ClipInternal(dom_path->GetPath(), winding_rule_string,
-               path2d_use_paint_cache_);
+  ClipInternal(dom_path->GetPath(), winding_rule, path2d_use_paint_cache_);
 }
 
-bool BaseRenderingContext2D::isPointInPath(const double x,
-                                           const double y,
-                                           const String& winding_rule_string) {
-  return IsPointInPathInternal(GetPath(), x, y, winding_rule_string);
+bool BaseRenderingContext2D::isPointInPath(
+    const double x,
+    const double y,
+    const V8CanvasFillRule& winding_rule) {
+  return IsPointInPathInternal(GetPath(), x, y, winding_rule);
 }
 
-bool BaseRenderingContext2D::isPointInPath(Path2D* dom_path,
-                                           const double x,
-                                           const double y,
-                                           const String& winding_rule_string) {
-  return IsPointInPathInternal(dom_path->GetPath(), x, y, winding_rule_string);
+bool BaseRenderingContext2D::isPointInPath(
+    Path2D* dom_path,
+    const double x,
+    const double y,
+    const V8CanvasFillRule& winding_rule) {
+  return IsPointInPathInternal(dom_path->GetPath(), x, y, winding_rule);
 }
 
 bool BaseRenderingContext2D::IsPointInPathInternal(
     const Path& path,
     const double x,
     const double y,
-    const String& winding_rule_string) {
+    const V8CanvasFillRule& winding_rule) {
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
   if (!c)
     return false;
@@ -1887,8 +1890,9 @@ bool BaseRenderingContext2D::IsPointInPathInternal(
   AffineTransform ctm = GetState().GetTransform();
   gfx::PointF transformed_point = ctm.Inverse().MapPoint(point);
 
-  return path.Contains(transformed_point,
-                       SkFillTypeToWindRule(ParseWinding(winding_rule_string)));
+  return path.Contains(
+      transformed_point,
+      SkFillTypeToWindRule(CanvasFillRuleToSkiaFillType(winding_rule)));
 }
 
 bool BaseRenderingContext2D::isPointInStroke(const double x, const double y) {
@@ -3095,11 +3099,12 @@ void BaseRenderingContext2D::setImageSmoothingEnabled(bool enabled) {
   state.SetImageSmoothingEnabled(enabled);
 }
 
-String BaseRenderingContext2D::imageSmoothingQuality() const {
+V8ImageSmoothingQuality BaseRenderingContext2D::imageSmoothingQuality() const {
   return GetState().ImageSmoothingQuality();
 }
 
-void BaseRenderingContext2D::setImageSmoothingQuality(const String& quality) {
+void BaseRenderingContext2D::setImageSmoothingQuality(
+    const V8ImageSmoothingQuality& quality) {
   CanvasRenderingContext2DState& state = GetState();
   if (quality == state.ImageSmoothingQuality()) {
     return;
@@ -3108,7 +3113,7 @@ void BaseRenderingContext2D::setImageSmoothingQuality(const String& quality) {
   if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kSetImageSmoothingQuality,
-        IdentifiabilitySensitiveStringToken(quality));
+        IdentifiabilitySensitiveStringToken(quality.AsString()));
   }
   state.SetImageSmoothingQuality(quality);
 }
@@ -3121,8 +3126,12 @@ String BaseRenderingContext2D::wordSpacing() const {
   return GetState().GetWordSpacing();
 }
 
-String BaseRenderingContext2D::textRendering() const {
+String BaseRenderingContext2D::textRenderingAsString() const {
   return GetState().GetTextRendering().AsString();
+}
+
+V8CanvasTextRendering BaseRenderingContext2D::textRendering() const {
+  return GetState().GetTextRendering();
 }
 
 float BaseRenderingContext2D::GetFontBaseline(
@@ -3172,7 +3181,11 @@ String BaseRenderingContext2D::fontKerning() const {
   return FontDescription::ToString(GetState().GetFontKerning()).LowerASCII();
 }
 
-String BaseRenderingContext2D::fontStretch() const {
+V8CanvasFontStretch BaseRenderingContext2D::fontStretch() const {
+  return GetState().GetFontStretch();
+}
+
+String BaseRenderingContext2D::fontStretchAsString() const {
   return GetState().GetFontStretch().AsString();
 }
 
@@ -3637,8 +3650,19 @@ void BaseRenderingContext2D::setWordSpacing(const String& word_spacing) {
   state.SetWordSpacing(word_spacing);
 }
 
-void BaseRenderingContext2D::setTextRendering(
+void BaseRenderingContext2D::setTextRenderingAsString(
     const String& text_rendering_string) {
+  std::optional<blink::V8CanvasTextRendering> text_value =
+      V8CanvasTextRendering::Create(text_rendering_string);
+
+  if (!text_value.has_value()) {
+    return;
+  }
+  setTextRendering(text_value.value());
+}
+
+void BaseRenderingContext2D::setTextRendering(
+    const V8CanvasTextRendering& text_rendering) {
   UseCounter::Count(GetTopExecutionContext(),
                     WebFeature::kCanvasRenderingContext2DTextRendering);
   // TODO(crbug.com/1234113): Instrument new canvas APIs.
@@ -3648,17 +3672,10 @@ void BaseRenderingContext2D::setTextRendering(
     setFont(font());
   }
 
-  std::optional<blink::V8CanvasTextRendering> text_value =
-      V8CanvasTextRendering::Create(text_rendering_string);
-
-  if (!text_value.has_value()) {
+  if (state.GetTextRendering() == text_rendering) {
     return;
   }
-
-  if (state.GetTextRendering() == text_value.value()) {
-    return;
-  }
-  state.SetTextRendering(text_value.value(), GetFontSelector());
+  state.SetTextRendering(text_rendering, GetFontSelector());
 }
 
 void BaseRenderingContext2D::setFontKerning(const String& font_kerning_string) {
@@ -3688,7 +3705,19 @@ void BaseRenderingContext2D::setFontKerning(const String& font_kerning_string) {
   state.SetFontKerning(kerning, GetFontSelector());
 }
 
-void BaseRenderingContext2D::setFontStretch(const String& font_stretch) {
+void BaseRenderingContext2D::setFontStretchAsString(
+    const String& font_stretch) {
+  std::optional<V8CanvasFontStretch> font_value =
+      V8CanvasFontStretch::Create(font_stretch);
+
+  if (!font_value.has_value()) {
+    return;
+  }
+  setFontStretch(font_value.value());
+}
+
+void BaseRenderingContext2D::setFontStretch(
+    const V8CanvasFontStretch& font_stretch) {
   UseCounter::Count(GetTopExecutionContext(),
                     WebFeature::kCanvasRenderingContext2DFontStretch);
   // TODO(crbug.com/1234113): Instrument new canvas APIs.
@@ -3698,16 +3727,10 @@ void BaseRenderingContext2D::setFontStretch(const String& font_stretch) {
     setFont(font());
   }
 
-  std::optional<blink::V8CanvasFontStretch> font_value =
-      V8CanvasFontStretch::Create(font_stretch);
-
-  if (!font_value.has_value()) {
+  if (state.GetFontStretch() == font_stretch) {
     return;
   }
-  if (state.GetFontStretch() == font_value.value()) {
-    return;
-  }
-  state.SetFontStretch(font_value.value(), GetFontSelector());
+  state.SetFontStretch(font_stretch, GetFontSelector());
 }
 
 void BaseRenderingContext2D::setFontVariantCaps(

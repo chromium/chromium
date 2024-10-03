@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_host.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_source.h"
@@ -83,7 +84,7 @@ class CORE_EXPORT OffscreenCanvas final
   void SetNeutered();
   CanvasRenderingContext* GetCanvasRenderingContext(
       ExecutionContext*,
-      const String&,
+      CanvasRenderingContext::CanvasRenderingAPI,
       const CanvasContextCreationAttributesCore&);
 
   static void RegisterRenderingContextFactory(

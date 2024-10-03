@@ -742,31 +742,36 @@ bool CanvasRenderingContext2DState::ImageSmoothingEnabled() const {
 }
 
 void CanvasRenderingContext2DState::SetImageSmoothingQuality(
-    const String& quality_string) {
-  if (quality_string == "low") {
-    image_smoothing_quality_ = cc::PaintFlags::FilterQuality::kLow;
-  } else if (quality_string == "medium") {
-    image_smoothing_quality_ = cc::PaintFlags::FilterQuality::kMedium;
-  } else if (quality_string == "high") {
-    image_smoothing_quality_ = cc::PaintFlags::FilterQuality::kHigh;
-  } else {
-    return;
+    const V8ImageSmoothingQuality& quality) {
+  switch (quality.AsEnum()) {
+    case V8ImageSmoothingQuality::Enum::kLow:
+      image_smoothing_quality_ = cc::PaintFlags::FilterQuality::kLow;
+      UpdateFilterQuality();
+      return;
+    case V8ImageSmoothingQuality::Enum::kMedium:
+      image_smoothing_quality_ = cc::PaintFlags::FilterQuality::kMedium;
+      UpdateFilterQuality();
+      return;
+    case V8ImageSmoothingQuality::Enum::kHigh:
+      image_smoothing_quality_ = cc::PaintFlags::FilterQuality::kHigh;
+      UpdateFilterQuality();
+      return;
   }
-  UpdateFilterQuality();
+  NOTREACHED();
 }
 
-String CanvasRenderingContext2DState::ImageSmoothingQuality() const {
+V8ImageSmoothingQuality CanvasRenderingContext2DState::ImageSmoothingQuality()
+    const {
   switch (image_smoothing_quality_) {
+    case cc::PaintFlags::FilterQuality::kNone:
     case cc::PaintFlags::FilterQuality::kLow:
-      return "low";
+      return V8ImageSmoothingQuality(V8ImageSmoothingQuality::Enum::kLow);
     case cc::PaintFlags::FilterQuality::kMedium:
-      return "medium";
+      return V8ImageSmoothingQuality(V8ImageSmoothingQuality::Enum::kMedium);
     case cc::PaintFlags::FilterQuality::kHigh:
-      return "high";
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return "low";
+      return V8ImageSmoothingQuality(V8ImageSmoothingQuality::Enum::kHigh);
   }
+  NOTREACHED();
 }
 
 void CanvasRenderingContext2DState::UpdateFilterQuality() const {

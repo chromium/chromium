@@ -384,15 +384,12 @@ bool OffscreenCanvas::IsOpaque() const {
 
 CanvasRenderingContext* OffscreenCanvas::GetCanvasRenderingContext(
     ExecutionContext* execution_context,
-    const String& id,
+    CanvasRenderingContext::CanvasRenderingAPI rendering_api,
     const CanvasContextCreationAttributesCore& attributes) {
   DCHECK_EQ(execution_context, GetTopExecutionContext());
 
   if (execution_context->IsContextDestroyed())
     return nullptr;
-
-  CanvasRenderingContext::CanvasRenderingAPI rendering_api =
-      CanvasRenderingContext::RenderingAPIFromId(id);
 
   // Unknown type.
   if (rendering_api == CanvasRenderingContext::CanvasRenderingAPI::kUnknown)
