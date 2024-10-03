@@ -9654,9 +9654,11 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="EffectName">
     <variant name="CameraFraming" summary="Camera Framing"/>
+    <variant name="FaceRetouch" summary="Face retouch"/>
     <variant name="LiveCaption" summary="Live Caption"/>
     <variant name="NoiseCancellation" summary="Noise cancellation"/>
     <variant name="PortraitRelighting" summary="Portrait Relighting"/>
+    <variant name="StudioLook" summary="Studio Look"/>
     <variant name="StudioMic" summary="Studio mic"/>
     <variant name="TestEffect" summary="Test Effect"/>
   </token>
@@ -9672,9 +9674,11 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="EffectName">
     <variant name="CameraFraming" summary="Camera Framing"/>
+    <variant name="FaceRetouch" summary="Face retouch"/>
     <variant name="LiveCaption" summary="Live Caption"/>
     <variant name="NoiseCancellation" summary="Noise cancellation"/>
     <variant name="PortraitRelighting" summary="Portrait Relighting"/>
+    <variant name="StudioLook" summary="Studio Look"/>
     <variant name="StudioMic" summary="Studio mic"/>
     <variant name="TestEffect" summary="Test Effect"/>
   </token>
