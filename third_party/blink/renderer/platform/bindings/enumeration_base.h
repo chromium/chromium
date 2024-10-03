@@ -36,7 +36,7 @@ class PLATFORM_EXPORT EnumerationBase {
 
   // Migration adapter
   operator AtomicString() const { return AtomicString(string_literal_); }
-  operator String() const { return string_literal_; }
+  explicit operator String() const { return string_literal_; }
 
   // Returns true if the value is invalid.  The instance in this state must be
   // created only when an exception is thrown.
