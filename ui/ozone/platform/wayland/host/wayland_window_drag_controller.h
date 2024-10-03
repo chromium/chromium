@@ -86,10 +86,10 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   // drag controller.
   bool IsDragInProgress() const;
 
-  // Tells if "extended drag" extension is available.
-  bool IsExtendedDragAvailable() const;
-  // Tells if "xdg toplevel drag" extension is available.
-  bool IsXdgToplevelDragAvailable() const;
+  // Tells if any of the window drag protocol (ie: zcr-extended-drag-v1 or
+  // xdg-toplevel-drag-v1) is available. May also return true in tests if
+  // `window_drag_protocol_available_for_testing_` is set.
+  bool IsWindowDragProtocolAvailable() const;
 
   // Returns true if there there is currently an active drag-and-drop session.
   // This is true if the `data_source_` exists (the session ends when this is
@@ -151,9 +151,6 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   // extended-drag extension is available.
   void SetDraggedWindow(WaylandToplevelWindow* window,
                         const gfx::Vector2d& offset);
-  // Tells if "extended drag" extension is available, ignoring
-  // |extended_drag_available_for_testing_|.
-  bool IsExtendedDragAvailableInternal() const;
 
   // Returns the serial for the given |drag_source| if |origin| has the
   // corresponding focus, otherwise return null.
@@ -222,7 +219,7 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   // scenarios.
   bool should_process_drag_motion_events_ = false;
 
-  bool extended_drag_available_for_testing_ = false;
+  bool window_drag_protocol_available_for_testing_ = false;
 
   base::WeakPtrFactory<WaylandWindowDragController> weak_factory_{this};
 };

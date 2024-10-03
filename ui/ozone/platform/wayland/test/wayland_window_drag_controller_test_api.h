@@ -28,10 +28,10 @@ class WaylandWindowDragControllerTestApi {
       const WaylandWindowDragControllerTestApi&) = delete;
   ~WaylandWindowDragControllerTestApi() = default;
 
-  // Force drag controller to consider extended-drag protocol to be available.
-  // TODO(crbug.com/324170129): Unify for both window drag protocols.
+  // Force drag controller to consider any of the window drag protocols (ie:
+  // zcr-extended-drag-v1 or xdg-toplevel-drag-v1) to be available.
   void set_extended_drag_available(bool available) {
-    impl_->extended_drag_available_for_testing_ = available;
+    impl_->window_drag_protocol_available_for_testing_ = available;
   }
 
   WaylandWindowDragController::State state() { return impl_->state_; }
