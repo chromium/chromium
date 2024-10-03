@@ -1004,6 +1004,12 @@ void RenderWidgetHostViewAndroid::WriteContentBitmapToDiskAsync(
                   std::move(result_callback));
 }
 
+void RenderWidgetHostViewAndroid::OnResume(JNIEnv* env) {
+  // crbug.com/370000831. After activity resume, input state is not refreshed
+  // properly. Manually call update state.
+  OnUpdateTextInputStateCalled(text_input_manager_, this, true);
+}
+
 void RenderWidgetHostViewAndroid::OnRenderFrameMetadataChangedAfterActivation(
     base::TimeTicks activation_time) {
   const cc::RenderFrameMetadata& metadata =

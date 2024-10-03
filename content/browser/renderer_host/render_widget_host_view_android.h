@@ -429,6 +429,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
       const base::android::JavaParamRef<jstring>& jpath,
       const base::android::JavaParamRef<jobject>& jcallback);
 
+  // Notifies that the parent activity has moved into the foreground.
+  void OnResume(JNIEnv* env);
+
   ui::DelegatedFrameHostAndroid* delegated_frame_host_for_testing() {
     return delegated_frame_host_.get();
   }
