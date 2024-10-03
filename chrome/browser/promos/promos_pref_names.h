@@ -7,20 +7,24 @@
 
 namespace promos_prefs {
 
+// Pref names for the "Desktop to iOS" promos where users are offered a QR code
+// on Desktop they can scan to download the mobile app.
+
 // iOS Password promo prefs.
 // Int64 that keeps track of the last impression timestamp of the "iOS password
 // promo bubble on desktop" for a given user.
-inline constexpr char kiOSPasswordPromoLastImpressionTimestamp[] =
+inline constexpr char kDesktopToiOSPasswordPromoLastImpressionTimestamp[] =
     "promos.ios_password_last_impression_timestamp";
 
 // Integer that keeps track of impressions of the "iOS password promo bubble on
 // desktop" shown to a given user.
-inline constexpr char kiOSPasswordPromoImpressionsCounter[] =
+inline constexpr char kDesktopToiOSPasswordPromoImpressionsCounter[] =
     "promos.ios_password_impressions_counter";
 
 // Boolean that keeps track whether a given user has opted-out of seeing the
 // "iOS password promo bubble on desktop" again.
-inline constexpr char kiOSPasswordPromoOptOut[] = "promos.ios_password_opt_out";
+inline constexpr char kDesktopToiOSPasswordPromoOptOut[] =
+    "promos.ios_password_opt_out";
 
 // iOS Address promo prefs.
 // Int64 that keeps track of the last impression timestamp of the "iOS address

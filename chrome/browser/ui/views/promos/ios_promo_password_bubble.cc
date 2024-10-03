@@ -81,7 +81,7 @@ class IOSPromoPasswordBubbleDelegate : public ui::DialogModelDelegate {
     if (!impression_histogram_already_recorded_) {
       promos_utils::RecordIOSPasswordPromoUserInteractionHistogram(
           browser_->profile()->GetPrefs()->GetInteger(
-              promos_prefs::kiOSPasswordPromoImpressionsCounter),
+              promos_prefs::kDesktopToiOSPasswordPromoImpressionsCounter),
           promos_utils::DesktopIOSPasswordPromoAction::kDismissed);
     }
   }
@@ -89,11 +89,11 @@ class IOSPromoPasswordBubbleDelegate : public ui::DialogModelDelegate {
   // Callback for when the "No thanks" button is clicked.
   void OnNoThanksButtonClicked() {
     browser_->profile()->GetPrefs()->SetBoolean(
-        promos_prefs::kiOSPasswordPromoOptOut, true);
+        promos_prefs::kDesktopToiOSPasswordPromoOptOut, true);
 
     promos_utils::RecordIOSPasswordPromoUserInteractionHistogram(
         browser_->profile()->GetPrefs()->GetInteger(
-            promos_prefs::kiOSPasswordPromoImpressionsCounter),
+            promos_prefs::kDesktopToiOSPasswordPromoImpressionsCounter),
         promos_utils::DesktopIOSPasswordPromoAction::kExplicitlyClosed);
 
     impression_histogram_already_recorded_ = true;

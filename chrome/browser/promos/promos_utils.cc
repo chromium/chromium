@@ -68,7 +68,7 @@ std::string IOSDesktopPromoHistogramType(IOSPromoType promo_type) {
 bool VerifyIOSDesktopPromoTotalImpressions(Profile* profile) {
   int total_desktop_promo_impressions =
       profile->GetPrefs()->GetInteger(
-          promos_prefs::kiOSPasswordPromoImpressionsCounter) +
+          promos_prefs::kDesktopToiOSPasswordPromoImpressionsCounter) +
       profile->GetPrefs()->GetInteger(
           promos_prefs::kDesktopToiOSAddressPromoImpressionsCounter) +
       profile->GetPrefs()->GetInteger(
@@ -83,7 +83,8 @@ bool VerifyIOSDesktopPromoTotalImpressions(Profile* profile) {
 // New promos should add themselves to this check.
 bool VerifyIOSDesktopPromoTotalOptOuts(Profile* profile) {
   std::vector<bool> promo_opt_outs = {
-      profile->GetPrefs()->GetBoolean(promos_prefs::kiOSPasswordPromoOptOut),
+      profile->GetPrefs()->GetBoolean(
+          promos_prefs::kDesktopToiOSPasswordPromoOptOut),
       profile->GetPrefs()->GetBoolean(
           promos_prefs::kDesktopToiOSAddressPromoOptOut),
       profile->GetPrefs()->GetBoolean(
@@ -101,7 +102,7 @@ bool VerifyIOSDesktopPromoTotalOptOuts(Profile* profile) {
 bool VerifyMostRecentPromoTimestamp(Profile* profile) {
   std::vector<base::Time> promos_timestamps = {
       profile->GetPrefs()->GetTime(
-          promos_prefs::kiOSPasswordPromoLastImpressionTimestamp),
+          promos_prefs::kDesktopToiOSPasswordPromoLastImpressionTimestamp),
       profile->GetPrefs()->GetTime(
           promos_prefs::kDesktopToiOSAddressPromoLastImpressionTimestamp),
       profile->GetPrefs()->GetTime(
@@ -170,10 +171,10 @@ IOSPromoPrefsConfig::IOSPromoPrefsConfig(IOSPromoType promo_type) {
       promo_feature = &feature_engagement::kIPHiOSPasswordPromoDesktopFeature;
 #endif
       promo_impressions_counter_pref_name =
-          promos_prefs::kiOSPasswordPromoImpressionsCounter;
-      promo_opt_out_pref_name = promos_prefs::kiOSPasswordPromoOptOut;
+          promos_prefs::kDesktopToiOSPasswordPromoImpressionsCounter;
+      promo_opt_out_pref_name = promos_prefs::kDesktopToiOSPasswordPromoOptOut;
       promo_last_impression_timestamp_pref_name =
-          promos_prefs::kiOSPasswordPromoLastImpressionTimestamp;
+          promos_prefs::kDesktopToiOSPasswordPromoLastImpressionTimestamp;
       break;
     case IOSPromoType::kAddress:
       // This feature isn't defined without the following buildflags.
@@ -203,13 +204,13 @@ IOSPromoPrefsConfig::IOSPromoPrefsConfig(IOSPromoType promo_type) {
 // Registers profile prefs. New promos should add themselves to this function.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterTimePref(
-      promos_prefs::kiOSPasswordPromoLastImpressionTimestamp, base::Time(),
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+      promos_prefs::kDesktopToiOSPasswordPromoLastImpressionTimestamp,
+      base::Time(), user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterIntegerPref(
-      promos_prefs::kiOSPasswordPromoImpressionsCounter, 0,
+      promos_prefs::kDesktopToiOSPasswordPromoImpressionsCounter, 0,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
-      promos_prefs::kiOSPasswordPromoOptOut, false,
+      promos_prefs::kDesktopToiOSPasswordPromoOptOut, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
   registry->RegisterTimePref(
@@ -279,13 +280,14 @@ bool ShouldShowIOSPasswordPromo(Profile* profile) {
   // Show the promo if the user hasn't opted out, is not in the cooldown
   // period and is within the impression limit for this promo.
   if (profile->GetPrefs()->GetInteger(
-          promos_prefs::kiOSPasswordPromoImpressionsCounter) <
+          promos_prefs::kDesktopToiOSPasswordPromoImpressionsCounter) <
           kiOSPasswordPromoMaxImpressionCount &&
       profile->GetPrefs()->GetTime(
-          promos_prefs::kiOSPasswordPromoLastImpressionTimestamp) +
+          promos_prefs::kDesktopToiOSPasswordPromoLastImpressionTimestamp) +
               kiOSPasswordPromoCooldownTime <
           base::Time::Now() &&
-      !profile->GetPrefs()->GetBoolean(promos_prefs::kiOSPasswordPromoOptOut)) {
+      !profile->GetPrefs()->GetBoolean(
+          promos_prefs::kDesktopToiOSPasswordPromoOptOut)) {
     return true;
   }
 
@@ -336,13 +338,14 @@ bool UserNotClassifiedAsMobileDeviceSwitcher(
 void iOSPasswordPromoShown(Profile* profile) {
   int new_impression_count =
       profile->GetPrefs()->GetInteger(
-          promos_prefs::kiOSPasswordPromoImpressionsCounter) +
+          promos_prefs::kDesktopToiOSPasswordPromoImpressionsCounter) +
       1;
 
   profile->GetPrefs()->SetInteger(
-      promos_prefs::kiOSPasswordPromoImpressionsCounter, new_impression_count);
+      promos_prefs::kDesktopToiOSPasswordPromoImpressionsCounter,
+      new_impression_count);
   profile->GetPrefs()->SetTime(
-      promos_prefs::kiOSPasswordPromoLastImpressionTimestamp,
+      promos_prefs::kDesktopToiOSPasswordPromoLastImpressionTimestamp,
       base::Time::Now());
 
   RecordIOSPasswordPromoShownHistogram(new_impression_count);

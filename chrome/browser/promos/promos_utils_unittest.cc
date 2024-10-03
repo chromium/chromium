@@ -258,7 +258,8 @@ TEST_F(IOSPromoOnDesktopTest,
 // seen 3 promos for the given password promo type.
 TEST_F(IOSPromoOnDesktopTest,
        ShouldShowIOSDesktopPromoTestFalseTooManyImpressionsForPasswordPromo) {
-  prefs()->SetInteger(promos_prefs::kiOSPasswordPromoImpressionsCounter, 3);
+  prefs()->SetInteger(
+      promos_prefs::kDesktopToiOSPasswordPromoImpressionsCounter, 3);
   EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), IOSPromoType::kPassword));
 }
 
@@ -267,8 +268,9 @@ TEST_F(IOSPromoOnDesktopTest,
 TEST_F(
     IOSPromoOnDesktopTest,
     ShouldShowIOSDesktopPromoTestFalseLastImpressionTooRecentForPasswordPromo) {
-  prefs()->SetTime(promos_prefs::kiOSPasswordPromoLastImpressionTimestamp,
-                   base::Time::Now());
+  prefs()->SetTime(
+      promos_prefs::kDesktopToiOSPasswordPromoLastImpressionTimestamp,
+      base::Time::Now());
   EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), IOSPromoType::kPassword));
 }
 
@@ -276,7 +278,7 @@ TEST_F(
 // opted-out from the given password promo type.
 TEST_F(IOSPromoOnDesktopTest,
        ShouldShowIOSDesktopPromoTestFalseUserOptedOutForPasswordPromo) {
-  prefs()->SetBoolean(promos_prefs::kiOSPasswordPromoOptOut, true);
+  prefs()->SetBoolean(promos_prefs::kDesktopToiOSPasswordPromoOptOut, true);
   EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), IOSPromoType::kPassword));
 }
 
@@ -325,14 +327,16 @@ TEST_F(IOSPromoOnDesktopTest,
   IOSDesktopPromoShown(profile(), IOSPromoType::kPassword);
   base::Time after = base::Time::Now();
 
-  ASSERT_EQ(
-      prefs()->GetInteger(promos_prefs::kiOSPasswordPromoImpressionsCounter),
-      1);
+  ASSERT_EQ(prefs()->GetInteger(
+                promos_prefs::kDesktopToiOSPasswordPromoImpressionsCounter),
+            1);
   ASSERT_GE(
-      prefs()->GetTime(promos_prefs::kiOSPasswordPromoLastImpressionTimestamp),
+      prefs()->GetTime(
+          promos_prefs::kDesktopToiOSPasswordPromoLastImpressionTimestamp),
       before);
   ASSERT_LE(
-      prefs()->GetTime(promos_prefs::kiOSPasswordPromoLastImpressionTimestamp),
+      prefs()->GetTime(
+          promos_prefs::kDesktopToiOSPasswordPromoLastImpressionTimestamp),
       after);
 
   histograms()->ExpectUniqueSample("IOS.Desktop.PasswordPromo.Shown",
@@ -353,14 +357,16 @@ TEST_F(IOSPromoOnDesktopTest,
   IOSDesktopPromoShown(profile(), IOSPromoType::kPassword);
   base::Time after = base::Time::Now();
 
-  ASSERT_EQ(
-      prefs()->GetInteger(promos_prefs::kiOSPasswordPromoImpressionsCounter),
-      2);
+  ASSERT_EQ(prefs()->GetInteger(
+                promos_prefs::kDesktopToiOSPasswordPromoImpressionsCounter),
+            2);
   ASSERT_GE(
-      prefs()->GetTime(promos_prefs::kiOSPasswordPromoLastImpressionTimestamp),
+      prefs()->GetTime(
+          promos_prefs::kDesktopToiOSPasswordPromoLastImpressionTimestamp),
       before);
   ASSERT_LE(
-      prefs()->GetTime(promos_prefs::kiOSPasswordPromoLastImpressionTimestamp),
+      prefs()->GetTime(
+          promos_prefs::kDesktopToiOSPasswordPromoLastImpressionTimestamp),
       after);
 
   histograms()->ExpectBucketCount("IOS.Desktop.PasswordPromo.Shown",
@@ -384,14 +390,16 @@ TEST_F(IOSPromoOnDesktopTest,
   IOSDesktopPromoShown(profile(), IOSPromoType::kPassword);
   base::Time after = base::Time::Now();
 
-  ASSERT_EQ(
-      prefs()->GetInteger(promos_prefs::kiOSPasswordPromoImpressionsCounter),
-      3);
+  ASSERT_EQ(prefs()->GetInteger(
+                promos_prefs::kDesktopToiOSPasswordPromoImpressionsCounter),
+            3);
   ASSERT_GE(
-      prefs()->GetTime(promos_prefs::kiOSPasswordPromoLastImpressionTimestamp),
+      prefs()->GetTime(
+          promos_prefs::kDesktopToiOSPasswordPromoLastImpressionTimestamp),
       before);
   ASSERT_LE(
-      prefs()->GetTime(promos_prefs::kiOSPasswordPromoLastImpressionTimestamp),
+      prefs()->GetTime(
+          promos_prefs::kDesktopToiOSPasswordPromoLastImpressionTimestamp),
       after);
 
   histograms()->ExpectBucketCount("IOS.Desktop.PasswordPromo.Shown",
@@ -552,7 +560,8 @@ TEST_F(IOSPromoOnDesktopTest, ShouldShowIOSPasswordPromoTestTrue) {
 // seen 2 promos.
 TEST_F(IOSPromoOnDesktopTest,
        ShouldShowIOSPasswordPromoTestFalseTooManyImpressions) {
-  prefs()->SetInteger(promos_prefs::kiOSPasswordPromoImpressionsCounter, 2);
+  prefs()->SetInteger(
+      promos_prefs::kDesktopToiOSPasswordPromoImpressionsCounter, 2);
   EXPECT_FALSE(promos_utils::ShouldShowIOSPasswordPromo(profile()));
 }
 
@@ -562,8 +571,9 @@ TEST_F(IOSPromoOnDesktopTest,
 // impression is too recent.
 TEST_F(IOSPromoOnDesktopTest,
        ShouldShowIOSPasswordPromoTestFalseLastImpressionTooRecent) {
-  prefs()->SetTime(promos_prefs::kiOSPasswordPromoLastImpressionTimestamp,
-                   base::Time::Now());
+  prefs()->SetTime(
+      promos_prefs::kDesktopToiOSPasswordPromoLastImpressionTimestamp,
+      base::Time::Now());
   EXPECT_FALSE(promos_utils::ShouldShowIOSPasswordPromo(profile()));
 }
 
@@ -572,7 +582,7 @@ TEST_F(IOSPromoOnDesktopTest,
 // Tests that ShouldShowIOSPasswordPromo returns false when the user has
 // opted-out from the promo.
 TEST_F(IOSPromoOnDesktopTest, ShouldShowIOSPasswordPromoTestFalseUserOptedOut) {
-  prefs()->SetBoolean(promos_prefs::kiOSPasswordPromoOptOut, true);
+  prefs()->SetBoolean(promos_prefs::kDesktopToiOSPasswordPromoOptOut, true);
   EXPECT_FALSE(promos_utils::ShouldShowIOSPasswordPromo(profile()));
 }
 
@@ -610,12 +620,14 @@ TEST_F(IOSPromoOnDesktopTest,
 // correctly.
 TEST_F(IOSPromoOnDesktopTest, RegisterProfilePrefsTest) {
   // Password promo.
-  ASSERT_FALSE(prefs()->GetBoolean(promos_prefs::kiOSPasswordPromoOptOut));
+  ASSERT_FALSE(
+      prefs()->GetBoolean(promos_prefs::kDesktopToiOSPasswordPromoOptOut));
+  ASSERT_EQ(prefs()->GetInteger(
+                promos_prefs::kDesktopToiOSPasswordPromoImpressionsCounter),
+            0);
   ASSERT_EQ(
-      prefs()->GetInteger(promos_prefs::kiOSPasswordPromoImpressionsCounter),
-      0);
-  ASSERT_EQ(
-      prefs()->GetTime(promos_prefs::kiOSPasswordPromoLastImpressionTimestamp),
+      prefs()->GetTime(
+          promos_prefs::kDesktopToiOSPasswordPromoLastImpressionTimestamp),
       base::Time());
 
   // Address promo.
@@ -649,14 +661,16 @@ TEST_F(IOSPromoOnDesktopTest, iOSPasswordPromoShownTestFirstImpression) {
   promos_utils::iOSPasswordPromoShown(profile());
   base::Time after = base::Time::Now();
 
-  ASSERT_EQ(
-      prefs()->GetInteger(promos_prefs::kiOSPasswordPromoImpressionsCounter),
-      1);
+  ASSERT_EQ(prefs()->GetInteger(
+                promos_prefs::kDesktopToiOSPasswordPromoImpressionsCounter),
+            1);
   ASSERT_GE(
-      prefs()->GetTime(promos_prefs::kiOSPasswordPromoLastImpressionTimestamp),
+      prefs()->GetTime(
+          promos_prefs::kDesktopToiOSPasswordPromoLastImpressionTimestamp),
       before);
   ASSERT_LE(
-      prefs()->GetTime(promos_prefs::kiOSPasswordPromoLastImpressionTimestamp),
+      prefs()->GetTime(
+          promos_prefs::kDesktopToiOSPasswordPromoLastImpressionTimestamp),
       after);
 
   histograms()->ExpectUniqueSample(
@@ -677,14 +691,16 @@ TEST_F(IOSPromoOnDesktopTest, iOSPasswordPromoShownTestSecondImpression) {
   promos_utils::iOSPasswordPromoShown(profile());
   base::Time after = base::Time::Now();
 
-  ASSERT_EQ(
-      prefs()->GetInteger(promos_prefs::kiOSPasswordPromoImpressionsCounter),
-      2);
+  ASSERT_EQ(prefs()->GetInteger(
+                promos_prefs::kDesktopToiOSPasswordPromoImpressionsCounter),
+            2);
   ASSERT_GE(
-      prefs()->GetTime(promos_prefs::kiOSPasswordPromoLastImpressionTimestamp),
+      prefs()->GetTime(
+          promos_prefs::kDesktopToiOSPasswordPromoLastImpressionTimestamp),
       before);
   ASSERT_LE(
-      prefs()->GetTime(promos_prefs::kiOSPasswordPromoLastImpressionTimestamp),
+      prefs()->GetTime(
+          promos_prefs::kDesktopToiOSPasswordPromoLastImpressionTimestamp),
       after);
 
   histograms()->ExpectBucketCount(
