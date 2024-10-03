@@ -15,7 +15,7 @@ namespace constrained_window {
 
 class ConstrainedWindowViewsClient {
  public:
-  virtual ~ConstrainedWindowViewsClient() {}
+  virtual ~ConstrainedWindowViewsClient() = default;
 
   // Returns the modal window host for the |parent| native window.
   virtual web_modal::ModalDialogHost* GetModalDialogHost(
