@@ -142,6 +142,9 @@ void Clean(UpdaterScope scope);
 // test.
 void ExpectClean(UpdaterScope scope);
 
+// The overinstall timeout for `EnterTestMode`. Different for windows/mac/linux.
+base::TimeDelta GetOverinstallTimeoutForEnterTestMode();
+
 // Places the updater into test mode (redirect server URLs and disable CUP).
 void EnterTestMode(const GURL& update_url,
                    const GURL& crash_upload_url,
