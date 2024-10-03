@@ -710,7 +710,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // or create it if it doesn't already exist.
   ui::BrowserAccessibilityManager* GetOrCreateRootBrowserAccessibilityManager();
 
-  void RejectPointerLockOrUnlockIfNecessary(
+  // Virtual for testing.
+  virtual void RejectPointerLockOrUnlockIfNecessary(
       blink::mojom::PointerLockResult reason);
 
   // Store values received in a child frame RenderWidgetHost from a parent

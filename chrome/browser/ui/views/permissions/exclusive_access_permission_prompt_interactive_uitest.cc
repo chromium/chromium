@@ -7,9 +7,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/permissions/exclusive_access_permission_prompt_view.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -18,6 +20,10 @@
 namespace {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
+
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabElementId);
+#endif  // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 
 enum class TestContentSettings {
   kKeyboardLock,
@@ -56,9 +62,17 @@ class ExclusiveAccessPermissionPromptInteractiveTest
  protected:
   void TestPermissionPrompt(TestContentSettings test_content_settings,
                             ContentSetting expected_value) {
-    RunTestSequence(ShowPrompt(test_content_settings),
-                    PressPromptButton(GetButtonViewId(expected_value)),
-                    CheckOutcome(test_content_settings, expected_value));
+    if (test_content_settings == TestContentSettings::kPointerLock) {
+      RunTestSequence(CheckPointerLockPrompt(/*displayed=*/false),
+                      ShowPrompt(test_content_settings),
+                      CheckPointerLockPrompt(/*displayed=*/true),
+                      PressPromptButton(GetButtonViewId(expected_value)),
+                      CheckOutcome(test_content_settings, expected_value));
+    } else {
+      RunTestSequence(ShowPrompt(test_content_settings),
+                      PressPromptButton(GetButtonViewId(expected_value)),
+                      CheckOutcome(test_content_settings, expected_value));
+    }
   }
 
   MultiStep ShowPrompt(TestContentSettings test_content_settings) {
@@ -92,6 +106,17 @@ class ExclusiveAccessPermissionPromptInteractiveTest
           return true;
         },
         true));
+  }
+
+  // Adds a Step to validate that the pointer lock prompt is displayed.
+  MultiStep CheckPointerLockPrompt(bool displayed) {
+    return Steps(CheckResult(
+        [=, this]() {
+          return static_cast<content::WebContentsDelegate*>(browser())
+              ->IsWaitingForPointerLockPrompt(
+                  browser()->tab_strip_model()->GetActiveWebContents());
+        },
+        displayed));
   }
 
   ui::ElementIdentifier GetButtonViewId(ContentSetting expected_value) {
@@ -175,3 +200,90 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessPermissionPromptInteractiveTest,
   TestPermissionPrompt(TestContentSettings::kKeyboardAndPointerLock,
                        CONTENT_SETTING_BLOCK);
 }
+
+// Validates that the pointer lock request which is initiated from the
+// RenderWidgetHostImpl instance is isolated to the instance which
+// initiated the pointer lock request. For context on a page with iframes
+// each iframe (security context) would have its own RWHI instance.
+// Please note that this requires the iframes to exist in different site
+// instances.
+//
+// TODO(crbug.com/371112529): Add similar tests for pointer lock widget in
+// content.
+IN_PROC_BROWSER_TEST_F(ExclusiveAccessPermissionPromptInteractiveTest,
+                       PointerLockIsPerRenderWidgetHost) {
+  // Step 1: Navigate to the custom page with two sandboxed iframes
+  GURL main_url = ui_test_utils::GetTestUrl(
+      base::FilePath(FILE_PATH_LITERAL("pointer_lock")),
+      base::FilePath(FILE_PATH_LITERAL("page_with_two_iframes.html")));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+
+  content::RenderFrameHost* frame1 = nullptr;
+  content::RenderFrameHost* frame2 = nullptr;
+
+  // Step 2: Use ForEachRenderFrameHost to find both iframes
+  // TODO: Use FrameTree to find the iframes we are interested in.
+  web_contents->ForEachRenderFrameHost([&](content::RenderFrameHost* frame) {
+    std::string frame_name = frame->GetFrameName();
+    if (frame_name == "frame1") {
+      frame1 = frame;
+    } else if (frame_name == "frame2") {
+      frame2 = frame;
+    }
+  });
+
+  // Ensure that both iframes are found
+  ASSERT_TRUE(frame1);
+  ASSERT_TRUE(frame2);
+
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      FocusWebContents(kWebContentsElementId),
+      ExecuteJsAt(kWebContentsElementId, DeepQuery{"#pointer-lock"}, "click"),
+      // Step 5: Verify that the pointer lock prompt is displayed for frame1.
+      CheckPointerLockPrompt(/*displayed=*/true),
+      // Step 6: Interact with the pointer lock prompt (simulate clicking
+      // "Allow").
+      PressPromptButton(GetButtonViewId(CONTENT_SETTING_ALLOW)));
+
+  // Step 6: Ensure that the pointer lock is granted for frame1 and not for
+  // frame2.
+  EXPECT_TRUE(frame1->GetRenderWidgetHost()->GetView()->IsPointerLocked());
+  EXPECT_FALSE(frame2->GetRenderWidgetHost()->GetView()->IsPointerLocked());
+}
+
+// TODO: Enable these tests on Linux and Chrome OS.
+// These tests are currently disabled on Linux and Chrome OS due to
+// platform-specific issues.
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
+// Verifies that we can select the permission prompt after losing focus
+// to another tab and getting focus back.
+IN_PROC_BROWSER_TEST_F(ExclusiveAccessPermissionPromptInteractiveTest,
+                       AllowPointerLockAfterLosingFocus) {
+  TestContentSettings test_content_settings = TestContentSettings::kPointerLock;
+
+  RunTestSequence(
+      // Step 1: Verify the pointer lock prompt is not displayed initially.
+      CheckPointerLockPrompt(/*displayed=*/false),
+      // Step 2: Trigger the pointer lock prompt.
+      ShowPrompt(test_content_settings),
+      // Step 3: Verify that the pointer lock prompt is now displayed.
+      CheckPointerLockPrompt(/*displayed=*/true),
+      // Step 4: Simulate losing focus by switching to another tab.
+      InstrumentTab(kNewTabElementId),
+      NavigateWebContents(kNewTabElementId, GURL("about:blank")),
+      FocusWebContents(kNewTabElementId),
+      // Step 5: Switch back to the original tab to regain focus.
+      FocusWebContents(kWebContentsElementId),
+      // Step 6: Interact with the pointer lock prompt (simulate clicking
+      // "Allow").
+      PressPromptButton(GetButtonViewId(CONTENT_SETTING_ALLOW)),
+      // Step 7: Verify the expected outcome (pointer lock should be granted).
+      CheckOutcome(test_content_settings, CONTENT_SETTING_ALLOW));
+}
+#endif  // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)

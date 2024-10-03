@@ -126,6 +126,11 @@ RenderWidgetHostImpl* RenderWidgetHostDelegate::GetPointerLockWidget() {
   return nullptr;
 }
 
+bool RenderWidgetHostDelegate::IsWaitingForPointerLockPrompt(
+    RenderWidgetHostImpl* render_widget_host) {
+  return false;
+}
+
 bool RenderWidgetHostDelegate::RequestKeyboardLock(RenderWidgetHostImpl* host,
                                                    bool esc_key_locked) {
   return false;
