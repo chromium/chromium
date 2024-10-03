@@ -25,7 +25,7 @@ class Config {
     /** @type {Map<string, number>} */
     this.speeds = {up: 20, down: 20, left: 20, right: 20};
     /** @type {number} */
-    this.repeatDelayMs = -1;
+    this.repeatDelayMs = undefined;
     /** @type {boolean} */
     this.cursorControlEnabled = true;
     /** @type {boolean} */
@@ -318,7 +318,7 @@ FaceGazeTestBase = class extends E2ETestBase {
     await this.setPref(MouseController.PREF_SPD_LEFT, config.speeds.left);
     await this.setPref(MouseController.PREF_SPD_RIGHT, config.speeds.right);
 
-    if (config.repeatDelayMs > 0) {
+    if (config.repeatDelayMs !== undefined) {
       faceGaze.gestureHandler_.repeatDelayMs_ = config.repeatDelayMs;
     }
 

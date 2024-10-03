@@ -1214,7 +1214,7 @@ AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeGesturesLong', async function() {
                      .withMouseLocation({x: 600, y: 400})
                      .withGestureToMacroName(gestureToMacroName)
                      .withGestureToConfidence(gestureToConfidence)
-                     .withRepeatDelayMs(1);
+                     .withRepeatDelayMs(-1);
   await this.configureFaceGaze(config);
 
   // Trigger a mouse press and a key down.
