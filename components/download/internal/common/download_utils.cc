@@ -5,7 +5,9 @@
 #include "components/download/public/common/download_utils.h"
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
@@ -329,18 +331,22 @@ void HandleResponseHeaders(const net::HttpResponseHeaders* headers,
   if (headers->HasStrongValidators()) {
     // If we don't have strong validators as per RFC 7232 section 2, then
     // we neither store nor use them for range requests.
-    if (!headers->EnumerateHeader(nullptr, "Last-Modified",
-                                  &create_info->last_modified))
-      create_info->last_modified.clear();
-    if (!headers->EnumerateHeader(nullptr, "ETag", &create_info->etag))
-      create_info->etag.clear();
+    std::optional<std::string_view> last_modified =
+        headers->EnumerateHeader(nullptr, "Last-Modified");
+    create_info->last_modified = last_modified.value_or(std::string_view());
+
+    std::optional<std::string_view> etag =
+        headers->EnumerateHeader(nullptr, "ETag");
+    create_info->etag = etag.value_or(std::string_view());
   }
 
   // Grab the first content-disposition header.  There may be more than one,
   // though as of this writing, the network stack ensures if there are, they
   // are all duplicates.
-  headers->EnumerateHeader(nullptr, "Content-Disposition",
-                           &create_info->content_disposition);
+  std::optional<std::string_view> content_disposition =
+      headers->EnumerateHeader(nullptr, "Content-Disposition");
+  create_info->content_disposition =
+      content_disposition.value_or(std::string_view());
 
   // Parse the original mime type from the header, notice that actual mime type
   // might be different due to mime type sniffing.
