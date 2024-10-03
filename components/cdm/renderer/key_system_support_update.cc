@@ -289,12 +289,11 @@ bool CanSupportPersistentLicense() {
 // Remove `kPersistentLicense` support if it's not supported by the platform.
 base::flat_set<CdmSessionType> UpdatePersistentLicenseSupport(
     bool can_persist_data,
-    const base::flat_set<CdmSessionType> session_types) {
-  auto updated_session_types = session_types;
+    base::flat_set<CdmSessionType> session_types) {
   if (!can_persist_data || !CanSupportPersistentLicense()) {
-    updated_session_types.erase(CdmSessionType::kPersistentLicense);
+    session_types.erase(CdmSessionType::kPersistentLicense);
   }
-  return updated_session_types;
+  return session_types;
 }
 
 void AddWidevine(const media::KeySystemCapability& capability,

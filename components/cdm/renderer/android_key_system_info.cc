@@ -4,6 +4,8 @@
 
 #include "components/cdm/renderer/android_key_system_info.h"
 
+#include <utility>
+
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -32,9 +34,9 @@ AndroidKeySystemInfo::AndroidKeySystemInfo(
     base::flat_set<EncryptionScheme> hw_secure_encryption_schemes)
     : name_(name),
       sw_secure_codecs_(sw_secure_codecs),
-      sw_secure_encryption_schemes_(sw_secure_encryption_schemes),
+      sw_secure_encryption_schemes_(std::move(sw_secure_encryption_schemes)),
       hw_secure_codecs_(hw_secure_codecs),
-      hw_secure_encryption_schemes_(hw_secure_encryption_schemes) {
+      hw_secure_encryption_schemes_(std::move(hw_secure_encryption_schemes)) {
   DCHECK_NE(name, kWidevineKeySystem)
       << "Use WidevineKeySystemInfo for Widevine";
 }
