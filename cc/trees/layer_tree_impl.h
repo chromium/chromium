@@ -564,7 +564,7 @@ class CC_EXPORT LayerTreeImpl {
 
   bool IsElementInPropertyTree(ElementId element_id) const;
 
-  void SetSurfaceRanges(const base::flat_set<viz::SurfaceRange> surface_ranges);
+  void SetSurfaceRanges(base::flat_set<viz::SurfaceRange> surface_ranges);
   const base::flat_set<viz::SurfaceRange>& SurfaceRanges() const;
   void ClearSurfaceRanges();
 

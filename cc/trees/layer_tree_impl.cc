@@ -1854,7 +1854,7 @@ LayerImpl* LayerTreeImpl::LayerByElementId(ElementId element_id) const {
 }
 
 void LayerTreeImpl::SetSurfaceRanges(
-    const base::flat_set<viz::SurfaceRange> surface_ranges) {
+    base::flat_set<viz::SurfaceRange> surface_ranges) {
   DCHECK(surface_layer_ranges_.empty());
   surface_layer_ranges_ = std::move(surface_ranges);
   needs_surface_ranges_sync_ = true;
