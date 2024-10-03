@@ -470,7 +470,7 @@ def RunGsutilCommand(args, can_fail=False, ignore_fail=False):
       print('Warning: You might have an outdated .boto file. If this issue '
             'persists after running `gsutil.py config`, try removing your '
             '.boto, usually located in your home directory.')
-      sys.exit(1)
+      raise BisectException('gsutil credential error')
     elif can_fail:
       return stderr
     elif ignore_fail:
@@ -1603,6 +1603,7 @@ class DownloadJob:
     self.name = name
 
     self.results = {}
+    self.exc_info = None  # capture exception from worker thread
     self.quit_event = threading.Event()
     self.progress_event = threading.Event()
     self.thread = None
@@ -1656,6 +1657,8 @@ class DownloadJob:
         self._fetch(url, tmp_file)
     except RuntimeError:
       pass
+    except BaseException:
+      self.exc_info = sys.exc_info()
 
   def start(self):
     """Start the download in a thread."""
@@ -1684,6 +1687,8 @@ class DownloadJob:
         # The parameter to join is needed to keep the main thread responsive to
         # signals. Without it, the program will not respond to interruptions.
         self.thread.join(1)
+      if self.exc_info:
+        raise self.exc_info[1].with_traceback(self.exc_info[2])
       if self.quit_event.is_set():
         raise Exception('The DownloadJob was stopped.')
       if self.is_multiple:

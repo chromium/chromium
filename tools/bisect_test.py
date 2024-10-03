@@ -216,6 +216,24 @@ class DownloadJobTest(BisectTestCase):
     self.assertEqual(mock_gsutil.call_count, 2)
 
 
+  @patch(
+      "urllib.request.urlopen",
+      side_effect=urllib.request.HTTPError('url', 404, 'Not Found', None, None),
+  )
+  @patch('subprocess.Popen', spec=subprocess.Popen)
+  @patch('bisect-builds.GSUTILS_PATH', new='/some/path')
+  def test_download_failure_should_raised(self, mock_Popen, mock_urlopen):
+    fetch = bisect_builds.DownloadJob('http://some-file.zip', 123)
+    with self.assertRaises(urllib.request.HTTPError):
+      fetch.start().wait_for()
+
+    mock_Popen.return_value.communicate.return_value = (b'', b'status=403')
+    mock_Popen.return_value.returncode = 1
+    fetch = bisect_builds.DownloadJob('gs://some-file.zip', 123)
+    with self.assertRaises(bisect_builds.BisectException):
+      fetch.start().wait_for()
+
+
 class ArchiveBuildTest(BisectTestCase):
 
   def setUp(self):
