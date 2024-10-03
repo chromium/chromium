@@ -62,44 +62,42 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
 class ContentSuggestionsCoordinatorTest : public PlatformTest {
  public:
   void SetUp() override {
-    TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.AddTestingFactory(
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
-        SyncServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateMockSyncService));
-    test_cbs_builder.AddTestingFactory(
+    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                              base::BindRepeating(&CreateMockSyncService));
+    builder.AddTestingFactory(
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetInstance(),
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    builder.AddTestingFactory(
         ReadingListModelFactory::GetInstance(),
         base::BindRepeating(&BuildReadingListModelWithFakeStorage,
                             std::vector<scoped_refptr<ReadingListEntry>>()));
-    test_cbs_builder.AddTestingFactory(
+    builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
         base::BindRepeating(&BuildFeatureEngagementMockTracker));
-    test_cbs_builder.AddTestingFactory(
+    builder.AddTestingFactory(
         IOSChromeLargeIconServiceFactory::GetInstance(),
         IOSChromeLargeIconServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    builder.AddTestingFactory(
         commerce::ShoppingServiceFactory::GetInstance(),
         base::BindRepeating(
             [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
               return commerce::MockShoppingService::Build();
             }));
 
-    browser_state_ =
-        profile_manager_.AddProfileWithBuilder(std::move(test_cbs_builder));
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_, std::make_unique<FakeAuthenticationServiceDelegate>());
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
+    AuthenticationServiceFactory::CreateAndInitializeForProfile(
+        profile_, std::make_unique<FakeAuthenticationServiceDelegate>());
 
-    browser_ = std::make_unique<TestBrowser>(browser_state_);
+    browser_ = std::make_unique<TestBrowser>(profile_);
     StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser_.get());
 
     coordinator_ = [[ContentSuggestionsCoordinator alloc]
@@ -113,7 +111,7 @@ class ContentSuggestionsCoordinatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
-  raw_ptr<TestChromeBrowserState> browser_state_;
+  raw_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   ScopedKeyWindow scoped_key_window_;
   ContentSuggestionsCoordinator* coordinator_;
@@ -123,7 +121,7 @@ class ContentSuggestionsCoordinatorTest : public PlatformTest {
 TEST_F(ContentSuggestionsCoordinatorTest, TestLogEphemeralCardVisibility) {
   [coordinator_ logEphemeralCardVisibility:ContentSuggestionsModuleType::
                                                kPriceTrackingPromo];
-  EXPECT_EQ(1, browser_state_->GetTestingPrefService()->GetInteger(
+  EXPECT_EQ(1, profile_->GetTestingPrefService()->GetInteger(
                    "ephemeral_pref_counter.price_tracking_promo_counter"));
 }
 

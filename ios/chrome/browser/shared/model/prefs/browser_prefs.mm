@@ -817,7 +817,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   [BookmarkMediator registerBrowserStatePrefs:registry];
   [BookmarkPathCache registerBrowserStatePrefs:registry];
   [BookmarksHomeMediator registerBrowserStatePrefs:registry];
-  [ContentSuggestionsMediator registerBrowserStatePrefs:registry];
+  [ContentSuggestionsMediator registerProfilePrefs:registry];
   [HandoffManager registerBrowserStatePrefs:registry];
   [SigninCoordinator registerProfilePrefs:registry];
   [SigninPromoViewMediator registerProfilePrefs:registry];

@@ -40,33 +40,29 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
 class ShortcutsMediatorTest : public PlatformTest {
  public:
   ShortcutsMediatorTest() {
-    TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.AddTestingFactory(
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
         ReadingListModelFactory::GetInstance(),
         base::BindRepeating(&BuildReadingListModelWithFakeStorage,
                             std::vector<scoped_refptr<ReadingListEntry>>()));
-    test_cbs_builder.AddTestingFactory(
+    builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
         base::BindRepeating(&BuildFeatureEngagementMockTracker));
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        chrome_browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+    profile_ = std::move(builder).Build();
+    AuthenticationServiceFactory::CreateAndInitializeForProfile(
+        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
 
     dispatcher_ = OCMProtocolMock(@protocol(ShortcutsMediatorDispatcher));
 
     ReadingListModel* readingListModel =
-        ReadingListModelFactory::GetForBrowserState(
-            chrome_browser_state_.get());
+        ReadingListModelFactory::GetForProfile(profile_.get());
     feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForBrowserState(
-            chrome_browser_state_.get());
+        feature_engagement::TrackerFactory::GetForProfile(profile_.get());
     AuthenticationService* authentication_service =
-        AuthenticationServiceFactory::GetForBrowserState(
-            chrome_browser_state_.get());
+        AuthenticationServiceFactory::GetForProfile(profile_.get());
     mediator_ = [[ShortcutsMediator alloc]
         initWithReadingListModel:readingListModel
         featureEngagementTracker:(feature_engagement::Tracker*)tracker
@@ -82,7 +78,7 @@ class ShortcutsMediatorTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   ShortcutsMediator* mediator_;
   ContentSuggestionsMetricsRecorder* metrics_recorder_;
   id dispatcher_;

@@ -222,39 +222,37 @@ class MagicStackRankingModelTest : public PlatformTest {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{kMagicStack, {{kMagicStackMostVisitedModuleParam, "true"}}}}, {});
 
-    TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.AddTestingFactory(
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
-        SyncServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateMockSyncService));
-    test_cbs_builder.AddTestingFactory(
+    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                              base::BindRepeating(&CreateMockSyncService));
+    builder.AddTestingFactory(
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetInstance(),
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    builder.AddTestingFactory(
         ReadingListModelFactory::GetInstance(),
         base::BindRepeating(&BuildReadingListModelWithFakeStorage,
                             std::vector<scoped_refptr<ReadingListEntry>>()));
-    test_cbs_builder.AddTestingFactory(
+    builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
         base::BindRepeating(&BuildFeatureEngagementMockTracker));
-    test_cbs_builder.AddTestingFactory(
+    builder.AddTestingFactory(
         IOSChromeLargeIconServiceFactory::GetInstance(),
         IOSChromeLargeIconServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    builder.AddTestingFactory(
         commerce::ShoppingServiceFactory::GetInstance(),
         base::BindRepeating(
             [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
               return commerce::MockShoppingService::Build();
             }));
 
-    browser_state_ =
-        profile_manager_.AddProfileWithBuilder(std::move(test_cbs_builder));
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
-    browser_ = std::make_unique<TestBrowser>(GetBrowserState());
+    browser_ = std::make_unique<TestBrowser>(GetProfile());
 
     // Necessary set up for kIOSSetUpList.
     GetLocalState()->ClearPref(set_up_list_prefs::kDisabled);
@@ -266,15 +264,14 @@ class MagicStackRankingModelTest : public PlatformTest {
         std::make_unique<IOSChromeScopedTestingVariationsService>();
     scoped_variations_service_->Get()->OverrideStoredPermanentCountry("us");
 
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        GetBrowserState(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+    AuthenticationServiceFactory::CreateAndInitializeForProfile(
+        GetProfile(), std::make_unique<FakeAuthenticationServiceDelegate>());
     syncer::SyncService* syncService =
-        SyncServiceFactory::GetForBrowserState(GetBrowserState());
+        SyncServiceFactory::GetForProfile(GetProfile());
     AuthenticationService* authenticationService =
-        AuthenticationServiceFactory::GetForBrowserState(GetBrowserState());
+        AuthenticationServiceFactory::GetForProfile(GetProfile());
     signin::IdentityManager* identityManager =
-        IdentityManagerFactory::GetForProfile(GetBrowserState());
+        IdentityManagerFactory::GetForProfile(GetProfile());
 
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
@@ -283,18 +280,17 @@ class MagicStackRankingModelTest : public PlatformTest {
     StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser_.get());
 
     ReadingListModel* readingListModel =
-        ReadingListModelFactory::GetForBrowserState(GetBrowserState());
+        ReadingListModelFactory::GetForProfile(GetProfile());
     feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForBrowserState(
-            GetBrowserState());
+        feature_engagement::TrackerFactory::GetForProfile(GetProfile());
     AuthenticationService* authentication_service =
-        AuthenticationServiceFactory::GetForBrowserState(GetBrowserState());
+        AuthenticationServiceFactory::GetForProfile(GetProfile());
     _shortcutsMediator = [[ShortcutsMediator alloc]
         initWithReadingListModel:readingListModel
         featureEngagementTracker:(feature_engagement::Tracker*)tracker
                      authService:authentication_service];
     _setUpListMediator = [[FakeSetUpListMediator alloc]
-                   initWithPrefService:GetBrowserState()->GetPrefs()
+                   initWithPrefService:GetProfile()->GetPrefs()
                            syncService:syncService
                        identityManager:identityManager
                  authenticationService:authenticationService
@@ -304,19 +300,19 @@ class MagicStackRankingModelTest : public PlatformTest {
         deviceSwitcherResultDispatcher:nullptr];
     _setUpListMediator.shouldShowSetUpList = YES;
     _parcelTrackingMediator = [[FakeParcelTrackingMediator alloc]
-        initWithShoppingService:commerce::ShoppingServiceFactory::
-                                    GetForBrowserState(GetBrowserState())
+        initWithShoppingService:commerce::ShoppingServiceFactory::GetForProfile(
+                                    GetProfile())
          URLLoadingBrowserAgent:url_loader_
                     prefService:GetLocalState()];
     _tabResumptionMediator = [[FakeTabResumptionMediator alloc]
         initWithLocalState:GetLocalState()
-               prefService:GetBrowserState()->GetPrefs()
+               prefService:GetProfile()->GetPrefs()
            identityManager:identityManager
                    browser:browser_.get()];
     favicon::LargeIconService* large_icon_service =
-        IOSChromeLargeIconServiceFactory::GetForBrowserState(GetBrowserState());
+        IOSChromeLargeIconServiceFactory::GetForProfile(GetProfile());
     LargeIconCache* cache =
-        IOSChromeLargeIconCacheFactory::GetForBrowserState(GetBrowserState());
+        IOSChromeLargeIconCacheFactory::GetForProfile(GetProfile());
     std::unique_ptr<ntp_tiles::MostVisitedSites> most_visited_sites =
         std::make_unique<ntp_tiles::MostVisitedSites>(
             &pref_service_, /*identity_manager*/ nullptr,
@@ -325,7 +321,7 @@ class MagicStackRankingModelTest : public PlatformTest {
             /*custom_links*/ nullptr, /*icon_cacher*/ nullptr, true);
     _mostVisitedTilesMediator = [[FakeMostVisitedTilesMediator alloc]
         initWithMostVisitedSite:std::move(most_visited_sites)
-                    prefService:GetBrowserState()->GetPrefs()
+                    prefService:GetProfile()->GetPrefs()
                largeIconService:large_icon_service
                  largeIconCache:cache
          URLLoadingBrowserAgent:url_loader_];
@@ -334,17 +330,17 @@ class MagicStackRankingModelTest : public PlatformTest {
 
     _safetyCheckMediator = [[SafetyCheckMagicStackMediator alloc]
         initWithSafetyCheckManager:IOSChromeSafetyCheckManagerFactory::
-                                       GetForBrowserState(GetBrowserState())
+                                       GetForProfile(GetProfile())
                         localState:GetLocalState()
-                         userState:GetBrowserState()->GetPrefs()
+                         userState:GetProfile()->GetPrefs()
                           appState:mockAppState];
 
     _priceTrackingPromoMediator = [[PriceTrackingPromoMediator alloc]
-        initWithShoppingService:commerce::ShoppingServiceFactory::
-                                    GetForBrowserState(GetBrowserState())
+        initWithShoppingService:commerce::ShoppingServiceFactory::GetForProfile(
+                                    GetProfile())
                   bookmarkModel:nil
                    imageFetcher:nil
-                    prefService:GetBrowserState()->GetPrefs()
+                    prefService:GetProfile()->GetPrefs()
         pushNotificationService:nil
           authenticationService:nil];
 
@@ -354,11 +350,11 @@ class MagicStackRankingModelTest : public PlatformTest {
     _magicStackRankingModel = [[MagicStackRankingModel alloc]
         initWithSegmentationService:segmentation_platform::
                                         SegmentationPlatformServiceFactory::
-                                            GetForProfile(GetBrowserState())
+                                            GetForProfile(GetProfile())
                     shoppingService:commerce::ShoppingServiceFactory::
-                                        GetForBrowserState(GetBrowserState())
+                                        GetForProfile(GetProfile())
                         authService:authenticationService
-                        prefService:GetBrowserState()->GetPrefs()
+                        prefService:GetProfile()->GetPrefs()
                          localState:GetLocalState()
                     moduleMediators:@[
                       _shortcutsMediator,
@@ -379,7 +375,7 @@ class MagicStackRankingModelTest : public PlatformTest {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
-  ChromeBrowserState* GetBrowserState() { return browser_state_.get(); }
+  ProfileIOS* GetProfile() { return profile_.get(); }
 
   PrefService* GetLocalState() {
     return GetApplicationContext()->GetLocalState();
@@ -419,7 +415,7 @@ class MagicStackRankingModelTest : public PlatformTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   FakeSceneState* scene_state_;
   std::unique_ptr<Browser> browser_;
@@ -501,7 +497,7 @@ TEST_F(MagicStackRankingModelTest, TestOnServiceStatusChanged) {
   EXPECT_EQ(item_state, SetUpListItemState::kNotComplete);
 
   // Simulate the user disabling signin.
-  GetBrowserState()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
   // Verify that the signin item is complete.
   item_state = set_up_list_prefs::GetItemState(GetLocalState(),
                                                SetUpListItemType::kSignInSync);
@@ -670,8 +666,7 @@ TEST_F(MagicStackRankingModelTest, TestEphemeralModelDidGetCardToShow) {
       {});
   commerce::MockShoppingService* shopping_service =
       static_cast<commerce::MockShoppingService*>(
-          commerce::ShoppingServiceFactory::GetForBrowserState(
-              GetBrowserState()));
+          commerce::ShoppingServiceFactory::GetForProfile(GetProfile()));
   shopping_service->SetIsShoppingListEligible(true);
 
   FakeMagicStackRankingModelDelegate* delegate_ =

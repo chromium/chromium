@@ -31,13 +31,13 @@
 class ContentSuggestionsMediatorTest : public PlatformTest {
  public:
   void SetUp() override {
-    TestChromeBrowserState::Builder test_cbs_builder;
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
+    TestProfileIOS::Builder test_cbs_builder;
+    profile_ = std::move(test_cbs_builder).Build();
 
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     web_state_list_ = browser_->GetWebStateList();
     fake_web_state_ = std::make_unique<web::FakeWebState>();
-    fake_web_state_->SetBrowserState(chrome_browser_state_.get());
+    fake_web_state_->SetBrowserState(profile_.get());
     consumer_ = OCMProtocolMock(@protocol(ContentSuggestionsConsumer));
 
     mediator_ = [[ContentSuggestionsMediator alloc] init];
@@ -52,7 +52,7 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
     test_web_state->SetCurrentURL(GURL(url));
     test_web_state->SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
-    test_web_state->SetBrowserState(chrome_browser_state_.get());
+    test_web_state->SetBrowserState(profile_.get());
     return test_web_state;
   }
 
@@ -60,7 +60,7 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   raw_ptr<WebStateList> web_state_list_;
   std::unique_ptr<web::FakeWebState> fake_web_state_;

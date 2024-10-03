@@ -27,7 +27,7 @@ class Browser;
     : NSObject <MagicStackRankingModelDelegate>
 
 // Registers the feature preferences.
-+ (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry;
++ (void)registerProfilePrefs:(user_prefs::PrefRegistrySyncable*)registry;
 
 // Ranking Model for the Magic Stack.
 @property(nonatomic, weak) MagicStackRankingModel* magicStackRankingModel;

@@ -28,8 +28,8 @@
 class ParcelTrackingMediatorTest : public PlatformTest {
  public:
   ParcelTrackingMediatorTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     shopping_service_ = std::make_unique<commerce::MockShoppingService>();
     std::vector<commerce::ParcelTrackingStatus> parcels;
@@ -82,7 +82,7 @@ class ParcelTrackingMediatorTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   raw_ptr<FakeUrlLoadingBrowserAgent> url_loader_;
   std::unique_ptr<commerce::MockShoppingService> shopping_service_;

@@ -253,16 +253,16 @@ using segmentation_platform::TipIdentifier;
   }
   _started = YES;
 
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
+  PrefService* prefs = ProfileIOS::FromBrowserState(profile)->GetPrefs();
 
   _segmentationService =
       segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
-          browserState);
+          profile);
   _deviceSwitcherResultDispatcher = segmentation_platform::
-      SegmentationPlatformServiceFactory::GetDispatcherForProfile(browserState);
+      SegmentationPlatformServiceFactory::GetDispatcherForProfile(profile);
 
-  self.authService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
+  self.authService = AuthenticationServiceFactory::GetForProfile(profile);
 
   // Conditionally register for provisional Safety Check notifications if the
   // feature is enabled.
@@ -272,8 +272,7 @@ using segmentation_platform::TipIdentifier;
   // `ProvisionalPushNotificationUtil` circular dependencies are fixed.
   if (IsSafetyCheckNotificationsEnabled()) {
     _notificationsObserver = [[NotificationsSettingsObserver alloc]
-        initWithPrefService:ChromeBrowserState::FromBrowserState(browserState)
-                                ->GetPrefs()
+        initWithPrefService:prefs
                  localState:GetApplicationContext()->GetLocalState()];
 
     _notificationsObserver.delegate = self;
@@ -286,36 +285,32 @@ using segmentation_platform::TipIdentifier;
                                    deviceInfoSyncService:nil];
   }
 
-  PrefService* prefs =
-      ChromeBrowserState::FromBrowserState(browserState)->GetPrefs();
-
   favicon::LargeIconService* largeIconService =
-      IOSChromeLargeIconServiceFactory::GetForBrowserState(browserState);
+      IOSChromeLargeIconServiceFactory::GetForProfile(profile);
 
   LargeIconCache* cache =
-      IOSChromeLargeIconCacheFactory::GetForBrowserState(browserState);
+      IOSChromeLargeIconCacheFactory::GetForProfile(profile);
 
   std::unique_ptr<ntp_tiles::MostVisitedSites> mostVisitedFactory =
-      IOSMostVisitedSitesFactory::NewForBrowserState(browserState);
+      IOSMostVisitedSitesFactory::NewForBrowserState(profile);
 
   ReadingListModel* readingListModel =
-      ReadingListModelFactory::GetForBrowserState(browserState);
+      ReadingListModelFactory::GetForProfile(profile);
 
   self.contentSuggestionsMetricsRecorder =
       [[ContentSuggestionsMetricsRecorder alloc]
           initWithLocalState:GetApplicationContext()->GetLocalState()];
 
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(browserState);
+  syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
 
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
+      AuthenticationServiceFactory::GetForProfile(profile);
 
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(browserState);
+      IdentityManagerFactory::GetForProfile(profile);
 
   commerce::ShoppingService* shoppingService =
-      commerce::ShoppingServiceFactory::GetForBrowserState(browserState);
+      commerce::ShoppingServiceFactory::GetForProfile(profile);
 
   self.contentSuggestionsMediator = [[ContentSuggestionsMediator alloc] init];
 
@@ -344,7 +339,7 @@ using segmentation_platform::TipIdentifier;
   _shortcutsMediator = [[ShortcutsMediator alloc]
       initWithReadingListModel:readingListModel
       featureEngagementTracker:feature_engagement::TrackerFactory::
-                                   GetForBrowserState(browserState)
+                                   GetForProfile(profile)
                    authService:authenticationService];
   _shortcutsMediator.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;
@@ -369,15 +364,13 @@ using segmentation_platform::TipIdentifier;
   if (IsPriceTrackingPromoCardEnabled(shoppingService, authenticationService,
                                       prefs)) {
     _priceTrackingPromoMediator = [[PriceTrackingPromoMediator alloc]
-        initWithShoppingService:commerce::ShoppingServiceFactory::
-                                    GetForBrowserState(
-                                        self.browser->GetBrowserState())
-                  bookmarkModel:ios::BookmarkModelFactory::GetForBrowserState(
-                                    self.browser->GetBrowserState())
+        initWithShoppingService:commerce::ShoppingServiceFactory::GetForProfile(
+                                    profile)
+                  bookmarkModel:ios::BookmarkModelFactory::GetForProfile(
+                                    profile)
                    imageFetcher:std::make_unique<
                                     image_fetcher::ImageDataFetcher>(
-                                    self.browser->GetBrowserState()
-                                        ->GetSharedURLLoaderFactory())
+                                    profile->GetSharedURLLoaderFactory())
                     prefService:prefs
         pushNotificationService:GetApplicationContext()
                                     ->GetPushNotificationService()
@@ -406,7 +399,7 @@ using segmentation_platform::TipIdentifier;
   }
   if (IsSafetyCheckMagicStackEnabled()) {
     IOSChromeSafetyCheckManager* safetyCheckManager =
-        IOSChromeSafetyCheckManagerFactory::GetForBrowserState(browserState);
+        IOSChromeSafetyCheckManagerFactory::GetForProfile(profile);
     _safetyCheckMediator = [[SafetyCheckMagicStackMediator alloc]
         initWithSafetyCheckManager:safetyCheckManager
                         localState:GetApplicationContext()->GetLocalState()
@@ -436,7 +429,7 @@ using segmentation_platform::TipIdentifier;
       GetApplicationContext()->GetLocalState(), prefs);
   if (isSetupListEnabled) {
     const TemplateURL* defaultSearchURLTemplate =
-        ios::TemplateURLServiceFactory::GetForBrowserState(browserState)
+        ios::TemplateURLServiceFactory::GetForProfile(profile)
             ->GetDefaultSearchProvider();
     BOOL isDefaultSearchEngine = defaultSearchURLTemplate &&
                                  defaultSearchURLTemplate->prepopulate_id() ==
@@ -463,8 +456,7 @@ using segmentation_platform::TipIdentifier;
   _magicStackRankingModel = [[MagicStackRankingModel alloc]
       initWithSegmentationService:_segmentationService
                   shoppingService:commerce::ShoppingServiceFactory::
-                                      GetForBrowserState(
-                                          self.browser->GetBrowserState())
+                                      GetForProfile(profile)
                       authService:self.authService
                       prefService:prefs
                        localState:GetApplicationContext()->GetLocalState()
@@ -869,8 +861,7 @@ using segmentation_platform::TipIdentifier;
                                ContentSuggestionsModuleType::kSafetyCheck];
 
   IOSChromeSafetyCheckManager* safetyCheckManager =
-      IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
-          browser->GetBrowserState());
+      IOSChromeSafetyCheckManagerFactory::GetForProfile(browser->GetProfile());
 
   id<ApplicationCommands> applicationHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
@@ -1017,8 +1008,8 @@ using segmentation_platform::TipIdentifier;
       };
   // If there are 0 identities, kInstantSignin requires less taps.
   AuthenticationOperation operation =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState())
+      ChromeAccountManagerServiceFactory::GetForProfile(
+          self.browser->GetProfile())
               ->HasIdentities()
           ? AuthenticationOperation::kSigninOnly
           : AuthenticationOperation::kInstantSignin;

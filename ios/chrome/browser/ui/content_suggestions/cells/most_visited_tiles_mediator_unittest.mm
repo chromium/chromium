@@ -29,17 +29,16 @@
 class MostVisitedTilesMediatorTest : public PlatformTest {
  public:
   void SetUp() override {
-    TestChromeBrowserState::Builder test_cbs_builder;
+    TestProfileIOS::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         IOSChromeLargeIconServiceFactory::GetInstance(),
         IOSChromeLargeIconServiceFactory::GetDefaultFactory());
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
+    profile_ = std::move(test_cbs_builder).Build();
 
     favicon::LargeIconService* large_icon_service =
-        IOSChromeLargeIconServiceFactory::GetForBrowserState(
-            chrome_browser_state_.get());
-    LargeIconCache* cache = IOSChromeLargeIconCacheFactory::GetForBrowserState(
-        chrome_browser_state_.get());
+        IOSChromeLargeIconServiceFactory::GetForProfile(profile_.get());
+    LargeIconCache* cache =
+        IOSChromeLargeIconCacheFactory::GetForProfile(profile_.get());
     std::unique_ptr<ntp_tiles::MostVisitedSites> most_visited_sites =
         std::make_unique<ntp_tiles::MostVisitedSites>(
             &pref_service_, /*identity_manager*/ nullptr,
@@ -47,7 +46,7 @@ class MostVisitedTilesMediatorTest : public PlatformTest {
             /*popular_sites*/ nullptr,
             /*custom_links*/ nullptr, /*icon_cacher*/ nullptr, true);
 
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
     url_loader_ = FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
@@ -76,7 +75,7 @@ class MostVisitedTilesMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   raw_ptr<FakeUrlLoadingBrowserAgent> url_loader_;
   MostVisitedTilesMediator* mediator_;
