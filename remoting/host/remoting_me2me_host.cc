@@ -243,7 +243,7 @@ const char kWebRtcTraceEventFile[] = "webrtc-trace-event-file";
 
 // Helper to check if a string value is in a Policy allowlist.
 bool IsInAllowlist(std::string_view value,
-                   const std::vector<std::string> allowlist) {
+                   const std::vector<std::string>& allowlist) {
   return std::find_if(allowlist.begin(), allowlist.end(),
                       [&value](const std::string& allowed_value) {
                         return base::EqualsCaseInsensitiveASCII(value,
