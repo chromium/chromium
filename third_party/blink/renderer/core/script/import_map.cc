@@ -211,7 +211,7 @@ ImportMap* ImportMap::Parse(const String& input,
   }
 
   // <spec step="5">Let sortedAndNormalizedScopes be an empty map.</spec>
-  ScopeType sorted_and_normalized_scopes;
+  ScopesMap normalized_scopes_map;
 
   // <spec step="6">If parsed["scopes"] exists, then:</spec>
   if (parsed_map->Get("scopes")) {
@@ -234,7 +234,6 @@ ImportMap* ImportMap::Parse(const String& input,
 
     // <spec label="sort-and-normalize-scopes" step="1">Let normalized be an
     // empty map.</spec>
-    ScopeType normalized;
 
     // <spec label="sort-and-normalize-scopes" step="2">For each scopePrefix →
     // potentialSpecifierMap of originalMap,</spec>
@@ -281,18 +280,18 @@ ImportMap* ImportMap::Parse(const String& input,
       // normalized[normalizedScopePrefix] to the result of sorting and
       // normalizing a specifier map given potentialSpecifierMap and
       // baseURL.</spec>
-      sorted_and_normalized_scopes.push_back(std::make_pair(
-          prefix_url.GetString(),
-          SortAndNormalizeSpecifierMap(specifier_map, base_url, context)));
+      auto prefix_url_string = prefix_url.GetString();
+      if (normalized_scopes_map.find(prefix_url_string) !=
+          normalized_scopes_map.end()) {
+        // Later instances of a prefix override earlier ones. An explicit
+        // `erase` is needed because WTF HashMaps behave differently than spec
+        // infra ones, and do nothing if a key already exists.
+        normalized_scopes_map.erase(prefix_url_string);
+      }
+      normalized_scopes_map.insert(
+          prefix_url_string,
+          SortAndNormalizeSpecifierMap(specifier_map, base_url, context));
     }
-    // <spec label="sort-and-normalize-scopes" step="3">Return the result of
-    // sorting normalized, with an entry a being less than an entry b if b’s key
-    // is code unit less than a’s key.</spec>
-    std::sort(sorted_and_normalized_scopes.begin(),
-              sorted_and_normalized_scopes.end(),
-              [](const ScopeEntryType& a, const ScopeEntryType& b) {
-                return CodeUnitCompareLessThan(b.first, a.first);
-              });
   }
   // <spec step="7">Let normalizedIntegrity be an empty map.</spec>
   IntegrityMap normalized_integrity_map;
@@ -377,8 +376,7 @@ ImportMap* ImportMap::Parse(const String& input,
   // sortedAndNormalizedScopes.</spec>
   return MakeGarbageCollected<ImportMap>(
       std::move(sorted_and_normalized_imports),
-      std::move(sorted_and_normalized_scopes),
-      std::move(normalized_integrity_map));
+      std::move(normalized_scopes_map), std::move(normalized_integrity_map));
 }
 
 // <specdef
@@ -487,11 +485,13 @@ std::optional<ImportMap::MatchResult> ImportMap::MatchPrefix(
 ImportMap::ImportMap() = default;
 
 ImportMap::ImportMap(SpecifierMap&& imports,
-                     ScopeType&& scopes,
+                     ScopesMap&& scopes_map,
                      IntegrityMap&& integrity)
     : imports_(std::move(imports)),
-      scopes_(std::move(scopes)),
-      integrity_(std::move(integrity)) {}
+      scopes_map_(std::move(scopes_map)),
+      integrity_(std::move(integrity)) {
+  InitializeScopesVector();
+}
 
 // <specdef
 // href="https://https://html.spec.whatwg.org/C#resolve-a-module-specifier">
@@ -502,16 +502,16 @@ std::optional<KURL> ImportMap::Resolve(const ParsedSpecifier& parsed_specifier,
 
   // <spec step="8">For each scopePrefix → scopeImports of importMap’s
   // scopes,</spec>
-  for (const auto& entry : scopes_) {
+  for (const auto& scope : scopes_vector_) {
+    const auto& specifier_map = scopes_map_.at(scope);
     // <spec step="8.1">If scopePrefix is baseURLString, or if scopePrefix ends
     // with U+002F (/) and baseURLString starts with scopePrefix, then:</spec>
-    if (entry.first == base_url.GetString() ||
-        (entry.first.EndsWith("/") &&
-         base_url.GetString().StartsWith(entry.first))) {
+    if (scope == base_url.GetString() ||
+        (scope.EndsWith("/") && base_url.GetString().StartsWith(scope))) {
       // <spec step="8.1.1">Let scopeImportsMatch be the result of resolving an
       // imports match given normalizedSpecifier and scopeImports.</spec>
       std::optional<KURL> scope_match =
-          ResolveImportsMatch(parsed_specifier, entry.second, debug_message);
+          ResolveImportsMatch(parsed_specifier, specifier_map, debug_message);
 
       // <spec step="8.1.2">If scopeImportsMatch is not null, then return
       // scopeImportsMatch.</spec>
@@ -627,14 +627,15 @@ String ImportMap::ToStringForTesting() const {
   builder.Append(",\"scopes\":{");
 
   bool is_first = true;
-  for (const auto& entry : scopes_) {
+  for (const auto& scope : scopes_vector_) {
+    const auto& specifier_map = scopes_map_.at(scope);
     if (!is_first) {
       builder.Append(",");
     }
     is_first = false;
-    builder.Append(entry.first.EncodeForDebugging());
+    builder.Append(scope.EncodeForDebugging());
     builder.Append(":");
-    SpecifierMapToStringForTesting(builder, entry.second);
+    SpecifierMapToStringForTesting(builder, specifier_map);
   }
 
   builder.Append("},\"integrity\": {");
@@ -664,4 +665,16 @@ String ImportMap::GetIntegrity(const KURL& module_url) const {
   return it != integrity_.end() ? it->value : String();
 }
 
+// To be called when scopes_map_ is set/updated to make scopes_vector_ and
+// scopes_map_ consistent.
+void ImportMap::InitializeScopesVector() {
+  // <spec label="sort-and-normalize-scopes" step="3">Return the result of
+  // sorting normalized, with an entry a being less than an entry b if b’s key
+  // is code unit less than a’s key.</spec>
+  WTF::CopyKeysToVector(scopes_map_, scopes_vector_);
+  std::sort(scopes_vector_.begin(), scopes_vector_.end(),
+            [](const String& a, const String& b) {
+              return CodeUnitCompareLessThan(b, a);
+            });
+}
 }  // namespace blink

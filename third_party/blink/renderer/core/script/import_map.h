@@ -36,23 +36,25 @@ class CORE_EXPORT ImportMap final : public GarbageCollected<ImportMap> {
   // specifier map is an ordered map from strings to resolution results.</spec>
   //
   // An invalid KURL corresponds to a null resolution result in the spec.
-  //
-  // In Blink, we actually use an unordered map here, and related algorithms
-  // are implemented differently from the spec.
   using SpecifierMap = HashMap<String, KURL>;
 
   // <spec href="https://html.spec.whatwg.org/C#concept-import-map-scopes">an
   // ordered map of URLs to specifier maps.</spec>
-  using ScopeEntryType = std::pair<String, SpecifierMap>;
-  using ScopeType = Vector<ScopeEntryType>;
+  //
+  // Since we don't have an ordered map, we're using a combination of a map and
+  // a sorted vector.
+  using ScopesMap = HashMap<String, SpecifierMap>;
+  using ScopesVector = Vector<String>;
 
   using IntegrityMap = HashMap<KURL, String>;
 
   // Empty import map.
   ImportMap();
 
+  ImportMap(const ImportMap&);
+
   ImportMap(SpecifierMap&& imports,
-            ScopeType&& scopes,
+            ScopesMap&& scopes_map,
             IntegrityMap&& integrity);
 
   // Return values of Resolve(), ResolveImportsMatch() and
@@ -87,11 +89,16 @@ class CORE_EXPORT ImportMap final : public GarbageCollected<ImportMap> {
                                    const MatchResult&,
                                    String* debug_message) const;
 
+  void InitializeScopesVector();
+
   // https://html.spec.whatwg.org/C#concept-import-map-imports
   SpecifierMap imports_;
 
   // https://html.spec.whatwg.org/C#concept-import-map-scopes
-  ScopeType scopes_;
+  ScopesMap scopes_map_;
+  // This contains the sorted keys of scopes_map_, used to iterate over it in
+  // order.
+  ScopesVector scopes_vector_;
 
   // https://html.spec.whatwg.org/C#concept-import-map-integrity
   IntegrityMap integrity_;
