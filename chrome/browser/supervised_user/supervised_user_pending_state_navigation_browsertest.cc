@@ -122,11 +122,12 @@ class SupervisedUserPendingStateNavigationTest
 
   void WaitForReauthenticationInterstitial() {
     WaitForPageTitle(l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_TITLE));
-    // The "Next" button should be present and visible.
+    // The "Next" button should be visible.
     EXPECT_FALSE(
-        content::ExecJs(contents(),
-                        "document.querySelector(\".supervised-user-verified\")."
-                        "querySelector(\"#primary-button\").hidden;"));
+        content::EvalJs(contents(),
+                        "document.querySelector('#primary-button').hidden;")
+            .ExtractBool());
+
     EXPECT_EQ(
         ui_test_utils::FindInPage(
             contents(),
