@@ -37,6 +37,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "gpu/config/gpu_finch_features.h"
+#include "ui/display/display_features.h"
 #include "ui/gl/gl_switches.h"
 #endif
 
@@ -210,6 +211,16 @@ bool AllowColorSpaceCombination(
            gfx::ColorSpace::MatrixID::BT2020_NCL ||
        source_color_space.GetRangeID() == gfx::ColorSpace::RangeID::FULL)) {
     return false;
+  }
+
+  // Do not promote SDR content to overlay if the screen is in HDR10 mode.
+  // TODO(b/367739334): Fix color conversion layer in skia_renderer.cc
+  if (base::FeatureList::IsEnabled(
+          display::features::kEnableExternalDisplayHDR10Mode) &&
+      destination_color_space.GetContentColorUsage() ==
+          gfx::ContentColorUsage::kHDR) {
+    return source_color_space.GetContentColorUsage() ==
+           destination_color_space.GetContentColorUsage();
   }
 
   // Allow color space mismatches as long as either a) the source color space is
