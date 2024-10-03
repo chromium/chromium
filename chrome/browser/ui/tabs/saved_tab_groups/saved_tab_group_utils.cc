@@ -201,7 +201,6 @@ void SavedTabGroupUtils::DeleteSavedGroup(const Browser* browser,
   }
 }
 
-// See comment for TabStripModelDelegate::ConfirmGroupDeletion
 void SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
     Browser* browser,
     DeletionDialogController::DialogType type,

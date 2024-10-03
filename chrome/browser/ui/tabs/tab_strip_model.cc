@@ -1440,28 +1440,31 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
     }
 
     case CommandCloseTab: {
-      ReentrancyCheck reentrancy_check(&reentrancy_guard_);
-
       base::RecordAction(UserMetricsAction("TabContextMenu_CloseTab"));
-      ExecuteCloseTabsByIndicesCommand(GetIndicesForCommand(context_index));
+      ExecuteCloseTabsByIndicesCommand(
+          base::BindRepeating(&TabStripModel::GetIndicesForCommand,
+                              base::Unretained(this), context_index),
+          /*is_bulk_operation=*/false);
       break;
     }
 
     case CommandCloseOtherTabs: {
-      ReentrancyCheck reentrancy_check(&reentrancy_guard_);
-
       base::RecordAction(UserMetricsAction("TabContextMenu_CloseOtherTabs"));
       ExecuteCloseTabsByIndicesCommand(
-          GetIndicesClosedByCommand(context_index, command_id));
+          base::BindRepeating(&TabStripModel::GetIndicesClosedByCommand,
+                              base::Unretained(this), context_index,
+                              command_id),
+          /*is_bulk_operation=*/true);
       break;
     }
 
     case CommandCloseTabsToRight: {
-      ReentrancyCheck reentrancy_check(&reentrancy_guard_);
-
       base::RecordAction(UserMetricsAction("TabContextMenu_CloseTabsToRight"));
       ExecuteCloseTabsByIndicesCommand(
-          GetIndicesClosedByCommand(context_index, command_id));
+          base::BindRepeating(&TabStripModel::GetIndicesClosedByCommand,
+                              base::Unretained(this), context_index,
+                              command_id),
+          /*is_bulk_operation=*/true);
       break;
     }
 
@@ -1681,12 +1684,22 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       // Closes all tabs except the pinned home tab.
       base::RecordAction(UserMetricsAction("TabContextMenu_CloseAllTabs"));
 
-      std::vector<int> indices;
-      for (int i = count() - 1; i > 0; --i) {
-        indices.push_back(i);
-      }
+      base::RepeatingCallback<std::vector<int>()> get_indices =
+          base::BindRepeating(
+              [](base::RepeatingCallback<int()> count) {
+                std::vector<int> indices;
+                for (int i = count.Run() - 1; i > 0; --i) {
+                  indices.push_back(i);
+                }
+                return indices;
+              },
+              base::BindRepeating(&TabStripModel::count,
+                                  base::Unretained(this)));
 
-      ExecuteCloseTabsByIndicesCommand(indices);
+      // This does not qualify as a bulk operation because no tabs
+      // remain in the tab strip this command originates from.
+      ExecuteCloseTabsByIndicesCommand(get_indices,
+                                       /*is_bulk_operation=*/false);
       break;
     }
 
@@ -1772,28 +1785,41 @@ TabStripModel::GetGroupsDestroyedFromRemovingIndices(
   return groups_to_delete;
 }
 
+void TabStripModel::ExecuteCloseTabsByIndices(
+    base::RepeatingCallback<std::vector<int>()> get_indices_to_close,
+    uint32_t close_types) {
+  ReentrancyCheck reentrancy_check(&reentrancy_guard_);
+  const std::vector<int> indices_to_close =
+      std::move(get_indices_to_close).Run();
+  CloseTabs(GetWebContentsesByIndices(indices_to_close), close_types);
+}
+
 void TabStripModel::ExecuteCloseTabsByIndicesCommand(
-    const std::vector<int>& indices_to_delete) {
+    base::RepeatingCallback<std::vector<int>()> get_indices_to_close,
+    bool is_bulk_operation) {
   std::vector<tab_groups::TabGroupId> groups_to_delete =
-      GetGroupsDestroyedFromRemovingIndices(indices_to_delete);
+      GetGroupsDestroyedFromRemovingIndices(get_indices_to_close.Run());
 
   // If there are groups that will be deleted by closing tabs from the context
   // menu, confirm the group deletion first, and then perform the close, either
   // through the callback provided to confirm, or directly if the Confirm is
-  // allowing a synchronous delete.
-  base::OnceCallback<void()> callback =
-      base::BindOnce(&TabStripModel::CloseTabs, base::Unretained(this),
-                     GetWebContentsesByIndices(indices_to_delete),
+  // allowing a synchronous delete. The delegate gets to decide if the
+  // groups will be deleted or closed based on where this is a bulk
+  // operation.
+  base::OnceCallback<void()> close_callback =
+      base::BindOnce(&TabStripModel::ExecuteCloseTabsByIndices,
+                     base::Unretained(this), get_indices_to_close,
                      TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB |
                          TabCloseTypes::CLOSE_USER_GESTURE);
+
   if (!groups_to_delete.empty()) {
-    // If the delegate returns false for confirming the destroy of groups
-    // that means that the user needs to make a decision about the
-    // destruction first. prevent CloseTabs from being called.
-    return delegate_->OnGroupsDestruction(groups_to_delete,
-                                          std::move(callback));
+    // The delegate decides whether to close or delete the groups,
+    // potentially prompting the user to decide what action to take.
+    // ExecuteCloseTabs may or may not be called as a result.
+    delegate_->OnGroupsDestruction(groups_to_delete, std::move(close_callback),
+                                   is_bulk_operation);
   } else {
-    std::move(callback).Run();
+    std::move(close_callback).Run();
   }
 }
 

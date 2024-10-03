@@ -589,9 +589,12 @@ class TabStripModel : public TabGroupController {
 
   // There are multiple commands that close by indices. They all must check the
   // Group affiliation of the indices, confirm that they can delete groups, and
-  // then perform the close of the indices.
+  // then perform the close of the indices. A bulk operation is denoted
+  // as an operation that closes multiple tabs while leaving one or more
+  // tabs open in this window.
   void ExecuteCloseTabsByIndicesCommand(
-      const std::vector<int>& indices_to_delete);
+      base::RepeatingCallback<std::vector<int>()> get_indices_to_close,
+      bool is_bulk_operation);
 
   // Adds the tab at |context_index| to the given tab group |group|. If
   // |context_index| is selected the command applies to all selected tabs.
@@ -765,6 +768,14 @@ class TabStripModel : public TabGroupController {
   // into this method.
   void CloseTabs(base::span<content::WebContents* const> items,
                  uint32_t close_types);
+
+  // Executes a call to CloseTabs on the web contentses contained in tabs
+  // returned from |get_indices_to_close|. This is a helper method
+  // bound by ExecuteCloseTabsByIndicesCommand in order to properly
+  // protect the stack from reentrancy.
+  void ExecuteCloseTabsByIndices(
+      base::RepeatingCallback<std::vector<int>()> get_indices_to_close,
+      uint32_t close_types);
 
   // |close_types| is a bitmask of the types in CloseTypes.
   // Returns true if all the tabs have been deleted. A return value of false

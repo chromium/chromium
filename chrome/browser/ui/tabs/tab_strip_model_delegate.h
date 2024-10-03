@@ -188,12 +188,15 @@ class TabStripModelDelegate {
 
   // When performing actions to groups, some features may need to show
   // interstitials before allowing deletion. |groups| is a list of all of the
-  // groups that would be Closed by the |callback| which may be called by the
-  // implementation. This should be called with a non empty `group_ids`.
+  // groups that would be Closed by the |close_callback| which may be called by
+  // the implementation. This should be called with a non empty `group_ids`.
   // callback will either be executed by the delegate or asynchronously handled.
+  // A bulk operation suggests that the group should be closed rather
+  // than destroyed.
   virtual void OnGroupsDestruction(
       const std::vector<tab_groups::TabGroupId>& group_ids,
-      base::OnceCallback<void()> callback) = 0;
+      base::OnceCallback<void()> close_callback,
+      bool is_bulk_operation) = 0;
 
   virtual void OnRemovingAllTabsFromGroups(
       const std::vector<tab_groups::TabGroupId>& group_ids,

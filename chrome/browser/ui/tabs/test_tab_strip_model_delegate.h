@@ -61,7 +61,8 @@ class TestTabStripModelDelegate : public TabStripModelDelegate {
   bool IsNormalWindow() override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;
   void OnGroupsDestruction(const std::vector<tab_groups::TabGroupId>& group_ids,
-                           base::OnceCallback<void()> callback) override;
+                           base::OnceCallback<void()> callback,
+                           bool is_bulk_operation) override;
   void OnRemovingAllTabsFromGroups(
       const std::vector<tab_groups::TabGroupId>& group_ids,
       base::OnceCallback<void()> callback) override;
