@@ -82,9 +82,10 @@ proto_library("metric_data_proto") {
 
   sources = [ "synced/metric_data.proto" ]
 
-  link_deps = [ "//components/services/app_service/public/protos" ]
-
-  deps = [ ":session_affiliated_user_proto" ]
+  deps = [
+    ":session_affiliated_user_proto",
+    "//components/services/app_service/public/protos",
+  ]
 }
 
 proto_library("status_proto") {

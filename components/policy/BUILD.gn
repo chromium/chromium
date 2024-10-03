@@ -226,8 +226,7 @@ proto_library("cloud_policy_proto_generated_compile_proto") {
   component_build_force_source_set = true
   defines = [ "POLICY_PROTO_COMPILATION" ]
 
-  link_deps =
-      [ "//components/policy/proto:policy_common_definitions_compile_proto" ]
+  deps = [ "//components/policy/proto:policy_common_definitions_compile_proto" ]
   proto_deps = [ ":policy_code_generate" ]
 }
 
