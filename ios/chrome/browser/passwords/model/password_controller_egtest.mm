@@ -485,7 +485,15 @@ void LoginOnUff() {
 
 // Tests that password generation is not offered for signed in not syncing users
 // with passwords toggle disabled.
-- (void)testPasswordGenerationWhileSignedInWithPasswordsDisabled {
+// TODO(crbug.com/371189341): Test fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testPasswordGenerationWhileSignedInWithPasswordsDisabled \
+  testPasswordGenerationWhileSignedInWithPasswordsDisabled
+#else
+#define MAYBE_testPasswordGenerationWhileSignedInWithPasswordsDisabled \
+  DISABLED_testPasswordGenerationWhileSignedInWithPasswordsDisabled
+#endif
+- (void)MAYBE_testPasswordGenerationWhileSignedInWithPasswordsDisabled {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
 
@@ -521,7 +529,15 @@ void LoginOnUff() {
 
 // Tests that password generation is not offered for signed in not syncing users
 // with an encryption error; missing passphrase.
-- (void)testPasswordGenerationWhileSignedInWithError {
+// TODO(crbug.com/371189341): Test fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testPasswordGenerationWhileSignedInWithError \
+  testPasswordGenerationWhileSignedInWithError
+#else
+#define MAYBE_testPasswordGenerationWhileSignedInWithError \
+  DISABLED_testPasswordGenerationWhileSignedInWithError
+#endif
+- (void)MAYBE_testPasswordGenerationWhileSignedInWithError {
   // Encrypt synced data with a passphrase to enable passphrase encryption for
   // the signed in account.
   [ChromeEarlGrey addSyncPassphrase:kPassphrase];

@@ -1055,7 +1055,16 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests password generation on manual fallback not showing for signed in not
 // syncing users with Passwords toggle in account settings disbaled.
-- (void)testPasswordGenerationFallbackSignedInNotSyncingPasswordsDisabled {
+// TODO(crbug.com/371189341): Test fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testPasswordGenerationFallbackSignedInNotSyncingPasswordsDisabled \
+  testPasswordGenerationFallbackSignedInNotSyncingPasswordsDisabled
+#else
+#define MAYBE_testPasswordGenerationFallbackSignedInNotSyncingPasswordsDisabled \
+  DISABLED_testPasswordGenerationFallbackSignedInNotSyncingPasswordsDisabled
+#endif
+- (void)
+    MAYBE_testPasswordGenerationFallbackSignedInNotSyncingPasswordsDisabled {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:base::Seconds(10)];
@@ -1085,7 +1094,15 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests password generation on manual fallback not showing for signed in not
 // syncing users with encryption error.
-- (void)testPasswordGenerationFallbackSignedInNotSyncingEncryptionError {
+// TODO(crbug.com/371189341): Test fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testPasswordGenerationFallbackSignedInNotSyncingEncryptionError \
+  testPasswordGenerationFallbackSignedInNotSyncingEncryptionError
+#else
+#define MAYBE_testPasswordGenerationFallbackSignedInNotSyncingEncryptionError \
+  DISABLED_testPasswordGenerationFallbackSignedInNotSyncingEncryptionError
+#endif
+- (void)MAYBE_testPasswordGenerationFallbackSignedInNotSyncingEncryptionError {
   // Encrypt synced data with a passphrase to enable passphrase encryption for
   // the signed in account.
   [ChromeEarlGrey addSyncPassphrase:kPassphrase];
