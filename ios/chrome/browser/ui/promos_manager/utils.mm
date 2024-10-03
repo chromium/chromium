@@ -7,7 +7,8 @@
 #import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/app/application_delegate/app_state_observer.h"
+#import "ios/chrome/app/profile/profile_init_stage.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/policy/ui_bundled/user_policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -27,9 +28,9 @@ bool IsUIAvailableForPromo(SceneState* scene_state) {
   // display (please note the Promos Manager may still decide *not* to display a
   // promo, based on its own internal criteria):
 
-  // (1) The app initialization is over (the stage AppInitStage::kFinal is
-  // reached).
-  if (scene_state.appState.initStage < AppInitStage::kFinal) {
+  // (1) The profile initialization is over (the stage ProfileInitStage::kFinal
+  // is reached).
+  if (scene_state.profileState.initStage < ProfileInitStage::kFinal) {
     return NO;
   }
 
@@ -68,10 +69,11 @@ bool IsUIAvailableForPromo(SceneState* scene_state) {
   // (8) User Policy notification has priority over showing promos.
   // This will only prevent showing a promo before policy notification but might
   // show a promo within same user session.
-  ProfileIOS* profile = scene_state.browserProviderInterface
-                            .currentBrowserProvider.browser->GetProfile();
+  DCHECK(scene_state.profileState.profile);
+  ProfileIOS* profile = scene_state.profileState.profile;
   AuthenticationService* auth_service =
       AuthenticationServiceFactory::GetForProfile(profile);
+
   // Don't show promo until auth service is initialized and we are sure that
   // there is no conflict.
   if (!auth_service) {
