@@ -46,7 +46,7 @@ FontSizePrefsAndroid::FontSizePrefsAndroid(
                           base::Unretained(this)));
 }
 
-FontSizePrefsAndroid::~FontSizePrefsAndroid() {}
+FontSizePrefsAndroid::~FontSizePrefsAndroid() = default;
 
 void FontSizePrefsAndroid::SetFontScaleFactor(JNIEnv* env,
                                               const JavaRef<jobject>& obj,
