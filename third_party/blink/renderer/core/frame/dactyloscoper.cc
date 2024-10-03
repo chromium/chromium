@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/frame/dactyloscoper.h"
 
 #include "base/trace_event/typed_macros.h"
@@ -151,8 +146,7 @@ void Dactyloscoper::RecordDirectSurface(ExecutionContext* context,
     return;
   IdentifiableTokenBuilder builder;
   if (buffer && buffer->byteLength() > 0) {
-    builder.AddBytes(base::make_span(
-        static_cast<uint8_t*>(buffer->BaseAddress()), buffer->byteLength()));
+    builder.AddBytes(buffer->ByteSpan());
   }
   Dactyloscoper::RecordDirectSurface(context, feature, builder.GetToken());
 }

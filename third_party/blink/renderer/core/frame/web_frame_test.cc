@@ -28,13 +28,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/public/web/web_frame.h"
 
+#include <array>
 #include <initializer_list>
 #include <limits>
 #include <memory>
@@ -2342,15 +2338,15 @@ TEST_F(WebFrameTest,
 }
 
 TEST_F(WebFrameTest, SmallPermanentInitialPageScaleFactorIsClobbered) {
-  const char* pages[] = {
-      // These pages trigger the clobbering condition. There must be a matching
-      // item in "pageScaleFactors" array.
-      "viewport-device-0.5x-initial-scale.html",
-      "viewport-initial-scale-1.html",
-      // These ones do not.
-      "viewport-auto-initial-scale.html",
-      "viewport-target-densitydpi-device-and-fixed-width.html"};
-  float page_scale_factors[] = {0.5f, 1.0f};
+  const auto pages = std::to_array<const char*>(
+      {// These pages trigger the clobbering condition. There must be a matching
+       // item in "pageScaleFactors" array.
+       "viewport-device-0.5x-initial-scale.html",
+       "viewport-initial-scale-1.html",
+       // These ones do not.
+       "viewport-auto-initial-scale.html",
+       "viewport-target-densitydpi-device-and-fixed-width.html"});
+  const std::array<float, 2> page_scale_factors = {0.5f, 1.0f};
   for (size_t i = 0; i < std::size(pages); ++i)
     RegisterMockedHttpURLLoad(pages[i]);
 
@@ -2993,7 +2989,7 @@ TEST_F(WebFrameTest, targetDensityDpiHigh) {
 
   // high-dpi = 240
   float target_dpi = 240.0f;
-  float device_scale_factors[] = {1.0f, 4.0f / 3.0f, 2.0f};
+  std::array<float, 3> device_scale_factors = {1.0f, 4.0f / 3.0f, 2.0f};
   int viewport_width = 640;
   int viewport_height = 480;
 
@@ -3041,7 +3037,7 @@ TEST_F(WebFrameTest, targetDensityDpiHigh) {
 TEST_F(WebFrameTest, targetDensityDpiDevice) {
   RegisterMockedHttpURLLoad("viewport-target-densitydpi-device.html");
 
-  float device_scale_factors[] = {1.0f, 4.0f / 3.0f, 2.0f};
+  std::array<float, 3> device_scale_factors = {1.0f, 4.0f / 3.0f, 2.0f};
 
   int viewport_width = 640;
   int viewport_height = 480;
@@ -3087,7 +3083,7 @@ TEST_F(WebFrameTest, targetDensityDpiDeviceAndFixedWidth) {
   RegisterMockedHttpURLLoad(
       "viewport-target-densitydpi-device-and-fixed-width.html");
 
-  float device_scale_factors[] = {1.0f, 4.0f / 3.0f, 2.0f};
+  std::array<float, 3> device_scale_factors = {1.0f, 4.0f / 3.0f, 2.0f};
 
   int viewport_width = 640;
   int viewport_height = 480;

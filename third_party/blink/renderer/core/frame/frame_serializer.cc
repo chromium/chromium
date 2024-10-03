@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/frame/frame_serializer.h"
 
 #include "third_party/blink/public/web/web_frame_serializer.h"
@@ -998,9 +993,7 @@ void FrameSerializer::SerializeFrame(
 String FrameSerializer::MarkOfTheWebDeclaration(const KURL& url) {
   StringBuilder builder;
   bool emits_minus = false;
-  std::string orignal_url = url.GetString().Ascii();
-  for (const char* string = orignal_url.c_str(); *string; ++string) {
-    const char ch = *string;
+  for (const char ch : url.GetString().Ascii()) {
     if (ch == '-' && emits_minus) {
       builder.Append("%2D");
       emits_minus = false;

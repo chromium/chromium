@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/frame/local_frame_mojo_handler.h"
 
 #include "base/metrics/histogram_functions.h"
@@ -963,7 +958,7 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequestInIsolatedWorld(
 
   WebScriptSource web_script_source(javascript);
   frame_->RequestExecuteScript(
-      world_id, {&web_script_source, 1u},
+      world_id, base::span_from_ref(web_script_source),
       mojom::blink::UserActivationOption::kDoNotActivate,
       mojom::blink::EvaluationTiming::kSynchronous,
       mojom::blink::LoadEventBlockingOption::kDoNotBlock,
