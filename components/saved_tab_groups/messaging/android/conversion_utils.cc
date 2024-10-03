@@ -10,9 +10,9 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/uuid.h"
 #include "components/data_sharing/public/android/conversion_utils.h"
-#include "components/saved_tab_groups/android/tab_group_sync_conversions_bridge.h"
-#include "components/saved_tab_groups/android/tab_group_sync_conversions_utils.h"
 #include "components/saved_tab_groups/messaging/message.h"
+#include "components/saved_tab_groups/public/android/tab_group_sync_conversions_bridge.h"
+#include "components/saved_tab_groups/public/android/tab_group_sync_conversions_utils.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/saved_tab_groups/messaging/android/jni_headers/ConversionUtils_jni.h"

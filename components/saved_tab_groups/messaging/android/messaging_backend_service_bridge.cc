@@ -12,10 +12,10 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
-#include "components/saved_tab_groups/android/tab_group_sync_conversions_bridge.h"
-#include "components/saved_tab_groups/android/tab_group_sync_conversions_utils.h"
 #include "components/saved_tab_groups/messaging/android/conversion_utils.h"
 #include "components/saved_tab_groups/messaging/message.h"
+#include "components/saved_tab_groups/public/android/tab_group_sync_conversions_bridge.h"
+#include "components/saved_tab_groups/public/android/tab_group_sync_conversions_utils.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/saved_tab_groups/messaging/android/jni_headers/MessagingBackendServiceBridge_jni.h"

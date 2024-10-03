@@ -4,8 +4,8 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
-#include "components/saved_tab_groups/android/tab_group_sync_conversions_bridge.h"
-#include "components/saved_tab_groups/android/tab_group_sync_conversions_utils.h"
+#include "components/saved_tab_groups/public/android/tab_group_sync_conversions_bridge.h"
+#include "components/saved_tab_groups/public/android/tab_group_sync_conversions_utils.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "content/public/browser/navigation_handle.h"

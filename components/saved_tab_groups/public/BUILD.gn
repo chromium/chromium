@@ -36,6 +36,46 @@ source_set("public") {
   ]
 }
 
+if (is_android) {
+  source_set("conversion_utils") {
+    sources = [
+      "android/tab_group_sync_conversions_bridge.cc",
+      "android/tab_group_sync_conversions_bridge.h",
+      "android/tab_group_sync_conversions_utils.cc",
+      "android/tab_group_sync_conversions_utils.h",
+    ]
+    deps = [
+      ":conversion_utils_jni_headers",
+      "//base",
+      "//components/saved_tab_groups/public",
+      "//components/tab_groups",
+      "//url",
+    ]
+  }
+
+  android_library("conversion_utils_java") {
+    sources = [ "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncConversionsBridge.java" ]
+
+    deps = [
+      "//base:base_java",
+      "//components/saved_tab_groups/public:java",
+      "//components/tab_groups:tab_groups_java",
+      "//net/android:net_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//url:gurl_java",
+    ]
+
+    srcjar_deps = [ ":conversion_utils_jni_headers" ]
+  }
+
+  generate_jni("conversion_utils_jni_headers") {
+    visibility = [ ":*" ]
+
+    sources = [ "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncConversionsBridge.java" ]
+  }
+}
+
 source_set("features") {
   sources = [
     "features.cc",
