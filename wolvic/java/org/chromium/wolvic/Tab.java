@@ -5,6 +5,7 @@
 package org.chromium.wolvic;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
@@ -18,8 +19,10 @@ import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.navigation_controller.LoadURLType;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
+import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.wolvic.WolvicWebContentsDelegate;
 
@@ -110,6 +113,10 @@ public class Tab {
         mNavigationController.reload(true);
     }
 
+    public void loadData(@NonNull String data, @NonNull String mimeType, String encoding) {
+        loadUrl(LoadUrlParams.createLoadDataParams(fixupData(data), fixupMimeType(mimeType), "base64".equals(encoding)));
+    }
+
     public void loadUrl(@NonNull String uri) {
         LoadUrlParams params =
                 new LoadUrlParams(UrlFormatter.fixupUrl(uri).getPossiblyInvalidSpec());
@@ -170,6 +177,34 @@ public class Tab {
         } while (isEntryMarkedAsSkipped(currentIndex + offset));
 
         return offset;
+    }
+
+    private static String fixupMimeType(String mimeType) {
+        return TextUtils.isEmpty(mimeType) ? "text/html" : mimeType;
+    }
+
+    private static String fixupData(String data) {
+        return TextUtils.isEmpty(data) ? "" : data;
+    }
+
+    private void loadUrl(LoadUrlParams params) {
+	// Based on AwContents::loadUrl
+        if (params.getLoadUrlType() == LoadURLType.DATA && !params.isBaseUrlDataScheme()) {
+            // This allows data URLs with a non-data base URL access to file:///android_asset/ and
+            // file:///android_res/ URLs.
+            params.setCanLoadLocalResources(true);
+        }
+
+        // If we are reloading the same url, then set transition type as reload.
+        if (params.getUrl() != null
+                && params.getUrl().equals(mWebContents.getLastCommittedUrl().getSpec())
+                && params.getTransitionType() == PageTransition.TYPED) {
+            params.setTransitionType(PageTransition.RELOAD);
+        }
+        params.setTransitionType(params.getTransitionType() | PageTransition.FROM_API);
+        params.setUrl(UrlFormatter.fixupUrl(params.getUrl()).getPossiblyInvalidSpec());
+
+        mNavigationController.loadUrl(params);
     }
 
     @NativeMethods
