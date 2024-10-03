@@ -34,10 +34,6 @@ class GLSurface;
 
 namespace gpu {
 
-namespace webgpu {
-class DawnInstance;
-}  // namespace webgpu
-
 class VulkanImplementation;
 
 class GPU_IPC_SERVICE_EXPORT GpuSandboxHelper {
@@ -113,10 +109,6 @@ class GPU_IPC_SERVICE_EXPORT GpuInit {
 
 #if BUILDFLAG(SKIA_USE_DAWN)
   std::unique_ptr<DawnContextProvider> dawn_context_provider_;
-#endif
-
-#if BUILDFLAG(IS_WIN)
-  std::unique_ptr<webgpu::DawnInstance> dawn_instance_for_d3d12_shader_cache_;
 #endif
 
   GPUInfo gpu_info_;
