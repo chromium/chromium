@@ -71,14 +71,16 @@ namespace {
 // app window in those cases.
 bool ShouldCreateAppWindowForAppName(Profile* profile,
                                      const std::string& app_name) {
-  if (app_name.empty())
+  if (app_name.empty()) {
     return false;
+  }
 
   // Only need to check that the app is installed if |app_name| is for a
   // platform app or web app. (|app_name| could also be for a devtools window.)
   const std::string app_id = web_app::GetAppIdFromApplicationName(app_name);
-  if (app_id.empty())
+  if (app_id.empty()) {
     return true;
+  }
 
   return apps::IsInstalledApp(profile, app_id);
 }
@@ -133,8 +135,9 @@ std::map<std::string, std::string> BrowserLiveTabContext::GetExtraDataForTab(
     std::optional<std::pair<std::string, std::string>> side_search_data =
         side_search::MaybeGetSideSearchTabRestoreData(
             browser_->tab_strip_model()->GetWebContentsAt(index));
-    if (side_search_data.has_value())
+    if (side_search_data.has_value()) {
       extra_data.insert(side_search_data.value());
+    }
   }
 #endif  // defined(TOOLKIT_VIEWS)
 
@@ -256,19 +259,9 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
       // Save the group if it was not saved.
       if (!tab_group_service->GetGroup(group_id.value()).has_value() &&
           tab_groups::IsTabGroupsSaveV2Enabled()) {
-        tab_group_service->AddGroup(
+        tab_group_service->SaveGroup(
             tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
                 tab.group.value()));
-
-        if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
-          // Ensure we listen for changes to the newly created group.
-          // This is done automatically for the old service, not the new one.
-          std::optional<tab_groups::SavedTabGroup> s =
-              tab_group_service->GetGroup(group_id.value());
-          tab_group_service->ConnectLocalTabGroup(
-              s->saved_guid(), group_id.value(),
-              tab_groups::OpeningSource::kOpenedFromTabRestore);
-        }
       }
     }
   } else {

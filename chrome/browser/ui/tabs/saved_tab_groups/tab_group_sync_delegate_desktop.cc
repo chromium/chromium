@@ -116,6 +116,11 @@ void TabGroupSyncDelegateDesktop::CloseLocalTabGroup(
   listener_->RemoveLocalGroupFromSync(local_id);
 }
 
+void TabGroupSyncDelegateDesktop::DisconnectLocalTabGroup(
+    const LocalTabGroupID& local_id) {
+  listener_->DisconnectLocalTabGroup(local_id, ClosingSource::kDeletedByUser);
+}
+
 void TabGroupSyncDelegateDesktop::UpdateLocalTabGroup(
     const SavedTabGroup& group) {
   if (!group.local_group_id().has_value()) {

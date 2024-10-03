@@ -60,6 +60,11 @@ TabGroupSyncCoordinatorImpl::CreateScopedLocalObserverPauser() {
   return platform_delegate_->CreateScopedLocalObserverPauser();
 }
 
+void TabGroupSyncCoordinatorImpl::DisconnectLocalTabGroup(
+    const LocalTabGroupID& local_id) {
+  platform_delegate_->DisconnectLocalTabGroup(local_id);
+}
+
 void TabGroupSyncCoordinatorImpl::OnTabGroupAdded(const SavedTabGroup& group,
                                               TriggerSource source) {
   if (source != TriggerSource::REMOTE) {

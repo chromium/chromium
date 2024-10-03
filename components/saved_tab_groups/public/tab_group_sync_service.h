@@ -139,6 +139,11 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   virtual void OnTabSelected(const LocalTabGroupID& group_id,
                              const LocalTabID& tab_id) = 0;
 
+  // SaveGroup / UnsaveGroup are temporary solutions used during desktop's
+  // migration. Other clients should use AddGroup / RemoveGroup.
+  virtual void SaveGroup(SavedTabGroup group) = 0;
+  virtual void UnsaveGroup(const LocalTabGroupID& local_id) = 0;
+
   // Mutator methods for shared tab groups.
   // Converts the saved tab group to shared tab group and associates it with the
   // given `collaboration_id` (this is the same as data_sharing::GroupId). The

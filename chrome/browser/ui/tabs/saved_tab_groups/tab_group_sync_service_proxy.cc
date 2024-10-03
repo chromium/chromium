@@ -43,7 +43,7 @@ TabGroupSyncServiceProxy::TabGroupSyncServiceProxy(
 TabGroupSyncServiceProxy::~TabGroupSyncServiceProxy() = default;
 
 void TabGroupSyncServiceProxy::AddGroup(SavedTabGroup group) {
-  service_->SaveRestoredGroup(std::move(group));
+  service_->model()->Add(std::move(group));
 }
 
 void TabGroupSyncServiceProxy::RemoveGroup(const LocalTabGroupID& local_id) {
@@ -168,6 +168,14 @@ void TabGroupSyncServiceProxy::MoveTab(const LocalTabGroupID& group_id,
 void TabGroupSyncServiceProxy::OnTabSelected(const LocalTabGroupID& group_id,
                                              const LocalTabID& tab_id) {
   NOTIMPLEMENTED();
+}
+
+void TabGroupSyncServiceProxy::SaveGroup(SavedTabGroup group) {
+  service_->SaveRestoredGroup(std::move(group));
+}
+
+void TabGroupSyncServiceProxy::UnsaveGroup(const LocalTabGroupID& local_id) {
+  service_->UnsaveGroup(local_id, ClosingSource::kClosedByUser);
 }
 
 void TabGroupSyncServiceProxy::MakeTabGroupShared(

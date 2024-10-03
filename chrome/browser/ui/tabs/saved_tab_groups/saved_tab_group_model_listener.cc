@@ -80,7 +80,7 @@ void SavedTabGroupModelListener::OnTabGroupWillBeRemoved(
     return;
   }
 
-  if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
+  if (!local_tab_group_listeners_.contains(group_id)) {
     return;
   }
 

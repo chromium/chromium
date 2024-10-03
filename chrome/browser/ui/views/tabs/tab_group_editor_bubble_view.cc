@@ -668,9 +668,8 @@ void TabGroupEditorBubbleView::OnSaveTogglePressed() {
     base::RecordAction(
         base::UserMetricsAction("TabGroups_TabGroupBubble_GroupSaved"));
 
-    tab_groups::SavedTabGroup group =
-        tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(group_);
-    tab_group_service->AddGroup(std::move(group));
+    tab_group_service->SaveGroup(
+        tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(group_));
 
     views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
         kTabGroupSavedCustomEventId, save_group_toggle_);
@@ -685,7 +684,7 @@ void TabGroupEditorBubbleView::OnSaveTogglePressed() {
   } else {
     base::RecordAction(
         base::UserMetricsAction("TabGroups_TabGroupBubble_GroupUnsaved"));
-    tab_group_service->RemoveGroup(group_);
+    tab_group_service->UnsaveGroup(group_);
   }
 
   save_group_toggle_->GetViewAccessibility().SetName(

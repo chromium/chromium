@@ -369,6 +369,20 @@ void TabGroupSyncServiceImpl::OnTabSelected(const LocalTabGroupID& group_id,
   LogEvent(TabGroupEvent::kTabSelected, group_id, tab_id);
 }
 
+void TabGroupSyncServiceImpl::SaveGroup(SavedTabGroup group) {
+  const base::Uuid sync_id = group.saved_guid();
+  const LocalTabGroupID local_id = group.local_group_id().value();
+  AddGroup(std::move(group));
+  ConnectLocalTabGroup(sync_id, local_id, OpeningSource::kOpenedFromRevisitUi);
+}
+
+void TabGroupSyncServiceImpl::UnsaveGroup(const LocalTabGroupID& local_id) {
+  std::optional<SavedTabGroup> group = GetGroup(local_id);
+  CHECK(group);
+  coordinator_->DisconnectLocalTabGroup(local_id);
+  RemoveGroup(group->saved_guid());
+}
+
 void TabGroupSyncServiceImpl::MakeTabGroupShared(
     const LocalTabGroupID& local_group_id,
     std::string_view collaboration_id) {

@@ -38,6 +38,7 @@ class TabGroupSyncCoordinatorImpl : public TabGroupSyncCoordinator {
   void ConnectLocalTabGroup(const base::Uuid& sync_id,
                             const LocalTabGroupID& local_id,
                             OpeningSource opening_source) override;
+  void DisconnectLocalTabGroup(const LocalTabGroupID& local_id) override;
   std::unique_ptr<ScopedLocalObservationPauser>
   CreateScopedLocalObserverPauser() override;
 

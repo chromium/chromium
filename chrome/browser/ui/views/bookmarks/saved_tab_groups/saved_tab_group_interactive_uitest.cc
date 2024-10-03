@@ -62,29 +62,10 @@
 
 namespace tab_groups {
 
-class SavedTabGroupInteractiveTest
-    : public InteractiveBrowserTest,
-      public ::testing::WithParamInterface<bool> {
+class SavedTabGroupInteractiveTestBase : public InteractiveBrowserTest {
  public:
-  SavedTabGroupInteractiveTest() = default;
-  ~SavedTabGroupInteractiveTest() override = default;
-
-  void SetUp() override {
-    if (IsV2UIEnabled()) {
-      scoped_feature_list_.InitWithFeatures(
-          {tab_groups::kTabGroupsSaveUIUpdate, tab_groups::kTabGroupsSaveV2,
-           tab_groups::kTabGroupSyncServiceDesktopMigration},
-          {});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          {tab_groups::kTabGroupsSaveV2},
-          {tab_groups::kTabGroupsSaveUIUpdate,
-           tab_groups::kTabGroupSyncServiceDesktopMigration});
-    }
-    InteractiveBrowserTest::SetUp();
-  }
-
-  bool IsV2UIEnabled() const { return GetParam(); }
+  SavedTabGroupInteractiveTestBase() = default;
+  ~SavedTabGroupInteractiveTestBase() override = default;
 
   MultiStep ShowBookmarksBar() {
     return Steps(PressButton(kToolbarAppMenuButtonElementId),
@@ -99,13 +80,6 @@ class SavedTabGroupInteractiveTest
         std::move(WithView(kTabStripElementId, [](TabStrip* tab_strip) {
                     tab_strip->StopAnimating(true);
                   }).SetDescription("FinishTabstripAnimation")));
-  }
-
-  MultiStep HoverTabAt(int index) {
-    const char kTabToHover[] = "Tab to hover";
-    return Steps(NameDescendantViewByType<Tab>(kBrowserViewElementId,
-                                               kTabToHover, index),
-                 MoveMouseTo(kTabToHover));
   }
 
   MultiStep HoverTabGroupHeader(tab_groups::TabGroupId group_id) {
@@ -125,6 +99,39 @@ class SavedTabGroupInteractiveTest
                 },
                 group_id)),
         MoveMouseTo(kTabGroupHeaderToHover));
+  }
+};
+
+class SavedTabGroupInteractiveTest
+    : public SavedTabGroupInteractiveTestBase,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  SavedTabGroupInteractiveTest() = default;
+  ~SavedTabGroupInteractiveTest() override = default;
+
+  void SetUp() override {
+    if (IsV2UIEnabled()) {
+      scoped_feature_list_.InitWithFeatures(
+          {tab_groups::kTabGroupsSaveUIUpdate, tab_groups::kTabGroupsSaveV2,
+           tab_groups::kTabGroupSyncServiceDesktopMigration},
+          {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {tab_groups::kTabGroupsSaveV2},
+          {tab_groups::kTabGroupsSaveUIUpdate,
+           tab_groups::kTabGroupSyncServiceDesktopMigration});
+    }
+
+    SavedTabGroupInteractiveTestBase::SetUp();
+  }
+
+  bool IsV2UIEnabled() const { return GetParam(); }
+
+  MultiStep HoverTabAt(int index) {
+    const char kTabToHover[] = "Tab to hover";
+    return Steps(NameDescendantViewByType<Tab>(kBrowserViewElementId,
+                                               kTabToHover, index),
+                 MoveMouseTo(kTabToHover));
   }
 
   MultiStep OpenTabGroupEditorMenu(tab_groups::TabGroupId group_id) {
@@ -210,6 +217,58 @@ class SavedTabGroupInteractiveTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+// Used to test SavedTabGroups V2 specific features such as the save toggle.
+class SavedTabGroupInteractiveTestV1
+    : public SavedTabGroupInteractiveTestBase,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  SavedTabGroupInteractiveTestV1() = default;
+  ~SavedTabGroupInteractiveTestV1() override = default;
+
+  void SetUp() override {
+    if (IsV2UIEnabled()) {
+      scoped_feature_list_.InitWithFeatures(
+          {tab_groups::kTabGroupSyncServiceDesktopMigration},
+          {tab_groups::kTabGroupsSaveV2});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {}, {tab_groups::kTabGroupSyncServiceDesktopMigration,
+               tab_groups::kTabGroupsSaveV2});
+    }
+
+    SavedTabGroupInteractiveTestBase::SetUp();
+  }
+
+  bool IsV2UIEnabled() const { return GetParam(); }
+
+  MultiStep SaveGroupLeaveEditorBubbleOpen(tab_groups::TabGroupId group_id) {
+    return Steps(EnsureNotPresent(kTabGroupEditorBubbleId),
+                 // Right click on the header to open the editor bubble.
+                 HoverTabGroupHeader(group_id), ClickMouse(ui_controls::RIGHT),
+                 // Wait for the tab group editor bubble to appear.
+                 WaitForShow(kTabGroupEditorBubbleId),
+                 // Click the save toggle and make sure the saved tab group
+                 // appears in the bookmarks bar.
+                 PressButton(kTabGroupEditorBubbleSaveToggleId));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTestV1,
+                       ToggleSavedStateOfGroup) {
+  const tab_groups::TabGroupId& group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0});
+  RunTestSequence(FinishTabstripAnimations(), ShowBookmarksBar(),
+                  // Verify pressing the toggle saves the group.
+                  SaveGroupLeaveEditorBubbleOpen(group_id),
+                  EnsurePresent(kSavedTabGroupButtonElementId),
+                  // Verify pressing the toggle again unsaves the group.
+                  PressButton(kTabGroupEditorBubbleSaveToggleId),
+                  EnsureNotPresent(kSavedTabGroupButtonElementId));
+}
 
 IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest, CreateGroupAndSave) {
   browser()->tab_strip_model()->AddToNewGroup({0});
@@ -1145,4 +1204,7 @@ INSTANTIATE_TEST_SUITE_P(SavedTabGroupBar,
                          SavedTabGroupInteractiveTest,
                          testing::Bool());
 
+INSTANTIATE_TEST_SUITE_P(SavedTabGroupBar,
+                         SavedTabGroupInteractiveTestV1,
+                         testing::Bool());
 }  // namespace tab_groups

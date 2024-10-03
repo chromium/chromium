@@ -199,14 +199,7 @@ void TabsApiUnitTest::MaybeSaveLocalTabGroup(
 
   tab_groups::SavedTabGroup saved_group =
       tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(local_id);
-  const base::Uuid sync_id = saved_group.saved_guid();
-  sync_service()->AddGroup(std::move(saved_group));
-  if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
-    // Manually observe the group for V1 code paths. These code paths were
-    // introduced before autosaving which is why this is required.
-    sync_service()->ConnectLocalTabGroup(sync_id, local_id,
-                                         tab_groups::OpeningSource::kUnknown);
-  }
+  sync_service()->SaveGroup(std::move(saved_group));
 
   ASSERT_TRUE(sync_service()->GetGroup(local_id));
 }

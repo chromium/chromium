@@ -9,6 +9,7 @@
 #import "base/check.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/notimplemented.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/uuid.h"
 #import "components/saved_tab_groups/public/saved_tab_group_tab.h"
@@ -215,6 +216,11 @@ void IOSTabGroupSyncDelegate::CloseLocalTabGroup(
   CloseAllWebStatesInGroup(*tab_group_info.web_state_list,
                            tab_group_info.tab_group,
                            WebStateList::CLOSE_NO_FLAGS);
+}
+
+void IOSTabGroupSyncDelegate::DisconnectLocalTabGroup(
+    const LocalTabGroupID& local_id) {
+  NOTIMPLEMENTED();
 }
 
 void IOSTabGroupSyncDelegate::UpdateLocalTabGroup(

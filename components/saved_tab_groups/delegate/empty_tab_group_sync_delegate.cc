@@ -29,6 +29,9 @@ void EmptyTabGroupSyncDelegate::CreateLocalTabGroup(
 void EmptyTabGroupSyncDelegate::CloseLocalTabGroup(
     const LocalTabGroupID& local_id) {}
 
+void EmptyTabGroupSyncDelegate::DisconnectLocalTabGroup(
+    const LocalTabGroupID& local_id) {}
+
 void EmptyTabGroupSyncDelegate::UpdateLocalTabGroup(
     const SavedTabGroup& group) {}
 

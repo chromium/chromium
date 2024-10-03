@@ -15,6 +15,7 @@
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/types.h"
 
 namespace {
 
@@ -41,6 +42,17 @@ namespace tab_groups {
 FakeTabGroupSyncService::FakeTabGroupSyncService() = default;
 
 FakeTabGroupSyncService::~FakeTabGroupSyncService() = default;
+
+void FakeTabGroupSyncService::SaveGroup(SavedTabGroup group) {
+  const base::Uuid sync_id = group.saved_guid();
+  const LocalTabGroupID local_id = group.local_group_id().value();
+  AddGroup(std::move(group));
+  ConnectLocalTabGroup(sync_id, local_id, OpeningSource::kOpenedFromRevisitUi);
+}
+
+void FakeTabGroupSyncService::UnsaveGroup(const LocalTabGroupID& local_id) {
+  RemoveGroup(local_id);
+}
 
 void FakeTabGroupSyncService::AddGroup(SavedTabGroup group) {
   groups_.push_back(group);

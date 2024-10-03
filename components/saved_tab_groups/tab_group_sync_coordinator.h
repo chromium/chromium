@@ -32,6 +32,7 @@ class TabGroupSyncCoordinator : public TabGroupSyncService::Observer {
   virtual void ConnectLocalTabGroup(const base::Uuid& sync_id,
                                     const LocalTabGroupID& local_id,
                                     OpeningSource opening_source) = 0;
+  virtual void DisconnectLocalTabGroup(const LocalTabGroupID& local_id) = 0;
   virtual std::unique_ptr<ScopedLocalObservationPauser>
   CreateScopedLocalObserverPauser() = 0;
 
