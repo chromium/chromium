@@ -167,8 +167,9 @@ enum Sandbox {
   kNearby,
 
   // Hosts On Device Translation service.
-  // Currently the sandboxing of the On Device Translation service is supported
-  // only on macOS and Linux.
+  // Currently the sandboxing of the On Device Translation service needs
+  // a dedicated sandbox type on macOS and Linux.
+  // On Windows the kService sandbox type is used.
   // TODO(crbug.com/340778819): Implement sandboxing on other platforms.
   [EnableIf=is_linux_or_mac]
   kOnDeviceTranslation,

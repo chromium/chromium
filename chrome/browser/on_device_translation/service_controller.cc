@@ -28,6 +28,7 @@
 #include "components/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
 #include "components/services/on_device_translation/public/mojom/translator.mojom.h"
 #include "content/public/browser/service_process_host.h"
+#include "content/public/browser/service_process_host_passkeys.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
@@ -188,6 +189,11 @@ OnDeviceTranslationServiceController::OnDeviceTranslationServiceController()
       content::ServiceProcessHost::Options()
           .WithDisplayName(kOnDeviceTranslationServiceDisplayName)
           .WithExtraCommandLineSwitches(extra_switches)
+#if BUILDFLAG(IS_WIN)
+          .WithPreloadedLibraries(
+              {GetTranslateKitLibraryPath()},
+              content::ServiceProcessHostPreloadLibraries::GetPassKey())
+#endif
           .Pass());
   StartOpeningLanguagePackFiles();
 }

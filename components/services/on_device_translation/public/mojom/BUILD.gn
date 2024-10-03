@@ -17,4 +17,7 @@ mojom("mojom") {
   if (is_linux || is_mac) {
     enabled_features += [ "is_linux_or_mac" ]
   }
+  if (is_win || is_linux || is_mac) {
+    enabled_features += [ "is_linux_or_mac_or_win" ]
+  }
 }

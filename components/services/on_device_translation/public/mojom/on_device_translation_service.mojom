@@ -47,7 +47,10 @@ struct OnDeviceTranslationServiceConfig {
 [EnableIf=is_linux_or_mac]
 const sandbox.mojom.Sandbox kOnDeviceTranslationSandbox
     = sandbox.mojom.Sandbox.kOnDeviceTranslation;
-[EnableIfNot=is_linux_or_mac]
+[EnableIf=is_win]
+const sandbox.mojom.Sandbox kOnDeviceTranslationSandbox
+    = sandbox.mojom.Sandbox.kService;
+[EnableIfNot=is_linux_or_mac_or_win]
 const sandbox.mojom.Sandbox kOnDeviceTranslationSandbox
     = sandbox.mojom.Sandbox.kNoSandbox;
 
