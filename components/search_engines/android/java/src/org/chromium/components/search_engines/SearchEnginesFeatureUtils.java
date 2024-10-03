@@ -4,60 +4,91 @@
 
 package org.chromium.components.search_engines;
 
+import androidx.annotation.VisibleForTesting;
+
 /** Helpers to access feature params for {@link SearchEnginesFeatures}. */
 public final class SearchEnginesFeatureUtils {
+    /**
+     * Whether the feature should be powered by a fake backend. This avoid having dependencies on
+     * other device apps/components to test the feature.
+     *
+     * <p>In "fake backend" mode, if the "dialog_timeout_millis" param is set, it is also used to
+     * simulate a long-running backend query. It will respond that blocking is required after
+     * <tt>min(3000, paramValue("dialog_timeout_millis"))</tt> milliseconds.
+     *
+     * <p>This param is surfaced in <tt>chrome://flags</tt>.
+     */
     public static boolean clayBlockingUseFakeBackend() {
-        assert SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)
-                : "Avoid accessing params on disabled features!";
-
-        return SearchEnginesFeatureMap.getInstance()
-                .getFieldTrialParamByFeatureAsBoolean(
-                        SearchEnginesFeatures.CLAY_BLOCKING, "use_fake_backend", false);
-    }
-
-    public static boolean clayBlockingIsDarkLaunch() {
-        assert SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)
-                : "Avoid accessing params on disabled features!";
-
-        return SearchEnginesFeatureMap.getInstance()
-                .getFieldTrialParamByFeatureAsBoolean(
-                        SearchEnginesFeatures.CLAY_BLOCKING, "is_dark_launch", false);
-    }
-
-    public static boolean clayBlockingEnableVerboseLogging() {
-        assert SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)
-                : "Avoid accessing params on disabled features!";
-
-        return SearchEnginesFeatureMap.getInstance()
-                .getFieldTrialParamByFeatureAsBoolean(
-                        SearchEnginesFeatures.CLAY_BLOCKING, "enable_verbose_logging", false);
+        return clayBlockingFeatureParamAsBoolean("use_fake_backend", false);
     }
 
     /**
-     * Delay in milliseconds after which the blocking dialog will time out and stop blocking. Should
-     * to be a positive value. The timeout feature will be disabled if an unexpected value is
-     * provided.
+     * Whether the feature is in "dark launch" mode. It means that even if the feature is enabled:
+     *
+     * <ul>
+     *   <li>The dialog will not be shown
+     *   <li>The service query timeout mechanism will not be active, since it starts counting from
+     *       when the dialog is shown
+     *   <li>Some metrics and events will not be recorded, if they depend on the dialog being shown.
+     * </ul>
+     */
+    public static boolean clayBlockingIsDarkLaunch() {
+        return clayBlockingFeatureParamAsBoolean("is_dark_launch", false);
+    }
+
+    /**
+     * Whether verbose logs should be enabled.
+     *
+     * <p>This param is surfaced in <tt>chrome://flags</tt>.
+     */
+    public static boolean clayBlockingEnableVerboseLogging() {
+        return clayBlockingFeatureParamAsBoolean("enable_verbose_logging", false);
+    }
+
+    /**
+     * Delay in milliseconds after which the blocking dialog will time out and stop blocking. The
+     * timer starts when the dialog is actually shown.
+     *
+     * <p>Should to be a positive value. The timeout feature will be disabled if an unexpected value
+     * is provided.
      */
     public static int clayBlockingDialogTimeoutMillis() {
-        assert SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)
-                : "Avoid accessing params on disabled features!";
-
-        return SearchEnginesFeatureMap.getInstance()
-                .getFieldTrialParamByFeatureAsInt(
-                        SearchEnginesFeatures.CLAY_BLOCKING, "dialog_timeout_millis", 60_000);
+        return clayBlockingFeatureParamAsInt("dialog_timeout_millis", 60_000);
     }
 
     /**
      * Millis during which we don't block the user with the dialog while determining whether
-     * blocking should be done.
+     * blocking should be done. After this delay, if we didn't get a response from the backend about
+     * whether the blocking should be done, we start blocking by showing the dialog in "Pending"
+     * mode, with the action button disable.
+     *
+     * <p>Should be a positive value. Showing the dialog in "Pending" mode will be disabled if an
+     * unexpected value is provided. <tt>0</tt> deliberately also disables the dialog. If we want to
+     * show the pending dialog "immediately", we can use another very small duration (e.g. <tt>1
+     * ms</tt>), which should be functionally identical.
      */
     public static int clayBlockingDialogSilentlyPendingDurationMillis() {
+        return clayBlockingFeatureParamAsInt("silent_pending_duration_millis", 0);
+    }
+
+    @VisibleForTesting
+    static boolean clayBlockingFeatureParamAsBoolean(String param, boolean defaultValue) {
+        assert SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)
+                : "Avoid accessing params on disabled features!";
+
+        return SearchEnginesFeatureMap.getInstance()
+                .getFieldTrialParamByFeatureAsBoolean(
+                        SearchEnginesFeatures.CLAY_BLOCKING, param, defaultValue);
+    }
+
+    @VisibleForTesting
+    static int clayBlockingFeatureParamAsInt(String param, int defaultValue) {
         assert SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)
                 : "Avoid accessing params on disabled features!";
 
         return SearchEnginesFeatureMap.getInstance()
                 .getFieldTrialParamByFeatureAsInt(
-                        SearchEnginesFeatures.CLAY_BLOCKING, "silent_pending_duration_millis", 0);
+                        SearchEnginesFeatures.CLAY_BLOCKING, param, defaultValue);
     }
 
     // Do not instantiate this class.

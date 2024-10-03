@@ -37,9 +37,11 @@ import org.chromium.base.Promise;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.components.search_engines.SearchEngineCountryDelegate.DeviceChoiceEventType;
+import org.chromium.components.search_engines.test.util.SearchEnginesFeaturesTestUtil;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
 
 @SmallTest
 @RunWith(ParameterizedRobolectricTestRunner.class)
@@ -234,15 +236,17 @@ public class SearchEngineChoiceServiceUnitTest {
 
     private static void configureClayBlockingFeature(
             boolean isClayBlockingEnabled, boolean isDarkLaunchEnabled) {
-        var testFeatures = new FeatureList.TestValues();
-        testFeatures.addFeatureFlagOverride(
-                SearchEnginesFeatures.CLAY_BLOCKING, isClayBlockingEnabled);
-        testFeatures.addFieldTrialParamOverride(
-                SearchEnginesFeatures.CLAY_BLOCKING,
-                "is_dark_launch",
-                isDarkLaunchEnabled ? "true" : "");
-        testFeatures.addFieldTrialParamOverride(
-                SearchEnginesFeatures.CLAY_BLOCKING, "dialog_timeout_millis", "0");
-        FeatureList.setTestValues(testFeatures);
+        if (isClayBlockingEnabled) {
+            SearchEnginesFeaturesTestUtil.configureClayBlockingFeatureParams(
+                    Map.of(
+                            // Param 1
+                            "is_dark_launch",
+                            isDarkLaunchEnabled ? "true" : "",
+                            // Param 2
+                            "dialog_timeout_millis",
+                            "0"));
+        } else {
+            FeatureList.setTestFeatures(Map.of(SearchEnginesFeatures.CLAY_BLOCKING, false));
+        }
     }
 }

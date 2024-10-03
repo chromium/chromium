@@ -185,18 +185,19 @@ class ChoiceDialogMediator {
             Log.i(TAG, "Mediator initializing");
         }
 
-        if (!mIsDeviceChoiceRequiredSupplier.hasValue()) {
+        int silentlyPendingDurationMillis =
+                SearchEnginesFeatureUtils.clayBlockingDialogSilentlyPendingDurationMillis();
+        if (!mIsDeviceChoiceRequiredSupplier.hasValue() && silentlyPendingDurationMillis > 0) {
             // An initial response from the supplier is still pending, so it won't call the observer
-            // on registration by itself. It's unclear how long it would take. We proactively
-            // trigger the blocking dialog. We use a grace period (externally configured via
-            // `SearchEnginesFeatureUtils.clayBlockingDialogSilentlyPendingDurationMillis()`) before
-            // showing so that if the backend responds quickly enough, we can reduce the chances to
-            // unnecessarily show the dialog.
+            // on registration by itself. It's unclear how long it would take.
+            // If a positive `clayBlockingDialogSilentlyPendingDurationMillis()` grace period
+            // duration is provided, we proactively trigger the blocking dialog after this time
+            // elapses.
             ThreadUtils.postOnUiThreadDelayed(
                     () -> {
                         if (mDialogType != DialogType.LOADING) {
-                            // Another update arrived via the supplier, which changed the internal
-                            // state. No need to show it here anymore.
+                            // The backend responded quickly enough, and updated the state. We don't
+                            // need to show the dialog here anymore.
                             return;
                         }
 
@@ -208,7 +209,7 @@ class ChoiceDialogMediator {
                             Log.i(TAG, "Dialog shown while waiting for a backend response.");
                         }
                     },
-                    SearchEnginesFeatureUtils.clayBlockingDialogSilentlyPendingDurationMillis());
+                    silentlyPendingDurationMillis);
         }
         mIsDeviceChoiceRequiredSupplier.addObserver(mIsDeviceChoiceRequiredObserver);
         mLifecycleDispatcher.register(mActivityLifecycleObserver);

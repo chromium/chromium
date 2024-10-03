@@ -40,6 +40,7 @@ android_library("java") {
 android_library("features_java") {
   deps = [
     "//base:base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
 
@@ -84,6 +85,7 @@ android_library("test_utils_java") {
     "java/src/org/chromium/components/search_engines/FakeTemplateUrl.java",
     "java/src/org/chromium/components/search_engines/TemplateUrlTestHelpers.java",
     "java/src/org/chromium/components/search_engines/test/util/SearchEngineChoiceServiceTestUtil.java",
+    "java/src/org/chromium/components/search_engines/test/util/SearchEnginesFeaturesTestUtil.java",
   ]
   deps = [
     ":delegate_java",
@@ -111,6 +113,7 @@ android_library("junit") {
     "//base:base_junit_test_support",
     "//base:promise_java",
     "//base:supplier_java",
+    "//components/search_engines/android:test_utils_java",
     "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",

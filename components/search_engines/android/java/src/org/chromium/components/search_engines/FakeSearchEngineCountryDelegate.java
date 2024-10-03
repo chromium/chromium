@@ -149,7 +149,9 @@ public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate
                             }
                             mIsChoiceRequired.set(true);
                         },
-                        dialogTimeoutMillis / 2);
+                        // Don't go beyond 3 seconds timeout, it doesn't help with testing and looks
+                        // broken.
+                        Math.min(dialogTimeoutMillis / 2, 3000));
             } else {
                 mIsChoiceRequired = new ObservableSupplierImpl<>(true);
             }
