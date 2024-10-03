@@ -40,7 +40,8 @@ using l10n_util::GetNSString;
     config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
     config.additional_args.push_back("Desktop");
   }
-  if ([self isRunningTest:@selector(testAndroidSwitcherPromoDisplayed)]) {
+  if ([self isRunningTest:@selector
+            (DISABLED_testAndroidSwitcherPromoDisplayed)]) {
     config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
     config.additional_args.push_back("AndroidPhone");
   }
@@ -74,7 +75,8 @@ using l10n_util::GetNSString;
 }
 
 // Tests if the android switcher promo text is correctly displayed.
-- (void)testAndroidSwitcherPromoDisplayed {
+// TODO(crbug.com/371185539): fails consistently.
+- (void)DISABLED_testAndroidSwitcherPromoDisplayed {
   [[EarlGrey
       selectElementWithMatcher:
           grey_text(GetNSString(
