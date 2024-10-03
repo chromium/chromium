@@ -93,7 +93,6 @@
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache.h"
-#include "chrome/browser/ui/webui/page_not_available_for_guest/page_not_available_for_guest_ui.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_utils.h"
@@ -216,14 +215,6 @@ WebUIController* NewComponentUI(WebUI* web_ui, const GURL& url) {
   return new WEB_UI_CONTROLLER(web_ui, std::move(delegate));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-template <>
-WebUIController* NewWebUI<PageNotAvailableForGuestUI>(WebUI* web_ui,
-                                                      const GURL& url) {
-  return new PageNotAvailableForGuestUI(web_ui, url.host());
-}
-#endif
-
 template <>
 WebUIController* NewWebUI<commerce::CommerceInternalsUI>(WebUI* web_ui,
                                                          const GURL& url) {
@@ -300,13 +291,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (profile->IsGuestSession() &&
-      (url.host_piece() == chrome::kChromeUIAppLauncherPageHost ||
-       url.host_piece() == chrome::kChromeUINewTabPageHost ||
-       url.host_piece() == chrome::kChromeUINewTabPageThirdPartyHost ||
-       url.host_piece() == password_manager::kChromeUIPasswordManagerHost)) {
-    return &NewWebUI<PageNotAvailableForGuestUI>;
-  }
   if (url.host_piece() == chrome::kChromeUINewTabHost) {
     // The URL chrome://newtab/ can be either a virtual or a real URL,
     // depending on the context. In this case, it is always a real URL that

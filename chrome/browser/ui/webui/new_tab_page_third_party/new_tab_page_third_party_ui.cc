@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_handler.h"
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache.h"
+#include "chrome/browser/ui/webui/page_not_available_for_guest/page_not_available_for_guest_ui.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/browser/ui/webui/webui_util_desktop.h"
@@ -52,6 +53,17 @@ bool NewTabPageThirdPartyUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
   return !profile->IsOffTheRecord();
+}
+
+std::unique_ptr<content::WebUIController>
+NewTabPageThirdPartyUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                                    const GURL& url) {
+  Profile* profile = Profile::FromWebUI(web_ui);
+  if (profile->IsGuestSession()) {
+    return std::make_unique<PageNotAvailableForGuestUI>(
+        web_ui, chrome::kChromeUINewTabPageThirdPartyHost);
+  }
+  return std::make_unique<NewTabPageThirdPartyUI>(web_ui);
 }
 
 namespace {

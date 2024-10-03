@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/webui/extension_control_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
+#include "chrome/browser/ui/webui/page_not_available_for_guest/page_not_available_for_guest_ui.h"
 #include "chrome/browser/ui/webui/password_manager/promo_card.h"
 #include "chrome/browser/ui/webui/password_manager/promo_cards_handler.h"
 #include "chrome/browser/ui/webui/password_manager/sync_handler.h"
@@ -41,7 +42,6 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/grit/components_scaled_resources.h"
-#include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
@@ -72,9 +72,16 @@
 #include "chrome/grit/settings_shared_resources_map.h"
 #endif
 
-PasswordManagerUIConfig::PasswordManagerUIConfig()
-    : DefaultWebUIConfig(content::kChromeUIScheme,
-                         password_manager::kChromeUIPasswordManagerHost) {}
+std::unique_ptr<content::WebUIController>
+PasswordManagerUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                               const GURL& url) {
+  Profile* profile = Profile::FromWebUI(web_ui);
+  if (profile->IsGuestSession()) {
+    return std::make_unique<PageNotAvailableForGuestUI>(
+        web_ui, password_manager::kChromeUIPasswordManagerHost);
+  }
+  return std::make_unique<PasswordManagerUI>(web_ui);
+}
 
 namespace {
 
