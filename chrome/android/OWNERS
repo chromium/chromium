@@ -1,3 +1,8 @@
+# Anyone can apply to join //chrome/android/OWNERS. We expect:
+#  * Landed >300 CLs and reviewed >500 CLs spanning many directories in //chrome/android
+#  * Be an OWNER of at least 3 subdirectories of //chrome/android.
+# Please email dtrainor@, tedchoc@, twellington@, and yfriedman@ for approval.
+
 agrieve@chromium.org
 bsazonov@chromium.org
 ckitagawa@chromium.org
@@ -5,6 +10,8 @@ dtrainor@chromium.org
 mthiesse@chromium.org
 nyquist@chromium.org
 peconn@chromium.org
+pnoland@chromium.org
+skym@chromium.org
 tedchoc@chromium.org
 twellington@chromium.org
 wenyufu@chromium.org
