@@ -13,7 +13,6 @@ import android.view.WindowManager;
 import androidx.activity.ComponentDialog;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.graphics.Insets;
 import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -44,11 +43,11 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
             mModelChangeProcessor;
 
     private InsetObserver mInsetObserver;
-    private Insets mSystemInsets;
     private OnApplyWindowInsetsListener mWindowInsetsListener;
 
     private int mHorizontalMargin;
     private int mVerticalMargin;
+    private int mFixedMargin;
 
     private class ViewBinder extends ModalDialogViewBinder {
         @Override
@@ -188,29 +187,43 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
         mInsetObserver = insetObserver;
     }
 
-    /** Updates dialog margins to avoid drawing into system insets' regions. */
+    /**
+     * Updates dialog margins to maintain a fixed distance from the app window's edges and to avoid
+     * drawing into system insets' regions.
+     */
     private void updateMargins() {
-        if (mInsetObserver == null) return;
         if (mDialog == null || isFullScreenDialog(mContext, mModel)) return;
 
-        var windowInsets = mInsetObserver.getLastRawWindowInsets();
-        if (windowInsets == null) return;
-
-        var systemInsets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
-        // We will continue to set model properties and request relayout if needed even if system
-        // insets don't change so that every dialog that is added / resized can take these margins
-        // (even if unchanged) into account when the view is measured.
-        if (!systemInsets.equals(mSystemInsets)) {
-            // Calculate margins only if insets have changed.
-            int fixedMargin =
+        // All modals should maintain a fixed distance from the app window's edges.
+        if (mFixedMargin == 0) {
+            // Extract the resource if not already extracted.
+            mFixedMargin =
                     mContext.getResources()
                             .getDimensionPixelSize(R.dimen.modal_dialog_view_external_margin);
-            mHorizontalMargin =
-                    Math.max(Math.max(systemInsets.left, systemInsets.right), fixedMargin);
-            mVerticalMargin =
-                    Math.max(Math.max(systemInsets.top, systemInsets.bottom), fixedMargin);
+            mHorizontalMargin = mFixedMargin;
+            mVerticalMargin = mFixedMargin;
         }
-        mSystemInsets = systemInsets;
+
+        // Recalculate the margins to account for system insets if applicable.
+        // TODO (crbug/370575347): System insets should be considered only when E2E is active.
+        if (mInsetObserver != null) {
+            var windowInsets = mInsetObserver.getLastRawWindowInsets();
+            if (windowInsets != null) {
+                var systemInsets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+                mHorizontalMargin =
+                        Math.max(Math.max(systemInsets.left, systemInsets.right), mFixedMargin);
+                mVerticalMargin =
+                        Math.max(Math.max(systemInsets.top, systemInsets.bottom), mFixedMargin);
+            }
+        }
+
+        int currHorizontalMargin = mModel.get(ModalDialogProperties.HORIZONTAL_MARGIN);
+        int currVerticalMargin = mModel.get(ModalDialogProperties.VERTICAL_MARGIN);
+
+        // Margins for the current modal are already updated as needed.
+        if (currHorizontalMargin == mHorizontalMargin && currVerticalMargin == mVerticalMargin) {
+            return;
+        }
 
         mModel.set(ModalDialogProperties.HORIZONTAL_MARGIN, mHorizontalMargin);
         mModel.set(ModalDialogProperties.VERTICAL_MARGIN, mVerticalMargin);

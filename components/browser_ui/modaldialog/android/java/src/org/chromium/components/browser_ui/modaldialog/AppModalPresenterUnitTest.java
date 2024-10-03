@@ -235,6 +235,22 @@ public class AppModalPresenterUnitTest {
         verifyDialogMargins(25, 40);
     }
 
+    @Test
+    public void addDialogView_NullInsetObserver() {
+        mAppModalPresenter.setInsetObserver(null);
+
+        // Setup test window dimensions.
+        mDisplayMetrics.heightPixels = WINDOW_HEIGHT;
+        mDisplayMetrics.widthPixels = WINDOW_WIDTH;
+
+        // Add dialog view.
+        addDialogView();
+
+        // Verify dialog margins are set to the fixed value of 16dp, when window insets are not
+        // available.
+        verifyDialogMargins(16, 16);
+    }
+
     private void setupWindow(
             int windowWidth,
             int windowHeight,

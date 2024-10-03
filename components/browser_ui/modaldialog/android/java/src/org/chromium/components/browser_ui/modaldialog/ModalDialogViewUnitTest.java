@@ -234,9 +234,10 @@ public class ModalDialogViewUnitTest {
         assertEquals("Height is incorrect.", expectedHeight, mDialogView.getMeasuredHeight());
     }
 
-    /** Tests that dialog uses specified size when margins are not set. */
+    /** Tests that dialog uses specified size when margins are not set on phones. */
     @Test
-    public void measure_MarginsNotSet() {
+    @Config(qualifiers = "sw320dp")
+    public void measure_MarginsNotSet_Phone() {
         // Set window size.
         var windowWidth = 800;
         var windowHeight = 800;
@@ -253,6 +254,29 @@ public class ModalDialogViewUnitTest {
 
         assertEquals("Width is incorrect.", 500, mDialogView.getMeasuredWidth());
         assertEquals("Height is incorrect.", 500, mDialogView.getMeasuredHeight());
+    }
+
+    /** Tests that dialog uses specified size if margins are not set on tablets. */
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void measure_MarginsNotSet_Tablet() {
+        // Set window size.
+        var windowWidth = 800;
+        var windowHeight = 800;
+        mDisplayMetrics.widthPixels = windowWidth;
+        mDisplayMetrics.heightPixels = windowHeight;
+
+        // Create model without margins set.
+        createModel(mModelBuilder, MIN_DIALOG_WIDTH, MIN_DIALOG_HEIGHT);
+
+        // Measure view.
+        var widthMeasureSpec =
+                MeasureSpec.makeMeasureSpec(MIN_DIALOG_WIDTH + 200, MeasureSpec.AT_MOST);
+        var heightMeasureSpec = MeasureSpec.makeMeasureSpec(MIN_DIALOG_HEIGHT, MeasureSpec.AT_MOST);
+        mDialogView.measure(widthMeasureSpec, heightMeasureSpec);
+
+        assertEquals("Width is incorrect.", MIN_DIALOG_WIDTH + 200, mDialogView.getMeasuredWidth());
+        assertEquals("Height is incorrect.", MIN_DIALOG_HEIGHT, mDialogView.getMeasuredHeight());
     }
 
     private void createModel(
