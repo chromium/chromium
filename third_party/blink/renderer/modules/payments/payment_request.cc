@@ -1365,9 +1365,6 @@ PaymentRequest::PaymentRequest(
     validated_details->shipping_options = std::nullopt;
   }
 
-  DCHECK(shipping_type_.IsNull() || shipping_type_ == "shipping" ||
-         shipping_type_ == "delivery" || shipping_type_ == "pickup");
-
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       execution_context->GetTaskRunner(TaskType::kUserInteraction);
 

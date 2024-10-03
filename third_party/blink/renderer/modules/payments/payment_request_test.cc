@@ -213,7 +213,7 @@ TEST(PaymentRequestTest, NullShippingTypeWhenRequestShippingIsFalse) {
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(), details,
       options, scope.GetExceptionState());
 
-  EXPECT_TRUE(request->shippingType().IsNull());
+  EXPECT_FALSE(request->shippingType().has_value());
 }
 
 TEST(PaymentRequestTest,
