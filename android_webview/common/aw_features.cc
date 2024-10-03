@@ -45,10 +45,6 @@ BASE_FEATURE(kWebViewEnumerateDevicesCache,
              "WebViewEnumerateDevicesCache",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebViewExitReasonMetric,
-             "WebViewExitReasonMetric",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable JS FileSystemAccess API.
 // TODO(b/364980165): Add targetSdkVersion checks before enabling.
 BASE_FEATURE(kWebViewFileSystemAccess,
