@@ -8288,6 +8288,22 @@
             ]
         }
     ],
+    "DisableBruschettaInstallChecks": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DisableBruschettaInstallChecks"
+                    ],
+                    "min_os_version": "131.0.6740.0"
+                }
+            ]
+        }
+    ],
     "DisableGles2ForOopR": [
         {
             "platforms": [
