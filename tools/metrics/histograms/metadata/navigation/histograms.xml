@@ -118,8 +118,14 @@ chromium-metrics-reviews@google.com.
   <variant name="LocalFrame.SwapIn" summary="LocalFrame::SwapIn()"/>
   <variant name="PendingDeletionCheckCompletedOnSubtree"
       summary="RenderFrameHostImpl::PendingDeletionCheckCompletedOnSubtree()"/>
+  <variant name="ProxyImpl.ReleaseLayerTreeFrameSinkOnImpl"
+      summary="ProxyImpl::ReleaseLayerTreeFrameSinkOnImpl()"/>
+  <variant name="ProxyMain.ReleaseLayerTreeFrameSink"
+      summary="ProxyMain::ReleaseLayerTreeFrameSink()"/>
   <variant name="RenderFrameHostImpl.DeleteRenderFrame"
       summary="RenderFrameHostImpl::DeleteRenderFrame()"/>
+  <variant name="RenderFrameImpl.FrameDetached"
+      summary="RenderFrameImpl::FrameDetached()"/>
   <variant name="ResetChildren" summary="RenderFrameHostImpl::ResetChildren()"/>
   <variant name="StartPendingDeletionOnSubtree.Detach"
       summary="RenderFrameHostImpl::StartPendingDeletionOnSubtree() for
@@ -133,6 +139,8 @@ chromium-metrics-reviews@google.com.
   <variant name="StartPendingDeletionOnSubtree.SwappedOut"
       summary="RenderFrameHostImpl::StartPendingDeletionOnSubtree() for
                swapping"/>
+  <variant name="WebFrameWidgetImpl.Close"
+      summary="WebFrameWidgetImpl::Close()"/>
 </variants>
 
 <histogram name="BackForwardCache.AllSites.EvictedAfterDocumentRestoredReason"

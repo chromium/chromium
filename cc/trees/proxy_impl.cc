@@ -282,6 +282,9 @@ void ProxyImpl::SetShouldWarmUpOnImpl() {
 }
 
 void ProxyImpl::ReleaseLayerTreeFrameSinkOnImpl(CompletionEvent* completion) {
+  TRACE_EVENT0("cc", "ProxyImpl::ReleaseLayerTreeFrameSinkOnImpl");
+  base::ScopedUmaHistogramTimer histogram_timer(
+      "Navigation.ProxyImpl.ReleaseLayerTreeFrameSinkOnImpl");
   DCHECK(IsImplThread());
 
   // Unlike DidLoseLayerTreeFrameSinkOnImplThread, we don't need to call
