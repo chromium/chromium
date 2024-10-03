@@ -1,0 +1,31 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configuration for an Android-14 (U, API 34) AVD on google_apis on x86_64
+
+emulator_package {
+  package_name: "chromium/third_party/android_sdk/public/emulator"
+  version: "XS__KK27esI_4qZkc_Ybb_ooYjPfcIQ7DDOPUZGYW5wC"  # 35.1.21 (Stable)
+  dest_path: "android_34_google_apis_x64_swangle"
+}
+
+system_image_package {
+  package_name: "chromium/third_party/android_sdk/public/system-images/android-34/google_apis/x86_64"
+  version: "TIwWQNogvpRgkhjpGkQnJrpAToU2WL10bk9hJ9WNkdAC"  # r14, UE1A.230829.050
+  dest_path: "android_34_google_apis_x64_swangle"
+}
+system_image_name: "system-images;android-34;google_apis;x86_64"
+
+avd_package {
+  package_name: "chromium/third_party/android_sdk/public/avds/android-34/google_apis/x86_64"
+  # Created in https://ci.chromium.org/ui/b/8735783234873256961
+  # Patched gmscore version 24.26.32 in https://crrev.com/c/5735581
+  version: "zCxd4WbL6GbWd6GEN35XW9-U7mN9UpEPrhZw7R2Tr4UC"
+  dest_path: "android_34_google_apis_x64_swangle"
+}
+avd_name: "android_34_google_apis_x64"
+
+avd_launch_settings {
+  gpu_mode: "swangle_indirect"
+}

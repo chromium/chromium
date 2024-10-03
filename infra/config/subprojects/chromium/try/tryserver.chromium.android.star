@@ -152,6 +152,21 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-13-x64-fyi-rel",
+    mirrors = [
+        "ci/android-13-x64-fyi-rel",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-13-x64-fyi-rel",
+            "release_try_builder",
+        ],
+    ),
+    contact_team_email = "clank-engprod@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "android-tablet-14-arm64-fyi-rel",
     mirrors = [
         "ci/android-tablet-14-arm64-fyi-rel",
@@ -209,6 +224,21 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/android-14-x64-rel",
+            "release_try_builder",
+        ],
+    ),
+    contact_team_email = "clank-engprod@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
+    name = "android-14-x64-fyi-rel",
+    mirrors = [
+        "ci/android-14-x64-fyi-rel",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-14-x64-fyi-rel",
             "release_try_builder",
         ],
     ),
