@@ -6,6 +6,7 @@
 
 #include "base/barrier_callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
@@ -16,7 +17,6 @@ namespace history_embeddings {
 
 using ModelExecutionError = optimization_guide::
     OptimizationGuideModelExecutionError::ModelExecutionError;
-using Session = optimization_guide::OptimizationGuideModelExecutor::Session;
 using optimization_guide::OptimizationGuideModelExecutionError;
 using optimization_guide::OptimizationGuideModelStreamingExecutionResult;
 using optimization_guide::proto::Answer;
@@ -26,6 +26,10 @@ using optimization_guide::proto::Passage;
 namespace {
 
 static constexpr std::string kPassageIdToken = "ID";
+// Estimated token count of the preamble text in prompt.
+static constexpr size_t kPreambleTokenBufferSize = 100u;
+// Estimated token count of overhead text per passage.
+static constexpr size_t kExtraTokensPerPassage = 10u;
 
 std::string GetPassageIdStr(size_t id) {
   return base::StringPrintf("%04d", static_cast<int>(id));
@@ -35,20 +39,20 @@ float GetMlAnswerScoreThreshold() {
   return kMlAnswererMinScore.Get();
 }
 
-void AddQueryAndPassagesToSession(const std::string& query,
-                                  const std::vector<std::string>& passages,
-                                  Session* session) {
-  HistoryAnswerRequest request;
-  request.set_query(query);
-  for (size_t i = 0; i < passages.size(); i++) {
-    auto* passage = request.add_passages();
-    passage->set_text(passages[i]);
-    passage->set_passage_id(GetPassageIdStr(i + 1));
-  }
-  session->AddContext(request);
-}
-
 }  // namespace
+
+// Helper struct to bundle raw model input (queries/passages) with its metadata.
+struct MlAnswerer::ModelInput {
+  // The string content of this input.
+  std::string text;
+  // Index 0 is reserved for queries, i.e. this index will be 0 iff. this input
+  // is a query. If the input is a passage, index will contain the index of the
+  // passage in the original passage vector (where lower index means higher
+  // relevance), plus 1 to offset for query.
+  size_t index;
+  // The size of `text` in tokens.
+  uint32_t token_count;
+};
 
 // Manages sessions for generating an answer for a given query and multiple
 // URLs.
@@ -104,6 +108,10 @@ class MlAnswerer::SessionManager {
 
   size_t GetNumberOfSessions() { return sessions_.size(); }
 
+  base::WeakPtr<MlAnswerer::SessionManager> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   // Runs callback with result.
   void FinishCallback(AnswererResult answer_result) {
     CHECK(!callback_.is_null());
@@ -119,6 +127,47 @@ class MlAnswerer::SessionManager {
     // Destroy all existing sessions.
     sessions_.clear();
     urls_.clear();
+  }
+
+  // Called when all sessions are started and added.
+  void OnSessionsStarted(std::vector<int> args) { RunSpeculativeDecoding(); }
+
+  // Called when token counts of the query and all passages of a session are
+  // computed.
+  void OnTokenCountRetrieved(std::unique_ptr<Session> session,
+                             const std::string url,
+                             base::OnceCallback<void(int)> session_added_cb,
+                             std::vector<ModelInput> inputs) {
+    HistoryAnswerRequest request;
+    int token_limit = session->GetTokenLimits().max_context_tokens;
+    // Reserve space for preamble text.
+    int token_count = kPreambleTokenBufferSize;
+
+    // Sort the inputs according to their indices in the original vector, so
+    // we prioritize passages that are more relevant.
+    base::ranges::sort(
+        inputs.begin(), inputs.end(),
+        [](ModelInput& i1, ModelInput& i2) { return i1.index < i2.index; });
+
+    // Add the query to the request. The query will always have index 0.
+    token_count += inputs[0].token_count;
+    request.set_query(inputs[0].text);
+
+    // Add as many passages as the input window can fit.
+    for (size_t i = 1; i < inputs.size(); ++i) {
+      token_count += (inputs[i].token_count + kExtraTokensPerPassage);
+      if (token_count > token_limit) {
+        break;
+      }
+
+      auto* passage = request.add_passages();
+      passage->set_text(inputs[i].text);
+      passage->set_passage_id(GetPassageIdStr(i));
+    }
+
+    session->AddContext(request);
+    AddSession(std::move(session), url);
+    std::move(session_added_cb).Run(1);
   }
 
  private:
@@ -206,6 +255,11 @@ void MlAnswerer::ComputeAnswer(std::string query,
   session_manager_ =
       std::make_unique<SessionManager>(query, context, std::move(callback));
 
+  const auto sessions_started_callback = base::BarrierCallback<int>(
+      context.url_passages_map.size(),
+      base::BindOnce(&MlAnswerer::SessionManager::OnSessionsStarted,
+                     session_manager_->GetWeakPtr()));
+
   // Start a session for each URL.
   for (const auto& url_and_passages : context.url_passages_map) {
     std::unique_ptr<Session> session = model_executor_->StartSession(
@@ -217,11 +271,42 @@ void MlAnswerer::ComputeAnswer(std::string query,
       return;
     }
 
-    AddQueryAndPassagesToSession(query, url_and_passages.second, session.get());
-    session_manager_->AddSession(std::move(session), url_and_passages.first);
+    StartAndAddSession(query, url_and_passages.first, url_and_passages.second,
+                       std::move(session), sessions_started_callback);
   }
+}
 
-  session_manager_->RunSpeculativeDecoding();
+void MlAnswerer::StartAndAddSession(
+    const std::string& query,
+    const std::string& url,
+    const std::vector<std::string>& passages,
+    std::unique_ptr<Session> session,
+    base::OnceCallback<void(int)> session_started) {
+  Session* raw_session = session.get();
+  const auto token_count_callback = base::BarrierCallback<ModelInput>(
+      passages.size() + 1,  // We need token count for passages + query.
+      base::BindOnce(&MlAnswerer::SessionManager::OnTokenCountRetrieved,
+                     session_manager_->GetWeakPtr(), std::move(session), url,
+                     std::move(session_started)));
+
+  const auto make_model_input = [](std::string text, size_t index,
+                                   uint32_t token_count) {
+    return ModelInput{text, index, token_count};
+  };
+
+  // Get token count for query, always assign index 0 to query to make a
+  // ModelInput.
+  raw_session->GetSizeInTokens(
+      query,
+      base::BindOnce(make_model_input, query, 0).Then(token_count_callback));
+
+  // Get token count for passages, and assign their index + 1 to make
+  // ModelInput, in order to reserve index 0 for query.
+  for (size_t i = 0; i < passages.size(); ++i) {
+    raw_session->GetSizeInTokens(
+        passages[i], base::BindOnce(make_model_input, passages[i], i + 1)
+                         .Then(token_count_callback));
+  }
 }
 
 }  // namespace history_embeddings

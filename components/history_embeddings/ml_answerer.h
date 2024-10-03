@@ -14,6 +14,7 @@
 namespace history_embeddings {
 
 using optimization_guide::OptimizationGuideModelExecutor;
+using Session = optimization_guide::OptimizationGuideModelExecutor::Session;
 
 class MlAnswerer : public Answerer {
  public:
@@ -27,6 +28,14 @@ class MlAnswerer : public Answerer {
 
  private:
   class SessionManager;
+  struct ModelInput;
+
+  // Start and add a session for the url and passages.
+  void StartAndAddSession(const std::string& query,
+                          const std::string& url,
+                          const std::vector<std::string>& passages,
+                          std::unique_ptr<Session> session,
+                          base::OnceCallback<void(int)> session_started);
 
   // Guaranteed to outlive `this`, since
   // `model_executor_` is owned by OptimizationGuideKeyedServiceFactory,
