@@ -7686,11 +7686,10 @@ crbug.com/330761492 external/wpt/html/editing/the-hidden-attribute/beforematch-s
 crbug.com/324111880 external/wpt/css/css-ruby/empty-ruby-text-container-float.html [ Failure ]
 crbug.com/324111880 fast/ruby/float-overhang-from-ruby-text.html [ Failure ]
 
-# SidewaysWritingModes
-crbug.com/40501131 external/wpt/css/css-writing-modes/wm-propagation-body-042.html [ Failure ]
-crbug.com/40501131 external/wpt/css/css-writing-modes/wm-propagation-body-047.html [ Failure ]
-crbug.com/40501131 external/wpt/css/css-writing-modes/wm-propagation-body-049.html [ Failure ]
-crbug.com/40501131 external/wpt/css/css-writing-modes/wm-propagation-body-054.html [ Failure ]
+crbug.com/371033184 external/wpt/css/css-writing-modes/wm-propagation-body-042.html [ Failure ]
+crbug.com/371033184 external/wpt/css/css-writing-modes/wm-propagation-body-047.html [ Failure ]
+crbug.com/371033184 external/wpt/css/css-writing-modes/wm-propagation-body-049.html [ Failure ]
+crbug.com/371033184 external/wpt/css/css-writing-modes/wm-propagation-body-054.html [ Failure ]
 
 crbug.com/351117372 external/wpt/css/css-writing-modes/vertical-alignment-slr-029.xht [ Crash Timeout ]
 crbug.com/351117372 external/wpt/css/css-writing-modes/vertical-alignment-slr-035.xht [ Crash Timeout ]
