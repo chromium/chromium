@@ -14,7 +14,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom.h"
 #include "chromeos/ash/components/emoji/tenor_types.mojom.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
@@ -48,13 +47,19 @@ class GifTenorApiFetcher {
 
   ~GifTenorApiFetcher();
 
+  using GetCategoriesCallback =
+      base::OnceCallback<void(tenor::mojom::Status,
+                              const std::vector<std::string>& categories)>;
   using TenorGifsApiCallback =
       base::OnceCallback<void(tenor::mojom::Status,
                               tenor::mojom::PaginatedGifResponsesPtr)>;
+  using GetGifsByIdsCallback = base::OnceCallback<void(
+      tenor::mojom::Status,
+      std::vector<tenor::mojom::GifResponsePtr> selected_gifs)>;
 
   // Fetch tenor API Categories endpoint
   void FetchCategories(
-      emoji_picker::mojom::PageHandler::GetCategoriesCallback callback,
+      GetCategoriesCallback callback,
       const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Fetch tenor API Featured endpoint
@@ -82,7 +87,7 @@ class GifTenorApiFetcher {
 
   // Fetch tenor API Posts endpoint
   void FetchGifsByIds(
-      emoji_picker::mojom::PageHandler::GetGifsByIdsCallback callback,
+      GetGifsByIdsCallback callback,
       const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::vector<std::string>& ids);
 
@@ -91,13 +96,12 @@ class GifTenorApiFetcher {
   base::WeakPtrFactory<GifTenorApiFetcher> weak_ptr_factory_{this};
 
   void FetchCategoriesResponseHandler(
-      emoji_picker::mojom::PageHandler::GetCategoriesCallback callback,
+      GetCategoriesCallback callback,
       std::unique_ptr<EndpointFetcher> endpoint_fetcher,
       std::unique_ptr<EndpointResponse> response);
 
-  void OnCategoriesJsonParsed(
-      emoji_picker::mojom::PageHandler::GetCategoriesCallback callback,
-      data_decoder::DataDecoder::ValueOrError result);
+  void OnCategoriesJsonParsed(GetCategoriesCallback callback,
+                              data_decoder::DataDecoder::ValueOrError result);
 
   void TenorGifsApiResponseHandler(
       TenorGifsApiCallback callback,
@@ -108,13 +112,12 @@ class GifTenorApiFetcher {
                         data_decoder::DataDecoder::ValueOrError result);
 
   void FetchGifsByIdsResponseHandler(
-      emoji_picker::mojom::PageHandler::GetGifsByIdsCallback callback,
+      GetGifsByIdsCallback callback,
       std::unique_ptr<EndpointFetcher> endpoint_fetcher,
       std::unique_ptr<EndpointResponse> response);
 
-  void OnGifsByIdsJsonParsed(
-      emoji_picker::mojom::PageHandler::GetGifsByIdsCallback callback,
-      data_decoder::DataDecoder::ValueOrError result);
+  void OnGifsByIdsJsonParsed(GetGifsByIdsCallback callback,
+                             data_decoder::DataDecoder::ValueOrError result);
 };
 }  // namespace ash
 

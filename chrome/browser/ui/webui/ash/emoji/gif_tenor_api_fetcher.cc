@@ -18,7 +18,6 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom.h"
 #include "chrome/common/channel_info.h"
 #include "chromeos/ash/components/emoji/tenor_types.mojom.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
@@ -34,8 +33,6 @@
 namespace ash {
 
 namespace {
-
-using emoji_picker::mojom::PageHandler;
 
 constexpr char kTenorBaseUrl[] = "https://tenor.googleapis.com";
 constexpr char kHttpMethod[] = "GET";
@@ -312,7 +309,7 @@ void GifTenorApiFetcher::OnGifsJsonParsed(
 }
 
 void GifTenorApiFetcher::FetchCategories(
-    PageHandler::GetCategoriesCallback callback,
+    GetCategoriesCallback callback,
     const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   constexpr char kCategoriesApi[] = "/v2/categories";
   constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
@@ -364,7 +361,7 @@ void GifTenorApiFetcher::FetchCategories(
 }
 
 void GifTenorApiFetcher::FetchCategoriesResponseHandler(
-    PageHandler::GetCategoriesCallback callback,
+    GetCategoriesCallback callback,
     std::unique_ptr<EndpointFetcher> endpoint_fetcher,
     std::unique_ptr<EndpointResponse> response) {
   if (response->http_status_code == net::HTTP_OK) {
@@ -379,7 +376,7 @@ void GifTenorApiFetcher::FetchCategoriesResponseHandler(
 }
 
 void GifTenorApiFetcher::OnCategoriesJsonParsed(
-    PageHandler::GetCategoriesCallback callback,
+    GetCategoriesCallback callback,
     data_decoder::DataDecoder::ValueOrError result) {
   const auto* tags = FindList(result, "tags");
   if (!tags) {
@@ -505,7 +502,7 @@ std::unique_ptr<EndpointFetcher> GifTenorApiFetcher::FetchGifSearchCancellable(
 }
 
 void GifTenorApiFetcher::FetchGifsByIds(
-    PageHandler::GetGifsByIdsCallback callback,
+    GetGifsByIdsCallback callback,
     const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::vector<std::string>& ids) {
   constexpr char kPostsApi[] = "/v2/posts";
@@ -561,7 +558,7 @@ void GifTenorApiFetcher::FetchGifsByIds(
 }
 
 void GifTenorApiFetcher::FetchGifsByIdsResponseHandler(
-    PageHandler::GetGifsByIdsCallback callback,
+    GetGifsByIdsCallback callback,
     std::unique_ptr<EndpointFetcher> endpoint_fetcher,
     std::unique_ptr<EndpointResponse> response) {
   if (response->http_status_code == net::HTTP_OK) {
@@ -576,7 +573,7 @@ void GifTenorApiFetcher::FetchGifsByIdsResponseHandler(
 }
 
 void GifTenorApiFetcher::OnGifsByIdsJsonParsed(
-    PageHandler::GetGifsByIdsCallback callback,
+    GetGifsByIdsCallback callback,
     data_decoder::DataDecoder::ValueOrError result) {
   const auto* gifs = FindList(result, "results");
   if (!gifs) {

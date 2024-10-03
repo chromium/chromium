@@ -10,7 +10,6 @@
 
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom-forward.h"
 #include "chromeos/ash/components/emoji/tenor_types.mojom.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "content/public/test/browser_task_environment.h"
