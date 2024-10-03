@@ -359,6 +359,7 @@
                         "AndroidBrowserControlsInViz"
                     ],
                     "disable_features": [
+                        "AndroidBcivPhoneOnly",
                         "AndroidBcivWithSimpleScheduler",
                         "AndroidBcivWithSuppression",
                         "AndroidBcivZeroBrowserFrames"

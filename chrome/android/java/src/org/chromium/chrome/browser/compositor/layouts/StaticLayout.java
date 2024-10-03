@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.WebContents;
@@ -218,7 +219,8 @@ public class StaticLayout extends Layout {
                             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
                             BrowserControlsOffsetTagsInfo offsetTagsInfo,
                             @BrowserControlsState int constraints) {
-                        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
+                        if (ToolbarFeatures.isBrowserControlsInVizEnabled(
+                                DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext))) {
                             // On tablets, StaticTabSceneLayer is a subtree of TabStripSceneLayer,
                             // and the tag would have been set on the TabStripSceneLayer already.
                             if (mNeedsOffsetTag) {
@@ -251,7 +253,8 @@ public class StaticLayout extends Layout {
                             int bottomControlsMinHeightOffset,
                             boolean needsAnimate,
                             boolean isVisibilityForced) {
-                        if (!ChromeFeatureList.sBrowserControlsInViz.isEnabled()
+                        if (!ToolbarFeatures.isBrowserControlsInVizEnabled(
+                                        DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext))
                                 || needsAnimate
                                 || isVisibilityForced) {
                             mModel.set(

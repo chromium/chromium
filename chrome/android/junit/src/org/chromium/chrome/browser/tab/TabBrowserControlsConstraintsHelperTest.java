@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tab;
 
 import android.content.Context;
+import android.content.res.Resources;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -25,6 +26,7 @@ import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
@@ -38,6 +40,8 @@ public class TabBrowserControlsConstraintsHelperTest {
 
     @Rule public JniMocker mocker = new JniMocker();
 
+    @Mock Context mContext;
+    @Mock Resources mResources;
     @Mock TabImpl mTab;
     @Mock WebContents mWebContents;
     @Mock TabDelegateFactory mDelegateFactory;
@@ -62,6 +66,13 @@ public class TabBrowserControlsConstraintsHelperTest {
         mVisibilityDelegate = new TestVisibilityDelegate();
         Mockito.when(mDelegateFactory.createBrowserControlsVisibilityDelegate(Mockito.any()))
                 .thenReturn(mVisibilityDelegate);
+
+        // TODO(b/370495692) Remove when we don't need to restrict stable
+        // experiment to phones.
+        Mockito.when(mTab.getContext()).thenReturn(mContext);
+        Mockito.when(mContext.getResources()).thenReturn(mResources);
+        Mockito.when(mResources.getInteger(org.chromium.ui.R.integer.min_screen_width_bucket))
+                .thenReturn(DeviceFormFactor.SCREEN_BUCKET_TABLET - 1);
     }
 
     private void initHelper() {

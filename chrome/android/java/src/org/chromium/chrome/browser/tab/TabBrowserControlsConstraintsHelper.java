@@ -15,10 +15,11 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.cc.input.OffsetTag;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Manages the state of tab browser controls. */
@@ -155,14 +156,18 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
 
                     @Override
                     public void onHidden(Tab tab, @TabHidingType int type) {
-                        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
+                        if (ToolbarFeatures.isBrowserControlsInVizEnabled(
+                                DeviceFormFactor.isNonMultiDisplayContextOnTablet(
+                                        mTab.getContext()))) {
                             unregisterOffsetTags();
                         }
                     }
 
                     @Override
                     public void onShown(Tab tab, @TabHidingType int type) {
-                        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
+                        if (ToolbarFeatures.isBrowserControlsInVizEnabled(
+                                DeviceFormFactor.isNonMultiDisplayContextOnTablet(
+                                        mTab.getContext()))) {
                             updateEnabledState();
                         }
                     }
@@ -270,7 +275,8 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
             return;
         }
 
-        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
+        if (ToolbarFeatures.isBrowserControlsInVizEnabled(
+                DeviceFormFactor.isNonMultiDisplayContextOnTablet(mTab.getContext()))) {
             generateOffsetTags(current, constraints);
         }
 
