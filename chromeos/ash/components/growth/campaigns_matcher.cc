@@ -927,13 +927,6 @@ bool CampaignsMatcher::MatchRuntimeTargeting(
   }
 
   bool is_matched = false;
-  is_matched = MatchTriggerTargeting(targeting.GetTriggers());
-  if (!is_matched) {
-    CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
-                         << " Trigger targeting is NOT matched.";
-    return false;
-  }
-
   is_matched = MatchSchedulings(targeting.GetSchedulings());
   if (!is_matched) {
     CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
@@ -1000,6 +993,18 @@ bool CampaignsMatcher::Matched(const Targeting* targeting,
     CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
                          << " Demo Mode targeting is NOT matched.";
     return false;
+  }
+
+  // Skip other matchings if the trigger type doesn't match, which contributes
+  // to the majority of the mismatch as we added event based triggering.
+  RuntimeTargeting runtime_targeting = RuntimeTargeting(targeting);
+  if (runtime_targeting.IsValid()) {
+    is_matched = MatchTriggerTargeting(runtime_targeting.GetTriggers());
+    if (!is_matched) {
+      CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
+                           << " Trigger targeting is NOT matched.";
+      return false;
+    }
   }
 
   is_matched = MatchSessionTargeting(SessionTargeting(targeting));
