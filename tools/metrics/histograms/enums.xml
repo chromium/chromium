@@ -11006,6 +11006,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="V8GPUSupportedLimits_MaxInterStageShaderComponents_AttributeGetter"/>
   <int value="5111" label="MaxInterStageShaderComponentsRequiredLimit"/>
   <int value="5112" label="ShowPickerSelect"/>
+  <int value="5113" label="AudioContextPlayoutStats"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
