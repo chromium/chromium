@@ -16,6 +16,7 @@
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
@@ -40,6 +41,7 @@
 #include "third_party/blink/renderer/platform/widget/input/widget_input_handler_impl.h"
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
 #include "third_party/blink/renderer/platform/widget/widget_base_client.h"
+#include "ui/latency/latency_info.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "third_party/blink/renderer/platform/widget/compositing/android_webview/synchronous_compositor_registry.h"
@@ -48,7 +50,7 @@
 
 namespace blink {
 
-using ::perfetto::protos::pbzero::ChromeLatencyInfo;
+using ::perfetto::protos::pbzero::ChromeLatencyInfo2;
 using ::perfetto::protos::pbzero::TrackEvent;
 
 namespace {
@@ -81,13 +83,14 @@ void CallCallback(
     const ui::LatencyInfo& latency_info,
     mojom::blink::DidOverscrollParamsPtr overscroll_params,
     std::optional<cc::TouchAction> touch_action) {
+  int64_t trace_id = latency_info.trace_id();
   TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
-              [&latency_info](perfetto::EventContext ctx) {
-                ui::LatencyInfo::EmitIntermediateLatencyInfoStep(
-                    ctx, latency_info.trace_id(),
-                    perfetto::protos::pbzero::ChromeLatencyInfo2::Step::
-                        STEP_HANDLED_INPUT_EVENT_IMPL);
+              [&](perfetto::EventContext ctx) {
+                ui::LatencyInfo::FillTraceEvent(
+                    ctx, trace_id,
+                    ChromeLatencyInfo2::Step::STEP_HANDLED_INPUT_EVENT_IMPL);
               });
+
   std::move(callback).Run(
       mojom::blink::InputEventResultSource::kMainThread, latency_info,
       result_state, std::move(overscroll_params),
@@ -980,13 +983,16 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToCompositor(
   TRACE_EVENT1("input",
                "WidgetInputHandlerManager::DidHandleInputEventSentToCompositor",
                "Disposition", event_disposition);
-  TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
-              [&event](perfetto::EventContext ctx) {
-                ui::LatencyInfo::EmitIntermediateLatencyInfoStep(
-                    ctx, event->latency_info().trace_id(),
-                    perfetto::protos::pbzero::ChromeLatencyInfo2::Step::
-                        STEP_DID_HANDLE_INPUT_AND_OVERSCROLL);
-              });
+
+  int64_t trace_id = event->latency_info().trace_id();
+  TRACE_EVENT(
+      "input,benchmark,latencyInfo", "LatencyInfo.Flow",
+      [&](perfetto::EventContext ctx) {
+        ui::LatencyInfo::FillTraceEvent(
+            ctx, trace_id,
+            ChromeLatencyInfo2::Step::STEP_DID_HANDLE_INPUT_AND_OVERSCROLL);
+      });
+
   DCHECK(InputThreadTaskRunner()->BelongsToCurrentThread());
 
   if (event_disposition == InputHandlerProxy::DROP_EVENT &&
@@ -1117,13 +1123,15 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToMain(
   TRACE_EVENT1("input",
                "WidgetInputHandlerManager::DidHandleInputEventSentToMain",
                "ack_state", ack_state);
-  TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
-              [&latency_info](perfetto::EventContext ctx) {
-                ui::LatencyInfo::EmitIntermediateLatencyInfoStep(
-                    ctx, latency_info.trace_id(),
-                    perfetto::protos::pbzero::ChromeLatencyInfo2::Step::
-                        STEP_HANDLED_INPUT_EVENT_MAIN_OR_IMPL);
-              });
+
+  int64_t trace_id = latency_info.trace_id();
+  TRACE_EVENT(
+      "input,benchmark,latencyInfo", "LatencyInfo.Flow",
+      [&](perfetto::EventContext ctx) {
+        ui::LatencyInfo::FillTraceEvent(
+            ctx, trace_id,
+            ChromeLatencyInfo2::Step::STEP_HANDLED_INPUT_EVENT_MAIN_OR_IMPL);
+      });
 
   std::optional<cc::TouchAction> touch_action_for_ack = touch_action_from_main;
   if (!touch_action_for_ack.has_value()) {

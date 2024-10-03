@@ -36,6 +36,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "cc/base/devtools_instrumentation.h"
@@ -79,11 +80,11 @@
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
-#include "services/tracing/public/cpp/perfetto/flow_event_utils.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/gfx/presentation_feedback.h"
+#include "ui/latency/latency_info.h"
 
 namespace {
 static base::AtomicSequenceNumber s_layer_tree_host_sequence_number;
@@ -1150,17 +1151,14 @@ void LayerTreeHost::ApplyCompositorChanges(CompositorCommitData* commit_data) {
   using perfetto::protos::pbzero::TrackEvent;
 
   for (auto& swap_promise : commit_data->swap_promises) {
-    TRACE_EVENT(
-        "input,benchmark", "LatencyInfo.Flow",
-        [&swap_promise](perfetto::EventContext ctx) {
-          auto* info = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
-                           ->set_chrome_latency_info();
-          info->set_trace_id(swap_promise->GetTraceId());
-          info->set_step(perfetto::protos::pbzero::ChromeLatencyInfo2::Step::
-                             STEP_MAIN_THREAD_SCROLL_UPDATE);
-          tracing::FillFlowEvent(ctx, TrackEvent::LegacyEvent::FLOW_INOUT,
-                                 swap_promise->GetTraceId());
-        });
+    int64_t trace_id = swap_promise->GetTraceId();
+    TRACE_EVENT("input,benchmark", "LatencyInfo.Flow",
+                [&](perfetto::EventContext ctx) {
+                  ui::LatencyInfo::FillTraceEvent(
+                      ctx, trace_id,
+                      perfetto::protos::pbzero::ChromeLatencyInfo2::Step::
+                          STEP_MAIN_THREAD_SCROLL_UPDATE);
+                });
     swap_promise_manager_.QueueSwapPromise(std::move(swap_promise));
   }
 

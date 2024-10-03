@@ -5,6 +5,7 @@
 #include "components/input/render_input_router_latency_tracker.h"
 
 #include <stddef.h>
+
 #include <string>
 
 #include "base/check_op.h"
@@ -12,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "build/build_config.h"
 #include "components/input/render_input_router_delegate.h"
 #include "ui/events/blink/web_input_event_traits.h"
@@ -215,8 +217,7 @@ void RenderInputRouterLatencyTracker::OnInputEventAck(
 
 void RenderInputRouterLatencyTracker::OnEventStart(ui::LatencyInfo* latency) {
   if (latency->trace_id() == -1) {
-    static uint64_t global_trace_id = 0;
-    latency->set_trace_id(++global_trace_id);
+    latency->set_trace_id(base::trace_event::GetNextGlobalTraceId());
   }
 }
 

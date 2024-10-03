@@ -101,8 +101,6 @@ void CompositorThreadEventQueue::Queue(
   queue_.pop_back();
 
   DCHECK(IsContinuousGestureEvent(last_event->event().GetType()));
-  DCHECK_LE(last_event->latency_info().trace_id(),
-            new_event->latency_info().trace_id());
 
   SetScrollOrPinchTraceId(last_event.get(), &oldest_scroll_trace_id,
                           &oldest_pinch_trace_id);
@@ -121,12 +119,6 @@ void CompositorThreadEventQueue::Queue(
                              ToWebGestureEvent(queue_.back()->event()))) {
     second_last_event = std::move(queue_.back());
     queue_.pop_back();
-    // second_last_event's trace_id might not be less than last_event if we had
-    // both a scroll and a pinch previously in the queue and reordered them when
-    // coalescing with a new event to keep the invariant that a scroll happens
-    // before the pinch.
-    DCHECK_LE(second_last_event->latency_info().trace_id(),
-              new_event->latency_info().trace_id());
     SetScrollOrPinchTraceId(second_last_event.get(), &oldest_scroll_trace_id,
                             &oldest_pinch_trace_id);
     oldest_latency = second_last_event->latency_info();

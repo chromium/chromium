@@ -100,13 +100,17 @@ bool LatencyInfo::Verify(const std::vector<LatencyInfo>& latency_info,
   return true;
 }
 
-void LatencyInfo::EmitLatencyInfoStep(
+ChromeLatencyInfo2* LatencyInfo::FillTraceEvent(
     perfetto::EventContext& ctx,
     int64_t latency_trace_id,
     ChromeLatencyInfo2::Step step,
     std::optional<ChromeLatencyInfo2::InputType> input_type,
-    std::optional<ChromeLatencyInfo2::InputResultState> input_result_state,
-    TrackEvent::LegacyEvent::FlowDirection direction) {
+    std::optional<ChromeLatencyInfo2::InputResultState> input_result_state) {
+  // The flow id needs to be written first. Due to ProtoZero write semantics, we
+  // need to write to submessages in one go, so we write the flow id first and
+  // then can write fields of `ChromeLatencyInfo2`.
+  ctx.event()->add_flow_ids(latency_trace_id);
+
   auto* info = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
                    ->set_chrome_latency_info();
   info->set_trace_id(latency_trace_id);
@@ -117,27 +121,7 @@ void LatencyInfo::EmitLatencyInfoStep(
   if (input_result_state.has_value()) {
     info->set_input_result_state(input_result_state.value());
   }
-  tracing::FillFlowEvent(ctx, direction, latency_trace_id);
-}
-
-void LatencyInfo::EmitFirstLatencyInfoStep(
-    perfetto::EventContext& ctx,
-    int64_t latency_trace_id,
-    ChromeLatencyInfo2::Step step,
-    ChromeLatencyInfo2::InputType input_type,
-    std::optional<ChromeLatencyInfo2::InputResultState> input_result_state) {
-  EmitLatencyInfoStep(ctx, latency_trace_id, step, input_type,
-                      input_result_state, TrackEvent::LegacyEvent::FLOW_OUT);
-}
-
-void LatencyInfo::EmitIntermediateLatencyInfoStep(
-    perfetto::EventContext& ctx,
-    int64_t latency_trace_id,
-    ChromeLatencyInfo2::Step step,
-    std::optional<ChromeLatencyInfo2::InputType> input_type,
-    std::optional<ChromeLatencyInfo2::InputResultState> input_result_state) {
-  EmitLatencyInfoStep(ctx, latency_trace_id, step, input_type,
-                      input_result_state, TrackEvent::LegacyEvent::FLOW_INOUT);
+  return info;
 }
 
 void LatencyInfo::AddNewLatencyFrom(const LatencyInfo& other) {

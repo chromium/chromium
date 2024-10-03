@@ -12,6 +12,7 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "cc/input/browser_controls_offset_tags_info.h"
 #include "components/input/input_router_config_helper.h"
 #include "components/input/render_input_router_client.h"
@@ -23,12 +24,15 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "ui/latency/latency_info.h"
 
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
 
 namespace input {
 namespace {
+
+using ::perfetto::protos::pbzero::ChromeLatencyInfo2;
 
 class UnboundWidgetInputHandler : public blink::mojom::WidgetInputHandler {
  public:
@@ -337,13 +341,12 @@ void RenderInputRouter::ForwardGestureEventWithLatencyInfo(
   // Assigns a `trace_id` to the latency object.
   latency_tracker_->OnEventStart(&gesture_with_latency.latency);
 
+  int64_t trace_id = gesture_with_latency.latency.trace_id();
   TRACE_EVENT(
       "input,benchmark,latencyInfo", "LatencyInfo.Flow",
-      [&gesture_with_latency](perfetto::EventContext ctx) {
-        ui::LatencyInfo::EmitFirstLatencyInfoStep(
-            ctx, gesture_with_latency.latency.trace_id(),
-            perfetto::protos::pbzero::ChromeLatencyInfo2::Step::
-                STEP_SEND_INPUT_EVENT_UI,
+      [&](perfetto::EventContext ctx) {
+        ui::LatencyInfo::FillTraceEvent(
+            ctx, trace_id, ChromeLatencyInfo2::Step::STEP_SEND_INPUT_EVENT_UI,
             InputEventTypeToProto(gesture_with_latency.event.GetType()));
       });
 
@@ -479,12 +482,12 @@ void RenderInputRouter::ForwardTouchEventWithLatencyInfo(
   // Assigns a `trace_id` to the latency object.
   latency_tracker_->OnEventStart(&touch_with_latency.latency);
 
+  int64_t trace_id = touch_with_latency.latency.trace_id();
   TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
-              [&touch_with_latency](perfetto::EventContext ctx) {
-                ui::LatencyInfo::EmitFirstLatencyInfoStep(
-                    ctx, touch_with_latency.latency.trace_id(),
-                    perfetto::protos::pbzero::ChromeLatencyInfo2::Step::
-                        STEP_SEND_INPUT_EVENT_UI,
+              [&](perfetto::EventContext ctx) {
+                ui::LatencyInfo::FillTraceEvent(
+                    ctx, trace_id,
+                    ChromeLatencyInfo2::Step::STEP_SEND_INPUT_EVENT_UI,
                     InputEventTypeToProto(touch_with_latency.event.GetType()));
               });
 

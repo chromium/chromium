@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "components/input/gesture_event_queue.h"
 #include "components/input/input_disposition_handler.h"
 #include "components/input/input_event_ack_state.h"
@@ -31,6 +32,7 @@
 #include "ui/events/blink/web_input_event_traits.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/latency/latency_info.h"
 
 namespace input {
 
@@ -683,10 +685,11 @@ void InputRouterImpl::TouchEventHandled(
     blink::mojom::InputEventResultState state,
     blink::mojom::DidOverscrollParamsPtr overscroll,
     blink::mojom::TouchActionOptionalPtr touch_action) {
+  int64_t trace_id = latency.trace_id();
   TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
               [&](perfetto::EventContext ctx) {
-                ui::LatencyInfo::EmitIntermediateLatencyInfoStep(
-                    ctx, latency.trace_id(),
+                ui::LatencyInfo::FillTraceEvent(
+                    ctx, trace_id,
                     ChromeLatencyInfo2::Step::STEP_TOUCH_EVENT_HANDLED,
                     InputEventTypeToProto(touch_event.event.GetType()),
                     InputEventResultStateToProto(state));
@@ -720,10 +723,11 @@ void InputRouterImpl::GestureEventHandled(
     blink::mojom::InputEventResultState state,
     blink::mojom::DidOverscrollParamsPtr overscroll,
     blink::mojom::TouchActionOptionalPtr touch_action) {
+  int64_t trace_id = latency.trace_id();
   TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
               [&](perfetto::EventContext ctx) {
-                ui::LatencyInfo::EmitIntermediateLatencyInfoStep(
-                    ctx, latency.trace_id(),
+                ui::LatencyInfo::FillTraceEvent(
+                    ctx, trace_id,
                     ChromeLatencyInfo2::Step::STEP_GESTURE_EVENT_HANDLED,
                     InputEventTypeToProto(gesture_event.event.GetType()),
                     InputEventResultStateToProto(state));

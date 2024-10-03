@@ -20,6 +20,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
@@ -27,7 +28,6 @@
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/trees/latency_info_swap_promise_monitor.h"
-#include "services/tracing/public/cpp/perfetto/flow_event_utils.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -46,12 +46,13 @@
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/latency/latency_info.h"
 
-using perfetto::protos::pbzero::TrackEvent;
-
 using ScrollThread = cc::InputHandler::ScrollThread;
 
 namespace blink {
 namespace {
+
+using ::perfetto::protos::pbzero::ChromeLatencyInfo2;
+using ::perfetto::protos::pbzero::TrackEvent;
 
 cc::ScrollStateData CreateScrollStateDataForGesture(
     const WebGestureEvent& event) {
@@ -268,22 +269,16 @@ void InputHandlerProxy::HandleInputEventWithLatencyInfo(
     std::unique_ptr<blink::WebCoalescedInputEvent> event,
     std::unique_ptr<cc::EventMetrics> metrics,
     EventDispositionCallback callback) {
-  DCHECK(input_handler_);
-
-  input_handler_->NotifyInputEvent();
-
   int64_t trace_id = event->latency_info().trace_id();
   TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
-              [trace_id](perfetto::EventContext ctx) {
-                auto* info =
-                    ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
-                        ->set_chrome_latency_info();
-                info->set_trace_id(trace_id);
-                info->set_step(perfetto::protos::pbzero::ChromeLatencyInfo2::
-                                   Step::STEP_HANDLE_INPUT_EVENT_IMPL);
-                tracing::FillFlowEvent(ctx, TrackEvent::LegacyEvent::FLOW_INOUT,
-                                       trace_id);
+              [&](perfetto::EventContext ctx) {
+                ui::LatencyInfo::FillTraceEvent(
+                    ctx, trace_id,
+                    ChromeLatencyInfo2::Step::STEP_HANDLE_INPUT_EVENT_IMPL);
               });
+
+  DCHECK(input_handler_);
+  input_handler_->NotifyInputEvent();
 
   // Prevent the events to be counted into INP metrics if there is an active
   // scroll.
@@ -568,18 +563,15 @@ void InputHandlerProxy::GenerateAndDispatchSytheticScrollPrediction(
           args.frame_time, args.interval,
           currently_active_gesture_device_.value(),
           current_active_gesture_scroll_modifiers_.value_or(0));
+
   int64_t trace_id = event_with_callback->latency_info().trace_id();
   TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
-              [trace_id](perfetto::EventContext ctx) {
-                auto* info =
-                    ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
-                        ->set_chrome_latency_info();
-                info->set_trace_id(trace_id);
-                info->set_step(perfetto::protos::pbzero::ChromeLatencyInfo2::
-                                   Step::STEP_HANDLE_INPUT_EVENT_IMPL);
-                tracing::FillFlowEvent(ctx, TrackEvent::LegacyEvent::FLOW_INOUT,
-                                       trace_id);
+              [&](perfetto::EventContext ctx) {
+                ui::LatencyInfo::FillTraceEvent(
+                    ctx, trace_id,
+                    ChromeLatencyInfo2::Step::STEP_HANDLE_INPUT_EVENT_IMPL);
               });
+
   DispatchSingleInputEvent(std::move(event_with_callback));
 }
 
