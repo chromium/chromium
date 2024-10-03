@@ -28,6 +28,10 @@ class ShoppingService;
 
 - (void)setPriceTrackingPromoItemForTesting:(PriceTrackingPromoItem*)item;
 
+- (void)requestPushNotificationDoneWithGrantedForTesting:(BOOL)granted
+                                             promptShown:(BOOL)promptShown
+                                                   error:(NSError*)error;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_PRICE_TRACKING_PROMO_MEDIATOR_TESTING_H_

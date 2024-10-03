@@ -177,3 +177,21 @@ TEST_F(PriceTrackingPromoMediatorTest,
   OCMExpect([mockDispatcher showSnackbarMessage:[OCMArg isNotNil]]);
   [mediator() enablePriceTrackingSettingsAndShowSnackbar];
 }
+
+TEST_F(PriceTrackingPromoMediatorTest, TestDenyPriceTrackingNotifications) {
+  id settings = OCMClassMock([UNNotificationSettings class]);
+  OCMStub([mock_notification_center_
+      getNotificationSettingsWithCompletionHandler:
+          ([OCMArg invokeBlockWithArgs:settings, nil])]);
+  OCMStub([settings authorizationStatus])
+      .andReturn(UNAuthorizationStatusAuthorized);
+  id mockDelegate =
+      OCMStrictProtocolMock(@protocol(PriceTrackingPromoMediatorDelegate));
+  OCMExpect([mockDelegate removePriceTrackingPromo]);
+  mediator().delegate = mockDelegate;
+  EXPECT_FALSE(pref_service()->GetBoolean(kPriceTrackingPromoDisabled));
+  [mediator() requestPushNotificationDoneWithGrantedForTesting:NO
+                                                   promptShown:YES
+                                                         error:nil];
+  EXPECT_TRUE(pref_service()->GetBoolean(kPriceTrackingPromoDisabled));
+}
