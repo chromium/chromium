@@ -581,6 +581,8 @@ URLLoader::URLLoader(
       devtools_request_id_(request.devtools_request_id),
       request_mode_(request.mode),
       request_credentials_mode_(request.credentials_mode),
+      has_user_activation_(request.trusted_params &&
+                           request.trusted_params->has_user_activation),
       request_destination_(request.destination),
       resource_scheduler_client_(context.GetResourceSchedulerClient()),
       keepalive_statistics_recorder_(std::move(keepalive_statistics_recorder)),
@@ -616,6 +618,17 @@ URLLoader::URLLoader(
               url_loader_network_observer_)),
       has_fetch_streaming_upload_body_(HasFetchStreamingUploadBody(&request)),
       accept_ch_frame_observer_(std::move(accept_ch_frame_observer)),
+      allow_cookies_from_browser_(
+          request.trusted_params &&
+          request.trusted_params->allow_cookies_from_browser),
+      cookies_from_browser_(
+          allow_cookies_from_browser_
+              ? GetCookiesFromHeaders(request.headers,
+                                      request.cors_exempt_headers)
+              : std::string()),
+      include_request_cookies_with_response_(
+          request.trusted_params &&
+          request.trusted_params->include_request_cookies_with_response),
       provide_data_use_updates_(context.DataUseUpdatesEnabled()) {
   DCHECK(delete_callback_);
 
@@ -656,52 +669,12 @@ URLLoader::URLLoader(
   receiver_.set_disconnect_handler(
       base::BindOnce(&URLLoader::OnMojoDisconnect, base::Unretained(this)));
   url_request_ = url_request_context_->CreateRequest(
-      GURL(request.url), request.priority, this, traffic_annotation,
+      request.url, request.priority, this, traffic_annotation,
       /*is_for_websockets=*/false, request.net_log_create_info);
 
   TRACE_EVENT(
       "loading", "URLLoader::URLLoader",
       perfetto::Flow::ProcessScoped(url_request_->net_log().source().id));
-
-  url_request_->set_method(request.method);
-  url_request_->set_site_for_cookies(request.site_for_cookies);
-  if (ShouldForceIgnoreSiteForCookies(request))
-    url_request_->set_force_ignore_site_for_cookies(true);
-  if (!request.navigation_redirect_chain.empty()) {
-    DCHECK_EQ(request.mode, mojom::RequestMode::kNavigate);
-    url_request_->SetURLChain(request.navigation_redirect_chain);
-  }
-  url_request_->SetReferrer(request.referrer.GetAsReferrer().spec());
-  url_request_->set_referrer_policy(request.referrer_policy);
-  url_request_->set_upgrade_if_insecure(request.upgrade_if_insecure);
-  url_request_->set_ad_tagged(request.is_ad_tagged);
-
-  auto isolation_info = GetIsolationInfo(
-      factory_params_->isolation_info,
-      factory_params_->automatically_assign_isolation_info, request);
-  if (isolation_info)
-    url_request_->set_isolation_info(isolation_info.value());
-
-  if (context.ShouldRequireIsolationInfo()) {
-    DCHECK(!url_request_->isolation_info().IsEmpty());
-  }
-
-  // When a service worker forwards a navigation request it uses the
-  // service worker's IsolationInfo.  This causes the cookie code to fail
-  // to send SameSite=Lax cookies for main-frame navigations passed through
-  // a service worker.  To fix this we check to see if the original destination
-  // of the request was a main frame document and then set a flag indicating
-  // SameSite cookies should treat it as a main frame navigation.
-  if (request.mode == mojom::RequestMode::kNavigate &&
-      request.destination == mojom::RequestDestination::kEmpty &&
-      request.original_destination == mojom::RequestDestination::kDocument) {
-    url_request_->set_force_main_frame_for_same_site_cookies(true);
-  }
-
-  if (factory_params_->disable_secure_dns ||
-      (request.trusted_params && request.trusted_params->disable_secure_dns)) {
-    url_request_->SetSecureDnsPolicy(net::SecureDnsPolicy::kDisable);
-  }
 
   // |cors_exempt_headers| must be merged here to avoid breaking CORS checks.
   // They are non-empty when the values are given by the UA code, therefore
@@ -713,47 +686,152 @@ URLLoader::URLLoader(
   // This should be ensured by the CorsURLLoaderFactory(), which is called
   // before URLLoaders are created.
   DCHECK(AreRequestHeadersSafe(merged_headers));
-  url_request_->SetExtraRequestHeaders(merged_headers);
 
-  url_request_->SetUserData(kUserDataKey,
-                            std::make_unique<UnownedPointer>(this));
-  url_request_->set_accepted_stream_types(
-      request.devtools_accepted_stream_types);
+  // When a service worker forwards a navigation request it uses the
+  // service worker's IsolationInfo.  This causes the cookie code to fail
+  // to send SameSite=Lax cookies for main-frame navigations passed through
+  // a service worker.  To fix this we check to see if the original destination
+  // of the request was a main frame document and then set a flag indicating
+  // SameSite cookies should treat it as a main frame navigation.
+  const bool force_main_frame_for_same_site_cookies =
+      request.mode == mojom::RequestMode::kNavigate &&
+      request.destination == mojom::RequestDestination::kEmpty &&
+      request.original_destination == mojom::RequestDestination::kDocument;
 
-  if (request.trusted_params) {
-    has_user_activation_ = request.trusted_params->has_user_activation;
-    allow_cookies_from_browser_ =
-        request.trusted_params->allow_cookies_from_browser;
-    include_request_cookies_with_response_ =
-        request.trusted_params->include_request_cookies_with_response;
+  const net::SecureDnsPolicy secure_dns_policy =
+      factory_params_->disable_secure_dns ||
+              (request.trusted_params &&
+               request.trusted_params->disable_secure_dns)
+          ? net::SecureDnsPolicy::kDisable
+          : net::SecureDnsPolicy::kAllow;
+
+  const net::RedirectInfo::FirstPartyURLPolicy first_party_url_policy =
+      request.update_first_party_url_on_redirect
+          ? net::RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT
+          : net::RedirectInfo::FirstPartyURLPolicy::NEVER_CHANGE_URL;
+
+  if (!request.navigation_redirect_chain.empty()) {
+    DCHECK_EQ(request.mode, mojom::RequestMode::kNavigate);
   }
 
-  // Store any cookies passed from the browser process to later attach them to
-  // the request.
-  if (allow_cookies_from_browser_) {
-    cookies_from_browser_ =
-        GetCookiesFromHeaders(request.headers, request.cors_exempt_headers);
+  ConfigureRequest(
+      request.url, request.method, request.site_for_cookies,
+      /*force_ignore_site_for_cookies=*/
+      ShouldForceIgnoreSiteForCookies(request),
+      request.navigation_redirect_chain, request.referrer,
+      request.referrer_policy,
+      /*upgrade_if_insecure=*/request.upgrade_if_insecure,
+      /*is_ad_tagged=*/request.is_ad_tagged,
+      /*isolation_info=*/
+      GetIsolationInfo(factory_params_->isolation_info,
+                       factory_params_->automatically_assign_isolation_info,
+                       request),
+      /*force_main_frame_for_same_site_cookies=*/
+      force_main_frame_for_same_site_cookies, secure_dns_policy,
+      std::move(merged_headers), request.devtools_accepted_stream_types,
+      request.request_initiator, first_party_url_policy,
+      /*request_load_flags=*/request.load_flags,
+      /*priority_incremental=*/request.priority_incremental,
+      request.storage_access_api_status,
+      /*cookie_setting_overrides=*/
+      CalculateCookieSettingOverrides(factory_params_->cookie_setting_overrides,
+                                      request),
+      /*shared_dictionary_getter=*/
+      shared_dictionary_manager
+          ? std::make_optional(
+                shared_dictionary_manager->MaybeCreateSharedDictionaryGetter(
+                    request.load_flags, request_destination_))
+          : std::nullopt);
+
+  if (context.ShouldRequireIsolationInfo()) {
+    DCHECK(!url_request_->isolation_info().IsEmpty());
   }
 
   throttling_token_ = network::ScopedThrottlingToken::MaybeCreate(
       url_request_->net_log().source().id, request.throttling_profile_id);
 
-  url_request_->set_initiator(request.request_initiator);
+  if (keepalive_ && keepalive_statistics_recorder_) {
+    keepalive_statistics_recorder_->OnLoadStarted(
+        *factory_params_->top_frame_id, keepalive_request_size_);
+  }
+
+  if (request.net_log_reference_info) {
+    // Log source object that created the request, if available.
+    url_request_->net_log().AddEventReferencingSource(
+        net::NetLogEventType::CREATED_BY,
+        request.net_log_reference_info.value());
+  }
+
+  // Resolve elements from request_body and prepare upload data.
+  if (request.request_body.get()) {
+    OpenFilesForUpload(request);
+    return;
+  }
+
+  ProcessOutboundTrustTokenInterceptor(request);
+}
+
+void URLLoader::ConfigureRequest(
+    const GURL& url,
+    std::string_view method,
+    const net::SiteForCookies& site_for_cookies,
+    bool force_ignore_site_for_cookies,
+    const std::vector<GURL>& url_chain,
+    const GURL& referrer,
+    net::ReferrerPolicy referrer_policy,
+    bool upgrade_if_insecure,
+    bool is_ad_tagged,
+    std::optional<net::IsolationInfo> isolation_info,
+    bool force_main_frame_for_same_site_cookies,
+    net::SecureDnsPolicy secure_dns_policy,
+    net::HttpRequestHeaders extra_request_headers,
+    const std::optional<std::vector<net::SourceStream::SourceType>>&
+        accepted_stream_types,
+    const std::optional<url::Origin>& initiator,
+    net::RedirectInfo::FirstPartyURLPolicy first_party_url_policy,
+    int request_load_flags,
+    bool priority_incremental,
+    net::StorageAccessApiStatus storage_access_api_status,
+    net::CookieSettingOverrides cookie_setting_overrides,
+    std::optional<net::SharedDictionaryGetter> shared_dictionary_getter) {
+  url_request_->set_method(method);
+  url_request_->set_site_for_cookies(site_for_cookies);
+  url_request_->set_force_ignore_site_for_cookies(
+      force_ignore_site_for_cookies);
+  if (!url_chain.empty()) {
+    url_request_->SetURLChain(url_chain);
+  }
+  url_request_->SetReferrer(referrer.GetAsReferrer().spec());
+  url_request_->set_referrer_policy(referrer_policy);
+  url_request_->set_upgrade_if_insecure(upgrade_if_insecure);
+  url_request_->set_ad_tagged(is_ad_tagged);
+
+  if (isolation_info) {
+    url_request_->set_isolation_info(std::move(isolation_info).value());
+  }
+
+  url_request_->set_force_main_frame_for_same_site_cookies(
+      force_main_frame_for_same_site_cookies);
+
+  url_request_->SetSecureDnsPolicy(secure_dns_policy);
+
+  url_request_->SetExtraRequestHeaders(std::move(extra_request_headers));
+
+  url_request_->SetUserData(kUserDataKey,
+                            std::make_unique<UnownedPointer>(this));
+  url_request_->set_accepted_stream_types(accepted_stream_types);
+
+  url_request_->set_initiator(initiator);
 
   SetFetchMetadataHeaders(url_request_.get(), request_mode_,
                           has_user_activation_, request_destination_, nullptr,
                           *factory_params_, *origin_access_list_);
 
-  if (request.update_first_party_url_on_redirect) {
-    url_request_->set_first_party_url_policy(
-        net::RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT);
-  }
-
-  int request_load_flags = request.load_flags;
+  url_request_->set_first_party_url_policy(first_party_url_policy);
 
   url_request_->SetLoadFlags(request_load_flags);
-  url_request_->SetPriorityIncremental(request.priority_incremental);
-  SetRequestCredentials(request.url);
+  url_request_->SetPriorityIncremental(priority_incremental);
+  SetRequestCredentials(url);
 
   url_request_->SetRequestHeadersCallback(base::BindRepeating(
       &URLLoader::SetRawRequestHeadersAndNotify, base::Unretained(this)));
@@ -770,37 +848,14 @@ URLLoader::URLLoader(
   url_request_->SetEarlyResponseHeadersCallback(base::BindRepeating(
       &URLLoader::NotifyEarlyResponse, base::Unretained(this)));
 
-  if (keepalive_ && keepalive_statistics_recorder_) {
-    keepalive_statistics_recorder_->OnLoadStarted(
-        *factory_params_->top_frame_id, keepalive_request_size_);
-  }
+  url_request_->set_storage_access_api_status(storage_access_api_status);
 
-  if (request.net_log_reference_info) {
-    // Log source object that created the request, if avairable.
-    url_request_->net_log().AddEventReferencingSource(
-        net::NetLogEventType::CREATED_BY,
-        request.net_log_reference_info.value());
-  }
+  url_request_->cookie_setting_overrides() = cookie_setting_overrides;
 
-  url_request_->set_storage_access_api_status(
-      request.storage_access_api_status);
-
-  url_request_->cookie_setting_overrides() = CalculateCookieSettingOverrides(
-      factory_params_->cookie_setting_overrides, request);
-
-  if (shared_dictionary_manager) {
+  if (shared_dictionary_getter) {
     url_request_->SetSharedDictionaryGetter(
-        shared_dictionary_manager->MaybeCreateSharedDictionaryGetter(
-            request_load_flags, request_destination_));
+        std::move(shared_dictionary_getter).value());
   }
-
-  // Resolve elements from request_body and prepare upload data.
-  if (request.request_body.get()) {
-    OpenFilesForUpload(request);
-    return;
-  }
-
-  ProcessOutboundTrustTokenInterceptor(request);
 }
 
 // This class is used to manage the queue of pending file upload operations
