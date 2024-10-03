@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -145,6 +146,13 @@
 #include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
 #include "components/enterprise/client_certificates/core/client_certificates_service.h"
 #include "components/enterprise/client_certificates/core/features.h"
+#endif
+
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+#include "chrome/browser/net/server_certificate_database.h"     // nogncheck
+#include "chrome/browser/net/server_certificate_database.pb.h"  // nogncheck
+#include "chrome/browser/net/server_certificate_database_service.h"  // nogncheck
+#include "chrome/browser/net/server_certificate_database_service_factory.h"  // nogncheck
 #endif
 
 namespace {
@@ -687,8 +695,8 @@ ProfileNetworkContextService::GetCertificatePolicy(
     std::string_view spki_piece;
     bool success = net::asn1::ExtractSPKIFromDERCert(decoded, &spki_piece);
     if (success) {
-      additional_certificates->distrusted_spkis.emplace_back(spki_piece.begin(),
-                                                             spki_piece.end());
+      additional_certificates->distrusted_spkis.push_back(
+          base::ToVector(base::as_byte_span(spki_piece)));
     }
   }
 
@@ -701,13 +709,86 @@ ProfileNetworkContextService::GetCertificatePolicy(
 }
 
 void ProfileNetworkContextService::UpdateAdditionalCertificates() {
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+  if (base::FeatureList::IsEnabled(features::kEnableCertManagementUIV2Write)) {
+    net::ServerCertificateDatabaseService* cert_db_service =
+        net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
+            profile_);
+
+    cert_db_service->GetAllCertificates(
+        base::BindOnce(&ProfileNetworkContextService::
+                           UpdateAdditionalCertificatesWithUserAddedCerts,
+                       base::Unretained(this)));
+  } else {
+    profile_->ForEachLoadedStoragePartition(
+        [&](content::StoragePartition* storage_partition) {
+          storage_partition->GetCertVerifierServiceUpdater()
+              ->UpdateAdditionalCertificates(
+                  GetCertificatePolicy(storage_partition->GetPath()));
+        });
+  }
+#else
   profile_->ForEachLoadedStoragePartition(
       [&](content::StoragePartition* storage_partition) {
         storage_partition->GetCertVerifierServiceUpdater()
             ->UpdateAdditionalCertificates(
                 GetCertificatePolicy(storage_partition->GetPath()));
       });
+#endif
 }
+
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+void ProfileNetworkContextService::
+    UpdateAdditionalCertificatesWithUserAddedCerts(
+        std::vector<net::ServerCertificateDatabase::CertInformation>
+            cert_infos) {
+  profile_->ForEachLoadedStoragePartition(
+      [&](content::StoragePartition* storage_partition) {
+        cert_verifier::mojom::AdditionalCertificatesPtr additional_certs =
+            GetCertificatePolicy(storage_partition->GetPath());
+
+        for (const auto& cert_info : cert_infos) {
+          std::optional<bssl::CertificateTrustType> trust =
+              net::ServerCertificateDatabase::GetUserCertificateTrust(
+                  cert_info);
+          if (!trust) {
+            continue;
+          }
+          switch (trust.value()) {
+            case bssl::CertificateTrustType::UNSPECIFIED:
+              additional_certs->all_certificates.push_back(cert_info.der_cert);
+              break;
+
+            case bssl::CertificateTrustType::DISTRUSTED: {
+              std::string_view spki_piece;
+              bool success = net::asn1::ExtractSPKIFromDERCert(
+                  base::as_string_view(cert_info.der_cert), &spki_piece);
+              if (success) {
+                additional_certs->distrusted_spkis.push_back(
+                    base::ToVector(base::as_byte_span(spki_piece)));
+              }
+              break;
+            }
+
+            case bssl::CertificateTrustType::TRUSTED_ANCHOR:
+              // TODO(crbug.com/40928765): add additional constraints.
+              additional_certs->trust_anchors_with_enforced_constraints
+                  .push_back(cert_info.der_cert);
+              break;
+
+            case bssl::CertificateTrustType::TRUSTED_ANCHOR_OR_LEAF:
+            case bssl::CertificateTrustType::TRUSTED_LEAF:
+              // TODO(crbug.com/40928765): There's currently no place to pass
+              // this through mojo to the cert verifier; add this to the mojo
+              // message after this becomes possible.
+              continue;
+          }
+        }
+        storage_partition->GetCertVerifierServiceUpdater()
+            ->UpdateAdditionalCertificates(std::move(additional_certs));
+      });
+}
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
 void ProfileNetworkContextService::ScheduleUpdateCertificatePolicy() {
   cert_policy_update_timer_.Start(
@@ -1272,18 +1353,19 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   // TODO(crbug.com/40928765): check to see if IsManaged() ensures the pref
   // isn't set in user profiles, or if that does something else. If that's true,
   // add an isManaged() check here.
-  // TODO(crbug.com/40928765): add async calls to get the User Certs from
-  // server_cert_database_ and then feed it to the CertVerifiers
-  // through the cert_verifier_updater
-  // (storage_partition->GetCertVerifierServiceUpdater()).
-  // verifications need to wait for for these certs to get to the cert verifier.
-  //
-  // Will have to think about if separate mojom call should be used or if the
-  // currently existing one should be repurposed.
-  // Will also have to consider any caching/reuse to reduce amount of DB reads
-  // necessary.
+
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+  if (base::FeatureList::IsEnabled(features::kEnableCertManagementUIV2Write)) {
+    cert_verifier_creation_params->wait_for_update = true;
+    UpdateAdditionalCertificates();
+  } else {
+    cert_verifier_creation_params->initial_additional_certificates =
+        GetCertificatePolicy(GetPartitionPath(relative_partition_path));
+  }
+#else
   cert_verifier_creation_params->initial_additional_certificates =
       GetCertificatePolicy(GetPartitionPath(relative_partition_path));
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Disable idle sockets close on memory pressure if configured by finch or

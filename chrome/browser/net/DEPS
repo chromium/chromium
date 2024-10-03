@@ -3,4 +3,7 @@ specific_include_rules = {
     "+services/network/test",
     "+third_party/boringssl/src/pki",
   ],
+  'server_certificate_database*': [
+    "+third_party/boringssl/src/pki",
+  ],
 }

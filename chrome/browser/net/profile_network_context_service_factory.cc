@@ -8,6 +8,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/buildflags.h"
 #include "crypto/crypto_buildflags.h"
 
 #if BUILDFLAG(USE_NSS_CERTS)
@@ -16,6 +17,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
+#endif
+
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+#include "chrome/browser/net/server_certificate_database_service_factory.h"  // nogncheck
 #endif
 
 ProfileNetworkContextService*
@@ -53,6 +58,9 @@ ProfileNetworkContextServiceFactory::ProfileNetworkContextServiceFactory()
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   DependsOn(chromeos::CertificateProviderServiceFactory::GetInstance());
+#endif
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+  DependsOn(net::ServerCertificateDatabaseServiceFactory::GetInstance());
 #endif
 }
 

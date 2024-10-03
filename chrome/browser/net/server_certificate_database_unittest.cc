@@ -123,4 +123,44 @@ TEST_F(ServerCertificateDatabaseTest, Update) {
                            CertInfoEquals(std::ref(intermediate_cert_info))));
 }
 
+TEST(ServerCertificateDatabaseTrustTest, TestTrustMappings) {
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+
+  EXPECT_EQ(bssl::CertificateTrustType::UNSPECIFIED,
+            ServerCertificateDatabase::GetUserCertificateTrust(MakeCertInfo(
+                intermediate->GetDER(),
+                CertificateTrust::CERTIFICATE_TRUST_TYPE_UNSPECIFIED)));
+
+  EXPECT_EQ(bssl::CertificateTrustType::DISTRUSTED,
+            ServerCertificateDatabase::GetUserCertificateTrust(MakeCertInfo(
+                root->GetDER(),
+                CertificateTrust::CERTIFICATE_TRUST_TYPE_DISTRUSTED)));
+
+  EXPECT_EQ(bssl::CertificateTrustType::TRUSTED_ANCHOR,
+            ServerCertificateDatabase::GetUserCertificateTrust(MakeCertInfo(
+                intermediate->GetDER(),
+                CertificateTrust::CERTIFICATE_TRUST_TYPE_TRUSTED)));
+
+  EXPECT_EQ(
+      bssl::CertificateTrustType::TRUSTED_LEAF,
+      ServerCertificateDatabase::GetUserCertificateTrust(MakeCertInfo(
+          leaf->GetDER(), CertificateTrust::CERTIFICATE_TRUST_TYPE_TRUSTED)));
+
+  leaf->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/-1);
+  EXPECT_EQ(
+      bssl::CertificateTrustType::TRUSTED_ANCHOR_OR_LEAF,
+      ServerCertificateDatabase::GetUserCertificateTrust(MakeCertInfo(
+          leaf->GetDER(), CertificateTrust::CERTIFICATE_TRUST_TYPE_TRUSTED)));
+
+  EXPECT_EQ(
+      bssl::CertificateTrustType::TRUSTED_ANCHOR,
+      ServerCertificateDatabase::GetUserCertificateTrust(MakeCertInfo(
+          root->GetDER(), CertificateTrust::CERTIFICATE_TRUST_TYPE_TRUSTED)));
+
+  EXPECT_EQ(
+      std::nullopt,
+      ServerCertificateDatabase::GetUserCertificateTrust(MakeCertInfo(
+          "invalidcertder", CertificateTrust::CERTIFICATE_TRUST_TYPE_TRUSTED)));
+}
+
 }  // namespace net

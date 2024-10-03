@@ -41,6 +41,24 @@
 #include "components/onc/onc_constants.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/net/profile_network_context_service.h"
+#include "chrome/browser/net/profile_network_context_service_factory.h"
+#include "chrome/browser/net/server_certificate_database.h"     // nogncheck
+#include "chrome/browser/net/server_certificate_database.pb.h"  // nogncheck
+#include "chrome/browser/net/server_certificate_database_service.h"  // nogncheck
+#include "chrome/browser/net/server_certificate_database_service_factory.h"  // nogncheck
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "crypto/sha2.h"
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+
 // Testing the CACertificates policy
 class CertVerifierServiceCACertificatesPolicyTest
     : public policy::PolicyTest,
@@ -854,3 +872,114 @@ INSTANTIATE_TEST_SUITE_P(All,
                          CertVerifierServiceNewAndOncCertificatePoliciesTest,
                          ::testing::Bool());
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+// Tests that when certificates are simultaneously added to both the user
+// added certs database and the new CACertificates/CAHintCertificates policies,
+// that they are both honored.
+class CertVerifierServicePolicyAndUserRootsTest
+    : public policy::PolicyTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  CertVerifierServicePolicyAndUserRootsTest() {
+    feature_list_.InitWithFeatures({features::kEnableCertManagementUIV2,
+                                    features::kEnableCertManagementUIV2Write},
+                                   {});
+  }
+  bool add_certs() const { return GetParam(); }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(CertVerifierServicePolicyAndUserRootsTest,
+                       UserRootsAndPolicyCombined) {
+  net::EmbeddedTestServer test_server_for_user_added{
+      net::EmbeddedTestServer::TYPE_HTTPS};
+  net::EmbeddedTestServer test_server_for_policy{
+      net::EmbeddedTestServer::TYPE_HTTPS};
+  // Configure both test servers to serve chains with unique roots and with
+  // an intermediate that is not sent by the testserver nor available via
+  // AIA. Neither server should be trusted unless its intermediate is
+  // supplied as a hint via policy and its root is trusted via policy.
+  net::EmbeddedTestServer::ServerCertificateConfig test_cert_config;
+  test_cert_config.intermediate =
+      net::EmbeddedTestServer::IntermediateType::kMissing;
+  test_cert_config.root = net::EmbeddedTestServer::RootType::kUniqueRoot;
+  test_server_for_user_added.SetSSLConfig(test_cert_config);
+  test_server_for_policy.SetSSLConfig(test_cert_config);
+  test_server_for_user_added.ServeFilesFromSourceDirectory("chrome/test/data");
+  test_server_for_policy.ServeFilesFromSourceDirectory("chrome/test/data");
+
+  ASSERT_TRUE(test_server_for_user_added.Start());
+  ASSERT_TRUE(test_server_for_policy.Start());
+  if (add_certs()) {
+    net::ServerCertificateDatabaseService* server_certificate_database_service =
+        net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
+            browser()->profile());
+    {
+      scoped_refptr<net::X509Certificate> root_cert =
+          test_server_for_user_added.GetRoot();
+      net::ServerCertificateDatabase::CertInformation user_root_info;
+      user_root_info.sha256hash_hex =
+          base::HexEncode(crypto::SHA256Hash(root_cert->cert_span()));
+      user_root_info.cert_metadata.mutable_trust()->set_trust_type(
+          chrome_browser_server_certificate_database::CertificateTrust::
+              CERTIFICATE_TRUST_TYPE_TRUSTED);
+      user_root_info.der_cert = base::ToVector(root_cert->cert_span());
+
+      base::test::TestFuture<bool> future;
+      server_certificate_database_service->AddOrUpdateUserCertificate(
+          std::move(user_root_info), future.GetCallback());
+      ASSERT_TRUE(future.Get());
+    }
+    {
+      scoped_refptr<net::X509Certificate> hint_cert =
+          test_server_for_user_added.GetGeneratedIntermediate();
+
+      net::ServerCertificateDatabase::CertInformation user_hint_info;
+      user_hint_info.sha256hash_hex =
+          base::HexEncode(crypto::SHA256Hash(hint_cert->cert_span()));
+      user_hint_info.cert_metadata.mutable_trust()->set_trust_type(
+          chrome_browser_server_certificate_database::CertificateTrust::
+              CERTIFICATE_TRUST_TYPE_UNSPECIFIED);
+      user_hint_info.der_cert = base::ToVector(hint_cert->cert_span());
+
+      base::test::TestFuture<bool> future;
+      server_certificate_database_service->AddOrUpdateUserCertificate(
+          std::move(user_hint_info), future.GetCallback());
+      ASSERT_TRUE(future.Get());
+    }
+
+    auto policy_ca_certs = base::Value::List().Append(
+        base::Base64Encode(net::x509_util::CryptoBufferAsStringPiece(
+            test_server_for_policy.GetRoot()->cert_buffer())));
+
+    auto policy_hint_certs = base::Value::List().Append(
+        base::Base64Encode(net::x509_util::CryptoBufferAsStringPiece(
+            test_server_for_policy.GetGeneratedIntermediate()->cert_buffer())));
+
+    policy::PolicyMap policies;
+    SetPolicy(&policies, policy::key::kCACertificates,
+              std::make_optional(base::Value(std::move(policy_ca_certs))));
+    SetPolicy(&policies, policy::key::kCAHintCertificates,
+              std::make_optional(base::Value(std::move(policy_hint_certs))));
+    // Policy updates will also trigger an update to the Cert Verifier, pulling
+    // in the certs from ServerCertificateDatabase.
+    UpdateProviderPolicy(policies);
+  }
+
+  ASSERT_TRUE(
+      NavigateToUrl(test_server_for_policy.GetURL("/simple.html"), this));
+  EXPECT_NE(add_certs(), chrome_browser_interstitials::IsShowingInterstitial(
+                             chrome_test_utils::GetActiveWebContents(this)));
+
+  ASSERT_TRUE(
+      NavigateToUrl(test_server_for_user_added.GetURL("/simple.html"), this));
+  EXPECT_NE(add_certs(), chrome_browser_interstitials::IsShowingInterstitial(
+                             chrome_test_utils::GetActiveWebContents(this)));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CertVerifierServicePolicyAndUserRootsTest,
+                         ::testing::Bool());
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)

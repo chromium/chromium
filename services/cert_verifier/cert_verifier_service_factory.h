@@ -94,6 +94,8 @@ class CertVerifierServiceFactoryImpl
     return proc_params_;
   }
 
+  base::WeakPtr<CertVerifierServiceFactoryImpl> GetWeakPtr();
+
  private:
   // Update all the `verifier_services_` with the current data.
   void UpdateVerifierServices();

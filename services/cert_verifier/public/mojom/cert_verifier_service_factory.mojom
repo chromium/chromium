@@ -37,6 +37,13 @@ struct CertVerifierCreationParams {
   // Initial additional certificates that will be used for certificate
   // validation.
   AdditionalCertificates? initial_additional_certificates;
+
+  // If true, verifier should wait for a call to
+  // CertVeriferServiceUpdater.UpdateAdditionalCertificates
+  // before processing any verifications.
+  // TODO(crbug.com/370696616): Also see if verifications can be blocked until
+  // PKIMetadata component updates are finished.
+  bool wait_for_update = false;
 };
 
 // Information about a certificate in the Chrome Root Store

@@ -101,7 +101,8 @@ internal::CertVerifierServiceImpl* GetNewCertVerifierImpl(
   return new internal::CertVerifierServiceImpl(
       std::move(cert_verifier), std::move(service_receiver),
       std::move(updater_receiver), std::move(client),
-      std::move(cert_net_fetcher), std::move(instance_params));
+      std::move(cert_net_fetcher), std::move(instance_params),
+      creation_params->wait_for_update);
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -431,6 +432,11 @@ void CertVerifierServiceFactoryImpl::UpdateVerifierServices() {
   for (internal::CertVerifierServiceImpl* service : verifier_services_) {
     service->UpdateVerifierData(proc_params_);
   }
+}
+
+base::WeakPtr<CertVerifierServiceFactoryImpl>
+CertVerifierServiceFactoryImpl::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 }  // namespace cert_verifier

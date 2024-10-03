@@ -33,6 +33,10 @@
 #include "services/network/public/mojom/cookie_manager.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+#include "chrome/browser/net/server_certificate_database.h"  // nogncheck
+#endif
+
 class PrefRegistrySimple;
 class Profile;
 
@@ -80,7 +84,7 @@ class ProfileNetworkContextService
           cert_verifier_creation_params);
 
   // Update all of the profile_'s CertVerifierServices with certificates from
-  // enterprise policies.
+  // enterprise policies, and any user-added certificates if present.
   void UpdateAdditionalCertificates();
 
   struct CertificatePoliciesForView {
@@ -174,6 +178,13 @@ class ProfileNetworkContextService
   // Get the current certificate policies from preferences.
   cert_verifier::mojom::AdditionalCertificatesPtr GetCertificatePolicy(
       const base::FilePath& storage_partition_path);
+
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+  // Like UpdateAdditionalCertificates, but also includes the passed in user
+  // added certificates.
+  void UpdateAdditionalCertificatesWithUserAddedCerts(
+      std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos);
+#endif
 
   bool ShouldSplitAuthCacheByNetworkIsolationKey() const;
   void UpdateSplitAuthCacheByNetworkIsolationKey();
