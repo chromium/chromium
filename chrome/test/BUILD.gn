@@ -5208,6 +5208,7 @@ if (!is_android) {
         "../browser/extensions/api/image_writer_private/image_writer_utility_client_browsertest.cc",
         "../browser/profiles/profile_statistics_browsertest.cc",
       ]
+      deps += [ "//chrome/browser/ui/webui/signin:browser_tests" ]
 
       if (!is_chromeos_lacros) {
         sources += [
@@ -7972,6 +7973,7 @@ test("unit_tests") {
       "//chrome/browser/ui/tabs:test_support",
       "//chrome/browser/ui/tabs:unit_tests",
       "//chrome/browser/ui/webui/settings",
+      "//chrome/browser/ui/webui/signin:unit_tests",
     ]
 
     if (!is_chromeos_lacros) {
