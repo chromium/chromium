@@ -44,13 +44,13 @@ constexpr char kNotAllowedText[] =
     "NotAllowedError: The operation is not allowed at this time because the "
     "page does not have focus.";
 
-class WebAuthFocusTest : public InteractiveBrowserTest,
-                         public AuthenticatorRequestDialogModel::Observer {
+class WebAuthnFocusTest : public InteractiveBrowserTest,
+                          public AuthenticatorRequestDialogModel::Observer {
  public:
-  WebAuthFocusTest() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+  WebAuthnFocusTest() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
-  WebAuthFocusTest(const WebAuthFocusTest&) = delete;
-  WebAuthFocusTest& operator=(const WebAuthFocusTest&) = delete;
+  WebAuthnFocusTest(const WebAuthnFocusTest&) = delete;
+  WebAuthnFocusTest& operator=(const WebAuthnFocusTest&) = delete;
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -89,7 +89,7 @@ class WebAuthFocusTest : public InteractiveBrowserTest,
   net::EmbeddedTestServer https_server_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebAuthFocusTest, SucceedWhenTabIsFocused) {
+IN_PROC_BROWSER_TEST_F(WebAuthnFocusTest, SucceedWhenTabIsFocused) {
   RunTestSequence(
       InstrumentTab(kFirstTabId),
       NavigateWebContents(kFirstTabId,
@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFocusTest, SucceedWhenTabIsFocused) {
           kOkText));
 }
 
-IN_PROC_BROWSER_TEST_F(WebAuthFocusTest, FailWhenTabIsNotFocused) {
+IN_PROC_BROWSER_TEST_F(WebAuthnFocusTest, FailWhenTabIsNotFocused) {
   // Web Authentication requests will often trigger machine-wide indications,
   // such as a Security Key flashing for a touch. If background tabs were able
   // to trigger this, there would be a risk of user confusion since the user
@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFocusTest, FailWhenTabIsNotFocused) {
           kOkText));
 }
 
-IN_PROC_BROWSER_TEST_F(WebAuthFocusTest, FailWhenTabFocusChangesWhileRunning) {
+IN_PROC_BROWSER_TEST_F(WebAuthnFocusTest, FailWhenTabFocusChangesWhileRunning) {
   // Start the request in the foreground and open a new tab between starting and
   // finishing the request. This should fail because we don't want foreground
   // pages to be able to start a request, open a trusted site in a new
@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFocusTest, FailWhenTabFocusChangesWhileRunning) {
           kNotAllowedText));
 }
 
-IN_PROC_BROWSER_TEST_F(WebAuthFocusTest, SucceedWithDevtoolsOpen) {
+IN_PROC_BROWSER_TEST_F(WebAuthnFocusTest, SucceedWithDevtoolsOpen) {
   RunTestSequence(
       InstrumentTab(kFirstTabId),
       NavigateWebContents(kFirstTabId,
@@ -170,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFocusTest, SucceedWithDevtoolsOpen) {
           kOkText));
 }
 
-IN_PROC_BROWSER_TEST_F(WebAuthFocusTest, SucceedWithNewWindowOpen) {
+IN_PROC_BROWSER_TEST_F(WebAuthnFocusTest, SucceedWithNewWindowOpen) {
   virtual_device_factory()->mutable_state()->simulate_press_callback =
       base::BindRepeating(
           [](Browser* browser, device::VirtualFidoDevice* device) {
