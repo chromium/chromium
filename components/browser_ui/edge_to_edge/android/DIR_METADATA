@@ -1,0 +1,8 @@
+monorail: {
+  component: "UI>Browser>Mobile>EdgeToEdge"
+}
+team_email: "clank-app-team@google.com"
+os: ANDROID
+buganizer_public: {
+  component_id: 1456116
+}

@@ -1,0 +1,39 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/components/browser_ui/edge_to_edge/BaseSystemBarColorHelper.java",
+    "java/src/org/chromium/components/browser_ui/edge_to_edge/EdgeToEdgeSystemBarColorHelper.java",
+    "java/src/org/chromium/components/browser_ui/edge_to_edge/SystemBarColorHelper.java",
+    "java/src/org/chromium/components/browser_ui/edge_to_edge/WindowSystemBarColorHelper.java",
+  ]
+  deps = [
+    "//base:base_java",
+    "//build/android:build_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
+    "//ui/android:ui_utils_java",
+  ]
+}
+
+robolectric_library("junit") {
+  testonly = true
+  sources = [
+    "java/src/org/chromium/components/browser_ui/edge_to_edge/EdgeToEdgeSystemBarColorHelperUnitTest.java",
+    "java/src/org/chromium/components/browser_ui/edge_to_edge/WindowSystemBarColorHelperUnitTest.java",
+  ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_junit_test_support",
+    "//build/android:build_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
