@@ -463,7 +463,6 @@ Name: Lit
 Short Name: lit
 URL: https://lit.dev
 Version: 3.0.2
-Revision: N/A
 License: BSD 3-Clause
 License File: LICENSE
 Security Critical: no
@@ -488,7 +487,6 @@ Name: Mediapipe Tasks Vision
 Short Name: @mediapipe/tasks-vision
 URL: https://www.npmjs.com/package/@mediapipe/tasks-vision
 Version: 0.10.9
-Revision: N/A
 License: Apache 2.0
 License File: LICENSE
 Security Critical: no
@@ -511,7 +509,6 @@ Name: Type Definitions for Dom View Transitions API
 Short Name: @types/dom-view-transitions
 URL: https://www.npmjs.com/package/@types/dom-view-transitions
 Version: 1.0.4
-Revision: N/A
 License: MIT
 License File: LICENSE
 Security Critical: no
@@ -532,7 +529,6 @@ Name: Stylistic rules for ESLint, works for both JavaScript and TypeScript.
 Short Name: @stylistic/eslint-plugin
 URL: https://www.npmjs.com/package/@stylistic/eslint-plugin
 Version: 2.8.0
-Revision: N/A
 License: MIT
 Security Critical: no
 Shipped: no
@@ -552,7 +548,6 @@ Name: An AST-based pattern checker for JavaScript.
 Short Name: eslint
 URL: https://www.npmjs.com/package/eslint
 Version: 9.10.0
-Revision: N/A
 License: MIT
 Security Critical: no
 Shipped: no
