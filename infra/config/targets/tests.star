@@ -384,6 +384,8 @@ targets.tests.gtest_test(
 targets.tests.junit_test(
     name = "cast_base_junit_tests",
     label = "//chromecast/base:cast_base_junit_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 # TODO(issues.chromium.org/1516671): Eliminate cast_* suites that are no longer
@@ -432,6 +434,8 @@ targets.tests.gtest_test(
 targets.tests.junit_test(
     name = "cast_shell_junit_tests",
     label = "//chromecast/browser/android:cast_shell_junit_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.tests.gtest_test(

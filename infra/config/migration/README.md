@@ -81,13 +81,19 @@ Commands assume the working directory is //infra/config.
 1. Some manual work will need to be done to transfer any comments on the removed
    test suite declarations to the corresponding bundle declarations.
 
-1. Binaries that are no longer referenced by any builder in
-  //testing/waterfalls.pyl should be added to the exclude list in
-  //testing/buildbot/check.py. These binaries can be found by running
+1. Isolates that are no longer referenced by any builder in
+  //testing/buildbot/waterfalls.pyl should have their declaration
+  updated to set skip_usage_check=True. These isolates can be found by
+  running
 
     ```sh
     ../../testing/buildbot/check.py
     ```
+
+    Isolates can be defined by one of: compile targets in
+    //infra/config/targets/compile_targets.star, binaries in
+    //infra/config/targets/binaries.star or junit tests in
+    //infra/config/targets/tests.star.
 
 ## buildozer
 

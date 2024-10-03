@@ -19,6 +19,7 @@
   "android_lint": {
     "label": "//chrome/android:android_lint",
     "type": "additional_compile_target",
+    "skip_usage_check": True,
   },
   "android_sync_integration_tests": {
     "label": "//chrome/test:android_sync_integration_tests",
@@ -244,46 +245,57 @@
   "cast_android_cma_backend_unittests": {
     "label": "//chromecast/media/cma/backend/android:cast_android_cma_backend_unittests",
     "type": "console_test_launcher",
+    "skip_usage_check": True,
   },
   "cast_audio_backend_unittests": {
     "label": "//chromecast/media/cma/backend:cast_audio_backend_unittests",
     "type": "console_test_launcher",
+    "skip_usage_check": True,
   },
   "cast_base_junit_tests": {
     "label": "//chromecast/base:cast_base_junit_tests",
     "type": "generated_script",
+    "skip_usage_check": True,
   },
   "cast_base_unittests": {
     "label": "//chromecast/base:cast_base_unittests",
     "type": "console_test_launcher",
+    "skip_usage_check": True,
   },
   "cast_browser_apk": {
     "label": "//chromecast:cast_browser_apk",
     "type": "additional_compile_target",
+    "skip_usage_check": True,
   },
   "cast_cast_core_unittests": {
     "label": "//chromecast/cast_core:cast_cast_core_unittests",
     "type": "console_test_launcher",
+    "skip_usage_check": True,
   },
   "cast_crash_unittests": {
     "label": "//chromecast/crash:cast_crash_unittests",
     "type": "console_test_launcher",
+    "skip_usage_check": True,
   },
   "cast_display_settings_unittests": {
     "label": "//chromecast/ui/display_settings:cast_display_settings_unittests",
     "type": "console_test_launcher",
+    "skip_usage_check": True,
   },
   "cast_graphics_unittests": {
     "label": "//chromecast/graphics:cast_graphics_unittests",
     "type": "console_test_launcher",
+    "skip_usage_check": True,
   },
   "cast_junit_test_lists": {
     "label": "//chromecast:cast_junit_test_lists",
     "type": "additional_compile_target",
+    "skip_usage_check": True,
   },
   "cast_media_unittests": {
     "label": "//chromecast/media:cast_media_unittests",
     "type": "console_test_launcher",
+    "skip_usage_check": True,
   },
   "cast_runner_browsertests": {
     "label": "//fuchsia_web/runners:cast_runner_browsertests",
@@ -304,22 +316,27 @@
   "cast_shell": {
     "label": "//chromecast:cast_shell",
     "type": "additional_compile_target",
+    "skip_usage_check": True,
   },
   "cast_shell_browsertests": {
     "label": "//chromecast:cast_shell_browsertests",
     "type": "console_test_launcher",
+    "skip_usage_check": True,
   },
   "cast_shell_junit_tests": {
     "label": "//chromecast/browser/android:cast_shell_junit_tests",
     "type": "generated_script",
+    "skip_usage_check": True,
   },
   "cast_shell_unittests": {
     "label": "//chromecast:cast_shell_unittests",
     "type": "console_test_launcher",
+    "skip_usage_check": True,
   },
   "cast_test_lists": {
     "label": "//chromecast:cast_test_lists",
     "type": "additional_compile_target",
+    "skip_usage_check": True,
   },
   "cast_unittests": {
     "label": "//media/cast:cast_unittests",
@@ -332,6 +349,7 @@
   "check_chrome_static_initializers": {
     "label": "//chrome/android:check_chrome_static_initializers",
     "type": "additional_compile_target",
+    "skip_usage_check": True,
   },
   "chrome": {
     "label": "//chrome:chrome",
@@ -449,6 +467,7 @@
   "chrome_public_apk_baseline_profile_generator": {
     "label": "//chrome/test/android:chrome_public_apk_baseline_profile_generator",
     "type": "console_test_launcher",
+    "skip_usage_check": True,
   },
   "chrome_public_smoke_test": {
     "label": "//chrome/android:chrome_public_smoke_test",
@@ -469,6 +488,7 @@
   "chrome_public_wpt": {
     "label": "//chrome/android:chrome_public_wpt",
     "type": "generated_script",
+    "skip_usage_check": True,
     "args": [
       "--results-directory",
       "${ISOLATED_OUTDIR}",
@@ -655,10 +675,12 @@
   "core_runtime_simple": {
     "label": "//chromecast/cast_core:core_runtime_simple",
     "type": "additional_compile_target",
+    "skip_usage_check": True,
   },
   "core_runtime_starboard": {
     "label": "//chromecast/cast_core:core_runtime_starboard",
     "type": "additional_compile_target",
+    "skip_usage_check": True,
   },
   "crashpad_tests": {
     "label": "//third_party/crashpad/crashpad:crashpad_tests",
@@ -667,14 +689,17 @@
   "cronet_package": {
     "label": "//components/cronet:cronet_package",
     "type": "additional_compile_target",
+    "skip_usage_check": True,
   },
   "cronet_package_ci": {
     "label": "//components/cronet/android:cronet_package_ci",
     "type": "additional_compile_target",
+    "skip_usage_check": True,
   },
   "cronet_perf_test_apk": {
     "label": "//components/cronet/android:cronet_perf_test_apk",
     "type": "additional_compile_target",
+    "skip_usage_check": True,
   },
   "cronet_sample_test_apk": {
     "label": "//components/cronet/android:cronet_sample_test_apk",
@@ -683,6 +708,7 @@
   "cronet_sizes": {
     "label": "//components/cronet/android:cronet_sizes",
     "type": "generated_script",
+    "skip_usage_check": True,
   },
   "cronet_smoketests_apk": {
     "label": "//components/cronet/android:cronet_smoketests_apk",
@@ -1041,6 +1067,7 @@
   "jni_zero_sample_apk_test": {
     "label": "//third_party/jni_zero/sample:jni_zero_sample_apk_test",
     "type": "console_test_launcher",
+    "skip_usage_check": True,
   },
   "junit_unit_tests": {
     "label": "//testing/android/junit:junit_unit_tests",
@@ -1147,6 +1174,7 @@
   "minidump_uploader_test": {
     "label": "//components/minidump_uploader:minidump_uploader_test",
     "type": "console_test_launcher",
+    "skip_usage_check": True,
   },
   "model_validation_tests": {
     "label": "//components/optimization_guide/internal/testing:model_validation_tests",
@@ -1219,6 +1247,7 @@
   "monochrome_public_test_ar_apk": {
     "label": "//chrome/android:monochrome_public_test_ar_apk",
     "type": "console_test_launcher",
+    "skip_usage_check": True,
   },
   "nacl_helper": {
     "label": "//components/nacl/loader:nacl_helper",
@@ -1417,6 +1446,7 @@
   "private_code_failure_test": {
     "label": "//build/private_code_test:private_code_failure_test",
     "type": "generated_script",
+    "skip_usage_check": True,
   },
   "profile_provider_unittest": {
     "label": "//chrome/browser/metrics/perf:profile_provider_unittest",
@@ -1445,6 +1475,7 @@
   "resource_sizes_cronet_sample_apk": {
     "label": "//components/cronet/android:resource_sizes_cronet_sample_apk",
     "type": "generated_script",
+    "skip_usage_check": True,
   },
   "rust_build_tests": {
     "label": "//build/rust/tests",
@@ -1549,6 +1580,7 @@
   "system_webview_wpt": {
     "label": "//android_webview/test:system_webview_wpt",
     "type": "generated_script",
+    "skip_usage_check": True,
     "args": [
       "--results-directory",
       "${ISOLATED_OUTDIR}",
@@ -1574,6 +1606,7 @@
     "label": "//content/test:telemetry_gpu_integration_test_fuchsia",
     "type": "script",
     "script": "//testing/scripts/run_gpu_integration_test_as_googletest.py",
+    "skip_usage_check": True,
     "args": [
       "../../content/test/gpu/run_gpu_integration_test_fuchsia.py",
       "--logs-dir",
@@ -1662,10 +1695,12 @@
   "trichrome_chrome_bundle_smoke_test": {
     "label": "//chrome/android:trichrome_chrome_bundle_smoke_test",
     "type": "console_test_launcher",
+    "skip_usage_check": True,
   },
   "trichrome_webview_wpt_64": {
     "label": "//android_webview/test:trichrome_webview_wpt_64",
     "type": "generated_script",
+    "skip_usage_check": True,
     "args": [
       "--results-directory",
       "${ISOLATED_OUTDIR}",
@@ -1892,6 +1927,7 @@
     "label": "//android_webview/test:webview_64_cts_tests",
     "type": "script",
     "script": "//android_webview/tools/run_cts.py",
+    "skip_usage_check": True,
     "args": [
       "--skip-expected-failures",
       "--use-webview-provider",
@@ -1928,6 +1964,7 @@
     "label": "//android_webview/test:webview_trichrome_64_cts_hostside_tests",
     "type": "script",
     "script": "//android_webview/tools/run_cts.py",
+    "skip_usage_check": True,
     "args": [
       "--cts-gcs-path",
       "../../android_webview/tools/cts_config/webview_cts_hostside_gcs_path.json",
@@ -1962,6 +1999,7 @@
     "label": "//android_webview/test:webview_trichrome_cts_tests",
     "type": "script",
     "script": "//android_webview/tools/run_cts.py",
+    "skip_usage_check": True,
     "args": [
       "--skip-expected-failures",
       "--additional-apk",
