@@ -132,9 +132,12 @@ class PDFiumOnDemandSearchifierTest : public PDFiumTestBase {
 TEST_P(PDFiumOnDemandSearchifierTest, NoImage) {
   CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
 
+  PDFiumPage& page = GetPDFiumPageForTest(*engine(), 0);
+
   // Load the page to trigger searchify checking.
-  engine()->GetPage(0)->GetPage();
+  page.GetPage();
   ASSERT_FALSE(engine()->PageNeedsSearchify(0));
+  EXPECT_FALSE(page.IsPageSearchified());
 
   // Searchifier should not be created as it's not needed yet.
   ASSERT_FALSE(engine()->GetSearchifierForTesting());
@@ -143,8 +146,10 @@ TEST_P(PDFiumOnDemandSearchifierTest, NoImage) {
 TEST_P(PDFiumOnDemandSearchifierTest, OnePageWithImages) {
   CreateEngine(FILE_PATH_LITERAL("image_alt_text.pdf"));
 
+  PDFiumPage& page = GetPDFiumPageForTest(*engine(), 0);
+
   // Load the page to trigger searchify checking.
-  engine()->GetPage(0)->GetPage();
+  page.GetPage();
   ASSERT_TRUE(engine()->PageNeedsSearchify(0));
 
   PDFiumOnDemandSearchifier* searchifier = engine()->GetSearchifierForTesting();
@@ -158,9 +163,10 @@ TEST_P(PDFiumOnDemandSearchifierTest, OnePageWithImages) {
   WaitUntilIdle(searchifier, future.GetCallback());
   ASSERT_TRUE(future.Wait());
   ASSERT_EQ(performed_ocrs(), 2);
+  EXPECT_TRUE(page.IsPageSearchified());
 
   // The page has two images.
-  std::string page_text = GetPageText(engine()->GetPage(0));
+  std::string page_text = GetPageText(&page);
   ASSERT_EQ(page_text, "OCR Text 0\r\nOCR Text 1");
 }
 

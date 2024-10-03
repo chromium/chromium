@@ -162,6 +162,7 @@ void PDFiumOnDemandSearchifier::OnGotOcrResult(
     screen_ai::mojom::VisualAnnotationPtr annotation) {
   CHECK_EQ(state_, State::kWaitingForResults);
   if (annotation) {
+    current_page_->OnSearchifyGotOcrResult();
     FPDF_PAGEOBJECT image =
         FPDFPage_GetObject(current_page_->GetPage(), image_index);
     AddTextOnImage(engine_->doc(), current_page_->GetPage(), font_.get(), image,

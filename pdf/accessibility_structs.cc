@@ -48,7 +48,23 @@ AccessibilityTextRunInfo::AccessibilityTextRunInfo(
     const gfx::RectF& bounds,
     AccessibilityTextDirection direction,
     const AccessibilityTextStyleInfo& style)
-    : len(len), bounds(bounds), direction(direction), style(style) {}
+    : AccessibilityTextRunInfo(len,
+                               bounds,
+                               direction,
+                               style,
+                               /*is_searchified=*/false) {}
+
+AccessibilityTextRunInfo::AccessibilityTextRunInfo(
+    uint32_t len,
+    const gfx::RectF& bounds,
+    AccessibilityTextDirection direction,
+    const AccessibilityTextStyleInfo& style,
+    bool is_searchified)
+    : len(len),
+      bounds(bounds),
+      direction(direction),
+      style(style),
+      is_searchified(is_searchified) {}
 
 AccessibilityTextRunInfo::AccessibilityTextRunInfo(
     const AccessibilityTextRunInfo& other) = default;
