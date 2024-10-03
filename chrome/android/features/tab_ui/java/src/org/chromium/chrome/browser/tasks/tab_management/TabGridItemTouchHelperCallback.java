@@ -166,8 +166,10 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
         if (viewHolder instanceof SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder) {
             PropertyModel model = simpleViewHolder.model;
             if (model.get(CARD_TYPE) == TAB) {
-                return TabShareUtils.isCollaborationIdValid(
-                        model.get(TabProperties.COLLABORATION_ID));
+                @Nullable
+                TabGroupColorViewProvider provider =
+                        model.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER);
+                return provider != null && provider.hasCollaborationId();
             }
         }
         return false;

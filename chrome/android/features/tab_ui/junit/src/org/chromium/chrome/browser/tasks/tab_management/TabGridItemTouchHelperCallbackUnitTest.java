@@ -76,8 +76,6 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter.ViewHolder;
         })
 public class TabGridItemTouchHelperCallbackUnitTest {
 
-    private static final String COLLABORATION_ID_1 = "COLLABORATION_ID_1";
-    private static final String COLLABORATION_ID_2 = "COLLABORATION_ID_2";
     private static final String TAB1_TITLE = "Tab1";
     private static final String TAB2_TITLE = "Tab2";
     private static final String TAB3_TITLE = "Tab3";
@@ -95,20 +93,22 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock Canvas mCanvas;
-    @Mock RecyclerView mRecyclerView;
-    @Mock RecyclerView.Adapter mAdapter;
-    @Mock TabModel mTabModel;
-    @Mock TabListMediator.TabActionListener mTabClosedListener;
-    @Mock TabGroupModelFilter mTabGroupModelFilter;
-    @Mock TabListMediator.TabGridDialogHandler mTabGridDialogHandler;
-    @Mock Profile mProfile;
-    @Mock Tracker mTracker;
-    @Mock GridLayoutManager mGridLayoutManager;
-    @Mock TabGroupCreationDialogManager mTabGroupCreationDialogManager;
+    @Mock private Canvas mCanvas;
+    @Mock private RecyclerView mRecyclerView;
+    @Mock private RecyclerView.Adapter mAdapter;
+    @Mock private TabModel mTabModel;
+    @Mock private TabListMediator.TabActionListener mTabClosedListener;
+    @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Mock private TabListMediator.TabGridDialogHandler mTabGridDialogHandler;
+    @Mock private Profile mProfile;
+    @Mock private Tracker mTracker;
+    @Mock private GridLayoutManager mGridLayoutManager;
+    @Mock private TabGroupCreationDialogManager mTabGroupCreationDialogManager;
+    @Mock private TabGroupColorViewProvider mTabGroupColorViewProvider;
 
     @Mock
-    TabGridItemTouchHelperCallback.OnLongPressTabItemEventListener mOnLongPressTabItemEventListener;
+    private TabGridItemTouchHelperCallback.OnLongPressTabItemEventListener
+            mOnLongPressTabItemEventListener;
 
     private final ObservableSupplierImpl<TabModelFilter> mTabModelFilterSupplier =
             new ObservableSupplierImpl<>();
@@ -421,8 +421,10 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
-    public void onDragTab_Hovered_GTS_OneCollaborationCannotDrop() {
-        mMockViewHolder1.model.set(TabProperties.COLLABORATION_ID, COLLABORATION_ID_1);
+    public void onDragTab_Hovered_Gts_OneCollaborationCannotDrop() {
+        when(mTabGroupColorViewProvider.hasCollaborationId()).thenReturn(true);
+        mMockViewHolder1.model.set(
+                TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, mTabGroupColorViewProvider);
         // Drag card#1 rightwards to hover on card#2. We cannot drop a collaboration over a normal
         // tab or it will be destroyed.
         verifyDrag(mMockViewHolder1, 5, 0, POSITION2, TabGridView.AnimationStatus.CARD_RESTORE);
@@ -437,9 +439,12 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
-    public void onDragTab_Hovered_GTS_TwoCollaborationCannotDrop() {
-        mMockViewHolder1.model.set(TabProperties.COLLABORATION_ID, COLLABORATION_ID_1);
-        mMockViewHolder2.model.set(TabProperties.COLLABORATION_ID, COLLABORATION_ID_2);
+    public void onDragTab_Hovered_Gts_TwoCollaborationCannotDrop() {
+        when(mTabGroupColorViewProvider.hasCollaborationId()).thenReturn(true);
+        mMockViewHolder1.model.set(
+                TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, mTabGroupColorViewProvider);
+        mMockViewHolder2.model.set(
+                TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, mTabGroupColorViewProvider);
 
         // Merging collaborations is not allowed. Neither of these should work.
         verifyDrag(mMockViewHolder1, 5, 0, POSITION2, TabGridView.AnimationStatus.CARD_RESTORE);
@@ -447,7 +452,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
-    public void onDragTab_Hovered_GTS_Horizontal() {
+    public void onDragTab_Hovered_Gts_Horizontal() {
         // Drag card#1 rightwards to hover on card#2.
         verifyDrag(
                 mMockViewHolder1,
@@ -465,7 +470,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
-    public void onDragTab_Hovered_GTS_Vertical() {
+    public void onDragTab_Hovered_Gts_Vertical() {
         // Drag card#1 downwards to hover on card#3.
         verifyDrag(
                 mMockViewHolder1,
@@ -483,7 +488,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
-    public void onDragTab_Hovered_GTS_Diagonal() {
+    public void onDragTab_Hovered_Gts_Diagonal() {
         // Drag card#1 diagonally to hover on card#4.
         verifyDrag(
                 mMockViewHolder1,
@@ -515,7 +520,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
-    public void onDragTab_NotHovered_GTS_Horizontal() {
+    public void onDragTab_NotHovered_Gts_Horizontal() {
         // With merge threshold equal to 50% of the overlapped area, the following dX should never
         // trigger hovering.
         verifyDrag(mMockViewHolder1, 3, 0, POSITION2, TabGridView.AnimationStatus.CARD_RESTORE);
@@ -527,7 +532,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
-    public void onDragTab_NotHovered_GTS_Vertical() {
+    public void onDragTab_NotHovered_Gts_Vertical() {
         // With merge threshold equal to 50% of the overlapped area, the following dX should never
         // trigger hovering.
         verifyDrag(mMockViewHolder1, 0, 3, POSITION3, TabGridView.AnimationStatus.CARD_RESTORE);
@@ -539,7 +544,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
-    public void onDragTab_NotHovered_GTS_Diagonal() {
+    public void onDragTab_NotHovered_Gts_Diagonal() {
         // With merge threshold equal to 50% of the overlapped area, the following dX should never
         // trigger hovering.
         verifyDrag(mMockViewHolder1, 3, 4, POSITION4, TabGridView.AnimationStatus.CARD_RESTORE);
@@ -555,7 +560,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
-    public void onDragTab_Restore_Hovered_GTS() {
+    public void onDragTab_Restore_Hovered_Gts() {
         // Simulate the process of hovering card#1 on card#2.
         verifyDrag(
                 mMockViewHolder1,
@@ -603,7 +608,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
-    public void onDragTab_Hovered_NonGTS() {
+    public void onDragTab_Hovered_NonGts() {
         // Suppose drag happens in components other than GTS.
         mItemTouchHelperCallback.setActionsOnAllRelatedTabsForTesting(false);
 
@@ -839,7 +844,9 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     @Test
     public void collaborationCurrentIsNotDropable() {
         setupItemTouchHelperCallback(false);
-        mMockViewHolder2.model.set(TabProperties.COLLABORATION_ID, COLLABORATION_ID_1);
+        when(mTabGroupColorViewProvider.hasCollaborationId()).thenReturn(true);
+        mMockViewHolder2.model.set(
+                TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, mTabGroupColorViewProvider);
         assertFalse(
                 mItemTouchHelperCallback.canDropOver(
                         mRecyclerView, mMockViewHolder2, mMockViewHolder1));
@@ -1026,7 +1033,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         PropertyModel tabInfo =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
                         .with(TabProperties.TAB_ID, tab.getId())
-                        .with(TabProperties.COLLABORATION_ID, null)
+                        .with(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, null)
                         .with(
                                 TabProperties.CARD_ANIMATION_STATUS,
                                 TabGridView.AnimationStatus.CARD_RESTORE)

@@ -53,10 +53,6 @@ public class TabProperties {
 
     public static final WritableIntPropertyKey TAB_ID = new WritableIntPropertyKey();
 
-    // TODO(crbug.com/365972761): Move this to `TabGroupProperties` when it is created.
-    public static final WritableObjectPropertyKey<String> COLLABORATION_ID =
-            new WritableObjectPropertyKey<>();
-
     public static final ReadableBooleanPropertyKey IS_INCOGNITO = new ReadableBooleanPropertyKey();
 
     public static final WritableObjectPropertyKey<TabActionListener> TAB_CLICK_LISTENER =
@@ -141,7 +137,6 @@ public class TabProperties {
             new PropertyKey[] {
                 TAB_ACTION_STATE,
                 TAB_ID,
-                COLLABORATION_ID,
                 IS_INCOGNITO,
                 TAB_CLICK_LISTENER,
                 TAB_LONG_CLICK_LISTENER,
