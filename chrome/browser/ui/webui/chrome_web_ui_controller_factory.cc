@@ -120,15 +120,12 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/webui/dlp_internals/dlp_internals_ui.h"
 #include "chromeos/crosapi/cpp/gurl_os_handler_utils.h"
 #include "url/url_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/app_home/app_home_ui.h"
-#include "chrome/browser/ui/webui/app_settings/web_app_settings_ui.h"
-#include "chrome/browser/ui/webui/browser_switch/browser_switch_ui.h"
 #include "chrome/browser/ui/webui/welcome/helpers.h"
 #include "chrome/browser/ui/webui/welcome/welcome_ui.h"
 #endif
@@ -140,17 +137,11 @@
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/webui/commerce/product_specifications_ui.h"
-#include "chrome/browser/ui/webui/discards/discards_ui.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/sandbox/sandbox_internals_ui.h"
-#endif
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/webui/connectors_internals/connectors_internals_ui.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -363,36 +354,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<SyncConfirmationUI>;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_ANDROID)
-  if (url.host_piece() == chrome::kChromeUISandboxHost) {
-    return &NewWebUI<SandboxInternalsUI>;
-  }
-#endif
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_ASH)
-  if (url.host_piece() == chrome::kChromeUIConnectorsInternalsHost)
-    return &NewWebUI<enterprise_connectors::ConnectorsInternalsUI>;
-#endif
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-  if (url.host_piece() == chrome::kChromeUIDiscardsHost)
-    return &NewWebUI<DiscardsUI>;
-#endif
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (url.host_piece() == chrome::kChromeUIBrowserSwitchHost)
-    return &NewWebUI<BrowserSwitchUI>;
-#endif
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (url.host_piece() == chrome::kChromeUIWebAppSettingsHost)
-    return &NewWebUI<WebAppSettingsUI>;
-#endif
-#if BUILDFLAG(IS_CHROMEOS)
-  if (url.host_piece() == chrome::kChromeUIDlpInternalsHost) {
-    return &NewWebUI<policy::DlpInternalsUI>;
-  }
-#endif
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   if (url.host_piece() == chrome::kChromeUIResetPasswordHost) {

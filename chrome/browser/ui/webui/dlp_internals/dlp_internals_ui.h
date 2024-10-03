@@ -6,9 +6,22 @@
 #define CHROME_BROWSER_UI_WEBUI_DLP_INTERNALS_DLP_INTERNALS_UI_H_
 
 #include "chrome/browser/ui/webui/dlp_internals/dlp_internals_page_handler.h"
+#include "chrome/common/webui_url_constants.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 namespace policy {
+
+class DlpInternalsUI;
+
+class DlpInternalsUIConfig
+    : public content::DefaultWebUIConfig<DlpInternalsUI> {
+ public:
+  DlpInternalsUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUIDlpInternalsHost) {}
+};
 
 // UI controller for chrome://dlp-internals.
 class DlpInternalsUI : public ui::MojoWebUIController {
