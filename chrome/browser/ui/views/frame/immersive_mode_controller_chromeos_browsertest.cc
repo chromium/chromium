@@ -189,15 +189,8 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
 
 // Verify the immersive mode status is as expected in tablet mode (titlebars are
 // autohidden in tablet mode).
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(b/40946296): Port and enable when bug is fixed.
-#define MAYBE_ImmersiveModeStatusTabletMode \
-  DISABLED_ImmersiveModeStatusTabletMode
-#else
-#define MAYBE_ImmersiveModeStatusTabletMode ImmersiveModeStatusTabletMode
-#endif
 IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
-                       MAYBE_ImmersiveModeStatusTabletMode) {
+                       ImmersiveModeStatusTabletMode) {
   LaunchAppBrowser();
   ASSERT_FALSE(controller()->IsEnabled());
 
@@ -312,14 +305,8 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
 // but still drawn. In this case, we should have a null anchor view so that the
 // bubble gets placed in the default top left corner. Regression test for
 // https://crbug.com/1087143.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/329759044): Enable when bug is fixed.
-#define MAYBE_PermissionsBubbleAnchor DISABLED_PermissionsBubbleAnchor
-#else
-#define MAYBE_PermissionsBubbleAnchor PermissionsBubbleAnchor
-#endif
 IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
-                       MAYBE_PermissionsBubbleAnchor) {
+                       PermissionsBubbleAnchor) {
   LaunchAppBrowser();
   auto test_api =
       std::make_unique<test::PermissionRequestManagerTestApi>(browser());

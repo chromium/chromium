@@ -33,10 +33,6 @@
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/controls/webview/webview.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/ui/lacros/immersive_context_lacros.h"
-#endif
-
 class ImmersiveModeControllerChromeosTest : public TestWithBrowserView {
  public:
   ImmersiveModeControllerChromeosTest()
@@ -85,10 +81,6 @@ class ImmersiveModeControllerChromeosTest : public TestWithBrowserView {
   raw_ptr<ImmersiveModeController, DanglingUntriaged> controller_;
 
   std::unique_ptr<ImmersiveRevealedLock> revealed_lock_;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  ImmersiveContextLacros immersive_context_;
-#endif
 };
 
 // Test the layout and visibility of the tabstrip, toolbar and TopContainerView
@@ -186,16 +178,7 @@ TEST_F(ImmersiveModeControllerChromeosTest, Layout) {
 
 // Verifies that transitioning from fullscreen to trusted pinned disables the
 // immersive controls.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(b/40276379): Currently, fullscreen flow on Lacros is not properly
-// implemented in some edge cases, and this is hitting one of the cases.
-// Re-enable the test once the flow is fixed.
-#define MAYBE_FullscreenToLockedTransition DISABLED_FullscreenToLockedTransition
-#else
-#define MAYBE_FullscreenToLockedTransition FullscreenToLockedTransition
-#endif
-TEST_F(ImmersiveModeControllerChromeosTest,
-       MAYBE_FullscreenToLockedTransition) {
+TEST_F(ImmersiveModeControllerChromeosTest, FullscreenToLockedTransition) {
   AddTab(browser(), GURL("about:blank"));
   // Start in fullscreen.
   ChromeOSBrowserUITest::EnterImmersiveFullscreenMode(browser());
@@ -210,7 +193,6 @@ TEST_F(ImmersiveModeControllerChromeosTest,
   EXPECT_FALSE(controller()->IsEnabled());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Verifies that transitioning from fullscreen to trusted pinned keeps immersive
 // controls when the webapp is locked for OnTask. Only relevant for non-web
 // browser scenarios.
@@ -228,7 +210,6 @@ TEST_F(ImmersiveModeControllerChromeosTest,
       browser_view()->GetWidget()->GetNativeWindow(), /*trusted=*/true);
   EXPECT_TRUE(controller()->IsEnabled());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Test that the browser commands which are usually disabled in fullscreen are
 // are enabled in immersive fullscreen.
@@ -282,15 +263,7 @@ TEST_F(ImmersiveModeControllerChromeosTest, LayeredSpinners) {
 
 // Ensure SetEnable is called when needed even when the previous request is
 // passed from different client.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(b/40942067): Port and enable when bug is fixed.
-#define MAYBE_CallEnableForWidgetWhenNeeded \
-  DISABLED_CallEnableForWidgetWhenNeeded
-#else
-#define MAYBE_CallEnableForWidgetWhenNeeded CallEnableForWidgetWhenNeeded
-#endif
-TEST_F(ImmersiveModeControllerChromeosTest,
-       MAYBE_CallEnableForWidgetWhenNeeded) {
+TEST_F(ImmersiveModeControllerChromeosTest, CallEnableForWidgetWhenNeeded) {
   ASSERT_FALSE(controller()->IsEnabled());
   chromeos::ImmersiveFullscreenController::EnableForWidget(
       browser_view()->frame(), /*enabled=*/true);
