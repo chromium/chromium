@@ -19,6 +19,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -54,6 +55,15 @@ constexpr gfx::Size kDefaultSupportedResolution = gfx::Size(640, 480);
 // real support status with a give resolution, framerate etc,
 // instead of query a "supportedProfile" list.
 constexpr gfx::Size kMaxSupportedResolution = gfx::Size(4096, 2304);
+
+// The ID of the encoder that may be selected when we enable low latency via
+// `kVTVideoEncoderSpecification_EnableLowLatencyRateControl`. Low latency is
+// in general only possible with a hardware encoder in VideoToolbox, so we
+// assume this is in fact a hardware encoder. For some reason, neither
+// `VTCompressionPropertyKey_UsingHardwareAcceleratedVideoEncoder` nor
+// `kVTVideoEncoderList_IsHardwareAccelerated` is set for this encoder.
+constexpr std::string_view kRealtimeHardwareH264EncoderID =
+    "com.apple.videotoolbox.videoencoder.h264.rtvc";
 
 constexpr VideoCodecProfile kSupportedProfiles[] = {
     H264PROFILE_BASELINE,
@@ -117,26 +127,45 @@ static CMVideoCodecType VideoCodecToCMVideoCodec(VideoCodec codec) {
   return kCMVideoCodecType_H264;
 }
 
+bool IsHardwareEncoder(VTSessionRef compression_session,
+                       VideoCodecProfile profile) {
+  // iOS and HEVC are always hardware-accelerated.
+#if BUILDFLAG(IS_IOS)
+  return true;
+#else
+  if (VideoCodecProfileToVideoCodec(profile) == VideoCodec::kHEVC) {
+    return true;
+  }
+
+  base::apple::ScopedCFTypeRef<CFBooleanRef> using_hardware;
+  if (VTSessionCopyProperty(
+          compression_session,
+          kVTCompressionPropertyKey_UsingHardwareAcceleratedVideoEncoder,
+          kCFAllocatorDefault, using_hardware.InitializeInto()) == noErr) {
+    return CFBooleanGetValue(using_hardware.get());
+  }
+  DVLOG(1) << "Couldn't read the UsingHardwareAcceleratedVideoEncoder property";
+
+  base::apple::ScopedCFTypeRef<CFStringRef> encoder_id;
+  if (VTSessionCopyProperty(
+          compression_session, kVTCompressionPropertyKey_EncoderID,
+          kCFAllocatorDefault, encoder_id.InitializeInto()) == noErr &&
+      base::SysCFStringRefToUTF8(encoder_id.get()) ==
+          kRealtimeHardwareH264EncoderID) {
+    DVLOG(1) << "But " << encoder_id.get() << " is a known hardware encoder";
+    return true;
+  }
+
+  return false;
+#endif  // BUILDFLAG(IS_IOS)
+}
+
 VideoEncoderInfo GetVideoEncoderInfo(VTSessionRef compression_session,
                                      VideoCodecProfile profile) {
   VideoEncoderInfo info;
   info.implementation_name = "VideoToolbox";
-  // iOS and HEVC are always hardware-accelerated.
-  info.is_hardware_accelerated = true;
-
-#if !BUILDFLAG(IS_IOS)
-  if (VideoCodecProfileToVideoCodec(profile) == VideoCodec::kH264) {
-    base::apple::ScopedCFTypeRef<CFBooleanRef> cf_using_hardware;
-    if (VTSessionCopyProperty(
-            compression_session,
-            kVTCompressionPropertyKey_UsingHardwareAcceleratedVideoEncoder,
-            kCFAllocatorDefault, cf_using_hardware.InitializeInto()) == 0) {
-      info.is_hardware_accelerated = CFBooleanGetValue(cf_using_hardware.get());
-    } else {
-      info.is_hardware_accelerated = false;
-    }
-  }
-#endif  // !BUILDFLAG(IS_IOS)
+  info.is_hardware_accelerated =
+      IsHardwareEncoder(compression_session, profile);
 
   std::optional<int> max_frame_delay_property;
   base::apple::ScopedCFTypeRef<CFNumberRef> max_frame_delay_count;
@@ -255,10 +284,8 @@ VTVideoEncodeAccelerator::GetSupportedH264Profiles() {
   profile.rate_control_modes = VideoEncodeAccelerator::kConstantMode |
                                VideoEncodeAccelerator::kVariableMode;
   // L1T1 = no additional spatial and temporal layer = always supported.
-  profile.scalability_modes.push_back(SVCScalabilityMode::kL1T1);
-  if (IsSVCSupported(VideoCodec::kH264)) {
-    profile.scalability_modes.push_back(SVCScalabilityMode::kL1T2);
-  }
+  const std::vector<SVCScalabilityMode> always_supported_scalability_modes{
+      SVCScalabilityMode::kL1T1};
 
   for (const auto& supported_profile : kSupportedProfiles) {
     if (VideoCodecProfileToVideoCodec(supported_profile) == VideoCodec::kH264) {
@@ -271,15 +298,23 @@ VTVideoEncodeAccelerator::GetSupportedH264Profiles() {
         profile.min_resolution = min_resolution;
         profile.is_software_codec = false;
         profile.profile = supported_profile;
+        profile.scalability_modes = always_supported_scalability_modes;
+        if (IsSVCSupported(VideoCodec::kH264)) {
+          profile.scalability_modes.push_back(SVCScalabilityMode::kL1T2);
+        }
         profiles.push_back(profile);
 
+#if BUILDFLAG(IS_MAC)
+        // iOS is always hardware-accelerated.
         // macOS doesn't provide a way to enumerate codec details, so just
         // assume software codec support is the same as hardware, but with
         // the lowest possible minimum resolution.
         profile.min_resolution = gfx::Size(2, 2);
+        profile.scalability_modes = always_supported_scalability_modes;
         profile.is_software_codec = true;
         profiles.push_back(profile);
       }
+#endif  // BUILDFLAG(IS_MAC)
     }
   }
   return profiles;
@@ -774,7 +809,15 @@ bool VTVideoEncodeAccelerator::CreateCompressionSession(
 #endif
 
   if (@available(macOS LOW_LATENCY_AND_SVC_AVAILABLE_VER, *)) {
-    if (require_low_delay_ && IsSVCSupported(codec)) {
+    // Don't enable low-latency rate control in SW mode as it doesn't seem to
+    // apply to the SW encoder. From
+    // https://developer.apple.com/videos/play/wwdc2021/10158/, "[...] the
+    // low-latency mode always uses a hardware-accelerated video encoder". In
+    // fact, trying to use
+    // `kVTVideoEncoderSpecification_EnableLowLatencyRateControl` with the SW
+    // encoder leads to an initialization error.
+    if (required_encoder_type_ != Config::EncoderType::kSoftware &&
+        require_low_delay_ && IsSVCSupported(codec)) {
       encoder_spec[CFToNSPtrCast(
           kVTVideoEncoderSpecification_EnableLowLatencyRateControl)] = @YES;
     }
@@ -882,10 +925,11 @@ bool VTVideoEncodeAccelerator::ConfigureCompressionSession(VideoCodec codec) {
     return true;
   }
 
-  if (!IsSVCSupported(codec)) {
-    NotifyErrorStatus(
-        {EncoderStatus::Codes::kEncoderUnsupportedConfig,
-         "SVC encoding is not supported on this OS version or hardware"});
+  if (!IsHardwareEncoder(compression_session_.get(), profile_) ||
+      !IsSVCSupported(codec)) {
+    NotifyErrorStatus({EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                       "SVC encoding is not supported on this OS version or "
+                       "hardware, or SW encoding was selected"});
     return false;
   }
 
