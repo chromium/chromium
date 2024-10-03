@@ -243,12 +243,15 @@ RTCIceCandidatePlatform* ConvertToRTCIceCandidatePlatform(
       /*url can not be reconstruncted*/ std::nullopt);
 }
 
-webrtc::PeerConnectionInterface::IceTransportsType IceTransportPolicyFromString(
-    const String& policy) {
-  if (policy == "relay")
-    return webrtc::PeerConnectionInterface::kRelay;
-  DCHECK_EQ(policy, "all");
-  return webrtc::PeerConnectionInterface::kAll;
+webrtc::PeerConnectionInterface::IceTransportsType IceTransportPolicyFromEnum(
+    V8RTCIceTransportPolicy::Enum policy) {
+  switch (policy) {
+    case V8RTCIceTransportPolicy::Enum::kRelay:
+      return webrtc::PeerConnectionInterface::kRelay;
+    case V8RTCIceTransportPolicy::Enum::kAll:
+      return webrtc::PeerConnectionInterface::kAll;
+  }
+  NOTREACHED();
 }
 
 bool IsValidStunURL(const KURL& url) {
@@ -285,12 +288,12 @@ webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
 
   if (configuration->hasIceTransportPolicy()) {
     UseCounter::Count(context, WebFeature::kRTCConfigurationIceTransportPolicy);
-    web_configuration.type =
-        IceTransportPolicyFromString(configuration->iceTransportPolicy());
+    web_configuration.type = IceTransportPolicyFromEnum(
+        configuration->iceTransportPolicy().AsEnum());
   } else if (configuration->hasIceTransports()) {
     UseCounter::Count(context, WebFeature::kRTCConfigurationIceTransports);
     web_configuration.type =
-        IceTransportPolicyFromString(configuration->iceTransports());
+        IceTransportPolicyFromEnum(configuration->iceTransports().AsEnum());
   }
 
   if (configuration->bundlePolicy() == "max-compat") {
@@ -998,8 +1001,8 @@ ScriptPromise<IDLUndefined> RTCPeerConnection::setLocalDescription(
         break;
     }
   }
-  ParsedSessionDescription parsed_sdp =
-      ParsedSessionDescription::Parse(session_description_init->type(), sdp);
+  ParsedSessionDescription parsed_sdp = ParsedSessionDescription::Parse(
+      session_description_init->type().AsString(), sdp);
   if (session_description_init->type() != V8RTCSdpType::Enum::kRollback) {
     DOMException* exception = checkSdpForStateErrors(
         ExecutionContext::From(script_state), parsed_sdp);
