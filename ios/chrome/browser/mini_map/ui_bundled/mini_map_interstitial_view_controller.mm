@@ -7,6 +7,7 @@
 #import "base/notreached.h"
 #import "base/values.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
@@ -97,13 +98,25 @@ UIImage* GetBrandedGoogleMapsSymbol() {
   _delegateMethodProxy.actionHandler = self;
   self.delegate = _delegateMethodProxy;
   [super viewDidLoad];
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits =
+        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.self ]);
+    [self
+        registerForTraitChanges:traits
+                     withAction:@selector(toggleBannerVisibilityOnTraitChange)];
+  }
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  self.shouldHideBanner =
-      self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
+  if (@available(iOS 17, *)) {
+    return;
+  }
+  [self toggleBannerVisibilityOnTraitChange];
 }
+#endif
 
 - (void)viewDidDisappear:(BOOL)animated {
   [super viewDidDisappear:animated];
@@ -134,6 +147,15 @@ UIImage* GetBrandedGoogleMapsSymbol() {
 
 - (void)userPressedContentSettings {
   [self.actionHandler userPressedContentSettings];
+}
+
+#pragma mark - Private
+
+// Sets the `shouldHideBanner` to true if the device's vertical orientation is
+// compact.
+- (void)toggleBannerVisibilityOnTraitChange {
+  self.shouldHideBanner =
+      self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
 }
 
 @end
