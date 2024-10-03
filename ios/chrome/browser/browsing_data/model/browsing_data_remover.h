@@ -34,6 +34,15 @@ class BrowsingDataRemover : public KeyedService {
     kForceReload,
   };
 
+  // If kAutomatic, BrowsingDataRemover decides if the active tab should stay
+  // open. Otherwise, forces the active tab to close or not when using
+  // BrowsingDataRemoverMask::CLOSE_TABS.
+  enum class KeepActiveTabPolicy {
+    kAutomatic,
+    kKeepActiveTab,
+    kCloseActiveTab,
+  };
+
   // Parameters for removing browsing data.
   struct RemovalParams {
     // Returns RemovalParams with default values.
@@ -49,6 +58,10 @@ class BrowsingDataRemover : public KeyedService {
     // deletion has completed, or if BrowsingDataRemover decides if reloading is
     // necessary.
     WebStatesReloadPolicy reload_web_states = WebStatesReloadPolicy::kAutomatic;
+
+    // Indicates if BrowsingDataRemoverMask::CLOSE_TABS is allowed to close
+    // the active tab or not.
+    KeepActiveTabPolicy keep_active_tab = KeepActiveTabPolicy::kAutomatic;
   };
 
   BrowsingDataRemover();

@@ -1117,6 +1117,10 @@ void ClearRelevantData() {
   GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 4,
                   @"History did not contain the expected entries");
 
+  // Signout doesn't close the current tab. Switch to the first tab, so the
+  // second tab can close.
+  [ChromeEarlGrey selectTabAtIndex:0];
+
   // Open settings and tap "Sign Out".
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI
