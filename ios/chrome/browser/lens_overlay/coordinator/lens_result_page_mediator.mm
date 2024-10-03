@@ -234,6 +234,10 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
   if (requestInfo.target_frame_is_main && !IsValidURLToOpenInResultsPage(URL)) {
     decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Cancel());
 
+    if (URL.IsAboutBlank()) {
+      return;
+    }
+
     if (IsMaximizeBottomSheetURL(URL)) {
       [self.presentationDelegate requestMaximizeBottomSheet];
       return;
