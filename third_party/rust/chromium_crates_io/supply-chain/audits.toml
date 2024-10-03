@@ -1082,6 +1082,12 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
 delta = "0.6.0 -> 0.7.1"
 notes = "No new unsafe, mostly changes about int24 as a new OpenType type, and moving Pen from Skrifa."
 
+[[audits.font-types]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+delta = "0.7.1 -> 0.7.2"
+notes = "Explicit inlining of some type conversion. No new unsafe."
+
 [[audits.getrandom]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -1550,6 +1556,12 @@ notes = "Changes for incremental font transfer, Ankr, Feat tables, and support f
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.22.0 -> 0.22.1"
+
+[[audits.read-fonts]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.22.1 -> 0.22.3"
+notes = "Support for the hdmx table, inlining optimizations. Crate has no unsafe code."
 
 [[audits.regex]]
 who = "danakj@chromium.org"
@@ -2108,6 +2120,12 @@ notes = "Changes for adding autohinting support. Crates forbids unsafe code."
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.22.0 -> 0.22.1"
+
+[[audits.skrifa]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.22.1 -> 0.22.3"
+notes = "Matching FreeType advances more closely, through usage of hdmx and other fixes. Path retrieval speedups."
 
 [[audits.small_ctor]]
 who = "danakj@chromium.org"

@@ -189,7 +189,6 @@ docs/enterprise 1 1
 docs/experiments 1 1
 docs/gpu 15 3
 docs/ios 10 3
-docs/lacros 2 1
 docs/linux 6 4
 docs/mac 1 1
 docs/media/capture 1 1
@@ -692,7 +691,7 @@ third_party/rust/chromium_crates_io/vendor/rand_chacha-0.3.1 4 1
 third_party/rust/chromium_crates_io/vendor/rand_core-0.6.4 4 1
 third_party/rust/chromium_crates_io/vendor/rand_core-0.6.4/src 3 1
 third_party/rust/chromium_crates_io/vendor/rand_pcg-0.3.1 4 1
-third_party/rust/chromium_crates_io/vendor/read-fonts-0.22.1/src/tables 3 2
+third_party/rust/chromium_crates_io/vendor/read-fonts-0.22.3/src/tables 3 2
 third_party/rust/chromium_crates_io/vendor/regex-1.11.0 1 1
 third_party/rust/chromium_crates_io/vendor/regex-1.11.0/src 1 1
 third_party/rust/chromium_crates_io/vendor/regex-1.11.0/tests 7 6
