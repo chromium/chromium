@@ -86,12 +86,7 @@ class URLRequestJob::URLRequestJobSourceStream : public SourceStream {
   const raw_ptr<URLRequestJob> job_;
 };
 
-URLRequestJob::URLRequestJob(URLRequest* request)
-    : request_(request),
-      request_initiator_site_(request->initiator().has_value()
-                                  ? std::make_optional(net::SchemefulSite(
-                                        request->initiator().value()))
-                                  : std::nullopt) {}
+URLRequestJob::URLRequestJob(URLRequest* request) : request_(request) {}
 
 URLRequestJob::~URLRequestJob() = default;
 

@@ -20,6 +20,7 @@
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_request_headers.h"
 #include "net/log/test_net_log_util.h"
+#include "net/storage_access_api/status.h"
 #include "net/test/gtest_util.h"
 #include "net/url_request/referrer_policy.h"
 #include "services/network/cookie_manager.h"
@@ -2436,12 +2437,15 @@ class StorageAccessHeadersCorsURLLoaderTest : public CorsURLLoaderTest {
         .GetStorageAccessStatus(
             request.url, request.site_for_cookies,
             request.trusted_params->isolation_info.top_frame_origin(),
-            net::CookieSettingOverrides());
+            URLLoader::CalculateCookieSettingOverrides(
+                net::CookieSettingOverrides(), request));
   }
 
   ResourceRequest CreateNoCorsResourceRequest(
       const GURL& url,
-      const url::Origin& top_frame_origin) const {
+      const url::Origin& top_frame_origin,
+      base::optional_ref<const url::Origin> initiator =
+          base::optional_ref<const url::Origin>(std::nullopt)) const {
     const url::Origin url_origin = url::Origin::Create(url);
 
     net::SiteForCookies site_for_cookies = net::SiteForCookies::FromUrl(url);
@@ -2453,7 +2457,8 @@ class StorageAccessHeadersCorsURLLoaderTest : public CorsURLLoaderTest {
     request.method = "GET";
     request.site_for_cookies = site_for_cookies;
     request.url = url;
-    request.request_initiator = kInitiator;
+    request.request_initiator =
+        initiator.has_value() ? initiator.value() : kInitiator;
     request.trusted_params = ResourceRequest::TrustedParams();
 
     // From a privacy and security standpoint, there are three parties
@@ -2552,6 +2557,56 @@ TEST_F(StorageAccessHeadersCorsURLLoaderTest,
 
   EXPECT_EQ(GetRequest().headers.GetHeader(net::HttpRequestHeaders::kOrigin),
             "https://origin.com");
+}
+
+// Regression test for https://crbug.com/371011222. This sends a request that
+// would have "Sec-Fetch-Storage-Access: inactive", and therefore include an
+// "Origin" header (to allow for safe upgrades to "active"), if the
+// ResourceRequest's StorageAccessApiStatus weren't taken into account. However,
+// its status of kAccessViaAPI means that the "Sec-Fetch-Storage-Access" value
+// should be "active", and thus no Origin header should be sent. These tests
+// mock out lower layers (including URLLoader and URLRequest) which add the
+// "Sec-Fetch-Storage-Access" header, so this test only checks that there's no
+// "Origin" header.
+TEST_F(StorageAccessHeadersCorsURLLoaderTest,
+       ResourceRequestParamsActivateAccess) {
+  ResetFactoryParams factory_params;
+  factory_params.is_trusted = true;
+  url::Origin initiator = url::Origin::Create(GURL("https://sub.example.com"));
+  ResetFactory(initiator, kRendererProcessId, factory_params);
+  network_context()->cookie_manager()->BlockThirdPartyCookies(true);
+  base::test::TestFuture<void> future;
+  network_context()->cookie_manager()->SetContentSettings(
+      ContentSettingsType::STORAGE_ACCESS,
+      {
+          ContentSettingPatternSource(
+              ContentSettingsPattern::FromURLToSchemefulSitePattern(kUrl),
+              ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                  kTopFrameOrigin.GetURL()),
+              base::Value(ContentSetting::CONTENT_SETTING_ALLOW),
+              content_settings::ProviderType::kDefaultProvider,
+              /*incognito=*/false),
+      },
+      future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  ResourceRequest request =
+      CreateNoCorsResourceRequest(kUrl, kTopFrameOrigin, initiator);
+  request.storage_access_api_status =
+      net::StorageAccessApiStatus::kAccessViaAPI;
+
+  // The status is active because this is a cross-site context, cross-site
+  // cookies are blocked, there's a matching STORAGE_ACCESS grant that could
+  // allow access, the caller is opting to use that permission via
+  // `storage_access_api_status`, *and* the request initiator is same-site with
+  // the target URL.
+  ASSERT_EQ(ComputeStorageAccessStatus(request),
+            net::cookie_util::StorageAccessStatus::kActive);
+
+  CreateLoaderAndRunToSuccessfulCompletion(request);
+
+  EXPECT_FALSE(
+      GetRequest().headers.GetHeader(net::HttpRequestHeaders::kOrigin));
 }
 
 TEST_F(StorageAccessHeadersCorsURLLoaderTest, OmitsOriginWhenStatusIsActive) {

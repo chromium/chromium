@@ -11,14 +11,17 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "net/base/net_export.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_options.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
+#include "net/storage_access_api/status.h"
 #include "url/origin.h"
 
 class GURL;
@@ -372,6 +375,14 @@ NET_EXPORT void DCheckIncludedAndExcludedCookieLists(
 NET_EXPORT bool IsForceThirdPartyCookieBlockingEnabled();
 
 NET_EXPORT bool PartitionedCookiesDisabledByCommandLine();
+
+// Adds or removes the kStorageAccessGrantEligible override, as appropriate.
+// Mutates `overrides` in place.
+NET_EXPORT void AddOrRemoveStorageAccessApiOverride(
+    const GURL& url,
+    StorageAccessApiStatus api_status,
+    base::optional_ref<const url::Origin> request_initiator,
+    CookieSettingOverrides& overrides);
 
 }  // namespace cookie_util
 

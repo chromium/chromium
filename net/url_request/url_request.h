@@ -854,16 +854,6 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   void SetSharedDictionaryGetter(
       SharedDictionaryGetter shared_dictionary_getter);
 
-  void set_storage_access_api_status(
-      StorageAccessApiStatus storage_access_api_status) {
-    DCHECK(!is_pending_);
-    DCHECK(!has_notified_completion_);
-    storage_access_api_status_ = storage_access_api_status;
-  }
-  StorageAccessApiStatus storage_access_api_status() const {
-    return storage_access_api_status_;
-  }
-
   // Returns the StorageAccessStatus for this request.
   // TODO(https://crbug.com/366284840): move this state out of //net (into
   // network::URLLoader) to respect layering rules.
@@ -1022,14 +1012,6 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Whether the request is allowed to send credentials in general. Set by
   // caller.
   bool allow_credentials_ = true;
-  // Whether the request is eligible for using a <request initiator's site,
-  // top-level site> storage access permission grant if one exists. Only set by
-  // caller when constructed and will not change during redirects.
-  //
-  // Note that this has no effect if the request initiator site and the request
-  // URL are not same-site to each other.
-  StorageAccessApiStatus storage_access_api_status_ =
-      StorageAccessApiStatus::kNone;
   SecureDnsPolicy secure_dns_policy_ = SecureDnsPolicy::kAllow;
 
   CookieAccessResultList maybe_sent_cookies_;

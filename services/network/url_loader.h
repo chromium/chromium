@@ -391,7 +391,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       net::RedirectInfo::FirstPartyURLPolicy first_party_url_policy,
       int request_load_flags,
       bool priority_incremental,
-      net::StorageAccessApiStatus storage_access_api_status,
       net::CookieSettingOverrides cookie_setting_overrides,
       std::optional<net::SharedDictionaryGetter> shared_dictionary_getter);
 
@@ -785,6 +784,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // codes, like kFailedPrecondition (outbound) and kBadResponse (inbound) are
   // specific to one direction.
   std::optional<mojom::TrustTokenOperationStatus> trust_token_status_;
+
+  // Whether the caller has opted into using the Storage Access API (via JS).
+  const net::StorageAccessApiStatus storage_access_api_status_;
 
   // This is used to determine whether it is allowed to use a dictionary when
   // there is a matching shared dictionary for the request.

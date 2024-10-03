@@ -208,6 +208,7 @@ namespace network {
 namespace {
 
 using net::CreateTestURLRequestContextBuilder;
+using ::testing::AllOf;
 using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::IsSupersetOf;
@@ -10599,6 +10600,69 @@ TEST_P(StorageAccessHeaderNetworkContextTest, RetryABAWithStorageAccess) {
   client->RunUntilComplete();
 
   EXPECT_THAT(cookie_headers(), ElementsAre("None", "3PCookie=1"));
+}
+
+// Regression test for https://crbug.com/371011222. This sends a request that
+// would have "Sec-Fetch-Storage-Access: inactive", if the ResourceRequest's
+// StorageAccessApiStatus weren't taken into account. This ensures that
+// CorsURLLoader uses the same logic as the rest of the stack when determining
+// the StorageAccessStatus.
+TEST_P(StorageAccessHeaderNetworkContextTest, OptedInViaJsApi) {
+  StartTestServerWithRequestHeaderMonitorAndRetryHandler();
+
+  const GURL request_url =
+      test_server()->GetURL("a.test", kStorageAccessRetryPath);
+  const GURL top_level_url = test_server()->GetURL("b.test", "/");
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  if (is_origin_trial_test()) {
+    SeedStorageAccessHeaderOriginTrialToken(request_url, top_level_url,
+                                            network_context.get());
+  }
+
+  ASSERT_TRUE(
+      SetCookieHelper(network_context.get(), request_url, "3PCookie", "1"));
+
+  network_context->cookie_manager()->BlockThirdPartyCookies(true);
+  SetContentSettings(
+      network_context->cookie_manager(), ContentSettingsType::STORAGE_ACCESS,
+      {
+          {
+              ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                  request_url),
+              ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                  top_level_url),
+              CONTENT_SETTING_ALLOW,
+          },
+      });
+
+  ResourceRequest request;
+  request.url = request_url;
+  request.storage_access_api_status =
+      net::StorageAccessApiStatus::kAccessViaAPI;
+  request.request_initiator = url::Origin::Create(request_url);
+  auto params = mojom::URLLoaderFactoryParams::New();
+  params->is_trusted = true;
+  params->process_id = mojom::kBrowserProcessId;
+  params->is_orb_enabled = false;
+  params->isolation_info = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther,
+      url::Origin::Create(top_level_url), url::Origin::Create(request.url),
+      request.site_for_cookies);
+  std::unique_ptr<TestURLLoaderClient> client =
+      FetchRequest(request, network_context.get(), mojom::kURLLoadOptionNone,
+                   mojom::kBrowserProcessId, std::move(params));
+
+  client->RunUntilComplete();
+
+  EXPECT_THAT(cookie_headers(), ElementsAre("3PCookie=1"));
+  EXPECT_THAT(most_recent_request_headers(),
+              ElementsAre(AllOf(
+                  Not(Contains(Key(net::HttpRequestHeaders::kOrigin))),
+                  Contains(Pair(net::HttpRequestHeaders::kSecFetchStorageAccess,
+                                "active")))));
 }
 
 TEST_P(StorageAccessHeaderNetworkContextTest, Load) {

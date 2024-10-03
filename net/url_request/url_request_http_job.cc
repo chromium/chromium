@@ -250,15 +250,6 @@ enum class ContentEncodingType {
   kMaxValue = kZstd,
 };
 
-bool IsSameSiteIgnoringWebSocketProtocol(const net::SchemefulSite& initiator,
-                                         const GURL& request_url) {
-  net::SchemefulSite request_site = net::SchemefulSite(
-      request_url.SchemeIsHTTPOrHTTPS()
-          ? request_url
-          : net::ChangeWebSocketSchemeToHttpScheme(request_url));
-  return initiator == request_site;
-}
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class HttpRequestStsState {
@@ -460,16 +451,6 @@ void URLRequestHttpJob::Start() {
   request_info_.reporting_upload_depth = request_->reporting_upload_depth();
 #endif
 
-  // Add/remove the Storage Access override enum based on whether the request's
-  // url and initiator are same-site, to prevent cross-site sibling iframes
-  // benefit from each other's storage access API grants.
-  request()->cookie_setting_overrides().PutOrRemove(
-      CookieSettingOverride::kStorageAccessGrantEligible,
-      request()->storage_access_api_status() ==
-              StorageAccessApiStatus::kAccessViaAPI &&
-          request_initiator_site().has_value() &&
-          IsSameSiteIgnoringWebSocketProtocol(request_initiator_site().value(),
-                                              request()->url()));
   CookieStore* cookie_store = request()->context()->cookie_store();
   const CookieAccessDelegate* delegate =
       cookie_store ? cookie_store->cookie_access_delegate() : nullptr;

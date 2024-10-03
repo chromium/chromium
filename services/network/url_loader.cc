@@ -594,6 +594,7 @@ URLLoader::URLLoader(
           factory_params_->client_security_state.get(),
           options_),
       trust_token_helper_factory_(std::move(trust_token_helper_factory)),
+      storage_access_api_status_(request.storage_access_api_status),
       shared_dictionary_checker_(std::move(shared_dictionary_checker)),
       attribution_request_helper_(std::move(attribution_request_helper)),
       origin_access_list_(context.GetOriginAccessList()),
@@ -732,7 +733,6 @@ URLLoader::URLLoader(
       request.request_initiator, first_party_url_policy,
       /*request_load_flags=*/request.load_flags,
       /*priority_incremental=*/request.priority_incremental,
-      request.storage_access_api_status,
       /*cookie_setting_overrides=*/
       CalculateCookieSettingOverrides(factory_params_->cookie_setting_overrides,
                                       request),
@@ -791,7 +791,6 @@ void URLLoader::ConfigureRequest(
     net::RedirectInfo::FirstPartyURLPolicy first_party_url_policy,
     int request_load_flags,
     bool priority_incremental,
-    net::StorageAccessApiStatus storage_access_api_status,
     net::CookieSettingOverrides cookie_setting_overrides,
     std::optional<net::SharedDictionaryGetter> shared_dictionary_getter) {
   url_request_->set_method(method);
@@ -847,8 +846,6 @@ void URLLoader::ConfigureRequest(
 
   url_request_->SetEarlyResponseHeadersCallback(base::BindRepeating(
       &URLLoader::NotifyEarlyResponse, base::Unretained(this)));
-
-  url_request_->set_storage_access_api_status(storage_access_api_status);
 
   url_request_->cookie_setting_overrides() = cookie_setting_overrides;
 
@@ -1563,6 +1560,10 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
   cookies_from_browser_.clear();
   request_cookies_.clear();
 
+  net::cookie_util::AddOrRemoveStorageAccessApiOverride(
+      redirect_info.new_url, storage_access_api_status_,
+      url_request_->initiator(), url_request_->cookie_setting_overrides());
+
   // We may need to clear out old Sec- prefixed request headers. We'll attempt
   // to do this before we re-add any.
   MaybeRemoveSecHeaders(url_request_.get(), redirect_info.new_url);
@@ -1673,12 +1674,21 @@ net::CookieSettingOverrides URLLoader::CalculateCookieSettingOverrides(
 
   AddAdsHeuristicCookieSettingOverrides(request.is_ad_tagged, overrides);
 
-  // The `kStorageAccessGrantEligible` and
-  // `kStorageAccessGrantEligibleViaHeader` overrides will be applied (in-place)
-  // by individual request jobs as appropriate, but should not be present
-  // initially.
+  // The `kStorageAccessGrantEligible` override should not be present in
+  // factory_overrides.
   CHECK(
       !overrides.Has(net::CookieSettingOverride::kStorageAccessGrantEligible));
+  // Add/remove the Storage Access override enum based on whether the request's
+  // url and initiator are same-site, to prevent cross-site sibling iframes
+  // benefit from each other's storage access API grants. This must be updated
+  // on redirects.
+  net::cookie_util::AddOrRemoveStorageAccessApiOverride(
+      request.url, request.storage_access_api_status, request.request_initiator,
+      overrides);
+
+  // The `kStorageAccessGrantEligibleViaHeader` override will be applied
+  // (in-place) by individual request jobs as appropriate, but should not be
+  // present initially.
   CHECK(!overrides.Has(
       net::CookieSettingOverride::kStorageAccessGrantEligibleViaHeader));
 
