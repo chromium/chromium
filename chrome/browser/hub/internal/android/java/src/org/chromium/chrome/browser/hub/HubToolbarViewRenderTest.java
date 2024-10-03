@@ -54,7 +54,7 @@ public class HubToolbarViewRenderTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_HUB)
-                    .setRevision(6)
+                    .setRevision(7)
                     .build();
 
     @Mock private TabSwitcherDrawable.Observer mTabSwitcherDrawableObserver;
