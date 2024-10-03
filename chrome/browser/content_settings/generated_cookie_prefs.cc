@@ -33,6 +33,8 @@ bool IsDefaultCookieContentSettingUserControlled(HostContentSettingsMap* map) {
 
 const char kCookieDefaultContentSetting[] =
     "generated.cookie_default_content_setting";
+const char kThirdPartyCookieBlockingSetting[] =
+    "generated.third_party_cookie_blocking_setting";
 
 GeneratedCookieDefaultContentSettingPref::
     GeneratedCookieDefaultContentSettingPref(Profile* profile)
@@ -71,8 +73,10 @@ GeneratedCookieDefaultContentSettingPref::SetPref(const base::Value* value) {
     return extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH;
   }
 
-  if (!IsDefaultCookieContentSettingUserControlled(host_content_settings_map_))
+  if (!IsDefaultCookieContentSettingUserControlled(
+          host_content_settings_map_)) {
     return extensions::settings_private::SetPrefResult::PREF_NOT_MODIFIABLE;
+  }
 
   host_content_settings_map_->SetDefaultContentSetting(
       ContentSettingsType::COOKIES, static_cast<ContentSetting>(setting));
@@ -110,6 +114,66 @@ GeneratedCookieDefaultContentSettingPref::GetPrefObject() const {
     pref_object.controlled_by = settings_api::ControlledBy::kChildRestriction;
     pref_object.enforcement = settings_api::Enforcement::kEnforced;
   }
+
+  return pref_object;
+}
+
+GeneratedThirdPartyCookieBlockingSettingPref::
+    GeneratedThirdPartyCookieBlockingSettingPref(Profile* profile)
+    : profile_(profile) {}
+
+GeneratedThirdPartyCookieBlockingSettingPref::
+    ~GeneratedThirdPartyCookieBlockingSettingPref() = default;
+
+ThirdPartyCookieBlockingSetting
+GeneratedThirdPartyCookieBlockingSettingPref::GetValue() const {
+  switch (static_cast<CookieControlsMode>(
+      profile_->GetPrefs()->GetInteger(prefs::kCookieControlsMode))) {
+    case CookieControlsMode::kBlockThirdParty:
+      return ThirdPartyCookieBlockingSetting::BLOCK_THIRD_PARTY;
+    default:
+      return ThirdPartyCookieBlockingSetting::INCOGNITO_ONLY;
+  }
+}
+
+extensions::settings_private::SetPrefResult
+GeneratedThirdPartyCookieBlockingSettingPref::SetPrefResult(
+    CookieControlsMode value) {
+  profile_->GetPrefs()->SetInteger(prefs::kCookieControlsMode,
+                                   static_cast<int>(value));
+  return extensions::settings_private::SetPrefResult::SUCCESS;
+}
+
+extensions::settings_private::SetPrefResult
+GeneratedThirdPartyCookieBlockingSettingPref::SetPref(
+    const base::Value* value) {
+  if (!value->is_int()) {
+    return extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH;
+  }
+  if (!profile_->GetPrefs()
+           ->FindPreference(prefs::kCookieControlsMode)
+           ->IsUserModifiable()) {
+    return extensions::settings_private::SetPrefResult::PREF_NOT_MODIFIABLE;
+  }
+
+  switch (static_cast<ThirdPartyCookieBlockingSetting>(value->GetInt())) {
+    case ThirdPartyCookieBlockingSetting::INCOGNITO_ONLY:
+      return SetPrefResult(CookieControlsMode::kIncognitoOnly);
+    case ThirdPartyCookieBlockingSetting::BLOCK_THIRD_PARTY:
+      return SetPrefResult(CookieControlsMode::kBlockThirdParty);
+    default:
+      return extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH;
+  }
+}
+
+settings_api::PrefObject
+GeneratedThirdPartyCookieBlockingSettingPref::GetPrefObject() const {
+  settings_api::PrefObject pref_object;
+
+  pref_object.value = base::Value(static_cast<int>(GetValue()));
+
+  // TODO(b:370008370): Set enforcement if controlled by a policy, extension, or
+  // supervision
 
   return pref_object;
 }
