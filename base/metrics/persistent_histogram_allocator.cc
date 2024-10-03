@@ -110,6 +110,11 @@ bool MergeSamplesToExistingHistogram(
     std::unique_ptr<HistogramSamples> samples) {
   // Check if the histograms match, which is necessary for merging their data.
   HistogramType existing_type = existing->GetHistogramType();
+  if (existing_type == HistogramType::DUMMY_HISTOGRAM) {
+    // Merging into a dummy histogram (e.g. histogram is expired) is a no-op and
+    // not considered a failure case.
+    return true;
+  }
   if (histogram->GetHistogramType() != existing_type) {
     return false;  // Merge failed due to different histogram types.
   }
