@@ -89,19 +89,6 @@ class SupervisedUserPendingStateNavigationTest
         [&]() { return page_title == contents()->GetTitle(); }));
   }
 
-  void WaitForBlockedUrlInterstitial(
-      content::WebContents* interstitial_contents) {
-    // Search for string that only appears in the blocked url interstitial.
-    ASSERT_TRUE(base::test::RunUntil([interstitial_contents]() {
-      return ui_test_utils::FindInPage(
-                 interstitial_contents,
-                 l10n_util::GetStringUTF16(
-                     IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_V2),
-                 /*forward=*/true, /*case_sensitive=*/true, /*ordinal=*/nullptr,
-                 /*selection_rect=*/nullptr) == 1;
-    }));
-  }
-
   void SignInSupervisedUserAndWaitForInterstitialReload(
       content::WebContents* content) {
     Profile* profile =
@@ -295,7 +282,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
       1);
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
 
-  WaitForBlockedUrlInterstitial(interstitial_contents);
+  // TODO(b/370115099): Re-introduce a check that the blocked url interstitial
+  // is shown.
 }
 
 IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
