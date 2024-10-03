@@ -61,7 +61,6 @@ android_clang_toolchain("android_clang_x86") {
     # eventually resulted in that android toolchains being used inside a LaCrOS
     # build.
     also_build_ash_chrome = false
-    also_build_lacros_chrome = false
     chromeos_is_browser_only = false
     ozone_platform = ""
     ozone_platform_wayland = false
@@ -91,7 +90,6 @@ android_clang_toolchain("android_clang_x64") {
     # eventually resulted in that android toolchains being used inside a LaCrOS
     # build.
     also_build_ash_chrome = false
-    also_build_lacros_chrome = false
     chromeos_is_browser_only = false
     ozone_platform = ""
     ozone_platform_wayland = false

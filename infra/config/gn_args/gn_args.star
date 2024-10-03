@@ -21,27 +21,6 @@ gn_args.config(
 )
 
 gn_args.config(
-    name = "also_build_lacros_chrome",
-    args = {
-        "also_build_lacros_chrome": True,
-    },
-)
-
-gn_args.config(
-    name = "also_build_lacros_chrome_for_architecture_amd64",
-    args = {
-        "also_build_lacros_chrome_for_architecture": "amd64",
-    },
-)
-
-gn_args.config(
-    name = "also_build_lacros_chrome_for_architecture_arm64",
-    args = {
-        "also_build_lacros_chrome_for_architecture": "arm64",
-    },
-)
-
-gn_args.config(
     name = "amd64-generic",
     args_file = "//build/args/chromeos/amd64-generic.gni",
 )

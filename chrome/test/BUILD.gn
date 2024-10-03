@@ -1226,10 +1226,6 @@ if (is_chromeos && is_chromeos_device) {
       ":test_support",
       "//components/app_constants",
     ]
-    data_deps = []
-    if (also_build_lacros_chrome_for_architecture != "") {
-      data_deps += [ "//chrome:chrome(//build/toolchain/cros:lacros_clang)" ]
-    }
     if (is_chromeos_ash) {
       # Note: for each test case in the below list, add a metadata file
       # in the `crosier_metadata` build rule above.
@@ -1263,7 +1259,7 @@ if (is_chromeos && is_chromeos_device) {
         "//chrome/browser/ui/webui/ash:integration_tests",
       ]
 
-      data_deps += [
+      data_deps = [
         ":crosier_js_helpers",
         ":crosier_metadata",
         "//chrome/test/base/chromeos/crosier/helper",
@@ -5302,14 +5298,6 @@ if (!is_android) {
       deps += [ "//third_party/libbrlapi" ]
     } else if (enable_extensions) {
       sources -= [ "../browser/extensions/api/braille_display_private/braille_display_private_apitest.cc" ]
-    }
-
-    if (is_chromeos_ash && also_build_lacros_chrome && enable_extensions) {
-      # Lacros chrome loads in helper a11y extensions, ensure their resources
-      # are available in tests.
-      # TODO(b:272150598): There must be a better way to ensure they are available
-      # to the lacros binary.
-      data += [ "$root_out_dir/lacros_clang_x64/resources/accessibility/" ]
     }
 
     if (is_chromeos_ash || ((is_linux || is_chromeos_lacros) && use_dbus)) {
