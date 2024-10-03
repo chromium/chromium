@@ -128,11 +128,13 @@ class WebAppNavigationCapturingIphUiTest
 
   // Opens the "start" page for app testing, with links to launch various apps.
   auto OpenStartPage() {
-    auto steps = Steps(
-        InstrumentTab(kStartPageId),
-        ObserveState(kLatestDomMessage, kStartPageId),
-        NavigateWebContents(kStartPageId, GetStartUrl()),
-        WaitForState(kLatestDomMessage, "\"ReadyForLinkCaptureTesting\""));
+    auto steps =
+        Steps(InstrumentTab(kStartPageId),
+              ObserveState(kLatestDomMessage, kStartPageId),
+              NavigateWebContents(kStartPageId, GetStartUrl()),
+              // TODO(crbug.com/371180649): Implement 'contains' logic so
+              // this message can include debug info.
+              WaitForState(kLatestDomMessage, "\"FinishedNavigating\""));
     AddDescription(steps, "OpenStartPage( %s )");
     return steps;
   }
@@ -149,9 +151,11 @@ class WebAppNavigationCapturingIphUiTest
                        apps::LaunchSource::kFromAppListGrid);
         }),
         InAnyContext(WaitForShow(kStartPageId)),
-        InSameContext(Steps(ObserveState(kLatestDomMessage, kStartPageId),
-                            WaitForState(kLatestDomMessage,
-                                         "\"ReadyForLinkCaptureTesting\""))));
+        InSameContext(
+            Steps(ObserveState(kLatestDomMessage, kStartPageId),
+                  // TODO(crbug.com/371180649): Implement 'contains' logic so
+                  // this message can include debug info.
+                  WaitForState(kLatestDomMessage, "\"FinishedNavigating\""))));
     AddDescription(steps, "OpenAppStartPage( %s )");
     return steps;
   }

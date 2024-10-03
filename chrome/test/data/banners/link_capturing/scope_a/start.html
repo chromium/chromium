@@ -18,17 +18,9 @@
     }
 
     function notifyReady(delay) {
-      // Launches can simply focus this window without navigating, so start listening.
-      listenForNextLaunchParams(delay);
-      if (delay <= 0) {
-        domAutomationController.send('ReadyForLinkCaptureTesting')
-        return;
-      }
-
-      setTimeout(() => {
-        console.log("Delay start for a bit (" + delay + ")");
-        domAutomationController.send('ReadyForLinkCaptureTesting')
-      }, delay);
+      // Launches can simply focus this window without navigating, so this
+      // intentionally starts listening too.
+      signalNavigationCompleteAndListenForNextLaunch(delay);
     }
 
     function getModifierString(event) {

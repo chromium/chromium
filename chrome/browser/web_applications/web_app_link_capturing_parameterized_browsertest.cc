@@ -57,6 +57,8 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-shared.h"
 #include "ui/base/window_open_disposition.h"
@@ -896,9 +898,11 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
            "Add the switch '--run-all-tests' to run disabled tests too.";
   }
 
+  DLOG(INFO) << "Installing apps.";
+
   // Install apps for scope A and B (note: scope X is deliberately excluded).
   const webapps::AppId app_a =
-      InstallTestWebApp(embedded_test_server()->GetURL(kStartPageScopeA));
+      InstallTestWebApp(embedded_test_server()->GetURL(kDestinationPageScopeA));
   const webapps::AppId app_b =
       InstallTestWebApp(embedded_test_server()->GetURL(kDestinationPageScopeB));
 
@@ -909,6 +913,8 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
               base::ok());
   }
 
+  DLOG(INFO) << "Setting up.";
+
   std::string element_id = GetElementId();
 
   // Setup the initial page.
@@ -918,12 +924,17 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
     content::DOMMessageQueue message_queue;
 
     if (StartInAppWindow()) {
-      auto* const proxy =
-          apps::AppServiceProxyFactory::GetForProfile(profile());
-      ui_test_utils::AllBrowserTabAddedWaiter waiter;
-      proxy->Launch(app_a,
-                    /* event_flags= */ 0, apps::LaunchSource::kFromAppListGrid);
-      contents_a = waiter.Wait();
+      base::test::TestFuture<base::WeakPtr<Browser>,
+                             base::WeakPtr<content::WebContents>,
+                             apps::LaunchContainer>
+          launch_future;
+      provider().scheduler().LaunchApp(
+          app_a, embedded_test_server()->GetURL(kStartPageScopeA),
+          launch_future.GetCallback());
+      ASSERT_TRUE(launch_future.Wait());
+      contents_a =
+          launch_future.Get<base::WeakPtr<content::WebContents>>().get();
+      content::WaitForLoadStop(contents_a);
     } else {
       ASSERT_TRUE(ui_test_utils::NavigateToURL(
           browser(), embedded_test_server()->GetURL(kStartPageScopeA)));
@@ -932,7 +943,8 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
 
     std::string message;
     EXPECT_TRUE(message_queue.WaitForMessage(&message));
-    EXPECT_EQ("\"ReadyForLinkCaptureTesting\"", message);
+    EXPECT_TRUE(base::Contains(message, "FinishedNavigating")) << message;
+    DLOG(INFO) << message;
 
     browser_a = chrome::FindBrowserWithTab(contents_a);
     ASSERT_TRUE(browser_a != nullptr);
@@ -940,6 +952,8 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
                                  : Browser::Type::TYPE_NORMAL,
               browser_a->type());
   }
+
+  DLOG(INFO) << "Performing action.";
 
   action_histogram_tester_ = std::make_unique<base::HistogramTester>();
 

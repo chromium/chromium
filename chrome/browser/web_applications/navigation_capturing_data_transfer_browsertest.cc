@@ -142,7 +142,7 @@ class NavigationCapturingDataTransferBrowserTest
 
     std::string message;
     EXPECT_TRUE(message_queue.WaitForMessage(&message));
-    EXPECT_EQ("\"ReadyForLinkCaptureTesting\"", message);
+    EXPECT_EQ("\"FinishedNavigating\"", message);
 
     return contents;
   }
@@ -154,7 +154,7 @@ class NavigationCapturingDataTransferBrowserTest
 
     std::string message;
     EXPECT_TRUE(message_queue.WaitForMessage(&message));
-    EXPECT_EQ("\"ReadyForLinkCaptureTesting\"", message);
+    EXPECT_EQ("\"FinishedNavigating\"", message);
 
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
