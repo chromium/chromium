@@ -158,6 +158,15 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
 #endif
   }
 
+  void SendDndDropAndFinished() {
+    PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+      auto* data_source = server->data_device_manager()->data_source();
+      ASSERT_TRUE(data_source);
+      data_source->OnDndDropPerformed();
+      data_source->OnFinished();
+    });
+  }
+
  protected:
   using State = WaylandWindowDragController::State;
 
@@ -292,7 +301,7 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop) {
         EXPECT_EQ(gfx::Point(20, 20), window_->GetBoundsInDIP().origin());
         EXPECT_TRUE(change.origin_changed);
         test_step = kDropping;
-        SendDndFinished();
+        SendDndDropAndFinished();
       });
 
   // RunMoveLoop() blocks until the dragging session ends.
@@ -384,8 +393,9 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop_TOUCH) {
         EXPECT_TRUE(change.origin_changed);
 
         test_step = kDropping;
-        ScheduleTestTask(base::BindOnce(&WaylandDragDropTest::SendDndFinished,
-                                        base::Unretained(this)));
+        ScheduleTestTask(base::BindOnce(
+            &WaylandWindowDragControllerTest::SendDndDropAndFinished,
+            base::Unretained(this)));
       });
 
   // While in |kDetached| state, motion events are expected to be propagated
@@ -544,8 +554,9 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDropTwoFingerTouch) {
         EXPECT_TRUE(change.origin_changed);
 
         test_step = kDropping;
-        ScheduleTestTask(base::BindOnce(&WaylandDragDropTest::SendDndFinished,
-                                        base::Unretained(this)));
+        ScheduleTestTask(base::BindOnce(
+            &WaylandWindowDragControllerTest::SendDndDropAndFinished,
+            base::Unretained(this)));
       });
 
   // While in |kDetached| state, motion events are expected to be propagated
@@ -747,7 +758,7 @@ TEST_P(WaylandWindowDragControllerTest, DragExitWindowAndDrop) {
 
         test_step = kExitedDropping;
         SendDndLeave();
-        SendDndFinished();
+        SendDndDropAndFinished();
       });
 
   // RunMoveLoop() blocks until the dragging sessions ends.
@@ -920,7 +931,7 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop) {
     }
   });
 
-  SendDndFinished();
+  SendDndDropAndFinished();
   SendPointerEnter(target_window, &delegate_);
   EXPECT_EQ(target_window,
             window_manager()->GetCurrentPointerOrTouchFocusedWindow());
@@ -1078,7 +1089,7 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop_TOUCH) {
     }
   });
 
-  SendDndFinished();
+  SendDndDropAndFinished();
   SendTouchUp(0 /*touch id*/);
   EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
 }
@@ -1206,7 +1217,7 @@ TEST_P(WaylandWindowDragControllerTest,
 
   Mock::VerifyAndClearExpectations(&delegate_);
 
-  SendDndFinished();
+  SendDndDropAndFinished();
   SendPointerEnter(target_window, &delegate_);
   EXPECT_EQ(target_window,
             window_manager()->GetCurrentPointerOrTouchFocusedWindow());
@@ -1249,7 +1260,7 @@ TEST_P(WaylandWindowDragControllerTest, DragExitAttached) {
   SendDndLeave();
 
   EXPECT_CALL(delegate_, DispatchEvent(_)).Times(1);
-  SendDndFinished();
+  SendDndDropAndFinished();
 
   SendPointerEnter(window_.get(), &delegate_);
 
@@ -1297,7 +1308,7 @@ TEST_P(WaylandWindowDragControllerTest, DragExitAttached_TOUCH) {
   SendDndLeave();
 
   EXPECT_CALL(delegate_, DispatchEvent(_)).Times(1);
-  SendDndFinished();
+  SendDndDropAndFinished();
 }
 
 using BoundsChange = PlatformWindowDelegate::BoundsChange;
@@ -1452,7 +1463,7 @@ TEST_P(WaylandWindowDragControllerTest, IgnorePointerEventsUntilDrop) {
           // in |kDropping| test step above.
           SendPointerMotion(nullptr, nullptr, gfx::Point(30, 30), false);
           SendPointerMotion(nullptr, nullptr, gfx::Point(20, 20), false);
-          SendDndFinished();
+          SendDndDropAndFinished();
         }));
       });
 
@@ -1530,7 +1541,7 @@ TEST_P(WaylandWindowDragControllerTest, MotionEventsSkippedWhileReattaching) {
   SendDndMotionForWindowDrag({30, 30});
 
   EXPECT_CALL(delegate(), DispatchEvent(_)).Times(1);
-  SendDndFinished();
+  SendDndDropAndFinished();
 
   SendPointerEnter(window_.get(), &delegate_);
 
@@ -2131,7 +2142,7 @@ TEST_P(WaylandWindowDragControllerTest, AllPointersReleasedAfterDragEnd) {
   ASSERT_EQ(State::kAttached, drag_controller_state());
 
   // End the drag, all pressed mouse buttons should have been released.
-  SendDndFinished();
+  SendDndDropAndFinished();
   EXPECT_EQ(State::kIdle, drag_controller_state());
 
   EXPECT_FALSE(
@@ -2183,7 +2194,7 @@ TEST_P(WaylandWindowDragControllerTest, OutgoingSessionWithoutDndFinished) {
   EXPECT_EQ(State::kAttached, drag_controller_state());
 
   // End the drag.
-  SendDndFinished();
+  SendDndDropAndFinished();
   EXPECT_EQ(State::kIdle, drag_controller_state());
 }
 

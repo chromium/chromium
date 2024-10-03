@@ -121,6 +121,8 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   const WaylandWindow* GetDragTarget() const override;
 
   // WaylandDataSource::Delegate
+  void OnDataSourceDropPerformed(WaylandDataSource* source,
+                                 base::TimeTicks timestamp) override;
   void OnDataSourceFinish(WaylandDataSource* source,
                           base::TimeTicks timestamp,
                           bool completed) override;
@@ -138,6 +140,10 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   // Handles drag/move mouse |event|, while in |kDetached| mode, forwarding it
   // as a bounds change event to the upper layer handlers.
   void HandleMotionEvent(LocatedEvent* event);
+  // Handles drag session end, which might correspond to either a successful
+  // drop, notified through wl_data_source.dnd_drop_performed or a source
+  // finish/cancellation.
+  void HandleDragEnd(bool completed, base::TimeTicks timestamp);
   // Handles the mouse button release (i.e: drop). Dispatches the required
   // events and resets the internal state.
   void HandleDropAndResetState(base::TimeTicks timestamp);

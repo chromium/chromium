@@ -56,7 +56,6 @@ void WaylandDataDevice::StartDrag(const WaylandDataSource& data_source,
 }
 
 void WaylandDataDevice::ResetDragDelegate() {
-  DCHECK(drag_delegate_);
   drag_delegate_ = nullptr;
 }
 

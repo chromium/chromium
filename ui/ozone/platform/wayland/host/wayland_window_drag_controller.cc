@@ -387,8 +387,6 @@ void WaylandWindowDragController::OnDragLeave(base::TimeTicks timestamp) {
     return;
   }
 
-  DCHECK_GE(state_, State::kAttached);
-
   drag_target_window_ = nullptr;
 
   // In order to guarantee EventType::kMouseReleased event is delivered once the
@@ -465,6 +463,14 @@ const WaylandWindow* WaylandWindowDragController::GetDragTarget() const {
   return drag_target_window_;
 }
 
+void WaylandWindowDragController::OnDataSourceDropPerformed(
+    WaylandDataSource* source,
+    base::TimeTicks timestamp) {
+  CHECK_GE(state_, State::kAttached);
+  VLOG(1) << __func__ << " state=" << state_;
+  HandleDragEnd(/*completed=*/true, timestamp);
+}
+
 // This function is called when either 'cancelled' or 'finished' data source
 // events is received during a window dragging session. It is used to detect
 // when drop happens, since it is the only event sent by the server regardless
@@ -472,16 +478,21 @@ const WaylandWindow* WaylandWindowDragController::GetDragTarget() const {
 void WaylandWindowDragController::OnDataSourceFinish(WaylandDataSource* source,
                                                      base::TimeTicks timestamp,
                                                      bool completed) {
-  CHECK_GE(state_, State::kAttached);
-  CHECK_EQ(data_source_.get(), source);
+  VLOG(1) << __func__ << " completed=" << completed << " state=" << state_;
+  HandleDragEnd(completed, timestamp);
+  data_source_.reset();
+}
 
-  VLOG(1) << "DataSourceFinish received. completed=" << completed
-          << ", state=" << state_;
+void WaylandWindowDragController::HandleDragEnd(bool completed,
+                                                base::TimeTicks timestamp) {
+  // No-op if drag end has already been handled.
+  if (state_ != State::kAttached && state_ != State::kDetached) {
+    return;
+  }
 
   // Release DND objects.
   nested_dispatcher_.reset();
   data_offer_.reset();
-  data_source_.reset();
   extended_drag_source_.reset();
   xdg_toplevel_drag_.reset();
   origin_surface_.reset();
@@ -494,14 +505,9 @@ void WaylandWindowDragController::OnDataSourceFinish(WaylandDataSource* source,
   // it would be wrongly kept to the latest surface received through
   // wl_data_device::enter (see OnDragEnter function). In case of touch, though,
   // we simply reset the focus altogether.
-  //
-  // TODO(crbug.com/324170129): Move drop handling logic below into
-  // OnDataSourceDropPerformed instead, otherwise dropping outside target
-  // surfaces will results in drag cancellation when xdg-toplevel-drag is used.
   if (IsWindowDragProtocolAvailable() && dragged_window_) {
     if (*drag_source_ == DragEventSource::kMouse) {
       // TODO: check if this usage is correct.
-
       pointer_delegate_->OnPointerFocusChanged(
           dragged_window_, pointer_location_, timestamp,
           wl::EventDispatchPolicy::kImmediate);
