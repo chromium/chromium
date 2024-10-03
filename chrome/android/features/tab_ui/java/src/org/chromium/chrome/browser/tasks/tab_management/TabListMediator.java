@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.ACTION_BUTTON_DESCRIPTION_STRING;
+import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_ID;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.THUMBNAIL_FETCHER;
 
@@ -364,6 +365,8 @@ class TabListMediator implements TabListNotificationHandler {
     private String mComponentName;
     private @TabActionState int mTabActionState;
     private @Nullable Profile mOriginalProfile;
+    private @Nullable TabGroupSyncService mTabGroupSyncService;
+    private @Nullable DataSharingService mDataSharingService;
     private TabListGroupMenuCoordinator mTabListGroupMenuCoordinator;
     private Size mDefaultGridCardSize;
     private ComponentCallbacks mComponentCallbacks;
@@ -698,7 +701,7 @@ class TabListMediator implements TabListNotificationHandler {
                                 previousGroupTab.getId() == movedTab.getId();
                         int curTabListModelIndex = mModel.indexFromId(movedTab.getId());
                         if (!isValidMovePosition(curTabListModelIndex)) return;
-                        mModel.removeAt(curTabListModelIndex);
+                        removeAt(curTabListModelIndex);
                         if (mTabGridDialogHandler != null) {
                             mTabGridDialogHandler.updateDialogContent(
                                     isUngroupingLastTabInGroup
@@ -748,7 +751,7 @@ class TabListMediator implements TabListNotificationHandler {
                         }
 
                         Tab newSelectedTabInMergedGroup = null;
-                        mModel.removeAt(srcIndex);
+                        removeAt(srcIndex);
                         if (getRelatedTabsForId(movedTab.getId()).size() == 2) {
                             // When users use drop-to-merge to create a group.
                             RecordUserAction.record("TabGroup.Created.DropToMerge");
@@ -1065,7 +1068,7 @@ class TabListMediator implements TabListNotificationHandler {
                         }
 
                         if (mModel.indexFromId(tab.getId()) == TabModel.INVALID_TAB_INDEX) return;
-                        mModel.removeAt(mModel.indexFromId(tab.getId()));
+                        removeAt(mModel.indexFromId(tab.getId()));
                     }
 
                     @Override
@@ -1075,7 +1078,7 @@ class TabListMediator implements TabListNotificationHandler {
                         tab.removeObserver(mTabObserver);
 
                         if (mModel.indexFromId(tab.getId()) == TabModel.INVALID_TAB_INDEX) return;
-                        mModel.removeAt(mModel.indexFromId(tab.getId()));
+                        removeAt(mModel.indexFromId(tab.getId()));
                     }
                 };
 
@@ -1364,6 +1367,11 @@ class TabListMediator implements TabListNotificationHandler {
                         }
                     };
             mModel.addObserver(mListObserver);
+
+            if (TabGroupSyncFeatures.isTabGroupSyncEnabled(mOriginalProfile)) {
+                mTabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(mOriginalProfile);
+                mDataSharingService = DataSharingServiceFactory.getForProfile(mOriginalProfile);
+            }
         }
     }
 
@@ -1486,7 +1494,7 @@ class TabListMediator implements TabListNotificationHandler {
             mLastSelectedTabListModelIndex = TabList.INVALID_TAB_INDEX;
             return true;
         }
-        mModel.set(new ArrayList<>());
+        resetModel();
         mLastSelectedTabListModelIndex = TabList.INVALID_TAB_INDEX;
 
         if (tabs == null) {
@@ -1880,18 +1888,19 @@ class TabListMediator implements TabListNotificationHandler {
 
     private TabListMediator.TabActionListener getTabGroupOverflowMenuClickListener() {
         if (mTabListGroupMenuCoordinator == null) {
+            TabModel tabModel = mCurrentTabModelFilterSupplier.get().getTabModel();
             boolean isTabGroupSyncEnabled =
-                    !mCurrentTabModelFilterSupplier.get().isIncognitoBranded()
-                            && TabGroupSyncFeatures.isTabGroupSyncEnabled(mOriginalProfile);
+                    mTabGroupSyncService != null && !tabModel.isIncognitoBranded();
             IdentityManager identityManager = null;
             TabGroupSyncService tabGroupSyncService = null;
             DataSharingService dataSharingService = null;
             if (isTabGroupSyncEnabled
+                    && mDataSharingService != null
                     && ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
                 identityManager =
                         IdentityServicesProvider.get().getIdentityManager(mOriginalProfile);
-                tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(mOriginalProfile);
-                dataSharingService = DataSharingServiceFactory.getForProfile(mOriginalProfile);
+                tabGroupSyncService = mTabGroupSyncService;
+                dataSharingService = mDataSharingService;
             }
             mTabListGroupMenuCoordinator =
                     new TabListGroupMenuCoordinator(
@@ -2310,7 +2319,7 @@ class TabListMediator implements TabListNotificationHandler {
             if (itemIdentifier == MessageService.MessageType.ALL) {
                 while (mModel.lastIndexForMessageItem() != TabModel.INVALID_TAB_INDEX) {
                     index = mModel.lastIndexForMessageItem();
-                    mModel.removeAt(index);
+                    removeAt(index);
                 }
                 return;
             }
@@ -2320,7 +2329,7 @@ class TabListMediator implements TabListNotificationHandler {
         if (index == TabModel.INVALID_TAB_INDEX) return;
 
         assert validateItemAt(index, uiType, itemIdentifier);
-        mModel.removeAt(index);
+        removeAt(index);
     }
 
     private boolean validateItemAt(
@@ -2999,13 +3008,16 @@ class TabListMediator implements TabListNotificationHandler {
 
     private void updateTabGroupColorViewProvider(
             PropertyModel model, @NonNull Tab tab, @TabGroupColorId int colorId) {
+        if (!ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) return;
+
+        @Nullable TabGroupColorViewProvider provider = model.get(TAB_GROUP_COLOR_VIEW_PROVIDER);
+
         @Nullable Token tabGroupId = tab.getTabGroupId();
-        if (!ChromeFeatureList.sTabGroupParityAndroid.isEnabled()
-                || !mActionsOnAllRelatedTabs
-                || tabGroupId == null
-                || !isTabInTabGroup(tab)) {
+        if (!mActionsOnAllRelatedTabs || tabGroupId == null || !isTabInTabGroup(tab)) {
             // Not a group or not in group display mode.
-            model.set(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, null);
+            model.set(TAB_GROUP_COLOR_VIEW_PROVIDER, null);
+            if (provider != null) provider.destroy();
+
             return;
         }
 
@@ -3013,16 +3025,39 @@ class TabListMediator implements TabListNotificationHandler {
                 : "Tab in tab group should always have valid colors.";
         assert mMode != TabListMode.STRIP : "Tab group colors are not applicable to strip mode.";
 
-        @Nullable
-        TabGroupColorViewProvider provider = model.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER);
         if (provider == null) {
             provider =
                     new TabGroupColorViewProvider(
-                            mContext, tabGroupId, tab.isIncognitoBranded(), colorId);
-            model.set(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, provider);
+                            mContext,
+                            tabGroupId,
+                            tab.isIncognitoBranded(),
+                            colorId,
+                            mTabGroupSyncService,
+                            mDataSharingService);
+            model.set(TAB_GROUP_COLOR_VIEW_PROVIDER, provider);
         } else {
             assert Objects.equals(tabGroupId, provider.getTabGroupId());
             provider.setTabGroupColorId(colorId);
+        }
+    }
+
+    private void resetModel() {
+        for (int i = 0; i < mModel.size(); i++) {
+            destroyTabGroupColorViewProviderIfNotNull(mModel.get(i).model);
+        }
+        mModel.clear();
+    }
+
+    @VisibleForTesting
+    void removeAt(int index) {
+        destroyTabGroupColorViewProviderIfNotNull(mModel.get(index).model);
+        mModel.removeAt(index);
+    }
+
+    private void destroyTabGroupColorViewProviderIfNotNull(PropertyModel model) {
+        if (model.get(CARD_TYPE) == TAB) {
+            @Nullable TabGroupColorViewProvider provider = model.get(TAB_GROUP_COLOR_VIEW_PROVIDER);
+            if (provider != null) provider.destroy();
         }
     }
 

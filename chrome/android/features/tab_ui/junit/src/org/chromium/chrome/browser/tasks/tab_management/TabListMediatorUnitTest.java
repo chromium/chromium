@@ -645,6 +645,58 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void tabGroupColorViewProviderDestroyed_Reset() {
+        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, newTab));
+        createTabGroup(tabs, TAB1_ID, TAB_GROUP_ID);
+
+        mTabGroupModelFilter.setTabGroupColor(mTab1.getRootId(), TabGroupColorId.BLUE);
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .didChangeTabGroupColor(mTab1.getRootId(), TabGroupColorId.BLUE);
+
+        PropertyModel model = mModel.get(0).model;
+        var provider = spy(model.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER));
+        model.set(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, provider);
+
+        mMediator.resetWithListOfTabs(null, false);
+        verify(provider).destroy();
+    }
+
+    @Test
+    public void tabGroupColorViewProviderDestroyed_Remove() {
+        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, newTab));
+        createTabGroup(tabs, TAB1_ID, TAB_GROUP_ID);
+
+        mTabGroupModelFilter.setTabGroupColor(mTab1.getRootId(), TabGroupColorId.BLUE);
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .didChangeTabGroupColor(mTab1.getRootId(), TabGroupColorId.BLUE);
+
+        PropertyModel model = mModel.get(0).model;
+        var provider = spy(model.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER));
+        model.set(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, provider);
+
+        mMediator.removeAt(0);
+        verify(provider).destroy();
+    }
+
+    @Test
+    public void tabGroupColorViewProviderDestroyed_Ungroup() {
+        mMediator.resetWithListOfTabs(List.of(mTab1, mTab2), false);
+
+        PropertyModel model = mModel.get(0).model;
+        var provider = mock(TabGroupColorViewProvider.class);
+        model.set(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, provider);
+
+        mTabGroupModelFilterObserverCaptor.getValue().didMoveTabOutOfGroup(mTab2, POSITION1);
+
+        assertNull(model.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER));
+        verify(provider).destroy();
+    }
+
+    @Test
     public void updatesFaviconFetcher_SingleTab_Gts() {
         mModel.get(0).model.set(TabProperties.FAVICON_FETCHER, null);
         assertNull(mModel.get(0).model.get(TabProperties.FAVICON_FETCHER));

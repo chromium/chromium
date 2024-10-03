@@ -1037,7 +1037,9 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
                         getActivity(),
                         new Token(1L, 2L),
                         /* isIncognito= */ false,
-                        TabGroupColorId.BLUE);
+                        TabGroupColorId.BLUE,
+                        /* tabGroupSyncService= */ null,
+                        /* dataSharingService= */ null);
 
         mGridModel.set(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, provider);
         assertEquals(1, gridContainer.getChildCount());
@@ -1076,7 +1078,9 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
                         getActivity(),
                         new Token(1L, 2L),
                         /* isIncognito= */ false,
-                        TabGroupColorId.BLUE);
+                        TabGroupColorId.BLUE,
+                        /* tabGroupSyncService= */ null,
+                        /* dataSharingService= */ null);
 
         mGridModel.set(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, provider);
         assertEquals(1, listContainer.getChildCount());

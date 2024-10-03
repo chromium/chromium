@@ -80,6 +80,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.data_sharing.ServiceStatus;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -124,6 +125,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Mock private IdentityManager mIdentityManager;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private DataSharingService mDataSharingService;
+    @Mock private ServiceStatus mServiceStatus;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
 
     private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
@@ -153,6 +155,9 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         mJniMocker.mock(TabGroupSyncFeaturesJni.TEST_HOOKS, mTabGroupSyncFeaturesJniMock);
         when(mTabGroupSyncFeaturesJniMock.isTabGroupSyncEnabled(mProfile)).thenReturn(true);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
+        DataSharingServiceFactory.setForTesting(mDataSharingService);
+        when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
+        when(mDataSharingService.getServiceStatus()).thenReturn(mServiceStatus);
 
         TrackerFactory.setTrackerForTests(mTracker);
 
@@ -400,7 +405,6 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     public void testOpenInvitationModal() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
-        DataSharingServiceFactory.setForTesting(mDataSharingService);
 
         DialogController controller = showTabGridDialogWithTabs();
 

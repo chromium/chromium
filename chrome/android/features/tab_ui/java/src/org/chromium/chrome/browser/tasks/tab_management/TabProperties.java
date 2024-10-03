@@ -124,7 +124,8 @@ public class TabProperties {
     // TODO(crbug.com/365972761): Move this to `TabGroupProperties` when it is created.
     /**
      * Provides a view for the tab group color. In list mode this is shown alongside the row. In
-     * grid mode this replaces the favicon image view.
+     * grid mode this replaces the favicon image view. {@code #destroy()} must be invoked on this
+     * object before it is nulled out or the property model as a whole is removed.
      */
     public static final WritableObjectPropertyKey<TabGroupColorViewProvider>
             TAB_GROUP_COLOR_VIEW_PROVIDER = new WritableObjectPropertyKey<>();
