@@ -161,16 +161,24 @@ CommandType CommandFromString(const std::string& source) {
   return CLOSE;
 }
 
+bool StringToDouble(std::string_view piece, double* out) {
+  if (piece[piece.size() - 1] == 'f') {
+    piece.remove_suffix(1);
+  }
+
+  return base::StringToDouble(piece, out);
+}
+
 std::vector<PathElement> PathFromSource(const std::string& source) {
   std::vector<PathElement> path;
   std::vector<std::string> pieces = base::SplitString(
-      source, "\n ,f", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+      source, "\n ,", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   for (const auto& piece : pieces) {
     double value = 0;
     int hex_value = 0;
-    if (base::StringToDouble(piece, &value))
+    if (StringToDouble(piece, &value)) {
       path.push_back(PathElement(SkDoubleToScalar(value)));
-    else if (base::HexStringToInt(piece, &hex_value))
+    } else if (base::HexStringToInt(piece, &hex_value))
       path.push_back(PathElement(SkIntToScalar(hex_value)));
     else
       path.push_back(PathElement(CommandFromString(piece)));
