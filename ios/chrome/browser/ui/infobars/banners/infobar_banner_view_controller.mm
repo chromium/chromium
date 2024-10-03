@@ -329,6 +329,20 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
   longPressGestureRecognizer.minimumPressDuration =
       kLongPressTimeDuration.InSecondsF();
   [self.view addGestureRecognizer:longPressGestureRecognizer];
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+      UITraitUserInterfaceIdiom.self, UITraitUserInterfaceStyle.self,
+      UITraitDisplayGamut.self, UITraitAccessibilityContrast.self,
+      UITraitUserInterfaceLevel.self
+    ]);
+    __weak __typeof(self) weakSelf = self;
+    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                     UITraitCollection* previousCollection) {
+      [weakSelf updateShadowColorOnTraitChange:previousCollection];
+    };
+    [self registerForTraitChanges:traits withHandler:handler];
+  }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -355,17 +369,17 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
   [super viewDidDisappear:animated];
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 // This is triggered when dark mode changes while the banner is already
 // presented.
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  if ([self.traitCollection
-          hasDifferentColorAppearanceComparedToTraitCollection:
-              previousTraitCollection]) {
-    [self.view.layer
-        setShadowColor:[UIColor colorNamed:kToolbarShadowColor].CGColor];
+  if (@available(iOS 17, *)) {
+    return;
   }
+  [self updateShadowColorOnTraitChange:previousTraitCollection];
 }
+#endif
 
 #pragma mark - Public Methods
 
@@ -652,6 +666,17 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
         base::TimeTicks::Now() - self.bannerAppearedTime;
     [self.metricsRecorder recordBannerOnScreenDuration:duration];
     self.bannerOnScreenTimeWasRecorded = YES;
+  }
+}
+
+// Updates the view's shadow color when one of the view's UITraits are modified.
+- (void)updateShadowColorOnTraitChange:
+    (UITraitCollection*)previousTraitCollection {
+  if ([self.traitCollection
+          hasDifferentColorAppearanceComparedToTraitCollection:
+              previousTraitCollection]) {
+    [self.view.layer
+        setShadowColor:[UIColor colorNamed:kToolbarShadowColor].CGColor];
   }
 }
 
