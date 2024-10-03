@@ -132,10 +132,6 @@ public final class TopicsFragmentTest {
         return getRootViewSanitized(R.string.settings_topics_page_blocked_topics_heading_new);
     }
 
-    private View getLearnMoreRootView() {
-        return getRootViewSanitized(R.string.settings_topics_page_learn_more_heading);
-    }
-
     private void setTopicsPrefEnabled(boolean isEnabled) {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
