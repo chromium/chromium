@@ -100,40 +100,20 @@ bool LatencyInfo::Verify(const std::vector<LatencyInfo>& latency_info,
   return true;
 }
 
-void LatencyInfo::TraceIntermediateFlowEvents(
-    const std::vector<LatencyInfo>& latency_info,
-    perfetto::protos::pbzero::ChromeLatencyInfo::Step step) {
-  for (auto& latency : latency_info) {
-    if (latency.trace_id() == -1)
-      continue;
-
-    TRACE_EVENT(
-        "input,benchmark,latencyInfo", "LatencyInfo.Flow",
-        [&latency, &step](perfetto::EventContext ctx) {
-          auto* info = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
-                           ->set_chrome_latency_info();
-          info->set_step(
-              (perfetto::protos::pbzero::
-                   perfetto_pbzero_enum_ChromeLatencyInfo2::Step)step);
-          info->set_trace_id(latency.trace_id());
-          tracing::FillFlowEvent(ctx, TrackEvent::LegacyEvent::FLOW_INOUT,
-                                 latency.trace_id());
-        });
-  }
-}
-
 void LatencyInfo::EmitLatencyInfoStep(
     perfetto::EventContext& ctx,
     int64_t latency_trace_id,
     ChromeLatencyInfo2::Step step,
-    ChromeLatencyInfo2::InputType input_type,
+    std::optional<ChromeLatencyInfo2::InputType> input_type,
     std::optional<ChromeLatencyInfo2::InputResultState> input_result_state,
     TrackEvent::LegacyEvent::FlowDirection direction) {
   auto* info = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
                    ->set_chrome_latency_info();
   info->set_trace_id(latency_trace_id);
   info->set_step(step);
-  info->set_input_type(input_type);
+  if (input_type.has_value()) {
+    info->set_input_type(input_type.value());
+  }
   if (input_result_state.has_value()) {
     info->set_input_result_state(input_result_state.value());
   }
@@ -154,7 +134,7 @@ void LatencyInfo::EmitIntermediateLatencyInfoStep(
     perfetto::EventContext& ctx,
     int64_t latency_trace_id,
     ChromeLatencyInfo2::Step step,
-    ChromeLatencyInfo2::InputType input_type,
+    std::optional<ChromeLatencyInfo2::InputType> input_type,
     std::optional<ChromeLatencyInfo2::InputResultState> input_result_state) {
   EmitLatencyInfoStep(ctx, latency_trace_id, step, input_type,
                       input_result_state, TrackEvent::LegacyEvent::FLOW_INOUT);

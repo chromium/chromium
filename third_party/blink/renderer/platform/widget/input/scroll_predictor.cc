@@ -14,6 +14,8 @@
 
 namespace blink {
 
+using ::perfetto::protos::pbzero::ChromeLatencyInfo2;
+
 ScrollPredictor::ScrollPredictor()
     : metrics_handler_("Event.InputEventPrediction.Scroll") {
   // Get the predictor from feature flags
@@ -73,8 +75,7 @@ std::unique_ptr<EventWithCallback> ScrollPredictor::ResampleScrollEvents(
         auto* info = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
                          ->set_chrome_latency_info();
         info->set_trace_id(trace_id);
-        info->set_step(perfetto::protos::pbzero::ChromeLatencyInfo2::Step::
-                           STEP_RESAMPLE_SCROLL_EVENTS);
+        info->set_step(ChromeLatencyInfo2::Step::STEP_RESAMPLE_SCROLL_EVENTS);
         for (const EventWithCallback::OriginalEventWithCallback&
                  coalesced_event : original_events) {
           int64_t coalesced_event_trace_id =
@@ -168,10 +169,15 @@ ScrollPredictor::GenerateSyntheticScrollUpdate(
                             overscroll_params,
                         const WebInputEventAttribution& attribution,
                         std::unique_ptr<cc::EventMetrics> metrics) {
-        ui::LatencyInfo::TraceIntermediateFlowEvents(
-            {event->latency_info()},
-            ::perfetto::protos::pbzero::ChromeLatencyInfo::
-                STEP_DID_HANDLE_INPUT_AND_OVERSCROLL);
+        TRACE_EVENT(
+            "input,benchmark,latencyInfo", "LatencyInfo.Flow",
+            [&event](perfetto::EventContext ctx) {
+              ui::LatencyInfo::EmitIntermediateLatencyInfoStep(
+                  ctx, event->latency_info().trace_id(),
+                  ChromeLatencyInfo2::Step::
+                      STEP_DID_HANDLE_INPUT_AND_OVERSCROLL,
+                  ChromeLatencyInfo2::InputType::GESTURE_SCROLL_UPDATE_EVENT);
+            });
       }),
       std::move(metrics));
 }

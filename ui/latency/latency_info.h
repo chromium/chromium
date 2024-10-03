@@ -104,11 +104,6 @@ class LatencyInfo {
   static bool Verify(const std::vector<LatencyInfo>& latency_info,
                      const char* referring_msg);
 
-  // Adds trace flow events only to LatencyInfos that are being traced.
-  static void TraceIntermediateFlowEvents(
-      const std::vector<LatencyInfo>& latency_info,
-      perfetto::protos::pbzero::ChromeLatencyInfo::Step step);
-
   // Populates fields for the first `LatencyInfo.Flow` event in a flow, for
   // `latency_trace_id` with `ctx`.
   static void EmitFirstLatencyInfoStep(
@@ -126,7 +121,8 @@ class LatencyInfo {
       perfetto::EventContext& ctx,
       int64_t latency_trace_id,
       perfetto::protos::pbzero::ChromeLatencyInfo2::Step step,
-      perfetto::protos::pbzero::ChromeLatencyInfo2::InputType input_type,
+      std::optional<perfetto::protos::pbzero::ChromeLatencyInfo2::InputType>
+          input_type = std::nullopt,
       std::optional<
           perfetto::protos::pbzero::ChromeLatencyInfo2::InputResultState>
           input_result_state = std::nullopt);
@@ -180,7 +176,8 @@ class LatencyInfo {
       perfetto::EventContext& ctx,
       int64_t latency_trace_id,
       perfetto::protos::pbzero::ChromeLatencyInfo2::Step step,
-      perfetto::protos::pbzero::ChromeLatencyInfo2::InputType input_type,
+      std::optional<perfetto::protos::pbzero::ChromeLatencyInfo2::InputType>
+          input_type,
       std::optional<
           perfetto::protos::pbzero::ChromeLatencyInfo2::InputResultState>
           input_result_state,

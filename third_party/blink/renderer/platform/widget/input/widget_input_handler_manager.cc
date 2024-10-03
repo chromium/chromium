@@ -81,8 +81,13 @@ void CallCallback(
     const ui::LatencyInfo& latency_info,
     mojom::blink::DidOverscrollParamsPtr overscroll_params,
     std::optional<cc::TouchAction> touch_action) {
-  ui::LatencyInfo::TraceIntermediateFlowEvents(
-      {latency_info}, ChromeLatencyInfo::STEP_HANDLED_INPUT_EVENT_IMPL);
+  TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
+              [&latency_info](perfetto::EventContext ctx) {
+                ui::LatencyInfo::EmitIntermediateLatencyInfoStep(
+                    ctx, latency_info.trace_id(),
+                    perfetto::protos::pbzero::ChromeLatencyInfo2::Step::
+                        STEP_HANDLED_INPUT_EVENT_IMPL);
+              });
   std::move(callback).Run(
       mojom::blink::InputEventResultSource::kMainThread, latency_info,
       result_state, std::move(overscroll_params),
@@ -975,6 +980,13 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToCompositor(
   TRACE_EVENT1("input",
                "WidgetInputHandlerManager::DidHandleInputEventSentToCompositor",
                "Disposition", event_disposition);
+  TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
+              [&event](perfetto::EventContext ctx) {
+                ui::LatencyInfo::EmitIntermediateLatencyInfoStep(
+                    ctx, event->latency_info().trace_id(),
+                    perfetto::protos::pbzero::ChromeLatencyInfo2::Step::
+                        STEP_DID_HANDLE_INPUT_AND_OVERSCROLL);
+              });
   DCHECK(InputThreadTaskRunner()->BelongsToCurrentThread());
 
   if (event_disposition == InputHandlerProxy::DROP_EVENT &&
@@ -1001,10 +1013,6 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToCompositor(
       }
     }
   }
-
-  ui::LatencyInfo::TraceIntermediateFlowEvents(
-      {event->latency_info()},
-      ChromeLatencyInfo::STEP_DID_HANDLE_INPUT_AND_OVERSCROLL);
 
   if (event_disposition == InputHandlerProxy::REQUIRES_MAIN_THREAD_HIT_TEST) {
     TRACE_EVENT_INSTANT0("input", "PostingHitTestToMainThread",
@@ -1109,8 +1117,13 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToMain(
   TRACE_EVENT1("input",
                "WidgetInputHandlerManager::DidHandleInputEventSentToMain",
                "ack_state", ack_state);
-  ui::LatencyInfo::TraceIntermediateFlowEvents(
-      {latency_info}, ChromeLatencyInfo::STEP_HANDLED_INPUT_EVENT_MAIN_OR_IMPL);
+  TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
+              [&latency_info](perfetto::EventContext ctx) {
+                ui::LatencyInfo::EmitIntermediateLatencyInfoStep(
+                    ctx, latency_info.trace_id(),
+                    perfetto::protos::pbzero::ChromeLatencyInfo2::Step::
+                        STEP_HANDLED_INPUT_EVENT_MAIN_OR_IMPL);
+              });
 
   std::optional<cc::TouchAction> touch_action_for_ack = touch_action_from_main;
   if (!touch_action_for_ack.has_value()) {
