@@ -489,7 +489,9 @@ NSString* GetOverridenReason(
             ^(visited_url_ranking::ResultStatus status,
               visited_url_ranking::URLVisitsMetadata url_visits_metadata,
               std::vector<visited_url_ranking::URLVisitAggregate> urls) {
-              [weakSelf onURLFetched:std::move(urls) withStatus:status];
+              [weakSelf onURLFetched:std::move(urls)
+                        withMetadata:url_visits_metadata
+                          withStatus:status];
             }));
     return;
   }
@@ -760,6 +762,7 @@ NSString* GetOverridenReason(
 // Called when the URLs have been fetched from the different fetcher.
 // This method just forwards the URLs to the ranker.
 - (void)onURLFetched:(std::vector<visited_url_ranking::URLVisitAggregate>)URLs
+        withMetadata:(const visited_url_ranking::URLVisitsMetadata&)metadata
           withStatus:(visited_url_ranking::ResultStatus)status {
   if (status != visited_url_ranking::ResultStatus::kSuccess) {
     return;
@@ -770,14 +773,19 @@ NSString* GetOverridenReason(
   _visitedURLRankingService->RankURLVisitAggregates(
       config, std::move(URLs),
       base::BindOnce(
-          ^(visited_url_ranking::ResultStatus rankStatus,
+          ^(visited_url_ranking::URLVisitsMetadata local_metadata,
+            visited_url_ranking::ResultStatus rankStatus,
             std::vector<visited_url_ranking::URLVisitAggregate> rankedURLs) {
-            [weakSelf onURLRanked:std::move(rankedURLs) withStatus:rankStatus];
-          }));
+            [weakSelf onURLRanked:std::move(rankedURLs)
+                     withMetadata:local_metadata
+                       withStatus:rankStatus];
+          },
+          metadata));
 }
 
 // Called when the URLs have been ranked. Select the first one and decorate it.
 - (void)onURLRanked:(std::vector<visited_url_ranking::URLVisitAggregate>)URLs
+       withMetadata:(const visited_url_ranking::URLVisitsMetadata&)metadata
          withStatus:(visited_url_ranking::ResultStatus)status {
   if (status != visited_url_ranking::ResultStatus::kSuccess ||
       URLs.size() == 0) {
@@ -803,7 +811,7 @@ NSString* GetOverridenReason(
 
   __weak __typeof(self) weakSelf = self;
   _visitedURLRankingService->DecorateURLVisitAggregates(
-      {}, std::move(selectedURLs),
+      {}, metadata, std::move(selectedURLs),
       base::BindOnce(
           ^(visited_url_ranking::ResultStatus decorateStatus,
             std::vector<visited_url_ranking::URLVisitAggregate> decoratedURLs) {
