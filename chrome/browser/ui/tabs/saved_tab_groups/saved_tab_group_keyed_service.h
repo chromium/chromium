@@ -122,6 +122,9 @@ class SavedTabGroupKeyedService : public KeyedService,
   void OnTabGroupVisualsChanged(const base::Uuid& group_guid);
 
   TabGroupSyncServiceProxy* proxy() { return service_proxy_.get(); }
+  TabGroupSyncMetricsLogger* GetTabGroupSyncMetricsLogger() {
+    return metrics_logger_.get();
+  }
 
  private:
   // Adds tabs to `tab_group` if `saved_group` was modified and has more tabs

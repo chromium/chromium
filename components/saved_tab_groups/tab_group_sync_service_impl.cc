@@ -542,6 +542,11 @@ void TabGroupSyncServiceImpl::RecordTabGroupEvent(
   metrics_logger_->LogEvent(event_details, group, tab);
 }
 
+TabGroupSyncMetricsLogger*
+TabGroupSyncServiceImpl::GetTabGroupSyncMetricsLogger() {
+  return metrics_logger_.get();
+}
+
 void TabGroupSyncServiceImpl::HandleTabGroupsReordered(TriggerSource source) {
   if (!is_initialized_) {
     return;

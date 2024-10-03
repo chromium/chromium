@@ -253,6 +253,11 @@ void TabGroupSyncServiceProxy::RecordTabGroupEvent(
   NOTIMPLEMENTED();
 }
 
+TabGroupSyncMetricsLogger*
+TabGroupSyncServiceProxy::GetTabGroupSyncMetricsLogger() {
+  return service_->GetTabGroupSyncMetricsLogger();
+}
+
 base::WeakPtr<syncer::DataTypeControllerDelegate>
 TabGroupSyncServiceProxy::GetSavedTabGroupControllerDelegate() {
   return service_->GetSavedTabGroupControllerDelegate();

@@ -30,6 +30,7 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace tab_groups {
+class TabGroupSyncMetricsLogger;
 
 // A RAII class that pauses local tab model observers when required.
 class ScopedLocalObservationPauser {
@@ -197,6 +198,9 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   // event source call site i.e. UI layer. Currently required to record open and
   // close tab group events only, but see implementation for more details.
   virtual void RecordTabGroupEvent(const EventDetails& event_details) = 0;
+
+  // For accessing the centralized metrics logger.
+  virtual TabGroupSyncMetricsLogger* GetTabGroupSyncMetricsLogger() = 0;
 
   // For connecting to sync engine.
   virtual base::WeakPtr<syncer::DataTypeControllerDelegate>

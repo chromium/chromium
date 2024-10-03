@@ -302,6 +302,11 @@ void FakeTabGroupSyncService::RecordTabGroupEvent(
   // No op.
 }
 
+TabGroupSyncMetricsLogger*
+FakeTabGroupSyncService::GetTabGroupSyncMetricsLogger() {
+  return nullptr;
+}
+
 base::WeakPtr<syncer::DataTypeControllerDelegate>
 FakeTabGroupSyncService::GetSavedTabGroupControllerDelegate() {
   return base::WeakPtr<syncer::DataTypeControllerDelegate>();

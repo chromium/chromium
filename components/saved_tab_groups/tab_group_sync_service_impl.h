@@ -114,6 +114,7 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
       const base::Uuid& sync_tab_group_id) const override;
 
   void RecordTabGroupEvent(const EventDetails& event_details) override;
+  TabGroupSyncMetricsLogger* GetTabGroupSyncMetricsLogger() override;
 
   base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetSavedTabGroupControllerDelegate() override;
