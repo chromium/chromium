@@ -46,7 +46,7 @@ constexpr char kInvalidStateErrorMessage[] = "The document is not active.";
 
 LockInfo* ToLockInfo(const mojom::blink::LockInfoPtr& record) {
   LockInfo* info = LockInfo::Create();
-  info->setMode(Lock::ModeToString(record->mode));
+  info->setMode(Lock::ModeToEnum(record->mode));
   info->setName(record->name);
   info->setClientId(record->client_id);
   return info;
@@ -295,7 +295,7 @@ ScriptPromise<IDLAny> LockManager::request(ScriptState* script_state,
     UseCounter::Count(context, WebFeature::kFileAccessedLocks);
   }
 
-  mojom::blink::LockMode mode = Lock::StringToMode(options->mode());
+  mojom::blink::LockMode mode = Lock::EnumToMode(options->mode().AsEnum());
 
   // 6. Otherwise, if name starts with U+002D HYPHEN-MINUS (-), then reject
   // promise with a "NotSupportedError" DOMException.

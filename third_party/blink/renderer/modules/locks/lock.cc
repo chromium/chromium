@@ -19,11 +19,6 @@
 
 namespace blink {
 
-namespace {
-const char* kLockModeNameExclusive = "exclusive";
-const char* kLockModeNameShared = "shared";
-}  // namespace
-
 class Lock::ThenFunction final : public ScriptFunction::Callable {
  public:
   enum ResolveType {
@@ -81,8 +76,8 @@ Lock::Lock(ScriptState* script_state,
 
 Lock::~Lock() = default;
 
-String Lock::mode() const {
-  return ModeToString(mode_);
+V8LockMode Lock::mode() const {
+  return V8LockMode(ModeToEnum(mode_));
 }
 
 void Lock::HoldUntil(ScriptPromise<IDLAny> promise,
@@ -106,25 +101,25 @@ void Lock::HoldUntil(ScriptPromise<IDLAny> promise,
 }
 
 // static
-mojom::blink::LockMode Lock::StringToMode(const String& string) {
-  if (string == kLockModeNameShared)
-    return mojom::blink::LockMode::SHARED;
-  if (string == kLockModeNameExclusive)
-    return mojom::blink::LockMode::EXCLUSIVE;
-  NOTREACHED_IN_MIGRATION();
-  return mojom::blink::LockMode::SHARED;
+mojom::blink::LockMode Lock::EnumToMode(V8LockMode::Enum mode) {
+  switch (mode) {
+    case V8LockMode::Enum::kShared:
+      return mojom::blink::LockMode::SHARED;
+    case V8LockMode::Enum::kExclusive:
+      return mojom::blink::LockMode::EXCLUSIVE;
+  }
+  NOTREACHED();
 }
 
 // static
-String Lock::ModeToString(mojom::blink::LockMode mode) {
+V8LockMode::Enum Lock::ModeToEnum(mojom::blink::LockMode mode) {
   switch (mode) {
     case mojom::blink::LockMode::SHARED:
-      return kLockModeNameShared;
+      return V8LockMode::Enum::kShared;
     case mojom::blink::LockMode::EXCLUSIVE:
-      return kLockModeNameExclusive;
+      return V8LockMode::Enum::kExclusive;
   }
-  NOTREACHED_IN_MIGRATION();
-  return g_empty_string;
+  NOTREACHED();
 }
 
 void Lock::ContextDestroyed() {
