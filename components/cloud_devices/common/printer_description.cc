@@ -496,7 +496,7 @@ PwgRasterConfig::PwgRasterConfig()
       reverse_order_streaming(false),
       rotate_all_pages(false) {}
 
-PwgRasterConfig::~PwgRasterConfig() {}
+PwgRasterConfig::~PwgRasterConfig() = default;
 
 RangeVendorCapability::RangeVendorCapability() = default;
 

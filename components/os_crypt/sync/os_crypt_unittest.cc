@@ -203,7 +203,7 @@ TEST_F(OSCryptConcurrencyTest, MAYBE_ConcurrentInitialization) {
 
 class OSCryptTestWin : public testing::Test {
  public:
-  OSCryptTestWin() {}
+  OSCryptTestWin() = default;
 
   OSCryptTestWin(const OSCryptTestWin&) = delete;
   OSCryptTestWin& operator=(const OSCryptTestWin&) = delete;

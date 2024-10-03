@@ -1130,7 +1130,7 @@ PrintRenderFrameHelper::PrintRenderFrameHelper(
           weak_ptr_factory_.GetWeakPtr()));
 }
 
-PrintRenderFrameHelper::~PrintRenderFrameHelper() {}
+PrintRenderFrameHelper::~PrintRenderFrameHelper() = default;
 
 const mojo::AssociatedRemote<mojom::PrintManagerHost>&
 PrintRenderFrameHelper::GetPrintManagerHost() {

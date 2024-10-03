@@ -114,7 +114,7 @@ class PrintRenderFrameHelper
  public:
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Returns the element to be printed. Returns a null WebElement if
     // a pdf plugin element can't be extracted from the frame.
