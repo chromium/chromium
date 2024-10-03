@@ -35,8 +35,8 @@
 @synthesize appState = _appState;
 
 - (instancetype)initWithAppState:(AppState*)appState
-                    browserState:(ChromeBrowserState*)browserState {
-  return [self initWithAppState:appState profile:browserState];
+                    browserState:(ProfileIOS*)profile {
+  return [self initWithAppState:appState profile:profile];
 }
 
 - (instancetype)initWithAppState:(AppState*)appState
@@ -68,9 +68,8 @@
 }
 
 + (NSArray<FakeSceneState*>*)sceneArrayWithCount:(int)count
-                                    browserState:
-                                        (ChromeBrowserState*)browserState {
-  return [FakeSceneState sceneArrayWithCount:count profile:browserState];
+                                    browserState:(ProfileIOS*)profile {
+  return [FakeSceneState sceneArrayWithCount:count profile:profile];
 }
 
 + (NSArray<FakeSceneState*>*)sceneArrayWithCount:(int)count

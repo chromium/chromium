@@ -242,8 +242,7 @@ void InjectUnrealizedWebStates(Browser* browser, int count) {
   WebStateList* web_state_list = browser->GetWebStateList();
 
   SessionRestorationService* service =
-      SessionRestorationServiceFactory::GetForBrowserState(
-          browser->GetBrowserState());
+      SessionRestorationServiceFactory::GetForProfile(browser->GetProfile());
 
   auto scoped_lock = web_state_list->StartBatchOperation();
   for (int i = 0; i < count; ++i) {
@@ -296,7 +295,7 @@ void InjectNTP(Browser* browser) {
   }
 
   // Inject a live NTP.
-  web::WebState::CreateParams create_params(browser->GetBrowserState());
+  web::WebState::CreateParams create_params(browser->GetProfile());
   std::unique_ptr<web::WebState> web_state =
       web::WebState::Create(create_params);
   std::vector<std::unique_ptr<web::NavigationItem>> items;
@@ -304,7 +303,7 @@ void InjectNTP(Browser* browser) {
   item->SetURL(GURL(kChromeUINewTabURL));
   items.push_back(std::move(item));
   web_state->GetNavigationManager()->Restore(0, std::move(items));
-  if (!browser->GetBrowserState()->IsOffTheRecord()) {
+  if (!browser->GetProfile()->IsOffTheRecord()) {
     NewTabPageTabHelper::CreateForWebState(web_state.get());
     NewTabPageTabHelper::FromWebState(web_state.get())
         ->SetShowStartSurface(true);
@@ -360,7 +359,7 @@ void OnListFamilyMembersResponse(
       _policyWatcherObserver;
 
   // The scene level component for url loading. Is passed down to
-  // browser state level UrlLoadingService instances.
+  // profile level UrlLoadingService instances.
   std::unique_ptr<SceneUrlLoadingService> _sceneURLLoadingService;
 
   // Map recording the number of tabs in WebStateList before the batch
@@ -539,15 +538,15 @@ void OnListFamilyMembersResponse(
     return;
   }
 
-  ChromeBrowserState* browserState = mainBrowser->GetBrowserState();
-  if (!browserState) {
+  ProfileIOS* profile = mainBrowser->GetProfile();
+  if (!profile) {
     return;
   }
 
   if (parameters.openedViaWidgetScheme) {
     // Notify Default Browser promo that user opened Chrome with widget.
     default_browser::NotifyStartWithWidget(
-        feature_engagement::TrackerFactory::GetForBrowserState(browserState));
+        feature_engagement::TrackerFactory::GetForProfile(profile));
   }
   if (parameters.openedWithURL) {
     // An HTTP(S) URL open that opened Chrome (e.g. default browser open or
@@ -556,7 +555,7 @@ void OnListFamilyMembersResponse(
     // browser in case the user changes away from Chrome. This will leave a
     // trace of this activity for re-prompting.
     default_browser::NotifyStartWithURL(
-        feature_engagement::TrackerFactory::GetForBrowserState(browserState));
+        feature_engagement::TrackerFactory::GetForProfile(profile));
   }
 }
 
@@ -892,7 +891,7 @@ void OnListFamilyMembersResponse(
   }
   if (appInitStage < AppInitStage::kNormalUI) {
     // Nothing else per-scene should happen before the app completes the global
-    // setup, like executing Safe mode, or creating the main BrowserState.
+    // setup, like executing Safe mode, or creating the main Profile.
     return;
   }
 
@@ -965,8 +964,8 @@ void OnListFamilyMembersResponse(
   }
 
   ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(
-          self.mainInterface.browser->GetBrowserState());
+      ChromeAccountManagerServiceFactory::GetForProfile(
+          self.mainInterface.browser->GetProfile());
   // The sign-in promo should not be presented if there is no identities.
   id<SystemIdentity> defaultIdentity =
       accountManagerService->GetDefaultIdentity();
@@ -1023,8 +1022,7 @@ void OnListFamilyMembersResponse(
   [self.browserViewWrangler createMainCoordinatorAndInterface];
   Browser* mainBrowser = self.browserViewWrangler.mainInterface.browser;
 
-  PromosManager* promosManager =
-      PromosManagerFactory::GetForBrowserState(profile);
+  PromosManager* promosManager = PromosManagerFactory::GetForProfile(profile);
 
   DefaultBrowserPromoSceneAgent* defaultBrowserAgent =
       [[DefaultBrowserPromoSceneAgent alloc] init];
@@ -1049,7 +1047,7 @@ void OnListFamilyMembersResponse(
 
   PrefService* prefService = profile->GetPrefs();
   AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(profile);
+      AuthenticationServiceFactory::GetForProfile(profile);
 
   policy::UserCloudPolicyManager* userPolicyManager =
       profile->GetUserCloudPolicyManager();
@@ -1069,7 +1067,7 @@ void OnListFamilyMembersResponse(
   }
 
   enterprise_idle::IdleService* idleService =
-      enterprise_idle::IdleServiceFactory::GetForBrowserState(profile);
+      enterprise_idle::IdleServiceFactory::GetForProfile(profile);
   id<SnackbarCommands> snackbarCommandsHandler =
       static_cast<id<SnackbarCommands>>(mainCommandDispatcher);
 
@@ -1369,22 +1367,21 @@ void OnListFamilyMembersResponse(
 
 - (BOOL)isIncognitoDisabled {
   return IsIncognitoModeDisabled(
-      self.mainInterface.browser->GetBrowserState()->GetPrefs());
+      self.mainInterface.browser->GetProfile()->GetPrefs());
 }
 
 // YES if incognito mode is forced by enterprise policy.
 - (BOOL)isIncognitoForced {
   return IsIncognitoModeForced(
-      self.incognitoInterface.browser->GetBrowserState()->GetPrefs());
+      self.incognitoInterface.browser->GetProfile()->GetPrefs());
 }
 
 // Returns 'YES' if the tabID from the given `activity` is valid.
 - (BOOL)isTabActivityValid:(NSUserActivity*)activity {
   web::WebStateID tabID = GetTabIDFromActivity(activity);
 
-  ChromeBrowserState* browserState = self.currentInterface.profile;
-  BrowserList* browserList =
-      BrowserListFactory::GetForBrowserState(browserState);
+  ProfileIOS* profile = self.currentInterface.profile;
+  BrowserList* browserList = BrowserListFactory::GetForProfile(profile);
   const BrowserList::BrowserType browser_types =
       self.currentInterface.incognito
           ? BrowserList::BrowserType::kIncognito
@@ -1421,7 +1418,7 @@ void OnListFamilyMembersResponse(
   }
   if (!signin::ShouldPresentUserSigninUpgrade(
           self.sceneState.browserProviderInterface.mainBrowserProvider.browser
-              ->GetBrowserState(),
+              ->GetProfile(),
           version_info::GetVersion())) {
     return NO;
   }
@@ -1497,9 +1494,9 @@ void OnListFamilyMembersResponse(
 
 - (BOOL)isSignedIn {
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(
+      AuthenticationServiceFactory::GetForProfile(
           self.sceneState.browserProviderInterface.mainBrowserProvider.browser
-              ->GetBrowserState());
+              ->GetProfile());
   DCHECK(authenticationService);
   DCHECK(authenticationService->initialized());
 
@@ -1751,8 +1748,8 @@ using UserFeedbackDataCallback =
   DCHECK(lastView);
   data.currentPageScreenshot = CaptureView(lastView, scale);
 
-  ChromeBrowserState* browserState = self.currentInterface.profile;
-  if (browserState->IsOffTheRecord()) {
+  ProfileIOS* profile = self.currentInterface.profile;
+  if (profile->IsOffTheRecord()) {
     data.currentPageIsIncognito = YES;
   } else {
     data.currentPageIsIncognito = NO;
@@ -2017,8 +2014,8 @@ using UserFeedbackDataCallback =
   id<SettingsCommands> settingsHandler =
       HandlerForProtocol(dispatcher, SettingsCommands);
   SigninNotificationInfoBarDelegate::Create(
-      infoBarManager, self.mainInterface.browser->GetBrowserState(),
-      settingsHandler, baseViewController);
+      infoBarManager, self.mainInterface.browser->GetProfile(), settingsHandler,
+      baseViewController);
 }
 
 - (void)setIncognitoContentVisible:(BOOL)incognitoContentVisible {
@@ -2043,8 +2040,8 @@ using UserFeedbackDataCallback =
   Browser* browser = self.mainInterface.browser;
   if (browser) {
     feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForBrowserState(
-            browser->GetBrowserState());
+        feature_engagement::TrackerFactory::GetForProfile(
+            browser->GetProfile());
     if (tracker) {
       hasDefaultBrowserBlueDot =
           ShouldTriggerDefaultBrowserHighlightFeature(tracker);
@@ -2831,8 +2828,7 @@ using UserFeedbackDataCallback =
     return;
   }
   feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(
-          browser->GetBrowserState());
+      feature_engagement::TrackerFactory::GetForProfile(browser->GetProfile());
   if (tracker) {
     tracker->NotifyEvent(
         feature_engagement::events::kPasswordManagerWidgetPromoUsed);
@@ -3118,7 +3114,7 @@ using UserFeedbackDataCallback =
 
   // MailtoHandlerService is responsible for the dialogs displayed by the
   // services it wraps.
-  MailtoHandlerServiceFactory::GetForBrowserState(self.currentInterface.profile)
+  MailtoHandlerServiceFactory::GetForProfile(self.currentInterface.profile)
       ->DismissAllMailtoHandlerInterfaces();
 
   // Then, depending on what the SSO view controller is presented on, dismiss
@@ -3589,9 +3585,9 @@ using UserFeedbackDataCallback =
     (ShowSigninCommandCompletionCallback)completion {
   DCHECK(self.signinCoordinator);
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(
+      AuthenticationServiceFactory::GetForProfile(
           self.sceneState.browserProviderInterface.mainBrowserProvider.browser
-              ->GetBrowserState());
+              ->GetProfile());
   AuthenticationService::ServiceStatus statusService =
       authenticationService->GetServiceStatus();
   switch (statusService) {
@@ -3828,10 +3824,10 @@ using UserFeedbackDataCallback =
 // Called when the last incognito tab was closed.
 - (void)lastIncognitoTabClosed {
   // If no other window has incognito tab, then destroy and rebuild the
-  // BrowserState. Otherwise, just do the state transition animation.
-  if ([self shouldDestroyAndRebuildIncognitoBrowserState]) {
-    // Incognito browser state cannot be deleted before all the requests are
-    // deleted. Queue empty task on IO thread and destroy the BrowserState
+  // Profile. Otherwise, just do the state transition animation.
+  if ([self shouldDestroyAndRebuildIncognitoProfile]) {
+    // Incognito profile cannot be deleted before all the requests are
+    // deleted. Queue empty task on IO thread and destroy the Profile
     // when the task has executed, again verifying that no incognito tabs are
     // present. When an incognito tab is moved between browsers, there is
     // a point where the tab isn't attached to any web state list. However, when
@@ -3839,8 +3835,8 @@ using UserFeedbackDataCallback =
     // the cleanup shouldn't proceed.
 
     auto cleanup = ^{
-      if ([self shouldDestroyAndRebuildIncognitoBrowserState]) {
-        [self destroyAndRebuildIncognitoBrowserState];
+      if ([self shouldDestroyAndRebuildIncognitoProfile]) {
+        [self destroyAndRebuildIncognitoProfile];
       }
     };
 
@@ -3878,19 +3874,19 @@ using UserFeedbackDataCallback =
 }
 
 // Clears incognito data that is specific to iOS and won't be cleared by
-// deleting the browser state.
+// deleting the profile.
 - (void)clearIOSSpecificIncognitoData {
   DCHECK(self.sceneState.browserProviderInterface.mainBrowserProvider.browser
-             ->GetBrowserState()
-             ->HasOffTheRecordChromeBrowserState());
-  ChromeBrowserState* otrBrowserState =
+             ->GetProfile()
+             ->HasOffTheRecordProfile());
+  ProfileIOS* otrProfile =
       self.sceneState.browserProviderInterface.mainBrowserProvider.browser
-          ->GetBrowserState()
-          ->GetOffTheRecordChromeBrowserState();
+          ->GetProfile()
+          ->GetOffTheRecordProfile();
 
   __weak SceneController* weakSelf = self;
   BrowsingDataRemover* browsingDataRemover =
-      BrowsingDataRemoverFactory::GetForBrowserState(otrBrowserState);
+      BrowsingDataRemoverFactory::GetForBrowserState(otrProfile);
   browsingDataRemover->Remove(browsing_data::TimePeriod::ALL_TIME,
                               BrowsingDataRemoveMask::REMOVE_ALL,
                               base::BindOnce(^{
@@ -4009,25 +4005,22 @@ using UserFeedbackDataCallback =
   [self beginActivatingBrowser:browser focusOmnibox:NO];
 }
 
-#pragma mark - Handling of destroying the incognito BrowserState
+#pragma mark - Handling of destroying the incognito profile
 
-// The incognito BrowserState should be closed when the last incognito tab is
+// The incognito Profile should be closed when the last incognito tab is
 // closed (i.e. if there are other incognito tabs open in another Scene, the
-// BrowserState must not be destroyed).
-- (BOOL)shouldDestroyAndRebuildIncognitoBrowserState {
-  ChromeBrowserState* mainBrowserState =
-      self.sceneState.browserProviderInterface.mainBrowserProvider.browser
-          ->GetBrowserState();
-  if (!mainBrowserState->HasOffTheRecordChromeBrowserState()) {
+// Profile must not be destroyed).
+- (BOOL)shouldDestroyAndRebuildIncognitoProfile {
+  ProfileIOS* profile = self.sceneState.browserProviderInterface
+                            .mainBrowserProvider.browser->GetProfile();
+  if (!profile->HasOffTheRecordProfile()) {
     return NO;
   }
 
-  ChromeBrowserState* otrBrowserState =
-      mainBrowserState->GetOffTheRecordChromeBrowserState();
-  DCHECK(otrBrowserState);
+  ProfileIOS* otrProfile = profile->GetOffTheRecordProfile();
+  DCHECK(otrProfile);
 
-  BrowserList* browserList =
-      BrowserListFactory::GetForBrowserState(otrBrowserState);
+  BrowserList* browserList = BrowserListFactory::GetForProfile(otrProfile);
   for (Browser* browser :
        browserList->BrowsersOfType(BrowserList::BrowserType::kIncognito)) {
     WebStateList* webStateList = browser->GetWebStateList();
@@ -4039,23 +4032,21 @@ using UserFeedbackDataCallback =
   return YES;
 }
 
-// Destroys and rebuilds the incognito BrowserState. This will inform all the
-// other SceneController to destroy state tied to the BrowserState and to
+// Destroys and rebuilds the incognito Profile. This will inform all the
+// other SceneController to destroy state tied to the Profile and to
 // recreate it.
-- (void)destroyAndRebuildIncognitoBrowserState {
+- (void)destroyAndRebuildIncognitoProfile {
   // This seems the best place to mark the start of destroying the incognito
-  // browser state.
+  // profile.
   crash_keys::SetDestroyingAndRebuildingIncognitoBrowserState(
       /*in_progress=*/true);
 
   [self clearIOSSpecificIncognitoData];
 
-  ChromeBrowserState* mainBrowserState =
-      self.sceneState.browserProviderInterface.mainBrowserProvider.browser
-          ->GetBrowserState();
-  DCHECK(mainBrowserState->HasOffTheRecordChromeBrowserState());
-  ChromeBrowserState* otrBrowserState =
-      mainBrowserState->GetOffTheRecordChromeBrowserState();
+  ProfileIOS* profile = self.sceneState.browserProviderInterface
+                            .mainBrowserProvider.browser->GetProfile();
+  DCHECK(profile->HasOffTheRecordProfile());
+  ProfileIOS* otrProfile = profile->GetOffTheRecordProfile();
 
   NSMutableArray<SceneController*>* sceneControllers =
       [[NSMutableArray alloc] init];
@@ -4070,28 +4061,28 @@ using UserFeedbackDataCallback =
   }
 
   for (SceneController* sceneController in sceneControllers) {
-    [sceneController willDestroyIncognitoBrowserState];
+    [sceneController willDestroyIncognitoProfile];
   }
 
-  // Record off-the-record metrics before detroying the BrowserState.
-  SessionMetrics::FromProfile(otrBrowserState)
+  // Record off-the-record metrics before detroying the Profile.
+  SessionMetrics::FromProfile(otrProfile)
       ->RecordAndClearSessionMetrics(MetricsToRecordFlags::kNoMetrics);
 
-  // Destroy and recreate the off-the-record BrowserState.
-  mainBrowserState->DestroyOffTheRecordChromeBrowserState();
-  mainBrowserState->GetOffTheRecordChromeBrowserState();
+  // Destroy and recreate the off-the-record Profile.
+  profile->DestroyOffTheRecordProfile();
+  profile->GetOffTheRecordProfile();
 
   for (SceneController* sceneController in sceneControllers) {
-    [sceneController incognitoBrowserStateCreated];
+    [sceneController incognitoProfileCreated];
   }
 
   // This seems the best place to deem the destroying and rebuilding the
-  // incognito browser state to be completed.
+  // incognito profile to be completed.
   crash_keys::SetDestroyingAndRebuildingIncognitoBrowserState(
       /*in_progress=*/false);
 }
 
-- (void)willDestroyIncognitoBrowserState {
+- (void)willDestroyIncognitoProfile {
   // Clear the Incognito Browser and notify the TabGrid that its otrBrowser
   // will be destroyed.
   self.mainCoordinator.incognitoBrowser = nil;
@@ -4105,7 +4096,7 @@ using UserFeedbackDataCallback =
   [self.browserViewWrangler willDestroyIncognitoProfile];
 }
 
-- (void)incognitoBrowserStateCreated {
+- (void)incognitoProfileCreated {
   [self.browserViewWrangler incognitoProfileCreated];
 
   // There should be a new URL loading browser agent for the incognito browser,

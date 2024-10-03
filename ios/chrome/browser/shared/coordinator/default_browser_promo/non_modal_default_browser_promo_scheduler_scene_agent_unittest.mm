@@ -50,17 +50,15 @@ class NonModalDefaultBrowserPromoSchedulerSceneAgentTest : public PlatformTest {
   NonModalDefaultBrowserPromoSchedulerSceneAgentTest() {}
 
   void SetUp() override {
-    TestChromeBrowserState::Builder test_cbs_builder;
-    std::unique_ptr<TestChromeBrowserState> chrome_browser_state =
-        std::move(test_cbs_builder).Build();
+    TestProfileIOS::Builder builder;
+    std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
 
     FakeStartupInformation* startup_information =
         [[FakeStartupInformation alloc] init];
     app_state_ =
         [[AppState alloc] initWithStartupInformation:startup_information];
-    scene_state_ =
-        [[FakeSceneState alloc] initWithAppState:app_state_
-                                    browserState:chrome_browser_state.get()];
+    scene_state_ = [[FakeSceneState alloc] initWithAppState:app_state_
+                                                    profile:profile.get()];
     scene_state_.scene = static_cast<UIWindowScene*>(
         [[[UIApplication sharedApplication] connectedScenes] anyObject]);
 

@@ -45,9 +45,9 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 @interface InternalFakeSceneController : SceneController
-// Browser and ChromeBrowserState used to mock the currentInterface.
+// Browser and ProfileIOS used to mock the currentInterface.
 @property(nonatomic, assign) Browser* browser;
-@property(nonatomic, assign) ChromeBrowserState* chromeBrowserState;
+@property(nonatomic, assign) ProfileIOS* profile;
 // Mocked currentInterface.
 @property(nonatomic, assign) WrangledBrowser* currentInterface;
 // BrowserViewWrangler to provide test setup for main coordinator and interface.
@@ -94,7 +94,7 @@ class SceneControllerTest : public PlatformTest {
         [[InternalFakeSceneController alloc] initWithSceneState:scene_state_];
     scene_state_.controller = scene_controller_;
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
         base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
@@ -125,29 +125,27 @@ class SceneControllerTest : public PlatformTest {
     builder.AddTestingFactory(
         SessionRestorationServiceFactory::GetInstance(),
         TestSessionRestorationService::GetTestingFactory());
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
 
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+    AuthenticationServiceFactory::CreateAndInitializeForProfile(
+        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
 
-    browser_ =
-        std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
     UserActivityBrowserAgent::CreateForBrowser(browser_.get());
 
-    browser_state_->SetSharedURLLoaderFactory(
+    profile_->SetSharedURLLoaderFactory(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_loader_factory_));
 
     scene_controller_.browserViewWrangler =
-        [[BrowserViewWrangler alloc] initWithProfile:browser_state_.get()
+        [[BrowserViewWrangler alloc] initWithProfile:profile_.get()
                                           sceneState:scene_state_
                                  applicationEndpoint:nil
                                     settingsEndpoint:nil];
     [scene_controller_.browserViewWrangler createMainCoordinatorAndInterface];
 
     scene_controller_.browser = browser_.get();
-    scene_controller_.chromeBrowserState = browser_state_.get();
+    scene_controller_.profile = profile_.get();
     scene_controller_.currentInterface = CreateMockCurrentInterface();
     connection_information_ = scene_state_.controller;
   }
@@ -164,18 +162,18 @@ class SceneControllerTest : public PlatformTest {
   // Mock & stub a WrangledBrowser object.
   id CreateMockCurrentInterface() {
     id mock_wrangled_browser = OCMClassMock(WrangledBrowser.class);
-    OCMStub([mock_wrangled_browser profile]).andReturn(browser_state_.get());
+    OCMStub([mock_wrangled_browser profile]).andReturn(profile_.get());
     OCMStub([mock_wrangled_browser browser]).andReturn(browser_.get());
     return mock_wrangled_browser;
   }
 
   signin::IdentityManager* GetIdentityManager() {
-    return IdentityManagerFactory::GetForProfile(browser_state_.get());
+    return IdentityManagerFactory::GetForProfile(profile_.get());
   }
 
   void MakePrimaryAccountAvailable(const std::string& email) {
     signin::MakePrimaryAccountAvailable(
-        IdentityManagerFactory::GetForProfile(browser_state_.get()), email,
+        IdentityManagerFactory::GetForProfile(profile_.get()), email,
         signin::ConsentLevel::kSignin);
   }
 
@@ -191,7 +189,7 @@ class SceneControllerTest : public PlatformTest {
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
   std::unique_ptr<Browser> browser_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   InternalFakeSceneController* scene_controller_;
   SceneState* scene_state_;
   id fake_scene_;
