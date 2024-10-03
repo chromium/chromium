@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom.h"
+#include "chromeos/ash/components/emoji/tenor_types.mojom.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
 struct EndpointResponse;
@@ -48,8 +49,8 @@ class GifTenorApiFetcher {
   ~GifTenorApiFetcher();
 
   using TenorGifsApiCallback =
-      base::OnceCallback<void(emoji_picker::mojom::Status,
-                              emoji_picker::mojom::PaginatedGifResponsesPtr)>;
+      base::OnceCallback<void(tenor::mojom::Status,
+                              tenor::mojom::PaginatedGifResponsesPtr)>;
 
   // Fetch tenor API Categories endpoint
   void FetchCategories(

@@ -20,6 +20,7 @@
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom.h"
 #include "chrome/common/channel_info.h"
+#include "chromeos/ash/components/emoji/tenor_types.mojom.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/version_info/channel.h"
 #include "net/base/url_util.h"
@@ -125,9 +126,9 @@ const base::Value::List* FindList(
   return list ? list : nullptr;
 }
 
-std::vector<emoji_picker::mojom::GifResponsePtr> ParseGifs(
+std::vector<tenor::mojom::GifResponsePtr> ParseGifs(
     const base::Value::List* results) {
-  std::vector<emoji_picker::mojom::GifResponsePtr> gifs;
+  std::vector<tenor::mojom::GifResponsePtr> gifs;
   for (const auto& result : *results) {
     const auto* gif = result.GetIfDict();
     if (!gif) {
@@ -236,10 +237,10 @@ std::vector<emoji_picker::mojom::GifResponsePtr> ParseGifs(
       continue;
     }
 
-    gifs.push_back(emoji_picker::mojom::GifResponse::New(
+    gifs.push_back(tenor::mojom::GifResponse::New(
         *id, *content_description,
-        emoji_picker::mojom::GifUrls::New(full_gurl, preview_gurl,
-                                          tiny_gif_preview_gurl),
+        tenor::mojom::GifUrls::New(full_gurl, preview_gurl,
+                                   tiny_gif_preview_gurl),
         gfx::Size(preview_width.value(), preview_height.value()),
         gfx::Size(*full_width, *full_height)));
   }
@@ -258,12 +259,11 @@ GURL GetUrl(const char* endpoint, const std::optional<std::string>& pos) {
   return url;
 }
 
-emoji_picker::mojom::Status GetError(
-    std::unique_ptr<EndpointResponse> response) {
+tenor::mojom::Status GetError(std::unique_ptr<EndpointResponse> response) {
   return response->error_type.has_value() &&
                  response->error_type == FetchErrorType::kNetError
-             ? emoji_picker::mojom::Status::kNetError
-             : emoji_picker::mojom::Status::kHttpError;
+             ? tenor::mojom::Status::kNetError
+             : tenor::mojom::Status::kHttpError;
 }
 
 }  // namespace
@@ -289,10 +289,9 @@ void GifTenorApiFetcher::TenorGifsApiResponseHandler(
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     return;
   }
-  std::move(callback).Run(
-      GetError(std::move(response)),
-      emoji_picker::mojom::PaginatedGifResponses::New(
-          "", std::vector<emoji_picker::mojom::GifResponsePtr>{}));
+  std::move(callback).Run(GetError(std::move(response)),
+                          tenor::mojom::PaginatedGifResponses::New(
+                              "", std::vector<tenor::mojom::GifResponsePtr>{}));
 }
 
 void GifTenorApiFetcher::OnGifsJsonParsed(
@@ -301,14 +300,14 @@ void GifTenorApiFetcher::OnGifsJsonParsed(
   const auto* gifs = FindList(result, "results");
   if (!gifs) {
     std::move(callback).Run(
-        emoji_picker::mojom::Status::kHttpError,
-        emoji_picker::mojom::PaginatedGifResponses::New(
-            "", std::vector<emoji_picker::mojom::GifResponsePtr>{}));
+        tenor::mojom::Status::kHttpError,
+        tenor::mojom::PaginatedGifResponses::New(
+            "", std::vector<tenor::mojom::GifResponsePtr>{}));
     return;
   }
   const auto* next = result->GetDict().FindString("next");
-  std::move(callback).Run(emoji_picker::mojom::Status::kHttpOk,
-                          emoji_picker::mojom::PaginatedGifResponses::New(
+  std::move(callback).Run(tenor::mojom::Status::kHttpOk,
+                          tenor::mojom::PaginatedGifResponses::New(
                               next ? *next : "", ParseGifs(gifs)));
 }
 
@@ -384,7 +383,7 @@ void GifTenorApiFetcher::OnCategoriesJsonParsed(
     data_decoder::DataDecoder::ValueOrError result) {
   const auto* tags = FindList(result, "tags");
   if (!tags) {
-    std::move(callback).Run(emoji_picker::mojom::Status::kHttpError,
+    std::move(callback).Run(tenor::mojom::Status::kHttpError,
                             std::vector<std::string>{});
     return;
   }
@@ -404,8 +403,7 @@ void GifTenorApiFetcher::OnCategoriesJsonParsed(
     categories.push_back(*name);
   }
 
-  std::move(callback).Run(emoji_picker::mojom::Status::kHttpOk,
-                          std::move(categories));
+  std::move(callback).Run(tenor::mojom::Status::kHttpOk, std::move(categories));
 }
 
 void GifTenorApiFetcher::FetchFeaturedGifs(
@@ -563,7 +561,7 @@ void GifTenorApiFetcher::FetchGifsByIds(
 }
 
 void GifTenorApiFetcher::FetchGifsByIdsResponseHandler(
-    emoji_picker::mojom::PageHandler::GetGifsByIdsCallback callback,
+    PageHandler::GetGifsByIdsCallback callback,
     std::unique_ptr<EndpointFetcher> endpoint_fetcher,
     std::unique_ptr<EndpointResponse> response) {
   if (response->http_status_code == net::HTTP_OK) {
@@ -574,20 +572,19 @@ void GifTenorApiFetcher::FetchGifsByIdsResponseHandler(
     return;
   }
   std::move(callback).Run(GetError(std::move(response)),
-                          std::vector<emoji_picker::mojom::GifResponsePtr>{});
+                          std::vector<tenor::mojom::GifResponsePtr>{});
 }
 
 void GifTenorApiFetcher::OnGifsByIdsJsonParsed(
-    emoji_picker::mojom::PageHandler::GetGifsByIdsCallback callback,
+    PageHandler::GetGifsByIdsCallback callback,
     data_decoder::DataDecoder::ValueOrError result) {
   const auto* gifs = FindList(result, "results");
   if (!gifs) {
-    std::move(callback).Run(emoji_picker::mojom::Status::kHttpError,
-                            std::vector<emoji_picker::mojom::GifResponsePtr>{});
+    std::move(callback).Run(tenor::mojom::Status::kHttpError,
+                            std::vector<tenor::mojom::GifResponsePtr>{});
     return;
   }
 
-  std::move(callback).Run(emoji_picker::mojom::Status::kHttpOk,
-                          ParseGifs(gifs));
+  std::move(callback).Run(tenor::mojom::Status::kHttpOk, ParseGifs(gifs));
 }
 }  // namespace ash

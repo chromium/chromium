@@ -16,7 +16,6 @@ mojom("mojo_bindings") {
   public_deps = [
     "//chromeos/ash/components/emoji:mojo_bindings",
     "//mojo/public/mojom/base",
-    "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
 

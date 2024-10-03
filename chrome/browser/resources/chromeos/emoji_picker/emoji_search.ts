@@ -14,11 +14,11 @@ import {PolymerSpliceChange} from 'chrome://resources/polymer/v3_0/polymer/inter
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NO_INTERNET_SEARCH_ERROR_MSG} from './constants.js';
-import {Status} from './emoji_picker.mojom-webui.js';
 import {EmojiPickerApiProxy} from './emoji_picker_api_proxy.js';
 import {getTemplate} from './emoji_search.html.js';
 import {createCustomEvent, EMOJI_IMG_BUTTON_CLICK, GIF_ERROR_TRY_AGAIN} from './events.js';
 import Fuse from './fuse.js';
+import {Status} from './tenor_types.mojom-webui.js';
 import {CategoryData, CategoryEnum, EmojiGroupData, EmojiVariants, Gender, Tone} from './types.js';
 
 declare global {

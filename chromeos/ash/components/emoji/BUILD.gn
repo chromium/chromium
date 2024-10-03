@@ -9,8 +9,15 @@ import("//tools/grit/grit_rule.gni")
 assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
 
 mojom("mojo_bindings") {
-  sources = [ "emoji_search.mojom" ]
-  public_deps = [ "//mojo/public/mojom/base" ]
+  sources = [
+    "emoji_search.mojom",
+    "tenor_types.mojom",
+  ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//ui/gfx/geometry/mojom",
+    "//url/mojom:url_mojom_gurl",
+  ]
   webui_module_path = "/"
 }
 

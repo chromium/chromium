@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {Category, HistoryItem, PageHandlerFactory, PageHandlerRemote, PaginatedGifResponses, Status} from './emoji_picker.mojom-webui.js';
+import {Category, HistoryItem, PageHandlerFactory, PageHandlerRemote} from './emoji_picker.mojom-webui.js';
 import {EmojiSearch} from './emoji_search.mojom-webui.js';
 import {NewWindowProxy} from './new_window_proxy.mojom-webui.js';
+import {PaginatedGifResponses, Status} from './tenor_types.mojom-webui.js';
 import {EmojiVariants, GifSubcategoryData, VisualContent} from './types.js';
 
 const HELP_CENTRE_URL = 'https://support.google.com/chrome?p=palette';
