@@ -129,17 +129,6 @@ void HoldingSpaceKeyedService::RegisterProfilePrefs(
   HoldingSpacePersistenceDelegate::RegisterProfilePrefs(registry);
 }
 
-void HoldingSpaceKeyedService::BindReceiver(
-    mojo::PendingReceiver<crosapi::mojom::HoldingSpaceService> receiver) {
-  receivers_.Add(this, std::move(receiver));
-}
-
-void HoldingSpaceKeyedService::AddPrintedPdf(
-    const base::FilePath& printed_pdf_path,
-    bool from_incognito_profile) {
-  AddItemOfType(HoldingSpaceItem::Type::kPrintedPdf, printed_pdf_path);
-}
-
 void HoldingSpaceKeyedService::AddPinnedFiles(
     const std::vector<storage::FileSystemURL>& file_system_urls,
     holding_space_metrics::EventSource event_source) {

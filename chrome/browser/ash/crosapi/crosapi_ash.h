@@ -292,8 +292,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::GeolocationService> receiver) override;
   void BindHidManager(
       mojo::PendingReceiver<device::mojom::HidManager> receiver) override;
-  void BindHoldingSpaceService(
-      mojo::PendingReceiver<mojom::HoldingSpaceService> receiver) override;
   void BindIdentityManager(
       mojo::PendingReceiver<mojom::IdentityManager> receiver) override;
   void BindIdleService(

@@ -60,7 +60,6 @@ import "chromeos/crosapi/mojom/force_installed_tracker.mojom";
 import "chromeos/crosapi/mojom/full_restore.mojom";
 import "chromeos/crosapi/mojom/fullscreen_controller.mojom";
 import "chromeos/crosapi/mojom/geolocation.mojom";
-import "chromeos/crosapi/mojom/holding_space_service.mojom";
 import "chromeos/crosapi/mojom/identity_manager.mojom";
 import "chromeos/crosapi/mojom/idle_service.mojom";
 import "chromeos/crosapi/mojom/image_writer.mojom";
@@ -471,11 +470,6 @@ interface Crosapi {
   // Added in M95.
   [MinVersion=43]
   BindGeolocationService@48(pending_receiver<GeolocationService> receiver);
-
-  // Binds the holding space service.
-  // Added in M92.
-  [MinVersion=27]
-  BindHoldingSpaceService@32(pending_receiver<HoldingSpaceService> receiver);
 
   // Binds the IdentityManager interface for reading identity information.
   // Added in M96.
@@ -1397,21 +1391,11 @@ struct BrowserInitParams {
   [MinVersion=33]
   array<url.mojom.Url>? accepted_internal_ash_urls@32;
 
-  // Deprecated in M117. Enabled by default in M100.
-  // Whether incognito profile integration is enabled with the feature that aims
-  // to reduce context switching by enabling users to collect content and
-  // transfer or access it later.
-  // See `ash::features::IsHoldingSpaceIncognitoProfileIntegrationEnabled()`.
   [MinVersion=34]
-  bool is_holding_space_incognito_profile_integration_enabled_deprecated@33;
+  bool REMOVED_33@33;
 
-  // Deprecated in M117. Never enabled.
-  // Whether in-progress downloads notification suppression is enabled with the
-  // feature that aims to reduce context switching by enabling users to collect
-  // content and transfer or access it later.
-  // See `ash::features::IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled()`.
   [MinVersion=34]
-  bool is_holding_space_in_progress_downloads_notification_suppression_enabled_deprecated@34;
+  bool REMOVED_34@34;
 
   // Whether the device is either enterprise managed or in demo mode.
   [MinVersion=35]

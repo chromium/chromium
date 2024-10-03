@@ -63,7 +63,6 @@ mojom("mojom") {
     "fullscreen_controller.mojom",
     "geolocation.mojom",
     "guest_os_sk_forwarder.mojom",
-    "holding_space_service.mojom",
     "identity_manager.mojom",
     "idle_service.mojom",
     "image_writer.mojom",

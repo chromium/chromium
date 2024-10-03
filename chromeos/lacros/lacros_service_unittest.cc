@@ -10,7 +10,6 @@
 #include "base/token.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
-#include "chromeos/crosapi/mojom/holding_space_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "chromeos/startup/browser_init_params.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,17 +41,6 @@ TEST_F(LacrosServiceTest, CheckCrosapiRemoteVersion) {
                          &download_status_updater_remote);
   EXPECT_TRUE(success);
   EXPECT_EQ(download_status_updater_remote.version(), 1u);
-
-  // Bind a holding space service remote and then check that remote
-  // initialization fails.
-  mojo::Remote<crosapi::mojom::HoldingSpaceService>
-      holding_space_service_remote;
-  success = LacrosService()
-                .MaybeInitializeAndBindRemote<
-                    crosapi::mojom::HoldingSpaceService,
-                    &crosapi::mojom::Crosapi::BindHoldingSpaceService>(
-                    &holding_space_service_remote);
-  EXPECT_FALSE(success);
 }
 
 }  // namespace chromeos

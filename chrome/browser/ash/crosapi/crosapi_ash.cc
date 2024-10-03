@@ -133,8 +133,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/tts_ash.h"
-#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
-#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -697,19 +695,6 @@ void CrosapiAsh::BindGeolocationService(
 void CrosapiAsh::BindHidManager(
     mojo::PendingReceiver<device::mojom::HidManager> receiver) {
   content::GetDeviceService().BindHidManager(std::move(receiver));
-}
-
-void CrosapiAsh::BindHoldingSpaceService(
-    mojo::PendingReceiver<mojom::HoldingSpaceService> receiver) {
-  // Given `GetAshProfile()` assumptions, there is 1 and only 1
-  // `HoldingSpaceKeyedService` that can/should be contacted - the one attached
-  // to the regular `Profile` in ash-chrome for the active `User`.
-  ash::HoldingSpaceKeyedService* holding_space_keyed_service =
-      ash::HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
-          GetAshProfile());
-  if (holding_space_keyed_service) {
-    holding_space_keyed_service->BindReceiver(std::move(receiver));
-  }
 }
 
 void CrosapiAsh::BindIdentityManager(

@@ -65,8 +65,6 @@
 #include "components/user_manager/user.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/common/chrome_paths_lacros.h"
-#include "chromeos/crosapi/mojom/holding_space_service.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
 #endif
 
 #if defined(USE_AURA)
@@ -194,7 +192,6 @@ void PrintToPdfCallback(scoped_refptr<base::RefCountedMemory> data,
 
 // Callback that runs after `PrintToPdfCallback()` returns.
 void OnPdfPrintedCallback(const AccountId& account_id,
-                          bool from_incognito_profile,
                           const base::FilePath& path,
                           base::OnceClosure pdf_file_saved_closure) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -204,14 +201,10 @@ void OnPdfPrintedCallback(const AccountId& account_id,
     ash::HoldingSpaceKeyedService* holding_space_keyed_service =
         ash::HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
             profile);
-    if (holding_space_keyed_service)
-      holding_space_keyed_service->AddPrintedPdf(path, from_incognito_profile);
-  }
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* service = chromeos::LacrosService::Get();
-  if (service && service->IsAvailable<crosapi::mojom::HoldingSpaceService>()) {
-    service->GetRemote<crosapi::mojom::HoldingSpaceService>()->AddPrintedPdf(
-        path, from_incognito_profile);
+    if (holding_space_keyed_service) {
+      holding_space_keyed_service->AddItemOfType(
+          ash::HoldingSpaceItem::Type::kPrintedPdf, path);
+    }
   }
 #endif
   if (!pdf_file_saved_closure.is_null())
@@ -481,8 +474,7 @@ void PdfPrinterHandler::PostPrintToPdfTask() {
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&PrintToPdfCallback, print_data_, print_to_pdf_path_),
       base::BindOnce(&OnPdfPrintedCallback, GetAccountId(profile_),
-                     profile_->IsIncognitoProfile(), print_to_pdf_path_,
-                     std::move(pdf_file_saved_closure_)));
+                     print_to_pdf_path_, std::move(pdf_file_saved_closure_)));
 
   print_to_pdf_path_.clear();
 
