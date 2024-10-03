@@ -64,7 +64,6 @@ source_set("unit_tests") {
   deps = [
     ":price_tracking_promo",
     "//components/commerce/core:shopping_service_test_support",
-    "//components/image_fetcher/core:core",
     "//ios/chrome/browser/push_notification/model:push_notification_service",
     "//ios/chrome/browser/shared/model/application_context:application_context",
     "//ios/chrome/browser/shared/model/profile/test:test",
