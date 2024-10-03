@@ -819,7 +819,12 @@ void BackForwardTransitionAnimator::DidFinishNavigation(
   physics_model_.OnNavigationFinished(/*navigation_committed=*/false);
   // 204/205/Download, or the ongoing navigation is cancelled. We need
   // to animate the old page back.
-  //
+  if (old_surface_clone_) {
+    // We might already have cloned the old surface. Reset it since we don't
+    // need it.
+    old_surface_clone_->RemoveFromParent();
+    old_surface_clone_.reset();
+  }
   // TODO(crbug.com/41482488): We might need a better UX than
   // just display the cancel animation.
   AdvanceAndProcessState(State::kDisplayingCancelAnimation);
@@ -1771,6 +1776,10 @@ bool BackForwardTransitionAnimator::SetLayerTransformationAndTickEffect(
       ->SetTransform(live_page_transform);
 
   if (old_surface_clone_) {
+    // TODO(https://crbug.com/371043197): Remove once it's fixed.
+    SCOPED_CRASH_KEY_STRING64("PredBack", "nav_state",
+                              NavigationStateToString(navigation_state_));
+    SCOPED_CRASH_KEY_STRING64("PredBack", "state", StateToString(state_));
     CHECK(navigation_state_ == NavigationState::kCommitted ||
           navigation_state_ == NavigationState::kStarted)
         << NavigationStateToString(navigation_state_);
