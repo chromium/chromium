@@ -227,7 +227,6 @@ void ParseStudentStatusProtoFromJson(
 
 std::unique_ptr<::boca::Session> GetSessionProtoFromJson(std::string json) {
   std::unique_ptr<base::Value> raw_value = google_apis::ParseJson(json);
-
   if (!raw_value) {
     return nullptr;
   }
@@ -246,16 +245,24 @@ std::unique_ptr<::boca::Session> GetSessionProtoFromJson(std::string json) {
 
   if (session_dict->FindDict(kDuration)) {
     auto* duration = session->mutable_duration();
-    duration->set_seconds(
-        session_dict->FindDict(kDuration)->FindInt(kSeconds).value_or(0));
+    if (auto* ptr = session_dict->FindDict(kDuration)->FindString(kSeconds)) {
+      int64_t output;
+      if (base::StringToInt64(*ptr, &output)) {
+        duration->set_seconds(output);
+      }
+    }
     duration->set_nanos(
         session_dict->FindDict(kDuration)->FindInt(kNanos).value_or(0));
   }
 
   if (session_dict->FindDict(kStartTime)) {
     auto* start_time = session->mutable_start_time();
-    start_time->set_seconds(
-        session_dict->FindDict(kStartTime)->FindInt(kSeconds).value_or(0));
+    if (auto* ptr = session_dict->FindDict(kStartTime)->FindString(kSeconds)) {
+      int64_t output;
+      if (base::StringToInt64(*ptr, &output)) {
+        start_time->set_seconds(output);
+      }
+    }
     start_time->set_nanos(
         session_dict->FindDict(kStartTime)->FindInt(kNanos).value_or(0));
   }

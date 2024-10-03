@@ -51,11 +51,12 @@ class MockRequestHandler {
         R"(
   {
   "startTime":{
-    "seconds": 1723773909
+    "seconds": "1723773909",
+    "nanos": 1234
   },
   "sessionId": "111",
   "duration": {
-    "seconds": 120
+    "seconds": "120"
   },
   "studentStatuses": {
     "2": {
@@ -136,7 +137,7 @@ class MockRequestHandler {
      {
     "sessionId": "111",
     "duration": {
-        "seconds": 120
+        "seconds": "120"
     },
     "studentStatuses": {},
     "roster": {
@@ -169,11 +170,12 @@ class MockRequestHandler {
         R"(
   {
   "startTime":{
-    "seconds": 1723773909
+    "seconds": "1723773909",
+    "nanos": 1234
   },
   "sessionId": "111",
   "duration": {
-    "seconds": 120
+    "seconds": "120"
   },
   "sessionState": "ACTIVE",
   "studentGroupConfigs": {
@@ -298,6 +300,7 @@ TEST_F(GetSessionRequestTest, GetSessionWithFullProducerInputAndSucceed) {
 
   std::unique_ptr<::boca::Session> session = std::move(result.value());
   EXPECT_EQ(1723773909, session->start_time().seconds());
+  EXPECT_EQ(1234, session->start_time().nanos());
   EXPECT_EQ("111", session->session_id());
   EXPECT_EQ(120, session->duration().seconds());
 
@@ -394,6 +397,7 @@ TEST_F(GetSessionRequestTest, GetSessionWithFullConsumerInputAndSucceed) {
 
   std::unique_ptr<::boca::Session> session = std::move(result.value());
   EXPECT_EQ(1723773909, session->start_time().seconds());
+  EXPECT_EQ(1234, session->start_time().nanos());
   EXPECT_EQ("111", session->session_id());
   EXPECT_EQ(120, session->duration().seconds());
 
