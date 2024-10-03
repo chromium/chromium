@@ -1702,6 +1702,10 @@ static_library("ui") {
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/apps/link_capturing:features",
       "//chrome/browser/browsing_data:constants",
+
+      # TODO(crbug.com/370804668i): Remove the dependency when chrome/browser/serial
+      # gets modularized.
+      "//chrome/browser/chooser_controller",
       "//chrome/browser/companion/core",
       "//chrome/browser/companion/text_finder",
       "//chrome/browser/content_extraction",

@@ -13,6 +13,7 @@ source_set("hid") {
   ]
   public_deps = [
     "//base",
+    "//chrome/browser/chooser_controller",
     "//chrome/browser/profiles:profile",
     "//components/permissions",
     "//mojo/public/cpp/bindings",
