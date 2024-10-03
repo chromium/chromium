@@ -1,7 +1,8 @@
 Name: One Euro Filter
 Short Name: 1€ filter
-URL: http://cristal.univ-lille.fr/~casiez/1euro/
-Version: 0
+URL: https://github.com/casiez/OneEuroFilter
+Version: 492e0388079185ef25150a7109e25e2943c08d3e
+Revision: 492e0388079185ef25150a7109e25e2943c08d3e
 License: BSD
 License File: LICENSE
 Security Critical: no
@@ -11,8 +12,8 @@ Description:
 1€ Filter is a simple speed-based low-pass filter for noisy input in
 interactive systems.
 
-Local Modifications:
-1. Separate source code from headers
-2. Add namespaces
-3. Add tests
-4. Added Clone and Reset functions
+Update instructions:
+git clone https://github.com/casiez/OneEuroFilter
+cd OneEuroFilter/cpp
+cp OneEuroFilter.{cpp,h} $CHROMIUM_SRC/third_party/one_euro_filter/src
+# Update Version in this README.chromium
