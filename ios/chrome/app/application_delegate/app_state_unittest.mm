@@ -212,16 +212,14 @@ class AppStateTest : public BlockCleanupTest {
 
   void SetUp() override {
     BlockCleanupTest::SetUp();
-    TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.AddTestingFactory(
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    browser_state_ =
-        profile_manager_.AddProfileWithBuilder(std::move(test_cbs_builder));
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+    AuthenticationServiceFactory::CreateAndInitializeForProfile(
+        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
   }
 
   void TearDown() override {
@@ -273,9 +271,8 @@ class AppStateTest : public BlockCleanupTest {
           initWithStartupInformation:startup_information_mock_
                      connectedScenes:@[ main_scene_state_ ]];
 
-      main_scene_state_ =
-          [main_scene_state_ initWithAppState:app_state_
-                                 browserState:GetBrowserState()];
+      main_scene_state_ = [main_scene_state_ initWithAppState:app_state_
+                                                      profile:GetProfile()];
       main_scene_state_.window = GetWindowMock();
 
       if (with_safe_mode_agent) {
@@ -313,9 +310,8 @@ class AppStateTest : public BlockCleanupTest {
           initWithStartupInformation:startup_information_mock_
                      connectedScenes:@[ main_scene_state_ ]];
 
-      main_scene_state_ =
-          [main_scene_state_ initWithAppState:app_state_
-                                 browserState:GetBrowserState()];
+      main_scene_state_ = [main_scene_state_ initWithAppState:app_state_
+                                                      profile:GetProfile()];
       main_scene_state_.window = window;
       [window makeKeyAndVisible];
 
@@ -341,7 +337,7 @@ class AppStateTest : public BlockCleanupTest {
   id GetConnectionInformationMock() { return connection_information_mock_; }
   id GetWindowMock() { return window_; }
   id GetAppStateObserverMock() { return app_state_observer_mock_; }
-  ChromeBrowserState* GetBrowserState() { return browser_state_.get(); }
+  ProfileIOS* GetProfile() { return profile_.get(); }
 
  private:
   web::WebTaskEnvironment task_environment_;
@@ -363,7 +359,7 @@ class AppStateTest : public BlockCleanupTest {
   std::unique_ptr<ScopedBlockSwizzler> safe_mode_swizzler_;
   std::unique_ptr<ScopedBlockSwizzler> connected_scenes_swizzler_;
   std::unique_ptr<ScopedBlockSwizzler> handle_startup_swizzler_;
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
 };
 
 #pragma mark - Tests.
@@ -380,7 +376,7 @@ TEST_F(AppStateNoFixtureTest, WillResignActive) {
 
   IOSChromeScopedTestingLocalState scoped_testing_local_state;
   TestProfileManagerIOS profile_manager;
-  profile_manager.AddProfileWithBuilder(TestChromeBrowserState::Builder());
+  profile_manager.AddProfileWithBuilder(TestProfileIOS::Builder());
 
   AppState* appState =
       [[AppState alloc] initWithStartupInformation:startupInformation];
@@ -461,7 +457,7 @@ TEST_F(AppStateTest, ApplicationWillEnterForeground) {
   id metricsMediator = [OCMockObject mockForClass:[MetricsMediator class]];
   id memoryHelper = [OCMockObject mockForClass:[MemoryWarningHelper class]];
   std::unique_ptr<Browser> browser =
-      std::make_unique<TestBrowser>(GetBrowserState());
+      std::make_unique<TestBrowser>(GetProfile());
 
   [[metricsMediator expect] updateMetricsStateBasedOnPrefsUserTriggered:NO];
   [[metricsMediator expect]

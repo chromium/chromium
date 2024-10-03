@@ -281,9 +281,9 @@ void FlushCookieStoreOnIOThread(
     return;
   }
 
-  for (ChromeBrowserState* browserState :
+  for (ProfileIOS* profile :
        GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
-    enterprise_idle::IdleServiceFactory::GetForBrowserState(browserState)
+    enterprise_idle::IdleServiceFactory::GetForProfile(profile)
         ->OnApplicationWillEnterBackground();
   }
 
@@ -368,12 +368,12 @@ void FlushCookieStoreOnIOThread(
   }
 
   _applicationInBackground = NO;
-  for (ChromeBrowserState* chromeBrowserState :
+  for (ProfileIOS* profile :
        GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
-    AuthenticationServiceFactory::GetForBrowserState(chromeBrowserState)
+    AuthenticationServiceFactory::GetForProfile(profile)
         ->OnApplicationWillEnterForeground();
 
-    enterprise_idle::IdleServiceFactory::GetForBrowserState(chromeBrowserState)
+    enterprise_idle::IdleServiceFactory::GetForProfile(profile)
         ->OnApplicationWillEnterForeground();
   }
 
@@ -395,11 +395,10 @@ void FlushCookieStoreOnIOThread(
                              connectedScenes:self.connectedScenes];
   [memoryHelper resetForegroundMemoryWarningCount];
 
-  for (ChromeBrowserState* chromeBrowserState :
+  for (ProfileIOS* profile :
        GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForBrowserState(
-            chromeBrowserState);
+        feature_engagement::TrackerFactory::GetForProfile(profile);
     // Send the "Chrome Opened" event to the feature_engagement::Tracker on a
     // warm start.
     tracker->NotifyEvent(feature_engagement::events::kChromeOpened);
@@ -495,9 +494,9 @@ void FlushCookieStoreOnIOThread(
     SessionMetrics::FromProfile(profile)->RecordAndClearSessionMetrics(
         MetricsToRecordFlags::kActivatedTabCount);
 
-    if (profile->HasOffTheRecordChromeBrowserState()) {
-      ProfileIOS* otrProifle = profile->GetOffTheRecordChromeBrowserState();
-      SessionMetrics::FromProfile(otrProifle)
+    if (profile->HasOffTheRecordProfile()) {
+      ProfileIOS* otrProfile = profile->GetOffTheRecordProfile();
+      SessionMetrics::FromProfile(otrProfile)
           ->RecordAndClearSessionMetrics(MetricsToRecordFlags::kNoMetrics);
     }
   }
