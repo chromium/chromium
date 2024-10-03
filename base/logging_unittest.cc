@@ -374,7 +374,8 @@ TEST_F(LoggingTest, DuplicateLogFile) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !CHECK_WILL_STREAM() && BUILDFLAG(IS_WIN)
-NOINLINE void CheckContainingFunc(int death_location) {
+// Tell clang to not optimize this function or else it will remove the CHECKs.
+[[clang::optnone]] NOINLINE void CheckContainingFunc(int death_location) {
   CHECK(death_location != 1);
   CHECK(death_location != 2);
   CHECK(death_location != 3);
