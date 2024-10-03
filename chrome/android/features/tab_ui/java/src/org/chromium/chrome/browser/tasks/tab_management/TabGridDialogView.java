@@ -12,6 +12,8 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
@@ -863,7 +865,24 @@ public class TabGridDialogView extends FrameLayout {
         animationCard.findViewById(R.id.card_view).setBackground(backgroundCopy);
 
         Drawable faviconDrawable = ((ImageView) view.findViewById(R.id.tab_favicon)).getDrawable();
-        cardFavicon.setImageDrawable(faviconDrawable);
+        if (faviconDrawable != null) {
+            cardFavicon.setImageDrawable(faviconDrawable);
+        } else {
+            // Draw the tab group color dot to the bitmap and put it in the favicon container as it
+            // isn't possible to clone the whole view.
+            FrameLayout containerView = view.findViewById(R.id.tab_group_color_view_container);
+            int childCount = containerView.getChildCount();
+            if (childCount != 0) {
+                assert childCount == 1;
+                View v = containerView.getChildAt(0);
+
+                Bitmap bitmap =
+                        Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas(bitmap);
+                v.draw(canvas);
+                cardFavicon.setImageBitmap(bitmap);
+            }
+        }
 
         cardTitle.setText(viewTitle.getText());
         cardTitle.setTextAppearance(R.style.TextAppearance_TextMediumThick_Primary);

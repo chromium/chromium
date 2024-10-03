@@ -14,6 +14,7 @@ import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -98,7 +99,13 @@ class TabGridViewBinder {
             ThumbnailFetcher fetcher = model.get(TabProperties.THUMBNAIL_FETCHER);
             if (fetcher != null) fetcher.cancel();
 
-            setFavicon(tabGridView, model, /* favicon= */ null);
+            ImageView faviconView = (ImageView) tabGridView.fastFindViewById(R.id.tab_favicon);
+            setFavicon(faviconView, model, /* favicon= */ null);
+
+            // Ensure the tab group color view can be attached to a new parent if it exists.
+            FrameLayout container =
+                    (FrameLayout) tabGridView.fastFindViewById(R.id.tab_group_color_view_container);
+            TabCardViewBinderUtils.detachTabGroupColorView(container);
         }
     }
 
@@ -145,6 +152,13 @@ class TabGridViewBinder {
             updateFavicon(view, model);
         } else if (TabProperties.FAVICON_FETCHER == propertyKey) {
             updateFavicon(view, model);
+        } else if (TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER == propertyKey) {
+            @Nullable
+            TabGroupColorViewProvider provider =
+                    model.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER);
+            FrameLayout container =
+                    (FrameLayout) view.fastFindViewById(R.id.tab_group_color_view_container);
+            TabCardViewBinderUtils.updateTabGroupColorView(container, provider);
         } else if (TabProperties.CONTENT_DESCRIPTION_STRING == propertyKey) {
             view.setContentDescription(model.get(TabProperties.CONTENT_DESCRIPTION_STRING));
         } else if (TabProperties.GRID_CARD_SIZE == propertyKey) {
@@ -401,15 +415,19 @@ class TabGridViewBinder {
     private static void updateFavicon(ViewLookupCachingFrameLayout rootView, PropertyModel model) {
         final TabListFaviconProvider.TabFaviconFetcher fetcher =
                 model.get(TabProperties.FAVICON_FETCHER);
+        ImageView faviconView = (ImageView) rootView.fastFindViewById(R.id.tab_favicon);
         if (fetcher == null) {
-            setFavicon(rootView, model, null);
+            faviconView.setVisibility(View.GONE);
+            setFavicon(faviconView, model, null);
             return;
         }
+
+        faviconView.setVisibility(View.VISIBLE);
         fetcher.fetch(
                 tabFavicon -> {
                     if (fetcher != model.get(TabProperties.FAVICON_FETCHER)) return;
 
-                    setFavicon(rootView, model, tabFavicon);
+                    setFavicon(faviconView, model, tabFavicon);
                 });
     }
 
@@ -419,10 +437,7 @@ class TabGridViewBinder {
      * #bindCommonProperties}.
      */
     private static void setFavicon(
-            ViewLookupCachingFrameLayout rootView,
-            PropertyModel model,
-            TabListFaviconProvider.TabFavicon favicon) {
-        ImageView faviconView = (ImageView) rootView.fastFindViewById(R.id.tab_favicon);
+            ImageView faviconView, PropertyModel model, TabListFaviconProvider.TabFavicon favicon) {
         if (favicon == null) {
             faviconView.setImageDrawable(null);
             return;

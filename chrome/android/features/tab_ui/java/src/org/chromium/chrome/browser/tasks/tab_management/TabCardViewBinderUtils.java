@@ -30,6 +30,15 @@ class TabCardViewBinderUtils {
     }
 
     /**
+     * Detaches any views from the container view and sets its visibility to {@link View.GONE}.
+     *
+     * @param containerView The container view to update.
+     */
+    static void detachTabGroupColorView(@NonNull FrameLayout containerView) {
+        updateTabGroupColorView(containerView, /* viewProvider= */ null);
+    }
+
+    /**
      * Attaches the view from the provider to the container view or removes all views of the
      * container if the view provider will not provide a view.
      *
@@ -38,7 +47,7 @@ class TabCardViewBinderUtils {
      *     detach all views from the container.
      */
     static void updateTabGroupColorView(
-            FrameLayout containerView, @Nullable TabGroupColorViewProvider viewProvider) {
+            @NonNull FrameLayout containerView, @Nullable TabGroupColorViewProvider viewProvider) {
         if (viewProvider == null) {
             containerView.setVisibility(View.GONE);
             containerView.removeAllViews();

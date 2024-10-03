@@ -82,7 +82,6 @@ found in the LICENSE file.
     <dimen name="color_picker_color_item_vertical_padding">12dp</dimen>
     <dimen name="color_picker_inner_layer_inset">5dp</dimen>
     <dimen name="color_picker_selection_layer_inset">2dp</dimen>
-    <dimen name="tab_group_color_icon_inset">2dp</dimen>
     <dimen name="tab_group_color_icon_stroke">2dp</dimen>
     <dimen name="tab_group_color_icon_item_size">16dp</dimen>
     <dimen name="tab_group_color_picker_popup_padding">10dp</dimen>
@@ -101,9 +100,6 @@ found in the LICENSE file.
     <dimen name="tab_group_quarter_outer_radius">12dp</dimen>
 
     <!-- Dimens for TabGroupShare features-->
-    <dimen name="tab_group_color_share_icon_inset">4dp</dimen>
-    <dimen name="tab_group_color_share_icon_item_size">12dp</dimen>
-    <dimen name="tab_group_share_icon_item_size">16dp</dimen>
     <dimen name="tab_group_share_tiles_padding">14dp</dimen>
 
     <!-- Dimens for Hub integration. -->

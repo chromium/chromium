@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Token;
 import org.chromium.chrome.R;
@@ -38,7 +39,7 @@ public class TabGroupColorViewProvider {
             @NonNull Token tabGroupId,
             boolean isIncognito,
             @TabGroupColorId int colorId) {
-        assert tabGroupId != null;
+        assert tabGroupId != null : "Tab group id cannot be null.";
         mContext = context;
         mTabGroupId = tabGroupId;
         mIsIncognito = isIncognito;
@@ -80,12 +81,18 @@ public class TabGroupColorViewProvider {
     private void updateColor() {
         assert mViewGroup != null;
 
-        GradientDrawable drawable = (GradientDrawable) mViewGroup.getBackground();
+        GradientDrawable drawable = (GradientDrawable) mViewGroup.getBackground().mutate();
         assert drawable != null;
 
         final @ColorInt int color =
                 ColorPickerUtils.getTabGroupColorPickerItemColor(mContext, mColorId, mIsIncognito);
         drawable.setColor(color);
         mViewGroup.invalidate();
+    }
+
+    @VisibleForTesting
+    @TabGroupColorId
+    int getTabGroupColorIdForTesting() {
+        return mColorId;
     }
 }

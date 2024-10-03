@@ -286,7 +286,6 @@ public class TabListCoordinator
                         tabModelFilterSupplier,
                         thumbnailProvider,
                         tabListFaviconProvider,
-                        new TabGroupColorFaviconProvider(mContext),
                         actionOnRelatedTabs,
                         selectionDelegateProvider,
                         gridCardOnClickListenerProvider,

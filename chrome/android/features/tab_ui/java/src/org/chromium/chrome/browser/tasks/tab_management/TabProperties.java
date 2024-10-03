@@ -122,8 +122,12 @@ public class TabProperties {
             new WritableBooleanPropertyKey();
 
     // TODO(crbug.com/365972761): Move this to `TabGroupProperties` when it is created.
-    /** The {@link TabGroupColorId} for a tab group representation's color in TabListMode only. */
-    public static final WritableIntPropertyKey TAB_GROUP_COLOR_ID = new WritableIntPropertyKey();
+    /**
+     * Provides a view for the tab group color. In list mode this is shown alongside the row. In
+     * grid mode this replaces the favicon image view.
+     */
+    public static final WritableObjectPropertyKey<TabGroupColorViewProvider>
+            TAB_GROUP_COLOR_VIEW_PROVIDER = new WritableObjectPropertyKey<>();
 
     // TODO(crbug.com/365973166): Move this to `TabStripProperties` when it is created.
     public static final WritableBooleanPropertyKey HAS_NOTIFICATION_BUBBLE =
@@ -158,7 +162,7 @@ public class TabProperties {
                 SHOPPING_PERSISTED_TAB_DATA_FETCHER,
                 SHOULD_SHOW_PRICE_DROP_TOOLTIP,
                 QUICK_DELETE_ANIMATION_STATUS,
-                TAB_GROUP_COLOR_ID,
+                TAB_GROUP_COLOR_VIEW_PROVIDER,
                 VISIBILITY,
                 USE_SHRINK_CLOSE_ANIMATION,
                 HAS_NOTIFICATION_BUBBLE,

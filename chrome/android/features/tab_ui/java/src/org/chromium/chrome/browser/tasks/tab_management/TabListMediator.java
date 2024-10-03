@@ -348,7 +348,6 @@ class TabListMediator implements TabListNotificationHandler {
     private final ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
     private final ThumbnailProvider mThumbnailProvider;
     private final TabListFaviconProvider mTabListFaviconProvider;
-    private final TabGroupColorFaviconProvider mTabGroupColorFaviconProvider;
     private final SelectionDelegateProvider mSelectionDelegateProvider;
     private final GridCardOnClickListenerProvider mGridCardOnClickListenerProvider;
     private final TabGridDialogHandler mTabGridDialogHandler;
@@ -621,11 +620,8 @@ class TabListMediator implements TabListNotificationHandler {
                     Tab tab = indexAndTab.second;
                     PropertyModel model = mModel.get(indexAndTab.first).model;
 
-                    if (mMode == TabListMode.LIST) {
-                        model.set(TabProperties.TAB_GROUP_COLOR_ID, newColor);
-                    } else if (mMode == TabListMode.GRID) {
-                        updateFaviconForTab(tab, null, null);
-                    }
+                    updateFaviconForTab(tab, null, null);
+                    updateTabGroupColorViewProvider(model, tab, newColor);
                     updateDescriptionString(tab, model);
                     updateActionButtonDescriptionString(tab, model);
                 }
@@ -840,8 +836,7 @@ class TabListMediator implements TabListNotificationHandler {
                 public void didCreateNewGroup(Tab destinationTab, TabGroupModelFilter filter) {
                     // On new group creation for the tab group representation in the GTS, update
                     // the tab group color icon.
-                    if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()
-                            && mMode == TabListMode.LIST) {
+                    if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
                         int groupIndex = filter.indexOf(destinationTab);
                         Tab groupTab = filter.getTabAt(groupIndex);
                         PropertyModel model = getModelFromId(groupTab.getId());
@@ -850,7 +845,8 @@ class TabListMediator implements TabListNotificationHandler {
                             @TabGroupColorId
                             int colorId =
                                     filter.getTabGroupColorWithFallback(destinationTab.getRootId());
-                            model.set(TabProperties.TAB_GROUP_COLOR_ID, colorId);
+                            updateFaviconForTab(groupTab, null, null);
+                            updateTabGroupColorViewProvider(model, destinationTab, colorId);
                         }
                     }
                 }
@@ -867,7 +863,6 @@ class TabListMediator implements TabListNotificationHandler {
      * @param tabModelFilterSupplier Used to fetch the filter that provides tab group information.
      * @param thumbnailProvider {@link ThumbnailProvider} to provide screenshot related details.
      * @param tabListFaviconProvider Provider for all favicon related drawables.
-     * @param tabGroupColorFaviconProvider Provider for tab group color favicon related drawables.
      * @param actionOnRelatedTabs Whether tab-related actions should be operated on all related
      *     tabs.
      * @param selectionDelegateProvider Provider for a {@link SelectionDelegate} that is used for a
@@ -891,7 +886,6 @@ class TabListMediator implements TabListNotificationHandler {
             @NonNull ObservableSupplier<TabModelFilter> tabModelFilterSupplier,
             @Nullable ThumbnailProvider thumbnailProvider,
             TabListFaviconProvider tabListFaviconProvider,
-            @NonNull TabGroupColorFaviconProvider tabGroupColorFaviconProvider,
             boolean actionOnRelatedTabs,
             @Nullable SelectionDelegateProvider selectionDelegateProvider,
             @Nullable GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
@@ -908,7 +902,6 @@ class TabListMediator implements TabListNotificationHandler {
         mCurrentTabModelFilterSupplier = tabModelFilterSupplier;
         mThumbnailProvider = thumbnailProvider;
         mTabListFaviconProvider = tabListFaviconProvider;
-        mTabGroupColorFaviconProvider = tabGroupColorFaviconProvider;
         mActionsOnAllRelatedTabs = actionOnRelatedTabs;
         mSelectionDelegateProvider = selectionDelegateProvider;
         mGridCardOnClickListenerProvider = gridCardOnClickListenerProvider;
@@ -1605,19 +1598,16 @@ class TabListMediator implements TabListNotificationHandler {
         boolean isTabSelected = isTabSelected(mTabActionState, tab);
         boolean isInTabGroup = isTabInTabGroup(tab);
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-            // If the tab to update is in ListMode, update it with the most recent stored color.
-            if (mMode == TabListMode.LIST) {
-                int tabGroupColorId = TabGroupColorUtils.INVALID_COLOR_ID;
-                // Only update the color if the tab is a representation of a tab group, otherwise
-                // hide the icon by setting the color to INVALID.
-                if (isInTabGroup) {
-                    TabGroupModelFilter filter =
-                            (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
-                    tabGroupColorId = filter.getTabGroupColorWithFallback(tab.getRootId());
-                }
-
-                model.set(TabProperties.TAB_GROUP_COLOR_ID, tabGroupColorId);
+            int tabGroupColorId = TabGroupColorUtils.INVALID_COLOR_ID;
+            // Only update the color if the tab is a representation of a tab group, otherwise
+            // hide the icon by setting the color to INVALID.
+            if (isInTabGroup) {
+                TabGroupModelFilter filter =
+                        (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+                tabGroupColorId = filter.getTabGroupColorWithFallback(tab.getRootId());
             }
+
+            updateTabGroupColorViewProvider(model, tab, tabGroupColorId);
         }
 
         model.set(TabProperties.TAB_CLICK_LISTENER, getTabActionListener(tab, isInTabGroup));
@@ -1627,7 +1617,7 @@ class TabListMediator implements TabListNotificationHandler {
 
         // A tab is deemed a tab group card representation if it is part of a tab group and
         // based in the tab switcher.
-        boolean isTabGroup = isTabInTabGroup(tab) && isParentComponentTabSwitcher();
+        boolean isTabGroup = isTabInTabGroup(tab) && mActionsOnAllRelatedTabs;
         // Update the group color icon.
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled() && isTabGroup) {
             updateFaviconForTab(tab, null, null);
@@ -1878,7 +1868,7 @@ class TabListMediator implements TabListNotificationHandler {
         }
         // A tab is deemed a tab group card representation if it is part of a tab group and
         // based in the tab switcher.
-        boolean isTabGroup = isTabInTabGroup(tab) && isParentComponentTabSwitcher();
+        boolean isTabGroup = isTabInTabGroup(tab) && mActionsOnAllRelatedTabs;
         if (ChromeFeatureList.sTabGroupPaneAndroid.isEnabled() && isTabGroup) {
             return new TabActionButtonData(
                     TabActionButtonData.TabActionButtonType.OVERFLOW,
@@ -1997,19 +1987,6 @@ class TabListMediator implements TabListNotificationHandler {
         assert index != TabModel.INVALID_TAB_INDEX;
         boolean isInTabGroup = isTabInTabGroup(tab);
 
-        int colorId = TabGroupColorUtils.INVALID_COLOR_ID;
-        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-            // While groups always have a color, only set it here when it should be shown next to
-            // the title. In GRID mode this is not the case, as the color replaces the favicon.
-            // Rather it's LIST mode where we do this, and additionally not when we've opened a
-            // dialog for a particular group, checked by isParentComponentTabSwitcher().
-            if (mMode == TabListMode.LIST && isInTabGroup && isParentComponentTabSwitcher()) {
-                TabGroupModelFilter filter =
-                        (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
-                colorId = filter.getTabGroupColorWithFallback(tab.getRootId());
-            }
-        }
-
         PropertyModel tabInfo =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
                         .with(TabProperties.TAB_ACTION_STATE, mTabActionState)
@@ -2033,12 +2010,11 @@ class TabListMediator implements TabListNotificationHandler {
                         .with(
                                 TabProperties.QUICK_DELETE_ANIMATION_STATUS,
                                 QuickDeleteAnimationStatus.TAB_RESTORE)
-                        .with(TabProperties.TAB_GROUP_COLOR_ID, colorId)
                         .with(TabProperties.VISIBILITY, View.VISIBLE)
                         .with(TabProperties.USE_SHRINK_CLOSE_ANIMATION, false)
                         .build();
 
-        if (!mActionsOnAllRelatedTabs || !isTabInTabGroup(tab)) {
+        if (!mActionsOnAllRelatedTabs || isInTabGroup) {
             tabInfo.set(
                     TabProperties.FAVICON_FETCHER,
                     mTabListFaviconProvider.getDefaultFaviconFetcher(tab.isIncognito()));
@@ -2058,6 +2034,16 @@ class TabListMediator implements TabListNotificationHandler {
         setupPersistedTabDataFetcherForTab(tab, index);
 
         updateFaviconForTab(tab, null, null);
+
+        int colorId = TabGroupColorUtils.INVALID_COLOR_ID;
+        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
+            if (isInTabGroup && mActionsOnAllRelatedTabs) {
+                TabGroupModelFilter filter =
+                        (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+                colorId = filter.getTabGroupColorWithFallback(tab.getRootId());
+            }
+        }
+        updateTabGroupColorViewProvider(tabInfo, tab, colorId);
 
         if (mThumbnailProvider != null && mDefaultGridCardSize != null) {
             if (!mDefaultGridCardSize.equals(tabInfo.get(TabProperties.GRID_CARD_SIZE))) {
@@ -2257,20 +2243,7 @@ class TabListMediator implements TabListNotificationHandler {
         if (mActionsOnAllRelatedTabs && isTabInTabGroup(tab)) {
             List<Tab> relatedTabList = getRelatedTabsForId(tab.getId());
             if (mMode != TabListMode.LIST) {
-                // For tab group card in grid tab switcher, the favicon is set to be null.
-                // With tab group colors, set the the favicon fetcher to a circle of color.
-                TabFaviconFetcher faviconFetcher = null;
-                if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-                    TabGroupModelFilter filter =
-                            (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
-                    @TabGroupColorId
-                    int colorId = filter.getTabGroupColorWithFallback(tab.getRootId());
-                    faviconFetcher =
-                            mTabGroupColorFaviconProvider.getFaviconFromTabGroupColorFetcher(
-                                    colorId, filter.getTabModel(), tab);
-                }
-
-                model.set(TabProperties.FAVICON_FETCHER, faviconFetcher);
+                model.set(TabProperties.FAVICON_FETCHER, null);
                 return;
             } else if (mMode == TabListMode.LIST && relatedTabList.size() > 1) {
                 // The order of the url list matches the multi-thumbnail.
@@ -3012,10 +2985,6 @@ class TabListMediator implements TabListNotificationHandler {
         return mModel.get(modelIndex).model;
     }
 
-    private boolean isParentComponentTabSwitcher() {
-        return TabSwitcherPaneCoordinator.COMPONENT_NAME.equals(mComponentName);
-    }
-
     private void updateThumbnailFetcher(PropertyModel model, int tabId) {
         @Nullable ThumbnailFetcher oldFetcher = model.get(THUMBNAIL_FETCHER);
         if (oldFetcher != null) oldFetcher.cancel();
@@ -3026,6 +2995,35 @@ class TabListMediator implements TabListNotificationHandler {
                         ? null
                         : new ThumbnailFetcher(mThumbnailProvider, tabId);
         model.set(THUMBNAIL_FETCHER, newFetcher);
+    }
+
+    private void updateTabGroupColorViewProvider(
+            PropertyModel model, @NonNull Tab tab, @TabGroupColorId int colorId) {
+        @Nullable Token tabGroupId = tab.getTabGroupId();
+        if (!ChromeFeatureList.sTabGroupParityAndroid.isEnabled()
+                || !mActionsOnAllRelatedTabs
+                || tabGroupId == null
+                || !isTabInTabGroup(tab)) {
+            // Not a group or not in group display mode.
+            model.set(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, null);
+            return;
+        }
+
+        assert colorId != TabGroupColorUtils.INVALID_COLOR_ID
+                : "Tab in tab group should always have valid colors.";
+        assert mMode != TabListMode.STRIP : "Tab group colors are not applicable to strip mode.";
+
+        @Nullable
+        TabGroupColorViewProvider provider = model.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER);
+        if (provider == null) {
+            provider =
+                    new TabGroupColorViewProvider(
+                            mContext, tabGroupId, tab.isIncognitoBranded(), colorId);
+            model.set(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, provider);
+        } else {
+            assert Objects.equals(tabGroupId, provider.getTabGroupId());
+            provider.setTabGroupColorId(colorId);
+        }
     }
 
     @TabListMode

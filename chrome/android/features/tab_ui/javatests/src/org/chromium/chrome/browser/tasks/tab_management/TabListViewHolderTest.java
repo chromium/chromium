@@ -30,8 +30,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.VectorDrawable;
 import android.util.Size;
 import android.view.View;
@@ -62,6 +60,7 @@ import org.mockito.stubbing.Answer;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.Token;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -182,6 +181,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
 
     private ViewGroup mTabListView;
     private ViewGroup mSelectableTabListView;
+    private PropertyModelChangeProcessor mListMcp;
 
     @Mock private Profile mProfile;
 
@@ -352,8 +352,9 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
                                     TabGridViewBinder::bindTab);
                     PropertyModelChangeProcessor.create(
                             mSelectableModel, mSelectableTabListView, TabListViewBinder::bindTab);
-                    PropertyModelChangeProcessor.create(
-                            mGridModel, mTabListView, TabListViewBinder::bindTab);
+                    mListMcp =
+                            PropertyModelChangeProcessor.create(
+                                    mGridModel, mTabListView, TabListViewBinder::bindTab);
                 });
         mMocker.mock(LevelDBPersistedDataStorageJni.TEST_HOOKS, mLevelDBPersistedTabDataStorage);
         doNothing()
@@ -1023,61 +1024,77 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @UiThreadTest
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
-    public void testColorIcon_validNewColor() {
-        final int colorId = TabGroupColorId.BLUE;
-        final int colorLayer = 1;
+    public void testColorIcon_Grid() {
+        // Prevent errors with duplicate view attachment.
+        mListMcp.destroy();
 
-        ImageView colorIconView = mTabListView.findViewById(R.id.before_title_icon);
-        assertNull(colorIconView.getBackground());
+        FrameLayout gridContainer = mTabGridView.findViewById(R.id.tab_group_color_view_container);
+        assertEquals(0, gridContainer.getChildCount());
+        assertEquals(View.GONE, gridContainer.getVisibility());
 
-        mGridModel.set(TabProperties.TAB_GROUP_COLOR_ID, colorId);
+        TabGroupColorViewProvider provider =
+                new TabGroupColorViewProvider(
+                        getActivity(),
+                        new Token(1L, 2L),
+                        /* isIncognito= */ false,
+                        TabGroupColorId.BLUE);
 
-        assertEquals(colorIconView.getVisibility(), View.VISIBLE);
-        assertThat(colorIconView.getBackground(), instanceOf(LayerDrawable.class));
-        LayerDrawable layerDrawable = (LayerDrawable) colorIconView.getBackground();
-        assertEquals(2, layerDrawable.getNumberOfLayers());
+        mGridModel.set(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, provider);
+        assertEquals(1, gridContainer.getChildCount());
+        assertEquals(View.VISIBLE, gridContainer.getVisibility());
 
-        // Check outer color layer
-        assertThat(layerDrawable.getDrawable(colorLayer), instanceOf(GradientDrawable.class));
-        GradientDrawable drawable = (GradientDrawable) layerDrawable.getDrawable(colorLayer);
-        assertEquals(GradientDrawable.OVAL, drawable.getShape());
-        assertEquals(
-                ColorStateList.valueOf(
-                        ColorPickerUtils.getTabGroupColorPickerItemColor(
-                                getActivity(), colorId, false)),
-                drawable.getColor());
+        mGridModel.set(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, null);
+        assertEquals(0, gridContainer.getChildCount());
+        assertEquals(View.GONE, gridContainer.getVisibility());
+
+        mGridModel.set(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, provider);
+        assertEquals(1, gridContainer.getChildCount());
+        assertEquals(View.VISIBLE, gridContainer.getVisibility());
+
+        TabGridViewBinder.onViewRecycled(mGridModel, mTabGridView);
+        assertEquals(0, gridContainer.getChildCount());
+        assertEquals(View.GONE, gridContainer.getVisibility());
+
+        mGridModel.set(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, null);
     }
 
     @Test
     @MediumTest
     @UiThreadTest
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
-    public void testColorIcon_validExistingColor() {
-        final int colorId1 = TabGroupColorId.BLUE;
-        final int colorId2 = TabGroupColorId.RED;
-        final int colorLayer = 1;
+    public void testColorIcon_List() {
+        // Prevent errors with duplicate view attachment.
+        mSelectableMcp.destroy();
+        mGridMcp.destroy();
 
-        mGridModel.set(TabProperties.TAB_GROUP_COLOR_ID, colorId1);
+        FrameLayout listContainer = mTabListView.findViewById(R.id.after_title_container);
+        assertEquals(0, listContainer.getChildCount());
+        assertEquals(View.GONE, listContainer.getVisibility());
 
-        ImageView colorIconView = mTabListView.findViewById(R.id.before_title_icon);
-        assertEquals(colorIconView.getVisibility(), View.VISIBLE);
-        assertNotNull(colorIconView.getBackground());
+        TabGroupColorViewProvider provider =
+                new TabGroupColorViewProvider(
+                        getActivity(),
+                        new Token(1L, 2L),
+                        /* isIncognito= */ false,
+                        TabGroupColorId.BLUE);
 
-        mGridModel.set(TabProperties.TAB_GROUP_COLOR_ID, colorId2);
+        mGridModel.set(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, provider);
+        assertEquals(1, listContainer.getChildCount());
+        assertEquals(View.VISIBLE, listContainer.getVisibility());
 
-        assertThat(colorIconView.getBackground(), instanceOf(LayerDrawable.class));
-        LayerDrawable layerDrawable = (LayerDrawable) colorIconView.getBackground();
-        assertEquals(2, layerDrawable.getNumberOfLayers());
+        mGridModel.set(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, null);
+        assertEquals(0, listContainer.getChildCount());
+        assertEquals(View.GONE, listContainer.getVisibility());
 
-        // Check outer color layer
-        assertThat(layerDrawable.getDrawable(colorLayer), instanceOf(GradientDrawable.class));
-        GradientDrawable drawable = (GradientDrawable) layerDrawable.getDrawable(colorLayer);
-        assertEquals(GradientDrawable.OVAL, drawable.getShape());
-        assertEquals(
-                ColorStateList.valueOf(
-                        ColorPickerUtils.getTabGroupColorPickerItemColor(
-                                getActivity(), colorId2, false)),
-                drawable.getColor());
+        mGridModel.set(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, provider);
+        assertEquals(1, listContainer.getChildCount());
+        assertEquals(View.VISIBLE, listContainer.getVisibility());
+
+        TabListViewBinder.onViewRecycled(mGridModel, mTabListView);
+        assertEquals(0, listContainer.getChildCount());
+        assertEquals(View.GONE, listContainer.getVisibility());
+
+        mGridModel.set(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, null);
     }
 
     @Test
