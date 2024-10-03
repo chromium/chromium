@@ -5985,6 +5985,52 @@
             ]
         }
     ],
+    "ComposeAcceptanceSurvey": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "prob": "0.1",
+                        "survey_cycle_length": "7",
+                        "survey_start_date_ms": "1729580400000",
+                        "trigger_id": "44m1DgehL0ugnJ3q1cK0Qih71MRQ"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingSurveysForComposeAcceptance"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ComposeCloseSurvey": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "prob": "0.1",
+                        "survey_cycle_length": "7",
+                        "survey_start_date_ms": "1729580400000",
+                        "trigger_id": "mT2d9fiNR0ugnJ3q1cK0SdAewrT2"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingSurveysForComposeClose"
+                    ]
+                }
+            ]
+        }
+    ],
     "ComposeModelQualityLogging": [
         {
             "platforms": [
