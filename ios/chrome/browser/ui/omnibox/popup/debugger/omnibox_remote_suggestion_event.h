@@ -11,6 +11,8 @@
 // A class that captures the state of a RemoteSuggestionsService event
 @interface OmniboxRemoteSuggestionEvent : NSObject <OmniboxEvent>
 
+// Contains the request URL as a string.
+@property(nonatomic, strong) NSString* requestURL;
 // Contains the request body of the remote suggestion service.
 @property(nonatomic, strong) NSString* requestBody;
 // Contains the response body of the remote suggestion service.

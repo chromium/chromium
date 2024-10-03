@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_mediator.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views.h"
@@ -231,7 +232,9 @@
 }
 
 - (void)focusOmnibox {
-  if (!self.keyboardAccessoryView && !self.isSearchOnlyUI) {
+  if (!self.keyboardAccessoryView &&
+      (!self.isSearchOnlyUI ||
+       experimental_flags::IsOmniboxDebuggingEnabled())) {
     TemplateURLService* templateURLService =
         ios::TemplateURLServiceFactory::GetForBrowserState(
             self.browser->GetProfile());

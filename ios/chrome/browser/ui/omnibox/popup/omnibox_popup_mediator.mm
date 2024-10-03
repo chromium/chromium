@@ -188,9 +188,6 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 - (void)updateWithResults:(const AutocompleteResult&)result {
   [self updateMatches:result];
   self.open = !result.empty();
-  if (!self.open) {
-    [_cachedImages removeAllObjects];
-  }
   metrics::OmniboxFocusType inputFocusType =
       self.autocompleteController->input().focus_type();
   BOOL isFocusing =
@@ -228,6 +225,15 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   }
 
   _debugInfoConsumer = debugInfoConsumer;
+}
+
+- (void)setOpen:(BOOL)open {
+  // When closing the popup.
+  if (_open && !open) {
+    [_cachedImages removeAllObjects];
+    [_debugInfoConsumer removeAllObjects];
+  }
+  _open = open;
 }
 
 #pragma mark - AutocompleteResultDataSource
