@@ -289,10 +289,9 @@ void DistillerImpl::OnFetchImageDone(int page_num,
   DCHECK(fetcher_it != page_data->image_fetchers_.end());
   // Delete the |url_fetcher| by DeleteSoon since the OnFetchImageDone
   // callback is invoked by the |url_fetcher|.
-  fetcher_it->release();
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+      FROM_HERE, std::move(*fetcher_it));
   page_data->image_fetchers_.erase(fetcher_it);
-  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
-                                                                url_fetcher);
 
   DistilledPageProto_Image* image =
       page_data->distilled_page_proto->data.add_image();
