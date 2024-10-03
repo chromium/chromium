@@ -115,7 +115,7 @@ void BocaAppHandler::CreateSession(mojom::ConfigPtr config,
                   // Load current session into memory;
                   BocaAppClient::Get()
                       ->GetSessionManager()
-                      ->UpdateCurrentSession(std::move(result.value()));
+                      ->UpdateCurrentSession(std::move(result.value()), true);
                   std::move(callback).Run(true);
                 }
               },
@@ -168,7 +168,7 @@ void BocaAppHandler::GetSession(GetSessionCallback callback) {
                   mojom::GetSessionError::kEmpty));
               // Load current session into memory;
               BocaAppClient::Get()->GetSessionManager()->UpdateCurrentSession(
-                  nullptr);
+                  nullptr, false);
               return;
             }
             auto session = std::move(result.value());
@@ -225,7 +225,7 @@ void BocaAppHandler::GetSession(GetSessionCallback callback) {
 
             // Load current session into memory;
             BocaAppClient::Get()->GetSessionManager()->UpdateCurrentSession(
-                std::move(session));
+                std::move(session), false);
           },
           std::move(callback)));
   session_client_impl_->GetSession(std::move(get_session_request));
@@ -252,7 +252,7 @@ void BocaAppHandler::EndSession(EndSessionCallback callback) {
                 }
                 std::move(callback).Run(std::nullopt);
                 BocaAppClient::Get()->GetSessionManager()->UpdateCurrentSession(
-                    std::move(result.value()));
+                    std::move(result.value()), true);
               },
               std::move(callback)));
   request->set_session_state(
@@ -351,7 +351,7 @@ void BocaAppHandler::OnUpdatedOnTaskConfig(
   std::move(callback).Run(std::nullopt);
   // Trigger a session reload from session response.
   BocaAppClient::Get()->GetSessionManager()->UpdateCurrentSession(
-      std::move(result.value()));
+      std::move(result.value()), true);
 }
 
 void BocaAppHandler::OnUpdatedCaptionConfig(
@@ -374,6 +374,6 @@ void BocaAppHandler::OnUpdatedCaptionConfig(
   std::move(callback).Run(std::nullopt);
   // Trigger a session reload from session response.
   BocaAppClient::Get()->GetSessionManager()->UpdateCurrentSession(
-      std::move(result.value()));
+      std::move(result.value()), true);
 }
 }  // namespace ash::boca

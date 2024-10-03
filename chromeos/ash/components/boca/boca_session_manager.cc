@@ -114,18 +114,21 @@ void BocaSessionManager::ParseSessionResponse(
   if (!result.has_value()) {
     return;
   }
-  UpdateCurrentSession(std::move(result.value()));
+  UpdateCurrentSession(std::move(result.value()), true);
 }
 
 void BocaSessionManager::UpdateCurrentSession(
-    std::unique_ptr<::boca::Session> session) {
+    std::unique_ptr<::boca::Session> session,
+    bool dispatch_event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   previous_session_ = std::move(current_session_);
   current_session_ = std::move(session);
-  NotifySessionUpdate();
-  NotifyOnTaskUpdate();
-  NotifyCaptionConfigUpdate();
-  NotifyRosterUpdate();
+  if (dispatch_event) {
+    NotifySessionUpdate();
+    NotifyOnTaskUpdate();
+    NotifyCaptionConfigUpdate();
+    NotifyRosterUpdate();
+  }
 }
 
 ::boca::Session* BocaSessionManager::GetCurrentSession() {
