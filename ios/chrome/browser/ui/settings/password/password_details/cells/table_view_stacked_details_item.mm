@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_details/cells/table_view_stacked_details_item.h"
 
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -68,6 +69,17 @@
     _detailLabels = [[NSMutableArray<UILabel*> alloc] init];
     [self addStaticViews];
     [self setTitleStyling];
+
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+          @[ UITraitPreferredContentSizeCategory.self ]);
+      __weak __typeof(self) weakSelf = self;
+      UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                       UITraitCollection* previousCollection) {
+        [weakSelf updateUIOnTraitChange:previousCollection];
+      };
+      [self registerForTraitChanges:traits withHandler:handler];
+    }
   }
 
   return self;
@@ -104,18 +116,15 @@
   [_detailLabels removeAllObjects];
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  BOOL isCurrentCategoryAccessibility =
-      UIContentSizeCategoryIsAccessibilityCategory(
-          self.traitCollection.preferredContentSizeCategory);
-  if (isCurrentCategoryAccessibility !=
-      UIContentSizeCategoryIsAccessibilityCategory(
-          previousTraitCollection.preferredContentSizeCategory)) {
-    [self updateForAccessibilityContentSizeCategory:
-              isCurrentCategoryAccessibility];
+  if (@available(iOS 17, *)) {
+    return;
   }
+  [self updateUIOnTraitChange:previousTraitCollection];
 }
+#endif
 
 #pragma mark - Private
 
@@ -218,6 +227,20 @@
                                       : UIStackViewAlignmentTop;
     _detailsStackView.alignment = UIStackViewAlignmentTrailing;
     _columnsStackView.spacing = kTableViewSubViewHorizontalSpacing;
+  }
+}
+
+// Updates the view's accessiblity properties when the device's
+// UITraitPreferredContentSizeCategory is modified.
+- (void)updateUIOnTraitChange:(UITraitCollection*)previousTraitCollection {
+  BOOL isCurrentCategoryAccessibility =
+      UIContentSizeCategoryIsAccessibilityCategory(
+          self.traitCollection.preferredContentSizeCategory);
+  if (isCurrentCategoryAccessibility !=
+      UIContentSizeCategoryIsAccessibilityCategory(
+          previousTraitCollection.preferredContentSizeCategory)) {
+    [self updateForAccessibilityContentSizeCategory:
+              isCurrentCategoryAccessibility];
   }
 }
 
