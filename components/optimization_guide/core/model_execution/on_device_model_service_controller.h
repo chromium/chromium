@@ -181,6 +181,7 @@ class OnDeviceModelServiceController
   friend class OnDeviceModelAdaptationController;
   friend class OnDeviceModelClient;
   friend class OnDeviceModelServiceAdaptationControllerTest;
+  friend class OnDeviceModelServiceControllerIOS;
   friend class OnDeviceModelServiceControllerTest;
   friend class base::RefCounted<OnDeviceModelServiceController>;
 

@@ -6,4 +6,6 @@ include_rules = [
   "+ios/chrome/browser/download/model/background_service",
   "+ios/chrome/browser/metrics/model",
   "+ios/web/public",
+  # On iOS, the service must be created directly from the browser code.
+  "+services/on_device_model",
 ]

@@ -17,9 +17,15 @@
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
+#import "components/optimization_guide/optimization_guide_buildflags.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "ios/chrome/browser/download/model/background_service/background_download_service_factory.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+#include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#endif
 
 namespace leveldb_proto {
 class ProtoDatabaseProvider;
@@ -30,12 +36,14 @@ class SharedURLLoaderFactory;
 }  // namespace network
 
 namespace optimization_guide {
-class TabUrlProvider;
-class TopHostProvider;
+class HintsManager;
+class ModelExecutionManager;
+class OnDeviceModelComponentStateManager;
 class OptimizationGuideStore;
 class OptimizationTargetModelObserver;
 class PredictionManager;
-class HintsManager;
+class TabUrlProvider;
+class TopHostProvider;
 }  // namespace optimization_guide
 
 namespace signin {
@@ -181,6 +189,16 @@ class OptimizationGuideService
   // Manages the storing, loading, and evaluating of optimization target
   // prediction models.
   std::unique_ptr<optimization_guide::PredictionManager> prediction_manager_;
+
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+  // Manages the state of the on-device model.
+  scoped_refptr<optimization_guide::OnDeviceModelComponentStateManager>
+      on_device_model_state_manager_;
+
+  // Manages the model execution. Not created for off the record profiles.
+  std::unique_ptr<optimization_guide::ModelExecutionManager>
+      model_execution_manager_;
+#endif
 
   // The PrefService of the profile this service is linked to.
   const raw_ptr<PrefService> pref_service_ = nullptr;

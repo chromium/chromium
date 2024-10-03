@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/optimization_guide/features.gni")
+
 source_set("prefs") {
   sources = [
     "pref_backed_boolean.h",
@@ -51,6 +53,7 @@ source_set("browser_prefs") {
     "//components/network_time",
     "//components/ntp_tiles",
     "//components/omnibox/browser",
+    "//components/optimization_guide:optimization_guide_buildflags",
     "//components/optimization_guide/core",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/common",
@@ -131,6 +134,10 @@ source_set("browser_prefs") {
     "//ios/web/common:features",
     "//ui/base",
   ]
+
+  if (build_with_internal_optimization_guide) {
+    deps += [ "//components/optimization_guide/core:features" ]
+  }
 }
 
 source_set("unit_tests") {

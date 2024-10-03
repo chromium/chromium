@@ -33,6 +33,7 @@
 #import "components/metrics_services_manager/metrics_services_manager.h"
 #import "components/net_log/net_export_file_writer.h"
 #import "components/network_time/network_time_tracker.h"
+#import "components/optimization_guide/optimization_guide_buildflags.h"
 #import "components/os_crypt/async/browser/os_crypt_async.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
@@ -85,6 +86,11 @@
 #import "services/network/public/cpp/network_connection_tracker.h"
 #import "services/network/public/mojom/network_service.mojom.h"
 #import "ui/base/resource/resource_bundle.h"
+
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+#import "components/optimization_guide/core/model_execution/on_device_model_component.h"  // nogncheck
+#import "ios/chrome/browser/optimization_guide/model/on_device_model_service_controller_ios.h"
+#endif  // BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE
 
 namespace {
 
@@ -547,6 +553,22 @@ ApplicationContextImpl::GetAdditionalFeaturesController() {
   }
   return additional_features_controller_.get();
 }
+
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+optimization_guide::OnDeviceModelServiceController*
+ApplicationContextImpl::GetOnDeviceModelServiceController(
+    base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
+        on_device_component_manager) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!on_device_model_service_controller_) {
+    on_device_model_service_controller_ = base::MakeRefCounted<
+        optimization_guide::OnDeviceModelServiceControllerIOS>(
+        std::move(on_device_component_manager));
+    on_device_model_service_controller_->Init();
+  }
+  return on_device_model_service_controller_.get();
+}
+#endif  // BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE
 
 os_crypt_async::OSCryptAsync* ApplicationContextImpl::GetOSCryptAsync() {
   return os_crypt_async_.get();

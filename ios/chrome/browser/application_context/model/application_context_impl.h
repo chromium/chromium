@@ -88,6 +88,12 @@ class ApplicationContextImpl : public ApplicationContext {
   PushNotificationService* GetPushNotificationService() override;
   os_crypt_async::OSCryptAsync* GetOSCryptAsync() override;
   AdditionalFeaturesController* GetAdditionalFeaturesController() override;
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+  optimization_guide::OnDeviceModelServiceController*
+  GetOnDeviceModelServiceController(
+      base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
+          on_device_component_manager) override;
+#endif  // BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE
 
  private:
   // Represents the possible application states the app can be in.
@@ -165,6 +171,11 @@ class ApplicationContextImpl : public ApplicationContext {
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 
   std::unique_ptr<AdditionalFeaturesController> additional_features_controller_;
+
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+  scoped_refptr<optimization_guide::OnDeviceModelServiceController>
+      on_device_model_service_controller_;
+#endif  // BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE
 };
 
 #endif  // IOS_CHROME_BROWSER_APPLICATION_CONTEXT_MODEL_APPLICATION_CONTEXT_IMPL_H_

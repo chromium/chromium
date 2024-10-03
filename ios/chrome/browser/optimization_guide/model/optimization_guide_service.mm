@@ -34,7 +34,19 @@
 #import "ios/web/public/navigation/navigation_context.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+#import "base/apple/bundle_locations.h"
+#import "base/system/sys_info.h"
+#import "components/optimization_guide/core/model_execution/model_execution_manager.h"
+#import "components/optimization_guide/core/model_execution/on_device_model_component.h"
+#import "ios/chrome/browser/optimization_guide/model/on_device_model_service_controller_ios.h"
+#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+
 namespace {
+
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+using ::optimization_guide::OnDeviceModelComponentStateManager;
+#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
 // Deletes old store paths that were written in incorrect locations.
 void DeleteOldStorePaths(const base::FilePath& profile_path) {
@@ -47,6 +59,54 @@ void DeleteOldStorePaths(const base::FilePath& profile_path) {
       base::GetDeletePathRecursivelyCallback(profile_path.Append(
           optimization_guide::kOldOptimizationGuidePredictionModelDownloads)));
 }
+
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+class OnDeviceModelComponentStateManagerDelegate
+    : public OnDeviceModelComponentStateManager::Delegate {
+ public:
+  ~OnDeviceModelComponentStateManagerDelegate() override = default;
+
+  base::FilePath GetInstallDirectory() override {
+    // The model is located in the app bundle.
+    return base::apple::OuterBundlePath();
+  }
+
+  void GetFreeDiskSpace(const base::FilePath& path,
+                        base::OnceCallback<void(int64_t)> callback) override {
+    base::TaskTraits traits = {base::MayBlock(),
+                               base::TaskPriority::BEST_EFFORT};
+    if (optimization_guide::switches::
+            ShouldGetFreeDiskSpaceWithUserVisiblePriorityTask()) {
+      traits.UpdatePriority(base::TaskPriority::USER_VISIBLE);
+    }
+
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, traits,
+        base::BindOnce(&base::SysInfo::AmountOfFreeDiskSpace, path),
+        std::move(callback));
+  }
+
+  void RegisterInstaller(scoped_refptr<OnDeviceModelComponentStateManager>
+                             state_manager) override {
+    // If a model is bundled with the app, call SetReady() and treat
+    // it as an override. Otherwise return and do nothing.
+    base::FilePath model_path =
+        base::apple::OuterBundlePath().Append("on_device_model");
+    LOG(ERROR) << "model_file_path: " << model_path;
+
+    state_manager->SetReady(
+        base::Version("override"), model_path,
+        base::Value::Dict().Set("BaseModelSpec", base::Value::Dict()
+                                                     .Set("version", "override")
+                                                     .Set("name", "override")));
+  }
+
+  void Uninstall(scoped_refptr<OnDeviceModelComponentStateManager>
+                     state_manager) override {
+    // Do nothing since the model is bundled with the app.
+  }
+};
+#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
 }  // namespace
 
@@ -105,6 +165,31 @@ OptimizationGuideService::OptimizationGuideService(
                   ::prefs::kComponentUpdatesEnabled);
             }));
   }
+
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+  if (!off_the_record_) {
+    PrefService* local_state = GetApplicationContext()->GetLocalState();
+
+    // Create and startup the on-device model's state manager.
+    on_device_model_state_manager_ =
+        optimization_guide::OnDeviceModelComponentStateManager::CreateOrGet(
+            local_state,
+            std::make_unique<OnDeviceModelComponentStateManagerDelegate>());
+    on_device_model_state_manager_->OnStartup();
+
+    // Create the manager for on-device model execution.
+    scoped_refptr<optimization_guide::OnDeviceModelServiceController>
+        on_device_model_service_controller =
+            GetApplicationContext()->GetOnDeviceModelServiceController(
+                on_device_model_state_manager_->GetWeakPtr());
+    model_execution_manager_ =
+        std::make_unique<optimization_guide::ModelExecutionManager>(
+            url_loader_factory, local_state, identity_manager,
+            std::move(on_device_model_service_controller), this,
+            on_device_model_state_manager_->GetWeakPtr(),
+            optimization_guide_logger_.get(), nullptr);
+  }
+#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
   // Some previous paths were written in incorrect locations. Delete the
   // old paths.
