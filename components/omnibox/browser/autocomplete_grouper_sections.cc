@@ -294,9 +294,9 @@ DesktopWebZpsSection::DesktopWebZpsSection(
 
 DesktopLensContextualZpsSection::DesktopLensContextualZpsSection(
     omnibox::GroupConfigMap& group_configs)
-    : ZpsSection(8,
+    : ZpsSection(5,
                  {
-                     {8, omnibox::GROUP_VISITED_DOC_RELATED},
+                     {5, omnibox::GROUP_CONTEXTUAL_SEARCH},
                  },
                  group_configs) {}
 
