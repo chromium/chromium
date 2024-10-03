@@ -42,7 +42,6 @@ namespace crosapi {
 class BrowserManager;
 class CrosapiManager;
 class LacrosAvailabilityPolicyObserver;
-class LacrosDataBackwardMigrationModePolicyObserver;
 }  // namespace crosapi
 
 namespace crostini {
@@ -235,8 +234,6 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<crosapi::BrowserManager> browser_manager_;
   std::unique_ptr<crosapi::LacrosAvailabilityPolicyObserver>
       lacros_availability_policy_observer_;
-  std::unique_ptr<crosapi::LacrosDataBackwardMigrationModePolicyObserver>
-      lacros_data_backward_migration_mode_policy_observer_;
 
   std::unique_ptr<VideoConferenceAppServiceClient> vc_app_service_client_;
   std::unique_ptr<VideoConferenceAshFeatureClient> vc_ash_feature_client_;

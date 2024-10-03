@@ -67,7 +67,6 @@
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/lacros_availability_policy_observer.h"
-#include "chrome/browser/ash/crosapi/lacros_data_backward_migration_mode_policy_observer.h"
 #include "chrome/browser/ash/crostini/crostini_unsupported_action_notifier.h"
 #include "chrome/browser/ash/dbus/arc_tracing_service_provider.h"
 #include "chrome/browser/ash/dbus/ash_dbus_helper.h"
@@ -1036,8 +1035,6 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   browser_manager_->AddObserver(SessionControllerClientImpl::Get());
   lacros_availability_policy_observer_ =
       std::make_unique<crosapi::LacrosAvailabilityPolicyObserver>();
-  lacros_data_backward_migration_mode_policy_observer_ = std::make_unique<
-      crosapi::LacrosDataBackwardMigrationModePolicyObserver>();
 
   chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
 
@@ -1705,7 +1702,6 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // ProfileManager, so they need to be destroyed before ProfileManager
   // destruction, which happens inside PostMainMessageLoopRun below.
   lacros_availability_policy_observer_.reset();
-  lacros_data_backward_migration_mode_policy_observer_.reset();
 
   multi_capture_notifications_.reset();
 
