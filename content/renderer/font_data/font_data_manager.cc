@@ -17,8 +17,13 @@
 #include "content/public/child/child_thread.h"
 #include "content/public/common/content_features.h"
 #include "content/public/renderer/render_thread.h"
-#include "third_party/skia/include/ports/SkFontMgr_empty.h"
 #include "third_party/skia/src/ports/SkTypeface_win_dw.h"  // nogncheck
+
+#if BUILDFLAG(ENABLE_FREETYPE)
+#include "third_party/skia/include/ports/SkFontMgr_empty.h"
+#else
+#include "third_party/skia/include/ports/SkTypeface_fontations.h"
+#endif
 
 namespace font_data_service {
 
@@ -49,7 +54,9 @@ mojom::TypefaceSlant ConvertToMojomFontStyle(SkFontStyle::Slant slant) {
 
 FontDataManager::FontDataManager()
     : typeface_cache_(kTypefaceCacheSize),
+#if BUILDFLAG(ENABLE_FREETYPE)
       custom_fnt_mgr_(SkFontMgr_New_Custom_Empty()),
+#endif
       main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   CHECK(content::RenderThread::IsMainThread());
 }
@@ -204,9 +211,15 @@ sk_sp<SkTypeface> FontDataManager::onMakeFromStreamArgs(
                stream->getLength());
   // Experiment will test the performance of different SkTypefaces.
   // 'custom_fnt_mgr_' is a wrapper to create an SkFreeType typeface.
+
   return features::kSkiaFontServiceTypefaceType.Get() ==
                  features::SkiaFontServiceTypefaceType::kFreetype
-             ? custom_fnt_mgr_->makeFromStream(std::move(stream), args)
+             ?
+#if BUILDFLAG(ENABLE_FREETYPE)
+             custom_fnt_mgr_->makeFromStream(std::move(stream), args)
+#else
+             SkTypeface_Make_Fontations(std::move(stream), args)
+#endif
              : DWriteFontTypeface::MakeFromStream(std::move(stream), args);
 }
 

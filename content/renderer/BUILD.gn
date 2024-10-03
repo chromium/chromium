@@ -558,6 +558,9 @@ target(link_target_type, "renderer") {
       "media/win/overlay_state_service_provider.cc",
       "media/win/overlay_state_service_provider.h",
     ]
+
+    # For font_data_manager creating FreeType font instances.
+    deps += [ "//third_party:freetype_buildflags" ]
   }
 
   if (is_linux || is_chromeos || is_android) {

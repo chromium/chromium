@@ -11,4 +11,9 @@ declare_args() {
   # System FreeType configurations other than as described WILL INTRODUCE TEXT
   # RENDERING AND SECURITY REGRESSIONS.
   use_system_freetype = false
+
+  # Use FreeType for font rendering. If this is set to false, FreeType is
+  # replaced with the Rust-based Fontations set of libraries plus Skia
+  # path rendering.
+  enable_freetype = true
 }
