@@ -41,6 +41,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.AuxiliarySearch.Availability.Favicons" enum="Boolean"
+    expires_after="2025-09-15">
+  <owner>hanxi@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Records whether a favicon is fetched successfully. The histogram is logged
+    when Chrome is paused and a favicon is fetched for a Tab for the auxiliary
+    search. Android-only.
+  </summary>
+</histogram>
+
 <histogram name="Search.AuxiliarySearch.DeleteTime{AuxiliarySearchDataType}"
     units="ms" expires_after="M140">
   <owner>gangwu@chromium.org</owner>
@@ -110,6 +122,14 @@ chromium-metrics-reviews@google.com.
     Records the count of contents which are sent to the auxiliary search.
   </summary>
   <token key="AuxiliarySearchDataType" variants="AuxiliarySearchDataType"/>
+</histogram>
+
+<histogram name="Search.AuxiliarySearch.QueryTime.Favicons" units="ms"
+    expires_after="2025-09-15">
+  <owner>hanxi@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>Time taken for query favicons for the auxiliary search.</summary>
 </histogram>
 
 <histogram name="Search.AuxiliarySearch.QueryTime{AuxiliarySearchDataType}"
