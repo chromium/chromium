@@ -185,6 +185,9 @@ class FileSystemAccessManagerImplTest : public testing::Test {
 
     manager_->BindReceiver(kBindingContext,
                            manager_remote_.BindNewPipeAndPassReceiver());
+
+    EXPECT_CALL(permission_context_, IsFileTypeDangerous_)
+        .WillRepeatedly(testing::Return(false));
   }
 
   void TearDown() override {
@@ -2032,36 +2035,36 @@ TEST_F(FileSystemAccessManagerImplTest, IsSafePathComponent) {
   };
 
   for (const char* component : kSafePathComponents) {
-    EXPECT_TRUE(manager_->IsSafePathComponent(storage::kFileSystemTypeTemporary,
-                                              component))
+    EXPECT_TRUE(manager_->IsSafePathComponent(
+        storage::kFileSystemTypeTemporary, kTestStorageKey.origin(), component))
         << component;
-    EXPECT_TRUE(
-        manager_->IsSafePathComponent(storage::kFileSystemTypeLocal, component))
+    EXPECT_TRUE(manager_->IsSafePathComponent(
+        storage::kFileSystemTypeLocal, kTestStorageKey.origin(), component))
         << component;
-    EXPECT_TRUE(manager_->IsSafePathComponent(storage::kFileSystemTypeExternal,
-                                              component))
+    EXPECT_TRUE(manager_->IsSafePathComponent(
+        storage::kFileSystemTypeExternal, kTestStorageKey.origin(), component))
         << component;
   }
   for (const char* component : kAlwaysUnsafePathComponents) {
     EXPECT_FALSE(manager_->IsSafePathComponent(
-        storage::kFileSystemTypeTemporary, component))
+        storage::kFileSystemTypeTemporary, kTestStorageKey.origin(), component))
         << component;
-    EXPECT_FALSE(
-        manager_->IsSafePathComponent(storage::kFileSystemTypeLocal, component))
+    EXPECT_FALSE(manager_->IsSafePathComponent(
+        storage::kFileSystemTypeLocal, kTestStorageKey.origin(), component))
         << component;
-    EXPECT_FALSE(manager_->IsSafePathComponent(storage::kFileSystemTypeExternal,
-                                               component))
+    EXPECT_FALSE(manager_->IsSafePathComponent(
+        storage::kFileSystemTypeExternal, kTestStorageKey.origin(), component))
         << component;
   }
   for (const char* component : kUnsafeLocalPathComponents) {
-    EXPECT_TRUE(manager_->IsSafePathComponent(storage::kFileSystemTypeTemporary,
-                                              component))
+    EXPECT_TRUE(manager_->IsSafePathComponent(
+        storage::kFileSystemTypeTemporary, kTestStorageKey.origin(), component))
         << component;
-    EXPECT_FALSE(
-        manager_->IsSafePathComponent(storage::kFileSystemTypeLocal, component))
+    EXPECT_FALSE(manager_->IsSafePathComponent(
+        storage::kFileSystemTypeLocal, kTestStorageKey.origin(), component))
         << component;
-    EXPECT_FALSE(manager_->IsSafePathComponent(storage::kFileSystemTypeExternal,
-                                               component))
+    EXPECT_FALSE(manager_->IsSafePathComponent(
+        storage::kFileSystemTypeExternal, kTestStorageKey.origin(), component))
         << component;
   }
 }

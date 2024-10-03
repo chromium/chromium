@@ -146,6 +146,12 @@ bool AwFileSystemAccessPermissionContext::CanObtainWritePermission(
   return true;
 }
 
+bool AwFileSystemAccessPermissionContext::IsFileTypeDangerous(
+    const base::FilePath& path,
+    const url::Origin& origin) {
+  return false;
+}
+
 void AwFileSystemAccessPermissionContext::SetLastPickedDirectory(
     const url::Origin& origin,
     const std::string& id,

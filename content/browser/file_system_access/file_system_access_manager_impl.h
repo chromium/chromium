@@ -406,6 +406,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   // TODO(crbug.com/40159607): Merge this with
   // net::IsSafePortablePathComponent.
   bool IsSafePathComponent(storage::FileSystemType type,
+                           const url::Origin& origin,
                            const std::string& name);
 
   // Invokes `method` on the correct sequence on the FileSystemOperationRunner,

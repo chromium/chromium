@@ -64,6 +64,12 @@ class MockFileSystemAccessPermissionContext
                GlobalRenderFrameHostId frame_id,
                base::OnceCallback<void(AfterWriteCheckResult)>& callback));
 
+  bool IsFileTypeDangerous(const base::FilePath& path,
+                           const url::Origin& origin) override;
+  MOCK_METHOD(bool,
+              IsFileTypeDangerous_,
+              (const base::FilePath& path, const url::Origin& origin));
+
   MOCK_METHOD(bool,
               CanObtainReadPermission,
               (const url::Origin& origin),

@@ -54,6 +54,12 @@ void FakeFileSystemAccessPermissionContext::PerformAfterWriteChecks(
   std::move(callback).Run(AfterWriteCheckResult::kAllow);
 }
 
+bool FakeFileSystemAccessPermissionContext::IsFileTypeDangerous(
+    const base::FilePath& path,
+    const url::Origin& origin) {
+  return false;
+}
+
 bool FakeFileSystemAccessPermissionContext::CanObtainReadPermission(
     const url::Origin& origin) {
   return true;

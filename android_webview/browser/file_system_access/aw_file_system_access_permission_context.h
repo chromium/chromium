@@ -57,6 +57,8 @@ class AwFileSystemAccessPermissionContext
       base::OnceCallback<void(AfterWriteCheckResult)> callback) override;
   bool CanObtainReadPermission(const url::Origin& origin) override;
   bool CanObtainWritePermission(const url::Origin& origin) override;
+  bool IsFileTypeDangerous(const base::FilePath& path,
+                           const url::Origin& origin) override;
   void SetLastPickedDirectory(const url::Origin& origin,
                               const std::string& id,
                               const base::FilePath& path,

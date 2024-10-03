@@ -559,16 +559,12 @@ std::string_view GetGrantKeyFromGrantType(GrantType type) {
                                    : kPermissionReadableKey;
 }
 
-bool FileHasDangerousExtension(const url::Origin& origin,
-                               const base::FilePath& path,
-                               Profile* profile) {
-  safe_browsing::DownloadFileType::DangerLevel danger_level =
-      safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
-          path, origin.GetURL(), profile->GetPrefs());
-  // See https://crbug.com/1320877#c4 for justification for why we show the
-  // prompt if `danger_level` is ALLOW_ON_USER_GESTURE as well as DANGEROUS.
-  return danger_level == safe_browsing::DownloadFileType::DANGEROUS ||
-         danger_level == safe_browsing::DownloadFileType::ALLOW_ON_USER_GESTURE;
+safe_browsing::DownloadFileType::DangerLevel GetFileTypeDangerLevel(
+    const base::FilePath& path,
+    const url::Origin& origin,
+    Profile* profile) {
+  return safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
+      path, origin.GetURL(), profile->GetPrefs());
 }
 
 }  // namespace
@@ -1665,6 +1661,14 @@ bool ChromeFileSystemAccessPermissionContext::CanObtainWritePermission(
          GetWriteGuardContentSetting(origin) == CONTENT_SETTING_ALLOW;
 }
 
+bool ChromeFileSystemAccessPermissionContext::IsFileTypeDangerous(
+    const base::FilePath& path,
+    const url::Origin& origin) {
+  return GetFileTypeDangerLevel(path, origin,
+                                Profile::FromBrowserContext(profile_)) ==
+         safe_browsing::DownloadFileType::DANGEROUS;
+}
+
 void ChromeFileSystemAccessPermissionContext::ConfirmSensitiveEntryAccess(
     const url::Origin& origin,
     PathType path_type,
@@ -1847,16 +1851,22 @@ void ChromeFileSystemAccessPermissionContext::DidCheckPathAgainstBlocklist(
 
   // If attempting to save a file with a dangerous extension, prompt the user
   // to make them confirm they actually want to save the file.
-  if (handle_type == HandleType::kFile && user_action == UserAction::kSave &&
-      FileHasDangerousExtension(origin, path,
-                                Profile::FromBrowserContext(profile_))) {
-    auto result_callback =
-        base::BindPostTaskToCurrentDefault(std::move(callback));
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ShowFileSystemAccessDangerousFileDialogOnUIThread,
-                       frame_id, origin, path, std::move(result_callback)));
-    return;
+  if (handle_type == HandleType::kFile && user_action == UserAction::kSave) {
+    // See https://crbug.com/1320877#c4 for justification for why we show the
+    // prompt if `danger_level` is ALLOW_ON_USER_GESTURE as well as DANGEROUS.
+    auto danger_level = GetFileTypeDangerLevel(
+        path, origin, Profile::FromBrowserContext(profile_));
+    if (danger_level == safe_browsing::DownloadFileType::DANGEROUS ||
+        danger_level ==
+            safe_browsing::DownloadFileType::ALLOW_ON_USER_GESTURE) {
+      auto result_callback =
+          base::BindPostTaskToCurrentDefault(std::move(callback));
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&ShowFileSystemAccessDangerousFileDialogOnUIThread,
+                         frame_id, origin, path, std::move(result_callback)));
+      return;
+    }
   }
 
   std::move(callback).Run(SensitiveEntryResult::kAllowed);

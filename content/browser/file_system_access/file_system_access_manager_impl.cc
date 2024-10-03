@@ -391,32 +391,6 @@ std::string DisplayName(const base::FilePath& path,
   return (display_name.empty() ? path.BaseName() : display_name).AsUTF8Unsafe();
 }
 
-// Returns whether the specified extension receives special handling by the
-// Windows shell.
-bool IsShellIntegratedExtension(const base::FilePath::StringType& extension) {
-  base::FilePath::StringType extension_lower = base::ToLowerASCII(extension);
-
-  // .lnk and .scf files may be used to execute arbitrary code (see
-  // https://nvd.nist.gov/vuln/detail/CVE-2010-2568 and
-  // https://crbug.com/1227995, respectively). '.url' files can be used to read
-  // arbitrary files (see https://crbug.com/1307930 and
-  // https://crbug.com/1354518).
-  if (extension_lower == FILE_PATH_LITERAL("lnk") ||
-      extension_lower == FILE_PATH_LITERAL("scf") ||
-      extension_lower == FILE_PATH_LITERAL("url")) {
-    return true;
-  }
-
-  // Setting a file's extension to a CLSID may conceal its actual file type on
-  // some Windows versions (see https://nvd.nist.gov/vuln/detail/CVE-2004-0420).
-  if (!extension_lower.empty() &&
-      (extension_lower.front() == FILE_PATH_LITERAL('{')) &&
-      (extension_lower.back() == FILE_PATH_LITERAL('}'))) {
-    return true;
-  }
-  return false;
-}
-
 }  // namespace
 
 FileSystemAccessManagerImpl::SharedHandleState::SharedHandleState(
@@ -2085,6 +2059,7 @@ FileSystemAccessManagerImpl::AsWeakPtr() {
 
 bool FileSystemAccessManagerImpl::IsSafePathComponent(
     storage::FileSystemType type,
+    const url::Origin& origin,
     const std::string& name) {
   // This method is similar to net::IsSafePortablePathComponent, with a few
   // notable differences where the net version does not consider names safe
@@ -2094,16 +2069,19 @@ bool FileSystemAccessManagerImpl::IsSafePathComponent(
   //  - Names starting with a '.'. These would be hidden files in most file
   //    managers, but are something we explicitly want to support for the
   //    File System Access API, for names like .git.
-  //  - Names that end in '.local'. For downloads writing to such files is
-  //    dangerous since it might modify what code is executed when an executable
-  //    is ran from the same directory. For the File System Access API this
-  //    isn't really a problem though, since if a website can write to a .local
-  //    file via a FileSystemDirectoryHandle they can also just modify the
-  //    executables in the directory directly.
+  //  - safe_browsing::DownloadFileType::DangerLevel::kDangerous are considered
+  //    not safe, with an exception of '.local'. For downloads writing to such
+  //    files is dangerous since it might modify what code is executed when an
+  //    executable is ran from the same directory. For the File System Access
+  //    API this isn't really a problem though, since if a website can write to
+  //    a .local file via a FileSystemDirectoryHandle they can also just modify
+  //    the executables in the directory directly.
   //
   // TODO(crbug.com/40159607): Unify this with
   // net::IsSafePortablePathComponent, with the result probably ending up in
   // base/i18n/file_util_icu.h.
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const base::FilePath component = storage::StringToFilePath(name);
   // Empty names, or names that contain path separators are invalid.
@@ -2151,7 +2129,32 @@ bool FileSystemAccessManagerImpl::IsSafePathComponent(
   if (!extension.empty()) {
     extension.erase(extension.begin());  // Erase preceding '.'.
   }
-  if (IsShellIntegratedExtension(extension)) {
+
+  base::FilePath::StringType extension_lower = base::ToLowerASCII(extension);
+  // .lnk and .scf files may be used to execute arbitrary code (see
+  // https://nvd.nist.gov/vuln/detail/CVE-2010-2568 and
+  // https://crbug.com/1227995, respectively). '.url' files can be used to read
+  // arbitrary files (see https://crbug.com/1307930 and
+  // https://crbug.com/1354518).
+  if (extension_lower == FILE_PATH_LITERAL("lnk") ||
+      extension_lower == FILE_PATH_LITERAL("scf") ||
+      extension_lower == FILE_PATH_LITERAL("url")) {
+    return false;
+  }
+
+  // Setting a file's extension to a CLSID may conceal its actual file type on
+  // some Windows versions (see https://nvd.nist.gov/vuln/detail/CVE-2004-0420).
+  if (!extension_lower.empty() &&
+      (extension_lower.front() == FILE_PATH_LITERAL('{')) &&
+      (extension_lower.back() == FILE_PATH_LITERAL('}'))) {
+    return false;
+  }
+
+  // Extensions with `safe_browsing::DownloadFileType::DANGEROUS` type, per
+  // components/safe_browsing/content/resources/download_file_types.asciipb,
+  // are considered unsafe, with an exception of ".local" extensions.
+  if (extension_lower != FILE_PATH_LITERAL("local") && permission_context_ &&
+      permission_context_->IsFileTypeDangerous(component, origin)) {
     return false;
   }
 

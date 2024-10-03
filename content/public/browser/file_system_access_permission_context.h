@@ -140,6 +140,11 @@ class FileSystemAccessPermissionContext {
       GlobalRenderFrameHostId frame_id,
       base::OnceCallback<void(AfterWriteCheckResult)> callback) = 0;
 
+  // Returns whether the file type is considered dangerous. This is used to
+  // block file operations from creating or accessing these file types.
+  virtual bool IsFileTypeDangerous(const base::FilePath& path,
+                                   const url::Origin& origin) = 0;
+
   // Returns whether the give |origin| already allows read permission, or it is
   // possible to request one. This is used to block file dialogs from being
   // shown if permission won't be granted anyway.
