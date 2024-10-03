@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 
 #include "testing/gtest/include/gtest/gtest-death-test.h"
@@ -51,29 +46,12 @@ bool operator!=(const OffsetMappingUnit& unit, const OffsetMappingUnit& other) {
 }
 
 void PrintTo(const OffsetMappingUnit& unit, std::ostream* ostream) {
-  static const char* kTypeNames[] = {"Identity", "Collapsed", "Expanded"};
+  static const std::array<const char*, 3> kTypeNames = {"Identity", "Collapsed",
+                                                        "Expanded"};
   *ostream << "{" << kTypeNames[static_cast<unsigned>(unit.GetType())] << " "
            << unit.GetLayoutObject() << " dom=" << unit.DOMStart() << "-"
            << unit.DOMEnd() << " tc=" << unit.TextContentStart() << "-"
            << unit.TextContentEnd() << "}";
-}
-
-bool operator==(const HeapVector<OffsetMappingUnit>& units1,
-                const HeapVector<OffsetMappingUnit>& units2) {
-  if (units1.size() != units2.size())
-    return false;
-  auto it2 = units2.begin();
-  for (const auto& unit1 : units1) {
-    if (unit1 != *it2)
-      return false;
-    ++it2;
-  }
-  return true;
-}
-
-bool operator==(const HeapVector<OffsetMappingUnit>& units,
-                const base::span<const OffsetMappingUnit>& range) {
-  return units == ToVector(range);
 }
 
 void PrintTo(const HeapVector<OffsetMappingUnit>& units,
