@@ -12,11 +12,13 @@
   left: 0;
   min-width: 245px;
   width: 80%;
+  background: #303030;
 }
 
 #toastDiv {
   line-height: 1.2;
   white-space: normal;
+  color: #F2F2F2;
 }
 
 #toastTitle {
