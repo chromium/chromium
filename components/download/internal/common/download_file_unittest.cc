@@ -1455,6 +1455,48 @@ TEST_F(DownloadFileTestWithObfuscation, ObfuscationDisabled) {
 
   DestroyDownloadFile(0);
 }
+
+TEST_F(DownloadFileTestWithObfuscation, DeobfuscateAndRename) {
+  size_t length = strlen(kTestData1) + strlen(kTestData2) + strlen(kTestData3);
+  ASSERT_TRUE(CreateDownloadFile(length, true));
+  const char* chunks[] = {kTestData1, kTestData2, kTestData3};
+
+  EXPECT_CALL(*input_stream_, RegisterDataReadyCallback(_))
+      .Times(1)
+      .RetiresOnSaturation();
+
+  expected_data_ += std::string(CalculateObfuscationOverhead(3), '\0');
+  AppendDataToFile(chunks, 3);
+  FinishStream(DOWNLOAD_INTERRUPT_REASON_NONE, true, kDataHash);
+
+  // Deobfuscate the file in place.
+  base::expected<void, enterprise_obfuscation::Error> deobfuscate_result =
+      enterprise_obfuscation::DeobfuscateFileInPlace(
+          download_file_->FullPath());
+  EXPECT_TRUE(deobfuscate_result.has_value());
+
+  EXPECT_CALL(quarantine_, QuarantineFile(_, _, _, _, _, _))
+      .WillOnce(WithArg<5>(
+          [](quarantine::mojom::Quarantine::QuarantineFileCallback callback) {
+            std::move(callback).Run(
+                quarantine::mojom::QuarantineFileResult::OK);
+          }));
+
+  // Test renaming after deobfuscation.
+  base::FilePath initial_path(download_file_->FullPath());
+  base::FilePath new_path(initial_path.InsertBeforeExtensionASCII("_renamed"));
+  DownloadInterruptReason rename_reason = RenameAndAnnotate(new_path, nullptr);
+  EXPECT_EQ(DOWNLOAD_INTERRUPT_REASON_NONE, rename_reason);
+  EXPECT_TRUE(base::PathExists(new_path));
+  EXPECT_FALSE(base::PathExists(initial_path));
+
+  // Verify the final file size after renaming.
+  int64_t final_size;
+  ASSERT_TRUE(base::GetFileSize(new_path, &final_size));
+  EXPECT_EQ(length, static_cast<size_t>(final_size));
+
+  DestroyDownloadFile(0, false);
+}
 #endif
 
 }  // namespace download

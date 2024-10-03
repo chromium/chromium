@@ -85,12 +85,15 @@ void InitializeFile(base::File* file, const base::FilePath& file_path) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Use exclusive write to prevent another process from writing the file.
-  file->Initialize(file_path,
-                   base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WRITE |
-                       base::File::FLAG_READ |
-                       // Don't allow other processes to write to the file while
-                       // Chrome is writing (Windows-specific).
-                       base::File::FLAG_WIN_EXCLUSIVE_WRITE);
+  file->Initialize(
+      file_path,
+      base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WRITE |
+          base::File::FLAG_READ |
+          // Don't allow other processes to write to the file while
+          // Chrome is writing (Windows-specific).
+          base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+          // Allow the file to be renamed or replaced (Windows-specific).
+          base::File::FLAG_WIN_SHARE_DELETE);
 }
 
 void DeleteFileWrapper(const base::FilePath& file_path) {
