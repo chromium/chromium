@@ -665,7 +665,8 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       if (has_aspect_ratio) {
         const MinMaxSizes inline_min_max = ComputeMinMaxInlineSizes(
             flex_basis_space, child, border_padding_in_child_writing_mode,
-            /* auto_min_length */ nullptr, MinMaxSizesFunc);
+            /* auto_min_length */ nullptr, MinMaxSizesFunc,
+            TransferredSizesMode::kIgnore);
         const MinMaxSizes min_max = ComputeTransferredMinMaxBlockSizes(
             child_style.LogicalAspectRatio(), inline_min_max,
             border_padding_in_child_writing_mode,
@@ -828,7 +829,8 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         is_main_axis_inline_axis
             ? ComputeMinMaxInlineSizes(
                   flex_basis_space, child, border_padding_in_child_writing_mode,
-                  base::OptionalToPtr(auto_min_length), MinMaxSizesFunc)
+                  base::OptionalToPtr(auto_min_length), MinMaxSizesFunc,
+                  TransferredSizesMode::kIgnore)
             : ComputeMinMaxBlockSizes(
                   flex_basis_space, child, border_padding_in_child_writing_mode,
                   base::OptionalToPtr(auto_min_length), BlockSizeFunc);

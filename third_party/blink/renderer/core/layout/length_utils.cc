@@ -705,12 +705,14 @@ MinMaxSizes ComputeMinMaxInlineSizesFromAspectRatio(
                                              style.BoxSizingForAspectRatio());
 }
 
-MinMaxSizes ComputeMinMaxInlineSizes(const ConstraintSpace& space,
-                                     const BlockNode& node,
-                                     const BoxStrut& border_padding,
-                                     const Length* auto_min_length,
-                                     MinMaxSizesFunctionRef min_max_sizes_func,
-                                     LayoutUnit override_available_size) {
+MinMaxSizes ComputeMinMaxInlineSizes(
+    const ConstraintSpace& space,
+    const BlockNode& node,
+    const BoxStrut& border_padding,
+    const Length* auto_min_length,
+    MinMaxSizesFunctionRef min_max_sizes_func,
+    TransferredSizesMode transferred_sizes_mode,
+    LayoutUnit override_available_size) {
   const ComputedStyle& style = node.Style();
   MinMaxSizes sizes = {
       ResolveMinInlineLength(space, style, border_padding, min_max_sizes_func,
@@ -726,7 +728,8 @@ MinMaxSizes ComputeMinMaxInlineSizes(const ConstraintSpace& space,
 
   // This implements the transferred min/max sizes per:
   // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-size-transfers
-  if (!style.AspectRatio().IsAuto() && style.LogicalWidth().HasAuto() &&
+  if (transferred_sizes_mode == TransferredSizesMode::kNormal &&
+      !style.AspectRatio().IsAuto() && style.LogicalWidth().HasAuto() &&
       space.InlineAutoBehavior() != AutoSizeBehavior::kStretchExplicit) {
     MinMaxSizes transferred_sizes =
         ComputeMinMaxInlineSizesFromAspectRatio(space, node, border_padding);

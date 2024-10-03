@@ -730,7 +730,7 @@ bool ComputeOofInlineDimensions(
     const MinMaxSizes min_max_inline_sizes = ComputeMinMaxInlineSizes(
         space, node, border_padding,
         apply_automatic_min_size ? &Length::MinIntrinsic() : nullptr,
-        MinMaxSizesFunc, imcb.InlineSize());
+        MinMaxSizesFunc, TransferredSizesMode::kNormal, imcb.InlineSize());
 
     inline_size = min_max_inline_sizes.ClampSizeToMinAndMax(main_inline_size);
   }
