@@ -62,7 +62,7 @@ void FatalGpuErrorFn(const char* msg) {
     error_reason = GpuErrorReason::kDxgiErrorDeviceHung;
   } else if (msg_str.find("DXGI_ERROR_DEVICE_REMOVED") != std::string::npos) {
     error_reason = GpuErrorReason::kDxgiErrorDeviceRemoved;
-  } else if (msg_str.find("Failed to create device.") != std::string::npos) {
+  } else if (msg_str.find("Failed to create device") != std::string::npos) {
     error_reason = GpuErrorReason::kDeviceCreationFailed;
   }
   base::UmaHistogramEnumeration("OnDeviceModel.GpuErrorReason", error_reason);
