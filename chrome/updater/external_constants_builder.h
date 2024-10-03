@@ -70,11 +70,11 @@ class ExternalConstantsBuilder {
   ExternalConstantsBuilder& ClearGroupPolicies();
 
   ExternalConstantsBuilder& SetOverinstallTimeout(
-      const base::TimeDelta& overinstall_timeout);
+      base::TimeDelta overinstall_timeout);
   ExternalConstantsBuilder& ClearOverinstallTimeout();
 
   ExternalConstantsBuilder& SetIdleCheckPeriod(
-      const base::TimeDelta& idle_check_period);
+      base::TimeDelta idle_check_period);
   ExternalConstantsBuilder& ClearIdleCheckPeriod();
 
   ExternalConstantsBuilder& SetMachineManaged(
@@ -85,7 +85,7 @@ class ExternalConstantsBuilder {
   ExternalConstantsBuilder& ClearEnableDiffUpdates();
 
   ExternalConstantsBuilder& SetCecaConnectionTimeout(
-      const base::TimeDelta& ceca_connection_timeout);
+      base::TimeDelta ceca_connection_timeout);
   ExternalConstantsBuilder& ClearCecaConnectionTimeout();
 
   // Write the external constants overrides file in the default location

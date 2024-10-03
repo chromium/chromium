@@ -95,7 +95,7 @@ Matcher CreatePacUrlMatcher(const TestServer& test_server);
 
 // Create and serialize a LogResponse proto.
 std::string CreateLogResponse(
-    const base::TimeDelta& next_request_wait = base::Seconds(0));
+    base::TimeDelta next_request_wait = base::Seconds(0));
 
 }  // namespace enterprise_companion
 

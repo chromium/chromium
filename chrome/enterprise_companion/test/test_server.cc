@@ -131,7 +131,7 @@ Matcher CreatePacUrlMatcher(const TestServer& test_server) {
   });
 }
 
-std::string CreateLogResponse(const base::TimeDelta& next_request_wait) {
+std::string CreateLogResponse(base::TimeDelta next_request_wait) {
   proto::LogResponse response;
   response.set_next_request_wait_millis(next_request_wait.InMilliseconds());
   return response.SerializeAsString();

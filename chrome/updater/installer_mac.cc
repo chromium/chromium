@@ -23,7 +23,7 @@ InstallerResult RunApplicationInstaller(
     const std::string& arguments,
     const std::optional<base::FilePath>& installer_data_file,
     bool usage_stats_enabled,
-    const base::TimeDelta& timeout,
+    base::TimeDelta timeout,
     InstallProgressCallback /*progress_callback*/) {
   if (!PrepareToRunBundle(app_installer)) {
     VLOG(0) << "Prep failed -- Gatekeeper may prompt for " << app_installer;

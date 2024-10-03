@@ -21,7 +21,7 @@ InstallerResult RunApplicationInstaller(
     const std::string& arguments,
     const std::optional<base::FilePath>& install_data_file,
     bool usage_stats_enabled,
-    const base::TimeDelta& timeout,
+    base::TimeDelta timeout,
     InstallProgressCallback /*progress_callback*/) {
   base::LaunchOptions options;
   if (install_data_file) {

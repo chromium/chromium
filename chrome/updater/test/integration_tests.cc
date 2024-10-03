@@ -293,9 +293,9 @@ class IntegrationTest : public ::testing::Test {
       const GURL& crash_upload_url,
       const GURL& device_management_url,
       const GURL& app_logo_url,
-      const base::TimeDelta& idle_timeout,
-      const base::TimeDelta& server_keep_alive_time = base::Seconds(2),
-      const base::TimeDelta& ceca_connection_timeout = base::Seconds(10)) {
+      base::TimeDelta idle_timeout,
+      base::TimeDelta server_keep_alive_time = base::Seconds(2),
+      base::TimeDelta ceca_connection_timeout = base::Seconds(10)) {
     test_commands_->EnterTestMode(
         update_url, crash_upload_url, device_management_url, app_logo_url,
         idle_timeout, server_keep_alive_time, ceca_connection_timeout);

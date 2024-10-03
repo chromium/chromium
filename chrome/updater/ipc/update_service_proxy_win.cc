@@ -1049,7 +1049,7 @@ void UpdateServiceProxyImpl::RunInstaller(
 
 scoped_refptr<UpdateService> CreateUpdateServiceProxy(
     UpdaterScope updater_scope,
-    const base::TimeDelta& /*get_version_timeout*/) {
+    base::TimeDelta /*get_version_timeout*/) {
   return base::MakeRefCounted<UpdateServiceProxy>(
       base::MakeRefCounted<UpdateServiceProxyImpl>(updater_scope));
 }

@@ -468,7 +468,7 @@ InstallerResult RunApplicationInstaller(
     const std::string& arguments,
     const std::optional<base::FilePath>& installer_data_file,
     bool usage_stats_enabled,
-    const base::TimeDelta& timeout,
+    base::TimeDelta timeout,
     InstallProgressCallback progress_callback) {
   if (!app_installer.MatchesExtension(L".exe") &&
       !app_installer.MatchesExtension(L".msi")) {

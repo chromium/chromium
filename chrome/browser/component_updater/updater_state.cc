@@ -228,7 +228,7 @@ UpdaterState::Attributes UpdaterState::Serialize() const {
   return attributes;
 }
 
-std::string UpdaterState::NormalizeTimeDelta(const base::TimeDelta& delta) {
+std::string UpdaterState::NormalizeTimeDelta(base::TimeDelta delta) {
   const base::TimeDelta two_weeks = base::Days(14);
   const base::TimeDelta two_months = base::Days(56);
 

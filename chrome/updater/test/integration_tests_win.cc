@@ -386,7 +386,7 @@ void CheckInstallation(UpdaterScope scope,
              FILE_PATH_LITERAL(","));
 }
 
-void SleepFor(const base::TimeDelta& interval) {
+void SleepFor(base::TimeDelta interval) {
   VLOG(2) << "Sleeping " << interval.InSecondsF() << " seconds...";
   base::PlatformThread::Sleep(interval);
   VLOG(2) << "Sleep complete.";

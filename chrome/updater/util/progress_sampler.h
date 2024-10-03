@@ -19,8 +19,8 @@ class ProgressSampler {
   // Creates a sampler that keep samples within the last `sample_time_range` and
   // calculates the remaining time if the minimum time range of
   // `minimum_range_required` is reached.
-  ProgressSampler(const base::TimeDelta& sample_time_range,
-                  const base::TimeDelta& minimum_range_required);
+  ProgressSampler(base::TimeDelta sample_time_range,
+                  base::TimeDelta minimum_range_required);
   ~ProgressSampler();
 
   // Adds a sample for the current time.

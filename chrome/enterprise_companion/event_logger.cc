@@ -325,7 +325,7 @@ class EventLoggerManagerImpl : public EventLoggerManager {
         base::Milliseconds(response.next_request_wait_millis()), min_timeout));
   }
 
-  void SetCooldown(const base::TimeDelta& cooldown) {
+  void SetCooldown(base::TimeDelta cooldown) {
     cooldown_timer_.Start(
         FROM_HERE, cooldown,
         base::BindOnce(&EventLoggerManagerImpl::OnCooldownExhausted,

@@ -16,7 +16,7 @@ class UpdateServiceInternal;
 
 scoped_refptr<UpdateService> CreateUpdateServiceProxy(
     UpdaterScope updater_scope,
-    const base::TimeDelta& get_version_timeout = base::TimeDelta::Max());
+    base::TimeDelta get_version_timeout = base::TimeDelta::Max());
 
 scoped_refptr<UpdateServiceInternal> CreateUpdateServiceInternalProxy(
     UpdaterScope updater_scope);

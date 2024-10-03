@@ -60,7 +60,7 @@ InstallerResult RunApplicationInstaller(
     const std::string& install_args,
     const std::optional<base::FilePath>& server_install_data,
     bool usage_stats_enabled,
-    const base::TimeDelta& timeout,
+    base::TimeDelta timeout,
     InstallProgressCallback progress_callback);
 
 // Retrieves the value of `keyname` from `path` (a plist, on macOS). If the

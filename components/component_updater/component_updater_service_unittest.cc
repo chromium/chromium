@@ -116,8 +116,8 @@ class MockServiceObserver : public ServiceObserver {
 class MockUpdateScheduler : public UpdateScheduler {
  public:
   MOCK_METHOD4(Schedule,
-               void(const base::TimeDelta& initial_delay,
-                    const base::TimeDelta& delay,
+               void(base::TimeDelta initial_delay,
+                    base::TimeDelta delay,
                     const UserTask& user_task,
                     const OnStopTaskCallback& on_stop));
   MOCK_METHOD0(Stop, void());
@@ -181,8 +181,8 @@ class ComponentUpdaterTest : public testing::Test {
 
  private:
   void RunUpdateTask(const UpdateScheduler::UserTask& user_task);
-  void Schedule(const base::TimeDelta& initial_delay,
-                const base::TimeDelta& delay,
+  void Schedule(base::TimeDelta initial_delay,
+                base::TimeDelta delay,
                 const UpdateScheduler::UserTask& user_task,
                 const UpdateScheduler::OnStopTaskCallback& on_stop);
 
@@ -270,8 +270,8 @@ void ComponentUpdaterTest::RunUpdateTask(
 }
 
 void ComponentUpdaterTest::Schedule(
-    const base::TimeDelta& initial_delay,
-    const base::TimeDelta& delay,
+    base::TimeDelta initial_delay,
+    base::TimeDelta delay,
     const UpdateScheduler::UserTask& user_task,
     const UpdateScheduler::OnStopTaskCallback& on_stop) {
   RunUpdateTask(user_task);

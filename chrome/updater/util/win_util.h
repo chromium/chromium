@@ -352,7 +352,7 @@ bool IsShutdownEventSignaled(UpdaterScope scope);
 // `wait_period`, and if the processes still have not exited, by terminating the
 // processes.
 void StopProcessesUnderPath(const base::FilePath& path,
-                            const base::TimeDelta& wait_period);
+                            base::TimeDelta wait_period);
 
 // Returns `true` if the argument is a guid.
 bool IsGuid(const std::wstring& s);

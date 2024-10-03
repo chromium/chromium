@@ -14,8 +14,8 @@
 
 namespace updater {
 
-ProgressSampler::ProgressSampler(const base::TimeDelta& sample_time_range,
-                                 const base::TimeDelta& minimum_range_required)
+ProgressSampler::ProgressSampler(base::TimeDelta sample_time_range,
+                                 base::TimeDelta minimum_range_required)
     : sample_time_range_(sample_time_range),
       minimum_range_required_(minimum_range_required) {
   CHECK(minimum_range_required.is_positive());

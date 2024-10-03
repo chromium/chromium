@@ -192,10 +192,9 @@ bool RetryDeletePathRecursively(const base::FilePath& path) {
       /*seconds_between_tries=*/base::Seconds(1));
 }
 
-bool RetryDeletePathRecursivelyCustom(
-    const base::FilePath& path,
-    size_t tries,
-    const base::TimeDelta& seconds_between_tries) {
+bool RetryDeletePathRecursivelyCustom(const base::FilePath& path,
+                                      size_t tries,
+                                      base::TimeDelta seconds_between_tries) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
   for (size_t i = 0;;) {

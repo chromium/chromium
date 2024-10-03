@@ -155,7 +155,7 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::ClearGroupPolicies() {
 }
 
 ExternalConstantsBuilder& ExternalConstantsBuilder::SetOverinstallTimeout(
-    const base::TimeDelta& overinstall_timeout) {
+    base::TimeDelta overinstall_timeout) {
   overrides_.Set(kDevOverrideKeyOverinstallTimeout,
                  static_cast<int>(overinstall_timeout.InSeconds()));
   return *this;
@@ -167,7 +167,7 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::ClearOverinstallTimeout() {
 }
 
 ExternalConstantsBuilder& ExternalConstantsBuilder::SetIdleCheckPeriod(
-    const base::TimeDelta& idle_check_period) {
+    base::TimeDelta idle_check_period) {
   overrides_.Set(kDevOverrideKeyIdleCheckPeriodSeconds,
                  static_cast<int>(idle_check_period.InSeconds()));
   return *this;
@@ -204,7 +204,7 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::ClearEnableDiffUpdates() {
 }
 
 ExternalConstantsBuilder& ExternalConstantsBuilder::SetCecaConnectionTimeout(
-    const base::TimeDelta& ceca_connection_timeout) {
+    base::TimeDelta ceca_connection_timeout) {
   overrides_.Set(kDevOverrideKeyCecaConnectionTimeout,
                  static_cast<int>(ceca_connection_timeout.InSeconds()));
   return *this;

@@ -168,7 +168,7 @@ base::RepeatingCallback<bool(Args...)> WithSwitch(
 template <typename... Args>
 base::RepeatingCallback<bool(Args...)> WithSwitch(
     const std::string& flag,
-    base::RepeatingCallback<bool(const base::TimeDelta&, Args...)> callback) {
+    base::RepeatingCallback<bool(base::TimeDelta, Args...)> callback) {
   return WithSwitch(
       flag,
       base::BindLambdaForTesting([=](const std::string& flag, Args... args) {
