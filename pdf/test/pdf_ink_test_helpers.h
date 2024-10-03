@@ -5,12 +5,15 @@
 #ifndef PDF_TEST_PDF_INK_TEST_HELPERS_H_
 #define PDF_TEST_PDF_INK_TEST_HELPERS_H_
 
+#include <optional>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/ink/src/ink/geometry/affine_transform.h"
+#include "third_party/ink/src/ink/strokes/input/stroke_input_batch.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace chrome_pdf {
@@ -29,6 +32,10 @@ struct PdfInkInputData {
   gfx::PointF position;
   base::TimeDelta time;
 };
+
+// Generates an ink::StrokeInputBatch.  Treats `inputs` as mouse inputs.
+std::optional<ink::StrokeInputBatch> CreateInkInputBatch(
+    base::span<const PdfInkInputData> inputs);
 
 base::Value::Dict CreateSetAnnotationModeMessageForTesting(bool enable);
 

@@ -14,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "pdf/pdf_ink_brush.h"
-#include "pdf/pdf_ink_conversions.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_engine_exports.h"
 #include "pdf/pdfium/pdfium_page.h"
@@ -78,19 +77,6 @@ constexpr auto kBasicInputs = std::to_array<PdfInkInputData>({
     {{125.878f, 53.2194f}, base::Seconds(0.985401f)},
 });
 
-std::optional<ink::StrokeInputBatch> CreateInputBatch(
-    base::span<const PdfInkInputData> inputs) {
-  ink::StrokeInputBatch input_batch;
-  for (const auto& input : inputs) {
-    auto result = input_batch.Append(CreateInkStrokeInput(
-        ink::StrokeInput::ToolType::kMouse, input.position, input.time));
-    if (!result.ok()) {
-      return std::nullopt;
-    }
-  }
-  return input_batch;
-}
-
 base::FilePath GetReferenceFilePath(std::string_view test_filename) {
   return base::FilePath(FILE_PATH_LITERAL("pdfium_ink"))
       .AppendASCII(test_filename);
@@ -142,7 +128,8 @@ TEST_P(PDFiumInkWriterTest, Basic) {
   auto brush =
       std::make_unique<PdfInkBrush>(PdfInkBrush::Type::kPen, kBasicBrushParams);
 
-  std::optional<ink::StrokeInputBatch> inputs = CreateInputBatch(kBasicInputs);
+  std::optional<ink::StrokeInputBatch> inputs =
+      CreateInkInputBatch(kBasicInputs);
   ASSERT_TRUE(inputs.has_value());
   ink::Stroke stroke(brush->GetInkBrush(), inputs.value());
   ASSERT_TRUE(WriteStrokeToPage(page, stroke));
