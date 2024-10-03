@@ -6,30 +6,31 @@
 
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/app/application_delegate/app_state_observer.h"
+#import "ios/chrome/app/profile/profile_init_stage.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/post_default_abandonment/features.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 
 @interface DefaultBrowserPromoSceneAgent ()
 
-// Indicates whether the user has already seen the post restore default browser
-// promo in the current app session.
-@property(nonatomic, assign) BOOL postRestorePromoSeenInCurrentSession;
-
 // YES if the main profile for this scene is signed in.
 @property(nonatomic, readonly, getter=isSignedIn) BOOL signedIn;
 
+// The feature engagement tracker for self, if it exists.
+@property(nonatomic, readonly)
+    feature_engagement::Tracker* featureEngagementTracker;
+
 @end
 
-@implementation DefaultBrowserPromoSceneAgent
+@implementation DefaultBrowserPromoSceneAgent {
+  // Indicates whether the user has already seen the post restore default
+  // browser promo in the current app session.
+  BOOL _postRestorePromoSeenInCurrentSession;
+}
 
 #pragma mark - Private
 
@@ -102,18 +103,6 @@
   }
 }
 
-- (BOOL)isSignedIn {
-  ProfileIOS* profile = self.sceneState.browserProviderInterface
-                            .mainBrowserProvider.browser->GetProfile();
-
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForProfile(profile);
-  DCHECK(authenticationService);
-  DCHECK(authenticationService->initialized());
-  return authenticationService->HasPrimaryIdentity(
-      signin::ConsentLevel::kSignin);
-}
-
 // Signed in users are eligible for generic default browser promo. Notify FET if
 // user is currently signed in.
 - (void)notifyFETSigninStatus {
@@ -121,16 +110,10 @@
     return;
   }
 
-  Browser* browser =
-      self.sceneState.browserProviderInterface.mainBrowserProvider.browser;
-  if (!browser || !browser->GetProfile()) {
-    return;
+  if (feature_engagement::Tracker* tracker = self.featureEngagementTracker) {
+    tracker->NotifyEvent(
+        feature_engagement::events::kGenericDefaultBrowserPromoConditionsMet);
   }
-
-  feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForProfile(browser->GetProfile());
-  tracker->NotifyEvent(
-      feature_engagement::events::kGenericDefaultBrowserPromoConditionsMet);
 }
 
 - (void)maybeSetTriggerCriteriaExperimentStartTimestamp {
@@ -143,16 +126,11 @@
 - (void)maybeNotifyFETTriggerCriteriaExperimentConditionMet {
   if (IsDefaultBrowserTriggerCriteraExperimentEnabled() &&
       HasTriggerCriteriaExperimentStarted21days()) {
-    Browser* browser =
-        self.sceneState.browserProviderInterface.mainBrowserProvider.browser;
-    if (!browser || !browser->GetProfile()) {
-      return;
+    if (feature_engagement::Tracker* tracker = self.featureEngagementTracker) {
+      tracker->NotifyEvent(
+          feature_engagement::events::
+              kDefaultBrowserPromoTriggerCriteriaConditionsMet);
     }
-    feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForProfile(
-            browser->GetProfile());
-    tracker->NotifyEvent(feature_engagement::events::
-                             kDefaultBrowserPromoTriggerCriteriaConditionsMet);
   }
 }
 
@@ -162,7 +140,7 @@
     transitionedToActivationLevel:(SceneActivationLevel)level {
   DCHECK(self.promosManager);
 
-  if (self.sceneState.appState.initStage < AppInitStage::kFinal) {
+  if (self.sceneState.profileState.initStage < ProfileInitStage::kFinal) {
     return;
   }
 
@@ -178,6 +156,31 @@
     [self maybeSetTriggerCriteriaExperimentStartTimestamp];
     [self maybeNotifyFETTriggerCriteriaExperimentConditionMet];
   }
+}
+
+#pragma mark - Private properties
+
+- (BOOL)isSignedIn {
+  ProfileIOS* profile = self.sceneState.profileState.profile;
+  if (!profile) {
+    return NO;
+  }
+
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForProfile(profile);
+  DCHECK(authenticationService);
+  DCHECK(authenticationService->initialized());
+  return authenticationService->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin);
+}
+
+- (feature_engagement::Tracker*)featureEngagementTracker {
+  ProfileIOS* profile = self.sceneState.profileState.profile;
+  if (!profile) {
+    return nullptr;
+  }
+
+  return feature_engagement::TrackerFactory::GetForProfile(profile);
 }
 
 @end

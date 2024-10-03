@@ -9,11 +9,8 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/signin/public/base/signin_metrics.h"
-#import "components/sync_preferences/pref_service_mock_factory.h"
-#import "components/sync_preferences/pref_service_syncable.h"
-#import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/app/application_delegate/fake_startup_information.h"
+#import "ios/chrome/app/profile/profile_init_stage.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/post_default_abandonment/features.h"
@@ -21,11 +18,11 @@
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/promos_manager/model/mock_promos_manager.h"
+#import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -34,6 +31,7 @@
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -47,10 +45,19 @@ using testing::Mock;
 using testing::NiceMock;
 
 namespace {
-std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
-    web::BrowserState* browser_state) {
+
+// Factory returning a mock feature engagement tracker.
+std::unique_ptr<KeyedService> BuildMockFeatureEngagementTracker(
+    web::BrowserState* context) {
   return std::make_unique<feature_engagement::test::MockTracker>();
 }
+
+// Factory returning a mock PromosManager.
+std::unique_ptr<KeyedService> BuildMockPromosManager(
+    web::BrowserState* context) {
+  return std::make_unique<NiceMock<MockPromosManager>>();
+}
+
 }  // namespace
 
 class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
@@ -60,40 +67,38 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
  protected:
   void SetUp() override {
     ClearDefaultBrowserPromoData();
-    local_state_ = std::make_unique<TestingPrefServiceSimple>();
-    RegisterLocalStatePrefs(local_state_->registry());
-    TestingApplicationContext::GetGlobal()->SetLocalState(local_state_.get());
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
-        base::BindRepeating(&BuildFeatureEngagementMockTracker));
+        base::BindRepeating(&BuildMockFeatureEngagementTracker));
+    builder.AddTestingFactory(PromosManagerFactory::GetInstance(),
+                              base::BindOnce(&BuildMockPromosManager));
     profile_ = std::move(builder).Build();
     AuthenticationServiceFactory::CreateAndInitializeForProfile(
         profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
-    startup_information_ = [[FakeStartupInformation alloc] init];
-    [startup_information_ setIsColdStart:YES];
-    app_state_ =
-        [[AppState alloc] initWithStartupInformation:startup_information_];
-    scene_state_ = [[FakeSceneState alloc] initWithAppState:app_state_
-                                                    profile:profile_.get()];
-    scene_state_.scene = static_cast<UIWindowScene*>(
-        [[[UIApplication sharedApplication] connectedScenes] anyObject]);
-    promos_manager_ = std::make_unique<NiceMock<MockPromosManager>>();
-    agent_ = [[DefaultBrowserPromoSceneAgent alloc] init];
-    agent_.sceneState = scene_state_;
-    agent_.promosManager = promos_manager_.get();
 
-    // Set app state initialization stage to final.
-    // App state stage can be moved only one stage at a time.
-    while (app_state_.initStage < AppInitStage::kFinal) {
-      [app_state_ queueTransitionToNextInitStage];
-    }
+    promos_manager_ = static_cast<NiceMock<MockPromosManager>*>(
+        PromosManagerFactory::GetForProfile(profile_.get()));
 
     mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(
         feature_engagement::TrackerFactory::GetForProfile(profile_.get()));
+
+    profile_state_ = OCMClassMock([ProfileState class]);
+    OCMStub([profile_state_ initStage]).andReturn(ProfileInitStage::kFinal);
+    OCMStub([profile_state_ profile]).andReturn(profile_.get());
+
+    scene_state_ = [[FakeSceneState alloc] initWithAppState:nil
+                                                    profile:profile_.get()];
+    scene_state_.scene = static_cast<UIWindowScene*>(
+        [[[UIApplication sharedApplication] connectedScenes] anyObject]);
+    scene_state_.profileState = profile_state_;
+
+    agent_ = [[DefaultBrowserPromoSceneAgent alloc] init];
+    agent_.sceneState = scene_state_;
+    agent_.promosManager = promos_manager_.get();
   }
 
   void TearDown() override {
@@ -102,8 +107,6 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
          forKey:@"SimulatePostDeviceRestore"];
     profile_.reset();
     ClearDefaultBrowserPromoData();
-    TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
-    local_state_.reset();
   }
 
   void SignIn() {
@@ -185,16 +188,14 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestingPrefServiceSimple> local_state_;
-  std::unique_ptr<TestProfileIOS> profile_;
-  DefaultBrowserPromoSceneAgent* agent_;
-  FakeSceneState* scene_state_;
-  AppState* app_state_;
-  std::unique_ptr<MockPromosManager> promos_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  id dispatcher_;
-  FakeStartupInformation* startup_information_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
+  raw_ptr<MockPromosManager> promos_manager_;
   raw_ptr<feature_engagement::test::MockTracker> mock_tracker_;
+  ProfileState* profile_state_;
+  FakeSceneState* scene_state_;
+  DefaultBrowserPromoSceneAgent* agent_;
 };
 
 // Tests that DefaultBrowser was registered with the promo manager when user is
