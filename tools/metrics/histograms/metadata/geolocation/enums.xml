@@ -59,6 +59,12 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="kCLErrorHistoricalLocationError"/>
 </enum>
 
+<enum name="CoreLocationSessionResult">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kCoreLocationError"/>
+  <int value="2" label="kWifiDisabled"/>
+</enum>
+
 <enum name="GeolocationClientId">
   <int value="0" label="kForTesting"/>
   <int value="1" label="kGeolocationServiceImpl"/>

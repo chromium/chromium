@@ -42,6 +42,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Geolocation.CoreLocationProvider.SessionResult"
+    enum="CoreLocationSessionResult" expires_after="2025-09-01">
+  <owner>alvinji@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records the overall result of a geolocation session using the
+    CoreLocationProvider. This metric captures the CoreLocationSessionResult
+    representing the final outcome of the session, which could be a success
+    result or any error encountered that prevented the provider from obtaining a
+    valid position. If the session result is kCoreLocationError then the
+    specific error reported by the platform is recorded in the
+    Geolocation.CoreLocationProvider.ErrorCode metric.
+  </summary>
+</histogram>
+
 <histogram name="Geolocation.GeolocationImpl.ClientId"
     enum="GeolocationClientId" expires_after="2025-03-23">
   <owner>mattreynolds@chromium.org</owner>

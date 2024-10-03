@@ -67,6 +67,7 @@ void SystemGeolocationSourceApple::PermissionUpdated() {
 void SystemGeolocationSourceApple::PositionUpdated(
     const mojom::Geoposition& position) {
   CHECK(main_task_runner_->BelongsToCurrentThread());
+  position_received_ = true;
   position_observers_->Notify(FROM_HERE, &PositionObserver::OnPositionUpdated,
                               position);
 }
@@ -74,6 +75,9 @@ void SystemGeolocationSourceApple::PositionUpdated(
 void SystemGeolocationSourceApple::PositionError(
     const mojom::GeopositionError& error) {
   CHECK(main_task_runner_->BelongsToCurrentThread());
+  if (!session_result_) {
+    session_result_ = CoreLocationSessionResult::kCoreLocationError;
+  }
   // If an error reported from `LocationManagerDelegate` when
   // network change timer is running. Stop the timer (which also cancel the
   // pending fallback) and report that error.
@@ -120,6 +124,19 @@ void SystemGeolocationSourceApple::StopWatchingPositionInternal() {
     network_changed_timer_.Stop();
     net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
   }
+
+  // Record the session result if either:
+  // 1. An error occurred (session_result_ is set).
+  // 2. At least one position update was received (position_received_ is true).
+  // This excludes short-lived sessions that start and stop immediately
+  // without obtaining any position updates.
+  if (session_result_ || position_received_) {
+    base::UmaHistogramSparse("Geolocation.CoreLocationProvider.SessionResult",
+                             static_cast<int>(session_result_.value_or(
+                                 CoreLocationSessionResult::kSuccess)));
+  }
+  session_result_.reset();
+  position_received_ = false;
 }
 
 void SystemGeolocationSourceApple::StopWatchingPosition() {
@@ -192,7 +209,8 @@ void SystemGeolocationSourceApple::OnNetworkChanged(
         device::mojom::kGeoPositionUnavailableErrorMessage;
     position_error.error_technical =
         "CoreLocationProvider: CoreLocation framework reported a "
-        "kCLErrorLocationUnknown failure.";
+        "kWifiDisabled error.";
+    session_result_ = CoreLocationSessionResult::kWifiDisabled;
     PositionError(position_error);
   }
 }
