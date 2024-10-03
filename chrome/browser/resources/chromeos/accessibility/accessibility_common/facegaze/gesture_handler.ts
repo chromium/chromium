@@ -325,7 +325,7 @@ export namespace GestureHandler {
 
   /** Minimum repeat rate of a gesture. */
   // TODO(b:322511275): Move to a pref in settings.
-  export const DEFAULT_REPEAT_DELAY_MS = 500;
+  export const DEFAULT_REPEAT_DELAY_MS = 1000;
 
   export const GESTURE_TO_KEY_COMBO_PREF =
       'settings.a11y.face_gaze.gestures_to_key_combos';
