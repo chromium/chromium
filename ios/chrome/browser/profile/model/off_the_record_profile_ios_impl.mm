@@ -96,14 +96,14 @@ void OffTheRecordProfileIOSImpl::DestroyOffTheRecordProfile() {
 }
 
 BrowserStatePolicyConnector* OffTheRecordProfileIOSImpl::GetPolicyConnector() {
-  // Forward the call to the original (non-OTR) browser state.
-  return GetOriginalChromeBrowserState()->GetPolicyConnector();
+  // Forward the call to the original (non-OTR) profile.
+  return GetOriginalProfile()->GetPolicyConnector();
 }
 
 policy::UserCloudPolicyManager*
 OffTheRecordProfileIOSImpl::GetUserCloudPolicyManager() {
-  // Forward the call to the original (non-OTR) browser state.
-  return GetOriginalChromeBrowserState()->GetUserCloudPolicyManager();
+  // Forward the call to the original (non-OTR) profile.
+  return GetOriginalProfile()->GetUserCloudPolicyManager();
 }
 
 sync_preferences::PrefServiceSyncable*

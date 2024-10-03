@@ -233,7 +233,7 @@ void ProfileManagerIOSImpl::LoadProfiles() {
   // LoadProfiles() must load at least one profile, so if there is no
   // recently active Profile, create one with a default name.
   if (profiles.empty()) {
-    profiles.insert(kIOSChromeInitialBrowserState);
+    profiles.insert(kIOSChromeInitialProfile);
   }
 
   // Take care of the legacy profiles.
@@ -258,7 +258,7 @@ void ProfileManagerIOSImpl::LoadProfiles() {
 
 ProfileIOS* ProfileManagerIOSImpl::GetProfileWithName(std::string_view name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // If the browser state is already loaded, just return it.
+  // If the profile is already loaded, just return it.
   auto iter = profiles_map_.find(name);
   if (iter != profiles_map_.end()) {
     ProfileInfo& profile_info = iter->second;

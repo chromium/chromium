@@ -89,8 +89,8 @@ BrowserStateDirectoryBuilder::Result
 BrowserStateDirectoryBuilder::CreateDirectories(
     const base::FilePath& state_path,
     const base::FilePath& otr_path) {
-  // Create the browser state directory synchronously otherwise we would need to
-  // sequence every otherwise independent I/O operation inside the browser state
+  // Create the profile directory synchronously otherwise we would need to
+  // sequence every otherwise independent I/O operation inside the profile
   // directory with this operation. base::CreateDirectory() should be a
   // lightweight I/O operation and avoiding the headache of sequencing all
   // otherwise unrelated I/O after this one justifies running it on the main
@@ -106,7 +106,7 @@ BrowserStateDirectoryBuilder::CreateDirectories(
   }
 
   // Create the directory for the OTR stash state now, even though it won't
-  // necessarily be needed: the OTR browser state itself is created
+  // necessarily be needed: the OTR profile itself is created
   // synchronously on an as-needed basis on the UI thread, so creation of its
   // stash state directory cannot easily be done at that point.
   if (!base::PathExists(otr_path)) {
@@ -266,16 +266,16 @@ ProfileIOSImpl::~ProfileIOSImpl() {
     pref_proxy_config_tracker_->DetachFromPrefService();
   }
 
-  // Here, (1) the browser state services may
-  // depend on `policy_connector_` and `user_cloud_policy_manager_`, and (2)
-  // `policy_connector_` depends on `user_cloud_policy_manager_`. The
-  // dependencies have to be shut down backward.
+  // Here, (1) the profile services may depend on `policy_connector_` and
+  // `user_cloud_policy_manager_`, and (2) `policy_connector_` depends on
+  // `user_cloud_policy_manager_`. The dependencies have to be shut down
+  // backward.
   policy_connector_->Shutdown();
   if (user_cloud_policy_manager_) {
     user_cloud_policy_manager_->Shutdown();
   }
 
-  DestroyOffTheRecordChromeBrowserState();
+  DestroyOffTheRecordProfile();
 }
 
 ProfileIOS* ProfileIOSImpl::GetOriginalChromeBrowserState() {

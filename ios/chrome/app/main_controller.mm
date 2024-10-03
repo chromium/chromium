@@ -1622,7 +1622,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
       profileName = GetApplicationContext()->GetLocalState()->GetString(
           prefs::kLastUsedProfile);
       if (profileName.empty()) {
-        profileName = kIOSChromeInitialBrowserState;
+        profileName = kIOSChromeInitialProfile;
       }
 
       iterator = _profileControllers.find(profileName);

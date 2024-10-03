@@ -256,7 +256,7 @@
   item.profileName = base::SysUTF8ToNSString(profileName);
   item.attachedGaiaId = base::SysUTF8ToNSString(gaiaID);
   item.active = [item.profileName isEqualToString:_activeProfileName];
-  if (profileName == kIOSChromeInitialBrowserState) {
+  if (profileName == kIOSChromeInitialProfile) {
     // TODO(crbug.com/331783685): Remove assumption that "Default" is the
     // personal profile.
     item.displayName = @"Personal profile";

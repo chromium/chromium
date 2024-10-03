@@ -78,24 +78,22 @@ void NotifyContextGettersOfShutdownOnIO(
 
 }  // namespace
 
-void ProfileIOSIOData::InitializeOnUIThread(
-    ChromeBrowserState* browser_state) {
+void ProfileIOSIOData::InitializeOnUIThread(ProfileIOS* profile) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  PrefService* pref_service = browser_state->GetPrefs();
+  PrefService* pref_service = profile->GetPrefs();
   auto params = std::make_unique<ProfileParams>();
-  params->path = browser_state->GetOriginalChromeBrowserState()->GetStatePath();
+  params->path = profile->GetOriginalProfile()->GetStatePath();
 
   params->io_thread = GetApplicationContext()->GetIOSChromeIOThread();
 
-  params->cookie_settings =
-      ios::CookieSettingsFactory::GetForProfile(browser_state);
+  params->cookie_settings = ios::CookieSettingsFactory::GetForProfile(profile);
   params->host_content_settings_map =
-      ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state);
+      ios::HostContentSettingsMapFactory::GetForBrowserState(profile);
 
   params->proxy_config_service = ProxyServiceFactory::CreateProxyConfigService(
-      browser_state->GetProxyConfigTracker());
-  params->system_cookie_store = web::CreateSystemCookieStore(browser_state);
-  params->browser_state = browser_state;
+      profile->GetProxyConfigTracker());
+  params->system_cookie_store = web::CreateSystemCookieStore(profile);
+  params->profile = profile;
   profile_params_ = std::move(params);
 
   IOSChromeNetworkDelegate::InitializePrefsOnUIThread(&enable_do_not_track_,
@@ -109,7 +107,7 @@ void ProfileIOSIOData::InitializeOnUIThread(
 }
 
 ProfileIOSIOData::ProfileParams::ProfileParams()
-    : io_thread(nullptr), browser_state(nullptr) {}
+    : io_thread(nullptr), profile(nullptr) {}
 
 ProfileIOSIOData::ProfileParams::~ProfileParams() {}
 

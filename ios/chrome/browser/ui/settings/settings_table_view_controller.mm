@@ -1134,7 +1134,7 @@ struct EnhancedSafeBrowsingActivePromoData
   std::string profileName = _profile->GetProfileName();
   // TODO(crbug.com/331783685): Remove assumption that "Default" is the
   // personal profile.
-  if (profileName == kIOSChromeInitialBrowserState) {
+  if (profileName == kIOSChromeInitialProfile) {
     detailText = @"Personal";
   } else {
     detailText = base::SysUTF8ToNSString(profileName);

@@ -26,7 +26,7 @@ class ProfileIOSImplIOData : public ProfileIOSIOData {
  public:
   class Handle {
    public:
-    explicit Handle(ChromeBrowserState* browser_state);
+    explicit Handle(ProfileIOS* profile);
 
     Handle(const Handle&) = delete;
     Handle& operator=(const Handle&) = delete;
@@ -84,7 +84,7 @@ class ProfileIOSImplIOData : public ProfileIOSIOData {
     mutable IOSChromeURLRequestContextGetterMap app_request_context_getter_map_;
     const raw_ptr<ProfileIOSImplIOData> io_data_;
 
-    const raw_ptr<ChromeBrowserState> browser_state_;
+    const raw_ptr<ProfileIOS> profile_;
 
     mutable bool initialized_;
   };

@@ -237,8 +237,8 @@ void AccountProfileMapper::CheckIdentityProfileWithHostedDomain(
   // correct one.
   // TODO(crbug.com/331783685): Remove assumption that "Default" is the
   // personal profile.
-  bool is_in_personal_profile = (existing_mapping_it->second ==
-                                 std::string(kIOSChromeInitialBrowserState));
+  bool is_in_personal_profile =
+      (existing_mapping_it->second == std::string(kIOSChromeInitialProfile));
   // TODO(crbug.com/331783685): Need to make sure no cached hosted domain is
   // nil, and no hosted domain is @"".
   bool is_managed_account = hosted_domain.length > 0;
@@ -260,7 +260,7 @@ void AccountProfileMapper::AddIdentityToProfile(
   CHECK(hosted_domain);
   // TODO(crbug.com/331783685): Remove assumption that "Default" is the
   // personal profile.
-  std::string new_profile_name = std::string(kIOSChromeInitialBrowserState);
+  std::string new_profile_name = std::string(kIOSChromeInitialProfile);
   // TODO(crbug.com/331783685): Instead of using the pre-created test profiles,
   // dynamically create profiles as necessary here.
   std::optional<int> num_test_profiles =

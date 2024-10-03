@@ -45,10 +45,10 @@ class URLRequestContextBuilder;
 }  // namespace net
 
 // Conceptually speaking, the ProfileIOSIOData represents data that
-// lives on the IO thread that is owned by a ChromeBrowserState, such as, but
+// lives on the IO thread that is owned by a ProfileIOS, such as, but
 // not limited to, network objects like CookieMonster, HttpTransactionFactory,
 // etc.
-// ChromeBrowserState owns ProfileIOSIOData, but will make sure to
+// ProfileIOS owns ProfileIOSIOData, but will make sure to
 // delete it on the IO thread.
 class ProfileIOSIOData {
  public:
@@ -69,7 +69,7 @@ class ProfileIOSIOData {
 
   // These are useful when the Chrome layer is called from the content layer
   // with a content::ResourceContext, and they want access to Chrome data for
-  // that browser state.
+  // that profile.
   content_settings::CookieSettings* GetCookieSettings() const;
   HostContentSettingsMap* GetHostContentSettingsMap() const;
 
@@ -84,7 +84,7 @@ class ProfileIOSIOData {
   void InitializeMetricsEnabledStateOnUIThread();
 
   // Returns whether or not metrics reporting is enabled in the browser instance
-  // on which this browser state resides. This is safe for use from the IO
+  // on which this profile resides. This is safe for use from the IO
   // thread, and should only be called from there.
   bool GetMetricsEnabledStateOnIOThread() const;
 
@@ -106,17 +106,17 @@ class ProfileIOSIOData {
     std::unique_ptr<net::ProxyConfigService> proxy_config_service;
 
     // SystemCookieStore should be initialized from the UI thread as it depends
-    // on the `browser_state`.
+    // on the `profile`.
     std::unique_ptr<net::SystemCookieStore> system_cookie_store;
 
-    // The browser state this struct was populated from. It's passed as a void*
+    // The profile this struct was populated from. It's passed as a void*
     // to ensure it's not accidentally used on the IO thread.
-    raw_ptr<void> browser_state;
+    raw_ptr<void> profile;
   };
 
   explicit ProfileIOSIOData(ChromeBrowserStateType browser_state_type);
 
-  void InitializeOnUIThread(ChromeBrowserState* browser_state);
+  void InitializeOnUIThread(ProfileIOS* profile);
 
   // Called when the ChromeBrowserState is destroyed. `context_getters` must
   // include all URLRequestContextGetters that refer to the

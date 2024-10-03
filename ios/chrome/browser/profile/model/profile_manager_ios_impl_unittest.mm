@@ -244,9 +244,9 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfiles) {
   ASSERT_TRUE(observer.on_profile_loaded_called());
 
   // Exactly one Profile must be loaded, it must be the last used Profile with
-  // name `kIOSChromeInitialBrowserState`.
+  // name `kIOSChromeInitialProfile`.
   EXPECT_EQ(GetLoadedProfileNames(),
-            (std::set<std::string>{kIOSChromeInitialBrowserState}));
+            (std::set<std::string>{kIOSChromeInitialProfile}));
 }
 
 // Tests that LoadProfiles() always loads the "last used Profile" when
@@ -255,11 +255,11 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfiles) {
 // See https://crbug.com/345478758 for crashes related to this.
 //
 // Specifically, this test case check that even if both properties are set but
-// `kLastUsedProfile` is not `kIOSChromeInitialBrowserState` and not in
+// `kLastUsedProfile` is not `kIOSChromeInitialProfile` and not in
 // `kLastActiveProfiles`, then the last used Profile is still loaded.
 TEST_F(ProfileManagerIOSImplTest, LoadProfiles_IncoherentPrefs_1) {
-  ASSERT_NE(kProfileName1, kIOSChromeInitialBrowserState);
-  ASSERT_NE(kProfileName2, kIOSChromeInitialBrowserState);
+  ASSERT_NE(kProfileName1, kIOSChromeInitialProfile);
+  ASSERT_NE(kProfileName2, kIOSChromeInitialProfile);
 
   // There should be no Profile loaded yet.
   EXPECT_EQ(GetLoadedProfileNames(), (std::set<std::string>{}));
@@ -283,11 +283,11 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfiles_IncoherentPrefs_1) {
 // See https://crbug.com/345478758 for crashes related to this.
 //
 // Specifically, this test case check that if `kLastActiveProfiles` is not set
-// and `kLastUsedProfile` is not `kIOSChromeInitialBrowserState`, then the last
+// and `kLastUsedProfile` is not `kIOSChromeInitialProfile`, then the last
 // used Profile is still loaded.
 TEST_F(ProfileManagerIOSImplTest, LoadProfiles_IncoherentPrefs_2) {
-  ASSERT_NE(kProfileName1, kIOSChromeInitialBrowserState);
-  ASSERT_NE(kProfileName2, kIOSChromeInitialBrowserState);
+  ASSERT_NE(kProfileName1, kIOSChromeInitialProfile);
+  ASSERT_NE(kProfileName2, kIOSChromeInitialProfile);
 
   // There should be no Profile loaded yet.
   EXPECT_EQ(GetLoadedProfileNames(), (std::set<std::string>{}));
@@ -309,11 +309,11 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfiles_IncoherentPrefs_2) {
 // See https://crbug.com/345478758 for crashes related to this.
 //
 // Specifically, this test case check that if `kLastActiveProfiles` is set but
-// does not contains the value `kIOSChromeInitialBrowserState` and
+// does not contains the value `kIOSChromeInitialProfile` and
 // `kLastUsedProfile` is unset, then the last used Profile is still loaded.
 TEST_F(ProfileManagerIOSImplTest, LoadProfiles_IncoherentPrefs_3) {
-  ASSERT_NE(kProfileName1, kIOSChromeInitialBrowserState);
-  ASSERT_NE(kProfileName2, kIOSChromeInitialBrowserState);
+  ASSERT_NE(kProfileName1, kIOSChromeInitialProfile);
+  ASSERT_NE(kProfileName2, kIOSChromeInitialProfile);
 
   // There should be no Profile loaded yet.
   EXPECT_EQ(GetLoadedProfileNames(), (std::set<std::string>{}));
@@ -332,8 +332,8 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfiles_IncoherentPrefs_3) {
 // Tests that LoadProfiles() ignores profile named "TestProfile[0-9]+" which
 // were test profiles created for an experiment and should no longer be used.
 TEST_F(ProfileManagerIOSImplTest, LoadProfiles_IgnoreTestProfiles) {
-  ASSERT_NE(kTestProfile1, kIOSChromeInitialBrowserState);
-  ASSERT_NE(kTestProfile2, kIOSChromeInitialBrowserState);
+  ASSERT_NE(kTestProfile1, kIOSChromeInitialProfile);
+  ASSERT_NE(kTestProfile2, kIOSChromeInitialProfile);
 
   // There should be no Profile loaded yet.
   EXPECT_EQ(GetLoadedProfileNames(), (std::set<std::string>{}));
@@ -675,9 +675,9 @@ TEST_F(ProfileManagerIOSImplTest_HideLegacyProfile, Hide) {
               testing::ElementsAre(base::Bucket(1, 1)));
 
   // Exactly one Profile must be loaded, it must be the last used Profile with
-  // name `kIOSChromeInitialBrowserState`.
+  // name `kIOSChromeInitialProfile`.
   EXPECT_EQ(GetLoadedProfileNames(),
-            (std::set<std::string>{kIOSChromeInitialBrowserState}));
+            (std::set<std::string>{kIOSChromeInitialProfile}));
 
   // The legacy profile should no longer be visible in the
   // ProfileAttributesStorageIOS.
@@ -718,9 +718,9 @@ TEST_F(ProfileManagerIOSImplTest_HideLegacyProfile, Hide_AlreadyDone) {
               testing::ElementsAre(base::Bucket(0, 1)));
 
   // Exactly one Profile must be loaded, it must be the last used Profile with
-  // name `kIOSChromeInitialBrowserState`.
+  // name `kIOSChromeInitialProfile`.
   EXPECT_EQ(GetLoadedProfileNames(),
-            (std::set<std::string>{kIOSChromeInitialBrowserState}));
+            (std::set<std::string>{kIOSChromeInitialProfile}));
 
   // The profile must still be visible in the ProfileAttributesStorageIOS.
   EXPECT_TRUE(profile_attributes_storage().HasProfileWithName(kLegacyProfile));
@@ -765,9 +765,9 @@ TEST_F(ProfileManagerIOSImplTest_KeepLegacyProfile, Keep) {
               testing::ElementsAre(base::Bucket(0, 1)));
 
   // Exactly one Profile must be loaded, it must be the last used Profile with
-  // name `kIOSChromeInitialBrowserState`.
+  // name `kIOSChromeInitialProfile`.
   EXPECT_EQ(GetLoadedProfileNames(),
-            (std::set<std::string>{kIOSChromeInitialBrowserState}));
+            (std::set<std::string>{kIOSChromeInitialProfile}));
 
   // The profile must still be visible in the ProfileAttributesStorageIOS.
   EXPECT_TRUE(profile_attributes_storage().HasProfileWithName(kLegacyProfile));
@@ -805,9 +805,9 @@ TEST_F(ProfileManagerIOSImplTest_KeepLegacyProfile, Restore) {
   profile_manager().LoadProfiles();
 
   // Exactly one Profile must be loaded, it must be the last used Profile with
-  // name `kIOSChromeInitialBrowserState`.
+  // name `kIOSChromeInitialProfile`.
   EXPECT_EQ(GetLoadedProfileNames(),
-            (std::set<std::string>{kIOSChromeInitialBrowserState}));
+            (std::set<std::string>{kIOSChromeInitialProfile}));
 
   EXPECT_THAT(histogram_tester().GetAllSamples("Profile.LegacyProfilesCount"),
               testing::ElementsAre(base::Bucket(0, 1)));

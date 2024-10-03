@@ -9,7 +9,7 @@
 
 // A handful of resource-like constants related to the Chrome application.
 
-extern const char kIOSChromeInitialBrowserState[];
+extern const char kIOSChromeInitialProfile[];
 
 extern const base::FilePath::CharType kIOSChromeCacheDirname[];
 extern const base::FilePath::CharType kIOSChromeCookieFilename[];

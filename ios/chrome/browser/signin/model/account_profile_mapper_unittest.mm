@@ -24,7 +24,7 @@ using testing::_;
 
 namespace {
 
-const std::string kDefaultProfileName(kIOSChromeInitialBrowserState);
+const std::string kDefaultProfileName(kIOSChromeInitialProfile);
 const std::string kTestProfile1Name("TestProfile1");
 
 FakeSystemIdentity* gmail_identity1 =
