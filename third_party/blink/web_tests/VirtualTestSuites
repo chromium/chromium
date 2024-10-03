@@ -899,8 +899,7 @@
     "platforms": ["Linux", "Win"],
     "bases": ["fast/scrolling/scrollbars", "external/wpt/css/css-scrollbars"],
     "args": ["--enable-features=FluentScrollbar",
-             "--enable-threaded-compositing",
-             "--disable-smooth-scrolling"],
+             "--enable-threaded-compositing"],
     "expires": "Jul 1, 2025",
     "owners": ["gastonr@microsoft.com", "gerchiko@microsoft.com", "yshalivskyy@microsoft.com"]
   },
@@ -956,7 +955,6 @@
     "exclusive_tests": ["virtual/overlay-scrollbar/overlay-scrollbar-smoke-test.html"],
     "args": ["--enable-features=FluentOverlayScrollbar",
              "--enable-threaded-compositing",
-             "--disable-smooth-scrolling",
              "--disable-features=RasterInducingScroll"],
     "expires": "Jul 1, 2025",
     "owners": ["gastonr@microsoft.com", "gerchiko@microsoft.com", "yshalivskyy@microsoft.com"]
