@@ -257,10 +257,10 @@ BASE_FEATURE(kIPHDefaultBrowserPromoMagicStackFeature,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHDefaultBrowserPromoMessagesFeature,
              "IPH_DefaultBrowserPromoMessages",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHDefaultBrowserPromoSettingCardFeature,
              "IPH_DefaultBrowserPromoSettingCard",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHDownloadHomeFeature,
              "IPH_DownloadHome",
              base::FEATURE_ENABLED_BY_DEFAULT);
