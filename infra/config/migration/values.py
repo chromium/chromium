@@ -1,7 +1,11 @@
 # Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Utilities for constructing starlark values.
+"""Utilities for creating starlark values.
+
+The convert_direct function converts python values when the starlark
+value is the direct translation. The convert_swarming function converts
+the swarming dict present in pyl files to a targets.swarming call.
 
 3 classes are provided that enable building compound values for starlark
 output: CallValueBuilder, DictValueBuilder and ListValueBuilder for
@@ -63,6 +67,38 @@ import typing
 # A value that can be contained by another value. A string value will be output
 # as-is. A ValueBuilder may or may not produce output.
 Value: typing.TypeAlias = 'str | ValueBuilder'
+
+
+def convert_direct(value: typing.Any) -> Value:
+  """Convert a python value to a starlark value.
+
+  This converts python values where the starlark representation is the
+  same.
+  """
+  if value is None or isinstance(value, (int, bool)):
+    return str(value)
+  if isinstance(value, str):
+    return f'"{value}"'
+  if isinstance(value, list):
+    return ListValueBuilder([convert_direct(e) for e in value])
+  if isinstance(value, dict):
+    return DictValueBuilder({k: convert_direct(v) for k, v in value.items()})
+  raise Exception(f'unhandled python value: {value!r}')
+
+
+def convert_swarming(swarming: dict[str, typing.Any]) -> Value:
+  """Convert a swarming dict to a targets.swarming call."""
+  value_builder = CallValueBuilder('targets.swarming')
+
+  for key, value in swarming.items():
+    match key:
+      case 'dimensions' | 'shards':
+        value_builder[key] = convert_direct(value)
+
+      case _:
+        raise Exception(f'unhandled key in swarming: "{key}"')
+
+  return value_builder
 
 
 class ValueBuilder(abc.ABC):

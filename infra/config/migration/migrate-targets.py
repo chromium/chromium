@@ -12,52 +12,22 @@ import sys
 import typing
 
 import buildozer
-import value_builders
+import values
 
 _THIS_DIR = pathlib.Path(__file__).parent
 _INFRA_CONFIG_DIR = _THIS_DIR.parent
 _TESTING_BUILDBOT_DIR = (_INFRA_CONFIG_DIR / '../../testing/buildbot').resolve()
 
 
-def _to_starlark_value(value: typing.Any) -> value_builders.Value:
-  if value is None or isinstance(value, (int, bool)):
-    return str(value)
-  if isinstance(value, str):
-    return f'"{value}"'
-  if isinstance(value, list):
-    return value_builders.ListValueBuilder(
-        [_to_starlark_value(e) for e in value])
-  if isinstance(value, dict):
-    return value_builders.DictValueBuilder({
-        k: _to_starlark_value(v)
-        for k, v in value.items()
-    })
-  raise Exception(f'unhandled python value: {value!r}')
-
-
-def _swarming(swarming: dict[str, typing.Any]) -> value_builders.ValueBuilder:
-  value_builder = value_builders.CallValueBuilder('targets.swarming')
-
-  for key, value in swarming.items():
-    match key:
-      case 'dimensions' | 'shards':
-        value_builder[key] = _to_starlark_value(value)
-
-      case _:
-        raise Exception(f'unhandled key in swarming: "{key}"')
-
-  return value_builder
-
-
 def _per_test_modifications(
     builder: str,
     test_suite_exceptions: dict[str, typing.Any],
-) -> value_builders.ValueBuilder:
-  value_builder = value_builders.DictValueBuilder()
+) -> values.ValueBuilder:
+  value_builder = values.DictValueBuilder()
 
   for test_name, exceptions in test_suite_exceptions.items():
     if builder in exceptions.get('remove_from', []):
-      value_builder[test_name] = value_builders.CallValueBuilder(
+      value_builder[test_name] = values.CallValueBuilder(
           'targets.remove',
           {
               # Break up the string so that it doesn't get flagged by the
@@ -66,17 +36,17 @@ def _per_test_modifications(
           })
 
     elif modifications := exceptions.get('modifications', {}).get(builder):
-      mixin_builder = value_builders.CallValueBuilder('targets.mixin')
+      mixin_builder = values.CallValueBuilder('targets.mixin')
       value_builder[test_name] = mixin_builder
 
       for key, value in modifications.items():
         match key:
           case ('args' | 'ci_only' | 'experiment_percentage'
                 | 'isolate_profile_data' | 'retry_only_failed_tests'):
-            mixin_builder[key] = _to_starlark_value(value)
+            mixin_builder[key] = values.convert_direct(value)
 
           case 'swarming':
-            mixin_builder['swarming'] = _swarming(value)
+            mixin_builder['swarming'] = values.convert_swarming(value)
 
           case _:
             raise Exception(f'unhandled key in modifications: "{key}"')
@@ -120,17 +90,17 @@ def _compute_edits(
     builder_config: dict[str, typing.Any],
     test_suite_exceptions: dict[str, typing.Any],
 ) -> dict[str, str] | None:
-  anonymous_mixin_builder = value_builders.CallValueBuilder('targets.mixin')
-  mixins_builder = value_builders.ListValueBuilder([anonymous_mixin_builder])
-  bundle_builder = value_builders.CallValueBuilder('targets.bundle',
-                                                   {'mixins': mixins_builder},
-                                                   output_empty=True)
-  settings_builder = value_builders.CallValueBuilder('targets.settings')
+  anonymous_mixin_builder = values.CallValueBuilder('targets.mixin')
+  mixins_builder = values.ListValueBuilder([anonymous_mixin_builder])
+  bundle_builder = values.CallValueBuilder('targets.bundle',
+                                           {'mixins': mixins_builder},
+                                           output_empty=True)
+  settings_builder = values.CallValueBuilder('targets.settings')
 
   for key, value in builder_config.items():
     match key:
       case 'test_suites':
-        targets_builder = value_builders.ListValueBuilder()
+        targets_builder = values.ListValueBuilder()
         bundle_builder['targets'] = targets_builder
 
         for suite_type, suite in value.items():
@@ -147,10 +117,10 @@ def _compute_edits(
               raise Exception(f'unhandled suite type: "{suite}"')
 
       case 'additional_compile_targets':
-        bundle_builder[key] = _to_starlark_value(value)
+        bundle_builder[key] = values.convert_direct(value)
 
       case 'args':
-        anonymous_mixin_builder['args'] = _to_starlark_value(value)
+        anonymous_mixin_builder['args'] = values.convert_direct(value)
 
       case 'mixins':
         for element in value:
@@ -259,7 +229,7 @@ def main(argv: list[str]):
         pass
 
       case 'mixins':
-        mixins_default_builder = value_builders.ListValueBuilder(
+        mixins_default_builder = values.ListValueBuilder(
             [f'"{m}"' for m in value])
         targets_builder_defaults['mixins'] = mixins_default_builder.output()
 

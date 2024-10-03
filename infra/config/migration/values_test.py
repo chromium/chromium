@@ -8,10 +8,10 @@ import textwrap
 import typing
 import unittest
 
-import value_builders
+import values
 
 
-class TestValueBuilder(value_builders._CompoundValueBuilder):
+class TestValueBuilder(values._CompoundValueBuilder):
 
   def __init__(self):
     super().__init__()
@@ -34,17 +34,17 @@ class TestValueBuilder(value_builders._CompoundValueBuilder):
 class ValueBuildersTest(unittest.TestCase):
 
   def test_empty_call_builder(self):
-    builder = value_builders.CallValueBuilder('func')
+    builder = values.CallValueBuilder('func')
 
     self.assertIsNone(builder.output())
 
   def test_empty_call_builder_output_empty(self):
-    builder = value_builders.CallValueBuilder('func', output_empty=True)
+    builder = values.CallValueBuilder('func', output_empty=True)
 
     self.assertEqual('func()', builder.output())
 
   def test_call_builder(self):
-    builder = value_builders.CallValueBuilder('func')
+    builder = values.CallValueBuilder('func')
     builder['foo'] = 'x'
     builder['bar'] = 'y'
 
@@ -58,23 +58,22 @@ class ValueBuildersTest(unittest.TestCase):
     )
 
   def test_call_builder_with_initial_params(self):
-    builder0 = value_builders.CallValueBuilder('func')
+    builder0 = values.CallValueBuilder('func')
     builder0['foo'] = 'x'
-    builder1 = value_builders.CallValueBuilder('func', {'foo': 'x'})
+    builder1 = values.CallValueBuilder('func', {'foo': 'x'})
 
     self.assertEqual(builder0.output(), builder1.output())
 
     builder0['bar'] = 'y'
     builder1['bar'] = 'y'
-    builder2 = value_builders.CallValueBuilder('func', {'foo': 'x', 'bar': 'y'})
+    builder2 = values.CallValueBuilder('func', {'foo': 'x', 'bar': 'y'})
 
     self.assertEqual(builder0.output(), builder2.output())
     self.assertEqual(builder1.output(), builder2.output())
 
   def test_call_builder_with_nested_value_builder(self):
     test_value_builder = TestValueBuilder()
-    builder = value_builders.CallValueBuilder('func',
-                                              {'foo': test_value_builder})
+    builder = values.CallValueBuilder('func', {'foo': test_value_builder})
 
     self.assertIsNone(builder.output())
 
@@ -103,17 +102,17 @@ class ValueBuildersTest(unittest.TestCase):
     )
 
   def test_empty_dict_builder(self):
-    builder = value_builders.DictValueBuilder()
+    builder = values.DictValueBuilder()
 
     self.assertIsNone(builder.output())
 
   def test_empty_dict_builder_output_empty(self):
-    builder = value_builders.DictValueBuilder(output_empty=True)
+    builder = values.DictValueBuilder(output_empty=True)
 
     self.assertEqual('{}', builder.output())
 
   def test_dict_builder(self):
-    builder = value_builders.DictValueBuilder()
+    builder = values.DictValueBuilder()
     builder['foo'] = 'x'
     builder['bar'] = 'y'
 
@@ -127,22 +126,22 @@ class ValueBuildersTest(unittest.TestCase):
     )
 
   def test_dict_builder_with_initial_items(self):
-    builder0 = value_builders.DictValueBuilder()
+    builder0 = values.DictValueBuilder()
     builder0['foo'] = 'x'
-    builder1 = value_builders.DictValueBuilder({'foo': 'x'})
+    builder1 = values.DictValueBuilder({'foo': 'x'})
 
     self.assertEqual(builder0.output(), builder1.output())
 
     builder0['bar'] = 'y'
     builder1['bar'] = 'y'
-    builder2 = value_builders.DictValueBuilder({'foo': 'x', 'bar': 'y'})
+    builder2 = values.DictValueBuilder({'foo': 'x', 'bar': 'y'})
 
     self.assertEqual(builder0.output(), builder2.output())
     self.assertEqual(builder1.output(), builder2.output())
 
   def test_dict_builder_with_nested_value_builder(self):
     test_value_builder = TestValueBuilder()
-    builder = value_builders.DictValueBuilder({'foo': test_value_builder})
+    builder = values.DictValueBuilder({'foo': test_value_builder})
 
     self.assertIsNone(builder.output())
 
@@ -171,17 +170,17 @@ class ValueBuildersTest(unittest.TestCase):
     )
 
   def test_empty_list_builder(self):
-    builder = value_builders.ListValueBuilder()
+    builder = values.ListValueBuilder()
 
     self.assertIsNone(builder.output())
 
   def test_empty_list_builder_output_empty(self):
-    builder = value_builders.ListValueBuilder(output_empty=True)
+    builder = values.ListValueBuilder(output_empty=True)
 
     self.assertEqual('[]', builder.output())
 
   def test_list_builder(self):
-    builder = value_builders.ListValueBuilder()
+    builder = values.ListValueBuilder()
     builder.append('foo')
     builder.append('bar')
 
@@ -195,22 +194,22 @@ class ValueBuildersTest(unittest.TestCase):
     )
 
   def test_list_builder_with_initial_elements(self):
-    builder0 = value_builders.ListValueBuilder()
+    builder0 = values.ListValueBuilder()
     builder0.append('foo')
-    builder1 = value_builders.ListValueBuilder(['foo'])
+    builder1 = values.ListValueBuilder(['foo'])
 
     self.assertEqual(builder0.output(), builder1.output())
 
     builder0.append('bar')
     builder1.append('bar')
-    builder2 = value_builders.ListValueBuilder(['foo', 'bar'])
+    builder2 = values.ListValueBuilder(['foo', 'bar'])
 
     self.assertEqual(builder0.output(), builder2.output())
     self.assertEqual(builder1.output(), builder2.output())
 
   def test_list_builder_with_nested_value_builder(self):
     test_value_builder = TestValueBuilder()
-    builder = value_builders.ListValueBuilder([test_value_builder])
+    builder = values.ListValueBuilder([test_value_builder])
 
     self.assertIsNone(builder.output())
 
