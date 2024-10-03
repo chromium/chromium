@@ -173,6 +173,7 @@ bool ArCoreGl::CanRenderDOMContent() {
 }
 
 void ArCoreGl::Initialize(
+    const scoped_refptr<base::SingleThreadTaskRunner>& main_thread_task_runner,
     XrJavaCoordinator* session_utils,
     ArCoreFactory* arcore_factory,
     XrFrameSinkClient* xr_frame_sink_client,
@@ -281,8 +282,8 @@ void ArCoreGl::Initialize(
                                    weak_ptr_factory_.GetWeakPtr()));
 
   if (use_ar_compositor_) {
-    InitializeArCompositor(surface_handle, root_window, xr_frame_sink_client,
-                           dom_setup);
+    InitializeArCompositor(main_thread_task_runner, surface_handle, root_window,
+                           xr_frame_sink_client, dom_setup);
     webxr_->SetStateMachineType(
         WebXrPresentationState::StateMachineType::kVizComposited);
   } else {
@@ -297,10 +298,12 @@ void ArCoreGl::Initialize(
   arcore_->SetDisplayGeometry(kDefaultFrameSize, kDefaultRotation);
 }
 
-void ArCoreGl::InitializeArCompositor(gpu::SurfaceHandle surface_handle,
-                                      ui::WindowAndroid* root_window,
-                                      XrFrameSinkClient* xr_frame_sink_client,
-                                      device::DomOverlaySetup dom_setup) {
+void ArCoreGl::InitializeArCompositor(
+    const scoped_refptr<base::SingleThreadTaskRunner>& main_thread_task_runner,
+    gpu::SurfaceHandle surface_handle,
+    ui::WindowAndroid* root_window,
+    XrFrameSinkClient* xr_frame_sink_client,
+    device::DomOverlaySetup dom_setup) {
   ArCompositorFrameSink::BeginFrameCallback begin_frame_callback =
       base::BindRepeating(&ArCoreGl::OnBeginFrame,
                           weak_ptr_factory_.GetWeakPtr());
@@ -334,8 +337,8 @@ void ArCoreGl::InitializeArCompositor(gpu::SurfaceHandle surface_handle,
       can_issue_new_frame_callback);
 
   ar_compositor_->Initialize(
-      surface_handle, root_window, screen_size_, xr_frame_sink_client,
-      dom_setup,
+      main_thread_task_runner, surface_handle, root_window, screen_size_,
+      xr_frame_sink_client, dom_setup,
       base::BindOnce(&ArCoreGl::OnArCompositorInitialized,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&ArCoreGl::OnBindingDisconnect,

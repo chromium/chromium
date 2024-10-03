@@ -427,10 +427,10 @@ void ArCoreDevice::RequestArCoreGlInitialization(
     PostTaskToGlThread(base::BindOnce(
         &ArCoreGl::Initialize,
         session_state_->arcore_gl_thread_->GetArCoreGl()->GetWeakPtr(),
-        xr_java_coordinator_.get(), arcore_factory_.get(),
-        frame_sink_client_.get(), drawing_widget, surface_handle, root_window,
-        frame_size, rotation, session_state_->required_features_,
-        session_state_->optional_features_,
+        main_thread_task_runner_, xr_java_coordinator_.get(),
+        arcore_factory_.get(), frame_sink_client_.get(), drawing_widget,
+        surface_handle, root_window, frame_size, rotation,
+        session_state_->required_features_, session_state_->optional_features_,
         std::move(session_state_->tracked_images_),
         std::move(session_state_->depth_options_),
         base::BindPostTask(
