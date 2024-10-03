@@ -148,6 +148,10 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
     });
   }
 
+  protected voiceItemTabIndex_(groupIndex: number, voiceIndex: number) {
+    return (groupIndex + voiceIndex) === 0 ? 0 : -1;
+  }
+
   private computeEnabledVoices_(): SpeechSynthesisVoice[] {
     if (!this.availableVoices || !this.enabledLangs) {
       return [];
@@ -266,6 +270,13 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
   protected onVoiceMenuKeyDown_(e: KeyboardEvent) {
     const currentElement = e.target as HTMLElement;
     assert(currentElement, 'no key target');
+    // Prevent closing the menu unless tabbing on the language menu button.
+    if (e.key === 'Tab' &&
+        !currentElement.classList.contains('language-menu-button')) {
+      e.stopImmediatePropagation();
+      return;
+    }
+
     const targetIsVoiceOption =
         (currentElement.classList.contains('dropdown-voice-selection-button')) ?
         true :

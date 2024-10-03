@@ -21,6 +21,7 @@
 
         ${voiceGroup.voices.map((voice, voiceIndex) => html`
             <button data-test-id="${voice.id}"
+                tabindex="${this.voiceItemTabIndex_(groupIndex, voiceIndex)}"
                 class="dropdown-item dropdown-voice-selection-button"
                 data-group-index="${groupIndex}"
                 data-voice-index="${voiceIndex}"
@@ -35,6 +36,7 @@
               </span>
 
               <cr-icon-button id="preview-icon"
+                  tabindex="${this.voiceItemTabIndex_(groupIndex, voiceIndex)}"
                   @click="${this.onVoicePreviewClick_}"
                   data-group-index="${groupIndex}"
                   data-voice-index="${voiceIndex}"
@@ -49,6 +51,7 @@
       <hr class="menu-divider">
       <button
           class="dropdown-item dropdown-voice-selection-button language-menu-button"
+          tabindex="0"
           @click="${this.openLanguageMenu_}">
         $i18n{readingModeLanguageMenu}
       </button>
