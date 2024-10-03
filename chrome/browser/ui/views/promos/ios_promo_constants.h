@@ -7,8 +7,9 @@
 
 namespace IOSPromoConstants {
 
-// Size of QR code image view including the Margin.
-const int kQrCodeImageSize = 85;
+// Size of the QR code image view including the quiet zone margin added by the
+// QR code generator.
+const int kQrCodeImageSize = 90;
 
 // URL used for the QR code within the password bubble promo.
 const char kPasswordBubbleQRCodeURL[] =
