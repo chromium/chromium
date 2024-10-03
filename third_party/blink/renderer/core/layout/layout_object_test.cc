@@ -1129,6 +1129,12 @@ class LayoutObjectSimTest : public SimTest {
     return registry.HasEventHandlers(
         EventHandlerRegistry::EventHandlerClass::kTouchAction);
   }
+
+ protected:
+  static HitTestResult HitTestForOcclusion(const Element& target) {
+    const LayoutObject* object = target.GetLayoutObject();
+    return object->HitTestForOcclusion(object->VisualRectInDocument());
+  }
 };
 
 TEST_F(LayoutObjectSimTest, TouchActionUpdatesSubframeEventHandler) {
@@ -1209,13 +1215,13 @@ TEST_F(LayoutObjectSimTest, HitTestForOcclusionInIframe) {
   auto* frame_owner_element = To<HTMLFrameOwnerElement>(iframe_element);
   Document* iframe_doc = frame_owner_element->contentDocument();
   Element* target = iframe_doc->getElementById(AtomicString("target"));
-  HitTestResult result = target->GetLayoutObject()->HitTestForOcclusion();
+  HitTestResult result = HitTestForOcclusion(*target);
   EXPECT_EQ(result.InnerNode(), target);
 
   Element* occluder = GetDocument().getElementById(AtomicString("occluder"));
   occluder->SetInlineStyleProperty(CSSPropertyID::kMarginTop, "-150px");
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
-  result = target->GetLayoutObject()->HitTestForOcclusion();
+  result = HitTestForOcclusion(*target);
   EXPECT_EQ(result.InnerNode(), occluder);
 }
 
