@@ -130,4 +130,58 @@ TEST_F(ConnectorsServiceTest, ConnectorsEnabled) {
           .ConnectorsEnabled());
 }
 
+TEST_F(ConnectorsServiceTest, RealTimeUrlCheck) {
+  auto service = ConnectorsService(
+      /*off_the_record=*/false, prefs(),
+      /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager());
+
+  ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
+  ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(),
+            EnterpriseRealTimeUrlCheckMode::REAL_TIME_CHECK_DISABLED);
+
+  prefs()->SetInteger(
+      kEnterpriseRealTimeUrlCheckMode,
+      EnterpriseRealTimeUrlCheckMode::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
+  prefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
+                      policy::POLICY_SCOPE_MACHINE);
+  ASSERT_TRUE(service.GetDMTokenForRealTimeUrlCheck().has_value());
+  ASSERT_EQ(*service.GetDMTokenForRealTimeUrlCheck(), kTestBrowserDmToken);
+  ASSERT_EQ(
+      service.GetAppliedRealTimeUrlCheck(),
+      EnterpriseRealTimeUrlCheckMode::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
+
+  prefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
+                      policy::POLICY_SCOPE_USER);
+  ASSERT_TRUE(service.GetDMTokenForRealTimeUrlCheck().has_value());
+  ASSERT_EQ(*service.GetDMTokenForRealTimeUrlCheck(), kTestProfileDmToken);
+  ASSERT_EQ(
+      service.GetAppliedRealTimeUrlCheck(),
+      EnterpriseRealTimeUrlCheckMode::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
+}
+
+TEST_F(ConnectorsServiceTest, RealTimeUrlCheck_OffTheRecord) {
+  auto service = ConnectorsService(
+      /*off_the_record=*/true, prefs(),
+      /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager());
+
+  ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
+  ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(),
+            EnterpriseRealTimeUrlCheckMode::REAL_TIME_CHECK_DISABLED);
+
+  prefs()->SetInteger(
+      kEnterpriseRealTimeUrlCheckMode,
+      EnterpriseRealTimeUrlCheckMode::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
+  prefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
+                      policy::POLICY_SCOPE_MACHINE);
+  ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
+  ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(),
+            EnterpriseRealTimeUrlCheckMode::REAL_TIME_CHECK_DISABLED);
+
+  prefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
+                      policy::POLICY_SCOPE_USER);
+  ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
+  ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(),
+            EnterpriseRealTimeUrlCheckMode::REAL_TIME_CHECK_DISABLED);
+}
+
 }  // namespace enterprise_connectors
