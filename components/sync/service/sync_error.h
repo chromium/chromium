@@ -5,14 +5,10 @@
 #ifndef COMPONENTS_SYNC_SERVICE_SYNC_ERROR_H_
 #define COMPONENTS_SYNC_SERVICE_SYNC_ERROR_H_
 
-#include <memory>
 #include <string>
 
+#include "base/location.h"
 #include "components/sync/base/data_type.h"
-
-namespace base {
-class Location;
-}  // namespace base
 
 namespace syncer {
 
@@ -42,14 +38,6 @@ class SyncError {
     DATATYPE_POLICY_ERROR,
   };
 
-  // Severity is used to indicate how an error should be logged and
-  // represented to an end user.
-  enum Severity {
-    SYNC_ERROR_SEVERITY_ERROR,  // Severe unrecoverable error.
-    SYNC_ERROR_SEVERITY_INFO    // Low-severity recoverable error or
-                                // configuration policy issue.
-  };
-
   // Default constructor refers to "no error", and IsSet() will return false.
   SyncError();
 
@@ -60,20 +48,9 @@ class SyncError {
             ErrorType error_type,
             const std::string& message,
             DataType data_type);
-
-  // Copy and assign via deep copy.
-  SyncError(const SyncError& other);
-  SyncError& operator=(const SyncError& other);
-
+  SyncError(const SyncError& other) = default;
+  SyncError& operator=(const SyncError& other) = default;
   ~SyncError();
-
-  // Reset the current error to a new datatype error. May be called
-  // irrespective of whether IsSet() is true. After this is called, IsSet()
-  // will return true.
-  // Will print the new error to LOG(ERROR).
-  void Reset(const base::Location& location,
-             const std::string& message,
-             DataType type);
 
   // Whether this is a valid error or not.
   bool IsSet() const;
@@ -84,8 +61,6 @@ class SyncError {
   DataType data_type() const;
   ErrorType error_type() const;
 
-  // Error severity for logging and UI purposes.
-  Severity GetSeverity() const;
   // Type specific message prefix for logging and UI purposes.
   std::string GetMessagePrefix() const;
 
@@ -93,28 +68,10 @@ class SyncError {
   std::string ToString() const;
 
  private:
-  // Print error information to log.
-  void PrintLogError() const;
-
-  // Make a copy of a SyncError. If other.IsSet() == false, this->IsSet() will
-  // now return false.
-  void Copy(const SyncError& other);
-
-  // Initialize the local error data with the specified error data. After this
-  // is called, IsSet() will return true.
-  void Init(const base::Location& location,
-            const std::string& message,
-            DataType data_type,
-            ErrorType error_type);
-
-  // Reset the error to it's default (unset) values.
-  void Clear();
-
-  // unique_ptr is necessary because Location objects aren't assignable.
-  std::unique_ptr<base::Location> location_;
+  base::Location location_;
   std::string message_;
-  DataType data_type_;
-  ErrorType error_type_;
+  DataType data_type_ = UNSPECIFIED;
+  ErrorType error_type_ = UNSET;
 };
 
 }  // namespace syncer

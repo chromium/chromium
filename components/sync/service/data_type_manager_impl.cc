@@ -377,14 +377,19 @@ TypeStatusMapForDebugging DataTypeManagerImpl::GetTypeStatusMapForDebugging(
     if (base::Contains(data_type_error_map, type)) {
       const SyncError& error = data_type_error_map.at(type);
       DCHECK(error.IsSet());
-      switch (error.GetSeverity()) {
-        case SyncError::SYNC_ERROR_SEVERITY_ERROR:
+      switch (error.error_type()) {
+        case SyncError::UNSET:
+          NOTREACHED();
+        case SyncError::MODEL_ERROR:
+        case SyncError::CONFIGURATION_ERROR:
+        case SyncError::CRYPTO_ERROR:
           type_status.severity = TypeStatusForDebugging::Severity::kError;
           type_status.message =
               base::StrCat({"Error: ", error.location().ToString(), ", ",
                             error.GetMessagePrefix(), error.message()});
           break;
-        case SyncError::SYNC_ERROR_SEVERITY_INFO:
+        case SyncError::UNREADY_ERROR:
+        case SyncError::DATATYPE_POLICY_ERROR:
           type_status.severity = TypeStatusForDebugging::Severity::kInfo;
           type_status.message = error.message();
           break;

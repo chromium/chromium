@@ -4,73 +4,25 @@
 
 #include "components/sync/service/sync_error.h"
 
-#include <ostream>
-
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/notreached.h"
 
 namespace syncer {
 
-SyncError::SyncError() {
-  Clear();
-}
+SyncError::SyncError() = default;
 
 SyncError::SyncError(const base::Location& location,
                      ErrorType error_type,
                      const std::string& message,
-                     DataType data_type) {
-  DCHECK(error_type != UNSET);
-  Init(location, message, data_type, error_type);
-  PrintLogError();
-}
-
-SyncError::SyncError(const SyncError& other) {
-  Copy(other);
+                     DataType data_type)
+    : location_(location),
+      message_(message),
+      data_type_(data_type),
+      error_type_(error_type) {
+  CHECK_NE(error_type, UNSET);
 }
 
 SyncError::~SyncError() = default;
-
-SyncError& SyncError::operator=(const SyncError& other) {
-  if (this == &other) {
-    return *this;
-  }
-  Copy(other);
-  return *this;
-}
-
-void SyncError::Copy(const SyncError& other) {
-  if (other.IsSet()) {
-    Init(other.location(), other.message(), other.data_type(),
-         other.error_type());
-  } else {
-    Clear();
-  }
-}
-
-void SyncError::Clear() {
-  location_.reset();
-  message_ = std::string();
-  data_type_ = UNSPECIFIED;
-  error_type_ = UNSET;
-}
-
-void SyncError::Reset(const base::Location& location,
-                      const std::string& message,
-                      DataType data_type) {
-  Init(location, message, data_type, MODEL_ERROR);
-  PrintLogError();
-}
-
-void SyncError::Init(const base::Location& location,
-                     const std::string& message,
-                     DataType data_type,
-                     ErrorType error_type) {
-  location_ = std::make_unique<base::Location>(location);
-  message_ = message;
-  data_type_ = data_type;
-  error_type_ = error_type;
-}
 
 bool SyncError::IsSet() const {
   return error_type_ != UNSET;
@@ -78,7 +30,7 @@ bool SyncError::IsSet() const {
 
 const base::Location& SyncError::location() const {
   DCHECK(IsSet());
-  return *location_;
+  return location_;
 }
 
 const std::string& SyncError::message() const {
@@ -94,19 +46,6 @@ DataType SyncError::data_type() const {
 SyncError::ErrorType SyncError::error_type() const {
   DCHECK(IsSet());
   return error_type_;
-}
-
-SyncError::Severity SyncError::GetSeverity() const {
-  switch (error_type_) {
-    case UNREADY_ERROR:
-    case DATATYPE_POLICY_ERROR:
-      return SYNC_ERROR_SEVERITY_INFO;
-    case UNSET:
-    case MODEL_ERROR:
-    case CONFIGURATION_ERROR:
-    case CRYPTO_ERROR:
-      return SYNC_ERROR_SEVERITY_ERROR;
-  }
 }
 
 std::string SyncError::GetMessagePrefix() const {
@@ -138,21 +77,8 @@ std::string SyncError::ToString() const {
   if (!IsSet()) {
     return std::string();
   }
-  return location_->ToString() + ", " + DataTypeToDebugString(data_type_) +
-         " " + GetMessagePrefix() + message_;
-}
-
-void SyncError::PrintLogError() const {
-  logging::LogSeverity logSeverity = (GetSeverity() == SYNC_ERROR_SEVERITY_INFO)
-                                         ? logging::LOGGING_VERBOSE
-                                         : logging::LOGGING_ERROR;
-
-  LAZY_STREAM(logging::LogMessage(location_->file_name(),
-                                  location_->line_number(), logSeverity)
-                  .stream(),
-              logSeverity >= ::logging::GetMinLogLevel())
-      << DataTypeToDebugString(data_type_) << " " << GetMessagePrefix()
-      << message_;
+  return location_.ToString() + ", " + DataTypeToDebugString(data_type_) + " " +
+         GetMessagePrefix() + message_;
 }
 
 }  // namespace syncer
