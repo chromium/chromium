@@ -2,21 +2,7 @@
 # Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Migrate tests for a builder from //testing/buildbot to starlark.
-
-buildozer must be installed on the system. To get the desired output from
-buildozer, we must use a custom fork (belonging to gbeaty@google.com) that
-allows for newlines to be specified in the values when using a command file. Run
-the following commands:
-
-git clone https://github.com/kleerwater/buildtools.git
-cd buildtools/buildozer
-git checkout origin/command-file-newlines
-go install
-
-There is a pull request to get the capability into the upstream repository:
-https://github.com/bazelbuild/buildtools/pull/1296
-"""
+"""Migrate tests for builders from //testing/buildbot to starlark."""
 
 import argparse
 import ast
@@ -25,6 +11,7 @@ import subprocess
 import sys
 import typing
 
+import buildozer
 import value_builders
 
 _THIS_DIR = pathlib.Path(__file__).parent
@@ -197,13 +184,6 @@ def _escape_spaces(s: str) -> str:
   return s.replace(' ', '\\ ').replace('\n', '\\\n')
 
 
-# Override the buildozer tables with empty tables to avoid buildozer making
-# unintended changes such as sorting most lists, including in existing portions
-# of the file
-_TABLE_JSON_FILE = _THIS_DIR / 'tables.json'
-_CMD_PREFIX = ['buildozer', '-tables', _TABLE_JSON_FILE]
-
-
 def _update_starlark(
     builder_group: str,
     star_file: pathlib.Path,
@@ -216,24 +196,12 @@ def _update_starlark(
   # files.
   #
   # Pull request to fix: https://github.com/bazelbuild/buildtools/pull/1296
-  def buildoze(*args):
-    # output is always captured to avoid having each edit trigger a repetitive
-    # line of output
-    ret = subprocess.run([*_CMD_PREFIX, *args],
-                         capture_output=True,
-                         encoding='utf-8')
-    # buildozer returns exit code of 3 when it makes no changes, the edits
-    # should be idempotent, so we have to manually check the return code
-    if ret.returncode not in (0, 3):
-      sys.stderr.write(ret.stderr)
-      ret.check_returncode()
-    return ret.stdout
 
   # Buildozer is geared towards manipulating build targets, actions that operate
   # on the file level, such as adding a new rule, use __pkg__ as the target name
   file_target = f'{star_file}:__pkg__'
 
-  buildoze('new_load //lib/targets.star targets', file_target)
+  buildozer.run('new_load //lib/targets.star targets', file_target)
 
   defaults_rule_kind = 'targets.builder_defaults.set'
   # %{kind} as the pattern tells it to operate on all rules of that kind. There
@@ -241,21 +209,23 @@ def _update_starlark(
   defaults_target = f'{star_file}:%{defaults_rule_kind}'
   # Check if a targets.builder_defaults.set declaration already exists, any
   # print operation will result in output if there is already a rule
-  if not subprocess.check_output([*_CMD_PREFIX, 'print kind', defaults_target]):
+  if not buildozer.run('print kind', defaults_target):
     # It's not possible to add an arbitrary function call, only new rules, which
     # require a name, so create a rule with a temporary name and then remove the
     # name attribute, then we can just use the kind filter for modifying it
     temp_name = 'NO_DECLARATION_SHOULD_EXIST_WITH_THIS_NAME'
-    buildoze(f'new {defaults_rule_kind} {temp_name} before {builder_group}',
-             file_target)
-    buildoze('remove name', f'{star_file}:{temp_name}')
+    buildozer.run(
+        f'new {defaults_rule_kind} {temp_name} before {builder_group}',
+        file_target)
+    buildozer.run('remove name', f'{star_file}:{temp_name}')
 
   for attr, value in targets_builder_defaults.items():
-    buildoze(f'set {attr} {_escape_spaces(value)}', defaults_target)
+    buildozer.run(f'set {attr} {_escape_spaces(value)}', defaults_target)
 
   for builder, edits in edits_by_builder.items():
     for attr, value in edits.items():
-      buildoze(f'set {attr} {_escape_spaces(value)}', f'{star_file}:{builder}')
+      buildozer.run(f'set {attr} {_escape_spaces(value)}',
+                    f'{star_file}:{builder}')
 
 
 def main(argv: list[str]):
