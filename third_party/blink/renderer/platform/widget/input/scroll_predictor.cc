@@ -7,6 +7,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
+#include "services/tracing/public/cpp/perfetto/flow_event_utils.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/widget/input/prediction/predictor_factory.h"
 #include "ui/base/ui_base_features.h"

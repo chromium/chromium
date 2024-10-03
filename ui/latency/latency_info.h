@@ -10,15 +10,19 @@
 
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
-#include "services/tracing/public/cpp/perfetto/flow_event_utils.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_latency_info.pbzero.h"
 
 #if BUILDFLAG(USE_BLINK)
 #include "ipc/ipc_param_traits.h"  // nogncheck
 #include "mojo/public/cpp/bindings/struct_traits.h"  // nogncheck
 #endif
+
+namespace perfetto {
+class EventContext;
+}
 
 namespace ui {
 
