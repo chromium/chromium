@@ -68,14 +68,14 @@ export class ChromeHelperFake extends ChromeHelper {
     if (file === null) {
       return;
     }
-    const objectURL = await getObjectURL(file);
-    const newTabWindow = window.open(objectURL, '_blank');
+    const objectUrl = await getObjectURL(file);
+    const newTabWindow = window.open(objectUrl, '_blank');
     newTabWindow?.addEventListener('load', () => {
       // The unload handler is fired immediately since the window.open
       // triggered unload event on the initial empty page. See
       // https://stackoverflow.com/q/7476660
       newTabWindow?.addEventListener('unload', () => {
-        URL.revokeObjectURL(objectURL);
+        URL.revokeObjectURL(objectUrl);
       });
     });
   }
@@ -160,7 +160,7 @@ export class ChromeHelperFake extends ChromeHelper {
     return LidState.kNotPresent;
   }
 
-  override async initSWPrivacySwitchMonitor(
+  override async initSwPrivacySwitchMonitor(
       _onChange: (is_sw_privacy_switch_on: boolean) => void): Promise<boolean> {
     return false;
   }

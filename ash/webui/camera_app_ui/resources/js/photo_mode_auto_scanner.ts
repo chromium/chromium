@@ -136,7 +136,13 @@ export class PhotoModeAutoScanner {
   }
 
   private createBarcodeRunner(interval: number) {
-    const barcodeScanner = new BarcodeScanner(this.video, () => {});
+    const barcodeScanner = new BarcodeScanner(
+        this.video,
+        () => {
+            // We don't use the BarcodeScanner.start so callback does nothing.
+            // TODO(pihsun): callback should be directly passed to `start`
+            // instead of in constructor.
+        });
     return new AsyncIntervalRunner(async (stopped) => {
       const result = await barcodeScanner.scan();
       if (stopped.isSignaled()) {

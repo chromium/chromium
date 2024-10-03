@@ -8,7 +8,7 @@ import {
   CameraConfig,
   CameraInfo,
   CameraManager,
-  CameraUI,
+  CameraUi,
 } from '../../device/index.js';
 import * as dom from '../../dom.js';
 import {I18nString} from '../../i18n_string.js';
@@ -17,12 +17,12 @@ import * as nav from '../../nav.js';
 import * as state from '../../state.js';
 import {Facing, LocalStorageKey, Mode, ViewName} from '../../type.js';
 import * as util from '../../util.js';
-import {OptionPanelOptions, PTZPanelOptions, StateOption} from '../view.js';
+import {OptionPanelOptions, PtzPanelOptions, StateOption} from '../view.js';
 
 /**
  * Creates a controller for the options of Camera view.
  */
-export class Options implements CameraUI {
+export class Options implements CameraUi {
   private readonly toggleMic = dom.get('#toggle-mic', HTMLButtonElement);
 
   private readonly openMirrorPanel =
@@ -55,7 +55,7 @@ export class Options implements CameraUI {
   private audioTrack: MediaStreamTrack|null = null;
 
   constructor(private readonly cameraManager: CameraManager) {
-    this.cameraManager.registerCameraUI(this);
+    this.cameraManager.registerCameraUi(this);
     this.switchDeviceButton.addEventListener('click', () => {
       if (state.get(state.State.TAKING)) {
         return;
@@ -71,7 +71,7 @@ export class Options implements CameraUI {
     this.initOpenMirrorPanel();
     this.initOpenGridPanel();
     this.initOpenTimerPanel();
-    this.initOpenPTZPanel();
+    this.initOpenPtzPanel();
     this.initToggleMic();
 
     // Restore saved mirroring states per video device.
@@ -219,12 +219,12 @@ export class Options implements CameraUI {
     });
   }
 
-  private initOpenPTZPanel() {
+  private initOpenPtzPanel() {
     this.openPTZPanel.addEventListener('click', () => {
       toggleIndicatorOnOpenPTZButton(false);
       nav.open(
           ViewName.PTZ_PANEL,
-          new PTZPanelOptions(this.cameraManager.getPTZController()));
+          new PtzPanelOptions(this.cameraManager.getPtzController()));
     });
   }
 
@@ -341,6 +341,6 @@ export class Options implements CameraUI {
  * the new super-resolution feature.
  */
 export function toggleIndicatorOnOpenPTZButton(display: boolean): void {
-  const openPTZPanel = dom.get('#open-ptz-panel', HTMLButtonElement);
-  openPTZPanel.classList.toggle('notify-new-feature', display);
+  const openPtzPanel = dom.get('#open-ptz-panel', HTMLButtonElement);
+  openPtzPanel.classList.toggle('notify-new-feature', display);
 }

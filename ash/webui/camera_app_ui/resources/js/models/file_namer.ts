@@ -140,7 +140,7 @@ export class Filenamer {
   /**
    * Returns true if given |fileName| matches the format that CCA generates.
    */
-  static isCCAFileFormat(fileName: string): boolean {
+  static isCcaFileFormat(fileName: string): boolean {
     return FILE_NAME_PATTERN.test(fileName);
   }
 }

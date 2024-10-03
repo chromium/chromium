@@ -27,7 +27,7 @@ import * as dom from './dom.js';
 import {reportError} from './error.js';
 import {Flag} from './flag.js';
 import {Intent} from './intent.js';
-import * as Comlink from './lib/comlink.js';
+import * as comlink from './lib/comlink.js';
 import {startMeasuringMemoryUsage} from './memory_usage.js';
 import * as metrics from './metrics.js';
 import * as filesystem from './models/file_system.js';
@@ -319,7 +319,7 @@ async function setupMultiWindowHandling(
   const multiWindowManagerWorker = new SharedWorker(
       getSanitizedScriptUrl('/js/multi_window_manager.js'), {type: 'module'});
   const windowInstance =
-      Comlink.wrap<WindowInstance>(multiWindowManagerWorker.port);
+      comlink.wrap<WindowInstance>(multiWindowManagerWorker.port);
   addUnloadCallback(() => {
     windowInstance.onWindowClosed().catch((e) => {
       reportError(
@@ -328,7 +328,7 @@ async function setupMultiWindowHandling(
     });
   });
   await windowInstance.init(
-      Comlink.proxy(handleSuspend), Comlink.proxy(handleResume));
+      comlink.proxy(handleSuspend), comlink.proxy(handleResume));
   await ChromeHelper.getInstance().initCameraWindowController();
   windowController.addWindowStateListener((states) => {
     const isMinimizing = states.includes(WindowStateType.kMinimized);

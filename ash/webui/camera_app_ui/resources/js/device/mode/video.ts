@@ -498,7 +498,8 @@ export class Video extends ModeBase {
     }
     const preference = encoderPreference.get(loadTimeData.getBoard()) ??
         {profile: h264.Profile.HIGH, multiplier: 2};
-    let {profile, multiplier} = preference;
+    const {profile} = preference;
+    let {multiplier} = preference;
     if (this.recordingType === RecordType.TIME_LAPSE) {
       multiplier = Math.max(multiplier, TIME_LAPSE_MIN_BITRATE_MULTIPLIER);
     }

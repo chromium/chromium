@@ -500,8 +500,7 @@ export class DocumentReview extends View {
    * Changes active page and updates related elements.
    */
   private selectPageView(index: number): void {
-    for (let i = 0; i < this.pagesElement.children.length; i++) {
-      const pageElement = this.pagesElement.children[i];
+    for (const pageElement of this.pagesElement.children) {
       pageElement.classList.remove(ACTIVE_PAGE_CLASS);
       pageElement.setAttribute('aria-selected', 'false');
       pageElement.setAttribute('tabindex', '-1');

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @file
+ * @fileoverview
  *
  * This is used to handle multiple windows of CCA.
  * An example is when using the following windows at the same time:
@@ -29,7 +29,7 @@
  */
 
 import {assert, assertNotReached} from './assert.js';
-import * as Comlink from './lib/comlink.js';
+import * as comlink from './lib/comlink.js';
 
 // This is needed since we currently have the same tsconfig for files running
 // in SharedWorker and in CCA.
@@ -237,6 +237,6 @@ export type WindowInstance = WindowInstanceImpl;
  */
 sharedWorkerScope.onconnect = (event: MessageEvent) => {
   const port = event.ports[0];
-  Comlink.expose(windowManager.createWindowInstance(), port);
+  comlink.expose(windowManager.createWindowInstance(), port);
   port.start();
 };

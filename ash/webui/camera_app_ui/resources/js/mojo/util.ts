@@ -93,8 +93,10 @@ export function fakeEndpoint<T>(): T {
   // Disable type assertion since it is intended to make all function calls as
   // no-ops.
   const handler = {
-    apply: (): unknown => new Proxy(() => {}, handler),
-    get: (): unknown => new Proxy(() => {}, handler),
+    apply: (): unknown =>
+        new Proxy(() => {/* Doing nothing for fake */}, handler),
+    get: (): unknown =>
+        new Proxy(() => {/* Doing nothing for fake */}, handler),
   };
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return new Proxy({}, handler) as T;

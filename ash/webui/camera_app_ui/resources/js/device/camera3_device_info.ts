@@ -55,7 +55,7 @@ export class Camera3DeviceInfo {
    * @param videoResolutionFpses Supported available video
    *     resolutions and maximal capture fps of the video device.
    * @param fpsRanges Supported fps ranges of the video device.
-   * @param builtinPTZSupport Is PTZ controls supported by the camera.
+   * @param builtinPtzSupport Is PTZ controls supported by the camera.
    */
   constructor(
       deviceInfo: MediaDeviceInfo,
@@ -63,7 +63,7 @@ export class Camera3DeviceInfo {
       readonly photoResolutions: ResolutionList,
       videoResolutionFpses: VideoConfig[],
       readonly fpsRanges: FpsRangeList,
-      readonly builtinPTZSupport: boolean,
+      readonly builtinPtzSupport: boolean,
   ) {
     this.deviceId = deviceInfo.deviceId;
     // If all fps supported by the camera is lower than 24, use the maximum
@@ -137,7 +137,7 @@ export class Camera3DeviceInfo {
     const facing = await deviceOperator.getCameraFacing(deviceId);
     // Check if the camera has PTZ support, not the PTZ support through stream
     // manipulators, by checking with USB HAL vendor tags.
-    const builtinPTZSupport =
+    const builtinPtzSupport =
         !(await deviceOperator.isDigitalZoomSupported(deviceId)) &&
         ((await deviceOperator.getPanDefault(deviceId)) !== undefined ||
          (await deviceOperator.getTiltDefault(deviceId)) !== undefined ||
@@ -150,6 +150,6 @@ export class Camera3DeviceInfo {
 
     return new Camera3DeviceInfo(
         deviceInfo, facing, photoResolution, filteredVideoConfigs,
-        supportedFpsRanges, builtinPTZSupport);
+        supportedFpsRanges, builtinPtzSupport);
   }
 }

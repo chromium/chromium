@@ -24,7 +24,7 @@ const PRODUCT_NAME = 'ChromeOS_CameraApp';
 
 function parseTopFrameInfo(stackTrace: string): StackFrame {
   const regex = /at (\[?\w+\]? |)\(?(.+):(\d+):(\d+)/;
-  const match = stackTrace.match(regex) ?? ['', '', '', '-1', '-1'] as const;
+  const match = regex.exec(stackTrace) ?? ['', '', '', '-1', '-1'] as const;
   return {
     funcName: match[1].trim(),
     fileName: match[2],
@@ -114,7 +114,6 @@ export function reportError(
   };
 
   if (isLocalDev()) {
-    // eslint-disable-next-line no-console
     console.info('crashReportPrivate called with:', params);
   } else {
     chrome.crashReportPrivate.reportError(

@@ -14,9 +14,15 @@ export const SELECTOR_MAP = {
   backVideoResolutionOptions: `#view-video-resolution-settings ` +
       `.menu-item>input[data-facing="environment"]`,
   barcodeChipText: '.barcode-chip-text',
+  // This is used by tast side and name needs to be keep as is for backward
+  // compatibility.
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   barcodeChipURL: '#barcode-chip-url',
   barcodeChipWifi: '#barcode-chip-wifi',
   barcodeCopyTextButton: '#barcode-chip-text-container .barcode-copy-button',
+  // This is used by tast side and name needs to be keep as is for backward
+  // compatibility.
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   barcodeCopyURLButton: '#barcode-chip-url-container .barcode-copy-button',
   bitrateMultiplierRangeInput: '#bitrate-slider input[type=range]',
   cancelResultButton: 'button[i18n-label=cancel_review_button]',
@@ -61,6 +67,9 @@ export const SELECTOR_MAP = {
   lowStorageDialog: '#view-low-storage-dialog',
   lowStorageDialogManageButton:
       '#view-low-storage-dialog button.dialog-negative-button',
+  // This is used by tast side and name needs to be keep as is for backward
+  // compatibility.
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   lowStorageDialogOKButton:
       '#view-low-storage-dialog button.dialog-positive-button',
   lowStorageWarning: '#nudge',
@@ -69,6 +78,9 @@ export const SELECTOR_MAP = {
   modeSelector: 'mode-selector',
   openGridPanelButton: '#open-grid-panel',
   openMirrorPanelButton: '#open-mirror-panel',
+  // This is used by tast side and name needs to be keep as is for backward
+  // compatibility.
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   openPTZPanelButton: '#open-ptz-panel',
   openTimerPanelButton: '#open-timer-panel',
   panLeftButton: '#pan-left',
@@ -107,7 +119,7 @@ export const SELECTOR_MAP = {
   zoomInButton: '#zoom-in',
   zoomOutButton: '#zoom-out',
 } as const;
-export type UIComponent = keyof typeof SELECTOR_MAP;
+export type UiComponent = keyof typeof SELECTOR_MAP;
 
 export const SETTING_OPTION_MAP = {
   customVideoParametersOption: {
@@ -130,7 +142,7 @@ export const SETTING_OPTION_MAP = {
     component: 'previewOcrOption',
     state: State.ENABLE_PREVIEW_OCR,
   },
-} satisfies Record<string, {component: UIComponent, state: StateUnion}>;
+} satisfies Record<string, {component: UiComponent, state: StateUnion}>;
 export type SettingOption = keyof typeof SETTING_OPTION_MAP;
 
 export const SETTING_MENU_MAP = {
@@ -154,5 +166,5 @@ export const SETTING_MENU_MAP = {
     component: 'videoResolutionSettingButton',
     view: ViewName.VIDEO_RESOLUTION_SETTINGS,
   },
-} satisfies Record<string, {component: UIComponent, view: ViewName}>;
+} satisfies Record<string, {component: UiComponent, view: ViewName}>;
 export type SettingMenu = keyof typeof SETTING_MENU_MAP;

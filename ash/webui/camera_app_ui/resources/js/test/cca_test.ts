@@ -12,8 +12,8 @@ import {TIME_LAPSE_INITIAL_SPEED} from '../device/mode/video.js';
 import {Preview} from '../device/preview.js';
 import {
   DIGITAL_ZOOM_CAPABILITIES,
-  PTZCapabilities,
-  StrictPTZSettings,
+  PtzCapabilities,
+  StrictPtzSettings,
 } from '../device/ptz_controller.js';
 import * as dom from '../dom.js';
 import {GalleryButton} from '../lit/components/gallery-button.js';
@@ -42,7 +42,7 @@ import {
   SETTING_OPTION_MAP,
   SettingMenu,
   SettingOption,
-  UIComponent,
+  UiComponent,
 } from './cca_type.js';
 
 interface Coordinate {
@@ -59,7 +59,7 @@ interface InputRange {
  * Get HTMLInputElement from the specified component and ensure that the type of
  * the input element is "range".
  */
-function getRangeInputComponent(component: UIComponent): HTMLInputElement {
+function getRangeInputComponent(component: UiComponent): HTMLInputElement {
   const element = resolveElement(component);
   const inputElement = assertInstanceof(
       element, HTMLInputElement,
@@ -97,7 +97,7 @@ function getPreviewVideoTrack(): MediaStreamTrack {
  * Resolves selector of the component and returns a list of HTML elements with
  * that selector.
  */
-function getElementList(component: UIComponent): HTMLElement[] {
+function getElementList(component: UiComponent): HTMLElement[] {
   const selector = SELECTOR_MAP[component];
   // Value from Tast may not be UIComponent and results in undefined.
   assert(selector !== undefined, 'Invalid UIComponent value.');
@@ -110,7 +110,7 @@ function getElementList(component: UIComponent): HTMLElement[] {
 /**
  * Returns a list of HTML elements which are visible.
  */
-function getVisibleElementList(component: UIComponent): HTMLElement[] {
+function getVisibleElementList(component: UiComponent): HTMLElement[] {
   const elements = getElementList(component);
   const visibleElements =
       elements.filter((element) => isVisibleElement(element));
@@ -132,7 +132,7 @@ function isVisibleElement(element: HTMLElement): boolean {
  * specified, returns the |index|'th element, else returns the first element
  * found. This will throw an error if it cannot be resolved.
  */
-function resolveElement(component: UIComponent, index = 0): HTMLElement {
+function resolveElement(component: UiComponent, index = 0): HTMLElement {
   const elements = getElementList(component);
   assert(
       index < elements.length,
@@ -143,7 +143,7 @@ function resolveElement(component: UIComponent, index = 0): HTMLElement {
 /**
  * Resolves the |index|'th visible HTMLElement of the specified ui |component|.
  */
-function resolveVisibleElement(component: UIComponent, index = 0): HTMLElement {
+function resolveVisibleElement(component: UiComponent, index = 0): HTMLElement {
   const elements = getVisibleElementList(component);
   assert(
       index < elements.length,
@@ -154,6 +154,11 @@ function resolveVisibleElement(component: UIComponent, index = 0): HTMLElement {
 /**
  * Return test functionalities to be used in Tast automation test.
  */
+// This is used by tast side and name needs to be keep as is for backward
+// compatibility.
+// TODO(b/371112908): Have alias of these names, update tast, then remove the
+// old names.
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export class CCATest {
   /**
    * Checks if mojo connection could be constructed without error. In this check
@@ -228,7 +233,7 @@ export class CCATest {
   /**
    * Clicks on the UI component if it's visible.
    */
-  static click(component: UIComponent, index?: number): void {
+  static click(component: UiComponent, index?: number): void {
     const element = resolveVisibleElement(component, index);
     element.click();
   }
@@ -250,21 +255,27 @@ export class CCATest {
   /**
    * Returns the number of ui elements of the specified component.
    */
-  static countUI(component: UIComponent): number {
+  // This is used by tast side and name needs to be keep as is for backward
+  // compatibility.
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  static countUI(component: UiComponent): number {
     return getElementList(component).length;
   }
 
   /**
    * Returns the number of visible ui elements of the specified component.
    */
-  static countVisibleUI(component: UIComponent): number {
+  // This is used by tast side and name needs to be keep as is for backward
+  // compatibility.
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  static countVisibleUI(component: UiComponent): number {
     return getVisibleElementList(component).length;
   }
 
   /**
    * Returns whether the UI exists in the current DOM tree.
    */
-  static exists(component: UIComponent): boolean {
+  static exists(component: UiComponent): boolean {
     const elements = getElementList(component);
     return elements.length > 0;
   }
@@ -280,7 +291,7 @@ export class CCATest {
   /**
    * Returns the attribute |attr| of the |index|'th ui.
    */
-  static getAttribute(component: UIComponent, attr: string, index?: number):
+  static getAttribute(component: UiComponent, attr: string, index?: number):
       string|null {
     const element = resolveElement(component, index);
     return element.getAttribute(attr);
@@ -297,7 +308,7 @@ export class CCATest {
   /**
    * Gets the capabilities of digital zoom.
    */
-  static getDigitalZoomCapabilities(): PTZCapabilities {
+  static getDigitalZoomCapabilities(): PtzCapabilities {
     return DIGITAL_ZOOM_CAPABILITIES;
   }
 
@@ -331,7 +342,7 @@ export class CCATest {
    * Get [min, max] range of the component. Throws an error if the component is
    * not HTMLInputElement with type "range".
    */
-  static getInputRange(component: UIComponent): InputRange {
+  static getInputRange(component: UiComponent): InputRange {
     const element = getRangeInputComponent(component);
     const max = Number(element.max);
     const min = Number(element.min);
@@ -378,8 +389,11 @@ export class CCATest {
    * Returns current PTZ settings. Throws an error if PTZ is not enabled, or
    * any of the pan, tilt, or zoom values are missing.
    */
-  static getPTZSettings(): StrictPTZSettings {
-    return Preview.getPTZSettingsForTest();
+  // This is used by tast side and name needs to be keep as is for backward
+  // compatibility.
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  static getPTZSettings(): StrictPtzSettings {
+    return Preview.getPtzSettingsForTest();
   }
 
   static getScreenOrientation(): OrientationType {
@@ -389,7 +403,10 @@ export class CCATest {
   /**
    * Gets screen x, y of the center of |index|'th ui component.
    */
-  static getScreenXY(component: UIComponent, index?: number): Coordinate {
+  // This is used by tast side and name needs to be keep as is for backward
+  // compatibility.
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  static getScreenXY(component: UiComponent, index?: number): Coordinate {
     const element = resolveVisibleElement(component, index);
     const rect = element.getBoundingClientRect();
     const actionBarH = window.outerHeight - window.innerHeight;
@@ -402,7 +419,7 @@ export class CCATest {
   /**
    * Gets rounded numbers of width and height of the specified ui component.
    */
-  static getSize(component: UIComponent, index?: number): Resolution {
+  static getSize(component: UiComponent, index?: number): Resolution {
     const element = resolveVisibleElement(component, index);
     const {width, height} = element.getBoundingClientRect();
     return new Resolution(Math.round(width), Math.round(height));
@@ -433,16 +450,19 @@ export class CCATest {
   /**
    * Gets the cover image URL of the gallery button.
    */
+  // This is used by tast side and name needs to be keep as is for backward
+  // compatibility.
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   static getGalleryButtonCoverURL(): string {
     const galleryButton =
         assertInstanceof(resolveElement('galleryButton'), GalleryButton);
-    return galleryButton.getCoverURLForTesting();
+    return galleryButton.getCoverUrlForTesting();
   }
 
   /**
    * Performs mouse hold by sending pointerdown and pointerup events.
    */
-  static async hold(component: UIComponent, ms: number, index?: number):
+  static async hold(component: UiComponent, ms: number, index?: number):
       Promise<void> {
     const element = resolveVisibleElement(component, index);
     element.dispatchEvent(new Event('pointerdown'));
@@ -454,7 +474,7 @@ export class CCATest {
    * Returns checked attribute of component. Throws an error if the component is
    * not HTMLInputElement.
    */
-  static isChecked(component: UIComponent, index?: number): boolean {
+  static isChecked(component: UiComponent, index?: number): boolean {
     const element = resolveElement(component, index);
     const inputElement = assertInstanceof(element, HTMLInputElement);
     return inputElement.checked;
@@ -464,7 +484,7 @@ export class CCATest {
    * Returns disabled attribute of the component. In case the element without
    * "disabled" attribute, always returns false.
    */
-  static isDisabled(component: UIComponent, index?: number): boolean {
+  static isDisabled(component: UiComponent, index?: number): boolean {
     const element = resolveElement(component, index);
     if ('disabled' in element && typeof element.disabled === 'boolean') {
       return element.disabled;
@@ -490,7 +510,7 @@ export class CCATest {
   /**
    * Returns whether the UI component is currently visible.
    */
-  static isVisible(component: UIComponent, index?: number): boolean {
+  static isVisible(component: UiComponent, index?: number): boolean {
     const element = resolveElement(component, index);
     return isVisibleElement(element);
   }
@@ -515,7 +535,7 @@ export class CCATest {
   /**
    * Selects the select component with the option with the provided value.
    */
-  static selectOption(component: UIComponent, value: string): void {
+  static selectOption(component: UiComponent, value: string): void {
     const element = resolveElement(component);
     const selectElement = assertInstanceof(element, HTMLSelectElement);
     const option =
@@ -531,6 +551,9 @@ export class CCATest {
   /**
    * Hides all toasts, nudges and tooltips.
    */
+  // This is used by tast side and name needs to be keep as is for backward
+  // compatibility.
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   static hideFloatingUI(): void {
     state.set(state.State.HIDE_FLOATING_UI_FOR_TESTING, true);
   }
@@ -547,7 +570,7 @@ export class CCATest {
    * HTMLInputElement with type "range", or the value is not within [min, max]
    * range.
    */
-  static setRangeInputValue(component: UIComponent, value: number): void {
+  static setRangeInputValue(component: UiComponent, value: number): void {
     const {max, min} = CCATest.getInputRange(component);
     if (value < min || value > max) {
       throw new Error(`Invalid value ${value} within range ${min}-${max}`);

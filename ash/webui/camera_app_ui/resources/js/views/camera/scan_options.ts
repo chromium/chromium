@@ -4,7 +4,7 @@
 
 import {assert, assertEnumVariant} from '../../assert.js';
 import {queuedAsyncCallback} from '../../async_job_queue.js';
-import {CameraManager, CameraUI} from '../../device/index.js';
+import {CameraManager, CameraUi} from '../../device/index.js';
 import * as dom from '../../dom.js';
 import {sendBarcodeEnabledEvent} from '../../metrics.js';
 import {BarcodeScanner} from '../../models/barcode.js';
@@ -39,7 +39,7 @@ type ScanOptionsChangeListener = () => void;
 /**
  * Controller for the scan options of Camera view.
  */
-export class ScanOptions implements CameraUI {
+export class ScanOptions implements CameraUi {
   private readonly scanOptions =
       [...dom.getAll('#scan-modes-group [data-scantype]', HTMLInputElement)];
 
@@ -63,7 +63,7 @@ export class ScanOptions implements CameraUI {
       dom.get('#scan-document-option', HTMLDivElement);
 
   constructor(private readonly cameraManager: CameraManager) {
-    this.cameraManager.registerCameraUI(this);
+    this.cameraManager.registerCameraUi(this);
 
     this.documentCornerOverlay = new DocumentCornerOverlay(
         (p) => this.cameraManager.setPointOfInterest(p));

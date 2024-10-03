@@ -411,7 +411,7 @@ export class CaptureCandidatePreferrer {
         const candidatesByLevel = option.resolutions.map(
             (r) => new PhotoCaptureCandidate(
                 deviceId, r, photoPreviewPair.previewResolutions,
-                cameraInfo.builtinPTZSupport));
+                cameraInfo.builtinPtzSupport));
         if (showAllResolutions &&
             option.resolutions[0].equals(prefResolution)) {
           candidatesByAspectRatio.unshift(...candidatesByLevel);
@@ -443,7 +443,7 @@ export class CaptureCandidatePreferrer {
         expert.isEnabled(expert.ExpertOption.SHOW_ALL_RESOLUTIONS);
     assert(options !== undefined);
     for (const option of options) {
-      const prefFps = this.getFallbackFPS(deviceId, option.resolutionLevel);
+      const prefFps = this.getFallbackFps(deviceId, option.resolutionLevel);
       const targetFpsCandidates = [];
       const otherFpsCandidates = [];
       const videoPreviewPair = cameraInfo.videoPreviewPairs.find(
@@ -869,7 +869,7 @@ export class CaptureCandidatePreferrer {
         if (this.cameraConfig === null) {
           continue;
         }
-        const prefFps = this.getFallbackFPS(deviceId, option.resolutionLevel);
+        const prefFps = this.getFallbackFps(deviceId, option.resolutionLevel);
         const captureCandidate = this.cameraConfig.captureCandidate;
         const configuredResolution = captureCandidate?.resolution;
         const isRunningCameraOption = deviceId === this.cameraConfig.deviceId &&
@@ -906,7 +906,7 @@ export class CaptureCandidatePreferrer {
     }
   }
 
-  private getFallbackFPS(deviceId: string, level: VideoResolutionLevel):
+  private getFallbackFps(deviceId: string, level: VideoResolutionLevel):
       number {
     return this.prefVideoFpsesMap[deviceId]?.[level] ?? 30;
   }

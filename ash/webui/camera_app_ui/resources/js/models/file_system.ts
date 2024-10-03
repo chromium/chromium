@@ -172,7 +172,7 @@ export async function getEntries(): Promise<FileAccessEntry[]> {
         !hasDocumentPrefix(entry)) {
       return false;
     }
-    return entry.name.match(/_(\d{8})_(\d{6})(?: \((\d+)\))?/);
+    return /_(\d{8})_(\d{6})(?: \((\d+)\))?/.exec(entry.name);
   });
 }
 

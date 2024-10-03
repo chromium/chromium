@@ -29,7 +29,7 @@ export class PhotoAspectRatioSettings extends BaseSettings {
     super(ViewName.PHOTO_ASPECT_RATIO_SETTINGS);
 
     this.menu = dom.getFrom(this.root, 'div.menu', HTMLDivElement);
-    cameraManager.registerCameraUI({
+    cameraManager.registerCameraUi({
       onCameraUnavailable: () => {
         for (const input of dom.getAllFrom(
                  this.menu, 'input', HTMLInputElement)) {

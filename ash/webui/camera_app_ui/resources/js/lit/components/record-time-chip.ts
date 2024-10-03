@@ -69,7 +69,6 @@ window.customElements.define('record-time-chip', RecordTimeChip);
 
 declare global {
   interface HTMLElementTagNameMap {
-    /* eslint-disable-next-line @typescript-eslint/naming-convention */
     'record-time-chip': RecordTimeChip;
   }
 }

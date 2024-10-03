@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @file
+ * @fileoverview
  * H264 related utility functions referenced from
  * media/video/h264_level_limits.cc.
  */

@@ -55,11 +55,11 @@ import * as util from '../util.js';
 import {WaitableEvent} from '../waitable_event.js';
 
 import {
-  assertStrictPTZSettings,
-  DigitalZoomPTZController,
-  MediaStreamPTZController,
-  PTZController,
-  StrictPTZSettings,
+  assertStrictPtzSettings,
+  DigitalZoomPtzController,
+  MediaStreamPtzController,
+  PtzController,
+  StrictPtzSettings,
 } from './ptz_controller.js';
 import {
   StreamConstraints,
@@ -121,7 +121,7 @@ export class Preview {
   /**
    * Map from device id to constraints to reset default PTZ setting.
    */
-  private readonly deviceDefaultPTZ =
+  private readonly deviceDefaultPtz =
       new Map<string, MediaTrackConstraintSet>();
 
   private constraints: StreamConstraints|null = null;
@@ -133,7 +133,7 @@ export class Preview {
   private readonly digitalZoomFlag =
       loadTimeData.getChromeFlag(Flag.DIGITAL_ZOOM);
 
-  private static ptzControllerForTest: PTZController|null = null;
+  private static ptzControllerForTest: PtzController|null = null;
 
   /**
    * Triggered when the screen orientation is updated.
@@ -150,7 +150,7 @@ export class Preview {
    * PTZController for the current stream constraint. Null if PTZ is not
    * supported.
    */
-  private ptzController: PTZController|null = null;
+  private ptzController: PtzController|null = null;
 
   /**
    * @param onNewStreamNeeded Callback to request new stream.
@@ -227,7 +227,7 @@ export class Preview {
     }
   }
 
-  private async updatePTZ() {
+  private async updatePtz() {
     const deviceOperator = DeviceOperator.getInstance();
     const {pan, tilt, zoom} = this.getVideoTrack().getCapabilities();
     const {deviceId} = getVideoTrackSettings(this.getVideoTrack());
@@ -241,7 +241,7 @@ export class Preview {
       const isSquare = this.isSquareResolution();
       const aspectRatio = isSquare ? 1 : this.getResolution().aspectRatio;
       this.ptzController =
-          await DigitalZoomPTZController.create(deviceId, aspectRatio);
+          await DigitalZoomPtzController.create(deviceId, aspectRatio);
       return;
     }
 
@@ -269,15 +269,15 @@ export class Preview {
       return;
     }
 
-    const deviceDefaultPTZ = await this.getDeviceDefaultPTZ(deviceId);
-    this.ptzController = new MediaStreamPTZController(
-        this.getVideoTrack(), deviceDefaultPTZ, this.vidPid);
+    const deviceDefaultPtz = await this.getDeviceDefaultPtz(deviceId);
+    this.ptzController = new MediaStreamPtzController(
+        this.getVideoTrack(), deviceDefaultPtz, this.vidPid);
   }
 
-  private async getDeviceDefaultPTZ(deviceId: string):
+  private async getDeviceDefaultPtz(deviceId: string):
       Promise<MediaTrackConstraintSet> {
-    if (this.deviceDefaultPTZ.has(deviceId)) {
-      return assertExists(this.deviceDefaultPTZ.get(deviceId));
+    if (this.deviceDefaultPtz.has(deviceId)) {
+      return assertExists(this.deviceDefaultPtz.get(deviceId));
     }
 
     const deviceOperator = DeviceOperator.getInstance();
@@ -307,31 +307,31 @@ export class Preview {
         defaultConstraints.zoom = await deviceOperator.getZoomDefault(deviceId);
       }
     }
-    this.deviceDefaultPTZ.set(deviceId, defaultConstraints);
+    this.deviceDefaultPtz.set(deviceId, defaultConstraints);
     return defaultConstraints;
   }
 
   /**
    * If the preview camera support PTZ controls.
    */
-  isSupportPTZ(): boolean {
+  isSupportPtz(): boolean {
     return this.isSupportPTZInternal;
   }
 
-  getPTZController(): PTZController {
+  getPtzController(): PtzController {
     return assertExists(this.ptzController);
   }
 
-  async resetPTZ(): Promise<void> {
+  async resetPtz(): Promise<void> {
     if (this.streamInternal === null || !this.isSupportPTZInternal) {
       return;
     }
     assert(this.ptzController !== null);
-    await this.ptzController.resetPTZ();
+    await this.ptzController.resetPtz();
   }
 
   getZoomRatio(): number {
-    if (this.ptzController instanceof DigitalZoomPTZController) {
+    if (this.ptzController instanceof DigitalZoomPtzController) {
       return assertExists(this.ptzController.getSettings().zoom);
     }
     return 1;
@@ -420,7 +420,7 @@ export class Preview {
       }, 100);
       this.updateFacing();
       this.deviceId = getVideoTrackSettings(this.getVideoTrack()).deviceId;
-      await this.updatePTZ();
+      await this.updatePtz();
       Preview.ptzControllerForTest = this.ptzController;
       window.screen.orientation.addEventListener(
           'change', this.orientationListener);
@@ -684,7 +684,7 @@ export class Preview {
           this.faceOverlay?.show(rects);
         };
 
-    const updatePTZ = () => {
+    const updatePtz = () => {
       const ptz = this.ptzController?.getSettings();
       showValue('#preview-ptz-pan', `Pan ${ptz?.pan?.toFixed(1) ?? '-'}`);
       showValue('#preview-ptz-tilt', `Tilt ${ptz?.tilt?.toFixed(1) ?? '-'}`);
@@ -751,7 +751,7 @@ export class Preview {
       // in the metadata, which may happen if there is no face detected.
       updateFace(faceMode, faceRects);
 
-      updatePTZ();
+      updatePtz();
     };
 
     this.metadataObserver = await deviceOperator.addMetadataObserver(
@@ -797,7 +797,7 @@ export class Preview {
    *     |x| and |y| are in range [0, 1).
    */
   setPointOfInterest(point: Point): Promise<void> {
-    if (this.ptzController instanceof DigitalZoomPTZController) {
+    if (this.ptzController instanceof DigitalZoomPtzController) {
       point = this.ptzController.calculatePointOnCameraFrame(point);
     }
     const constraints = {
@@ -862,9 +862,9 @@ export class Preview {
   /**
    * Returns current PTZ settings for testing.
    */
-  static getPTZSettingsForTest(): StrictPTZSettings {
+  static getPtzSettingsForTest(): StrictPtzSettings {
     assert(Preview.ptzControllerForTest !== null, 'PTZ is not enabled');
     const settings = Preview.ptzControllerForTest.getSettings();
-    return assertStrictPTZSettings(settings);
+    return assertStrictPtzSettings(settings);
   }
 }

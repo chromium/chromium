@@ -35,12 +35,12 @@ import {windowController} from '../window_controller.js';
 import {EventListener, OperationScheduler} from './camera_operation.js';
 import {VideoCaptureCandidate} from './capture_candidate.js';
 import {Preview} from './preview.js';
-import {PTZController} from './ptz_controller.js';
+import {PtzController} from './ptz_controller.js';
 import {
   CameraConfig,
   CameraInfo,
-  CameraUI,
-  CameraViewUI,
+  CameraUi,
+  CameraViewUi,
   ModeConstraints,
   PhotoAspectRatioOptionListener,
   PhotoResolutionOptionListener,
@@ -101,7 +101,7 @@ export class CameraManager implements EventListener {
 
   private watchdog: ResumeStateWatchdog|null = null;
 
-  private readonly cameraUIs: CameraUI[] = [];
+  private readonly cameraUis: CameraUi[] = [];
 
   private readonly preview: Preview;
 
@@ -199,25 +199,25 @@ export class CameraManager implements EventListener {
   }
 
   async onUpdateConfig(config: CameraConfig): Promise<void> {
-    for (const ui of this.cameraUIs) {
+    for (const ui of this.cameraUis) {
       await ui.onUpdateConfig?.(config);
     }
   }
 
   onTryingNewConfig(config: CameraConfig): void {
-    for (const ui of this.cameraUIs) {
+    for (const ui of this.cameraUis) {
       ui.onTryingNewConfig?.(config);
     }
   }
 
   onUpdateCapability(cameraInfo: CameraInfo): void {
-    for (const ui of this.cameraUIs) {
+    for (const ui of this.cameraUis) {
       ui.onUpdateCapability?.(cameraInfo);
     }
   }
 
-  registerCameraUI(ui: CameraUI): void {
-    this.cameraUIs.push(ui);
+  registerCameraUi(ui: CameraUi): void {
+    this.cameraUis.push(ui);
   }
 
   /**
@@ -236,7 +236,7 @@ export class CameraManager implements EventListener {
     return this.screenOffAuto && !this.hasExternalScreen;
   }
 
-  async initialize(cameraViewUI: CameraViewUI): Promise<void> {
+  async initialize(cameraViewUI: CameraViewUi): Promise<void> {
     const helper = ChromeHelper.getInstance();
 
     function setTablet(isTablet: boolean) {
@@ -251,12 +251,12 @@ export class CameraManager implements EventListener {
     const lidState = await helper.initLidStateMonitor(setLidClosed);
     setLidClosed(lidState);
 
-    function setSWPirvacySwitchOn(isSWPrivacySwitchOn: boolean) {
+    function setSwPirvacySwitchOn(isSWPrivacySwitchOn: boolean) {
       state.set(state.State.SW_PRIVACY_SWITCH_ON, isSWPrivacySwitchOn);
     }
-    const isSWPrivacySwitchOn =
-        await helper.initSWPrivacySwitchMonitor(setSWPirvacySwitchOn);
-    setSWPirvacySwitchOn(isSWPrivacySwitchOn);
+    const isSwPrivacySwitchOn =
+        await helper.initSwPrivacySwitchMonitor(setSwPirvacySwitchOn);
+    setSwPirvacySwitchOn(isSwPrivacySwitchOn);
 
     const handleScreenLockedChange = async (isScreenLocked: boolean) => {
       this.locked = isScreenLocked;
@@ -481,12 +481,12 @@ export class CameraManager implements EventListener {
     return this.preview.setPointOfInterest(point);
   }
 
-  getPTZController(): PTZController {
-    return this.preview.getPTZController();
+  getPtzController(): PtzController {
+    return this.preview.getPtzController();
   }
 
-  resetPTZ(): Promise<void> {
-    return this.preview.resetPTZ();
+  resetPtz(): Promise<void> {
+    return this.preview.resetPtz();
   }
 
   /**
@@ -500,7 +500,7 @@ export class CameraManager implements EventListener {
       return false;
     }
     return state.get(state.State.ENABLE_PTZ) &&
-        this.getCameraInfo().hasBuiltinPTZSupport(deviceId);
+        this.getCameraInfo().hasBuiltinPtzSupport(deviceId);
   }
 
   /**
@@ -550,7 +550,7 @@ export class CameraManager implements EventListener {
       return;
     }
     this.cameraAvailable = available;
-    for (const ui of this.cameraUIs) {
+    for (const ui of this.cameraUis) {
       if (this.cameraAvailable) {
         ui.onCameraAvailable?.();
       } else {

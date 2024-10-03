@@ -152,7 +152,7 @@ export function assertExists<T>(
  * @return The value if it's an enum variant, null otherwise.
  */
 export function checkEnumVariant<T extends string>(
-    enumType: {[key: string]: T}, value: unknown): T|null {
+    enumType: Record<string, T>, value: unknown): T|null {
   if (value === null || value === undefined || typeof value !== 'string' ||
       !Object.values<string>(enumType).includes(value)) {
     return null;
@@ -171,7 +171,7 @@ export function checkEnumVariant<T extends string>(
  * @return The value if it's an enum variant, throws assertion error otherwise.
  */
 export function assertEnumVariant<T extends string>(
-    enumType: {[key: string]: T}, value: unknown): T {
+    enumType: Record<string, T>, value: unknown): T {
   const ret = checkEnumVariant(enumType, value);
   assert(ret !== null, `${value} is not a valid enum variant`);
   return ret;

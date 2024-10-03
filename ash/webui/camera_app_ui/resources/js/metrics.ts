@@ -4,7 +4,7 @@
 
 import {assert, assertExists} from './assert.js';
 import {Intent} from './intent.js';
-import * as Comlink from './lib/comlink.js';
+import * as comlink from './lib/comlink.js';
 import * as loadTimeData from './models/load_time_data.js';
 import * as localStorage from './models/local_storage.js';
 import {ChromeHelper} from './mojo/chrome_helper.js';
@@ -115,7 +115,7 @@ export async function initMetrics(): Promise<void> {
           clientId,
           measurementId: GA4_ID,
         },
-        Comlink.proxy(setClientId));
+        comlink.proxy(setClientId));
   }
 
   // GA_IDs are refreshed every 90 days cycle according to GA_ID_REFRESH_TIME.
@@ -542,8 +542,7 @@ interface BarcodeDetectedEventParam {
  * Sends the barcode detected event.
  */
 export function sendBarcodeDetectedEvent(
-    {contentType}: BarcodeDetectedEventParam,
-    wifiSecurityType: string = ''): void {
+    {contentType}: BarcodeDetectedEventParam, wifiSecurityType = ''): void {
   sendEvent('detect', {
     [Ga4MetricDimension.EVENT_CATEGORY]: 'barcode',
     [Ga4MetricDimension.EVENT_LABEL]: contentType,
@@ -717,7 +716,7 @@ export class PopularCamPeripheralSet {
   }
 }
 
-const moduleIDSet = new PopularCamPeripheralSet();
+const moduleIdSet = new PopularCamPeripheralSet();
 
 /**
  * Sends camera opening event.
@@ -727,7 +726,7 @@ const moduleIDSet = new PopularCamPeripheralSet();
  */
 export function sendOpenCameraEvent(moduleId: string|null): void {
   const newModuleId =
-      moduleId === null ? 'MIPI' : moduleIDSet.getMaskedId(moduleId);
+      moduleId === null ? 'MIPI' : moduleIdSet.getMaskedId(moduleId);
 
   sendEvent('open-camera', {
     [Ga4MetricDimension.EVENT_CATEGORY]: 'open-camera',
@@ -741,7 +740,7 @@ export function sendOpenCameraEvent(moduleId: string|null): void {
     };
   } else {
     params.cameraModule = {
-      usbCamera: {id: moduleIDSet.has(moduleId) ? moduleId : null},
+      usbCamera: {id: moduleIdSet.has(moduleId) ? moduleId : null},
     };
   }
   void (async () => {
