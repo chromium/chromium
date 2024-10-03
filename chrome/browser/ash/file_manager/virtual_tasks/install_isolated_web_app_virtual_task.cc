@@ -9,9 +9,6 @@
 
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/strings/strcat.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/virtual_tasks/id_constants.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
@@ -67,45 +64,19 @@ bool InstallIsolatedWebAppVirtualTask::Execute(
     return false;
   }
 
-  if (!web_app::IsWebAppsCrosapiEnabled()) {
-    auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(profile);
-    if (!web_app_provider) {
-      return false;
-    }
-    for (const FileSystemURL& file_url : file_urls) {
-      base::FilePath path = file_url.path();
-      // VirtualTask::Match should return false if multiple files with different
-      // extensions were selected. `AsUTF8Unsafe()` is safe on ChromeOS.
-      DCHECK(apps_util::ExtensionMatched(path.BaseName().AsUTF8Unsafe(),
-                                         matcher_file_extensions_[0]));
-      web_app_provider->ui_manager().LaunchOrFocusIsolatedWebAppInstaller(
-          file_url.path());
-    }
-    return true;
-  }
-
-  crosapi::mojom::WebAppProviderBridge* web_app_provider_bridge =
-      crosapi::CrosapiManager::Get()
-          ->crosapi_ash()
-          ->web_app_service_ash()
-          ->GetWebAppProviderBridge();
-  if (!web_app_provider_bridge) {
+  auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(profile);
+  if (!web_app_provider) {
     return false;
   }
-
   for (const FileSystemURL& file_url : file_urls) {
-    base::FilePath path =
-        file_url.TypeImpliesPathIsReal()
-            ? file_url.path()
-            : fusebox::Server::SubstituteFuseboxFilePath(file_url);
+    base::FilePath path = file_url.path();
     // VirtualTask::Match should return false if multiple files with different
     // extensions were selected. `AsUTF8Unsafe()` is safe on ChromeOS.
     DCHECK(apps_util::ExtensionMatched(path.BaseName().AsUTF8Unsafe(),
                                        matcher_file_extensions_[0]));
-
-    web_app_provider_bridge->LaunchIsolatedWebAppInstaller(path);
+    web_app_provider->ui_manager().LaunchOrFocusIsolatedWebAppInstaller(
+        file_url.path());
   }
-
   return true;
 }
 
