@@ -115,7 +115,7 @@ export class PlaybackPage extends ReactiveLitElement {
       display: flex;
       flex: 1;
       flex-flow: column;
-      gap: 4px;
+      gap: 2px;
 
       /* To have the border-radius applied to content. */
       overflow: hidden;
