@@ -1736,6 +1736,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kHelpMeReadSettings,
     ash::prefs::kHmrManagedSettings,
     base::Value::Type::INTEGER},
+  { key::kAllowExcludeDisplayInMirrorMode,
+    prefs::kAllowExcludeDisplayInMirrorMode,
+    base::Value::Type::BOOLEAN},
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)

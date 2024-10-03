@@ -374,8 +374,10 @@
 
 
   <template is="dom-if"
-      if="[[showExcludeInMirror_(unifiedDesktopMode_, displays,
-      selectedDisplay)]]" restamp>
+      if="[[showExcludeInMirror_(unifiedDesktopMode_,
+      excludeDisplayInMirrorModeEnabled_,
+      prefs.settings.display.allow_exclude_display_in_mirror_mode.value,
+      displays, selectedDisplay)]]" restamp>
     <div id="excludeDisplayToggleRow"
         class="settings-box indented hr two-line">
       <div class="start text-area">

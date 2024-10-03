@@ -257,6 +257,13 @@ export function getFakePrefs() {
           value: 500,
         },
       },
+      display: {
+        allow_exclude_display_in_mirror_mode: {
+          key: 'settings.display.allow_exclude_display_in_mirror_mode',
+          type: chrome.settingsPrivate.PrefType.BOOLEAN,
+          value: false,
+        },
+      },
     },
   };
 }

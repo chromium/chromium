@@ -215,6 +215,9 @@ void Preferences::RegisterProfilePrefs(
   // and it should not carry over to sessions were neither of these is set.
   registry->RegisterBooleanPref(::prefs::kUnifiedDesktopEnabledByDefault, false,
                                 PrefRegistry::NO_REGISTRATION_FLAGS);
+  registry->RegisterBooleanPref(::prefs::kAllowExcludeDisplayInMirrorMode,
+                                false, PrefRegistry::NO_REGISTRATION_FLAGS);
+
   // TODO(anasalazar): Finish moving this to ash.
   registry->RegisterBooleanPref(
       prefs::kNaturalScroll,

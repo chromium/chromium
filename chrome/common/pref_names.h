@@ -691,6 +691,13 @@ inline constexpr char kNssChapsDualWrittenCertsExist[] =
 inline constexpr char kUnifiedDesktopEnabledByDefault[] =
     "settings.display.unified_desktop_enabled_by_default";
 
+// A boolean pref. If set to true, the Exclude Display in Mirror Mode feature
+// is made available to the user, which allows a display to be excluded in
+// mirror mode. Users may turn the feature off and on in the settings while
+// this is set to true.
+inline constexpr char kAllowExcludeDisplayInMirrorMode[] =
+    "settings.display.allow_exclude_display_in_mirror_mode";
+
 // An int64 pref. This is the timestamp, microseconds after epoch, that
 // indicates the end of the Bluetooth revamp experience survey.
 inline constexpr char kHatsBluetoothRevampCycleEndTs[] =

@@ -335,7 +335,6 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   private readonly isRevampWayfindingEnabled_: boolean;
   private isTabletMode_: boolean;
   private listAllDisplayModes_: boolean;
-  private excludeDisplayInMirrorModeEnabled_: boolean;
   private logicalResolutionText_: string;
   private mirroringExcludedId_: string;
   private modeToParentModeMap_: Map<number, number>;
@@ -1091,13 +1090,20 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   }
 
   private showExcludeInMirror_(
-      unifiedDesktopMode: boolean, displays: DisplayUnitInfo[],
+      unifiedDesktopMode: boolean,
+      excludeDisplayInMirrorModeEnabled: boolean,
+      allowExcludeDisplayInMirrorModePref: boolean,
+      displays: DisplayUnitInfo[],
       selectedDisplay: DisplayUnitInfo): boolean {
-    if (!this.excludeDisplayInMirrorModeEnabled_ || !selectedDisplay) {
-      return false;
-    }
     if (this.isMirrored(displays)) {
       return selectedDisplay.id === this.mirroringExcludedId_;
+    }
+    if (!selectedDisplay) {
+      return false;
+    }
+    if (!excludeDisplayInMirrorModeEnabled &&
+        !allowExcludeDisplayInMirrorModePref) {
+      return false;
     }
     if (displays.length < 3) {
       return false;
@@ -1502,12 +1508,10 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   }
 
   private shouldExcludeInMirror_(selectedDisplay: DisplayUnitInfo): boolean {
-    assert(this.excludeDisplayInMirrorModeEnabled_);
     return this.mirroringExcludedId_ === selectedDisplay.id;
   }
 
   private onExcludeInMirrorClick_(event: Event): void {
-    assert(this.excludeDisplayInMirrorModeEnabled_);
     (event.currentTarget as CrToggleElement).blur();
     assertExists(this.selectedDisplay);
     if (this.mirroringExcludedId_ === this.selectedDisplay.id) {
