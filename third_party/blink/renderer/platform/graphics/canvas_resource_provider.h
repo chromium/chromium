@@ -237,7 +237,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   GetBackingClientSharedImageForExternalWrite(
       gpu::SyncToken* internal_access_sync_token,
       gpu::SharedImageUsageSet required_shared_image_usages) {
-    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 
