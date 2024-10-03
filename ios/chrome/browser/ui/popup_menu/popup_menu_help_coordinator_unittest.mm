@@ -41,17 +41,16 @@ class PopupMenuHelpCoordinatorTest : public PlatformTest {
     RegisterLocalStatePrefs(local_state_->registry());
     TestingApplicationContext::GetGlobal()->SetLocalState(local_state_.get());
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
         base::BindRepeating(&BuildFeatureEngagementMockTracker));
 
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
 
     AppState* app_state = [[AppState alloc] initWithStartupInformation:nil];
     scene_state_ = [[SceneState alloc] initWithAppState:app_state];
-    browser_ =
-        std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
     UIViewController* root_view_controller = [[UIViewController alloc] init];
     popup_menu_help_coordinator_ = [[PopupMenuHelpCoordinator alloc]
         initWithBaseViewController:root_view_controller
@@ -61,14 +60,13 @@ class PopupMenuHelpCoordinatorTest : public PlatformTest {
     [popup_menu_help_coordinator_ start];
 
     tracker_ = static_cast<feature_engagement::test::MockTracker*>(
-        feature_engagement::TrackerFactory::GetForBrowserState(
-            browser_state_.get()));
+        feature_engagement::TrackerFactory::GetForProfile(profile_.get()));
     ON_CALL(*tracker_, IsInitialized()).WillByDefault(testing::Return(true));
   }
 
   void TearDown() override {
     ClearDefaultBrowserPromoData();
-    browser_state_.reset();
+    profile_.reset();
     TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
     local_state_.reset();
     PlatformTest::TearDown();
@@ -78,7 +76,7 @@ class PopupMenuHelpCoordinatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   SceneState* scene_state_;
   std::unique_ptr<TestBrowser> browser_;
   PopupMenuHelpCoordinator* popup_menu_help_coordinator_;

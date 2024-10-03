@@ -297,7 +297,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
   self.bookmarkModel = nullptr;
   self.readingListModel = nullptr;
-  self.browserStatePrefs = nullptr;
+  self.profilePrefs = nullptr;
   self.localStatePrefs = nullptr;
 
   self.syncService = nullptr;
@@ -412,15 +412,15 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   [self updateModel];
 }
 
-- (void)setBrowserStatePrefs:(PrefService*)browserStatePrefs {
+- (void)setProfilePrefs:(PrefService*)profilePrefs {
   _prefObserverBridge.reset();
   _prefChangeRegistrar.reset();
 
-  _browserStatePrefs = browserStatePrefs;
+  _profilePrefs = profilePrefs;
 
-  if (_browserStatePrefs) {
+  if (_profilePrefs) {
     _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
-    _prefChangeRegistrar->Init(browserStatePrefs);
+    _prefChangeRegistrar->Init(profilePrefs);
     _prefObserverBridge.reset(new PrefObserverBridge(self));
     _prefObserverBridge->ObserveChangesForPreference(
         bookmarks::prefs::kEditBookmarksEnabled, _prefChangeRegistrar.get());
@@ -1287,25 +1287,22 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       _browserPolicyConnector &&
       _browserPolicyConnector->HasMachineLevelPolicies();
   bool canFetchUserPolicies =
-      _authenticationService && _browserStatePrefs &&
-      CanFetchUserPolicy(_authenticationService, _browserStatePrefs);
+      _authenticationService && _profilePrefs &&
+      CanFetchUserPolicy(_authenticationService, _profilePrefs);
   // Set footer (on last section), if any.
-  auto* browser_state =
+  web::BrowserState* browserState =
       self.webState ? self.webState->GetBrowserState() : nullptr;
-  auto* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(browserState);
   if (hasMachineLevelPolicies || canFetchUserPolicies) {
     // Set the Enterprise footer if there are machine level or user level
-    // (aka ChromeBrowserState level) policies.
+    // (aka ProfileIOS level) policies.
     self.helpActionsGroup.footer = CreateOverflowMenuManagedFooter(
         IDS_IOS_TOOLS_MENU_ENTERPRISE_MANAGED,
         IDS_IOS_TOOLS_MENU_ENTERPRISE_LEARN_MORE, kTextMenuEnterpriseInfo,
         @"overflow_menu_footer_managed", ^{
           [self enterpriseLearnMore];
         });
-  } else if (chrome_browser_state &&
-             supervised_user::IsSubjectToParentalControls(
-                 chrome_browser_state)) {
+  } else if (profile && supervised_user::IsSubjectToParentalControls(profile)) {
     self.helpActionsGroup.footer = CreateOverflowMenuManagedFooter(
         IDS_IOS_TOOLS_MENU_PARENT_MANAGED, IDS_IOS_TOOLS_MENU_PARENT_LEARN_MORE,
         kTextMenuFamilyLinkInfo, @"overflow_menu_footer_family_link", ^{
@@ -1334,9 +1331,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
   // Enable/disable items based on enterprise policies.
   self.openTabAction.enterpriseDisabled =
-      IsIncognitoModeForced(self.browserStatePrefs);
+      IsIncognitoModeForced(self.profilePrefs);
   self.openIncognitoTabAction.enterpriseDisabled =
-      IsIncognitoModeDisabled(self.browserStatePrefs);
+      IsIncognitoModeDisabled(self.profilePrefs);
 
   if (IsLensOverlayAvailable()) {
     self.lensOverlayAction.enabled =
@@ -1446,8 +1443,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 // Returns YES if user is allowed to edit any bookmarks.
 - (BOOL)isEditBookmarksEnabled {
-  return self.browserStatePrefs->GetBoolean(
-      bookmarks::prefs::kEditBookmarksEnabled);
+  return self.profilePrefs->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled);
 }
 
 // Whether the page is currently loading.
@@ -1828,9 +1824,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       return self.spotlightDebuggerDestination;
     case overflow_menu::Destination::PriceNotifications:
       BOOL priceNotificationsActive =
-          self.webState &&
-          IsPriceTrackingEnabled(ChromeBrowserState::FromBrowserState(
-              self.webState->GetBrowserState()));
+          self.webState && IsPriceTrackingEnabled(ProfileIOS::FromBrowserState(
+                               self.webState->GetBrowserState()));
       return (priceNotificationsActive) ? self.priceNotificationsDestination
                                         : nil;
   }
