@@ -52,7 +52,6 @@
 namespace thumbnail {
 namespace {
 
-constexpr float kApproximationScaleFactor = 4.f;
 constexpr base::TimeDelta kDefaultCaptureMinRequestTimeMs(
     base::Milliseconds(1000));
 
@@ -644,28 +643,6 @@ ThumbnailCache::ThumbnailMetaData::ThumbnailMetaData(
     const base::Time& current_time,
     GURL url)
     : capture_time_(current_time), url_(std::move(url)) {}
-
-std::pair<SkBitmap, float> ThumbnailCache::CreateApproximation(
-    const SkBitmap& bitmap,
-    float scale) {
-  DCHECK(!bitmap.empty());
-  DCHECK_GT(scale, 0);
-  float new_scale = 1.f / kApproximationScaleFactor;
-
-  gfx::Size dst_size = gfx::ScaleToFlooredSize(
-      gfx::Size(bitmap.width(), bitmap.height()), new_scale);
-  SkBitmap dst_bitmap;
-  dst_bitmap.allocPixels(SkImageInfo::Make(dst_size.width(), dst_size.height(),
-                                           bitmap.info().colorType(),
-                                           bitmap.info().alphaType()));
-  dst_bitmap.eraseColor(0);
-  SkCanvas canvas(dst_bitmap);
-  canvas.scale(new_scale, new_scale);
-  canvas.drawImage(bitmap.asImage(), 0, 0);
-  dst_bitmap.setImmutable();
-
-  return std::make_pair(dst_bitmap, new_scale * scale);
-}
 
 void ThumbnailCache::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel level) {

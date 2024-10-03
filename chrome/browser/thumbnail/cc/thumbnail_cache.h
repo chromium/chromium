@@ -164,8 +164,6 @@ class ThumbnailCache : ThumbnailDelegate {
   void NotifyObserversOfThumbnailAddedToCache(TabId tab_id);
   void NotifyObserversOfThumbnailRead(TabId tab_id);
   void RemoveOnMatchedTimeStamp(TabId tab_id, const base::Time& time_stamp);
-  static std::pair<SkBitmap, float> CreateApproximation(const SkBitmap& bitmap,
-                                                        float scale);
 
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel level);
