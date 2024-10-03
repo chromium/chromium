@@ -19,14 +19,14 @@ option java_outer_classname = "ProductSpecificationsProto";
 // refer to http://go/chrome-intelligence-feature-protos (Google-internal link),
 // and then changes will be synced with Chrome automatically.
 
-message ProductSpecificationsLoggingData {
-  ProductSpecificationsQuality quality = 3;
-}
-
 // Protos for the AiData representing the Product Specifications inference flow.
 // Please note that this feature doesn't not use MES so there is no proto for
 // request and response. Part of the model request and response are stored in
 // the quality proto by Chrome client.
+
+message ProductSpecificationsLoggingData {
+  ProductSpecificationsQuality quality = 3;
+}
 
 // Data logged for each Product Specifications table by client.
 // Next ID: 4
@@ -72,7 +72,7 @@ message ProductSpecificationSection {
 }
 
 // Product metadata and per-product specifications.
-// Next ID: 6
+// Next ID: 7
 message ProductSpecification {
   // Available identifier of the product specification.
   ProductSpecificationIdentifiers identifiers = 1;
@@ -89,7 +89,7 @@ message ProductSpecification {
   // Generated summary description for the product.
   repeated DescriptionText summary_description = 5;
 
-  // Buying options URL (jackpot URL).
+  // URL of the buying options page for the product.
   string buying_options_url = 6;
 }
 

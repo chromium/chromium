@@ -17,12 +17,18 @@ option java_outer_classname = "HistoryAnswerProto";
 // refer to http://go/chrome-intelligence-feature-protos (Google-internal link),
 // and then changes will be synced with Chrome automatically.
 
+// Protos for the AiData representing the History AQA inference flow. The
+// request contains the user query and top candidate passages, and
+// the response contains the answer and citations.
+
 message HistoryAnswerLoggingData {
   HistoryAnswerRequest request = 1;
 
   HistoryAnswerResponse response = 2;
 
   HistoryAnswerQuality quality = 3;
+
+  reserved 5;
 }
 
 // The History AQA request contains a query and top candidate passages.
@@ -35,10 +41,6 @@ message HistoryAnswerRequest {
   // from.
   repeated Passage passages = 2;
 }
-
-// Protos for the AiData representing the History AQA inference flow. The
-// request contains the user query and top candidate passages, and
-// the response contains the answer and citations.
 
 // Passage.
 // Next ID: 4

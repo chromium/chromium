@@ -19,12 +19,15 @@ option java_outer_classname = "TabOrganizationProto";
 // refer to http://go/chrome-intelligence-feature-protos (Google-internal link),
 // and then changes will be synced with Chrome automatically.
 
+// Next ID: 6
 message TabOrganizationLoggingData {
   TabOrganizationRequest request = 1;
 
   TabOrganizationResponse response = 2;
 
   TabOrganizationQuality quality = 3;
+
+  reserved 4, 5;
 }
 
 // Next ID: 6

@@ -19,17 +19,19 @@ option java_outer_classname = "HistoryQueryProto";
 // refer to http://go/chrome-intelligence-feature-protos (Google-internal link),
 // and then changes will be synced with Chrome automatically.
 
+// Protos for the AiData representing the flow where Chrome sends the user query
+// to the server, the server returns an embedding and the client computes a
+// ranking of the documents.
+
 message HistoryQueryLoggingData {
   HistoryQueryRequest request = 1;
 
   HistoryQueryResponse response = 2;
 
   HistoryQueryQuality quality = 3;
-}
 
-// Protos for the AiData representing the flow where Chrome sends the user query
-// to the server, the server returns an embedding and the client computes a
-// ranking of the documents.
+  reserved 4, 5;
+}
 
 // Next ID: 2
 message HistoryQueryRequest {

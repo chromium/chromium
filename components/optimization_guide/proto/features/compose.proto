@@ -25,6 +25,8 @@ message ComposeLoggingData {
   ComposeResponse response = 2;
 
   ComposeQuality quality = 3;
+
+  reserved 4, 5;
 }
 
 // Stores all data associated with a single call to the model execution run for

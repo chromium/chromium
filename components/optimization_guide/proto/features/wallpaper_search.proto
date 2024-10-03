@@ -25,6 +25,8 @@ message WallpaperSearchLoggingData {
   WallpaperSearchResponse response = 2;
 
   WallpaperSearchQuality quality = 3;
+
+  reserved 5;
 }
 
 // Next ID: 3
