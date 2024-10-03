@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/lens/lens_availability.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views.h"
@@ -79,19 +80,28 @@ constexpr base::TimeDelta kLensButtonIPHDelay = base::Seconds(1);
     self.templateURLService = templateURLService;
     self.helpHandler = helpHandler;
     [self addSubviews];
+
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits =
+          TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.self ]);
+      [self
+          registerForTraitChanges:traits
+                       withAction:@selector(updateLensAppearanceOnTraitChange)];
+    }
   }
   return self;
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  // The Lens button needs to be updated when the device goes from light to dark
-  // mode or vice versa.
-  UIButton* lensButton = _delegate.lensButton;
-  if (lensButton) {
-    UpdateLensButtonAppearance(lensButton);
+  if (@available(iOS 17, *)) {
+    return;
   }
+
+  [self updateLensAppearanceOnTraitChange];
 }
+#endif
 
 - (void)addSubviews {
   if (!self.subviews.count)
@@ -273,6 +283,16 @@ constexpr base::TimeDelta kLensButtonIPHDelay = base::Seconds(1);
   return defaultURL &&
          defaultURL->GetEngineType(service->search_terms_data()) ==
              SEARCH_ENGINE_GOOGLE;
+}
+
+// Updates the Lens Button's appearance when the view's UITraits are modified.
+- (void)updateLensAppearanceOnTraitChange {
+  // The Lens button needs to be updated when the device goes from light to dark
+  // mode or vice versa.
+  UIButton* lensButton = _delegate.lensButton;
+  if (lensButton) {
+    UpdateLensButtonAppearance(lensButton);
+  }
 }
 
 @end
