@@ -56,12 +56,6 @@ void RequestProxyResolvingSocketFactory(
 }  // namespace
 
 // static
-gcm::GCMProfileService* IOSChromeGCMProfileServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 gcm::GCMProfileService* IOSChromeGCMProfileServiceFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<gcm::GCMProfileService*>(

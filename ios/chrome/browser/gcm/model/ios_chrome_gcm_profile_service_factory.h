@@ -21,9 +21,6 @@ class GCMProfileService;
 class IOSChromeGCMProfileServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static gcm::GCMProfileService* GetForBrowserState(ProfileIOS* profile);
-
   static gcm::GCMProfileService* GetForProfile(ProfileIOS* profile);
   static IOSChromeGCMProfileServiceFactory* GetInstance();
 
