@@ -225,7 +225,6 @@
 #include "extensions/browser/api/audio/audio_api.h"
 #include "extensions/browser/api/runtime/runtime_api.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/device_name/device_name_store.h"
 #include "chrome/browser/ash/extensions/extensions_permissions_tracker.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
@@ -1103,6 +1102,15 @@ const char kTabResumeDismissedTabsPrefName[] =
     "NewTabPage.MostRelevantTabResumption.DismissedTabs";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+// Deprecated 10/2024.
+#if BUILDFLAG(IS_CHROMEOS)
+const char kMigrationStep[] = "ash.browser_data_migrator.migration_step";
+const char kMoveMigrationResumeStepPref[] =
+    "ash.browser_data_migrator.move_migration_resume_step";
+const char kMoveMigrationResumeCountPref[] =
+    "ash.browser_data_migrator.move_migration_resume_count";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1196,6 +1204,13 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   // Deprecated 08/2024.
   registry->RegisterBooleanPref(kDemoModeResourcesRemoved, false);
   registry->RegisterIntegerPref(kAccumulatedUsagePref, 0);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Deprecated 10/2024.
+  registry->RegisterIntegerPref(kMigrationStep, 0);
+  registry->RegisterDictionaryPref(kMoveMigrationResumeStepPref);
+  registry->RegisterDictionaryPref(kMoveMigrationResumeCountPref);
 #endif
 }
 
@@ -1720,7 +1735,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   user_manager::UserManagerBase::RegisterPrefs(registry);
   crosapi::browser_util::RegisterLocalStatePrefs(registry);
   ash::CupsPrintersManager::RegisterLocalStatePrefs(registry);
-  ash::BrowserDataMigratorImpl::RegisterLocalStatePrefs(registry);
   ash::bluetooth_config::BluetoothPowerControllerImpl::RegisterLocalStatePrefs(
       registry);
   ash::bluetooth_config::DeviceNameManagerImpl::RegisterLocalStatePrefs(
@@ -2464,6 +2478,13 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kDemoModeResourcesRemoved);
   local_state->ClearPref(kAccumulatedUsagePref);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Added 10/2024
+#if BUILDFLAG(IS_CHROMEOS)
+  local_state->ClearPref(kMigrationStep);
+  local_state->ClearPref(kMoveMigrationResumeStepPref);
+  local_state->ClearPref(kMoveMigrationResumeCountPref);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
