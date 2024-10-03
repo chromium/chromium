@@ -126,6 +126,12 @@ void BirchCoralItem::PerformAction(bool is_post_login) {
       coral::mojom::EntityKey::NewTabUrl(GURL("https://www.ikea.com/")));
   temp_group->entities.push_back(
       coral::mojom::EntityKey::NewTabUrl(GURL("https://www.nhl.com/")));
+  // OS settings.
+  temp_group->entities.push_back(
+      coral::mojom::EntityKey::NewAppId("odknhmnlageboeamepcngndbggdpaobj"));
+  // Files.
+  temp_group->entities.push_back(
+      coral::mojom::EntityKey::NewAppId("fkiggjmkendpmbegkagpmagjepfkpmeb"));
 
   // Pick first half of the tabs from request for testing.
   const auto& request_items =

@@ -10,6 +10,7 @@
 #include "ash/public/cpp/coral_delegate.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_util.h"
+#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -22,12 +23,12 @@
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/birch/birch_test_util.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/ash/util/ash_test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "gmock/gmock.h"
@@ -99,6 +100,8 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PRE_PostLoginBrowser) {
 // Launches a browser with the expected tabs when the post login coral chip is
 // clicked.
 IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PostLoginBrowser) {
+  test::InstallSystemAppsForTesting(ProfileManager::GetActiveUserProfile());
+
   // Wait until the chip is visible, it may not be visible while data fetch is
   // underway or the overview animation is still running.
   EXPECT_TRUE(base::test::RunUntil([]() {
@@ -108,20 +111,32 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PostLoginBrowser) {
 
   BirchChipButtonBase* coral_chip = GetBirchChipButton();
   ASSERT_EQ(coral_chip->GetItem()->GetType(), BirchItemType::kCoral);
-  ui_test_utils::BrowserChangeObserver observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
-  test::Click(coral_chip);
-  Browser* coral_browser = observer.Wait();
 
-  // TODO(sammiequon): This tabs are currently hardcoded in ash for
+  test::BrowsersWaiter waiter(/*expected_count=*/3);
+  test::Click(coral_chip);
+  waiter.Wait();
+
+  // TODO(sammiequon): These tabs and apps are currently hardcoded in ash for
   // `switches::kForceBirchFakeCoral`. Update to use a test coral provider
   // instead.
-  TabStripModel* tab_strip_model = coral_browser->tab_strip_model();
-  EXPECT_EQ(2, tab_strip_model->count());
-  EXPECT_EQ(GURL("https://www.ikea.com/"),
-            tab_strip_model->GetWebContentsAt(0)->GetVisibleURL());
-  EXPECT_EQ(GURL("https://www.nhl.com/"),
-            tab_strip_model->GetWebContentsAt(1)->GetVisibleURL());
+  EXPECT_TRUE(
+      base::ranges::any_of(*BrowserList::GetInstance(), [](Browser* browser) {
+        TabStripModel* tab_strip_model = browser->tab_strip_model();
+        return tab_strip_model->count() == 2 &&
+               tab_strip_model->GetWebContentsAt(0)->GetVisibleURL() ==
+                   GURL("https://www.ikea.com/") &&
+               tab_strip_model->GetWebContentsAt(1)->GetVisibleURL() ==
+                   GURL("https://www.nhl.com/");
+      }));
+  EXPECT_TRUE(
+      base::ranges::any_of(*BrowserList::GetInstance(), [](Browser* browser) {
+        return IsBrowserForSystemWebApp(browser, SystemWebAppType::SETTINGS);
+      }));
+  EXPECT_TRUE(
+      base::ranges::any_of(*BrowserList::GetInstance(), [](Browser* browser) {
+        return IsBrowserForSystemWebApp(browser,
+                                        SystemWebAppType::FILE_MANAGER);
+      }));
 }
 
 // Tests that clicking the in session coral button opens and activates a new

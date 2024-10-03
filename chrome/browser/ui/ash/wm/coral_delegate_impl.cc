@@ -14,6 +14,8 @@
 #include "components/app_constants/constants.h"
 #include "components/app_restore/restore_data.h"
 #include "components/user_manager/user_manager.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 
 namespace {
 
@@ -21,9 +23,12 @@ std::unique_ptr<app_restore::RestoreData> CoralGroupToRestoreData(
     coral::mojom::GroupPtr group) {
   auto restore_data = std::make_unique<app_restore::RestoreData>();
   std::vector<GURL> tab_urls;
+  std::vector<std::string> app_ids;
   for (const coral::mojom::EntityKeyPtr& entity : group->entities) {
     if (entity->is_tab_url()) {
       tab_urls.push_back(entity->get_tab_url());
+    } else if (entity->is_app_id()) {
+      app_ids.push_back(entity->get_app_id());
     }
   }
 
@@ -37,7 +42,18 @@ std::unique_ptr<app_restore::RestoreData> CoralGroupToRestoreData(
     app_restore_data->browser_extra_info.urls = std::move(tab_urls);
   }
 
-  // TODO(http::/b/365839465): Handle apps.
+  for (const std::string& app_id : app_ids) {
+    auto& launch_list = restore_data->mutable_app_id_to_launch_list()[app_id];
+    auto& app_restore_data = launch_list[/*window_id=*/0];
+    app_restore_data = std::make_unique<app_restore::AppRestoreData>();
+
+    // TODO(http://b/365839465): These fields are required to launch an app.
+    // Retrieve them from full restore read handler.
+    app_restore_data->container = 0;
+    app_restore_data->display_id =
+        display::Screen::GetScreen()->GetPrimaryDisplay().id();
+    app_restore_data->disposition = 3;
+  }
 
   return restore_data;
 }

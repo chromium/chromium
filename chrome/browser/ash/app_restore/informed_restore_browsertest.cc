@@ -82,33 +82,6 @@ const PillButton* GetInformedRestoreDialogCancelButton() {
 
 }  // namespace
 
-// Class used to wait for multiple browser windows to be created.
-class BrowsersWaiter : public BrowserListObserver {
- public:
-  explicit BrowsersWaiter(int expected_count)
-      : expected_count_(expected_count) {
-    BrowserList::AddObserver(this);
-  }
-  BrowsersWaiter(const BrowsersWaiter&) = delete;
-  BrowsersWaiter& operator=(const BrowsersWaiter&) = delete;
-  ~BrowsersWaiter() override { BrowserList::RemoveObserver(this); }
-
-  void Wait() { run_loop_.Run(); }
-
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override {
-    ++current_count_;
-    if (current_count_ == expected_count_) {
-      run_loop_.Quit();
-    }
-  }
-
- private:
-  int current_count_ = 0;
-  const int expected_count_;
-  base::RunLoop run_loop_;
-};
-
 class InformedRestoreTest : public InProcessBrowserTest {
  public:
   InformedRestoreTest() {
@@ -164,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, LaunchBrowsers) {
   ASSERT_TRUE(restore_button);
 
   // Click the "Restore" button and verify we have launched 2 browsers.
-  BrowsersWaiter waiter(/*expected_count=*/2);
+  test::BrowsersWaiter waiter(/*expected_count=*/2);
   test::Click(restore_button, /*flag=*/0);
   waiter.Wait();
   EXPECT_EQ(2u, BrowserList::GetInstance()->size());
@@ -203,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, LaunchSWA) {
   ASSERT_TRUE(restore_button);
 
   // Click the "Restore" button.
-  BrowsersWaiter waiter(/*expected_count=*/2);
+  test::BrowsersWaiter waiter(/*expected_count=*/2);
   test::Click(restore_button, /*flag=*/0);
   waiter.Wait();
 
@@ -273,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, DISABLED_LaunchBrowsersToDesks) {
   ASSERT_TRUE(restore_button);
 
   // Click the "Restore" button and verify we have launched 3 browsers.
-  BrowsersWaiter waiter(/*expected_count=*/3);
+  test::BrowsersWaiter waiter(/*expected_count=*/3);
   test::Click(restore_button, /*flag=*/0);
   waiter.Wait();
 
@@ -338,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, DISABLED_WindowStates) {
   ASSERT_TRUE(restore_button);
 
   // Click the "Restore" button and verify we have launched 5 browsers.
-  BrowsersWaiter waiter(/*expected_count=*/5);
+  test::BrowsersWaiter waiter(/*expected_count=*/5);
   test::Click(restore_button, /*flag=*/0);
   waiter.Wait();
 
@@ -624,7 +597,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, ReenterInformedRestoreSession) {
   // restore dialog data and the next overview enter will not show the dialog.
   ToggleOverview();
   WaitForOverviewExitAnimation();
-  BrowsersWaiter waiter(/*expected_count=*/1);
+  test::BrowsersWaiter waiter(/*expected_count=*/1);
   ASSERT_TRUE(Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
       AcceleratorAction::kNewWindow, {}));
   waiter.Wait();
@@ -737,7 +710,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreOnboardingTest, Onboarding) {
   ASSERT_TRUE(restore_button);
 
   // Click the "Restore" button and verify we have launched 1 browser.
-  BrowsersWaiter waiter(/*expected_count=*/1);
+  test::BrowsersWaiter waiter(/*expected_count=*/1);
   test::Click(restore_button, /*flag=*/0);
   waiter.Wait();
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());

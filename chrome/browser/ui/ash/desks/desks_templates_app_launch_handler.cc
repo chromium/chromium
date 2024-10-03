@@ -118,6 +118,7 @@ void DesksTemplatesAppLaunchHandler::LaunchCoralGroup(
   set_restore_data(std::move(restore_data));
 
   LaunchBrowsers();
+  LaunchApps();
 }
 
 void DesksTemplatesAppLaunchHandler::RecordRestoredAppLaunch(

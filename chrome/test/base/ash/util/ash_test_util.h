@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "base/run_loop.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "components/webapps/common/web_app_id.h"
 #include "ui/events/event_constants.h"
 
@@ -60,6 +62,25 @@ Browser* InstallAndLaunchPWA(Profile* profile,
                              const GURL& start_url,
                              bool launch_in_browser,
                              const std::u16string& app_title = u"A Web App");
+
+// Class used to wait for multiple browser windows to be created.
+class BrowsersWaiter : public BrowserListObserver {
+ public:
+  explicit BrowsersWaiter(int expected_count);
+  BrowsersWaiter(const BrowsersWaiter&) = delete;
+  BrowsersWaiter& operator=(const BrowsersWaiter&) = delete;
+  ~BrowsersWaiter() override;
+
+  void Wait();
+
+  // BrowserListObserver:
+  void OnBrowserAdded(Browser* browser) override;
+
+ private:
+  int current_count_ = 0;
+  const int expected_count_;
+  base::RunLoop run_loop_;
+};
 
 }  // namespace ash::test
 

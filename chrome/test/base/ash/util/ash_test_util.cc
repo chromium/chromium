@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -169,6 +170,26 @@ Browser* InstallAndLaunchPWA(Profile* profile,
   return launch_in_browser
              ? web_app::LaunchBrowserForWebAppInTab(profile, app_id)
              : web_app::LaunchWebAppBrowserAndWait(profile, app_id);
+}
+
+BrowsersWaiter::BrowsersWaiter(int expected_count)
+    : expected_count_(expected_count) {
+  BrowserList::AddObserver(this);
+}
+
+BrowsersWaiter::~BrowsersWaiter() {
+  BrowserList::RemoveObserver(this);
+}
+
+void BrowsersWaiter::Wait() {
+  run_loop_.Run();
+}
+
+void BrowsersWaiter::OnBrowserAdded(Browser* browser) {
+  ++current_count_;
+  if (current_count_ == expected_count_) {
+    run_loop_.Quit();
+  }
 }
 
 }  // namespace ash::test
