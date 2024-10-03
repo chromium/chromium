@@ -221,6 +221,14 @@ void RecorderAppUI::AddModelMonitor(
     AddModelMonitorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (!delegate_->CanUseGenerativeAiForCurrentProfile()) {
+    // TODO(pihsun): Return a dedicate error when GenAI can't be used.
+    std::move(callback).Run(recorder_app::mojom::ModelState{
+        recorder_app::mojom::ModelStateType::kUnavailable, std::nullopt}
+                                .Clone());
+    return;
+  }
+
   EnsureOnDeviceModelService();
 
   if (!on_device_model_service_) {
@@ -267,6 +275,13 @@ void RecorderAppUI::LoadModel(
     LoadModelCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (!delegate_->CanUseGenerativeAiForCurrentProfile()) {
+    // TODO(pihsun): Return a dedicate error when GenAI can't be used.
+    std::move(callback).Run(
+        on_device_model::mojom::LoadModelResult::kFailedToLoadLibrary);
+    return;
+  }
+
   EnsureOnDeviceModelService();
 
   if (!on_device_model_service_) {
@@ -298,6 +313,8 @@ void RecorderAppUI::FormatModelInput(
     FormatModelInputCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  DCHECK(delegate_->CanUseGenerativeAiForCurrentProfile());
+
   EnsureOnDeviceModelService();
 
   if (!on_device_model_service_) {
@@ -314,6 +331,8 @@ void RecorderAppUI::ValidateSafetyResult(
     on_device_model::mojom::SafetyInfoPtr safety_info,
     ValidateSafetyResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  DCHECK(delegate_->CanUseGenerativeAiForCurrentProfile());
 
   EnsureOnDeviceModelService();
 
