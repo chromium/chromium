@@ -643,12 +643,6 @@ static_library("test_support") {
     public_deps += [ "//printing:test_support" ]
   }
 
-  if (is_chromeos_lacros && also_build_ash_chrome) {
-    data_deps += [
-      "//chrome/test:test_ash_chrome(//build/toolchain/linux:ash_clang_x64)",
-    ]
-  }
-
   if (is_linux) {
     data_deps += [ "//components/crash/core/app:chrome_crashpad_handler" ]
   }
@@ -1000,25 +994,6 @@ static_library("test_support") {
     allow_circular_includes_from += [
       "//chrome/browser/ash/login/users:test_support",
       "//chrome/browser/ash/settings:test_support",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    public_deps += [
-      "//components/enterprise/data_controls/core/browser:dlp_policy_event_proto",
-      "//components/reporting/client:report_queue",
-      "//components/reporting/client:test_support",
-      "//components/reporting/storage:test_support",
-      "//components/reporting/util:test_callbacks_support",
-    ]
-    deps += [
-      "//chrome/browser/lacros/account_manager",
-      "//chromeos/lacros",
-      "//chromeos/lacros:test_support",
-      "//chromeos/services/machine_learning/public/cpp:stub",
-      "//chromeos/startup",
-      "//chromeos/ui/base",
-      "//components/account_manager_core:test_support",
     ]
   }
 
@@ -3334,50 +3309,42 @@ if (!is_android) {
       data_deps += [ "//third_party/screen-ai:screen_ai" ]
     }
 
-    if (!is_chromeos_lacros) {
+    sources += [
+      "../browser/accessibility/live_translate_controller_browsertest.cc",
+      "../browser/media/webrtc/capture_handle_browsertest.cc",
+      "../browser/media/webrtc/webrtc_getdisplaymedia_browsertest.cc",
+      "../browser/ui/views/intent_picker_bubble_view_browsertest.cc",
+      "../browser/ui/views/location_bar/intent_chip_button_browsertest.cc",
+      "../browser/ui/views/tabs/alert_indicator_button_browsertest.cc",
+      "../browser/ui/views/web_apps/web_app_integration_browsertest.cc",
+    ]
+
+    deps += [
+      "//chrome/browser/apps/link_capturing:app_service_browser_tests",
+      "//chrome/browser/ui/web_applications:app_service_browser_tests",
+      "//chrome/browser/web_applications:app_service_browser_tests",
+      "//components/live_caption:live_translate",
+      "//components/plus_addresses:blocklist_data",
+    ]
+    if (!is_win || target_cpu != "arm64") {
+      # SODA doesn't support Windows on Arm64.
       sources += [
-        # Lacros does not seem to have any actual WebView-based UI to test.
-        "../browser/accessibility/live_translate_controller_browsertest.cc",
-
-        # These tests also run on Lacros, as part of
-        # lacros_chrome_browsertests below.
-        "../browser/media/webrtc/capture_handle_browsertest.cc",
-        "../browser/media/webrtc/webrtc_getdisplaymedia_browsertest.cc",
-        "../browser/ui/views/intent_picker_bubble_view_browsertest.cc",
-        "../browser/ui/views/location_bar/intent_chip_button_browsertest.cc",
-        "../browser/ui/views/tabs/alert_indicator_button_browsertest.cc",
-        "../browser/ui/views/web_apps/web_app_integration_browsertest.cc",
+        "../browser/accessibility/live_caption/live_caption_controller_browsertest.cc",
+        "../browser/accessibility/live_caption/live_caption_speech_recognition_host_browsertest.cc",
+        "../browser/accessibility/live_caption/live_caption_speech_recognition_host_browsertest.h",
       ]
 
-      deps += [
-        "//chrome/browser/apps/link_capturing:app_service_browser_tests",
-        "//chrome/browser/ui/web_applications:app_service_browser_tests",
-        "//chrome/browser/web_applications:app_service_browser_tests",
-        "//components/live_caption:live_translate",
-        "//components/plus_addresses:blocklist_data",
+      if (is_win || is_mac || is_linux) {
+        sources += [ "../browser/accessibility/live_caption/live_caption_automatic_language_download_browsertest.cc" ]
+      }
+    }
+
+    if (enterprise_cloud_content_analysis) {
+      sources += [
+        "../browser/enterprise/connectors/analysis/content_analysis_delegate_browsertest.cc",
+        "../browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service_browsertest.cc",
+        "../browser/safe_browsing/download_protection/deep_scanning_browsertest.cc",
       ]
-      if (!is_win || target_cpu != "arm64") {
-        # SODA doesn't support Windows on Arm64, and Lacros delegates rendering
-        # captions to Ash.
-        sources += [
-          "../browser/accessibility/live_caption/live_caption_controller_browsertest.cc",
-          "../browser/accessibility/live_caption/live_caption_speech_recognition_host_browsertest.cc",
-          "../browser/accessibility/live_caption/live_caption_speech_recognition_host_browsertest.h",
-        ]
-
-        if (is_win || is_mac || is_linux) {
-          sources += [ "../browser/accessibility/live_caption/live_caption_automatic_language_download_browsertest.cc" ]
-        }
-      }
-
-      if (enterprise_cloud_content_analysis) {
-        sources += [
-          # crbug.com/1230268 These tests need to be fixed for Lacros.
-          "../browser/enterprise/connectors/analysis/content_analysis_delegate_browsertest.cc",
-          "../browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service_browsertest.cc",
-          "../browser/safe_browsing/download_protection/deep_scanning_browsertest.cc",
-        ]
-      }
     }
 
     if (is_win) {
@@ -3693,6 +3660,7 @@ if (!is_android) {
       sources += [
         "../browser/chrome_multiprofile_startup_browsertest.cc",
         "../browser/enterprise/reporting/cloud_profile_reporting_browsertest.cc",
+        "../browser/external_protocol/external_protocol_handler_browsertest.cc",
         "../browser/profiles/avatar_menu_browsertest.cc",
         "../browser/profiles/delete_profile_helper_browsertest.cc",
         "../browser/profiles/profile_keyed_service_browsertest.cc",
@@ -3700,52 +3668,9 @@ if (!is_android) {
         "../browser/ui/views/accessibility/accessibility_focus_highlight_browsertest.cc",
         "../browser/ui/views/profiles/signin_view_controller_delegate_views_browsertest.cc",
       ]
-      if (!is_chromeos_lacros) {
-        sources += [ "../browser/external_protocol/external_protocol_handler_browsertest.cc" ]
-      }
       sources -= [
         "../browser/invalidation/profile_invalidation_provider_factory_browsertest.cc",
         "../browser/net/nss_context_chromeos_browsertest.cc",
-      ]
-    }
-
-    if (is_chromeos_lacros) {
-      sources -= [
-        #  Needs crosapi for Lacros, so it's part of lacros_chrome_browsertests.
-        "../browser/ui/webui/profile_helper_browsertest.cc",
-      ]
-
-      sources += [
-        "../browser/apps/app_service/metrics/website_metrics_browsertest.cc",
-        "../browser/apps/app_service/webapk/webapk_utils_lacros_browsertest.cc",
-        "../browser/certificate_manager_model_lacros_browsertest.cc",
-        "../browser/lacros/app_mode/kiosk_accelerator_browsertest.cc",
-        "../browser/lacros/app_mode/kiosk_session_service_browsertest.cc",
-        "../browser/lacros/lacros_apps_publisher_browsertest.cc",
-        "../browser/lacros/lacros_extension_apps_controller_browsertest.cc",
-        "../browser/lacros/lacros_extension_apps_publisher_browsertest.cc",
-        "../browser/lacros/profile_loader_browsertest.cc",
-        "../browser/lacros/profile_util_browsertest.cc",
-        "../browser/policy/restricted_mgs_policy_provider_lacros_browsertest.cc",
-        "../browser/web_applications/app_service/lacros_web_apps_controller_browsertest.cc",
-      ]
-      deps += [
-        ":lacros_test_support_ui",
-        "//chrome/browser/app_mode/test:test_support",
-        "//chrome/browser/apps/browser_instance",
-        "//chrome/browser/lacros/account_manager:test_support_ui",
-        "//chrome/browser/lacros/cros_apps:all_browser_tests",
-        "//chromeos/crosapi/mojom",
-        "//chromeos/lacros",
-        "//chromeos/lacros:test_support",
-        "//chromeos/startup",
-        "//chromeos/ui/base",
-        "//chromeos/ui/frame:test_support",
-        "//components/account_manager_core:test_support",
-        "//components/app_constants",
-        "//components/services/app_service",
-        "//components/webapk:proto",
-        "//ui/wm:wm",
       ]
     }
 
@@ -3851,7 +3776,7 @@ if (!is_android) {
     }
 
     # TODO(crbug.com/40118868): Update guard when pixel tests support widens.
-    if (is_win || is_linux || is_chromeos_lacros) {
+    if (is_win || is_linux) {
       sources += [
         "../browser/ui/views/profiles/managed_user_profile_notice_ui_browsertest.cc",
         "../browser/ui/views/profiles/profile_menu_view_ui_browsertest.cc",
@@ -4281,44 +4206,28 @@ if (!is_android) {
         ]
       }
 
-      if (!is_chromeos_lacros) {
-        sources += [
-          "../browser/extensions/api/automation/automation_apitest.cc",
-          "../browser/extensions/api/image_writer_private/image_writer_private_apitest.cc",
-          "../browser/extensions/api/proxy/proxy_apitest.cc",
-        ]
-      }
+      sources += [
+        "../browser/extensions/api/automation/automation_apitest.cc",
+        "../browser/extensions/api/image_writer_private/image_writer_private_apitest.cc",
+        "../browser/extensions/api/proxy/proxy_apitest.cc",
+      ]
 
       if (is_chromeos) {
-        sources += [
-          "../browser/chromeos/extensions/info_private/info_private_browser_apitest.cc",
-          "../browser/extensions/api/certificate_provider/certificate_provider_apitest.cc",
-          "../browser/extensions/api/document_scan/document_scan_apitest.cc",
-          "../browser/extensions/api/document_scan/fake_document_scan_ash.cc",
-          "../browser/extensions/api/document_scan/fake_document_scan_ash.h",
-          "../browser/extensions/clipboard_extension_apitest_chromeos.cc",
-        ]
-
-        deps += [
-          "//chrome/browser/chromeos/extensions/smart_card_provider_private:browser_tests",
-          "//chromeos/constants",
-          "//chromeos/dbus/constants",
-          "//chromeos/dbus/power",
-          "//components/device_event_log:device_event_log",
-        ]
-      }
-
-      if (is_chromeos_ash) {
         sources += [
           "../browser/apps/platform_apps/api/arc_apps_private/arc_apps_private_apitest.cc",
           "../browser/apps/platform_apps/api/enterprise_remote_apps/enterprise_remote_apps_apitest.cc",
           "../browser/chromeos/extensions/info_private/info_private_apitest.cc",
+          "../browser/chromeos/extensions/info_private/info_private_browser_apitest.cc",
           "../browser/chromeos/extensions/login_screen/login_screen_i18n_apitest.cc",
           "../browser/chromeos/extensions/login_screen/storage_apitest.cc",
           "../browser/chromeos/extensions/wallpaper/wallpaper_apitest.cc",
           "../browser/chromeos/extensions/wm/wm_desks_private_apitest.cc",
           "../browser/extensions/api/bluetooth_low_energy/bluetooth_low_energy_apitest_chromeos.cc",
+          "../browser/extensions/api/certificate_provider/certificate_provider_apitest.cc",
           "../browser/extensions/api/crash_report_private/crash_report_private_apitest.cc",
+          "../browser/extensions/api/document_scan/document_scan_apitest.cc",
+          "../browser/extensions/api/document_scan/fake_document_scan_ash.cc",
+          "../browser/extensions/api/document_scan/fake_document_scan_ash.h",
           "../browser/extensions/api/enterprise_device_attributes/enterprise_device_attributes_ash_apitest.cc",
           "../browser/extensions/api/enterprise_networking_attributes/enterprise_networking_attributes_ash_apitest.cc",
           "../browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_apitest_nss.cc",
@@ -4339,15 +4248,21 @@ if (!is_android) {
           "../browser/extensions/api/video_capture/video_capture_apitest_chromeos.cc",
           "../browser/extensions/api/virtual_keyboard_private/virtual_keyboard_private_apitest.cc",
           "../browser/extensions/api/vpn_provider/vpn_provider_apitest.cc",
+          "../browser/extensions/clipboard_extension_apitest_chromeos.cc",
         ]
 
         deps += [
           "//build/config/chromebox_for_meetings:buildflags",
+          "//chrome/browser/chromeos/extensions/smart_card_provider_private:browser_tests",
           "//chrome/browser/chromeos/extensions/telemetry/api:browser_tests",
           "//chrome/browser/chromeos/extensions/vpn_provider",
           "//chrome/browser/chromeos/extensions/wm",
           "//chrome/browser/error_reporting:test_support",
+          "//chromeos/constants",
+          "//chromeos/dbus/constants",
           "//chromeos/dbus/dlp:dlp",
+          "//chromeos/dbus/power",
+          "//components/device_event_log:device_event_log",
           "//components/file_access:test_support",
         ]
 
@@ -4419,10 +4334,6 @@ if (!is_android) {
           "../browser/apps/platform_apps/api/media_galleries/media_galleries_apitest.cc",
           "../browser/chrome_service_worker_browsertest.cc",
         ]
-      }
-
-      if (!is_chromeos_lacros) {
-        data_deps += [ "//chrome/browser/resources/accessibility:reading_mode_gdocs_extension_resources" ]
       }
     }
 
@@ -5205,21 +5116,15 @@ if (!is_android) {
       sources -= [ "../common/time_format_browsertest.cc" ]
     }
 
-    if (is_mac || is_win || is_linux || is_chromeos_lacros) {
+    if (is_mac || is_win || is_linux) {
       sources += [
-        # Tests for non mobile and non CrOS (includes Linux, Win, Mac).
+        "../browser/browser_switcher/browser_switcher_browsertest.cc",
+        "../browser/browser_switcher/browser_switcher_service_browsertest.cc",
+        "../browser/enterprise/signin/enterprise_signin_service_browsertest.cc",
         "../browser/extensions/api/image_writer_private/image_writer_utility_client_browsertest.cc",
         "../browser/profiles/profile_statistics_browsertest.cc",
       ]
       deps += [ "//chrome/browser/ui/webui/signin:browser_tests" ]
-
-      if (!is_chromeos_lacros) {
-        sources += [
-          "../browser/browser_switcher/browser_switcher_browsertest.cc",
-          "../browser/browser_switcher/browser_switcher_service_browsertest.cc",
-          "../browser/enterprise/signin/enterprise_signin_service_browsertest.cc",
-        ]
-      }
     }
     if (is_linux || is_mac) {
       sources +=
@@ -5303,7 +5208,7 @@ if (!is_android) {
       sources -= [ "../browser/extensions/api/braille_display_private/braille_display_private_apitest.cc" ]
     }
 
-    if (is_chromeos_ash || ((is_linux || is_chromeos_lacros) && use_dbus)) {
+    if (is_chromeos_ash || (is_linux && use_dbus)) {
       sources += [ "../browser/extensions/api/bluetooth_low_energy/bluetooth_low_energy_apitest.cc" ]
     }
 
@@ -5324,10 +5229,8 @@ if (!is_android) {
           [ "../browser/site_isolation/spellcheck_per_process_browsertest.cc" ]
     }
 
-    if (!is_chromeos_lacros) {
-      sources +=
-          [ "../browser/metrics/structured_metrics_service_browsertest.cc" ]
-    }
+    sources +=
+        [ "../browser/metrics/structured_metrics_service_browsertest.cc" ]
 
     if (is_win || is_mac || is_linux) {
       sources += [
@@ -5372,283 +5275,6 @@ if (!is_android) {
         "//chrome/browser/ui/webui/whats_new:browser_tests",
         "//chrome/browser/ui/webui/whats_new:mojo_bindings",
       ]
-    }
-  }
-}
-
-if (is_chromeos_lacros) {
-  source_set("lacros_test_support_ui") {
-    testonly = true
-
-    sources = [
-      "../browser/lacros/browser_test_util.cc",
-      "../browser/lacros/browser_test_util.h",
-    ]
-
-    deps = [
-      "//chrome/browser",
-      "//chrome/browser/ui",
-      "//chromeos/lacros",
-      "//chromeos/lacros:test_support",
-      "//components/account_manager_core:test_support",
-      "//ui/platform_window",
-      "//ui/views",
-    ]
-  }
-
-  # This test target is intended for lacros chrome specific tests that depend
-  # on crosapi.
-  test("lacros_chrome_browsertests") {
-    use_xvfb = use_xvfb_in_this_config
-
-    configs += [ "//build/config:precompiled_headers" ]
-    defines = [
-      "HAS_OUT_OF_PROC_TEST_RUNNER",
-      "CHROME_VERSION_MAJOR=" + chrome_version_major,
-    ]
-
-    sources = [
-      "../browser/accessibility/live_caption/live_caption_surface_browsertest.cc",
-      "../browser/apps/app_service/lacros_browser_shelf_lacros_browsertest.cc",
-      "../browser/chromeos/enterprise/cloud_storage/one_drive_pref_observer_browsertest.cc",
-      "../browser/chromeos/video_conference/video_conference_manager_client_browsertest.cc",
-      "../browser/lacros/app_mode/web_kiosk_installer_lacros_browsertest.cc",
-      "../browser/lacros/browser_launcher_browsertest.cc",
-      "../browser/lacros/browser_service_lacros_browsertest.cc",
-      "../browser/lacros/cert/cert_db_initializer_browsertest.cc",
-      "../browser/lacros/chaps_service_lacros_browsertest.cc",
-      "../browser/lacros/clipboard_history_lacros_browsertest.cc",
-      "../browser/lacros/clipboard_lacros_browsertest.cc",
-      "../browser/lacros/component_policy_lacros_browsertest.cc",
-      "../browser/lacros/crosapi_pref_observer_lacros_browsertest.cc",
-      "../browser/lacros/desk_template_client_lacros_browsertest.cc",
-      "../browser/lacros/device_attributes_lacros_browsertest.cc",
-      "../browser/lacros/download_status_updater_lacros_browsertest.cc",
-      "../browser/lacros/embedded_a11y_manager_lacros_browsertest.cc",
-      "../browser/lacros/field_trial_service_lacros_browsertest.cc",
-      "../browser/lacros/file_change_service_bridge_browsertest.cc",
-      "../browser/lacros/file_manager_lacros_browsertest.cc",
-      "../browser/lacros/full_restore_client_lacros_browsertest.cc",
-      "../browser/lacros/geolocation/system_geolocation_source_lacros_browsertest.cc",
-      "../browser/lacros/holding_space_service_lacros_browsertest.cc",
-      "../browser/lacros/idle_service_lacros_browsertest.cc",
-      "../browser/lacros/input_method_lacros_browsertest.cc",
-      "../browser/lacros/keystore_service_lacros_browsertest.cc",
-      "../browser/lacros/lacros_extension_apps_controller_lacros_browsertest.cc",
-      "../browser/lacros/login_screen_storage_lacros_browsertest.cc",
-      "../browser/lacros/login_state_lacros_browsertest.cc",
-      "../browser/lacros/machine_learning_service_lacros_browsertest.cc",
-      "../browser/lacros/magic_boost_lacros_browsertest.cc",
-      "../browser/lacros/mahi_lacros_browsertest.cc",
-      "../browser/lacros/media_session_lacros_browsertest.cc",
-      "../browser/lacros/message_center_lacros_browsertest.cc",
-      "../browser/lacros/metrics_lacros_browsertest.cc",
-      "../browser/lacros/metrics_reporting_lacros_browsertest.cc",
-      "../browser/lacros/multitask_menu_nudge_delegate_lacros_browsertest.cc",
-      "../browser/lacros/net/lacros_extension_proxy_tracker_browsertest.cc",
-      "../browser/lacros/net/network_settings_observer_browsertest.cc",
-      "../browser/lacros/net/proxy_config_service_lacros_browsertest.cc",
-      "../browser/lacros/networking_attributes_lacros_browsertest.cc",
-      "../browser/lacros/overview_lacros_browsertest.cc",
-      "../browser/lacros/parent_access_lacros_browsertest.cc",
-      "../browser/lacros/policy_ui_lacros_browsertest.cc",
-      "../browser/lacros/popup_lacros_browsertest.cc",
-      "../browser/lacros/power_api_lacros_browsertest.cc",
-      "../browser/lacros/remote_apps/remote_apps_proxy_browsertest.cc",
-      "../browser/lacros/screen_manager_lacros_browsertest.cc",
-      "../browser/lacros/smart_reader_lacros_browsertest.cc",
-      "../browser/lacros/tab_scrubber_lacros_browsertest.cc",
-      "../browser/lacros/tablet_mode_lacros_browsertest.cc",
-      "../browser/lacros/video_conference_lacros_browsertest.cc",
-      "../browser/lacros/wallpaper_lacros_browsertest.cc",
-      "../browser/lacros/web_contents_can_go_back_observer_browsertest.cc",
-      "../browser/lacros/window_lacros_browsertest.cc",
-      "../browser/media/webrtc/capture_handle_browsertest.cc",
-      "../browser/media/webrtc/capture_policy_utils_browsertest.cc",
-      "../browser/media/webrtc/get_all_screens_media_browsertest.cc",
-      "../browser/media/webrtc/webrtc_getdisplaymedia_browsertest.cc",
-      "../browser/metrics/structured/lacros_structured_metrics_delegate_browsertest.cc",
-      "../browser/payments/webapps/payment_request_lacros_browsertest.cc",
-      "../browser/policy/policy_extension_controlling_proxy_lacros_browsertest.cc",
-      "../browser/sessions/app_session_restore_lacros_browsertest.cc",
-      "../browser/speech/extension_api/tts_extension_api_lacros_browsertest.cc",
-      "../browser/sync/test/lacros/sync_apps_toggle_sharing_lacros_browsertest.cc",
-      "../browser/sync/test/lacros/sync_custom_passphrase_sharing_lacros_browsertest.cc",
-      "../browser/sync/test/lacros/trusted_vault_keys_sharing_lacros_browsertest.cc",
-      "../browser/ui/browser_navigator_browsertest.cc",
-      "../browser/ui/browser_navigator_browsertest.h",
-      "../browser/ui/browser_navigator_browsertest_chromeos.cc",
-      "../browser/ui/lacros/screen_capture_notification_ui_lacros_browsertest.cc",
-      "../browser/ui/sharing_hub/sharing_hub_bubble_controller_chromeos_lacros_browsertest.cc",
-      "../browser/ui/startup/first_run_service_browsertest.cc",
-      "../browser/ui/views/chrome_views_delegate_lacros_browsertest.cc",
-      "../browser/ui/views/frame/browser_non_client_frame_view_chromeos_browsertest.cc",
-      "../browser/ui/views/frame/immersive_mode_browser_view_test.cc",
-      "../browser/ui/views/frame/immersive_mode_controller_chromeos_browsertest.cc",
-      "../browser/ui/views/intent_picker_bubble_view_browsertest.cc",
-      "../browser/ui/views/location_bar/intent_chip_button_browsertest.cc",
-      "../browser/ui/views/profiles/profile_picker_view_browsertest.cc",
-      "../browser/ui/views/tabs/alert_indicator_button_browsertest.cc",
-      "../browser/ui/views/web_apps/web_app_integration_browsertest.cc",
-      "../browser/ui/views/web_apps/web_app_integration_browsertest_cros.cc",
-      "../browser/ui/views/web_apps/web_app_integration_browsertest_win_linux_cros.cc",
-      "../browser/ui/webui/profile_helper_browsertest.cc",
-      "../browser/upgrade_detector/get_installed_version_lacros_browsertest.cc",
-      "../browser/web_applications/app_service/lacros_web_apps_controller_lacros_browsertest.cc",
-      "../browser/web_applications/app_service/web_apps_chromeos_browsertest.cc",
-      "../browser/web_applications/externally_managed_app_manager_browsertest.cc",
-      "base/in_process_browser_test_browsertest_lacros.cc",
-
-      # download_controller_client_lacros_browsertest.cc should become a unit
-      # test.
-      "../browser/lacros/download_controller_client_lacros_browsertest.cc",
-
-      # ScreenCapturer should work for lacros with crosapi.
-      "base/save_desktop_snapshot_browsertest.cc",
-    ]
-
-    deps = [
-      ":browser_tests_runner",
-      ":lacros_test_support_ui",
-      ":sync_integration_test_support",
-      ":test_support",
-      ":test_support_ui",
-      ":webrtc_browser_tests_base",
-      "//chrome/app:command_ids",
-      "//chrome/browser:main_extra_parts",
-      "//chrome/browser/accessibility:test_support",
-      "//chrome/browser/apps/app_service",
-      "//chrome/browser/apps/app_service:app_registry_cache_waiter",
-      "//chrome/browser/apps/app_service/app_icon",
-      "//chrome/browser/apps/app_service/app_install:browser_tests",
-      "//chrome/browser/apps/browser_instance",
-      "//chrome/browser/apps/link_capturing",
-      "//chrome/browser/apps/link_capturing:app_service_browser_tests",
-      "//chrome/browser/apps/link_capturing:features",
-      "//chrome/browser/apps/link_capturing:test_support",
-      "//chrome/browser/chromeos/app_mode",
-      "//chrome/browser/chromeos/enterprise/cloud_storage",
-      "//chrome/browser/chromeos/extensions/telemetry/api:browser_tests",
-      "//chrome/browser/chromeos/extensions/vpn_provider",
-      "//chrome/browser/chromeos/extensions/wm",
-      "//chrome/browser/chromeos/network",
-      "//chrome/browser/chromeos/policy/dlp",
-      "//chrome/browser/chromeos/policy/dlp/test:test_support",
-      "//chrome/browser/chromeos/printing/print_preview",
-      "//chrome/browser/chromeos/smart_reader",
-      "//chrome/browser/chromeos/video_conference",
-      "//chrome/browser/content_settings:content_settings_factory",
-      "//chrome/browser/download",
-      "//chrome/browser/file_system_access",
-      "//chrome/browser/lacros/account_manager:test_support_ui",
-      "//chrome/browser/media/router:test_support",
-      "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
-      "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
-      "//chrome/browser/policy:test_support",
-      "//chrome/browser/sync",
-      "//chrome/browser/themes",
-      "//chrome/browser/ui:browser_element_identifiers",
-      "//chrome/browser/ui:browser_navigator_params_headers",
-      "//chrome/browser/ui/autofill:lacros_chrome_browsertests",
-      "//chrome/browser/ui/chromeos:test_support",
-      "//chrome/browser/ui/download",
-      "//chrome/browser/ui/web_applications:app_service_browser_tests",
-      "//chrome/browser/ui/webui/signin",
-      "//chrome/browser/web_applications:app_service_browser_tests",
-      "//chrome/browser/web_applications:prevent_close_test_support",
-      "//chrome/browser/web_applications:web_applications_test_support",
-      "//chrome/browser/web_applications/app_service:test_support",
-      "//chrome/test/media_router/access_code_cast:access_code_cast_integration_base",
-      "//chromeos/components/magic_boost/public/cpp:cpp",
-      "//chromeos/components/mahi/public/cpp",
-      "//chromeos/crosapi/cpp:cpp",
-      "//chromeos/crosapi/cpp:test_support",
-      "//chromeos/crosapi/mojom",
-      "//chromeos/dbus/missive:test_support",
-      "//chromeos/lacros",
-      "//chromeos/lacros:test_support",
-      "//chromeos/printing:test_support",
-      "//chromeos/services/machine_learning/public/cpp",
-      "//chromeos/services/machine_learning/public/cpp:stub",
-      "//chromeos/services/machine_learning/public/mojom",
-      "//chromeos/startup",
-      "//chromeos/ui/base",
-      "//chromeos/ui/frame",
-      "//chromeos/ui/frame:test_support",
-      "//components/account_manager_core:test_support",
-      "//components/app_constants",
-      "//components/captive_portal/content:content",
-      "//components/captive_portal/core:buildflags",
-      "//components/feature_engagement/public:public",
-      "//components/feature_engagement/test:test_support",
-      "//components/infobars/content:content",
-      "//components/live_caption:constants",
-      "//components/live_caption:live_caption",
-      "//components/metrics/structured",
-      "//components/metrics/structured:structured_events",
-      "//components/onc:onc",
-      "//components/policy/content",
-      "//components/proxy_config:proxy_config",
-      "//components/reporting/proto:metric_data_proto",
-      "//components/services/app_service",
-      "//components/services/app_service/public/cpp:test_support",
-      "//components/soda:constants",
-      "//components/user_manager:user_manager",
-      "//components/web_package",
-      "//components/web_package/test_support",
-      "//components/webapps/browser",
-      "//components/webapps/common",
-      "//services/preferences/public/cpp:cpp",
-      "//ui/aura:test_support",
-      "//ui/display:test_support",
-      "//ui/events:test_support",
-      "//ui/gfx/codec",
-      "//ui/ozone",
-      "//ui/platform_window",
-      "//ui/strings:ui_strings_grit",
-    ]
-
-    if (use_cups) {
-      sources += [
-        "../browser/chromeos/extensions/printing_metrics/printing_metrics_apitest.cc",
-        "../browser/extensions/api/printing/printing_apitest.cc",
-        "../browser/printing/web_api/web_printing_browsertest.cc",
-      ]
-      deps += [
-        "//chrome/browser/chromeos/extensions/printing_metrics",
-        "//chrome/browser/chromeos/printing",
-        "//chromeos/printing",
-      ]
-    }
-
-    data = [
-      "//chrome/test/data/",
-      "//content/test/data/",
-      "data/banners/",
-      "data/extensions/",
-      "data/intent_picker/",
-      "data/media/",
-      "data/policy/test_certs/",
-      "data/result_queue.js",
-      "data/webapps_integration/",
-      "data/web_app_badging/",
-      "data/web_app_shortcuts/",
-      "data/web_apps/",
-      "data/web_share_target/",
-      "data/webrtc",
-      "data/webshare/",
-    ]
-
-    data_deps = [
-      "//build:version_metadata",
-      "//chrome:packed_resources",
-      "//testing/buildbot/filters:lacros_chrome_browsertests_filters",
-    ]
-
-    if (enable_extensions) {
-      data_deps +=
-          [ "//chrome/browser/resources/accessibility:extension_resources" ]
-      data += [ "$root_out_dir/resources/accessibility/" ]
     }
   }
 }
@@ -5828,13 +5454,7 @@ template("performance_test_suite_template_base") {
     script = "//testing/scripts/run_performance_tests.py"
     if (is_chromeos_device) {
       if (defined(override_board)) {
-        # TODO(b/248270560): Restore the --flash once the bug is fixed.
-        if (is_chromeos_lacros && chrome_pgo_phase == 1 &&
-            (override_board == "jacuzzi" || override_board == "jacuzzi64")) {
-          args = [ "bin/cros_update_wrapper --board=${override_board} ../../tools/perf/run_benchmark" ]
-        } else {
-          args = [ "bin/cros_update_wrapper --board=${override_board} --flash ../../tools/perf/run_benchmark" ]
-        }
+        args = [ "bin/cros_update_wrapper --board=${override_board} --flash ../../tools/perf/run_benchmark" ]
       } else {
         args = [ "bin/cros_update_wrapper ../../tools/perf/run_benchmark" ]
       }
@@ -5842,37 +5462,24 @@ template("performance_test_suite_template_base") {
       args = [ "../../tools/perf/run_benchmark" ]
     }
 
-    if (!is_chromeos_lacros) {
-      data_deps += [
-        "//components:components_perftests",
-        "//testing:run_perf_test",
-      ]
-    }
+    data_deps += [
+      "//components:components_perftests",
+      "//testing:run_perf_test",
+      "//third_party/dawn/src/tint/cmd/bench:bench_cmd",
+    ]
 
-    if (!is_chromeos_lacros && !is_android) {
+    if (!is_android) {
       data_deps += [
         "//base:base_perftests",
-        "//components/tracing:tracing_perftests",
-      ]
-    }
-
-    if (build_dawn_tests && !is_chromeos_lacros) {
-      data_deps += [ "//third_party/dawn/src/dawn/tests:dawn_perf_tests" ]
-    }
-
-    if (!is_chromeos_lacros) {
-      data_deps += [ "//third_party/dawn/src/tint/cmd/bench:bench_cmd" ]
-    }
-
-    if (!is_android && !is_chromeos_lacros) {
-      data_deps += [
         "//chrome/test:load_library_perf_tests",
+        "//components/tracing:tracing_perftests",
+        "//testing:run_perf_test",
         "//ui/views:views_perftests",
       ]
     }
 
-    if (!is_android) {
-      data_deps += [ "//testing:run_perf_test" ]
+    if (build_dawn_tests) {
+      data_deps += [ "//third_party/dawn/src/dawn/tests:dawn_perf_tests" ]
     }
   }
 }
@@ -7859,6 +7466,7 @@ test("unit_tests") {
       "../browser/ui/webid/identity_dialog_controller_unittest.cc",
       "../browser/ui/webui/about/about_ui_unittest.cc",
       "../browser/ui/webui/access_code_cast/access_code_cast_handler_unittest.cc",
+      "../browser/ui/webui/app_management/app_management_page_handler_unittest.cc",
       "../browser/ui/webui/browser_command/browser_command_handler_unittest.cc",
       "../browser/ui/webui/commerce/shopping_list_context_menu_controller_unittest.cc",
       "../browser/ui/webui/components/components_handler_unittest.cc",
@@ -7978,10 +7586,6 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/settings",
       "//chrome/browser/ui/webui/signin:unit_tests",
     ]
-
-    if (!is_chromeos_lacros) {
-      sources += [ "../browser/ui/webui/app_management/app_management_page_handler_unittest.cc" ]
-    }
 
     if (is_chrome_branded) {
       sources += [
@@ -8740,57 +8344,6 @@ test("unit_tests") {
     }
   }
 
-  if (is_chromeos_lacros) {
-    sources += [
-      "../browser/lacros/app_mode/web_kiosk_installer_lacros_unittest.cc",
-      "../browser/lacros/cert/client_cert_store_lacros_unittest.cc",
-      "../browser/lacros/clipboard_history_lacros_unittest.cc",
-      "../browser/lacros/device_settings_lacros_unittest.cc",
-      "../browser/lacros/force_installed_tracker_lacros_unittest.cc",
-      "../browser/lacros/fullscreen_controller_client_lacros_unittest.cc",
-      "../browser/lacros/guest_os/vm_sk_forwarding_native_message_host_unittest.cc",
-      "../browser/lacros/lacros_memory_pressure_evaluator_unittest.cc",
-      "../browser/lacros/lacros_url_handling_unittest.cc",
-      "../browser/lacros/metrics_reporting_observer_unittest.cc",
-      "../browser/lacros/net/network_settings_translation_unittest.cc",
-      "../browser/lacros/prefs_ash_observer_unittest.cc",
-      "../browser/lacros/remote_apps/remote_apps_proxy_lacros_unittest.cc",
-      "../browser/lacros/suggestion_service_lacros_unittest.cc",
-      "../browser/lacros/sync/crosapi_session_sync_favicon_delegate_unittest.cc",
-      "../browser/lacros/sync/crosapi_session_sync_notifier_unittest.cc",
-      "../browser/lacros/sync/sync_explicit_passphrase_client_lacros_unittest.cc",
-      "../browser/lacros/sync/sync_user_settings_client_lacros_unittest.cc",
-      "../browser/lacros/trusted_vault/crosapi_trusted_vault_client_unittest.cc",
-      "../browser/media/webrtc/chrome_screen_enumerator_lacros_unittest.cc",
-      "../browser/metrics/lacros_metrics_provider_unittest.cc",
-      "../browser/notifications/notification_platform_bridge_lacros_unittest.cc",
-      "../browser/policy/restricted_mgs_policy_provider_lacros_unittest.cc",
-      "../browser/signin/signin_ui_delegate_impl_lacros_unittest.cc",
-      "../browser/upgrade_detector/get_installed_version_lacros_unittest.cc",
-      "../common/chrome_paths_lacros_unittest.cc",
-    ]
-
-    deps += [
-      "//chrome/browser/lacros/account_manager",
-      "//chrome/browser/lacros/account_manager:unit_tests",
-      "//chrome/browser/policy:onc",
-      "//chrome/browser/policy:unit_tests",
-      "//chrome/browser/web_applications/app_service:test_support",
-      "//chromeos/components/onc:onc",
-      "//chromeos/crosapi/mojom",
-      "//chromeos/dbus/dlp:dlp",
-      "//chromeos/lacros:test_support",
-      "//chromeos/startup",
-      "//chromeos/ui/base",
-      "//chromeos/ui/wm",
-      "//components/account_manager_core",
-      "//components/account_manager_core:test_support",
-      "//components/enterprise/data_controls/core/browser:dlp_policy_event_proto",
-      "//components/reporting/metrics:metrics_data_collection",
-      "//components/reporting/metrics/fakes:test_support",
-    ]
-  }
-
   if (is_linux || is_chromeos) {
     deps += [ "//chrome/browser/error_reporting:unit_test" ]
   }
@@ -9199,7 +8752,7 @@ test("unit_tests") {
       deps += [ "../browser/enterprise/connectors/test:test_support" ]
     }
 
-    if (is_chromeos_lacros || is_chromeos_ash) {
+    if (is_chromeos_ash) {
       sources += [ "//chrome/browser/chromeos/extensions/wm/wm_desks_private_events_unittest.cc" ]
       deps += [ "//chrome/browser/chromeos/extensions/wm" ]
     }
@@ -10214,7 +9767,7 @@ test("unit_tests") {
     sources += [ "../common/net/x509_certificate_model_nss_unittest.cc" ]
   }
 
-  if (is_win || is_mac || is_linux || is_chromeos_lacros) {
+  if (is_win || is_mac || is_linux) {
     sources += [
       "../browser/ui/passwords/account_storage_auth_helper_unittest.cc",
       "../browser/ui/profiles/profile_customization_util_unittest.cc",
@@ -10222,7 +9775,7 @@ test("unit_tests") {
     ]
   }
 
-  if (enable_widevine_cdm_component && (is_linux || is_chromeos_lacros)) {
+  if (enable_widevine_cdm_component && is_linux) {
     sources +=
         [ "../common/media/component_widevine_cdm_hint_file_linux_unittest.cc" ]
   }
@@ -10325,10 +9878,6 @@ static_library("test_support_unit") {
       "//chrome/browser/ui/quick_answers",
       "//chromeos/components/quick_answers:test_support",
     ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros:test_support" ]
   }
 
   if (enable_bound_session_credentials) {
@@ -10612,17 +10161,6 @@ if (!is_android) {
       deps += [ "//extensions/browser" ]
     }
 
-    if (is_chromeos_lacros) {
-      deps += [
-        ":lacros_test_support_ui",
-        "//chromeos/lacros",
-        "//chromeos/lacros:test_support",
-        "//chromeos/startup:startup",
-        "//components/account_manager_core",
-        "//components/account_manager_core:test_support",
-      ]
-    }
-
     if (is_chromeos_ash) {
       sources += [
         "base/ash/javascript_browser_test.cc",
@@ -10660,7 +10198,7 @@ if (!is_android) {
         "../browser/password_manager/password_manager_signin_intercept_test_helper.h",
       ]
     }
-    if (enable_dice_support || is_chromeos_lacros) {
+    if (enable_dice_support) {
       sources += [
         "../browser/ui/startup/first_run_test_util.cc",
         "../browser/ui/startup/first_run_test_util.h",
@@ -11152,21 +10690,19 @@ if (!is_android && !is_chromeos_device) {
     }
 
     if (use_aura) {
-      sources += [ "../browser/ui/views/drag_and_drop_interactive_uitest.cc" ]
+      sources += [
+        "../browser/ui/views/drag_and_drop_interactive_uitest.cc",
+        "../browser/ui/views/eye_dropper/eye_dropper_view_aura_interactive_uitest.cc",
+      ]
 
       deps += [
         "//chrome/browser/ui/aura/accessibility:interactive_ui_tests",
+        "//components/eye_dropper",
         "//ui/aura:aura_interactive_ui_tests",
         "//ui/aura:test_support",
         "//ui/base/dragdrop:types",
         "//ui/base/dragdrop/mojom",
       ]
-    }
-
-    # LaCrOS opens EyeDropper in ash via crosapi. Tests only work for ash.
-    if (use_aura && !is_chromeos_lacros) {
-      sources += [ "../browser/ui/views/eye_dropper/eye_dropper_view_aura_interactive_uitest.cc" ]
-      deps += [ "//components/eye_dropper" ]
     }
 
     if (toolkit_views) {
@@ -11331,13 +10867,10 @@ if (!is_android && !is_chromeos_device) {
           "../browser/signin/mirror_interactive_uitest.cc",
           "../browser/ui/views/toolbar/browser_app_menu_button_interactive_uitest_chromeos.cc",
         ]
-        if (is_chromeos_lacros) {
-          deps += [ "//chrome/browser/lacros/account_manager:test_support_ui" ]
-        }
       } else {
         deps += [ "//chrome/browser/ui/views/shortcuts:interactive_ui_tests" ]
       }
-      if (is_linux || is_chromeos_lacros) {
+      if (is_linux) {
         # Desktop linux.
         sources -= [
           # TODO(port): This times out. Attempts have been made to fix the
@@ -11481,21 +11014,6 @@ if (!is_android && !is_chromeos_device) {
       }
     }
 
-    if (is_chromeos_lacros) {
-      sources +=
-          [ "../browser/lacros/browser_activation_interactive_uitest.cc" ]
-
-      # These tests require a MessageCenter which isn't available on Lacros.
-      sources -=
-          [ "../browser/notifications/notification_interactive_uitest.cc" ]
-
-      deps += [
-        ":lacros_test_support_ui",
-        "//chromeos/lacros:lacros",
-        "//ui/display:managed_display_info",
-      ]
-    }
-
     if (is_win) {
       sources += [
         "../browser/downgrade/user_data_downgrade_browsertest.cc",
@@ -11614,7 +11132,7 @@ if (!is_android && !is_chromeos_device) {
       }
     }
 
-    if (is_linux || is_chromeos_lacros) {
+    if (is_linux) {
       deps += [ "//ui/base/ime/linux" ]
     }
 
@@ -11623,20 +11141,12 @@ if (!is_android && !is_chromeos_device) {
           [ "../browser/ui/views/frame/webui_tab_strip_interactive_uitest.cc" ]
     }
 
-    if (is_win || is_mac || is_linux || is_chromeos_lacros) {
+    if (is_win || is_mac || is_linux) {
       sources += [
         "../browser/ui/views/profiles/profile_picker_interactive_uitest.cc",
         "../browser/ui/views/profiles/profile_picker_interactive_uitest_base.cc",
         "../browser/ui/views/profiles/profile_picker_interactive_uitest_base.h",
       ]
-    }
-
-    if (is_chromeos_lacros) {
-      sources += [
-        "../browser/ui/views/profiles/first_run_lacros_interactive_uitest.cc",
-      ]
-
-      deps += [ "//chromeos/ui/frame:interactive_ui_tests" ]
     }
 
     if (is_win || is_mac || is_linux) {
@@ -11653,19 +11163,12 @@ if (!is_android && !is_chromeos_device) {
       sources += [ "../browser/window_management/window_management_printing_interactive_uitest.cc" ]
     }
 
-    if (!is_chromeos_lacros) {
-      sources += [
-        "../browser/media/router/discovery/access_code/access_code_cast_sink_service_browsertest.cc",
-        "../browser/ui/views/accessibility/caption_bubble_controller_views_browsertest.cc",
-      ]
+    sources += [
+      "../browser/media/router/discovery/access_code/access_code_cast_sink_service_browsertest.cc",
+      "../browser/ui/views/accessibility/caption_bubble_controller_views_browsertest.cc",
+    ]
 
-      deps += [ "//components/soda:soda" ]
-    }
-
-    if (is_chromeos_lacros && !is_chromeos_device) {
-      # For support version skew testing.
-      data_deps += [ "//build:version_metadata" ]
-    }
+    deps += [ "//components/soda:soda" ]
 
     if (safe_browsing_mode == 1) {
       sources += [ "../browser/safe_browsing/safe_browsing_navigation_observer_interactive_test.cc" ]
