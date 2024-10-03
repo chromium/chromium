@@ -6,6 +6,7 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_reader.h"
@@ -76,8 +77,7 @@ constexpr char kDestinationPageScopeB[] =
     "/banners/link_capturing/scope_b/destination.html";
 constexpr char kDestinationPageScopeX[] =
     "/banners/link_capturing/scope_x/destination.html";
-constexpr char kLinkCaptureTestInputPath[] =
-    "chrome/test/data/web_apps/link_capture_test_input.json";
+constexpr char kLinkCaptureTestInputPathPrefix[] = "chrome/test/data/web_apps/";
 
 constexpr char kValueScopeA2A[] = "A_TO_A";
 constexpr char kValueScopeA2B[] = "A_TO_B";
@@ -507,6 +507,17 @@ class WebAppLinkCapturingParameterizedBrowserTest
     InitializeTestExpectations();
   }
 
+  // Returns the expectations JSON file name without extension
+  virtual std::string GetExpectationsFileBaseName() const {
+    return "link_capture_test_input";
+  }
+
+  base::FilePath GetExpectationsFile() const {
+    return base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
+        .AppendASCII(kLinkCaptureTestInputPathPrefix)
+        .AppendASCII(GetExpectationsFileBaseName() + ".json");
+  }
+
   std::unique_ptr<net::test_server::HttpResponse> SimulateRedirectHandler(
       const net::test_server::HttpRequest& request) {
     if (GetRedirectType() == RedirectType::kNone) {
@@ -662,7 +673,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
     std::optional<std::string> json_string = base::WriteJsonWithOptions(
         *test_expectations_, base::JsonOptions::OPTIONS_PRETTY_PRINT);
     ASSERT_TRUE(json_string.has_value());
-    ASSERT_TRUE(base::WriteFile(json_file_path_, *json_string));
+    ASSERT_TRUE(base::WriteFile(GetExpectationsFile(), *json_string));
   }
 
   LinkCapturing GetLinkCapturing() const {
@@ -814,7 +825,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
                                 &chrome_src_dir)) {
       return base::unexpected("Could not find src directory.");
     }
-    return chrome_src_dir.AppendASCII(kLinkCaptureTestInputPath);
+    return GetExpectationsFile();
   }
 
   Browser::Type StringToBrowserType(std::string type) {
@@ -849,7 +860,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
   // doesn't exist during rebaselining, a dummy json file is used.
   void InitializeTestExpectations() {
     std::string json_data;
-    bool success = ReadFileToString(json_file_path_, &json_data);
+    bool success = ReadFileToString(GetExpectationsFile(), &json_data);
     if (!ShouldRebaseline()) {
       ASSERT_TRUE(success) << "Failed to read test baselines";
     }
@@ -867,14 +878,9 @@ class WebAppLinkCapturingParameterizedBrowserTest
 
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
 
-  // The path to the json file containing the test expectations.
-  base::FilePath json_file_path_ =
-      base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
-          .AppendASCII(kLinkCaptureTestInputPath);
-
   base::FilePath lock_file_path_ =
       base::PathService::CheckedGet(base::DIR_OUT_TEST_DATA_ROOT)
-          .AppendASCII("link_capturing_rebaseline_lock_file.lock");
+          .AppendASCII(GetExpectationsFileBaseName() + "_lock_file.lock");
 
   // Current expectations for this test (parsed from the test json file).
   std::optional<base::Value> test_expectations_;
