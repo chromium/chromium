@@ -83,6 +83,9 @@ class DataSharingSDKDelegateDesktop : public DataSharingSDKDelegate,
   void OnReadGroups(ReadGroupsCallback callback,
                     data_sharing::mojom::ReadGroupsResultPtr mojom_result);
 
+  void OnDeleteGroup(base::OnceCallback<void(const absl::Status&)> callback,
+                     int status_code);
+
   // A list of callback to be invoked.
   base::OnceCallbackList<void(content::WebContents*)> callbacks_;
 

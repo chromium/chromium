@@ -56,3 +56,25 @@ IN_PROC_BROWSER_TEST_F(DataSharingServiceBrowserTest, ReadGroup) {
   run_loop.Run();
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
+
+IN_PROC_BROWSER_TEST_F(DataSharingServiceBrowserTest, DeleteGroup) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  GTEST_SKIP() << "N/A for Google Chrome Branding Build";
+#else
+  base::RunLoop run_loop;
+  auto* service = data_sharing::DataSharingServiceFactory::GetForProfile(
+      browser()->profile());
+  service->DeleteGroup(
+      data_sharing::GroupId("12345"),
+      base::BindOnce(
+          [](base::RunLoop* run_loop,
+             data_sharing::DataSharingService::PeopleGroupActionOutcome
+                 result) {
+            EXPECT_EQ(result, data_sharing::DataSharingService::
+                                  PeopleGroupActionOutcome::kPersistentFailure);
+            run_loop->Quit();
+          },
+          &run_loop));
+  run_loop.Run();
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}

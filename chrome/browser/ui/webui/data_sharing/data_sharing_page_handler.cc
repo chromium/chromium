@@ -133,3 +133,10 @@ void DataSharingPageHandler::ReadGroups(
   CHECK(api_initialized_);
   page_->ReadGroups(group_ids, std::move(callback));
 }
+
+void DataSharingPageHandler::DeleteGroup(
+    std::string group_id,
+    data_sharing::mojom::Page::DeleteGroupCallback callback) {
+  CHECK(api_initialized_);
+  page_->DeleteGroup(group_id, std::move(callback));
+}

@@ -58,4 +58,8 @@ interface Page {
 
   // Read groups given group_ids.
   ReadGroups(array<string> group_ids) => (ReadGroupsResult result);
+
+  // Delete the group given group_id.
+  // Return status code equivalent to absl::StatusCode.
+  DeleteGroup(string group_id) => (int32 status_code);
 };

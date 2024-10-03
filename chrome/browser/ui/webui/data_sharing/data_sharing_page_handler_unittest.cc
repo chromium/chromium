@@ -30,6 +30,9 @@ class MockPage : public data_sharing::mojom::Page {
               ReadGroups,
               (const std::vector<std::string>& group_ids,
                ReadGroupsCallback callback));
+  MOCK_METHOD(void,
+              DeleteGroup,
+              (const std::string& group_id, DeleteGroupCallback callback));
 
   mojo::Receiver<data_sharing::mojom::Page> receiver_{this};
 };

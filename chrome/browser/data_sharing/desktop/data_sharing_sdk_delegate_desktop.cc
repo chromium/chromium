@@ -66,7 +66,22 @@ void DataSharingSDKDelegateDesktop::RemoveMember(
 void DataSharingSDKDelegateDesktop::DeleteGroup(
     const data_sharing_pb::DeleteGroupParams& params,
     base::OnceCallback<void(const absl::Status&)> callback) {
-  NOTIMPLEMENTED();
+  MaybeLoadWebContents(base::BindOnce(
+      [](data_sharing_pb::DeleteGroupParams params,
+         base::OnceCallback<void(const absl::Status&)> callback,
+         DataSharingSDKDelegateDesktop* delegate,
+         content::WebContents* web_contents) {
+        DataSharingPageHandler* handler =
+            static_cast<DataSharingUI*>(
+                web_contents->GetWebUI()->GetController())
+                ->page_handler();
+        CHECK(handler);
+        handler->DeleteGroup(
+            params.group_id(),
+            base::BindOnce(&DataSharingSDKDelegateDesktop::OnDeleteGroup,
+                           base::Unretained(delegate), std::move(callback)));
+      },
+      params, std::move(callback), this));
 }
 
 void DataSharingSDKDelegateDesktop::LookupGaiaIdByEmail(
@@ -147,6 +162,13 @@ void DataSharingSDKDelegateDesktop::OnReadGroups(
     *result.add_group_data() = ConvertGroup(group);
   }
   std::move(callback).Run(result);
+}
+
+void DataSharingSDKDelegateDesktop::OnDeleteGroup(
+    base::OnceCallback<void(const absl::Status&)> callback,
+    int status_code) {
+  std::move(callback).Run(
+      absl::Status(static_cast<absl::StatusCode>(status_code), "Delete Group"));
 }
 
 }  // namespace data_sharing
