@@ -12,9 +12,9 @@ namespace ash {
 
 namespace {
 
-constexpr int kMakoAnchorVerticalPadding = 16;
-constexpr int kMakoScreenEdgePadding = 16;
-constexpr int kMakoRewriteCornerRadius = 20;
+constexpr int kLobsterAnchorVerticalPadding = 16;
+constexpr int kLobsterScreenEdgePadding = 16;
+constexpr int kLobsterResultCornerRadius = 20;
 
 }  // namespace
 
@@ -27,7 +27,7 @@ LobsterView::LobsterView(WebUIContentsWrapper* contents_wrapper,
                             /*autosize=*/false),
       caret_bounds_(caret_bounds) {
   set_has_parent(false);
-  set_corner_radius(kMakoRewriteCornerRadius);
+  set_corner_radius(kLobsterResultCornerRadius);
   // Disable the default offscreen adjustment so that we can customise it.
   set_adjust_if_offscreen(false);
 }
@@ -40,30 +40,31 @@ void LobsterView::ResizeDueToAutoResize(content::WebContents* source,
   gfx::Rect screen_work_area = display::Screen::GetScreen()
                                    ->GetDisplayMatching(caret_bounds_)
                                    .work_area();
-  screen_work_area.Inset(kMakoScreenEdgePadding);
+  screen_work_area.Inset(kLobsterScreenEdgePadding);
 
   // Otherwise, try to place it under at the bottom left of the selection.
   gfx::Rect anchor = caret_bounds_;
-  anchor.Outset(gfx::Outsets::VH(kMakoAnchorVerticalPadding, 0));
-  gfx::Rect mako_contents_bounds(anchor.bottom_left(), new_size);
+  anchor.Outset(gfx::Outsets::VH(kLobsterAnchorVerticalPadding, 0));
+  gfx::Rect lobster_contents_bounds(anchor.bottom_left(), new_size);
 
   // If horizontally offscreen, just move it to the right edge of the screen.
-  if (mako_contents_bounds.right() > screen_work_area.right()) {
-    mako_contents_bounds.set_x(screen_work_area.right() - new_size.width());
+  if (lobster_contents_bounds.right() > screen_work_area.right()) {
+    lobster_contents_bounds.set_x(screen_work_area.right() - new_size.width());
   }
 
   // If vertically offscreen, try above the selection.
-  if (mako_contents_bounds.bottom() > screen_work_area.bottom()) {
-    mako_contents_bounds.set_y(anchor.y() - new_size.height());
+  if (lobster_contents_bounds.bottom() > screen_work_area.bottom()) {
+    lobster_contents_bounds.set_y(anchor.y() - new_size.height());
   }
   // If still vertically offscreen, just move it to the bottom of the screen.
-  if (mako_contents_bounds.y() < screen_work_area.y()) {
-    mako_contents_bounds.set_y(screen_work_area.bottom() - new_size.height());
+  if (lobster_contents_bounds.y() < screen_work_area.y()) {
+    lobster_contents_bounds.set_y(screen_work_area.bottom() -
+                                  new_size.height());
   }
 
   // Compute widget bounds, which includes the border and shadow around the main
   // contents. Then, adjust again to ensure the whole widget is onscreen.
-  gfx::Rect widget_bounds(mako_contents_bounds);
+  gfx::Rect widget_bounds(lobster_contents_bounds);
   widget_bounds.Inset(-GetBubbleFrameView()->bubble_border()->GetInsets());
   widget_bounds.AdjustToFit(screen_work_area);
 
