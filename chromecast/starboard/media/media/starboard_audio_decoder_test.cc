@@ -626,6 +626,65 @@ TEST_F(StarboardAudioDecoderTest, ReportsStatistics) {
   EXPECT_EQ(stats.decoded_bytes, buffer_data.size());
 }
 
+TEST_F(StarboardAudioDecoderTest, ConvertsPcmToS16ForPushBeforeInitialization) {
+  // NOTE: this test relies on cast converting PCM data to S16. If the code is
+  // updated to read an output format from partners, we should update this test
+  // correspondingly (to report S16 as the desired output format).
+
+  // This will be treated as unsigned 8 bit samples, and we expect it to be
+  // converted to two S16 samples.
+  const std::vector<uint8_t> buffer_data = {0x00, 0xFF};
+  scoped_refptr<CastDecoderBufferImpl> buffer(
+      new CastDecoderBufferImpl(buffer_data.size()));
+  memcpy(buffer->writable_data(), buffer_data.data(), buffer_data.size());
+
+  AudioConfig original_config;
+  original_config.codec = AudioCodec::kCodecPCM;
+  original_config.channel_layout = ChannelLayout::MONO;
+  original_config.sample_format = SampleFormat::kSampleFormatU8;
+  original_config.bytes_per_channel = 1;
+  original_config.channel_number = 1;
+  original_config.samples_per_second = 44100;
+  original_config.encryption_scheme = EncryptionScheme::kUnencrypted;
+
+  AudioConfig resampled_config;
+  resampled_config.codec = AudioCodec::kCodecPCM;
+  resampled_config.channel_layout = ChannelLayout::MONO;
+  resampled_config.sample_format = SampleFormat::kSampleFormatS16;
+  resampled_config.bytes_per_channel = 2;
+  resampled_config.channel_number = 1;
+  resampled_config.samples_per_second = 44100;
+  resampled_config.encryption_scheme = EncryptionScheme::kUnencrypted;
+
+  // Note: this is little endian representing two S16 values corresponding to
+  // buffer_data above.
+  const std::vector<uint8_t> expected_resampled_buffer_data = {0x00, 0x80, 0xFF,
+                                                               0x7F};
+  scoped_refptr<CastDecoderBufferImpl> expected_resampled_buffer(
+      new CastDecoderBufferImpl(expected_resampled_buffer_data.size()));
+  memcpy(expected_resampled_buffer->writable_data(),
+         expected_resampled_buffer_data.data(),
+         expected_resampled_buffer_data.size());
+
+  EXPECT_CALL(*starboard_,
+              WriteSample(&fake_player_, kStarboardMediaTypeAudio,
+                          Pointee(MatchesAudioConfigAndBuffer(
+                              resampled_config, expected_resampled_buffer)),
+                          1))
+      .Times(1);
+
+  StarboardAudioDecoder decoder(starboard_.get());
+  decoder.SetConfig(original_config);
+  EXPECT_EQ(decoder.PushBuffer(buffer.get()),
+            MediaPipelineBackend::BufferStatus::kBufferPending);
+
+  MockDelegate delegate;
+  decoder.SetDelegate(&delegate);
+
+  // At this point, the pending buffer should be pushed.
+  decoder.Initialize(&fake_player_);
+}
+
 }  // namespace
 }  // namespace media
 }  // namespace chromecast
