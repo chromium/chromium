@@ -595,4 +595,7 @@
   <message name="IDS_AUTOFILL_ADDRESS_EDIT_DIALOG_HISPANIC_MUNICIPIO" desc="The label shown in address edit dialogs representing a municipio (Spanish) / município (Portuguese) in an address, see https://en.wikipedia.org/wiki/Municipio. This is a subdivision of a state and currently introduced for Mexico.">
     Municipality
   </message>
+  <message name="IDS_AUTOFILL_ADDRESS_EDIT_DIALOG_FRENCH_LOCALITY_2" desc="The label for the locality-2 field in french autofill profile. In french it should be translated to 'Lieu-dit'.">
+    Named location
+  </message>
 </grit-part>

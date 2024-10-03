@@ -117,10 +117,15 @@ base::span<const AutofillCountry::AddressFormatExtension>
 AutofillCountry::address_format_extensions() const {
   // TODO(crbug.com/40216312): Extend more countries. FR and GB already have
   // overwrites, because libaddressinput already provides string literals.
-  static constexpr std::array<AddressFormatExtension, 1> fr_extensions{
+  static constexpr std::array<AddressFormatExtension, 2> fr_extensions{
       {{.type = FieldType::ADDRESS_HOME_STATE,
         .label_id = IDS_LIBADDRESSINPUT_PROVINCE,
         .placed_after = FieldType::ADDRESS_HOME_CITY,
+        .separator_before_label = "\n",
+        .large_sized = true},
+       {.type = FieldType::ADDRESS_HOME_DEPENDENT_LOCALITY,
+        .label_id = IDS_AUTOFILL_ADDRESS_EDIT_DIALOG_FRENCH_LOCALITY_2,
+        .placed_after = FieldType::ADDRESS_HOME_STREET_ADDRESS,
         .separator_before_label = "\n",
         .large_sized = true}}};
   static constexpr std::array<AddressFormatExtension, 1> gb_extensions{
@@ -147,10 +152,15 @@ AutofillCountry::address_format_extensions() const {
         .separator_before_label = " "}}};
 
   std::vector<std::pair<std::string, base::span<const AddressFormatExtension>>>
-      overrides = {{"FR", fr_extensions}, {"GB", gb_extensions}};
+      overrides = {{"GB", gb_extensions}, {"MX", mx_extensions}};
 
-  overrides.emplace_back("MX", mx_extensions);
-
+  // FR extensions should contain the ADDRESS_HOME_DEPENDENT_LOCALITY field
+  // only if flag `kAutofillUseFRAddressModel` is enabled.
+  base::span<const AddressFormatExtension> fr_extensions_span =
+      base::FeatureList::IsEnabled(features::kAutofillUseFRAddressModel)
+          ? fr_extensions
+          : base::span(fr_extensions).subspan(/*offset=*/0, /*count=*/1);
+  overrides.emplace_back("FR", fr_extensions_span);
   if (base::FeatureList::IsEnabled(features::kAutofillUseDEAddressModel)) {
     overrides.emplace_back("DE", de_extensions);
   }
