@@ -50,12 +50,12 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
 
   struct CreateP2PGroupParameter {
     CreateP2PGroupParameter(
-        const std::optional<std::string> ssid,
-        const std::optional<std::string> passphrase,
+        std::optional<std::string> ssid,
+        std::optional<std::string> passphrase,
         const std::optional<uint32_t> frequency,
         const std::optional<shill::WiFiInterfacePriority> priority);
-    CreateP2PGroupParameter(const std::optional<std::string> ssid,
-                            const std::optional<std::string> passphrase);
+    CreateP2PGroupParameter(std::optional<std::string> ssid,
+                            std::optional<std::string> passphrase);
 
     ~CreateP2PGroupParameter();
 

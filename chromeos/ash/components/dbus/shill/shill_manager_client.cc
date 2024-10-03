@@ -23,20 +23,20 @@
 namespace ash {
 
 ShillManagerClient::CreateP2PGroupParameter::CreateP2PGroupParameter(
-    const std::optional<std::string> ssid,
-    const std::optional<std::string> passphrase,
+    std::optional<std::string> ssid,
+    std::optional<std::string> passphrase,
     const std::optional<uint32_t> frequency,
     const std::optional<shill::WiFiInterfacePriority> priority)
-    : ssid(ssid),
-      passphrase(passphrase),
+    : ssid(std::move(ssid)),
+      passphrase(std::move(passphrase)),
       frequency(frequency),
       priority(priority) {}
 
 ShillManagerClient::CreateP2PGroupParameter::CreateP2PGroupParameter(
-    const std::optional<std::string> ssid,
-    const std::optional<std::string> passphrase)
-    : ssid(ssid),
-      passphrase(passphrase),
+    std::optional<std::string> ssid,
+    std::optional<std::string> passphrase)
+    : ssid(std::move(ssid)),
+      passphrase(std::move(passphrase)),
       frequency(std::nullopt),
       priority(std::nullopt) {}
 
