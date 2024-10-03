@@ -11321,8 +11321,8 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"screenlock-reauth", flag_descriptions::kScreenlockReauthPromoCardName,
-     flag_descriptions::kScreenlockReauthPromoCardDescription, kOsCrOS,
+    {"screenlock-reauth", flag_descriptions::kScreenlockReauthCardName,
+     flag_descriptions::kScreenlockReauthCardDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(password_manager::features::kBiometricsAuthForPwdFill)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
