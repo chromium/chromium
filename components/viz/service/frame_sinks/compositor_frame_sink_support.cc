@@ -628,7 +628,7 @@ void CompositorFrameSinkSupport::SetThreadIds(
     bool from_untrusted_client,
     base::flat_set<base::PlatformThreadId> unverified_thread_ids) {
   if (!from_untrusted_client) {
-    thread_ids_ = unverified_thread_ids;
+    thread_ids_ = std::move(unverified_thread_ids);
     return;
   }
   frame_sink_manager_->VerifySandboxedThreadIds(
