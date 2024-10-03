@@ -230,6 +230,7 @@
 #include "chrome/browser/ash/extensions/extensions_permissions_tracker.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
 #include "chrome/browser/ash/net/system_proxy_manager.h"
+#include "chrome/browser/ash/performance/doze_mode_power_status_scheduler.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager_impl.h"
 #include "chrome/browser/ash/policy/networking/euicc_status_uploader.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_admin_session_controller.h"
@@ -1727,6 +1728,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ash::DemoSession::RegisterLocalStatePrefs(registry);
   ash::DemoSetupController::RegisterLocalStatePrefs(registry);
   ash::DeviceNameStore::RegisterLocalStatePrefs(registry);
+  ash::DozeModePowerStatusScheduler::RegisterLocalStatePrefs(registry);
   chromeos::DeviceOAuth2TokenStoreChromeOS::RegisterPrefs(registry);
   ash::device_settings_cache::RegisterPrefs(registry);
   ash::EnableAdbSideloadingScreen::RegisterPrefs(registry);
