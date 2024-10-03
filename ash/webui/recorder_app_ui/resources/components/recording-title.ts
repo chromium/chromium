@@ -37,7 +37,6 @@ import {computed, signal} from '../core/reactive/signal.js';
 import {RecordingMetadata} from '../core/recording_data_manager.js';
 import {settings, SummaryEnableState} from '../core/state/settings.js';
 import {assertExists, assertInstanceof} from '../core/utils/assert.js';
-
 import {CraIconButton} from './cra/cra-icon-button.js';
 import {RecordingTitleSuggestion} from './recording-title-suggestion.js';
 
@@ -210,6 +209,26 @@ export class RecordingTitle extends ReactiveLitElement {
     this.requestUpdate();
   }
 
+  private onTextfieldKeyDown(ev: KeyboardEvent) {
+    const target = assertInstanceof(ev.target, Textfield);
+    if (ev.key === 'Escape') {
+      // Revert back to the old name and exit textfield.
+      target.value = this.recordingMetadata?.title ?? '';
+      target.blurTextfield();
+    } else if (ev.key === 'Enter') {
+      // Exit text field.
+      target.blurTextfield();
+    }
+  }
+
+  private onSuggestTitleButtonKeyDown(ev: KeyboardEvent) {
+    ev.stopPropagation();
+    if (ev.key === 'Escape') {
+      // Turn focus back to text field.
+      this.editTextfield?.focusTextfield();
+    }
+  }
+
   private setTitle(title: string) {
     const meta = this.recordingMetadata;
     if (meta === null) {
@@ -271,17 +290,18 @@ export class RecordingTitle extends ReactiveLitElement {
               slot="trailing"
               shape="circle"
               @click=${this.openSuggestionDialog}
+              @keydown=${this.onSuggestTitleButtonKeyDown}
               ${ref(this.suggestTitleButton)}
               aria-label=${i18n.titleSuggestionButtonTooltip}
             >
               <cra-icon slot="icon" name="pen_spark"></cra-icon>
             </cra-icon-button>`;
-      // TODO(pihsun): Handle keyboard event like "enter".
       return html`<cros-textfield
           type="text"
           .value=${this.recordingMetadata?.title ?? ''}
           @change=${this.onChangeTitle}
           @focusout=${this.onFocusout}
+          @keydown=${this.onTextfieldKeyDown}
           aria-label=${i18n.titleTextfieldAriaLabel}
         >
           ${suggestionIconButton}
