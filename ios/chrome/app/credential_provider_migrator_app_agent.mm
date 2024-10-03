@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/constants.h"
+#import "ios/chrome/common/credential_provider/credential_provider_creation_notifier.h"
 #import "ios/chrome/common/credential_provider/passkey_model_observer_bridge.h"
 
 @interface CredentialProviderMigratorAppAgent () <PasskeyModelObserverDelegate>
@@ -31,11 +32,26 @@
 // Keep track of the migration status of each browser state.
 @property(nonatomic, strong) NSMutableSet<NSString*>* migratingTracker;
 
+@property(nonatomic, strong)
+    CredentialProviderCreationNotifier* credentialProviderCreationNotifier;
+
 @end
 
 @implementation CredentialProviderMigratorAppAgent {
   std::vector<std::unique_ptr<PasskeyModelObserverBridge>>
       _passkeyModelObservers;
+}
+
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    __weak __typeof__(self) weakSelf = self;
+    self.credentialProviderCreationNotifier =
+        [[CredentialProviderCreationNotifier alloc] initWithBlock:^() {
+          [weakSelf credentialMigrationForPasskeyModel:nullptr];
+        }];
+  }
+  return self;
 }
 
 // Migrate the password when Chrome comes to foreground.
