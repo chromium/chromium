@@ -858,9 +858,9 @@ HRESULT GenerateSampleFromVideoFrame(
       hr = sample->AddBuffer(input_buffer.Get());
       RETURN_ON_HR_FAILURE(hr, "Failed to add buffer to sample", hr);
     }
-  } else if (frame->HasTextures()) {
-    // TODO:Handle non-GMB textures.  This needs access to SharedImageManager.
-    // See crbug.com/40162806
+  } else if (frame->HasSharedImage()) {
+    // TODO(crbug.com/40162806): Handle non-GMB textures. This needs access to
+    // SharedImageManager.
     return E_UNEXPECTED;
   } else {
     size_t allocation_size = VideoFrame::AllocationSize(

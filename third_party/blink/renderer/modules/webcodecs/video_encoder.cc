@@ -1110,7 +1110,7 @@ void VideoEncoder::ProcessEncode(Request* request) {
   // so let's readback pixel data to CPU memory.
   // TODO(crbug.com/1229845): We shouldn't be reading back frames here.
   if (!mappable) {
-    DCHECK(frame->HasTextures());
+    DCHECK(frame->HasSharedImage());
     // Stall request processing while we wait for the copy to complete. It'd
     // be nice to not have to do this, but currently the request processing
     // loop must execute synchronously or flush() will miss frames.

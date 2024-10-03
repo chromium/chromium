@@ -134,7 +134,7 @@ class ScopedSharedImageAccess {
 };
 
 const gpu::MailboxHolder GetVideoFrameMailboxHolder(VideoFrame* video_frame) {
-  DCHECK(video_frame->HasTextures());
+  DCHECK(video_frame->HasSharedImage());
 
   DCHECK(PIXEL_FORMAT_ARGB == video_frame->format() ||
          PIXEL_FORMAT_XRGB == video_frame->format() ||
@@ -712,7 +712,7 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
             frame->visible_rect().height(),
             frame->CompatRGBColorSpace().ToSkColorSpace())),
         frame_(std::move(frame)) {
-    DCHECK(!frame_->HasTextures());
+    DCHECK(!frame_->HasSharedImage());
   }
 
   VideoImageGenerator(const VideoImageGenerator&) = delete;
@@ -978,7 +978,7 @@ void PaintCanvasVideoRenderer::Paint(
     return;
   }
 
-  if (video_frame && video_frame->HasTextures()) {
+  if (video_frame && video_frame->HasSharedImage()) {
     if (!raster_context_provider) {
       DLOG(ERROR)
           << "Can't render textured frames w/o viz::RasterContextProvider";
@@ -1008,7 +1008,7 @@ void PaintCanvasVideoRenderer::Paint(
         video_frame->format() == PIXEL_FORMAT_XRGB ||
         video_frame->format() == PIXEL_FORMAT_ABGR ||
         video_frame->format() == PIXEL_FORMAT_XBGR ||
-        video_frame->HasTextures())) {
+        video_frame->HasSharedImage())) {
     cc::PaintFlags black_with_alpha_flags;
     black_with_alpha_flags.setAlphaf(flags.getAlphaf());
     canvas->drawRect(dest, black_with_alpha_flags);
@@ -1104,7 +1104,7 @@ void PaintCanvasVideoRenderer::Paint(
     const size_t offset = info.computeOffset(origin.x(), origin.y(), row_bytes);
     void* const pixels_offset = reinterpret_cast<char*>(pixels) + offset;
     ConvertVideoFrameToRGBPixels(video_frame.get(), pixels_offset, row_bytes);
-  } else if (video_frame->HasTextures()) {
+  } else if (video_frame->HasSharedImage()) {
     DCHECK_EQ(video_frame->coded_size(),
               gfx::Size(image.width(), image.height()));
     canvas->drawImageRect(image, gfx::RectToSkRect(video_frame->visible_rect()),
@@ -1426,7 +1426,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     bool flip_y) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(video_frame);
-  CHECK(video_frame->HasTextures());
+  CHECK(video_frame->HasSharedImage());
 
   if (video_frame->shared_image_format_type() ==
           SharedImageFormatType::kSharedImageFormat ||
@@ -1566,7 +1566,7 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
   // significant factor in performance, as the dominant factor in terms of
   // performance will be the fact that the VideoFrame's data needs to be
   // uploaded from the CPU to the GPU.
-  CHECK(video_frame->HasTextures());
+  CHECK(video_frame->HasSharedImage());
   DCHECK(video_frame->metadata().texture_origin_is_top_left);
 
   // Trigger resource allocation for dst texture to back SkSurface.
@@ -1627,7 +1627,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   }
   // Could handle NV12 here as well. See NewSkImageFromVideoFrameYUV.
 
-  CHECK(!video_frame->HasTextures());
+  CHECK(!video_frame->HasSharedImage());
   DCHECK(video_frame->metadata().texture_origin_is_top_left);
 
   auto* sii = raster_context_provider->SharedImageInterface();
@@ -1709,7 +1709,7 @@ bool PaintCanvasVideoRenderer::TexImage2D(
     bool flip_y,
     bool premultiply_alpha) {
   DCHECK(frame);
-  DCHECK(!frame->HasTextures());
+  DCHECK(!frame->HasSharedImage());
   DCHECK(frame->metadata().texture_origin_is_top_left);
 
   GLint precision = 0;
@@ -1761,7 +1761,7 @@ bool PaintCanvasVideoRenderer::TexSubImage2D(unsigned target,
                                              bool flip_y,
                                              bool premultiply_alpha) {
   DCHECK(frame);
-  DCHECK(!frame->HasTextures());
+  DCHECK(!frame->HasSharedImage());
   DCHECK(frame->metadata().texture_origin_is_top_left);
 
   scoped_refptr<DataBuffer> temp_buffer;
@@ -1821,7 +1821,7 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
   // |video_frame| is software.
   // Holding |video_frame| longer than this call when using GPUVideoDecoder
   // could cause problems since the pool of VideoFrames has a fixed size.
-  if (video_frame->HasTextures()) {
+  if (video_frame->HasSharedImage()) {
     DCHECK(raster_context_provider);
     bool gpu_rasterization =
         raster_context_provider->ContextCapabilities().gpu_rasterization;
@@ -1978,7 +1978,7 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
 
 bool PaintCanvasVideoRenderer::CanUseCopyVideoFrameToSharedImage(
     const VideoFrame& video_frame) {
-  return video_frame.HasTextures() ||
+  return video_frame.HasSharedImage() ||
          VideoFrameYUVConverter::IsVideoFrameFormatSupported(video_frame);
 }
 
@@ -1990,7 +1990,7 @@ gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
   auto* ri = raster_context_provider->RasterInterface();
 
   // If we have single source shared image, just use CopySharedImage().
-  if (video_frame->HasTextures()) {
+  if (video_frame->HasSharedImage()) {
     const auto source = video_frame->mailbox_holder(0);
     auto source_rect = use_visible_rect ? video_frame->visible_rect()
                                         : gfx::Rect(video_frame->coded_size());
@@ -2016,7 +2016,7 @@ gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
   // If VideoFrame has textures, we need to update SyncToken or to keep frame
   // alive until gpu is done with copy if `read_lock_fences_enabled` is set.
   // This is to make sure decoder doesn't re-use frame before copy is done.
-  if (video_frame->HasTextures()) {
+  if (video_frame->HasSharedImage()) {
     SynchronizeVideoFrameRead(std::move(video_frame), ri,
                               raster_context_provider->ContextSupport());
   }

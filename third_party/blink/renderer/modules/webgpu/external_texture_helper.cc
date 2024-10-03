@@ -263,7 +263,7 @@ ExternalTexture CreateExternalTexture(
   }
 
   const bool zero_copy =
-      (media_video_frame->HasTextures() &&
+      (media_video_frame->HasSharedImage() &&
        (media_video_frame->format() == media::PIXEL_FORMAT_NV12) &&
        device_support_zero_copy &&
        media_video_frame->metadata().is_webgpu_compatible &&

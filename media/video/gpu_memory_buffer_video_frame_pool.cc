@@ -645,7 +645,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CreateHardwareFrame(
     return;
   }
 
-  bool is_software_backed_video_frame = !video_frame->HasTextures();
+  bool is_software_backed_video_frame = !video_frame->HasSharedImage();
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   is_software_backed_video_frame &= !video_frame->HasDmaBufs();
 #endif

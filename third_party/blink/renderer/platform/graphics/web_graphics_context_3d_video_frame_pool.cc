@@ -217,7 +217,7 @@ void CopyToGpuMemoryBuffer(
   CHECK(!dst_frame->HasNativeGpuMemoryBuffer());
   CHECK_EQ(dst_frame->shared_image_format_type(),
            media::SharedImageFormatType::kSharedImageFormat);
-  CHECK(dst_frame->HasTextures());
+  CHECK(dst_frame->HasSharedImage());
 
   DCHECK(ctx_wrapper);
   auto* context_provider = ctx_wrapper->ContextProvider();
@@ -318,7 +318,7 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
   if (!dst_frame) {
     return false;
   }
-  CHECK(dst_frame->HasTextures());
+  CHECK(dst_frame->HasSharedImage());
 
   if (!media::CopyRGBATextureToVideoFrame(
           raster_context_provider, src_format, src_size, src_color_space,
@@ -418,7 +418,7 @@ bool WebGraphicsContext3DVideoFramePool::ConvertVideoFrame(
          format == media::PIXEL_FORMAT_XRGB ||
          format == media::PIXEL_FORMAT_ARGB)
       << "Invalid format " << format;
-  DCHECK(src_video_frame->HasTextures());
+  DCHECK(src_video_frame->HasSharedImage());
   viz::SharedImageFormat texture_format;
   switch (format) {
     case media::PIXEL_FORMAT_XBGR:

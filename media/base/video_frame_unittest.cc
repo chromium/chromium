@@ -667,7 +667,7 @@ TEST(VideoFrame, TextureNoLongerNeededCallbackIsCalled) {
         base::TimeDelta());  // timestamp
     EXPECT_EQ(PIXEL_FORMAT_ARGB, frame->format());
     EXPECT_EQ(VideoFrame::STORAGE_OPAQUE, frame->storage_type());
-    EXPECT_TRUE(frame->HasTextures());
+    EXPECT_TRUE(frame->HasSharedImage());
   }
   // Nobody set a sync point to |frame|, so |frame| set |called_sync_token|
   // cleared to default value.
@@ -705,7 +705,7 @@ TEST(VideoFrame,
     EXPECT_EQ(VideoFrame::STORAGE_OPAQUE, frame->storage_type());
     EXPECT_EQ(PIXEL_FORMAT_I420, frame->format());
     EXPECT_EQ(3u, VideoFrame::NumPlanes(frame->format()));
-    EXPECT_TRUE(frame->HasTextures());
+    EXPECT_TRUE(frame->HasSharedImage());
     const gpu::MailboxHolder& mailbox_holder = frame->mailbox_holder(0);
     EXPECT_EQ(shared_image->mailbox().name[0], mailbox_holder.mailbox.name[0]);
     EXPECT_EQ(target, mailbox_holder.texture_target);

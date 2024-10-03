@@ -444,7 +444,7 @@ const base::TimeDelta CanvasResourceProviderCache::kIdleTimeout =
 std::optional<media::VideoPixelFormat> CopyToFormat(
     const media::VideoFrame& frame) {
   const bool mappable = frame.IsMappable() || frame.HasMappableGpuBuffer();
-  const bool texturable = frame.HasTextures();
+  const bool texturable = frame.HasSharedImage();
   if (!(mappable || texturable))
     return std::nullopt;
 
@@ -456,7 +456,7 @@ std::optional<media::VideoPixelFormat> CopyToFormat(
   // Externally-sampled frames read back as RGB, regardless of the format.
   // TODO(crbug.com/40215121): Enable alpha readback for supported formats.
   if (!mappable && frame.RequiresExternalSampler()) {
-    DCHECK(frame.HasTextures());
+    DCHECK(frame.HasSharedImage());
     return media::PIXEL_FORMAT_XRGB;
   }
 
@@ -1327,7 +1327,7 @@ ScriptPromise<IDLSequence<PlaneLayout>> VideoFrame::copyTo(
     }
     CopyMappablePlanes(*mapped_frame, src_rect, dest_layout, buffer);
   } else {
-    DCHECK(local_frame->HasTextures());
+    DCHECK(local_frame->HasSharedImage());
 
     if (base::FeatureList::IsEnabled(kVideoFrameAsyncCopyTo)) {
       if (CopyToAsync(resolver, local_frame, src_rect, destination,

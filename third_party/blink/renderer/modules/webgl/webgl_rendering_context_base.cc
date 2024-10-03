@@ -6253,7 +6253,7 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
     // to system memory if possible.  Otherwise, it will fall back to the normal
     // SW path.
 
-    if (media_video_frame->HasTextures() &&
+    if (media_video_frame->HasSharedImage() &&
         video_renderer->CopyVideoFrameTexturesToGLTexture(
             raster_context_provider, ContextGL(), media_video_frame,
             params.target, texture->Object(), adjusted_internalformat,
@@ -6268,7 +6268,7 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
     //
     // TODO(crbug.com/1180879): I420A should be supported, but currently fails
     // conformance/textures/misc/texture-video-transparent.html.
-    if (!media_video_frame->HasTextures() &&
+    if (!media_video_frame->HasSharedImage() &&
         media::IsOpaque(media_video_frame->format()) &&
         video_renderer->CopyVideoFrameYUVDataToGLTexture(
             raster_context_provider, ContextGL(), media_video_frame,

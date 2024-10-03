@@ -237,7 +237,7 @@ bool CanUseGpuMemoryBufferReadback(
 scoped_refptr<media::VideoFrame>
 WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
     scoped_refptr<media::VideoFrame> source_frame) {
-  RTC_DCHECK(source_frame->HasTextures());
+  RTC_DCHECK(source_frame->HasSharedImage());
 
   auto raster_context_provider = GetRasterContextProvider();
   if (!raster_context_provider) {
@@ -278,7 +278,7 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
     }
 
     if (dst_frame) {
-      CHECK(dst_frame->HasTextures());
+      CHECK(dst_frame->HasSharedImage());
       const bool copy_succeeded = media::CopyRGBATextureToVideoFrame(
           raster_context_provider.get(), format, source_frame->coded_size(),
           source_frame->ColorSpace(), origin, source_frame->mailbox_holder(0),

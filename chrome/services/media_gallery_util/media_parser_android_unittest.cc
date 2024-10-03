@@ -146,7 +146,7 @@ TEST_F(MediaParserAndroidTest, VideoFrameExtractionH264) {
     ASSERT_TRUE(frame);
     EXPECT_TRUE(HasValidYUVData(*frame));
     EXPECT_TRUE(frame->IsMappable());
-    EXPECT_FALSE(frame->HasTextures());
+    EXPECT_FALSE(frame->HasSharedImage());
     EXPECT_EQ(frame->storage_type(),
               media::VideoFrame::StorageType::STORAGE_OWNED_MEMORY);
   } else {
@@ -180,7 +180,7 @@ TEST_F(MediaParserAndroidTest, VideoFrameExtractionVp8) {
   ASSERT_TRUE(frame);
   EXPECT_TRUE(HasValidYUVData(*frame));
   EXPECT_TRUE(frame->IsMappable());
-  EXPECT_FALSE(frame->HasTextures());
+  EXPECT_FALSE(frame->HasSharedImage());
   EXPECT_EQ(frame->storage_type(),
             media::VideoFrame::StorageType::STORAGE_OWNED_MEMORY);
 }
@@ -198,7 +198,7 @@ TEST_F(MediaParserAndroidTest, VideoFrameExtractionVp8WithAlphaPlane) {
   ASSERT_TRUE(frame);
   EXPECT_TRUE(HasValidYUVData(*frame));
   EXPECT_TRUE(frame->IsMappable());
-  EXPECT_FALSE(frame->HasTextures());
+  EXPECT_FALSE(frame->HasSharedImage());
   EXPECT_EQ(frame->storage_type(),
             media::VideoFrame::StorageType::STORAGE_OWNED_MEMORY);
 }
@@ -213,7 +213,7 @@ TEST_F(MediaParserAndroidTest, VideoFrameExtractionVp9) {
   ASSERT_TRUE(frame);
   EXPECT_TRUE(HasValidYUVData(*frame));
   EXPECT_TRUE(frame->IsMappable());
-  EXPECT_FALSE(frame->HasTextures());
+  EXPECT_FALSE(frame->HasSharedImage());
   EXPECT_EQ(frame->storage_type(),
             media::VideoFrame::StorageType::STORAGE_UNOWNED_MEMORY);
 }
@@ -228,7 +228,7 @@ TEST_F(MediaParserAndroidTest, VideoFrameExtractionAv1) {
   ASSERT_TRUE(frame);
   EXPECT_TRUE(HasValidYUVData(*frame));
   EXPECT_TRUE(frame->IsMappable());
-  EXPECT_FALSE(frame->HasTextures());
+  EXPECT_FALSE(frame->HasSharedImage());
   EXPECT_EQ(frame->storage_type(),
             media::VideoFrame::StorageType::STORAGE_UNOWNED_MEMORY);
 }

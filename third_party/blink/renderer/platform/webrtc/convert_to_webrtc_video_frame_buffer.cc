@@ -273,7 +273,7 @@ bool CanConvertToWebRtcVideoFrameBuffer(const media::VideoFrame* frame) {
                          frame->format())) ||
          frame->storage_type() ==
              media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER ||
-         frame->HasTextures();
+         frame->HasSharedImage();
 }
 
 // static
@@ -312,7 +312,7 @@ rtc::scoped_refptr<webrtc::VideoFrameBuffer> ConvertToWebRtcVideoFrameBuffer(
       return create_placeholder_frame(*video_frame);
     }
     return MakeFrameAdapter(std::move(converted_frame));
-  } else if (video_frame->HasTextures()) {
+  } else if (video_frame->HasSharedImage()) {
     auto converted_frame =
         shared_resources
             ? shared_resources->ConstructVideoFrameFromTexture(video_frame)

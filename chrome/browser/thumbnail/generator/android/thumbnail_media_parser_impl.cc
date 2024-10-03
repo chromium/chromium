@@ -239,7 +239,7 @@ void ThumbnailMediaParserImpl::OnVideoFrameDecoded(
     return;
   }
 
-  DCHECK(frame->HasTextures());
+  DCHECK(frame->HasSharedImage());
   decode_done_ = true;
 
   RenderVideoFrame(std::move(frame));

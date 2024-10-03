@@ -102,7 +102,7 @@ const gpu::Mailbox& VideoFrameYUVMailboxesHolder::VideoFrameToMailbox(
   auto* sii = provider_->SharedImageInterface();
   CHECK(sii);
 
-  CHECK(!video_frame->HasTextures());
+  CHECK(!video_frame->HasSharedImage());
   constexpr SkAlphaType kPlaneAlphaType = kPremul_SkAlphaType;
 
   // This SharedImage will be written to (and later read from) via the raster

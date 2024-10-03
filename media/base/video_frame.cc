@@ -502,7 +502,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapSharedImage(
   frame->mailbox_holder_and_gmb_release_cb_ =
       WrapReleaseMailboxCB(std::move(mailbox_holder_release_cb));
 
-  DCHECK(frame->HasTextures());
+  DCHECK(frame->HasSharedImage());
 
   return frame;
 }
@@ -1496,7 +1496,6 @@ const gpu::MailboxHolder VideoFrame::mailbox_holder(
 }
 
 scoped_refptr<gpu::ClientSharedImage> VideoFrame::shared_image() const {
-  DCHECK(HasTextures());
   DCHECK(HasSharedImage());
   return wrapped_frame_ ? wrapped_frame_->shared_image() : shared_image_;
 }

@@ -250,7 +250,7 @@ TEST_P(MailboxVideoFrameConverterWithUnwrappedFramesTest,
     }
     EXPECT_EQ(converted_frame->visible_rect(), gmb_frames[i]->visible_rect());
     EXPECT_EQ(converted_frame->natural_size(), gmb_frames[i]->natural_size());
-    ASSERT_TRUE(converted_frame->HasTextures());
+    ASSERT_TRUE(converted_frame->HasSharedImage());
     EXPECT_EQ(converted_frame->mailbox_holder(0).mailbox,
               mailboxes_seen_by_gpu_delegate[i]);
   }

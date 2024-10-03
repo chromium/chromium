@@ -488,7 +488,7 @@ void VideoFrameCompositor::OnContextLost() {
   // is not valid any more. current_frame_ should be reset. Now the compositor
   // has no concept of resetting current_frame_, so a black frame is set.
   base::AutoLock lock(current_frame_lock_);
-  if (!current_frame_ || (!current_frame_->HasTextures() &&
+  if (!current_frame_ || (!current_frame_->HasSharedImage() &&
                           !current_frame_->HasMappableGpuBuffer())) {
     return;
   }

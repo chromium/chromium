@@ -30,7 +30,7 @@ bool VideoFrameYUVConverter::ConvertYUVVideoFrame(
     const gpu::MailboxHolder& dest_mailbox_holder,
     std::optional<GrParams> gr_params) {
   CHECK(video_frame);
-  CHECK(!video_frame->HasTextures());
+  CHECK(!video_frame->HasSharedImage());
   DCHECK(IsVideoFrameFormatSupported(*video_frame))
       << "VideoFrame has an unsupported YUV format " << video_frame->format();
   DCHECK(!video_frame->coded_size().IsEmpty())

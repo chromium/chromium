@@ -161,7 +161,7 @@ void MojoVideoEncodeAcceleratorService::Encode(
 
   if (frame->coded_size() != input_coded_size_ &&
       frame->storage_type() != media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER &&
-      !frame->HasTextures()) {
+      !frame->HasSharedImage()) {
     NotifyErrorStatus({EncoderStatus::Codes::kInvalidInputFrame,
                        "wrong input coded size, expected " +
                            input_coded_size_.ToString() + ", got " +

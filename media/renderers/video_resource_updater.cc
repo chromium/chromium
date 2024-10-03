@@ -897,11 +897,12 @@ VideoResourceUpdater::CreateExternalResourceFromVideoFrame(
     scoped_refptr<VideoFrame> video_frame) {
   if (video_frame->format() == PIXEL_FORMAT_UNKNOWN)
     return VideoFrameExternalResource();
-  DCHECK(video_frame->HasTextures() || video_frame->IsMappable());
-  if (video_frame->HasTextures())
+  DCHECK(video_frame->HasSharedImage() || video_frame->IsMappable());
+  if (video_frame->HasSharedImage()) {
     return CreateForHardwarePlanes(std::move(video_frame));
-  else
+  } else {
     return CreateForSoftwarePlanes(std::move(video_frame));
+  }
 }
 
 bool VideoResourceUpdater::ReallocateUploadPixels(size_t needed_size,
@@ -1039,7 +1040,7 @@ void VideoResourceUpdater::CopyHardwarePlane(
 VideoFrameExternalResource VideoResourceUpdater::CreateForHardwarePlanes(
     scoped_refptr<VideoFrame> video_frame) {
   TRACE_EVENT0("media", "VideoResourceUpdater::CreateForHardwarePlanes");
-  DCHECK(video_frame->HasTextures());
+  DCHECK(video_frame->HasSharedImage());
   if (!context_provider_) {
     return VideoFrameExternalResource();
   }

@@ -64,7 +64,7 @@ scoped_refptr<media::VideoFrame> CopyFrame(
     scoped_refptr<media::VideoFrame> frame,
     media::PaintCanvasVideoRenderer* video_renderer) {
   scoped_refptr<media::VideoFrame> new_frame;
-  if (frame->HasTextures()) {
+  if (frame->HasSharedImage()) {
     DCHECK(frame->format() == media::PIXEL_FORMAT_ARGB ||
            frame->format() == media::PIXEL_FORMAT_XRGB ||
            frame->format() == media::PIXEL_FORMAT_ABGR ||
@@ -600,7 +600,7 @@ void WebMediaPlayerMSCompositor::OnContextLost() {
   // is not valid any more. current_frame_ should be reset. Now the compositor
   // has no concept of resetting current_frame_, so a black frame is set.
   base::AutoLock auto_lock(current_frame_lock_);
-  if (!current_frame_ || (!current_frame_->HasTextures() &&
+  if (!current_frame_ || (!current_frame_->HasSharedImage() &&
                           !current_frame_->HasMappableGpuBuffer())) {
     return;
   }
