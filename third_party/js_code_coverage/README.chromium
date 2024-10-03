@@ -19,7 +19,7 @@ Short Name: source-map
 URL: https://www.npmjs.com/package/source-map
 Version: 0.7.4
 License: BSD-3-Clause
-Security Critical: No. Not shipped in Chrome, used to generate source maps for build steps.
+Security Critical: No
 Shipped: no
 
 Description:
@@ -27,6 +27,8 @@ Source map provides useful functionality to easily generate and consume
 JavaScript source maps, useful in identifying the build transformations that
 occurred between the final generated JavaScript file and the source it
 originated from.
+
+Not shipped in Chrome, used to generate source maps for build steps.
 
 Local Modifications:
 (none)
@@ -38,13 +40,15 @@ Short Name: nyc
 URL: https://www.npmjs.com/package/nyc
 Version: 15.1.0
 License: ISC
-Security Critical: No. Not shipped in Chrome, used for post-processing of coverage reports.
+Security Critical: No
 Shipped: no
 
 Description:
 NYC is a CLI to merge, manipulate and generate reports in a variety of formats
 for JavaScript code coverage. This tool is used in conjunction with the
 v8-to-istanbul package to convert v8 coverage -> istanbul -> {html,lcov}
+
+Not shipped in Chrome, Used for post-processing of coverage reports.
 
 Local Modifications:
 (none)
@@ -56,12 +60,14 @@ Short Name: argparse
 URL: https://www.npmjs.com/package/argparse
 Version: 2.0.1
 License: Python-2.0
-Security Critical: No. Not shipped in Chrome, used to take arguments for JS files run via CLI.
+Security Critical: No
 Shipped: no
 
 Description:
 Argparse is used to take, validate and parse CLI arguments for JavaScript scripts
 which are run as CLI scripts.
+
+Not shipped in Chrome, used to take arguments for JS files run via CLI.
 
 -------------------- DEPENDENCY DIVIDER --------------------
 
@@ -70,8 +76,10 @@ Short Name: istanbul-lib-coverage
 URL: https://www.npmjs.com/package/istanbul-lib-coverage
 Version: 3.2.0
 License: BSD-3-Clause
-Security Critical: No. Not shipped in Chrome, used to merge coverage reports.
+Security Critical: No
 Shipped: no
 
 Description:
 istanbul-lib-coverage is used to merge coverage reports by the NYC library.
+
+Not shipped in Chrome, used to merge coverage reports.
