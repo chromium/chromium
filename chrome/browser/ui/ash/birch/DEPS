@@ -11,6 +11,7 @@ include_rules = [
   # refactor ash codes in //chrome to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/app_list/search",
+  "+chrome/browser/ash/app_restore",
   "+chrome/browser/ash/calendar",
   "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/file_suggest",

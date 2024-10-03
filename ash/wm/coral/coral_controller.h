@@ -30,6 +30,8 @@ class ASH_EXPORT CoralRequest {
 
   const std::vector<ContentItem>& content() const { return content_; }
 
+  std::string ToString() const;
+
  private:
   // Tab/app content with arbitrary ordering.
   std::vector<ContentItem> content_;

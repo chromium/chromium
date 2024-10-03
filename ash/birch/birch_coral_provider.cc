@@ -24,6 +24,8 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/window_restore/informed_restore_contents_data.h"
+#include "ash/wm/window_restore/informed_restore_controller.h"
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
@@ -229,12 +231,38 @@ void BirchCoralProvider::OverrideCoralResponseForTest(
 }
 
 bool BirchCoralProvider::HasValidPostLoginData() const {
-  // TODO(sammiequon) add check for valid post login data.
-  return false;
+  InformedRestoreController* informed_restore_controller =
+      Shell::Get()->informed_restore_controller();
+  return informed_restore_controller &&
+         !!informed_restore_controller->contents_data();
 }
 
 void BirchCoralProvider::HandlePostLoginDataRequest() {
-  // TODO(sammiequon) handle post-login use case.
+  InformedRestoreContentsData* contents_data =
+      Shell::Get()->informed_restore_controller()->contents_data();
+  std::vector<CoralRequest::ContentItem> tab_app_data;
+
+  for (const InformedRestoreContentsData::AppInfo& app_info :
+       contents_data->apps_infos) {
+    if (app_info.tab_urls.empty()) {
+      tab_app_data.push_back(coral::mojom::Entity::NewApp(
+          coral::mojom::App::New(app_info.title, app_info.app_id)));
+      continue;
+    }
+
+    for (const GURL& url : app_info.tab_urls) {
+      // TODO(http://b/365839465): The only title we have right now is the
+      // active tab title.
+      tab_app_data.push_back(coral::mojom::Entity::NewTab(
+          coral::mojom::Tab::New(app_info.title, url)));
+    }
+  }
+
+  // TODO(sammiequon): Implement item remover.
+  request_.set_content(std::move(tab_app_data));
+  Shell::Get()->coral_controller()->GenerateContentGroups(
+      request_, base::BindOnce(&BirchCoralProvider::HandleCoralResponse,
+                               weak_ptr_factory_.GetWeakPtr()));
 }
 
 void BirchCoralProvider::HandleInSessionDataRequest() {

@@ -7,6 +7,7 @@
 #include "ash/public/cpp/coral_delegate.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "base/json/json_writer.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -25,6 +26,29 @@ constexpr size_t kMaxItemsInRequest = 100;
 CoralRequest::CoralRequest() = default;
 
 CoralRequest::~CoralRequest() = default;
+
+std::string CoralRequest::ToString() const {
+  auto list = base::Value::List();
+  for (const ContentItem& item : content_) {
+    auto item_value = base::Value::Dict();
+    if (item->is_tab()) {
+      item_value.Set("Tab", base::Value::Dict()
+                                .Set("Title", item->get_tab()->title)
+                                .Set("Url", item->get_tab()->url.spec()));
+    }
+    if (item->is_app()) {
+      item_value.Set("App", base::Value::Dict()
+                                .Set("Title", item->get_app()->title)
+                                .Set("Id", item->get_app()->id));
+    }
+    list.Append(std::move(item_value));
+  }
+
+  auto root = base::Value::Dict().Set("Coral request", std::move(list));
+  return base::WriteJsonWithOptions(root,
+                                    base::JSONWriter::OPTIONS_PRETTY_PRINT)
+      .value_or(std::string());
+}
 
 CoralResponse::CoralResponse() = default;
 

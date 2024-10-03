@@ -30,6 +30,8 @@ struct ASH_EXPORT InformedRestoreContentsData {
     kUpdate,
   };
 
+  // TODO(http://b/365839465): Introduce more data for coral usage. We need more
+  // than just 5 tabs and the tab title of all tabs, not just the active one.
   struct AppInfo {
     AppInfo(const std::string& id, const std::string& title, int window_id);
     AppInfo(const std::string& app_id,
