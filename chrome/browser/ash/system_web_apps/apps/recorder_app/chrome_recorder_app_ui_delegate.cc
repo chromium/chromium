@@ -69,9 +69,20 @@ ChromeRecorderAppUIDelegate::GetMediaDeviceSaltService(
 bool ChromeRecorderAppUIDelegate::CanUseSpeakerLabelForCurrentProfile() {
   Profile* profile = Profile::FromWebUI(web_ui_);
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  // TODO: b/341806818 - Integrate with capabilities.
-  return identity_manager != nullptr &&
-         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+  if (identity_manager == nullptr) {
+    return false;
+  }
+
+  const auto account_id =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  if (account_id.empty()) {
+    return false;
+  }
+
+  const AccountInfo extended_account_info =
+      identity_manager->FindExtendedAccountInfoByAccountId(account_id);
+  return extended_account_info.capabilities
+             .can_use_speaker_label_in_recorder_app() == signin::Tribool::kTrue;
 }
 
 void ChromeRecorderAppUIDelegate::RecordSpeakerLabelConsent(
