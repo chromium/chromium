@@ -30,6 +30,7 @@
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/network.h"
@@ -75,6 +76,8 @@ Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
   // created.
   GetNetworkFetcherFactory();
 #endif
+  static crash_reporter::CrashKeyString<6> crash_key_managed("managed");
+  crash_key_managed.Set(is_managed_device_ ? "true" : "false");
 }
 Configurator::~Configurator() = default;
 

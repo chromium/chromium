@@ -39,9 +39,9 @@
 #elif BUILDFLAG(IS_MAC)
 #include "chrome/updater/policy/mac/managed_preference_policy_manager.h"
 #endif
+#include "components/crash/core/common/crash_key.h"
 
 namespace updater {
-
 namespace {
 
 // Sorts the managed policy managers ahead of the non-managed ones in the
@@ -177,6 +177,8 @@ void PolicyService::FetchPolicies(base::OnceCallback<void(int)> callback) {
 void PolicyService::DoFetchPolicies(base::OnceCallback<void(int)> callback,
                                     bool is_cbcm_managed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  static crash_reporter::CrashKeyString<6> crash_key_cbcm("cbcm");
+  crash_key_cbcm.Set(is_cbcm_managed ? "true" : "false");
   if (!is_cbcm_managed) {
     VLOG(2) << "Device is not CBCM managed, skipped policy fetch.";
     std::move(callback).Run(0);

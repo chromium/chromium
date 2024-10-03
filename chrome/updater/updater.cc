@@ -79,14 +79,6 @@ void ReinitializeLoggingAfterCrashHandler(UpdaterScope updater_scope) {
   InitLogging(updater_scope);
 }
 
-void InitializeCrashKeys(const base::CommandLine& command_line) {
-  crash_reporter::InitializeCrashKeys();
-  static crash_reporter::CrashKeyString<16> crash_key_process_type(
-      "process_type");
-  crash_key_process_type.Set("updater");
-  crash_keys::SetSwitchesFromCommandLine(command_line, nullptr);
-}
-
 void InitializeCrashReporting(UpdaterScope updater_scope) {
   if (!CrashClient::GetInstance()->InitializeCrashReporting(updater_scope)) {
     VLOG(1) << "Crash reporting is not available.";
@@ -95,6 +87,9 @@ void InitializeCrashReporting(UpdaterScope updater_scope) {
   if (AreRawUsageStatsEnabled(updater_scope)) {
     CrashClient::GetInstance()->SetUploadsEnabled(true);
   }
+  crash_reporter::InitializeCrashKeys();
+  crash_keys::SetSwitchesFromCommandLine(
+      *base::CommandLine::ForCurrentProcess(), nullptr);
   VLOG(1) << "Crash reporting initialized.";
 }
 
@@ -320,7 +315,6 @@ int UpdaterMain(int argc, const char* const* argv) {
   *command_line = GetCommandLineLegacyCompatible();
 #endif
   EnableLoggingByDefault();
-  InitializeCrashKeys(*command_line);
   const UpdaterScope updater_scope = GetUpdaterScope();
   InitLogging(updater_scope);
   VLOG(1) << "Version: " << kUpdaterVersion << ", " << BuildFlavor() << ", "

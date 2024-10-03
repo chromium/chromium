@@ -1821,7 +1821,6 @@ TEST_F(IntegrationTest, CrashUsageStatsEnabled) {
           request::GetHeaderMatcher({{"User-Agent", R"(Crashpad/.*)"}}),
           request::GetMultipartContentMatcher({
               {"guid", std::vector<std::string>({})},  // Crash guid.
-              {"process_type", std::vector<std::string>({R"(updater)"})},
               {"prod", std::vector<std::string>({CRASH_PRODUCT_NAME})},
               {"ver", std::vector<std::string>({kUpdaterVersion})},
               {"upload_file_minidump",  // Dump file name and its content.
