@@ -1050,6 +1050,8 @@ void HistoryEmbeddingsService::OnAnswerComputed(
   search_result.answerer_result = std::move(answerer_result);
   VLOG(3) << "Query '" << search_result.answerer_result.query
           << "' computed answer '" << search_result.AnswerText() << "'";
+  VLOG(3) << "ComputeAnswerStatus: "
+          << static_cast<int>(search_result.answerer_result.status);
   callback.Run(std::move(search_result));
 }
 
