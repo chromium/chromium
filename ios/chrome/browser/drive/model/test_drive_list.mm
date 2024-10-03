@@ -26,7 +26,7 @@ DriveListResult TestDriveList::GetDriveListResult() const {
   DriveListResult result;
   for (int i = 0; i < 10; ++i) {
     DriveItem item;
-    item.identifier = [[NSUUID alloc] UUIDString];
+    item.identifier = [[NSUUID UUID] UUIDString];
     item.name = [NSString stringWithFormat:@"Fake Item %d", i];
     result.items.push_back(item);
   }
@@ -56,7 +56,7 @@ void TestDriveList::CancelCurrentQuery() {
   callbacks_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-void TestDriveList::ListItems(const DriveListQuery& query,
+void TestDriveList::ListFiles(const DriveListQuery& query,
                               DriveListCompletionCallback completion_callback) {
   const auto completion_quit_closure =
       base::BindRepeating(&TestDriveList::RunListItemsCompletionQuitClosure,

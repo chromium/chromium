@@ -318,9 +318,12 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   _filterButton.enabled = YES;
   _filterButton.preferredMenuElementOrder =
       UIContextMenuConfigurationElementOrderFixed;
+  _filterButton.accessibilityIdentifier =
+      kDriveFilePickerFilterButtonIdentifier;
 
   // Init account button.
   _accountButton = [[UIBarButtonItem alloc] init];
+  _accountButton.accessibilityIdentifier = kDriveFilePickerIdentityIdentifier;
 
   // Init sort button.
   UIImage* sortIcon = DefaultSymbolTemplateWithPointSize(
@@ -329,6 +332,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   _sortButton = [[UIBarButtonItem alloc] initWithImage:sortIcon
                                                   menu:sortButtonMenu];
   _sortButton.enabled = YES;
+  _sortButton.accessibilityIdentifier = kDriveFilePickerSortButtonIdentifier;
 }
 
 // Returns the right bar button based on the status.
@@ -355,6 +359,8 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
               style:UIBarButtonItemStyleDone
              target:self.mutator
              action:@selector(submitFileSelection)];
+  confirmButton.accessibilityIdentifier =
+      kDriveFilePickerConfirmButtonIdentifier;
   return confirmButton;
 }
 

@@ -6,3 +6,11 @@
 
 NSString* const kDriveFilePickerAccessibilityIdentifier =
     @"kDriveFilePickerAccessibilityIdentifier";
+NSString* const kDriveFilePickerConfirmButtonIdentifier =
+    @"kDriveFilePickerConfirmButtonIdentifier";
+NSString* const kDriveFilePickerFilterButtonIdentifier =
+    @"kDriveFilePickerFilterButtonIdentifier";
+NSString* const kDriveFilePickerSortButtonIdentifier =
+    @"kDriveFilePickerSortButtonIdentifier";
+NSString* const kDriveFilePickerIdentityIdentifier =
+    @"kDriveFilePickerIdentityIdentifier";

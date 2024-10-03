@@ -13,6 +13,7 @@
 @protocol ApplicationCommands;
 @protocol CountryCodePickerCommands;
 @protocol UnitConversionCommands;
+@protocol DriveFilePickerCommands;
 
 class Browser;
 @class MainController;
@@ -65,7 +66,8 @@ id<ApplicationCommands,
    BrowserCommands,
    BrowserCoordinatorCommands,
    UnitConversionCommands,
-   CountryCodePickerCommands>
+   CountryCodePickerCommands,
+   DriveFilePickerCommands>
 HandlerForActiveBrowser();
 
 // Removes all presented infobars.
