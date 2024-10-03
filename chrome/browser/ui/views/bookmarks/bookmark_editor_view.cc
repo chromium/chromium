@@ -64,7 +64,6 @@ BookmarkEditorView::BookmarkEditorView(
     BookmarkEditor::Configuration configuration,
     BookmarkEditor::OnSaveCallback on_save_callback)
     : profile_(profile),
-      initial_parent_(details.parent_node),
       details_(details),
       bb_model_(BookmarkModelFactory::GetForBrowserContext(profile)),
       expanded_state_tracker_(
@@ -74,7 +73,7 @@ BookmarkEditorView::BookmarkEditorView(
   DCHECK(profile);
   DCHECK(bb_model_);
   DCHECK(expanded_state_tracker_);
-  DCHECK(!bb_model_->client()->IsNodeManaged(initial_parent_));
+  DCHECK(!bb_model_->client()->IsNodeManaged(details_.parent_node));
   SetCanResize(true);
   SetModalType(ui::mojom::ModalType::kWindow);
   SetShowCloseButton(false);
@@ -242,7 +241,7 @@ void BookmarkEditorView::BookmarkNodeRemoved(const BookmarkNode* parent,
                                              const base::Location& location) {
   if ((details_.type == EditDetails::EXISTING_NODE &&
        details_.existing_node->HasAncestor(node)) ||
-      (initial_parent_ && initial_parent_->HasAncestor(node))) {
+      (details_.parent_node && details_.parent_node->HasAncestor(node))) {
     // The node, or its parent was removed. Close the dialog.
     GetWidget()->Close();
   } else {
@@ -407,7 +406,7 @@ void BookmarkEditorView::ExpandAndSelect() {
       tree_view_->Expand(editor_node);
   }
 
-  const BookmarkNode* to_select = initial_parent_;
+  const BookmarkNode* to_select = details_.parent_node;
   if (details_.type == EditDetails::EXISTING_NODE)
     to_select = details_.existing_node->parent();
   int64_t folder_id_to_select = to_select->id();
@@ -493,8 +492,8 @@ void BookmarkEditorView::ApplyEdits(EditorNode* parent) {
   std::u16string new_title(title_tf_->GetText());
 
   if (!show_tree_) {
-    BookmarkEditor::ApplyEdits(bb_model_, initial_parent_, details_, new_title,
-                               new_url);
+    BookmarkEditor::ApplyEdits(bb_model_, details_.parent_node, details_,
+                               new_title, new_url);
   } else {
     // Create the new folders and update the titles.
     const BookmarkNode* new_parent = nullptr;

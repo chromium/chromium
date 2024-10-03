@@ -237,10 +237,6 @@ class BookmarkEditorView : public BookmarkEditor,
   // The text field used for editing the title.
   raw_ptr<views::Textfield> title_tf_ = nullptr;
 
-  // Initial parent to select. Is only used if |details_.existing_node| is
-  // NULL.
-  raw_ptr<const bookmarks::BookmarkNode> initial_parent_;
-
   const EditDetails details_;
 
   // The context menu.
