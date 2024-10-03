@@ -108,6 +108,17 @@ class BodyArrayBufferConsumer final : public BodyConsumerBase {
   }
 };
 
+class BodyUint8ArrayConsumer final : public BodyConsumerBase {
+ public:
+  using BodyConsumerBase::BodyConsumerBase;
+  using ResolveType = NotShared<DOMUint8Array>;
+
+  void DidFetchDataLoadedArrayBuffer(DOMArrayBuffer* array_buffer) override {
+    ResolveLater<ResolveType>(WrapPersistent(
+        DOMUint8Array::Create(array_buffer, 0, array_buffer->ByteLength())));
+  }
+};
+
 class BodyFormDataConsumer final : public BodyConsumerBase {
  public:
   using BodyConsumerBase::BodyConsumerBase;
@@ -249,6 +260,20 @@ ScriptPromise<Blob> Body::blob(ScriptState* script_state,
 
   return LoadAndConvertBody<BodyBlobConsumer>(script_state, create_loader,
                                               on_no_body, exception_state);
+}
+
+ScriptPromise<NotShared<DOMUint8Array>> Body::bytes(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  auto on_no_body =
+      [](ScriptPromiseResolver<NotShared<DOMUint8Array>>* resolver) {
+        resolver->Resolve(
+            NotShared<DOMUint8Array>(DOMUint8Array::Create(size_t{0})));
+      };
+
+  return LoadAndConvertBody<BodyUint8ArrayConsumer>(
+      script_state, &FetchDataLoader::CreateLoaderAsArrayBuffer, on_no_body,
+      exception_state);
 }
 
 ScriptPromise<FormData> Body::formData(ScriptState* script_state,
