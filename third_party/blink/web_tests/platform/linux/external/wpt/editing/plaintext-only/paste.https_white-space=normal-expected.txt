@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] Pasting text in <b>: beforeinput
+  assert_equals: data should be null expected (object) null but got (string) "abc"
+[FAIL] Pasting text in <span>: beforeinput
+  assert_equals: data should be null expected (object) null but got (string) "abc"
+[FAIL] Pasting text into editable <b>: beforeinput
+  assert_equals: data should be null expected (object) null but got (string) "abc"
+[FAIL] Pasting text into editable <b>: pasted result
+  assert_equals: text should be inserted into the editable <b> expected "<b>AabcB</b>" but got "<b>A</b>abc<b>B</b>"
+[FAIL] Pasting text in <i> into editable <b>: beforeinput
+  assert_equals: data should be null expected (object) null but got (string) "abc"
+[FAIL] Pasting text in <i> into editable <b>: pasted result
+  assert_equals: text should be inserted into the editable <b> without copied <i> expected "<b>AabcB</b>" but got "<b>A</b>abc<b>B</b>"
+[FAIL] Pasting 2 paragraphs: beforeinput
+  assert_equals: data should be null expected (object) null but got (string) "abc\\ndef"
+[FAIL] Pasting 2 paragraphs: pasted result
+  assert_in_array: Each paragraph should be pasted as a line value "Aabc\\ndefB" not in array ["Aabc<br>defB", "A<br>abc<br>def<br>B"]
+[FAIL] Pasting 2 paragraphs into <b>: beforeinput
+  assert_equals: data should be null expected (object) null but got (string) "abc\\ndef"
+[FAIL] Pasting 2 paragraphs into <b>: pasted result
+  assert_in_array: Each paragraph should be pasted as a line value "<b>A</b>abc\\ndef<b>B</b>" not in array ["<b>Aabc<br>defB</b>", "<b>A<br>abc<br>def<br>B</b>"]
+[FAIL] Pasting 2 paragraphs whose text is bold: beforeinput
+  assert_equals: data should be null expected (object) null but got (string) "abc\\ndef"
+[FAIL] Pasting 2 paragraphs whose text is bold: pasted result
+  assert_in_array: Each paragraph should be pasted as a line value "Aabc\\ndefB" not in array ["Aabc<br>defB", "A<br>abc<br>def<br>B"]
+Harness: the test ran to completion.
+
