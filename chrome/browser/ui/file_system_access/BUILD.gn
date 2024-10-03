@@ -27,7 +27,10 @@ source_set("impl") {
     "file_system_access_restricted_directory_dialog.cc",
     "file_system_access_ui_helpers.cc",
   ]
-  deps = [ ":file_system_access" ]
+  deps = [
+    ":file_system_access",
+    "//chrome/browser/ui:url_identity",
+  ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 

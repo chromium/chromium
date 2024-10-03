@@ -166,8 +166,6 @@ static_library("ui") {
     "translate/translate_bubble_model_impl.h",
     "translate/translate_language_list_model.h",
     "uninstall_browser_prompt.h",
-    "url_identity.cc",
-    "url_identity.h",
     "view_ids.h",
     "webauthn/authenticator_request_dialog.h",
     "webid/account_selection_view.h",
@@ -334,6 +332,7 @@ static_library("ui") {
   deps = [
     ":browser_element_identifiers",
     ":ui_features",
+    ":url_identity",
     "//base",
     "//base:i18n",
     "//base/allocator:buildflags",
@@ -5860,6 +5859,28 @@ static_library("ui_public_dependencies") {
   if (chrome_root_store_cert_management_ui) {
     public_deps +=
         [ "//ui/webui/resources/cr_components/certificate_manager:mojom" ]
+  }
+}
+
+source_set("url_identity") {
+  sources = [
+    "url_identity.cc",
+    "url_identity.h",
+  ]
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//components/url_formatter",
+    "//components/webapps/common",
+    "//extensions/buildflags",
+    "//url",
+  ]
+  if (enable_extensions) {
+    deps += [
+      "//chrome/browser/web_applications",
+      "//extensions/common",
+      "//extensions/common:common_constants",
+    ]
   }
 }
 

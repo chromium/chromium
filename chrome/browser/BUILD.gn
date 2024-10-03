@@ -1953,6 +1953,10 @@ static_library("browser") {
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:ui_features",
+
+    # TODO(crbug.com/370804668): Remove this dendendecy when //c/b/chooser_controller/
+    # gets modularized.
+    "//chrome/browser/ui:url_identity",
     "//chrome/browser/ui/actions:actions",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/autofill",

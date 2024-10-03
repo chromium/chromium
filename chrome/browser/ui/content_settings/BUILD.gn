@@ -53,6 +53,7 @@ source_set("impl") {
     "//chrome/browser/permissions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui:url_identity",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications",
     "//chrome/common:non_code_constants",

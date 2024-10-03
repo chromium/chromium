@@ -177,6 +177,7 @@ source_set("impl") {
     "//chrome/browser/favicon",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/task_manager",
+    "//chrome/browser/ui:url_identity",
     "//chrome/common",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
