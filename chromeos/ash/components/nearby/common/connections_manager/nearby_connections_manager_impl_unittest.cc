@@ -242,7 +242,7 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
           EXPECT_TRUE(options->allowed_mediums->bluetooth);
           EXPECT_TRUE(options->allowed_mediums->ble);
           EXPECT_EQ(should_use_web_rtc_, options->allowed_mediums->web_rtc);
-          EXPECT_FALSE(options->allowed_mediums->wifi_lan);
+          EXPECT_EQ(should_use_wifilan_, options->allowed_mediums->wifi_lan);
           EXPECT_EQ(should_use_wifidirect_,
                     options->allowed_mediums->wifi_direct);
           EXPECT_EQ(

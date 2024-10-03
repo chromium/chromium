@@ -1597,12 +1597,17 @@ struct ValidSendSurfaceTestDataInternal {
 } kValidSendSurfaceTestData[] = {
     // No network connection, only bluetooth available
     {true, net::NetworkChangeNotifier::CONNECTION_NONE},
-    // Wifi available
+    // Bluetooth & Wifi available
     {true, net::NetworkChangeNotifier::CONNECTION_WIFI},
-    // Ethernet available
+    // Bluetooth & Ethernet available
     {true, net::NetworkChangeNotifier::CONNECTION_ETHERNET},
-    // 3G available
-    {true, net::NetworkChangeNotifier::CONNECTION_3G}};
+    // Bluetooth & 3G available
+    {true, net::NetworkChangeNotifier::CONNECTION_3G},
+    // No Bluetooth, Wifi available
+    {false, net::NetworkChangeNotifier::CONNECTION_WIFI},
+    // No Bluetooth, Ethernet available
+    {false, net::NetworkChangeNotifier::CONNECTION_ETHERNET},
+};
 
 // size_t parameter is |feature_mask|.
 using ValidSendSurfaceTestData =
@@ -1629,12 +1634,7 @@ struct InvalidSendSurfaceTestDataInternal {
      net::NetworkChangeNotifier::CONNECTION_NONE},
     // 3G available and no bluetooth
     {/*screen_locked=*/false, false, net::NetworkChangeNotifier::CONNECTION_3G},
-    // Wifi available and no bluetooth (invalid until WiFi LAN is supported)
-    {/*screen_locked=*/false, false,
-     net::NetworkChangeNotifier::CONNECTION_WIFI},
-    // Ethernet available and no bluetooth (invalid until WiFi LAN is supported)
-    {/*screen_locked=*/false, false,
-     net::NetworkChangeNotifier::CONNECTION_ETHERNET}};
+};
 
 // size_t parameter is |feature_mask|.
 using InvalidSendSurfaceTestData =
@@ -1773,9 +1773,12 @@ TEST_P(NearbySharingServiceImplTest,
   MockTransferUpdateCallback transfer_callback;
   MockShareTargetDiscoveredCallback discovery_callback;
   EXPECT_EQ(
-      NearbySharingService::StatusCodes::kNoAvailableConnectionMedium,
+      NearbySharingService::StatusCodes::kOk,
       service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
                                     SendSurfaceState::kForeground));
+  // We can register a send surface via mDNS, but not send fast initiation
+  // advertisements over BLE.
+  EXPECT_EQ(0u, fast_initiation_advertiser_factory_->StartAdvertisingCount());
 }
 
 TEST_P(NearbySharingServiceImplTest,
@@ -1785,9 +1788,12 @@ TEST_P(NearbySharingServiceImplTest,
   MockTransferUpdateCallback transfer_callback;
   MockShareTargetDiscoveredCallback discovery_callback;
   EXPECT_EQ(
-      NearbySharingService::StatusCodes::kNoAvailableConnectionMedium,
+      NearbySharingService::StatusCodes::kOk,
       service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
                                     SendSurfaceState::kForeground));
+  // We can register a send surface via mDNS, but not send fast initiation
+  // advertisements over BLE.
+  EXPECT_EQ(0u, fast_initiation_advertiser_factory_->StartAdvertisingCount());
 }
 
 TEST_P(NearbySharingServiceImplTest, StopFastInitiationAdvertising) {
@@ -2123,13 +2129,19 @@ TEST_P(NearbySharingServiceImplInvalidSendTest,
        RegisterSendSurfaceNotDiscovering) {
   session_controller_->SetScreenLocked(std::get<0>(GetParam()).screen_locked);
   is_bluetooth_present_ = std::get<0>(GetParam()).bluetooth_enabled;
-  SetConnectionType(std::get<0>(GetParam()).connection_type);
+  net::NetworkChangeNotifier::ConnectionType connection_type =
+      std::get<0>(GetParam()).connection_type;
+  SetConnectionType(connection_type);
   MockTransferUpdateCallback transfer_callback;
   MockShareTargetDiscoveredCallback discovery_callback;
   EXPECT_FALSE(fake_nearby_connections_manager_->IsDiscovering());
 
+  // Either Bluetooth or a Wifi/Ethernet network must be available to
+  // register a send surface.
   NearbySharingService::StatusCodes expected_status =
-      is_bluetooth_present_
+      (is_bluetooth_present_ ||
+       connection_type == net::NetworkChangeNotifier::CONNECTION_ETHERNET ||
+       connection_type == net::NetworkChangeNotifier::CONNECTION_WIFI)
           ? NearbySharingService::StatusCodes::kOk
           : NearbySharingService::StatusCodes::kNoAvailableConnectionMedium;
 

@@ -43,7 +43,7 @@ BASE_FEATURE(kEnableNearbyBluetoothClassicScanning,
 // Enables use of mDNS discovery in Nearby Connections for Nearby Share.
 BASE_FEATURE(kEnableNearbyMdns,
              "EnableNearbyMdns",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables use of WebRTC in Nearby Connections for Nearby Share.
 BASE_FEATURE(kNearbySharingWebRtc,
