@@ -37,6 +37,7 @@
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service.h"
+#include "chrome/browser/ash/crostini/ansible/ansible_management_service_factory.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_manager_factory.h"
 #include "chrome/browser/ash/crostini/crostini_metrics_service.h"
@@ -579,10 +580,11 @@ void CrostiniManager::CrostiniRestarter::StartLxdContainerFinished(
     // Check to see if there's any additional configuration via Ansible
     // required.
     StartStage(mojom::InstallerState::kConfigureContainer);
-    AnsibleManagementService::GetForProfile(profile_)->ConfigureContainer(
-        container_id_, requests_[0].options.ansible_playbook.value(),
-        base::BindOnce(&CrostiniRestarter::OnConfigureContainerFinished,
-                       weak_ptr_factory_.GetWeakPtr()));
+    AnsibleManagementServiceFactory::GetForProfile(profile_)
+        ->ConfigureContainer(
+            container_id_, requests_[0].options.ansible_playbook.value(),
+            base::BindOnce(&CrostiniRestarter::OnConfigureContainerFinished,
+                           weak_ptr_factory_.GetWeakPtr()));
     return;
   }
   // If default termina/penguin, then sshfs mount and reshare folders, else we
@@ -3071,7 +3073,7 @@ void CrostiniManager::OnApplyAnsiblePlaybookProgress(
   }
 
   // TODO(okalitova): Add an observer.
-  AnsibleManagementService::GetForProfile(profile_)
+  AnsibleManagementServiceFactory::GetForProfile(profile_)
       ->OnApplyAnsiblePlaybookProgress(signal);
 }
 

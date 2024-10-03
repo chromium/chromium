@@ -65,8 +65,6 @@ class AnsibleManagementService : public KeyedService,
         bool interactive) {}
   };
 
-  static AnsibleManagementService* GetForProfile(Profile* profile);
-
   explicit AnsibleManagementService(Profile* profile);
 
   AnsibleManagementService(const AnsibleManagementService&) = delete;

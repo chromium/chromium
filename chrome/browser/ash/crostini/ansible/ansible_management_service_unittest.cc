@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/crostini/ansible/ansible_management_service_factory.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_test_util.h"
@@ -37,7 +38,7 @@ class AnsibleManagementServiceTest : public testing::Test,
     profile_ = std::make_unique<TestingProfile>();
     crostini_manager_ = CrostiniManager::GetForProfile(profile_.get());
     ansible_management_service_ =
-        AnsibleManagementService::GetForProfile(profile_.get());
+        AnsibleManagementServiceFactory::GetForProfile(profile_.get());
     test_helper_ =
         std::make_unique<AnsibleManagementTestHelper>(profile_.get());
     test_helper_->SetUpAnsibleInfra();

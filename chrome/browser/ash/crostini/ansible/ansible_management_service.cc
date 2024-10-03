@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ash/crostini/ansible/ansible_management_service_factory.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -43,11 +42,6 @@ AnsibleConfiguration::AnsibleConfiguration(
     : AnsibleConfiguration("", path, std::move(callback)) {}
 
 AnsibleConfiguration::~AnsibleConfiguration() {}
-
-AnsibleManagementService* AnsibleManagementService::GetForProfile(
-    Profile* profile) {
-  return AnsibleManagementServiceFactory::GetForProfile(profile);
-}
 
 AnsibleManagementService::AnsibleManagementService(Profile* profile)
     : profile_(profile), weak_ptr_factory_(this) {}

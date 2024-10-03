@@ -7,6 +7,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/crostini/ansible/ansible_management_service.h"
+#include "chrome/browser/ash/crostini/ansible/ansible_management_service_factory.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -28,14 +30,14 @@ bool CrostiniAnsibleSoftwareConfigView::Accept() {
     state_ = State::CONFIGURING;
     OnStateChanged();
 
-    crostini::AnsibleManagementService::GetForProfile(profile_)
+    crostini::AnsibleManagementServiceFactory::GetForProfile(profile_)
         ->RetryConfiguration(container_id_);
     return false;
   }
   DCHECK_EQ(state_, State::ERROR);
-  crostini::AnsibleManagementService::GetForProfile(profile_)->RemoveObserver(
-      this);
-  crostini::AnsibleManagementService::GetForProfile(profile_)
+  crostini::AnsibleManagementServiceFactory::GetForProfile(profile_)
+      ->RemoveObserver(this);
+  crostini::AnsibleManagementServiceFactory::GetForProfile(profile_)
       ->CompleteConfiguration(container_id_, false);
   return true;
 }
@@ -43,13 +45,13 @@ bool CrostiniAnsibleSoftwareConfigView::Accept() {
 bool CrostiniAnsibleSoftwareConfigView::Cancel() {
   if (state_ == State::CONFIGURING) {
     // Cancel anything running/waiting on this specific configuration task.
-    crostini::AnsibleManagementService::GetForProfile(profile_)
+    crostini::AnsibleManagementServiceFactory::GetForProfile(profile_)
         ->CancelConfiguration(container_id_);
   }
   // Always close.
-  crostini::AnsibleManagementService::GetForProfile(profile_)->RemoveObserver(
-      this);
-  crostini::AnsibleManagementService::GetForProfile(profile_)
+  crostini::AnsibleManagementServiceFactory::GetForProfile(profile_)
+      ->RemoveObserver(this);
+  crostini::AnsibleManagementServiceFactory::GetForProfile(profile_)
       ->CompleteConfiguration(container_id_, false);
   return true;
 }
@@ -118,7 +120,8 @@ CrostiniAnsibleSoftwareConfigView::CrostiniAnsibleSoftwareConfigView(
       crostini::prefs::kCrostiniAnsiblePlaybookFilePath);
 
   container_name_ = base::UTF8ToUTF16(container_id.container_name);
-  crostini::AnsibleManagementService::GetForProfile(profile)->AddObserver(this);
+  crostini::AnsibleManagementServiceFactory::GetForProfile(profile)
+      ->AddObserver(this);
   OnStateChanged();
 }
 
@@ -175,9 +178,9 @@ void CrostiniAnsibleSoftwareConfigView::OnAnsibleSoftwareConfigurationFinished(
     OnStateChanged();
     return;
   }
-  crostini::AnsibleManagementService::GetForProfile(profile_)->RemoveObserver(
-      this);
-  crostini::AnsibleManagementService::GetForProfile(profile_)
+  crostini::AnsibleManagementServiceFactory::GetForProfile(profile_)
+      ->RemoveObserver(this);
+  crostini::AnsibleManagementServiceFactory::GetForProfile(profile_)
       ->CompleteConfiguration(container_id_, true);
 }
 
