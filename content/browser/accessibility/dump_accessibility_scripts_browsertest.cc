@@ -589,6 +589,25 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, SetAccessibilityFocused) {
   RunTypedTest<kMacMethods>("set-accessibility-focused.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, IsAccessibilityDisclosed) {
+  Migration_RunTypedTest<kMacMethods>("is-accessibility-disclosed.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilityDisclosedByRow) {
+  Migration_RunTypedTest<kMacMethods>("accessibility-disclosed-by-row.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilityDisclosedRows) {
+  Migration_RunTypedTest<kMacMethods>("accessibility-disclosed-rows.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilityDisclosureLevel) {
+  Migration_RunTypedTest<kMacMethods>("accessibility-disclosure-level.html");
+}
+
 // Parameterized attributes
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,

@@ -5497,6 +5497,12 @@ data/accessibility/mac/methods/accessibility-column-header-ui-elements.html
 data/accessibility/mac/methods/accessibility-custom-content-expected-mac-before-11.txt
 data/accessibility/mac/methods/accessibility-custom-content-expected.txt
 data/accessibility/mac/methods/accessibility-custom-content.html
+data/accessibility/mac/methods/accessibility-disclosed-by-row-expected.txt
+data/accessibility/mac/methods/accessibility-disclosed-by-row.html
+data/accessibility/mac/methods/accessibility-disclosed-rows-expected.txt
+data/accessibility/mac/methods/accessibility-disclosed-rows.html
+data/accessibility/mac/methods/accessibility-disclosure-level-expected.txt
+data/accessibility/mac/methods/accessibility-disclosure-level.html
 data/accessibility/mac/methods/accessibility-is-ignored-expected.txt
 data/accessibility/mac/methods/accessibility-is-ignored.html
 data/accessibility/mac/methods/accessibility-label-expected.txt
@@ -5517,6 +5523,8 @@ data/accessibility/mac/methods/accessibility-title-ui-element.html
 data/accessibility/mac/methods/accessibility-title.html
 data/accessibility/mac/methods/accessibility-url-expected.txt
 data/accessibility/mac/methods/accessibility-url.html
+data/accessibility/mac/methods/is-accessibility-disclosed-expected.txt
+data/accessibility/mac/methods/is-accessibility-disclosed.html
 data/accessibility/mac/methods/is-accessibility-element-expected.txt
 data/accessibility/mac/methods/is-accessibility-element.html
 data/accessibility/mac/methods/is-accessibility-focused-expected.txt

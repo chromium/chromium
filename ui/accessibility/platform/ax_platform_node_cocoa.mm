@@ -258,8 +258,12 @@ void CollectAncestorRoles(
   static NSSet<NSString*>* set = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    set =
-        [NSSet<NSString*> setWithObjects:NSAccessibilityFocusedAttribute, nil];
+    set = [NSSet<NSString*>
+        setWithObjects:NSAccessibilityDisclosedByRowAttribute,
+                       NSAccessibilityDisclosedRowsAttribute,
+                       NSAccessibilityDisclosingAttribute,
+                       NSAccessibilityDisclosureLevelAttribute,
+                       NSAccessibilityFocusedAttribute, nil];
   });
   return set;
 }
@@ -268,7 +272,11 @@ void CollectAncestorRoles(
   static NSSet<NSString*>* set = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    set = [NSSet<NSString*> setWithObjects:@"isAccessibilityFocused", nil];
+    set = [NSSet<NSString*> setWithObjects:@"accessibilityDisclosedByRow",
+                                           @"accessibilityDisclosedRows",
+                                           @"accessibilityDisclosureLevel",
+                                           @"isAccessibilityDisclosed",
+                                           @"isAccessibilityFocused", nil];
   });
   return set;
 }
