@@ -518,8 +518,8 @@ void FlexLine::ComputeLineItemsPosition() {
 
   const LayoutUnit auto_margin_offset = ApplyMainAxisAutoMarginAdjustment();
 
-  LayoutUnit max_major_descent;
-  LayoutUnit max_minor_descent;
+  LayoutUnit max_major_descent = LayoutUnit::Min();
+  LayoutUnit max_minor_descent = LayoutUnit::Min();
 
   LayoutUnit max_child_cross_axis_extent;
   for (wtf_size_t i = 0; i < line_items_.size(); ++i) {
