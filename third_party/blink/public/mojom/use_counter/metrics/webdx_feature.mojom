@@ -183,6 +183,7 @@ enum WebDXFeature {
   kEditContext = 125,
   kPaintOrder = 126,
   kShowPickerSelect = 127,
+  kInert = 128,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

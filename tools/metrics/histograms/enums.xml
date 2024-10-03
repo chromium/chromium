@@ -7655,7 +7655,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1994"
       label="CredentialManagerCredentialRequestOptionsOnlyUnmediated
              (obsolete as of M64)"/>
-  <int value="1995" label="OBSOLETE_InertAttribute"/>
+  <int value="1995" label="InertAttribute"/>
   <int value="1996" label="PluginInstanceAccessFromIsolatedWorld"/>
   <int value="1997" label="PluginInstanceAccessFromMainWorld"/>
   <int value="1998" label="RequestFullscreenForDialogElement"/>
@@ -34066,6 +34066,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="125" label="EditContext"/>
   <int value="126" label="PaintOrder"/>
   <int value="127" label="ShowPickerSelect"/>
+  <int value="128" label="Inert"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

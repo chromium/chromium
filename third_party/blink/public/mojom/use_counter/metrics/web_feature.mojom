@@ -1437,7 +1437,7 @@ enum WebFeature {
   kOBSOLETE_ShapeDetection_BarcodeDetectorConstructor = 1991,
   kOBSOLETE_ShapeDetection_FaceDetectorConstructor = 1992,
   kOBSOLETE_ShapeDetection_TextDetectorConstructor = 1993,
-  kOBSOLETE_InertAttribute = 1995,
+  kInertAttribute = 1995,
   kPluginInstanceAccessFromIsolatedWorld = 1996,
   kPluginInstanceAccessFromMainWorld = 1997,
   kShowModalForElementInFullscreenStack = 2000,
