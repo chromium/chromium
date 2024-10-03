@@ -1286,7 +1286,8 @@ void ContentSecurityPolicy::PostViolationReport(
   csp_report->SetString("effective-directive",
                         violation_data->effectiveDirective());
   csp_report->SetString("original-policy", violation_data->originalPolicy());
-  csp_report->SetString("disposition", violation_data->disposition());
+  csp_report->SetString("disposition",
+                        violation_data->disposition().AsString());
   csp_report->SetString("blocked-uri", violation_data->blockedURI());
   if (violation_data->lineNumber())
     csp_report->SetInteger("line-number", violation_data->lineNumber());
