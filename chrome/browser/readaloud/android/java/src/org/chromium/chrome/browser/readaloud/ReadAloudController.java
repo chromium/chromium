@@ -41,6 +41,8 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.device.DeviceConditions;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -129,6 +131,11 @@ public class ReadAloudController
     private TabModelTabObserver mIncognitoTabObserver;
 
     private boolean mPausedForIncognito;
+
+    /** The fullscreen state of the browser. */
+    private final FullscreenManager mFullscreenManager;
+
+    private final FullscreenManager.Observer mFullscreenObserver;
 
     private final BottomSheetController mBottomSheetController;
     private final BottomControlsStacker mBottomControlsStacker;
@@ -489,7 +496,8 @@ public class ReadAloudController
             ObservableSupplier<LayoutManager> layoutManagerSupplier,
             ActivityWindowAndroid activityWindowAndroid,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier) {
+            OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
+            FullscreenManager fullscreenManager) {
         sInstances.add(this);
         mCallbackController = new CallbackController();
         ReadAloudFeatures.init();
@@ -523,6 +531,21 @@ public class ReadAloudController
         mLayoutStateProviderSupplier = layoutStateProviderSupplier;
         mLayoutStateProviderSupplier.onAvailable(
                 mCallbackController.makeCancelable(this::addLayoutStateObserver));
+        mFullscreenManager = fullscreenManager;
+        mFullscreenObserver =
+                new FullscreenManager.Observer() {
+                    @Override
+                    public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
+                        maybeHidePlayer();
+                    }
+
+                    @Override
+                    public void onExitFullscreen(Tab tab) {
+                        maybeShowPlayer();
+                    }
+                };
+
+        mFullscreenManager.addObserver(mFullscreenObserver);
     }
 
     private void addLayoutStateObserver(LayoutStateProvider layoutStateProvider) {

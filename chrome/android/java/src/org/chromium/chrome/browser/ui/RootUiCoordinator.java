@@ -926,7 +926,8 @@ public class RootUiCoordinator
                             mLayoutManagerSupplier,
                             mWindowAndroid,
                             mActivityLifecycleDispatcher,
-                            mLayoutStateProviderOneShotSupplier);
+                            mLayoutStateProviderOneShotSupplier,
+                            mFullscreenManager);
             mReadAloudControllerSupplier.set(controller);
             mReadAloudContextualSearchObserver =
                     new ContextualSearchObserver() {

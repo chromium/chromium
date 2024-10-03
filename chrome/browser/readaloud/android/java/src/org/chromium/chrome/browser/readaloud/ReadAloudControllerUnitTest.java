@@ -64,6 +64,8 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.device.ShadowDeviceConditions;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -171,6 +173,7 @@ public class ReadAloudControllerUnitTest {
     @Captor ArgumentCaptor<PlaybackArgs> mPlaybackArgsCaptor;
     @Captor ArgumentCaptor<PlaybackListener> mPlaybackListenerCaptor;
     @Captor ArgumentCaptor<LayoutStateObserver> mLayoutStateObserver;
+    @Captor ArgumentCaptor<FullscreenManager.Observer> mFullscreenObserver;
 
     @Mock private Playback mPlayback;
     @Mock private Playback.Metadata mMetadata;
@@ -181,6 +184,7 @@ public class ReadAloudControllerUnitTest {
     @Mock private SelectionPopupController mSelectionPopupController;
     @Mock private NativePage mNativePage;
     @Mock private LayoutStateProvider mLayoutStateProvider;
+    @Mock private FullscreenManager mFullscreenManager;
     private GlobalRenderFrameHostId mGlobalRenderFrameHostId = new GlobalRenderFrameHostId(1, 1);
     public UserActionTester mUserActionTester;
     private HistogramWatcher mHighlightingEnabledOnStartupHistogram;
@@ -289,6 +293,7 @@ public class ReadAloudControllerUnitTest {
 
         mController = createController();
         verify(mLayoutStateProvider).addObserver(mLayoutStateObserver.capture());
+        verify(mFullscreenManager).addObserver(mFullscreenObserver.capture());
         when(mMetadata.languageCode()).thenReturn("en");
         when(mPlayback.getMetadata()).thenReturn(mMetadata);
         when(mWebContents.getMainFrame()).thenReturn(mRenderFrameHost);
@@ -329,7 +334,8 @@ public class ReadAloudControllerUnitTest {
                         mLayoutManagerSupplier,
                         mActivityWindowAndroid,
                         mActivityLifecycleDispatcher,
-                        mLayoutStateProviderSupplier);
+                        mLayoutStateProviderSupplier,
+                        mFullscreenManager);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         return controller;
     }
@@ -373,6 +379,16 @@ public class ReadAloudControllerUnitTest {
 
         mLayoutStateObserver.getValue().onFinishedHiding(LayoutType.START_SURFACE);
         verify(mPlayerCoordinator, never()).restorePlayers();
+    }
+
+    @Test
+    public void testHidePlayer_FullScreen() {
+        requestAndStartPlayback();
+        mFullscreenObserver.getValue().onEnterFullscreen(mTab, new FullscreenOptions(true, true));
+        verify(mPlayerCoordinator).hidePlayers();
+
+        mFullscreenObserver.getValue().onExitFullscreen(mTab);
+        verify(mPlayerCoordinator).restorePlayers();
     }
 
     @Test
