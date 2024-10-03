@@ -429,7 +429,7 @@ void JsSandboxIsolate::SetConsoleEnabled(
 
 // Called from control sequence.
 void JsSandboxIsolate::PostEvaluationToIsolateThread(
-    const std::string code,
+    std::string code,
     scoped_refptr<JsSandboxIsolateCallback> callback) {
   cancelable_task_tracker_->PostTask(
       isolate_task_runner_.get(), FROM_HERE,
@@ -692,7 +692,7 @@ void JsSandboxIsolate::InitializeIsolateOnThread() {
 
 // Called from isolate thread.
 void JsSandboxIsolate::EvaluateJavascriptOnThread(
-    const std::string code,
+    std::string code,
     scoped_refptr<JsSandboxIsolateCallback> callback) {
   ongoing_evaluation_callbacks_.emplace(callback);
 

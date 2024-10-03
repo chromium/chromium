@@ -83,7 +83,7 @@ class JsSandboxIsolate {
   // Will enabled or disable inspection depending on whether any dynamic
   // features require it (for example, console logging).
   void EvaluateJavascriptOnThread(
-      const std::string code,
+      std::string code,
       scoped_refptr<JsSandboxIsolateCallback> callback);
   void PromiseFulfillCallback(scoped_refptr<JsSandboxIsolateCallback> callback,
                               gin::Arguments* args);
@@ -95,7 +95,7 @@ class JsSandboxIsolate {
   void NotifyInitComplete();
   void CreateCancelableTaskTracker();
   void PostEvaluationToIsolateThread(
-      const std::string code,
+      std::string code,
       scoped_refptr<JsSandboxIsolateCallback> callback);
   void PostFileDescriptorReadToIsolateThread(
       int fd,

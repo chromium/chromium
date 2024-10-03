@@ -161,7 +161,7 @@ class LastRequestResultCache {
 
 class AwPermissionManager::PendingRequest {
  public:
-  PendingRequest(const std::vector<PermissionType> permissions,
+  PendingRequest(const std::vector<PermissionType>& permissions,
                  GURL requesting_origin,
                  GURL embedding_origin,
                  int render_process_id,
