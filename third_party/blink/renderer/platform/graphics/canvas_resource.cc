@@ -722,18 +722,15 @@ void CanvasResourceSharedImage::CopyRenderingResultsToGpuMemoryBuffer(
   }
   auto* sii =
       ContextProviderWrapper()->ContextProvider()->SharedImageInterface();
-  std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping;
-  void* memory = nullptr;
-  size_t stride = 0;
-  mapping = GetClientSharedImage()->Map();
+  std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping =
+      GetClientSharedImage()->Map();
   if (!mapping) {
     LOG(ERROR) << "MapSharedImage failed.";
     return;
   }
-  memory = mapping->Memory(0);
-  stride = mapping->Stride(0);
 
-  auto surface = SkSurfaces::WrapPixels(CreateSkImageInfo(), memory, stride);
+  auto surface = SkSurfaces::WrapPixels(CreateSkImageInfo(), mapping->Memory(0),
+                                        mapping->Stride(0));
   SkPixmap pixmap;
   image->peekPixels(&pixmap);
   surface->writePixels(pixmap, 0, 0);
