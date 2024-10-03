@@ -64,6 +64,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
@@ -242,6 +244,10 @@ public class CustomTabActivity extends BaseCustomTabActivity {
                                     mConnection.getClientPackageNameForSession(mSession));
                 });
         super.finishNativeInitialization();
+        if (SigninFeatureMap.isEnabled(SigninFeatures.CCT_SIGN_IN_PROMPT)) {
+            mConnection.maybeShowAccountMismatchNotification(
+                    mSession, getIntent(), getWindowAndroid(), getProfileProviderSupplier());
+        }
     }
 
     @Override
