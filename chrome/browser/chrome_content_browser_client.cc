@@ -7096,6 +7096,7 @@ ChromeContentBrowserClient::CreateLoginDelegate(
     content::BrowserContext* browser_context,
     const content::GlobalRequestID& request_id,
     bool is_request_for_primary_main_frame,
+    bool is_request_for_navigation,
     const GURL& url,
     scoped_refptr<net::HttpResponseHeaders> response_headers,
     bool first_auth_attempt,
@@ -7145,8 +7146,8 @@ ChromeContentBrowserClient::CreateLoginDelegate(
   // ash-chrome.
   return http_auth_coordinator_->CreateLoginDelegate(
       web_contents, browser_context, auth_info, request_id,
-      is_request_for_primary_main_frame, url, response_headers,
-      std::move(auth_required_callback));
+      is_request_for_primary_main_frame, is_request_for_navigation, url,
+      response_headers, std::move(auth_required_callback));
 }
 
 bool ChromeContentBrowserClient::HandleExternalProtocol(

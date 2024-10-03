@@ -168,7 +168,8 @@ class WorkerTest : public ContentBrowserTest,
   }
 
   static void QuitUIMessageLoop(base::OnceClosure callback,
-                                bool is_primary_main_frame /* unused */) {
+                                bool is_primary_main_frame /* unused */,
+                                bool is_navigation /* unused */) {
     GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(callback));
   }
 

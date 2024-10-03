@@ -123,6 +123,7 @@ class ShellContentBrowserClient : public ContentBrowserClient {
       content::BrowserContext* browser_context,
       const content::GlobalRequestID& request_id,
       bool is_main_frame,
+      bool is_navigation,
       const GURL& url,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
       bool first_auth_attempt,
@@ -191,7 +192,7 @@ class ShellContentBrowserClient : public ContentBrowserClient {
         std::move(select_client_certificate_callback);
   }
   void set_login_request_callback(
-      base::OnceCallback<void(bool is_primary_main_frame)>
+      base::OnceCallback<void(bool is_primary_main_frame, bool is_navigation)>
           login_request_callback) {
     login_request_callback_ = std::move(login_request_callback);
   }
@@ -244,7 +245,8 @@ class ShellContentBrowserClient : public ContentBrowserClient {
   static bool allow_any_cors_exempt_header_for_browser_;
 
   SelectClientCertificateCallback select_client_certificate_callback_;
-  base::OnceCallback<void(bool is_main_frame)> login_request_callback_;
+  base::OnceCallback<void(bool is_main_frame, bool is_navigation)>
+      login_request_callback_;
   base::RepeatingCallback<void(const network::mojom::URLLoaderFactoryParams*,
                                const url::Origin&,
                                bool is_for_isolated_world)>

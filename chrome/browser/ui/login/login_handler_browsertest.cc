@@ -1396,7 +1396,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Load a page which makes a synchronous XMLHttpRequest for an authenticated
-  // resource with the wrong credentials.  There should be no login prompt.
+  // resource with the correct credentials.  There should be no login prompt.
   {
     GURL test_page = embedded_test_server()->GetURL(kXHRTestPage);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page));
@@ -1422,7 +1422,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Load a page which makes a synchronous XMLHttpRequest for an authenticated
-  // resource with the wrong credentials.  There should be no login prompt.
+  // resource without credentials.  There should be a login prompt.
   {
     GURL test_page = embedded_test_server()->GetURL(kXHRTestPage);
     auto auth_needed_waiter = CreateAuthNeededObserver();
@@ -1482,9 +1482,60 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Load a page which makes a synchronous XMLHttpRequest for an authenticated
-  // resource with the wrong credentials.  There should be no login prompt.
+  // resource without credentials.  There should be a login prompt.
   {
     GURL test_page = embedded_test_server()->GetURL(kXHRTestPage);
+    auto auth_needed_waiter = CreateAuthNeededObserver();
+    browser()->OpenURL(
+        OpenURLParams(test_page, Referrer(), WindowOpenDisposition::CURRENT_TAB,
+                      ui::PAGE_TRANSITION_TYPED, false),
+        /*navigation_handle_callback=*/{});
+    auth_needed_waiter.Wait();
+  }
+
+  ASSERT_EQ(1u, LoginHandler::GetAllLoginHandlersForTest().size());
+  auto auth_cancelled_waiter = CreateAuthCancelledObserver();
+  LoginHandler* handler = LoginHandler::GetAllLoginHandlersForTest().front();
+
+  handler->CancelAuth(/*notify_others=*/true);
+  auth_cancelled_waiter.Wait();
+
+  content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  std::u16string expected_title(u"status=401");
+
+  EXPECT_EQ(expected_title, contents->GetTitle());
+  EXPECT_EQ(0, browser_client_->auth_supplied_count);
+  EXPECT_EQ(1, browser_client_->auth_needed_count);
+  EXPECT_EQ(1, browser_client_->auth_cancelled_count);
+}
+
+// Test the same scenario as LoginPromptForXHRWithoutCredentialsCancelled, but
+// with the page under a service worker's control.
+IN_PROC_BROWSER_TEST_P(
+    LoginPromptBrowserTest,
+    LoginPromptForXHRWithoutCredentialsCancelledWithServiceWorker) {
+  static constexpr char kXHRTestPage[] = "/login/xhr_without_credentials.html";
+
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Install a Service Worker that does nothing.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_https_test_server().GetURL(
+                     "/service_worker/create_service_worker.html")));
+  EXPECT_EQ("DONE", content::EvalJs(contents,
+                                    "register('/service_worker/"
+                                    "empty.js', '/')"));
+
+  // Load a page which is under service worker's control and makes a synchronous
+  // XMLHttpRequest for an authenticated resource without credentials. There
+  // should be a login prompt.
+  {
+    GURL test_page = embedded_https_test_server().GetURL(kXHRTestPage);
     auto auth_needed_waiter = CreateAuthNeededObserver();
     browser()->OpenURL(
         OpenURLParams(test_page, Referrer(), WindowOpenDisposition::CURRENT_TAB,

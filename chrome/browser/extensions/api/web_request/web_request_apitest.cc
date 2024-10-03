@@ -986,6 +986,151 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(ARTestParams(ProfileMode::kIncognito,
                                    ContextType::kServiceWorkerMV2)));
 
+struct AuthRequiredServiceWorkerTestParams {
+  bool under_service_worker_control;
+  ContextType context_type;
+};
+
+// OnAuthRequired tests for subresource and sub frame, under service worker
+// control and not under service worker control.
+class ExtensionWebRequestApiAuthRequiredTestVariousContext
+    : public testing::WithParamInterface<AuthRequiredServiceWorkerTestParams>,
+      public ExtensionApiTest {
+ public:
+  ExtensionWebRequestApiAuthRequiredTestVariousContext()
+      : ExtensionApiTest(GetParam().context_type) {}
+  ~ExtensionWebRequestApiAuthRequiredTestVariousContext() override = default;
+  ExtensionWebRequestApiAuthRequiredTestVariousContext(
+      const ExtensionWebRequestApiAuthRequiredTestVariousContext&) = delete;
+  ExtensionWebRequestApiAuthRequiredTestVariousContext& operator=(
+      const ExtensionWebRequestApiAuthRequiredTestVariousContext&) = delete;
+
+  void InstallRequestOnAuthRequiredTypeReportingExtension() {
+    TestExtensionDir test_dir;
+    test_dir.WriteManifest(R"({
+        "name": "Web Request onAuthRequired Type Reporting Extension",
+        "manifest_version": 2,
+        "version": "0.1",
+        "background": { "scripts": ["background.js"], "persistent": true },
+        "permissions": ["<all_urls>", "webRequest", "webRequestBlocking"]
+      })");
+
+    // Extension script that will send message about the request type of
+    // onAuthRequired event, and cancel the request.
+    static constexpr char kBackgroundScript[] = R"(
+        console.log('extension running');
+        chrome.webRequest.onAuthRequired.addListener(
+            function(details, callback) {
+              console.log('onAuthRequired fired for ' + details.type);
+              chrome.test.sendMessage(details.type);
+              return {cancel: true};
+            },
+            {urls: ['<all_urls>']},
+            ['blocking']);
+        chrome.test.sendMessage('ready');
+      )";
+    test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundScript);
+
+    ExtensionTestMessageListener listener("ready");
+    ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
+    EXPECT_TRUE(listener.WaitUntilSatisfied());
+  }
+
+  void RegisterServiceWorker() {
+    GURL url =
+        embedded_test_server()->GetURL("/workers/service_worker_setup.html");
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    EXPECT_EQ("ok", EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                           "setup();"));
+  }
+
+  void RunCommonTestSetup() {
+    embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
+    ASSERT_TRUE(embedded_test_server()->Start());
+
+    InstallRequestOnAuthRequiredTypeReportingExtension();
+
+    // Register a service worker for a variation of the test and not register it
+    // for another variation, so that we can verify that onAuthRequired event is
+    // fired regardless of whether the page is under service worker control.
+    if (GetParam().under_service_worker_control) {
+      RegisterServiceWorker();
+    }
+
+    // Navigate to the test page.
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/workers/simple.html")));
+  }
+
+  // Ensures auth required event is received for subresource fetch.
+  void RunAuthRequiredTestForSubResource() {
+    RunCommonTestSetup();
+
+    // Make a fetch from the test page for a resource that requires auth.
+    ExtensionTestMessageListener listener("xmlhttprequest");
+    static constexpr char kSubResourceUrl[] =
+        "/auth-basic/auth_required_subresource?realm=auth_required_subresource";
+    std::string fetch_url =
+        embedded_test_server()->GetURL(kSubResourceUrl).spec();
+    EXPECT_EQ(401, EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                          "try_fetch_status('" + fetch_url + "');"));
+    EXPECT_TRUE(listener.WaitUntilSatisfied());
+  }
+
+  // Ensures auth required event is received for sub frame navigation.
+  void RunAuthRequiredTestForSubFrame() {
+    RunCommonTestSetup();
+
+    // Add an iframe for a source that requires auth.
+    ExtensionTestMessageListener listener("sub_frame");
+    static constexpr char kSubFrameUrl[] =
+        "/auth-basic/auth_required_subframe?realm=auth_required_subframe";
+    std::string frame_url = embedded_test_server()->GetURL(kSubFrameUrl).spec();
+    static constexpr char kAddIframeScript[] = R"(
+        const el = document.createElement('iframe');
+        el.src = $1;
+        document.body.appendChild(el);
+      )";
+    content::EvalJsResult result =
+        EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+               content::JsReplace(kAddIframeScript, frame_url));
+    ASSERT_THAT(result, content::EvalJsResult::IsOk());
+    EXPECT_TRUE(listener.WaitUntilSatisfied());
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackgroundWithServiceWorker,
+                         ExtensionWebRequestApiAuthRequiredTestVariousContext,
+                         ::testing::Values(AuthRequiredServiceWorkerTestParams(
+                             true,
+                             ContextType::kPersistentBackground)));
+INSTANTIATE_TEST_SUITE_P(PersistentBackgroundWithoutServiceWorker,
+                         ExtensionWebRequestApiAuthRequiredTestVariousContext,
+                         ::testing::Values(AuthRequiredServiceWorkerTestParams(
+                             false,
+                             ContextType::kPersistentBackground)));
+
+INSTANTIATE_TEST_SUITE_P(ServiceWorkerExtensionWithServiceWorker,
+                         ExtensionWebRequestApiAuthRequiredTestVariousContext,
+                         ::testing::Values(AuthRequiredServiceWorkerTestParams(
+                             true,
+                             ContextType::kServiceWorkerMV2)));
+INSTANTIATE_TEST_SUITE_P(ServiceWorkerExtensionWithoutServiceWorker,
+                         ExtensionWebRequestApiAuthRequiredTestVariousContext,
+                         ::testing::Values(AuthRequiredServiceWorkerTestParams(
+                             false,
+                             ContextType::kServiceWorkerMV2)));
+
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiAuthRequiredTestVariousContext,
+                       SubFrame) {
+  RunAuthRequiredTestForSubFrame();
+}
+
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiAuthRequiredTestVariousContext,
+                       SubResource) {
+  RunAuthRequiredTestForSubResource();
+}
+
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                        WebRequestBlocking) {
   ASSERT_TRUE(StartEmbeddedTestServer());

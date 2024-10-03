@@ -452,6 +452,7 @@ class LoginHandlerDelegate {
       content::BrowserContext* browser_context,
       const net::AuthChallengeInfo& auth_info,
       bool is_request_for_primary_main_frame,
+      bool is_request_for_navigation,
       base::StrictNumeric<int32_t> process_id,
       base::StrictNumeric<int32_t> request_id,
       const GURL& url,
@@ -461,6 +462,7 @@ class LoginHandlerDelegate {
         auth_info_(auth_info),
         request_id_(process_id, request_id),
         is_request_for_primary_main_frame_(is_request_for_primary_main_frame),
+        is_request_for_navigation_(is_request_for_navigation),
         creating_login_delegate_(false),
         url_(url),
         response_headers_(std::move(response_headers)),
@@ -508,8 +510,8 @@ class LoginHandlerDelegate {
     creating_login_delegate_ = true;
     login_delegate_ = GetContentClient()->browser()->CreateLoginDelegate(
         auth_info_, web_contents_.get(), browser_context_.get(), request_id_,
-        is_request_for_primary_main_frame_, url_, response_headers_,
-        first_auth_attempt_,
+        is_request_for_primary_main_frame_, is_request_for_navigation_, url_,
+        response_headers_, first_auth_attempt_,
         base::BindOnce(&LoginHandlerDelegate::OnAuthCredentials,
                        weak_factory_.GetWeakPtr()));
     creating_login_delegate_ = false;
@@ -534,6 +536,7 @@ class LoginHandlerDelegate {
   net::AuthChallengeInfo auth_info_;
   const content::GlobalRequestID request_id_;
   bool is_request_for_primary_main_frame_;
+  bool is_request_for_navigation_;
   bool creating_login_delegate_;
   GURL url_;
   const scoped_refptr<net::HttpResponseHeaders> response_headers_;
@@ -1999,6 +2002,7 @@ void StoragePartitionImpl::OnAuthRequired(
   URLLoaderNetworkContext context =
       url_loader_network_observers_.current_context();
   std::optional<bool> is_primary_main_frame;
+  std::optional<bool> is_navigation_request;
 
   if (window_id) {
     // Use `window_id` if it is provided, because this request was sent by a
@@ -2020,15 +2024,10 @@ void StoragePartitionImpl::OnAuthRequired(
           context = URLLoaderNetworkContext::CreateForRenderFrameHost(
               render_frame_host_id);
 
-          // TODO(crbug.com/963748, crbug.com/1251596): `is_primary_main_frame`
-          // should be false because only the request for a sub resource
-          // intercepted by a service worker reaches here.
-          auto* render_frame_host_impl =
-              RenderFrameHostImpl::FromID(render_frame_host_id);
-          if (render_frame_host_impl) {
-            is_primary_main_frame =
-                render_frame_host_impl->IsInPrimaryMainFrame();
-          }
+          // Only the request for a sub resource intercepted by a service worker
+          // reaches here.
+          is_primary_main_frame = false;
+          is_navigation_request = false;
         } else if (NavigationRequest* ongoing_navigation =
                        container_host->GetOngoingNavigationRequestBeforeCommit(
                            base::PassKey<StoragePartitionImpl>())) {
@@ -2054,6 +2053,9 @@ void StoragePartitionImpl::OnAuthRequired(
 
   if (!is_primary_main_frame.has_value()) {
     is_primary_main_frame = context.IsPrimaryMainFrameRequest();
+  }
+  if (!is_navigation_request.has_value()) {
+    is_navigation_request = context.IsNavigationRequestContext();
   }
   int process_id = network::mojom::kBrowserProcessId;
   if (context.type() == ContextType::kRenderFrameHostContext) {
@@ -2118,8 +2120,9 @@ void StoragePartitionImpl::OnAuthRequired(
 
   new LoginHandlerDelegate(std::move(auth_challenge_responder),
                            current_web_contents, browser_context_, auth_info,
-                           *is_primary_main_frame, process_id, request_id, url,
-                           head_headers, first_auth_attempt);  // deletes self
+                           *is_primary_main_frame, *is_navigation_request,
+                           process_id, request_id, url, head_headers,
+                           first_auth_attempt);  // deletes self
 }
 
 void StoragePartitionImpl::OnPrivateNetworkAccessPermissionRequired(

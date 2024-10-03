@@ -483,7 +483,7 @@ bool WebRequestAPI::MaybeProxyAuthRequest(
     const net::AuthChallengeInfo& auth_info,
     scoped_refptr<net::HttpResponseHeaders> response_headers,
     const content::GlobalRequestID& request_id,
-    bool is_main_frame,
+    bool is_request_for_navigation,
     AuthRequestCallback callback,
     WebViewGuest* web_view_guest) {
   if (!MayHaveProxies()) {
@@ -499,7 +499,10 @@ bool WebRequestAPI::MaybeProxyAuthRequest(
   }
 
   content::GlobalRequestID proxied_request_id = request_id;
-  if (is_main_frame) {
+  // In MaybeProxyURLLoaderFactory, we use -1 as render_process_id for
+  // navigation requests. Applying the same logic here so that we can correctly
+  // identify the request.
+  if (is_request_for_navigation) {
     proxied_request_id.child_id = -1;
   }
 

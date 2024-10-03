@@ -230,7 +230,7 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
       const net::AuthChallengeInfo& auth_info,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
       const content::GlobalRequestID& request_id,
-      bool is_main_frame,
+      bool is_request_for_navigation,
       AuthRequestCallback callback,
       WebViewGuest* web_view_guest);
 
