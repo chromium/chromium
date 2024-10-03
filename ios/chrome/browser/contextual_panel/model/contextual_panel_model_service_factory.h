@@ -16,9 +16,6 @@ class ContextualPanelModelService;
 class ContextualPanelModelServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static ContextualPanelModelService* GetForBrowserState(ProfileIOS* profile);
-
   static ContextualPanelModelService* GetForProfile(ProfileIOS* profile);
   static ContextualPanelModelServiceFactory* GetInstance();
 

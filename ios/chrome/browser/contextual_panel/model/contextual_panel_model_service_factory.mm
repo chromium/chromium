@@ -17,12 +17,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 
 // static
-ContextualPanelModelService*
-ContextualPanelModelServiceFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 ContextualPanelModelService* ContextualPanelModelServiceFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<ContextualPanelModelService*>(
