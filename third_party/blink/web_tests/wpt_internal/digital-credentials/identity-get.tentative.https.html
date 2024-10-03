@@ -16,7 +16,7 @@ import { buildValidNavigatorIdentityRequest, buildValidNavigatorIdentityRequestW
 promise_test(async t=>{
   assert_false(navigator.userActivation.isActive);
   let request = buildValidNavigatorIdentityRequest();
-  await promise_rejects_dom(t, "NetworkError", navigator.identity.get(request));
+  await promise_rejects_dom(t, "NotAllowedError", navigator.identity.get(request));
 }, "navigator.identity.get() fails if the page doesn't have user activation");
 
 // Tests for success are here because the tests rely on the
@@ -51,6 +51,6 @@ promise_test(async t => {
   let request = buildValidNavigatorIdentityRequest();
   let providerCopy = structuredClone(request.digital.providers[0]);
   request.digital.providers.push(providerCopy);
-  await promise_rejects_js(t, TypeError, requestIdentityWithActivation(test_driver, request));
+  await promise_rejects_dom(t, "NetworkError", requestIdentityWithActivation(test_driver, request));
 }, "navigator.identity.get() API fails if there is more than one provider.");
 </script>

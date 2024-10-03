@@ -19,9 +19,11 @@ struct DigitalCredentialProvider {
 // the error message of such exception should say.
 enum RequestDigitalIdentityStatus {
   kSuccess,
+  kError,
   kErrorTooManyRequests,
   kErrorCanceled,
-  kError,
+  kErrorNoProviders,
+  kErrorNoTransientUserActivation,
 };
 
 // Create a digital identity request using the specified provider.
@@ -32,11 +34,13 @@ interface DigitalIdentityRequest {
   // Returns:
   // - Status of the request.
   // - Raw content of the token.
+  // - Protocol of the selected provider.
   //
   // Does not support concurrent requests. Throws an error on a new request if
   // there is a pending request.
-  Request(DigitalCredentialProvider digital_credential_provider) =>
+  Request(array<DigitalCredentialProvider> digital_credential_providers) =>
       (RequestDigitalIdentityStatus status,
+      string? protocol,
       string? token);
 
   // Aborts the pending request, if any.

@@ -63,8 +63,14 @@ export async function check_digital_credential_api_availability() {
     await navigator.identity.get(request);
     return false;
   } catch (error) {
-    // If digital credentials API is disabled, a DOM error should be thrown prior
-    // to checking whether the request has non-empty providers.
+    // If digital credentials API is disabled, an error due to the API being
+    // disabled should be thrown prior to checking whether the request has
+    // transient user activation and non-empty providers.
+    if (error instanceof DOMException && error.name == "NotAllowedError" &&
+        error.message != null &&
+        error.message.includes("transient activation")) {
+      return true;
+    }
     return (error instanceof TypeError)
   }
 }
