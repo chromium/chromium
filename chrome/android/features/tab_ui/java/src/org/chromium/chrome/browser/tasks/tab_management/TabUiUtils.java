@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 import android.view.Gravity;
-import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
@@ -17,6 +16,7 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
+import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesView;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -325,7 +325,15 @@ public class TabUiUtils {
      */
     public static void attachSharedImageTilesCoordinatorToFrameLayout(
             SharedImageTilesCoordinator sharedImageTilesCoordinator, FrameLayout container) {
-        View imageTilesView = sharedImageTilesCoordinator.getView();
+        attachSharedImageTilesViewToFrameLayout(sharedImageTilesCoordinator.getView(), container);
+    }
+
+    /**
+     * {@link #attachSharedImageTilesCoordinatorToFrameLayout(SharedImageTilesCoordinator,
+     * FrameLayout)}
+     */
+    public static void attachSharedImageTilesViewToFrameLayout(
+            SharedImageTilesView imageTilesView, FrameLayout container) {
         var layoutParams =
                 new FrameLayout.LayoutParams(
                         FrameLayout.LayoutParams.WRAP_CONTENT,

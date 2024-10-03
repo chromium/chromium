@@ -9,20 +9,18 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProper
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.CREATION_MILLIS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DELETE_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DISPLAY_AS_SHARED;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.GET_IMAGE_TILE_CONTAINER_CALLBACK;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.LEAVE_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.OPEN_RUNNABLE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.SHARED_IMAGE_TILES_VIEW;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.TITLE_DATA;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 
 /** Forwards changed property values to the view. */
-public class TabGroupRowViewBinder
-        implements ViewBinder<PropertyModel, TabGroupRowView, PropertyKey> {
-    @Override
-    public void bind(PropertyModel model, TabGroupRowView view, PropertyKey propertyKey) {
+public class TabGroupRowViewBinder {
+    /** Propagates one key from the model to the view. */
+    public static void bind(PropertyModel model, TabGroupRowView view, PropertyKey propertyKey) {
         if (propertyKey == CLUSTER_DATA) {
             view.updateCornersForClusterData(model.get(CLUSTER_DATA));
         } else if (propertyKey == DISPLAY_AS_SHARED) {
@@ -40,8 +38,13 @@ public class TabGroupRowViewBinder
                     model.get(OPEN_RUNNABLE),
                     model.get(DELETE_RUNNABLE),
                     model.get(LEAVE_RUNNABLE));
-        } else if (propertyKey == GET_IMAGE_TILE_CONTAINER_CALLBACK) {
-            view.setGetImageTileContainerCallback(model.get(GET_IMAGE_TILE_CONTAINER_CALLBACK));
+        } else if (propertyKey == SHARED_IMAGE_TILES_VIEW) {
+            view.setSharedImageTilesView(model.get(SHARED_IMAGE_TILES_VIEW));
         }
+    }
+
+    /** Cleans up the view when recycled. */
+    public static void onViewRecycled(TabGroupRowView view) {
+        view.setSharedImageTilesView(null);
     }
 }

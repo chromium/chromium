@@ -8,7 +8,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProper
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.LEAVE_RUNNABLE;
 
 import android.content.Context;
-import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -166,9 +165,7 @@ class TabGroupRowMediator {
             mPropertyModel.set(DELETE_RUNNABLE, this::processDeleteGroup);
             mPropertyModel.set(LEAVE_RUNNABLE, null);
             mPropertyModel.set(TabGroupRowProperties.DISPLAY_AS_SHARED, false);
-            mPropertyModel.set(
-                    TabGroupRowProperties.GET_IMAGE_TILE_CONTAINER_CALLBACK,
-                    this::removeViewsOnContainer);
+            mPropertyModel.set(TabGroupRowProperties.SHARED_IMAGE_TILES_VIEW, null);
             return;
         }
 
@@ -192,34 +189,22 @@ class TabGroupRowMediator {
 
         if (sharedState == GroupSharedState.COLLABORATION_ONLY) {
             mPropertyModel.set(TabGroupRowProperties.DISPLAY_AS_SHARED, false);
-            mPropertyModel.set(
-                    TabGroupRowProperties.GET_IMAGE_TILE_CONTAINER_CALLBACK,
-                    this::removeViewsOnContainer);
+            mPropertyModel.set(TabGroupRowProperties.SHARED_IMAGE_TILES_VIEW, null);
         } else if (sharedState == GroupSharedState.HAS_OTHER_USERS) {
             mPropertyModel.set(TabGroupRowProperties.DISPLAY_AS_SHARED, true);
+            if (mSharedImageTilesCoordinator == null) {
+                mSharedImageTilesCoordinator =
+                        new SharedImageTilesCoordinator(
+                                mContext,
+                                SharedImageTilesType.DEFAULT,
+                                SharedImageTilesColor.DYNAMIC,
+                                mDataSharingService);
+            }
+            mSharedImageTilesCoordinator.updateCollaborationId(mSavedTabGroup.collaborationId);
             mPropertyModel.set(
-                    TabGroupRowProperties.GET_IMAGE_TILE_CONTAINER_CALLBACK,
-                    this::attachImageTilesOnContainer);
+                    TabGroupRowProperties.SHARED_IMAGE_TILES_VIEW,
+                    mSharedImageTilesCoordinator.getView());
         }
-    }
-
-    private void removeViewsOnContainer(FrameLayout container) {
-        container.removeAllViews();
-    }
-
-    private void attachImageTilesOnContainer(FrameLayout container) {
-        assert mSharedImageTilesCoordinator == null;
-        mSharedImageTilesCoordinator =
-                new SharedImageTilesCoordinator(
-                        mContext,
-                        SharedImageTilesType.DEFAULT,
-                        SharedImageTilesColor.DYNAMIC,
-                        mDataSharingService);
-        mSharedImageTilesCoordinator.updateCollaborationId(mSavedTabGroup.collaborationId);
-        // On rebind an old coordinator might be attached to the container.
-        container.removeAllViews();
-        TabUiUtils.attachSharedImageTilesCoordinatorToFrameLayout(
-                mSharedImageTilesCoordinator, container);
     }
 
     private void openGroup() {

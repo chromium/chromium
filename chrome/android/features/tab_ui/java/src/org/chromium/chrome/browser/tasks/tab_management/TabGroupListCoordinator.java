@@ -98,9 +98,18 @@ public class TabGroupListCoordinator {
 
         ViewBuilder<TabGroupRowView> layoutBuilder =
                 new LayoutViewBuilder<>(R.layout.tab_group_row);
-        mSimpleRecyclerViewAdapter = new SimpleRecyclerViewAdapter(modelList);
+        mSimpleRecyclerViewAdapter =
+                new SimpleRecyclerViewAdapter(modelList) {
+                    @Override
+                    public void onViewRecycled(SimpleRecyclerViewAdapter.ViewHolder holder) {
+                        if (holder.getItemViewType() == RowType.TAB_GROUP) {
+                            TabGroupRowViewBinder.onViewRecycled((TabGroupRowView) holder.itemView);
+                        }
+                        super.onViewRecycled(holder);
+                    }
+                };
         mSimpleRecyclerViewAdapter.registerType(
-                RowType.TAB_GROUP, layoutBuilder, new TabGroupRowViewBinder());
+                RowType.TAB_GROUP, layoutBuilder, TabGroupRowViewBinder::bind);
 
         mView =
                 (TabGroupListView)

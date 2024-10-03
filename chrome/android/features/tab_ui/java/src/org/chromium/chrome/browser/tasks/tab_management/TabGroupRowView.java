@@ -21,7 +21,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.util.Pair;
 
-import org.chromium.base.Callback;
+import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesView;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
 import org.chromium.chrome.tab_ui.R;
@@ -107,8 +107,12 @@ public class TabGroupRowView extends LinearLayout {
         mListMenuButton.setDelegate(() -> getListMenu(openRunnable, deleteRunnable, leaveRunnable));
     }
 
-    void setGetImageTileContainerCallback(Callback<FrameLayout> getImageTileContainerCallback) {
-        getImageTileContainerCallback.onResult(mImageTilesContainer);
+    void setSharedImageTilesView(@Nullable SharedImageTilesView sharedImageTilesView) {
+        mImageTilesContainer.removeAllViews();
+        if (sharedImageTilesView != null) {
+            TabUiUtils.attachSharedImageTilesViewToFrameLayout(
+                    sharedImageTilesView, mImageTilesContainer);
+        }
     }
 
     private ListMenu getListMenu(

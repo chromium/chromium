@@ -145,7 +145,7 @@ public class TabGroupRowViewRenderTest {
                     builder.with(CREATION_MILLIS, Clock.systemUTC().millis());
                     mPropertyModel = builder.build();
                     PropertyModelChangeProcessor.create(
-                            mPropertyModel, mTabGroupRowView, new TabGroupRowViewBinder());
+                            mPropertyModel, mTabGroupRowView, TabGroupRowViewBinder::bind);
                 });
     }
 
@@ -165,7 +165,7 @@ public class TabGroupRowViewRenderTest {
                     builder.with(CREATION_MILLIS, Clock.systemUTC().millis());
                     mPropertyModel = builder.build();
                     PropertyModelChangeProcessor.create(
-                            mPropertyModel, mTabGroupRowView, new TabGroupRowViewBinder());
+                            mPropertyModel, mTabGroupRowView, TabGroupRowViewBinder::bind);
                 });
         mRenderTestRule.render(mTabGroupRowView, "long_title");
     }

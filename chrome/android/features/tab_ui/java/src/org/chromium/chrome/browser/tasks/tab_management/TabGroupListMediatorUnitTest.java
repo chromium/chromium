@@ -25,6 +25,9 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProper
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.OPEN_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.TITLE_DATA;
 
+import android.content.Context;
+import android.view.ContextThemeWrapper;
+
 import androidx.core.util.Pair;
 import androidx.test.core.app.ApplicationProvider;
 
@@ -131,9 +134,14 @@ public class TabGroupListMediatorUnitTest {
 
     private PropertyModel mPropertyModel;
     private ModelList mModelList;
+    private Context mContext;
 
     @Before
     public void setUp() {
+        mContext =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
         mPropertyModel = new PropertyModel(TabGroupListProperties.ALL_KEYS);
         mModelList = new ModelList();
         when(mPaneManager.getPaneForId(PaneId.TAB_SWITCHER)).thenReturn(mTabSwitcherPaneBase);
@@ -144,7 +152,7 @@ public class TabGroupListMediatorUnitTest {
 
     private TabGroupListMediator createMediator() {
         return new TabGroupListMediator(
-                ApplicationProvider.getApplicationContext(),
+                mContext,
                 mModelList,
                 mPropertyModel,
                 mTabGroupModelFilter,

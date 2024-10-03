@@ -6,9 +6,9 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
@@ -16,11 +16,10 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProper
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.COLOR_INDEX;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DESTROYABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DISPLAY_AS_SHARED;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.GET_IMAGE_TILE_CONTAINER_CALLBACK;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.SHARED_IMAGE_TILES_VIEW;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;
-import android.widget.FrameLayout;
 
 import androidx.core.util.Supplier;
 import androidx.test.filters.SmallTest;
@@ -104,7 +103,6 @@ public class TabGroupRowMediatorUnitTest {
     @Mock private FaviconResolver mFaviconResolver;
     @Mock private CoreAccountInfo mCoreAccountInfo;
     @Mock private Supplier<Integer> mFetchGroupState;
-    @Mock private FrameLayout mImageTileContainer;
 
     @Captor private ArgumentCaptor<Callback<GroupDataOrFailureOutcome>> mReadGroupCallbackCaptor;
 
@@ -268,10 +266,7 @@ public class TabGroupRowMediatorUnitTest {
     public void testNotShared() {
         PropertyModel propertyModel = buildTestModel(Arrays.asList(mTab1), /* isShared= */ false);
         assertFalse(propertyModel.get(DISPLAY_AS_SHARED));
-        Callback<FrameLayout> getImageTileContainerCallback =
-                propertyModel.get(GET_IMAGE_TILE_CONTAINER_CALLBACK);
-        getImageTileContainerCallback.onResult(mImageTileContainer);
-        verify(mImageTileContainer).removeAllViews();
+        assertNull(propertyModel.get(SHARED_IMAGE_TILES_VIEW));
     }
 
     @Test
@@ -281,10 +276,7 @@ public class TabGroupRowMediatorUnitTest {
         respondToReadGroup(new GroupMember[] {GROUP_MEMBER1});
 
         assertFalse(propertyModel.get(DISPLAY_AS_SHARED));
-        Callback<FrameLayout> getImageTileContainerCallback =
-                propertyModel.get(GET_IMAGE_TILE_CONTAINER_CALLBACK);
-        getImageTileContainerCallback.onResult(mImageTileContainer);
-        verify(mImageTileContainer).removeAllViews();
+        assertNull(propertyModel.get(SHARED_IMAGE_TILES_VIEW));
     }
 
     @Test
@@ -294,11 +286,7 @@ public class TabGroupRowMediatorUnitTest {
         respondToReadGroup(new GroupMember[] {GROUP_MEMBER1, GROUP_MEMBER2});
 
         assertTrue(propertyModel.get(DISPLAY_AS_SHARED));
-        Callback<FrameLayout> getImageTileContainerCallback =
-                propertyModel.get(GET_IMAGE_TILE_CONTAINER_CALLBACK);
-        getImageTileContainerCallback.onResult(mImageTileContainer);
-        verify(mImageTileContainer).removeAllViews();
-        verify(mImageTileContainer).addView(any(), any());
+        assertNotNull(propertyModel.get(SHARED_IMAGE_TILES_VIEW));
     }
 
     @Test
@@ -311,6 +299,6 @@ public class TabGroupRowMediatorUnitTest {
 
         respondToReadGroup(new GroupMember[] {GROUP_MEMBER1, GROUP_MEMBER2});
         assertFalse(propertyModel.get(DISPLAY_AS_SHARED));
-        assertNull(propertyModel.get(GET_IMAGE_TILE_CONTAINER_CALLBACK));
+        assertNull(propertyModel.get(SHARED_IMAGE_TILES_VIEW));
     }
 }
