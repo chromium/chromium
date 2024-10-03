@@ -4,6 +4,9 @@
 
 #include "components/commerce/core/product_specifications/product_specifications_cache.h"
 
+#include "base/feature_list.h"
+#include "components/commerce/core/commerce_feature_list.h"
+
 namespace commerce {
 
 ProductSpecificationsCache::ProductSpecificationsCache() : cache_(kCacheSize) {}
@@ -11,11 +14,19 @@ ProductSpecificationsCache::~ProductSpecificationsCache() = default;
 
 void ProductSpecificationsCache::SetEntry(std::vector<uint64_t> cluster_ids,
                                           ProductSpecifications specs) {
+  if (!base::FeatureList::IsEnabled(kProductSpecificationsCache)) {
+    return;
+  }
+
   cache_.Put(GetKey(cluster_ids), std::move(specs));
 }
 
 const ProductSpecifications* ProductSpecificationsCache::GetEntry(
     std::vector<uint64_t> cluster_ids) {
+  if (!base::FeatureList::IsEnabled(kProductSpecificationsCache)) {
+    return nullptr;
+  }
+
   auto it = cache_.Get(GetKey(cluster_ids));
   if (it == cache_.end()) {
     return nullptr;
