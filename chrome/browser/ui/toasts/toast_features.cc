@@ -50,6 +50,11 @@ BASE_FEATURE(kLensOverlayToast,
              "LensOverlayToast",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enabled the clear browsing data confirmation toast.
+BASE_FEATURE(kClearBrowsingDataToast,
+             "ClearBrowsingDataToast",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // static
 bool IsEnabled(const base::Feature& feature) {
   return kToastDemoMode.Get() || base::FeatureList::IsEnabled(feature);

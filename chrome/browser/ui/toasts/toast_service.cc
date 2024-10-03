@@ -73,6 +73,12 @@ void ToastService::RegisterToasts(
           .AddCloseButton()
           .Build());
 
+  toast_registry_->RegisterToast(
+      ToastId::kClearBrowsingData,
+      ToastSpecification::Builder(kTrashCanRefreshIcon,
+                                  IDS_CLEAR_BROWSING_DATA_TOAST_BODY)
+          .Build());
+
   // TODO(crbug.com/357929158): This registration only partially implements the
   // Chromnient toast and will need to handle alternate icons and strings.
   toast_registry_->RegisterToast(

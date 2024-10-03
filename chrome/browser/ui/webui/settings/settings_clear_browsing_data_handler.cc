@@ -24,8 +24,14 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
@@ -301,6 +307,20 @@ void ClearBrowsingDataHandler::OnClearingTaskFinished(
   base::Value::Dict result;
   result.Set("showHistoryNotice", show_history_notice);
   result.Set("showPasswordsNotice", show_passwords_notice);
+
+  if (toast_features::IsEnabled(toast_features::kClearBrowsingDataToast)) {
+    tabs::TabInterface* tab =
+        tabs::TabInterface::MaybeGetFromContents(web_ui()->GetWebContents());
+    if (tab && tab->IsInForeground()) {
+      CHECK(tab->GetBrowserWindowInterface());
+      ToastController* const toast_controller =
+          tab->GetBrowserWindowInterface()->GetFeatures().toast_controller();
+      if (toast_controller) {
+        toast_controller->MaybeShowToast(
+            ToastParams(ToastId::kClearBrowsingData));
+      }
+    }
+  }
 
   ResolveJavascriptCallback(base::Value(webui_callback_id), result);
 }

@@ -2547,6 +2547,13 @@ Permissions you've already given to websites and apps may apply to this account.
           Chromium Shortcut
         </message>
       </if>
+
+      <!-- Toast Strings-->
+      <if expr="not is_android">
+        <message name="IDS_CLEAR_BROWSING_DATA_TOAST_BODY" desc="Text on a toast notification that is shown when browsing data is successfully cleared.">
+          Cleared Chromium data
+        </message>
+      </if>
     </messages>
   </release>
 </grit>

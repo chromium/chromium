@@ -10,8 +10,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
@@ -102,6 +106,8 @@ class ClearBrowsingDataHandlerUnitTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment browser_task_environment_;
+  std::unique_ptr<TestBrowserWindow> browser_window_;
+  std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<content::WebContents> web_contents_;
   content::TestWebUI test_web_ui_;
@@ -113,19 +119,35 @@ class ClearBrowsingDataHandlerUnitTest : public testing::Test {
   const content::TestWebUI::CallData& GetCallData() {
     return *test_web_ui_.call_data().back();
   }
+
+  Browser* browser() { return browser_.get(); }
 };
 
 void ClearBrowsingDataHandlerUnitTest::SetUp() {
+  feature_list_.InitWithFeatures({toast_features::kToastFramework,
+                                  toast_features::kClearBrowsingDataToast},
+                                 {});
+
   TestingProfile::Builder builder;
   profile_ = builder.Build();
 
   profile_->GetTestingPrefService()->registry()->RegisterBooleanPref(
       kTestingDatatypePref, true);
 
-  web_contents_ = content::WebContents::Create(
-      content::WebContents::CreateParams(profile_.get()));
+  browser_window_ = std::make_unique<TestBrowserWindow>();
+  Browser::CreateParams params(profile_.get(), /*user_gesture*/ true);
+  params.type = Browser::TYPE_NORMAL;
+  params.window = browser_window_.get();
+  browser_.reset(Browser::Create(params));
 
-  test_web_ui_.set_web_contents(web_contents_.get());
+  std::unique_ptr<tabs::TabModel> tab_model = std::make_unique<tabs::TabModel>(
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile_.get())),
+      browser()->GetTabStripModel());
+  browser()->GetTabStripModel()->AppendTab(std::move(tab_model), true);
+
+  test_web_ui_.set_web_contents(
+      browser()->GetTabStripModel()->GetActiveWebContents());
   test_web_ui_.ClearTrackedCalls();
 
   dse_factory_util_ =
@@ -145,6 +167,9 @@ void ClearBrowsingDataHandlerUnitTest::SetUp() {
 
 void ClearBrowsingDataHandlerUnitTest::TearDown() {
   dse_factory_util_.reset();
+  browser_->tab_strip_model()->CloseAllTabs();
+  browser_ = nullptr;
+  browser_window_ = nullptr;
 }
 
 void ClearBrowsingDataHandlerUnitTest::VerifySearchHistoryWebUIUpdate(
@@ -214,6 +239,18 @@ TEST_F(ClearBrowsingDataHandlerUnitTest,
   histogram_tester.ExpectBucketCount(
       "Privacy.DeleteBrowsingData.Action",
       browsing_data::DeleteBrowsingDataAction::kClearBrowsingDataDialog, 1);
+}
+
+TEST_F(ClearBrowsingDataHandlerUnitTest, ClearBrowsingData_ShowsToast) {
+  EXPECT_FALSE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+
+  base::Value::List args;
+  args.Append("fooCallback");
+  args.Append(base::Value::List());
+  args.Append(1);
+  test_web_ui_.HandleReceivedMessage("clearBrowsingData", args);
+
+  EXPECT_TRUE(browser()->GetFeatures().toast_controller()->IsShowingToast());
 }
 
 TEST_F(ClearBrowsingDataHandlerUnitTest, UpdateSyncState_GoogleDse) {

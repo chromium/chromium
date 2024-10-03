@@ -49,8 +49,7 @@ ToastController::ToastController(
     BrowserWindowInterface* browser_window_interface,
     const ToastRegistry* toast_registry)
     : browser_window_interface_(browser_window_interface),
-      toast_registry_(toast_registry) {
-}
+      toast_registry_(toast_registry) {}
 
 ToastController::~ToastController() = default;
 
@@ -290,6 +289,15 @@ void ToastController::CloseToast(toasts::ToastCloseReason reason) {
 
 void ToastController::CreateToast(const ToastParams& params,
                                   const ToastSpecification* spec) {
+  // TODO(crbug.com/364730656): Replace this logic when improving
+  // ToastController testability.
+  if (browser_window_interface_ == nullptr ||
+      !browser_window_interface_->TopContainer()) {
+    // Don't actually create the toast in unit tests
+    CHECK_IS_TEST();
+    return;
+  }
+
   views::View* const anchor_view = browser_window_interface_->TopContainer();
   CHECK(anchor_view);
   auto toast_view = std::make_unique<toasts::ToastView>(

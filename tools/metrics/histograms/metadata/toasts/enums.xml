@@ -46,6 +46,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Lens Overlay"/>
   <int value="5" label="Non-milestone Update"/>
   <int value="6" label="Added to comparison table"/>
+  <int value="7" label="Clear Browsing Data"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toasts/api/toast_id.h:ToastId) -->
