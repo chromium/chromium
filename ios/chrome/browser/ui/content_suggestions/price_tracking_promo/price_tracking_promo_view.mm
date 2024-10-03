@@ -58,14 +58,6 @@ const CGFloat kSeparatorHeight = 0.5;
   UITapGestureRecognizer* _tapRecognizer;
 }
 
-- (instancetype)initWithFrame:(CGRect)frame {
-  self = [super initWithFrame:CGRectZero];
-  if (self) {
-    self.isAccessibilityElement = YES;
-  }
-  return self;
-}
-
 - (void)configureView:(PriceTrackingPromoItem*)config {
   if (!config) {
     return;
@@ -86,6 +78,7 @@ const CGFloat kSeparatorHeight = 0.5;
   _titleLabel.adjustsFontForContentSizeCategory = YES;
   _titleLabel.text = l10n_util::GetNSString(
       IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_TITLE);
+  _titleLabel.isAccessibilityElement = YES;
 
   _descriptionLabel = [[UILabel alloc] init];
   _descriptionLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -97,6 +90,7 @@ const CGFloat kSeparatorHeight = 0.5;
   _descriptionLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   _descriptionLabel.text = l10n_util::GetNSString(
       IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_DESCRIPTION);
+  _descriptionLabel.isAccessibilityElement = YES;
 
   // TODO(crbug.com/361106168) use product image from most recent subscription
   // if available.
@@ -148,6 +142,7 @@ const CGFloat kSeparatorHeight = 0.5;
                      forState:UIControlStateNormal];
   _allowButton.titleLabel.font =
       [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  _allowButton.isAccessibilityElement = YES;
   _tapRecognizer = [[UITapGestureRecognizer alloc]
       initWithTarget:self
               action:@selector(allowPriceTrackingTapped:)];
