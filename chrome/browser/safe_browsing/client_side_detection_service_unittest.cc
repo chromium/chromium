@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "chrome/browser/safe_browsing/chrome_client_side_detection_service_delegate.h"
+#include "components/safe_browsing/content/browser/client_side_detection_service.h"
 
 #include <stdint.h>
 
@@ -16,6 +15,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -26,12 +26,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/safe_browsing/chrome_client_side_detection_service_delegate.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
-#include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -52,11 +52,11 @@
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #endif
 
+using content::BrowserThread;
+using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::StrictMock;
-using ::testing::_;
-using content::BrowserThread;
 
 namespace safe_browsing {
 
@@ -264,8 +264,8 @@ class ClientSideDetectionServiceTest
     // While 3 elements remain, only the first and the fourth are actually
     // valid.
     bool is_phishing;
-    EXPECT_TRUE(csd_service_->GetValidCachedResult(
-        GURL("http://first.url.com"), &is_phishing));
+    EXPECT_TRUE(csd_service_->GetValidCachedResult(GURL("http://first.url.com"),
+                                                   &is_phishing));
     EXPECT_FALSE(is_phishing);
     EXPECT_FALSE(csd_service_->GetValidCachedResult(
         GURL("http://third.url.com"), &is_phishing));
@@ -473,12 +473,6 @@ TEST_P(ClientSideDetectionServiceTest, GetNumReportTest) {
 
   EXPECT_TRUE(csd_service_->AddPhishingReport(now));
   EXPECT_EQ(3, csd_service_->GetPhishingNumReports());
-  EXPECT_TRUE(AtPhishingReportLimit());
-}
-
-TEST_P(ClientSideDetectionServiceTest, GetNumReportAtLimitWhenProfileIsNull) {
-  csd_service_ = std::make_unique<ClientSideDetectionService>(
-      nullptr, model_observer_tracker_.get());
   EXPECT_TRUE(AtPhishingReportLimit());
 }
 

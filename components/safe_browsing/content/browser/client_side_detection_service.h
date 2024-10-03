@@ -271,8 +271,7 @@ class ClientSideDetectionService
   bool AddPhishingReport(base::Time timestamp);
 
   // Populates |phishing_report_times_| with the data stored in local prefs.
-  // Return bool value represents whether the load was successful or not.
-  bool LoadPhishingReportTimesFromPrefs();
+  void LoadPhishingReportTimesFromPrefs();
 
   // Returns the URL that will be used for phishing requests.
   static GURL GetClientReportUrl(const std::string& report_url);
@@ -283,10 +282,6 @@ class ClientSideDetectionService
   //  content::RenderProcessHostObserver
   void RenderProcessHostDestroyed(content::RenderProcessHost* rph) override;
   void RenderProcessReady(content::RenderProcessHost* rph) override;
-  // If we fail to load the report times, we will not know how many pings the
-  // user has sent already. In this case, we will assume the user has sent
-  // enough pings and skip the phishing URL check.
-  bool skip_phishing_request_check_ = true;
 
   // Whether the service is running or not.  When the service is not running,
   // it won't download the model nor report detected phishing URLs.

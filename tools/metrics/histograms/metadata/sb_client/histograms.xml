@@ -711,17 +711,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="SBClientPhishing.LoadReportTimesFromPrefAtServiceCreationSuccessful"
-    enum="BooleanSuccess" expires_after="2025-05-17">
-  <owner>andysjlim@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records whether phishing report times load from profile at client side
-    detection service creation is successful or not.
-  </summary>
-</histogram>
-
 <histogram name="SBClientPhishing.LocalModelDetectsPhishing"
     enum="BooleanIsPhishing" expires_after="2025-03-09">
   <owner>drubery@chromium.org</owner>
@@ -873,16 +862,6 @@ chromium-metrics-reviews@google.com.
     Safe Browsing to evaluate whether a site is phishing.
   </summary>
   <token key="RequestType" variants="ClientSideDetectionRequestType"/>
-</histogram>
-
-<histogram name="SBClientPhishing.SkipPhishingRequestCheck"
-    enum="BooleanSuccess" expires_after="2025-05-17">
-  <owner>andysjlim@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records whether phishing request was skipped because the profile prefs for
-    report times was not loaded at service creation.
-  </summary>
 </histogram>
 
 <histogram name="SBClientPhishing.TimeSinceLastReportAtLimit" units="ms"

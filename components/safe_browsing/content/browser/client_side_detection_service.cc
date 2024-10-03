@@ -110,20 +110,9 @@ ClientSideDetectionService::ClientSideDetectionService(
       base::BindRepeating(&ClientSideDetectionService::OnPrefsUpdated,
                           base::Unretained(this)));
 
-  // If we fail to load the report times, we will not know how many pings the
-  // user has sent already. In this case, we will assume the user has sent
-  // enough pings and skip the phishing URL check.
-  // TODO: (andysjlim): clean up the ifs and logs if the uma never logs false.
-  if (LoadPhishingReportTimesFromPrefs()) {
-    skip_phishing_request_check_ = false;
-    base::UmaHistogramBoolean(
-        "SBClientPhishing.LoadReportTimesFromPrefAtServiceCreationSuccessful",
-        true);
-  } else {
-    base::UmaHistogramBoolean(
-        "SBClientPhishing.LoadReportTimesFromPrefAtServiceCreationSuccessful",
-        false);
-  }
+  // Load the report times from preferences.
+  LoadPhishingReportTimesFromPrefs();
+
   //  Do an initial check of the prefs.
   OnPrefsUpdated();
 }
@@ -445,14 +434,6 @@ void ClientSideDetectionService::UpdateCache() {
 }
 
 bool ClientSideDetectionService::AtPhishingReportLimit() {
-  base::UmaHistogramBoolean("SBClientPhishing.SkipPhishingRequestCheck",
-                            skip_phishing_request_check_);
-  // If |skip_phishing_request_check_| is true, that means we failed to load the
-  // report times from prefs before from class initialization.
-  if (skip_phishing_request_check_) {
-    return true;
-  }
-
   // Clear the expired timestamps
   const auto cutoff = base::Time::Now() - base::Days(kReportsIntervalDays);
   // Erase items older than cutoff because we will never care about them again.
@@ -509,10 +490,10 @@ bool ClientSideDetectionService::AddPhishingReport(base::Time timestamp) {
   return true;
 }
 
-bool ClientSideDetectionService::LoadPhishingReportTimesFromPrefs() {
+void ClientSideDetectionService::LoadPhishingReportTimesFromPrefs() {
   // delegate and prefs can be null in unit tests.
   if (!delegate_ || !delegate_->GetPrefs()) {
-    return false;
+    return;
   }
 
   phishing_report_times_.clear();
@@ -524,8 +505,6 @@ bool ClientSideDetectionService::LoadPhishingReportTimesFromPrefs() {
       phishing_report_times_.push_back(time);
     }
   }
-
-  return true;
 }
 
 // static
