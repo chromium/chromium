@@ -394,7 +394,9 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
   mixer[kColorPageInfoBackground] = {kColorToolbar};
   mixer[kColorPageInfoBackgroundTonal] = {kColorPageInfoBackground};
   mixer[kColorPageInfoForeground] = {
-      ui::GetColorWithMaxContrast(kColorToolbar)};
+      ui::GetColorWithMaxContrast(kColorOmniboxText)};
+  mixer[kColorPageInfoSubtitleForeground] = {
+      ui::GetColorWithMaxContrast(kColorToolbarBackgroundSubtleEmphasis)};
   mixer[kColorPageInfoForegroundTonal] = {kColorPageInfoForeground};
   // Literal constants are `kOmniboxOpacityHovered` and
   // `kOmniboxOpacitySelected`. This is so that we can more cleanly use the
