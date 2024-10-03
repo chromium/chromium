@@ -217,6 +217,7 @@ shopping_service::mojom::ProductSpecificationsPtr ProductSpecsToMojo(
     product_ptr->product_cluster_id = product.product_cluster_id;
     product_ptr->title = product.title;
     product_ptr->image_url = product.image_url;
+    product_ptr->buying_options_url = product.buying_options_url;
 
     // Top-level product summaries.
     for (const auto& summary : product.summary) {
