@@ -2006,6 +2006,8 @@ void AuthenticatorCommonImpl::OnRegisterResponse(
     device::MakeCredentialStatus status_code,
     std::optional<device::AuthenticatorMakeCredentialResponse> response_data,
     const device::FidoAuthenticator* authenticator) {
+  CHECK(authenticator);
+
   if (!req_state_->request_handler) {
     // Either the callback was called immediately and
     // |req_state_->request_handler| has not yet been assigned (this is a bug),
@@ -2227,7 +2229,9 @@ void AuthenticatorCommonImpl::OnSignResponse(
     std::optional<std::vector<device::AuthenticatorGetAssertionResponse>>
         response_data,
     device::FidoAuthenticator* authenticator) {
+  CHECK(authenticator);
   DCHECK(!response_data || !response_data->empty());  // empty vector is invalid
+
   if (!req_state_->request_handler) {
     // Either the callback was called immediately and
     // |req_state_->request_handler| has not yet been assigned (this is a bug),

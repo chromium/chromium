@@ -96,6 +96,7 @@
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/fido_device_authenticator.h"
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_request_handler_base.h"
@@ -5369,10 +5370,12 @@ class PINTestAuthenticatorRequestDelegate
   PINTestAuthenticatorRequestDelegate(
       bool supports_pin,
       const std::list<PINExpectation>& pins,
-      std::optional<InterestingFailureReason>* failure_reason)
+      std::optional<InterestingFailureReason>* failure_reason,
+      base::RepeatingCallback<bool()> collect_pin_cb)
       : supports_pin_(supports_pin),
         expected_(pins),
-        failure_reason_(failure_reason) {}
+        failure_reason_(failure_reason),
+        collect_pin_cb_(collect_pin_cb) {}
 
   PINTestAuthenticatorRequestDelegate(
       const PINTestAuthenticatorRequestDelegate&) = delete;
@@ -5389,6 +5392,9 @@ class PINTestAuthenticatorRequestDelegate
   void CollectPIN(
       CollectPINOptions options,
       base::OnceCallback<void(std::u16string)> provide_pin_cb) override {
+    if (collect_pin_cb_ && !collect_pin_cb_.Run()) {
+      return;
+    }
     DCHECK(supports_pin_);
     DCHECK(!expected_.empty()) << "unexpected PIN request";
     if (expected_.front().reason == PINReason::kChallenge) {
@@ -5418,6 +5424,9 @@ class PINTestAuthenticatorRequestDelegate
   const bool supports_pin_;
   std::list<PINExpectation> expected_;
   const raw_ptr<std::optional<InterestingFailureReason>> failure_reason_;
+  // collect_pin_cb_ is optional. If present, it returns whether `CollectPIN`
+  // should continue and invoke its main callback.
+  base::RepeatingCallback<bool()> collect_pin_cb_;
 };
 
 class PINTestAuthenticatorContentBrowserClient : public ContentBrowserClient {
@@ -5431,7 +5440,7 @@ class PINTestAuthenticatorContentBrowserClient : public ContentBrowserClient {
   GetWebAuthenticationRequestDelegate(
       RenderFrameHost* render_frame_host) override {
     return std::make_unique<PINTestAuthenticatorRequestDelegate>(
-        supports_pin, expected, &failure_reason);
+        supports_pin, expected, &failure_reason, collect_pin_cb);
   }
 
   TestWebAuthenticationDelegate web_authentication_delegate;
@@ -5439,6 +5448,7 @@ class PINTestAuthenticatorContentBrowserClient : public ContentBrowserClient {
   bool supports_pin = true;
   std::list<PINExpectation> expected;
   std::optional<InterestingFailureReason> failure_reason;
+  base::RepeatingCallback<bool()> collect_pin_cb;
 };
 
 class PINAuthenticatorImplTest : public UVAuthenticatorImplTest {
@@ -6381,6 +6391,61 @@ TEST_F(PINAuthenticatorImplTest, RemoveSecondAuthenticator) {
   test_client_.expected = {
       {PINReason::kChallenge, kTestPIN16, device::kMaxPinRetries}};
   EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
+}
+
+TEST_F(PINAuthenticatorImplTest,
+       RemoveAuthenticatorDuringRegistrationPINPrompt) {
+  // Regression test for crbug.com/370000838: removing an authenticator while
+  // the PIN prompt was showing would crash.
+  base::RepeatingCallback<void(bool)> disconnect_1;
+  device::test::MultipleVirtualFidoDeviceFactory::DeviceDetails device_1;
+  device_1.state->pin = kTestPIN;
+  device_1.config.pin_support = true;
+  std::tie(disconnect_1, device_1.disconnect_events) =
+      device::FidoDiscoveryBase::EventStream<bool>::New();
+
+  auto discovery =
+      std::make_unique<device::test::MultipleVirtualFidoDeviceFactory>();
+  discovery->AddDevice(std::move(device_1));
+  ReplaceDiscoveryFactory(std::move(discovery));
+
+  test_client_.collect_pin_cb =
+      base::BindLambdaForTesting([&disconnect_1]() -> bool {
+        disconnect_1.Run(false);
+        return false;
+      });
+
+  EXPECT_EQ(AuthenticatorMakeCredential().status,
+            AuthenticatorStatus::NOT_ALLOWED_ERROR);
+}
+
+TEST_F(PINAuthenticatorImplTest, RemoveAuthenticatorDuringAssertionPINPrompt) {
+  ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
+      get_credential_options()->allow_credentials[0].id, kTestRelyingPartyId));
+
+  base::RepeatingCallback<void(bool)> disconnect_1;
+  device::test::MultipleVirtualFidoDeviceFactory::DeviceDetails device_1;
+  device_1.state->pin = kTestPIN;
+  device_1.config.pin_support = true;
+  std::tie(disconnect_1, device_1.disconnect_events) =
+      device::FidoDiscoveryBase::EventStream<bool>::New();
+
+  auto discovery =
+      std::make_unique<device::test::MultipleVirtualFidoDeviceFactory>();
+  discovery->AddDevice(std::move(device_1));
+  ReplaceDiscoveryFactory(std::move(discovery));
+
+  test_client_.collect_pin_cb =
+      base::BindLambdaForTesting([&disconnect_1]() -> bool {
+        disconnect_1.Run(false);
+        return false;
+      });
+
+  PublicKeyCredentialRequestOptionsPtr options =
+      GetTestPublicKeyCredentialRequestOptions();
+  options->user_verification = device::UserVerificationRequirement::kRequired;
+  EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
+            AuthenticatorStatus::NOT_ALLOWED_ERROR);
 }
 
 TEST_F(PINAuthenticatorImplTest, AppIdExcludeExtensionWithPinRequiredError) {
