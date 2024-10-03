@@ -644,6 +644,9 @@ chromium-metrics-reviews@google.com.
   <int value="100302" label="FocusModeYTMDisplayOAuthConsent"/>
   <int value="100303" label="FocusModeYTMDisplayFreeTrial"/>
   <int value="100304" label="AccessibilityFaceGazeVelocityThreshold"/>
+  <int value="100305" label="iOSPaymentPromoLastImpressionTimestamp"/>
+  <int value="100306" label="iOSPaymentPromoImpressionsCounter"/>
+  <int value="100307" label="iOSPaymentPromoOptOut"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->

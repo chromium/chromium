@@ -50,42 +50,45 @@ constexpr int kiOSDesktopPromoTotalOptOuts = 2;
 constexpr base::TimeDelta kiOSDesktopPromoCooldownTime = base::Days(90);
 
 // IOSDesktopPromoHistogramType returns the promo histogram type for the given
-// promo type.
+// promo type. New promos should add themselves to this check.
 std::string IOSDesktopPromoHistogramType(IOSPromoType promo_type) {
   switch (promo_type) {
     case IOSPromoType::kPassword:
       return "PasswordPromo";
     case IOSPromoType::kAddress:
       return "AddressPromo";
-    // TODO(crbug.com/340269648): Add IOS Payment Promo for Desktop.
-    default:
-      NOTREACHED();
+    case IOSPromoType::kPayment:
+      return "PaymentPromo";
   }
 }
 
 // VerifyIOSDesktopPromoTotalImpressions ensures that each individual user sees
-// 10 of these promos total in their lifetime.
+// no more than a maximum of these promos total in their lifetime. New promos
+// should add themselves to this check.
 bool VerifyIOSDesktopPromoTotalImpressions(Profile* profile) {
-  // TODO(crbug.com/339262105): Add new promos to this check.
   int total_desktop_promo_impressions =
       profile->GetPrefs()->GetInteger(
           promos_prefs::kiOSPasswordPromoImpressionsCounter) +
       profile->GetPrefs()->GetInteger(
-          promos_prefs::kDesktopToiOSAddressPromoImpressionsCounter);
+          promos_prefs::kDesktopToiOSAddressPromoImpressionsCounter) +
+      profile->GetPrefs()->GetInteger(
+          promos_prefs::kDesktopToiOSPaymentPromoImpressionsCounter);
 
   return total_desktop_promo_impressions <=
          kiOSDesktopPromoTotalImpressionCount;
 }
 
 // VerifyIOSDesktopPromoTotalOptOuts verifies that a user hasn't opted-out of
-// seeing more than 1 of the 4 promo types (Passwords, Bookmarks, Addresses,
-// Payments).
+// seeing more than the allowed amount of opt-outs for all iOS Desktop promos.
+// New promos should add themselves to this check.
 bool VerifyIOSDesktopPromoTotalOptOuts(Profile* profile) {
-  // TODO(crbug.com/339262105): Add new promos to this check.
   std::vector<bool> promo_opt_outs = {
       profile->GetPrefs()->GetBoolean(promos_prefs::kiOSPasswordPromoOptOut),
       profile->GetPrefs()->GetBoolean(
-          promos_prefs::kDesktopToiOSAddressPromoOptOut)};
+          promos_prefs::kDesktopToiOSAddressPromoOptOut),
+      profile->GetPrefs()->GetBoolean(
+          promos_prefs::kDesktopToiOSPaymentPromoOptOut)};
+
   int total_desktop_promo_opt_outs_counter =
       std::count(promo_opt_outs.begin(), promo_opt_outs.end(), true);
 
@@ -93,15 +96,16 @@ bool VerifyIOSDesktopPromoTotalOptOuts(Profile* profile) {
 }
 
 // VerifyMostRecentPromoTimestamp ensures that each individual user sees a
-// iOS to Desktop promo a maximum of once every 90 days.
+// iOS to Desktop promo a maximum of once per cooldown period. New promos should
+// add themselves to this check.
 bool VerifyMostRecentPromoTimestamp(Profile* profile) {
-  // TODO(crbug.com/339262105): Add new promos to this check.
-  std::vector<base::Time> promos_timestamps;
-
-  promos_timestamps.push_back(profile->GetPrefs()->GetTime(
-      promos_prefs::kiOSPasswordPromoLastImpressionTimestamp));
-  promos_timestamps.push_back(profile->GetPrefs()->GetTime(
-      promos_prefs::kDesktopToiOSAddressPromoLastImpressionTimestamp));
+  std::vector<base::Time> promos_timestamps = {
+      profile->GetPrefs()->GetTime(
+          promos_prefs::kiOSPasswordPromoLastImpressionTimestamp),
+      profile->GetPrefs()->GetTime(
+          promos_prefs::kDesktopToiOSAddressPromoLastImpressionTimestamp),
+      profile->GetPrefs()->GetTime(
+          promos_prefs::kDesktopToiOSPaymentPromoLastImpressionTimestamp)};
 
   auto most_recent_promo_timestamp =
       std::max_element(promos_timestamps.begin(), promos_timestamps.end());
@@ -152,7 +156,8 @@ void RecordIOSDesktopPromoShownHistogram(IOSPromoType promo_type,
 }
 
 // IOSPromoPrefsConfig is a complex struct that needs definition of a
-// constructor, an explicit out-of-line copy constructor and a destructor.
+// constructor, an explicit out-of-line copy constructor and a destructor. New
+// promos should add themselves to this function.
 IOSPromoPrefsConfig::IOSPromoPrefsConfig() = default;
 IOSPromoPrefsConfig::IOSPromoPrefsConfig(const IOSPromoPrefsConfig&) = default;
 IOSPromoPrefsConfig::~IOSPromoPrefsConfig() = default;
@@ -160,7 +165,7 @@ IOSPromoPrefsConfig::~IOSPromoPrefsConfig() = default;
 IOSPromoPrefsConfig::IOSPromoPrefsConfig(IOSPromoType promo_type) {
   switch (promo_type) {
     case IOSPromoType::kPassword:
-      // This feature isn't defined with those buildflags.
+      // This feature isn't defined without the following buildflags.
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
       promo_feature = &feature_engagement::kIPHiOSPasswordPromoDesktopFeature;
 #endif
@@ -171,7 +176,7 @@ IOSPromoPrefsConfig::IOSPromoPrefsConfig(IOSPromoType promo_type) {
           promos_prefs::kiOSPasswordPromoLastImpressionTimestamp;
       break;
     case IOSPromoType::kAddress:
-      // This feature isn't defined with those buildflags.
+      // This feature isn't defined without the following buildflags.
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
       promo_feature = &feature_engagement::kIPHiOSAddressPromoDesktopFeature;
 #endif
@@ -181,12 +186,21 @@ IOSPromoPrefsConfig::IOSPromoPrefsConfig(IOSPromoType promo_type) {
       promo_last_impression_timestamp_pref_name =
           promos_prefs::kDesktopToiOSAddressPromoLastImpressionTimestamp;
       break;
-    // TODO(crbug.com/340269648): Add IOS Payment Promo for Desktop.
-    default:
-      NOTREACHED();
+    case IOSPromoType::kPayment:
+      // This feature isn't defined without the following buildflags.
+#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      promo_feature = &feature_engagement::kIPHiOSPaymentPromoDesktopFeature;
+#endif
+      promo_impressions_counter_pref_name =
+          promos_prefs::kDesktopToiOSPaymentPromoImpressionsCounter;
+      promo_opt_out_pref_name = promos_prefs::kDesktopToiOSPaymentPromoOptOut;
+      promo_last_impression_timestamp_pref_name =
+          promos_prefs::kDesktopToiOSPaymentPromoLastImpressionTimestamp;
+      break;
   }
 }
 
+// Registers profile prefs. New promos should add themselves to this function.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterTimePref(
       promos_prefs::kiOSPasswordPromoLastImpressionTimestamp, base::Time(),
@@ -206,6 +220,16 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
       promos_prefs::kDesktopToiOSAddressPromoOptOut, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+
+  registry->RegisterTimePref(
+      promos_prefs::kDesktopToiOSPaymentPromoLastImpressionTimestamp,
+      base::Time(), user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterIntegerPref(
+      promos_prefs::kDesktopToiOSPaymentPromoImpressionsCounter, 0,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      promos_prefs::kDesktopToiOSPaymentPromoOptOut, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
@@ -284,7 +308,6 @@ bool ShouldShowIOSDesktopPromo(Profile* profile, IOSPromoType promo_type) {
   return profile->GetPrefs()->GetInteger(
              promo_prefs.promo_impressions_counter_pref_name) <
              kiOSDesktopPromoMaxImpressionCount &&
-         // TODO(crbug.com/339262105): Add new promos to these checks.
          VerifyMostRecentPromoTimestamp(profile) &&
          VerifyIOSDesktopPromoTotalImpressions(profile) &&
          VerifyIOSDesktopPromoTotalOptOuts(profile) &&

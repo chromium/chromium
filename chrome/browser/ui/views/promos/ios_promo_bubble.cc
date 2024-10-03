@@ -107,12 +107,12 @@ class IOSPromoBubbleDelegate : public ui::DialogModelDelegate {
 // CreateFooter creates the view that is inserted as footer to the bubble.
 std::unique_ptr<views::View> CreateFooter(
     IOSPromoBubbleDelegate* bubble_delegate,
-    IOSPromoConstants::IOSPromoTypeConfigs IOSPromoConfig) {
+    const IOSPromoConstants::IOSPromoTypeConfigs& ios_promo_config) {
   views::LayoutProvider* provider = views::LayoutProvider::Get();
 
   auto footer_title_container =
       views::Builder<views::Label>()
-          .SetText(l10n_util::GetStringUTF16(IOSPromoConfig.kPromoTitleID))
+          .SetText(l10n_util::GetStringUTF16(ios_promo_config.promo_title_id))
           .SetTextStyle(views::style::STYLE_BODY_2_MEDIUM)
           .SetMultiLine(true)
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD)
@@ -141,14 +141,14 @@ std::unique_ptr<views::View> CreateFooter(
 
   auto decline_button = views::Builder<views::MdTextButton>()
                             .SetText(l10n_util::GetStringUTF16(
-                                IOSPromoConfig.kDeclineButtonTextID))
+                                ios_promo_config.decline_button_text_id))
                             .SetIsDefault(false)
                             .SetCallback(decline_button_callback);
 
   auto description_label =
       views::Builder<views::Label>()
           .SetText(
-              l10n_util::GetStringUTF16(IOSPromoConfig.kPromoDescriptionID))
+              l10n_util::GetStringUTF16(ios_promo_config.promo_description_id))
           .SetTextContext(views::style::CONTEXT_BUBBLE_FOOTER)
           .SetTextStyle(views::style::STYLE_DISABLED)
           .SetMultiLine(true)
@@ -207,7 +207,7 @@ std::unique_ptr<views::View> CreateFooter(
   // Note that the absence of a quiet zone may interfere with decoding
   // of QR codes even for small codes.
   auto qr_image = qr_code_generator::GenerateImage(
-      base::as_byte_span(std::string_view(IOSPromoConfig.kPromoQRCodeURL)),
+      base::as_byte_span(std::string_view(ios_promo_config.promo_qr_code_url)),
       qr_code_generator::ModuleStyle::kCircles,
       qr_code_generator::LocatorStyle::kRounded,
       qr_code_generator::CenterImage::kProductLogo,
@@ -225,42 +225,55 @@ std::unique_ptr<views::View> CreateFooter(
 // static
 IOSPromoConstants::IOSPromoTypeConfigs IOSPromoBubble::SetUpBubble(
     IOSPromoType promo_type) {
-  IOSPromoConstants::IOSPromoTypeConfigs IOSPromoConfig;
+  IOSPromoConstants::IOSPromoTypeConfigs ios_promo_config;
   switch (promo_type) {
     case IOSPromoType::kPassword:
       // Set up iOS Password Promo Bubble.
-      IOSPromoConfig.kPromoQRCodeURL =
+      ios_promo_config.promo_qr_code_url =
           IOSPromoConstants::kPasswordBubbleQRCodeURL;
-      IOSPromoConfig.kBubbleTitleID =
+      ios_promo_config.bubble_title_id =
           IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_TITLE;
-      IOSPromoConfig.kBubbleSubtitleID =
+      ios_promo_config.bubble_subtitle_id =
           IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_SUBTITLE;
-      IOSPromoConfig.kPromoTitleID =
+      ios_promo_config.promo_title_id =
           IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_TITLE;
-      IOSPromoConfig.kPromoDescriptionID =
+      ios_promo_config.promo_description_id =
           IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR;
-      IOSPromoConfig.kDeclineButtonTextID =
+      ios_promo_config.decline_button_text_id =
           IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_BUTTON_DECLINE;
       break;
     case IOSPromoType::kAddress:
       // Set up iOS Address Promo Bubble.
-      IOSPromoConfig.kPromoQRCodeURL =
+      ios_promo_config.promo_qr_code_url =
           IOSPromoConstants::kAddressBubbleQRCodeURL;
-      IOSPromoConfig.kBubbleTitleID =
+      ios_promo_config.bubble_title_id =
           IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_TITLE;
-      IOSPromoConfig.kBubbleSubtitleID =
+      ios_promo_config.bubble_subtitle_id =
           IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_SUBTITLE;
-      IOSPromoConfig.kPromoTitleID =
+      ios_promo_config.promo_title_id =
           IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_FOOTER_TITLE;
-      IOSPromoConfig.kPromoDescriptionID =
+      ios_promo_config.promo_description_id =
           IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR;
-      IOSPromoConfig.kDeclineButtonTextID =
+      ios_promo_config.decline_button_text_id =
           IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_BUTTON_DECLINE;
       break;
-    default:
-      NOTREACHED();
+    case IOSPromoType::kPayment:
+      // Set up iOS Payment Promo Bubble.
+      ios_promo_config.promo_qr_code_url =
+          IOSPromoConstants::kPaymentBubbleQRCodeURL;
+      ios_promo_config.bubble_title_id =
+          IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_TITLE;
+      ios_promo_config.bubble_subtitle_id =
+          IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_SUBTITLE;
+      ios_promo_config.promo_title_id =
+          IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_FOOTER_TITLE;
+      ios_promo_config.promo_description_id =
+          IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR;
+      ios_promo_config.decline_button_text_id =
+          IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_BUTTON_DECLINE;
+      break;
   }
-  return IOSPromoConfig;
+  return ios_promo_config;
 }
 
 // static
@@ -268,7 +281,7 @@ void IOSPromoBubble::ShowPromoBubble(views::View* anchor_view,
                                      PageActionIconView* highlighted_button,
                                      Browser* browser,
                                      IOSPromoType promo_type) {
-  IOSPromoConstants::IOSPromoTypeConfigs IOSPromoConfig =
+  IOSPromoConstants::IOSPromoTypeConfigs ios_promo_config =
       SetUpBubble(promo_type);
 
   if (ios_promo_delegate_) {
@@ -294,10 +307,10 @@ void IOSPromoBubble::ShowPromoBubble(views::View* anchor_view,
   dialog_model_builder.SetBannerImage(banner_image);
 
   dialog_model_builder.SetTitle(
-      l10n_util::GetStringUTF16(IOSPromoConfig.kBubbleTitleID));
+      l10n_util::GetStringUTF16(ios_promo_config.bubble_title_id));
 
   dialog_model_builder.SetSubtitle(
-      l10n_util::GetStringUTF16(IOSPromoConfig.kBubbleSubtitleID));
+      l10n_util::GetStringUTF16(ios_promo_config.bubble_subtitle_id));
 
   auto promo_bubble = std::make_unique<views::BubbleDialogModelHost>(
       dialog_model_builder.Build(), anchor_view,
@@ -306,7 +319,8 @@ void IOSPromoBubble::ShowPromoBubble(views::View* anchor_view,
   ios_promo_delegate_ = promo_bubble.get();
 
   promo_bubble->SetHighlightedButton(highlighted_button);
-  promo_bubble->SetFootnoteView(CreateFooter(bubble_delegate, IOSPromoConfig));
+  promo_bubble->SetFootnoteView(
+      CreateFooter(bubble_delegate, ios_promo_config));
 
   views::Widget* const widget =
       views::BubbleDialogDelegate::CreateBubble(std::move(promo_bubble));

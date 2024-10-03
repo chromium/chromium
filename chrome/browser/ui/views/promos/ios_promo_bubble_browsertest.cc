@@ -62,10 +62,36 @@ class IOSAddressPromoBubbleTest : public DialogBrowserTest {
   }
 };
 
+class IOSPaymentPromoBubbleTest : public DialogBrowserTest {
+ public:
+  IOSPaymentPromoBubbleTest() = default;
+
+  IOSPaymentPromoBubbleTest(const IOSPaymentPromoBubbleTest&) = delete;
+
+  IOSPaymentPromoBubbleTest& operator=(const IOSPaymentPromoBubbleTest&) =
+      delete;
+
+  // DialogBrowserTest
+  void ShowUi(const std::string& name) override {
+    ToolbarButtonProvider* button_provider =
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->toolbar_button_provider();
+    // Test for iOS Promo Bubble for Desktop Payment promo.
+    IOSPromoBubble::ShowPromoBubble(
+        button_provider->GetAnchorView(PageActionIconType::kSaveCard),
+        button_provider->GetPageActionIconView(PageActionIconType::kSaveCard),
+        browser(), IOSPromoType::kPayment);
+  }
+};
+
 IN_PROC_BROWSER_TEST_F(IOSPasswordPromoBubbleTest, InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_F(IOSAddressPromoBubbleTest, InvokeUi_default) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(IOSPaymentPromoBubbleTest, InvokeUi_default) {
   ShowAndVerifyUi();
 }

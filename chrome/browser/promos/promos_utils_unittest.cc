@@ -609,6 +609,7 @@ TEST_F(IOSPromoOnDesktopTest,
 // Tests that RegisterProfilePrefs registers the prefs to their default values
 // correctly.
 TEST_F(IOSPromoOnDesktopTest, RegisterProfilePrefsTest) {
+  // Password promo.
   ASSERT_FALSE(prefs()->GetBoolean(promos_prefs::kiOSPasswordPromoOptOut));
   ASSERT_EQ(
       prefs()->GetInteger(promos_prefs::kiOSPasswordPromoImpressionsCounter),
@@ -616,6 +617,8 @@ TEST_F(IOSPromoOnDesktopTest, RegisterProfilePrefsTest) {
   ASSERT_EQ(
       prefs()->GetTime(promos_prefs::kiOSPasswordPromoLastImpressionTimestamp),
       base::Time());
+
+  // Address promo.
   ASSERT_FALSE(
       prefs()->GetBoolean(promos_prefs::kDesktopToiOSAddressPromoOptOut));
   ASSERT_EQ(prefs()->GetInteger(
@@ -623,6 +626,16 @@ TEST_F(IOSPromoOnDesktopTest, RegisterProfilePrefsTest) {
             0);
   ASSERT_EQ(prefs()->GetTime(
                 promos_prefs::kDesktopToiOSAddressPromoLastImpressionTimestamp),
+            base::Time());
+
+  // Payment promo.
+  ASSERT_FALSE(
+      prefs()->GetBoolean(promos_prefs::kDesktopToiOSPaymentPromoOptOut));
+  ASSERT_EQ(prefs()->GetInteger(
+                promos_prefs::kDesktopToiOSPaymentPromoImpressionsCounter),
+            0);
+  ASSERT_EQ(prefs()->GetTime(
+                promos_prefs::kDesktopToiOSPaymentPromoLastImpressionTimestamp),
             base::Time());
 }
 
@@ -678,4 +691,207 @@ TEST_F(IOSPromoOnDesktopTest, iOSPasswordPromoShownTestSecondImpression) {
       "IOS.DesktopPasswordPromo.Shown",
       promos_utils::DesktopIOSPasswordPromoImpression::kSecondImpression, 1);
 }
+
+// Tests that RecordIOSDesktopPromoUserInteractionHistogram records the proper
+// histogram for first impression and action dismissed for the payment promo
+// type.
+TEST_F(
+    IOSPromoOnDesktopTest,
+    RecordIOSDesktopPromoUserInteractionHistogramTestFirstImpressionDismissedForPaymentPromo) {
+  RecordIOSDesktopPromoUserInteractionHistogram(
+      IOSPromoType::kPayment, 1, DesktopIOSPromoAction::kDismissed);
+
+  histograms()->ExpectUniqueSample(
+      "IOS.Desktop.PaymentPromo.FirstImpression.Action",
+      DesktopIOSPromoAction::kDismissed, 1);
+}
+
+// Tests that RecordIOSDesktopPromoUserInteractionHistogram records the proper
+// histogram for first impression and no thanks clicked action for the payment
+// promo type.
+TEST_F(
+    IOSPromoOnDesktopTest,
+    RecordIOSDesktopPromoUserInteractionHistogramTestFirstImpressionNoThanksClickedForPaymentPromo) {
+  RecordIOSDesktopPromoUserInteractionHistogram(
+      IOSPromoType::kPayment, 1, DesktopIOSPromoAction::kNoThanksClicked);
+
+  histograms()->ExpectUniqueSample(
+      "IOS.Desktop.PaymentPromo.FirstImpression.Action",
+      DesktopIOSPromoAction::kNoThanksClicked, 1);
+}
+
+// Tests that RecordIOSDesktopPromoUserInteractionHistogram records the proper
+// histogram for second impression and action dismissed for the payment promo
+// type.
+TEST_F(
+    IOSPromoOnDesktopTest,
+    RecordIOSDesktopPromoUserInteractionHistogramTestSecondImpressionDismissedForPaymentPromo) {
+  RecordIOSDesktopPromoUserInteractionHistogram(
+      IOSPromoType::kPayment, 2, DesktopIOSPromoAction::kDismissed);
+
+  histograms()->ExpectUniqueSample(
+      "IOS.Desktop.PaymentPromo.SecondImpression.Action",
+      DesktopIOSPromoAction::kDismissed, 1);
+}
+
+// Tests that RecordIOSDesktopPromoUserInteractionHistogram records the proper
+// histogram for second impression and no thanks clicked action for the
+// payment promo type.
+TEST_F(
+    IOSPromoOnDesktopTest,
+    RecordIOSDesktopPromoUserInteractionHistogramTestSecondImpressionNoThanksClickedForPaymentPromo) {
+  RecordIOSDesktopPromoUserInteractionHistogram(
+      IOSPromoType::kPayment, 2, DesktopIOSPromoAction::kNoThanksClicked);
+
+  histograms()->ExpectUniqueSample(
+      "IOS.Desktop.PaymentPromo.SecondImpression.Action",
+      DesktopIOSPromoAction::kNoThanksClicked, 1);
+}
+
+// Tests that RecordIOSDesktopPromoUserInteractionHistogram records the proper
+// histogram for third impression and action dismissed for the payment promo
+// type.
+TEST_F(
+    IOSPromoOnDesktopTest,
+    RecordIOSDesktopPromoUserInteractionHistogramTestThirdImpressionDismissedForPaymentPromo) {
+  RecordIOSDesktopPromoUserInteractionHistogram(
+      IOSPromoType::kPayment, 3, DesktopIOSPromoAction::kDismissed);
+
+  histograms()->ExpectUniqueSample(
+      "IOS.Desktop.PaymentPromo.ThirdImpression.Action",
+      DesktopIOSPromoAction::kDismissed, 1);
+}
+
+// Tests that RecordIOSDesktopPromoUserInteractionHistogram records the proper
+// histogram for third impression and no thanks clicked action for the
+// payment promo type.
+TEST_F(
+    IOSPromoOnDesktopTest,
+    RecordIOSDesktopPromoUserInteractionHistogramTestThirdImpressionNoThanksClickedForPaymentPromo) {
+  RecordIOSDesktopPromoUserInteractionHistogram(
+      IOSPromoType::kPayment, 3, DesktopIOSPromoAction::kNoThanksClicked);
+
+  histograms()->ExpectUniqueSample(
+      "IOS.Desktop.PaymentPromo.ThirdImpression.Action",
+      DesktopIOSPromoAction::kNoThanksClicked, 1);
+}
+
+// Tests that ShouldShowIOSDesktopPromo returns true when no promo has yet been
+// shown for the given payment promo type.
+TEST_F(IOSPromoOnDesktopTest,
+       ShouldShowIOSDesktopPromoTestTrueForPaymentPromo) {
+  EXPECT_TRUE(ShouldShowIOSDesktopPromo(profile(), IOSPromoType::kPayment));
+}
+
+// Tests that ShouldShowIOSDesktopPromo returns false when the user has already
+// seen 3 promos for the given payment promo type.
+TEST_F(IOSPromoOnDesktopTest,
+       ShouldShowIOSDesktopPromoTestFalseTooManyImpressionsForPaymentPromo) {
+  prefs()->SetInteger(promos_prefs::kDesktopToiOSPaymentPromoImpressionsCounter,
+                      3);
+  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), IOSPromoType::kPayment));
+}
+
+// Tests that ShouldShowIOSDesktopPromo returns false when the last seen
+// impression is too recent for the given payment promo type.
+TEST_F(
+    IOSPromoOnDesktopTest,
+    ShouldShowIOSDesktopPromoTestFalseLastImpressionTooRecentForPaymentPromo) {
+  prefs()->SetTime(
+      promos_prefs::kDesktopToiOSPaymentPromoLastImpressionTimestamp,
+      base::Time::Now());
+  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), IOSPromoType::kPayment));
+}
+
+// Tests that ShouldShowIOSDesktopPromo returns false when the user has
+// opted-out from the given payment promo type.
+TEST_F(IOSPromoOnDesktopTest,
+       ShouldShowIOSDesktopPromoTestFalseUserOptedOutForPaymentPromo) {
+  prefs()->SetBoolean(promos_prefs::kDesktopToiOSPaymentPromoOptOut, true);
+  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), IOSPromoType::kPayment));
+}
+
+// Tests that IOSDesktopPromoShown sets the correct prefs and records the
+// correct histogram for the first impression for the given payment promo
+// type.
+TEST_F(IOSPromoOnDesktopTest,
+       IOSDesktopPromoShownTestFirstImpressionForPaymentPromo) {
+  // Record before and after times to ensure the timestamp is within that range.
+  base::Time before = base::Time::Now();
+  IOSDesktopPromoShown(profile(), IOSPromoType::kPayment);
+  base::Time after = base::Time::Now();
+
+  ASSERT_EQ(prefs()->GetInteger(
+                promos_prefs::kDesktopToiOSPaymentPromoImpressionsCounter),
+            1);
+  ASSERT_GE(prefs()->GetTime(
+                promos_prefs::kDesktopToiOSPaymentPromoLastImpressionTimestamp),
+            before);
+  ASSERT_LE(prefs()->GetTime(
+                promos_prefs::kDesktopToiOSPaymentPromoLastImpressionTimestamp),
+            after);
+
+  histograms()->ExpectUniqueSample("IOS.Desktop.PaymentPromo.Shown",
+                                   DesktopIOSPromoImpression::kFirstImpression,
+                                   1);
+}
+
+// Tests that IOSDesktopPromoShown sets the correct prefs and records the
+// correct histogram for the second impression for the given payment promo
+// type.
+TEST_F(IOSPromoOnDesktopTest,
+       IOSDesktopPromoShownTestSecondImpressionForPaymentPromo) {
+  // First impression
+  IOSDesktopPromoShown(profile(), IOSPromoType::kPayment);
+
+  // Second impression
+  base::Time before = base::Time::Now();
+  IOSDesktopPromoShown(profile(), IOSPromoType::kPayment);
+  base::Time after = base::Time::Now();
+
+  ASSERT_EQ(prefs()->GetInteger(
+                promos_prefs::kDesktopToiOSPaymentPromoImpressionsCounter),
+            2);
+  ASSERT_GE(prefs()->GetTime(
+                promos_prefs::kDesktopToiOSPaymentPromoLastImpressionTimestamp),
+            before);
+  ASSERT_LE(prefs()->GetTime(
+                promos_prefs::kDesktopToiOSPaymentPromoLastImpressionTimestamp),
+            after);
+
+  histograms()->ExpectBucketCount("IOS.Desktop.PaymentPromo.Shown",
+                                  DesktopIOSPromoImpression::kSecondImpression,
+                                  1);
+}
+// Tests that IOSDesktopPromoShown sets the correct prefs and records the
+// correct histogram for the third impression for the given payment promo
+// type.
+TEST_F(IOSPromoOnDesktopTest,
+       IOSDesktopPromoShownTestThirdImpressionForPaymentPromo) {
+  // First impression
+  IOSDesktopPromoShown(profile(), IOSPromoType::kPayment);
+
+  // Second impression
+  IOSDesktopPromoShown(profile(), IOSPromoType::kPayment);
+
+  // Third impression
+  base::Time before = base::Time::Now();
+  IOSDesktopPromoShown(profile(), IOSPromoType::kPayment);
+  base::Time after = base::Time::Now();
+
+  ASSERT_EQ(prefs()->GetInteger(
+                promos_prefs::kDesktopToiOSPaymentPromoImpressionsCounter),
+            3);
+  ASSERT_GE(prefs()->GetTime(
+                promos_prefs::kDesktopToiOSPaymentPromoLastImpressionTimestamp),
+            before);
+  ASSERT_LE(prefs()->GetTime(
+                promos_prefs::kDesktopToiOSPaymentPromoLastImpressionTimestamp),
+            after);
+
+  histograms()->ExpectBucketCount("IOS.Desktop.PaymentPromo.Shown",
+                                  DesktopIOSPromoImpression::kThirdImpression,
+                                  1);
+}
+
 }  // namespace promos_utils

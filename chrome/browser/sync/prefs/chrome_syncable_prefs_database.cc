@@ -364,6 +364,9 @@ enum {
   kFocusModeYTMDisplayOAuthConsent = 100302,
   kFocusModeYTMDisplayFreeTrial = 100303,
   kAccessibilityFaceGazeVelocityThreshold = 100304,
+  kDesktopToiOSPaymentPromoLastImpressionTimestamp = 100305,
+  kDesktopToiOSPaymentPromoImpressionsCounter = 100306,
+  kDesktopToiOSPaymentPromoOptOut = 100307,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -1570,6 +1573,18 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kHttpsFirstBalancedMode,
      {syncable_prefs_ids::kHttpsFirstBalancedMode, syncer::PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {promos_prefs::kDesktopToiOSPaymentPromoLastImpressionTimestamp,
+     {syncable_prefs_ids::kDesktopToiOSPaymentPromoLastImpressionTimestamp,
+      syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {promos_prefs::kDesktopToiOSPaymentPromoImpressionsCounter,
+     {syncable_prefs_ids::kDesktopToiOSPaymentPromoImpressionsCounter,
+      syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {promos_prefs::kDesktopToiOSPaymentPromoOptOut,
+     {syncable_prefs_ids::kDesktopToiOSPaymentPromoOptOut, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
 });

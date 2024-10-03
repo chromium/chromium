@@ -23,7 +23,7 @@ inline constexpr char kiOSPasswordPromoImpressionsCounter[] =
 inline constexpr char kiOSPasswordPromoOptOut[] = "promos.ios_password_opt_out";
 
 // iOS Address promo prefs.
-// Int64 that keeps track of the last impression timestamp of the "iOS password
+// Int64 that keeps track of the last impression timestamp of the "iOS address
 // promo bubble on desktop" for a given user.
 inline constexpr char kDesktopToiOSAddressPromoLastImpressionTimestamp[] =
     "promos.ios_address_last_impression_timestamp";
@@ -37,6 +37,22 @@ inline constexpr char kDesktopToiOSAddressPromoImpressionsCounter[] =
 // "iOS address promo bubble on desktop" again.
 inline constexpr char kDesktopToiOSAddressPromoOptOut[] =
     "promos.ios_address_opt_out";
+
+// iOS Payment promo prefs.
+// Int64 that keeps track of the last impression timestamp of the "iOS payment
+// promo bubble on desktop" for a given user.
+inline constexpr char kDesktopToiOSPaymentPromoLastImpressionTimestamp[] =
+    "promos.ios_payment_last_impression_timestamp";
+
+// Integer that keeps track of impressions of the "iOS payment promo bubble on
+// desktop" shown to a given user.
+inline constexpr char kDesktopToiOSPaymentPromoImpressionsCounter[] =
+    "promos.ios_payment_impressions_counter";
+
+// Boolean that keeps track whether a given user has opted-out of seeing the
+// "iOS payment promo bubble on desktop" again.
+inline constexpr char kDesktopToiOSPaymentPromoOptOut[] =
+    "promos.ios_payment_opt_out";
 
 }  // namespace promos_prefs
 
