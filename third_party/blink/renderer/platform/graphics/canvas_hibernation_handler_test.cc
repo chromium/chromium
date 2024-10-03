@@ -91,16 +91,23 @@ void SetPageVisible(
     bool page_visible) {
   host->SetPageVisible(page_visible);
 
-  // Temporary plumbing until hibernation logic is moved to CanvasResourceHost.
-  bridge->PageVisibilityChanged();
-
-  // Make sure that idle tasks run when hidden.
+  // TODO(crbug.com/40280152): Make a custom FakeCanvasResourceHost subclass
+  // that encapsulates the logic for starting/ending hibernation in its
+  // SetPageVisible() implementation and change the tests to directly call
+  // SetPageVisible() on the host.
+  CanvasHibernationHandler& hibernation_handler =
+      bridge->GetHibernationHandler();
   if (!page_visible) {
-    ThreadScheduler::Current()
-        ->ToMainThreadScheduler()
-        ->StartIdlePeriodForTesting();
-    platform->RunUntilIdle();
-    EXPECT_TRUE(bridge->GetHibernationHandler().IsHibernating());
+    // Trigger hibernation.
+    scoped_refptr<StaticBitmapImage> snapshot =
+        host->ResourceProvider()->Snapshot(FlushReason::kHibernating);
+    hibernation_handler.SaveForHibernation(
+        snapshot->PaintImageForCurrentFrame().GetSwSkImage(),
+        host->ResourceProvider()->ReleaseRecorder());
+    EXPECT_TRUE(hibernation_handler.IsHibernating());
+  } else {
+    // End hibernation.
+    hibernation_handler.Clear();
   }
 }
 
@@ -225,10 +232,13 @@ TEST_P(CanvasHibernationHandlerTest, SimpleTest) {
   histogram_tester.ExpectTotalCount(
       "Blink.Canvas.2DLayerBridge.Compression.DecompressionTime", 0);
 
-  SetPageVisible(Host(), bridge.get(), platform, true);
-  EXPECT_FALSE(handler.is_encoded());
+  // It should be possible to decompress the encoded image.
+  EXPECT_TRUE(bridge->GetHibernationHandler().GetImage());
   histogram_tester.ExpectTotalCount(
       "Blink.Canvas.2DLayerBridge.Compression.DecompressionTime", 1);
+
+  SetPageVisible(Host(), bridge.get(), platform, true);
+  EXPECT_FALSE(handler.is_encoded());
 
   EXPECT_TRUE(Host()->GetRasterMode() == RasterMode::kGPU);
   EXPECT_FALSE(handler.IsHibernating());
@@ -495,7 +505,9 @@ TEST_P(CanvasHibernationHandlerTest, HibernationMemoryMetrics) {
     EXPECT_EQ(entries["is_encoded"], 1u);
   }
 
-  DrawSomething(bridge.get());
+  // End hibernation to be able to verify that hibernation dumps will no longer
+  // occur.
+  SetPageVisible(Host(), bridge.get(), platform, true);
   EXPECT_FALSE(handler.IsHibernating());
 
   {
@@ -506,7 +518,6 @@ TEST_P(CanvasHibernationHandlerTest, HibernationMemoryMetrics) {
     EXPECT_FALSE(pmd.GetAllocatorDump("canvas/hibernated/canvas_0"));
   }
 
-  SetPageVisible(Host(), bridge.get(), platform, true);
   SetPageVisible(Host(), bridge.get(), platform, false);
   // Wait for the canvas to be encoded.
   EXPECT_EQ(1u, TestSingleThreadTaskRunner::RunAll(task_runner->delayed()));
