@@ -495,7 +495,21 @@ void av1_quantize_lp_neon(const int16_t *coeff_ptr, intptr_t n_coeffs, const int
 
 void av1_resize_and_extend_frame_c(const YV12_BUFFER_CONFIG *src, YV12_BUFFER_CONFIG *dst, const InterpFilter filter, const int phase, const int num_planes);
 void av1_resize_and_extend_frame_neon(const YV12_BUFFER_CONFIG *src, YV12_BUFFER_CONFIG *dst, const InterpFilter filter, const int phase, const int num_planes);
-#define av1_resize_and_extend_frame av1_resize_and_extend_frame_neon
+void av1_resize_and_extend_frame_neon_dotprod(const YV12_BUFFER_CONFIG* src,
+                                              YV12_BUFFER_CONFIG* dst,
+                                              const InterpFilter filter,
+                                              const int phase,
+                                              const int num_planes);
+void av1_resize_and_extend_frame_neon_i8mm(const YV12_BUFFER_CONFIG* src,
+                                           YV12_BUFFER_CONFIG* dst,
+                                           const InterpFilter filter,
+                                           const int phase,
+                                           const int num_planes);
+RTCD_EXTERN void (*av1_resize_and_extend_frame)(const YV12_BUFFER_CONFIG* src,
+                                                YV12_BUFFER_CONFIG* dst,
+                                                const InterpFilter filter,
+                                                const int phase,
+                                                const int num_planes);
 
 void av1_resize_horz_dir_c(const uint8_t* const input,
                            int in_stride,
@@ -622,6 +636,13 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_NEON_I8MM) av1_dist_wtd_convolve_x = av1_dist_wtd_convolve_x_neon_i8mm;
     av1_get_crc32c_value = av1_get_crc32c_value_c;
     if (flags & HAS_ARM_CRC32) av1_get_crc32c_value = av1_get_crc32c_value_arm_crc32;
+    av1_resize_and_extend_frame = av1_resize_and_extend_frame_neon;
+    if (flags & HAS_NEON_DOTPROD) {
+      av1_resize_and_extend_frame = av1_resize_and_extend_frame_neon_dotprod;
+    }
+    if (flags & HAS_NEON_I8MM) {
+      av1_resize_and_extend_frame = av1_resize_and_extend_frame_neon_i8mm;
+    }
 }
 #endif
 
