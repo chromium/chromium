@@ -26,7 +26,7 @@ const std::array<GpuControlList::Conditions, 1> kExceptionsForEntry5 = {{
         &kGLStringsForGpuManagerTestingEntry5Exception0,  // GL strings
         nullptr,                                          // machine model info
         nullptr,                                          // Intel conditions
-        &kMoreForEntry5_572251052Exception0,              // more data
+        nullptr,                                          // more conditions
     },
 }};
 

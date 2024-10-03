@@ -39,7 +39,7 @@ const std::array<GpuControlList::Entry, 6> kGpuDataManagerTestingEntries = {{
             nullptr,                                // GL strings
             nullptr,                                // machine model info
             nullptr,                                // Intel conditions
-            &kMoreForEntry1_572251052,              // more data
+            nullptr,                                // more conditions
         },
         base::span<const GpuControlList::Conditions>(),  // exceptions
     },
@@ -64,7 +64,7 @@ const std::array<GpuControlList::Entry, 6> kGpuDataManagerTestingEntries = {{
             &kGLStringsForGpuManagerTestingEntry2,  // GL strings
             nullptr,                                // machine model info
             nullptr,                                // Intel conditions
-            &kMoreForEntry2_572251052,              // more data
+            nullptr,                                // more conditions
         },
         base::span<const GpuControlList::Conditions>(),  // exceptions
     },
@@ -89,7 +89,7 @@ const std::array<GpuControlList::Entry, 6> kGpuDataManagerTestingEntries = {{
             nullptr,                                // GL strings
             nullptr,                                // machine model info
             nullptr,                                // Intel conditions
-            &kMoreForEntry3_572251052,              // more data
+            nullptr,                                // more conditions
         },
         base::span<const GpuControlList::Conditions>(),  // exceptions
     },
@@ -114,7 +114,7 @@ const std::array<GpuControlList::Entry, 6> kGpuDataManagerTestingEntries = {{
             &kGLStringsForGpuManagerTestingEntry4,  // GL strings
             nullptr,                                // machine model info
             nullptr,                                // Intel conditions
-            &kMoreForEntry4_572251052,              // more data
+            nullptr,                                // more conditions
         },
         base::span<const GpuControlList::Conditions>(),  // exceptions
     },
@@ -139,7 +139,7 @@ const std::array<GpuControlList::Entry, 6> kGpuDataManagerTestingEntries = {{
             nullptr,                                // GL strings
             nullptr,                                // machine model info
             nullptr,                                // Intel conditions
-            &kMoreForEntry5_572251052,              // more data
+            nullptr,                                // more conditions
         },
         base::span(kExceptionsForEntry5),  // exceptions
     },
@@ -164,7 +164,7 @@ const std::array<GpuControlList::Entry, 6> kGpuDataManagerTestingEntries = {{
             nullptr,                                // GL strings
             nullptr,                                // machine model info
             nullptr,                                // Intel conditions
-            &kMoreForEntry6_572251052,              // more data
+            nullptr,                                // more conditions
         },
         base::span<const GpuControlList::Conditions>(),  // exceptions
     },

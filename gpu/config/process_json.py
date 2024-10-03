@@ -477,7 +477,7 @@ def write_conditions(entry_id, is_exception, exception_id, entry,
   pixel_shader_version = None
   in_process_gpu = False
   gl_reset_notification_strategy = None
-  direct_rendering_version = ''
+  direct_rendering_version = None
   gpu_count = None
   hardware_overlay = None
   test_group = 0

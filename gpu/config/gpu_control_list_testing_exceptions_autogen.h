@@ -26,7 +26,7 @@ const std::array<GpuControlList::Conditions, 1> kExceptionsForEntry4 = {{
         nullptr,                                // GL strings
         nullptr,                                // machine model info
         nullptr,                                // Intel conditions
-        &kMoreForEntry4_1440601243Exception0,   // more data
+        nullptr,                                // more conditions
     },
 }};
 
@@ -44,7 +44,7 @@ const std::array<GpuControlList::Conditions, 1> kExceptionsForEntry5 = {{
         nullptr,                                // GL strings
         nullptr,                                // machine model info
         nullptr,                                // Intel conditions
-        &kMoreForEntry5_1440601243Exception0,   // more data
+        nullptr,                                // more conditions
     },
 }};
 
@@ -62,7 +62,7 @@ const std::array<GpuControlList::Conditions, 1> kExceptionsForEntry21 = {{
         &kGLStringsForGpuControlTestingEntry21Exception0,  // GL strings
         nullptr,                                           // machine model info
         nullptr,                                           // Intel conditions
-        &kMoreForEntry21_1440601243Exception0,             // more data
+        nullptr,                                           // more conditions
     },
 }};
 
@@ -80,7 +80,7 @@ const std::array<GpuControlList::Conditions, 1> kExceptionsForEntry27 = {{
         nullptr,                                 // GL strings
         &kMachineModelInfoForEntry27Exception0,  // machine model info
         nullptr,                                 // Intel conditions
-        &kMoreForEntry27_1440601243Exception0,   // more data
+        nullptr,                                 // more conditions
     },
 }};
 
@@ -98,7 +98,7 @@ const std::array<GpuControlList::Conditions, 1> kExceptionsForEntry29 = {{
         nullptr,                                 // GL strings
         &kMachineModelInfoForEntry29Exception0,  // machine model info
         nullptr,                                 // Intel conditions
-        &kMoreForEntry29_1440601243Exception0,   // more data
+        nullptr,                                 // more conditions
     },
 }};
 
@@ -115,9 +115,9 @@ const std::array<GpuControlList::Conditions, 2> kExceptionsForEntry44 = {{
         GpuControlList::kMultiGpuStyleNone,     // multi_gpu_style
         &kDriverInfoForGpuControlTestingEntry44Exception0,  // driver info
         nullptr,                                            // GL strings
-        nullptr,                                // machine model info
-        nullptr,                                // Intel conditions
-        &kMoreForEntry44_1440601243Exception0,  // more data
+        nullptr,  // machine model info
+        nullptr,  // Intel conditions
+        nullptr,  // more conditions
     },
     {
         GpuControlList::kOsAny,  // os_type
@@ -131,9 +131,9 @@ const std::array<GpuControlList::Conditions, 2> kExceptionsForEntry44 = {{
         GpuControlList::kMultiGpuStyleNone,     // multi_gpu_style
         &kDriverInfoForGpuControlTestingEntry44Exception1,  // driver info
         nullptr,                                            // GL strings
-        nullptr,                                // machine model info
-        nullptr,                                // Intel conditions
-        &kMoreForEntry44_1440601243Exception1,  // more data
+        nullptr,  // machine model info
+        nullptr,  // Intel conditions
+        nullptr,  // more conditions
     },
 }};
 
@@ -151,7 +151,7 @@ const std::array<GpuControlList::Conditions, 1> kExceptionsForEntry51 = {{
         &kGLStringsForGpuControlTestingEntry51Exception0,  // GL strings
         nullptr,                                           // machine model info
         nullptr,                                           // Intel conditions
-        &kMoreForEntry51_1440601243Exception0,             // more data
+        nullptr,                                           // more conditions
     },
 }};
 
@@ -169,7 +169,7 @@ const std::array<GpuControlList::Conditions, 1> kExceptionsForEntry65 = {{
         nullptr,                                           // GL strings
         nullptr,                                           // machine model info
         &kIntelConditionsForEntry65_1440601243Exception0,  // Intel conditions
-        &kMoreForEntry65_1440601243Exception0,             // more data
+        nullptr,                                           // more conditions
     },
 }};
 
@@ -202,7 +202,7 @@ const std::array<GpuControlList::Conditions, 3> kExceptionsForEntry73 = {{
         &kGLStringsForGpuControlTestingEntry73Exception1,  // GL strings
         nullptr,                                           // machine model info
         nullptr,                                           // Intel conditions
-        &kMoreForEntry73_1440601243Exception1,             // more data
+        nullptr,                                           // more conditions
     },
     {
         GpuControlList::kOsAny,  // os_type
@@ -234,9 +234,9 @@ const std::array<GpuControlList::Conditions, 2> kExceptionsForEntry77 = {{
         GpuControlList::kMultiGpuStyleNone,     // multi_gpu_style
         &kDriverInfoForGpuControlTestingEntry77Exception0,  // driver info
         nullptr,                                            // GL strings
-        nullptr,                                // machine model info
-        nullptr,                                // Intel conditions
-        &kMoreForEntry77_1440601243Exception0,  // more data
+        nullptr,  // machine model info
+        nullptr,  // Intel conditions
+        nullptr,  // more conditions
     },
     {
         GpuControlList::kOsAny,  // os_type
@@ -250,9 +250,9 @@ const std::array<GpuControlList::Conditions, 2> kExceptionsForEntry77 = {{
         GpuControlList::kMultiGpuStyleNone,     // multi_gpu_style
         &kDriverInfoForGpuControlTestingEntry77Exception1,  // driver info
         nullptr,                                            // GL strings
-        nullptr,                                // machine model info
-        nullptr,                                // Intel conditions
-        &kMoreForEntry77_1440601243Exception1,  // more data
+        nullptr,  // machine model info
+        nullptr,  // Intel conditions
+        nullptr,  // more conditions
     },
 }};
 
