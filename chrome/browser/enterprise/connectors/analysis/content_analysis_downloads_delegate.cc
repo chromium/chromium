@@ -16,13 +16,40 @@
 
 namespace enterprise_connectors {
 
+namespace {
+
+// Deobfuscates the entire file. Placed here to allow the deobfuscation and file
+// opening to proceed independently of the delegate's lifecycle.
+void DeobfuscateAndOpen(base::FilePath file_path,
+                        base::OnceClosure open_file_callback) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&enterprise_obfuscation::DeobfuscateFileInPlace,
+                     std::move(file_path)),
+      base::BindOnce(
+          [](base::OnceClosure open_file_callback,
+             base::expected<void, enterprise_obfuscation::Error> result) {
+            if (!result.has_value()) {
+              // TODO(b/367259664): Add better error handling for deobfuscation.
+              DVLOG(1) << "Failed to deobfuscate file.";
+            }
+
+            if (open_file_callback) {
+              std::move(open_file_callback).Run();
+            }
+          },
+          std::move(open_file_callback)));
+}
+
+}  // namespace
+
 ContentAnalysisDownloadsDelegate::ContentAnalysisDownloadsDelegate(
     const std::u16string& filename,
     const std::u16string& custom_message,
     GURL custom_learn_more_url,
     bool bypass_justification_required,
-    base::OnceCallback<void()> open_file_callback,
-    base::OnceCallback<void()> discard_file_callback,
+    base::OnceClosure open_file_callback,
+    base::OnceClosure discard_file_callback,
     download::DownloadItem* download_item,
     const ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage&
         custom_rule_message)
@@ -70,25 +97,12 @@ void ContentAnalysisDownloadsDelegate::BypassWarnings(
               enterprise_obfuscation::DownloadObfuscationData::kUserDataKey));
 
   if (obfuscation_data && obfuscation_data->is_obfuscated) {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(&enterprise_obfuscation::DeobfuscateFileInPlace,
-                       download_item_->GetFullPath()),
-        base::BindOnce(
-            &ContentAnalysisDownloadsDelegate::OnDeobfuscationComplete,
-            weak_ptr_factory_.GetWeakPtr()));
+    DeobfuscateAndOpen(download_item_->GetFullPath(),
+                       std::move(open_file_callback_));
+    ResetCallbacks();
     return;
   }
 
-  Open();
-}
-
-void ContentAnalysisDownloadsDelegate::OnDeobfuscationComplete(
-    base::expected<void, enterprise_obfuscation::Error> deobfuscation_result) {
-  if (!deobfuscation_result.has_value()) {
-    // TODO(b/367259664): Add better error handling for deobfuscation.
-    DVLOG(1) << "Failed to deobfuscate file.";
-  }
   Open();
 }
 

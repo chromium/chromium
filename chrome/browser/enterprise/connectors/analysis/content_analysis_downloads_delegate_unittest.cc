@@ -234,19 +234,24 @@ TEST_F(ContentAnalysisDownloadsDelegateTest, TestDeobfuscationOnBypass) {
       enterprise_obfuscation::DownloadObfuscationData::kUserDataKey,
       std::move(obfuscation_data));
 
-  ContentAnalysisDownloadsDelegate delegate(
-      kTestFile, u"", GURL(), true,
-      base::BindOnce(&ContentAnalysisDownloadsDelegateTest::OpenCallback,
-                     base::Unretained(this)),
-      base::BindOnce(&ContentAnalysisDownloadsDelegateTest::DiscardCallback,
-                     base::Unretained(this)),
-      &mock_download_item, CreateSampleCustomRuleMessage(u"", ""));
-
-  // Bypass warnings should trigger deobfuscation and open callback.
   base::RunLoop run_loop;
   quit_closure_ = run_loop.QuitClosure();
 
-  delegate.BypassWarnings(u"User's justification");
+  // Simulate scenario where the delegate is destroyed immediately after
+  // bypassing warnings.
+  {
+    ContentAnalysisDownloadsDelegate delegate(
+        kTestFile, u"", GURL(), true,
+        base::BindOnce(&ContentAnalysisDownloadsDelegateTest::OpenCallback,
+                       base::Unretained(this)),
+        base::BindOnce(&ContentAnalysisDownloadsDelegateTest::DiscardCallback,
+                       base::Unretained(this)),
+        &mock_download_item, CreateSampleCustomRuleMessage(u"", ""));
+
+    // Bypass warnings should trigger deobfuscation and open callback.
+    delegate.BypassWarnings(u"User's justification");
+  }
+
   run_loop.Run();
 
   EXPECT_EQ(1, times_open_called_);
