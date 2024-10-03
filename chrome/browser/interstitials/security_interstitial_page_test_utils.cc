@@ -44,8 +44,7 @@ bool IsShowingInterstitial(content::WebContents* tab) {
   security_interstitials::SecurityInterstitialTabHelper* helper =
       security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
           tab);
-  return helper &&
-         helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting();
+  return helper && helper->IsDisplayingInterstitial();
 }
 
 bool IsShowingCaptivePortalInterstitial(content::WebContents* tab) {
