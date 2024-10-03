@@ -57,7 +57,7 @@ class ShowDialogAction : public Action {
  public:
   explicit ShowDialogAction(base::flat_set<ActionType> action_types)
       : Action(static_cast<int>(ActionType::kShowDialog)),
-        action_types_(action_types) {}
+        action_types_(std::move(action_types)) {}
 
   void Run(Profile* profile, Continuation continuation) override {
     base::TimeDelta timeout =
@@ -176,7 +176,7 @@ class ClearBrowsingDataAction : public Action,
       base::flat_set<ActionType> action_types,
       content::BrowsingDataRemover* browsing_data_remover_for_testing)
       : Action(static_cast<int>(ActionType::kClearBrowsingHistory)),
-        action_types_(action_types),
+        action_types_(std::move(action_types)),
         browsing_data_remover_for_testing_(browsing_data_remover_for_testing) {}
 
   ~ClearBrowsingDataAction() override = default;

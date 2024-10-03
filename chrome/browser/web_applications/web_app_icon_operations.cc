@@ -33,7 +33,7 @@ base::flat_set<GURL> GetAllIconUrlsForSizeAny(
 
 void PopulateIconUrlsForSizeAnyIfNeeded(
     std::vector<IconUrlWithSize>& icon_vector,
-    base::flat_set<GURL> icon_urls_to_download_if_any,
+    const base::flat_set<GURL>& icon_urls_to_download_if_any,
     SizeSet icon_sizes_found,
     bool is_app_icon = false) {
   std::set<SquareSizePx> sizes_to_generate = web_app::SizesToGenerate();

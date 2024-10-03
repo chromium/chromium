@@ -759,12 +759,11 @@ class PDFExtensionAccessibilityTextExtractionTest
   // populates a vector with all nodes that match any of the roles
   // in |roles|.
   void FindAXNodes(ui::AXNode* current,
-                   const base::flat_set<ax::mojom::Role> roles,
+                   const base::flat_set<ax::mojom::Role>& roles,
                    std::vector<ui::AXNode*>* results) {
     if (base::Contains(roles, current->GetRole())) {
       results->push_back(current);
     }
-
     for (ui::AXNode* child : current->children()) {
       FindAXNodes(child, roles, results);
     }

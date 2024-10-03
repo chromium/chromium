@@ -26,7 +26,7 @@ const base::FilePath::CharType kRemotePublicCredentialDatabaseName[] =
 const base::FilePath::CharType kPrivateCredentialDatabaseName[] =
     FILE_PATH_LITERAL("NearbyPresencePrivateCredentialDatabase");
 
-bool ShouldDeleteEntry(base::flat_set<std::string> keys_to_not_delete,
+bool ShouldDeleteEntry(const base::flat_set<std::string>& keys_to_not_delete,
                        const std::string& key) {
   return !keys_to_not_delete.contains(key);
 }
@@ -136,7 +136,8 @@ void NearbyPresenceCredentialStorage::SaveCredentials(
       local_public_db_->UpdateEntriesWithRemoveFilter(
           /*entries_to_save=*/std::move(credential_pairs_to_save),
           /*delete_key_filter=*/
-          base::BindRepeating(&ShouldDeleteEntry, keys_to_not_delete),
+          base::BindRepeating(&ShouldDeleteEntry,
+                              std::move(keys_to_not_delete)),
           base::BindOnce(
               &NearbyPresenceCredentialStorage::OnLocalPublicCredentialsSaved,
               weak_ptr_factory_.GetWeakPtr(), std::move(local_credentials),
@@ -149,7 +150,8 @@ void NearbyPresenceCredentialStorage::SaveCredentials(
       remote_public_db_->UpdateEntriesWithRemoveFilter(
           /*entries_to_save=*/std::move(credential_pairs_to_save),
           /*delete_key_filter=*/
-          base::BindRepeating(&ShouldDeleteEntry, keys_to_not_delete),
+          base::BindRepeating(&ShouldDeleteEntry,
+                              std::move(keys_to_not_delete)),
           base::BindOnce(
               &NearbyPresenceCredentialStorage::OnRemotePublicCredentialsSaved,
               weak_ptr_factory_.GetWeakPtr(),

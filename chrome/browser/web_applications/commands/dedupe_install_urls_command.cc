@@ -138,7 +138,8 @@ DedupeOperations BuildOperationsToHaveOneAppPerInstallUrl(
     base::Value::Dict& debug_value,
     const WebAppRegistrar& registrar,
     ScopedRegistryUpdate& update,
-    base::flat_map<GURL, base::flat_set<webapps::AppId>> install_url_to_apps) {
+    const base::flat_map<GURL, base::flat_set<webapps::AppId>>&
+        install_url_to_apps) {
   DedupeOperations result;
 
   for (const auto& [install_url, app_ids] : install_url_to_apps) {

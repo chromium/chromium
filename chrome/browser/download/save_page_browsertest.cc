@@ -1629,9 +1629,9 @@ class BlockingDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
     std::move(callback).Run(false);
   }
 
-  void ValidateSavePackageFiles(base::flat_set<base::FilePath> expected_paths) {
+  void ValidateSavePackageFiles(
+      const base::flat_set<base::FilePath>& expected_paths) {
     EXPECT_EQ(expected_paths.size(), save_package_final_paths_.size());
-
     for (const base::FilePath& expected_path : expected_paths) {
       EXPECT_TRUE(save_package_final_paths_.contains(expected_path));
     }
