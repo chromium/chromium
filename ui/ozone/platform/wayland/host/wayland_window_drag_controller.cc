@@ -129,7 +129,11 @@ class WaylandWindowDragController::XdgToplevelDrag {
         window->shell_toplevel()->AsXDGToplevelWrapper()->xdg_toplevel_.get();
     DCHECK(toplevel);
 
-    xdg_toplevel_drag_v1_attach(drag_.get(), toplevel, offset.x(), offset.y());
+    // xdg-toplevel-drag protocol expects the passed in offset to be relative to
+    // the surface's geometry, i.e: no client-side decoration insets included.
+    auto toplevel_offset = offset - window->GetWindowGeometryOffsetInDIP();
+    xdg_toplevel_drag_v1_attach(drag_.get(), toplevel, toplevel_offset.x(),
+                                toplevel_offset.y());
     connection_->Flush();
   }
 
