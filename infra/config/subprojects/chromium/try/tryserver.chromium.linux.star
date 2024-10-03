@@ -403,18 +403,10 @@ try_.orchestrator_builder(
     builder_config_settings = builder_config.try_settings(
         is_compile_only = True,
     ),
-    gn_args = gn_args.config(
-        configs = [
-            "try/linux-rel",
-            "no_reclient",
-        ],
-    ),
+    gn_args = "try/linux-rel",
     compilator = "linux-full-remote-rel-compilator",
     contact_team_email = "chrome-build-team@google.com",
-    siso_configs = ["builder", "remote-library-link", "remote-exec-link"],
-    # TODO: crbug.com/368518993 - Enable Cloud monitoring by default.
-    siso_enable_cloud_monitoring = True,
-    siso_output_local_strategy = "minimum",
+    siso_remote_linking = True,
     tryjob = try_.job(
         experiment_percentage = 10,
     ),
