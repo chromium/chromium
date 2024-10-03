@@ -442,7 +442,7 @@ int SavedTabGroupBar::OnDragUpdated(const ui::DropTargetEvent& event) {
 }
 
 void SavedTabGroupBar::OnDragExited() {
-  drag_data_.release();
+  drag_data_.reset();
   SchedulePaint();
 }
 
