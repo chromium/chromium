@@ -46,11 +46,6 @@ class AvatarToolbarButton : public ToolbarButton {
   METADATA_HEADER(AvatarToolbarButton, ToolbarButton)
 
  public:
-  enum ProfileLabelType : int {
-    kWork = 0,
-    kSchool = 1,
-  };
-
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnMouseExited() {}

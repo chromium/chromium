@@ -750,10 +750,6 @@ class ManagementStateProvider : public StateProvider,
         prefs::kEnterpriseCustomLabelForProfile,
         base::BindRepeating(&ManagementStateProvider::RequestUpdate,
                             weak_ptr_factory_.GetWeakPtr()));
-    profile_pref_change_registrar_.Add(
-        prefs::kProfileLabelPreset,
-        base::BindRepeating(&ManagementStateProvider::RequestUpdate,
-                            weak_ptr_factory_.GetWeakPtr()));
   }
 
   ~ManagementStateProvider() override { BrowserList::RemoveObserver(this); }
@@ -1410,18 +1406,6 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
               prefs::kEnterpriseCustomLabelForProfile);
       if (!enterprise_custom_label.empty()) {
         text = base::UTF8ToUTF16(enterprise_custom_label);
-      } else if (profile_->GetPrefs()
-                     ->FindPreference(prefs::kProfileLabelPreset)
-                     ->IsManaged()) {
-        const int profile_label_preset =
-            profile_->GetPrefs()->GetInteger(prefs::kProfileLabelPreset);
-        if (profile_label_preset ==
-            AvatarToolbarButton::ProfileLabelType::kWork) {
-          text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_WORK);
-        } else if (profile_label_preset ==
-                   AvatarToolbarButton::ProfileLabelType::kSchool) {
-          text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SCHOOL);
-        }
       } else if (IsManagementWork(profile_)) {
         text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_WORK);
       } else {

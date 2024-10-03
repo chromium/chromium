@@ -1,4 +1,5 @@
 caption: Profile Label
+deprecated: true
 default: null
 desc: |-
   This policy controls a label used to identify a signed in profile. This label will be shown in various locations to help users identify the profile such as next to the toolbar profile icon.
@@ -18,7 +19,7 @@ features:
   cloud_only: true
   user_only: true
 supported_on:
-- chrome.*:125-
+- chrome.*:125-130
 items:
 - caption: Work
   name: Work
