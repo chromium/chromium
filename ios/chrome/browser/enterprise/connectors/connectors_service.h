@@ -21,7 +21,8 @@ namespace enterprise_connectors {
 // - OnSecurityEventEnterpriseConnectors
 class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
  public:
-  ConnectorsService(PrefService* pref_service,
+  ConnectorsService(bool off_the_record,
+                    PrefService* pref_service,
                     policy::UserCloudPolicyManager* user_cloud_policy_manager);
 
   // ConnectorsServiceBase:
@@ -41,7 +42,9 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(ConnectorsServiceTest, GetPrefs);
   FRIEND_TEST_ALL_PREFIXES(ConnectorsServiceTest, GetProfileDmToken);
   FRIEND_TEST_ALL_PREFIXES(ConnectorsServiceTest, GetBrowserDmToken);
+  FRIEND_TEST_ALL_PREFIXES(ConnectorsServiceTest, ConnectorsEnabled);
 
+  bool off_the_record_;
   raw_ptr<PrefService> prefs_;
   raw_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
 };

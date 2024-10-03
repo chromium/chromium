@@ -70,10 +70,10 @@ class ConnectorsServiceTest : public PlatformTest {
 }  // namespace
 
 TEST_F(ConnectorsServiceTest, GetPrefs) {
-  ConnectorsService connectors_service{prefs(),
+  ConnectorsService connectors_service{/*off_the_record=*/false, prefs(),
                                        /*user_cloud_policy_client=*/nullptr};
   const ConnectorsService const_connectors_service{
-      prefs(),
+      /*off_the_record=*/false, prefs(),
       /*user_cloud_policy_client=*/nullptr};
 
   PrefService* prefs = connectors_service.GetPrefs();
@@ -88,7 +88,7 @@ TEST_F(ConnectorsServiceTest, GetProfileDmToken) {
   prefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
                       policy::POLICY_SCOPE_USER);
   ConnectorsService connectors_service{
-      prefs(),
+      /*off_the_record=*/false, prefs(),
       /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager()};
 
   auto profile_dm_token =
@@ -102,7 +102,7 @@ TEST_F(ConnectorsServiceTest, GetBrowserDmToken) {
   prefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
                       policy::POLICY_SCOPE_MACHINE);
   ConnectorsService connectors_service{
-      prefs(),
+      /*off_the_record=*/false, prefs(),
       /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager()};
 
   auto browser_dm_token =
@@ -110,6 +110,24 @@ TEST_F(ConnectorsServiceTest, GetBrowserDmToken) {
   ASSERT_TRUE(browser_dm_token.has_value());
   ASSERT_EQ(browser_dm_token->value, kTestBrowserDmToken);
   ASSERT_EQ(browser_dm_token->scope, policy::POLICY_SCOPE_MACHINE);
+}
+
+TEST_F(ConnectorsServiceTest, ConnectorsEnabled) {
+  ASSERT_TRUE(
+      ConnectorsServiceFactory::GetForProfile(profile())->ConnectorsEnabled());
+  ASSERT_FALSE(ConnectorsServiceFactory::GetForProfile(
+                   profile()->GetOffTheRecordChromeBrowserState())
+                   ->ConnectorsEnabled());
+  ASSERT_TRUE(
+      ConnectorsService(
+          /*off_the_record=*/false, prefs(),
+          /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager())
+          .ConnectorsEnabled());
+  ASSERT_FALSE(
+      ConnectorsService(
+          /*off_the_record=*/true, prefs(),
+          /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager())
+          .ConnectorsEnabled());
 }
 
 }  // namespace enterprise_connectors

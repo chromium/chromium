@@ -11,9 +11,11 @@
 namespace enterprise_connectors {
 
 ConnectorsService::ConnectorsService(
+    bool off_the_record,
     PrefService* pref_service,
     policy::UserCloudPolicyManager* user_cloud_policy_manager)
-    : prefs_(pref_service),
+    : off_the_record_(off_the_record),
+      prefs_(pref_service),
       user_cloud_policy_manager_(user_cloud_policy_manager) {
   DCHECK(prefs_);
 }
@@ -48,8 +50,7 @@ std::optional<ConnectorsServiceBase::DmToken> ConnectorsService::GetDmToken(
 }
 
 bool ConnectorsService::ConnectorsEnabled() const {
-  // TODO(crbug.com/370466578): Implement this method.
-  return false;
+  return !off_the_record_;
 }
 
 PrefService* ConnectorsService::GetPrefs() {
