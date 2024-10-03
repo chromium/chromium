@@ -350,19 +350,6 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
   }
 }
 
-void ChromeUserManagerImpl::RemoveNonCryptohomeData(
-    const AccountId& account_id) {
-  // TODO(tbarzic): Forward data removal request to HammerDeviceHandler,
-  // instead of removing the prefs value here.
-  if (GetLocalState()->FindPreference(prefs::kDetachableBaseDevices)) {
-    ScopedDictPrefUpdate update(GetLocalState(), prefs::kDetachableBaseDevices);
-    update->Remove(account_id.HasAccountIdKey() ? account_id.GetAccountIdKey()
-                                                : account_id.GetUserEmail());
-  }
-
-  UserManagerBase::RemoveNonCryptohomeData(account_id);
-}
-
 void ChromeUserManagerImpl::RemovePendingDeviceLocalAccount() {
   PrefService* local_state = GetLocalState();
   const std::string device_local_account_pending_data_removal =

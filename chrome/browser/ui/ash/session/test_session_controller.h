@@ -88,6 +88,7 @@ class TestSessionController : public ash::SessionController {
   bool IsScreenLocked() const override;
   std::optional<int> GetExistingUsersCount() const override;
   void NotifyFirstSessionReady() override;
+  void NotifyUserToBeRemoved(const AccountId& account_id) override;
 
  private:
   std::optional<ash::SessionInfo> last_session_info_;

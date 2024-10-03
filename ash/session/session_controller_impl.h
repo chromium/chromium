@@ -238,6 +238,7 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
   bool IsScreenLocked() const override;
   std::optional<int> GetExistingUsersCount() const override;
   void NotifyFirstSessionReady() override;
+  void NotifyUserToBeRemoved(const AccountId& account_id) override;
 
   // Test helpers.
   void ClearUserSessionsForTest();

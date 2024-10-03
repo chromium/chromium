@@ -57,9 +57,6 @@ class ChromeUserManagerImpl
   // policy::MinimumVersionPolicyHandler::Observer:
   void OnMinimumVersionStateChanged() override;
 
- protected:
-  void RemoveNonCryptohomeData(const AccountId& account_id) override;
-
  private:
   friend class UserManagerTest;
   friend class WallpaperManager;

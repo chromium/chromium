@@ -61,6 +61,9 @@ class ASH_PUBLIC_EXPORT SessionObserver : public base::CheckedObserver {
   // initialized. Never called with null.
   virtual void OnActiveUserPrefServiceChanged(PrefService* pref_service) {}
 
+  // Called when the user is going to be removed soon.
+  virtual void OnUserToBeRemoved(const AccountId& account_id) {}
+
  protected:
   ~SessionObserver() override {}
 };

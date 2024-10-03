@@ -105,3 +105,6 @@ std::optional<int> TestSessionController::GetExistingUsersCount() const {
 void TestSessionController::NotifyFirstSessionReady() {
   ++first_session_ready_count_;
 }
+
+void TestSessionController::NotifyUserToBeRemoved(const AccountId& account_id) {
+}

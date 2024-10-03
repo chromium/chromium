@@ -134,6 +134,9 @@ class ASH_PUBLIC_EXPORT SessionController {
   // Notifies the first user session has finished post login works.
   virtual void NotifyFirstSessionReady() = 0;
 
+  // Notifies the user specified by `account_id` is going to be removed soon.
+  virtual void NotifyUserToBeRemoved(const AccountId& account_id) = 0;
+
  protected:
   SessionController();
   virtual ~SessionController();

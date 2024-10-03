@@ -266,6 +266,10 @@ void SessionControllerImpl::NotifyFirstSessionReady() {
   }
 }
 
+void SessionControllerImpl::NotifyUserToBeRemoved(const AccountId& account_id) {
+  observers_.Notify(&SessionObserver::OnUserToBeRemoved, account_id);
+}
+
 bool SessionControllerImpl::ShouldDisplayManagedUI() const {
   if (!IsActiveUserSessionStarted())
     return false;

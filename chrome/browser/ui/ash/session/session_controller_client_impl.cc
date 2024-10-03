@@ -426,6 +426,11 @@ void SessionControllerClientImpl::OnUserNotAllowed(
   session_controller_->ShowMultiprofilesSessionAbortedDialog(user_email);
 }
 
+void SessionControllerClientImpl::OnUserToBeRemoved(
+    const AccountId& account_id) {
+  session_controller_->NotifyUserToBeRemoved(account_id);
+}
+
 // static
 bool SessionControllerClientImpl::CanLockScreen() {
   return !UserManager::Get()->GetUnlockUsers().empty();
