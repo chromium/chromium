@@ -258,7 +258,8 @@ void CollectAncestorRoles(
   static NSSet<NSString*>* set = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    set = [NSSet<NSString*> set];
+    set =
+        [NSSet<NSString*> setWithObjects:NSAccessibilityFocusedAttribute, nil];
   });
   return set;
 }
@@ -267,7 +268,7 @@ void CollectAncestorRoles(
   static NSSet<NSString*>* set = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    set = [NSSet<NSString*> set];
+    set = [NSSet<NSString*> setWithObjects:@"isAccessibilityFocused", nil];
   });
   return set;
 }
@@ -1887,9 +1888,15 @@ void CollectAncestorRoles(
 }
 
 - (NSNumber*)AXFocused {
-  return
-      @(_node->GetDelegate()->GetFocus() == _node->GetNativeViewAccessible());
-  return @NO;
+  return @([self isAccessibilityFocused]);
+}
+
+- (BOOL)isAccessibilityFocused {
+  if (![self instanceActive]) {
+    return NO;
+  }
+
+  return _node->GetDelegate()->GetFocus() == _node->GetNativeViewAccessible();
 }
 
 - (id)AXFocusableAncestor {

@@ -11,6 +11,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/inspect/ax_api_type.h"
 #include "ui/accessibility/platform/inspect/ax_script_instruction.h"
@@ -73,6 +74,17 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
   DumpAccessibilityScriptTest(const DumpAccessibilityScriptTest&) = delete;
   DumpAccessibilityScriptTest& operator=(const DumpAccessibilityScriptTest&) =
       delete;
+
+#if BUILDFLAG(IS_MAC)
+  template <const char* type>
+  void Migration_RunTypedTest(const base::FilePath::CharType* file_path) {
+    if (features::IsMacAccessibilityAPIMigrationEnabled()) {
+      RunTypedTest<type>(file_path);
+    } else {
+      GTEST_SKIP();
+    }
+  }
+#endif
 
  protected:
   std::vector<ui::AXPropertyFilter> DefaultFilters() const override {
@@ -567,6 +579,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityURL) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, IsAccessibilityElement) {
   RunTypedTest<kMacMethods>("is-accessibility-element.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, IsAccessibilityFocused) {
+  Migration_RunTypedTest<kMacMethods>("is-accessibility-focused.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, SetAccessibilityFocused) {

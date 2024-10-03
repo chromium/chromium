@@ -5519,6 +5519,8 @@ data/accessibility/mac/methods/accessibility-url-expected.txt
 data/accessibility/mac/methods/accessibility-url.html
 data/accessibility/mac/methods/is-accessibility-element-expected.txt
 data/accessibility/mac/methods/is-accessibility-element.html
+data/accessibility/mac/methods/is-accessibility-focused-expected.txt
+data/accessibility/mac/methods/is-accessibility-focused.html
 data/accessibility/mac/methods/is-accessibility-selector-allowed-expected.txt
 data/accessibility/mac/methods/is-accessibility-selector-allowed.html
 data/accessibility/mac/methods/set-accessibility-focused-expected.txt

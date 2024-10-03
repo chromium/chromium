@@ -24,21 +24,21 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "ui/accessibility/platform/browser_accessibility_mac.h"
-#include "ui/accessibility/platform/browser_accessibility_manager.h"
-#include "ui/accessibility/platform/browser_accessibility_manager_mac.h"
-#include "ui/accessibility/platform/one_shot_accessibility_tree_search.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_range.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #import "ui/accessibility/platform/ax_platform_node_mac.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
 #include "ui/accessibility/platform/ax_utils_mac.h"
+#include "ui/accessibility/platform/browser_accessibility_mac.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
+#include "ui/accessibility/platform/browser_accessibility_manager_mac.h"
+#include "ui/accessibility/platform/one_shot_accessibility_tree_search.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/strings/grit/ax_strings.h"
 
@@ -749,11 +749,19 @@ bool ui::IsNSRange(id value) {
   return @(GetState(_owner, ax::mojom::State::kExpanded));
 }
 
-- (NSNumber*)AXFocused {
+- (BOOL)isAccessibilityFocused {
   if (![self instanceActive])
-    return nil;
+    return NO;
+
   BrowserAccessibilityManager* manager = _owner->manager();
-  return @(manager->GetFocus() == _owner);
+  return manager->GetFocus() == _owner;
+}
+
+- (void)setAccessibilityFocused:(BOOL)flag {
+  BrowserAccessibilityManager* manager = _owner->manager();
+  if (flag) {
+    manager->SetFocus(*_owner);
+  }
 }
 
 - (id)header {
@@ -2690,11 +2698,7 @@ bool ui::IsNSRange(id value) {
   }
 
   if ([attribute isEqualToString:NSAccessibilityFocusedAttribute]) {
-    NSNumber* focusedNumber = value;
-    BrowserAccessibilityManager* manager = _owner->manager();
-    BOOL focused = [focusedNumber intValue];
-    if (focused)
-      manager->SetFocus(*_owner);
+    [self setAccessibilityFocused:[value boolValue]];
   }
   if ([attribute isEqualToString:NSAccessibilitySelectedTextRangeAttribute]) {
     if (ui::IsNSRange(value)) {

@@ -260,8 +260,7 @@ class BrowserAccessibilityCocoaBrowserTest : public ContentBrowserTest {
       NSAccessibilityElement* element) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [element accessibilitySetValue:@(1)
-                      forAttribute:NSAccessibilityFocusedAttribute];
+    [element setAccessibilityFocused:YES];
 #pragma clang diagnostic pop
     WaitForAccessibilityFocusChange();
   }
