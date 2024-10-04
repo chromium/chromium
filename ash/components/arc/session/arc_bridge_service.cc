@@ -36,6 +36,7 @@
 #include "ash/components/arc/mojom/net.mojom.h"
 #include "ash/components/arc/mojom/obb_mounter.mojom.h"
 #include "ash/components/arc/mojom/oemcrypto.mojom.h"
+#include "ash/components/arc/mojom/on_device_safety.mojom.h"
 #include "ash/components/arc/mojom/pip.mojom.h"
 #include "ash/components/arc/mojom/policy.mojom.h"
 #include "ash/components/arc/mojom/power.mojom.h"

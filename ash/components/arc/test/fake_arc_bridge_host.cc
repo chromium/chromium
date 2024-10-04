@@ -35,6 +35,7 @@
 #include "ash/components/arc/mojom/notifications.mojom.h"
 #include "ash/components/arc/mojom/obb_mounter.mojom.h"
 #include "ash/components/arc/mojom/oemcrypto.mojom.h"
+#include "ash/components/arc/mojom/on_device_safety.mojom.h"
 #include "ash/components/arc/mojom/pip.mojom.h"
 #include "ash/components/arc/mojom/policy.mojom.h"
 #include "ash/components/arc/mojom/power.mojom.h"
@@ -175,6 +176,10 @@ void FakeArcBridgeHost::OnObbMounterInstanceReady(
 
 void FakeArcBridgeHost::OnOemCryptoInstanceReady(
     mojo::PendingRemote<mojom::OemCryptoInstance> oemcrypto_remote) {}
+
+void FakeArcBridgeHost::OnOnDeviceSafetyInstanceReady(
+    mojo::PendingRemote<mojom::OnDeviceSafetyInstance>
+        on_device_safety_remote) {}
 
 void FakeArcBridgeHost::OnPaymentAppInstanceReady(
     mojo::PendingRemote<chromeos::payments::mojom::PaymentAppInstance>

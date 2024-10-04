@@ -1,0 +1,62 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 1
+
+module arc.mojom;
+
+import "mojo/public/mojom/base/big_buffer.mojom";
+
+// This enum type identifies the result of retrieving the on device safety
+// session from OnDeviceSafetyInstance.
+[Extensible]
+enum GetOnDeviceSafetySessionResult {
+  [Default] kOk,
+  kArcDeviceNotSupported,  // Cannot run on this device.
+  kArcDisabledByUser,      // Inform the user to enable arc
+  kArcHadesNotAvailable,   // The Hades system has an error
+  kArcSystemNotReady,      // Temporary issue (loading, downloading, etc).
+};
+
+// This enum type identifies the result of Classify*Safety.
+// We may want to extend this to be more fine-grained.
+[Extensible]
+enum OnDeviceSafetyClassifierVerdict {
+  kPass,                  // Meaning that the content passed the classification.
+  [Default] kFail,        // Meaning that the content failed the classification.
+};
+
+// These enum entries identify which feature is requesting a verdict. This
+// allows the implementation to use different classifiers per feature if
+// necessary. Within the implementation of the CrosSafetyService it will map
+// these enums to {client_id, release_config_version} pairs that tell Hades
+// which classifier to load / download for an OnDeviceSafetySession.
+[Extensible]
+enum OnDeviceSafetyRuleset {
+  [Default] kGeneric,
+  kMantis,
+};
+
+// OnDeviceSafetySession is implemented in ARC and returned by
+// OnDeviceSafetyInstance when requested.
+// Next Method ID: 2
+interface OnDeviceSafetySession {
+  // Infers multiclass safety scores for the given `text`.
+  ClassifyTextSafety@0(string text)
+      => (OnDeviceSafetyClassifierVerdict verdict);
+
+  // Infers multiclass safety scores for the given `image` data.
+  ClassifyImageSafety@1(mojo_base.mojom.BigBuffer image)
+      => (OnDeviceSafetyClassifierVerdict verdict);
+};
+
+// OnDeviceSafetyInstance runs in Android and handles the Android side of the
+// ArcBridge connection.
+// Next Method ID: 1
+interface OnDeviceSafetyInstance {
+  // Creates a session to be used for on-device classification
+  GetOnDeviceSafetySession@0(OnDeviceSafetyRuleset rules,
+                             pending_receiver<OnDeviceSafetySession> session)
+      => (GetOnDeviceSafetySessionResult status);
+};

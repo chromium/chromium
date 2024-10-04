@@ -80,6 +80,7 @@ class ObbMounterHost;
 class ObbMounterInstance;
 class OemCryptoHost;
 class OemCryptoInstance;
+class OnDeviceSafetyInstance;
 class PipHost;
 class PipInstance;
 class PolicyHost;
@@ -274,6 +275,9 @@ class ArcBridgeService {
   oemcrypto() {
     return &oemcrypto_;
   }
+  ConnectionHolder<mojom::OnDeviceSafetyInstance>* on_device_safety() {
+    return &on_device_safety_;
+  }
   ConnectionHolder<chromeos::payments::mojom::PaymentAppInstance>*
   payment_app() {
     return &payment_app_;
@@ -385,6 +389,7 @@ class ArcBridgeService {
   ConnectionHolder<mojom::ObbMounterInstance, mojom::ObbMounterHost>
       obb_mounter_;
   ConnectionHolder<mojom::OemCryptoInstance, mojom::OemCryptoHost> oemcrypto_;
+  ConnectionHolder<mojom::OnDeviceSafetyInstance> on_device_safety_;
   ConnectionHolder<chromeos::payments::mojom::PaymentAppInstance> payment_app_;
   ConnectionHolder<mojom::PipInstance, mojom::PipHost> pip_;
   ConnectionHolder<mojom::PolicyInstance, mojom::PolicyHost> policy_;

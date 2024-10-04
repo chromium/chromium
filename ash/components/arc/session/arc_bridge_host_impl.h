@@ -137,6 +137,9 @@ class ArcBridgeHostImpl
                                      obb_mounter_remote) override;
   void OnOemCryptoInstanceReady(
       mojo::PendingRemote<mojom::OemCryptoInstance> oemcrypto_remote) override;
+  void OnOnDeviceSafetyInstanceReady(
+      mojo::PendingRemote<mojom::OnDeviceSafetyInstance>
+          on_device_safety_remote) override;
   void OnPaymentAppInstanceReady(
       mojo::PendingRemote<chromeos::payments::mojom::PaymentAppInstance>
           payment_app_remote) override;

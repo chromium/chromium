@@ -170,6 +170,7 @@ TEST_F(ArcBridgeHostImplTest, TestOnInstanceReady) {
     // instance is forwarded to ash, we need a completely different test.
     MAKE_INSTANCE_READY(ObbMounter);
     MAKE_INSTANCE_READY(OemCrypto);
+    MAKE_INSTANCE_READY(OnDeviceSafety);
     MAKE_INSTANCE_READY_WITH_NAMESPACE(chromeos::payments::mojom, PaymentApp);
     MAKE_INSTANCE_READY(Pip);
     MAKE_INSTANCE_READY(Policy);
