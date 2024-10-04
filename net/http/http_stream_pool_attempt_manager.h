@@ -335,8 +335,6 @@ class HttpStreamPool::AttemptManager
 
   const NetLogWithSource net_log_;
 
-  ProxyInfo proxy_info_;
-
   RespectLimits respect_limits_ = RespectLimits::kRespect;
 
   bool enable_ip_based_pooling_ = true;

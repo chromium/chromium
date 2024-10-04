@@ -107,7 +107,6 @@ HttpStreamPool::AttemptManager::AttemptManager(Group* group, NetLog* net_log)
   group_->net_log().AddEventReferencingSource(
       NetLogEventType::HTTP_STREAM_POOL_GROUP_ATTEMPT_MANAGER_CREATED,
       net_log_.source());
-  proxy_info_.UseDirect();
 }
 
 HttpStreamPool::AttemptManager::~AttemptManager() {
@@ -1020,11 +1019,9 @@ void HttpStreamPool::AttemptManager::NotifyPreconnectsComplete(int rv) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(entry->callback), rv));
   }
-  if (preconnects_.empty()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&AttemptManager::MaybeComplete,
-                                  weak_ptr_factory_.GetWeakPtr()));
-  }
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&AttemptManager::MaybeComplete,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 void HttpStreamPool::AttemptManager::ProcessPreconnectsAfterAttemptComplete(
