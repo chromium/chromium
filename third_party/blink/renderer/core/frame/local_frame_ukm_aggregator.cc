@@ -118,24 +118,39 @@ void LocalFrameUkmAggregator::IterativeTimer::Record(
 
 LocalFrameUkmAggregator::ScopedForcedLayoutTimer::ScopedForcedLayoutTimer(
     LocalFrameUkmAggregator& aggregator,
-    DocumentUpdateReason update_reason)
+    DocumentUpdateReason update_reason,
+    bool should_report_uma_this_frame,
+    bool is_pre_fcp)
     : aggregator_(&aggregator),
       update_reason_(update_reason),
-      start_time_(aggregator_->clock_->NowTicks()) {
+      start_time_(aggregator_->clock_->NowTicks()),
+      should_report_uma_this_frame_(should_report_uma_this_frame),
+      is_pre_fcp_(is_pre_fcp) {
   aggregator_->BeginForcedLayout();
 }
 
 LocalFrameUkmAggregator::ScopedForcedLayoutTimer::~ScopedForcedLayoutTimer() {
-  aggregator_->EndForcedLayout(update_reason_, start_time_,
-                               aggregator_->clock_->NowTicks());
+  // aggregator_ will be null in a moved-from object.
+  if (aggregator_) {
+    aggregator_->EndForcedLayout(update_reason_,
+                                 aggregator_->clock_->NowTicks() - start_time_,
+                                 should_report_uma_this_frame_, is_pre_fcp_);
+  }
 }
 
 LocalFrameUkmAggregator::ScopedForcedLayoutTimer::ScopedForcedLayoutTimer(
-    ScopedForcedLayoutTimer&&) = default;
+    ScopedForcedLayoutTimer&& other) {
+  *this = std::move(other);
+}
 
 LocalFrameUkmAggregator::ScopedForcedLayoutTimer&
 LocalFrameUkmAggregator::ScopedForcedLayoutTimer::operator=(
-    ScopedForcedLayoutTimer&&) = default;
+    ScopedForcedLayoutTimer&& other) {
+  aggregator_ = std::move(other.aggregator_);
+  update_reason_ = other.update_reason_;
+  start_time_ = other.start_time_;
+  return *this;
+}
 
 void LocalFrameUkmAggregator::AbsoluteMetricRecord::reset() {
   interval_count = 0;
@@ -233,6 +248,26 @@ bool LocalFrameUkmAggregator::ShouldMeasureMetric(int64_t metric_id) const {
 LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer
 LocalFrameUkmAggregator::GetScopedTimer(size_t metric_index) {
   return ScopedUkmHierarchicalTimer(this, metric_index, clock_);
+}
+
+LocalFrameUkmAggregator::ScopedForcedLayoutTimer
+LocalFrameUkmAggregator::GetScopedForcedLayoutTimer(
+    DocumentUpdateReason update_reason) {
+  // Accumulate for UKM always, but only record the UMA for a subset of cases to
+  // avoid overflowing the counters.
+  bool should_report_uma_this_frame = !calls_to_next_forced_style_layout_uma_;
+  if (should_report_uma_this_frame) {
+    calls_to_next_forced_style_layout_uma_ =
+        base::RandInt(0, mean_calls_between_forced_style_layout_uma_ * 2);
+  } else {
+    DCHECK_GT(calls_to_next_forced_style_layout_uma_, 0u);
+    --calls_to_next_forced_style_layout_uma_;
+  }
+
+  bool is_pre_fcp = (fcp_state_ != kHavePassedFCP);
+
+  return ScopedForcedLayoutTimer(*this, update_reason,
+                                 should_report_uma_this_frame, is_pre_fcp);
 }
 
 void LocalFrameUkmAggregator::BeginMainFrame() {
@@ -576,23 +611,12 @@ void LocalFrameUkmAggregator::BeginForcedLayout() {
 }
 
 void LocalFrameUkmAggregator::EndForcedLayout(DocumentUpdateReason reason,
-                                              base::TimeTicks start,
-                                              base::TimeTicks end) {
+                                              base::TimeDelta duration,
+                                              bool should_report_uma_this_frame,
+                                              bool is_pre_fcp) {
   TRACE_EVENT_END1("blink", metrics_data()[kForcedStyleAndLayout].name,
                    "preFCP", fcp_state_ == kBeforeFCPSignal);
-  int64_t count = (end - start).InMicroseconds();
-  bool is_pre_fcp = (fcp_state_ != kHavePassedFCP);
-
-  // Accumulate for UKM always, but only record the UMA for a subset of cases to
-  // avoid overflowing the counters.
-  bool should_report_uma_this_frame = !calls_to_next_forced_style_layout_uma_;
-  if (should_report_uma_this_frame) {
-    calls_to_next_forced_style_layout_uma_ =
-        base::RandInt(0, mean_calls_between_forced_style_layout_uma_ * 2);
-  } else {
-    DCHECK_GT(calls_to_next_forced_style_layout_uma_, 0u);
-    --calls_to_next_forced_style_layout_uma_;
-  }
+  int64_t count = duration.InMicroseconds();
 
   auto& record =
       absolute_metric_records_[static_cast<size_t>(kForcedStyleAndLayout)];

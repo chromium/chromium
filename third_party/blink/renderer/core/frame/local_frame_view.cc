@@ -863,7 +863,8 @@ void LocalFrameView::WillStartForcedLayout(DocumentUpdateReason reason) {
     return;
   if (auto* metrics_aggregator = GetUkmAggregator()) {
     DCHECK(!forced_layout_timer_.has_value());
-    forced_layout_timer_.emplace(*metrics_aggregator, reason);
+    forced_layout_timer_ =
+        metrics_aggregator->GetScopedForcedLayoutTimer(reason);
   }
 }
 
