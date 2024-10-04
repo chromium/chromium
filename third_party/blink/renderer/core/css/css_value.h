@@ -218,6 +218,8 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     return class_type_ == kRelativeColorClass;
   }
 
+  bool IsRepeatValue() const { return class_type_ == kRepeatClass; }
+
   bool HasFailedOrCanceledSubresources() const;
   bool MayContainUrl() const;
   void ReResolveUrl(const Document&) const;
@@ -343,6 +345,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kGridAutoRepeatClass,
     kGridIntegerRepeatClass,
     kAxisClass,
+    kRepeatClass,
     // Do not append non-list class types here.
   };
 

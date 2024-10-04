@@ -1035,7 +1035,6 @@
     {
       // https://chromestatus.com/feature/5157805733183488
       name: "CSSGapDecoration",
-      status: "test",
     },
     {
       // This needs to be kept as a runtime flag as long as we need to forcibly

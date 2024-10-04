@@ -264,6 +264,8 @@ blink_core_sources_css = [
   "css_relative_color_value.h",
   "css_repeat_style_value.cc",
   "css_repeat_style_value.h",
+  "css_repeat_value.cc",
+  "css_repeat_value.h",
   "css_resolution_units.h",
   "css_resource_fetch_restriction.h",
   "css_revert_layer_value.cc",

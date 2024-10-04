@@ -429,6 +429,9 @@ CSSValue* ParseBorderWidthSide(CSSParserTokenStream&,
 const CSSValue* ParseBorderStyleSide(CSSParserTokenStream&,
                                      const CSSParserContext&);
 
+CSSValue* ConsumeGapDecorationColorList(CSSParserTokenStream&,
+                                        const CSSParserContext&);
+
 CSSValue* ConsumeShadow(CSSParserTokenStream&,
                         const CSSParserContext&,
                         AllowInsetAndSpread);

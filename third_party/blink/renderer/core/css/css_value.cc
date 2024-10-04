@@ -79,6 +79,7 @@
 #include "third_party/blink/renderer/core/css/css_reflect_value.h"
 #include "third_party/blink/renderer/core/css/css_relative_color_value.h"
 #include "third_party/blink/renderer/core/css/css_repeat_style_value.h"
+#include "third_party/blink/renderer/core/css/css_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_revert_layer_value.h"
 #include "third_party/blink/renderer/core/css/css_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_scoped_keyword_value.h"
@@ -351,6 +352,8 @@ bool CSSValue::operator==(const CSSValue& other) const {
         return CompareCSSValues<CSSRepeatStyleValue>(*this, other);
       case kRelativeColorClass:
         return CompareCSSValues<cssvalue::CSSRelativeColorValue>(*this, other);
+      case kRepeatClass:
+        return CompareCSSValues<cssvalue::CSSRepeatValue>(*this, other);
     }
     NOTREACHED_IN_MIGRATION();
     return false;
@@ -511,6 +514,8 @@ String CSSValue::CssText() const {
       return To<CSSRepeatStyleValue>(this)->CustomCSSText();
     case kRelativeColorClass:
       return To<cssvalue::CSSRelativeColorValue>(this)->CustomCSSText();
+    case kRepeatClass:
+      return To<cssvalue::CSSRepeatValue>(this)->CustomCSSText();
   }
   NOTREACHED_IN_MIGRATION();
   return String();
@@ -786,6 +791,9 @@ void CSSValue::Trace(Visitor* visitor) const {
     case kRelativeColorClass:
       To<cssvalue::CSSRelativeColorValue>(this)->TraceAfterDispatch(visitor);
       return;
+    case kRepeatClass:
+      To<cssvalue::CSSRepeatValue>(this)->TraceAfterDispatch(visitor);
+      return;
   }
   NOTREACHED_IN_MIGRATION();
 }
@@ -933,6 +941,8 @@ String CSSValue::ClassTypeToString() const {
       return "GridAutoRepeatClass";
     case kGridIntegerRepeatClass:
       return "GridIntegerRepeatClass";
+    case kRepeatClass:
+      return "RepeatClass";
     case kAxisClass:
       return "AxisClass";
     default:

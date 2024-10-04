@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/css/css_property_value.h"
 #include "third_party/blink/renderer/core/css/css_ratio_value.h"
 #include "third_party/blink/renderer/core/css/css_ray_value.h"
+#include "third_party/blink/renderer/core/css/css_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_revert_layer_value.h"
 #include "third_party/blink/renderer/core/css/css_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_scoped_keyword_value.h"
@@ -5023,6 +5024,96 @@ const CSSValue* ParseBorderStyleSide(CSSParserTokenStream& stream,
   }
   return ParseLonghand(CSSPropertyID::kBorderLeftStyle, CSSPropertyID::kBorder,
                        context, stream);
+}
+
+cssvalue::CSSRepeatValue* ConsumeGapColorRepeatFunction(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context) {
+  DCHECK_EQ(stream.Peek().GetType(), kFunctionToken);
+  CSSParserTokenStream::RestoringBlockGuard guard(stream);
+
+  stream.ConsumeWhitespace();
+
+  CSSPrimitiveValue* repetition_value = nullptr;
+  CSSValueList* repeated_colors = CSSValueList::CreateSpaceSeparated();
+
+  if (IdentMatches<CSSValueID::kAuto>(stream.Peek().Id())) {
+    CHECK(stream.ConsumeIncludingWhitespace().Id() == CSSValueID::kAuto);
+  } else {
+    // Means it's an integer repetition.
+    repetition_value = ConsumeIntegerOrNumberCalc(
+        stream, context, CSSPrimitiveValue::ValueRange::kPositiveInteger);
+    if (!repetition_value) {
+      return nullptr;
+    }
+  }
+
+  // After auto/integer we expect a comma.
+  if (!ConsumeCommaIncludingWhitespace(stream)) {
+    return nullptr;
+  }
+
+  while (!stream.AtEnd()) {
+    CSSValue* color = ConsumeColor(stream, context);
+    if (!color) {
+      return nullptr;
+    }
+    repeated_colors->Append(*color);
+  }
+
+  if (repeated_colors->length() == 0) {
+    return nullptr;
+  }
+
+  guard.Release();
+  stream.ConsumeWhitespace();
+
+  return MakeGarbageCollected<cssvalue::CSSRepeatValue>(repetition_value,
+                                                        *repeated_colors);
+}
+
+CSSValue* ConsumeGapDecorationColorList(CSSParserTokenStream& stream,
+                                        const CSSParserContext& context) {
+  // Consume single color if the Gap decoration feature flag is not
+  // enabled.
+  if (!RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
+    return ConsumeColor(stream, context);
+  }
+
+  // List to holds all the color values.
+  CSSValueList* values = CSSValueList::CreateSpaceSeparated();
+
+  if (stream.AtEnd()) {
+    return nullptr;
+  }
+
+  // Flag to limit to one auto-repeat.
+  bool seen_auto_repeat = false;
+
+  // Consume the color values(s) in the stream.
+  do {
+    if (stream.Peek().FunctionId() == CSSValueID::kRepeat) {
+      auto* repeat_value = ConsumeGapColorRepeatFunction(stream, context);
+      if (!repeat_value) {
+        return nullptr;
+      }
+      if (repeat_value->IsAutoRepeatValue()) {
+        if (seen_auto_repeat) {
+          return nullptr;
+        }
+        seen_auto_repeat = true;
+      }
+      values->Append(*repeat_value);
+    } else {
+      CSSValue* color = ConsumeColor(stream, context);
+      if (!color) {
+        break;
+      }
+      values->Append(*color);
+    }
+  } while (!stream.AtEnd());
+
+  return values;
 }
 
 CSSValue* ConsumeShadow(CSSParserTokenStream& stream,

@@ -3513,6 +3513,15 @@
     "owners": ["evelynn.kaplan@microsoft.com", "almaher@microsoft.com"]
   },
   {
+    "prefix": "css-gap-decorations",
+    "exclusive_tests": ["external/wpt/css/css-gaps"],
+    "platforms": ["Linux"],
+    "bases": ["external/wpt/css/css-gaps"],
+    "args": ["--enable-blink-features=CSSGapDecoration"],
+    "expires": "Oct 1, 2025",
+    "owners": ["samomekarajr@microsoft.com", "almaher@microsoft.com"]
+  },
+  {
     "prefix": "popover-hover-disabled",
     "owners": ["masonf@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
