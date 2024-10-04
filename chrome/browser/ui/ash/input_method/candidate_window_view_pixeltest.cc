@@ -84,6 +84,8 @@ IN_PROC_BROWSER_TEST_F(CandidateWindowViewPixelBrowserTest, Render) {
   views::test::WidgetVisibleWaiter(widget).Wait();
 
   EXPECT_TRUE(pixel_diff_->CompareViewScreenshot("CandidateWindowView", &view));
+
+  widget->CloseNow();
 }
 }  // namespace
 
