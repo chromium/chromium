@@ -213,13 +213,12 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
       LocalFrameUkmAggregator::MetricId target_metric,
       unsigned expected_num_entries) {
     base::TimeTicks start_time = Now();
+    test_task_runner_->FastForwardBy(base::Milliseconds(10));
+    base::TimeTicks end_time = Now();
+
     aggregator().BeginMainFrame();
-    {
-      LocalFrameUkmAggregator::ScopedForcedLayoutTimer timer =
-          aggregator().GetScopedForcedLayoutTimer(reason);
-      test_task_runner_->FastForwardBy(base::Milliseconds(10));
-    }
-    aggregator().RecordEndOfFrameMetrics(start_time, Now(), 0, source_id(),
+    aggregator().EndForcedLayout(reason, start_time, end_time);
+    aggregator().RecordEndOfFrameMetrics(start_time, end_time, 0, source_id(),
                                          &recorder());
     ResetAggregator();
 
