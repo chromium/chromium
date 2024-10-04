@@ -168,6 +168,12 @@ UIImageView* BrandingImageView() {
   NSInteger _refreshCount;
   // The notice message if it will be shown.
   UITextView* _noticeMessage;
+  // A boolean that is set to `YES` when generating a plus address either in the
+  // initial state or during the refresh state.
+  BOOL _isGenerating;
+  // `YES` if feature
+  // `plus_addresses::features::kPlusAddressIOSErrorStatesEnabled` is enabled.
+  BOOL _errorStatesEnabled;
 }
 
 - (instancetype)initWithDelegate:(id<PlusAddressBottomSheetDelegate>)delegate
@@ -180,6 +186,9 @@ UIImageView* BrandingImageView() {
     _reservedPlusAddress = l10n_util::GetNSString(
         IDS_PLUS_ADDRESS_BOTTOMSHEET_LOADING_TEMPORARY_LABEL_CONTENT_IOS);
     _refreshCount = 0;
+    _errorStatesEnabled = base::FeatureList::IsEnabled(
+        plus_addresses::features::kPlusAddressIOSErrorStatesEnabled);
+    _isGenerating = _errorStatesEnabled;
   }
   return self;
 }
@@ -234,8 +243,7 @@ UIImageView* BrandingImageView() {
 - (void)confirmationAlertPrimaryAction {
   self.primaryActionButton.enabled = NO;
   // Make sure the user perceives that something is happening via a spinner.
-  if (base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressIOSErrorStatesEnabled)) {
+  if (_errorStatesEnabled) {
     self.isLoading = YES;
   } else {
     [_activityIndicator startAnimating];
@@ -258,6 +266,9 @@ UIImageView* BrandingImageView() {
 
 - (void)didReservePlusAddress:(NSString*)plusAddress {
   self.primaryActionButton.enabled = YES;
+  if (_errorStatesEnabled) {
+    _isGenerating = NO;
+  }
   _reservedPlusAddress = plusAddress;
   [_reservedPlusAddressTableView reloadData];
 }
@@ -267,8 +278,7 @@ UIImageView* BrandingImageView() {
       PlusAddressModalCompletionStatus::kModalConfirmed,
       base::Time::Now() - _bottomSheetShownTime,
       /*refresh_count=*/(int)_refreshCount, [_delegate shouldShowNotice]);
-  if (base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressIOSErrorStatesEnabled)) {
+  if (_errorStatesEnabled) {
     self.isLoading = NO;
   } else {
     [_activityIndicator stopAnimating];
@@ -279,8 +289,7 @@ UIImageView* BrandingImageView() {
 
 - (void)notifyError:(PlusAddressModalCompletionStatus)status {
   _bottomSheetErrorStatus = status;
-  if (base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressIOSErrorStatesEnabled)) {
+  if (_errorStatesEnabled) {
     self.isLoading = NO;
   } else {
     // With any error, whether during the reservation step or the confirmation
@@ -350,12 +359,7 @@ UIImageView* BrandingImageView() {
 
   BOOL shouldShowRefresh = [_delegate isRefreshEnabled];
 
-  if (base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressIOSErrorStatesEnabled) &&
-      [_reservedPlusAddress
-          isEqualToString:
-              l10n_util::GetNSString(
-                  IDS_PLUS_ADDRESS_BOTTOMSHEET_LOADING_TEMPORARY_LABEL_CONTENT_IOS)]) {
+  if (_errorStatesEnabled && _isGenerating) {
     shouldShowRefresh = NO;
     [cell showActivityIndicator];
   } else {
@@ -394,9 +398,11 @@ UIImageView* BrandingImageView() {
 - (void)didTapTrailingButton {
   _refreshCount++;
   self.primaryActionButton.enabled = NO;
-  // TODO(crbug.com/343153116): Disable the refresh button when it's loading.
+  _isGenerating = _errorStatesEnabled;
   _reservedPlusAddress = l10n_util::GetNSString(
-      IDS_PLUS_ADDRESS_BOTTOMSHEET_REFRESH_TEMPORARY_LABEL_CONTENT_IOS);
+      _errorStatesEnabled
+          ? IDS_PLUS_ADDRESS_BOTTOMSHEET_LOADING_TEMPORARY_LABEL_CONTENT_IOS
+          : IDS_PLUS_ADDRESS_BOTTOMSHEET_REFRESH_TEMPORARY_LABEL_CONTENT_IOS);
   [_reservedPlusAddressTableView reloadData];
 
   [_delegate didTapRefreshButton];
