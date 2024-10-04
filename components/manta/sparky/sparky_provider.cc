@@ -170,14 +170,6 @@ void SparkyProvider::OnScreenshotObtained(
     proto::Image* image_proto = sparky_context_data->mutable_screenshot();
     image_proto->set_serialized_bytes(
         std::string(base::as_string_view(*png_screenshot)));
-    // Also appends the screenshot to the last conversation if it is available.
-    if (sparky_context_data->conversation_size() > 0) {
-      auto* last_conversation = sparky_context_data->mutable_conversation(
-          sparky_context_data->conversation_size() - 1);
-      proto::Image* screenshot = last_conversation->mutable_screenshot();
-      screenshot->set_serialized_bytes(
-          std::string(base::as_string_view(*png_screenshot)));
-    }
   }
   auto* apps_data = sparky_context_data->mutable_apps_data();
   AddAppsData(sparky_delegate_->GetAppsList(), apps_data);
