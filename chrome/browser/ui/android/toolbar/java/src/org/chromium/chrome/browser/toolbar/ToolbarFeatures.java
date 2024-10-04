@@ -46,4 +46,9 @@ public final class ToolbarFeatures {
         sTabStripLayoutOptimizationEnabledForTesting = enabled;
         ResettersForTesting.register(() -> sTabStripLayoutOptimizationEnabledForTesting = null);
     }
+
+    public static boolean isBrowserControlsInVizEnabled(boolean isTablet) {
+        return ChromeFeatureList.sBrowserControlsInViz.isEnabled()
+                && (!ChromeFeatureList.sBcivPhoneOnly.isEnabled() || !isTablet);
+    }
 }

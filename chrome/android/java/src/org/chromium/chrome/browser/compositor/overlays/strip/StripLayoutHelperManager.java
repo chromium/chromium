@@ -91,6 +91,7 @@ import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
@@ -757,7 +758,8 @@ public class StripLayoutHelperManager
                     getStripTransitionScrimColor(), mStripTransitionScrimOpacity);
 
             yOffset = 0;
-        } else if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()
+        } else if (ToolbarFeatures.isBrowserControlsInVizEnabled(
+                        DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext))
                 && mIsVerticalScrollInProgress) {
             // With bciv, we don't want anything else controlling the offset while scrolling.
             // Tabstrip currently has no min height, so setting to 0 is ok.
@@ -1360,7 +1362,8 @@ public class StripLayoutHelperManager
                             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
                             BrowserControlsOffsetTagsInfo offsetTagsInfo,
                             @BrowserControlsState int constraints) {
-                        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
+                        if (ToolbarFeatures.isBrowserControlsInVizEnabled(
+                                DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext))) {
                             mTabStripTreeProvider.updateOffsetTag(
                                     offsetTagsInfo.getTopControlsOffsetTag());
                         }

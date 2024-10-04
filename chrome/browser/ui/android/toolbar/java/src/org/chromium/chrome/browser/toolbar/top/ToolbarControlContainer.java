@@ -620,7 +620,9 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         }
 
         public void onPageLoadStopped() {
-            if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()
+            if (ToolbarFeatures.isBrowserControlsInVizEnabled(
+                            DeviceFormFactor.isNonMultiDisplayContextOnTablet(
+                                    mToolbarContainer.getContext()))
                     && !ChromeFeatureList.sBcivWithSuppression.isEnabled()) {
                 // With capture suppression, we don't capture after navigating. Instead, we schedule
                 // a capture to happen when the controls become unlocked. With BCIV, there is no

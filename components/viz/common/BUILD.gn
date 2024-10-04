@@ -301,6 +301,7 @@ viz_component("common") {
     "//services/tracing/public/cpp:cpp",
     "//third_party/blink/public/common/tokens:tokens_headers",
     "//third_party/libyuv",
+    "//ui/base",
     "//ui/display/types",
     "//ui/gfx",
     "//ui/gfx:color_space",

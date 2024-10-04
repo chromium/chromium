@@ -160,7 +160,7 @@ public class TopToolbarOverlayMediator {
                         // when status indicator is visible or tab strip is hidden), and the toolbar
                         // needs to be positioned at the bottom of the top controls regardless of
                         // the total height.
-                        if (!ChromeFeatureList.sBrowserControlsInViz.isEnabled()
+                        if (!ToolbarFeatures.isBrowserControlsInVizEnabled(isTablet())
                                 || needsAnimate
                                 || isVisibilityForced) {
                             mModel.set(
@@ -188,7 +188,7 @@ public class TopToolbarOverlayMediator {
                             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
                             BrowserControlsOffsetTagsInfo offsetTagsInfo,
                             @BrowserControlsState int constraints) {
-                        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
+                        if (ToolbarFeatures.isBrowserControlsInVizEnabled(isTablet())) {
                             mModel.set(
                                     TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG,
                                     offsetTagsInfo.getTopControlsOffsetTag());

@@ -19,6 +19,7 @@
 namespace features {
 
 #if BUILDFLAG(IS_ANDROID)
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidBcivPhoneOnly);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidBcivWithSuppression);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidBcivZeroBrowserFrames);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidBrowserControlsInViz);
@@ -170,6 +171,9 @@ VIZ_COMMON_EXPORT bool ShouldAckOnSurfaceActivationWhenInteractive();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 VIZ_COMMON_EXPORT bool IsCrosContentAdjustedRefreshRateEnabled();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID)
+VIZ_COMMON_EXPORT bool IsBrowserControlsInVizEnabled();
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace features
 

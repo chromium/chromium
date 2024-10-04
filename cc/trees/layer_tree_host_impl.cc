@@ -2466,7 +2466,7 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
     metadata.top_controls_visible_height.emplace(visible_height);
 
 #if BUILDFLAG(IS_ANDROID)
-    if (base::FeatureList::IsEnabled(features::kAndroidBrowserControlsInViz)) {
+    if (features::IsBrowserControlsInVizEnabled()) {
       const viz::OffsetTag& tag =
           browser_controls_offset_manager_->TopControlsOffsetTag();
       if (tag) {
@@ -2604,7 +2604,7 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
         last_draw_render_frame_metadata_->has_transparent_background !=
             metadata.has_transparent_background;
 
-    if (!base::FeatureList::IsEnabled(features::kAndroidBrowserControlsInViz)) {
+    if (!features::IsBrowserControlsInVizEnabled()) {
       allocate_new_local_surface_id |=
           last_draw_render_frame_metadata_->top_controls_shown_ratio !=
               metadata.top_controls_shown_ratio ||
