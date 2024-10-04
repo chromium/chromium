@@ -33,7 +33,15 @@ public abstract class TabModelSelectorBase
 
     private static TabModelSelectorObserver sObserverForTesting;
 
+    /**
+     * Elements in {@link mTabModels} should be kept in sync with elements in {@link
+     * mTabModelInternals}. These could be the same list; however, the casting of {@code
+     * (List<TabModel>)(List<? extends TabModel>) mTabModelInternals} is potentially dangerous and
+     * could crash at runtime if the list were mutated or cast with the wrong type.
+     */
     private final List<TabModel> mTabModels = new ArrayList<>();
+
+    private final List<TabModelInternal> mTabModelInternals = new ArrayList<>();
     private IncognitoTabModel mIncognitoTabModel;
 
     /**
@@ -84,16 +92,18 @@ public abstract class TabModelSelectorBase
                         mTabModelSupplier, tabModel -> tabModel.getTabCountSupplier());
     }
 
-    protected final void initialize(TabModel normalModel, IncognitoTabModel incognitoModel) {
+    protected final void initialize(
+            TabModelInternal normalModel, IncognitoTabModelInternal incognitoModel) {
         // Only normal and incognito supported for now.
-        assert mTabModels.isEmpty();
+        assert mTabModelInternals.isEmpty();
 
-        mTabModels.add(normalModel);
-        mTabModels.add(incognitoModel);
+        mTabModelInternals.add(normalModel);
+        mTabModelInternals.add(incognitoModel);
+        mTabModels.addAll(mTabModelInternals);
         mIncognitoTabModel = incognitoModel;
         int activeModelIndex = getModelIndex(mStartIncognito);
         assert activeModelIndex != MODEL_NOT_FOUND;
-        mTabModelFilterProvider.init(mTabModelFilterFactory, this, mTabModels);
+        mTabModelFilterProvider.init(mTabModelFilterFactory, this, getModels());
 
         TabModelObserver tabModelObserver =
                 new TabModelObserver() {
@@ -128,7 +138,7 @@ public abstract class TabModelSelectorBase
 
         incognitoModel.setActive(mStartIncognito);
         normalModel.setActive(!mStartIncognito);
-        mTabModelSupplier.set(mTabModels.get(activeModelIndex));
+        mTabModelSupplier.set(mTabModelInternals.get(activeModelIndex));
 
         notifyChanged();
     }
@@ -151,16 +161,16 @@ public abstract class TabModelSelectorBase
 
     @Override
     public void selectModel(boolean incognito) {
-        if (mTabModels.size() == 0) {
+        if (mTabModelInternals.size() == 0) {
             mStartIncognito = incognito;
             return;
         }
         int newIndex = getModelIndex(incognito);
         assert newIndex != MODEL_NOT_FOUND;
-        if (mTabModels.get(newIndex) == mTabModelSupplier.get()) return;
+        if (mTabModelInternals.get(newIndex) == mTabModelSupplier.get()) return;
 
-        TabModel newModel = mTabModels.get(newIndex);
-        TabModel previousModel = mTabModelSupplier.get();
+        TabModelInternal newModel = mTabModelInternals.get(newIndex);
+        TabModelInternal previousModel = (TabModelInternal) mTabModelSupplier.get();
         previousModel.setActive(false);
         newModel.setActive(true);
         mTabModelSupplier.set(newModel);
@@ -186,8 +196,8 @@ public abstract class TabModelSelectorBase
 
     @Override
     public TabModel getModelForTabId(int id) {
-        for (int i = 0; i < mTabModels.size(); i++) {
-            TabModel model = mTabModels.get(i);
+        for (int i = 0; i < mTabModelInternals.size(); i++) {
+            TabModel model = mTabModelInternals.get(i);
             if (model.getTabById(id) != null || model.isClosurePending(id)) {
                 return model;
             }
@@ -197,7 +207,7 @@ public abstract class TabModelSelectorBase
 
     @Override
     public @NonNull TabModel getCurrentModel() {
-        if (mTabModels.size() == 0) return EmptyTabModel.getInstance(false);
+        if (mTabModelInternals.size() == 0) return EmptyTabModel.getInstance(false);
         return mTabModelSupplier.get();
     }
 
@@ -220,12 +230,12 @@ public abstract class TabModelSelectorBase
     public TabModel getModel(boolean incognito) {
         int index = getModelIndex(incognito);
         if (index == MODEL_NOT_FOUND) return EmptyTabModel.getInstance(false);
-        return mTabModels.get(index);
+        return mTabModelInternals.get(index);
     }
 
     private int getModelIndex(boolean incognito) {
-        for (int i = 0; i < mTabModels.size(); i++) {
-            if (incognito == mTabModels.get(i).isIncognito()) return i;
+        for (int i = 0; i < mTabModelInternals.size(); i++) {
+            if (incognito == mTabModelInternals.get(i).isIncognito()) return i;
         }
         return MODEL_NOT_FOUND;
     }
@@ -237,19 +247,19 @@ public abstract class TabModelSelectorBase
 
     @Override
     public boolean isIncognitoSelected() {
-        if (mTabModels.size() == 0) return mStartIncognito;
+        if (mTabModelInternals.size() == 0) return mStartIncognito;
         return getCurrentModel().isIncognito();
     }
 
     @Override
     public boolean isIncognitoBrandedModelSelected() {
-        if (mTabModels.size() == 0) return mStartIncognito;
+        if (mTabModelInternals.size() == 0) return mStartIncognito;
         return getCurrentModel().isIncognitoBranded();
     }
 
     @Override
     public boolean isOffTheRecordModelSelected() {
-        if (mTabModels.size() == 0) return mStartIncognito;
+        if (mTabModelInternals.size() == 0) return mStartIncognito;
         return getCurrentModel().isOffTheRecord();
     }
 
@@ -275,7 +285,7 @@ public abstract class TabModelSelectorBase
     public boolean closeTab(Tab tab) {
         boolean isClosing = tab.isClosing() && !tab.isDestroyed();
         for (int i = 0; i < getModels().size(); i++) {
-            TabModel model = mTabModels.get(i);
+            TabModel model = mTabModelInternals.get(i);
             if (isClosing) {
                 // If the tab is closing and not destroyed it should be in the comprehensive model
                 // of one of the tab models. Find its model and commit the tab closure.
@@ -317,15 +327,15 @@ public abstract class TabModelSelectorBase
 
     @Override
     public void commitAllTabClosures() {
-        for (int i = 0; i < mTabModels.size(); i++) {
-            mTabModels.get(i).commitAllTabClosures();
+        for (int i = 0; i < mTabModelInternals.size(); i++) {
+            mTabModelInternals.get(i).commitAllTabClosures();
         }
     }
 
     @Override
     public Tab getTabById(int id) {
         for (int i = 0; i < getModels().size(); i++) {
-            Tab tab = mTabModels.get(i).getTabById(id);
+            Tab tab = mTabModelInternals.get(i).getTabById(id);
             if (tab != null) return tab;
         }
         return null;
@@ -340,7 +350,7 @@ public abstract class TabModelSelectorBase
     public void closeAllTabs(boolean uponExit) {
         TabClosureParams params = TabClosureParams.closeAllTabs().uponExit(uponExit).build();
         for (int i = 0; i < getModels().size(); i++) {
-            mTabModels.get(i).closeTabs(params);
+            mTabModelInternals.get(i).closeTabs(params);
         }
     }
 
@@ -348,7 +358,7 @@ public abstract class TabModelSelectorBase
     public int getTotalTabCount() {
         int count = 0;
         for (int i = 0; i < getModels().size(); i++) {
-            count += mTabModels.get(i).getCount();
+            count += mTabModelInternals.get(i).getCount();
         }
         return count;
     }
@@ -384,7 +394,8 @@ public abstract class TabModelSelectorBase
         if (mIncognitoTabModel != null) {
             mIncognitoTabModel.removeIncognitoObserver(this);
         }
-        for (int i = 0; i < getModels().size(); i++) mTabModels.get(i).destroy();
+        for (int i = 0; i < getModels().size(); i++) mTabModelInternals.get(i).destroy();
+        mTabModelInternals.clear();
         mTabModels.clear();
     }
 

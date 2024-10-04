@@ -115,8 +115,8 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
     @VisibleForTesting
     void onNativeLibraryReadyInternal(
             TabContentManager tabContentProvider,
-            TabModel normalModel,
-            IncognitoTabModel incognitoModel) {
+            TabModelInternal normalModel,
+            IncognitoTabModelInternal incognitoModel) {
         mTabContentManager = tabContentProvider;
         initialize(normalModel, incognitoModel);
 
@@ -146,7 +146,8 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
      * @param normalModel The normal tab model.
      * @param incognitoModel The incognito tab model.
      */
-    public void initializeForTesting(TabModel normalModel, IncognitoTabModel incognitoModel) {
+    public void initializeForTesting(
+            TabModelInternal normalModel, IncognitoTabModelInternal incognitoModel) {
         initialize(normalModel, incognitoModel);
     }
 

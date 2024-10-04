@@ -145,7 +145,7 @@ public class TabModelImplUnitTest {
         TabModelOrderControllerImpl orderController =
                 new TabModelOrderControllerImpl(mTabModelSelector);
         Profile profile = isIncognito ? mIncognitoProfile : mProfile;
-        TabModel tabModel =
+        TabModelImpl tabModel =
                 new TabModelImpl(
                         profile,
                         ActivityType.TABBED,

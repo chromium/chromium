@@ -112,12 +112,12 @@ public class UndoTabModelUnitTest {
     }
 
     /** Create a {@link TabModel} to use for the test. */
-    private TabModel createTabModel(boolean isIncognito) {
+    private TabModelImpl createTabModel(boolean isIncognito) {
         AsyncTabParamsManager realAsyncTabParamsManager =
                 AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
         TabModelOrderControllerImpl orderController =
                 new TabModelOrderControllerImpl(mTabModelSelector);
-        TabModel tabModel;
+        TabModelImpl tabModel;
         final boolean supportUndo = !isIncognito;
         if (isIncognito) {
             // TODO(crbug.com/40222755): Consider using an incognito tab model.
@@ -1546,7 +1546,7 @@ public class UndoTabModelUnitTest {
     @SmallTest
     public void testInactiveModelCloseAndUndoForTabSupplier() throws TimeoutException {
         final boolean isIncognito = false;
-        final TabModel model = createTabModel(isIncognito);
+        final TabModelImpl model = createTabModel(isIncognito);
         assertEquals(0, model.getTabCountSupplier().get().intValue());
         model.getCurrentTabSupplier().addObserver(mTabSupplierObserver);
         model.setActive(false);

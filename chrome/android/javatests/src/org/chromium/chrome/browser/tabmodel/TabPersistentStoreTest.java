@@ -203,7 +203,7 @@ public class TabPersistentStoreTest {
                         }
                     };
             TabModelImpl regularTabModel = ThreadUtils.runOnUiThreadBlocking(callable);
-            IncognitoTabModel incognitoTabModel =
+            IncognitoTabModelImpl incognitoTabModel =
                     new IncognitoTabModelImpl(
                             new IncognitoTabModelImplCreator(
                                     null,

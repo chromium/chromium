@@ -126,7 +126,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                         /* isArchivedTabModel= */ false);
         regularTabCreator.setTabModel(normalModel, mOrderController);
 
-        IncognitoTabModel incognitoModel =
+        IncognitoTabModelImpl incognitoModel =
                 new IncognitoTabModelImpl(
                         new IncognitoTabModelImplCreator(
                                 profileProvider,
@@ -145,8 +145,8 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
     @VisibleForTesting
     void onNativeLibraryReadyInternal(
             TabContentManager tabContentProvider,
-            TabModel normalModel,
-            IncognitoTabModel incognitoModel) {
+            TabModelInternal normalModel,
+            IncognitoTabModelInternal incognitoModel) {
         mTabContentManager = tabContentProvider;
         initialize(normalModel, incognitoModel);
 
@@ -220,10 +220,12 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
 
     /**
      * Exposed to allow tests to initialize the selector with different tab models.
+     *
      * @param normalModel The normal tab model.
      * @param incognitoModel The incognito tab model.
      */
-    public void initializeForTesting(TabModel normalModel, IncognitoTabModel incognitoModel) {
+    public void initializeForTesting(
+            TabModelInternal normalModel, IncognitoTabModelInternal incognitoModel) {
         initialize(normalModel, incognitoModel);
     }
 

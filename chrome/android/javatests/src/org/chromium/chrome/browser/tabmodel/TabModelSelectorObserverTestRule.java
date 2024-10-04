@@ -158,7 +158,8 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
     }
 
     /** Test TabModel that exposes the needed capabilities for testing. */
-    public static class TabModelSelectorTestTabModel extends TabModelImpl {
+    public static class TabModelSelectorTestTabModel extends TabModelImpl
+            implements IncognitoTabModelInternal {
         private Set<TabModelObserver> mObserverSet = new HashSet<>();
 
         public TabModelSelectorTestTabModel(
@@ -194,6 +195,12 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
             super.removeObserver(observer);
             mObserverSet.remove(observer);
         }
+
+        @Override
+        public void addIncognitoObserver(IncognitoTabModelObserver observer) {}
+
+        @Override
+        public void removeIncognitoObserver(IncognitoTabModelObserver observer) {}
 
         public Set<TabModelObserver> getObservers() {
             return mObserverSet;

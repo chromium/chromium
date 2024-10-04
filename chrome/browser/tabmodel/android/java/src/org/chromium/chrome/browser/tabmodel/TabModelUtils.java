@@ -28,6 +28,11 @@ import java.util.List;
 public class TabModelUtils {
     private TabModelUtils() {}
 
+    /** Returns the non-incognito instance of the {@link EmptyTabModel}. */
+    public static @NonNull TabModel getEmptyTabModel() {
+        return EmptyTabModel.getInstance(/* isIncognito= */ false);
+    }
+
     /**
      * @param model The {@link TabModel} to act on.
      * @param index The index of the {@link Tab} to close.

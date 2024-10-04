@@ -62,7 +62,7 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
     }
 
     @Override
-    public TabModel createTabModel() {
+    public TabModelInternal createTabModel() {
         return new TabModelImpl(
                 mProfileProvider.getOffTheRecordProfile(true),
                 mActivityType,

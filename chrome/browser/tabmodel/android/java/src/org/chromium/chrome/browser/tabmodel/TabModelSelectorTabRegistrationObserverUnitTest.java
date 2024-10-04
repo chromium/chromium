@@ -78,7 +78,7 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
                 AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
         NextTabPolicy.NextTabPolicySupplier nextTabPolicySupplier =
                 () -> NextTabPolicy.HIERARCHICAL;
-        TabModel normalTabModel =
+        TabModelImpl normalTabModel =
                 new TabModelImpl(
                         mProfile,
                         ActivityType.TABBED,
@@ -361,7 +361,8 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
         }
     }
 
-    private static class TestIncognitoTabModel extends TabModelImpl implements IncognitoTabModel {
+    private static class TestIncognitoTabModel extends TabModelImpl
+            implements IncognitoTabModelInternal {
         public TestIncognitoTabModel(
                 @NonNull Profile profile,
                 @ActivityType int activityType,

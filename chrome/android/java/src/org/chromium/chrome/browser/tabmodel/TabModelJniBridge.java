@@ -24,7 +24,7 @@ import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 /** Bridges between the C++ and Java {@link TabModel} interfaces. */
-public abstract class TabModelJniBridge implements TabModel {
+public abstract class TabModelJniBridge implements TabModelInternal {
     private final Profile mProfile;
 
     /** The type of the Activity for which this tab model works. */
