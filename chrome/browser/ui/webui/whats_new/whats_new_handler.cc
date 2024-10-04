@@ -8,7 +8,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/rand_util.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
@@ -22,11 +21,7 @@
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_version.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/bookmarks/common/bookmark_pref_names.h"
-#include "components/prefs/pref_change_registrar.h"
-#include "components/prefs/pref_service.h"
 #include "components/user_education/common/user_education_features.h"
 #include "components/user_education/webui/whats_new_registry.h"
 #include "components/variations/service/variations_service.h"
@@ -169,15 +164,8 @@ std::string WhatsNewHandler::GetLatestCountry() {
 }
 
 bool WhatsNewHandler::IsHaTSActivated() {
-  // Calculate a threshold value < 100 and persist to local state.
-  PrefService* const prefs = g_browser_process->local_state();
-  int threshold;
-  if (prefs->HasPrefPath(prefs::kWhatsNewHatsActivationThreshold)) {
-    threshold = prefs->GetInteger(prefs::kWhatsNewHatsActivationThreshold);
-  } else {
-    threshold = base::RandInt(0, 99);
-    prefs->SetInteger(prefs::kWhatsNewHatsActivationThreshold, threshold);
-  }
+  // Calculate a threshold value < 100.
+  int threshold = GetThreshold();
 
   // What's New content is dependent on the user's current country. Use
   // the latest country to determine whether to show the survey.

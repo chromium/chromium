@@ -1112,6 +1112,13 @@ const char kMoveMigrationResumeCountPref[] =
     "ash.browser_data_migrator.move_migration_resume_count";
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+// Deprecated 10/2024
+// Pref name for the percent threshold to show HaTS on the What's New page.
+inline constexpr char kWhatsNewHatsActivationThreshold[] =
+    "browser.whats_new_hats_activation_threshold";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1212,6 +1219,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kMigrationStep, 0);
   registry->RegisterDictionaryPref(kMoveMigrationResumeStepPref);
   registry->RegisterDictionaryPref(kMoveMigrationResumeCountPref);
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Deprecated 10/2024
+  registry->RegisterIntegerPref(kWhatsNewHatsActivationThreshold, 100);
 #endif
 }
 
@@ -2486,6 +2498,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kMigrationStep);
   local_state->ClearPref(kMoveMigrationResumeStepPref);
   local_state->ClearPref(kMoveMigrationResumeCountPref);
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Added 10/2024
+  local_state->ClearPref(kWhatsNewHatsActivationThreshold);
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

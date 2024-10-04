@@ -15,8 +15,6 @@
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_version.h"
-#include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/user_education/common/user_education_features.h"
@@ -49,8 +47,7 @@ class MockPage : public whats_new::mojom::Page {
 class WhatsNewHandlerTest : public testing::Test {
  public:
   WhatsNewHandlerTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()),
-        profile_(std::make_unique<TestingProfile>()),
+      : profile_(std::make_unique<TestingProfile>()),
         web_contents_(factory_.CreateWebContents(profile_.get())) {
     feature_list_.InitWithFeatures(
         {}, {user_education::features::kWhatsNewVersion2});
@@ -81,7 +78,6 @@ class WhatsNewHandlerTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
 
   // NOTE: The initialization order of these members matters.
-  ScopedTestingLocalState local_state_;
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<MockHatsService> mock_hats_service_;
   content::TestWebContentsFactory factory_;
@@ -187,7 +183,7 @@ TEST_P(WhatsNewHandlerTestWithCountry, SurveyIsTriggeredInActiveCountries) {
   handler_->set_override_latest_country_for_testing(country);
 
   // Set activation threshold to trigger for
-  local_state_.Get()->SetInteger(prefs::kWhatsNewHatsActivationThreshold, 0);
+  handler_->set_override_threshold_for_testing_(0);
   base::MockCallback<WhatsNewHandler::GetServerUrlCallback> callback;
   EXPECT_CALL(callback, Run).Times(1);
 
@@ -223,7 +219,7 @@ TEST_P(WhatsNewHandlerTestWithCountry,
   handler_->set_override_latest_country_for_testing(country);
 
   // Set activation threshold to trigger for
-  local_state_.Get()->SetInteger(prefs::kWhatsNewHatsActivationThreshold, 0);
+  handler_->set_override_threshold_for_testing_(0);
   base::MockCallback<WhatsNewHandler::GetServerUrlCallback> callback;
   EXPECT_CALL(callback, Run).Times(1);
 
