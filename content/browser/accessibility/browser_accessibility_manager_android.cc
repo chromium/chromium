@@ -271,6 +271,7 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
       }
 
       wcax->AnnounceLiveRegionText(text);
+      wcax->HandleDialogModalOpened(android_node->GetUniqueId());
       break;
     }
     case ui::AXEventGenerator::Event::CHECKED_STATE_CHANGED:
