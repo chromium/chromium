@@ -87,8 +87,8 @@ class ReadingListModelObserver {
   virtual void ReadingListDidApplyChanges(ReadingListModel* model) {}
 
  protected:
-  ReadingListModelObserver() {}
-  virtual ~ReadingListModelObserver() {}
+  ReadingListModelObserver() = default;
+  virtual ~ReadingListModelObserver() = default;
 };
 
 #endif  // COMPONENTS_READING_LIST_CORE_READING_LIST_MODEL_OBSERVER_H_

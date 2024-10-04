@@ -21,7 +21,7 @@ class BookmarkUndoProvider {
                                   std::unique_ptr<BookmarkNode> node) = 0;
 
  protected:
-  virtual ~BookmarkUndoProvider() {}
+  virtual ~BookmarkUndoProvider() = default;
 };
 
 }  // namespace bookmarks

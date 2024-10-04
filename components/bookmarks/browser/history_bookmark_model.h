@@ -20,7 +20,7 @@ struct UrlAndTitle;
 class HistoryBookmarkModel
     : public base::RefCountedThreadSafe<HistoryBookmarkModel> {
  public:
-  HistoryBookmarkModel() {}
+  HistoryBookmarkModel() = default;
 
   virtual bool IsBookmarked(const GURL& url) = 0;
 
@@ -32,7 +32,7 @@ class HistoryBookmarkModel
  protected:
   friend class base::RefCountedThreadSafe<HistoryBookmarkModel>;
 
-  virtual ~HistoryBookmarkModel() {}
+  virtual ~HistoryBookmarkModel() = default;
 };
 
 }  // namespace bookmarks

@@ -220,8 +220,8 @@ bool HasUserCreatedBookmarks(BookmarkModel* model) {
 
 }  // namespace
 
-QueryFields::QueryFields() {}
-QueryFields::~QueryFields() {}
+QueryFields::QueryFields() = default;
+QueryFields::~QueryFields() = default;
 
 VectorIterator::VectorIterator(
     std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>* nodes)

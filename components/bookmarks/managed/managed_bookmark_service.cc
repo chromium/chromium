@@ -41,7 +41,7 @@ class BookmarkPermanentNodeLoader {
   BookmarkPermanentNodeLoader& operator=(const BookmarkPermanentNodeLoader&) =
       delete;
 
-  ~BookmarkPermanentNodeLoader() {}
+  ~BookmarkPermanentNodeLoader() = default;
 
   // Initializes |node_| from |initial_bookmarks_| and |title_id_| and returns
   // it. The ids are assigned starting at |next_node_id| and the value is

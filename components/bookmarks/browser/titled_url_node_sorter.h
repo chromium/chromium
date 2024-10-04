@@ -21,7 +21,7 @@ class TitledUrlNodeSorter {
   using TitledUrlNodeSet =
       base::flat_set<raw_ptr<const TitledUrlNode, CtnExperimental>>;
 
-  virtual ~TitledUrlNodeSorter() {}
+  virtual ~TitledUrlNodeSorter() = default;
 
   // Sorts |matches| in an implementation-specific way, placing the results in
   // |sorted_nodes|.
