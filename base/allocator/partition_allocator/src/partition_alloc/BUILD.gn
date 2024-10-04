@@ -138,6 +138,7 @@ pa_buildflag_header("buildflags") {
     "ENABLE_DANGLING_RAW_PTR_CHECKS=$enable_dangling_raw_ptr_checks",
     "ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=$enable_dangling_raw_ptr_feature_flag",
     "ENABLE_GWP_ASAN_SUPPORT=$enable_gwp_asan_support",
+    "ENABLE_PARTITION_LOCK_REENTRANCY_CHECK=$enable_partition_lock_reentrancy_check",
     "ENABLE_PKEYS=$enable_pkeys",
     "ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=$enable_pointer_arithmetic_trait_check",
     "ENABLE_POINTER_COMPRESSION=$enable_pointer_compression",

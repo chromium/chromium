@@ -152,6 +152,10 @@ declare_args() {
   # through malloc. Useful for using with tools that intercept malloc, e.g.
   # heaptrack.
   forward_through_malloc = false
+
+  # Enable reentrancy checks at `partition_alloc::internal::Lock`.
+  # TODO(crbug.com/371135823): Remove upon completion of investigation.
+  enable_partition_lock_reentrancy_check = false
 }
 
 declare_args() {

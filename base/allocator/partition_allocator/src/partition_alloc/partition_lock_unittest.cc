@@ -163,6 +163,29 @@ TEST(PartitionAllocLockTest, AssertAcquired) {
   lock.Release();
 }
 
+#if defined(GTEST_HAS_DEATH_TEST) && \
+    (PA_BUILDFLAG(DCHECKS_ARE_ON) || \
+     PA_BUILDFLAG(ENABLE_PARTITION_LOCK_REENTRANCY_CHECK))
+
+// Need to bypass `-Wthread-safety-analysis` for this test.
+#if __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wthread-safety-analysis"
+#endif
+
+TEST(PartitionAllocLockTest, ReentrancyDeathTest) {
+  Lock lock;
+  lock.Acquire();
+  EXPECT_DEATH(lock.Acquire(), "");
+}
+
+#if __clang__
+#pragma clang diagnostic pop
+#endif
+
+#endif  // defined(GTEST_HAS_DEATH_TEST) && (PA_BUILDFLAG(DCHECKS_ARE_ON) ||
+        // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_REENTRANCY_CHECK))
+
 // AssertAcquired() is only enforced with DCHECK()s.
 // DCHECKs don't work with EXPECT_DEATH on official builds.
 #if defined(GTEST_HAS_DEATH_TEST) && PA_BUILDFLAG(DCHECKS_ARE_ON) && \
