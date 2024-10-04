@@ -19,6 +19,12 @@
 #import "url/gurl.h"
 #import "url/origin.h"
 
+enum class PlusAddressAction {
+  kPlusAddressActionReserve = 0,
+  kPlusAddressActionConfirm,
+  kPlusAddressActionRefresh
+};
+
 @implementation PlusAddressBottomSheetMediator {
   // The service implementation that owns the data.
   raw_ptr<plus_addresses::PlusAddressService> _plusAddressService;
@@ -68,38 +74,25 @@
 
 - (void)reservePlusAddress {
   __weak __typeof(self) weakSelf = self;
-  // Create the callback needed by the C++ `_plusAddressService` object,
-  // notifying the consumer once the call returns.
   auto callback = base::BindOnce(^(
       const plus_addresses::PlusProfileOrError& maybePlusProfile) {
-    if (maybePlusProfile.has_value()) {
-      [weakSelf didReservePlusAddress:base::SysUTF8ToNSString(
-                                          *maybePlusProfile->plus_address)];
-    } else {
-      [weakSelf notifyError:plus_addresses::metrics::
-                                PlusAddressModalCompletionStatus::
-                                    kReservePlusAddressError];
-    }
+    [weakSelf
+        handlePlusAddressResult:maybePlusProfile
+                      forAction:PlusAddressAction::kPlusAddressActionReserve];
   });
+
   _plusAddressService->ReservePlusAddress(_mainFrameOrigin,
                                           std::move(callback));
 }
 
 - (void)confirmPlusAddress {
   __weak __typeof(self) weakSelf = self;
-  // Create the callback needed by the C++ `_plusAddressService` object,
-  // notifying the consumer once the call returns.
-  auto callback = base::BindOnce(
-      ^(const plus_addresses::PlusProfileOrError& maybePlusProfile) {
-        if (maybePlusProfile.has_value()) {
-          [weakSelf runAutofillCallback:base::SysUTF8ToNSString(
-                                            *maybePlusProfile->plus_address)];
-        } else {
-          [weakSelf notifyError:plus_addresses::metrics::
-                                    PlusAddressModalCompletionStatus::
-                                        kConfirmPlusAddressError];
-        }
-      });
+  auto callback = base::BindOnce(^(
+      const plus_addresses::PlusProfileOrError& maybePlusProfile) {
+    [weakSelf
+        handlePlusAddressResult:maybePlusProfile
+                      forAction:PlusAddressAction::kPlusAddressActionConfirm];
+  });
   _plusAddressService->ConfirmPlusAddress(
       _mainFrameOrigin,
       plus_addresses::PlusAddress(
@@ -132,19 +125,12 @@
 
 - (void)didTapRefreshButton {
   __weak __typeof(self) weakSelf = self;
-  // Create the callback needed by the C++ `_plusAddressService` object,
-  // notifying the consumer once the call returns.
-  auto callback = base::BindOnce(
-      ^(const plus_addresses::PlusProfileOrError& maybePlusProfile) {
-        if (maybePlusProfile.has_value()) {
-          [weakSelf didReservePlusAddress:base::SysUTF8ToNSString(
-                                              *maybePlusProfile->plus_address)];
-        } else {
-          [weakSelf notifyError:plus_addresses::metrics::
-                                    PlusAddressModalCompletionStatus::
-                                        kReservePlusAddressError];
-        }
-      });
+  auto callback = base::BindOnce(^(
+      const plus_addresses::PlusProfileOrError& maybePlusProfile) {
+    [weakSelf
+        handlePlusAddressResult:maybePlusProfile
+                      forAction:PlusAddressAction::kPlusAddressActionRefresh];
+  });
   _plusAddressService->RefreshPlusAddress(_mainFrameOrigin,
                                           std::move(callback));
 }
@@ -186,12 +172,48 @@
   }
 }
 
-// Informs both the `consumer` and `_delegate` to prepare to show the error
-// state.
-- (void)notifyError:
-    (plus_addresses::metrics::PlusAddressModalCompletionStatus)status {
-  [self.consumer notifyError:status];
-  if (base::FeatureList::IsEnabled(
+// This method handles the result of a Plus Address action.
+// It takes the `maybePlusProfile` result and the `action` that was performed.
+// Based on the action, it calls the appropriate success or error handler.
+- (void)handlePlusAddressResult:
+            (const plus_addresses::PlusProfileOrError&)maybePlusProfile
+                      forAction:(PlusAddressAction)action {
+  BOOL showGenericError = NO;
+  switch (action) {
+      // Both actions have the same success behavior.
+    case PlusAddressAction::kPlusAddressActionReserve:
+    case PlusAddressAction::kPlusAddressActionRefresh:
+      if (maybePlusProfile.has_value()) {
+        // If the action was successful, call `didReservePlusAddress` with the
+        // reserved Plus Address.
+        [self didReservePlusAddress:base::SysUTF8ToNSString(
+                                        *maybePlusProfile->plus_address)];
+      } else {
+        // If the action failed, notify the error.
+        [self.consumer notifyError:plus_addresses::metrics::
+                                       PlusAddressModalCompletionStatus::
+                                           kReservePlusAddressError];
+        showGenericError = YES;
+      }
+      break;
+    case PlusAddressAction::kPlusAddressActionConfirm:
+      if (maybePlusProfile.has_value()) {
+        // If the action was successful, call `runAutofillCallback` with the
+        // confirmed Plus Address.
+        [self runAutofillCallback:base::SysUTF8ToNSString(
+                                      *maybePlusProfile->plus_address)];
+      } else {
+        // If the action failed, notify the error.
+        [self.consumer notifyError:plus_addresses::metrics::
+                                       PlusAddressModalCompletionStatus::
+                                           kConfirmPlusAddressError];
+        showGenericError = YES;
+      }
+      break;
+  }
+
+  if (showGenericError &&
+      base::FeatureList::IsEnabled(
           plus_addresses::features::
               kPlusAddressIOSErrorAndLoadingStatesEnabled)) {
     [_delegate showErrorAlert];
