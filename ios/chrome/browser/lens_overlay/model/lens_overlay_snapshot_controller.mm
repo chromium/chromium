@@ -141,9 +141,15 @@ void LensOverlaySnapshotController::OnSnapshotCaptured(UIImage* snapshot) {
         [snapshot drawAtPoint:CGPointMake(0, viewportInsets.top)];
       }];
 
+  // Lens requires the image to be 1.0 scale.
+  UIImage* rescaledSnapshot =
+      [[UIImage alloc] initWithCGImage:snapshotWithInfill.CGImage
+                                 scale:1
+                           orientation:UIImageOrientationUp];
+
   // Consume and clear the pending callbacks storage.
   for (auto& callback : pending_snapshot_callbacks_) {
-    std::move(callback).Run(snapshotWithInfill);
+    std::move(callback).Run(rescaledSnapshot);
   }
 
   fullscreen_controller_->RemoveObserver(this);
