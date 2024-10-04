@@ -12,6 +12,7 @@ import optparse
 import os
 import pathlib
 import re
+import shlex
 import shutil
 import sys
 import time
@@ -496,7 +497,7 @@ def _RunCompiler(changes,
     if java_files:
       os.makedirs(classes_dir)
 
-      if enable_partial_javac:
+      if enable_partial_javac and changes:
         all_changed_paths_are_java = all(
             p.endswith(".java") for p in changes.IterChangedPaths())
         if (all_changed_paths_are_java and not changes.HasStringChanges()
@@ -568,6 +569,10 @@ def _RunCompiler(changes,
         before_join_callback = lambda: metadata_parser.ParseAndWriteInfoFile(
             jar_info_path, java_files, kt_files)
 
+      if options.print_javac_command_line:
+        print(shlex.join(cmd))
+        return
+
       build_utils.CheckOutput(cmd,
                               print_stdout=options.chromium_code,
                               stdout_filter=process_javac_output_partial,
@@ -577,6 +582,8 @@ def _RunCompiler(changes,
       end = time.time() - start
       logging.info('Java compilation took %ss', end)
     elif parse_java_files:
+      if options.print_javac_command_line:
+        raise Exception('need java files for --print-javac-command-line.')
       metadata_parser.ParseAndWriteInfoFile(jar_info_path, java_files, kt_files)
 
     CreateJarFile(jar_path, classes_dir, metadata_parser.services_map,
@@ -658,6 +665,9 @@ def _ParseOptions(argv):
       action='append',
       default=[],
       help='Additional arguments to pass to javac.')
+  parser.add_option('--print-javac-command-line',
+                    action='store_true',
+                    help='Just show javac command line (for ide_query).')
   parser.add_option(
       '--enable-kythe-annotations',
       action='store_true',
@@ -793,6 +803,13 @@ def main(argv):
 
   javac_args.extend(options.javac_arg)
 
+  if options.print_javac_command_line:
+    if options.java_srcjars:
+      raise Exception(
+          '--print-javac-command-line does not work with --java-srcjars')
+    _OnStaleMd5(None, options, javac_cmd, javac_args, java_files, kt_files)
+    return 0
+
   classpath_inputs = options.classpath + options.processorpath
 
   depfile_deps = classpath_inputs
@@ -820,6 +837,7 @@ def main(argv):
                                        input_strings=input_strings,
                                        output_paths=output_paths,
                                        pass_changes=True)
+  return 0
 
 
 if __name__ == '__main__':
