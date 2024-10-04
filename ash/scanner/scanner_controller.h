@@ -49,6 +49,8 @@ class ASH_EXPORT ScannerController {
 
   bool HasActiveSessionForTesting() const;
 
+  ScannerDelegate* delegate_for_testing() { return delegate_.get(); }
+
  private:
   std::unique_ptr<ScannerDelegate> delegate_;
 

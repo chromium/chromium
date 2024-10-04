@@ -6,6 +6,7 @@
 #define ASH_SCANNER_FAKE_SCANNER_PROFILE_SCOPED_DELEGATE_H_
 
 #include "ash/public/cpp/scanner/scanner_profile_scoped_delegate.h"
+#include "base/functional/callback.h"
 
 namespace ash {
 
@@ -24,6 +25,14 @@ class FakeScannerProfileScopedDelegate : public ScannerProfileScopedDelegate {
   void FetchActionsForImage(
       scoped_refptr<base::RefCountedMemory> jpeg_bytes,
       base::OnceCallback<void(ScannerActionsResponse)> callback) override;
+
+  // Simulates sending `actions_response` in response to a prior request to
+  // `FetchActionsForImage`. `FetchActionsForImage` must be called before
+  // sending a response via this method.
+  void SendFakeActionsResponse(ScannerActionsResponse actions_response);
+
+ private:
+  base::OnceCallback<void(ScannerActionsResponse)> fetch_actions_callback_;
 };
 
 }  // namespace ash
