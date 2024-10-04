@@ -528,5 +528,19 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
               label_is(u"***"));
 }
 
+// This is a regression test for crbug.com/521133 to ensure that we don't crash
+// when suggestions updates race with user selections.
+TEST_F(AutofillKeyboardAccessoryControllerImplTest, SelectInvalidSuggestion) {
+  ShowSuggestions(manager(), {SuggestionType::kMixedFormMessage});
+
+  EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion).Times(0);
+
+  // The following should not crash:
+  client().popup_controller(manager()).AcceptSuggestion(
+      /*index=*/0);  // Non-acceptable type.
+  client().popup_controller(manager()).AcceptSuggestion(
+      /*index=*/1);  // Out of bounds!
+}
+
 }  // namespace
 }  // namespace autofill

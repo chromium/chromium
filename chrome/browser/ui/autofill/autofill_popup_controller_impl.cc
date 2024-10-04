@@ -402,6 +402,9 @@ void AutofillPopupControllerImpl::OnSuggestionsChanged() {
 }
 
 void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
+  CHECK_LT(base::checked_cast<size_t>(index), GetSuggestions().size());
+  CHECK(IsAcceptableSuggestionType(GetSuggestions()[index].type));
+
   // Ignore clicks immediately after the popup was shown. This is to prevent
   // users accidentally accepting suggestions (crbug.com/1279268).
   if ((!barrier_for_accepting_ || !barrier_for_accepting_->value()) &&
@@ -409,13 +412,6 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
     return;
   }
 
-  if (static_cast<size_t>(index) >= GetSuggestions().size()) {
-    // Prevents crashes from crbug.com/521133. It seems that in rare cases or
-    // races the suggestions_ and the user-selected index may be out of sync.
-    // If the index points out of bounds, Chrome will crash. Prevent this by
-    // ignoring the selection and wait for another signal from the user.
-    return;
-  }
   if (IsPointerLocked(web_contents_.get())) {
     Hide(SuggestionHidingReason::kMouseLocked);
     return;
@@ -760,6 +756,7 @@ void AutofillPopupControllerImpl::KeyPressObserver::Reset() {
 
 void AutofillPopupControllerImpl::SelectSuggestion(int index) {
   CHECK_LT(base::checked_cast<size_t>(index), GetSuggestions().size());
+  CHECK(IsAcceptableSuggestionType(GetSuggestions()[index].type));
 
   if (IsPointerLocked(web_contents_.get())) {
     Hide(SuggestionHidingReason::kMouseLocked);
@@ -767,8 +764,7 @@ void AutofillPopupControllerImpl::SelectSuggestion(int index) {
   }
 
   const autofill::Suggestion& suggestion = GetSuggestionAt(index);
-  if (!IsAcceptableSuggestionType(suggestion.type) ||
-      !suggestion.is_acceptable) {
+  if (!suggestion.is_acceptable) {
     UnselectSuggestion();
     return;
   }
