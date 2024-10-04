@@ -6822,6 +6822,15 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid | kOsDesktop,
      FEATURE_VALUE_TYPE(commerce::kPriceTrackingSubscriptionServiceLocaleKey)},
 
+    {"price-tracking-subscription-service-product-version",
+     commerce::flag_descriptions::
+         kPriceTrackingSubscriptionServiceProductVersionName,
+     commerce::flag_descriptions::
+         kPriceTrackingSubscriptionServiceProductVersionDescription,
+     kOsAndroid | kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         commerce::kPriceTrackingSubscriptionServiceProductVersion)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"price-change-module", flag_descriptions::kPriceChangeModuleName,
      flag_descriptions::kPriceChangeModuleDescription, kOsAndroid,

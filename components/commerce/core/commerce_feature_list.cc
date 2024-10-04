@@ -299,6 +299,10 @@ BASE_FEATURE(kPriceTrackingSubscriptionServiceLocaleKey,
              "PriceTrackingSubscriptionServiceLocaleKey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPriceTrackingSubscriptionServiceProductVersion,
+             "PriceTrackingSubscriptionServiceProductVersion",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kShoppingPDPMetrics,
              "ShoppingPDPMetrics",
              base::FEATURE_DISABLED_BY_DEFAULT);

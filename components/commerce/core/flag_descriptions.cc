@@ -84,8 +84,13 @@ const char kTrackByDefaultOnMobileDescription[] =
 
 const char kPriceTrackingSubscriptionServiceLocaleKeyName[] =
     "Price Tracking Subscription Service Local Key";
-
 const char kPriceTrackingSubscriptionServiceLocaleKeyDescription[] =
     "Enable the locale key for price tracking subscription service";
+
+const char kPriceTrackingSubscriptionServiceProductVersionName[] =
+    "Price Tracking Subscription Service Product Version";
+const char kPriceTrackingSubscriptionServiceProductVersionDescription[] =
+    "Enable the product version logging for price tracking subscription "
+    "service";
 
 }  // namespace commerce::flag_descriptions

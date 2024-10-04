@@ -17466,6 +17466,8 @@ from previous Chrome versions.
   <int value="-1181840496" label="UnrestrictedUsb:enabled"/>
   <int value="-1181465102" label="SyncEnableBookmarksInTransportMode:disabled"/>
   <int value="-1179917414" label="DefaultChromeAppUninstallSync:disabled"/>
+  <int value="-1179245974"
+      label="PriceTrackingSubscriptionServiceProductVersion:disabled"/>
   <int value="-1178536416" label="PasswordManagerRedesign:disabled"/>
   <int value="-1178350793" label="RemoteCopyReceiver:disabled"/>
   <int value="-1177802205" label="enable-hosted-app-quit-notification"/>
@@ -18604,6 +18606,8 @@ from previous Chrome versions.
   <int value="-713136799" label="NearbySharingOnePageOnboarding:disabled"/>
   <int value="-713104676"
       label="DisablePeripheralDataAccessProtection:enabled"/>
+  <int value="-712499441"
+      label="PriceTrackingSubscriptionServiceProductVersion:enabled"/>
   <int value="-711991950" label="SiteExplorationUi:enabled"/>
   <int value="-711890895" label="enable-website-settings-manager"/>
   <int value="-711422585" label="kSignInProfileCreationEnterprise:disabled"/>
