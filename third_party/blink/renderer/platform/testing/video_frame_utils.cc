@@ -28,7 +28,8 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
     const gfx::Size& natural_size,
     media::VideoFrame::StorageType storage_type,
     media::VideoPixelFormat pixel_format,
-    base::TimeDelta timestamp) {
+    base::TimeDelta timestamp,
+    std::unique_ptr<gfx::GpuMemoryBuffer> gmb) {
   switch (storage_type) {
     case media::VideoFrame::STORAGE_OWNED_MEMORY:
       return media::VideoFrame::CreateZeroInitializedFrame(
@@ -39,8 +40,10 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
       CHECK(buffer_format) << "Pixel format "
                            << media::VideoPixelFormatToString(pixel_format)
                            << " has no corresponding gfx::BufferFormat";
-      auto gmb = std::make_unique<media::FakeGpuMemoryBuffer>(
-          coded_size, buffer_format.value());
+      if (!gmb) {
+        gmb = std::make_unique<media::FakeGpuMemoryBuffer>(
+            coded_size, buffer_format.value());
+      }
       return media::VideoFrame::WrapExternalGpuMemoryBuffer(
           visible_rect, natural_size, std::move(gmb), timestamp);
     }
@@ -50,8 +53,6 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
       CHECK(buffer_format) << "Pixel format "
                            << media::VideoPixelFormatToString(pixel_format)
                            << " has no corresponding gfx::BufferFormat";
-      auto gmb = std::make_unique<media::FakeGpuMemoryBuffer>(
-          coded_size, buffer_format.value());
       scoped_refptr<gpu::ClientSharedImage> shared_image =
           gpu::ClientSharedImage::CreateForTesting();
 

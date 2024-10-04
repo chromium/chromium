@@ -161,6 +161,7 @@ void MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter::
   // on that thread. However, since |video_source_| was created on the render
   // thread, it should be released on the render thread.
   base::AutoLock auto_lock(video_source_stop_lock_);
+  video_source_->Dispose();
   video_source_ = nullptr;
 }
 

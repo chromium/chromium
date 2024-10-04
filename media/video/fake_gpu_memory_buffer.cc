@@ -41,6 +41,12 @@ class FakeGpuMemoryBufferImpl : public gpu::GpuMemoryBufferImpl {
 
   // gfx::GpuMemoryBuffer implementation
   bool Map() override { return fake_gmb_->Map(); }
+  void MapAsync(base::OnceCallback<void(bool)> result_cb) override {
+    fake_gmb_->MapAsync(std::move(result_cb));
+  }
+  bool AsyncMappingIsNonBlocking() const override {
+    return fake_gmb_->AsyncMappingIsNonBlocking();
+  }
   void* memory(size_t plane) override { return fake_gmb_->memory(plane); }
   void Unmap() override { fake_gmb_->Unmap(); }
   int stride(size_t plane) const override { return fake_gmb_->stride(plane); }
@@ -68,6 +74,15 @@ base::ScopedFD GetDummyFD() {
 FakeGpuMemoryBuffer::FakeGpuMemoryBuffer(const gfx::Size& size,
                                          gfx::BufferFormat format)
     : FakeGpuMemoryBuffer(size, format, gfx::NativePixmapHandle::kNoModifier) {}
+
+FakeGpuMemoryBuffer::FakeGpuMemoryBuffer(const gfx::Size& size,
+                                         gfx::BufferFormat format,
+                                         bool premapped,
+                                         MapCallbackController* controller)
+    : FakeGpuMemoryBuffer(size, format, gfx::NativePixmapHandle::kNoModifier) {
+  premapped_ = premapped;
+  map_callback_controller_ = controller;
+}
 
 FakeGpuMemoryBuffer::FakeGpuMemoryBuffer(const gfx::Size& size,
                                          gfx::BufferFormat format,
@@ -109,6 +124,18 @@ FakeGpuMemoryBuffer::FakeGpuMemoryBuffer(const gfx::Size& size,
 FakeGpuMemoryBuffer::~FakeGpuMemoryBuffer() = default;
 
 bool FakeGpuMemoryBuffer::Map() {
+  return true;
+}
+
+void FakeGpuMemoryBuffer::MapAsync(base::OnceCallback<void(bool)> result_cb) {
+  if (premapped_) {
+    std::move(result_cb).Run(true);
+    return;
+  }
+  map_callback_controller_->RegisterCallback(std::move(result_cb));
+}
+
+bool FakeGpuMemoryBuffer::AsyncMappingIsNonBlocking() const {
   return true;
 }
 
