@@ -22,6 +22,7 @@ public class UrlConstants {
     public static final String DATA_SCHEME = "data";
     public static final String DEVTOOLS_SCHEME = "devtools";
     public static final String DOCUMENT_SCHEME = "document";
+    public static final String FIDO_SCHEME = "fido";
     public static final String FILE_SCHEME = "file";
     public static final String FILESYSTEM_SCHEME = "filesystem";
     public static final String FTP_SCHEME = "ftp";
