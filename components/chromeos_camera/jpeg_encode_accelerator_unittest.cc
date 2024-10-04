@@ -373,7 +373,7 @@ JpegClient::JpegClient(const std::vector<TestImage*>& test_aligned_images,
       exif_size_(exif_size),
       gpu_memory_buffer_manager_(new media::LocalGpuMemoryBufferManager()) {}
 
-JpegClient::~JpegClient() {}
+JpegClient::~JpegClient() = default;
 
 void JpegClient::CreateJpegEncoder() {
   auto jea_factories =
@@ -718,7 +718,7 @@ class JpegEncodeAcceleratorTest : public ::testing::Test {
       delete;
 
  protected:
-  JpegEncodeAcceleratorTest() {}
+  JpegEncodeAcceleratorTest() = default;
 
   void TestEncode(size_t num_concurrent_encoders,
                   bool is_dma,

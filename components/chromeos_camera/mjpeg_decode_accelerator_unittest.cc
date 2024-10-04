@@ -601,7 +601,7 @@ JpegClient::JpegClient(
       use_dmabuf_(use_dmabuf),
       skip_result_checking_(skip_result_checking) {}
 
-JpegClient::~JpegClient() {}
+JpegClient::~JpegClient() = default;
 
 void JpegClient::CreateJpegDecoder() {
   decoder_ = nullptr;

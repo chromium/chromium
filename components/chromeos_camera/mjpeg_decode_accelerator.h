@@ -81,7 +81,7 @@ class MjpegDecodeAccelerator {
     virtual void NotifyError(int32_t task_id, Error error) = 0;
 
    protected:
-    virtual ~Client() {}
+    virtual ~Client() = default;
   };
 
   // Destroys the decoder: all pending inputs are dropped immediately. This

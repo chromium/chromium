@@ -68,7 +68,7 @@ class JpegEncodeAccelerator {
     virtual void NotifyError(int32_t buffer_id, Status status) = 0;
 
    protected:
-    virtual ~Client() {}
+    virtual ~Client() = default;
   };
 
   // Destroys the encoder: all pending inputs are dropped immediately. This
