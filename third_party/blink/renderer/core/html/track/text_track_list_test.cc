@@ -23,7 +23,8 @@ TEST(TextTrackListTest, InvalidateTrackIndexes) {
   std::array<TextTrack*, kNumTextTracks> text_tracks;
   for (size_t i = 0; i < kNumTextTracks; ++i) {
     text_tracks[i] = MakeGarbageCollected<TextTrack>(
-        AtomicString("subtitles"), g_empty_atom, g_empty_atom, *list->Owner());
+        V8TextTrackKind(V8TextTrackKind::Enum::kSubtitles), g_empty_atom,
+        g_empty_atom, *list->Owner());
     list->Append(text_tracks[i]);
   }
 

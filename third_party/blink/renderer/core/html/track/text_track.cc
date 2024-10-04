@@ -68,13 +68,13 @@ const AtomicString& TextTrack::MetadataKeyword() {
   return metadata;
 }
 
-TextTrack::TextTrack(const AtomicString& kind,
+TextTrack::TextTrack(const V8TextTrackKind& kind,
                      const AtomicString& label,
                      const AtomicString& language,
                      HTMLElement& source_element,
                      const AtomicString& id,
                      TextTrackType type)
-    : TrackBase(WebMediaPlayer::kTextTrack, kind, label, language, id),
+    : TrackBase(WebMediaPlayer::kTextTrack, label, language, id),
       active_cues_(nullptr),
       track_list_(nullptr),
       source_element_(source_element),
@@ -82,7 +82,8 @@ TextTrack::TextTrack(const AtomicString& kind,
       readiness_state_(kNotLoaded),
       track_index_(kInvalidTrackIndex),
       rendered_track_index_(kInvalidTrackIndex),
-      has_been_configured_(false) {}
+      has_been_configured_(false),
+      kind_(kind.AsEnum()) {}
 
 TextTrack::~TextTrack() = default;
 

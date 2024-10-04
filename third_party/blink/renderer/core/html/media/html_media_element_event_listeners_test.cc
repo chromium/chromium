@@ -657,8 +657,8 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, CueEnterExitEventLatency) {
 
   // Create a text track, and fill it with cue data
   auto* text_track =
-      Video()->addTextTrack(AtomicString("subtitles"), g_empty_atom,
-                            g_empty_atom, ASSERT_NO_EXCEPTION);
+      Video()->addTextTrack(V8TextTrackKind(V8TextTrackKind::Enum::kSubtitles),
+                            g_empty_atom, g_empty_atom, ASSERT_NO_EXCEPTION);
 
   auto* listener = MakeGarbageCollected<CueEventListener>();
   for (auto cue_data : kTestCueData) {

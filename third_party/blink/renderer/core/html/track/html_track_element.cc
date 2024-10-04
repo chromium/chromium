@@ -92,15 +92,19 @@ void HTMLTrackElement::ParseAttribute(
     // As the kind, label, and srclang attributes are set, changed, or removed,
     // the text track must update accordingly...
   } else if (name == html_names::kKindAttr) {
+    std::optional<V8TextTrackKind> kind;
     AtomicString lower_case_value = params.new_value.LowerASCII();
     // 'missing value default' ("subtitles")
-    if (lower_case_value.IsNull())
-      lower_case_value = TextTrack::SubtitlesKeyword();
-    // 'invalid value default' ("metadata")
-    else if (!TextTrack::IsValidKindKeyword(lower_case_value))
-      lower_case_value = TextTrack::MetadataKeyword();
-
-    track()->SetKind(lower_case_value);
+    if (lower_case_value.IsNull()) {
+      // 'missing value default' ("subtitles")
+      kind = V8TextTrackKind(V8TextTrackKind::Enum::kSubtitles);
+    } else {
+      kind = V8TextTrackKind::Create(lower_case_value);
+      if (!kind.has_value()) {
+        kind = V8TextTrackKind(V8TextTrackKind::Enum::kMetadata);
+      }
+    }
+    track()->SetKind(kind.value());
   } else if (name == html_names::kLabelAttr) {
     track()->SetLabel(params.new_value);
   } else if (name == html_names::kSrclangAttr) {
@@ -112,8 +116,8 @@ void HTMLTrackElement::ParseAttribute(
   HTMLElement::ParseAttribute(params);
 }
 
-const AtomicString& HTMLTrackElement::kind() {
-  return track()->kind();
+AtomicString HTMLTrackElement::kind() {
+  return track()->kind().AsAtomicString();
 }
 
 void HTMLTrackElement::setKind(const AtomicString& kind) {

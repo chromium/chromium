@@ -3299,7 +3299,7 @@ void HTMLMediaElement::ForgetResourceSpecificTracks() {
   audio_tracks_timer_.Stop();
 }
 
-TextTrack* HTMLMediaElement::addTextTrack(const AtomicString& kind,
+TextTrack* HTMLMediaElement::addTextTrack(const V8TextTrackKind& kind,
                                           const AtomicString& label,
                                           const AtomicString& language,
                                           ExceptionState& exception_state) {

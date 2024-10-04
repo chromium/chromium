@@ -99,6 +99,7 @@ class TextTrackList;
 class TimeRanges;
 class VideoTrack;
 class VideoTrackList;
+class V8TextTrackKind;
 class WebRemotePlaybackClient;
 
 class CORE_EXPORT HTMLMediaElement
@@ -284,7 +285,7 @@ class CORE_EXPORT HTMLMediaElement
   VideoTrackList& videoTracks();
   void SelectedVideoTrackChanged(VideoTrack*);
 
-  TextTrack* addTextTrack(const AtomicString& kind,
+  TextTrack* addTextTrack(const V8TextTrackKind& kind,
                           const AtomicString& label,
                           const AtomicString& language,
                           ExceptionState&);

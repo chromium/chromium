@@ -27,6 +27,7 @@ class PLATFORM_EXPORT EnumerationBase {
   // https://webidl.spec.whatwg.org/#dfn-enumeration-value
   const char* AsCStr() const { return string_literal_; }
   String AsString() const { return string_literal_; }
+  AtomicString AsAtomicString() const { return AtomicString(string_literal_); }
 
   // Returns the string representation to be used by CHECK_OP family.
   // This member function is meant only for CHECK_EQ, etc.

@@ -44,7 +44,6 @@ class CORE_EXPORT TrackBase : public Supplementable<TrackBase> {
 
   WebMediaPlayer::TrackType GetType() const { return type_; }
 
-  const AtomicString& kind() const { return kind_; }
   AtomicString label() const { return label_; }
   AtomicString language() const { return language_; }
 
@@ -57,13 +56,11 @@ class CORE_EXPORT TrackBase : public Supplementable<TrackBase> {
 
  protected:
   TrackBase(WebMediaPlayer::TrackType,
-            const AtomicString& kind,
             const AtomicString& label,
             const AtomicString& language,
             const String& id);
 
   WebMediaPlayer::TrackType type_;
-  AtomicString kind_;
   AtomicString label_;
   AtomicString language_;
   String id_;
