@@ -70,7 +70,7 @@ Value: typing.TypeAlias = 'str | ValueBuilder'
 
 
 def to_output(value: Value) -> str | None:
-  """get the output for a starlark venue."""
+  """Get the output for a starlark value."""
   if isinstance(value, ValueBuilder):
     return value.output()
   return value
