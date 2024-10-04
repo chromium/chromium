@@ -433,11 +433,6 @@ bool WebContentsDelegate::MaybeCopyContentAreaAsBitmap(
   return false;
 }
 
-bool WebContentsDelegate::IsWaitingForPointerLockPrompt(
-    WebContents* web_contents) {
-  return false;
-}
-
 #if BUILDFLAG(IS_ANDROID)
 SkBitmap WebContentsDelegate::MaybeCopyContentAreaAsBitmapSync() {
   return SkBitmap();

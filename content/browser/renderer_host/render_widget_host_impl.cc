@@ -789,12 +789,8 @@ void RenderWidgetHostImpl::WasHidden() {
     return;
   }
 
-  // Cancel pending pointer lock requests, unless there's an open user prompt.
-  // Prompts should remain open and functional across tab switches.
-  if (!delegate_->IsWaitingForPointerLockPrompt(this)) {
-    RejectPointerLockOrUnlockIfNecessary(
-        blink::mojom::PointerLockResult::kWrongDocument);
-  }
+  RejectPointerLockOrUnlockIfNecessary(
+      blink::mojom::PointerLockResult::kWrongDocument);
 
   TRACE_EVENT0("renderer_host", "RenderWidgetHostImpl::WasHidden");
   is_hidden_ = true;

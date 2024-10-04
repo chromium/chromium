@@ -4507,14 +4507,6 @@ void WebContentsImpl::RequestToLockPointer(
   }
 }
 
-bool WebContentsImpl::IsWaitingForPointerLockPrompt(
-    RenderWidgetHostImpl* render_widget_host) {
-  if (!delegate_ || (pointer_lock_widget_ != render_widget_host)) {
-    return false;
-  }
-  return delegate_->IsWaitingForPointerLockPrompt(this);
-}
-
 void WebContentsImpl::LostPointerLock(
     RenderWidgetHostImpl* render_widget_host) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::LostPointerLock",
