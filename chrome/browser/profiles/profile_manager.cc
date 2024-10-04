@@ -140,7 +140,7 @@
 #include "chrome/browser/signin/signin_manager_android_factory.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/session/arc_management_transition.h"
 #include "ash/constants/ash_switches.h"
@@ -151,6 +151,8 @@
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
+#include "chrome/browser/chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager_factory.h"
+#include "chrome/browser/chromeos/extensions/desk_api/desk_api_extension_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/user_manager/user.h"
@@ -158,7 +160,7 @@
 #include "components/user_manager/user_type.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/profiles/profile_statistics.h"
 #include "chrome/browser/profiles/profile_statistics_factory.h"
 #endif
@@ -166,18 +168,6 @@
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/signin/signin_util_win.h"
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
-#include "chrome/browser/ui/startup/first_run_service.h"
-#include "chromeos/startup/browser_params_proxy.h"
-#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager_factory.h"
-#include "chrome/browser/chromeos/extensions/desk_api/desk_api_extension_manager_factory.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_factory.h"
@@ -343,7 +333,7 @@ bool IsRegisteredAsEphemeral(ProfileAttributesStorage* storage,
   return entry && entry->IsEphemeral();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool IsLoggedIn() {
   return user_manager::UserManager::IsInitialized() &&
          user_manager::UserManager::Get()->IsUserLoggedIn();
@@ -393,16 +383,11 @@ void UpdateSupervisedUserPref(Profile* profile, bool is_child) {
 }
 
 std::optional<bool> IsUserChild(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   const user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   return user ? std::make_optional(user->GetType() ==
                                    user_manager::UserType::kChild)
               : std::nullopt;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()->SessionType() ==
-         crosapi::mojom::SessionType::kChildSession;
-#endif
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -412,7 +397,7 @@ void RunCallbacks(std::vector<base::OnceCallback<void(Profile*)>>& callbacks,
     std::move(callback).Run(profile);
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 void ClearPrimaryAccountForProfile(
     base::WeakPtr<Profile> weak_profile,
     signin_metrics::ProfileSignout signout_source_metric) {
@@ -508,7 +493,6 @@ Profile* ProfileManager::GetLastUsedProfile() {
     return nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Use default login profile if user has not logged in yet.
   if (!IsLoggedIn())
     return profile_manager->GetActiveUserOrOffTheRecordProfile();
@@ -525,12 +509,6 @@ Profile* ProfileManager::GetLastUsedProfile() {
   Profile* profile = profile_manager->GetProfileByPath(
       ash::BrowserContextHelper::Get()->GetBrowserContextPathByUserIdHash(
           user->username_hash()));
-#else
-  // TODO(crbug.com/40238900): Once Lacros is launched pre-login, we should
-  // probably do something analogous to the !IsLoggedIn() check above.
-  Profile* profile =
-      profile_manager->GetProfile(profile_manager->GetLastUsedProfileDir());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Accessing a user profile before it is loaded may lead to policy exploit.
   // See http://crbug.com/689206.
@@ -615,7 +593,7 @@ std::vector<Profile*> ProfileManager::GetLastOpenedProfiles() {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 // static
 Profile* ProfileManager::GetPrimaryUserProfile() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (IsLoggedIn()) {
     user_manager::UserManager* manager = user_manager::UserManager::Get();
     const user_manager::User* user = manager->GetPrimaryUser();
@@ -661,7 +639,7 @@ Profile* ProfileManager::GetPrimaryUserProfile() {
 // static
 Profile* ProfileManager::GetActiveUserProfile() {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!profile_manager)
     return nullptr;
 
@@ -685,9 +663,7 @@ Profile* ProfileManager::GetActiveUserProfile() {
   CHECK(profile) << profile_manager->user_data_dir().AsUTF8Unsafe();
   return profile;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
 // static
 Profile* ProfileManager::CreateInitialProfile() {
   ProfileManager* const profile_manager = g_browser_process->profile_manager();
@@ -699,7 +675,7 @@ Profile* ProfileManager::CreateInitialProfile() {
     return profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   return profile;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
 void ProfileManager::AddObserver(ProfileManagerObserver* observer) {
   observers_.AddObserver(observer);
@@ -820,7 +796,7 @@ bool ProfileManager::IsValidProfile(const void* profile) {
 }
 
 base::FilePath ProfileManager::GetInitialProfileDir() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (IsLoggedIn()) {
     user_manager::UserManager* manager = user_manager::UserManager::Get();
     // IsLoggedIn check above ensures |user| is non-null.
@@ -1006,7 +982,7 @@ base::FilePath ProfileManager::GetGuestProfilePath() {
   return guest_path.Append(chrome::kGuestProfileDir);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 // static
 base::FilePath ProfileManager::GetSystemProfilePath() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -1016,18 +992,7 @@ base::FilePath ProfileManager::GetSystemProfilePath() {
   base::FilePath system_path = profile_manager->user_data_dir();
   return system_path.Append(chrome::kSystemProfileDir);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// static
-base::FilePath ProfileManager::GetPrimaryUserProfilePath() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  return profile_manager->user_data_dir().Append(
-      profile_manager->GetInitialProfileDir());
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 base::FilePath ProfileManager::GenerateNextProfileDirectoryPath() {
   PrefService* local_state = g_browser_process->local_state();
@@ -1071,17 +1036,6 @@ ProfileShortcutManager* ProfileManager::profile_shortcut_manager() {
   return profile_shortcut_manager_.get();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-AccountProfileMapper* ProfileManager::GetAccountProfileMapper() {
-  if (!account_profile_mapper_) {
-    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-        GetAccountManagerFacade(/*profile_path=*/std::string()),
-        &GetProfileAttributesStorage(), g_browser_process->local_state());
-  }
-  return account_profile_mapper_.get();
-}
-#endif
-
 void ProfileManager::AutoloadProfiles() {
   // If running in the background is disabled for the browser, do not autoload
   // any profiles.
@@ -1115,8 +1069,8 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
   }
 
   // User type can change during online sign in on Chrome OS. Propagate the
-  // change to the profile in both Ash and LaCrOS and remove stored profile
-  // attributes so they can be re-initialized later.
+  // change to the profile and remove stored profile attributes so they can be
+  // re-initialized later.
 #if BUILDFLAG(IS_CHROMEOS)
   const std::optional<bool> user_is_child = IsUserChild(profile);
   const bool profile_is_new = profile->IsNewProfile();
@@ -1134,11 +1088,9 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
     }
     UpdateSupervisedUserPref(profile, user_is_child.value());
   }
-#endif
 
   // Additionally to propagation of the user type change to profile on Chrome
   // OS, Ash needs to propagate it to ARC++ and update secondary accounts.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (user_is_child.has_value()) {
     const bool profile_is_managed = !profile->IsOffTheRecord() &&
                                     arc::policy_util::IsAccountManaged(profile);
@@ -1180,7 +1132,7 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
                                       static_cast<int>(transition));
     }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   size_t avatar_index;
   std::string profile_name;
@@ -1199,7 +1151,7 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
       supervised_user_id = entry->GetSupervisedUserId();
     } else {
       avatar_index = profiles::GetPlaceholderAvatarIndex();
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
       profile_name =
           base::UTF16ToUTF8(storage.ChooseNameForNewProfile(avatar_index));
 #else
@@ -1257,15 +1209,6 @@ bool ProfileManager::HasKeepAliveForTesting(const Profile* profile,
   DCHECK(info);
   return info->keep_alives[origin] > 0;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void ProfileManager::SetAccountProfileMapperForTests(
-    std::unique_ptr<AccountProfileMapper> mapper) {
-  DCHECK(!account_profile_mapper_)
-      << "AccountProfileMapper must be set before the first usage";
-  account_profile_mapper_ = std::move(mapper);
-}
-#endif
 
 void ProfileManager::DisableProfileMetricsForTesting() {
   zombie_metrics_timer_.Stop();
@@ -1404,7 +1347,7 @@ void ProfileManager::NotifyOnProfileMarkedForPermanentDeletion(
 }
 
 void ProfileManager::UnloadProfileIfNoKeepAlive(const ProfileInfo* info) {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   if (GetTotalRefCount(info->keep_alives) != 0)
     return;
 
@@ -1423,7 +1366,7 @@ void ProfileManager::UnloadProfileIfNoKeepAlive(const ProfileInfo* info) {
 
   VLOG(1) << "Unloading profile " << info->GetCreatedProfile()->GetDebugName();
   UnloadProfile(info->GetCreatedProfile()->GetPath());
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 }
 
 void ProfileManager::DoFinalInit(ProfileInfo* profile_info,
@@ -1482,7 +1425,7 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   bool extensions_enabled = !go_off_the_record;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if ((!base::CommandLine::ForCurrentProcess()->HasSwitch(
            switches::kDisableLoginScreenApps) &&
        ash::ProfileHelper::IsSigninProfile(profile)) ||
@@ -1571,7 +1514,7 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
   if (accessibility_service)
     accessibility_service->Init();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::AccountManagerPolicyControllerFactory::GetForBrowserContext(profile);
 #endif
 
@@ -1628,19 +1571,7 @@ ProfileManager::ProfileInfo::FromUnownedProfile(Profile* profile) {
   // ProfileInfo's constructor is private, can't make_unique().
   std::unique_ptr<ProfileInfo> info(new ProfileInfo());
   info->unowned_profile_ = profile;
-
   SetCrashKeysForAsyncProfileCreation(profile, /*creation_complete=*/false);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Lacros primary profile should not be destroyed, this KeepAlive will be
-  // set and not expected to be removed at any point. On Secondary profiles, we
-  // do not set it to allow the profiles to be destroyed.
-  if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose) &&
-      Profile::IsMainProfilePath(info->unowned_profile_->GetPath())) {
-    info->keep_alives[ProfileKeepAliveOrigin::kLacrosMainProfile] = 1;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   return info;
 }
 
@@ -1668,7 +1599,7 @@ Profile* ProfileManager::ProfileInfo::GetRawProfile() const {
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 Profile* ProfileManager::GetActiveUserOrOffTheRecordProfile() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!IsLoggedIn()) {
     base::FilePath default_profile_dir =
         profiles::GetDefaultProfileDir(user_data_dir_);
@@ -1705,7 +1636,7 @@ Profile* ProfileManager::GetActiveUserOrOffTheRecordProfile() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 void ProfileManager::UnloadProfile(const base::FilePath& profile_dir) {
   TRACE_EVENT0("browser", "ProfileManager::UnloadProfile");
 
@@ -1738,7 +1669,7 @@ void ProfileManager::UnloadProfile(const base::FilePath& profile_dir) {
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&NukeProfileFromDisk, profile_dir, base::OnceClosure()));
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 Profile* ProfileManager::CreateAndInitializeProfile(
     const base::FilePath& profile_dir,
@@ -1962,7 +1893,7 @@ void ProfileManager::AddProfileToStorage(Profile* profile) {
     ProfileAttributesEntry* entry =
         storage.GetProfileAttributesWithPath(profile->GetPath());
     if (entry) {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
       bool could_be_managed_status = entry->CanBeManaged();
 #endif
       // The ProfileAttributesStorage's info must match the Identity Manager.
@@ -1972,7 +1903,7 @@ void ProfileManager::AddProfileToStorage(Profile* profile) {
       entry->SetSignedInWithCredentialProvider(profile->GetPrefs()->GetBoolean(
           prefs::kSignedInWithCredentialProvider));
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
       // Sign out if force-sign-in policy is enabled and profile is not signed
       // in.
       VLOG(1) << "ForceSigninCheck: " << signin_util::IsForceSigninEnabled()
@@ -2006,7 +1937,7 @@ void ProfileManager::AddProfileToStorage(Profile* profile) {
   init_params.supervised_user_id =
       profile->GetPrefs()->GetString(prefs::kSupervisedUserId);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (user)
@@ -2033,7 +1964,7 @@ void ProfileManager::SetNonPersonalProfilePrefs(Profile* profile) {
 }
 
 bool ProfileManager::ShouldGoOffTheRecord(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!ash::ProfileHelper::IsUserProfile(profile)) {
     return true;
   }
@@ -2136,11 +2067,6 @@ void ProfileManager::OnBrowserOpened(Browser* browser) {
   Profile* profile = browser->profile();
   DCHECK(profile);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // No browser should be opened before the FRE is finished.
-  DCHECK(!ShouldOpenFirstRun(profile));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   if (!profile->IsOffTheRecord() &&
       !IsRegisteredAsEphemeral(&GetProfileAttributesStorage(),
                                profile->GetPath()) &&
@@ -2178,12 +2104,12 @@ void ProfileManager::OnBrowserClosed(Browser* browser) {
                                    duration.InMinutes(), 1,
                                    base::Days(28).InMinutes(), 100);
     // ChromeOS handles guest data independently.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     // Clear all browsing data once a Guest Session completes. The Guest profile
     // has BrowserContextKeyedServices that the ProfileDestroyer can't delete
     // properly.
     profiles::RemoveBrowsingDataForProfile(profile->GetPath());
-#endif  //! BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  //! BUILDFLAG(IS_CHROMEOS)
   }
 
   base::FilePath path = profile->GetPath();

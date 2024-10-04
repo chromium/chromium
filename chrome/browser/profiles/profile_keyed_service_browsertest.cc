@@ -224,15 +224,8 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
                        GuestProfileOTR_NeededServices) {
   // clang-format off
   std::set<std::string> guest_otr_active_services {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    "CleanupManagerLacros",
-    "DownloadBubbleUpdateService",
-    "DownloadCoreService",
-    "MediaNotificationService",
-#else
     "LiveCaptionController",
     "LiveTranslateController",
-#endif // BUILDFLAG(IS_CHROMEOS_LACROS)
     "AIManagerKeyedService",
     "AlarmManager",
     "BackgroundContentsService",
@@ -255,9 +248,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "FederatedIdentityPermissionContext",
     "FederatedIdentityAutoReauthnPermissionContext",
     "FeedbackPrivateAPI",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    "FileChangeServiceBridge",
-#endif // BUILDFLAG(IS_CHROMEOS_LACROS)
     "FileSystemAccessPermissionContext",
     "GeneratedPrefs",
     "HeavyAdService",
@@ -325,21 +315,8 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
                        GuestProfileParent_NeededServices) {
   // clang-format off
   std::set<std::string> guest_active_services {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    "CastNotificationControllerLacros",
-    "CertDbInitializerFactory",
-    "CleanupManagerLacros",
-    "ClipboardAPI",
-    "ExternalLogoutRequestEventHandler",
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-    "ImageWriterControllerLacros",
-#endif
-    "MediaNotificationService",
-    "SessionStateChangedEventDispatcher",
-#else // !BUILDFLAG(IS_CHROMEOS_LACROS)
     "SystemIndicatorManager",
     "WebAppProvider",
-#endif
     "AccountExtensionTracker",
     "AccountReconcilor",
     "ActivityLog",
@@ -426,9 +403,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "FederatedIdentityPermissionContext",
     "FederatedIdentityAutoReauthnPermissionContext",
     "FeedbackPrivateAPI",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    "FileChangeServiceBridge",
-#endif // BUILDFLAG(IS_CHROMEOS_LACROS)
     "FileSystemAccessPermissionContext",
     "FirstPartySetsPolicyService",
     "FontPrefChangeNotifier",
@@ -453,9 +427,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "InstallVerifier",
     "InstanceIDProfileService",
     "InvalidationService",
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     "KcerFactory",
-#endif // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif // BUILDFLAG(IS_CHROMEOS)
     "LanguageSettingsPrivateDelegate",
     "LazyBackgroundTaskQueue",
     "ListFamilyMembersService",
@@ -477,9 +451,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "NotificationDisplayService",
     "NtpBackgroundService",
     "NtpCustomBackgroundService",
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     "NssServiceFactory",
-#endif // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif // BUILDFLAG(IS_CHROMEOS)
     "OmniboxAPI",
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     "OnDeviceTailModelService",

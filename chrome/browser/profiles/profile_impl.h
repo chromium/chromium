@@ -30,7 +30,7 @@
 
 class PrefService;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace ash {
 class KioskBaseTest;
 class LocaleChangeGuard;
@@ -42,14 +42,7 @@ namespace base {
 class SequencedTaskRunner;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-namespace extensions {
-class VolumeListProviderLacros;
-}  // namespace extensions
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace policy {
-class AsyncPolicyProvider;
 class ConfigurationPolicyProvider;
 class ProfilePolicyConnector;
 class ProfileCloudPolicyManager;
@@ -115,9 +108,6 @@ class ProfileImpl : public Profile {
   std::string GetProfileUserName() const override;
   base::FilePath GetPath() override;
   base::Time GetCreationTime() const override;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  bool IsMainProfile() const override;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   base::FilePath GetPath() const override;
   Profile* GetOffTheRecordProfile(const OTRProfileID& otr_profile_id,
                                   bool create_if_needed) override;
@@ -135,12 +125,12 @@ class ProfileImpl : public Profile {
   ChromeZoomLevelPrefs* GetZoomLevelPrefs() override;
   PrefService* GetReadOnlyOffTheRecordPrefs() override;
   policy::SchemaRegistryService* GetPolicySchemaRegistryService() override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   policy::UserCloudPolicyManagerAsh* GetUserCloudPolicyManagerAsh() override;
 #else
   policy::UserCloudPolicyManager* GetUserCloudPolicyManager() override;
   policy::ProfileCloudPolicyManager* GetProfileCloudPolicyManager() override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   policy::CloudPolicyManager* GetCloudPolicyManager() override;
   policy::ProfilePolicyConnector* GetProfilePolicyConnector() override;
   const policy::ProfilePolicyConnector* GetProfilePolicyConnector()
@@ -156,11 +146,11 @@ class ProfileImpl : public Profile {
   bool ShouldRestoreOldSessionCookies() override;
   bool ShouldPersistSessionCookies() const override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void ChangeAppLocale(const std::string& locale, AppLocaleChangedVia) override;
   void OnLogin() override;
   void InitChromeOSPreferences() override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   bool IsNewProfile() const override;
 
@@ -172,7 +162,7 @@ class ProfileImpl : public Profile {
   bool IsSignedIn() override;
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   friend class ash::KioskBaseTest;
 #endif
   friend class Profile;
@@ -256,18 +246,13 @@ class ProfileImpl : public Profile {
 
   // configuration_policy_provider() is either of these, or nullptr in some
   // tests.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<policy::UserCloudPolicyManagerAsh>
       user_cloud_policy_manager_ash_;
 #else
   std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
   std::unique_ptr<policy::ProfileCloudPolicyManager>
       profile_cloud_policy_manager_;
-#endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<policy::AsyncPolicyProvider> user_policy_provider_;
-  // Provider (monitor and dispatcher) of volume list updates.
-  std::unique_ptr<extensions::VolumeListProviderLacros> volume_list_provider_;
 #endif
 
   std::unique_ptr<policy::ProfilePolicyConnector> profile_policy_connector_;
@@ -297,7 +282,7 @@ class ProfileImpl : public Profile {
   // SimpleKeyedServiceFactory.
   std::unique_ptr<ProfileKey> key_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<ash::Preferences> chromeos_preferences_;
 
   std::unique_ptr<ash::LocaleChangeGuard> locale_change_guard_;
