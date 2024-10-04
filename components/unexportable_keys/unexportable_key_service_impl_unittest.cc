@@ -128,9 +128,9 @@ TEST_F(UnexportableKeyServiceImplTest, GenerateKeyMultiplePendingRequests) {
 }
 
 TEST_F(UnexportableKeyServiceImplTest, GenerateKeyFails) {
-  // RSA is not supported by the mock key provider, so the key generation should
-  // fail.
-  auto unsupported_algorithm = {crypto::SignatureVerifier::RSA_PKCS1_SHA256};
+  // RSA_PKCS1_SHA1 is not supported by the protocol, so the key generation
+  // should fail.
+  auto unsupported_algorithm = {crypto::SignatureVerifier::RSA_PKCS1_SHA1};
   base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> future;
   service().GenerateSigningKeySlowlyAsync(unsupported_algorithm, kTaskPriority,
                                           future.GetCallback());
