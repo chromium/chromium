@@ -5,6 +5,7 @@
 #include "net/socket/tls_stream_attempt.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/scoped_refptr.h"
 #include "net/base/completion_once_callback.h"
@@ -174,11 +175,14 @@ int TlsStreamAttempt::DoTlsAttemptComplete(int rv) {
   mutable_connect_timing().ssl_end = base::TimeTicks::Now();
   tls_handshake_timeout_timer_.Stop();
 
-  // TODO(crbug.com/346835898): Record some histograms as SSLConnectJob does.
-
-  // TODO(crbug.com/346835898): Handle the following error as SSLConnectJob
-  // does.
+  // TODO(crbug.com/346835898): Support ECH.
   CHECK_NE(rv, ERR_ECH_NOT_NEGOTIATED) << "Not implemented yet";
+
+  const bool is_ech_capable = false;
+  const bool ech_enabled = params().ssl_client_context->config().ech_enabled;
+  SSLClientSocket::RecordSSLConnectResult(
+      *ssl_socket_, rv, is_ech_capable, ech_enabled,
+      /*ech_retry_configs=*/std::nullopt, connect_timing());
 
   if (rv == OK || IsCertificateError(rv)) {
     SetStreamSocket(std::move(ssl_socket_));

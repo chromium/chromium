@@ -14,6 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "net/base/load_timing_info.h"
 #include "net/base/net_export.h"
 #include "net/cert/cert_database.h"
 #include "net/cert/cert_verifier.h"
@@ -39,6 +40,15 @@ class TransportSecurityState;
 //
 class NET_EXPORT SSLClientSocket : public SSLSocket {
  public:
+  // Records some histograms based on the result of the SSL handshake.
+  static void RecordSSLConnectResult(
+      SSLClientSocket& ssl_socket,
+      int result,
+      bool is_ech_capable,
+      bool ech_enabled,
+      const std::optional<std::vector<uint8_t>>& ech_retry_configs,
+      const LoadTimingInfo::ConnectTiming& connect_timing);
+
   SSLClientSocket();
 
   // Called in response to |ERR_ECH_NOT_NEGOTIATED| in Connect(), to determine

@@ -8,6 +8,8 @@
 
 #include "base/containers/flat_tree.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "net/cert/x509_certificate_net_log_param.h"
@@ -16,6 +18,8 @@
 #include "net/socket/ssl_client_socket_impl.h"
 #include "net/socket/stream_socket.h"
 #include "net/ssl/ssl_client_session_cache.h"
+#include "net/ssl/ssl_connection_status_flags.h"
+#include "net/ssl/ssl_info.h"
 #include "net/ssl/ssl_key_logger.h"
 
 namespace net {
@@ -64,6 +68,84 @@ base::Value::Dict NetLogClearMatchingCachedClientCertParams(
 }
 
 }  // namespace
+
+// static
+void SSLClientSocket::RecordSSLConnectResult(
+    SSLClientSocket& ssl_socket,
+    int result,
+    bool is_ech_capable,
+    bool ech_enabled,
+    const std::optional<std::vector<uint8_t>>& ech_retry_configs,
+    const LoadTimingInfo::ConnectTiming& connect_timing) {
+  if (is_ech_capable && ech_enabled) {
+    // These values are persisted to logs. Entries should not be renumbered
+    // and numeric values should never be reused.
+    enum class ECHResult {
+      // The connection succeeded on the initial connection.
+      kSuccessInitial = 0,
+      // The connection failed on the initial connection, without providing
+      // retry configs.
+      kErrorInitial = 1,
+      // The connection succeeded after getting retry configs.
+      kSuccessRetry = 2,
+      // The connection failed after getting retry configs.
+      kErrorRetry = 3,
+      // The connection succeeded after getting a rollback signal.
+      kSuccessRollback = 4,
+      // The connection failed after getting a rollback signal.
+      kErrorRollback = 5,
+      kMaxValue = kErrorRollback,
+    };
+    const bool is_ok = result == OK;
+    ECHResult ech_result;
+    if (!ech_retry_configs.has_value()) {
+      ech_result =
+          is_ok ? ECHResult::kSuccessInitial : ECHResult::kErrorInitial;
+    } else if (ech_retry_configs->empty()) {
+      ech_result =
+          is_ok ? ECHResult::kSuccessRollback : ECHResult::kErrorRollback;
+    } else {
+      ech_result = is_ok ? ECHResult::kSuccessRetry : ECHResult::kErrorRetry;
+    }
+    base::UmaHistogramEnumeration("Net.SSL.ECHResult", ech_result);
+  }
+
+  if (result == OK) {
+    DCHECK(!connect_timing.ssl_start.is_null());
+    base::TimeDelta connect_duration =
+        connect_timing.ssl_end - connect_timing.ssl_start;
+    UMA_HISTOGRAM_CUSTOM_TIMES("Net.SSL_Connection_Latency_2", connect_duration,
+                               base::Milliseconds(1), base::Minutes(1), 100);
+    if (is_ech_capable) {
+      UMA_HISTOGRAM_CUSTOM_TIMES("Net.SSL_Connection_Latency_ECH",
+                                 connect_duration, base::Milliseconds(1),
+                                 base::Minutes(1), 100);
+    }
+
+    SSLInfo ssl_info;
+    bool has_ssl_info = ssl_socket.GetSSLInfo(&ssl_info);
+    DCHECK(has_ssl_info);
+
+    SSLVersion version =
+        SSLConnectionStatusToVersion(ssl_info.connection_status);
+    UMA_HISTOGRAM_ENUMERATION("Net.SSLVersion", version,
+                              SSL_CONNECTION_VERSION_MAX);
+
+    uint16_t cipher_suite =
+        SSLConnectionStatusToCipherSuite(ssl_info.connection_status);
+    base::UmaHistogramSparse("Net.SSL_CipherSuite", cipher_suite);
+
+    if (ssl_info.key_exchange_group != 0) {
+      base::UmaHistogramSparse("Net.SSL_KeyExchange.ECDHE",
+                               ssl_info.key_exchange_group);
+    }
+  }
+
+  base::UmaHistogramSparse("Net.SSL_Connection_Error", std::abs(result));
+  if (is_ech_capable) {
+    base::UmaHistogramSparse("Net.SSL_Connection_Error_ECH", std::abs(result));
+  }
+}
 
 SSLClientSocket::SSLClientSocket() = default;
 
