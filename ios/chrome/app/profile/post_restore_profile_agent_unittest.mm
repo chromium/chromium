@@ -46,24 +46,22 @@ std::unique_ptr<KeyedService> CreateMockPromosManager(
 class PostRestoreProfileAgentTest : public PlatformTest {
  public:
   explicit PostRestoreProfileAgentTest() {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(PromosManagerFactory::GetInstance(),
                               base::BindOnce(&CreateMockPromosManager));
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
 
     promos_manager_ = static_cast<NiceMock<MockPromosManager>*>(
-        PromosManagerFactory::GetForProfile(browser_state_.get()));
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
-    auth_service_ =
-        AuthenticationServiceFactory::GetForProfile(browser_state_.get());
+        PromosManagerFactory::GetForProfile(profile_.get()));
+    AuthenticationServiceFactory::CreateAndInitializeForProfile(
+        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
+    auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
 
     profile_state_ = [[ProfileState alloc] initWithAppState:nil];
-    profile_state_.profile = browser_state_.get();
+    profile_state_.profile = profile_.get();
 
     profile_agent_ = [[PostRestoreProfileAgent alloc] init];
     [profile_state_ addAgent:profile_agent_];
@@ -97,12 +95,12 @@ class PostRestoreProfileAgentTest : public PlatformTest {
                           signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   }
 
-  PrefService* pref_service() { return browser_state_.get()->GetPrefs(); }
+  PrefService* pref_service() { return profile_.get()->GetPrefs(); }
 
  protected:
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<NiceMock<MockPromosManager>> promos_manager_;
   raw_ptr<AuthenticationService> auth_service_;
   PostRestoreProfileAgent* profile_agent_;
