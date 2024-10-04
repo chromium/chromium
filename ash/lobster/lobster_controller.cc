@@ -80,7 +80,9 @@ std::unique_ptr<LobsterController::Trigger> LobsterController::CreateTrigger() {
 
 void LobsterController::StartSession(std::unique_ptr<LobsterClient> client,
                                      std::optional<std::string> query) {
+  LobsterClient* lobster_client_ptr = client.get();
   active_session_ = std::make_unique<LobsterSessionImpl>(std::move(client));
+  lobster_client_ptr->SetActiveSession(active_session_.get());
 
   active_session_->LoadUI(query);
 }

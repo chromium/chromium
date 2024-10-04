@@ -36,16 +36,12 @@ ui::TextInputClient* GetFocusedTextInputClient() {
 LobsterSessionImpl::LobsterSessionImpl(
     std::unique_ptr<LobsterClient> client,
     const LobsterCandidateStore& candidate_store)
-    : client_(std::move(client)), candidate_store_(candidate_store) {
-  client_->SetActiveSession(this);
-}
+    : client_(std::move(client)), candidate_store_(candidate_store) {}
 
 LobsterSessionImpl::LobsterSessionImpl(std::unique_ptr<LobsterClient> client)
     : LobsterSessionImpl(std::move(client), LobsterCandidateStore()) {}
 
-LobsterSessionImpl::~LobsterSessionImpl() {
-  client_->SetActiveSession(nullptr);
-}
+LobsterSessionImpl::~LobsterSessionImpl() = default;
 
 void LobsterSessionImpl::DownloadCandidate(int candidate_id,
                                            const base::FilePath& file_path,
