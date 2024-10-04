@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
+
 #include <string>
 
 #include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -152,6 +154,16 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest,
   // Finish loading after initializing.
   ASSERT_TRUE(content::WaitForLoadStop(tab_contents));
 
+  // WaitForLoadStop() waits for navigation commit. However, that does not
+  // guarantee that the page's javascript has been run. The page's javascript
+  // sends an async mojo request which results in creation of a page-handler.
+  // Only after that can the test continue.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return tab_contents->GetWebUI()
+        ->GetController()
+        ->template GetAs<TabSearchUI>()
+        ->page_handler_for_testing();
+  }));
   TabSearchPageHandler* page_handler = tab_contents->GetWebUI()
                                            ->GetController()
                                            ->template GetAs<TabSearchUI>()
