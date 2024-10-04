@@ -303,10 +303,12 @@ void ImageController::ProcessNextImageDecodeOnWorkerThread(
   // ordered. So, when we process this task's completion, we won't actually do
   // anything with the task and simply issue the callback.
   if (decode_task && decode_task->state().IsNew()) {
-    base::AutoUnlock release(worker_state->lock);
     decode_task->state().DidSchedule();
     decode_task->state().DidStart();
-    decode_task->RunOnWorkerThread();
+    {
+      base::AutoUnlock release(worker_state->lock);
+      decode_task->RunOnWorkerThread();
+    }
     decode_task->state().DidFinish();
   }
 
