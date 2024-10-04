@@ -458,17 +458,18 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
   GetMutableDebugValue().Set("skip_page_favicons_on_initial_download",
                              skip_page_favicons_on_initial_download_);
 
+  app_lock_ = std::make_unique<AppLock>();
   command_manager()->lock_manager().UpgradeAndAcquireLock(
-      std::move(noop_lock_),
+      std::move(noop_lock_), *app_lock_,
       {GenerateAppIdFromManifestId(web_app_info_->manifest_id())},
       base::BindOnce(
           &FetchManifestAndInstallCommand::CheckForPlayStoreIntentOrGetIcons,
           weak_ptr_factory_.GetWeakPtr()));
 }
 
-void FetchManifestAndInstallCommand::CheckForPlayStoreIntentOrGetIcons(
-    std::unique_ptr<AppLock> app_lock) {
-  app_lock_ = std::move(app_lock);
+void FetchManifestAndInstallCommand::CheckForPlayStoreIntentOrGetIcons() {
+  CHECK(app_lock_);
+  CHECK(app_lock_->IsGranted());
 
   bool is_create_shortcut =
       install_surface_ == webapps::WebappInstallSource::MENU_CREATE_SHORTCUT;

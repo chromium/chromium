@@ -107,6 +107,7 @@ class WebAppLockManager;
 template <typename LockType, typename... CallbackArgs>
 class WebAppCommand : public internal::CommandWithLock<LockType> {
  public:
+  using PassKey = base::PassKey<WebAppCommand>;
   using LockDescription = LockType::LockDescription;
   using CallbackType = base::OnceCallback<void(CallbackArgs...)>;
   using ShutdownArgumentsTuple = std::tuple<std::decay_t<CallbackArgs>...>;
@@ -137,7 +138,7 @@ class WebAppCommand : public internal::CommandWithLock<LockType> {
     CHECK(!callback_.is_null());
   }
 
-  ~WebAppCommand() override {}
+  ~WebAppCommand() override = default;
 
   base::OnceClosure TakeCallbackWithShutdownArgs(
       base::PassKey<WebAppCommandManager>) override {

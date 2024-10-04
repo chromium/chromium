@@ -142,15 +142,16 @@ void NavigateAndTriggerInstallDialogCommand::OnInstallabilityChecked(
   }
   CHECK(opt_manifest);
   app_id_ = GenerateAppIdFromManifest(*opt_manifest);
+  app_lock_ = std::make_unique<AppLock>();
   command_manager()->lock_manager().UpgradeAndAcquireLock(
-      std::move(noop_lock_), {app_id_},
+      std::move(noop_lock_), *app_lock_, {app_id_},
       base::BindOnce(&NavigateAndTriggerInstallDialogCommand::OnAppLockGranted,
                      weak_factory_.GetWeakPtr()));
 }
 
-void NavigateAndTriggerInstallDialogCommand::OnAppLockGranted(
-    std::unique_ptr<AppLock> app_lock) {
-  app_lock_ = std::move(app_lock);
+void NavigateAndTriggerInstallDialogCommand::OnAppLockGranted() {
+  CHECK(app_lock_);
+  CHECK(app_lock_->IsGranted());
 
   if (IsWebContentsDestroyed()) {
     GetMutableDebugValue().Set("web_contents_destroyed", true);

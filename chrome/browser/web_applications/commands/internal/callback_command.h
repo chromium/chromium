@@ -102,6 +102,8 @@ class CallbackCommandWithResult : public WebAppCommand<LockType, ItemType> {
  protected:
   // WebAppCommand:
   void StartWithLock(std::unique_ptr<LockType> lock) override {
+    CHECK(lock);
+    CHECK(lock->IsGranted());
     ReturnType result = std::move(callback_).Run(
         *lock, internal::CommandBase::GetMutableDebugValue());
     WebAppCommand<LockType, ItemType>::CompleteAndSelfDestruct(

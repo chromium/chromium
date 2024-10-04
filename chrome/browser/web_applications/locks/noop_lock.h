@@ -5,14 +5,11 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_NOOP_LOCK_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_NOOP_LOCK_H_
 
-#include <memory>
-
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/locks/lock.h"
 
 namespace web_app {
 
-struct PartitionedLockHolder;
 class WebAppLockManager;
 
 // This lock essentially doesn't lock anything in the system. However, if a
@@ -33,18 +30,21 @@ class NoopLockDescription : public LockDescription {
 //
 // See `WebAppLockManager` for how to use locks. Destruction of this class will
 // release the lock or cancel the lock request if it is not acquired yet.
+//
+// Note: Accessing a lock before it is granted or after the WebAppProvider
+// system has shutdown (or the profile has shut down) will CHECK-fail.
 class NoopLock : public Lock {
  public:
   using LockDescription = NoopLockDescription;
 
+  NoopLock();
   ~NoopLock();
 
   base::WeakPtr<NoopLock> AsWeakPtr() { return weak_factory_.GetWeakPtr(); }
 
  private:
   friend WebAppLockManager;
-  NoopLock(std::unique_ptr<PartitionedLockHolder> holder,
-           base::WeakPtr<WebAppLockManager> lock_manager);
+  void GrantLock(WebAppLockManager& lock_manager);
 
   base::WeakPtrFactory<NoopLock> weak_factory_{this};
 };

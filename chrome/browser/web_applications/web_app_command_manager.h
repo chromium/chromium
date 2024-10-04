@@ -90,6 +90,8 @@ class WebAppCommandManager : public ProfileManagerObserver {
   content::WebContents* web_contents_for_testing() const {
     return shared_web_contents_.get();
   }
+  void SetOnWebContentsCreatedCallbackForTesting(
+      base::OnceClosure on_web_contents_created);
 
   WebAppLockManager& lock_manager() { return lock_manager_; }
 
@@ -135,8 +137,9 @@ class WebAppCommandManager : public ProfileManagerObserver {
   WebAppLockManager lock_manager_;
 
   std::map<internal::CommandBase::Id, std::unique_ptr<internal::CommandBase>>
-      commands_{};
+      commands_;
 
+  base::OnceClosure on_web_contents_created_for_testing_;
   std::unique_ptr<base::RunLoop> run_loop_for_testing_;
 
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>

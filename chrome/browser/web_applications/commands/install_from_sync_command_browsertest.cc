@@ -4,8 +4,10 @@
 
 #include "chrome/browser/web_applications/commands/install_from_sync_command.h"
 
+#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
@@ -18,6 +20,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_observer_test_utils.h"
@@ -173,8 +176,19 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, AbortInstall) {
             webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
       }));
   provider->command_manager().ScheduleCommand(std::move(command));
+
+  // Wait until the web contents is created, then listen for navigation and
+  // destruction.
+  content::WebContents* web_contents = nullptr;
+  base::test::TestFuture<void> web_contents_created;
+  provider->command_manager().SetOnWebContentsCreatedCallbackForTesting(
+      web_contents_created.GetCallback());
+  ASSERT_TRUE(web_contents_created.Wait());
+  ASSERT_TRUE(provider->command_manager().web_contents_for_testing());
+  web_contents = provider->command_manager().web_contents_for_testing();
+
   content::NavigationStartObserver navigation_started_observer(
-      provider->command_manager().web_contents_for_testing(),
+      web_contents,
       base::BindLambdaForTesting([&](content::NavigationHandle* handle) {
         if (handle && handle->GetURL() == test_url) {
           // This must be posted as a task because web contents cannot be
@@ -185,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, AbortInstall) {
         }
       }));
   content::WebContentsDestroyedWatcher web_contents_destroyed_observer(
-      provider->command_manager().web_contents_for_testing());
+      web_contents);
   web_contents_destroyed_observer.Wait();
   EXPECT_FALSE(provider->registrar_unsafe().IsInstalled(id));
 }

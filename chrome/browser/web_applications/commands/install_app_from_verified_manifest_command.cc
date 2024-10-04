@@ -235,15 +235,16 @@ void InstallAppFromVerifiedManifestCommand::OnIconsRetrieved(
     return;
   }
 
+  app_lock_ = std::make_unique<SharedWebContentsWithAppLock>();
   command_manager()->lock_manager().UpgradeAndAcquireLock(
-      std::move(web_contents_lock_), {app_id},
+      std::move(web_contents_lock_), *app_lock_, {app_id},
       base::BindOnce(&InstallAppFromVerifiedManifestCommand::OnAppLockAcquired,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void InstallAppFromVerifiedManifestCommand::OnAppLockAcquired(
-    std::unique_ptr<SharedWebContentsWithAppLock> app_lock) {
-  app_lock_ = std::move(app_lock);
+void InstallAppFromVerifiedManifestCommand::OnAppLockAcquired() {
+  CHECK(app_lock_);
+  CHECK(app_lock_->IsGranted());
   WebAppInstallFinalizer::FinalizeOptions finalize_options(install_source_);
   finalize_options.add_to_quick_launch_bar = false;
   finalize_options.overwrite_existing_manifest_fields = false;

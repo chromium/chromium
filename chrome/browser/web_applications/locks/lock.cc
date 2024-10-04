@@ -79,10 +79,16 @@ VisitedManifestManager& Lock::visited_manifest_manager() {
   return lock_manager_->provider().visited_manifest_manager();
 }
 
-Lock::Lock(std::unique_ptr<PartitionedLockHolder> holder,
-           base::WeakPtr<WebAppLockManager> lock_manager)
-    : holder_(std::move(holder)), lock_manager_(std::move(lock_manager)) {}
-
+Lock::Lock() : holder_(std::make_unique<PartitionedLockHolder>()) {}
 Lock::~Lock() = default;
+
+bool Lock::IsGranted() const {
+  return !!lock_manager_;
+}
+
+void Lock::GrantLockResources(WebAppLockManager& lock_manager) {
+  CHECK(!lock_manager_);
+  lock_manager_ = lock_manager.GetWeakPtr();
+}
 
 }  // namespace web_app
