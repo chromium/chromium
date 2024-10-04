@@ -1372,8 +1372,14 @@ void PdfViewWebPlugin::SetSelectionBounds(const gfx::PointF& base,
                               FrameToPdfCoordinates(extent));
 }
 
-void PdfViewWebPlugin::GetPdfBytes(GetPdfBytesCallback callback) {
-  std::move(callback).Run(engine_->GetSaveData());
+void PdfViewWebPlugin::GetPdfBytes(uint32_t size_limit,
+                                   GetPdfBytesCallback callback) {
+  if (engine_->GetLoadedByteSize() > size_limit) {
+    std::move(callback).Run(GetPdfBytesStatus::kSizeLimitExceeded, {});
+    return;
+  }
+
+  std::move(callback).Run(GetPdfBytesStatus::kSuccess, engine_->GetSaveData());
 }
 
 bool PdfViewWebPlugin::IsValid() const {

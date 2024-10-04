@@ -352,6 +352,10 @@ extern bool UseOptimizedRequestFlow();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern std::string GetLensOverlayClusterInfoEndpointUrl();
 
+// Returns the max number of bytes to allow for content uploads.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern uint32_t GetLensOverlayFileUploadLimitBytes();
+
 // Returns whether to include PDFs from the underlying page in the request to be
 // used as page context.
 COMPONENT_EXPORT(LENS_FEATURES)

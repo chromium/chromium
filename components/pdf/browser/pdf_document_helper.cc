@@ -203,12 +203,14 @@ void PDFDocumentHelper::SelectBetweenCoordinates(const gfx::PointF& base,
 }
 
 void PDFDocumentHelper::GetPdfBytes(
+    uint32_t size_limit,
     pdf::mojom::PdfListener::GetPdfBytesCallback callback) {
   if (!remote_pdf_client_) {
-    std::move(callback).Run(std::vector<uint8_t>());
+    std::move(callback).Run(
+        pdf::mojom::PdfListener::GetPdfBytesStatus::kFailed, {});
     return;
   }
-  remote_pdf_client_->GetPdfBytes(std::move(callback));
+  remote_pdf_client_->GetPdfBytes(size_limit, std::move(callback));
 }
 
 void PDFDocumentHelper::OnSelectionEvent(ui::SelectionEventType event) {

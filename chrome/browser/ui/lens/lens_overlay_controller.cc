@@ -90,6 +90,7 @@
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "components/pdf/browser/pdf_document_helper.h"
+#include "pdf/mojom/pdf.mojom.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 void* kLensOverlayPreselectionWidgetIdentifier =
@@ -1339,9 +1340,11 @@ void LensOverlayController::ContinueCreateInitializationData(
           : nullptr;
   if (pdf_helper) {
     // Fetch the PDF bytes then initialize the overlay.
-    pdf_helper->GetPdfBytes(base::BindOnce(
-        &LensOverlayController::OnPdfBytesReceived, weak_factory_.GetWeakPtr(),
-        std::move(initialization_data)));
+    pdf_helper->GetPdfBytes(
+        /*size_limit=*/lens::features::GetLensOverlayFileUploadLimitBytes(),
+        base::BindOnce(&LensOverlayController::OnPdfBytesReceived,
+                       weak_factory_.GetWeakPtr(),
+                       std::move(initialization_data)));
     return;
   }
 #endif  // BUILDFLAG(ENABLE_PDF)
@@ -1372,13 +1375,19 @@ void LensOverlayController::ContinueCreateInitializationData(
   InitializeOverlay(std::move(initialization_data));
 }
 
+#if BUILDFLAG(ENABLE_PDF)
 void LensOverlayController::OnPdfBytesReceived(
     std::unique_ptr<OverlayInitializationData> initialization_data,
+    pdf::mojom::PdfListener::GetPdfBytesStatus status,
     const std::vector<uint8_t>& bytes) {
-  initialization_data->page_content_bytes_ = bytes;
-  initialization_data->page_content_type_ = kPdfMimeType;
+  // TODO(b/370530197): Show user error message if status is not success.
+  if (status == pdf::mojom::PdfListener::GetPdfBytesStatus::kSuccess) {
+    initialization_data->page_content_bytes_ = bytes;
+    initialization_data->page_content_type_ = kPdfMimeType;
+  }
   InitializeOverlay(std::move(initialization_data));
 }
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 void LensOverlayController::OnInnerTextReceived(
     std::unique_ptr<OverlayInitializationData> initialization_data,
@@ -1782,7 +1791,7 @@ void LensOverlayController::OnViewBoundsChanged(views::View* observed_view) {
 
   gfx::Rect bounds = observed_view->GetLocalBounds();
   overlay_view_->SetBoundsRect(bounds);
-  if(lens_overlay_blur_layer_delegate_) {
+  if (lens_overlay_blur_layer_delegate_) {
     lens_overlay_blur_layer_delegate_->layer()->SetBounds(bounds);
   }
 }

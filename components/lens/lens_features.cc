@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 
 namespace lens::features {
@@ -263,14 +264,15 @@ constexpr base::FeatureParam<bool>
         &kLensOverlayContextualSearchbox,
         "use-video-context-for-multimodal-requests", false};
 
-constexpr base::FeatureParam<bool>
-    kUseOptimizedRequestFlow{
-        &kLensOverlayContextualSearchbox,
-        "use-optimized-request-flow", false};
+constexpr base::FeatureParam<bool> kUseOptimizedRequestFlow{
+    &kLensOverlayContextualSearchbox, "use-optimized-request-flow", false};
 
 constexpr base::FeatureParam<std::string> kLensOverlayClusterInfoEndpointUrl{
     &kLensOverlayContextualSearchbox, "cluster-info-endpoint-url",
     "https://lensfrontend-pa.googleapis.com/v1/gsessionid"};
+
+constexpr base::FeatureParam<size_t> kLensOverlayFileUploadLimitBytes{
+    &kLensOverlayContextualSearchbox, "file-upload-limit-bytes", 2000000};
 
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
@@ -511,6 +513,13 @@ bool UseOptimizedRequestFlow() {
 
 std::string GetLensOverlayClusterInfoEndpointUrl() {
   return kLensOverlayClusterInfoEndpointUrl.Get();
+}
+
+uint32_t GetLensOverlayFileUploadLimitBytes() {
+  size_t limit = kLensOverlayFileUploadLimitBytes.Get();
+  return base::IsValueInRangeForNumericType<uint32_t>(limit)
+             ? static_cast<uint32_t>(limit)
+             : 0;
 }
 
 bool UsePdfsAsContext() {

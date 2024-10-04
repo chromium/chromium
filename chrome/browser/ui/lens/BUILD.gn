@@ -151,6 +151,7 @@ source_set("lens") {
 
   if (enable_pdf) {
     deps += [ "//components/pdf/browser" ]
+    public_deps += [ "//pdf/mojom" ]
   }
 }
 

@@ -46,10 +46,15 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "pdf/buildflags.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/views/view_observer.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "pdf/mojom/pdf.mojom.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace lens {
 class LensOverlayQueryController;
@@ -638,11 +643,14 @@ class LensOverlayController : public LensSearchboxClient,
       const std::vector<gfx::Rect>& all_bounds,
       SkBitmap rgb_screenshot);
 
+#if BUILDFLAG(ENABLE_PDF)
   // Receives the PDF bytes from the IPC call to the PDF renderer and stores
   // them in initialization data.
   void OnPdfBytesReceived(
       std::unique_ptr<OverlayInitializationData> initialization_data,
+      pdf::mojom::PdfListener::GetPdfBytesStatus status,
       const std::vector<uint8_t>& bytes);
+#endif  // BUILDFLAG(ENABLE_PDF)
 
   // Callback for when the inner text is retrieved from the underlying page.
   void OnInnerTextReceived(

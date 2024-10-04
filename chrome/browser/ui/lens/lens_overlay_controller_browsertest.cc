@@ -10,10 +10,14 @@
 
 #include <memory>
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/with_feature_override.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
@@ -55,6 +59,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/lens/lens_features.h"
@@ -108,6 +113,8 @@ constexpr char kDocumentWithImage[] = "/test_visual.html";
 constexpr char kDocumentWithDynamicColor[] = "/lens/dynamic_color.html";
 constexpr char kPdfDocument[] = "/pdf/test.pdf";
 constexpr char kDocumentWithNonAsciiCharacters[] = "/non-ascii.html";
+
+constexpr char kPdfDocument12KbFileName[] = "pdf/test-title.pdf";
 
 using State = LensOverlayController::State;
 using LensOverlayInvocationSource = lens::LensOverlayInvocationSource;
@@ -211,6 +218,13 @@ void ClickBubbleDialogButton(
                              ui::EF_LEFT_MOUSE_BUTTON);
   button->OnMousePressed(event);
   button->OnMouseReleased(event);
+}
+
+std::optional<int64_t> GetFileSizeForTestDataFile(std::string_view file_name) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath path = base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+                            .AppendASCII(file_name);
+  return base::GetFileSize(path);
 }
 
 const lens::mojom::GeometryPtr kTestGeometry = lens::mojom::Geometry::New(
@@ -4068,9 +4082,14 @@ class LensOverlayControllerBrowserPDFContextualizationTest
       const override {
     auto enabled = PDFExtensionTestBase::GetEnabledFeatures();
     enabled.push_back({lens::features::kLensOverlayContextualSearchbox,
-                       {{"use-pdfs-as-context", "true"}}});
+                       {{"use-pdfs-as-context", "true"},
+                        {"file-upload-limit-bytes",
+                         base::NumberToString(file_size_limit_bytes_)}}});
     return enabled;
   }
+
+ protected:
+  const uint32_t file_size_limit_bytes_ = 10000;
 };
 
 IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
@@ -4086,6 +4105,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
                          ->GetActiveTab()
                          ->tab_features()
                          ->lens_overlay_controller();
+  ASSERT_TRUE(controller);
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Open the overlay.
@@ -4101,6 +4121,42 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
       fake_query_controller->last_sent_underlying_content_bytes_.empty());
   ASSERT_EQ("application/pdf",
             fake_query_controller->last_sent_underlying_content_type_);
+}
+
+IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
+                       LargePdfNotIncludedInRequest) {
+  // Verify the document is over the size limit.
+  auto file_size = GetFileSizeForTestDataFile(kPdfDocument12KbFileName);
+  ASSERT_TRUE(file_size.has_value());
+  ASSERT_GT(file_size.value(), file_size_limit_bytes_);
+
+  // Open the PDF document that is over our size limit and wait for it to finish
+  // loading.
+  const GURL url = embedded_test_server()->GetURL(
+      base::StrCat({"/", kPdfDocument12KbFileName}));
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(url);
+  ASSERT_TRUE(extension_host);
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_TRUE(controller);
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Open the overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Verify PDF bytes were not included in the query.
+  auto* fake_query_controller = static_cast<LensOverlayQueryControllerFake*>(
+      controller->get_lens_overlay_query_controller_for_testing());
+  ASSERT_TRUE(
+      fake_query_controller->last_sent_underlying_content_bytes_.empty());
 }
 
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer

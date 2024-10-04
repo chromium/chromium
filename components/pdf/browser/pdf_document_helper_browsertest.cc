@@ -41,7 +41,10 @@ class FakePdfListener : public pdf::mojom::PdfListener {
               SetSelectionBounds,
               (const gfx::PointF&, const gfx::PointF&),
               (override));
-  MOCK_METHOD(void, GetPdfBytes, (GetPdfBytesCallback callback), (override));
+  MOCK_METHOD(void,
+              GetPdfBytes,
+              (uint32_t, GetPdfBytesCallback callback),
+              (override));
 };
 
 class TestPDFDocumentHelperClient : public PDFDocumentHelperClient {
