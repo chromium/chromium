@@ -30,6 +30,7 @@
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/apps/link_capturing/enable_link_capturing_infobar_delegate.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -45,6 +46,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -113,67 +115,36 @@
 #endif
 
 namespace web_app {
-
 namespace {
-
 Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
                                            Browser* target_browser,
                                            const webapps::AppId& app_id,
-                                           bool as_pinned_home_tab) {
+                                           bool insert_as_pinned_home_tab) {
   DCHECK(target_browser->is_type_app());
   Browser* source_browser = chrome::FindBrowserWithTab(contents);
+  CHECK(contents);
 
-  // In a reparent, the owning session service needs to be told it's tab
-  // has been removed, otherwise it will reopen the tab on restoration.
-  SessionServiceBase* service =
-      GetAppropriateSessionServiceForProfile(source_browser);
-  service->TabClosing(contents);
-
-  TabStripModel* source_tabstrip = source_browser->tab_strip_model();
   TabStripModel* target_tabstrip = target_browser->tab_strip_model();
+  bool target_has_pinned_home_tab = HasPinnedHomeTab(target_tabstrip);
+  if (!insert_as_pinned_home_tab) {
+    MaybeAddPinnedHomeTab(target_browser, app_id);
+  }
 
-  // Avoid causing the existing browser window to close if this is the last tab
-  // remaining.
-  if (source_tabstrip->count() == 1) {
+  // Avoid causing an existing non-app browser window to close if this is the
+  // last tab remaining.
+  if (source_browser->tab_strip_model()->count() == 1) {
     chrome::NewTab(source_browser);
   }
 
-  if (as_pinned_home_tab) {
-    if (HasPinnedHomeTab(target_tabstrip)) {
-      // Insert the web contents into the pinned home tab and delete the
-      // existing home tab.
-      target_tabstrip->InsertDetachedTabAt(
-          /*index=*/0,
-          source_tabstrip->DetachTabAtForInsertion(
-              source_tabstrip->GetIndexOfWebContents(contents)),
-          (AddTabTypes::ADD_INHERIT_OPENER | AddTabTypes::ADD_ACTIVE |
-           AddTabTypes::ADD_PINNED));
+  ReparentWebContentsIntoBrowser(
+      source_browser, contents, target_browser,
+      /*insert_as_pinned_first_tab=*/insert_as_pinned_home_tab);
+  if (insert_as_pinned_home_tab) {
+    if (target_has_pinned_home_tab) {
       target_tabstrip->DetachAndDeleteWebContentsAt(1);
-    } else {
-      target_tabstrip->InsertDetachedTabAt(
-          /*index=*/0,
-          source_tabstrip->DetachTabAtForInsertion(
-              source_tabstrip->GetIndexOfWebContents(contents)),
-          (AddTabTypes::ADD_INHERIT_OPENER | AddTabTypes::ADD_ACTIVE |
-           AddTabTypes::ADD_PINNED));
     }
     SetWebContentsIsPinnedHomeTab(target_tabstrip->GetWebContentsAt(0));
-  } else {
-    MaybeAddPinnedHomeTab(target_browser, app_id);
-    target_tabstrip->AppendTab(
-        source_tabstrip->DetachTabAtForInsertion(
-            source_tabstrip->GetIndexOfWebContents(contents)),
-        true);
   }
-  target_browser->window()->Show();
-
-  // The app window will be registered correctly, however the tab will not
-  // be correctly tracked. We need to do a reset to get the tab correctly
-  // tracked by the app service.
-  AppSessionService* app_service =
-      AppSessionServiceFactory::GetForProfile(target_browser->profile());
-  app_service->ResetFromCurrentBrowsers();
-
   return target_browser;
 }
 
@@ -392,6 +363,75 @@ void MaybePopulateNavigationHandlingInfoForRedirects(
 }
 
 }  // namespace
+
+void ReparentWebContentsIntoBrowser(Browser* source_browser,
+                                    content::WebContents* web_contents,
+                                    Browser* target_browser,
+                                    bool insert_as_first_tab) {
+  CHECK(source_browser);
+  CHECK(web_contents);
+  CHECK(target_browser);
+  // Check-fail if the web contents given is not part of the source browser.
+  std::optional<int> found_tab_index;
+  for (int i = 0; i < source_browser->tab_strip_model()->count(); ++i) {
+    if (source_browser->tab_strip_model()->GetWebContentsAt(i) ==
+        web_contents) {
+      found_tab_index = i;
+      break;
+    }
+  }
+  CHECK(found_tab_index);
+
+  TabStripModel* const source_tabstrip = source_browser->tab_strip_model();
+  const std::optional<webapps::AppId> source_app_id =
+      AppBrowserController::IsWebApp(source_browser)
+          ? source_browser->app_controller()->app_id()
+          : std::optional<webapps::AppId>(std::nullopt);
+  const std::optional<webapps::AppId> target_app_id =
+      AppBrowserController::IsWebApp(target_browser)
+          ? target_browser->app_controller()->app_id()
+          : std::optional<webapps::AppId>(std::nullopt);
+
+  // Always reset the window controls overlay titlebar area when going to a
+  // browser window or the app ids are different. The code will no-op if the old
+  // rect matches the new rect.
+  if (!target_app_id || target_app_id != source_app_id) {
+    web_contents->UpdateWindowControlsOverlay(gfx::Rect());
+  }
+
+  std::unique_ptr<tabs::TabModel> tab_model =
+      source_tabstrip->DetachTabAtForInsertion(found_tab_index.value());
+  std::unique_ptr<content::WebContents> contents_move =
+      tabs::TabModel::DestroyAndTakeWebContents(std::move(tab_model));
+  int location = target_browser->tab_strip_model()->count();
+  int add_types = (AddTabTypes::ADD_INHERIT_OPENER | AddTabTypes::ADD_ACTIVE);
+  if (insert_as_first_tab) {
+    location = 0;
+    add_types |= AddTabTypes::ADD_PINNED;
+  }
+  // This method moves a WebContents from a non-normal browser window to a
+  // normal browser window. We cannot move the Tab over directly since TabModel
+  // enforces the requirement that it cannot move between window types.
+  // https://crbug.com/334281979): Non-normal browser windows should not have a
+  // tab to begin with.
+  target_browser->tab_strip_model()->InsertWebContentsAt(
+      location, std::move(contents_move), add_types);
+  CHECK_EQ(web_contents,
+           target_browser->tab_strip_model()->GetActiveWebContents());
+
+  if (!target_app_id) {
+    IntentPickerTabHelper* helper =
+        IntentPickerTabHelper::FromWebContents(web_contents);
+    CHECK(helper);
+    helper->MaybeShowIntentPickerIcon();
+  }
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (source_app_id && source_app_id != target_app_id) {
+    apps::EnableLinkCapturingInfoBarDelegate::RemoveInfoBar(web_contents);
+  }
+#endif
+  target_browser->window()->Show();
+}
 
 std::optional<webapps::AppId> GetWebAppForActiveTab(const Browser* browser) {
   const WebAppProvider* const provider =

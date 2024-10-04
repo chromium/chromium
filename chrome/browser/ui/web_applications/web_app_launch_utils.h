@@ -38,6 +38,17 @@ class WebContents;
 }
 
 namespace web_app {
+// This function moves `contents` from the `source_browser` to the
+// `target_browser`. In doing so, it attempts to ensure that any logic that
+// needs to occur when transitioning between 'app' and 'browser' windows occurs,
+// and the all session restore logic is correctly updated. `contents` is not
+// required to be the active web contents in `source_browser`.
+//
+// Note: This will CHECK-fail if `contents` is not in `source_browser`.
+void ReparentWebContentsIntoBrowser(Browser* source_browser,
+                                    content::WebContents* contents,
+                                    Browser* target_browser,
+                                    bool insert_as_pinned_first_tab = false);
 
 class AppBrowserController;
 class WithAppResources;

@@ -2175,37 +2175,10 @@ Browser* OpenInChrome(Browser* hosted_app_browser) {
         Browser::CreateParams(hosted_app_browser->profile(), true));
   }
 
-  TabStripModel* source_tabstrip = hosted_app_browser->tab_strip_model();
-
-  // Clear bounds once a PWA with window controls overlay display override opens
-  // in browser.
-  if (hosted_app_browser->app_controller()->IsWindowControlsOverlayEnabled()) {
-    source_tabstrip->GetActiveWebContents()->UpdateWindowControlsOverlay(
-        gfx::Rect());
-  }
-
-  std::unique_ptr<tabs::TabModel> tab_model =
-      source_tabstrip->DetachTabAtForInsertion(source_tabstrip->active_index());
-  std::unique_ptr<content::WebContents> contents_move =
-      tabs::TabModel::DestroyAndTakeWebContents(std::move(tab_model));
-  // This method moves a WebContents from a non-normal browser window to a
-  // normal browser window. We cannot move the Tab over directly since TabModel
-  // enforces the requirement that it cannot move between window types.
-  // https://crbug.com/334281979): Non-normal browser windows should not have a
-  // tab to begin with.
-  target_browser->tab_strip_model()->AppendWebContents(std::move(contents_move),
-                                                       true);
-  auto* web_contents =
-      target_browser->tab_strip_model()->GetActiveWebContents();
-  CHECK(web_contents);
-  IntentPickerTabHelper* helper =
-      IntentPickerTabHelper::FromWebContents(web_contents);
-  CHECK(helper);
-  helper->MaybeShowIntentPickerIcon();
-#if !BUILDFLAG(IS_CHROMEOS)
-  apps::EnableLinkCapturingInfoBarDelegate::RemoveInfoBar(web_contents);
-#endif
-  target_browser->window()->Show();
+  web_app::ReparentWebContentsIntoBrowser(
+      hosted_app_browser,
+      hosted_app_browser->tab_strip_model()->GetActiveWebContents(),
+      target_browser);
   return target_browser;
 }
 
