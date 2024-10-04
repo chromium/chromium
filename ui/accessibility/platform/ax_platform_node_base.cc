@@ -1603,6 +1603,22 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
                        "text-input-type", attributes);
   }
 
+  // Expose details-from.
+  int details_from;
+  if (GetIntAttribute(ax::mojom::IntAttribute::kDetailsFrom, &details_from)) {
+    switch (static_cast<ax::mojom::DetailsFrom>(details_from)) {
+      case ax::mojom::DetailsFrom::kAriaDetails:
+        AddAttributeToList("details-from", "aria-details", attributes);
+        break;
+      case ax::mojom::DetailsFrom::kCssAnchor:
+        AddAttributeToList("details-from", "css-anchor", attributes);
+        break;
+      case ax::mojom::DetailsFrom::kPopoverAttribute:
+        AddAttributeToList("details-from", "popover-attribute", attributes);
+        break;
+    }
+  }
+
   std::string details_roles = ComputeDetailsRoles();
   if (!details_roles.empty())
     AddAttributeToList("details-roles", details_roles, attributes);

@@ -620,6 +620,7 @@ const char* const ATK_OBJECT_ATTRIBUTES[] = {
     "current",
     "description",
     "description-from",
+    "details-from",
     "details-roles",
     "display",
     "dropeffect",

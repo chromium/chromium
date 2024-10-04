@@ -1907,7 +1907,9 @@ data/accessibility/css/anchor-positioning-changed-expected-blink.txt
 data/accessibility/css/anchor-positioning-changed-simple-expected-blink.txt
 data/accessibility/css/anchor-positioning-changed-simple.html
 data/accessibility/css/anchor-positioning-changed.html
+data/accessibility/css/anchor-positioning-expected-auralinux.txt
 data/accessibility/css/anchor-positioning-expected-blink.txt
+data/accessibility/css/anchor-positioning-expected-win.txt
 data/accessibility/css/anchor-positioning-multiple-anchors-expected-blink.txt
 data/accessibility/css/anchor-positioning-multiple-anchors.html
 data/accessibility/css/anchor-positioning-position-fallback-expected-blink.txt
