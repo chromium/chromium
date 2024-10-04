@@ -46,6 +46,9 @@ constexpr char kTestSuggestSignals[] = "suggest_signals";
 // The fake server session id.
 constexpr char kTestServerSessionId[] = "server_session_id";
 
+// The fake search session id.
+constexpr char kTestSearchSessionId[] = "search_session_id";
+
 // The locale to use.
 constexpr char kLocale[] = "en-US";
 
@@ -74,6 +77,9 @@ inline constexpr char kInvocationSourceParameterKey[] = "source";
 // The encoded video context for the test page.
 constexpr char kTestEncodedVideoContext[] =
     "ChkKF2h0dHBzOi8vd3d3Lmdvb2dsZS5jb20v";
+
+// The session id query parameter key.
+constexpr char kSessionIdQueryParameterKey[] = "gsessionid";
 
 // The region.
 constexpr char kRegion[] = "US";
@@ -151,13 +157,16 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
                                    profile,
                                    invocation_source,
                                    use_dark_mode,
-                                   gen204_controller) {}
+                                   gen204_controller) {
+    fake_cluster_info_response_.set_server_session_id(kTestServerSessionId);
+    fake_cluster_info_response_.set_search_session_id(kTestSearchSessionId);
+  }
   ~LensOverlayQueryControllerMock() override = default;
 
-  // TOOD(b/370562017): Write tests for cluster info flow.
   lens::LensOverlayServerClusterInfoResponse fake_cluster_info_response_;
   lens::LensOverlayObjectsResponse fake_objects_response_;
   lens::LensOverlayInteractionResponse fake_interaction_response_;
+  GURL sent_fetch_url_;
   lens::LensOverlayClientLogs sent_client_logs_;
   lens::LensOverlayRequestId sent_request_id_;
   lens::LensOverlayObjectsRequest sent_objects_request_;
@@ -197,7 +206,10 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
     } else {
       NOTREACHED_IN_MIGRATION();
     }
-    sent_client_logs_.CopyFrom(request->client_logs());
+    if (request) {
+      sent_client_logs_.CopyFrom(request->client_logs());
+    }
+    sent_fetch_url_ = fetch_url;
 
     // Create the fake endpoint fetcher to return the fake response.
     EndpointResponse fake_endpoint_response;
@@ -310,6 +322,11 @@ class LensOverlayQueryControllerTest : public testing::Test {
     UErrorCode error_code = U_ZERO_ERROR;
     icu::Locale::setDefault(icu::Locale(kLocale), error_code);
     ASSERT_TRUE(U_SUCCESS(error_code));
+
+    feature_list_.InitAndEnableFeatureWithParameters(
+        lens::features::kLensOverlayContextualSearchbox,
+        {{"use-video-context-for-text-only-requests", "true"},
+         {"use-optimized-request-flow", "true"}});
   }
 };
 
@@ -359,6 +376,38 @@ TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
   ASSERT_EQ(query_controller.sent_client_logs_.lens_overlay_entry_point(),
             lens::LensOverlayClientLogs::APP_MENU);
   ASSERT_TRUE(query_controller.sent_client_logs_.has_paella_id());
+}
+
+// Tests that the query controller attaches the server session id from the
+// cluster info response to the full image request.
+TEST_F(LensOverlayQueryControllerTest,
+       FetchInitialQuery_UsesClusterInfoResponse) {
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  LensOverlayQueryControllerMock query_controller(
+      full_image_response_future.GetRepeatingCallback(), base::NullCallback(),
+      base::NullCallback(), base::NullCallback(), fake_variations_client_.get(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false, GetGen204Controller());
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  query_controller.StartQueryFlow(
+      bitmap, std::make_optional<GURL>(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
+      /*underlying_content_bytes=*/{}, /*underlying_content_type=*/"", 0);
+
+  task_environment_.RunUntilIdle();
+  query_controller.EndQuery();
+  ASSERT_TRUE(full_image_response_future.IsReady());
+
+  // Check the server session id is attached to the fetch url.
+  std::string session_id_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(query_controller.sent_fetch_url_,
+                                         kSessionIdQueryParameterKey,
+                                         &session_id_value));
+  ASSERT_EQ(session_id_value, kTestServerSessionId);
 }
 
 TEST_F(LensOverlayQueryControllerTest,
@@ -655,9 +704,6 @@ TEST_F(LensOverlayQueryControllerTest,
 
 TEST_F(LensOverlayQueryControllerTest,
        FetchTextOnlyInteraction_ReturnsResponse) {
-  feature_list_.InitAndEnableFeatureWithParameters(
-      lens::features::kLensOverlayContextualSearchbox,
-      {{"use-video-context-for-text-only-requests", "true"}});
   base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
                          lens::mojom::TextPtr, bool>
       full_image_response_future;
