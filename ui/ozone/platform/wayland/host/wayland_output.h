@@ -107,7 +107,6 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   void Initialize(Delegate* delegate);
   void InitializeXdgOutput(zxdg_output_manager_v1* manager);
   void InitializeColorManagementOutput(WaylandZcrColorManager* manager);
-  float GetUIScaleFactor() const;
 
   const Metrics& GetMetrics() const;
   void SetMetrics(const Metrics& metrics);

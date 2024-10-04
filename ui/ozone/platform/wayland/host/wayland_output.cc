@@ -152,12 +152,6 @@ void WaylandOutput::Initialize(Delegate* delegate) {
   wl_output_add_listener(output_.get(), &kOutputListener, this);
 }
 
-float WaylandOutput::GetUIScaleFactor() const {
-  return display::Display::HasForceDeviceScaleFactor()
-             ? display::Display::GetForcedDeviceScaleFactor()
-             : scale_factor();
-}
-
 const Metrics& WaylandOutput::GetMetrics() const {
   return metrics_;
 }

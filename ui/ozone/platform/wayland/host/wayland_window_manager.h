@@ -115,8 +115,14 @@ class WaylandWindowManager {
   // Creates a new unique gfx::AcceleratedWidget.
   gfx::AcceleratedWidget AllocateAcceleratedWidget();
 
+  // Returns the current value that to be used as windows' UI scale. If UI
+  // scaling feature is disabled or unavailable (eg: per-surface scaling
+  // unsupported), 1 is returned. If present, the value passed in through the
+  // force-device-scale-factor switch is used, otherwise the current font scale
+  // is returned, which presumably comes from system's "text scaling factor"
+  // setting, provided by LinuxUi, and set via SetFontScale function below.
+  float DetermineUiScale() const;
   void SetFontScale(float new_font_scale);
-  float GetFontScale() const;
 
   void DumpState(std::ostream& out) const;
 

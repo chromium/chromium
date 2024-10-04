@@ -6043,6 +6043,39 @@ TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_SanitizeFontScale) {
   test_font_scale(-1.0f, 0.5f);
 }
 
+TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_ForceDeviceScaleFactor) {
+  // Ensures force-device-scale-factor switch is not used when ui scaling is
+  // disabled or unsupported.
+  ASSERT_FALSE(connection_->IsUiScaleEnabled());
+  ASSERT_TRUE(connection_->window_manager());
+  display::Display::SetForceDeviceScaleFactor(2.0);
+  EXPECT_EQ(1.0f, connection_->window_manager()->DetermineUiScale());
+
+  // When it is enabled, it must take precedence over font scale.
+  base::test::ScopedFeatureList enable_ui_scaling(features::kWaylandUiScale);
+  ASSERT_TRUE(connection_->IsUiScaleEnabled());
+  EXPECT_EQ(2.0f, connection_->window_manager()->DetermineUiScale());
+  EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kDefaultBoundsChange))).Times(1);
+  SendConfigureEvent(surface_id_, gfx::Size(1000, 1000), wl::ScopedWlArray({}));
+  VerifyAndClearExpectations();
+  // Ensure the forced scale factor takes precedence (over font scale) and
+  // gets used as ui scale when firing the bounds change triggered by the
+  // server, in this case.
+  EXPECT_EQ(2.0f, window_->applied_state().ui_scale);
+  EXPECT_EQ(1.0f, window_->applied_state().window_scale);
+  EXPECT_EQ(gfx::Size(500, 500), window_->applied_state().bounds_dip.size());
+  EXPECT_EQ(gfx::Size(1000, 1000), window_->applied_state().size_px);
+  PlatformWindowDelegate::State previous_state(window_->applied_state());
+
+  // Font scale changes should not trigger bounds change when
+  // force-device-scale-factor is in use.
+  EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(0);
+  connection_->window_manager()->SetFontScale(1.25f);
+  Mock::VerifyAndClearExpectations(&delegate_);
+  EXPECT_EQ(2.0f, connection_->window_manager()->DetermineUiScale());
+  EXPECT_EQ(window_->applied_state(), previous_state);
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandWindowTest,
