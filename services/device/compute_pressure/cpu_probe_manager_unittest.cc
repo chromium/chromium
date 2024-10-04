@@ -16,12 +16,14 @@
 #include "base/sequence_checker.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "components/system_cpu/pressure_test_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device {
@@ -86,9 +88,14 @@ class CpuProbeManagerTest : public ::testing::TestWithParam<ResponseDelay> {
     }
   }
 
-  void SetProbeSample(CpuSample cpu_sample) {
+  void SetProbeSample(std::optional<CpuSample> cpu_sample) {
     static_cast<FakeCpuProbe*>(cpu_probe_manager_->cpu_probe())
         ->SetLastSample(cpu_sample);
+  }
+
+  void ClearUpdateCallback() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    update_callback_.Reset();
   }
 
  protected:
@@ -154,6 +161,27 @@ TEST_P(CpuProbeManagerTest, EnsureStarted) {
   cpu_probe_manager_->EnsureStarted();
   WaitForUpdate();
 
+  EXPECT_THAT(samples_, ::testing::ElementsAre(mojom::PressureState(
+                            mojom::PressureState::kSerious)));
+}
+
+TEST_P(CpuProbeManagerTest, InvalidSampleIsIgnored) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // We need to verify that CollectorCallback() was _not_ called, we
+  // basically let things run and check that samples_ is empty.
+  {
+    base::test::ScopedRunLoopTimeout timeout(FROM_HERE,
+                                             TestTimeouts::action_timeout());
+    SetProbeSample(std::nullopt);
+    cpu_probe_manager_->EnsureStarted();
+    EXPECT_NONFATAL_FAILURE({ WaitForUpdate(); }, "timed out");
+    EXPECT_TRUE(samples_.empty());
+    ClearUpdateCallback();
+  }
+
+  SetProbeSample(CpuSample{0.9});
+  WaitForUpdate();
   EXPECT_THAT(samples_, ::testing::ElementsAre(mojom::PressureState(
                             mojom::PressureState::kSerious)));
 }
@@ -371,6 +399,7 @@ TEST_P(CpuProbeManagerTest,
 TEST_P(CpuProbeManagerDelayedResponseTest, StopDelayedEnsureStartedImmediate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  SetProbeSample(CpuSample{0.1});
   cpu_probe_manager_->EnsureStarted();
   WaitForUpdate();
   cpu_probe_manager_->Stop();
@@ -387,6 +416,7 @@ TEST_P(CpuProbeManagerDelayedResponseTest, StopDelayedEnsureStartedImmediate) {
 TEST_P(CpuProbeManagerDelayedResponseTest, StopDelayedEnsureStartedDelayed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  SetProbeSample(CpuSample{0.1});
   cpu_probe_manager_->EnsureStarted();
   WaitForUpdate();
   cpu_probe_manager_->Stop();
@@ -404,6 +434,7 @@ TEST_P(CpuProbeManagerDelayedResponseTest,
        StopImmediateEnsureStartedImmediate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  SetProbeSample(CpuSample{0.1});
   cpu_probe_manager_->EnsureStarted();
   cpu_probe_manager_->Stop();
 
@@ -419,6 +450,7 @@ TEST_P(CpuProbeManagerDelayedResponseTest,
 TEST_P(CpuProbeManagerDelayedResponseTest, StopImmediateEnsureStartedDelayed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  SetProbeSample(CpuSample{0.1});
   cpu_probe_manager_->EnsureStarted();
   cpu_probe_manager_->Stop();
 

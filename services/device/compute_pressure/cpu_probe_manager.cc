@@ -165,13 +165,12 @@ void CpuProbeManager::OnCpuSampleAvailable(std::optional<CpuSample> sample) {
   // If the timer was stopped, OnCpuSampleAvailable should have been cancelled
   // by InvalidateWeakPtrs().
   CHECK(timer_.IsRunning());
-  sampling_callback_.Run(CalculateState(sample));
+  if (sample.has_value()) {
+    sampling_callback_.Run(CalculateState(sample.value()));
+  }
 }
 
-mojom::PressureState CpuProbeManager::CalculateState(
-    std::optional<CpuSample> maybe_sample) {
-  const CpuSample sample = maybe_sample.value_or(kUnsupportedValue);
-
+mojom::PressureState CpuProbeManager::CalculateState(const CpuSample& sample) {
   // TODO(crbug.com/40231044): A more advanced algorithm that calculates
   // PressureState using CpuSample needs to be determined.
   // At this moment the algorithm is the simplest possible
