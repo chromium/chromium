@@ -127,12 +127,14 @@ void AccessibilityTreeFormatterAndroid::AddDefaultFilters(
 void AccessibilityTreeFormatterAndroid::RecursiveBuildTree(
     const ui::AXPlatformNodeDelegate& node,
     base::Value::Dict* dict) const {
-  if (!ShouldDumpNode(node))
+  if (!ShouldDumpNode(node)) {
     return;
+  }
 
   AddProperties(node, dict);
-  if (!ShouldDumpChildren(node))
+  if (!ShouldDumpChildren(node)) {
     return;
+  }
 
   base::Value::List children;
 
@@ -221,8 +223,9 @@ void AccessibilityTreeFormatterAndroid::AddProperties(
 std::string AccessibilityTreeFormatterAndroid::ProcessTreeForOutput(
     const base::Value::Dict& dict) const {
   const std::string* error_value = dict.FindString("error");
-  if (error_value)
+  if (error_value) {
     return *error_value;
+  }
 
   std::string line;
   if (show_ids()) {
@@ -244,22 +247,25 @@ std::string AccessibilityTreeFormatterAndroid::ProcessTreeForOutput(
 
   for (const char* attribute_name : BOOL_ATTRIBUTES) {
     std::optional<bool> value = dict.FindBool(attribute_name);
-    if (value && *value)
+    if (value && *value) {
       WriteAttribute(true, attribute_name, &line);
+    }
   }
 
   for (const char* attribute_name : STRING_ATTRIBUTES) {
     const std::string* value = dict.FindString(attribute_name);
-    if (!value || value->empty())
+    if (!value || value->empty()) {
       continue;
+    }
     WriteAttribute(
         true, StringPrintf("%s='%s'", attribute_name, value->c_str()), &line);
   }
 
   for (const char* attribute_name : INT_ATTRIBUTES) {
     int value = dict.FindInt(attribute_name).value_or(0);
-    if (value == 0)
+    if (value == 0) {
       continue;
+    }
     WriteAttribute(true, StringPrintf("%s=%d", attribute_name, value), &line);
   }
 

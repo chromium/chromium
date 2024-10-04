@@ -487,8 +487,9 @@ ui::BrowserAccessibility* AccessibilityWinBrowserTest::FindNodeInSubtree(
   for (unsigned int i = 0; i < node.PlatformChildCount(); ++i) {
     ui::BrowserAccessibility* result =
         FindNodeInSubtree(*node.PlatformGetChild(i), role, name_or_value);
-    if (result)
+    if (result) {
       return result;
+    }
   }
   return nullptr;
 }
@@ -501,8 +502,9 @@ AccessibilityWinBrowserTest::GetAccessibleFromVariant(IAccessible* parent,
   switch (V_VT(var)) {
     case VT_DISPATCH: {
       IDispatch* dispatch = V_DISPATCH(var);
-      if (dispatch)
+      if (dispatch) {
         dispatch->QueryInterface(IID_PPV_ARGS(&ptr));
+      }
       break;
     }
 
@@ -510,8 +512,9 @@ AccessibilityWinBrowserTest::GetAccessibleFromVariant(IAccessible* parent,
       Microsoft::WRL::ComPtr<IDispatch> dispatch;
       HRESULT hr = parent->get_accChild(*var, &dispatch);
       EXPECT_TRUE(SUCCEEDED(hr));
-      if (dispatch.Get())
+      if (dispatch.Get()) {
         dispatch.As(&ptr);
+      }
       break;
     }
   }
@@ -549,8 +552,9 @@ void AccessibilityWinBrowserTest::FindNodeInAccessibilityTree(
 
   // Print the accessibility tree as we go, because if this test fails
   // on the bots, this is really helpful in figuring out why.
-  for (int i = 0; i < depth; i++)
+  for (int i = 0; i < depth; i++) {
     printf("  ");
+  }
   printf("role=%s name=%s\n",
          base::WideToUTF8(IAccessibleRoleToString(V_I4(role.ptr()))).c_str(),
          base::WideToUTF8(name).c_str());
@@ -568,8 +572,9 @@ void AccessibilityWinBrowserTest::FindNodeInAccessibilityTree(
     if (child_accessible) {
       FindNodeInAccessibilityTree(child_accessible.Get(), expected_role,
                                   expected_name, depth + 1, found);
-      if (*found)
+      if (*found) {
         return;
+      }
     }
   }
 }
@@ -604,8 +609,9 @@ AccessibilityWinBrowserTest::GetAllAccessibleChildren(IAccessible* element) {
   LONG child_count = 0;
   HRESULT hr = element->get_accChildCount(&child_count);
   EXPECT_EQ(S_OK, hr);
-  if (child_count <= 0)
+  if (child_count <= 0) {
     return std::vector<base::win::ScopedVariant>();
+  }
 
   auto children_array = base::HeapArray<VARIANT>::WithSize(child_count);
   LONG obtained_count = 0;
@@ -616,8 +622,9 @@ AccessibilityWinBrowserTest::GetAllAccessibleChildren(IAccessible* element) {
 
   std::vector<base::win::ScopedVariant> children(
       static_cast<size_t>(child_count));
-  for (size_t i = 0; i < children.size(); i++)
+  for (size_t i = 0; i < children.size(); i++) {
     children[i].Reset(children_array[i]);
+  }
 
   return children;
 }
@@ -703,7 +710,6 @@ AccessibilityWinBrowserTest::AccessibleChecker::AccessibleChecker(
       value_(expected_value),
       state_(-1) {}
 
-
 void AccessibilityWinBrowserTest::AccessibleChecker::AppendExpectedChild(
     AccessibleChecker* expected_child) {
   children_.push_back(expected_child);
@@ -782,8 +788,9 @@ void AccessibilityWinBrowserTest::AccessibleChecker::CheckAccessibleValue(
   base::win::ScopedVariant childid_self(CHILDID_SELF);
   HRESULT hr = accessible->get_accRole(childid_self, role.Receive());
   ASSERT_EQ(S_OK, hr);
-  if (role.type() == VT_I4 && V_I4(role.ptr()) == ROLE_SYSTEM_DOCUMENT)
+  if (role.type() == VT_I4 && V_I4(role.ptr()) == ROLE_SYSTEM_DOCUMENT) {
     return;
+  }
 
   // Get the value.
   base::win::ScopedBstr value;
@@ -796,8 +803,9 @@ void AccessibilityWinBrowserTest::AccessibleChecker::CheckAccessibleValue(
 
 void AccessibilityWinBrowserTest::AccessibleChecker::CheckAccessibleState(
     IAccessible* accessible) {
-  if (state_ < 0)
+  if (state_ < 0) {
     return;
+  }
 
   base::win::ScopedVariant state;
   base::win::ScopedVariant childid_self(CHILDID_SELF);
@@ -855,8 +863,9 @@ class NativeWinEventWaiter {
 
   void OnEvent(const std::string& event_str) {
     DLOG(INFO) << "Got event " + event_str;
-    if (base::MatchPattern(event_str, match_pattern_))
+    if (base::MatchPattern(event_str, match_pattern_)) {
       run_loop_.Quit();
+    }
   }
 
   void Wait() { run_loop_.Run(); }
@@ -4047,8 +4056,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
     // should be one past the embedded object character. To get to the start of
     // the next word, we have to skip the space between the embedded object
     // character and the next word.
-    if (word == embedded_character)
+    if (word == embedded_character) {
       ++word_start_offset;
+    }
   }
 }
 
@@ -4096,8 +4106,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   for (LONG offset = 0; offset < contents_string_length &&
                         sentence_index < sentence_starts.size();
        ++offset) {
-    if (offset == sentence_starts[sentence_index + 1])
+    if (offset == sentence_starts[sentence_index + 1]) {
       ++sentence_index;
+    }
     LONG expected_start_offset = sentence_starts[sentence_index];
     LONG expected_end_offset = sentence_ends[sentence_index];
     const std::wstring expected_text =
@@ -4986,8 +4997,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest,
   EXPECT_EQ(VT_EMPTY, result.type());
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest,
-                       OnscreenNodeClickable) {
+IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest, OnscreenNodeClickable) {
   LoadInitialAccessibilityTreeFromHtml(
       R"HTML(<!DOCTYPE html>
       <html>

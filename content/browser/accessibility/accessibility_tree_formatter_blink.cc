@@ -71,8 +71,9 @@ std::string IntAttrToString(const ui::AXNode& node,
     ui::AXTreeID tree_id = node.tree()->GetAXTreeID();
     ui::AXNode* target =
         ui::AXTreeManager::FromID(tree_id)->GetNodeFromTree(tree_id, value);
-    if (!target)
+    if (!target) {
       return "null";
+    }
 
     std::string result = ui::ToString(target->GetRole());
     // Provide some extra info about the related object via the name or
@@ -296,12 +297,14 @@ std::string AccessibilityTreeFormatterBlink::DumpInternalAccessibilityTree(
 void AccessibilityTreeFormatterBlink::RecursiveBuildTree(
     const ui::BrowserAccessibility& node,
     base::Value::Dict* dict) const {
-  if (!ShouldDumpNode(node))
+  if (!ShouldDumpNode(node)) {
     return;
+  }
 
   AddProperties(node, dict);
-  if (!ShouldDumpChildren(node))
+  if (!ShouldDumpChildren(node)) {
     return;
+  }
 
   base::Value::List children;
   for (const auto* child_node : node.AllChildren()) {
@@ -364,12 +367,14 @@ void AccessibilityTreeFormatterBlink::AddProperties(
        ++state_index) {
     auto state = static_cast<ax::mojom::State>(state_index);
     if (state == ax::mojom::State::kFocusable ? node.IsFocusable()
-                                              : node.HasState(state))
+                                              : node.HasState(state)) {
       dict->SetByDottedPath(ui::ToString(state), true);
+    }
   }
 
-  if (offscreen_result == ui::AXOffscreenResult::kOffscreen)
+  if (offscreen_result == ui::AXOffscreenResult::kOffscreen) {
     dict->Set(STATE_OFFSCREEN, true);
+  }
 
   for (int32_t attr_index =
            static_cast<int32_t>(ax::mojom::StringAttribute::kNone);
@@ -378,8 +383,9 @@ void AccessibilityTreeFormatterBlink::AddProperties(
        ++attr_index) {
     auto attr = static_cast<ax::mojom::StringAttribute>(attr_index);
     auto maybe_value = GetStringAttribute(*node.node(), attr);
-    if (maybe_value.has_value())
+    if (maybe_value.has_value()) {
       dict->SetByDottedPath(ui::ToString(attr), maybe_value.value());
+    }
   }
 
   for (int32_t attr_index =
@@ -401,8 +407,9 @@ void AccessibilityTreeFormatterBlink::AddProperties(
        ++attr_index) {
     auto attr = static_cast<ax::mojom::FloatAttribute>(attr_index);
     if (node.HasFloatAttribute(attr) &&
-        std::isfinite(node.GetFloatAttribute(attr)))
+        std::isfinite(node.GetFloatAttribute(attr))) {
       dict->SetByDottedPath(ui::ToString(attr), node.GetFloatAttribute(attr));
+    }
   }
 
   for (int32_t attr_index =
@@ -410,8 +417,9 @@ void AccessibilityTreeFormatterBlink::AddProperties(
        attr_index <= static_cast<int32_t>(ax::mojom::BoolAttribute::kMaxValue);
        ++attr_index) {
     auto attr = static_cast<ax::mojom::BoolAttribute>(attr_index);
-    if (node.HasBoolAttribute(attr))
+    if (node.HasBoolAttribute(attr)) {
       dict->SetByDottedPath(ui::ToString(attr), node.GetBoolAttribute(attr));
+    }
   }
 
   for (int32_t attr_index =
@@ -427,10 +435,11 @@ void AccessibilityTreeFormatterBlink::AddProperties(
       for (const int& value : values) {
         if (ui::IsNodeIdIntListAttribute(attr)) {
           ui::BrowserAccessibility* target = node.manager()->GetFromID(value);
-          if (target)
+          if (target) {
             value_list.Append(ui::ToString(target->GetRole()));
-          else
+          } else {
             value_list.Append("null");
+          }
         } else {
           value_list.Append(value);
         }
@@ -459,11 +468,13 @@ void AccessibilityTreeFormatterBlink::AddProperties(
        action_index <= static_cast<int32_t>(ax::mojom::Action::kMaxValue);
        ++action_index) {
     auto action = static_cast<ax::mojom::Action>(action_index);
-    if (node.HasAction(action))
+    if (node.HasAction(action)) {
       actions_strings.push_back(ui::ToString(action));
+    }
   }
-  if (!actions_strings.empty())
+  if (!actions_strings.empty()) {
     dict->Set("actions", base::JoinString(actions_strings, ","));
+  }
 }
 
 void AccessibilityTreeFormatterBlink::AddProperties(
@@ -515,8 +526,9 @@ void AccessibilityTreeFormatterBlink::AddProperties(
        state_index <= static_cast<int32_t>(ax::mojom::State::kMaxValue);
        ++state_index) {
     auto state = static_cast<ax::mojom::State>(state_index);
-    if (node.HasState(state))
+    if (node.HasState(state)) {
       dict->SetByDottedPath(ui::ToString(state), true);
+    }
   }
 
   for (int32_t attr_index =
@@ -526,8 +538,9 @@ void AccessibilityTreeFormatterBlink::AddProperties(
        ++attr_index) {
     auto attr = static_cast<ax::mojom::StringAttribute>(attr_index);
     auto maybe_value = GetStringAttribute(node, attr);
-    if (maybe_value.has_value())
+    if (maybe_value.has_value()) {
       dict->SetByDottedPath(ui::ToString(attr), maybe_value.value());
+    }
   }
 
   for (int32_t attr_index =
@@ -548,8 +561,9 @@ void AccessibilityTreeFormatterBlink::AddProperties(
        ++attr_index) {
     auto attr = static_cast<ax::mojom::FloatAttribute>(attr_index);
     if (node.HasFloatAttribute(attr) &&
-        std::isfinite(node.GetFloatAttribute(attr)))
+        std::isfinite(node.GetFloatAttribute(attr))) {
       dict->SetByDottedPath(ui::ToString(attr), node.GetFloatAttribute(attr));
+    }
   }
 
   for (int32_t attr_index =
@@ -557,8 +571,9 @@ void AccessibilityTreeFormatterBlink::AddProperties(
        attr_index <= static_cast<int32_t>(ax::mojom::BoolAttribute::kMaxValue);
        ++attr_index) {
     auto attr = static_cast<ax::mojom::BoolAttribute>(attr_index);
-    if (node.HasBoolAttribute(attr))
+    if (node.HasBoolAttribute(attr)) {
       dict->SetByDottedPath(ui::ToString(attr), node.GetBoolAttribute(attr));
+    }
   }
 
   for (int32_t attr_index =
@@ -576,10 +591,11 @@ void AccessibilityTreeFormatterBlink::AddProperties(
           ui::AXNode* target =
               ui::AXTreeManager::FromID(tree_id)->GetNode(node.id());
 
-          if (target)
+          if (target) {
             value_list.Append(ui::ToString(target->GetRole()));
-          else
+          } else {
             value_list.Append("null");
+          }
         } else {
           value_list.Append(value);
         }
@@ -607,26 +623,30 @@ void AccessibilityTreeFormatterBlink::AddProperties(
        action_index <= static_cast<int32_t>(ax::mojom::Action::kMaxValue);
        ++action_index) {
     auto action = static_cast<ax::mojom::Action>(action_index);
-    if (node.HasAction(action))
+    if (node.HasAction(action)) {
       actions_strings.push_back(ui::ToString(action));
+    }
   }
-  if (!actions_strings.empty())
+  if (!actions_strings.empty()) {
     dict->Set("actions", base::JoinString(actions_strings, ","));
+  }
 }
 
 std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
     const base::Value::Dict& dict) const {
   const std::string* error_value = dict.FindString("error");
-  if (error_value)
+  if (error_value) {
     return *error_value;
+  }
 
   std::string line;
 
   std::string id_value = base::NumberToString(dict.FindInt("id").value_or(0));
-  if (show_ids())  // Show id on every line.
+  if (show_ids()) {  // Show id on every line.
     WriteAttribute(true, id_value, &line);
-  else  // Show id if @BlINK-ALLOW:id#=* specified.
+  } else {  // Show id if @BlINK-ALLOW:id#=* specified.
     WriteAttribute(false, std::string("id#=") + id_value, &line);
+  }
 
   const std::string* role_value = dict.FindString("internalRole");
   if (role_value) {
@@ -638,17 +658,20 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
        ++state_index) {
     auto state = static_cast<ax::mojom::State>(state_index);
     const base::Value* value = dict.Find(ui::ToString(state));
-    if (!value)
+    if (!value) {
       continue;
+    }
 
     WriteAttribute(false, ui::ToString(state), &line);
   }
 
   // Offscreen and Focused states are not in the state list.
-  if (dict.FindBool(STATE_OFFSCREEN).value_or(false))
+  if (dict.FindBool(STATE_OFFSCREEN).value_or(false)) {
     WriteAttribute(false, STATE_OFFSCREEN, &line);
-  if (dict.FindBool(STATE_FOCUSED).value_or(false))
+  }
+  if (dict.FindBool(STATE_FOCUSED).value_or(false)) {
     WriteAttribute(false, STATE_FOCUSED, &line);
+  }
 
   if (dict.Find("boundsX") && dict.Find("boundsY")) {
     WriteAttribute(false,
@@ -691,8 +714,9 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
     }
   }
 
-  if (dict.FindBool("transform").value_or(false))
+  if (dict.FindBool("transform").value_or(false)) {
     WriteAttribute(false, "transform", &line);
+  }
 
   for (int attr_index = static_cast<int32_t>(ax::mojom::StringAttribute::kNone);
        attr_index <=
@@ -700,8 +724,9 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
        ++attr_index) {
     auto attr = static_cast<ax::mojom::StringAttribute>(attr_index);
     const std::string* string_value = dict.FindString(ui::ToString(attr));
-    if (!string_value)
+    if (!string_value) {
       continue;
+    }
     WriteAttribute(false,
                    base::StringPrintf("%s='%s'", ui::ToString(attr),
                                       string_value->c_str()),
@@ -713,8 +738,9 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
        ++attr_index) {
     auto attr = static_cast<ax::mojom::IntAttribute>(attr_index);
     const std::string* string_value = dict.FindString(ui::ToString(attr));
-    if (!string_value)
+    if (!string_value) {
       continue;
+    }
     WriteAttribute(
         false,
         base::StringPrintf("%s=%s", ui::ToString(attr), string_value->c_str()),
@@ -726,8 +752,9 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
        ++attr_index) {
     auto attr = static_cast<ax::mojom::BoolAttribute>(attr_index);
     std::optional<bool> bool_value = dict.FindBool(ui::ToString(attr));
-    if (!bool_value.has_value())
+    if (!bool_value.has_value()) {
       continue;
+    }
     WriteAttribute(false,
                    base::StringPrintf("%s=%s", ui::ToString(attr),
                                       *bool_value ? "true" : "false"),
@@ -739,8 +766,9 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
        ++attr_index) {
     auto attr = static_cast<ax::mojom::FloatAttribute>(attr_index);
     std::optional<double> float_value = dict.FindDouble(ui::ToString(attr));
-    if (!float_value)
+    if (!float_value) {
       continue;
+    }
     WriteAttribute(
         false, base::StringPrintf("%s=%.2f", ui::ToString(attr), *float_value),
         &line);
@@ -753,14 +781,16 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
        ++attr_index) {
     auto attr = static_cast<ax::mojom::IntListAttribute>(attr_index);
     const base::Value::List* value = dict.FindList(ui::ToString(attr));
-    if (!value)
+    if (!value) {
       continue;
+    }
     const base::Value::List& list = *value;
     std::string attr_string(ui::ToString(attr));
     attr_string.push_back('=');
     for (size_t i = 0; i < list.size(); ++i) {
-      if (i > 0)
+      if (i > 0) {
         attr_string += ",";
+      }
       if (ui::IsNodeIdIntListAttribute(attr)) {
         if (list[i].is_string()) {
           attr_string += list[i].GetString();
@@ -780,8 +810,9 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
 
   for (const char* attribute_name : TREE_DATA_ATTRIBUTES) {
     const base::Value* value = dict.FindByDottedPath(attribute_name);
-    if (!value)
+    if (!value) {
       continue;
+    }
 
     switch (value->type()) {
       case base::Value::Type::STRING:

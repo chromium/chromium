@@ -21,7 +21,7 @@
 namespace ui {
 class MotionEventAndroid;
 struct AXTreeUpdate;
-}
+}  // namespace ui
 
 namespace content {
 

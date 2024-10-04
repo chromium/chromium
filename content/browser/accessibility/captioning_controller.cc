@@ -39,8 +39,9 @@ CaptioningController::CaptioningController(JNIEnv* env,
 CaptioningController::~CaptioningController() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (!obj.is_null())
+  if (!obj.is_null()) {
     Java_CaptioningController_onDestroy(env, obj);
+  }
 }
 
 void CaptioningController::PrimaryPageChanged(Page& page) {
@@ -50,8 +51,9 @@ void CaptioningController::PrimaryPageChanged(Page& page) {
 void CaptioningController::RenderViewReady() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (!obj.is_null())
+  if (!obj.is_null()) {
     Java_CaptioningController_onRenderProcessChange(env, obj);
+  }
 }
 
 void CaptioningController::WebContentsDestroyed() {

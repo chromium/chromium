@@ -71,8 +71,9 @@ class WindowsAccessibilityEnabler
     // We used to trust this as a signal that a screen reader is running,
     // but it's been abused. Now only enable accessibility if we also
     // detect a call to get_accName.
-    if (screen_reader_honeypot_queried_)
+    if (screen_reader_honeypot_queried_) {
       return;
+    }
     screen_reader_honeypot_queried_ = true;
     if (acc_name_called_) {
       BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
@@ -82,8 +83,9 @@ class WindowsAccessibilityEnabler
 
   void OnAccNameCalled() override {
     // See OnScreenReaderHoneyPotQueried, above.
-    if (acc_name_called_)
+    if (acc_name_called_) {
       return;
+    }
     acc_name_called_ = true;
     if (screen_reader_honeypot_queried_) {
       BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
@@ -123,14 +125,16 @@ class WindowsAccessibilityEnabler
 
     // Firing a UIA event can cause UIA to call back into our APIs, don't
     // consider this to be usage.
-    if (firing_uia_events_)
+    if (firing_uia_events_) {
       return;
+    }
 
     // UI Automation insulates providers from knowing about the client(s) asking
     // for information. When IsSelectiveUIAEnablement is Enabled, we turn on
     // various parts of accessibility depending on what APIs have been called.
-    if (!features::IsSelectiveUIAEnablementEnabled())
+    if (!features::IsSelectiveUIAEnablementEnabled()) {
       mode = ui::kAXModeComplete;
+    }
     BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
         mode);
   }
@@ -211,14 +215,16 @@ void BrowserAccessibilityStateImplWin::UpdateHistogramsOnOtherThread() {
   HANDLE process = GetCurrentProcess();
   HMODULE* modules = nullptr;
   DWORD bytes_required;
-  if (!EnumProcessModules(process, modules, 0, &bytes_required))
+  if (!EnumProcessModules(process, modules, 0, &bytes_required)) {
     return;
+  }
 
   auto buffer = base::HeapArray<uint8_t>::WithSize(bytes_required);
   modules = reinterpret_cast<HMODULE*>(buffer.data());
   DWORD ignore;
-  if (!EnumProcessModules(process, modules, bytes_required, &ignore))
+  if (!EnumProcessModules(process, modules, bytes_required, &ignore)) {
     return;
+  }
 
   // Look for DLLs of assistive technology known to work with Chrome.
   size_t module_count = bytes_required / sizeof(HMODULE);

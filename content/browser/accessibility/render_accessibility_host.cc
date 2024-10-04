@@ -61,10 +61,10 @@ void RenderAccessibilityHost::HandleAXLocationChanges(
     ui::AXLocationAndScrollUpdates& changes,
     uint32_t reset_token) {
   GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&RenderFrameHostImpl::HandleAXLocationChanges,
-                                render_frame_host_impl_, tree_id_,
-                                std::move(changes), reset_token,
-                                mojo::GetBadMessageCallback()));
+      FROM_HERE,
+      base::BindOnce(&RenderFrameHostImpl::HandleAXLocationChanges,
+                     render_frame_host_impl_, tree_id_, std::move(changes),
+                     reset_token, mojo::GetBadMessageCallback()));
 }
 
 }  // namespace content

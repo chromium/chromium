@@ -51,12 +51,14 @@ class AXTreeSnapshotWaiter {
 void DumpRolesAndNamesAsText(const ui::AXNode* node,
                              int indent,
                              std::string* dst) {
-  for (int i = 0; i < indent; i++)
+  for (int i = 0; i < indent; i++) {
     *dst += "  ";
+  }
   *dst += ui::ToString(node->GetRole());
-  if (node->HasStringAttribute(ax::mojom::StringAttribute::kName))
+  if (node->HasStringAttribute(ax::mojom::StringAttribute::kName)) {
     *dst += " '" + node->GetStringAttribute(ax::mojom::StringAttribute::kName) +
             "'";
+  }
   *dst += "\n";
   for (auto iter = node->UnignoredChildrenBegin();
        iter != node->UnignoredChildrenEnd(); ++iter) {

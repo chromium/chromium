@@ -17,7 +17,6 @@ class BrowserAccessibility;
 
 namespace content {
 
-
 class CONTENT_EXPORT AccessibilityTreeFormatterBlink
     : public ui::AXTreeFormatterBase {
  public:

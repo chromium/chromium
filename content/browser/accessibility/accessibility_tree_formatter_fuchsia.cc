@@ -123,8 +123,9 @@ std::string FuchsiaActionsToString(const std::vector<FuchsiaAction>& actions) {
     fuchsia_actions.push_back(FuchsiaActionToString(action));
   }
 
-  if (fuchsia_actions.empty())
+  if (fuchsia_actions.empty()) {
     return std::string();
+  }
 
   return "{" + base::JoinString(fuchsia_actions, ", ") + "}";
 }
@@ -216,12 +217,14 @@ base::Value::Dict AccessibilityTreeFormatterFuchsia::BuildTree(
 void AccessibilityTreeFormatterFuchsia::RecursiveBuildTree(
     const ui::AXPlatformNodeDelegate& node,
     base::Value::Dict* dict) const {
-  if (!ShouldDumpNode(node))
+  if (!ShouldDumpNode(node)) {
     return;
+  }
 
   AddProperties(node, dict);
-  if (!ShouldDumpChildren(node))
+  if (!ShouldDumpChildren(node)) {
     return;
+  }
 
   base::Value::List children;
 
@@ -436,14 +439,16 @@ std::string AccessibilityTreeFormatterFuchsia::ProcessTreeForOutput(
   }
 
   for (const char* bool_attribute : kBoolAttributes) {
-    if (node.FindBool(bool_attribute).value_or(false))
+    if (node.FindBool(bool_attribute).value_or(false)) {
       WriteAttribute(/*include_by_default=*/true, bool_attribute, &line);
+    }
   }
 
   for (const char* string_attribute : kStringAttributes) {
     const std::string* value = node.FindString(string_attribute);
-    if (!value || value->empty())
+    if (!value || value->empty()) {
       continue;
+    }
 
     WriteAttribute(
         /*include_by_default=*/true,
@@ -452,16 +457,18 @@ std::string AccessibilityTreeFormatterFuchsia::ProcessTreeForOutput(
 
   for (const char* attribute_name : kIntAttributes) {
     int value = node.FindInt(attribute_name).value_or(0);
-    if (value == 0)
+    if (value == 0) {
       continue;
+    }
     WriteAttribute(true, base::StringPrintf("%s=%d", attribute_name, value),
                    &line);
   }
 
   for (const char* attribute_name : kDoubleAttributes) {
     int value = node.FindInt(attribute_name).value_or(0);
-    if (value == 0)
+    if (value == 0) {
       continue;
+    }
     WriteAttribute(true, base::StringPrintf("%s=%d", attribute_name, value),
                    &line);
   }

@@ -83,8 +83,9 @@ class AXPlatformNodeWinBrowserTest : public AccessibilityContentBrowserTest {
     ui::BrowserAccessibilityManager* manager =
         web_contents->GetRootBrowserAccessibilityManager();
     ui::BrowserAccessibility* node = begin;
-    while (node && (node->GetName() != name))
+    while (node && (node->GetName() != name)) {
       node = manager->NextInTreeOrder(node);
+    }
 
     return node;
   }
@@ -727,8 +728,9 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinBrowserTest,
   // Find a node to hit test. Note that this is a really simple page,
   // so synchronous hit testing will work fine.
   ui::BrowserAccessibility* node = manager->GetBrowserAccessibilityRoot();
-  while (node && node->GetRole() != ax::mojom::Role::kButton)
+  while (node && node->GetRole() != ax::mojom::Role::kButton) {
     node = manager->NextInTreeOrder(node);
+  }
   DCHECK(node);
 
   // Get the screen bounds of the hit target and find the point in the middle.

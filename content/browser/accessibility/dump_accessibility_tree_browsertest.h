@@ -5,9 +5,8 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_DUMP_ACCESSIBILITY_TREE_BROWSERTEST_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_DUMP_ACCESSIBILITY_TREE_BROWSERTEST_H_
 
-#include "content/browser/accessibility/dump_accessibility_browsertest_base.h"
-
 #include "base/command_line.h"
+#include "content/browser/accessibility/dump_accessibility_browsertest_base.h"
 #include "content/public/common/content_switches.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"

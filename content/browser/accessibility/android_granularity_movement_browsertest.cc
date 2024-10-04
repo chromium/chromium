@@ -89,11 +89,13 @@ class AndroidGranularityMovementBrowserTest : public ContentBrowserTest {
       int len = end_index - start_index;
       std::u16string selection = text.substr(start_index, len);
       if (base::EndsWith(selection, u"\n",
-                         base::CompareCase::INSENSITIVE_ASCII))
+                         base::CompareCase::INSENSITIVE_ASCII)) {
         selection.erase(selection.size() - 1);
+      }
       if (!selection.empty()) {
-        if (!concatenated.empty())
+        if (!concatenated.empty()) {
           concatenated += u", ";
+        }
         concatenated += u"'" + selection + u"'";
       }
 
@@ -113,10 +115,12 @@ class AndroidGranularityMovementBrowserTest : public ContentBrowserTest {
       int len = end_index - start_index;
       std::u16string selection = text.substr(start_index, len);
       if (base::EndsWith(selection, u"\n",
-                         base::CompareCase::INSENSITIVE_ASCII))
+                         base::CompareCase::INSENSITIVE_ASCII)) {
         selection = selection.substr(0, selection.size() - 1);
-      if (!reverse.empty())
+      }
+      if (!reverse.empty()) {
         reverse = u", " + reverse;
+      }
       reverse = u"'" + selection + u"'" + reverse;
 
       // Prevent an endless loop.

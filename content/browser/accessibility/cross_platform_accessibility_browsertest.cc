@@ -109,8 +109,9 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
 
   void LoadInitialAccessibilityTreeFromHtmlFilePath(
       const std::string& html_file_path) {
-    if (!embedded_test_server()->Started())
+    if (!embedded_test_server()->Started()) {
       ASSERT_TRUE(embedded_test_server()->Start());
+    }
     ASSERT_TRUE(embedded_test_server()->Started());
     AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                            ui::kAXModeComplete,
@@ -159,8 +160,9 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
     for (unsigned int i = 0; i < node.PlatformChildCount(); ++i) {
       ui::BrowserAccessibility* result =
           FindNodeInSubtree(*node.PlatformGetChild(i), name_or_value);
-      if (result)
+      if (result) {
         return result;
+      }
     }
 
     return nullptr;
@@ -174,14 +176,16 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
   ui::BrowserAccessibility* FindFirstNodeWithRoleInSubtree(
       ui::BrowserAccessibility& node,
       ax::mojom::Role role_value) {
-    if (node.GetRole() == role_value)
+    if (node.GetRole() == role_value) {
       return &node;
+    }
 
     for (unsigned int i = 0; i < node.PlatformChildCount(); ++i) {
       ui::BrowserAccessibility* result =
           FindFirstNodeWithRoleInSubtree(*node.PlatformGetChild(i), role_value);
-      if (result)
+      if (result) {
         return result;
+      }
     }
 
     return nullptr;
@@ -233,8 +237,7 @@ void CrossPlatformAccessibilityBrowserTest::SetUp() {
 
 void CrossPlatformAccessibilityBrowserTest::ChooseFeatures(
     std::vector<base::test::FeatureRef>* enabled_features,
-    std::vector<base::test::FeatureRef>* disabled_features) {
-}
+    std::vector<base::test::FeatureRef>* disabled_features) {}
 
 void CrossPlatformAccessibilityBrowserTest::SetUpOnMainThread() {
 #if BUILDFLAG(IS_WIN)
@@ -250,8 +253,9 @@ std::string CrossPlatformAccessibilityBrowserTest::GetAttr(
     const ax::mojom::StringAttribute attr) {
   const ui::AXNodeData& data = node->data();
   for (size_t i = 0; i < data.string_attributes.size(); ++i) {
-    if (data.string_attributes[i].first == attr)
+    if (data.string_attributes[i].first == attr) {
       return data.string_attributes[i].second;
+    }
   }
   return std::string();
 }
@@ -263,8 +267,9 @@ int CrossPlatformAccessibilityBrowserTest::GetIntAttr(
     const ax::mojom::IntAttribute attr) {
   const ui::AXNodeData& data = node->data();
   for (size_t i = 0; i < data.int_attributes.size(); ++i) {
-    if (data.int_attributes[i].first == attr)
+    if (data.int_attributes[i].first == attr) {
       return data.int_attributes[i].second;
+    }
   }
   return -1;
 }
@@ -276,8 +281,9 @@ bool CrossPlatformAccessibilityBrowserTest::GetBoolAttr(
     const ax::mojom::BoolAttribute attr) {
   const ui::AXNodeData& data = node->data();
   for (size_t i = 0; i < data.bool_attributes.size(); ++i) {
-    if (data.bool_attributes[i].first == attr)
+    if (data.bool_attributes[i].first == attr) {
       return data.bool_attributes[i].second;
+    }
   }
   return false;
 }
@@ -287,8 +293,9 @@ namespace {
 // Convenience method to find a node by its role value.
 ui::BrowserAccessibility* FindNodeByRole(ui::BrowserAccessibility* root,
                                          ax::mojom::Role role) {
-  if (root->GetRole() == role)
+  if (root->GetRole() == role) {
     return root;
+  }
   for (uint32_t i = 0; i < root->InternalChildCount(); ++i) {
     ui::BrowserAccessibility* child = root->InternalGetChild(i);
     DCHECK(child);

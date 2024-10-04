@@ -115,8 +115,9 @@ class AccessibilityActionBrowserTest : public ContentBrowserTest {
     action_data.vertical_scroll_alignment = vertical_alignment;
     node->AccessibilityPerformAction(action_data);
 
-    if (wait_for_event)
+    if (wait_for_event) {
       ASSERT_TRUE(waiter.WaitForNotification());
+    }
   }
 
   void ScrollToTop(bool will_scroll_horizontally = false) {
@@ -158,8 +159,9 @@ class AccessibilityActionBrowserTest : public ContentBrowserTest {
     for (unsigned int i = 0; i < node.PlatformChildCount(); ++i) {
       ui::BrowserAccessibility* result =
           FindNodeInSubtree(*node.PlatformGetChild(i), role, name_or_value);
-      if (result)
+      if (result) {
         return result;
+      }
     }
     return nullptr;
   }

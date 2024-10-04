@@ -61,8 +61,9 @@ void AccessibilityTreeFormatterAndroidExternal::RecursiveBuildTree(
 std::string AccessibilityTreeFormatterAndroidExternal::ProcessTreeForOutput(
     const base::Value::Dict& dict) const {
   const std::string* line = dict.FindString(kStringKey);
-  if (line)
+  if (line) {
     return *line;
+  }
   return std::string();
 }
 

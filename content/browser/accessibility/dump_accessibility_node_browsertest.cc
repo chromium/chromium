@@ -53,9 +53,10 @@ class DumpAccessibilityNodeTest : public DumpAccessibilityTestBase {
 
     ui::BrowserAccessibility* test_node =
         FindNodeByStringAttribute(ax::mojom::StringAttribute::kHtmlId, "test");
-    if (!test_node)
+    if (!test_node) {
       test_node = FindNodeByStringAttribute(
           ax::mojom::StringAttribute::kClassName, "test");
+    }
 
     std::string contents =
         test_node ? formatter->FormatNode(test_node) : "Test node not found.";
