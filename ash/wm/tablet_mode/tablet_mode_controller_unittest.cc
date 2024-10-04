@@ -117,11 +117,7 @@ extern const size_t kAccelerometerVerticalHingeUnstableAnglesTestDataLength;
 
 class TabletModeControllerTest : public AshTestBase {
  public:
-  TabletModeControllerTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kOsSettingsRevampWayfinding},
-        /*disabled_features=*/{});
-  }
+  TabletModeControllerTest() = default;
 
   TabletModeControllerTest(const TabletModeControllerTest&) = delete;
   TabletModeControllerTest& operator=(const TabletModeControllerTest&) = delete;
@@ -251,8 +247,6 @@ class TabletModeControllerTest : public AshTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   std::unique_ptr<TabletModeControllerTestApi> test_api_;
 
   base::SimpleTestTickClock test_tick_clock_;

@@ -313,11 +313,7 @@ class SnapGroupTestBase : public OverviewTestBase {
 
 class FasterSplitScreenTest : public SnapGroupTestBase {
  public:
-  FasterSplitScreenTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kOsSettingsRevampWayfinding},
-        /*disabled_features=*/{});
-  }
+  FasterSplitScreenTest() = default;
   FasterSplitScreenTest(const FasterSplitScreenTest&) = delete;
   FasterSplitScreenTest& operator=(const FasterSplitScreenTest&) = delete;
   ~FasterSplitScreenTest() override = default;
@@ -330,9 +326,6 @@ class FasterSplitScreenTest : public SnapGroupTestBase {
 
  protected:
   base::HistogramTester histogram_tester_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests the behavior in existing partial overview, i.e. overview -> drag to
@@ -2112,8 +2105,7 @@ class SnapGroupTest : public SnapGroupTestBase {
       : SnapGroupTestBase(std::forward<TaskEnvironmentTraits>(traits)...) {
     scoped_feature_list_
         .InitWithFeatures(/*enabled_features=*/
-                          {features::kOsSettingsRevampWayfinding,
-                           features::kSameAppWindowCycle,
+                          {features::kSameAppWindowCycle,
                            chromeos::features::
                                kOverviewSessionInitOptimizations},
                           /*disabled_features=*/{});

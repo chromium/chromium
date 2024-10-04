@@ -7177,8 +7177,9 @@ class SplitViewOverviewSessionTest : public OverviewTestBase {
  public:
   SplitViewOverviewSessionTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kOsSettingsRevampWayfinding,
-                              features::kDeskBarWindowOcclusionOptimization},
+        /*enabled_features=*/{features::kDeskBarWindowOcclusionOptimization,
+                              chromeos::features::
+                                  kOverviewSessionInitOptimizations},
         /*disabled_features=*/{});
   }
 
@@ -11277,7 +11278,6 @@ class OverviewWallpaperTest : public OverviewTestBase {
   OverviewWallpaperTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kForestFeature,
-                              features::kOsSettingsRevampWayfinding,
                               features::kDeskBarWindowOcclusionOptimization},
         /*disabled_features=*/{});
   }
