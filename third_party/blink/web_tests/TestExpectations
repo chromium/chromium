@@ -2614,7 +2614,6 @@ crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-com
 # ====== New tests from wpt-importer added here ======
 crbug.com/371292570 [ Mac13 ] external/wpt/compute-pressure/compute_pressure_rate_obfuscation_mitigation_triggered.https.window.html?globalScope=window [ Skip Timeout ]
 crbug.com/371292570 [ Mac12 ] external/wpt/compute-pressure/compute_pressure_rate_obfuscation_mitigation_triggered.https.window.html?globalScope=window [ Skip Timeout ]
-crbug.com/371248046 [ Mac11 ] external/wpt/compute-pressure/compute_pressure_disconnect_idempotent.https.window.html?globalScope=dedicated_worker [ Crash ]
 crbug.com/371061343 [ Mac ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/protocol-handler-fragment-nosw.https.html [ Skip Timeout ]
 crbug.com/371061343 [ Mac ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/protocol-handler-fragment.https.html [ Skip Timeout ]
 crbug.com/371061343 [ Mac ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/protocol-handler-path.https.html [ Skip Timeout ]
@@ -8178,3 +8177,11 @@ crbug.com/370303484 [ Debug Win11-arm64 ] external/wpt/selection/contenteditable
 crbug.com/369670465 [ Linux ] external/wpt/picture-in-picture/removed-from-document.html [ Failure Pass ]
 crbug.com/369670465 [ Debug Win10.20h2 ] external/wpt/picture-in-picture/removed-from-document.html [ Failure Pass ]
 crbug.com/369670465 [ Debug Win11-arm64 ] external/wpt/picture-in-picture/removed-from-document.html [ Failure Pass ]
+
+# Occasionally crashing in certain runs.
+crbug.com/371060464 external/wpt/compute-pressure/compute_pressure_disconnect.https.window.html?globalScope=dedicated_worker [ Crash Pass ]
+crbug.com/371060464 external/wpt/compute-pressure/compute_pressure_disconnect.https.window.html?globalScope=window [ Crash Pass ]
+crbug.com/371060464 external/wpt/compute-pressure/compute_pressure_disconnect_idempotent.https.window.html?globalScope=dedicated_worker [ Crash Pass ]
+crbug.com/371060464 external/wpt/compute-pressure/compute_pressure_disconnect_idempotent.https.window.html?globalScope=window [ Crash Pass ]
+crbug.com/371060464 external/wpt/compute-pressure/compute_pressure_disconnect_immediately.https.window.html?globalScope=dedicated_worker [ Crash Pass ]
+crbug.com/371060464 external/wpt/compute-pressure/compute_pressure_disconnect_immediately.https.window.html?globalScope=window [ Crash Pass ]
