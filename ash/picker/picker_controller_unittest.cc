@@ -617,22 +617,56 @@ TEST_F(PickerControllerTest, OpenNewGoogleDocOpensGoogleDocs) {
       PickerNewWindowResult(PickerNewWindowResult::Type::kDoc));
 }
 
-TEST_F(PickerControllerTest, OpenCapsLockResultTurnsOnCapsLock) {
+TEST_F(PickerControllerTest, OpenCapsLockResultTurnsOnCapsLockOnNextFocus) {
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+  ui::FakeTextInputClient input_field(input_method,
+                                      {.type = ui::TEXT_INPUT_TYPE_TEXT});
   controller().ToggleWidget();
 
   controller().OpenResult(PickerCapsLockResult(
       /*enabled=*/true, PickerCapsLockResult::Shortcut::kAltSearch));
+  input_method->SetFocusedTextInputClient(&input_field);
 
   input_method::ImeKeyboard* ime_keyboard = GetImeKeyboard();
   ASSERT_TRUE(ime_keyboard);
   EXPECT_TRUE(ime_keyboard->IsCapsLockEnabled());
 }
 
-TEST_F(PickerControllerTest, OpenCapsLockResultTurnsOffCapsLock) {
+TEST_F(PickerControllerTest, OpenCapsLockResultTurnsOffCapsLockOnNextFocus) {
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+  ui::FakeTextInputClient input_field(input_method,
+                                      {.type = ui::TEXT_INPUT_TYPE_TEXT});
   controller().ToggleWidget();
 
   controller().OpenResult(PickerCapsLockResult(
       /*enabled=*/false, PickerCapsLockResult::Shortcut::kAltSearch));
+  input_method->SetFocusedTextInputClient(&input_field);
+
+  input_method::ImeKeyboard* ime_keyboard = GetImeKeyboard();
+  ASSERT_TRUE(ime_keyboard);
+  EXPECT_FALSE(ime_keyboard->IsCapsLockEnabled());
+}
+
+TEST_F(PickerControllerTest, OpenCapsLockResultTurnsOnCapsLockOnTimeout) {
+  controller().ToggleWidget();
+
+  controller().OpenResult(PickerCapsLockResult(
+      /*enabled=*/true, PickerCapsLockResult::Shortcut::kAltSearch));
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  input_method::ImeKeyboard* ime_keyboard = GetImeKeyboard();
+  ASSERT_TRUE(ime_keyboard);
+  EXPECT_TRUE(ime_keyboard->IsCapsLockEnabled());
+}
+
+TEST_F(PickerControllerTest, OpenCapsLockResultTurnsOffCapsLockOnTimeout) {
+  controller().ToggleWidget();
+
+  controller().OpenResult(PickerCapsLockResult(
+      /*enabled=*/false, PickerCapsLockResult::Shortcut::kAltSearch));
+  task_environment()->FastForwardBy(base::Seconds(1));
 
   input_method::ImeKeyboard* ime_keyboard = GetImeKeyboard();
   ASSERT_TRUE(ime_keyboard);

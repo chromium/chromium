@@ -53,6 +53,7 @@ class PickerAssetFetcher;
 class PickerClient;
 class PickerModel;
 class PickerPasteRequest;
+class PickerActionOnNextFocusRequest;
 
 // Controls a Picker widget.
 class ASH_EXPORT PickerController : public PickerViewDelegate,
@@ -196,6 +197,7 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   std::unique_ptr<PickerAssetFetcher> asset_fetcher_;
   std::unique_ptr<PickerInsertMediaRequest> insert_media_request_;
   std::unique_ptr<PickerPasteRequest> paste_request_;
+  std::unique_ptr<PickerActionOnNextFocusRequest> caps_lock_request_;
   PickerSuggestionsController suggestions_controller_;
   PickerSearchController search_controller_;
 

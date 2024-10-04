@@ -24,6 +24,7 @@
 #include "ash/picker/model/picker_mode_type.h"
 #include "ash/picker/model/picker_model.h"
 #include "ash/picker/model/picker_search_results_section.h"
+#include "ash/picker/picker_action_on_next_focus_request.h"
 #include "ash/picker/picker_asset_fetcher.h"
 #include "ash/picker/picker_asset_fetcher_impl.h"
 #include "ash/picker/picker_caps_lock_bubble_controller.h"
@@ -86,6 +87,9 @@ bool g_feature_tour_enabled = true;
 // When spoken feedback is enabled, closing the widget after an insert is
 // delayed by this amount.
 constexpr base::TimeDelta kCloseWidgetDelay = base::Milliseconds(200);
+
+// Time to wait for a focus event after triggering caps lock.
+constexpr base::TimeDelta kCapsLockRequestTimeout = base::Seconds(1);
 
 constexpr int kCapsLockMinimumTopDisplayCount = 5;
 constexpr float kCapsLockRatioThresholdForTop = 0.8;
@@ -412,7 +416,19 @@ void PickerController::OpenResult(const PickerSearchResult& result) {
           [&](const PickerCapsLockResult& data) {
             session_->session_metrics.SetOutcome(
                 PickerSessionMetrics::SessionOutcome::kFormat);
-            GetImeKeyboard().SetCapsLockEnabled(data.enabled);
+            caps_lock_request_ =
+                std::make_unique<PickerActionOnNextFocusRequest>(
+                    widget_->GetInputMethod(), kCapsLockRequestTimeout,
+                    base::BindOnce(
+                        [](bool enabled) {
+                          GetImeKeyboard().SetCapsLockEnabled(enabled);
+                        },
+                        data.enabled),
+                    base::BindOnce(
+                        [](bool enabled) {
+                          GetImeKeyboard().SetCapsLockEnabled(enabled);
+                        },
+                        data.enabled));
           },
           [&](const PickerCaseTransformResult& data) {
             if (!session_) {
