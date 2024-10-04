@@ -12,12 +12,22 @@ group("resources") {
   ]
 }
 
-bundle_data_ib_file("launchscreen") {
+bundle_data_storyboard_file("launchscreen") {
   source = "LaunchScreen.storyboard"
+  bundle_files = [
+    "01J-lp-oVM-view-Ze5-6b-2t3.nib",
+    "UIViewController-01J-lp-oVM.nib",
+    "Info.plist",
+  ]
 }
 
-bundle_data_ib_file("main") {
+bundle_data_storyboard_file("main") {
   source = "Main.storyboard"
+  bundle_files = [
+    "UIViewController-BYZ-38-t0r.nib",
+    "BYZ-38-t0r-view-8bC-Xf-vdC.nib",
+    "Info.plist",
+  ]
 }
 
 bundle_data_xcassets("assets") {

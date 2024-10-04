@@ -9,8 +9,6 @@ import("//build/util/process_version.gni")
 import("//remoting/build/config/remoting_build.gni")
 import("//remoting/credits/credits.gni")
 
-_remoting_ios_app_source_dir = get_path_info("./", "abspath")
-
 # Arguments
 #
 #   output_name:
@@ -38,10 +36,13 @@ template("ios_remoting_app_tmpl") {
 
   _launchscreen_storyboard_target_name =
       "${target_name}_launchscreen_storyboard"
-  bundle_data_ib_file(_launchscreen_storyboard_target_name) {
-    source = rebase_path("resources/LaunchScreen.storyboard",
-                         ".",
-                         _remoting_ios_app_source_dir)
+  bundle_data_storyboard_file(_launchscreen_storyboard_target_name) {
+    source = "//remoting/ios/app/resources/LaunchScreen.storyboard"
+    bundle_files = [
+      "Info.plist",
+      "01J-lp-oVM-view-Ze5-6b-2t3.nib",
+      "UIViewController-01J-lp-oVM.nib",
+    ]
   }
 
   # Compiles the credits files into the gen directory.

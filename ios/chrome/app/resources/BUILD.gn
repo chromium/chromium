@@ -153,11 +153,16 @@ bundle_data_xcassets("launchscreen_assets") {
 # The scene startup flow (which is needed for multi-window) requires both
 # additional plist entries (handled in ../BUILD.gn) and an additional storyboard
 # file.
-bundle_data_ib_file("base_scene_storyboard") {
+bundle_data_storyboard_file("base_scene_storyboard") {
   source = "BaseScene.storyboard"
+  bundle_files = [
+    "Info.plist",
+    "j72-TL-eGS-view-6ef-rW-4AQ.nib",
+    "UIViewController-j72-TL-eGS.nib",
+  ]
 }
 
-bundle_data_ib_file("launchscreen_xib") {
+bundle_data_xib_file("launchscreen_xib") {
   source = "LaunchScreen.xib"
   deps = [ ios_launchscreen_assets_target ]
 }

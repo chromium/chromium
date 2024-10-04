@@ -179,10 +179,6 @@ source_set("run_all_unittests") {
   }
 }
 
-bundle_data_ib_file("base_scene_storyboard") {
-  source = "BaseScene.storyboard"
-}
-
 test("ios_chrome_unittests") {
   deps = [
     # Ensure that all unit tests are run, use fake hooks and pack resources.
