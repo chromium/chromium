@@ -133,18 +133,6 @@ const char
         "Uses Responsiveness Metrics definitions for discrete input in blink "
         "scheduler heuristics.";
 
-const char kCdmStorageDatabaseName[] = "Cdm Storage Database";
-const char kCdmStorageDatabaseDescription[] =
-    "Start to use the CdmStorageDatabase to store data alongside the "
-    "MediaLicenseDatabase. If disabled, we will not use CdmStorage* at all, "
-    "even in MediaLicense* code.";
-
-const char kCdmStorageDatabaseMigrationName[] =
-    "Cdm Storage Database Migration";
-const char kCdmStorageDatabaseMigrationDescription[] =
-    "Use the Cdm Storage Database over the MediaLicenseDatabase for Cdm "
-    "storage operations.";
-
 const char kCertVerificationNetworkTimeName[] =
     "Network Time for Certificate Verification";
 const char kCertVerificationNetworkTimeDescription[] =

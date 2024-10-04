@@ -112,12 +112,6 @@ extern const char kCampaignsOverrideDescription[];
 
 extern const char kCOLRV1FontsDescription[];
 
-extern const char kCdmStorageDatabaseName[];
-extern const char kCdmStorageDatabaseDescription[];
-
-extern const char kCdmStorageDatabaseMigrationName[];
-extern const char kCdmStorageDatabaseMigrationDescription[];
-
 extern const char kCertVerificationNetworkTimeName[];
 extern const char kCertVerificationNetworkTimeDescription[];
 

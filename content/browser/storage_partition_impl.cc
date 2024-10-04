@@ -1518,29 +1518,14 @@ void StoragePartitionImpl::Initialize(
   }
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-  if (base::FeatureList::IsEnabled(features::kCdmStorageDatabase)) {
-    if (is_in_memory()) {
-      // Pass an empty path if in_memory so that CdmStorage.db is not stored on
-      // disk.
-      cdm_storage_manager_ =
-          std::make_unique<CdmStorageManager>(base::FilePath());
-    } else {
-      cdm_storage_manager_ = std::make_unique<CdmStorageManager>(
-          partition_path_.Append(kCdmStorageDatabaseFileName));
-    }
-  }
-
-  media_license_manager_ = std::make_unique<MediaLicenseManager>(
-      is_in_memory(), browser_context_->GetSpecialStoragePolicy(),
-      quota_manager_proxy);
-
-  // When 'kCdmStorageDatabaseMigration' is enabled, in the
-  // 'MediaLicenseStorageHost', when operations occur, we make sure to
-  // update and reflect that in the CdmStorageDatabase as well.
-  if (base::FeatureList::IsEnabled(features::kCdmStorageDatabase) &&
-      base::FeatureList::IsEnabled(features::kCdmStorageDatabaseMigration)) {
-    CHECK(cdm_storage_manager_);
-    media_license_manager_->set_cdm_storage_manager(cdm_storage_manager_.get());
+  if (is_in_memory()) {
+    // Pass an empty path if in_memory so that CdmStorage.db is not stored on
+    // disk.
+    cdm_storage_manager_ =
+        std::make_unique<CdmStorageManager>(base::FilePath());
+  } else {
+    cdm_storage_manager_ = std::make_unique<CdmStorageManager>(
+        partition_path_.Append(kCdmStorageDatabaseFileName));
   }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 

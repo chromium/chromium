@@ -13,8 +13,6 @@ constexpr char kUmaPrefix[] = "Media.EME.CdmStorageManager.";
 
 constexpr char kIncognito[] = "Incognito";
 constexpr char kNonIncognito[] = "NonIncognito";
-
-constexpr char kMigration[] = ".Migration";
 }  // namespace
 
 CdmFileId::CdmFileId(const std::string& name, const media::CdmType& cdm_type)
@@ -38,17 +36,8 @@ CdmFileIdAndContents::~CdmFileIdAndContents() = default;
 
 std::string GetCdmStorageManagerHistogramName(const std::string& operation,
                                               bool in_memory) {
-  auto histogram_name = base::StrCat(
+  return base::StrCat(
       {kUmaPrefix, operation, in_memory ? kIncognito : kNonIncognito});
-
-  // If the 'kCdmStorageDatabaseMigration' flag is enabled, we should mark the
-  // UMA with the fact that this error came during the migration.
-  if (base::FeatureList::IsEnabled(features::kCdmStorageDatabase) &&
-      base::FeatureList::IsEnabled(features::kCdmStorageDatabaseMigration)) {
-    histogram_name = base::StrCat({histogram_name, kMigration});
-  }
-
-  return histogram_name;
 }
 
 }  // namespace content
