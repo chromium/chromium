@@ -4214,12 +4214,6 @@ const char kAccountBookmarksAndReadingListBehindOptInDescription[] =
     "Make account bookmarks and reading lists available to users that sign in "
     "via promo in the bookmark manager.";
 
-const char kAImageReaderName[] = "Android ImageReader";
-const char kAImageReaderDescription[] =
-    " Enables MediaPlayer and MediaCodec to use AImageReader on Android. "
-    " This feature is only available for android P+ devices. Disabling it also "
-    " disables SurfaceControl.";
-
 const char kAndroidSurfaceControlName[] = "Android SurfaceControl";
 const char kAndroidSurfaceControlDescription[] =
     " Enables SurfaceControl to manage the buffer queue for the "

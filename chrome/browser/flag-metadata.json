@@ -3391,11 +3391,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "enable-image-reader",
-    "owners": [ "vikassoni@chromium.org", "liberato@chromium.org" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "enable-immersive-fullscreen-toolbar",
     "owners": [ "bur@chromium.org", "chrome-mac-dev@google.com" ],
     "expiry_milestone": 135
