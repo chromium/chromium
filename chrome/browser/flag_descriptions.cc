@@ -4226,11 +4226,6 @@ const char kAccountBookmarksAndReadingListBehindOptInDescription[] =
     "Make account bookmarks and reading lists available to users that sign in "
     "via promo in the bookmark manager.";
 
-const char kAccountPasswordsOnSigninName[] = "Account passwords on sign-in";
-const char kAccountPasswordsOnSigninDescription[] =
-    "Allows saving/filling account passwords when the user is signed-in but "
-    "not syncing";
-
 const char kAImageReaderName[] = "Android ImageReader";
 const char kAImageReaderDescription[] =
     " Enables MediaPlayer and MediaCodec to use AImageReader on Android. "

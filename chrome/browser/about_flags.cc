@@ -11252,12 +11252,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidBrowserControlsInVizName,
      flag_descriptions::kAndroidBrowserControlsInVizDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kAndroidBrowserControlsInViz)},
-
-    {"account-passwords-on-signin",
-     flag_descriptions::kAccountPasswordsOnSigninName,
-     flag_descriptions::kAccountPasswordsOnSigninDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         syncer::kEnablePasswordsAccountStorageForNonSyncingUsers)},
 #endif
 
     {"optimization-guide-enable-dogfood-logging",
