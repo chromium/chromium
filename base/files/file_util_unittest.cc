@@ -4421,9 +4421,8 @@ TEST_F(VerifyPathControlledByUserTest, WriteBitChecks) {
 
 #endif  // BUILDFLAG(IS_MAC)
 
-// Flaky test: crbug/1054637
 #if BUILDFLAG(IS_ANDROID)
-TEST_F(FileUtilTest, DISABLED_ValidContentUriTest) {
+TEST_F(FileUtilTest, ValidContentUriTest) {
   // Get the test image path.
   FilePath data_dir;
   ASSERT_TRUE(PathService::Get(DIR_TEST_DATA, &data_dir));
@@ -4451,10 +4450,26 @@ TEST_F(FileUtilTest, DISABLED_ValidContentUriTest) {
   auto buffer = std::make_unique<char[]>(image_size);
   // SAFETY: required for test.
   EXPECT_TRUE(UNSAFE_BUFFERS(file.ReadAtCurrentPos(buffer.get(), image_size)));
+}
 
-  // We should be able to open the file as writable.
-  file = File(path, File::FLAG_CREATE_ALWAYS | File::FLAG_WRITE);
+TEST_F(FileUtilTest, WriteContentUri) {
+  // `path` and `content_uri` are the same file.
+  FilePath path = temp_dir_.GetPath().Append("file.txt");
+  ASSERT_TRUE(WriteFile(path, "file-content"));
+  FilePath content_uri =
+      *test::android::GetContentUriFromCacheDirFilePath(path);
+
+  // We should be able to open the file as writable which truncates the file.
+  File file = File(content_uri, File::FLAG_CREATE_ALWAYS | File::FLAG_WRITE);
   EXPECT_TRUE(file.IsValid());
+  int64_t size;
+  GetFileSize(path, &size);
+  EXPECT_EQ(size, 0);
+
+  EXPECT_EQ(*file.WriteAtCurrentPos(byte_span_from_cstring("123")), 3u);
+  EXPECT_TRUE(file.Flush());
+  GetFileSize(path, &size);
+  EXPECT_EQ(size, 3);
 }
 
 TEST_F(FileUtilTest, NonExistentContentUriTest) {
