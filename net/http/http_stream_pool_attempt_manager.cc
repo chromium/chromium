@@ -55,20 +55,46 @@ StreamSocketHandle::SocketReuseType GetReuseTypeFromIdleStreamSocket(
 }  // namespace
 
 // Represents an in-flight stream attempt.
-struct HttpStreamPool::AttemptManager::InFlightAttempt {
-  explicit InFlightAttempt(std::unique_ptr<StreamAttempt> attempt)
-      : attempt(std::move(attempt)) {}
+class HttpStreamPool::AttemptManager::InFlightAttempt
+    : public TlsStreamAttempt::SSLConfigProvider {
+ public:
+  explicit InFlightAttempt(AttemptManager* manager) : manager_(manager) {}
 
   InFlightAttempt(const InFlightAttempt&) = delete;
   InFlightAttempt& operator=(const InFlightAttempt&) = delete;
 
-  ~InFlightAttempt() = default;
+  ~InFlightAttempt() override = default;
 
-  std::unique_ptr<StreamAttempt> attempt;
+  int Start(std::unique_ptr<StreamAttempt> attempt) {
+    CHECK(!attempt_);
+    attempt_ = std::move(attempt);
+    // SAFETY: `manager_` owns `this` so using base::Unretained() is safe.
+    return attempt_->Start(
+        base::BindOnce(&AttemptManager::OnInFlightAttemptComplete,
+                       base::Unretained(manager_), this));
+  }
+
+  StreamAttempt* attempt() { return attempt_.get(); }
+
+  bool is_slow() const { return is_slow_; }
+  void set_is_slow(bool is_slow) { is_slow_ = is_slow; }
+
+  base::OneShotTimer& slow_timer() { return slow_timer_; }
+
+  // TlsStreamAttempt::SSLConfigProvider implementation:
+  int WaitForSSLConfigReady(CompletionOnceCallback callback) override {
+    return manager_->WaitForSSLConfigReady(std::move(callback));
+  }
+
+  SSLConfig GetSSLConfig() override { return manager_->GetSSLConfig(); }
+
+ private:
+  const raw_ptr<AttemptManager> manager_;
+  std::unique_ptr<StreamAttempt> attempt_;
   // Timer to start a next attempt. When fired, `this` is treated as a slow
   // attempt but `this` is not timed out yet.
-  base::OneShotTimer slow_timer;
-  bool is_slow = false;
+  base::OneShotTimer slow_timer_;
+  bool is_slow_ = false;
 };
 
 // Represents a preconnect request.
@@ -378,7 +404,7 @@ LoadState HttpStreamPool::AttemptManager::GetLoadState() const {
   // When there are in-flight attempts, use most advanced one.
   for (const auto& in_flight_attempt : in_flight_attempts_) {
     load_state =
-        std::max(load_state, in_flight_attempt->attempt->GetLoadState());
+        std::max(load_state, in_flight_attempt->attempt()->GetLoadState());
     // There should not be a load state later than LOAD_STATE_SSL_HANDSHAKE.
     if (load_state == LOAD_STATE_SSL_HANDSHAKE) {
       break;
@@ -647,13 +673,13 @@ void HttpStreamPool::AttemptManager::MaybeCalculateSSLConfig() {
   // Restart slow timer for in-flight attempts that have already completed
   // TCP handshakes.
   for (auto& in_flight_attempt : in_flight_attempts_) {
-    if (!in_flight_attempt->is_slow &&
-        !in_flight_attempt->slow_timer.IsRunning()) {
+    if (!in_flight_attempt->is_slow() &&
+        !in_flight_attempt->slow_timer().IsRunning()) {
       // TODO(crbug.com/346835898): Should we use a different delay other than
       // the connection attempt delay?
       // base::Unretained() is safe here because `this` owns the
       // `in_flight_attempt` and `slow_timer`.
-      in_flight_attempt->slow_timer.Start(
+      in_flight_attempt->slow_timer().Start(
           FROM_HERE, kConnectionAttemptDelay,
           base::BindOnce(&AttemptManager::OnInFlightAttemptSlow,
                          base::Unretained(this), in_flight_attempt.get()));
@@ -725,6 +751,11 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
   size_t num_attempts = 0;
   const bool using_tls = UsingTls();
   while (IsConnectionAttemptReady()) {
+    auto in_flight_attempt = std::make_unique<InFlightAttempt>(this);
+    InFlightAttempt* raw_attempt = in_flight_attempt.get();
+    in_flight_attempts_.emplace(std::move(in_flight_attempt));
+    pool()->IncrementTotalConnectingStreamCount();
+
     std::unique_ptr<StreamAttempt> attempt;
     // Set to non-null if the attempt is a TLS attempt.
     TlsStreamAttempt* tls_attempt_ptr = nullptr;
@@ -732,7 +763,7 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
       attempt = std::make_unique<TlsStreamAttempt>(
           pool()->stream_attempt_params(), *ip_endpoint,
           HostPortPair::FromSchemeHostPort(stream_key().destination()),
-          /*ssl_config_provider=*/this);
+          /*ssl_config_provider=*/raw_attempt);
       tls_attempt_ptr = static_cast<TlsStreamAttempt*>(attempt.get());
     } else {
       attempt = std::make_unique<TcpStreamAttempt>(
@@ -754,25 +785,17 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
           return dict;
         });
 
-    auto in_flight_attempt =
-        std::make_unique<InFlightAttempt>(std::move(attempt));
-    InFlightAttempt* raw_attempt = in_flight_attempt.get();
-    in_flight_attempts_.emplace(std::move(in_flight_attempt));
-    pool()->IncrementTotalConnectingStreamCount();
-
-    int rv = raw_attempt->attempt->Start(
-        base::BindOnce(&AttemptManager::OnInFlightAttemptComplete,
-                       base::Unretained(this), raw_attempt));
+    int rv = raw_attempt->Start(std::move(attempt));
     // Add NetLog dependency after Start() so that the first event of the
     // attempt can have meaningful description in the NetLog viewer.
-    raw_attempt->attempt->net_log().AddEventReferencingSource(
+    raw_attempt->attempt()->net_log().AddEventReferencingSource(
         NetLogEventType::STREAM_ATTEMPT_BOUND_TO_POOL, net_log().source());
     if (rv != ERR_IO_PENDING) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&AttemptManager::OnInFlightAttemptComplete,
                                     base::Unretained(this), raw_attempt, rv));
     } else {
-      raw_attempt->slow_timer.Start(
+      raw_attempt->slow_timer().Start(
           FROM_HERE, kConnectionAttemptDelay,
           base::BindOnce(&AttemptManager::OnInFlightAttemptSlow,
                          base::Unretained(this), raw_attempt));
@@ -1191,9 +1214,9 @@ void HttpStreamPool::AttemptManager::OnInFlightAttemptComplete(
     int rv) {
   net_log().AddEventReferencingSource(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_END,
-      raw_attempt->attempt->net_log().source());
-  raw_attempt->slow_timer.Stop();
-  if (raw_attempt->is_slow) {
+      raw_attempt->attempt()->net_log().source());
+  raw_attempt->slow_timer().Stop();
+  if (raw_attempt->is_slow()) {
     CHECK_GT(slow_attempt_count_, 0u);
     --slow_attempt_count_;
   }
@@ -1205,8 +1228,8 @@ void HttpStreamPool::AttemptManager::OnInFlightAttemptComplete(
   pool()->DecrementTotalConnectingStreamCount();
 
   if (rv != OK) {
-    connection_attempts_.emplace_back(in_flight_attempt->attempt->ip_endpoint(),
-                                      rv);
+    connection_attempts_.emplace_back(
+        in_flight_attempt->attempt()->ip_endpoint(), rv);
     HandleAttemptFailure(std::move(in_flight_attempt), rv);
     return;
   }
@@ -1218,7 +1241,7 @@ void HttpStreamPool::AttemptManager::OnInFlightAttemptComplete(
   }
 
   LoadTimingInfo::ConnectTiming connect_timing =
-      in_flight_attempt->attempt->connect_timing();
+      in_flight_attempt->attempt()->connect_timing();
   connect_timing.domain_lookup_start = dns_resolution_start_time_;
   // If the attempt started before DNS resolution completion, `connect_start`
   // could be smaller than `dns_resolution_end_time_`. Use the smallest one.
@@ -1228,7 +1251,7 @@ void HttpStreamPool::AttemptManager::OnInFlightAttemptComplete(
           : std::min(connect_timing.connect_start, dns_resolution_end_time_);
 
   std::unique_ptr<StreamSocket> stream_socket =
-      in_flight_attempt->attempt->ReleaseStreamSocket();
+      in_flight_attempt->attempt()->ReleaseStreamSocket();
   CHECK(stream_socket);
   CHECK(service_endpoint_request_);
   stream_socket->SetDnsAliases(service_endpoint_request_->GetDnsAliasResults());
@@ -1267,11 +1290,11 @@ void HttpStreamPool::AttemptManager::OnInFlightAttemptTcpHandshakeComplete(
     int rv) {
   auto it = in_flight_attempts_.find(raw_attempt);
   CHECK(it != in_flight_attempts_.end());
-  if (raw_attempt->is_slow || !raw_attempt->slow_timer.IsRunning()) {
+  if (raw_attempt->is_slow() || !raw_attempt->slow_timer().IsRunning()) {
     return;
   }
 
-  raw_attempt->slow_timer.Stop();
+  raw_attempt->slow_timer().Stop();
 }
 
 void HttpStreamPool::AttemptManager::OnInFlightAttemptSlow(
@@ -1279,10 +1302,10 @@ void HttpStreamPool::AttemptManager::OnInFlightAttemptSlow(
   auto it = in_flight_attempts_.find(raw_attempt);
   CHECK(it != in_flight_attempts_.end());
 
-  raw_attempt->is_slow = true;
+  raw_attempt->set_is_slow(true);
   ++slow_attempt_count_;
-  slow_ip_endpoints_.emplace(raw_attempt->attempt->ip_endpoint());
-  prefer_ipv6_ = !raw_attempt->attempt->ip_endpoint().address().IsIPv6();
+  slow_ip_endpoints_.emplace(raw_attempt->attempt()->ip_endpoint());
+  prefer_ipv6_ = !raw_attempt->attempt()->ip_endpoint().address().IsIPv6();
 
   MaybeAttemptConnection();
 }
@@ -1291,7 +1314,7 @@ void HttpStreamPool::AttemptManager::HandleAttemptFailure(
     std::unique_ptr<InFlightAttempt> in_flight_attempt,
     int rv) {
   CHECK_NE(rv, ERR_IO_PENDING);
-  failed_ip_endpoints_.emplace(in_flight_attempt->attempt->ip_endpoint());
+  failed_ip_endpoints_.emplace(in_flight_attempt->attempt()->ip_endpoint());
 
   ProcessPreconnectsAfterAttemptComplete(rv);
 
@@ -1304,7 +1327,7 @@ void HttpStreamPool::AttemptManager::HandleAttemptFailure(
 
   if (rv == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
     CHECK(UsingTls());
-    client_auth_cert_info_ = in_flight_attempt->attempt->GetCertRequestInfo();
+    client_auth_cert_info_ = in_flight_attempt->attempt()->GetCertRequestInfo();
     in_flight_attempt.reset();
     NotifyFailure();
     return;
@@ -1314,10 +1337,10 @@ void HttpStreamPool::AttemptManager::HandleAttemptFailure(
     // When a certificate error happened for an attempt, notifies all jobs of
     // the error.
     CHECK(UsingTls());
-    CHECK(in_flight_attempt->attempt->stream_socket());
+    CHECK(in_flight_attempt->attempt()->stream_socket());
     SSLInfo ssl_info;
     bool has_ssl_info =
-        in_flight_attempt->attempt->stream_socket()->GetSSLInfo(&ssl_info);
+        in_flight_attempt->attempt()->stream_socket()->GetSSLInfo(&ssl_info);
     CHECK(has_ssl_info);
     cert_error_ssl_info_ = ssl_info;
     in_flight_attempt.reset();

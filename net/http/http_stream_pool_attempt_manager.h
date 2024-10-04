@@ -31,7 +31,6 @@
 #include "net/socket/connection_attempts.h"
 #include "net/socket/stream_attempt.h"
 #include "net/socket/stream_socket_handle.h"
-#include "net/socket/tls_stream_attempt.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 #include "url/gurl.h"
@@ -44,8 +43,7 @@ class HttpStreamKey;
 
 // Maintains in-flight Jobs. Peforms DNS resolution.
 class HttpStreamPool::AttemptManager
-    : public HostResolver::ServiceEndpointRequest::Delegate,
-      public TlsStreamAttempt::SSLConfigProvider {
+    : public HostResolver::ServiceEndpointRequest::Delegate {
  public:
   // Time to delay connection attempts more than one when the destination is
   // known to support HTTP/2, to avoid unnecessary socket connection
@@ -103,9 +101,9 @@ class HttpStreamPool::AttemptManager
   void OnServiceEndpointsUpdated() override;
   void OnServiceEndpointRequestFinished(int rv) override;
 
-  // TlsStreamAttempt::SSLConfigProvider implementation:
-  int WaitForSSLConfigReady(CompletionOnceCallback callback) override;
-  SSLConfig GetSSLConfig() override;
+  int WaitForSSLConfigReady(CompletionOnceCallback callback);
+
+  SSLConfig GetSSLConfig();
 
   // Tries to process a single pending request/preconnect.
   void ProcessPendingJob();
@@ -185,7 +183,7 @@ class HttpStreamPool::AttemptManager
 
   using JobQueue = PriorityQueue<raw_ptr<Job>>;
 
-  struct InFlightAttempt;
+  class InFlightAttempt;
   struct PreconnectEntry;
 
   const HttpStreamKey& stream_key() const;
