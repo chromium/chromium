@@ -79,7 +79,7 @@ class QuickDeleteMediatorTest : public PlatformTest {
     signin::IdentityManager* identityManager =
         IdentityManagerFactory::GetForProfile(profile_.get());
     BrowsingDataRemover* browsing_data_remover =
-        BrowsingDataRemoverFactory::GetForBrowserState(profile_.get());
+        BrowsingDataRemoverFactory::GetForProfile(profile_.get());
     DiscoverFeedService* discover_feed_service =
         DiscoverFeedServiceFactory::GetForProfile(profile_.get());
 

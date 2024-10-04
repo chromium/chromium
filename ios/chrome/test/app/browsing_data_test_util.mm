@@ -35,7 +35,7 @@ bool ClearBrowsingData(bool off_the_record, BrowsingDataRemoveMask mask) {
 
   __block bool did_complete = false;
   BrowsingDataRemover* browsingDataRemover =
-      BrowsingDataRemoverFactory::GetForBrowserState(profile);
+      BrowsingDataRemoverFactory::GetForProfile(profile);
   browsingDataRemover->Remove(browsing_data::TimePeriod::ALL_TIME, mask,
                               base::BindOnce(^{
                                 did_complete = true;

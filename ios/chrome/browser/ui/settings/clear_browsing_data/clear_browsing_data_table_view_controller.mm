@@ -482,7 +482,7 @@
         ->BrowsingHistoryCleared();
   }
 
-  BrowsingDataRemoverFactory::GetForBrowserState(profile)->Remove(
+  BrowsingDataRemoverFactory::GetForProfile(profile)->Remove(
       timePeriod, removeMask,
       base::BindOnce(removeBrowsingDidFinishCompletionBlock));
 }

@@ -44,8 +44,8 @@ ActionRunnerImpl::ActionQueue ActionRunnerImpl::GetActions() {
         return static_cast<ActionType>(action.GetInt());
       });
   return action_factory_->Build(
-      actions, BrowsingDataRemoverFactory::GetForBrowserState(profile_),
-      BrowsingDataRemoverFactory::GetForBrowserState(
+      actions, BrowsingDataRemoverFactory::GetForProfile(profile_),
+      BrowsingDataRemoverFactory::GetForProfile(
           profile_->GetOffTheRecordProfile()));
 }
 

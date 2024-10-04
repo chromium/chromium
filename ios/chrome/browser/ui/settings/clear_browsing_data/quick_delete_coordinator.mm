@@ -79,7 +79,7 @@ using browsing_data::DeleteBrowsingDataDialogAction;
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(profile);
   BrowsingDataRemover* browsingDataRemover =
-      BrowsingDataRemoverFactory::GetForBrowserState(profile);
+      BrowsingDataRemoverFactory::GetForProfile(profile);
   DiscoverFeedService* discoverFeedService =
       DiscoverFeedServiceFactory::GetForProfile(profile);
 
@@ -186,8 +186,7 @@ using browsing_data::DeleteBrowsingDataDialogAction;
   }
 
   BrowsingDataRemover* browsingDataRemover =
-      BrowsingDataRemoverFactory::GetForBrowserState(
-          self.browser->GetProfile());
+      BrowsingDataRemoverFactory::GetForProfile(self.browser->GetProfile());
   browsingDataRemover->SetCachedTabsInfo(cachedTabsInfo);
 
   BrowsingDataRemover::RemovalParams params{

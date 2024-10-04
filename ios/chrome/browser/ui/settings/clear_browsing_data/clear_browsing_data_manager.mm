@@ -178,7 +178,7 @@ BOOL UIIsBlocking(Browser* browser) {
 - (instancetype)initWithProfile:(ProfileIOS*)profile {
   return [self initWithProfile:profile
                      browsingDataRemover:BrowsingDataRemoverFactory::
-                                             GetForBrowserState(profile)
+                                             GetForProfile(profile)
       browsingDataCounterWrapperProducer:[[BrowsingDataCounterWrapperProducer
                                              alloc] initWithProfile:profile]];
 }

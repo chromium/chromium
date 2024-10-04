@@ -17,7 +17,7 @@ class BrowsingDataRemover;
 // ProfileIOS.
 class BrowsingDataRemoverFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static BrowsingDataRemover* GetForBrowserState(ProfileIOS* profile);
+  static BrowsingDataRemover* GetForProfile(ProfileIOS* profile);
   static BrowsingDataRemover* GetForProfileIfExists(ProfileIOS* profile);
   static BrowsingDataRemoverFactory* GetInstance();
 

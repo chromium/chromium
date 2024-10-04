@@ -305,7 +305,7 @@ MainControllerAuthenticationServiceDelegate::
 void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
     base::OnceClosure completion) {
   BrowsingDataRemover* browsingDataRemover =
-      BrowsingDataRemoverFactory::GetForBrowserState(browser_state_);
+      BrowsingDataRemoverFactory::GetForProfile(browser_state_);
   browsingDataRemover->Remove(browsing_data::TimePeriod::ALL_TIME,
                               BrowsingDataRemoveMask::REMOVE_ALL,
                               (std::move(completion)));
@@ -329,7 +329,7 @@ void MainControllerAuthenticationServiceDelegate::
   // If `kLastSigninTimestamp` has the default base::Time() value, data will be
   // cleared for all time, which is intended to happen in this case.
   BrowsingDataRemover* browsingDataRemover =
-      BrowsingDataRemoverFactory::GetForBrowserState(browser_state_);
+      BrowsingDataRemoverFactory::GetForProfile(browser_state_);
   BrowsingDataRemover::RemovalParams params;
   params.keep_active_tab =
       BrowsingDataRemover::KeepActiveTabPolicy::kKeepActiveTab;

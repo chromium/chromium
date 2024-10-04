@@ -3886,7 +3886,7 @@ using UserFeedbackDataCallback =
 
   __weak SceneController* weakSelf = self;
   BrowsingDataRemover* browsingDataRemover =
-      BrowsingDataRemoverFactory::GetForBrowserState(otrProfile);
+      BrowsingDataRemoverFactory::GetForProfile(otrProfile);
   browsingDataRemover->Remove(browsing_data::TimePeriod::ALL_TIME,
                               BrowsingDataRemoveMask::REMOVE_ALL,
                               base::BindOnce(^{

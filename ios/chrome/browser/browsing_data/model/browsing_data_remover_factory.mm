@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
-BrowsingDataRemover* BrowsingDataRemoverFactory::GetForBrowserState(
+BrowsingDataRemover* BrowsingDataRemoverFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<BrowsingDataRemover*>(
       GetInstance()->GetServiceForBrowserState(profile, true));
