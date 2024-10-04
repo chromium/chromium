@@ -126,12 +126,6 @@
     },
   },
   'blink_web_tests': {
-    'remove_from': [
-      # TODO: crbug.com/346921029 - fix broken tests.
-      'linux-win-cross-rel',
-      'Win10 Tests x64 (dbg)',
-      'win11-arm64-dbg-tests',
-    ],
     'modifications': {
       'Mac Tests Siso FYI': {
         'swarming': {
@@ -210,21 +204,6 @@
           'hard_timeout': 10800,
           'io_timeout': 3600,
           'shards': 8,
-        },
-      },
-      'Win10 Tests x64': {
-        'swarming': {
-          # blink_web_tests has issues on non-broadwell machines.
-          # see https://crbug.com/1458859
-          'dimensions': {
-            'cpu': 'x86-64-Broadwell_GCE',
-          },
-          "shards": 12,
-        },
-      },
-      'Win11 Tests x64': {
-        'swarming': {
-          "shards": 12
         },
       },
       'devtools_frontend_linux_blink_light_rel': {
@@ -374,15 +353,11 @@
   },
   'blink_wpt_tests': {
     'remove_from': [
-      'Win10 Tests x64 (dbg)',
       'devtools_frontend_linux_blink_light_rel',
       'devtools_frontend_linux_blink_light_rel_fastbuild',
       'linux-rel-cft',
-      # TODO: crbug.com/346921029 - fix broken tests.
-      'linux-win-cross-rel',
       'mac-rel-cft',
       'win-rel-cft',
-      'win11-arm64-dbg-tests',
     ],
     'modifications': {
       'Mac Tests Siso FYI': {
@@ -461,16 +436,6 @@
           'hard_timeout': 10800,
           'io_timeout': 3600,
           'shards': 12,
-        },
-      },
-      'Win10 Tests x64': {
-        'swarming': {
-          "shards": 18,
-        },
-      },
-      'Win11 Tests x64': {
-        'swarming': {
-          "shards": 18
         },
       },
       'linux-bfcache-rel': {
@@ -590,11 +555,6 @@
           'hard_timeout': 2400,
         },
       },
-      'win11-arm64-rel-tests': {
-        'swarming': {
-          'shards': 18,
-        },
-      },
       'win11-blink-rel': {
         'swarming': {
           'hard_timeout': 2400,
@@ -616,8 +576,6 @@
       'mac14-tests-dbg',
       'Linux TSan Tests',  # https://crbug.com/368525
       'linux-chromeos-chrome-preuprev', # http://b/331706144
-      'Win10 Tests x64 (dbg)',
-      'win11-arm64-dbg-tests',
     ],
     'modifications': {
       'CrWinAsan': {
@@ -730,32 +688,6 @@
         'swarming': {
           'shards': 20,
         },
-      },
-      'Win10 Tests x64': {
-        # crbug.com/868082
-        'args': [
-          '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
-        ],
-        # Only retry the individual failed tests instead of rerunning entire
-        # shards.
-        # crbug.com/1473501
-        'retry_only_failed_tests': True,
-        'swarming': {
-          # This is for slow test execution that often becomes a critical path of
-          # swarming jobs. crbug.com/868114
-          'shards': 55,
-        }
-      },
-      'Win11 Tests x64': {
-        # crbug.com/868082
-        'args': [
-          '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
-        ],
-        'swarming': {
-          # This is for slow test execution that often becomes a critical path of
-          # swarming jobs. crbug.com/868114
-          'shards': 15,
-        }
       },
       'linux-chromeos-chrome': {
         # TODO(crbug.com/40614042): Promote out of experiment when the
@@ -887,21 +819,12 @@
           'shards': 15,
         }
       },
-      'win11-arm64-rel-tests': {
-        'swarming': {
-          # This is for slow test execution that often becomes a critical path of
-          # swarming jobs. crbug.com/868114
-          'shards': 15,
-        }
-      },
     },
   },
   'browser_tests_no_field_trial': {
     'remove_from': [
       'win10-rel-no-external-ip',
-      'win11-arm64-rel-tests',
       'win-rel-cft',
-      'Win11 Tests x64',
     ],
   },
   'capture_unittests': {
@@ -1022,10 +945,6 @@
   },
   'chromedriver_py_tests': {
     'modifications': {
-      'Win10 Tests x64': {
-        # TODO(crbug.com/40868908): Fix & re-enable.
-        'isolate_profile_data': False,
-      },
       'mac14-arm64-rel-tests': {
         # TODO(crbug.com/347304858) : Remove once fixed.
         'experiment_percentage': 100,
@@ -1035,10 +954,6 @@
         'isolate_profile_data': False,
       },
     },
-    'remove_from': [
-      # Timeout happens sometimes (crbug.com/951799).
-      'Win10 Tests x64 (dbg)',
-    ],
   },
   'components_browsertests': {
     'modifications': {
@@ -1068,9 +983,7 @@
   'components_browsertests_no_field_trial': {
     'remove_from': [
       'win10-rel-no-external-ip',
-      'win11-arm64-rel-tests',
       'win-rel-cft',
-      'Win11 Tests x64',
     ],
   },
   'components_unittests': {
@@ -1090,11 +1003,6 @@
         },
       },
       'Linux TSan Tests': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
-      'Win10 Tests x64 (dbg)': {
         'swarming': {
           'shards': 2,
         },
@@ -1181,29 +1089,6 @@
       'WebRTC Chromium FYI Android Tests ARM64 (dbg)': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromium.webrtc.fyi.android.tests.dbg.content_browsertests.filter',
-        ],
-      },
-      'Win10 Tests x64': {
-        # crbug.com/868082
-        'args': [
-          '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
-        ],
-        # Only retry the individual failed tests instead of rerunning entire
-        # shards.
-        # crbug.com/1475852
-        'retry_only_failed_tests': True,
-      },
-      'Win10 Tests x64 (dbg)': {
-        'experiment_percentage': 100,
-        # crbug.com/868082
-        'args': [
-          '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
-        ],
-      },
-      'Win11 Tests x64': {
-        # crbug.com/868082
-        'args': [
-          '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
         ],
       },
       'android-asan': {
@@ -1342,22 +1227,12 @@
           '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
         ],
       },
-      'win11-arm64-dbg-tests': {
-        'swarming': {
-          'shards': 16,
-        },
-      },
     },
   },
   'content_shell_crash_test': {
     'remove_from': [
       'android-x86-code-coverage', # crbug.com/1084353
     ],
-    'modifications': {
-      'Win10 Tests x64 (dbg)': {
-        'experiment_percentage': 100,  # https://crbug.com/861730
-      },
-    },
   },
   'content_shell_test_apk': {
     'remove_from': [
@@ -1743,9 +1618,6 @@
       'CrWinAsan(dll)', # https://crbug.com/935598
     ],
     'modifications': {
-      'Win10 Tests x64 (dbg)': {
-        'experiment_percentage': 100, # https://crbug.com/876615
-      },
       'win10-code-coverage': {
         'swarming': {
           'shards': 2,
@@ -2006,8 +1878,6 @@
       'mac13-arm64-rel-tests',
       # TODO(crbug.com/40204342): Re-enable.
       'mac14-arm64-rel-tests',
-      # TODO: crbug.com/346921029 - fix broken tests.
-      'linux-win-cross-rel',
     ],
   },
   'hardware_accelerated_feature_tests': {
@@ -2193,15 +2063,6 @@
           'shards': 6,
         },
       },
-      'Win10 Tests x64': {
-        'swarming': {
-          'shards': 9,
-        },
-      },
-      # temporary, https://crbug.com/818832
-      'Win10 Tests x64 (dbg)': {
-        'experiment_percentage': 100,
-      },
       # TODO(crbug.com/40630654): Remove these filters.
       'linux-chromeos-chrome': {
         'args': [
@@ -2245,12 +2106,6 @@
         'swarming': {
           'shards': 6,
         }
-      },
-      # Shadow Win10 Tests x64
-      'linux-win-cross-rel':{
-        'swarming': {
-          'shards': 9,
-        },
       },
       'mac-code-coverage': {
         'args': [
@@ -2323,31 +2178,11 @@
           },
         }
       },
-      'win11-arm64-dbg-tests': {
-        'swarming': {
-          'shards': 9,
-        },
-      },
     },
   },
   'interactive_ui_tests_no_field_trial': {
-    'modifications': {
-      'Win10 Tests x64': {
-        'swarming': {
-          'shards': 4,
-        },
-      },
-      # shadow Win10 Tests x64
-      'linux-win-cross-rel': {
-        'swarming': {
-          'shards': 4,
-        },
-      },
-    },
     'remove_from': [
-      'Win11 Tests x64',
       'win10-rel-no-external-ip',
-      'win11-arm64-rel-tests',
       'win-rel-cft',
     ],
   },
@@ -2357,20 +2192,6 @@
         'swarming': {
           'shards': 2,
         },
-      },
-    },
-  },
-  'leveldb_unittests': {
-    'modifications': {
-      'Win10 Tests x64 (dbg)': {
-        'args': [
-          '--test-launcher-timeout=90000',
-        ],
-      },
-      'win11-arm64-dbg-tests': {
-        'args': [
-          '--test-launcher-timeout=90000',
-        ],
       },
     },
   },
@@ -2404,20 +2225,6 @@
     'remove_from': [
       # crbug.com/1458020 for Mac Retina ASAN removal
       'Mac FYI Retina ASAN (AMD)',
-    ],
-  },
-  'metrics_python_tests': {
-    'remove_from': [
-       # TODO: crbug.com/347165944 - Fix missing dirmd.exe on Linux.
-      'linux-win-cross-rel',
-    ],
-  },
-  'mini_installer_tests': {
-    'remove_from': [
-      # TODO: crbug.com/346921029: support mini_installer_tests
-      # The label "//chrome/test/mini_installer:mini_installer_tests(//build/toolchain/win:win_clang_x64)" isn't a target.
-      # https://ci.chromium.org/ui/p/chromium/builders/try/linux-win-cross-rel/44/overview
-      'linux-win-cross-rel',
     ],
   },
   'model_validation_tests MODEL_VALIDATION_BASE': {
@@ -2630,12 +2437,6 @@
   },
   'performance_test_suite': {
     'modifications': {
-      'Win10 Tests x64 (dbg)': {
-        'args': [
-          '--browser=debug_x64',
-        ],
-        'experiment_percentage': 100,
-      },
       'mac14-tests-dbg': {
         'args': [
           '--browser=debug',
@@ -2650,9 +2451,7 @@
     # When we switch CQ builders(e.g. use Win11 to replace Win10), we also
     # need to update this field.
     'remove_from': [
-      'Win11 Tests x64',
       'win-rel-cft',
-      'win11-arm64-rel-tests',
     ],
   },
   'pixel_interactive_ui_tests': {
@@ -2662,9 +2461,7 @@
     # When we switch CQ builders(e.g. use Win11 to replace Win10), we also
     # need to update this field.
     'remove_from': [
-      'Win11 Tests x64',
       'win-rel-cft',
-      'win11-arm64-rel-tests',
     ],
   },
   'pixel_skia_gold_gl_passthrough_ganesh_test': {
@@ -2972,14 +2769,6 @@
           'shards': 6,
         },
       },
-      'Win10 Tests x64': {
-        'swarming': {
-          'shards': 3,
-        },
-      },
-      'Win10 Tests x64 (dbg)': {
-        'experiment_percentage': 100, # https://crbug.com/840369
-      },
       'linux-chromeos-code-coverage': {
         'swarming': {
           'shards': 4,
@@ -3045,9 +2834,7 @@
   'sync_integration_tests_no_field_trial': {
     'remove_from': [
       'win10-rel-no-external-ip',
-      'win11-arm64-rel-tests',
       'win-rel-cft',
-      'Win11 Tests x64',
     ],
   },
   'tab_capture_end2end_tests': {
@@ -3069,18 +2856,6 @@
         'ci_only': True,
       },
     },
-  },
-  'telemetry_desktop_minidump_unittests': {
-    'remove_from': [
-       # TODO: crbug.com/347165944 - Fix missing dirmd.exe on Linux.
-      'linux-win-cross-rel',
-    ],
-  },
-  'telemetry_gpu_unittests': {
-    'remove_from': [
-       # TODO: crbug.com/347165944 - Fix missing dirmd.exe on Linux.
-      'linux-win-cross-rel',
-    ],
   },
   'telemetry_monochrome_minidump_unittests': {
     'modifications': {
@@ -3130,13 +2905,7 @@
       # TODO crbug.com/1277277
       'mac14-tests-dbg',
       'Linux - Future (dbg)',  # client.v8.chromium
-      'Win10 Tests x64',
-      'Win10 Tests x64 (dbg)',
-      'Win11 Tests x64',
-      'linux-win-cross-rel', # shadow Win10 Tests x64
       'win10-rel-no-external-ip',
-      'win11-arm64-dbg-tests',
-      'win11-arm64-rel-tests',
       'win-rel-cft',
     ],
   },
@@ -3154,21 +2923,10 @@
     },
   },
   'telemetry_unittests': {
-    'modifications': {
-      'Win10 Tests x64 (dbg)': {
-        'experiment_percentage': 100,  # crbug.com/870673
-      },
-    },
     'remove_from': [
       # TODO(crbug.com/40727045): Restore when there's more DUTs
       'chromeos-eve-chrome',
-
-      'Win10 Tests x64',
-      'Win11 Tests x64',
-      'linux-win-cross-rel', # shadow Win10 Tests x64
       'win10-rel-no-external-ip',
-      'win11-arm64-dbg-tests',
-      'win11-arm64-rel-tests',
       'win-rel-cft',
 
       # TODO(crbug.com/40204348): Re-enable when platform is supported.

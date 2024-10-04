@@ -1,0 +1,25 @@
+{
+  "Win x64 Builder": {
+    "additional_compile_targets": [
+      "base_nocompile_tests",
+      "blink_platform_nocompile_tests",
+      "blink_probes_nocompile_tests",
+      "content_nocompile_tests",
+      "pdf_fuzzers"
+    ],
+    "scripts": [
+      {
+        "name": "check_network_annotations",
+        "script": "check_network_annotations.py"
+      },
+      {
+        "name": "metrics_python_tests",
+        "script": "metrics_python_tests.py"
+      },
+      {
+        "name": "webkit_lint",
+        "script": "blink_lint_expectations.py"
+      }
+    ]
+  }
+}

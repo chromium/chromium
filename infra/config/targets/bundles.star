@@ -797,6 +797,36 @@ targets.bundle(
     },
 )
 
+targets.bundle(
+    name = "chromium_win_dbg_isolated_scripts",
+    targets = [
+        "chromedriver_py_tests_isolated_scripts",
+        "components_perftests_isolated_scripts",
+        "desktop_chromium_isolated_scripts",
+        "performance_smoke_test_isolated_scripts",
+        "telemetry_perf_unittests_isolated_scripts",
+    ],
+)
+
+# Like chromium_win_rel_isolated_scripts, but should only include test suites
+# that aren't affected by things like extra GN args (e.g. is_debug) or OS
+# versions (e.g. Mac-12 vs Mac-13). Note: use chromium_win_rel_isolated_scripts
+# if you're setting up a new builder. This group should only be used across
+# ~3 builders.
+targets.bundle(
+    name = "chromium_win_rel_isolated_scripts_once",
+    targets = [
+        "chromedriver_py_tests_isolated_scripts",
+        "components_perftests_isolated_scripts",
+        "desktop_chromium_isolated_scripts",
+        "desktop_once_isolated_scripts",
+        "mojo_python_unittests_isolated_scripts",
+        "telemetry_desktop_minidump_unittests_isolated_scripts",
+        "telemetry_perf_unittests_isolated_scripts",
+        "win_specific_isolated_scripts",
+    ],
+)
+
 # Compile targets which are common to most cronet builders in chromium.android
 targets.bundle(
     name = "cronet_common_compile_targets",

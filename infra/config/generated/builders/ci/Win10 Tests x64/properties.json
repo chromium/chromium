@@ -78,7 +78,8 @@
           "group": "tryserver.chromium.win"
         }
       ],
-      "retry_failed_shards": true
+      "retry_failed_shards": true,
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Win10 Tests x64/targets"
     }
   },
   "$build/reclient": {

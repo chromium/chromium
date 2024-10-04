@@ -604,6 +604,20 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-gpu-archive",
     ),
+    targets = targets.bundle(
+        targets = [
+            "gpu_win_gtests",
+            "gpu_common_win_telemetry_tests",
+        ],
+        mixins = [
+            "win10_nvidia_gtx_1660_stable",
+            "puppet_production",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE_X64,
+        os_type = targets.os_type.WINDOWS,
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Windows",
     ),

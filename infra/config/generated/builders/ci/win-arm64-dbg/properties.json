@@ -87,7 +87,8 @@
           "group": "tryserver.chromium.win"
         }
       ],
-      "retry_failed_shards": true
+      "retry_failed_shards": true,
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/win-arm64-dbg/targets"
     }
   },
   "$build/reclient": {

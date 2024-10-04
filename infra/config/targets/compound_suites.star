@@ -329,17 +329,6 @@ targets.legacy_compound_suite(
 )
 
 targets.legacy_compound_suite(
-    name = "chromium_win_dbg_isolated_scripts",
-    basic_suites = [
-        "chromedriver_py_tests_isolated_scripts",
-        "components_perftests_isolated_scripts",
-        "desktop_chromium_isolated_scripts",
-        "performance_smoke_test_isolated_scripts",
-        "telemetry_perf_unittests_isolated_scripts",
-    ],
-)
-
-targets.legacy_compound_suite(
     name = "chromium_win_gtests",
     basic_suites = [
         "aura_gtests",
@@ -370,25 +359,6 @@ targets.legacy_compound_suite(
     name = "chromium_win_rel_isolated_scripts_code_coverage",
     basic_suites = [
         "gpu_dawn_webgpu_blink_web_tests",
-    ],
-)
-
-# Like chromium_win_rel_isolated_scripts above, but should only
-# include test suites that aren't affected by things like extra GN args
-# (e.g. is_debug) or OS versions (e.g. Mac-12 vs Mac-13). Note: use
-# chromium_win_rel_isolated_scripts if you're setting up a new builder.
-# This group should only be used across ~3 builders.
-targets.legacy_compound_suite(
-    name = "chromium_win_rel_isolated_scripts_once",
-    basic_suites = [
-        "chromedriver_py_tests_isolated_scripts",
-        "components_perftests_isolated_scripts",
-        "desktop_chromium_isolated_scripts",
-        "desktop_once_isolated_scripts",
-        "mojo_python_unittests_isolated_scripts",
-        "telemetry_desktop_minidump_unittests_isolated_scripts",
-        "telemetry_perf_unittests_isolated_scripts",
-        "win_specific_isolated_scripts",
     ],
 )
 

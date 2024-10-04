@@ -87,7 +87,8 @@
           "builder": "win-rel",
           "group": "tryserver.chromium.win"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/GPU Win x64 Builder/targets"
     }
   },
   "$build/reclient": {

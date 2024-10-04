@@ -23,16 +23,22 @@ targets.compile_target(
 targets.compile_target(
     name = "base_nocompile_tests",
     label = "//base:base_nocompile_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
     name = "blink_platform_nocompile_tests",
     label = "//third_party/blink/renderer/platform:blink_platform_nocompile_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
     name = "blink_probes_nocompile_tests",
     label = "//third_party/blink/renderer/core/probe:blink_probes_nocompile_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
@@ -201,6 +207,8 @@ targets.compile_target(
 targets.compile_target(
     name = "content_nocompile_tests",
     label = "//content/test:content_nocompile_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(

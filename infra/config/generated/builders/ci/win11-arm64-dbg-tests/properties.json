@@ -77,7 +77,8 @@
           "group": "tryserver.chromium.win"
         }
       ],
-      "retry_failed_shards": true
+      "retry_failed_shards": true,
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/win11-arm64-dbg-tests/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

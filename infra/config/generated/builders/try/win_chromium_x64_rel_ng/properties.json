@@ -42,7 +42,8 @@
           "builder": "Win x64 Builder",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/win_chromium_x64_rel_ng/targets"
     }
   },
   "$build/reclient": {

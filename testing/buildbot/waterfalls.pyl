@@ -17,6 +17,7 @@
   #   chromium.android.fyi
   #   chromium.fuchsia
   #   chromium.fuchsia.fyi
+  #   chromium.win
   {
     'name': 'chrome',
     'mixins': ['chrome-tester-service-account'],
@@ -2912,7 +2913,9 @@
     # //infra/config/subprojects/ci/chromium.gpu.star
     #   Android Release (Pixel 2)
     #   GPU Linux Builder
+    #   GPU Win x64 Builder
     #   Linux Release (NVIDIA)
+    #   Win10 x64 Release (NVIDIA)
     'name': 'chromium.gpu',
     'forbid_script_tests': True,
     'mixins': [
@@ -2998,18 +3001,6 @@
       },
       'Win10 x64 Debug (NVIDIA)': {
         'browser_config': 'debug_x64',
-        'os_type': 'win',
-        'mixins': [
-          'win10_nvidia_gtx_1660_stable',
-          'puppet_production',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_win_gtests',
-          'gpu_telemetry_tests': 'gpu_common_win_telemetry_tests',
-        },
-      },
-      'Win10 x64 Release (NVIDIA)': {
-        'browser_config': 'release_x64',
         'os_type': 'win',
         'mixins': [
           'win10_nvidia_gtx_1660_stable',
@@ -4877,129 +4868,6 @@
           'xcode_16_main',
           'xctest',
         ]
-      },
-    },
-  },
-  {
-    'name': 'chromium.win',
-    'mixins': ['chromium-tester-service-account'],
-    'machines': {
-      'WebKit Win10': {
-        'mixins': [
-            'win10',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
-        },
-      },
-      # 'Win Builder' and 'Win x64 Builder' should have the same set of
-      # additional_compile_targets and test_suites.
-      'Win Builder': {
-        'additional_compile_targets': [
-          'pdf_fuzzers'
-        ],
-        'test_suites': {
-          'scripts': 'chromium_win_scripts',
-        },
-      },
-      'Win Builder (dbg)': {
-        'additional_compile_targets': [
-          'all'
-        ],
-      },
-      'Win x64 Builder': {
-        'additional_compile_targets': [
-          'base_nocompile_tests',
-          'blink_platform_nocompile_tests',
-          'blink_probes_nocompile_tests',
-          'content_nocompile_tests',
-          'pdf_fuzzers'
-        ],
-        'test_suites': {
-          'scripts': 'chromium_win_scripts',
-        },
-      },
-      'Win x64 Builder (dbg)': {
-        'additional_compile_targets': [
-          'all'
-        ],
-      },
-      'Win10 Tests x64': {
-        'mixins': [
-          'x86-64',
-          'win10',
-          'isolate_profile_data',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_win10_gtests',
-          'isolated_scripts': 'chromium_win_rel_isolated_scripts_once',
-        },
-      },
-      'Win10 Tests x64 (dbg)': {
-        'mixins': [
-          'x86-64',
-          'win10',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_win_gtests',
-          'isolated_scripts': 'chromium_win_dbg_isolated_scripts',
-        },
-      },
-      'Win11 Tests x64': {
-        'mixins': [
-          'x86-64',
-          'win11',
-          'isolate_profile_data',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_win10_gtests',
-          'isolated_scripts': 'chromium_win_rel_isolated_scripts',
-        },
-      },
-      'linux-win-cross-rel': {
-        'mixins': [
-          'win10',
-          'x86-64',
-        ],
-        'additional_compile_targets': [
-          'all',
-        ],
-        # TODO: crbug.com/346921029 - Support the same test suites with
-        # Win10 Tests x64.
-        'test_suites': {
-          'gtest_tests': 'chromium_win10_gtests',
-          'isolated_scripts': 'chromium_win_rel_isolated_scripts_once',
-          'scripts': 'chromium_win_scripts',
-        },
-      },
-      'win-arm64-dbg': {
-        'additional_compile_targets': [
-          'all'
-        ],
-      },
-      'win-arm64-rel': {
-        'additional_compile_targets': [
-          'chrome',
-          'chromedriver_group',
-        ],
-      },
-      'win11-arm64-dbg-tests': {
-        'mixins': [
-          'win-arm64',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_win_gtests',
-          'isolated_scripts': 'chromium_win_dbg_isolated_scripts',
-        },
-      },
-      'win11-arm64-rel-tests': {
-        'mixins': [
-          'win-arm64',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_win10_gtests',
-          'isolated_scripts': 'chromium_win_rel_isolated_scripts_once',
-        },
       },
     },
   },
