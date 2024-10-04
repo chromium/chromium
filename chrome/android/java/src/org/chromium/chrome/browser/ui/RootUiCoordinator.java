@@ -1912,7 +1912,8 @@ public class RootUiCoordinator
                             return mEdgeToEdgeControllerSupplier.get() == null
                                     ? 0
                                     : mEdgeToEdgeControllerSupplier.get().getBottomInset();
-                        });
+                        },
+                        getDesktopWindowStateProvider());
         BottomSheetControllerFactory.setExceptionReporter(
                 ChromePureJavaExceptionReporter::reportJavaException);
         BottomSheetControllerFactory.attach(mWindowAndroid, mBottomSheetController);

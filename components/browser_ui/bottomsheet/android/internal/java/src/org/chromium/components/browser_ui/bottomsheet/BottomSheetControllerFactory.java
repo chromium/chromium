@@ -9,9 +9,11 @@ import android.view.ViewGroup;
 import android.view.Window;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
@@ -25,6 +27,7 @@ public class BottomSheetControllerFactory {
      * @param keyboardDelegate A means of hiding the keyboard.
      * @param root The view that should contain the sheet.
      * @param edgeToEdgeBottomInsetSupplier Supplier of bottom inset when e2e is on.
+     * @param desktopWindowStateProvider The {@link DesktopWindowStateProvider} for the app header.
      * @return A new instance of the {@link BottomSheetController}.
      */
     public static ManagedBottomSheetController createBottomSheetController(
@@ -33,7 +36,8 @@ public class BottomSheetControllerFactory {
             Window window,
             KeyboardVisibilityDelegate keyboardDelegate,
             Supplier<ViewGroup> root,
-            @NonNull Supplier<Integer> edgeToEdgeBottomInsetSupplier) {
+            @NonNull Supplier<Integer> edgeToEdgeBottomInsetSupplier,
+            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
         return new BottomSheetControllerImpl(
                 scrim,
                 initializedCallback,
@@ -41,11 +45,13 @@ public class BottomSheetControllerFactory {
                 keyboardDelegate,
                 root,
                 /* alwaysFullWidth= */ false,
-                edgeToEdgeBottomInsetSupplier);
+                edgeToEdgeBottomInsetSupplier,
+                desktopWindowStateProvider);
     }
 
     /**
      * Create {@link BottomSheetController} of full-width bottom sheets.
+     *
      * @param scrim A supplier of scrim to be shown behind the sheet.
      * @param initializedCallback A callback for the sheet having been created.
      * @param window The activity's window.
@@ -66,7 +72,8 @@ public class BottomSheetControllerFactory {
                 keyboardDelegate,
                 root,
                 /* alwaysFullWidth= */ true,
-                () -> 0);
+                () -> 0,
+                /* desktopWindowStateProvider= */ null);
     }
 
     // Redirect methods to provider to make them only accessible to classes that have access to the
@@ -74,6 +81,7 @@ public class BottomSheetControllerFactory {
 
     /**
      * Attach a shared {@link BottomSheetController} to a {@link WindowAndroid}.
+     *
      * @param windowAndroid The window to attach the sheet's controller to.
      * @param controller The controller to attach.
      */

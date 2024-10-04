@@ -4,15 +4,18 @@
 
 package org.chromium.components.browser_ui.bottomsheet;
 
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider.AppHeaderObserver;
+
 /**
- * An interface for the owning object to manage interaction between the bottom sheet and the rest
- * of the system.
+ * An interface for the owning object to manage interaction between the bottom sheet and the rest of
+ * the system.
  */
 public interface ManagedBottomSheetController
-        extends BottomSheetController, BottomSheetControllerProvider.Unowned {
+        extends BottomSheetController, BottomSheetControllerProvider.Unowned, AppHeaderObserver {
     /**
      * Temporarily suppress the bottom sheet while other UI is showing. This will not itself change
      * the content displayed by the sheet.
+     *
      * @param reason The reason the sheet was suppressed.
      * @return A token to unsuppress the sheet with.
      */

@@ -152,7 +152,8 @@ public class BottomSheetObserverTest {
                                     KeyboardVisibilityDelegate.getInstance(),
                                     () -> rootView,
                                     false,
-                                    () -> 0);
+                                    () -> 0,
+                                    /* desktopWindowStateProvider= */ null);
                         });
 
         mTestSupport = new BottomSheetTestSupport(mBottomSheetController);

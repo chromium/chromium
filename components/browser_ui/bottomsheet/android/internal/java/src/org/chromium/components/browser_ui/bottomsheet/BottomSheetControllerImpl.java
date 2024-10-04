@@ -10,12 +10,15 @@ import android.view.ViewGroup;
 import android.view.Window;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
@@ -104,6 +107,9 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
 
     private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
 
+    private final DesktopWindowStateProvider mDesktopWindowStateProvider;
+    private int mAppHeaderHeight;
+
     /**
      * Build a new controller of the bottom sheet.
      *
@@ -115,6 +121,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
      * @param root The view that should contain the sheet.
      * @param alwaysFullWidth Whether bottom sheet is full-width.
      * @param edgeToEdgeBottomInsetSupplier The supplier of bottom inset when e2e is on.
+     * @param desktopWindowStateProvider The {@link DesktopWindowStateProvider} for the app header.
      */
     public BottomSheetControllerImpl(
             final Supplier<ScrimCoordinator> scrim,
@@ -123,13 +130,18 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
             KeyboardVisibilityDelegate keyboardDelegate,
             Supplier<ViewGroup> root,
             boolean alwaysFullWidth,
-            @NonNull Supplier<Integer> edgeToEdgeBottomInsetSupplier) {
+            @NonNull Supplier<Integer> edgeToEdgeBottomInsetSupplier,
+            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
         mScrimCoordinatorSupplier = scrim;
         mPendingSheetObservers = new ArrayList<>();
         mSuppressionTokens = new TokenHolder(() -> onSuppressionTokensChanged());
         mAlwaysFullWidth = alwaysFullWidth;
         mEdgeToEdgeBottomInsetSupplier = edgeToEdgeBottomInsetSupplier;
         mKeyboardVisibilityDelegate = keyboardDelegate;
+        mDesktopWindowStateProvider = desktopWindowStateProvider;
+        if (mDesktopWindowStateProvider != null) {
+            mDesktopWindowStateProvider.addObserver(this);
+        }
         mSheetInitializer =
                 () -> {
                     initializeSheet(initializedCallback, window, keyboardDelegate, root);
@@ -162,6 +174,17 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
                 };
     }
 
+    // AppHeaderObserver implementation
+    @Override
+    public void onAppHeaderStateChanged(AppHeaderState newState) {
+        int appHeaderHeight = newState.getAppHeaderHeight();
+        if (appHeaderHeight == mAppHeaderHeight) return;
+        mAppHeaderHeight = appHeaderHeight;
+        if (mBottomSheet != null) {
+            mBottomSheet.onAppHeaderHeightChanged(mAppHeaderHeight);
+        }
+    }
+
     @Override
     public BackPressHandler getBottomSheetBackPressHandler() {
         return mBackPressHandler;
@@ -188,7 +211,11 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         initializedCallback.onResult(mBottomSheet);
 
         mBottomSheet.init(
-                window, keyboardDelegate, mAlwaysFullWidth, mEdgeToEdgeBottomInsetSupplier);
+                window,
+                keyboardDelegate,
+                mAlwaysFullWidth,
+                mEdgeToEdgeBottomInsetSupplier,
+                mAppHeaderHeight);
 
         // Initialize the queue with a comparator that checks content priority.
         mContentQueue =
@@ -337,6 +364,9 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
     @Override
     public void destroy() {
         if (mBottomSheet != null) mBottomSheet.destroy();
+        if (mDesktopWindowStateProvider != null) {
+            mDesktopWindowStateProvider.removeObserver(this);
+        }
     }
 
     @Override
@@ -688,5 +718,9 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
                                                 .getBackPressStateChangedSupplier()
                                                 .get())
                                 || mBottomSheet.isSheetOpen()));
+    }
+
+    void runSheetInitializerForTesting() {
+        mSheetInitializer.run();
     }
 }

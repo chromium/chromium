@@ -114,7 +114,8 @@ public class AppFilterCoordinatorTest {
                 getActivity().getWindow(),
                 KeyboardVisibilityDelegate.getInstance(),
                 () -> activityContentView,
-                () -> 0);
+                () -> 0,
+                /* desktopWindowStateProvider= */ null);
     }
 
     private void onAppUpdated(AppInfo appInfo) {

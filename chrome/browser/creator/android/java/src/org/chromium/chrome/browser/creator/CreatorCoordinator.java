@@ -436,7 +436,8 @@ public class CreatorCoordinator
                         mActivity.getWindow(),
                         KeyboardVisibilityDelegate.getInstance(),
                         () -> mBottomSheetContainer,
-                        () -> 0);
+                        () -> 0,
+                        /* desktopWindowStateProvider= */ null);
     }
 
     private void setUpToolbarListener() {

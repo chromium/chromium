@@ -21,6 +21,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
@@ -161,6 +162,9 @@ class BottomSheet extends FrameLayout
     /** The supplier of the bottom inset when edge to edge is enabled. */
     private Supplier<Integer> mEdgeToEdgeBottomInsetSupplier = () -> 0;
 
+    /** The last recorded app header height, in px. */
+    private int mAppHeaderHeight;
+
     /**
      * A view used to render a shadow behind the sheet and extends outside the bounds of its parent
      * view.
@@ -298,14 +302,17 @@ class BottomSheet extends FrameLayout
      * @param keyboardDelegate Delegate for hiding the keyboard.
      * @param alwaysFullWidth Whether bottom sheet is always full-width.
      * @param edgeToEdgeBottomInsetSupplier The supplier of the bottom inset in DP when e2e is on.
+     * @param appHeaderHeight The app header height, in px.
      */
     public void init(
             Window window,
             KeyboardVisibilityDelegate keyboardDelegate,
             boolean alwaysFullWidth,
-            @NonNull Supplier<Integer> edgeToEdgeBottomInsetSupplier) {
+            @NonNull Supplier<Integer> edgeToEdgeBottomInsetSupplier,
+            int appHeaderHeight) {
         mEdgeToEdgeBottomInsetSupplier = edgeToEdgeBottomInsetSupplier;
         mSheetContainer = (ViewGroup) getParent();
+        onAppHeaderHeightChanged(appHeaderHeight);
 
         mToolbarHolder =
                 (TouchRestrictingFrameLayout) findViewById(R.id.bottom_sheet_toolbar_container);
@@ -1351,6 +1358,29 @@ class BottomSheet extends FrameLayout
         }
     }
 
+    /**
+     * Updates the sheet container's top margin to avoid drawing the sheet into the app header.
+     *
+     * @param appHeaderHeight The app header height.
+     */
+    void onAppHeaderHeightChanged(int appHeaderHeight) {
+        assert mSheetContainer != null : "Sheet container should not be null.";
+        var params = (MarginLayoutParams) mSheetContainer.getLayoutParams();
+        Log.i(
+                TAG,
+                "Current top margin="
+                        + params.topMargin
+                        + ", previous app header height="
+                        + mAppHeaderHeight
+                        + ", new app header height="
+                        + appHeaderHeight);
+        mAppHeaderHeight = appHeaderHeight;
+        if (appHeaderHeight != params.topMargin) {
+            params.topMargin = appHeaderHeight;
+            mSheetContainer.setLayoutParams(params);
+        }
+    }
+
     private void ensureContentIsWrapped(boolean animate) {
         if (mCurrentState == SheetState.HIDDEN || mCurrentState == SheetState.PEEK) return;
 
@@ -1378,5 +1408,9 @@ class BottomSheet extends FrameLayout
         mScrollingStartState = mCurrentState;
         mCurrentState = SheetState.SCROLLING;
         return getTargetSheetState(sheetHeightInPx, yUpwardsVelocity);
+    }
+
+    void setSheetContainerForTesting(ViewGroup sheetContainer) {
+        mSheetContainer = sheetContainer;
     }
 }

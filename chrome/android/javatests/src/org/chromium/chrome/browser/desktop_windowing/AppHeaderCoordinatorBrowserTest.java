@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Build;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.FrameLayout.LayoutParams;
 import android.widget.ImageButton;
 
@@ -63,6 +64,11 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.ContentPriority;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.TestBottomSheetContent;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
@@ -429,6 +435,60 @@ public class AppHeaderCoordinatorBrowserTest {
         // Verify that the root view bottom padding is reset.
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(rootView.getPaddingBottom(), Matchers.is(0)));
+    }
+
+    @Test
+    @MediumTest
+    public void testBottomSheet() {
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        // Switch to desktop windowing mode.
+        triggerDesktopWindowingModeChange(activity, true);
+
+        // Trigger a bottom sheet, verify that the sheet container's top margin is updated to
+        // account for the app header height.
+        var bottomSheetContent = new TestBottomSheetContent(activity, ContentPriority.HIGH, false);
+        var bottomSheetController =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            var controller =
+                                    (ManagedBottomSheetController)
+                                            BottomSheetControllerProvider.from(
+                                                    activity.getWindowAndroid());
+                            controller.requestShowContent(bottomSheetContent, false);
+                            return controller;
+                        });
+
+        var sheetContainer = activity.findViewById(R.id.sheet_container);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Bottom sheet should be visible.",
+                            bottomSheetController.getSheetState(),
+                            Matchers.not(SheetState.HIDDEN));
+                    Criteria.checkThat(
+                            "Sheet container top margin should account for app header height.",
+                            ((MarginLayoutParams) sheetContainer.getLayoutParams()).topMargin,
+                            Matchers.is(mTestAppHeaderHeight));
+                });
+
+        // Switch out of desktop windowing mode, verify that the sheet container's top margin is
+        // reset.
+        triggerDesktopWindowingModeChange(activity, false);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Bottom sheet should be visible.",
+                            bottomSheetController.getSheetState(),
+                            Matchers.not(SheetState.HIDDEN));
+                    Criteria.checkThat(
+                            "Sheet container top margin should be reset.",
+                            ((MarginLayoutParams) sheetContainer.getLayoutParams()).topMargin,
+                            Matchers.is(0));
+                });
+
+        // Hide bottom sheet.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> bottomSheetController.hideContent(bottomSheetContent, false));
     }
 
     private void doTestOnTopResumedActivityChanged(
