@@ -1298,6 +1298,7 @@ policies:
   1297: KioskActiveWiFiCredentialsScopeChangeEnabled
   1298: DataURLWhitespacePreservationEnabled
   1299: AllowExcludeDisplayInMirrorMode
+  1300: AutofillPredictionSettings
 
 atomic_groups:
   1: Homepage

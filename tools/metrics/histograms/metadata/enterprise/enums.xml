@@ -2164,6 +2164,7 @@ chromium-metrics-reviews@google.com.
   <int value="1297" label="KioskActiveWiFiCredentialsScopeChangeEnabled"/>
   <int value="1298" label="DataURLWhitespacePreservationEnabled"/>
   <int value="1299" label="AllowExcludeDisplayInMirrorMode"/>
+  <int value="1300" label="AutofillPredictionSettings"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

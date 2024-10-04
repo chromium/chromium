@@ -1,0 +1,40 @@
+caption: Settings for Autofill Prediction Settings
+
+desc: |-
+ Enables Autofill Prediction Settings.
+
+  0 = Enable the feature for users, and send relevant data to Google to help train or improve AI models. Relevant data may include prompts, inputs, outputs, and source materials, depending on the feature. It may be reviewed by humans for the sole purpose of improving AI models. 0 is the default value, except when noted below.
+
+  1 = Enable the feature for users, but do not send data to Google to train or improve AI models. 1 is the default value for Enterprise users managed by <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph> and for Education accounts managed by <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME">Google Workspace</ph>.
+
+  2 = Disable the feature.
+
+default: 0
+example_value: 2
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Allow Autofill Prediction and improve AI models.
+  name: Allowed
+  value: 0
+- caption: Allow Autofill Prediction without improving AI models.
+  name: AllowedWithoutLogging
+  value: 1
+- caption: Do not allow Autofill Predition.
+  name: Disabled
+  value: 2
+owners:
+- file://components/autofill_prediction_improvements/OWNERS
+- file://components/optimization_guide/OWNERS
+schema:
+  enum:
+  - 0
+  - 1
+  - 2
+  type: integer
+supported_on:
+- chrome.*:131-
+- chrome_os:131-
+tags: []
+type: int-enum
