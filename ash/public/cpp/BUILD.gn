@@ -505,6 +505,7 @@ component("cpp") {
     "//chromeos/ash/services/connectivity/public/mojom",
     "//chromeos/ash/services/coral/public/mojom",
     "//chromeos/ash/services/hotspot_config/public/mojom",
+    "//chromeos/ash/services/recording/public/mojom",
     "//chromeos/components/security_token_pin",
     "//chromeos/crosapi/mojom",
     "//chromeos/services/network_config/public/mojom",
