@@ -136,7 +136,7 @@ void SparkyProvider::QuestionAndAnswer(
 void SparkyProvider::OnScreenshotObtained(
     std::unique_ptr<SparkyContext> sparky_context,
     SparkyShowAnswerCallback done_callback,
-    scoped_refptr<base::RefCountedMemory> jpeg_screenshot) {
+    scoped_refptr<base::RefCountedMemory> png_screenshot) {
   request_.set_feature_name(proto::FeatureName::CHROMEOS_SPARKY);
 
   proto::InputData* input_data;
@@ -166,17 +166,17 @@ void SparkyProvider::OnScreenshotObtained(
     }
   }
 
-  if (jpeg_screenshot) {
+  if (png_screenshot) {
     proto::Image* image_proto = sparky_context_data->mutable_screenshot();
     image_proto->set_serialized_bytes(
-        std::string(base::as_string_view(*jpeg_screenshot)));
+        std::string(base::as_string_view(*png_screenshot)));
     // Also appends the screenshot to the last conversation if it is available.
     if (sparky_context_data->conversation_size() > 0) {
       auto* last_conversation = sparky_context_data->mutable_conversation(
           sparky_context_data->conversation_size() - 1);
       proto::Image* screenshot = last_conversation->mutable_screenshot();
       screenshot->set_serialized_bytes(
-          std::string(base::as_string_view(*jpeg_screenshot)));
+          std::string(base::as_string_view(*png_screenshot)));
     }
   }
   auto* apps_data = sparky_context_data->mutable_apps_data();
