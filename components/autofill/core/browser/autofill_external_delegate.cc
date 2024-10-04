@@ -246,7 +246,6 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kRetrievePredictionImprovements:
     case SuggestionType::kPredictionImprovementsLoadingState:
     case SuggestionType::kFillPredictionImprovements:
-    case SuggestionType::kPredictionImprovementsDetails:
     case SuggestionType::kPredictionImprovementsError:
     case SuggestionType::kEditPredictionImprovementsInformation:
       return false;
@@ -687,7 +686,6 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddresses:
     case SuggestionType::kEditAddressProfile:
-    case SuggestionType::kPredictionImprovementsDetails:
     case SuggestionType::kPredictionImprovementsError:
     case SuggestionType::kEditPredictionImprovementsInformation:
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
@@ -885,7 +883,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kPredictionImprovementsFeedback:
     case SuggestionType::kViewPasswordDetails:
     case SuggestionType::kPredictionImprovementsLoadingState:
-    case SuggestionType::kPredictionImprovementsDetails:
     case SuggestionType::kPredictionImprovementsError:
       NOTREACHED();  // Should be handled elsewhere.
   }
@@ -944,21 +941,6 @@ void AutofillExternalDelegate::DidPerformButtonActionForSuggestion(
           delegate->UserClickedLearnMore();
           break;
       }
-      break;
-    }
-    case SuggestionType::kPredictionImprovementsDetails: {
-      AutofillPredictionImprovementsDelegate* delegate =
-          manager_->client().GetAutofillPredictionImprovementsDelegate();
-      if (!delegate) {
-        break;
-      }
-      CHECK(absl::holds_alternative<PredictionImprovementsButtonActions>(
-          button_action));
-      PredictionImprovementsButtonActions action =
-          absl::get<PredictionImprovementsButtonActions>(button_action);
-      CHECK_EQ(action, PredictionImprovementsButtonActions::kLearnMoreClicked);
-
-      delegate->UserClickedLearnMore();
       break;
     }
     default:
@@ -1033,7 +1015,6 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kRetrievePredictionImprovements:
     case SuggestionType::kPredictionImprovementsLoadingState:
     case SuggestionType::kFillPredictionImprovements:
-    case SuggestionType::kPredictionImprovementsDetails:
     case SuggestionType::kPredictionImprovementsError:
     case SuggestionType::kEditPredictionImprovementsInformation:
       return false;

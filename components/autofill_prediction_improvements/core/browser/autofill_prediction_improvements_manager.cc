@@ -97,18 +97,6 @@ autofill::Suggestion CreateFeedbackSuggestion() {
   return feedback_suggestion;
 }
 
-// Creates a suggestion containing more details about prediction improvements
-// and the suggestions it generates.
-autofill::Suggestion CreateDetailsSuggestion() {
-  autofill::Suggestion details_suggestion(
-      autofill::SuggestionType::kPredictionImprovementsDetails);
-  details_suggestion.is_acceptable = false;
-  details_suggestion.highlight_on_select = false;
-  details_suggestion.voice_over = l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_DETAILS_SUGGESTION_A11Y_HINT);
-  return details_suggestion;
-}
-
 autofill::Suggestion CreateEditPredictionImprovementsInformation() {
   autofill::Suggestion edit_suggestion;
   edit_suggestion.type =
@@ -135,7 +123,7 @@ std::vector<autofill::Suggestion> CreateErrorSuggestions() {
   error_suggestion.is_acceptable = false;
   return {error_suggestion,
           autofill::Suggestion(autofill::SuggestionType::kSeparator),
-          CreateDetailsSuggestion(), CreateFeedbackSuggestion()};
+          CreateFeedbackSuggestion()};
 }
 
 }  // namespace
@@ -281,7 +269,6 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestions(
     }
   }
   filling_suggestions.emplace_back(autofill::SuggestionType::kSeparator);
-  filling_suggestions.emplace_back(CreateDetailsSuggestion());
   filling_suggestions.emplace_back(CreateFeedbackSuggestion());
   return filling_suggestions;
 }
@@ -289,7 +276,6 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestions(
 std::vector<autofill::Suggestion>
 AutofillPredictionImprovementsManager::CreateTriggerSuggestion() {
   std::vector<autofill::Suggestion> suggestions;
-  // TODO(crbug.com/361434879): Add hardcoded string to an appropriate grd file.
   autofill::Suggestion retrieve_suggestion(
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_TRIGGER_SUGGESTION_MAIN_TEXT),
@@ -297,7 +283,6 @@ AutofillPredictionImprovementsManager::CreateTriggerSuggestion() {
   retrieve_suggestion.icon =
       autofill::Suggestion::Icon::kAutofillPredictionImprovements;
   suggestions.emplace_back(retrieve_suggestion);
-  suggestions.emplace_back(CreateDetailsSuggestion());
   return suggestions;
 }
 

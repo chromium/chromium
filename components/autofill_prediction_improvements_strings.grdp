@@ -52,11 +52,8 @@
   </message>
 
   <!-- Prediction improvements details -->
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_DETAILS_SUGGESTION_MAIN_TEXT" desc="Text displayed on the prediction improvements details suggestions" translateable="false">
-    Use prediction improvements. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS">$1<ex>Manage prediction improvements</ex></ph>
-  </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_DETAILS_SUGGESTION_A11Y_HINT" desc="Accessibility text announced by the screenreader when the user focuses on a improveprediction details suggestion" translateable="false">
-    Use prediction improvements. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS">$1<ex>Manage prediction improvements</ex></ph>
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_DETAILS" desc="Text displayed on the feedback suggestion giving users details about prediction improvements" translateable="false">
+    Use prediction improvements.
   </message>
 
   <!-- Feedback -->

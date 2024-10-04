@@ -56,7 +56,6 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kShowAccountCards:
     case SuggestionType::kUndoOrClear:
     case SuggestionType::kViewPasswordDetails:
-    case SuggestionType::kPredictionImprovementsDetails:
     case SuggestionType::kPredictionImprovementsFeedback:
     case SuggestionType::kEditPredictionImprovementsInformation:
       return true;

@@ -277,7 +277,6 @@ TEST_F(AutofillPredictionImprovementsManagerTest, RetrievePredictionsTimeOut) {
       error_suggestions,
       ElementsAre(HasType(SuggestionType::kPredictionImprovementsError),
                   HasType(SuggestionType::kSeparator),
-                  HasType(SuggestionType::kPredictionImprovementsDetails),
                   HasType(SuggestionType::kPredictionImprovementsFeedback)));
 }
 
@@ -337,7 +336,6 @@ TEST_F(AutofillPredictionImprovementsManagerTest, EndToEnd) {
       filling_suggestion,
       ElementsAre(HasType(SuggestionType::kFillPredictionImprovements),
                   HasType(SuggestionType::kSeparator),
-                  HasType(SuggestionType::kPredictionImprovementsDetails),
                   HasType(SuggestionType::kPredictionImprovementsFeedback)));
   const Suggestion::PredictionImprovementsPayload filling_payload =
       filling_suggestion[0]
@@ -363,8 +361,7 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
   autofill::FormFieldData field;
   EXPECT_THAT(
       manager_->GetSuggestions({}, field),
-      ElementsAre(HasType(SuggestionType::kRetrievePredictionImprovements),
-                  HasType(SuggestionType::kPredictionImprovementsDetails)));
+      ElementsAre(HasType(SuggestionType::kRetrievePredictionImprovements)));
 }
 
 // Tests address suggestions will be replaced by the trigger suggestion if the
@@ -381,8 +378,7 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
   autofill::FormData form = autofill::test::GetFormData(form_description);
   EXPECT_THAT(
       manager_->GetSuggestions(autofill_suggestions, form.fields().front()),
-      ElementsAre(HasType(SuggestionType::kRetrievePredictionImprovements),
-                  HasType(SuggestionType::kPredictionImprovementsDetails)));
+      ElementsAre(HasType(SuggestionType::kRetrievePredictionImprovements)));
 }
 
 // Tests that cached filling suggestions for prediction improvements are shown
@@ -404,7 +400,6 @@ TEST_F(AutofillPredictionImprovementsManagerTest, MaybeUpdateSuggestionsShows) {
       ElementsAre(HasType(SuggestionType::kFillPredictionImprovements),
                   HasType(SuggestionType::kAddressEntry),
                   HasType(SuggestionType::kSeparator),
-                  HasType(SuggestionType::kPredictionImprovementsDetails),
                   HasType(SuggestionType::kPredictionImprovementsFeedback)));
 }
 
@@ -423,7 +418,6 @@ TEST_F(
       manager_->GetSuggestions({}, form.fields().front()),
       ElementsAre(HasType(SuggestionType::kFillPredictionImprovements),
                   HasType(SuggestionType::kSeparator),
-                  HasType(SuggestionType::kPredictionImprovementsDetails),
                   HasType(SuggestionType::kPredictionImprovementsFeedback)));
 }
 
@@ -477,7 +471,6 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
                         HasType(SuggestionType::
                                     kEditPredictionImprovementsInformation)))),
           HasType(SuggestionType::kSeparator),
-          HasType(SuggestionType::kPredictionImprovementsDetails),
           HasType(SuggestionType::kPredictionImprovementsFeedback)));
 }
 
@@ -786,7 +779,6 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
       error_suggestions,
       ElementsAre(HasType(SuggestionType::kPredictionImprovementsError),
                   HasType(SuggestionType::kSeparator),
-                  HasType(SuggestionType::kPredictionImprovementsDetails),
                   HasType(SuggestionType::kPredictionImprovementsFeedback)));
 }
 
@@ -821,7 +813,6 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
       error_suggestions,
       ElementsAre(HasType(SuggestionType::kPredictionImprovementsError),
                   HasType(SuggestionType::kSeparator),
-                  HasType(SuggestionType::kPredictionImprovementsDetails),
                   HasType(SuggestionType::kPredictionImprovementsFeedback)));
 }
 
@@ -881,7 +872,6 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
       error_suggestion,
       ElementsAre(HasType(SuggestionType::kPredictionImprovementsError),
                   HasType(SuggestionType::kSeparator),
-                  HasType(SuggestionType::kPredictionImprovementsDetails),
                   HasType(SuggestionType::kPredictionImprovementsFeedback)));
 }
 
@@ -919,7 +909,6 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
       error_suggestions,
       ElementsAre(HasType(SuggestionType::kPredictionImprovementsError),
                   HasType(SuggestionType::kSeparator),
-                  HasType(SuggestionType::kPredictionImprovementsDetails),
                   HasType(SuggestionType::kPredictionImprovementsFeedback)));
 }
 

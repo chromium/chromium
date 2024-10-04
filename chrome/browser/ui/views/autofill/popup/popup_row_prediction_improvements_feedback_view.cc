@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -41,17 +42,37 @@ constexpr int kIconSize = 16;
 // The button radius used to paint the background.
 constexpr int kButtonRadius = 12;
 
-// Creates the suggestion container view with its `text`.
-// also looks for the "Learn more" substring in `text` and make it a link which
-// will trigger `learn_more_cliked`.
+// Creates the suggestion container view.
 std::unique_ptr<PopupRowContentView> CreateFeedbackContentView(
     base::RepeatingClosure manage_prediction_improvements_clicked) {
-  auto feedback_container = std::make_unique<PopupRowContentView>();
-  // TODO(crbug.com/357026771): Possibly move `touchable_menu_height` inside the
-  // `ChromeLayoutProvider`.
-  feedback_container->SetMinimumCrossAxisSize(
-      views::MenuConfig::instance().touchable_menu_height);
+  // First create the outer container, which contains text details about the
+  // feature and then the feedback section.
+  auto feedback_outer_container = std::make_unique<PopupRowContentView>();
+  feedback_outer_container->SetInsideBorderInsets(
+      gfx::Insets(autofill::PopupBaseView::ArrowHorizontalMargin()));
+  feedback_outer_container->SetOrientation(
+      views::BoxLayout::Orientation::kVertical);
+  feedback_outer_container->SetBetweenChildSpacing(
+      autofill::PopupBaseView::ArrowHorizontalMargin());
+  feedback_outer_container->SetMainAxisAlignment(
+      views::LayoutAlignment::kStart);
+  feedback_outer_container->AddChildView(
+      views::Builder<views::Label>()
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_DETAILS))
+          .SetTextStyle(views::style::STYLE_BODY_5)
+          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+          .SetMultiLine(true)
+          .Build());
 
+  // The feedback section, containing general text about it. Later on, thumbs up
+  // and down buttons are added.
+  auto feedback_title_and_button_container =
+      views::Builder<views::BoxLayoutView>()
+          .SetMainAxisAlignment(views::LayoutAlignment::kStart)
+          .SetID(PopupRowPredictionImprovementsFeedbackView::
+                     kFeedbackTextAndButtonsContainerViewID)
+          .Build();
   views::StyledLabel::RangeStyleInfo style_info =
       views::StyledLabel::RangeStyleInfo::CreateForLink(
           std::move(manage_prediction_improvements_clicked));
@@ -66,8 +87,8 @@ std::unique_ptr<PopupRowContentView> CreateFeedbackContentView(
       /*replacements=*/{manage_prediction_improvements_link_text},
       &replacement_offsets);
 
-  feedback_container->SetFlexForView(
-      feedback_container->AddChildView(
+  feedback_title_and_button_container->SetFlexForView(
+      feedback_title_and_button_container->AddChildView(
           views::Builder<views::StyledLabel>()
               .SetText(formatted_text)
               .SetHorizontalAlignment(gfx::ALIGN_LEFT)
@@ -84,7 +105,9 @@ std::unique_ptr<PopupRowContentView> CreateFeedbackContentView(
               .Build()),
       1);
 
-  return feedback_container;
+  feedback_outer_container->AddChildView(
+      std::move(feedback_title_and_button_container));
+  return feedback_outer_container;
 }
 
 void SetHoverStyleImageButton(views::ImageButton* button, bool hover) {
@@ -138,8 +161,12 @@ PopupRowPredictionImprovementsFeedbackView::
               line_number,
               PredictionImprovementsButtonActions::kLearnMoreClicked))) {
   // Create the feedback buttons.
-  auto* buttons_wrapper =
-      GetContentView().AddChildView(std::make_unique<views::BoxLayoutView>());
+  auto* feedback_text_and_buttons_container =
+      GetContentView().GetViewByID(PopupRowPredictionImprovementsFeedbackView::
+                                       kFeedbackTextAndButtonsContainerViewID);
+  CHECK(feedback_text_and_buttons_container);
+  auto* buttons_wrapper = feedback_text_and_buttons_container->AddChildView(
+      std::make_unique<views::BoxLayoutView>());
   buttons_wrapper->SetBetweenChildSpacing(
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
@@ -156,8 +183,8 @@ PopupRowPredictionImprovementsFeedbackView::
           controller, line_number,
           PredictionImprovementsButtonActions::kThumbsDownClicked)));
 
-  auto* content_layout =
-      static_cast<views::BoxLayout*>(GetContentView().GetLayoutManager());
+  auto* content_layout = static_cast<views::BoxLayout*>(
+      feedback_text_and_buttons_container->GetLayoutManager());
   content_layout->SetFlexForView(buttons_wrapper, 0);
 }
 

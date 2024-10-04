@@ -151,8 +151,9 @@ enum class SuggestionType {
   // Suggestion that provides users the possibility to give feedback about
   // predictions improvements.
   kPredictionImprovementsFeedback = 56,
+  // DEPRECATED due to UX changes.
   // Allows the users to navigate to more details about improved predictions.
-  kPredictionImprovementsDetails = 58,
+  // kPredictionImprovementsDetails = 58,
   // Suggestion displayed when there is an error with prediction improvements.
   kPredictionImprovementsError = 59,
   // Suggestion displayed when there is an error with prediction improvements.
