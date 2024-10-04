@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "pdf/document_metadata.h"
 #include "pdf/loader/document_loader.h"
 #include "pdf/loader/url_loader_wrapper.h"
@@ -38,7 +39,7 @@
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d.h"
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include <memory>
 
 #include "base/functional/callback.h"
@@ -47,7 +48,7 @@
 #include "pdf/pdfium/pdfium_searchify.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 using printing::ConvertUnitFloat;
 using printing::kPointsPerInch;
@@ -568,7 +569,7 @@ std::optional<gfx::SizeF> PDFiumEngineExports::GetPDFPageSizeByIndex(
   return gfx::SizeF(size.width, size.height);
 }
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 std::vector<uint8_t> PDFiumEngineExports::Searchify(
     base::span<const uint8_t> pdf_buffer,
     base::RepeatingCallback<screen_ai::mojom::VisualAnnotationPtr(
@@ -580,6 +581,6 @@ std::unique_ptr<PdfProgressiveSearchifier>
 PDFiumEngineExports::CreateProgressiveSearchifier() {
   return std::make_unique<PdfiumProgressiveSearchifier>();
 }
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 }  // namespace chrome_pdf

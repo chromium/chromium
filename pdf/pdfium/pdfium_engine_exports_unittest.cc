@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/path_service.h"
 #include "base/test/mock_callback.h"
+#include "build/chromeos_buildflags.h"
 #include "pdf/pdf.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "services/screen_ai/buildflags/buildflags.h"
@@ -22,7 +23,7 @@
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include <memory>
 #include <string>
 
@@ -32,12 +33,13 @@
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 namespace chrome_pdf {
 
 namespace {
 
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 class ScopedLibraryInitializer {
  public:
   ScopedLibraryInitializer() {
@@ -45,27 +47,6 @@ class ScopedLibraryInitializer {
                   FontMappingMode::kNoMapping);
   }
   ~ScopedLibraryInitializer() { ShutdownSDK(); }
-};
-
-class PDFiumEngineExportsTest : public testing::Test {
- public:
-  PDFiumEngineExportsTest() = default;
-  PDFiumEngineExportsTest(const PDFiumEngineExportsTest&) = delete;
-  PDFiumEngineExportsTest& operator=(const PDFiumEngineExportsTest&) = delete;
-  ~PDFiumEngineExportsTest() override = default;
-
- protected:
-  void SetUp() override {
-    pdf_data_dir_ = base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
-                        .Append(FILE_PATH_LITERAL("pdf"))
-                        .Append(FILE_PATH_LITERAL("test"))
-                        .Append(FILE_PATH_LITERAL("data"));
-  }
-
-  const base::FilePath& pdf_data_dir() const { return pdf_data_dir_; }
-
- private:
-  base::FilePath pdf_data_dir_;
 };
 
 // Returns all characters in the page.
@@ -112,6 +93,28 @@ std::vector<gfx::RectF> GetTextPositions(base::span<const uint8_t> pdf,
   }
   return positions;
 }
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+
+class PDFiumEngineExportsTest : public testing::Test {
+ public:
+  PDFiumEngineExportsTest() = default;
+  PDFiumEngineExportsTest(const PDFiumEngineExportsTest&) = delete;
+  PDFiumEngineExportsTest& operator=(const PDFiumEngineExportsTest&) = delete;
+  ~PDFiumEngineExportsTest() override = default;
+
+ protected:
+  void SetUp() override {
+    pdf_data_dir_ = base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
+                        .Append(FILE_PATH_LITERAL("pdf"))
+                        .Append(FILE_PATH_LITERAL("test"))
+                        .Append(FILE_PATH_LITERAL("data"));
+  }
+
+  const base::FilePath& pdf_data_dir() const { return pdf_data_dir_; }
+
+ private:
+  base::FilePath pdf_data_dir_;
+};
 
 }  // namespace
 
@@ -221,7 +224,7 @@ TEST_F(PDFiumEngineExportsTest, ConvertPdfDocumentToNupPdf) {
   }
 }
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 constexpr char kExpectedText[] = "Hello World! 你好！🙂";
 
 TEST_F(PDFiumEngineExportsTest, Searchify) {
@@ -446,6 +449,6 @@ TEST_F(PDFiumEngineExportsTest, PdfProgressiveSearchifierText) {
   }
 }
 
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 }  // namespace chrome_pdf

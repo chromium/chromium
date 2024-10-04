@@ -54,7 +54,7 @@ if (enable_pdf) {
       "//ui/gfx/geometry",
     ]
 
-    if (enable_screen_ai_service) {
+    if (is_chromeos && enable_screen_ai_service) {
       public_deps = [ ":pdf_progressive_searchifier" ]
     }
   }
@@ -238,8 +238,6 @@ if (enable_pdf) {
       sources += [
         "pdfium/pdfium_on_demand_searchifier.cc",
         "pdfium/pdfium_on_demand_searchifier.h",
-        "pdfium/pdfium_progressive_searchifier.cc",
-        "pdfium/pdfium_progressive_searchifier.h",
         "pdfium/pdfium_searchify.cc",
         "pdfium/pdfium_searchify.h",
         "pdfium/pdfium_searchify_font.cc",
@@ -248,11 +246,18 @@ if (enable_pdf) {
 
       public_deps += [ "//services/screen_ai/public/mojom" ]
 
-      deps += [ ":pdf_progressive_searchifier" ]
+      if (is_chromeos) {
+        sources += [
+          "pdfium/pdfium_progressive_searchifier.cc",
+          "pdfium/pdfium_progressive_searchifier.h",
+        ]
+
+        deps += [ ":pdf_progressive_searchifier" ]
+      }
     }
   }
 
-  if (enable_screen_ai_service) {
+  if (is_chromeos && enable_screen_ai_service) {
     source_set("pdf_progressive_searchifier") {
       public = [ "pdf_progressive_searchifier.h" ]
 
