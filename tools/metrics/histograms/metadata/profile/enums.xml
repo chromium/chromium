@@ -378,9 +378,9 @@ chromium-metrics-reviews@google.com.
   <int value="26" label="kCommanderFrontend"/>
   <int value="27" label="kDiceWebSigninInterceptionBubble"/>
   <int value="28" label="kHistoryMenuBridge"/>
-  <int value="29" label="kLacrosMainProfile"/>
+  <int value="29" label="(Obsolete) kLacrosMainProfile"/>
   <int value="30" label="kProfileCreationSamlFlow"/>
-  <int value="31" label="kDriveFsNativeMessageHostLacros"/>
+  <int value="31" label="(Obsolete) kDriveFsNativeMessageHostLacros"/>
   <int value="32" label="kProfileDeletionProcess"/>
   <int value="33" label="kProfileStatistics"/>
   <int value="34" label="kIsolatedWebAppInstall"/>

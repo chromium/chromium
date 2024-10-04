@@ -82,14 +82,14 @@ void DisableSyncForProfileDeletion(Profile* profile) {
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On ChromeOS Ash, profile deletion uses a different codepath but some
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, profile deletion uses a different codepath but some
   // browser tests do exercise this code.
   CHECK_IS_TEST();
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+#else
   identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
       signin_metrics::ProfileSignout::kSignoutDuringProfileDeletion);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace
@@ -127,9 +127,6 @@ void DeleteProfileHelper::MaybeScheduleProfileForDeletion(
 
   Profile* profile = profile_manager_->GetProfileByPath(profile_dir);
   if (profile) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    CHECK(!profile->IsMainProfile());
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     // Cancel all in-progress downloads before deleting the profile to prevent a
     // "Do you want to exit Google Chrome and cancel the downloads?" prompt
     // (crbug.com/336725).

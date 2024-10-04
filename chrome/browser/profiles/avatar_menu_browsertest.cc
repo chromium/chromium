@@ -183,8 +183,7 @@ IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, Guest) {
   Browser* guest_browser = ui_test_utils::WaitForBrowserToOpen();
 
   // ProfileManager will switch active profile upon observing
-  // BrowserList::OnBrowserSetLastActive(), which may happen asynchronously
-  // with Lacros Wayland UI flow. Wait until the event is observed if needed.
+  // BrowserList::OnBrowserSetLastActive().
   bool wait_for_set_last_active_observed =
       !ProfileManager::GetLastUsedProfileIfLoaded()->IsGuestSession();
   ui_test_utils::WaitForBrowserSetLastActive(guest_browser,

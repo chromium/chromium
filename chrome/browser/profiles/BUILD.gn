@@ -82,18 +82,10 @@ source_set("profile") {
     deps += [ "//extensions/browser" ]
   }
   if (is_chromeos) {
-    deps += [ "//chromeos/constants" ]
-  }
-  if (is_chromeos_ash) {
     deps += [
       "//ash/constants",
       "//chromeos/ash/components/browser_context_helper",
-    ]
-  }
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/lacros",
-      "//chromeos/startup",
+      "//chromeos/constants",
     ]
   }
   if (is_android) {
@@ -167,7 +159,7 @@ source_set("profile_util_impl") {
     "//url",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//chrome/browser/ash/login/users",
       "//chrome/browser/ash/policy/core",
@@ -378,7 +370,7 @@ source_set("profiles_extra_parts_impl") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//chrome/browser/apps/almanac_api_client",
       "//chrome/browser/apps/app_preload_service",
@@ -403,7 +395,7 @@ source_set("profiles_extra_parts_impl") {
     ]
   }
 
-  if (!is_chromeos_ash && !is_android) {
+  if (!is_chromeos && !is_android) {
     deps += [ ":profile_statistics" ]
   }
 
@@ -420,14 +412,6 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/extensions:keyed_service_factories",
       "//chrome/browser/web_applications",
       "//components/omnibox/browser",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
-      "//chrome/browser/chromeos/reporting",
-      "//chrome/browser/lacros/account_manager",
     ]
   }
 

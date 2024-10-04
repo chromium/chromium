@@ -99,17 +99,10 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/pref_names.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/preferences/preferences.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_params_proxy.h"
+#include "chromeos/constants/chromeos_features.h"
+#include "chromeos/constants/pref_names.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -285,7 +278,7 @@ OffTheRecordProfileImpl::~OffTheRecordProfileImpl() {
   // other profile-related destroy notifications are dispatched.
   ShutdownStoragePartitions();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Bypass profile lifetime recording for ChromeOS helper profiles (sign-in,
   // lockscreen, etc).
   if (!ash::ProfileHelper::IsUserProfile(profile_))
@@ -357,14 +350,6 @@ scoped_refptr<base::SequencedTaskRunner>
 OffTheRecordProfileImpl::GetIOTaskRunner() {
   return profile_->GetIOTaskRunner();
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool OffTheRecordProfileImpl::IsMainProfile() const {
-  return chromeos::BrowserParamsProxy::Get()->SessionType() ==
-             crosapi::mojom::SessionType::kGuestSession &&
-         profile_->IsMainProfile();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 Profile* OffTheRecordProfileImpl::GetOffTheRecordProfile(
     const OTRProfileID& otr_profile_id,
@@ -438,7 +423,7 @@ OffTheRecordProfileImpl::GetPolicySchemaRegistryService() {
   return nullptr;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 policy::UserCloudPolicyManagerAsh*
 OffTheRecordProfileImpl::GetUserCloudPolicyManagerAsh() {
   return GetOriginalProfile()->GetUserCloudPolicyManagerAsh();
@@ -452,7 +437,7 @@ policy::ProfileCloudPolicyManager*
 OffTheRecordProfileImpl::GetProfileCloudPolicyManager() {
   return GetOriginalProfile()->GetProfileCloudPolicyManager();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 policy::CloudPolicyManager* OffTheRecordProfileImpl::GetCloudPolicyManager() {
   return GetOriginalProfile()->GetCloudPolicyManager();
 }
@@ -599,7 +584,7 @@ bool OffTheRecordProfileImpl::WasCreatedByVersionOrLater(
   return profile_->WasCreatedByVersionOrLater(version);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void OffTheRecordProfileImpl::ChangeAppLocale(const std::string& locale,
                                               AppLocaleChangedVia) {}
 
@@ -609,7 +594,7 @@ void OffTheRecordProfileImpl::InitChromeOSPreferences() {
   // The incognito profile shouldn't have Chrome OS's preferences.
   // The preferences are associated with the regular user profile.
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool OffTheRecordProfileImpl::IsNewProfile() const {
   return profile_->IsNewProfile();
@@ -624,7 +609,7 @@ void OffTheRecordProfileImpl::SetCreationTimeForTesting(
   start_time_ = creation_time;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Special case of the OffTheRecordProfileImpl which is used while Guest
 // session in CrOS.
 class GuestSessionProfile : public OffTheRecordProfileImpl {
@@ -652,7 +637,7 @@ std::unique_ptr<Profile> Profile::CreateOffTheRecordProfile(
     Profile* parent,
     const OTRProfileID& otr_profile_id) {
   std::unique_ptr<OffTheRecordProfileImpl> profile;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (parent->IsGuestSession() && otr_profile_id == OTRProfileID::PrimaryID())
     profile = std::make_unique<GuestSessionProfile>(parent);
 #endif
