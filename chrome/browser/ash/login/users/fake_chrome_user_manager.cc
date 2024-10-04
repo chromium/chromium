@@ -154,6 +154,16 @@ user_manager::User* FakeChromeUserManager::AddWebKioskAppUser(
   return user;
 }
 
+user_manager::User* FakeChromeUserManager::AddKioskIwaUser(
+    const AccountId& account_id) {
+  user_manager::User* user = user_manager::User::CreateKioskIwaUser(account_id);
+  user->set_username_hash(
+      user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
+  user_storage_.emplace_back(user);
+  users_.push_back(user);
+  return user;
+}
+
 user_manager::User* FakeChromeUserManager::AddGuestUser() {
   user_manager::User* user =
       user_manager::User::CreateGuestUser(user_manager::GuestAccountId());

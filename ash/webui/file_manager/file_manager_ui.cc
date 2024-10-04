@@ -55,6 +55,7 @@ bool IsKioskSession() {
       return false;
     case user_manager::UserType::kKioskApp:
     case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskIWA:
       return true;
   }
 }

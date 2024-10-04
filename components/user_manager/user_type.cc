@@ -21,6 +21,8 @@ const char* UserTypeToString(UserType user_type) {
       return "chrome-app-kiosk";
     case UserType::kWebKioskApp:
       return "web-kiosk";
+    case UserType::kKioskIWA:
+      return "iwa-kiosk";
   }
 }
 

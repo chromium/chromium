@@ -127,29 +127,19 @@ void StubAuthenticator::LoginAsPublicSession(const UserContext& user_context) {
 void StubAuthenticator::LoginAsKioskAccount(
     const AccountId& /* app_account_id */,
     bool /* ephemeral */) {
-  UserContext user_context(user_manager::UserType::kKioskApp,
-                           expected_user_context_.GetAccountId());
-  user_context.SetIsUsingOAuth(false);
-  user_context.SetMountState(UserContext::MountState::kExistingPersistent);
-  user_context.SetUserIDHash(
-      expected_user_context_.GetAccountId().GetUserEmail() + kUserIdHashSuffix);
-  user_context.GetKey()->Transform(Key::KEY_TYPE_SALTED_SHA256_TOP_HALF,
-                                   "some-salt");
-  consumer_->OnAuthSuccess(user_context);
+  LoginAsKioskAccountStub(user_manager::UserType::kKioskApp);
 }
 
 void StubAuthenticator::LoginAsWebKioskAccount(
     const AccountId& /* app_account_id */,
     bool /* ephemeral */) {
-  UserContext user_context(user_manager::UserType::kWebKioskApp,
-                           expected_user_context_.GetAccountId());
-  user_context.SetIsUsingOAuth(false);
-  user_context.SetMountState(UserContext::MountState::kExistingPersistent);
-  user_context.SetUserIDHash(
-      expected_user_context_.GetAccountId().GetUserEmail() + kUserIdHashSuffix);
-  user_context.GetKey()->Transform(Key::KEY_TYPE_SALTED_SHA256_TOP_HALF,
-                                   "some-salt");
-  consumer_->OnAuthSuccess(user_context);
+  LoginAsKioskAccountStub(user_manager::UserType::kWebKioskApp);
+}
+
+void StubAuthenticator::LoginAsIwaKioskAccount(
+    const AccountId& /* app_account_id */,
+    bool /* ephemeral */) {
+  LoginAsKioskAccountStub(user_manager::UserType::kKioskIWA);
 }
 
 void StubAuthenticator::OnAuthSuccess() {
@@ -208,6 +198,18 @@ void StubAuthenticator::OnOldEncryptionDetected() {
   consumer_->OnOldEncryptionDetected(
       std::make_unique<UserContext>(user_context),
       has_incomplete_encryption_migration_);
+}
+
+void StubAuthenticator::LoginAsKioskAccountStub(
+    user_manager::UserType kiosk_type) {
+  UserContext user_context(kiosk_type, expected_user_context_.GetAccountId());
+  user_context.SetIsUsingOAuth(false);
+  user_context.SetMountState(UserContext::MountState::kExistingPersistent);
+  user_context.SetUserIDHash(
+      expected_user_context_.GetAccountId().GetUserEmail() + kUserIdHashSuffix);
+  user_context.GetKey()->Transform(Key::KEY_TYPE_SALTED_SHA256_TOP_HALF,
+                                   "some-salt");
+  consumer_->OnAuthSuccess(user_context);
 }
 
 }  // namespace ash

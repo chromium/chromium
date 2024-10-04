@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_manager.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
@@ -12,6 +13,7 @@
 #include "base/logging.h"
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_data.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
+#include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "components/policy/core/common/device_local_account_type.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -56,6 +58,19 @@ KioskAppManagerBase::AppList KioskIwaManager::GetApps() const {
   return apps;
 }
 
+const KioskIwaData* KioskIwaManager::GetApp(const AccountId& account_id) const {
+  auto iter =
+      std::find_if(isolated_web_apps_.begin(), isolated_web_apps_.end(),
+                   [&account_id](const std::unique_ptr<KioskIwaData>& app) {
+                     return app->account_id() == account_id;
+                   });
+
+  if (iter == isolated_web_apps_.end()) {
+    return nullptr;
+  }
+  return iter->get();
+}
+
 void KioskIwaManager::UpdateAppsFromPolicy() {
   // TODO(crbug.com/361017701): remove old apps as other app managers do.
   isolated_web_apps_.clear();
@@ -80,8 +95,12 @@ void KioskIwaManager::UpdateAppsFromPolicy() {
       continue;
     }
 
+    KioskCryptohomeRemover::CancelDelayedCryptohomeRemoval(
+        iwa_data->account_id());
     isolated_web_apps_.push_back(std::move(iwa_data));
   }
+
+  NotifyKioskAppsChanged();
 }
 
 }  // namespace ash

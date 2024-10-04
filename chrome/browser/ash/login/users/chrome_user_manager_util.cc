@@ -69,9 +69,9 @@ std::optional<user_manager::UserType> DeviceLocalAccountTypeToUserType(
     case policy::DeviceLocalAccountType::kKioskApp:
       return user_manager::UserType::kKioskApp;
     case policy::DeviceLocalAccountType::kWebKioskApp:
-    // TODO(crbug.com/358536558): Create a new user type for IWA kiosk.
-    case policy::DeviceLocalAccountType::kKioskIsolatedWebApp:
       return user_manager::UserType::kWebKioskApp;
+    case policy::DeviceLocalAccountType::kKioskIsolatedWebApp:
+      return user_manager::UserType::kKioskIWA;
   }
 }
 

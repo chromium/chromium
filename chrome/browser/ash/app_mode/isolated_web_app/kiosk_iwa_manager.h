@@ -10,6 +10,7 @@
 
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_data.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
+#include "components/account_id/account_id.h"
 
 class PrefRegistrySimple;
 
@@ -31,6 +32,9 @@ class KioskIwaManager : public KioskAppManagerBase {
 
   // KioskAppManagerBase overrides:
   KioskAppManagerBase::AppList GetApps() const override;
+
+  // Returns app data associated with `account_id`.
+  const KioskIwaData* GetApp(const AccountId& account_id) const;
 
  private:
   void UpdateAppsFromPolicy() override;

@@ -136,8 +136,12 @@ std::unique_ptr<KioskAppLauncher> BuildKioskAppLauncher(
     case KioskAppType::kIsolatedWebApp:
       // TODO(crbug.com/361018151): impl an app service based launcher or reuse
       // WebKioskAppServiceLauncher since IWAs are installed as Web Apps.
-      NOTIMPLEMENTED();
-      return nullptr;
+      // Temporarily use a web kiosk as a placeholder during development.
+      auto kiosk_web_apps = WebKioskAppManager::Get()->GetApps();
+      CHECK_GT(kiosk_web_apps.size(), 0U);
+      const WebKioskAppManager::App& placeholder_app_info = kiosk_web_apps[0];
+      return std::make_unique<WebKioskAppServiceLauncher>(
+          profile, placeholder_app_info.account_id, network_delegate);
   }
 }
 

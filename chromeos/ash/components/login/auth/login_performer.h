@@ -86,6 +86,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) LoginPerformer
   // Performs a login into the Web kiosk mode account with |web_app_account_id|.
   void LoginAsWebKioskAccount(const AccountId& web_app_account_id);
 
+  // Performs a login into the IWA kiosk mode account with |iwa_account_id|.
+  void LoginAsIwaKioskAccount(const AccountId& iwa_account_id);
+
   // Performs final stages of the login for user already authenticated via
   // `AuthSession`.
   void LoginAuthenticated(std::unique_ptr<UserContext> user_context);

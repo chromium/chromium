@@ -593,14 +593,25 @@ std::optional<ash::KioskAppId> GetAppId(const base::CommandLine& command_line,
                                         Profile* profile) {
   const user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
-  if (user && user->GetType() == user_manager::UserType::kKioskApp) {
-    return ash::KioskAppId::ForChromeApp(
-        command_line.GetSwitchValueASCII(::switches::kAppId),
-        user->GetAccountId());
-  } else if (user && user->GetType() == user_manager::UserType::kWebKioskApp) {
-    return ash::KioskAppId::ForWebApp(user->GetAccountId());
-  } else {
+
+  if (!user) {
     return std::nullopt;
+  }
+
+  switch (user->GetType()) {
+    case user_manager::UserType::kKioskApp:
+      return ash::KioskAppId::ForChromeApp(
+          command_line.GetSwitchValueASCII(::switches::kAppId),
+          user->GetAccountId());
+    case user_manager::UserType::kWebKioskApp:
+      return ash::KioskAppId::ForWebApp(user->GetAccountId());
+    case user_manager::UserType::kKioskIWA:
+      return ash::KioskAppId::ForIsolatedWebApp(user->GetAccountId());
+    case user_manager::UserType::kRegular:
+    case user_manager::UserType::kChild:
+    case user_manager::UserType::kGuest:
+    case user_manager::UserType::kPublicAccount:
+      return std::nullopt;
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

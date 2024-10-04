@@ -655,6 +655,8 @@ mojom::SessionType GetSessionType() {
     case user_manager::UserType::kKioskApp:
       return mojom::SessionType::kAppKioskSession;
     case user_manager::UserType::kWebKioskApp:
+    // Not introducing a separate value for lacros
+    case user_manager::UserType::kKioskIWA:
       return mojom::SessionType::kWebKioskSession;
   }
 }
@@ -1208,7 +1210,8 @@ policy::CloudPolicyCore* GetCloudPolicyCoreForUser(
     }
     case user_manager::UserType::kKioskApp:
     case user_manager::UserType::kPublicAccount:
-    case user_manager::UserType::kWebKioskApp: {
+    case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskIWA: {
       policy::DeviceLocalAccountPolicyBroker* broker =
           GetDeviceLocalAccountPolicyBroker(user);
       return broker ? broker->core() : nullptr;
@@ -1229,7 +1232,8 @@ policy::ComponentCloudPolicyService* GetComponentCloudPolicyServiceForUser(
     }
     case user_manager::UserType::kKioskApp:
     case user_manager::UserType::kPublicAccount:
-    case user_manager::UserType::kWebKioskApp: {
+    case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskIWA: {
       policy::DeviceLocalAccountPolicyBroker* broker =
           GetDeviceLocalAccountPolicyBroker(user);
       return broker ? broker->component_policy_service() : nullptr;

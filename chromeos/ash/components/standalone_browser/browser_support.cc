@@ -64,6 +64,9 @@ bool IsUserTypeAllowed(const user_manager::User& user) {
       return base::FeatureList::IsEnabled(features::kWebKioskEnableLacros);
     case user_manager::UserType::kKioskApp:
       return base::FeatureList::IsEnabled(features::kChromeKioskEnableLacros);
+    // IWA Kiosk does not support lacros.
+    case user_manager::UserType::kKioskIWA:
+      return false;
   }
 }
 

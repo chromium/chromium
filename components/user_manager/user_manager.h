@@ -417,6 +417,9 @@ class USER_MANAGER_EXPORT UserManager {
   // Returns true if we're logged in as a Web kiosk app.
   virtual bool IsLoggedInAsWebKioskApp() const = 0;
 
+  // Returns true if we're logged in as an Isolated web app (IWA) kiosk.
+  virtual bool IsLoggedInAsKioskIWA() const = 0;
+
   // Returns true if we're logged in as chrome, or Web kiosk app.
   virtual bool IsLoggedInAsAnyKioskApp() const = 0;
 

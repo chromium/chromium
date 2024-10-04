@@ -54,6 +54,8 @@ ForceInstalledMetrics::UserType ConvertUserType(
     case user_manager::UserType::kChild:
       return ForceInstalledMetrics::UserType::USER_TYPE_CHILD;
     case user_manager::UserType::kWebKioskApp:
+    // TODO(crbug.com/358536558): Process a new user type for IWA kiosk
+    case user_manager::UserType::kKioskIWA:
       return ForceInstalledMetrics::UserType::USER_TYPE_WEB_KIOSK_APP;
     default:
       NOTREACHED_IN_MIGRATION();

@@ -45,16 +45,12 @@
 #include "chromeos/ash/components/login/auth/public/recovery_types.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_type.h"
 
 namespace ash {
 
 namespace {
-
-bool IsKioskUserType(user_manager::UserType type) {
-  return type == user_manager::UserType::kKioskApp ||
-         type == user_manager::UserType::kWebKioskApp;
-}
 
 user_data_auth::AuthIntent SerializeIntent(AuthSessionIntent intent) {
   switch (intent) {
@@ -612,7 +608,7 @@ void AuthPerformer::OnStartAuthSession(
   std::vector<cryptohome::AuthFactor> next_factors;
   cryptohome::AuthFactorType fallback_type =
       cryptohome::AuthFactorType::kPassword;
-  if (IsKioskUserType(context->GetUserType())) {
+  if (user_manager::User::TypeIsKiosk(context->GetUserType())) {
     fallback_type = cryptohome::AuthFactorType::kKiosk;
   }
 

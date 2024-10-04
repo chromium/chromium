@@ -72,6 +72,8 @@ FatalCrashTelemetry::SessionType GetSessionType(
     case user_manager::UserType::kKioskApp:
       return FatalCrashTelemetry::SESSION_TYPE_KIOSK_APP;
     case user_manager::UserType::kWebKioskApp:
+    // TODO(crbug.com/358536558): Process a new user type for IWA kiosk
+    case user_manager::UserType::kKioskIWA:
       return FatalCrashTelemetry::SESSION_TYPE_WEB_KIOSK_APP;
     default:
       NOTREACHED();
