@@ -440,6 +440,7 @@
 #include "chrome/browser/ui/webui/settings/reset_settings_handler.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector_chromeos.h"
 #include "chromeos/ash/components/audio/audio_devices_pref_handler_impl.h"
+#include "chromeos/ash/components/boca/on_task/on_task_prefs.h"
 #include "chromeos/ash/components/local_search_service/search_metrics_reporter.h"
 #include "chromeos/ash/components/network/cellular_esim_profile_handler_impl.h"
 #include "chromeos/ash/components/network/cellular_metrics_logger.h"
@@ -2233,6 +2234,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   wallpaper_handlers::prefs::RegisterProfilePrefs(registry);
   ash::reporting::RegisterProfilePrefs(registry);
   ChromeMediaAppGuestUIDelegate::RegisterProfilePrefs(registry);
+  ash::boca::RegisterOnTaskProfilePrefs(registry);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
