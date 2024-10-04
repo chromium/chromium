@@ -21,7 +21,10 @@ component("dwa") {
     "dwa_service.cc",
     "dwa_service.h",
   ]
-  public_deps = [ "//components/metrics/dwa/mojom" ]
+  public_deps = [
+    "//components/metrics/dwa/mojom",
+    "//third_party/metrics_proto",
+  ]
   defines = [ "IS_DWA_IMPL" ]
   deps = [
     "//base",
@@ -31,7 +34,6 @@ component("dwa") {
     "//components/prefs:prefs",
     "//components/version_info:version_info",
     "//mojo/public/cpp/bindings",
-    "//third_party/metrics_proto",
   ]
 }
 
@@ -39,6 +41,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "dwa_entry_builder_unittest.cc",
+    "dwa_recorder_unittest.cc",
     "dwa_service_unittest.cc",
   ]
   deps = [
