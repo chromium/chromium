@@ -14,7 +14,8 @@ ${this.useUpdatedUi_ ? html`
     <div id="content-container">
       ${this.showValueProposition_ ? html`
         <managed-user-profile-notice-value-prop id="value-prop"
-            title="$i18n{signinIntoChrome}" subtitle="$i18n{valuePropSubtitle}"
+            title="$i18n{valuePropositionTitle}"
+            subtitle="$i18n{valuePropSubtitle}"
             picture-url="${this.pictureUrl_}"
             email="${this.email_}" account-name="${this.accountName_}">
         ` : ''}

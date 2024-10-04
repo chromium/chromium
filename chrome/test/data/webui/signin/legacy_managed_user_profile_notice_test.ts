@@ -479,7 +479,7 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
 
       // Initial values.
       checkValuePropositionTextValues(
-          app.i18n('signinIntoChrome'), app.i18n('valuePropSubtitle'),
+          app.i18n('valuePropositionTitle'), app.i18n('valuePropSubtitle'),
           'email@email.com', 'account_name', 'continue_as');
       checkImageUrl(targetElement, AVATAR_URL_1);
 
@@ -498,7 +498,7 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
       });
       await microtasksFinished();
       checkValuePropositionTextValues(
-          app.i18n('signinIntoChrome'), app.i18n('valuePropSubtitle'),
+          app.i18n('valuePropositionTitle'), app.i18n('valuePropSubtitle'),
           'new_email@email.com', 'new_account_name', 'new_continue_as');
 
       checkImageUrl(targetElement, AVATAR_URL_2);

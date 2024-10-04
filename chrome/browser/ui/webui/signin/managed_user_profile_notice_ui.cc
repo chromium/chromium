@@ -15,6 +15,8 @@
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
@@ -167,7 +169,7 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
   source->AddLocalizedString("separateBrowsingDataTitle",
                              IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_TITLE);
   source->AddLocalizedString(
-      "signinIntoChrome",
+      "valuePropositionTitle",
       IDS_AVATAR_BUTTON_INTERCEPT_BUBBLE_CHROME_SIGNIN_TEXT);
   source->AddLocalizedString("valuePropSubtitle",
                              IDS_ENTERPRISE_VALUE_PROPOSITION_SUBTITLE);
@@ -201,6 +203,7 @@ void ManagedUserProfileNoticeUI::Initialize(
     ManagedUserProfileNoticeUI::ScreenType type,
     std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
         create_param) {
+  auto* profile = Profile::FromWebUI(web_ui());
   base::Value::Dict update_data;
   if (type ==
       ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation) {
@@ -209,6 +212,23 @@ void ManagedUserProfileNoticeUI::Initialize(
     int title_id = create_param->profile_creation_required_by_policy
                        ? IDS_ENTERPRISE_WELCOME_PROFILE_REQUIRED_TITLE
                        : IDS_ENTERPRISE_WELCOME_PROFILE_WILL_BE_MANAGED_TITLE;
+    if (create_param->profile_creation_required_by_policy) {
+      std::string manager =
+          signin_util::IsProfileSeparationEnforcedByProfile(
+              profile, create_param->account_info.email)
+              ? chrome::GetEnterpriseAccountDomain(*profile).value_or(
+                    std::string())
+              : enterprise_util::GetDomainFromEmail(
+                    create_param->account_info.email);
+      update_data.Set(
+          "valuePropositionTitle",
+          manager.empty()
+              ? l10n_util::GetStringUTF16(
+                    IDS_ENTERPRISE_VALUE_PROPOSITION_PROFILE_REQUIRED_BY_ORG_TITLE)
+              : l10n_util::GetStringFUTF16(
+                    IDS_ENTERPRISE_VALUE_PROPOSITION_PROFILE_REQUIRED_BY_ORG_KNOWN_DOMAIN_TITLE,
+                    base::UTF8ToUTF16(manager)));
+    }
     update_data.Set("enterpriseProfileWelcomeTitle",
                     l10n_util::GetStringUTF16(title_id));
 
@@ -245,8 +265,8 @@ void ManagedUserProfileNoticeUI::Initialize(
                 create_param->account_info.email))));
   }
   content::WebUIDataSource::Update(
-      Profile::FromWebUI(web_ui()),
-      chrome::kChromeUIManagedUserProfileNoticeHost, std::move(update_data));
+      profile, chrome::kChromeUIManagedUserProfileNoticeHost,
+      std::move(update_data));
 
   auto handler = std::make_unique<ManagedUserProfileNoticeHandler>(
       browser, type, std::move(create_param));
