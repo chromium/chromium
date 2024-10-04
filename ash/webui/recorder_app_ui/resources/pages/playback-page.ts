@@ -286,12 +286,12 @@ export class PlaybackPage extends ReactiveLitElement {
         box-shadow: var(--cros-sys-app_elevation3);
         display: flex;
         flex-flow: row;
-        inset-area: center span-right;
         margin: initial;
         overflow: initial;
         padding: 0;
         position: absolute;
         position-anchor: --volume-button;
+        position-area: center span-right;
 
         & > cros-slider {
           min-inline-size: initial;

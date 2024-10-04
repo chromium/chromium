@@ -119,9 +119,9 @@ export class MainPage extends ReactiveLitElement {
       align-items: center;
       display: flex;
       flex-flow: column;
-      inset-area: top span-all;
       position: absolute;
       position-anchor: --record-button;
+      position-area: top span-all;
 
       & > div {
         background: var(--cros-sys-primary);
