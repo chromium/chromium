@@ -2559,7 +2559,13 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DeleteAndRecreate) {
   delegate.RunUntilEventsMatch(matcher);
 }
 
-TEST_P(FilePathWatcherWithChangeInfoTest, WatchDirectory) {
+// TODO(371594111): Tests are flaky on Macos
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_WatchDirectory DISABLED_WatchDirectory
+#else
+#define MAYBE_WatchDirectory WatchDirectory
+#endif
+TEST_P(FilePathWatcherWithChangeInfoTest, MAYBE_WatchDirectory) {
   base::FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
   base::FilePath file1(dir.AppendASCII("file1"));
   base::FilePath file2(dir.AppendASCII("file2"));
@@ -3149,7 +3155,13 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DeletedFileInDirectory) {
   delegate.RunUntilEventsMatch(matcher);
 }
 
-TEST_P(FilePathWatcherWithChangeInfoTest, FileInDirectory) {
+// TODO(371594111): Tests are flaky on Macos
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_FileInDirectory DISABLED_FileInDirectory
+#else
+#define MAYBE_FileInDirectory FileInDirectory
+#endif
+TEST_P(FilePathWatcherWithChangeInfoTest, MAYBE_FileInDirectory) {
   // Expect the changes to be reported as events on the file, not as
   // modifications to the directory.
   base::FilePath parent(temp_dir_.GetPath().AppendASCII("parent"));
