@@ -459,7 +459,6 @@ group("gn_all") {
         "//ash/webui:ash_webui_unittests",
         "//chrome/browser/ash/child_accounts/time_limit_consistency_test:usage_time_limit_unittests",
         "//chrome/browser/metrics/perf:profile_provider_unittest",
-        "//chrome/test:ash_crosapi_tests",
         "//chromeos/ash/components/proximity_auth:proximity_auth_unittests",
         "//chromeos/components:chromeos_components_unittests",
         "//components/exo/wayland:wayland_client_compatibility_tests",

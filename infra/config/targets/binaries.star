@@ -125,11 +125,6 @@ targets.binaries.windowed_test_launcher(
 )
 
 targets.binaries.windowed_test_launcher(
-    name = "ash_crosapi_tests",
-    label = "//chrome/test:ash_crosapi_tests",
-)
-
-targets.binaries.windowed_test_launcher(
     name = "ash_webui_unittests",
     label = "//ash/webui:ash_webui_unittests",
 )

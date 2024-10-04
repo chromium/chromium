@@ -3748,10 +3748,6 @@ targets.legacy_basic_suite(
     tests = {
         # Chrome OS only.
         "ash_components_unittests": targets.legacy_test_config(),
-        # TODO(crbug.com/40234627) Enable on CQ when stable.
-        "ash_crosapi_tests": targets.legacy_test_config(
-            ci_only = True,
-        ),
         "ash_unittests": targets.legacy_test_config(
             swarming = targets.swarming(
                 shards = 5,

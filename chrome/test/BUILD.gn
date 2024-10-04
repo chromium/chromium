@@ -12154,17 +12154,6 @@ if (is_chromeos_ash) {
   }
 }
 
-if (is_chromeos_ash) {
-  # This target is for Ash-side crosapi testing.
-  test("ash_crosapi_tests") {
-    use_xvfb = use_xvfb_in_this_config
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-    deps = [ "//chrome/browser/ash/crosapi/test" ]
-    data_deps = [ ":test_ash_chrome" ]
-  }
-}
-
 if (is_linux || is_mac || is_win) {
   script_test("variations_smoke_tests") {
     if (is_linux) {

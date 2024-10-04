@@ -133,10 +133,6 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
-    name = "ash_crosapi_tests",
-)
-
-targets.tests.gtest_test(
     name = "ash_webui_unittests",
 )
 

@@ -273,23 +273,6 @@
         "test_id_prefix": "ninja://ash/components:ash_components_unittests/"
       },
       {
-        "ci_only": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "ash_crosapi_tests",
-        "swarming": {
-          "dimensions": {
-            "os": "Ubuntu-22.04",
-            "pool": "chrome.tests",
-            "ssd": "0"
-          },
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ash_crosapi_tests",
-        "test_id_prefix": "ninja://chrome/test:ash_crosapi_tests/"
-      },
-      {
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
