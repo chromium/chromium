@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/ash/emoji/gif_tenor_api_fetcher.h"
+#include "chromeos/ash/components/emoji/gif_tenor_api_fetcher.h"
 
 #include <memory>
 #include <optional>

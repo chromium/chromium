@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_ASH_EMOJI_GIF_TENOR_API_FETCHER_H_
-#define CHROME_BROWSER_UI_WEBUI_ASH_EMOJI_GIF_TENOR_API_FETCHER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_EMOJI_GIF_TENOR_API_FETCHER_H_
+#define CHROMEOS_ASH_COMPONENTS_EMOJI_GIF_TENOR_API_FETCHER_H_
 
 #include <memory>
 #include <optional>
@@ -121,4 +121,4 @@ class GifTenorApiFetcher {
 };
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_ASH_EMOJI_GIF_TENOR_API_FETCHER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_EMOJI_GIF_TENOR_API_FETCHER_H_

@@ -9,7 +9,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom.h"
-#include "chrome/browser/ui/webui/ash/emoji/gif_tenor_api_fetcher.h"
+#include "chromeos/ash/components/emoji/gif_tenor_api_fetcher.h"
 #include "content/public/browser/web_ui.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"

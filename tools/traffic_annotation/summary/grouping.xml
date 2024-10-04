@@ -243,12 +243,8 @@ after discussions on the right group.
       <annotation id="network_diagnostics_routines"/>
       <annotation id="trial_group_lookup"/>
       <annotation id="wallpaper_drivefs_delegate"/>
-      <annotation id="chromeos_emoji_picker_categories_fetcher"/>
-      <annotation id="chromeos_emoji_picker_featured_fetcher"/>
-      <annotation id="chromeos_emoji_picker_search_fetcher"/>
       <annotation id="network_diagnostics_stun"/>
       <annotation id="network_diagnostics_tls"/>
-      <annotation id="chromeos_emoji_picker_posts_fetcher"/>
       <annotation id="webapk_minter_install_request"/>
       <annotation id="android_feedback_connectivity_checker"/>
       <annotation id="printer_config_fetch"/>
@@ -352,6 +348,10 @@ after discussions on the right group.
       <annotation id="remoting_cloud_verify_session_token"/>
       <annotation id="lens_overlay_gen204"/>
       <annotation id="policy_proxy_config"/>
+      <annotation id="chromeos_emoji_picker_search_fetcher"/>
+      <annotation id="chromeos_emoji_picker_categories_fetcher"/>
+      <annotation id="chromeos_emoji_picker_featured_fetcher"/>
+      <annotation id="chromeos_emoji_picker_posts_fetcher"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
