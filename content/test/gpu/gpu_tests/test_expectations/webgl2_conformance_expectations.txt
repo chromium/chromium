@@ -278,14 +278,6 @@ crbug.com/1507168 [ chromeos intel passthrough ] deqp/functional/gles3/clipping.
 # point. This is for things like tests that fail in a way that negatively and
 # significantly impacts other tests, e.g. killing the test device.
 
-# Skip temporarily for a change in the WebAssembly.Memory JS API.
-crbug.com/370792790 conformance2/wasm/bufferdata-16gb-wasm-memory.html [ Skip ]
-crbug.com/370792790 conformance2/wasm/buffersubdata-16gb-wasm-memory.html [ Skip ]
-crbug.com/370792790 conformance2/wasm/getbuffersubdata-16gb-wasm-memory.html [ Skip ]
-crbug.com/370792790 conformance2/wasm/readpixels-16gb-wasm-memory.html [ Skip ]
-crbug.com/370792790 conformance2/wasm/teximage2d-16gb-wasm-memory.html [ Skip ]
-crbug.com/370792790 conformance2/wasm/texsubimage2d-16gb-wasm-memory.html [ Skip ]
-
 # Skipped because EXT_disjoint_timer_query was disabled due to security concerns.
 crbug.com/808744 [ android ] WebglExtension_EXT_disjoint_timer_query_webgl2 [ Skip ]
 
@@ -559,6 +551,14 @@ crbug.com/1426916 [ chromeos chromeos-board-amd64-generic passthrough ] deqp/fun
 
 crbug.com/891953 [ mac ] WebglExtension_OVR_multiview2 [ Failure ]
 crbug.com/891953 [ android ] WebglExtension_OVR_multiview2 [ Failure ]
+
+# These tests fail until the tests are adapted upstream after an API change.
+crbug.com/370792790 conformance2/wasm/bufferdata-16gb-wasm-memory.html [ Failure ]
+crbug.com/370792790 conformance2/wasm/buffersubdata-16gb-wasm-memory.html [ Failure ]
+crbug.com/370792790 conformance2/wasm/getbuffersubdata-16gb-wasm-memory.html [ Failure ]
+crbug.com/370792790 conformance2/wasm/readpixels-16gb-wasm-memory.html [ Failure ]
+crbug.com/370792790 conformance2/wasm/teximage2d-16gb-wasm-memory.html [ Failure ]
+crbug.com/370792790 conformance2/wasm/texsubimage2d-16gb-wasm-memory.html [ Failure ]
 
 # ========================
 # Conformance expectations
