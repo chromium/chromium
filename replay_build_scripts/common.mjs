@@ -112,12 +112,15 @@ function runGnGen() {
   spawnChecked(gn(), ["gen", "out/Release"], { stdio: "inherit" });
 }
 
+/*
 function gclient() {
   return currentPlatform() == Platform.windows ? "gclient.bat" : "gclient";
 }
+*/
 
 function runGclientSync() {
-  spawnChecked(gclient(), ["sync", "-D"], { stdio: "inherit" });
+  // Disabled: Our fork may be too old for gclient sync to work properly.
+  //spawnChecked(gclient(), ["sync", "-D"], { stdio: "inherit" });
 }
 
 function updateRepo(repo, treeish) {
