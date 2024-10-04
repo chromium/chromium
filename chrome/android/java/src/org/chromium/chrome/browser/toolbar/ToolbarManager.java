@@ -32,6 +32,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.JavaExceptionReporter;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.ValueChangedCallback;
@@ -50,8 +51,8 @@ import org.chromium.chrome.browser.back_press.BackPressMetrics;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.OverlayPanelManagerObserver;
@@ -254,7 +255,7 @@ public class ToolbarManager
     private final AppMenuDelegate mAppMenuDelegate;
     private final CompositorViewHolder mCompositorViewHolder;
     private final BottomControlsStacker mBottomControlsStacker;
-    private final BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
+    private final BrowserControlsSizer mBrowserControlsSizer;
     private final FullscreenManager mFullscreenManager;
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private LocationBarFocusScrimHandler mLocationBarFocusHandler;
@@ -326,6 +327,7 @@ public class ToolbarManager
     private boolean mBackGestureInProgress;
     private boolean mStartNavDuringOngoingGesture;
     private WindowAndroid.ProgressBarConfig.Provider mProgressBarConfigProvider;
+    private ToolbarPositionController mToolbarPositionController;
 
     private static class TabObscuringCallback implements Callback<Boolean> {
         private final TabObscuringHandler mTabObscuringHandler;
@@ -496,8 +498,7 @@ public class ToolbarManager
      * Creates a ToolbarManager object.
      *
      * @param activity The Android activity.
-     * @param controlsVisibilityManager The {@link BrowserControlsVisibilityManager} for the
-     *     activity.
+     * @param controlsSizer The {@link BrowserControlsSizer} for the activity.
      * @param fullscreenManager The {@link FullscreenManager} for the activity.
      * @param edgeToEdgeControllerSupplier Supplies an {@link EdgeToEdgeController} needed for
      *     Bottom Controls Toolbar.
@@ -548,7 +549,7 @@ public class ToolbarManager
     public ToolbarManager(
             AppCompatActivity activity,
             BottomControlsStacker bottomControlsStacker,
-            BrowserControlsVisibilityManager controlsVisibilityManager,
+            BrowserControlsSizer controlsSizer,
             FullscreenManager fullscreenManager,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             ToolbarControlContainer controlContainer,
@@ -597,7 +598,7 @@ public class ToolbarManager
         mWindowAndroid = windowAndroid;
         mCompositorViewHolder = compositorViewHolder;
         mBottomControlsStacker = bottomControlsStacker;
-        mBrowserControlsVisibilityManager = controlsVisibilityManager;
+        mBrowserControlsSizer = controlsSizer;
         mFullscreenManager = fullscreenManager;
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
         mActionBarDelegate =
@@ -712,7 +713,7 @@ public class ToolbarManager
         }
 
         BrowserStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate =
-                mBrowserControlsVisibilityManager.getBrowserVisibilityDelegate();
+                mBrowserControlsSizer.getBrowserVisibilityDelegate();
         assert controlsVisibilityDelegate != null;
         mControlsVisibilityDelegate = controlsVisibilityDelegate;
         ThemeColorProvider browsingModeThemeColorProvider =
@@ -1173,7 +1174,7 @@ public class ToolbarManager
                         }
                     }
                 };
-        mBrowserControlsVisibilityManager.addObserver(mBrowserControlsObserver);
+        mBrowserControlsSizer.addObserver(mBrowserControlsObserver);
 
         mFullscreenObserver =
                 new FullscreenManager.Observer() {
@@ -1312,7 +1313,20 @@ public class ToolbarManager
                 };
         mWindowAndroid.setProgressBarConfigProvider(mProgressBarConfigProvider);
 
+        initializeToolbarPositionController();
+
         TraceEvent.end("ToolbarManager.ToolbarManager");
+    }
+
+    private void initializeToolbarPositionController() {
+        if (ToolbarPositionController.isToolbarPositionCustomizationEnabled(
+                mActivity, mIsCustomTab)) {
+            mToolbarPositionController =
+                    new ToolbarPositionController(
+                            mBrowserControlsSizer,
+                            mBottomControlsStacker,
+                            ContextUtils.getAppSharedPreferences());
+        }
     }
 
     // TODO(b/315204103): add tests
@@ -1565,7 +1579,7 @@ public class ToolbarManager
                         mTabModelSelector,
                         mActivity,
                         root.findViewById(R.id.bottom_container_slot),
-                        mBrowserControlsVisibilityManager,
+                        mBrowserControlsSizer,
                         mIncognitoStateProvider,
                         mScrimCoordinator,
                         mOmniboxFocusStateSupplier,
@@ -1667,7 +1681,7 @@ public class ToolbarManager
                 customTabsBackClickHandler,
                 layoutManager,
                 mActivityTabProvider,
-                mBrowserControlsVisibilityManager,
+                mBrowserControlsSizer,
                 mTopUiThemeColorProvider);
         mTabStripHeightSupplier.set(mToolbar.getTabStripHeight());
 
@@ -1870,7 +1884,7 @@ public class ToolbarManager
 
         mLocationBarModel.destroy();
         mHandler.removeCallbacksAndMessages(null); // Cancel delayed tasks.
-        mBrowserControlsVisibilityManager.removeObserver(mBrowserControlsObserver);
+        mBrowserControlsSizer.removeObserver(mBrowserControlsObserver);
         mFullscreenManager.removeObserver(mFullscreenObserver);
 
         if (mTopUiThemeColorProvider != null) {
@@ -2126,7 +2140,7 @@ public class ToolbarManager
         }
 
         int extraYOffset =
-                mBrowserControlsVisibilityManager.getTopControlsHeight()
+                mBrowserControlsSizer.getTopControlsHeight()
                         - (controlContainerHeight - toolbarHairlineHeight);
         // There are cases where extraYOffset can be negative e.g. during tab strip transitioning
         // from invisible -> visible.
