@@ -127,8 +127,8 @@ OnDeviceModelEligibilityReason OnDeviceModelServiceController::CanCreateSession(
       case optimization_guide::OnDeviceModelStatus::kNotReadyForUnknownReason:
         return OnDeviceModelEligibilityReason::kModelToBeInstalled;
       case optimization_guide::OnDeviceModelStatus::kReady:
-        // This case shouldn't be reached as the model_metadata_ is null.
-        NOTREACHED_IN_MIGRATION();
+        // The model is downloaded but the installation is not completed yet.
+        return OnDeviceModelEligibilityReason::kModelToBeInstalled;
     }
   }
 

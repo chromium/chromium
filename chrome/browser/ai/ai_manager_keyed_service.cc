@@ -111,8 +111,6 @@ ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
 
 // Currently, the following errors, which are used when a model may have been
 // installed but not yet loaded, are treated as waitable.
-// TODO(crbug.com/361537114): Consider making the kModelToBeInstalled error
-// waitable as well.
 static constexpr auto kWaitableReasons =
     base::MakeFixedFlatSet<optimization_guide::OnDeviceModelEligibilityReason>({
         optimization_guide::OnDeviceModelEligibilityReason::
@@ -121,6 +119,7 @@ static constexpr auto kWaitableReasons =
             kSafetyModelNotAvailable,
         optimization_guide::OnDeviceModelEligibilityReason::
             kLanguageDetectionModelNotAvailable,
+        optimization_guide::OnDeviceModelEligibilityReason::kModelToBeInstalled,
     });
 
 // A base class for tasks which create an on-device session. See the method
