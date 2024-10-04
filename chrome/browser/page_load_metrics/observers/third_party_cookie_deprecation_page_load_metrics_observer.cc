@@ -144,7 +144,13 @@ void ThirdPartyCookieDeprecationMetricsObserver::RecordCookieUseCounters(
     const GURL& first_party_url,
     bool blocked_by_policy,
     ThirdPartyCookieAllowMechanism allow_mechanism) {
-  if (blocked_by_policy || !IsThirdParty(url, first_party_url)) {
+  if (!IsThirdParty(url, first_party_url)) {
+    return;
+  }
+  if (blocked_by_policy) {
+    page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
+        GetDelegate().GetWebContents()->GetPrimaryMainFrame(),
+        blink::mojom::WebFeature::kThirdPartyCookieBlocked);
     return;
   }
 

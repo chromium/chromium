@@ -207,6 +207,10 @@ const Allow3PCMechanismBrowserTestCase kAllowMechanismTestCases[] = {
                 kAllowBy3PCDMetadataSourceCriticalSector,
         .expected_web_feature_histogram_sample =
             WebFeature::kThirdPartyCookieDeprecation_AllowBy3PCDMetadata,
+    },
+    {
+        .expected_web_feature_histogram_sample =
+            WebFeature::kThirdPartyCookieBlocked,
     }};
 
 }  // namespace

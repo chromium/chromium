@@ -11007,6 +11007,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5111" label="MaxInterStageShaderComponentsRequiredLimit"/>
   <int value="5112" label="ShowPickerSelect"/>
   <int value="5113" label="AudioContextPlayoutStats"/>
+  <int value="5114" label="ThirdPartyCookieBlocked"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
