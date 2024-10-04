@@ -137,6 +137,9 @@ def _compute_edits(
         if value:
           settings_builder['use_android_merge_script_by_default'] = str(False)
 
+      case 'swarming':
+        anonymous_mixin_builder['swarming'] = values.convert_swarming(value)
+
       case _:
         raise Exception(f'unhandled key in builder config: "{key}"')
 
