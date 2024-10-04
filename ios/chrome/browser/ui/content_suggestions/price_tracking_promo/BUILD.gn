@@ -38,6 +38,7 @@ source_set("price_tracking_promo") {
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/content_suggestions/magic_stack:public",
     "//ios/chrome/common/ui/colors:colors",
+    "//ios/chrome/common/ui/elements:elements",
     "//ios/chrome/common/ui/util:util",
     "//ios/third_party/material_components_ios",
     "//ios/web/public/thread:thread",

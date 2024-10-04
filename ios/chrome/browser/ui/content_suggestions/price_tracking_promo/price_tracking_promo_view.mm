@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -24,11 +25,14 @@ const CGFloat kVerticalStackSpacing = 15.0f;
 // (which contains title, description and allow label)).
 const CGFloat kHorizontalStackSpacing = 16.0f;
 
+// Alpha for top of gradient overlay.
+const CGFloat kGradientOverlayTopAlpha = 0.0;
+
+// Alpha for bottom of gradienet overlay.
+const CGFloat kGradientOverlayBottomAlpha = 0.14;
+
 // Inset for product image fallback from the UIImageView boundary.
 const CGFloat kProductImageFallbackInset = 10.0f;
-
-// Inset for product image from the UIImageView boundary.
-const CGFloat kProductImageInset = 0.0f;
 
 // Radius of background circle of product image fallback.
 const CGFloat kProductImageFallbackCornerRadius = 25.0;
@@ -38,6 +42,12 @@ const CGFloat kProductImageFallbackSize = 28.0;
 
 // Point size of product image fallback.
 const CGFloat kProductImageFallbackPointSize = 10.0;
+
+// Rounded corners of the product image radius
+const CGFloat kProductImageCornerRadius = 8.0;
+
+// Width and height of product image.
+const CGFloat kProductImageWidthHeight = 48.0;
 
 // Separator height.
 const CGFloat kSeparatorHeight = 0.5;
@@ -52,6 +62,7 @@ const CGFloat kSeparatorHeight = 0.5;
   // To create a background circle around the fallback product image.
   UIImageView* _fallbackProductImageView;
   UIView* _productImage;
+  UIView* _gradientOverlay;
   UIStackView* _contentStack;
   UIStackView* _textStack;
   UIView* _separator;
@@ -105,9 +116,38 @@ const CGFloat kSeparatorHeight = 0.5;
     _productImageView.contentMode = UIViewContentModeScaleAspectFit;
     _productImageView.translatesAutoresizingMaskIntoConstraints = NO;
     _productImageView.layer.borderWidth = 0;
+    _productImageView.layer.cornerRadius = kProductImageCornerRadius;
+    _productImageView.layer.masksToBounds = YES;
+    _productImageView.backgroundColor = UIColor.whiteColor;
+
+    _gradientOverlay = [[GradientView alloc]
+        initWithTopColor:[[UIColor blackColor]
+                             colorWithAlphaComponent:kGradientOverlayTopAlpha]
+             bottomColor:
+                 [[UIColor blackColor]
+                     colorWithAlphaComponent:kGradientOverlayBottomAlpha]];
+    _gradientOverlay.translatesAutoresizingMaskIntoConstraints = NO;
+    _gradientOverlay.layer.cornerRadius = kProductImageCornerRadius;
+    _gradientOverlay.layer.zPosition = 1;
+
+    [NSLayoutConstraint activateConstraints:@[
+      [_productImage.heightAnchor
+          constraintEqualToConstant:kProductImageWidthHeight],
+      [_productImage.widthAnchor
+          constraintEqualToAnchor:_productImage.heightAnchor],
+      [_productImageView.heightAnchor
+          constraintEqualToConstant:kProductImageWidthHeight],
+      [_productImageView.widthAnchor
+          constraintEqualToAnchor:_productImageView.heightAnchor],
+      [_gradientOverlay.heightAnchor
+          constraintEqualToConstant:kProductImageWidthHeight],
+      [_gradientOverlay.widthAnchor
+          constraintEqualToAnchor:_gradientOverlay.heightAnchor],
+    ]];
+
     [_productImage addSubview:_productImageView];
-    AddSameConstraintsWithInset(_productImageView, _productImage,
-                                kProductImageInset);
+    [_productImageView addSubview:_gradientOverlay];
+
   } else {
     _fallbackProductImageView = [[UIImageView alloc] init];
     _fallbackProductImageView.image = CustomSymbolWithPointSize(
