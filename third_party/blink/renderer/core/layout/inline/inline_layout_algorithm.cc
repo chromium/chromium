@@ -709,7 +709,7 @@ void InlineLayoutAlgorithm::PlaceBlockInInline(const InlineItem& item,
   end_margin_strut_ = result.EndMarginStrut();
   container_builder_.SetExclusionSpace(result.GetExclusionSpace());
   container_builder_.SetAdjoiningObjectTypes(result.GetAdjoiningObjectTypes());
-  state_until_clamp_ = result.StateUntilClamp();
+  lines_until_clamp_ = result.LinesUntilClamp();
   if (box_fragment.MayHaveDescendantAboveBlockStart()) [[unlikely]] {
     container_builder_.SetMayHaveDescendantAboveBlockStart(true);
   }
@@ -1035,7 +1035,8 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
   end_margin_strut_ = constraint_space.GetMarginStrut();
   container_builder_.SetAdjoiningObjectTypes(
       constraint_space.GetAdjoiningObjectTypes());
-  state_until_clamp_ = constraint_space.GetLineClampData().StateUntilClamp();
+  lines_until_clamp_ = constraint_space.GetLineClampData().LinesUntilClamp(
+      /*show_measured_lines*/ true);
 
   // In order to get the correct list of layout opportunities, we need to
   // position any "leading" floats within the exclusion space first.
@@ -1365,15 +1366,14 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
       if (!line_info.IsBlockInInline()) {
         end_margin_strut_ = MarginStrut();
 
-        if (state_until_clamp_) {
+        if (lines_until_clamp_) {
           if (constraint_space.GetLineClampData().state ==
               LineClampData::kClampByLines) {
-            --state_until_clamp_->lines;
+            *lines_until_clamp_ = *lines_until_clamp_ - 1;
           } else {
             DCHECK_EQ(constraint_space.GetLineClampData().state,
                       LineClampData::kMeasureLinesUntilBfcOffset);
-            ++state_until_clamp_->lines;
-            state_until_clamp_->remaining_blocks = 0;
+            *lines_until_clamp_ = *lines_until_clamp_ + 1;
           }
         }
       }
@@ -1388,8 +1388,8 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
 
   CHECK(is_line_created);
   container_builder_.SetEndMarginStrut(end_margin_strut_);
-  if (state_until_clamp_) {
-    container_builder_.SetStateUntilClamp(state_until_clamp_);
+  if (lines_until_clamp_) {
+    container_builder_.SetLinesUntilClamp(lines_until_clamp_);
   }
 
   DCHECK(items_builder);

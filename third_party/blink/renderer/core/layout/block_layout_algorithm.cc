@@ -580,8 +580,7 @@ BlockLayoutAlgorithm::HandleNonsuccessfulLayoutResult(
         return RelayoutIgnoringLineClamp();
       }
       if (GetConstraintSpace().IsNewFormattingContext()) {
-        DCHECK(result->StateUntilClamp());
-        return RelayoutWithLineClampBlockSize(*result->StateUntilClamp());
+        return RelayoutWithLineClampBlockSize(result->LinesUntilClamp());
       }
       // Propagate the error upwards until we reach the BFC root.
       return result;
@@ -642,22 +641,17 @@ NOINLINE const LayoutResult* BlockLayoutAlgorithm::RelayoutIgnoringLineClamp() {
 }
 
 NOINLINE const LayoutResult*
-BlockLayoutAlgorithm::RelayoutWithLineClampBlockSize(
-    LineClampData::UntilClamp state_until_clamp) {
+BlockLayoutAlgorithm::RelayoutWithLineClampBlockSize(int lines_until_clamp) {
   DCHECK_EQ(line_clamp_data_.data.state,
             LineClampData::kMeasureLinesUntilBfcOffset);
-  DCHECK_GE(state_until_clamp.lines, 0);
-  DCHECK_GE(state_until_clamp.remaining_blocks, 0);
   LayoutAlgorithmParams params(Node(),
                                container_builder_.InitialFragmentGeometry(),
                                GetConstraintSpace(), GetBreakToken(), nullptr);
   BlockLayoutAlgorithm algorithm_ignoring_line_clamp(params);
   algorithm_ignoring_line_clamp.line_clamp_data_.data.state =
       LineClampData::kClampByLines;
-  algorithm_ignoring_line_clamp.line_clamp_data_.data.until_clamp =
-      state_until_clamp;
-  algorithm_ignoring_line_clamp.line_clamp_data_.data
-      .show_positioned_oof_just_after_clamp = true;
+  algorithm_ignoring_line_clamp.line_clamp_data_.data.lines_until_clamp =
+      std::max(1, lines_until_clamp);
   algorithm_ignoring_line_clamp.line_clamp_data_.end_margin_strut =
       line_clamp_data_.end_margin_strut;
   BoxFragmentBuilder& new_builder =
@@ -781,18 +775,6 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
         line_clamp_data_.end_margin_strut = end_margin_strut;
       }
     }
-  }
-
-  // Clamping at the start of the line-clamp container.
-  if (constraint_space.IsNewFormattingContext() &&
-      line_clamp_data_.data.state == LineClampData::kClampByLines &&
-      line_clamp_data_.data.until_clamp.lines == 0 &&
-      line_clamp_data_.data.until_clamp.remaining_blocks == 0) {
-    DCHECK(Style().HasAutoStandardLineClamp());
-    line_clamp_data_.previous_inflow_position_when_clamped =
-        PreviousInflowPosition{LayoutUnit(), MarginStrut(),
-                               container_builder_.Padding().block_start,
-                               /* self_collapsing_child_had_clearance */ false};
   }
 
   LayoutUnit content_edge = BorderScrollbarPadding().block_start;
@@ -1388,8 +1370,8 @@ const LayoutResult* BlockLayoutAlgorithm::FinishLayout(
   if (constraint_space.IsNewFormattingContext()) {
     container_builder_.SetExclusionSpace(ExclusionSpace());
   } else {
-    container_builder_.SetStateUntilClamp(
-        line_clamp_data_.data.StateUntilClamp());
+    container_builder_.SetLinesUntilClamp(
+        line_clamp_data_.data.LinesUntilClamp(/*show_measured_lines*/ true));
   }
 
   if (constraint_space.UseFirstLineStyle()) {
@@ -1463,7 +1445,7 @@ bool BlockLayoutAlgorithm::TryReuseFragmentsFromCache(
   if (max_lines) {
     DCHECK(result.line_count <= max_lines);
     DCHECK_EQ(line_clamp_data_.data.state, LineClampData::kClampByLines);
-    line_clamp_data_.data.until_clamp.lines -= result.line_count;
+    line_clamp_data_.data.lines_until_clamp -= result.line_count;
   }
 
   // |AddPreviousItems| may have added more than one lines. Propagate baselines
@@ -1533,7 +1515,7 @@ void BlockLayoutAlgorithm::HandleOutOfFlowPositioned(
   container_builder_.AddOutOfFlowChildCandidate(
       child, static_offset, LogicalStaticPosition::kInlineStart,
       LogicalStaticPosition::kBlockStart,
-      line_clamp_data_.ShouldPositionedOofHideForPaint());
+      line_clamp_data_.ShouldHideForPaint());
 }
 
 void BlockLayoutAlgorithm::HandleFloat(
@@ -1632,8 +1614,6 @@ void BlockLayoutAlgorithm::HandleFloat(
       container_builder_.InlineSize(), constraint_space.Direction());
 
   container_builder_.AddResult(*positioned_float.layout_result, logical_offset);
-
-  line_clamp_data_.UpdateAfterOof(previous_inflow_position);
 }
 
 LayoutResult::EStatus BlockLayoutAlgorithm::HandleNewFormattingContext(
@@ -1855,7 +1835,8 @@ LayoutResult::EStatus BlockLayoutAlgorithm::HandleNewFormattingContext(
   if (!line_clamp_data_.UpdateAfterLayout(
           layout_result, *container_builder_.BfcBlockOffset(),
           *previous_inflow_position, Padding().block_end)) {
-    container_builder_.SetStateUntilClamp(line_clamp_data_.data.until_clamp);
+    container_builder_.SetLinesUntilClamp(
+        line_clamp_data_.LinesUntilClamp(/*show_measured_lines*/ true));
     return LayoutResult::kNeedsLineClampRelayout;
   }
 
@@ -2198,7 +2179,7 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
   if (layout_result->Status() == LayoutResult::kNeedsLineClampRelayout) {
     DCHECK_EQ(line_clamp_data_.data.state,
               LineClampData::kMeasureLinesUntilBfcOffset);
-    container_builder_.SetStateUntilClamp(layout_result->StateUntilClamp());
+    container_builder_.SetLinesUntilClamp(layout_result->LinesUntilClamp());
     return LayoutResult::kNeedsLineClampRelayout;
   }
 
@@ -2546,7 +2527,8 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
     if (!line_clamp_data_.UpdateAfterLayout(layout_result, *bfc_block_offset,
                                             *previous_inflow_position,
                                             Padding().block_end)) {
-      container_builder_.SetStateUntilClamp(line_clamp_data_.data.until_clamp);
+      container_builder_.SetLinesUntilClamp(
+          line_clamp_data_.LinesUntilClamp(/*show_measured_lines*/ true));
       return LayoutResult::kNeedsLineClampRelayout;
     }
   }

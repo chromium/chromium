@@ -108,9 +108,8 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     return *physical_fragment_;
   }
 
-  std::optional<LineClampData::UntilClamp> StateUntilClamp() const {
-    return rare_data_ ? rare_data_->state_until_clamp
-                      : std::optional<LineClampData::UntilClamp>();
+  int LinesUntilClamp() const {
+    return rare_data_ ? rare_data_->lines_until_clamp : 0;
   }
 
   // Returns true if the block-start/-end is trimmed by the `text-box-trim`
@@ -870,7 +869,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
           custom_layout_data(rare_data.custom_layout_data),
           annotation_overflow(rare_data.annotation_overflow),
           block_end_annotation_space(rare_data.block_end_annotation_space),
-          state_until_clamp(rare_data.state_until_clamp),
+          lines_until_clamp(rare_data.lines_until_clamp),
           line_box_bfc_block_offset(rare_data.line_box_bfc_block_offset),
           non_overflowing_scroll_ranges(
               rare_data.non_overflowing_scroll_ranges),
@@ -999,7 +998,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
 
     LayoutUnit annotation_overflow;
     LayoutUnit block_end_annotation_space;
-    std::optional<LineClampData::UntilClamp> state_until_clamp;
+    int lines_until_clamp;
     Member<Element> accessibility_anchor;
     Member<HeapHashSet<Member<Element>>> display_locks_affected_by_anchors;
 

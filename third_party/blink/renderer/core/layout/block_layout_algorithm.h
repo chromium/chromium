@@ -65,22 +65,20 @@ struct BlockLineClampData {
   explicit BlockLineClampData(LineClampData line_clamp_data)
       : data(line_clamp_data) {}
 
-  std::optional<int> LinesUntilClamp() const { return data.LinesUntilClamp(); }
+  std::optional<int> LinesUntilClamp(bool show_measured_lines = false) const {
+    return data.LinesUntilClamp(show_measured_lines);
+  }
 
   bool IsPastClampPoint() const { return data.IsPastClampPoint(); }
 
   bool ShouldHideForPaint() const { return data.ShouldHideForPaint(); }
-
-  bool ShouldPositionedOofHideForPaint() const {
-    return data.ShouldPositionedOofHideForPaint();
-  }
 
   bool ShouldRelayoutWithNoForcedTruncate() const {
     if (!previous_inflow_position_when_clamped.has_value()) {
       return false;
     }
     DCHECK_EQ(data.state, LineClampData::kClampByLines);
-    return data.until_clamp.lines == 0;
+    return data.lines_until_clamp == 0;
   }
 
   void UpdateClampOffsetFromStyle(LayoutUnit clamp_bfc_offset,
@@ -102,8 +100,7 @@ struct BlockLineClampData {
       data.state = LineClampData::kDontTruncate;
     } else {
       data.state = LineClampData::kMeasureLinesUntilBfcOffset;
-      data.until_clamp.lines = 0;
-      data.until_clamp.remaining_blocks = 0;
+      data.lines_until_clamp = 0;
       data.clamp_bfc_offset = clamp_bfc_offset;
     }
   }
@@ -115,8 +112,7 @@ struct BlockLineClampData {
 
     DCHECK_EQ(data.state, LineClampData::kDisabled);
     data.state = LineClampData::kClampByLines;
-    data.until_clamp.lines = lines_until_clamp;
-    data.until_clamp.remaining_blocks = 0;
+    data.lines_until_clamp = lines_until_clamp;
   }
 
   // Returns false if we need to relayout with a different clamp BFC offset.
@@ -125,15 +121,8 @@ struct BlockLineClampData {
                          const PreviousInflowPosition& previous_inflow_position,
                          LayoutUnit block_end_padding) {
     if (data.state == LineClampData::kClampByLines) {
-      // If these conditions are changed, make sure to also update the
-      // equivalent for kMeasureLinesUntilBfcOffset, as well as UpdateAfterOof.
-      if (layout_result->StateUntilClamp().has_value() &&
-          layout_result->StateUntilClamp() != data.until_clamp) {
-        DCHECK(!layout_result->GetPhysicalFragment().IsFormattingContextRoot());
-        data.until_clamp = *layout_result->StateUntilClamp();
-      } else if (layout_result->GetPhysicalFragment().IsBox() &&
-                 data.until_clamp.lines == 0) {
-        data.until_clamp.remaining_blocks--;
+      if (!layout_result->GetPhysicalFragment().IsFormattingContextRoot()) {
+        data.lines_until_clamp = layout_result->LinesUntilClamp();
       }
 
       if (IsPastClampPoint() &&
@@ -174,32 +163,12 @@ struct BlockLineClampData {
         return false;
       }
 
-      // If these conditions are changed, make sure to also update the
-      // equivalent for kClampByLines, as well as UpdateAfterOof.
-      if (layout_result->StateUntilClamp().has_value() &&
-          layout_result->StateUntilClamp() != data.until_clamp) {
-        DCHECK(!layout_result->GetPhysicalFragment().IsFormattingContextRoot());
-        data.until_clamp = *layout_result->StateUntilClamp();
-      } else if (layout_result->GetPhysicalFragment().IsBox()) {
-        data.until_clamp.remaining_blocks++;
+      if (!layout_result->GetPhysicalFragment().IsFormattingContextRoot()) {
+        data.lines_until_clamp = layout_result->LinesUntilClamp();
       }
     }
 
     return true;
-  }
-
-  void UpdateAfterOof(const PreviousInflowPosition& previous_inflow_position) {
-    if (data.state == LineClampData::kClampByLines &&
-        data.until_clamp.lines == 0) {
-      data.until_clamp.remaining_blocks--;
-
-      if (IsPastClampPoint() &&
-          !previous_inflow_position_when_clamped.has_value()) {
-        previous_inflow_position_when_clamped = previous_inflow_position;
-      }
-    } else if (data.state == LineClampData::kMeasureLinesUntilBfcOffset) {
-      data.until_clamp.remaining_blocks++;
-    }
   }
 
   LineClampData data;
@@ -238,7 +207,7 @@ class CORE_EXPORT BlockLayoutAlgorithm
 
   NOINLINE const LayoutResult* RelayoutIgnoringLineClamp();
   NOINLINE const LayoutResult* RelayoutWithLineClampBlockSize(
-      LineClampData::UntilClamp state_until_clamp);
+      int lines_until_clamp);
   NOINLINE const LayoutResult* RelayoutForTextBoxTrimEnd();
 
   inline const LayoutResult* Layout(

@@ -245,8 +245,8 @@ LayoutResult::LayoutResult(const PhysicalFragment* physical_fragment,
   } else {
     space_.GetExclusionSpace().MoveDerivedGeometry(builder->exclusion_space_);
   }
-  if (builder->state_until_clamp_) {
-    EnsureRareData()->state_until_clamp = *builder->state_until_clamp_;
+  if (builder->lines_until_clamp_) {
+    EnsureRareData()->lines_until_clamp = *builder->lines_until_clamp_;
   }
   if (builder->is_block_start_trimmed_) {
     EnsureRareData()->set_is_block_start_trimmed();
@@ -352,7 +352,7 @@ void LayoutResult::CheckSameForSimplifiedLayout(
           To<PhysicalBoxFragment>(*other.physical_fragment_),
           check_same_block_size, check_no_fragmentation);
 
-  DCHECK(StateUntilClamp() == other.StateUntilClamp());
+  DCHECK(LinesUntilClamp() == other.LinesUntilClamp());
   GetExclusionSpace().CheckSameForSimplifiedLayout(other.GetExclusionSpace());
 
   // We ignore |BfcBlockOffset|, and |BfcLineOffset| as "simplified" layout

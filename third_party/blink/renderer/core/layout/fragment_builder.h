@@ -139,9 +139,8 @@ class CORE_EXPORT FragmentBuilder {
     exclusion_space_ = exclusion_space;
   }
 
-  void SetStateUntilClamp(
-      const std::optional<LineClampData::UntilClamp>& value) {
-    state_until_clamp_ = value;
+  void SetLinesUntilClamp(const std::optional<int>& value) {
+    lines_until_clamp_ = value;
   }
 
   bool IsBlockStartTrimmed() const { return is_block_start_trimmed_; }
@@ -572,7 +571,7 @@ class CORE_EXPORT FragmentBuilder {
   std::optional<LayoutUnit> bfc_block_offset_;
   MarginStrut end_margin_strut_;
   ExclusionSpace exclusion_space_;
-  std::optional<LineClampData::UntilClamp> state_until_clamp_;
+  std::optional<int> lines_until_clamp_;
 
 
   ChildrenVector children_;
