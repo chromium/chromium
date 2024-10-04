@@ -184,9 +184,10 @@ SigninViewControllerDelegateViews::CreateManagedUserNoticeConfirmationWebView(
         create_param) {
   bool enable_updated_dialog = base::FeatureList::IsEnabled(
       features::kEnterpriseUpdatedProfileCreationScreen);
+  bool is_oidc_account = create_param->is_oidc_account;
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
   enable_updated_dialog |=
-      create_param->is_oidc_account &&
+      is_oidc_account &&
       base::FeatureList::IsEnabled(
           profile_management::features::kOidcAuthProfileManagement);
 #endif
@@ -208,7 +209,7 @@ SigninViewControllerDelegateViews::CreateManagedUserNoticeConfirmationWebView(
   DCHECK(web_dialog_ui);
   web_dialog_ui->Initialize(
       browser,
-      create_param->is_oidc_account
+      is_oidc_account
           ? ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC
           : ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation,
       std::move(create_param));
