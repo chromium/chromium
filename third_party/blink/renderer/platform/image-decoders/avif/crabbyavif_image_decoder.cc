@@ -1382,6 +1382,10 @@ bool CrabbyAVIFImageDecoder::GetGainmapInfoAndData(
         DVLOG(1) << "Invalid gainmap metadata: a denominator value is zero";
         return false;
       }
+      if (metadata.gainMapGammaN[i] == 0) {
+        DVLOG(1) << "Invalid gainmap metadata: gamma is zero";
+        return false;
+      }
 
       const float min_log2 =
           FractionToFloat(metadata.gainMapMinN[i], metadata.gainMapMinD[i]);

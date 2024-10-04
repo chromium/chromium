@@ -1304,6 +1304,24 @@ TEST(StaticAVIFTests, GetGainmapInfoAndDataWithTruncatedData) {
   }
 }
 
+TEST(StaticAVIFTests, GetGainmapWithGammaZero) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAvifGainmapHdrImages},
+      /*disabled_features=*/{});
+
+  const std::string image = "small-with-gainmap-iso-gammazero.avif";
+  scoped_refptr<SharedBuffer> data =
+      ReadFileToSharedBuffer("web_tests/images/resources/avif", image.c_str());
+  std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
+  decoder->SetData(data, true);
+  SkGainmapInfo gainmap_info;
+  scoped_refptr<SegmentReader> gainmap_data;
+  const bool has_gainmap =
+      decoder->GetGainmapInfoAndData(gainmap_info, gainmap_data);
+  ASSERT_FALSE(has_gainmap);
+}
+
 TEST(StaticAVIFTests, YUV) {
   // 3x3, YUV 4:2:0
   constexpr gfx::Size kUVSize420(2, 2);

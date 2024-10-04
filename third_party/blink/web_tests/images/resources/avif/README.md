@@ -210,6 +210,12 @@ avifenc  gainmap-trattore0.jpg --qgain-map 80 --qcolor 80 \
   small-with-gainmap-iso.avif
 ```
 
+### small-with-gainmap-iso-gammazero.avif
+A small image with a gainmap where the gain map gamma values are zero (invalid).
+
+The image was generated the same way as `small-with-gainmap.avif` with an
+avifenc modified to write 0 as the gamma numerator.
+
 ### small-with-gainmap-iso-hdrbase.avif
 A small image with a gainmap as a "tmap" derived item, where the base is HDR.
 Has use_base_color_space set to false. Has no ICC profile.
