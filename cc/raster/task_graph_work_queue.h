@@ -187,6 +187,9 @@ class CC_EXPORT TaskGraphWorkQueue {
   static bool DependencyMismatch(const TaskGraph* graph);
 
  private:
+  bool DecrementNodeDependencies(TaskGraph::Node& node,
+                                 TaskNamespace* task_namespace);
+
   // Helper class used to provide NamespaceToken comparison to TaskNamespaceMap.
   class CompareToken {
    public:
@@ -202,7 +205,7 @@ class CC_EXPORT TaskGraphWorkQueue {
   TaskNamespaceMap namespaces_;
 
   // Map from category to a vector of ready to run namespaces for that category.
-  std::map<uint16_t, TaskNamespace::Vector> ready_to_run_namespaces_;
+  ReadyNamespaces ready_to_run_namespaces_;
 
   // Provides a unique id to each NamespaceToken.
   int next_namespace_id_;
