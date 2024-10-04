@@ -37,10 +37,8 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
     r.PRIVACY_SANDBOX = r.PRIVACY.createChild('/adPrivacy');
     r.PRIVACY_SANDBOX_TOPICS =
         r.PRIVACY_SANDBOX.createChild('/adPrivacy/interests');
-    if (loadTimeData.getBoolean('isProactiveTopicsBlockingEnabled')) {
-      r.PRIVACY_SANDBOX_MANAGE_TOPICS =
-          r.PRIVACY_SANDBOX_TOPICS.createChild('/adPrivacy/interests/manage');
-    }
+    r.PRIVACY_SANDBOX_MANAGE_TOPICS =
+        r.PRIVACY_SANDBOX_TOPICS.createChild('/adPrivacy/interests/manage');
     r.PRIVACY_SANDBOX_FLEDGE =
         r.PRIVACY_SANDBOX.createChild('/adPrivacy/sites');
     r.PRIVACY_SANDBOX_AD_MEASUREMENT =

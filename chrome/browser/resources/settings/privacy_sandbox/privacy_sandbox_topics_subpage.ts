@@ -108,10 +108,10 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
 
       // Version 2 of Ad Topics Page should be displayed when Proactive Topics
       // Blocking is enabled.
+      // TODO(b/370758849): Cleanup Topics Subpage by removing shouldShowV2_.
       shouldShowV2_: {
         type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('isProactiveTopicsBlockingEnabled'),
+        value: true,
       },
 
       blockTopicDialogTitle_: {

@@ -235,10 +235,11 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         },
       },
 
+      // TODO(b/371166959): Cleanup privacy page by removing
+      // isProactiveTopicsBlockingEnabled_.
       isProactiveTopicsBlockingEnabled_: {
         type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('isProactiveTopicsBlockingEnabled'),
+        value: true,
       },
 
       enableAutomaticFullscreenContentSetting_: {

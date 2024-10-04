@@ -46,12 +46,6 @@ DeepQuery GetAdTopicsPageQuery() {
 class PrivacySandboxSettingsTopicsInteractiveTest
     : public InteractiveBrowserTest {
  public:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        privacy_sandbox::kPrivacySandboxProactiveTopicsBlocking);
-    InteractiveBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     browser()->profile()->GetPrefs()->SetBoolean(
         prefs::kPrivacySandboxM1TopicsEnabled, true);

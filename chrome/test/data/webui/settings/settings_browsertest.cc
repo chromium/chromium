@@ -1082,23 +1082,9 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, RestrictedEnabled) {
           "runMochaSuite('RestrictedEnabled')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest,
-                       TopicsSubpageWithProactiveTopicsBlockingDisabled) {
+IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, TopicsSubpage) {
   RunTest("settings/privacy_sandbox_page_test.js",
-          "runMochaSuite('TopicsSubpageWithProactiveTopicsBlockingDisabled')");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest,
-                       TopicsSubpageEmptyWithProactiveTopicsBlockingDisabled) {
-  RunTest(
-      "settings/privacy_sandbox_page_test.js",
-      "runMochaSuite('TopicsSubpageEmptyWithProactiveTopicsBlockingDisabled')");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest,
-                       FledgeSubpageWithProactiveTopicsBlockingDisabled) {
-  RunTest("settings/privacy_sandbox_page_test.js",
-          "runMochaSuite('FledgeSubpageWithProactiveTopicsBlockingDisabled')");
+          "runMochaSuite('TopicsSubpage')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, FledgeSubpageEmpty) {
@@ -1117,35 +1103,17 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, AdMeasurementSubpage) {
           "runMochaSuite('AdMeasurementSubpage')");
 }
 
-class ProactiveTopicsBlockingTest : public SettingsPrivacySandboxPageTest {
- protected:
-  ProactiveTopicsBlockingTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        privacy_sandbox::kPrivacySandboxProactiveTopicsBlocking);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ProactiveTopicsBlockingTest,
-                       TopicsSubpageWithProactiveTopicsBlockingEnabled) {
-  RunTest("settings/privacy_sandbox_page_test.js",
-          "runMochaSuite('TopicsSubpageWithProactiveTopicsBlockingEnabled')");
-}
-
-IN_PROC_BROWSER_TEST_F(ProactiveTopicsBlockingTest, ManageTopics) {
+IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, ManageTopics) {
   RunTest("settings/privacy_sandbox_page_test.js",
           "runMochaSuite('ManageTopics')");
 }
 
-IN_PROC_BROWSER_TEST_F(ProactiveTopicsBlockingTest,
-                       FledgeSubpageWithProactiveTopicsBlockingEnabled) {
+IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, FledgeSubpage) {
   RunTest("settings/privacy_sandbox_page_test.js",
-          "runMochaSuite('FledgeSubpageWithProactiveTopicsBlockingEnabled')");
+          "runMochaSuite('FledgeSubpage')");
 }
 
-IN_PROC_BROWSER_TEST_F(ProactiveTopicsBlockingTest,
+IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest,
                        ManageTopicsAndAdTopicsPageState) {
   RunTest("settings/privacy_sandbox_page_test.js",
           "runMochaSuite('ManageTopicsAndAdTopicsPageState')");

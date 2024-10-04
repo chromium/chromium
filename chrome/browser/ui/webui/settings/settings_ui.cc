@@ -531,11 +531,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           base::FeatureList::IsEnabled(
                               privacy_sandbox::kFingerprintingProtectionUx));
 
-  html_source->AddBoolean(
-      "isProactiveTopicsBlockingEnabled",
-      base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxProactiveTopicsBlocking));
-
   // Performance
   AddSettingsPageUIHandler(std::make_unique<PerformanceHandler>());
   html_source->AddBoolean(
