@@ -129,18 +129,53 @@ Vector<uint8_t> EncodeEucJp(StringView string, UnencodableHandling handling) {
 
 class Iso2022JpEncoder {
  public:
+  static Vector<uint8_t> Encode(StringView string,
+                                UnencodableHandling handling) {
+    Iso2022JpEncoder encoder(handling, string.length());
+    for (UChar32 code_point : string) {
+      encoder.ParseCodePoint(code_point);
+    }
+    return encoder.Finalize();
+  }
+
+ private:
+  enum class State : uint8_t { kAscii, kRoman, kJis0208 };
+
+  // From https://encoding.spec.whatwg.org/index-iso-2022-jp-katakana.txt
+  static constexpr std::array<UChar32, 63> kIso2022JpKatakana{
+      0x3002, 0x300C, 0x300D, 0x3001, 0x30FB, 0x30F2, 0x30A1, 0x30A3, 0x30A5,
+      0x30A7, 0x30A9, 0x30E3, 0x30E5, 0x30E7, 0x30C3, 0x30FC, 0x30A2, 0x30A4,
+      0x30A6, 0x30A8, 0x30AA, 0x30AB, 0x30AD, 0x30AF, 0x30B1, 0x30B3, 0x30B5,
+      0x30B7, 0x30B9, 0x30BB, 0x30BD, 0x30BF, 0x30C1, 0x30C4, 0x30C6, 0x30C8,
+      0x30CA, 0x30CB, 0x30CC, 0x30CD, 0x30CE, 0x30CF, 0x30D2, 0x30D5, 0x30D8,
+      0x30DB, 0x30DE, 0x30DF, 0x30E0, 0x30E1, 0x30E2, 0x30E4, 0x30E6, 0x30E8,
+      0x30E9, 0x30EA, 0x30EB, 0x30EC, 0x30ED, 0x30EF, 0x30F3, 0x309B, 0x309C};
+  static_assert(std::size(kIso2022JpKatakana) == 0xFF9F - 0xFF61 + 1);
+
   Iso2022JpEncoder(UnencodableHandling handling, wtf_size_t length)
       : handling_(handling) {
     result_.ReserveInitialCapacity(length);
   }
 
-  enum class State : uint8_t { kAscii, kRoman, kJis0208 };
-
   void ChangeStateToAscii() {
-    state_ = State::kAscii;
     result_.push_back(0x1B);
     result_.push_back(0x28);
     result_.push_back(0x42);
+    state_ = State::kAscii;
+  }
+
+  void ChangeStateToRoman() {
+    result_.push_back(0x1B);
+    result_.push_back(0x28);
+    result_.push_back(0x4A);
+    state_ = State::kRoman;
+  }
+
+  void ChangeStateToJis0208() {
+    result_.push_back(0x1B);
+    result_.push_back(0x24);
+    result_.push_back(0x42);
+    state_ = State::kJis0208;
   }
 
   void ParseCodePoint(UChar32 code_point) {
@@ -169,34 +204,19 @@ class Iso2022JpEncoder {
       }
     }
     if (IsASCII(code_point) && state_ != State::kAscii) {
-      if (state_ != State::kAscii)
-        ChangeStateToAscii();
+      ChangeStateToAscii();
       ParseCodePoint(code_point);
       return;
     }
     if ((code_point == kYenSignCharacter || code_point == kOverlineCharacter) &&
         state_ != State::kRoman) {
-      state_ = State::kRoman;
-      result_.push_back(0x1B);
-      result_.push_back(0x28);
-      result_.push_back(0x4A);
+      ChangeStateToRoman();
       ParseCodePoint(code_point);
       return;
     }
     if (code_point == kMinusSignCharacter)
       code_point = 0xFF0D;
     if (code_point >= 0xFF61 && code_point <= 0xFF9F) {
-      // From https://encoding.spec.whatwg.org/index-iso-2022-jp-katakana.txt
-      static constexpr std::array<UChar32, 63> kIso2022JpKatakana{
-          0x3002, 0x300C, 0x300D, 0x3001, 0x30FB, 0x30F2, 0x30A1, 0x30A3,
-          0x30A5, 0x30A7, 0x30A9, 0x30E3, 0x30E5, 0x30E7, 0x30C3, 0x30FC,
-          0x30A2, 0x30A4, 0x30A6, 0x30A8, 0x30AA, 0x30AB, 0x30AD, 0x30AF,
-          0x30B1, 0x30B3, 0x30B5, 0x30B7, 0x30B9, 0x30BB, 0x30BD, 0x30BF,
-          0x30C1, 0x30C4, 0x30C6, 0x30C8, 0x30CA, 0x30CB, 0x30CC, 0x30CD,
-          0x30CE, 0x30CF, 0x30D2, 0x30D5, 0x30D8, 0x30DB, 0x30DE, 0x30DF,
-          0x30E0, 0x30E1, 0x30E2, 0x30E4, 0x30E6, 0x30E8, 0x30E9, 0x30EA,
-          0x30EB, 0x30EC, 0x30ED, 0x30EF, 0x30F3, 0x309B, 0x309C};
-      static_assert(std::size(kIso2022JpKatakana) == 0xFF9F - 0xFF61 + 1);
       code_point = kIso2022JpKatakana[code_point - 0xFF61];
     }
 
@@ -207,10 +227,7 @@ class Iso2022JpEncoder {
       return;
     }
     if (state_ != State::kJis0208) {
-      state_ = State::kJis0208;
-      result_.push_back(0x1B);
-      result_.push_back(0x24);
-      result_.push_back(0x42);
+      ChangeStateToJis0208();
       ParseCodePoint(code_point);
       return;
     }
@@ -218,15 +235,13 @@ class Iso2022JpEncoder {
     result_.push_back(*pointer % 94 + 0x21);
   }
 
-  void Finalize() {
-    if (state_ != Iso2022JpEncoder::State::kAscii) {
+  Vector<uint8_t> Finalize() {
+    if (state_ != State::kAscii) {
       ChangeStateToAscii();
     }
+    return std::move(result_);
   }
 
-  const Vector<uint8_t>& result() { return result_; }
-
- private:
   void StatefulUnencodableHandler(UChar32 code_point) {
     if (state_ == State::kJis0208)
       ChangeStateToAscii();
@@ -241,13 +256,7 @@ class Iso2022JpEncoder {
 // https://encoding.spec.whatwg.org/#iso-2022-jp-encoder
 Vector<uint8_t> EncodeIso2022Jp(StringView string,
                                 UnencodableHandling handling) {
-  Iso2022JpEncoder encoder(handling, string.length());
-  for (UChar32 code_point : string) {
-    encoder.ParseCodePoint(code_point);
-  }
-  encoder.Finalize();
-
-  return encoder.result();
+  return Iso2022JpEncoder::Encode(string, handling);
 }
 
 // https://encoding.spec.whatwg.org/#shift_jis-encoder

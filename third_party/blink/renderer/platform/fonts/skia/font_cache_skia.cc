@@ -295,7 +295,7 @@ const FontPlatformData* FontCache::CreateFontPlatformData(
 
   FontPlatformData* font_platform_data = MakeGarbageCollected<FontPlatformData>(
       typeface, name, font_size, synthetic_bold, synthetic_italic,
-      font_description.TextRendering(), resolved_font_features,
+      font_description.TextRendering(), std::move(resolved_font_features),
       font_description.Orientation());
 
   font_platform_data->SetAvoidEmbeddedBitmaps(

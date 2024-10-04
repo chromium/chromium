@@ -2351,7 +2351,7 @@ void ResourceFetcher::WarnUnusedPreloads(
   }
 
   // Notify the unused preload list to the LCPP host.
-  std::move(callback).Run(unused_preloads);
+  std::move(callback).Run(std::move(unused_preloads));
 }
 
 void ResourceFetcher::HandleLoaderFinish(Resource* resource,

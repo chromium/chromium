@@ -75,18 +75,6 @@ RetrieveVariationDesignParametersByTag(sk_sp<SkTypeface> base_typeface,
   return std::nullopt;
 }
 
-std::unique_ptr<SkFontArguments::Palette::Override[]>
-ConvertPaletteOverridesToSkiaOverrides(
-    Vector<blink::FontPalette::FontPaletteOverride> color_overrides) {
-  auto sk_overrides = std::make_unique<SkFontArguments::Palette::Override[]>(
-      color_overrides.size());
-  for (wtf_size_t i = 0; i < color_overrides.size(); i++) {
-    SkColor sk_color = color_overrides[i].color.toSkColor4f().toSkColor();
-    sk_overrides[i] = {color_overrides[i].index, sk_color};
-  }
-  return sk_overrides;
-}
-
 }  // namespace
 
 namespace blink {
@@ -269,7 +257,12 @@ const FontPlatformData* FontCustomPlatformData::GetFontPlatformData(
       sk_palette.index = *palette_index;
 
       if (color_overrides.size()) {
-        sk_overrides = ConvertPaletteOverridesToSkiaOverrides(color_overrides);
+        sk_overrides = std::make_unique<SkFontArguments::Palette::Override[]>(
+            color_overrides.size());
+        for (wtf_size_t i = 0; i < color_overrides.size(); i++) {
+          SkColor sk_color = color_overrides[i].color.toSkColor4f().toSkColor();
+          sk_overrides[i] = {color_overrides[i].index, sk_color};
+        }
         sk_palette.overrides = sk_overrides.get();
         sk_palette.overrideCount = color_overrides.size();
       }
