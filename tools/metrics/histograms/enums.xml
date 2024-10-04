@@ -17687,6 +17687,7 @@ from previous Chrome versions.
   <int value="-1095899172" label="LensOverlayContextualSearchbox:enabled"/>
   <int value="-1095698985" label="ChromeSharePageInfo:enabled"/>
   <int value="-1093225454" label="FedCmIdPregistration:disabled"/>
+  <int value="-1093224986" label="ArcUnthrottleOnActiveAudioV2:disabled"/>
   <int value="-1093135462" label="DesktopPWAsAttentionBadgingCrOS:disabled"/>
   <int value="-1092514142" label="JourneysKeywordFiltering:disabled"/>
   <int value="-1092340892" label="VCTrayMicIndicator:disabled"/>
@@ -24521,6 +24522,7 @@ from previous Chrome versions.
   <int value="1714016217" label="EnableHeuristicPalmDetectionFilter:enabled"/>
   <int value="1714018180"
       label="EnableNearbyBluetoothClassicAdvertising:disabled"/>
+  <int value="1714346690" label="ArcUnthrottleOnActiveAudioV2:enabled"/>
   <int value="1714520147" label="MBIMode:disabled"/>
   <int value="1714751652" label="CaptivePortalErrorPage:disabled"/>
   <int value="1714922056" label="GlobalMediaControls:disabled"/>

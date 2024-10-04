@@ -396,9 +396,9 @@
     "expiry_milestone": 132
   },
   {
-    "name": "arc-unthrottle-on-active-audio",
+    "name": "arc-unthrottle-on-active-audio-v2",
     "owners": [ "pteerapong@chromium.org", "chromeos-audio@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "arc-vm-memory-size",

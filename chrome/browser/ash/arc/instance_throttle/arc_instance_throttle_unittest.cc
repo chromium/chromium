@@ -446,9 +446,9 @@ MATCHER_P(IsObserverNameEquals, name, "") {
   return arg->name() == name;
 }
 
-TEST_F(ArcInstanceThrottleTest, UnthrottleOnActiveAudioFeatureOff) {
+TEST_F(ArcInstanceThrottleTest, UnthrottleOnActiveAudioV2FeatureOff) {
   base::test::ScopedFeatureList feature;
-  feature.InitAndDisableFeature(arc::kUnthrottleOnActiveAudio);
+  feature.InitAndDisableFeature(arc::kUnthrottleOnActiveAudioV2);
 
   auto* arc_instance_throttle = CreateArcInstanceThrottle();
   EXPECT_THAT(arc_instance_throttle->observers_for_testing(),
@@ -456,9 +456,9 @@ TEST_F(ArcInstanceThrottleTest, UnthrottleOnActiveAudioFeatureOff) {
                   IsObserverNameEquals(kArcActiveAudioThrottleObserverName))));
 }
 
-TEST_F(ArcInstanceThrottleTest, UnthrottleOnActiveAudioFeatureOn) {
+TEST_F(ArcInstanceThrottleTest, UnthrottleOnActiveAudioV2FeatureOn) {
   base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(arc::kUnthrottleOnActiveAudio);
+  feature.InitAndEnableFeature(arc::kUnthrottleOnActiveAudioV2);
 
   auto* arc_instance_throttle = CreateArcInstanceThrottle();
   EXPECT_THAT(arc_instance_throttle->observers_for_testing(),
