@@ -175,13 +175,6 @@ void UpdatePinAuthAvailability(const AccountId& account_id) {
           account_id));
 }
 
-void UpdateChallengeResponseAuthAvailability(const AccountId& account_id) {
-  const bool enable_challenge_response =
-      ChallengeResponseAuthKeysLoader::CanAuthenticateUser(account_id);
-  LoginScreen::Get()->GetModel()->SetChallengeResponseAuthEnabledForUser(
-      account_id, enable_challenge_response);
-}
-
 LoginDisplayHostMojo* g_login_display_host_mojo = nullptr;
 
 }  // namespace
@@ -277,14 +270,9 @@ void LoginDisplayHostMojo::SetUsers(const user_manager::UserList& users) {
     // availability for any users who can use them.
     for (const user_manager::User* user : users) {
       if (!user->IsDeviceLocalAccount()) {
-        if (features::IsAllowPasswordlessSetupEnabled()) {
-          // Pref-based PIN is irrelvent on the Login screen, so it is ok to
-          // check only Cryptohome PIN here.
-          UpdateAuthFactorsAvailability(user);
-        } else {
-          UpdatePinAuthAvailability(user->GetAccountId());
-          UpdateChallengeResponseAuthAvailability(user->GetAccountId());
-        }
+        // Pref-based PIN is irrelvent on the Login screen, so it is ok to
+        // check only Cryptohome PIN here.
+        UpdateAuthFactorsAvailability(user);
       }
     }
   }

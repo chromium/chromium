@@ -80,12 +80,7 @@ void ViewsScreenLocker::Init(const user_manager::UserList& users) {
     // use them.
     for (user_manager::User* user :
          user_manager::UserManager::Get()->GetLoggedInUsers()) {
-      if (features::IsAllowPasswordlessSetupEnabled()) {
-        UpdateAuthFactorsAvailability(user);
-      } else {
-        UpdatePinKeyboardState(user->GetAccountId());
-        UpdateChallengeResponseAuthAvailability(user->GetAccountId());
-      }
+      UpdateAuthFactorsAvailability(user);
     }
   }
 
