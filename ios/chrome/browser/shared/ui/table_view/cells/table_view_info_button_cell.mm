@@ -259,6 +259,17 @@ const CGFloat kInfoSymbolSize = 22;
     } else {
       [NSLayoutConstraint activateConstraints:_standardConstraints];
     }
+
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+          @[ UITraitPreferredContentSizeCategory.self ]);
+      __weak __typeof(self) weakSelf = self;
+      UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                       UITraitCollection* previousCollection) {
+        [weakSelf updateConstraintsOnTraitChange:previousCollection];
+      };
+      [self registerForTraitChanges:traits withHandler:handler];
+    }
   }
   return self;
 }
@@ -340,23 +351,15 @@ const CGFloat kInfoSymbolSize = 22;
 
 #pragma mark - UIView
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  BOOL isCurrentContentSizeAccessibility =
-      UIContentSizeCategoryIsAccessibilityCategory(
-          self.traitCollection.preferredContentSizeCategory);
-  if (UIContentSizeCategoryIsAccessibilityCategory(
-          previousTraitCollection.preferredContentSizeCategory) !=
-      isCurrentContentSizeAccessibility) {
-    if (isCurrentContentSizeAccessibility) {
-      [NSLayoutConstraint deactivateConstraints:_standardConstraints];
-      [NSLayoutConstraint activateConstraints:_accessibilityConstraints];
-    } else {
-      [NSLayoutConstraint deactivateConstraints:_accessibilityConstraints];
-      [NSLayoutConstraint activateConstraints:_standardConstraints];
-    }
+  if (@available(iOS 17, *)) {
+    return;
   }
+  [self updateConstraintsOnTraitChange:previousTraitCollection];
 }
+#endif
 
 #pragma mark - UITableViewCell
 
@@ -405,6 +408,27 @@ const CGFloat kInfoSymbolSize = 22;
 
 - (NSString*)accessibilityValue {
   return self.statusTextLabel.text;
+}
+
+#pragma mark - Private
+
+// Updates view's constraints when the devices traits are modified.
+- (void)updateConstraintsOnTraitChange:
+    (UITraitCollection*)previousTraitCollection {
+  BOOL isCurrentContentSizeAccessibility =
+      UIContentSizeCategoryIsAccessibilityCategory(
+          self.traitCollection.preferredContentSizeCategory);
+  if (UIContentSizeCategoryIsAccessibilityCategory(
+          previousTraitCollection.preferredContentSizeCategory) !=
+      isCurrentContentSizeAccessibility) {
+    if (isCurrentContentSizeAccessibility) {
+      [NSLayoutConstraint deactivateConstraints:_standardConstraints];
+      [NSLayoutConstraint activateConstraints:_accessibilityConstraints];
+    } else {
+      [NSLayoutConstraint deactivateConstraints:_accessibilityConstraints];
+      [NSLayoutConstraint activateConstraints:_standardConstraints];
+    }
+  }
 }
 
 @end
