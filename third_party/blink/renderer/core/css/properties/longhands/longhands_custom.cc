@@ -7124,7 +7124,9 @@ const CSSValue* ViewTransitionName::ParseSingleValue(
     return css_parsing_utils::ConsumeIdent(stream);
   }
   if (stream.Peek().Id() == CSSValueID::kAuto) {
-    return nullptr;
+    return RuntimeEnabledFeatures::CSSViewTransitionAutoNameEnabled()
+               ? css_parsing_utils::ConsumeIdent(stream)
+               : nullptr;
   }
   return css_parsing_utils::ConsumeCustomIdent(stream, context);
 }
@@ -7137,8 +7139,14 @@ const CSSValue* ViewTransitionName::CSSValueFromComputedStyleInternal(
   if (!style.ViewTransitionName()) {
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
+  if (style.ViewTransitionName()->IsAuto()) {
+    CHECK(RuntimeEnabledFeatures::CSSViewTransitionAutoNameEnabled());
+    return CSSIdentifierValue::Create(CSSValueID::kAuto);
+  }
+
+  CHECK(style.ViewTransitionName()->IsCustom());
   return MakeGarbageCollected<CSSCustomIdentValue>(
-      style.ViewTransitionName()->GetName());
+      style.ViewTransitionName()->CustomName());
 }
 
 const CSSValue* ViewTransitionClass::ParseSingleValue(

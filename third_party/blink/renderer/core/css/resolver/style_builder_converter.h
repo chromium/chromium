@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/core/style/style_reflection.h"
 #include "third_party/blink/renderer/core/style/style_view_transition_group.h"
+#include "third_party/blink/renderer/core/style/style_view_transition_name.h"
 #include "third_party/blink/renderer/core/style/transform_origin.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_variant_emoji.h"
@@ -371,8 +372,8 @@ class StyleBuilderConverter {
       const StyleResolverState&,
       const CSSValue&);
 
-  static ScopedCSSName* ConvertViewTransitionName(StyleResolverState&,
-                                                  const CSSValue&);
+  static StyleViewTransitionName* ConvertViewTransitionName(StyleResolverState&,
+                                                            const CSSValue&);
   static ScopedCSSNameList* ConvertViewTransitionClass(StyleResolverState&,
                                                        const CSSValue&);
   static StyleViewTransitionGroup ConvertViewTransitionGroup(

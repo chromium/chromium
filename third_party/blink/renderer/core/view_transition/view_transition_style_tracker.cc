@@ -681,6 +681,25 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSS() {
       containing_group_stack, /*nearest_group_with_contain=*/g_null_atom);
 }
 
+AtomicString ViewTransitionStyleTracker::GenerateAutoName(
+    Element& element,
+    const TreeScope* scope) {
+  // The flag should be checked much earlier than this, in the CSS parser.
+  CHECK(RuntimeEnabledFeatures::CSSViewTransitionAutoNameEnabled());
+  if (element.HasID() && scope && *scope == element.GetTreeScope()) {
+    return element.GetIdAttribute();
+  }
+  StringBuilder builder;
+  builder.Append("-ua-auto-");
+  if (token_.is_zero()) {
+    token_ = base::Token::CreateRandom();
+  }
+  builder.Append(token_.ToString().c_str());
+  builder.Append("-");
+  builder.AppendNumber(element.GetDomNodeId());
+  return builder.ToAtomicString();
+}
+
 void ViewTransitionStyleTracker::AddTransitionElementsFromCSSRecursive(
     PaintLayer* root,
     const TreeScope* tree_scope,
@@ -716,7 +735,9 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSSRecursive(
             : &node->GetTreeScope();
 
     if (relevant_tree_scope == tree_scope || !relevant_tree_scope) {
-      current_name = root_style.ViewTransitionName()->GetName();
+      current_name = view_transition_name->IsAuto()
+                         ? GenerateAutoName(*To<Element>(node), tree_scope)
+                         : view_transition_name->CustomName();
       AddTransitionElement(DynamicTo<Element>(node), current_name,
                            containing_group_stack.empty()
                                ? g_null_atom

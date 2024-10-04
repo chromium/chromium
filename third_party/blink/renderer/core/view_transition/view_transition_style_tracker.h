@@ -228,6 +228,8 @@ class ViewTransitionStyleTracker
       const AtomicString& name,
       const StyleViewTransitionGroup& group) const;
 
+  AtomicString GenerateAutoName(Element&, const TreeScope*);
+
   struct ElementData : public GarbageCollected<ElementData> {
     void Trace(Visitor* visitor) const;
 
@@ -411,6 +413,8 @@ class ViewTransitionStyleTracker
     AtomicString contain;
   };
   HashMap<AtomicString, AncestorGroupNames> group_state_map_;
+
+  base::Token token_;
 };
 
 }  // namespace blink

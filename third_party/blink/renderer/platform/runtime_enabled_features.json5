@@ -1287,6 +1287,11 @@
     },
     {
       // https://chromestatus.com/feature/5064894363992064
+      name: "CSSViewTransitionAutoName",
+      status: "experimental"
+    },
+    {
+      // https://chromestatus.com/feature/5064894363992064
       name: "CSSViewTransitionClass",
       status: "stable"
     },
