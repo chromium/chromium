@@ -89,9 +89,11 @@ source_set("main") {
     "//ios/chrome/browser/tabs/ui_bundled:constants",
     "//ios/chrome/common/ui/colors",
 
-    # Note: the deps below is not directly used according to `gn check` since
-    # no headers from this target are included. It is however required because
-    # the target exist to break circular dependencies.
+    # Note: the deps below are not directly used according to `gn check` since
+    # no headers from those target are included. They are however required as
+    # the target exist to break circular dependencies or to provide resources.
+    "//ios/chrome/app/resources:base_scene_storyboard",
+    "//ios/chrome/app/resources:launchscreen_xib",
     "//ios/chrome/browser/tabs/model:tabs_internal",
   ]
 
