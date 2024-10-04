@@ -62,12 +62,7 @@ namespace {
 // announcements.
 class PickerAccessibilityBrowserTest : public InProcessBrowserTest {
  public:
-  PickerAccessibilityBrowserTest() {
-    // This is needed to turn off Dogfood checks that prevents Picker from being
-    // toggled.
-    scoped_feature_list_.InitWithFeatureState(ash::features::kPickerDogfood,
-                                              false);
-  }
+  PickerAccessibilityBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();

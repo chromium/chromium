@@ -2495,11 +2495,6 @@ BASE_FEATURE(kPickerAlwaysShowFeatureTour,
              "PickerAlwaysShowFeatureTour",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables Dogfood for picker.
-BASE_FEATURE(kPickerDogfood,
-             "PickerDogfood",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables filtering of link suggestions.
 BASE_FEATURE(kPickerFilterLinks,
              "PickerFilterLinks",

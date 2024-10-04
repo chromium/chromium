@@ -17084,8 +17084,7 @@
                     "enable_features": [
                         "ModifierSplit",
                         "ModifierSplitDogfood",
-                        "Picker",
-                        "PickerDogfood"
+                        "Picker"
                     ]
                 }
             ]
