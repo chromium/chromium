@@ -56,7 +56,10 @@ source_set("impl") {
     ]
 
     if (is_chromeos) {
-      deps += [ "//chromeos/components/kiosk" ]
+      deps += [
+        "//chromeos/components/kiosk",
+        "//chromeos/components/mgs",
+      ]
     }
   }
 }
