@@ -122,7 +122,17 @@ uint64_t PerformanceResourceTiming::GetTransferSize(
   return 0;
 }
 
+bool PerformanceResourceTiming::IsResponseFromCacheStorage() const {
+  return info_->service_worker_response_source ==
+         network::mojom::blink::FetchResponseSource::kCacheStorage;
+}
+
 AtomicString PerformanceResourceTiming::GetDeliveryType() const {
+  if (base::FeatureList::IsEnabled(
+          features::kServiceWorkerStaticRouterTimingInfo) &&
+      IsResponseFromCacheStorage()) {
+    return delivery_type_names::kCacheStorage;
+  }
   return info_->cache_state == mojom::blink::CacheState::kNone
              ? g_empty_atom
              : delivery_type_names::kCache;

@@ -63,6 +63,7 @@ function test_resource_timing(options) {
       if (entry.workerFinalSourceType === 'cache') {
         assert_equals(entry.fetchStart, entry.responseStart, description);
         assert_less_than_equal(entry.workerCacheLookupStart, entry.responseStart, description);
+        assert_equals(entry.deliveryType, 'cache-storage', description);
       } else {
         assert_less_than_equal(entry.workerCacheLookupStart, entry.fetchStart, description);
       }

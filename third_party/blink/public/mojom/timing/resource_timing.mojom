@@ -130,4 +130,9 @@ struct ResourceTimingInfo {
   // https://github.com/WICG/service-worker-static-routing-api, not in the
   // resource-timing standard yet.
   network.mojom.ServiceWorkerRouterInfo? service_worker_router_info;
+
+  // Holds where the source of the resource, when it was fetched via
+  // ServiceWorker. This is |kUnspecified| if the response is not from
+  // ServiceWorker.
+  network.mojom.FetchResponseSource service_worker_response_source;
 };

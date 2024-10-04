@@ -37,7 +37,8 @@ CrossThreadCopier<blink::mojom::blink::ResourceTimingInfoPtr>::Copy(
       info->render_blocking_status, info->response_status, info->content_type,
       info->service_worker_router_info
           ? info->service_worker_router_info->Clone()
-          : nullptr);
+          : nullptr,
+      info->service_worker_response_source);
 }
 
 CrossThreadCopier<blink::mojom::blink::ServerTimingInfoPtr>::Type

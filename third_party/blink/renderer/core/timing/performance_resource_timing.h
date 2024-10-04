@@ -123,6 +123,12 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   AtomicString GetNextHopProtocol(const AtomicString& alpn_negotiated_protocol,
                                   const AtomicString& connection_info) const;
 
+  // Returns true if the response comes from the CacheStorage. This is
+  // regardless of where the response came from whether it is from the `cache`
+  // rule of ServiceWorker static routing API, or the fetch handler's
+  // respondWith().
+  bool IsResponseFromCacheStorage() const;
+
   DOMHighResTimeStamp GetAnyFirstResponseStart() const;
   double WorkerReady() const;
 
