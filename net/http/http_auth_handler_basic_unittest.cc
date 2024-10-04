@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -111,9 +112,7 @@ TEST(HttpAuthHandlerBasicTest, HandleAnotherChallenge) {
                     NetLogWithSource(), host_resolver.get(), &basic));
 
   for (const auto& test : tests) {
-    std::string challenge(test.challenge);
-    HttpAuthChallengeTokenizer tok(challenge.begin(),
-                                   challenge.end());
+    HttpAuthChallengeTokenizer tok(test.challenge);
     EXPECT_EQ(test.expected_rv, basic->HandleAnotherChallenge(&tok));
   }
 }

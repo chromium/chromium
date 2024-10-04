@@ -6,6 +6,7 @@
 #define NET_HTTP_HTTP_AUTH_CHALLENGE_TOKENIZER_H_
 
 #include <string>
+#include <string_view>
 
 #include "net/base/net_export.h"
 #include "net/http/http_util.h"
@@ -22,33 +23,25 @@ namespace net {
 // to support either usage.
 class NET_EXPORT_PRIVATE HttpAuthChallengeTokenizer {
  public:
-  HttpAuthChallengeTokenizer(std::string::const_iterator begin,
-                             std::string::const_iterator end);
+  explicit HttpAuthChallengeTokenizer(std::string_view challenge);
   ~HttpAuthChallengeTokenizer();
 
   // Get the original text.
-  std::string challenge_text() const {
-    return std::string(begin_, end_);
-  }
+  std::string_view challenge_text() const { return challenge_; }
 
   // Get the authenthication scheme of the challenge. The returned scheme is
   // always lowercase.
   const std::string& auth_scheme() const { return lower_case_scheme_; }
 
-  std::string::const_iterator params_begin() const { return params_begin_; }
-  std::string::const_iterator params_end() const { return params_end_; }
+  std::string_view params() const { return params_; }
   HttpUtil::NameValuePairsIterator param_pairs() const;
-  std::string base64_param() const;
+  std::string_view base64_param() const;
 
  private:
-  void Init(std::string::const_iterator begin,
-            std::string::const_iterator end);
+  void Init(std::string_view challenge);
 
-  std::string::const_iterator begin_;
-  std::string::const_iterator end_;
-
-  std::string::const_iterator params_begin_;
-  std::string::const_iterator params_end_;
+  std::string_view challenge_;
+  std::string_view params_;
 
   std::string lower_case_scheme_;
 };

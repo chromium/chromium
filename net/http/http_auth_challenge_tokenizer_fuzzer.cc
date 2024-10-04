@@ -7,14 +7,15 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include <string>
-
 #include "net/http/http_auth_challenge_tokenizer.h"
+
+#include <string_view>
+
 #include "net/http/http_util.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  std::string input(reinterpret_cast<const char*>(data), size);
-  net::HttpAuthChallengeTokenizer tokenizer(input.begin(), input.end());
+  std::string_view input(reinterpret_cast<const char*>(data), size);
+  net::HttpAuthChallengeTokenizer tokenizer(input);
   net::HttpUtil::NameValuePairsIterator parameters = tokenizer.param_pairs();
   while (parameters.GetNext()) {
   }

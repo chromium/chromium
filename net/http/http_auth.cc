@@ -10,6 +10,8 @@
 #include "net/http/http_auth.h"
 
 #include <algorithm>
+#include <optional>
+#include <string_view>
 
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
@@ -90,17 +92,16 @@ HttpAuth::AuthorizationResult HttpAuth::HandleChallengeResponse(
   const char* current_scheme_name = SchemeToString(current_scheme);
   const std::string header_name = GetChallengeHeaderName(target);
   size_t iter = 0;
-  std::string challenge;
+  std::optional<std::string_view> challenge;
   HttpAuth::AuthorizationResult authorization_result =
       HttpAuth::AUTHORIZATION_RESULT_INVALID;
-  while (response_headers.EnumerateHeader(&iter, header_name, &challenge)) {
-    HttpAuthChallengeTokenizer challenge_tokens(challenge.begin(),
-                                                challenge.end());
+  while ((challenge = response_headers.EnumerateHeader(&iter, header_name))) {
+    HttpAuthChallengeTokenizer challenge_tokens(*challenge);
     if (challenge_tokens.auth_scheme() != current_scheme_name)
       continue;
     authorization_result = handler->HandleAnotherChallenge(&challenge_tokens);
     if (authorization_result != HttpAuth::AUTHORIZATION_RESULT_INVALID) {
-      *challenge_used = challenge;
+      *challenge_used = *challenge;
       return authorization_result;
     }
   }

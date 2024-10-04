@@ -4,6 +4,9 @@
 
 #include "net/http/http_log_util.h"
 
+#include <string_view>
+
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "net/http/http_auth_challenge_tokenizer.h"
@@ -38,39 +41,44 @@ bool ShouldRedactChallenge(HttpAuthChallengeTokenizer* challenge) {
 }  // namespace
 
 std::string ElideHeaderValueForNetLog(NetLogCaptureMode capture_mode,
-                                      const std::string& header,
-                                      const std::string& value) {
-  std::string::const_iterator redact_begin = value.begin();
-  std::string::const_iterator redact_end = value.begin();
+                                      std::string_view header,
+                                      std::string_view value) {
+  std::string_view redact;
 
-  if (redact_begin == redact_end &&
-      !NetLogCaptureIncludesSensitive(capture_mode)) {
+  if (!NetLogCaptureIncludesSensitive(capture_mode)) {
     if (base::EqualsCaseInsensitiveASCII(header, "set-cookie") ||
         base::EqualsCaseInsensitiveASCII(header, "set-cookie2") ||
         base::EqualsCaseInsensitiveASCII(header, "cookie") ||
         base::EqualsCaseInsensitiveASCII(header, "authorization") ||
         base::EqualsCaseInsensitiveASCII(header, "proxy-authorization")) {
-      redact_begin = value.begin();
-      redact_end = value.end();
+      redact = value;
     } else if (base::EqualsCaseInsensitiveASCII(header, "www-authenticate") ||
                base::EqualsCaseInsensitiveASCII(header, "proxy-authenticate")) {
       // Look for authentication information from data received from the server
       // in multi-round Negotiate authentication.
-      HttpAuthChallengeTokenizer challenge(value.begin(), value.end());
+      HttpAuthChallengeTokenizer challenge(value);
       if (ShouldRedactChallenge(&challenge)) {
-        redact_begin = challenge.params_begin();
-        redact_end = challenge.params_end();
+        redact = challenge.params();
       }
     }
   }
 
-  if (redact_begin == redact_end)
-    return value;
+  if (redact.empty()) {
+    return std::string(value);
+  }
 
-  return std::string(value.begin(), redact_begin) +
-      base::StringPrintf("[%ld bytes were stripped]",
-                         static_cast<long>(redact_end - redact_begin)) +
-      std::string(redact_end, value.end());
+  // Create string_views that contain the part of `value` before the `redact`
+  // substring, and the value after it. Need to use the data() field of the two
+  // string_views to figure out where `redact` appears within `value`.
+  size_t redact_offset = redact.data() - value.data();
+  std::string_view value_before_redact = value.substr(0, redact_offset);
+  std::string_view value_after_redact =
+      value.substr(redact_offset + redact.length());
+
+  return base::StrCat({value_before_redact,
+                       base::StringPrintf("[%ld bytes were stripped]",
+                                          static_cast<long>(redact.length())),
+                       value_after_redact});
 }
 
 NET_EXPORT void NetLogResponseHeaders(const NetLogWithSource& net_log,

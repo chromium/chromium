@@ -18799,10 +18799,8 @@ TEST_P(HttpNetworkTransactionTest, GenerateAuthToken) {
     if (test_config.proxy_auth_timing != AUTH_NONE) {
       for (int n = 0; n < 3; n++) {
         auto auth_handler = std::make_unique<HttpAuthHandlerMock>();
-        std::string auth_challenge = "Mock realm=proxy";
         url::SchemeHostPort scheme_host_port(GURL(test_config.proxy_url));
-        HttpAuthChallengeTokenizer tokenizer(auth_challenge.begin(),
-                                             auth_challenge.end());
+        HttpAuthChallengeTokenizer tokenizer("Mock realm=proxy");
         auth_handler->InitFromChallenge(
             &tokenizer, HttpAuth::AUTH_PROXY, empty_ssl_info,
             NetworkAnonymizationKey(), scheme_host_port, NetLogWithSource());
@@ -18815,10 +18813,8 @@ TEST_P(HttpNetworkTransactionTest, GenerateAuthToken) {
     }
     if (test_config.server_auth_timing != AUTH_NONE) {
       auto auth_handler = std::make_unique<HttpAuthHandlerMock>();
-      std::string auth_challenge = "Mock realm=server";
       url::SchemeHostPort scheme_host_port(GURL(test_config.server_url));
-      HttpAuthChallengeTokenizer tokenizer(auth_challenge.begin(),
-                                           auth_challenge.end());
+      HttpAuthChallengeTokenizer tokenizer("Mock realm=server");
       auth_handler->InitFromChallenge(&tokenizer, HttpAuth::AUTH_SERVER,
                                       empty_ssl_info, NetworkAnonymizationKey(),
                                       scheme_host_port, NetLogWithSource());
@@ -18947,10 +18943,8 @@ TEST_P(HttpNetworkTransactionTest, MultiRoundAuth) {
   auto auth_handler = std::make_unique<HttpAuthHandlerMock>();
   auto* auth_handler_ptr = auth_handler.get();
   auth_handler->set_connection_based(true);
-  std::string auth_challenge = "Mock realm=server";
   GURL url("http://www.example.com");
-  HttpAuthChallengeTokenizer tokenizer(auth_challenge.begin(),
-                                       auth_challenge.end());
+  HttpAuthChallengeTokenizer tokenizer("Mock realm=server");
   SSLInfo empty_ssl_info;
   auth_handler->InitFromChallenge(&tokenizer, HttpAuth::AUTH_SERVER,
                                   empty_ssl_info, NetworkAnonymizationKey(),

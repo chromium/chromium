@@ -10,6 +10,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -118,7 +119,7 @@ class NET_EXPORT HttpAuthHandlerFactory {
   // |challenge| and calls |CreateAuthHandler|. See |CreateAuthHandler| for
   // more details on return values.
   int CreateAuthHandlerFromString(
-      const std::string& challenge,
+      std::string_view challenge,
       HttpAuth::Target target,
       const SSLInfo& ssl_info,
       const NetworkAnonymizationKey& network_anonymization_key,
