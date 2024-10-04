@@ -114,8 +114,9 @@ PaymentsWindowUserConsentDialogView::GetWeakPtr() {
 }
 
 void PaymentsWindowUserConsentDialogView::AddedToWidget() {
-  GetBubbleFrameView()->SetTitleView(CreateTitleView(
-      GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
+  GetBubbleFrameView()->SetTitleView(
+      std::make_unique<TitleWithIconAfterLabelView>(
+          GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
 }
 
 std::u16string PaymentsWindowUserConsentDialogView::GetWindowTitle() const {

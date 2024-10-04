@@ -88,8 +88,9 @@ void OfferNotificationBubbleViews::AddedToWidget() {
   const AutofillOfferData* offer = controller_->GetOffer();
   CHECK(offer);
 
-    GetBubbleFrameView()->SetTitleView(CreateTitleView(
-        GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_G));
+  GetBubbleFrameView()->SetTitleView(
+      std::make_unique<TitleWithIconAfterLabelView>(
+          GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_G));
 }
 
 std::u16string OfferNotificationBubbleViews::GetWindowTitle() const {

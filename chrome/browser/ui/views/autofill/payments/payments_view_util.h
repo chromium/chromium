@@ -76,15 +76,6 @@ class TitleWithIconAfterLabelView : public views::BoxLayoutView {
   gfx::Size GetMinimumSize() const override;
 };
 
-// An intermediary method to switch between TitleWithIconAndSeparatorView and
-// TitleWithIconAfterLabelView protected by
-// kAutofillEnableMovingGPayLogoToTheRightOnDesktop.
-// TODO(crbug.com/40274277): Remove this method once
-// kAutofillEnableMovingGPayLogoToTheRightOnDesktop is fully launched.
-std::unique_ptr<views::View> CreateTitleView(
-    const std::u16string& window_title,
-    TitleWithIconAndSeparatorView::Icon icon_to_show);
-
 // Defines a view with legal message. This class handles the legal message
 // parsing and the links clicking events.
 class LegalMessageView : public views::BoxLayoutView {

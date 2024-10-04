@@ -127,8 +127,9 @@ void VirtualCardManualFallbackBubbleViews::Init() {
 }
 
 void VirtualCardManualFallbackBubbleViews::AddedToWidget() {
-  GetBubbleFrameView()->SetTitleView(CreateTitleView(
-      GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
+  GetBubbleFrameView()->SetTitleView(
+      std::make_unique<TitleWithIconAfterLabelView>(
+          GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
 }
 
 std::u16string VirtualCardManualFallbackBubbleViews::GetWindowTitle() const {

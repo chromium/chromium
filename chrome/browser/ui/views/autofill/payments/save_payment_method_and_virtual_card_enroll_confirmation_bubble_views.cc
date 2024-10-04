@@ -61,8 +61,9 @@ void SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews::AddedToWidget
                                      .set_bottom(0)));
     GetBubbleFrameView()->SetHeaderView(std::move(image_view));
   }
-  GetBubbleFrameView()->SetTitleView(CreateTitleView(
-      GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
+  GetBubbleFrameView()->SetTitleView(
+      std::make_unique<TitleWithIconAfterLabelView>(
+          GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
 }
 
 std::u16string
