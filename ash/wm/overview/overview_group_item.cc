@@ -12,7 +12,6 @@
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
-#include "ash/wm/overview/overview_group_container_view.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_base.h"
 #include "ash/wm/overview/overview_item_view.h"
@@ -34,6 +33,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -566,8 +566,8 @@ void OverviewGroupItem::CreateItemWidget() {
 
   CreateShadow();
 
-  overview_group_container_view_ = item_widget_->SetContentsView(
-      std::make_unique<OverviewGroupContainerView>(this));
+  overview_group_container_view_ =
+      item_widget_->SetContentsView(std::make_unique<views::View>());
   item_widget_->Show();
   item_widget_->GetLayer()->SetMasksToBounds(/*masks_to_bounds=*/false);
 }

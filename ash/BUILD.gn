@@ -3032,8 +3032,6 @@ component("ash") {
     "wm/overview/overview_grid.h",
     "wm/overview/overview_grid_event_handler.cc",
     "wm/overview/overview_grid_event_handler.h",
-    "wm/overview/overview_group_container_view.cc",
-    "wm/overview/overview_group_container_view.h",
     "wm/overview/overview_group_item.cc",
     "wm/overview/overview_group_item.h",
     "wm/overview/overview_item.cc",
