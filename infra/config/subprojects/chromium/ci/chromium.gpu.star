@@ -39,6 +39,10 @@ targets.builder_defaults.set(
     ],
 )
 
+targets.settings_defaults.set(
+    allow_script_tests = False,
+)
+
 consoles.console_view(
     name = "chromium.gpu",
     branch_selector = [

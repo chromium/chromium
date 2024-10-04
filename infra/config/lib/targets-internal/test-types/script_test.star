@@ -7,7 +7,8 @@
 load("../common.star", _targets_common = "common")
 
 def _script_test_spec_init(node, settings):
-    settings = settings  # Shut linter up
+    if not settings.allow_script_tests:
+        fail("script test being included by builder with allow_script_tests=False")
     return dict(
         name = node.key.id,
         script = node.props.details.script,

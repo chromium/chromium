@@ -39,6 +39,7 @@ _os_type = enums.enum(
 )
 
 _settings_defaults = args_lib.defaults(
+    allow_script_tests = True,
     browser_config = None,
     os_type = None,
     use_swarming = True,
@@ -47,6 +48,7 @@ _settings_defaults = args_lib.defaults(
 
 def _settings(
         *,
+        allow_script_tests = args_lib.DEFAULT,
         browser_config = args_lib.DEFAULT,
         os_type = args_lib.DEFAULT,
         use_swarming = args_lib.DEFAULT,
@@ -54,6 +56,10 @@ def _settings(
     """Settings that control the expansions of tests for a builder.
 
     Args:
+        allow_script_tests: A bool controlling whether the builder can be
+            configured to run script tests. It is an error if allow_script_tests
+            is False and a builder includes script tests. Supports a
+            module-level default.
         browser_config: One of the values from targets.browser_config that
             indicates the configuration of the browser to execute the test with.
         os_type: One of the values from targets.os_type that indicates the OS
@@ -75,12 +81,15 @@ def _settings(
     os_type = _settings_defaults.get_value("os_type", os_type)
     if os_type and os_type not in _os_type.values:
         fail("unknown os_type: {}".format(os_type))
+
+    allow_script_tests = _settings_defaults.get_value("allow_script_tests", allow_script_tests)
     use_swarming = _settings_defaults.get_value("use_swarming", use_swarming)
     use_android_merge_script_by_default = _settings_defaults.get_value(
         "use_android_merge_script_by_default",
         use_android_merge_script_by_default,
     )
     return struct(
+        allow_script_tests = allow_script_tests,
         browser_config = browser_config,
         os_type = os_type,
         use_swarming = use_swarming,
