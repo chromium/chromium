@@ -17,7 +17,7 @@
 
 namespace cbor {
 
-Writer::~Writer() {}
+Writer::~Writer() = default;
 
 // static
 std::optional<std::vector<uint8_t>> Writer::Write(const Value& node,
