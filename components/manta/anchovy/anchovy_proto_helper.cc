@@ -34,7 +34,7 @@ std::string AnchovyDescriptionTypeToString(
 }  // namespace
 
 constexpr char kAnchovyDescriptionsContextTypeUrl[] =
-    "type.googleapis.com/image_repository.api.AnchovyDescriptionContext";
+    "type.googleapis.com/image_repository.api.ImageDescriptionContext";
 
 proto::Request AnchovyProtoHelper::ComposeRequest(
     const ImageDescriptionRequest& request) {
