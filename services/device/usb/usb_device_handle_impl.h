@@ -132,7 +132,7 @@ class UsbDeviceHandleImpl : public UsbDeviceHandle {
 
   void ReportIsochronousTransferError(
       UsbDeviceHandle::IsochronousTransferCallback callback,
-      const std::vector<uint32_t> packet_lengths,
+      const std::vector<uint32_t>& packet_lengths,
       mojom::UsbTransferStatus status);
 
   // Submits a transfer and starts tracking it. Retains the buffer and copies
