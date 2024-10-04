@@ -727,10 +727,9 @@ TEST_F(ZeroSuggestProviderTest, SendRequestWithoutLensInteractionResponse) {
 
 TEST_F(ZeroSuggestProviderTest, SendRequestWithLensInteractionResponse) {
   AutocompleteInput input = OnFocusInputForLens();
-  lens::proto::LensOverlayInteractionResponse lens_overlay_interaction_response;
-  lens_overlay_interaction_response.set_suggest_signals("xyz");
-  input.set_lens_overlay_interaction_response(
-      lens_overlay_interaction_response);
+  lens::proto::LensOverlaySuggestInputs lens_overlay_suggest_inputs;
+  lens_overlay_suggest_inputs.set_encoded_image_signals("xyz");
+  input.set_lens_overlay_suggest_inputs(lens_overlay_suggest_inputs);
   provider_->Start(input, false);
 
   // Make sure the default provider's suggest endpoint was queried with the

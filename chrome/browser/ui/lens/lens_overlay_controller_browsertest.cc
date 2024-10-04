@@ -191,7 +191,7 @@ constexpr char kOverlayReadyScript[] =
     "getBoundingClientRect(); return regionLayerBounds.width > 0 && "
     "regionLayerBounds.height > 0;})();";
 
-constexpr char kTestSuggestSignals[] = "suggest_signals";
+constexpr char kTestSuggestSignals[] = "encoded_image_signals";
 
 constexpr char kStartTimeQueryParamKey[] = "qsubts";
 constexpr char kViewportWidthQueryParamKey[] = "biw";
@@ -326,7 +326,7 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
   explicit LensOverlayQueryControllerFake(
       lens::LensOverlayFullImageResponseCallback full_image_callback,
       lens::LensOverlayUrlResponseCallback url_callback,
-      lens::LensOverlayInteractionResponseCallback interaction_data_callback,
+      lens::LensOverlaySuggestInputsCallback suggest_inputs_callback,
       lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,
       signin::IdentityManager* identity_manager,
@@ -336,7 +336,7 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
       lens::LensOverlayGen204Controller* gen204_controller)
       : LensOverlayQueryController(full_image_callback,
                                    url_callback,
-                                   interaction_data_callback,
+                                   suggest_inputs_callback,
                                    thumbnail_created_callback,
                                    variations_client,
                                    identity_manager,
@@ -364,11 +364,10 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
 
     // Send response for interaction data callback /
     // HandleInteractionDataResponse.
-    lens::proto::LensOverlayInteractionResponse interaction_response;
-    interaction_response.set_suggest_signals(kTestSuggestSignals);
+    lens::proto::LensOverlaySuggestInputs suggest_inputs;
+    suggest_inputs.set_encoded_image_signals(kTestSuggestSignals);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(interaction_data_callback_, interaction_response));
+        FROM_HERE, base::BindOnce(suggest_inputs_callback_, suggest_inputs));
 
     last_sent_underlying_content_bytes_ = underlying_content_bytes;
     last_sent_underlying_content_type_ = underlying_content_type;
@@ -474,7 +473,7 @@ class LensOverlayControllerFake : public LensOverlayController {
   std::unique_ptr<lens::LensOverlayQueryController> CreateLensQueryController(
       lens::LensOverlayFullImageResponseCallback full_image_callback,
       lens::LensOverlayUrlResponseCallback url_callback,
-      lens::LensOverlayInteractionResponseCallback interaction_data_callback,
+      lens::LensOverlaySuggestInputsCallback suggest_inputs_callback,
       lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,
       signin::IdentityManager* identity_manager,
@@ -484,7 +483,7 @@ class LensOverlayControllerFake : public LensOverlayController {
       lens::LensOverlayGen204Controller* gen204_controller) override {
     auto fake_query_controller =
         std::make_unique<LensOverlayQueryControllerFake>(
-            full_image_callback, url_callback, interaction_data_callback,
+            full_image_callback, url_callback, suggest_inputs_callback,
             thumbnail_created_callback, variations_client, identity_manager,
             profile, invocation_source, use_dark_mode, gen204_controller);
     fake_query_controller->SetShouldReturnError(
@@ -1582,7 +1581,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Before showing the UI, there should be no suggest signals as no query flow
   // has started.
-  EXPECT_FALSE(controller->GetLensResponseForTesting().has_suggest_signals());
+  EXPECT_FALSE(
+      controller->GetLensSuggestInputsForTesting().has_encoded_image_signals());
 
   // Showing UI should change the state to screenshot and eventually to overlay.
   // When the overlay is bound, it should start the query flow which returns a
@@ -1594,9 +1594,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
 
   // The lens response should have been correctly set for use by the searchbox.
-  EXPECT_TRUE(controller->GetLensResponseForTesting().has_suggest_signals());
-  EXPECT_EQ(controller->GetLensResponseForTesting().suggest_signals(),
-            kTestSuggestSignals);
+  EXPECT_TRUE(
+      controller->GetLensSuggestInputsForTesting().has_encoded_image_signals());
+  EXPECT_EQ(
+      controller->GetLensSuggestInputsForTesting().encoded_image_signals(),
+      kTestSuggestSignals);
 
   // The tab ID should have been correctly set for use by the searchbox.
   content::WebContents* tab_web_contents =

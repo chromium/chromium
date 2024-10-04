@@ -75,7 +75,7 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
   explicit LensOverlayQueryControllerFake(
       lens::LensOverlayFullImageResponseCallback full_image_callback,
       lens::LensOverlayUrlResponseCallback url_callback,
-      lens::LensOverlayInteractionResponseCallback interaction_data_callback,
+      lens::LensOverlaySuggestInputsCallback suggest_inputs_callback,
       lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,
       signin::IdentityManager* identity_manager,
@@ -85,7 +85,7 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
       lens::LensOverlayGen204Controller* gen204_controller)
       : LensOverlayQueryController(full_image_callback,
                                    url_callback,
-                                   interaction_data_callback,
+                                   suggest_inputs_callback,
                                    thumbnail_created_callback,
                                    variations_client,
                                    identity_manager,
@@ -132,7 +132,7 @@ class LensOverlayControllerFake : public LensOverlayController {
   std::unique_ptr<lens::LensOverlayQueryController> CreateLensQueryController(
       lens::LensOverlayFullImageResponseCallback full_image_callback,
       lens::LensOverlayUrlResponseCallback url_callback,
-      lens::LensOverlayInteractionResponseCallback interaction_data_callback,
+      lens::LensOverlaySuggestInputsCallback suggest_inputs_callback,
       lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,
       signin::IdentityManager* identity_manager,
@@ -142,7 +142,7 @@ class LensOverlayControllerFake : public LensOverlayController {
       lens::LensOverlayGen204Controller* gen204_controller) override {
     auto fake_query_controller =
         std::make_unique<LensOverlayQueryControllerFake>(
-            full_image_callback, url_callback, interaction_data_callback,
+            full_image_callback, url_callback, suggest_inputs_callback,
             thumbnail_created_callback, variations_client, identity_manager,
             profile, invocation_source, use_dark_mode, gen204_controller);
     return fake_query_controller;

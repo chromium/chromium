@@ -8,9 +8,36 @@ option optimize_for = LITE_RUNTIME;
 
 package lens.proto;
 
-message LensOverlayInteractionResponse {
-  // The suggest signals.
-  optional string suggest_signals = 1;
+message LensOverlaySuggestInputs {
+  // The encoded image suggest signals.
+  // Passed in the iil= param to the Suggest server.
+  optional string encoded_image_signals = 1;
+
+  // The base64url encoded request id.
+  // Passed in the vsrid= param to the Suggest server.
+  optional string encoded_request_id = 2;
+
+  // The session id.
+  // Passed in the gsessionid= param to the Suggest server.
+  optional string search_session_id = 3;
+
+  // The base64url encoded visual search interaction log data.
+  // Passed in the vsint= param to the Suggest server.
+  optional string encoded_visual_search_interaction_log_data = 4;
+
+  // Whether or not to include the request and search session ids
+  // in contextual query flow suggest requests in the
+  // "gsessionid" and "vsrid" params.
+  optional bool send_gsession_vsrid_for_contextual_suggest = 5;
+
+  // Whether or not to include the request and search session ids
+  // in Lens query flow suggest requests in the
+  // "gsessionid" and "vsrid" params.
+  optional bool send_gsession_vsrid_for_lens_suggest = 6;
+
+  // Whether or not to include the visual search interaction log data
+  // in Lens query flow suggest requests in the "vsint" param.
+  optional bool send_vsint_for_lens_suggest = 7;
 }
 
 message LensOverlayUrlResponse {

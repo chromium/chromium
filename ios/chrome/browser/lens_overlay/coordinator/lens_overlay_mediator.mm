@@ -244,7 +244,7 @@
     [self.omniboxCoordinator setThumbnailImage:result.selectionPreviewImage];
   }
   if (self.omniboxClient) {
-    self.omniboxClient->SetLensOverlayInteractionResponse(std::nullopt);
+    self.omniboxClient->SetLensOverlaySuggestInputs(std::nullopt);
   }
 }
 
@@ -267,7 +267,7 @@
 
   NSData* data = result.suggestSignals;
   if (!data.length) {
-    self.omniboxClient->SetLensOverlayInteractionResponse(std::nullopt);
+    self.omniboxClient->SetLensOverlaySuggestInputs(std::nullopt);
     return;
   }
   std::string encodedString;
@@ -279,9 +279,9 @@
                   &encodedString);
 
   if (encodedString.size() > 0) {
-    lens::proto::LensOverlayInteractionResponse response;
-    response.set_suggest_signals(encodedString);
-    self.omniboxClient->SetLensOverlayInteractionResponse(response);
+    lens::proto::LensOverlaySuggestInputs response;
+    response.set_encoded_image_signals(encodedString);
+    self.omniboxClient->SetLensOverlaySuggestInputs(response);
   }
 }
 

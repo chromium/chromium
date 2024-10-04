@@ -378,16 +378,16 @@ TEST_F(LensOverlayMediatorTest, SuggestSignals) {
   Base64UrlEncode("xyz", base::Base64UrlEncodePolicy::INCLUDE_PADDING,
                   &expected_signals);
 
-  EXPECT_TRUE(lens_omnibox_client_->GetLensOverlayInteractionResponse()
-                  ->has_suggest_signals());
+  EXPECT_TRUE(lens_omnibox_client_->GetLensOverlaySuggestInputs()
+                  ->has_encoded_image_signals());
   EXPECT_EQ(expected_signals,
-            lens_omnibox_client_->GetLensOverlayInteractionResponse()
-                ->suggest_signals());
+            lens_omnibox_client_->GetLensOverlaySuggestInputs()
+                ->encoded_image_signals());
 
   // On a new selection, the signals reset until they are fetched again.
   UpdateLensSelection(/*resultURL=*/GURL("https://some-other-url.com"),
                       /*expectCanGoBack=*/YES);
-  EXPECT_FALSE(lens_omnibox_client_->GetLensOverlayInteractionResponse());
+  EXPECT_FALSE(lens_omnibox_client_->GetLensOverlaySuggestInputs());
 }
 
 }  // namespace

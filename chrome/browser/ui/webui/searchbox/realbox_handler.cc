@@ -100,8 +100,8 @@ class RealboxOmniboxClient final : public OmniboxClient {
   security_state::SecurityLevel GetSecurityLevel() const override;
   net::CertStatus GetCertStatus() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  std::optional<lens::proto::LensOverlayInteractionResponse>
-    GetLensOverlayInteractionResponse() const override;
+  std::optional<lens::proto::LensOverlaySuggestInputs>
+  GetLensOverlaySuggestInputs() const override;
   void OnThumbnailRemoved() override;
   gfx::Image GetFaviconForPageUrl(
       const GURL& page_url,
@@ -259,11 +259,10 @@ gfx::Image RealboxOmniboxClient::GetFaviconForPageUrl(
   return gfx::Image();
 }
 
-std::optional<lens::proto::LensOverlayInteractionResponse>
-    RealboxOmniboxClient::GetLensOverlayInteractionResponse() const {
-  if (lens_searchbox_client_ &&
-      lens_searchbox_client_->GetLensResponse().has_suggest_signals()) {
-    return lens_searchbox_client_->GetLensResponse();
+std::optional<lens::proto::LensOverlaySuggestInputs>
+RealboxOmniboxClient::GetLensOverlaySuggestInputs() const {
+  if (lens_searchbox_client_) {
+    return lens_searchbox_client_->GetLensSuggestInputs();
   }
   return std::nullopt;
 }
@@ -423,10 +422,10 @@ void RealboxHandler::QueryAutocomplete(const std::u16string& input,
   // Disable keyword matches as NTP realbox has no UI affordance for it.
   autocomplete_input.set_prefer_keyword(false);
   autocomplete_input.set_allow_exact_keyword_match(false);
-  // Set the lens overlay interaction response, if available.
-  if (std::optional<lens::proto::LensOverlayInteractionResponse> response =
-          controller_->client()->GetLensOverlayInteractionResponse()) {
-    autocomplete_input.set_lens_overlay_interaction_response(*response);
+  // Set the lens overlay suggest inputs, if available.
+  if (std::optional<lens::proto::LensOverlaySuggestInputs> suggest_inputs =
+          controller_->client()->GetLensOverlaySuggestInputs()) {
+    autocomplete_input.set_lens_overlay_suggest_inputs(*suggest_inputs);
   }
 
   omnibox_controller()->StartAutocomplete(autocomplete_input);

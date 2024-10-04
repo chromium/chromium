@@ -390,8 +390,8 @@ void ZeroSuggestProvider::RunZeroSuggestPrefetch(const AutocompleteInput& input,
   search_terms_args.current_page_url = result_type == ResultType::kRemoteSendURL
                                            ? input.current_url().spec()
                                            : std::string();
-  search_terms_args.lens_overlay_interaction_response =
-      input.lens_overlay_interaction_response();
+  search_terms_args.lens_overlay_suggest_inputs =
+      input.lens_overlay_suggest_inputs();
 
   std::unique_ptr<network::SimpleURLLoader>* prefetch_loader = nullptr;
   if (result_type == ResultType::kRemoteNoURL) {
@@ -470,8 +470,8 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
       result_type_running_ == ResultType::kRemoteSendURL
           ? input.current_url().spec()
           : std::string();
-  search_terms_args.lens_overlay_interaction_response =
-      input.lens_overlay_interaction_response();
+  search_terms_args.lens_overlay_suggest_inputs =
+      input.lens_overlay_suggest_inputs();
 
   const auto* template_url_service = client()->GetTemplateURLService();
   // Create a loader for the request and take ownership of it.

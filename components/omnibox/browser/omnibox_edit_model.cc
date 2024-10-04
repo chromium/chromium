@@ -735,9 +735,9 @@ void OmniboxEditModel::StartAutocomplete(bool has_selected_text,
   input_.set_allow_exact_keyword_match(is_keyword_selected() ||
                                        allow_exact_keyword_match_);
   input_.set_keyword_mode_entry_method(keyword_mode_entry_method_);
-  if (std::optional<lens::proto::LensOverlayInteractionResponse> response =
-          controller_->client()->GetLensOverlayInteractionResponse()) {
-    input_.set_lens_overlay_interaction_response(*response);
+  if (std::optional<lens::proto::LensOverlaySuggestInputs> suggest_inputs =
+          controller_->client()->GetLensOverlaySuggestInputs()) {
+    input_.set_lens_overlay_suggest_inputs(*suggest_inputs);
   }
 
   controller_->StartAutocomplete(input_);
@@ -1110,10 +1110,10 @@ void OmniboxEditModel::StartZeroSuggestRequest(
   input_.set_focus_type(user_clobbered_permanent_text
                             ? metrics::OmniboxFocusType::INTERACTION_CLOBBER
                             : metrics::OmniboxFocusType::INTERACTION_FOCUS);
-  // Set the lens overlay interaction response, if available.
-  if (std::optional<lens::proto::LensOverlayInteractionResponse> response =
-          controller_->client()->GetLensOverlayInteractionResponse()) {
-    input_.set_lens_overlay_interaction_response(*response);
+  // Set the lens overlay suggest inputs, if available.
+  if (std::optional<lens::proto::LensOverlaySuggestInputs> suggest_inputs =
+          controller_->client()->GetLensOverlaySuggestInputs()) {
+    input_.set_lens_overlay_suggest_inputs(*suggest_inputs);
   }
   controller_->StartAutocomplete(input_);
 }

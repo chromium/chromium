@@ -52,9 +52,9 @@ using LensOverlayFullImageResponseCallback =
 // Callback type alias for the lens overlay url response.
 using LensOverlayUrlResponseCallback =
     base::RepeatingCallback<void(lens::proto::LensOverlayUrlResponse)>;
-// Callback type alias for the lens overlay interaction data response.
-using LensOverlayInteractionResponseCallback =
-    base::RepeatingCallback<void(lens::proto::LensOverlayInteractionResponse)>;
+// Callback type alias for the lens overlay suggest inputs response.
+using LensOverlaySuggestInputsCallback =
+    base::RepeatingCallback<void(lens::proto::LensOverlaySuggestInputs)>;
 // Callback type alias for the thumbnail image creation.
 using LensOverlayThumbnailCreatedCallback =
     base::RepeatingCallback<void(const std::string&)>;
@@ -68,7 +68,7 @@ class LensOverlayQueryController {
   LensOverlayQueryController(
       LensOverlayFullImageResponseCallback full_image_callback,
       LensOverlayUrlResponseCallback url_callback,
-      LensOverlayInteractionResponseCallback interaction_data_callback,
+      LensOverlaySuggestInputsCallback suggest_inputs_callback,
       LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,
       signin::IdentityManager* identity_manager,
@@ -152,8 +152,9 @@ class LensOverlayQueryController {
   // and interaction retries.
   LensOverlayFullImageResponseCallback full_image_callback_;
 
-  // Interaction data callback for an interaction.
-  LensOverlayInteractionResponseCallback interaction_data_callback_;
+  // Suggest inputs callback, used for sending Lens suggest data to the
+  // search box.
+  LensOverlaySuggestInputsCallback suggest_inputs_callback_;
 
   // Callback for when a thumbnail image is created from a region selection.
   LensOverlayThumbnailCreatedCallback thumbnail_created_callback_;

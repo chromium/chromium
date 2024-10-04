@@ -79,8 +79,8 @@ gfx::Image OmniboxClient::GetSizedIcon(const gfx::Image& icon) const {
   return gfx::Image();
 }
 
-std::optional<lens::proto::LensOverlayInteractionResponse>
-OmniboxClient::GetLensOverlayInteractionResponse() const {
+std::optional<lens::proto::LensOverlaySuggestInputs>
+OmniboxClient::GetLensOverlaySuggestInputs() const {
   return std::nullopt;
 }
 

@@ -393,7 +393,7 @@ void LensOverlayController::ShowUI(
                           weak_factory_.GetWeakPtr()),
       base::BindRepeating(&LensOverlayController::HandleInteractionURLResponse,
                           weak_factory_.GetWeakPtr()),
-      base::BindRepeating(&LensOverlayController::HandleInteractionDataResponse,
+      base::BindRepeating(&LensOverlayController::HandleSuggestInputsResponse,
                           weak_factory_.GetWeakPtr()),
       base::BindRepeating(&LensOverlayController::HandleThumbnailCreated,
                           weak_factory_.GetWeakPtr()),
@@ -1104,16 +1104,16 @@ void LensOverlayController::OnThumbnailRemovedForTesting() {
   OnThumbnailRemoved();
 }
 
-const lens::proto::LensOverlayInteractionResponse&
-LensOverlayController::GetLensResponseForTesting() {
-  return GetLensResponse();
+const lens::proto::LensOverlaySuggestInputs&
+LensOverlayController::GetLensSuggestInputsForTesting() {
+  return GetLensSuggestInputs();
 }
 
 std::unique_ptr<lens::LensOverlayQueryController>
 LensOverlayController::CreateLensQueryController(
     lens::LensOverlayFullImageResponseCallback full_image_callback,
     lens::LensOverlayUrlResponseCallback url_callback,
-    lens::LensOverlayInteractionResponseCallback interaction_data_callback,
+    lens::LensOverlaySuggestInputsCallback suggest_inputs_callback,
     lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
     variations::VariationsClient* variations_client,
     signin::IdentityManager* identity_manager,
@@ -1123,10 +1123,9 @@ LensOverlayController::CreateLensQueryController(
     lens::LensOverlayGen204Controller* gen204_controller) {
   return std::make_unique<lens::LensOverlayQueryController>(
       std::move(full_image_callback), std::move(url_callback),
-      std::move(interaction_data_callback),
-      std::move(thumbnail_created_callback), variations_client,
-      identity_manager, profile, invocation_source, use_dark_mode,
-      gen204_controller);
+      std::move(suggest_inputs_callback), std::move(thumbnail_created_callback),
+      variations_client, identity_manager, profile, invocation_source,
+      use_dark_mode, gen204_controller);
 }
 
 LensOverlayController::OverlayInitializationData::OverlayInitializationData(
@@ -1843,11 +1842,11 @@ std::string& LensOverlayController::GetThumbnail() {
   return selected_region_thumbnail_uri_;
 }
 
-const lens::proto::LensOverlayInteractionResponse&
-LensOverlayController::GetLensResponse() const {
+const lens::proto::LensOverlaySuggestInputs&
+LensOverlayController::GetLensSuggestInputs() const {
   return initialization_data_
-             ? initialization_data_->interaction_response_
-             : lens::proto::LensOverlayInteractionResponse().default_instance();
+             ? initialization_data_->suggest_inputs_
+             : lens::proto::LensOverlaySuggestInputs().default_instance();
 }
 
 void LensOverlayController::OnTextModified() {
@@ -2349,9 +2348,9 @@ void LensOverlayController::HandleInteractionURLResponse(
   LoadURLInResultsFrame(GURL(response.url()));
 }
 
-void LensOverlayController::HandleInteractionDataResponse(
-    lens::proto::LensOverlayInteractionResponse response) {
-  initialization_data_->interaction_response_ = response;
+void LensOverlayController::HandleSuggestInputsResponse(
+    lens::proto::LensOverlaySuggestInputs suggest_inputs) {
+  initialization_data_->suggest_inputs_ = suggest_inputs;
 }
 
 void LensOverlayController::HandleThumbnailCreated(

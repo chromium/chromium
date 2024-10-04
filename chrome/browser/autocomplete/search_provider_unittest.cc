@@ -3765,10 +3765,9 @@ TEST_F(SearchProviderRequestTest, SendRequestWithoutLensInteractionResponse) {
   AutocompleteInput input(u"foo",
                           metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX,
                           ChromeAutocompleteSchemeClassifier(profile_.get()));
-  lens::proto::LensOverlayInteractionResponse lens_overlay_interaction_response;
-  lens_overlay_interaction_response.set_suggest_signals("xyz");
-  input.set_lens_overlay_interaction_response(
-      lens_overlay_interaction_response);
+  lens::proto::LensOverlaySuggestInputs lens_overlay_suggest_inputs;
+  lens_overlay_suggest_inputs.set_encoded_image_signals("xyz");
+  input.set_lens_overlay_suggest_inputs(lens_overlay_suggest_inputs);
   provider_->Start(input, false);
 
   // Make sure the default provider's suggest endpoint was queried with the
@@ -3798,10 +3797,9 @@ TEST_F(SearchProviderRequestTest, SendRequestWithLensInteractionResponse) {
   AutocompleteInput input(u"foo",
                           metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX,
                           ChromeAutocompleteSchemeClassifier(profile_.get()));
-  lens::proto::LensOverlayInteractionResponse lens_overlay_interaction_response;
-  lens_overlay_interaction_response.set_suggest_signals("xyz");
-  input.set_lens_overlay_interaction_response(
-      lens_overlay_interaction_response);
+  lens::proto::LensOverlaySuggestInputs lens_overlay_suggest_inputs;
+  lens_overlay_suggest_inputs.set_encoded_image_signals("xyz");
+  input.set_lens_overlay_suggest_inputs(lens_overlay_suggest_inputs);
   provider_->Start(input, false);
 
   // Make sure the default provider's suggest endpoint was queried with the

@@ -916,10 +916,10 @@ std::unique_ptr<network::SimpleURLLoader> SearchProvider::CreateSuggestLoader(
     search_term_args.prefetch_query_type =
         base::NumberToString(prefetch_data_.query_type);
   }
-  // Make sure the Lens interaction response is sent in the request, if
+  // Make sure the Lens suggest inputs are sent in the request, if
   // available.
-  search_term_args.lens_overlay_interaction_response =
-      input.lens_overlay_interaction_response();
+  search_term_args.lens_overlay_suggest_inputs =
+      input.lens_overlay_suggest_inputs();
 
   const SearchTermsData& search_terms_data =
       client()->GetTemplateURLService()->search_terms_data();

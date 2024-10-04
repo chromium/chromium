@@ -31,8 +31,9 @@ class LensSearchboxClient {
   // Returns the thumbnail data (data:image/) or address (chrome://image/).
   virtual std::string& GetThumbnail() = 0;
 
-  // Returns the Lens response. Used to report iil= in the Suggest requests.
-  virtual const lens::proto::LensOverlayInteractionResponse& GetLensResponse()
+  // Returns the Lens autocomplete inputs. Used to report iil=, vsrid=,
+  // gsessionid=, and vsint= in the Suggest requests.
+  virtual const lens::proto::LensOverlaySuggestInputs& GetLensSuggestInputs()
       const = 0;
 
   // Called when the user modifies the text in any way (add, delete, paste,

@@ -183,9 +183,9 @@ const gfx::VectorIcon& LensOmniboxClient::GetVectorIcon() const {
   return kEmptyVectorIcon;
 }
 
-std::optional<lens::proto::LensOverlayInteractionResponse>
-LensOmniboxClient::GetLensOverlayInteractionResponse() const {
-  return lens_overlay_interaction_response_;
+std::optional<lens::proto::LensOverlaySuggestInputs>
+LensOmniboxClient::GetLensOverlaySuggestInputs() const {
+  return lens_overlay_suggest_inputs_;
 }
 
 bool LensOmniboxClient::ProcessExtensionKeyword(

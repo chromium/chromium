@@ -41,7 +41,7 @@ namespace lens {
 constexpr char kTestQueryText[] = "query_text";
 
 // The fake suggest signals.
-constexpr char kTestSuggestSignals[] = "suggest_signals";
+constexpr char kTestSuggestSignals[] = "encoded_image_signals";
 
 // The fake server session id.
 constexpr char kTestServerSessionId[] = "server_session_id";
@@ -140,7 +140,7 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
   explicit LensOverlayQueryControllerMock(
       LensOverlayFullImageResponseCallback full_image_callback,
       LensOverlayUrlResponseCallback url_callback,
-      LensOverlayInteractionResponseCallback interaction_data_callback,
+      LensOverlaySuggestInputsCallback interaction_data_callback,
       LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,
       signin::IdentityManager* identity_manager,
@@ -417,7 +417,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<lens::proto::LensOverlayInteractionResponse>
+  base::test::TestFuture<lens::proto::LensOverlaySuggestInputs>
       interaction_data_response_future;
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   LensOverlayQueryControllerMock query_controller(
@@ -466,7 +466,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_TRUE(url_response_future.Get().has_url());
   ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
             lens::REGION_SEARCH);
-  ASSERT_EQ(interaction_data_response_future.Get().suggest_signals(),
+  ASSERT_EQ(interaction_data_response_future.Get().encoded_image_signals(),
             kTestSuggestSignals);
   ASSERT_EQ(sent_object_request.request_context().request_id().sequence_id(),
             1);
@@ -510,7 +510,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<lens::proto::LensOverlayInteractionResponse>
+  base::test::TestFuture<lens::proto::LensOverlaySuggestInputs>
       interaction_data_response_future;
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   LensOverlayQueryControllerMock query_controller(
@@ -561,7 +561,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_TRUE(url_response_future.Get().has_url());
   ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
             lens::REGION_SEARCH);
-  ASSERT_EQ(interaction_data_response_future.Get().suggest_signals(),
+  ASSERT_EQ(interaction_data_response_future.Get().encoded_image_signals(),
             kTestSuggestSignals);
   ASSERT_EQ(sent_object_request.request_context().request_id().sequence_id(),
             1);
@@ -613,7 +613,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<lens::proto::LensOverlayInteractionResponse>
+  base::test::TestFuture<lens::proto::LensOverlaySuggestInputs>
       interaction_data_response_future;
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   LensOverlayQueryControllerMock query_controller(
@@ -662,7 +662,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_TRUE(url_response_future.Get().has_url());
   ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
             lens::MULTIMODAL_SEARCH);
-  ASSERT_EQ(interaction_data_response_future.Get().suggest_signals(),
+  ASSERT_EQ(interaction_data_response_future.Get().encoded_image_signals(),
             kTestSuggestSignals);
   ASSERT_EQ(sent_object_request.request_context().request_id().sequence_id(),
             1);
@@ -709,7 +709,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<lens::proto::LensOverlayInteractionResponse>
+  base::test::TestFuture<lens::proto::LensOverlaySuggestInputs>
       interaction_data_response_future;
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   LensOverlayQueryControllerMock query_controller(
@@ -762,7 +762,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<lens::proto::LensOverlayInteractionResponse>
+  base::test::TestFuture<lens::proto::LensOverlaySuggestInputs>
       interaction_data_response_future;
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   LensOverlayQueryControllerMock query_controller(
@@ -850,7 +850,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<lens::proto::LensOverlayInteractionResponse>
+  base::test::TestFuture<lens::proto::LensOverlaySuggestInputs>
       interaction_data_response_future;
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   LensOverlayQueryControllerMock query_controller(
@@ -908,7 +908,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<lens::proto::LensOverlayInteractionResponse>
+  base::test::TestFuture<lens::proto::LensOverlaySuggestInputs>
       interaction_data_response_future;
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   LensOverlayQueryControllerMock query_controller(
@@ -964,7 +964,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
-  base::test::TestFuture<lens::proto::LensOverlayInteractionResponse>
+  base::test::TestFuture<lens::proto::LensOverlaySuggestInputs>
       interaction_data_response_future;
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   LensOverlayQueryControllerMock query_controller(

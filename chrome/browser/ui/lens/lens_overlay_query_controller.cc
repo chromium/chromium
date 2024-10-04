@@ -203,7 +203,7 @@ LenOverlayEntryPointFromInvocationSource(
 LensOverlayQueryController::LensOverlayQueryController(
     LensOverlayFullImageResponseCallback full_image_callback,
     LensOverlayUrlResponseCallback url_callback,
-    LensOverlayInteractionResponseCallback interaction_data_callback,
+    LensOverlaySuggestInputsCallback suggest_inputs_callback,
     LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
     variations::VariationsClient* variations_client,
     signin::IdentityManager* identity_manager,
@@ -212,7 +212,7 @@ LensOverlayQueryController::LensOverlayQueryController(
     bool use_dark_mode,
     lens::LensOverlayGen204Controller* gen204_controller)
     : full_image_callback_(std::move(full_image_callback)),
-      interaction_data_callback_(std::move(interaction_data_callback)),
+      suggest_inputs_callback_(std::move(suggest_inputs_callback)),
       thumbnail_created_callback_(std::move(thumbnail_created_callback)),
       request_id_generator_(
           std::make_unique<lens::LensOverlayRequestIdGenerator>()),
@@ -1014,18 +1014,18 @@ void LensOverlayQueryController::InteractionFetchResponseHandler(
     return;
   }
 
-  lens::proto::LensOverlayInteractionResponse lens_overlay_interaction_response;
-  lens_overlay_interaction_response.set_suggest_signals(
+  lens::proto::LensOverlaySuggestInputs lens_overlay_interaction_response;
+  lens_overlay_interaction_response.set_encoded_image_signals(
       server_response.interaction_response().encoded_response());
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(interaction_data_callback_,
+      FROM_HERE, base::BindOnce(suggest_inputs_callback_,
                                 lens_overlay_interaction_response));
 }
 
 void LensOverlayQueryController::RunInteractionCallbackForError() {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(interaction_data_callback_,
-                                lens::proto::LensOverlayInteractionResponse()));
+      FROM_HERE, base::BindOnce(suggest_inputs_callback_,
+                                lens::proto::LensOverlaySuggestInputs()));
 }
 
 void LensOverlayQueryController::PerformFetchRequest(

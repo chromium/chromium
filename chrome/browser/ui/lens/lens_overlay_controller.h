@@ -454,9 +454,8 @@ class LensOverlayController : public LensSearchboxClient,
   // testing.
   void OnThumbnailRemovedForTesting();
 
-  // Returns the lens response stored in this controller for testing.
-  const lens::proto::LensOverlayInteractionResponse&
-  GetLensResponseForTesting();
+  // Returns the lens suggest inputs stored in this controller for testing.
+  const lens::proto::LensOverlaySuggestInputs& GetLensSuggestInputsForTesting();
 
   const lens::mojom::CenterRotatedBoxPtr& get_selected_region_for_testing() {
     return initialization_data_->selected_region_;
@@ -504,7 +503,7 @@ class LensOverlayController : public LensSearchboxClient,
   CreateLensQueryController(
       lens::LensOverlayFullImageResponseCallback full_image_callback,
       lens::LensOverlayUrlResponseCallback url_callback,
-      lens::LensOverlayInteractionResponseCallback interaction_data_callback,
+      lens::LensOverlaySuggestInputsCallback suggest_inputs_callback,
       lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,
       signin::IdentityManager* identity_manager,
@@ -564,8 +563,8 @@ class LensOverlayController : public LensSearchboxClient,
     // Bounding boxes for significant regions identified in the screenshot.
     std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes_;
 
-    // The latest stored interaction response from the server.
-    lens::proto::LensOverlayInteractionResponse interaction_response_;
+    // The latest suggest inputs from the query controller.
+    lens::proto::LensOverlaySuggestInputs suggest_inputs_;
 
     // The selected region. Stored so that it can be used for multiple
     // requests, such as if the user changes the text query without changing
@@ -730,7 +729,7 @@ class LensOverlayController : public LensSearchboxClient,
   metrics::OmniboxEventProto::PageClassification GetPageClassification()
       const override;
   std::string& GetThumbnail() override;
-  const lens::proto::LensOverlayInteractionResponse& GetLensResponse()
+  const lens::proto::LensOverlaySuggestInputs& GetLensSuggestInputs()
       const override;
   void OnTextModified() override;
   void OnThumbnailRemoved() override;
@@ -837,9 +836,11 @@ class LensOverlayController : public LensSearchboxClient,
   void HandleInteractionURLResponse(
       lens::proto::LensOverlayUrlResponse response);
 
-  // Handles the suggest signals response to the Lens interaction request.
-  void HandleInteractionDataResponse(
-      lens::proto::LensOverlayInteractionResponse response);
+  // Handles an update to the suggest inputs. This will be called whenever
+  // any part of the suggest inputs changes, such as when a new objects
+  // request is sent, or when an interaction data response is received.
+  void HandleSuggestInputsResponse(
+      lens::proto::LensOverlaySuggestInputs suggest_inputs);
 
   // Handles the creation of a new thumbnail based on the user selection.
   void HandleThumbnailCreated(const std::string& thumbnail_bytes);

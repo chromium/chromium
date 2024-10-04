@@ -38,6 +38,58 @@ void AddVariationHeaders(network::ResourceRequest* request) {
       request->url, variations::InIncognito::kNo, request);
 }
 
+// Adds query params to the url from the search terms args
+// Lens overlay suggest inputs.
+GURL AddLensOverlaySuggestInputsDataToEndpointUrl(
+    TemplateURLRef::SearchTermsArgs search_terms_args,
+    const GURL& url_to_modify) {
+  auto lens_overlay_suggest_inputs =
+      search_terms_args.lens_overlay_suggest_inputs;
+  if (!lens_overlay_suggest_inputs.has_value()) {
+    return url_to_modify;
+  }
+  GURL modified_url = GURL(url_to_modify);
+  bool send_request_and_session_ids = false;
+
+  if (search_terms_args.page_classification ==
+      metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX) {
+    send_request_and_session_ids =
+        lens_overlay_suggest_inputs
+            ->send_gsession_vsrid_for_contextual_suggest();
+  } else if (search_terms_args.page_classification ==
+             metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX) {
+    send_request_and_session_ids =
+        lens_overlay_suggest_inputs->send_gsession_vsrid_for_lens_suggest();
+    if (lens_overlay_suggest_inputs->has_encoded_image_signals()) {
+      modified_url = net::AppendOrReplaceQueryParameter(
+          modified_url, "iil",
+          lens_overlay_suggest_inputs->encoded_image_signals());
+    }
+    if (lens_overlay_suggest_inputs->send_vsint_for_lens_suggest() &&
+        lens_overlay_suggest_inputs
+            ->has_encoded_visual_search_interaction_log_data()) {
+      modified_url = net::AppendOrReplaceQueryParameter(
+          modified_url, "vsint",
+          lens_overlay_suggest_inputs
+              ->encoded_visual_search_interaction_log_data());
+    }
+  }
+
+  if (send_request_and_session_ids) {
+    if (lens_overlay_suggest_inputs->has_encoded_request_id()) {
+      modified_url = net::AppendOrReplaceQueryParameter(
+          modified_url, "vsrid",
+          lens_overlay_suggest_inputs->encoded_request_id());
+    }
+    if (lens_overlay_suggest_inputs->has_search_session_id()) {
+      modified_url = net::AppendOrReplaceQueryParameter(
+          modified_url, "gsessionid",
+          lens_overlay_suggest_inputs->search_session_id());
+    }
+  }
+  return modified_url;
+}
+
 }  // namespace
 
 RemoteSuggestionsService::RemoteSuggestionsService(
@@ -63,7 +115,7 @@ GURL RemoteSuggestionsService::EndpointUrl(
     return url;
   }
 
-  // Append or replace query params based on `page_classification`.
+  // Append or replace client= and sclient= based on `page_classification`.
   switch (search_terms_args.page_classification) {
     case metrics::OmniboxEventProto::CHROMEOS_APP_LIST: {
       // Append `sclient=cros-launcher` for CrOS app_list launcher entry point.
@@ -81,21 +133,12 @@ GURL RemoteSuggestionsService::EndpointUrl(
       // Append `client=chrome-multimodal` for the multimodal lens searchbox.
       url = net::AppendOrReplaceQueryParameter(url, "client",
                                                "chrome-multimodal");
-      // Append `iil=` for the multimodal searchbox entry point, if available.
-      if (search_terms_args.lens_overlay_interaction_response.has_value() &&
-          search_terms_args.lens_overlay_interaction_response
-              ->has_suggest_signals()) {
-        url = net::AppendOrReplaceQueryParameter(
-            url, "iil",
-            search_terms_args.lens_overlay_interaction_response
-                ->suggest_signals());
-      }
       break;
     }
     default:
       break;
   }
-
+  url = AddLensOverlaySuggestInputsDataToEndpointUrl(search_terms_args, url);
   return url;
 }
 
