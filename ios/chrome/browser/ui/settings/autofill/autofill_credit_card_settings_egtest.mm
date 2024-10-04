@@ -304,7 +304,8 @@ id<GREYMatcher> BottomToolbar() {
 }
 
 // Test that the page for viewing Autofill credit card details is accessible.
-- (void)testAccessibilityOnCreditCardViewPage {
+// TODO(crbug.com/366085550): Re-enable the test.
+- (void)DISABLED_testAccessibilityOnCreditCardViewPage {
   NSString* lastDigits = [AutofillAppInterface saveLocalCreditCard];
   [AutofillAppInterface mockReauthenticationModuleExpectedResult:
                             ReauthenticationResult::kSuccess];

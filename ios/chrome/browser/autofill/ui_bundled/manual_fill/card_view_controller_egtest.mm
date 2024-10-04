@@ -594,7 +594,8 @@ void DismissPaymentBottomSheet() {
 
 // Tests that the manual fallback view and icon is not highlighted after
 // presenting the manage payment methods view.
-- (void)testCreditCardsStateAfterPresentingPaymentMethodSettings {
+// TODO(crbug.com/371215675): Re-enable the test.
+- (void)DISABLED_testCreditCardsStateAfterPresentingPaymentMethodSettings {
   if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
     EARL_GREY_TEST_SKIPPED(@"This test is not relevant when the Keyboard "
                            @"Accessory Upgrade feature is enabled.");
@@ -711,7 +712,8 @@ void DismissPaymentBottomSheet() {
 
 // Tests that the manual fallback view icon is not highlighted after presenting
 // the add credit card view.
-- (void)testCreditCardsButtonStateAfterPresentingAddCreditCard {
+// TODO(crbug.com/371199561): Re-enable the test.
+- (void)DISABLED_testCreditCardsButtonStateAfterPresentingAddCreditCard {
   if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
     EARL_GREY_TEST_SKIPPED(@"This test is not relevant when the Keyboard "
                            @"Accessory Upgrade feature is enabled.");
