@@ -9,10 +9,12 @@ import android.content.SharedPreferences;
 import androidx.annotation.AnyThread;
 
 import org.chromium.base.FeatureMap;
+import org.chromium.base.supplier.Supplier;
 
 /** A boolean-type {@link CachedFieldTrialParameter}. */
 public class BooleanCachedFieldTrialParameter extends CachedFieldTrialParameter {
-    private boolean mDefaultValue;
+    private final boolean mDefaultValue;
+    private Supplier<Boolean> mValueSupplier;
 
     public BooleanCachedFieldTrialParameter(
             FeatureMap featureMap, String featureName, String variationName, boolean defaultValue) {
@@ -28,31 +30,32 @@ public class BooleanCachedFieldTrialParameter extends CachedFieldTrialParameter 
         CachedFlagsSafeMode.getInstance().onFlagChecked();
 
         String preferenceName = getSharedPreferenceKey();
-        boolean defaultValue = getDefaultValue();
 
         Boolean value = ValuesOverridden.getBool(preferenceName);
         if (value != null) {
             return value;
         }
 
-        synchronized (ValuesReturned.sBoolValues) {
-            value = ValuesReturned.sBoolValues.get(preferenceName);
-            if (value != null) {
-                return value;
-            }
+        return ValuesReturned.getReturnedOrNewBoolValue(preferenceName, getValueSupplier());
+    }
 
-            value =
-                    CachedFlagsSafeMode.getInstance()
-                            .getBooleanFieldTrialParam(preferenceName, defaultValue);
-            if (value == null) {
-                value =
-                        CachedFlagsSharedPreferences.getInstance()
-                                .readBoolean(preferenceName, defaultValue);
-            }
-
-            ValuesReturned.sBoolValues.put(preferenceName, value);
+    private Supplier<Boolean> getValueSupplier() {
+        if (mValueSupplier == null) {
+            mValueSupplier =
+                    () -> {
+                        String preferenceName = getSharedPreferenceKey();
+                        Boolean value =
+                                CachedFlagsSafeMode.getInstance()
+                                        .getBooleanFieldTrialParam(preferenceName, mDefaultValue);
+                        if (value == null) {
+                            value =
+                                    CachedFlagsSharedPreferences.getInstance()
+                                            .readBoolean(preferenceName, mDefaultValue);
+                        }
+                        return value;
+                    };
         }
-        return value;
+        return mValueSupplier;
     }
 
     public boolean getDefaultValue() {

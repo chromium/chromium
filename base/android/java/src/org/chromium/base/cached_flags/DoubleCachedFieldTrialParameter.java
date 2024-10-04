@@ -9,10 +9,12 @@ import android.content.SharedPreferences;
 import androidx.annotation.AnyThread;
 
 import org.chromium.base.FeatureMap;
+import org.chromium.base.supplier.Supplier;
 
 /** A double-type {@link CachedFieldTrialParameter}. */
 public class DoubleCachedFieldTrialParameter extends CachedFieldTrialParameter {
-    private double mDefaultValue;
+    private final double mDefaultValue;
+    private Supplier<Double> mValueSupplier;
 
     public DoubleCachedFieldTrialParameter(
             FeatureMap featureMap, String featureName, String variationName, double defaultValue) {
@@ -28,31 +30,32 @@ public class DoubleCachedFieldTrialParameter extends CachedFieldTrialParameter {
         CachedFlagsSafeMode.getInstance().onFlagChecked();
 
         String preferenceName = getSharedPreferenceKey();
-        double defaultValue = getDefaultValue();
 
         Double value = ValuesOverridden.getDouble(preferenceName);
         if (value != null) {
             return value;
         }
 
-        synchronized (ValuesReturned.sDoubleValues) {
-            value = ValuesReturned.sDoubleValues.get(preferenceName);
-            if (value != null) {
-                return value;
-            }
+        return ValuesReturned.getReturnedOrNewDoubleValue(preferenceName, getValueSupplier());
+    }
 
-            value =
-                    CachedFlagsSafeMode.getInstance()
-                            .getDoubleFieldTrialParam(preferenceName, defaultValue);
-            if (value == null) {
-                value =
-                        CachedFlagsSharedPreferences.getInstance()
-                                .readDouble(preferenceName, defaultValue);
-            }
-
-            ValuesReturned.sDoubleValues.put(preferenceName, value);
+    private Supplier<Double> getValueSupplier() {
+        if (mValueSupplier == null) {
+            mValueSupplier =
+                    () -> {
+                        String preferenceName = getSharedPreferenceKey();
+                        Double value =
+                                CachedFlagsSafeMode.getInstance()
+                                        .getDoubleFieldTrialParam(preferenceName, mDefaultValue);
+                        if (value == null) {
+                            value =
+                                    CachedFlagsSharedPreferences.getInstance()
+                                            .readDouble(preferenceName, mDefaultValue);
+                        }
+                        return value;
+                    };
         }
-        return value;
+        return mValueSupplier;
     }
 
     public double getDefaultValue() {

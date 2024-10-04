@@ -9,11 +9,13 @@ import android.content.SharedPreferences;
 import androidx.annotation.AnyThread;
 
 import org.chromium.base.FeatureMap;
+import org.chromium.base.supplier.Supplier;
 
 import java.util.Map;
 
 /** AllCachedFieldTrialParameters caches all the parameters for a feature. */
 public class AllCachedFieldTrialParameters extends CachedFieldTrialParameter {
+    private Supplier<String> mValueSupplier;
 
     public AllCachedFieldTrialParameters(FeatureMap featureMap, String featureName) {
         // As this includes all parameters, the parameterName is empty.
@@ -37,20 +39,26 @@ public class AllCachedFieldTrialParameters extends CachedFieldTrialParameter {
             return value;
         }
 
-        synchronized (ValuesReturned.sStringValues) {
-            value = ValuesReturned.sStringValues.get(preferenceName);
-            if (value != null) {
-                return value;
-            }
+        return ValuesReturned.getReturnedOrNewStringValue(preferenceName, getValueSupplier());
+    }
 
-            value = CachedFlagsSafeMode.getInstance().getStringFieldTrialParam(preferenceName, "");
-            if (value == null) {
-                value = CachedFlagsSharedPreferences.getInstance().readString(preferenceName, "");
-            }
-
-            ValuesReturned.sStringValues.put(preferenceName, value);
+    private Supplier<String> getValueSupplier() {
+        if (mValueSupplier == null) {
+            mValueSupplier =
+                    () -> {
+                        String preferenceName = getSharedPreferenceKey();
+                        String value =
+                                CachedFlagsSafeMode.getInstance()
+                                        .getStringFieldTrialParam(preferenceName, "");
+                        if (value == null) {
+                            value =
+                                    CachedFlagsSharedPreferences.getInstance()
+                                            .readString(preferenceName, "");
+                        }
+                        return value;
+                    };
         }
-        return value;
+        return mValueSupplier;
     }
 
     @Override

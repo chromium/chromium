@@ -9,10 +9,12 @@ import android.content.SharedPreferences;
 import androidx.annotation.AnyThread;
 
 import org.chromium.base.FeatureMap;
+import org.chromium.base.supplier.Supplier;
 
 /** A String-type {@link CachedFieldTrialParameter}. */
 public class StringCachedFieldTrialParameter extends CachedFieldTrialParameter {
     private final String mDefaultValue;
+    private Supplier<String> mValueSupplier;
 
     public StringCachedFieldTrialParameter(
             FeatureMap featureMap, String featureName, String variationName, String defaultValue) {
@@ -28,31 +30,32 @@ public class StringCachedFieldTrialParameter extends CachedFieldTrialParameter {
         CachedFlagsSafeMode.getInstance().onFlagChecked();
 
         String preferenceName = getSharedPreferenceKey();
-        String defaultValue = getDefaultValue();
 
         String value = ValuesOverridden.getString(preferenceName);
         if (value != null) {
             return value;
         }
 
-        synchronized (ValuesReturned.sStringValues) {
-            value = ValuesReturned.sStringValues.get(preferenceName);
-            if (value != null) {
-                return value;
-            }
+        return ValuesReturned.getReturnedOrNewStringValue(preferenceName, getValueSupplier());
+    }
 
-            value =
-                    CachedFlagsSafeMode.getInstance()
-                            .getStringFieldTrialParam(preferenceName, defaultValue);
-            if (value == null) {
-                value =
-                        CachedFlagsSharedPreferences.getInstance()
-                                .readString(preferenceName, defaultValue);
-            }
-
-            ValuesReturned.sStringValues.put(preferenceName, value);
+    private Supplier<String> getValueSupplier() {
+        if (mValueSupplier == null) {
+            mValueSupplier =
+                    () -> {
+                        String preferenceName = getSharedPreferenceKey();
+                        String value =
+                                CachedFlagsSafeMode.getInstance()
+                                        .getStringFieldTrialParam(preferenceName, mDefaultValue);
+                        if (value == null) {
+                            value =
+                                    CachedFlagsSharedPreferences.getInstance()
+                                            .readString(preferenceName, mDefaultValue);
+                        }
+                        return value;
+                    };
         }
-        return value;
+        return mValueSupplier;
     }
 
     public String getDefaultValue() {

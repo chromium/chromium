@@ -12,8 +12,10 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.FeatureMap;
 import org.chromium.base.Flag;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.build.BuildConfig;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +46,7 @@ import java.util.Map;
 public class CachedFlag extends Flag {
     private final boolean mDefaultValue;
     private String mPreferenceKey;
+    private Supplier<Boolean> mValueSupplier;
 
     public CachedFlag(FeatureMap featureMap, String featureName, boolean defaultValue) {
         super(featureMap, featureName);
@@ -71,40 +74,42 @@ public class CachedFlag extends Flag {
      *       CachedFlag#setForTesting}, the forced value is returned.
      *   <li>2. If a value was previously returned in the same run, the same value is returned for
      *       consistency.
-     *   <li>3. If in a previous run, the value from {@link FeatureMap} was cached to SharedPrefs,
+     *   <li>3. If Safe Mode has activated, use a safe value.
+     *   <li>4. If in a previous run, the value from {@link FeatureMap} was cached to SharedPrefs,
      *       it is returned.
-     *   <li>4. The |defaultValue| passed as a constructor parameter is returned.
+     *   <li>5. The |defaultValue| passed as a constructor parameter is returned.
      * </ul>
      */
     @Override
     public boolean isEnabled() {
         CachedFlagsSafeMode.getInstance().onFlagChecked();
 
-        String preferenceName = getSharedPreferenceKey();
+        return ValuesReturned.getReturnedOrNewBoolValue(
+                getSharedPreferenceKey(), getValueSupplier());
+    }
 
-        Boolean flag;
-        synchronized (ValuesReturned.sBoolValues) {
-            Map<String, Boolean> boolValuesReturned = ValuesReturned.sBoolValues;
-            flag = boolValuesReturned.get(preferenceName);
-            if (flag != null) {
-                return flag;
-            }
+    private Supplier<Boolean> getValueSupplier() {
+        if (mValueSupplier == null) {
+            mValueSupplier =
+                    () -> {
+                        String preferenceName = getSharedPreferenceKey();
+                        Boolean flag =
+                                CachedFlagsSafeMode.getInstance()
+                                        .isEnabled(mFeatureName, preferenceName, mDefaultValue);
+                        if (flag == null) {
+                            SharedPreferencesManager prefs =
+                                    CachedFlagsSharedPreferences.getInstance();
+                            if (prefs.contains(preferenceName)) {
+                                flag = prefs.readBoolean(preferenceName, false);
+                            } else {
+                                flag = mDefaultValue;
+                            }
+                        }
 
-            flag =
-                    CachedFlagsSafeMode.getInstance()
-                            .isEnabled(mFeatureName, preferenceName, mDefaultValue);
-            if (flag == null) {
-                SharedPreferencesManager prefs = CachedFlagsSharedPreferences.getInstance();
-                if (prefs.contains(preferenceName)) {
-                    flag = prefs.readBoolean(preferenceName, false);
-                } else {
-                    flag = mDefaultValue;
-                }
-            }
-
-            boolValuesReturned.put(preferenceName, flag);
+                        return flag;
+                    };
         }
-        return flag;
+        return mValueSupplier;
     }
 
     /**
@@ -122,15 +127,13 @@ public class CachedFlag extends Flag {
     /**
      * Forces a feature to be enabled or disabled for testing.
      *
-     * @deprecated do not call this from tests; use @EnableFeatures/@DisableFeatures instead,
-     * since batched tests need to be split by feature flag configuration.
+     * @deprecated do not call this from tests; use @EnableFeatures/@DisableFeatures instead, since
+     *     batched tests need to be split by feature flag configuration.
      */
     @VisibleForTesting
     @Deprecated
     public void setForTesting(@Nullable Boolean value) {
-        synchronized (ValuesReturned.sBoolValues) {
-            ValuesReturned.sBoolValues.put(getSharedPreferenceKey(), value);
-        }
+        ValuesReturned.setFeaturesForTesting(Collections.singletonMap(getFeatureName(), value));
     }
 
     /**

@@ -9,10 +9,12 @@ import android.content.SharedPreferences;
 import androidx.annotation.AnyThread;
 
 import org.chromium.base.FeatureMap;
+import org.chromium.base.supplier.Supplier;
 
 /** An int-type {@link CachedFieldTrialParameter}. */
 public class IntCachedFieldTrialParameter extends CachedFieldTrialParameter {
-    private int mDefaultValue;
+    private final int mDefaultValue;
+    private Supplier<Integer> mValueSupplier;
 
     public IntCachedFieldTrialParameter(
             FeatureMap featureMap, String featureName, String variationName, int defaultValue) {
@@ -28,31 +30,32 @@ public class IntCachedFieldTrialParameter extends CachedFieldTrialParameter {
         CachedFlagsSafeMode.getInstance().onFlagChecked();
 
         String preferenceName = getSharedPreferenceKey();
-        int defaultValue = getDefaultValue();
 
         Integer value = ValuesOverridden.getInt(preferenceName);
         if (value != null) {
             return value;
         }
 
-        synchronized (ValuesReturned.sIntValues) {
-            value = ValuesReturned.sIntValues.get(preferenceName);
-            if (value != null) {
-                return value;
-            }
+        return ValuesReturned.getReturnedOrNewIntValue(preferenceName, getValueSupplier());
+    }
 
-            value =
-                    CachedFlagsSafeMode.getInstance()
-                            .getIntFieldTrialParam(preferenceName, defaultValue);
-            if (value == null) {
-                value =
-                        CachedFlagsSharedPreferences.getInstance()
-                                .readInt(preferenceName, defaultValue);
-            }
-
-            ValuesReturned.sIntValues.put(preferenceName, value);
+    private Supplier<Integer> getValueSupplier() {
+        if (mValueSupplier == null) {
+            mValueSupplier =
+                    () -> {
+                        String preferenceName = getSharedPreferenceKey();
+                        Integer value =
+                                CachedFlagsSafeMode.getInstance()
+                                        .getIntFieldTrialParam(preferenceName, mDefaultValue);
+                        if (value == null) {
+                            value =
+                                    CachedFlagsSharedPreferences.getInstance()
+                                            .readInt(preferenceName, mDefaultValue);
+                        }
+                        return value;
+                    };
         }
-        return value;
+        return mValueSupplier;
     }
 
     public int getDefaultValue() {

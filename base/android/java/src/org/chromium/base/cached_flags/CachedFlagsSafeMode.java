@@ -22,7 +22,6 @@ import org.chromium.build.BuildConfig;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -267,27 +266,7 @@ public class CachedFlagsSafeMode {
         // will.
         editor.clear();
 
-        synchronized (ValuesReturned.sBoolValues) {
-            for (Entry<String, Boolean> pair : ValuesReturned.sBoolValues.entrySet()) {
-                editor.putBoolean(pair.getKey(), pair.getValue());
-            }
-        }
-        synchronized (ValuesReturned.sIntValues) {
-            for (Entry<String, Integer> pair : ValuesReturned.sIntValues.entrySet()) {
-                editor.putInt(pair.getKey(), pair.getValue());
-            }
-        }
-        synchronized (ValuesReturned.sDoubleValues) {
-            for (Entry<String, Double> pair : ValuesReturned.sDoubleValues.entrySet()) {
-                long ieee754LongValue = Double.doubleToRawLongBits(pair.getValue());
-                editor.putLong(pair.getKey(), ieee754LongValue);
-            }
-        }
-        synchronized (ValuesReturned.sStringValues) {
-            for (Entry<String, String> pair : ValuesReturned.sStringValues.entrySet()) {
-                editor.putString(pair.getKey(), pair.getValue());
-            }
-        }
+        ValuesReturned.dumpToSharedPreferences(editor);
         editor.putString(PREF_SAFE_VALUES_VERSION, VersionInfo.getProductVersion());
         editor.apply();
         TraceEvent.end("writeSafeValues");
