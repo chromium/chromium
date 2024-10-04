@@ -745,16 +745,25 @@ void UpdateServiceImplImpl::RunPeriodicTasks(base::OnceClosure callback) {
       &CheckForUpdatesTask::Run,
       base::MakeRefCounted<CheckForUpdatesTask>(
           config_, GetUpdaterScope(),
-          /*task_name=*/"ForceInstall", /*task_delay=*/base::Seconds(0),
-          base::BindOnce(&UpdateServiceImplImpl::ForceInstall, this,
-                         base::DoNothing()))));
-  new_tasks.push_back(base::BindOnce(
-      &CheckForUpdatesTask::Run,
-      base::MakeRefCounted<CheckForUpdatesTask>(
-          config_, GetUpdaterScope(),
           /*task_name=*/"UpdateAll", /*task_delay=*/config_->InitialDelay(),
           base::BindOnce(&UpdateServiceImplImpl::UpdateAll, this,
                          base::DoNothing()))));
+  new_tasks.push_back(base::BindOnce(
+      [](scoped_refptr<UpdateServiceImplImpl> self,
+         base::OnceClosure callback) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                &UpdateServiceImplImpl::ForceInstall, self, base::DoNothing(),
+                base::BindOnce(
+                    [](base::OnceClosure closure,
+                       UpdateService::Result result) {
+                      VLOG(0) << "ForceInstall task complete: " << result;
+                      std::move(closure).Run();
+                    },
+                    std::move(callback))));
+      },
+      base::WrapRefCounted(this)));
   new_tasks.push_back(base::BindOnce(
       &AutoRunOnOsUpgradeTask::Run,
       base::MakeRefCounted<AutoRunOnOsUpgradeTask>(

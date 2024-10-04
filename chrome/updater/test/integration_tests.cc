@@ -2072,6 +2072,7 @@ TEST_F(IntegrationTestDeviceManagement, ForceInstall) {
       test_server_.get(), kEnrollmentToken, kDMToken);
   ExpectDeviceManagementPolicyFetchRequestFromDefaultPolicyAgent(
       test_server_.get(), kDMToken, omaha_settings);
+  ExpectUpdateCheckRequest(test_server_.get());
   ExpectAppsUpdateSequence(
       UpdaterScope::kSystem, test_server_.get(),
       /*request_attributes=*/{},
@@ -2083,7 +2084,6 @@ TEST_F(IntegrationTestDeviceManagement, ForceInstall) {
               /*should_update=*/true, false, "", "",
               GetInstallerPath(kApp1.v1_crx)),
       });
-  ExpectUpdateCheckRequest(test_server_.get());
 
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -3825,19 +3825,17 @@ TEST_F(IntegrationTest, ForceInstallApp) {
                          : kPolicyForceInstallUser);
   ASSERT_NO_FATAL_FAILURE(SetGroupPolicies(group_policies));
 
+  ExpectUpdateCheckRequest(&test_server);
+
   const std::string kAppId("test1");
   base::Version v0point1("0.1");
-  base::Version v1("1");
   ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
       &test_server, kAppId, "", UpdateService::Priority::kForeground,
       base::Version("0.0.0.0"), v0point1));
-  ASSERT_NO_FATAL_FAILURE(
-      ExpectUpdateSequence(&test_server, kAppId, "",
-                           UpdateService::Priority::kBackground, v0point1, v1));
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
 
   ASSERT_TRUE(WaitForUpdaterExit());
-  ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v1));
+  ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v0point1));
 
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
