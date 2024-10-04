@@ -321,8 +321,9 @@ int FingerprintView::GetTextIdFromState() const {
   CHECK(!has_success_);
   switch (state_) {
     case FingerprintState::AVAILABLE_DEFAULT:
-    case FingerprintState::AVAILABLE_WITH_FAILED_ATTEMPT:
       return IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_AVAILABLE;
+    case FingerprintState::AVAILABLE_WITH_FAILED_ATTEMPT:
+      return IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_FAILED;
     case FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING:
       return IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_TOUCH_SENSOR;
     case FingerprintState::DISABLED_FROM_ATTEMPTS:
@@ -341,8 +342,9 @@ int FingerprintView::GetA11yTextIdFromState() const {
   CHECK(!has_success_);
   switch (state_) {
     case FingerprintState::AVAILABLE_DEFAULT:
-    case FingerprintState::AVAILABLE_WITH_FAILED_ATTEMPT:
       return IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_AVAILABLE;
+    case FingerprintState::AVAILABLE_WITH_FAILED_ATTEMPT:
+      return IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_FAILED;
     case FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING:
       return IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_TOUCH_SENSOR;
     case FingerprintState::DISABLED_FROM_ATTEMPTS:
