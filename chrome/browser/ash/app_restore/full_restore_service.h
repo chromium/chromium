@@ -16,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ash/crosapi/full_restore_ash.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -141,8 +140,7 @@ class FullRestoreService : public KeyedService,
   //     first one is for apps, and the second one is for windows.
   //   - The data from session restore is a single vector.
   // We build a map to avoid doing a O(n) search each loop of the former.
-  using SessionWindowsMap =
-      base::flat_map<int, crosapi::mojom::SessionWindowPtr>;
+  using SessionWindowsMap = base::flat_map<int, sessions::SessionWindow*>;
 
   // KeyedService:
   void Shutdown() override;
@@ -181,8 +179,6 @@ class FullRestoreService : public KeyedService,
                        bool read_error);
   void OnGotAllSessionsAsh(
       const std::vector<SessionWindows>& all_session_windows);
-  void OnGotAllSessionsLacros(
-      std::vector<crosapi::mojom::SessionWindowPtr> all_session_windows);
 
   // Called when session information is ready to be processed. Constructs the
   // object needed to show the informed restore dialog. It will be passed to ash

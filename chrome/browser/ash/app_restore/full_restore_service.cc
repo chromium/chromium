@@ -44,7 +44,6 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/reboot_notifications_scheduler.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/full_restore/full_restore_util.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -119,7 +118,6 @@ void MaybeInitiateAdminTemplateAutoLaunch() {
 }
 
 // Collects window id and app id of normal browser windows.
-// Note that this collects both Lacros and Ash browser windows.
 std::vector<LoginUnlockThroughputRecorder::RestoreWindowID>
 CollectRestoreIDsForNormalBrowserWindows(
     ::app_restore::RestoreData* restore_data) {
@@ -130,9 +128,8 @@ CollectRestoreIDsForNormalBrowserWindows(
   std::vector<LoginUnlockThroughputRecorder::RestoreWindowID> app_restore_ids;
   for (const auto& [app_id, launch_list] :
        restore_data->app_id_to_launch_list()) {
-    const bool is_browser = app_id == app_constants::kChromeAppId ||
-                            app_id == app_constants::kLacrosAppId;
-    // We are only interested in Ash or Lacros browsers.
+    const bool is_browser = app_id == app_constants::kChromeAppId;
+    // We are only interested in Ash browsers.
     if (!is_browser) {
       continue;
     }
@@ -166,6 +163,8 @@ const char kRestoreNotificationId[] = "restore_notification";
 const char kRestoreNotificationHistogramName[] = "Apps.RestoreNotification";
 const char kRestoreForCrashNotificationHistogramName[] =
     "Apps.RestoreForCrashNotification";
+
+constexpr size_t kMaxUrls = 5u;
 
 class DelegateImpl : public FullRestoreService::Delegate {
  public:
@@ -706,14 +705,6 @@ void FullRestoreService::MaybeShowRestoreNotification(
 
     InitInformedRestoreContentsData(dialog_type);
 
-    if (crosapi::browser_util::IsLacrosEnabled()) {
-      crosapi::CrosapiManager::Get()
-          ->crosapi_ash()
-          ->full_restore_ash()
-          ->GetSessionInformation(
-              base::BindOnce(&FullRestoreService::OnGotAllSessionsLacros,
-                             weak_ptr_factory_.GetWeakPtr()));
-    } else {
       // Retrieves session service data from browser and app browsers, which
       // will be used to display favicons and tab titles.
       SessionServiceBase* service =
@@ -735,7 +726,6 @@ void FullRestoreService::MaybeShowRestoreNotification(
       } else {
         OnGotAllSessionsAsh(/*all_session_windows=*/{});
       }
-    }
 
     // Set to true as we might want to show the post reboot notification.
     show_notification = true;
@@ -861,32 +851,14 @@ void FullRestoreService::OnGotSessionAsh(
 void FullRestoreService::OnGotAllSessionsAsh(
     const std::vector<SessionWindows>& all_session_windows) {
   // Place all the session windows in map so we don't have to do so many O(n)
-  // lookups below. Note that this has the additional overhead of creating the
-  // full_restore.mojom struct. This is so we can share more code with Lacros,
-  // which is the final goal.
+  // lookups below.
   SessionWindowsMap session_windows_map;
   for (const SessionWindows& session_windows : all_session_windows) {
     for (const std::unique_ptr<sessions::SessionWindow>& session_window :
          session_windows) {
-      session_windows_map.emplace(
-          session_window->window_id.id(),
-          ::full_restore::ToSessionWindowPtr(*session_window,
-                                             /*lacros_profile_id=*/0));
+      session_windows_map.emplace(session_window->window_id.id(),
+                                  session_window.get());
     }
-  }
-
-  OnSessionInformationReceived(session_windows_map);
-}
-
-void FullRestoreService::OnGotAllSessionsLacros(
-    std::vector<crosapi::mojom::SessionWindowPtr> all_session_windows) {
-  // Place all the session windows in map so we don't have to do so many O(n)
-  // lookups below.
-  SessionWindowsMap session_windows_map;
-  for (const crosapi::mojom::SessionWindowPtr& session_window :
-       all_session_windows) {
-    session_windows_map.emplace(session_window->window_id,
-                                session_window->Clone());
   }
 
   OnSessionInformationReceived(session_windows_map);
@@ -913,17 +885,16 @@ void FullRestoreService::OnSessionInformationReceived(
 
     // For non browsers, the app id and title is sufficient for the UI we want
     // to display.
-    if (app_id != app_constants::kChromeAppId &&
-        app_id != app_constants::kLacrosAppId) {
+    if (app_id != app_constants::kChromeAppId) {
       continue;
     }
 
-    // Find the `crosapi::mojom::SessionWindow` associated with `window_id` if
-    // it exists.
+    // Find the `sessions::SessionWindow` associated with `window_id` if it
+    // exists.
     auto it = session_windows_map.find(window_id);
 
-    crosapi::mojom::SessionWindow* session_window =
-        it == session_windows_map.end() ? nullptr : it->second.get();
+    sessions::SessionWindow* session_window =
+        it == session_windows_map.end() ? nullptr : it->second;
 
     // Default to using the app id if we cannot find the associated window for
     // whatever reason.
@@ -946,10 +917,66 @@ void FullRestoreService::OnSessionInformationReceived(
       continue;
     }
 
+    // If there is no selected tab index or it is invalid, we can just pass the
+    // URLs as they are. If the selected tab index is one of the first five
+    // elements, then we place that URL at the front and place the remaining
+    // four URLs afterwards. Otherwise, we put the selected tab index at the
+    // front and insert the first four URLs after it.
+    std::string active_tab_title;
+    std::vector<GURL> tab_urls;
+    const std::vector<std::unique_ptr<sessions::SessionTab>>& tabs =
+        session_window->tabs;
+
+    auto maybe_add_display_tab =
+        [&tab_urls, &active_tab_title](sessions::SessionTab* tab) -> void {
+      const auto& navigations = tab->navigations;
+      const int index = tab->current_navigation_index;
+
+      // `index` can actually be larger than the size of `navigations`. See
+      // `sessions::SessionTab::current_navigation_index` for more details.
+      if (navigations.size() > static_cast<size_t>(index)) {
+        const sessions::SerializedNavigationEntry& entry = navigations[index];
+
+        // Use the tab title if possible. If no tab title is available and it is
+        // a chrome WebUI, use the host piece (history, extensions, etc.).
+        // Otherwise we will default to the app title, "Chrome".
+        if (active_tab_title.empty()) {
+          active_tab_title = base::UTF16ToUTF8(entry.title());
+          if (active_tab_title.empty() &&
+              entry.original_request_url().SchemeIs(content::kChromeUIScheme)) {
+            active_tab_title = entry.original_request_url().host_piece();
+          }
+        }
+
+        tab_urls.push_back(entry.original_request_url());
+      }
+    };
+
+    // Add the selected tab first if possible.
+    const int selected_tab_index = session_window->selected_tab_index;
+    if (selected_tab_index > -1 &&
+        selected_tab_index < static_cast<int>(tabs.size())) {
+      maybe_add_display_tab(tabs[selected_tab_index].get());
+    }
+
+    // Add the other tabs in order until there are no more tabs or we reach the
+    // limit.
+    for (int i = 0; i < static_cast<int>(tabs.size()); ++i) {
+      if (i == selected_tab_index) {
+        continue;
+      }
+      maybe_add_display_tab(tabs[i].get());
+
+      // We only show five favicons maximum so we can stop once we reach that
+      // amount.
+      if (tab_urls.size() >= kMaxUrls) {
+        break;
+      }
+    }
+
     info = InformedRestoreContentsData::AppInfo(
-        app_id, session_window->active_tab_title, window_id,
-        session_window->urls, session_window->tab_count,
-        session_window->profile_id);
+        app_id, active_tab_title, window_id, tab_urls, tabs.size(),
+        /*profile_id=*/0);
   }
 
   // Start the post-login session if not yet and pass the contents data to
