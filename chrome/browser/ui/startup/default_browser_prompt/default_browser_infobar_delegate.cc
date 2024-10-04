@@ -32,8 +32,6 @@
 #include "content/public/common/content_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chrome {
-
 // static
 infobars::InfoBar* DefaultBrowserInfoBarDelegate::Create(
     infobars::ContentInfoBarManager* infobar_manager,
@@ -143,5 +141,3 @@ bool DefaultBrowserInfoBarDelegate::Accept() {
 
   return ConfirmInfoBarDelegate::Accept();
 }
-
-}  // namespace chrome

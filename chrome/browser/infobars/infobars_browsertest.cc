@@ -318,8 +318,8 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       ADD_FAILURE() << "This infobar is not supported on this OS.";
 #else
-      chrome::DefaultBrowserInfoBarDelegate::Create(GetInfoBarManager(),
-                                                    browser()->profile());
+      DefaultBrowserInfoBarDelegate::Create(GetInfoBarManager(),
+                                            browser()->profile());
 #endif
       break;
 

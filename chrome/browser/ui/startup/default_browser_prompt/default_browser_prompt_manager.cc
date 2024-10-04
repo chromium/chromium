@@ -117,7 +117,7 @@ void DefaultBrowserPromptManager::CreateInfoBarForWebContents(
   // Ensure that an infobar hasn't already been created.
   CHECK(!infobars_.contains(web_contents));
 
-  infobars::InfoBar *infobar = chrome::DefaultBrowserInfoBarDelegate::Create(
+  infobars::InfoBar* infobar = DefaultBrowserInfoBarDelegate::Create(
       infobars::ContentInfoBarManager::FromWebContents(web_contents), profile);
 
   if (infobar == nullptr) {

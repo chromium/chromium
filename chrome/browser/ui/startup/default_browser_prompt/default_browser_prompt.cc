@@ -58,7 +58,7 @@ void ShowPrompt() {
       continue;
     }
 
-    chrome::DefaultBrowserInfoBarDelegate::Create(
+    DefaultBrowserInfoBarDelegate::Create(
         infobars::ContentInfoBarManager::FromWebContents(web_contents),
         browser->profile());
     break;
