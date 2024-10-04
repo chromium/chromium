@@ -143,15 +143,16 @@ CoopSwapResult ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
       switch (destination_coop) {
         case CrossOriginOpenerPolicyValue::kUnsafeNone:
           return CoopSwapResult::kNoSwap;
+        case CrossOriginOpenerPolicyValue::kNoopenerAllowPopups:
+          return (is_navigation_from_initial_empty_document ||
+                  !initiator_origin.IsSameOriginWith(destination_origin))
+                     ? CoopSwapResult::kSwap
+                     : CoopSwapResult::kNoSwap;
         case CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
-          return initiator_origin.IsSameOriginWith(destination_origin)
-                     ? CoopSwapResult::kNoSwap
-                     : CoopSwapResult::kSwap;
         case CrossOriginOpenerPolicyValue::kRestrictProperties:
         case CrossOriginOpenerPolicyValue::kRestrictPropertiesPlusCoep:
         case CrossOriginOpenerPolicyValue::kSameOrigin:
         case CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
-        case CrossOriginOpenerPolicyValue::kNoopenerAllowPopups:
           return CoopSwapResult::kSwap;
       }
 
