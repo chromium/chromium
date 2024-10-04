@@ -40,7 +40,7 @@ class MEDIA_EXPORT MediaTracks {
                             const MediaTrack::Kind& kind,
                             const MediaTrack::Label& label,
                             const MediaTrack::Language& language,
-                            bool exclusive = false);
+                            bool exclusive = true);
   // Adds a new video track. The |bytestreamTrackId| must uniquely identify the
   // track within the bytestream.
   MediaTrack* AddVideoTrack(const VideoDecoderConfig& config,
