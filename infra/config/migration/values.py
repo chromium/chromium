@@ -93,6 +93,21 @@ def convert_direct(value: typing.Any) -> Value:
   raise Exception(f'unhandled python value: {value!r}')
 
 
+def convert_resultdb(resultdb: dict[str, typing.Any]) -> Value:
+  """Convert a resultdb dict to a targets.resultdb call."""
+  value_builder = CallValueBuilder('targets.resultdb')
+
+  for key, value in resultdb.items():
+    match key:
+      case 'enable':
+        value_builder[key] = convert_direct(value)
+
+      case _:
+        raise Exception(f'unhandled key in resultdb: "{key}"')
+
+  return value_builder
+
+
 def convert_swarming(swarming: dict[str, typing.Any]) -> Value:
   """Convert a swarming dict to a targets.swarming call."""
   value_builder = CallValueBuilder('targets.swarming')
@@ -101,6 +116,9 @@ def convert_swarming(swarming: dict[str, typing.Any]) -> Value:
     match key:
       case 'dimensions' | 'shards':
         value_builder[key] = convert_direct(value)
+
+      case 'hard_timeout':
+        value_builder['hard_timeout_sec'] = convert_direct(value)
 
       case _:
         raise Exception(f'unhandled key in swarming: "{key}"')

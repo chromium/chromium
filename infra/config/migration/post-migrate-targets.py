@@ -51,6 +51,12 @@ def _convert_basic_suite(
         case 'results_handler' | 'script' | 'test' | 'test_common':
           pass
 
+        case 'args':
+          mixin_builder[key] = values.convert_direct(value)
+
+        case 'resultdb':
+          mixin_builder['resultdb'] = values.convert_resultdb(value)
+
         case 'swarming':
           mixin_builder['swarming'] = values.convert_swarming(value)
 
