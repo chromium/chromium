@@ -14,6 +14,7 @@
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/archivable_credential+passkey.h"
 #import "ios/chrome/common/credential_provider/constants.h"
+#import "ios/chrome/common/credential_provider/credential_provider_creation_notifier.h"
 #import "ios/chrome/common/credential_provider/user_defaults_credential_store.h"
 
 using base::SysNSStringToUTF8;
@@ -104,7 +105,13 @@ void SaveCredential(id<Credential> credential) {
     [store addCredential:credential];
   }
 
-  [store saveDataWithCompletion:nil];
+  [store saveDataWithCompletion:^(NSError* error) {
+    if (error != nil) {
+      return;
+    }
+
+    [CredentialProviderCreationNotifier notifyCredentialCreated];
+  }];
 }
 
 }  // namespace

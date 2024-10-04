@@ -11,9 +11,16 @@
 
 // The purpose of this class is to call the provided block as soon as a new
 // credential has been created by the credential provider extension.
-@interface CredentialProviderCreationNotifier : NSObject <NSFilePresenter>
+@interface CredentialProviderCreationNotifier : NSObject
 
+// Creating an instance of this class is made by Chrome, in order to receive a
+// notification (sent using the provided "block") that a new credential has
+// been created by the credential provider extension.
 - (instancetype)initWithBlock:(ProceduralBlock)block;
+
+// This class method is used by the CPE to send a notification to Chrome after
+// having created a new credential.
++ (void)notifyCredentialCreated;
 
 @end
 
