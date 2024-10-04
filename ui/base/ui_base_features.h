@@ -262,6 +262,10 @@ BASE_DECLARE_FEATURE(kEnableGestureBeginEndTypes);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kUseUtf8EncodingForSvgImage);
 
+// Copy bookmark and write url format to clipboard with empty title.
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kWriteBookmarkWithoutTitle);
+
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kAsyncFullscreenWindowState);
 

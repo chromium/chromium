@@ -5,6 +5,7 @@
 #ifndef UI_BASE_CLIPBOARD_CLIPBOARD_UTIL_H_
 #define UI_BASE_CLIPBOARD_CLIPBOARD_UTIL_H_
 
+#include <string>
 #include <vector>
 
 #include "base/component_export.h"
@@ -23,6 +24,13 @@ namespace ui::clipboard_util {
 // which may cause jank.
 [[nodiscard]] COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
     std::vector<uint8_t> EncodeBitmapToPngAcceptJank(const SkBitmap& bitmap);
+
+struct BookmarkData {
+  std::u16string title;
+  std::string url;
+};
+
+bool ShouldSkipBookmark(const std::u16string& title, const std::string& url);
 
 }  // namespace ui::clipboard_util
 

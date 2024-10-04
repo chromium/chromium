@@ -8,6 +8,7 @@
 #endif
 
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+
 #include <memory>
 #include <utility>
 
@@ -20,6 +21,7 @@
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/clipboard_metrics.h"
+#include "ui/base/clipboard/clipboard_util.h"
 #include "ui/gfx/geometry/size.h"
 
 // Documentation on the format of the parameters for each clipboard target can
@@ -126,8 +128,9 @@ void ScopedClipboardWriter::WriteFilenames(const std::string& uri_list) {
 
 void ScopedClipboardWriter::WriteBookmark(const std::u16string& bookmark_title,
                                           const std::string& url) {
-  if (bookmark_title.empty() || url.empty())
+  if (ui::clipboard_util::ShouldSkipBookmark(bookmark_title, url)) {
     return;
+  }
   RecordWrite(ClipboardFormatMetric::kBookmark);
 
   Clipboard::Data data = Clipboard::BookmarkData{

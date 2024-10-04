@@ -25,6 +25,7 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_constants.h"
+#include "ui/base/clipboard/clipboard_util.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
@@ -251,7 +252,8 @@ void Clipboard::DispatchPortableRepresentation(const ObjectMapParams& params) {
             WriteRTF(data.data);
           },
           [&](const BookmarkData& data) {
-            if (data.title.empty() || data.url.empty()) {
+            if (ui::clipboard_util::ShouldSkipBookmark(
+                    base::UTF8ToUTF16(data.title), data.url)) {
               return;
             }
 

@@ -1196,6 +1196,34 @@ TYPED_TEST(ClipboardTest, WriteImageEmptyParams) {
   scw.WriteImage(SkBitmap());
 }
 
+#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID))
+TYPED_TEST(ClipboardTest, BookmarkTestWithoutTitle) {
+  // We're testing platform-specific behavior, so use PlatformClipboardTest.
+  std::string test_suite_name = ::testing::UnitTest::GetInstance()
+                                    ->current_test_info()
+                                    ->test_suite_name();
+  if (test_suite_name != std::string("ClipboardTest/PlatformClipboardTest")) {
+    return;
+  }
+
+  std::u16string title_result;
+  std::string url("http://www.example.com/"), url_result;
+
+  {
+    ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
+    clipboard_writer.WriteBookmark(std::u16string(), url);
+  }
+
+  EXPECT_TRUE(this->clipboard().IsFormatAvailable(
+      ClipboardFormatType::UrlType(), ClipboardBuffer::kCopyPaste,
+      /* data_dst = */ nullptr));
+
+  this->clipboard().ReadBookmark(/* data_dst = */ nullptr, &title_result,
+                                 &url_result);
+  EXPECT_EQ(url, url_result);
+}
+#endif  //(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID))
+
 // Policy controller is only intended to be used in Chrome OS, so the following
 // policy related tests are only run on Chrome OS.
 #if BUILDFLAG(IS_CHROMEOS)

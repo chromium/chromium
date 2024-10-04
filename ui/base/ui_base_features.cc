@@ -537,6 +537,11 @@ BASE_FEATURE(kUseUtf8EncodingForSvgImage,
              "UseUtf8EncodingForSvgImage",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables copy bookmark and writes url format to clipboard with empty title.
+BASE_FEATURE(kWriteBookmarkWithoutTitle,
+             "WriteBookmarkWithoutTitle",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If enabled, fullscreen window state is updated asynchronously.
 BASE_FEATURE(kAsyncFullscreenWindowState,
              "AsyncFullscreenWindowState",

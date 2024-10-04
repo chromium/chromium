@@ -6,6 +6,7 @@
 
 #include "base/threading/thread_restrictions.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/codec/png_codec.h"
 
 namespace ui::clipboard_util {
@@ -32,6 +33,12 @@ std::vector<uint8_t> EncodeBitmapToPng(const SkBitmap& bitmap) {
 
 std::vector<uint8_t> EncodeBitmapToPngAcceptJank(const SkBitmap& bitmap) {
   return EncodeBitmapToPngImpl(bitmap);
+}
+
+bool ShouldSkipBookmark(const std::u16string& title, const std::string& url) {
+  return url.empty() ||
+         (!base::FeatureList::IsEnabled(features::kWriteBookmarkWithoutTitle) &&
+          title.empty());
 }
 
 }  // namespace ui::clipboard_util
