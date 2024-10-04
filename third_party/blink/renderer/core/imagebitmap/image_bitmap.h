@@ -131,10 +131,6 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
                                                ExceptionState&) override;
 
   struct ParsedOptions {
-    bool MustPreserveUnpremulValues() const {
-      return source_is_unpremul && !premultiply_alpha;
-    }
-
     // If true, then the final result should be flipped vertically. This happens
     // in the space after `source_orientation` has been applied.
     bool flip_y = false;

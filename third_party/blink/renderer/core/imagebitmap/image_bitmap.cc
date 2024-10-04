@@ -74,6 +74,78 @@ constexpr const char* kImageBitmapOptionResizeQualityPixelated = "pixelated";
 
 namespace {
 
+// A helper class for transformations of a StaticBitmapImage that can
+// potentially be accomplished by a blit. This includes the transforms caused
+// by ImageBitmapOptions and cloning, but will be expanded to include
+// changing the alpha type, color space, and pixel format.
+class StaticBitmapImageTransform {
+ public:
+  // The parameters to the most generic Apply function that all other functions
+  // are built upon.
+  struct Params {
+    // If true, then the source image must be copied (even if the transform
+    // is a no-op, or can be accomplished without allocating a new backing).
+    bool force_copy = false;
+
+    // If true, then the final result should be flipped vertically. This happens
+    // in the space after `source_orientation` has been applied.
+    bool flip_y = false;
+    bool premultiply_alpha = true;
+    bool has_color_space_conversion = false;
+    bool source_is_unpremul = false;
+    bool orientation_from_image = true;
+
+    // The sampling options to use. This will be set to nearest-neighbor if no
+    // resampling is performed.
+    SkSamplingOptions sampling;
+
+    // The orientation of the source.
+    class ImageOrientation source_orientation;
+
+    // The `source_size`, `source_rect`, and `dest_size` parameters are all in
+    // the space after the `source_orientation` has been applied.
+    gfx::Size source_size;
+    gfx::Rect source_rect;
+    gfx::Size dest_size;
+
+    // Compute the parameters for creating and then resizing a subset of the
+    // source image. In the underlying PaintImage, `source_skrect` corresponds
+    // to `source_rect`, `source_skrect_valid` corresponds to the intersection
+    // of that with the PaintImage size, and `dest_sksize` corresponds to the
+    // output size.
+    void ComputeSubsetParameters(SkIRect& source_skrect,
+                                 SkIRect& source_skrect_valid,
+                                 SkISize& dest_sksize) const;
+
+    bool MustPreserveUnpremulValues() const {
+      return source_is_unpremul && !premultiply_alpha;
+    }
+  };
+
+  // Apply the specified transform to the indcated image.
+  static scoped_refptr<StaticBitmapImage> Apply(
+      scoped_refptr<StaticBitmapImage> image,
+      const Params& params);
+
+  // Create a copy of the input image, with a newly created backing.
+  static scoped_refptr<StaticBitmapImage> Clone(
+      scoped_refptr<StaticBitmapImage> image);
+
+ private:
+  // Apply the specified transform by manipulating SkPixmaps in software. This
+  // (SkPixmap::scalePixels) is the only path that allows resampling of images
+  // while preserving unpremultiplied alpha values.
+  static scoped_refptr<StaticBitmapImage> ApplyUsingPixmap(
+      scoped_refptr<StaticBitmapImage> image,
+      const Params& params);
+
+  // Apply the specified transform by using a blit. The blit may be done on the
+  // GPU or may be done in software. The result is always premultiplied.
+  static scoped_refptr<StaticBitmapImage> ApplyWithBlit(
+      scoped_refptr<StaticBitmapImage> image,
+      const Params& params);
+};
+
 gfx::Size ParseDstSize(const ImageBitmapOptions* options,
                        const gfx::Rect& src_rect) {
   int resize_width = 0;
@@ -258,9 +330,9 @@ void FlipSkPixmapInPlace(SkPixmap& pm, bool horizontal) {
 }
 
 // Perform the requested transformations on the CPU.
-scoped_refptr<StaticBitmapImage> ApplyTransformsFromOptionsSoftware(
+scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyUsingPixmap(
     scoped_refptr<StaticBitmapImage> source,
-    const ImageBitmap::ParsedOptions& options) {
+    const StaticBitmapImageTransform::Params& options) {
   auto source_paint_image = source->PaintImageForCurrentFrame();
   auto source_info = source->GetSkImageInfo();
 
@@ -352,9 +424,9 @@ scoped_refptr<StaticBitmapImage> ApplyTransformsFromOptionsSoftware(
 
 // Perform all transformations using a blit, which will result in a new
 // premultiplied-alpha result.
-scoped_refptr<StaticBitmapImage> ApplyTransformsFromOptionsWithBlit(
+scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
     scoped_refptr<StaticBitmapImage> src,
-    const ImageBitmap::ParsedOptions& options) {
+    const StaticBitmapImageTransform::Params& options) {
   // This path will necessarily premultiply alpha. If unmultiplied alpha is
   // requested and the source was originally unmultiplied, then we this would
   // break things.
@@ -425,10 +497,9 @@ scoped_refptr<StaticBitmapImage> ApplyTransformsFromOptionsWithBlit(
 // result. When possible, this will avoid creating a new object and backing,
 // unless `force_copy` is specified, in which case it will always create a new
 // object and backing.
-scoped_refptr<StaticBitmapImage> ApplyTransformsFromOptions(
+scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::Apply(
     scoped_refptr<StaticBitmapImage> source,
-    const ImageBitmap::ParsedOptions& options,
-    bool force_copy = false) {
+    const StaticBitmapImageTransform::Params& options) {
   // Early-out for empty transformations.
   if (options.source_rect.IsEmpty() || options.dest_size.IsEmpty()) {
     return nullptr;
@@ -444,7 +515,7 @@ scoped_refptr<StaticBitmapImage> ApplyTransformsFromOptions(
 
   // If we aren't doing anything (and this wasn't a forced copy), just return
   // the original.
-  if (!force_copy && !needs_flip && !needs_crop && !needs_resize &&
+  if (!options.force_copy && !needs_flip && !needs_crop && !needs_resize &&
       !needs_strip_orientation && !needs_strip_color_space &&
       !needs_alpha_change) {
     return source;
@@ -456,15 +527,15 @@ scoped_refptr<StaticBitmapImage> ApplyTransformsFromOptions(
   // are falling back to the CPU for no increased precision).
   scoped_refptr<StaticBitmapImage> result;
   if (!options.premultiply_alpha) {
-    return ApplyTransformsFromOptionsSoftware(source, options);
+    return ApplyUsingPixmap(source, options);
   }
-  return ApplyTransformsFromOptionsWithBlit(source, options);
+  return ApplyWithBlit(source, options);
 }
 
-scoped_refptr<StaticBitmapImage> CloneStaticBitmapImage(
+scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::Clone(
     scoped_refptr<StaticBitmapImage> source) {
   const auto info = source->GetSkImageInfo();
-  ImageBitmap::ParsedOptions options;
+  StaticBitmapImageTransform::Params options;
   options.source_orientation = source->CurrentFrameOrientation();
   options.source_size = options.source_orientation.UsesWidthAsHeight()
                             ? gfx::Size(info.height(), info.width())
@@ -473,7 +544,32 @@ scoped_refptr<StaticBitmapImage> CloneStaticBitmapImage(
   options.dest_size = options.source_size;
   options.source_is_unpremul = info.alphaType() == kUnpremul_SkAlphaType;
   options.premultiply_alpha = !options.source_is_unpremul;
-  return ApplyTransformsFromOptions(source, options, /*force_copy=*/true);
+  options.force_copy = true;
+  return Apply(source, options);
+}
+
+scoped_refptr<StaticBitmapImage> ApplyTransformsFromOptions(
+    scoped_refptr<StaticBitmapImage> source,
+    const ImageBitmap::ParsedOptions& options,
+    bool force_copy = false) {
+  // Early-out for empty transformations.
+  if (options.source_rect.IsEmpty() || options.dest_size.IsEmpty()) {
+    return nullptr;
+  }
+
+  StaticBitmapImageTransform::Params params;
+  params.force_copy = force_copy;
+  params.flip_y = options.flip_y;
+  params.premultiply_alpha = options.premultiply_alpha;
+  params.has_color_space_conversion = options.has_color_space_conversion;
+  params.source_is_unpremul = options.source_is_unpremul;
+  params.orientation_from_image = options.orientation_from_image;
+  params.sampling = options.sampling;
+  params.source_orientation = options.source_orientation;
+  params.source_size = options.source_size;
+  params.source_rect = options.source_rect;
+  params.dest_size = options.dest_size;
+  return StaticBitmapImageTransform::Apply(source, params);
 }
 
 scoped_refptr<StaticBitmapImage> MakeBlankImage(
@@ -491,9 +587,7 @@ scoped_refptr<StaticBitmapImage> MakeBlankImage(
   return UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot());
 }
 
-}  // namespace
-
-void ImageBitmap::ParsedOptions::ComputeSubsetParameters(
+void StaticBitmapImageTransform::Params::ComputeSubsetParameters(
     SkIRect& source_skrect,
     SkIRect& source_skrect_valid,
     SkISize& dest_sksize) const {
@@ -515,6 +609,8 @@ void ImageBitmap::ParsedOptions::ComputeSubsetParameters(
   source_skrect_valid = gfx::RectToSkIRect(unoriented_source_rect_valid);
   dest_sksize = gfx::SizeToSkISize(unoriented_dest_size);
 }
+
+}  // namespace
 
 sk_sp<SkImage> ImageBitmap::GetSkImageFromDecoder(
     std::unique_ptr<ImageDecoder> decoder) {
@@ -776,7 +872,7 @@ scoped_refptr<StaticBitmapImage> ImageBitmap::Transfer() {
     // This approach is slow and wateful but it is only to handle extremely
     // rare edge cases.
     if (!image_->HasOneRef()) {
-      auto copy = CloneStaticBitmapImage(image_);
+      auto copy = StaticBitmapImageTransform::Clone(image_);
       if (!copy) {
         return nullptr;
       }
