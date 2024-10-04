@@ -26,18 +26,14 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/affiliation.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "components/policy/core/common/policy_loader_lacros.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -46,16 +42,6 @@ namespace {
 const enterprise_management::PolicyData* GetPolicyData(Profile* profile) {
   if (!profile)
     return nullptr;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/40199547): Clean up for Dent V2
-  if (profile->IsMainProfile()) {
-    const enterprise_management::PolicyData* policy =
-        policy::PolicyLoaderLacros::main_user_policy_data();
-    if (policy)
-      return policy;
-  }
-#endif
 
   auto* manager = profile->GetCloudPolicyManager();
   if (!manager) {
@@ -70,7 +56,7 @@ const enterprise_management::PolicyData* GetPolicyData(Profile* profile) {
   return store->policy();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // A callback which fetches device dm_token based on user affiliation.
 using DeviceDMTokenCallback = base::RepeatingCallback<std::string(
     const std::vector<std::string>& user_affiliation_ids)>;
@@ -104,7 +90,7 @@ std::string GetDeviceDmToken(Profile* profile) {
   return device_dm_token_callback.Run(user_affiliation_ids);
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -134,7 +120,7 @@ base::Value::Dict GetContext(Profile* profile) {
   if (client_id)
     context.SetByDottedPath("profile.clientId", *client_id);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::string device_dm_token = GetDeviceDmToken(profile);
   if (!device_dm_token.empty())
     context.SetByDottedPath("device.dmToken", device_dm_token);
@@ -173,7 +159,7 @@ enterprise_connectors::ClientMetadata GetContextAsClientMetadata(
   if (client_id)
     metadata.mutable_profile()->set_client_id(*client_id);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::string device_dm_token = GetDeviceDmToken(profile);
   if (!device_dm_token.empty())
     metadata.mutable_device()->set_dm_token(device_dm_token);
@@ -212,7 +198,7 @@ std::optional<std::string> GetUserClientId(Profile* profile) {
   return policy_data->device_id();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 std::optional<std::string> GetMGSUserClientId() {
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
