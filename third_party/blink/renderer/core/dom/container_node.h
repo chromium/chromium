@@ -161,6 +161,15 @@ class CORE_EXPORT ContainerNode : public Node {
       const AtomicString& substring,
       base::FunctionRef<bool(const String&)> validity_checker) const;
 
+  // Returns all Text nodes where `regex` would match for the text inside of
+  // the node, case-insensitive. This function does not normalize adjacent Text
+  // nodes and search them together. It only matches within individual Text
+  // nodes. It is therefore possible that some text is displayed to the user as
+  // a single run of text, but will not match the regex, because the nodes
+  // aren't normalized. This function searches within both the DOM and Shadow
+  // DOM.
+  StaticNodeList* FindAllTextNodesMatchingRegex(const String& regex) const;
+
   // These methods are only used during parsing.
   // They don't send DOM mutation events or accept DocumentFragments.
   void ParserAppendChild(Node*);

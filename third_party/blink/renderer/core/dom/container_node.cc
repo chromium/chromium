@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/name_node_list.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -79,6 +80,9 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
+#include "third_party/blink/renderer/platform/bindings/script_regexp.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -1652,6 +1656,28 @@ String ContainerNode::FindTextInElementWith(
   }
 
   return String();
+}
+
+StaticNodeList* ContainerNode::FindAllTextNodesMatchingRegex(
+    const String& regex) const {
+  blink::HeapVector<Member<Node>> nodes_matching_regex;
+  Node* node = FlatTreeTraversal::FirstWithin(*this);
+  ScriptRegexp* raw_regexp = MakeGarbageCollected<ScriptRegexp>(
+      GetDocument().GetAgent().isolate(), regex, kTextCaseASCIIInsensitive);
+  while (node) {
+    if (node->IsTextNode()) {
+      String text = To<Text>(node)->data();
+      if (!text.empty()) {
+        int match_offset = raw_regexp->Match(text);
+        if (match_offset >= 0) {
+          nodes_matching_regex.push_back(node);
+        }
+      }
+    }
+    node = FlatTreeTraversal::Next(*node, this);
+  }
+
+  return StaticNodeList::Adopt(nodes_matching_regex);
 }
 
 Element* ContainerNode::getElementById(const AtomicString& id) const {
