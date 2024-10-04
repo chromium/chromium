@@ -884,7 +884,7 @@ if (current_toolchain == default_toolchain) {
       "//components/data_sharing/internal:internal_java",
       "//components/gwp_asan/client/android:gwp_asan_java",
       "//components/messages/android/internal:java",
-      "//components/saved_tab_groups:java",
+      "//components/saved_tab_groups/internal:java",
       "//components/saved_tab_groups/messaging/android:java",
       "//components/saved_tab_groups/public:conversion_utils_java",
       "//components/segmentation_platform/internal:internal_java",

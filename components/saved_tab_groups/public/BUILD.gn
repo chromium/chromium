@@ -1,4 +1,4 @@
-# Copyright 2022 The Chromium Authors
+# Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD - style license that can be
 # found in the LICENSE file.
 
@@ -127,8 +127,8 @@ source_set("unit_tests") {
     "//components/optimization_guide/core",
     "//components/pref_registry:pref_registry",
     "//components/prefs:test_support",
-    "//components/saved_tab_groups:test_support",
     "//components/saved_tab_groups/proto",
+    "//components/saved_tab_groups/test_support",
     "//components/sync",
     "//components/sync:test_support",
     "//components/sync_device_info",

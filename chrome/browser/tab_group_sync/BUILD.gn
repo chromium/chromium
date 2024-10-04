@@ -37,7 +37,7 @@ if (is_android) {
       "//build/android:build_java",
       "//chrome/browser/flags:java",
       "//chrome/browser/profiles/android:java",
-      "//components/saved_tab_groups:java",
+      "//components/saved_tab_groups/internal:java",
       "//components/saved_tab_groups/public:java",
       "//content/public/android:content_java",
       "//third_party/androidx:androidx_annotation_annotation_java",

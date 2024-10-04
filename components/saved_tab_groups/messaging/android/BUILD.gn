@@ -12,7 +12,6 @@ source_set("android") {
     "//base",
     "//components/data_sharing/public",
     "//components/data_sharing/public:android_utils",
-    "//components/saved_tab_groups:core",
     "//components/saved_tab_groups/messaging",
     "//components/saved_tab_groups/public:conversion_utils",
   ]

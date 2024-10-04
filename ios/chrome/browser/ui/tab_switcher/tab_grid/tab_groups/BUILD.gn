@@ -236,8 +236,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/policy/core/common:common_constants",
     "//components/prefs:test_support",
-    "//components/saved_tab_groups:test_support",
     "//components/saved_tab_groups/public",
+    "//components/saved_tab_groups/test_support",
     "//components/sync_preferences:test_support",
     "//components/tab_groups",
     "//ios/chrome/browser/drag_and_drop/model",
@@ -316,7 +316,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/test/earl_grey:hooks",
   ]
   deps = [
-    "//components/saved_tab_groups:test_support",
+    "//components/saved_tab_groups/test_support",
     "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
