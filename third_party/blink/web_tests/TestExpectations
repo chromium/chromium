@@ -2660,6 +2660,7 @@ crbug.com/369685643 crbug.com/369826505 [ Mac ] virtual/view-transition-mpa-seri
 crbug.com/369668292 [ Mac12 ] virtual/threaded/external/wpt/css/css-view-transitions/animating-new-content-subset.html [ Failure ]
 crbug.com/369668292 [ Mac13 ] virtual/threaded/external/wpt/css/css-view-transitions/animating-new-content-subset.html [ Failure ]
 crbug.com/369668292 [ Mac14 ] virtual/threaded/external/wpt/css/css-view-transitions/animating-new-content-subset.html [ Failure ]
+crbug.com/369668292 [ Mac15 ] virtual/threaded/external/wpt/css/css-view-transitions/animating-new-content-subset.html [ Failure ]
 crbug.com/369236541 external/wpt/css/css-text-decor/text-underline-position-auto-001.html [ Failure ]
 crbug.com/369236542 [ Mac13-arm64 ] virtual/fsa-incognito/external/wpt/fs/FileSystemDirectoryHandle-getDirectoryHandle.https.any.worker.html [ Timeout ]
 crbug.com/369270133 [ Mac12 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/animating-new-content-subset.html [ Failure ]

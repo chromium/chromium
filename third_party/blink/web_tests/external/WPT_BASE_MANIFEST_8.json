@@ -155238,6 +155238,19 @@
         {}
        ]
       ],
+      "clip-path-url-reference-empty-while-loading.tentative.html": [
+       "346db822af279a47ace5519b29cd5ba2b21f7590",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path/reference/green-100x100.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "clip-path-url-reference-external.html": [
        "91737bf9b7059eaa454e4974c3d242e7e49dd615",
        [
@@ -241391,6 +241404,45 @@
        {}
       ]
      ],
+     "auto-name-from-id-shadow.html": [
+      "b5020d658eca8797925d04bb7fb78401d738f147",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/auto-name-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "auto-name-from-id.html": [
+      "9a04d431dfdc2225670e6bb2f87e6ac7a4fcd486",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/auto-name-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "auto-name.html": [
+      "205c8e559dc8cdd2eeb6d1a8e0e9b098fb791301",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/auto-name-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "backdrop-filter-animated.html": [
       "3a5f0665b00c476add8795fb59e7c29dea51fcb0",
       [
@@ -243268,6 +243320,19 @@
         [
          [
           "/css/css-view-transitions/navigation/at-rule-opt-in-none-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "auto-name-from-id.html": [
+       "c916733224282623559e963d2a7e7d33173bf986",
+       [
+        null,
+        [
+         [
+          "/css/css-view-transitions/navigation/auto-name-from-id-ref.html",
           "=="
          ]
         ],
@@ -354073,6 +354138,10 @@
       "eee7f19529b82269d066e08582e322e30e6a308b",
       []
      ],
+     "auto-name-ref.html": [
+      "36ef5faac4171d57ac09274318d79541ed081732",
+      []
+     ],
      "backdrop-filter-animated-ref.html": [
       "d3f1dffacdcdd2a85348a56214117fe58e0d4d08",
       []
@@ -354376,6 +354445,10 @@
        "59e3342daebb77a8e484add21626472c01b396ab",
        []
       ],
+      "auto-name-from-id-ref.html": [
+       "8f9954930bf096da0107b0ecb21c8136ca522850",
+       []
+      ],
       "chromium-paint-holding-timeout-ref.html": [
        "90267e3a84a34157078d1ad890710ea8059a75da",
        []
@@ -354427,6 +354500,10 @@
        ],
        "at-rule-opt-in-none.html": [
         "bf5a73c73ee014ecf5777f77b9282d8f947f58af",
+        []
+       ],
+       "auto-name-from-id.html": [
+        "f1fd1e48a68e6d7d63184f092bb1b607b6d6967d",
         []
        ],
        "chromium-paint-holding-timeout.html": [
@@ -362935,6 +363012,22 @@
      ],
      "insertHTML_white-space=pre-wrap-expected.txt": [
       "c9755cfe4d0fab2cfb23cb6a4463ef125f86e08b",
+      []
+     ],
+     "insertLineBreak_white-space=normal-expected.txt": [
+      "7732f41a104410bf0a6399059b4a937e2e4d822b",
+      []
+     ],
+     "insertLineBreak_white-space=pre-expected.txt": [
+      "c061df6712aa01464d9e8d588160e41d5d47c2f7",
+      []
+     ],
+     "insertLineBreak_white-space=pre-line-expected.txt": [
+      "c061df6712aa01464d9e8d588160e41d5d47c2f7",
+      []
+     ],
+     "insertLineBreak_white-space=pre-wrap-expected.txt": [
+      "c061df6712aa01464d9e8d588160e41d5d47c2f7",
       []
      ],
      "styling-commands_styleWithCSS=false-expected.txt": [
@@ -491657,14 +491750,14 @@
        ]
       ],
       "view-transition-name-invalid.html": [
-       "00cd411d6ad726690cca6a53caf0c9d2d70ca072",
+       "0151991436c824225d518ea23ce5f4860bfca8f0",
        [
         null,
         {}
        ]
       ],
       "view-transition-name-valid.html": [
-       "2fd384449f5656bfdefd673b8a62c8444a669e16",
+       "b1d08af0aaaa4b912ffebacd5b2bf46dfd4cdf64",
        [
         null,
         {}
@@ -507775,6 +507868,64 @@
       ],
       [
        "editing/plaintext-only/insertHTML.html?white-space=pre-wrap",
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "insertLineBreak.html": [
+      "564eb16605c2bd05f9ec103c11e640f9250217af",
+      [
+       "editing/plaintext-only/insertLineBreak.html?white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/plaintext-only/insertLineBreak.html?white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/plaintext-only/insertLineBreak.html?white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/plaintext-only/insertLineBreak.html?white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ]
+     ],
+     "insertParagraph.html": [
+      "2841fdb4f31e8eae28d47394d06eb50c2247adac",
+      [
+       "editing/plaintext-only/insertParagraph.html?white-space=normal",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/plaintext-only/insertParagraph.html?white-space=pre",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/plaintext-only/insertParagraph.html?white-space=pre-line",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/plaintext-only/insertParagraph.html?white-space=pre-wrap",
        {
         "timeout": "long"
        }

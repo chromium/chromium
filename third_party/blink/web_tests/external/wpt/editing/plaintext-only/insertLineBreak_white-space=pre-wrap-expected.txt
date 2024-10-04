@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+Found 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] execCommand("insertLineBreak") when <p style="white-space:normal">A[]B</p>
+  assert_equals: expected "<p style=\\"white-space:normal\\">A<br>B</p>" but got "<p style=\\"white-space:normal\\">A\\nB</p>"
+[FAIL] Pressing Enter when <p style="white-space:normal">A[]B</p> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<p style=\\"white-space:normal\\">A<br>B</p>" but got "<p style=\\"white-space:normal\\">A\\nB</p>"
+[FAIL] Pressing Shift+Enter when <p style="white-space:normal">A[]B</p> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<p style=\\"white-space:normal\\">A<br>B</p>" but got "<p style=\\"white-space:normal\\">A\\nB</p>"
+Harness: the test ran to completion.
+
