@@ -94,7 +94,7 @@ class GroupDataModelTest : public testing::Test {
   GroupDataModelTest()
       : data_type_store_(
             syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
-    EXPECT_TRUE(profile_dir_.CreateUniqueTempDir());
+    EXPECT_TRUE(data_sharing_dir_.CreateUniqueTempDir());
   }
 
   ~GroupDataModelTest() override = default;
@@ -116,15 +116,15 @@ class GroupDataModelTest : public testing::Test {
         collaboration_group_bridge_->CreateMetadataChangeList(),
         syncer::EntityChangeList());
 
-    model_ = std::make_unique<GroupDataModel>(profile_dir_.GetPath(),
+    model_ = std::make_unique<GroupDataModel>(data_sharing_dir_.GetPath(),
                                               collaboration_group_bridge_.get(),
                                               &sdk_delegate_);
     model_->AddObserver(&observer_);
   }
 
   void TearDown() override {
-    // Needed to ensure that `profile_dir_` outlives DB tasks, that runs on a
-    // dedicated sequence.
+    // Needed to ensure that `data_sharing_dir_` outlives DB tasks, that runs on
+    // a dedicated sequence.
     ShutdownModel();
   }
 
@@ -203,7 +203,7 @@ class GroupDataModelTest : public testing::Test {
   }
 
   void RestartModel() {
-    model_ = std::make_unique<GroupDataModel>(profile_dir_.GetPath(),
+    model_ = std::make_unique<GroupDataModel>(data_sharing_dir_.GetPath(),
                                               collaboration_group_bridge_.get(),
                                               &sdk_delegate_);
     model_->AddObserver(&observer_);
@@ -212,7 +212,7 @@ class GroupDataModelTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
 
-  base::ScopedTempDir profile_dir_;
+  base::ScopedTempDir data_sharing_dir_;
 
   std::unique_ptr<syncer::DataTypeStore> data_type_store_;
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;

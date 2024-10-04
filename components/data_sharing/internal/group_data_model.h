@@ -44,7 +44,7 @@ class GroupDataModel : public CollaborationGroupSyncBridge::Observer {
 
   // `collaboration_group_sync_bridge` and `sdk_delegate` must not be null and
   // must outlive `this`.
-  GroupDataModel(const base::FilePath& profile_dir,
+  GroupDataModel(const base::FilePath& data_sharing_dir,
                  CollaborationGroupSyncBridge* collaboration_group_sync_bridge,
                  DataSharingSDKDelegate* sdk_delegate);
   ~GroupDataModel() override;

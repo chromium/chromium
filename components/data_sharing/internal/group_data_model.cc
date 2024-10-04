@@ -19,8 +19,8 @@ namespace data_sharing {
 
 namespace {
 
-base::FilePath GetGroupDataStoreDBPath(const base::FilePath& profile_dir) {
-  return profile_dir.Append(FILE_PATH_LITERAL("DataSharingDB"));
+base::FilePath GetGroupDataStoreDBPath(const base::FilePath& data_sharing_dir) {
+  return data_sharing_dir.Append(FILE_PATH_LITERAL("DataSharingDB"));
 }
 
 VersionToken ComputeVersionToken(
@@ -32,10 +32,10 @@ VersionToken ComputeVersionToken(
 }  // namespace
 
 GroupDataModel::GroupDataModel(
-    const base::FilePath& profile_dir,
+    const base::FilePath& data_sharing_dir,
     CollaborationGroupSyncBridge* collaboration_group_sync_bridge,
     DataSharingSDKDelegate* sdk_delegate)
-    : group_data_store_(GetGroupDataStoreDBPath(profile_dir),
+    : group_data_store_(GetGroupDataStoreDBPath(data_sharing_dir),
                         base::BindOnce(&GroupDataModel::OnGroupDataStoreLoaded,
                                        base::Unretained(this))),
       collaboration_group_sync_bridge_(collaboration_group_sync_bridge),
