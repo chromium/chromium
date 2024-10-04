@@ -1180,7 +1180,7 @@ public class TabListMediatorUnitTest {
         itemTouchHelperCallback.onSelectedChanged(
                 mFakeViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
 
-        verify(mTabGroupModelFilter).moveTabOutOfGroup(eq(TAB1_ID));
+        verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(TAB1_ID, /* trailing= */ true);
         verify(mGridLayoutManager).removeView(mItemView1);
     }
 
@@ -4204,7 +4204,8 @@ public class TabListMediatorUnitTest {
         when(mIncognitoTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mIncognitoTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
         mMediator.onMenuItemClicked(R.id.ungroup_tab, TAB1_ID, /* collaborationId= */ null);
-        verify(mIncognitoTabGroupModelFilter).moveTabOutOfGroup(TAB1_ID);
+        verify(mIncognitoTabGroupModelFilter)
+                .moveTabOutOfGroupInDirection(TAB1_ID, /* trailing= */ true);
     }
 
     @Test

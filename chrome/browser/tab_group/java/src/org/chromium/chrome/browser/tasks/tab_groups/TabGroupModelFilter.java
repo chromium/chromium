@@ -644,15 +644,6 @@ public class TabGroupModelFilter extends TabModelFilter {
         }
     }
 
-    /**
-     * This method moves Tab with id as {@code sourceTabId} out of the group it belongs to.
-     *
-     * @param sourceTabId The id of the {@link Tab} to get the source group.
-     */
-    public void moveTabOutOfGroup(int sourceTabId) {
-        moveTabOutOfGroupInDirection(sourceTabId, true);
-    }
-
     private int getTabModelDestinationIndex(Tab destinationTab) {
         List<Integer> destinationGroupedTabIds =
                 mRootIdToGroupMap.get(destinationTab.getRootId()).getTabIdList();

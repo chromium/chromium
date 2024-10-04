@@ -102,7 +102,7 @@ public class TabListEditorUngroupAction extends TabListEditorAction {
     private void doRemoveTabs(List<Tab> tabs) {
         TabGroupModelFilter filter = getTabGroupModelFilter();
         for (Tab tab : tabs) {
-            filter.moveTabOutOfGroup(tab.getId());
+            filter.moveTabOutOfGroupInDirection(tab.getId(), /* trailing= */ true);
         }
         TabUiMetricsHelper.recordSelectionEditorActionMetrics(
                 TabListEditorActionMetricGroups.UNGROUP);

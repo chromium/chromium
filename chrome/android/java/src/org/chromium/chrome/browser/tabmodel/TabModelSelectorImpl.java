@@ -191,7 +191,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                                     getTabModelFilterProvider()
                                             .getTabModelFilter(tab.isIncognito());
                     if (filter.isTabInTabGroup(tab)) {
-                        filter.moveTabOutOfGroup(tab.getId());
+                        filter.moveTabOutOfGroupInDirection(tab.getId(), /* trailing= */ true);
                     }
 
                     tabModel.removeTab(tab);

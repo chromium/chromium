@@ -734,8 +734,8 @@ public class TabGroupModelFilterUnitTest {
         assertThat(mTab6.getTabGroupId(), equalTo(TAB5_TAB_GROUP_ID));
         assertArrayEquals(mTabs.toArray(), expectedTabModel.toArray());
 
-        mTabGroupModelFilter.moveTabOutOfGroup(TAB3_ID);
-        mTabGroupModelFilter.moveTabOutOfGroup(TAB6_ID);
+        mTabGroupModelFilter.moveTabOutOfGroupInDirection(TAB3_ID, /* trailing= */ true);
+        mTabGroupModelFilter.moveTabOutOfGroupInDirection(TAB6_ID, /* trailing= */ true);
 
         verify(mTabGroupModelFilterObserver).willMoveTabOutOfGroup(mTab3, TAB2_ROOT_ID);
         verify(mTabGroupModelFilterObserver).willMoveTabOutOfGroup(mTab6, TAB5_ROOT_ID);
@@ -772,8 +772,8 @@ public class TabGroupModelFilterUnitTest {
         assertEquals(mTab5.getTabGroupId(), TAB5_TAB_GROUP_ID);
         assertEquals(mTab6.getTabGroupId(), TAB5_TAB_GROUP_ID);
 
-        mTabGroupModelFilter.moveTabOutOfGroup(TAB2_ID);
-        mTabGroupModelFilter.moveTabOutOfGroup(TAB5_ID);
+        mTabGroupModelFilter.moveTabOutOfGroupInDirection(TAB2_ID, /* trailing= */ true);
+        mTabGroupModelFilter.moveTabOutOfGroupInDirection(TAB5_ID, /* trailing= */ true);
 
         mTabGroupModelFilterObserver.willMoveTabOutOfGroup(mTab2, TAB3_ID);
         mTabGroupModelFilterObserver.willMoveTabOutOfGroup(mTab5, TAB6_ID);
@@ -808,7 +808,7 @@ public class TabGroupModelFilterUnitTest {
         assertThat(mTab3.getTabGroupId(), equalTo(TAB2_TAB_GROUP_ID));
         assertArrayEquals(mTabs.toArray(), expectedTabModelBeforeUngroup.toArray());
 
-        mTabGroupModelFilter.moveTabOutOfGroup(TAB3_ID);
+        mTabGroupModelFilter.moveTabOutOfGroupInDirection(TAB3_ID, /* trailing= */ true);
 
         mTabGroupModelFilterObserver.willMoveTabOutOfGroup(mTab3, TAB2_ROOT_ID);
         // Plus one as offset because we are moving backwards in tab model.
@@ -840,7 +840,7 @@ public class TabGroupModelFilterUnitTest {
         assertThat(newTab.getTabGroupId(), equalTo(TAB2_TAB_GROUP_ID));
         assertArrayEquals(mTabs.toArray(), expectedTabModelBeforeUngroup.toArray());
 
-        mTabGroupModelFilter.moveTabOutOfGroup(TAB3_ID);
+        mTabGroupModelFilter.moveTabOutOfGroupInDirection(TAB3_ID, /* trailing= */ true);
 
         verify(mTabGroupModelFilterObserver).willMoveTabOutOfGroup(mTab3, TAB2_ROOT_ID);
         // Plus one as offset because we are moving backwards in tab model.
@@ -867,7 +867,7 @@ public class TabGroupModelFilterUnitTest {
         assertThat(mTab3.getTabGroupId(), equalTo(TAB2_TAB_GROUP_ID));
         assertArrayEquals(mTabs.toArray(), expectedTabModelBeforeUngroup.toArray());
 
-        mTabGroupModelFilter.moveTabOutOfGroup(TAB2_ID);
+        mTabGroupModelFilter.moveTabOutOfGroupInDirection(TAB2_ID, /* trailing= */ true);
 
         verify(mTabGroupModelFilterObserver).willMoveTabOutOfGroup(mTab2, TAB3_ID);
         // Plus one as offset because we are moving backwards in tab model.
@@ -899,7 +899,7 @@ public class TabGroupModelFilterUnitTest {
         assertThat(newTab.getTabGroupId(), equalTo(TAB2_TAB_GROUP_ID));
         assertArrayEquals(mTabs.toArray(), expectedTabModelBeforeUngroup.toArray());
 
-        mTabGroupModelFilter.moveTabOutOfGroup(TAB2_ID);
+        mTabGroupModelFilter.moveTabOutOfGroupInDirection(TAB2_ID, /* trailing= */ true);
 
         verify(mTabGroupModelFilterObserver).willMoveTabOutOfGroup(mTab2, NEW_TAB_ID_0);
         // Plus one as offset because we are moving backwards in tab model.
@@ -925,7 +925,7 @@ public class TabGroupModelFilterUnitTest {
         Token tabGroupId = new Token(374893L, 83942L);
         mTab1.setTabGroupId(tabGroupId);
         assertNotNull(mTab1.getTabGroupId());
-        mTabGroupModelFilter.moveTabOutOfGroup(TAB1_ID);
+        mTabGroupModelFilter.moveTabOutOfGroupInDirection(TAB1_ID, /* trailing= */ true);
 
         // Ungrouping the last tab in group should have no effect on tab model.
         verify(mTabModel, never()).moveTab(anyInt(), anyInt());
@@ -965,7 +965,7 @@ public class TabGroupModelFilterUnitTest {
                         anyBoolean());
         assertTrue(mTabGroupModelFilter.isTabInTabGroup(mTab1));
 
-        mTabGroupModelFilter.moveTabOutOfGroup(TAB1_ID);
+        mTabGroupModelFilter.moveTabOutOfGroupInDirection(TAB1_ID, /* trailing= */ true);
 
         // Ungrouping the last tab in group should have no effect on tab model.
         verify(mTabModel, never()).moveTab(anyInt(), anyInt());
@@ -994,7 +994,7 @@ public class TabGroupModelFilterUnitTest {
         assertThat(mTabGroupModelFilter.getGroupLastShownTabId(TAB5_ROOT_ID), equalTo(TAB6_ID));
         assertThat(mTabGroupModelFilter.getGroupLastShownTabId(TAB6_ROOT_ID), equalTo(TAB6_ID));
 
-        mTabGroupModelFilter.moveTabOutOfGroup(TAB2_ID);
+        mTabGroupModelFilter.moveTabOutOfGroupInDirection(TAB2_ID, /* trailing= */ true);
 
         verify(mTabGroupModelFilterObserver).willMoveTabOutOfGroup(mTab2, TAB3_ID);
         // Plus one as offset because we are moving backwards in tab model.

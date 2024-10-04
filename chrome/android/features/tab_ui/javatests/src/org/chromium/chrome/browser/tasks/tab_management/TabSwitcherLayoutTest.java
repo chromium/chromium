@@ -294,7 +294,7 @@ public class TabSwitcherLayoutTest {
     @Test
     @MediumTest
     @DisabledTest(message = "Flaky - https://crbug.com/1124041, crbug.com/1061178")
-    public void testSwipeToDismiss_GTS() {
+    public void testSwipeToDismiss_Gts() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         // Create 3 tabs and merge the first two tabs into one group.
         createTabs(cta, false, 3);
@@ -455,7 +455,8 @@ public class TabSwitcherLayoutTest {
                         cta.getTabModelSelector()
                                 .getTabModelFilterProvider()
                                 .getCurrentTabModelFilter();
-        ThreadUtils.runOnUiThreadBlocking(() -> filter.moveTabOutOfGroup(childTab.getId()));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> filter.moveTabOutOfGroupInDirection(childTab.getId(), /* trailing= */ true));
         verifyTabSwitcherCardCount(cta, 2);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -529,7 +530,7 @@ public class TabSwitcherLayoutTest {
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);
         // Create a tab group.
-        mergeNormalTabsToAGroupWithDialog(cta, 2);
+        mergeNormalTabsToGroupWithDialog(cta, 2);
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
@@ -563,7 +564,7 @@ public class TabSwitcherLayoutTest {
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);
         // Create a tab group.
-        mergeNormalTabsToAGroupWithDialog(cta, 2);
+        mergeNormalTabsToGroupWithDialog(cta, 2);
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
@@ -620,7 +621,7 @@ public class TabSwitcherLayoutTest {
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);
         // Create a tab group.
-        mergeNormalTabsToAGroupWithDialog(cta, 2);
+        mergeNormalTabsToGroupWithDialog(cta, 2);
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
@@ -678,7 +679,7 @@ public class TabSwitcherLayoutTest {
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);
         // Create a tab group.
-        mergeNormalTabsToAGroupWithDialog(cta, 2);
+        mergeNormalTabsToGroupWithDialog(cta, 2);
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
@@ -714,7 +715,7 @@ public class TabSwitcherLayoutTest {
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);
         // Create a tab group.
-        mergeNormalTabsToAGroupWithDialog(cta, 2);
+        mergeNormalTabsToGroupWithDialog(cta, 2);
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
@@ -750,7 +751,7 @@ public class TabSwitcherLayoutTest {
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);
         // Create a tab group.
-        mergeNormalTabsToAGroupWithDialog(cta, 2);
+        mergeNormalTabsToGroupWithDialog(cta, 2);
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
@@ -801,7 +802,7 @@ public class TabSwitcherLayoutTest {
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);
         // Create a tab group.
-        mergeNormalTabsToAGroupWithDialog(cta, 2);
+        mergeNormalTabsToGroupWithDialog(cta, 2);
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
@@ -838,7 +839,7 @@ public class TabSwitcherLayoutTest {
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);
         // Create a tab group.
-        mergeNormalTabsToAGroupWithDialog(cta, 2);
+        mergeNormalTabsToGroupWithDialog(cta, 2);
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
@@ -880,7 +881,7 @@ public class TabSwitcherLayoutTest {
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);
         // Create a tab group.
-        mergeNormalTabsToAGroupWithDialog(cta, 2);
+        mergeNormalTabsToGroupWithDialog(cta, 2);
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
@@ -1002,7 +1003,7 @@ public class TabSwitcherLayoutTest {
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 1);
         // Create a tab group.
-        mergeNormalTabsToAGroupWithDialog(cta, 1);
+        mergeNormalTabsToGroupWithDialog(cta, 1);
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
     }
@@ -1026,7 +1027,7 @@ public class TabSwitcherLayoutTest {
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 1);
         // Create a tab group.
-        mergeNormalTabsToAGroupWithDialog(cta, 1);
+        mergeNormalTabsToGroupWithDialog(cta, 1);
         // Verify the undo group merge snackbar is showing.
         assertTrue(
                 snackbarManager.getCurrentSnackbarForTesting().getController()
@@ -1057,7 +1058,7 @@ public class TabSwitcherLayoutTest {
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);
         // Create a tab group.
-        mergeNormalTabsToAGroupWithDialog(cta, 2);
+        mergeNormalTabsToGroupWithDialog(cta, 2);
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
@@ -1078,7 +1079,7 @@ public class TabSwitcherLayoutTest {
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);
         // Create a tab group.
-        mergeNormalTabsToAGroupWithDialog(cta, 2);
+        mergeNormalTabsToGroupWithDialog(cta, 2);
 
         // Expect that the the dialog is dismissed via another action.
         HistogramWatcher watcher =
@@ -1104,7 +1105,7 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 2);
 
         // Create a tab group.
-        mergeNormalTabsToAGroupWithDialog(cta, 2);
+        mergeNormalTabsToGroupWithDialog(cta, 2);
         // Verify the visual data dialog exists.
         verifyModalDialogShowingAnimationCompleteInTabSwitcher();
         onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
@@ -1152,7 +1153,7 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 2);
 
         // Create a tab group.
-        mergeNormalTabsToAGroupWithDialog(cta, 2);
+        mergeNormalTabsToGroupWithDialog(cta, 2);
         // Verify the visual data dialog exists.
         verifyModalDialogShowingAnimationCompleteInTabSwitcher();
         onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
@@ -1187,7 +1188,7 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 2);
 
         // Create a tab group.
-        mergeNormalTabsToAGroupWithDialog(cta, 2);
+        mergeNormalTabsToGroupWithDialog(cta, 2);
         // Verify the visual data dialog exists.
         verifyModalDialogShowingAnimationCompleteInTabSwitcher();
         onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
@@ -1226,7 +1227,7 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 2);
 
         // Create a tab group.
-        mergeNormalTabsToAGroupWithDialog(cta, 2);
+        mergeNormalTabsToGroupWithDialog(cta, 2);
         // Verify the visual data dialog exists.
         verifyModalDialogShowingAnimationCompleteInTabSwitcher();
         onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
@@ -1256,7 +1257,7 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 2);
 
         // Create a tab group.
-        mergeNormalTabsToAGroupWithDialog(cta, 2);
+        mergeNormalTabsToGroupWithDialog(cta, 2);
         // Verify the visual data dialog exists.
         verifyModalDialogShowingAnimationCompleteInTabSwitcher();
         onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
@@ -1863,7 +1864,7 @@ public class TabSwitcherLayoutTest {
                 withId(R.id.tab_list_recycler_view));
     }
 
-    private void mergeNormalTabsToAGroupWithDialog(ChromeTabbedActivity cta, int tabCount) {
+    private void mergeNormalTabsToGroupWithDialog(ChromeTabbedActivity cta, int tabCount) {
         TabListEditorTestingRobot robot = new TabListEditorTestingRobot();
         enterTabListEditor(cta);
         robot.resultRobot.verifyTabListEditorIsVisible();

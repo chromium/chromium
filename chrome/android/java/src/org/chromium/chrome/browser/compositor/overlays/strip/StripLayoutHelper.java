@@ -2436,7 +2436,8 @@ public class StripLayoutHelper
                         // title does not unexpectedly reappear. This is because the tab closure
                         // animation doesn't actually remove the tab from the model (and therefore
                         // delete the tab group), until after the animation finishes.
-                        mTabGroupModelFilter.moveTabOutOfGroup(tab.getTabId());
+                        mTabGroupModelFilter.moveTabOutOfGroupInDirection(
+                                tab.getTabId(), /* trailing= */ true);
 
                         // Clear the hidden group ID now. This will prevent a rebuild from occurring
                         // right after we kick off the closure, clobbering the close animation.

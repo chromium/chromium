@@ -238,7 +238,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         verify(mActionConfirmationManager)
                 .processUngroupAttempt(mConfirmationResultCaptor.capture());
         mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.CONFIRMATION_POSITIVE);
-        verify(mTabGroupModelFilter).moveTabOutOfGroup(mTabId);
+        verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(mTabId, /* trailing= */ true);
     }
 
     @Test

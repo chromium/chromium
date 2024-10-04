@@ -127,7 +127,7 @@ public class TabUiUtils {
 
         if (isIncognito || !isSyncEnabled || actionConfirmationManager == null) {
             for (Tab tab : tabs) {
-                filter.moveTabOutOfGroup(tab.getId());
+                filter.moveTabOutOfGroupInDirection(tab.getId(), /* trailing= */ true);
             }
         } else {
             // Present a confirmation dialog to the user before ungrouping the tab group.
@@ -144,7 +144,8 @@ public class TabUiUtils {
                                                                     && filter.isTabInTabGroup(tab))
                                             .collect(Collectors.toList());
                             for (Tab tab : tabsToUngroup) {
-                                filter.moveTabOutOfGroup(tab.getId());
+                                filter.moveTabOutOfGroupInDirection(
+                                        tab.getId(), /* trailing= */ true);
                             }
                         }
                     };

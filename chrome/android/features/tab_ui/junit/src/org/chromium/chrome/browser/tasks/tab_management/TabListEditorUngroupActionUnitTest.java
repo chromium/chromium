@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -147,7 +148,7 @@ public class TabListEditorUngroupActionUnitTest {
                 .processUngroupTabAttempt(any(), mConfirmationResultCaptor.capture());
         mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.CONFIRMATION_POSITIVE);
         for (int id : tabIds) {
-            verify(mGroupFilter).moveTabOutOfGroup(id);
+            verify(mGroupFilter).moveTabOutOfGroupInDirection(id, /* trailing= */ true);
         }
         verify(mDelegate).hideByAction();
 
@@ -159,7 +160,7 @@ public class TabListEditorUngroupActionUnitTest {
                 .processUngroupTabAttempt(any(), mConfirmationResultCaptor.capture());
         mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.CONFIRMATION_POSITIVE);
         for (int id : tabIds) {
-            verify(mGroupFilter, times(2)).moveTabOutOfGroup(id);
+            verify(mGroupFilter, times(2)).moveTabOutOfGroupInDirection(id, /* trailing= */ true);
         }
         verify(mDelegate, times(2)).hideByAction();
         Assert.assertEquals(1, helper.getCallCount());
@@ -181,7 +182,7 @@ public class TabListEditorUngroupActionUnitTest {
         mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.IMMEDIATE_CONTINUE);
 
         for (int id : tabIds) {
-            verify(mGroupFilter).moveTabOutOfGroup(id);
+            verify(mGroupFilter).moveTabOutOfGroupInDirection(id, /* trailing= */ true);
         }
     }
 
@@ -200,7 +201,7 @@ public class TabListEditorUngroupActionUnitTest {
                 .processUngroupTabAttempt(any(), mConfirmationResultCaptor.capture());
         mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.CONFIRMATION_NEGATIVE);
 
-        verify(mGroupFilter, never()).moveTabOutOfGroup(anyInt());
+        verify(mGroupFilter, never()).moveTabOutOfGroupInDirection(anyInt(), anyBoolean());
     }
 
     @Test
@@ -218,7 +219,7 @@ public class TabListEditorUngroupActionUnitTest {
         verify(mActionConfirmationManager, never()).processUngroupTabAttempt(any(), any());
 
         for (Tab tab : tabsToRemove) {
-            verify(mGroupFilter).moveTabOutOfGroup(tab.getId());
+            verify(mGroupFilter).moveTabOutOfGroupInDirection(tab.getId(), /* trailing= */ true);
         }
     }
 }

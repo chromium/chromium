@@ -419,13 +419,14 @@ public class TabModelSelectorImplTest {
         for (TabObserver observer : tab0.getObservers()) {
             observer.onActivityAttachmentChanged(tab0, /* window= */ null);
         }
-        verify(mRegularFilter, never()).moveTabOutOfGroup(tab0.getId());
+        verify(mRegularFilter, never())
+                .moveTabOutOfGroupInDirection(tab0.getId(), /* trailing= */ true);
 
         when(mRegularFilter.isTabInTabGroup(tab1)).thenReturn(true);
         for (TabObserver observer : tab1.getObservers()) {
             observer.onActivityAttachmentChanged(tab1, /* window= */ null);
         }
-        verify(mRegularFilter).moveTabOutOfGroup(tab1.getId());
+        verify(mRegularFilter).moveTabOutOfGroupInDirection(tab1.getId(), /* trailing= */ true);
     }
 
     @Test
