@@ -169,6 +169,10 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   void ExecuteFallbackForAddressesCommand(
       ContentAutofillDriver& autofill_driver);
 
+  // Marks the last added menu item as a new feature, depending on the response
+  // from the `UserEducationService`.
+  void MaybeMarkLastItemAsNewFeature(const base::Feature& feature);
+
   // Gets the `AutofillField` described by the `params_` from the
   // `autofill_driver`'s manager.
   AutofillField* GetAutofillField(AutofillDriver& autofill_driver) const;
