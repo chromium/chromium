@@ -83,10 +83,14 @@ BASE_FEATURE(kWebAuthnEnclaveAuthenticator,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-// Not yet enabled by default.
+// Enabled in M130 % ChromeOs.
 const base::FeatureParam<bool> kWebAuthnGpmPin{
     &kWebAuthnEnclaveAuthenticator, kWebAuthnGpmPinFeatureParameterName,
+#if BUILDFLAG(IS_CHROMEOS)
     /*default_value=*/false};
+#else
+    /*default_value=*/true};
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Enabled by default in M128. Remove in or after M131.
 BASE_FEATURE(kWebAuthnPasskeysReset,
