@@ -242,32 +242,25 @@ void FragmentBuilder::PropagateFromLayoutResult(
       child_result.HasOrthogonalFallbackSizeDescendant();
 }
 
-ScrollStartTargetCandidates& FragmentBuilder::EnsureScrollStartTargets() {
-  if (!scroll_start_targets_) {
-    scroll_start_targets_ = MakeGarbageCollected<ScrollStartTargetCandidates>();
+void FragmentBuilder::UpdateScrollStartTarget(const LayoutObject* new_target) {
+  if (new_target != scroll_start_target_ &&
+      (!scroll_start_target_ ||
+       new_target->IsBeforeInPreOrder(*scroll_start_target_))) {
+    scroll_start_target_ = new_target;
   }
-  return *scroll_start_targets_;
 }
 
 void FragmentBuilder::PropagateScrollStartTarget(
     const PhysicalFragment& child) {
-  auto UpdateScrollStartTarget = [](Member<const LayoutBox>& old_target,
-                                    const LayoutBox* new_target) {
-    if (new_target &&
-        (!old_target || old_target->IsBeforeInPreOrder(*new_target))) {
-      old_target = new_target;
-    }
-  };
-  const auto* child_box = DynamicTo<LayoutBox>(child.GetLayoutObject());
   if (child.Style().ScrollStartTarget() != EScrollStartTarget::kNone) {
-    UpdateScrollStartTarget(EnsureScrollStartTargets().y, child_box);
-    UpdateScrollStartTarget(EnsureScrollStartTargets().x, child_box);
+    if (auto* child_object = child.GetMutableLayoutObject()) {
+      UpdateScrollStartTarget(child_object);
+    }
   }
 
-  // Prefer deeper scroll-start-targets.
-  if (const auto* targets = child.PropagatedScrollStartTargets()) {
-    UpdateScrollStartTarget(EnsureScrollStartTargets().y, targets->y);
-    UpdateScrollStartTarget(EnsureScrollStartTargets().x, targets->x);
+  if (const Member<const LayoutObject> target =
+          child.PropagatedScrollStartTarget()) {
+    UpdateScrollStartTarget(target);
   }
 }
 

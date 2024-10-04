@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/physical_fragment_link.h"
 #include "third_party/blink/renderer/core/layout/style_variant.h"
-#include "third_party/blink/renderer/core/scroll/scroll_start_targets.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 
@@ -118,18 +117,18 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
     PropagatedData(
         const HeapVector<Member<LayoutBoxModelObject>>* sticky_descendants,
         const HeapVector<Member<LayoutBox>>* snap_areas,
-        const ScrollStartTargetCandidates* scroll_start_targets)
+        const Member<const LayoutObject> scroll_start_target)
         : sticky_descendants(sticky_descendants),
           snap_areas(snap_areas),
-          scroll_start_targets(scroll_start_targets) {}
+          scroll_start_target(scroll_start_target) {}
     void Trace(Visitor* visitor) const {
       visitor->Trace(sticky_descendants);
       visitor->Trace(snap_areas);
-      visitor->Trace(scroll_start_targets);
+      visitor->Trace(scroll_start_target);
     }
     Member<const HeapVector<Member<LayoutBoxModelObject>>> sticky_descendants;
     Member<const HeapVector<Member<LayoutBox>>> snap_areas;
-    Member<const ScrollStartTargetCandidates> scroll_start_targets;
+    Member<const LayoutObject> scroll_start_target;
   };
 
   PhysicalFragment(FragmentBuilder* builder,
@@ -665,12 +664,11 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
     return IsScrollContainer() ? nullptr : StickyDescendants();
   }
 
-  const ScrollStartTargetCandidates* ScrollStartTargets() const {
-    return propagated_data_ ? propagated_data_->scroll_start_targets.Get()
-                            : nullptr;
+  const Member<const LayoutObject> ScrollStartTarget() const {
+    return propagated_data_ ? propagated_data_->scroll_start_target : nullptr;
   }
-  const ScrollStartTargetCandidates* PropagatedScrollStartTargets() const {
-    return IsScrollContainer() ? nullptr : ScrollStartTargets();
+  const Member<const LayoutObject> PropagatedScrollStartTarget() const {
+    return IsScrollContainer() ? nullptr : ScrollStartTarget();
   }
 
   const HeapVector<Member<LayoutBox>>* SnapAreas() const {
@@ -681,7 +679,7 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   }
 
   bool HasPropagatedLayoutObjects() const {
-    return PropagatedStickyDescendants() || PropagatedScrollStartTargets() ||
+    return PropagatedStickyDescendants() || PropagatedScrollStartTarget() ||
            PropagatedSnapAreas();
   }
 

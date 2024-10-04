@@ -411,11 +411,11 @@ PhysicalFragment::PhysicalFragment(FragmentBuilder* builder,
       has_out_of_flow_in_fragmentainer_subtree_(
           builder->HasOutOfFlowInFragmentainerSubtree()),
       propagated_data_((builder->sticky_descendants_ || builder->snap_areas_ ||
-                        builder->scroll_start_targets_)
+                        builder->scroll_start_target_)
                            ? MakeGarbageCollected<PropagatedData>(
                                  builder->sticky_descendants_,
                                  builder->snap_areas_,
-                                 builder->scroll_start_targets_)
+                                 builder->scroll_start_target_)
                            : nullptr),
       break_token_(std::move(builder->break_token_)),
       oof_data_(builder->oof_positioned_descendants_.empty() &&

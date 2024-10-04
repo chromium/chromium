@@ -63,7 +63,6 @@
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
-#include "third_party/blink/renderer/core/scroll/scroll_start_targets.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
@@ -487,97 +486,74 @@ bool ScrollableArea::ScrollStartIsDefault() const {
          GetLayoutBox()->Style()->ScrollStartY() == ScrollStartData();
 }
 
-const ScrollStartTargetCandidates* ScrollableArea::GetScrollStartTargets()
-    const {
+const LayoutObject* ScrollableArea::GetScrollStartTarget() const {
   for (const auto& fragment : GetLayoutBox()->PhysicalFragments()) {
-    if (auto* scroll_start_targets = fragment.ScrollStartTargets()) {
-      return scroll_start_targets;
+    if (auto scroll_start_target = fragment.ScrollStartTarget()) {
+      return scroll_start_target;
     }
   }
   return nullptr;
 }
 
 void ScrollableArea::ScrollToScrollStartTarget(
-    const LayoutBox* scroll_start_target,
-    cc::SnapAxis axis) {
+    const LayoutObject* scroll_start_target) {
   using Behavior = mojom::ScrollAlignment_Behavior;
   mojom::blink::ScrollAlignment align_x(
       Behavior::kNoScroll, Behavior::kNoScroll, Behavior::kNoScroll);
   mojom::blink::ScrollAlignment align_y(
       Behavior::kNoScroll, Behavior::kNoScroll, Behavior::kNoScroll);
+  const LayoutBox* target_box = scroll_start_target->EnclosingBox();
+  if (!target_box) {
+    return;
+  }
   cc::ScrollSnapAlign snap_alignment =
       scroll_start_target->Style()->GetScrollSnapAlign();
-  if (axis == cc::SnapAxis::kY || axis == cc::SnapAxis::kBoth) {
-    switch (snap_alignment.alignment_block) {
-      case cc::SnapAlignment::kStart:
-        align_y = ScrollAlignment::TopAlways();
-        break;
-      case cc::SnapAlignment::kCenter:
-        align_y = ScrollAlignment::CenterAlways();
-        break;
-      case cc::SnapAlignment::kEnd:
-        align_y = ScrollAlignment::BottomAlways();
-        break;
-      default:
-        align_y = GetLayoutBox()->HasTopOverflow()
-                      ? ScrollAlignment::BottomAlways()
-                      : ScrollAlignment::TopAlways();
-    }
+  switch (snap_alignment.alignment_block) {
+    case cc::SnapAlignment::kStart:
+      align_y = ScrollAlignment::TopAlways();
+      break;
+    case cc::SnapAlignment::kCenter:
+      align_y = ScrollAlignment::CenterAlways();
+      break;
+    case cc::SnapAlignment::kEnd:
+      align_y = ScrollAlignment::BottomAlways();
+      break;
+    default:
+      align_y = GetLayoutBox()->HasTopOverflow()
+                    ? ScrollAlignment::BottomAlways()
+                    : ScrollAlignment::TopAlways();
   }
-  if (axis == cc::SnapAxis::kX || axis == cc::SnapAxis::kBoth) {
-    switch (snap_alignment.alignment_inline) {
-      case cc::SnapAlignment::kStart:
-        align_x = ScrollAlignment::LeftAlways();
-        break;
-      case cc::SnapAlignment::kCenter:
-        align_x = ScrollAlignment::CenterAlways();
-        break;
-      case cc::SnapAlignment::kEnd:
-        align_x = ScrollAlignment::RightAlways();
-        break;
-      default:
-        align_x = GetLayoutBox()->HasLeftOverflow()
-                      ? ScrollAlignment::RightAlways()
-                      : ScrollAlignment::LeftAlways();
-    }
+  switch (snap_alignment.alignment_inline) {
+    case cc::SnapAlignment::kStart:
+      align_x = ScrollAlignment::LeftAlways();
+      break;
+    case cc::SnapAlignment::kCenter:
+      align_x = ScrollAlignment::CenterAlways();
+      break;
+    case cc::SnapAlignment::kEnd:
+      align_x = ScrollAlignment::RightAlways();
+      break;
+    default:
+      align_x = GetLayoutBox()->HasLeftOverflow()
+                    ? ScrollAlignment::RightAlways()
+                    : ScrollAlignment::LeftAlways();
   }
   mojom::blink::ScrollIntoViewParamsPtr params =
       scroll_into_view_util::CreateScrollIntoViewParams(align_x, align_y);
   params->behavior = mojom::blink::ScrollBehavior::kInstant;
   params->type = mojom::blink::ScrollType::kScrollStart;
-  ScrollIntoView(
-      scroll_start_target->AbsoluteBoundingBoxRectForScrollIntoView(),
-      PhysicalBoxStrut(), params);
-}
-
-void ScrollableArea::ScrollToScrollStartTargets(
-    const ScrollStartTargetCandidates* targets) {
-  const LayoutBox* scroll_start_target_y = targets->y;
-  const LayoutBox* scroll_start_target_x = targets->x;
-  if (!scroll_start_target_y && !scroll_start_target_x) {
-    return;
-  }
-
-  if (scroll_start_target_y == scroll_start_target_x) {
-    ScrollToScrollStartTarget(scroll_start_target_y, cc::SnapAxis::kBoth);
-  } else {
-    if (scroll_start_target_y) {
-      ScrollToScrollStartTarget(scroll_start_target_y, cc::SnapAxis::kY);
-    }
-    if (scroll_start_target_x) {
-      ScrollToScrollStartTarget(scroll_start_target_x, cc::SnapAxis::kX);
-    }
-  }
+  ScrollIntoView(target_box->AbsoluteBoundingBoxRectForScrollIntoView(),
+                 PhysicalBoxStrut(), params);
 }
 
 void ScrollableArea::ApplyScrollStart() {
   if (RuntimeEnabledFeatures::CSSScrollStartTargetEnabled()) {
-    if (const auto* scroll_start_targets = GetScrollStartTargets()) {
+    if (const LayoutObject* scroll_start_target = GetScrollStartTarget()) {
       if (auto* box = GetLayoutBox()) {
         UseCounter::Count(box->GetDocument(),
                           WebFeature::kCSSScrollStartTarget);
       }
-      ScrollToScrollStartTargets(scroll_start_targets);
+      ScrollToScrollStartTarget(scroll_start_target);
       // scroll-start-target takes precedence over scroll-start, so we should
       // return here.
       return;

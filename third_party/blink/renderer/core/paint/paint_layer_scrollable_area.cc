@@ -1138,7 +1138,7 @@ bool PaintLayerScrollableArea::IsApplyingScrollStart() const {
       return false;
     }
     if (RuntimeEnabledFeatures::CSSScrollStartTargetEnabled() &&
-        GetScrollStartTargets()) {
+        GetScrollStartTarget()) {
       return true;
     }
     return RuntimeEnabledFeatures::CSSScrollStartEnabled() &&
