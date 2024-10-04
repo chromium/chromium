@@ -145,7 +145,7 @@ TEST_F(PasskeyUtilTest, CreationSucceeds) {
 
     ASPasskeyRegistrationCredential* passkeyRegistrationCredential =
         PerformPasskeyCreation(clientDataHash, credential.rpId,
-                               credential.username, credential.userId,
+                               credential.username, credential.userId, nil,
                                SecurityDomainSecret());
 
     ASSERT_NSEQ(clientDataHash, passkeyRegistrationCredential.clientDataHash);

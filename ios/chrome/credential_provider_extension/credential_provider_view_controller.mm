@@ -519,7 +519,7 @@ UIColor* BackgroundColor() {
     API_AVAILABLE(ios(17.0)) {
   ASPasskeyRegistrationCredential* passkeyRegistrationCredential =
       PerformPasskeyCreation(clientDataHash, relyingPartyIdentifier, username,
-                             userHandle, securityDomainSecret);
+                             userHandle, [self gaia], securityDomainSecret);
   if (passkeyRegistrationCredential) {
     [self completeRegistrationRequestWithSelectedPasskeyCredential:
               passkeyRegistrationCredential];

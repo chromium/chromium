@@ -17,6 +17,7 @@ ASPasskeyRegistrationCredential* PerformPasskeyCreation(
     NSString* rp_id,
     NSString* user_name,
     NSData* user_handle,
+    NSString* gaia,
     NSData* security_domain_secret) API_AVAILABLE(ios(17.0));
 
 // On a success, returns a valid passkey assertion structure.

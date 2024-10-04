@@ -11,7 +11,10 @@
 #import "base/time/time.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
-#import "ios/chrome/common/credential_provider/credential.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/credential_provider/archivable_credential+passkey.h"
+#import "ios/chrome/common/credential_provider/constants.h"
+#import "ios/chrome/common/credential_provider/user_defaults_credential_store.h"
 
 using base::SysNSStringToUTF8;
 
@@ -86,6 +89,24 @@ NSData* GenerateSignature(NSData* encrypted_private_key,
   return [NSData dataWithBytes:signature->data() length:signature->size()];
 }
 
+// Saves a newly created passkey to the user defaults credential store. This
+// credential store will be read by Chrome if it is currently running, or the
+// next time it runs, to sync the newly created passkeys in the user's account.
+void SaveCredential(id<Credential> credential) {
+  NSString* key = AppGroupUserDefaultsCredentialProviderNewCredentials();
+  UserDefaultsCredentialStore* store = [[UserDefaultsCredentialStore alloc]
+      initWithUserDefaults:app_group::GetGroupUserDefaults()
+                       key:key];
+
+  if ([store credentialWithRecordIdentifier:credential.recordIdentifier]) {
+    [store updateCredential:credential];
+  } else {
+    [store addCredential:credential];
+  }
+
+  [store saveDataWithCompletion:nil];
+}
+
 }  // namespace
 
 ASPasskeyRegistrationCredential* PerformPasskeyCreation(
@@ -93,6 +114,7 @@ ASPasskeyRegistrationCredential* PerformPasskeyCreation(
     NSString* rp_id,
     NSString* user_name,
     NSData* user_handle,
+    NSString* gaia,
     NSData* security_domain_secret) API_AVAILABLE(ios(17.0)) {
   if (!security_domain_secret) {
     return nil;
@@ -119,8 +141,9 @@ ASPasskeyRegistrationCredential* PerformPasskeyCreation(
   sync_pb::WebauthnCredentialSpecifics passkey = generated_passkey.first;
   std::vector<uint8_t> public_key_spki_der = generated_passkey.second;
 
-  // TODO(crbug.com/330355124): Save the new credential to a store so that it
-  //                            can be synced.
+  SaveCredential([[ArchivableCredential alloc] initWithFavicon:nil
+                                                          gaia:gaia
+                                                       passkey:passkey]);
 
   base::span<const uint8_t> cred_id =
       base::as_byte_span(passkey.credential_id());
