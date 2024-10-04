@@ -45,6 +45,7 @@ constexpr char kTestSuggestSignals[] = "encoded_image_signals";
 
 // The fake server session id.
 constexpr char kTestServerSessionId[] = "server_session_id";
+constexpr char kTestServerSessionId2[] = "server_session_id2";
 
 // The fake search session id.
 constexpr char kTestSearchSessionId[] = "search_session_id";
@@ -401,6 +402,59 @@ TEST_F(LensOverlayQueryControllerTest,
   task_environment_.RunUntilIdle();
   query_controller.EndQuery();
   ASSERT_TRUE(full_image_response_future.IsReady());
+
+  // Check the server session id is attached to the fetch url.
+  std::string session_id_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(query_controller.sent_fetch_url_,
+                                         kSessionIdQueryParameterKey,
+                                         &session_id_value));
+  ASSERT_EQ(session_id_value, kTestServerSessionId);
+}
+
+// Tests that the query controller attaches the server session id from the
+// cluster info response to the interaction request, even if the full image
+// request included a different server session id.
+TEST_F(LensOverlayQueryControllerTest,
+       FetchInteraction_UsesClusterInfoResponse) {
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
+      url_response_future;
+  base::test::TestFuture<lens::proto::LensOverlaySuggestInputs>
+      interaction_data_response_future;
+  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  LensOverlayQueryControllerMock query_controller(
+      full_image_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(),
+      interaction_data_response_future.GetRepeatingCallback(),
+      thumbnail_created_future.GetRepeatingCallback(),
+      fake_variations_client_.get(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false, GetGen204Controller());
+  query_controller.fake_objects_response_.mutable_cluster_info()
+      ->set_server_session_id(kTestServerSessionId2);
+  query_controller.fake_interaction_response_.set_encoded_response(
+      kTestSuggestSignals);
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  std::map<std::string, std::string> additional_search_query_params;
+  query_controller.StartQueryFlow(
+      bitmap, std::make_optional<GURL>(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
+      /*underlying_content_bytes=*/{}, /*underlying_content_type=*/"", 0);
+  task_environment_.RunUntilIdle();
+
+  auto region = lens::mojom::CenterRotatedBox::New();
+  region->box = gfx::RectF(30, 40, 50, 60);
+  region->coordinate_type =
+      lens::mojom::CenterRotatedBox_CoordinateType::kImage;
+  query_controller.SendRegionSearch(std::move(region), lens::REGION_SEARCH,
+                                    additional_search_query_params,
+                                    std::nullopt);
+  task_environment_.RunUntilIdle();
+  query_controller.EndQuery();
 
   // Check the server session id is attached to the fetch url.
   std::string session_id_value;

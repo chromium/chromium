@@ -714,8 +714,10 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
   SendLatencyGen204IfEnabled(elapsed_time.InMilliseconds(),
                              translate_options_.has_value());
 
-  cluster_info_ = std::make_optional<lens::LensOverlayClusterInfo>();
-  cluster_info_->CopyFrom(server_response.objects_response().cluster_info());
+  if (!cluster_info_.has_value()) {
+    cluster_info_ = std::make_optional<lens::LensOverlayClusterInfo>();
+    cluster_info_->CopyFrom(server_response.objects_response().cluster_info());
+  }
 
   // Clear the cluster info after its lifetime expires.
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
