@@ -257,39 +257,6 @@ void FlipSkPixmapInPlace(SkPixmap& pm, bool horizontal) {
   }
 }
 
-static inline bool ShouldAvoidPremul(
-    const ImageBitmap::ParsedOptions& options) {
-  return options.source_is_unpremul && !options.premultiply_alpha;
-}
-
-std::unique_ptr<CanvasResourceProvider> CreateProvider(
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
-    const SkImageInfo& info,
-    const scoped_refptr<StaticBitmapImage>& source_image,
-    bool fallback_to_software) {
-  constexpr auto kFilterQuality = cc::PaintFlags::FilterQuality::kLow;
-  constexpr auto kShouldInitialize =
-      CanvasResourceProvider::ShouldInitialize::kNo;
-  if (context_provider) {
-    const gpu::SharedImageUsageSet usage_flags =
-        context_provider->ContextProvider()
-            ->SharedImageInterface()
-            ->UsageForMailbox(source_image->GetMailboxHolder().mailbox);
-    auto resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
-        info, kFilterQuality, kShouldInitialize, context_provider,
-        RasterMode::kGPU, usage_flags);
-    if (resource_provider) {
-      return resource_provider;
-    }
-    if (!fallback_to_software) {
-      return nullptr;
-    }
-  }
-
-  return CanvasResourceProvider::CreateBitmapProvider(info, kFilterQuality,
-                                                      kShouldInitialize);
-}
-
 // Perform the requested transformations on the CPU.
 scoped_refptr<StaticBitmapImage> ApplyTransformsFromOptionsSoftware(
     scoped_refptr<StaticBitmapImage> source,
@@ -317,7 +284,8 @@ scoped_refptr<StaticBitmapImage> ApplyTransformsFromOptionsSoftware(
       }
     }
     const auto bm_info = source_info.makeDimensions(source_rect.size())
-                             .makeAlphaType(bm_alpha_type);
+                             .makeAlphaType(bm_alpha_type)
+                             .makeColorType(kN32_SkColorType);
     if (!bm.tryAllocPixels(bm_info)) {
       return nullptr;
     }
@@ -365,7 +333,6 @@ scoped_refptr<StaticBitmapImage> ApplyTransformsFromOptionsSoftware(
   // Create the resulting SkImage.
   bm.setImmutable();
   auto dest_image = bm.asImage();
-  ;
 
   // Strip the color space if requested.
   if (!options.has_color_space_conversion) {
@@ -405,15 +372,36 @@ scoped_refptr<StaticBitmapImage> ApplyTransformsFromOptionsWithBlit(
   SkISize dest_size;
   options.ComputeSubsetParameters(source_rect, source_rect_valid, dest_size);
 
-  SkImageInfo dst_info = SkImageInfo::Make(dest_size, kN32_SkColorType,
-                                           dst_alpha_type, dst_color_space);
-  auto resource_provider = CreateProvider(
-      paint_image.IsTextureBacked() ? src->ContextProviderWrapper() : nullptr,
-      dst_info, src, true /* fallback_to_software */);
-  if (!resource_provider) {
-    return nullptr;
+  // Create the resource provider for the target for the blit.
+  std::unique_ptr<CanvasResourceProvider> resource_provider;
+  {
+    SkImageInfo dest_info = SkImageInfo::Make(dest_size, kN32_SkColorType,
+                                              dst_alpha_type, dst_color_space);
+    constexpr auto kFilterQuality = cc::PaintFlags::FilterQuality::kLow;
+    constexpr auto kShouldInitialize =
+        CanvasResourceProvider::ShouldInitialize::kNo;
+    // If `src` is accelerated, then use a SharedImage provider.
+    if (paint_image.IsTextureBacked()) {
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider =
+          src->ContextProviderWrapper();
+      if (context_provider) {
+        const gpu::SharedImageUsageSet shared_image_usage_flags =
+            context_provider->ContextProvider()
+                ->SharedImageInterface()
+                ->UsageForMailbox(src->GetMailboxHolder().mailbox);
+        resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
+            dest_info, kFilterQuality, kShouldInitialize, context_provider,
+            RasterMode::kGPU, shared_image_usage_flags);
+      }
+    }
+    // If not (or if the SharedImage provider fails), fall back to software.
+    if (!resource_provider) {
+      resource_provider = CanvasResourceProvider::CreateBitmapProvider(
+          dest_info, kFilterQuality, kShouldInitialize);
+    }
   }
 
+  // Perform the blit and return the drawn resource.
   cc::PaintFlags paint;
   paint.setBlendMode(SkBlendMode::kSrc);
   cc::PaintCanvas& canvas = resource_provider->Canvas();
@@ -431,205 +419,6 @@ scoped_refptr<StaticBitmapImage> ApplyTransformsFromOptionsWithBlit(
                        SkCanvas::kStrict_SrcRectConstraint);
   return resource_provider->Snapshot(FlushReason::kCreateImageBitmap,
                                      options.source_orientation);
-}
-
-scoped_refptr<StaticBitmapImage> FlipImageVertically(
-    scoped_refptr<StaticBitmapImage> input,
-    const ImageBitmap::ParsedOptions& parsed_options) {
-  SkImageInfo info = GetSkImageInfo(input);
-  if (info.isEmpty())
-    return nullptr;
-
-  PaintImage paint_image = input->PaintImageForCurrentFrame();
-
-  if (ShouldAvoidPremul(parsed_options)) {
-    // Unpremul code path results in a GPU readback if |input| is texture
-    // backed since CopyImageData() uses SkImage::readPixels() to extract the
-    // pixels from SkImage.
-    sk_sp<SkData> image_pixels = TryAllocateSkData(info.computeMinByteSize());
-    if (!image_pixels)
-      return nullptr;
-
-    uint8_t* writable_pixels =
-        static_cast<uint8_t*>(image_pixels->writable_data());
-    size_t image_row_bytes = static_cast<size_t>(info.minRowBytes64());
-    bool read_successful =
-        paint_image.readPixels(info, writable_pixels, image_row_bytes, 0, 0);
-    DCHECK(read_successful);
-
-    // Since rotation is applied after flip, vertical flip becomes horizontal
-    // flips after rotation for oritation 5-8. So we swap pixels left to right
-    // to flip the image horizontally instead.
-    if (input->CurrentFrameOrientation().UsesWidthAsHeight()) {
-      for (int i = 0; i < info.height() - 1; i++) {
-        for (int j = 0; j < info.width() / 2; j++) {
-          size_t first_element = i * image_row_bytes + j * info.bytesPerPixel();
-          size_t last_element =
-              i * image_row_bytes + (j + 1) * info.bytesPerPixel();
-          size_t bottom_element =
-              (i + 1) * image_row_bytes - (j + 1) * info.bytesPerPixel();
-          std::swap_ranges(&writable_pixels[first_element],
-                           &writable_pixels[last_element],
-                           &writable_pixels[bottom_element]);
-        }
-      }
-    } else {
-      for (int i = 0; i < info.height() / 2; i++) {
-        size_t top_first_element = i * image_row_bytes;
-        size_t top_last_element = (i + 1) * image_row_bytes;
-        size_t bottom_first_element = (info.height() - 1 - i) * image_row_bytes;
-        std::swap_ranges(&writable_pixels[top_first_element],
-                         &writable_pixels[top_last_element],
-                         &writable_pixels[bottom_first_element]);
-      }
-    }
-    return StaticBitmapImage::Create(std::move(image_pixels), info,
-                                     input->CurrentFrameOrientation());
-  }
-
-  // Since we are allowed to premul the input image if needed, we can use Skia
-  // to flip the image by drawing it on a surface. If the image is premul, we
-  // can use both accelerated and software surfaces. If the image is unpremul,
-  // we have to use software surfaces.
-  bool use_accelerated =
-      paint_image.IsTextureBacked() && info.alphaType() == kPremul_SkAlphaType;
-  auto resource_provider = CreateProvider(
-      use_accelerated ? input->ContextProviderWrapper() : nullptr, info, input,
-      true /* fallback_to_software */);
-  if (!resource_provider)
-    return nullptr;
-
-  cc::PaintCanvas& canvas = resource_provider->Canvas();
-  // Since rotation is applied after flip, vertical flips becomes horizontal
-  // flips for oritation 5-8. So we flip the images horizontally instead.
-  if (input->CurrentFrameOrientation().UsesWidthAsHeight()) {
-    canvas.scale(-1, 1);
-    canvas.translate(-input->width(), 0);
-  } else {
-    canvas.scale(1, -1);
-    canvas.translate(0, -input->height());
-  }
-  cc::PaintFlags paint;
-  paint.setBlendMode(SkBlendMode::kSrc);
-  canvas.drawImage(input->PaintImageForCurrentFrame(), 0, 0,
-                   SkSamplingOptions(), &paint);
-  return resource_provider->Snapshot(FlushReason::kNon2DCanvas,
-                                     input->CurrentFrameOrientation());
-}
-
-scoped_refptr<StaticBitmapImage> ScaleImage(
-    scoped_refptr<StaticBitmapImage>&& image,
-    const ImageBitmap::ParsedOptions& parsed_options) {
-  auto src_image_info = image->PaintImageForCurrentFrame().GetSkImageInfo();
-  auto image_info = GetSkImageInfo(image).makeWH(parsed_options.resize_width,
-                                                 parsed_options.resize_height);
-
-  // Try to avoid GPU read back by drawing accelerated premul image on an
-  // accelerated surface.
-  if (!ShouldAvoidPremul(parsed_options) && image->IsTextureBacked() &&
-      src_image_info.alphaType() == kPremul_SkAlphaType) {
-    auto resource_provider =
-        CreateProvider(image->ContextProviderWrapper(), image_info, image,
-                       false /* fallback_to_software */);
-    if (resource_provider) {
-      SkSamplingOptions sampling =
-          cc::PaintFlags::FilterQualityToSkSamplingOptions(
-              parsed_options.resize_quality);
-      cc::PaintFlags paint;
-      paint.setBlendMode(SkBlendMode::kSrc);
-      resource_provider->Canvas().drawImageRect(
-          image->PaintImageForCurrentFrame(),
-          SkRect::MakeWH(src_image_info.width(), src_image_info.height()),
-          SkRect::MakeWH(parsed_options.resize_width,
-                         parsed_options.resize_height),
-          sampling, &paint, SkCanvas::kStrict_SrcRectConstraint);
-      return resource_provider->Snapshot(FlushReason::kNon2DCanvas,
-                                         image->CurrentFrameOrientation());
-    }
-  }
-
-  // Avoid sRGB transfer function by setting the color space to nullptr.
-  if (image_info.colorSpace() && image_info.colorSpace()->isSRGB()) {
-    image_info = image_info.makeColorSpace(nullptr);
-  }
-
-  sk_sp<SkData> image_pixels =
-      TryAllocateSkData(image_info.computeMinByteSize());
-  if (!image_pixels) {
-    return nullptr;
-  }
-
-  SkPixmap resized_pixmap(image_info, image_pixels->data(),
-                          image_info.minRowBytes());
-  auto sk_image = image->PaintImageForCurrentFrame().GetSwSkImage();
-  if (!sk_image)
-    return nullptr;
-  sk_image->scalePixels(resized_pixmap,
-                        cc::PaintFlags::FilterQualityToSkSamplingOptions(
-                            parsed_options.resize_quality));
-  // Tag the resized Pixmap with the correct color space.
-  resized_pixmap.setColorSpace(GetSkImageInfo(image).refColorSpace());
-
-  auto resized_sk_image =
-      SkImages::RasterFromData(resized_pixmap.info(), std::move(image_pixels),
-                               resized_pixmap.rowBytes());
-  if (!resized_sk_image)
-    return nullptr;
-  return UnacceleratedStaticBitmapImage::Create(
-      resized_sk_image, image->CurrentFrameOrientation());
-}
-
-scoped_refptr<StaticBitmapImage> BakeOrientation(
-    scoped_refptr<StaticBitmapImage> input,
-    const ImageBitmap::ParsedOptions& options,
-    gfx::Rect src_rect) {
-  SkImageInfo info = GetSkImageInfo(input);
-  if (info.isEmpty()) {
-    return nullptr;
-  }
-
-  PaintImage paint_image = input->PaintImageForCurrentFrame();
-
-  // For the premul code path, rotate and resize the paint image directly.
-  if (ShouldAvoidPremul(options)) {
-    PaintImage new_paint_image = Image::ResizeAndOrientImage(
-        paint_image, input->CurrentFrameOrientation());
-    return StaticBitmapImage::Create(std::move(new_paint_image),
-                                     ImageOrientationEnum::kDefault);
-  }
-
-  bool use_accelerated =
-      paint_image.IsTextureBacked() && info.alphaType() == kPremul_SkAlphaType;
-  auto resource_provider = CreateProvider(
-      use_accelerated ? input->ContextProviderWrapper() : nullptr, info, input,
-      true /* fallback_to_software */);
-  if (!resource_provider) {
-    return nullptr;
-  }
-
-  cc::PaintCanvas& canvas = resource_provider->Canvas();
-  ImageOrientation orientation = input->CurrentFrameOrientation();
-  auto affineTransform =
-      orientation.TransformToDefault(gfx::SizeF(src_rect.size()));
-  canvas.concat(AffineTransformToSkM44(affineTransform));
-
-  gfx::Rect dst_rect = src_rect;
-  // The destination rect will have its width and height already reversed
-  // for the orientation of the image, as it was needed for page layout, so
-  // we need to reverse it back here.
-  if (orientation.UsesWidthAsHeight()) {
-    dst_rect.set_size(gfx::TransposeSize(dst_rect.size()));
-  }
-
-  cc::PaintFlags paint;
-  paint.setBlendMode(SkBlendMode::kSrc);
-  canvas.drawImageRect(
-      std::move(paint_image), gfx::RectFToSkRect(gfx::RectF(src_rect)),
-      gfx::RectFToSkRect(gfx::RectF(dst_rect)), SkSamplingOptions(), &paint,
-      WebCoreClampingModeToSkiaRectConstraint(
-          Image::kDoNotClampImageToSourceRect));
-  return resource_provider->Snapshot(FlushReason::kNon2DCanvas,
-                                     input->CurrentFrameOrientation());
 }
 
 // Apply the transformations indicated in `options` on `source`, and return the
@@ -915,75 +704,18 @@ ImageBitmap::ImageBitmap(ImageData* data,
   if (DstBufferSizeHasOverflow(parsed_options))
     return;
 
-  const gfx::Rect& src_rect = parsed_options.crop_rect;
-  const gfx::Rect data_src_rect(data->Size());
-  const gfx::Rect intersect_rect =
-      crop_rect ? IntersectRects(src_rect, data_src_rect) : data_src_rect;
+  // Create a StaticBitmapImage that directly references the ImageData pixels.
+  SkPixmap pm = data->GetSkPixmap();
+  auto sk_data = SkData::MakeWithoutCopy(pm.addr(), pm.computeByteSize());
+  auto image = StaticBitmapImage::Create(sk_data, pm.info(),
+                                         ImageOrientationEnum::kOriginTopLeft);
 
-  // If cropRect doesn't intersect the source image, return a transparent black
-  // image.
-  if (intersect_rect.IsEmpty()) {
-    image_ = MakeBlankImage(parsed_options);
-    return;
-  }
-
-  // Copy / color convert the pixels
-  SkImageInfo info = SkImageInfo::Make(
-      src_rect.width(), src_rect.height(), kN32_SkColorType,
-      parsed_options.premultiply_alpha ? kPremul_SkAlphaType
-                                       : kUnpremul_SkAlphaType,
-      SkColorSpace::MakeSRGB());
-  size_t image_pixels_size = info.computeMinByteSize();
-  if (SkImageInfo::ByteSizeOverflowed(image_pixels_size))
-    return;
-  sk_sp<SkData> image_pixels = TryAllocateSkData(image_pixels_size);
-  if (!image_pixels)
-    return;
-  if (!data->GetSkPixmap().readPixels(info, image_pixels->writable_data(),
-                                      info.minRowBytes(), src_rect.x(),
-                                      src_rect.y())) {
-    return;
-  }
-
-  // Create Image object
-  image_ = StaticBitmapImage::Create(std::move(image_pixels), info);
+  // Force a copy of the data during the transformation (so that we do not
+  // reference ImageData's mutable data).
+  image_ =
+      ApplyTransformsFromOptions(image, parsed_options, /*force_copy=*/true);
   if (!image_)
     return;
-
-  // down-scaling has higher priority than other tasks, up-scaling has lower.
-  bool down_scaling = parsed_options.should_scale_input &&
-                      (static_cast<uint64_t>(parsed_options.resize_width) *
-                           parsed_options.resize_height <
-                       image_->Size().Area64());
-  bool up_scaling = parsed_options.should_scale_input && !down_scaling;
-
-  // resize if down-scaling
-  if (down_scaling)
-    image_ = ScaleImage(std::move(image_), parsed_options);
-  if (!image_)
-    return;
-
-  // flip if needed
-  if (parsed_options.flip_y) {
-    if (!image_)
-      return;
-
-    image_ = FlipImageVertically(std::move(image_), parsed_options);
-  }
-
-  // apply the orientation from EXIF metadata if needed.
-  if (!parsed_options.orientation_from_image &&
-      image_->CurrentFrameOrientation() !=
-          ImageOrientationEnum::kOriginTopLeft) {
-    if (!image_) {
-      return;
-    }
-    image_ = BakeOrientation(std::move(image_), parsed_options, intersect_rect);
-  }
-
-  // resize if up-scaling
-  if (up_scaling)
-    image_ = ScaleImage(std::move(image_), parsed_options);
 
   UpdateImageBitmapMemoryUsage();
 }
