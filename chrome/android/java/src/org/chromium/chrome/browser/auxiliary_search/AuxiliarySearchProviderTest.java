@@ -179,7 +179,7 @@ public class AuxiliarySearchProviderTest {
         ArrayList<Tab> tabList = new ArrayList<>();
         long now = System.currentTimeMillis();
         // Create 200 tabs with different timestamps(from 0 to 199), and only the newest 100 tabs
-        // should be returned from 'getTabsSearchableDataProtoAsync'.
+        // should be returned from 'getTabsSearchableDataProtoWithFaviconAsync'.
         for (int i = 0; i < 200; i++) {
             MockTab tab = mMockNormalTabModel.addTab(i);
             tab.setGurlOverrideForTesting(new GURL(TAB_URL + Integer.toString(i)));

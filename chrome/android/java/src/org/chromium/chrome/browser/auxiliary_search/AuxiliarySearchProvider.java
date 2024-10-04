@@ -102,7 +102,7 @@ public class AuxiliarySearchProvider {
      */
     public void getTabsSearchableDataProtoWithFaviconAsync(
             @NonNull Callback<AuxiliarySearchTabGroup> callback,
-            @NonNull FaviconImageFetchedCallback faviconImageFetchedCallback) {
+            @Nullable FaviconImageFetchedCallback faviconImageFetchedCallback) {
         long minAccessTime = System.currentTimeMillis() - mTabMaxAgeMillis;
         List<Tab> listTab = getTabsByMinimalAccessTime(minAccessTime);
 
