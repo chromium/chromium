@@ -144,21 +144,29 @@ if (!bar) {
 }
 ```
 
-## More cautious CHECK() rollouts and DCHECK() upgrades
+## More cautious CHECK() / NOTREACHED() rollouts and DCHECK() upgrades
 
 If you're not confident that an unexpected situation can't happen in practice,
 an additional `base::NotFatalUntil::M120` argument after the condition may be
 used to gather non-fatal diagnostics before turning fatal in a future milestone.
-Make sure to either prioritize these invariant failures once discovered, and
-punt the milestone where this invocation turns fatal to avoid rolling out a
-stability risk. Macros with a `base::NotFatalUntil` argument will provide
-non-fatal crash reports before the fatal milestone is hit. They preserve and upload logged arguments that are uploaded along the report which is useful
-for debugging failures as well.
+`CHECK()` and `NOTREACHED()` with a `base::NotFatalUntil` argument will provide
+non-fatal crash reports before the fatal milestone is hit. They preserve and
+upload logged arguments which is useful for debugging failures during rollout as
+well.
 
-This extra argument can be used to more cautiously add or upgrade to `CHECK()`s.
-This is appropriate when we're uncertain of whether the invariant currently
-holds true or when there's low pre-stable coverage. Specifically consider using
-these:
+Since these variants are non-fatal and do not terminate make best-effort
+attempts to handle the situation, like an early return and try to reason about
+that being at least "probably safe" in calling contexts. Do not use
+`base::NotFatalUntil` if there's no reasonable way to recover from the invariant
+failure (i.e. if this is wrong we're about to crash or hit a memory bug).
+
+Any invariant failures should be resolved before turning fatal even if they only
+fail for a very low number of users (above the noise floor). Once fatal they
+will be invariants that we collectively trust to hold true (other code may be
+rewritten with these assumptions).
+
+Using non-fatal invariant validation is especially appropriate when there's low
+pre-stable coverage. Specifically consider using these:
 
 * When working on iOS code (low pre-stable coverage).
 * Upgrading `DCHECK()s`.
