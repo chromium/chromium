@@ -230,8 +230,8 @@ void ViewsScreenLocker::UpdateChallengeResponseAuthAvailability(
 
 void ViewsScreenLocker::OnAuthSessionStarted(
     bool user_exists,
-    std::unique_ptr<ash::UserContext> user_context,
-    std::optional<ash::AuthenticationError> error) {
+    std::unique_ptr<UserContext> user_context,
+    std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     LOG(ERROR) << "Failed to start auth session, code "
                << error->get_cryptohome_error();
@@ -245,6 +245,8 @@ void ViewsScreenLocker::OnAuthSessionStarted(
     // Check for pref-based PIN.
     UpdatePinKeyboardState(account_id);
   }
+  auth_performer_.InvalidateAuthSession(std::move(user_context),
+                                        base::DoNothing());
 }
 
 void ViewsScreenLocker::OnPinCanAuthenticate(

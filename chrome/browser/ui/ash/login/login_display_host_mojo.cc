@@ -1053,18 +1053,24 @@ void LoginDisplayHostMojo::UpdateAuthFactorsAvailability(
           user->GetAccountId());
   auth_performer_.StartAuthSession(
       std::move(user_context), ephemeral, ash::AuthSessionIntent::kDecrypt,
-      base::BindOnce([](bool user_exists,
-                        std::unique_ptr<UserContext> user_context,
-                        std::optional<AuthenticationError> error) {
-        if (error.has_value()) {
-          LOG(ERROR) << "Failed to start auth session, code "
-                     << error->get_cryptohome_error();
-          return;
-        }
-        login::SetAuthFactorsForUser(user_context->GetAccountId(),
-                                     user_context->GetAuthFactorsData(),
-                                     LoginScreen::Get()->GetModel());
-      }));
+      base::BindOnce(&LoginDisplayHostMojo::OnAuthSessionStarted,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void LoginDisplayHostMojo::OnAuthSessionStarted(
+    bool user_exists,
+    std::unique_ptr<UserContext> user_context,
+    std::optional<AuthenticationError> error) {
+  if (error.has_value()) {
+    LOG(ERROR) << "Failed to start auth session, code "
+               << error->get_cryptohome_error();
+    return;
+  }
+  login::SetAuthFactorsForUser(user_context->GetAccountId(),
+                               user_context->GetAuthFactorsData(),
+                               LoginScreen::Get()->GetModel());
+  auth_performer_.InvalidateAuthSession(std::move(user_context),
+                                        base::DoNothing());
 }
 
 }  // namespace ash
