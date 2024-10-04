@@ -1,6 +1,7 @@
 specific_include_rules = {
     "background_tracing_helper.cc": [
         "+base/hash/md5.h",
+        "+base/strings/string_split.h",
         "+url/url_constants.h",
     ],
     "background_tracing_helper_test.cc": [
