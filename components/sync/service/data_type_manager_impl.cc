@@ -259,6 +259,7 @@ void DataTypeManagerImpl::ResetDataTypeErrors() {
 }
 
 void DataTypeManagerImpl::PurgeForMigration(DataTypeSet undesired_types) {
+  CHECK(configurer_);
   DataTypeSet remainder = Difference(preferred_types_, undesired_types);
   last_requested_context_.reason = CONFIGURE_REASON_MIGRATION;
   ConfigureImpl(remainder, last_requested_context_);
@@ -266,7 +267,9 @@ void DataTypeManagerImpl::PurgeForMigration(DataTypeSet undesired_types) {
 
 void DataTypeManagerImpl::ConfigureImpl(DataTypeSet preferred_types,
                                         const ConfigureContext& context) {
-  DCHECK_NE(context.reason, CONFIGURE_REASON_UNKNOWN);
+  CHECK(configurer_);
+  CHECK_NE(context.reason, CONFIGURE_REASON_UNKNOWN);
+
   DVLOG(1) << "Configuring for " << DataTypeSetToDebugString(preferred_types)
            << " with reason " << context.reason;
   if (state_ == STOPPING) {
@@ -519,6 +522,8 @@ DataTypeManagerImpl::BuildDataTypeConfigStateMap(
 }
 
 void DataTypeManagerImpl::Restart() {
+  CHECK(configurer_);
+
   DVLOG(1) << "Restarting...";
   const ConfigureReason reason = last_requested_context_.reason;
 
@@ -582,6 +587,16 @@ void DataTypeManagerImpl::Restart() {
   // `preferred_types_`.)
   preferred_types_without_errors_ = GetEnabledTypes();
   configuration_types_queue_ = PrioritizeTypes(preferred_types_without_errors_);
+
+  // PurgeForMigration() could have removed NIGORI from `preferred_types_`.
+  // As opposed to other datatypes, NIGORI requires exercising a dedicated
+  // codepath in the sync engine. Hypothetically, it is also possible that a
+  // previous migration attempt ran into a download failure. In such cases, it
+  // is also purged here once again, to preserve the historical behavior
+  // (although it is unclear whether purging again is needed).
+  if (!preferred_types_without_errors_.Has(NIGORI)) {
+    configurer_->ClearNigoriDataForMigration();
+  }
 
   model_load_manager_.Configure(
       /*preferred_types_without_errors=*/preferred_types_without_errors_,
@@ -741,8 +756,6 @@ DataTypeManagerImpl::PrepareConfigureParams() {
       BuildDataTypeConfigStateMap(configuration_types_queue_.front());
   const DataTypeSet active_types =
       GetDataTypesInState(CONFIGURE_ACTIVE, config_state_map);
-  const DataTypeSet inactive_types =
-      GetDataTypesInState(CONFIGURE_INACTIVE, config_state_map);
   const DataTypeSet disabled_types =
       GetDataTypesInState(DISABLED, config_state_map);
 
@@ -765,20 +778,12 @@ DataTypeManagerImpl::PrepareConfigureParams() {
   downloaded_types_.RemoveAll(disabled_types);
   force_redownload_types_.RemoveAll(types_to_download);
 
-  // TODO(crbug.com/40154783): "Purging" logic is only implemented for NIGORI -
-  // verify whether it is actually needed at all.
-  DataTypeSet types_to_purge = ControlTypes();
-  types_to_purge.RemoveAll(downloaded_types_);
-  types_to_purge.RemoveAll(active_types);
-  types_to_purge.RemoveAll(inactive_types);
-
   DVLOG(1) << "Types " << DataTypeSetToDebugString(types_to_download)
            << " added; calling ConfigureDataTypes";
 
   DataTypeConfigurer::ConfigureParams params;
   params.reason = last_requested_context_.reason;
   params.to_download = types_to_download;
-  params.to_purge = types_to_purge;
   params.ready_task =
       base::BindOnce(&DataTypeManagerImpl::ConfigurationCompleted,
                      weak_ptr_factory_.GetWeakPtr());

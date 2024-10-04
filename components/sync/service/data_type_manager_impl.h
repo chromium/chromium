@@ -85,6 +85,8 @@ class DataTypeManagerImpl : public DataTypeManager,
   enum DataTypeConfigState {
     // Actively being configured. Data of such types will be downloaded if not
     // present locally.
+    // TODO(crbug.com/40901755): Rename these enums to avoid 'active' in the
+    // name, as it has a different meaning in the public API.
     CONFIGURE_ACTIVE,
     // Already configured or to be configured in future. Data of such types is
     // left as it is, no downloading or purging.

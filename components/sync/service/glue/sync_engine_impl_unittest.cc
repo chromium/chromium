@@ -242,7 +242,6 @@ class SyncEngineImplTest : public testing::Test {
     if (!params.to_download.empty()) {
       params.to_download.Put(NIGORI);
     }
-    params.to_purge = Difference(engine_types_, enabled_types_);
     params.ready_task = base::BindOnce(&SyncEngineImplTest::DownloadReady,
                                        base::Unretained(this));
 
@@ -487,31 +486,6 @@ TEST_F(SyncEngineImplTest, DownloadControlTypesRestart) {
   InitializeBackend();
   EXPECT_EQ(CONFIGURE_REASON_NEWLY_ENABLED_DATA_TYPE,
             fake_manager_->GetAndResetConfigureReason());
-}
-
-// If bookmarks encounter an error that results in disabling without purging
-// (such as when the type is unready), and then is explicitly disabled, the
-// SyncEngine needs to tell the manager to purge the type, even though
-// it's already disabled (crbug.com/386778).
-TEST_F(SyncEngineImplTest, DisableThenPurgeType) {
-  const DataTypeSet error_types = {BOOKMARKS};
-
-  InitializeBackend();
-
-  // First enable the types.
-  DataTypeSet ready_types = ConfigureDataTypes();
-
-  // Nigori is always downloaded so won't be ready.
-  EXPECT_EQ(Difference(ControlTypes(), {NIGORI}), ready_types);
-
-  // Then mark the error types as unready (disables without purging).
-  ready_types = ConfigureDataTypesWithUnready(error_types);
-  EXPECT_EQ(Difference(enabled_types_, error_types), ready_types);
-
-  // Lastly explicitly disable the error types, which should result in a purge.
-  enabled_types_.RemoveAll(error_types);
-  ready_types = ConfigureDataTypes();
-  EXPECT_EQ(Difference(enabled_types_, error_types), ready_types);
 }
 
 // Tests that SyncEngineImpl retains DataTypeConnector after call to

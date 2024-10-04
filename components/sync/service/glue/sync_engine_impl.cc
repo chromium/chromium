@@ -314,9 +314,6 @@ void SyncEngineImpl::ConfigureDataTypes(ConfigureParams params) {
   DCHECK(Difference(params.to_download, ProtocolTypes()).empty());
 
   sync_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&SyncEngineBackend::DoPurgeDisabledTypes,
-                                backend_, params.to_purge));
-  sync_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncEngineBackend::DoConfigureSyncer, backend_,
                                 std::move(params)));
 }
@@ -538,6 +535,15 @@ bool SyncEngineImpl::IsNextPollTimeInThePast() const {
 
   base::Time now = base::Time::Now();
   return now >= last_poll_time + poll_interval;
+}
+
+void SyncEngineImpl::ClearNigoriDataForMigration() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(backend_);
+  sync_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SyncEngineBackend::DoClearNigoriDataForMigration,
+                     backend_));
 }
 
 void SyncEngineImpl::GetNigoriNodeForDebugging(AllNodesCallback callback) {

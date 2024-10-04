@@ -311,24 +311,6 @@ void SyncEngineBackend::DoShutdown(ShutdownReason reason) {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-void SyncEngineBackend::DoPurgeDisabledTypes(const DataTypeSet& to_purge) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (to_purge.Has(NIGORI)) {
-    // We are using USS implementation of Nigori and someone asked us to purge
-    // it's data. For regular datatypes it's controlled DataTypeManager, but
-    // for Nigori we need to do it here.
-    // TODO(crbug.com/40154783): try to find better way to implement this logic,
-    // it's likely happen only due to BackendMigrator.
-    // TODO(crbug.com/40154783): Evaluate whether this logic is necessary at
-    // all. There's no "purging" logic for any other data type, so likely it's
-    // not necessary for NIGORI either.
-    sync_manager_->GetDataTypeConnector()->DisconnectDataType(NIGORI);
-    nigori_controller_->Stop(SyncStopMetadataFate::CLEAR_METADATA,
-                             base::DoNothing());
-    LoadAndConnectNigoriController();
-  }
-}
-
 void SyncEngineBackend::DoConfigureSyncer(
     DataTypeConfigurer::ConfigureParams params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -456,6 +438,21 @@ void SyncEngineBackend::DoOnActiveDevicesChanged(
     ActiveDevicesInvalidationInfo active_devices_invalidation_info) {
   sync_manager_->UpdateActiveDevicesInvalidationInfo(
       std::move(active_devices_invalidation_info));
+}
+
+void SyncEngineBackend::DoClearNigoriDataForMigration() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Purging is needed for migrations triggered via protocol code
+  // MIGRATION_DONE, see BackendMigrator for details.
+  //
+  // For regular datatypes, DataTypeManager achieves purging by interacting with
+  // the datatype's controller. Nigori doesn't have one, and its implementation
+  // is deeply coupled with the Sync engine's, so it is necessary to use this
+  // TODO(crbug.com/40154783): try to find better way to implement this logic.
+  sync_manager_->GetDataTypeConnector()->DisconnectDataType(NIGORI);
+  nigori_controller_->Stop(SyncStopMetadataFate::CLEAR_METADATA,
+                           base::DoNothing());
+  LoadAndConnectNigoriController();
 }
 
 void SyncEngineBackend::GetNigoriNodeForDebugging(AllNodesCallback callback) {

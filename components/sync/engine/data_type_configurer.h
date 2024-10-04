@@ -37,7 +37,6 @@ class DataTypeConfigurer {
 
     ConfigureReason reason = CONFIGURE_REASON_UNKNOWN;
     DataTypeSet to_download;
-    DataTypeSet to_purge;
 
     base::OnceCallback<void(DataTypeSet succeeded, DataTypeSet failed)>
         ready_task;
@@ -64,6 +63,11 @@ class DataTypeConfigurer {
   // propagating changes between the server and the processor. No-op if the
   // type is not connected.
   virtual void DisconnectDataType(DataType type) = 0;
+
+  // MIGRATION_DONE may require that NIGORI data is cleared and redownloaded.
+  // As opposed to other datatypes, NIGORI doesn't expose a controller outside
+  // the sync engine, so the equivalent APIs are exposed here.
+  virtual void ClearNigoriDataForMigration() = 0;
 
   // Record histograms related to Nigori type.
   virtual void RecordNigoriMemoryUsageAndCountsHistograms() = 0;

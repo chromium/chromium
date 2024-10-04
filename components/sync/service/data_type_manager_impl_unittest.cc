@@ -99,6 +99,8 @@ class FakeDataTypeConfigurer : public DataTypeConfigurer {
     connected_types_.Remove(type);
   }
 
+  void ClearNigoriDataForMigration() override { clear_nigori_data_count_++; }
+
   void RecordNigoriMemoryUsageAndCountsHistograms() override {
     // Not implemented but also not needed for these tests.
   }
@@ -132,11 +134,13 @@ class FakeDataTypeConfigurer : public DataTypeConfigurer {
   bool has_ongoing_configuration() const {
     return !last_params_.ready_task.is_null();
   }
+  int clear_nigori_data_count() const { return clear_nigori_data_count_; }
 
  private:
   DataTypeSet connected_types_;
   int configure_call_count_ = 0;
   ConfigureParams last_params_;
+  int clear_nigori_data_count_ = 0;
 };
 
 class FakeDataTypeEncryptionHandler : public DataTypeEncryptionHandler {
@@ -242,6 +246,11 @@ class DataTypeManagerImplTest : public testing::Test {
         dtm_->GetControllerForTest(data_type));
   }
 
+  // Returns the number of times NIGORI was cleared (aka purged).
+  int clear_nigori_data_count() const {
+    return configurer_.clear_nigori_data_count();
+  }
+
   // Gets the batch uploader for the given type, which should have
   // been previously added via InitDataTypeManager(). Returns null if the
   // datatype was initialized without a batch uploader.
@@ -285,10 +294,12 @@ TEST_F(DataTypeManagerImplTest, NoControllers) {
   EXPECT_EQ(DataTypeSet(), FinishDownload());  // Control types.
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
   EXPECT_EQ(DataTypeSet(), dtm_->GetRegisteredDataTypes());
+  EXPECT_EQ(0, clear_nigori_data_count());
 
   dtm_->Stop(SyncStopMetadataFate::KEEP_METADATA);
   EXPECT_EQ(DataTypeManager::STOPPED, dtm_->state());
   EXPECT_EQ(DataTypeSet(), dtm_->GetRegisteredDataTypes());
+  EXPECT_EQ(0, clear_nigori_data_count());
 }
 
 // Set up a DTM with a single controller, configure it, finish
@@ -317,12 +328,14 @@ TEST_F(DataTypeManagerImplTest, ConfigureOne) {
   EXPECT_EQ(1U, configurer_.connected_types().size());
   EXPECT_TRUE(dtm_->GetTypesWithPendingDownloadForInitialSync().empty());
   EXPECT_EQ(DataTypeSet{BOOKMARKS}, dtm_->GetRegisteredDataTypes());
+  EXPECT_EQ(0, clear_nigori_data_count());
 
   dtm_->Stop(SyncStopMetadataFate::KEEP_METADATA);
   EXPECT_EQ(DataTypeManager::STOPPED, dtm_->state());
   EXPECT_TRUE(configurer_.connected_types().empty());
   EXPECT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_count());
   EXPECT_EQ(DataTypeSet{BOOKMARKS}, dtm_->GetRegisteredDataTypes());
+  EXPECT_EQ(0, clear_nigori_data_count());
 }
 
 TEST_F(DataTypeManagerImplTest, ConfigureOneThatSkipsEngineConnection) {
@@ -721,24 +734,26 @@ TEST_F(DataTypeManagerImplTest, MigrateAll) {
 
   // Initial setup.
   Configure({PRIORITY_PREFERENCES});
-  EXPECT_EQ(DataTypeSet(), FinishDownload());  // Control types.
-  EXPECT_EQ(AddControlTypesTo({PRIORITY_PREFERENCES}), FinishDownload());
+  ASSERT_EQ(DataTypeSet(), FinishDownload());  // Control types.
+  ASSERT_EQ(AddControlTypesTo({PRIORITY_PREFERENCES}), FinishDownload());
 
   // We've now configured priority prefs and (implicitly) the control types.
-  EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
+  ASSERT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
 
   // Pretend we were told to migrate all types.
   DataTypeSet to_migrate;
   to_migrate.Put(PRIORITY_PREFERENCES);
   to_migrate.PutAll(ControlTypes());
 
-  EXPECT_EQ(
+  ASSERT_EQ(0, clear_nigori_data_count());
+  ASSERT_EQ(
       0, GetController(PRIORITY_PREFERENCES)->model()->clear_metadata_count());
 
   EXPECT_CALL(observer_, OnConfigureStart());
   EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceeded()));
   dtm_->PurgeForMigration(to_migrate);
   EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
+  EXPECT_EQ(1, clear_nigori_data_count());
   EXPECT_EQ(
       1, GetController(PRIORITY_PREFERENCES)->model()->clear_metadata_count());
 
@@ -753,6 +768,7 @@ TEST_F(DataTypeManagerImplTest, MigrateAll) {
   EXPECT_EQ(ControlTypes(), FinishDownload());
   EXPECT_EQ(AddControlTypesTo({PRIORITY_PREFERENCES}), FinishDownload());
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
+  EXPECT_EQ(1, clear_nigori_data_count());
   EXPECT_EQ(
       1, GetController(PRIORITY_PREFERENCES)->model()->clear_metadata_count());
 }
@@ -766,17 +782,20 @@ TEST_F(DataTypeManagerImplTest, ConfigureDuringPurge) {
   EXPECT_CALL(observer_, OnConfigureStart());
   EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceeded()));
   Configure({BOOKMARKS});
-  EXPECT_EQ(DataTypeSet(), FinishDownload());  // Control types.
-  EXPECT_EQ(AddControlTypesTo({BOOKMARKS}), FinishDownload());
-  EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
+  ASSERT_EQ(DataTypeSet(), FinishDownload());  // Control types.
+  ASSERT_EQ(AddControlTypesTo({BOOKMARKS}), FinishDownload());
+  ASSERT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
+  ASSERT_EQ(1, GetController(PREFERENCES)->model()->clear_metadata_count());
+  ASSERT_EQ(0, clear_nigori_data_count());
 
   // Purge the Nigori type.
   EXPECT_CALL(observer_, OnConfigureStart());
   dtm_->PurgeForMigration(ControlTypes());
-  EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
+  ASSERT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
+  ASSERT_EQ(1, clear_nigori_data_count());
 
   // Called during the first call to Configure() and during PurgeForMigration().
-  EXPECT_EQ(2, GetController(PREFERENCES)->model()->clear_metadata_count());
+  ASSERT_EQ(2, GetController(PREFERENCES)->model()->clear_metadata_count());
 
   // Before the backend configuration completes, ask for a different
   // set of types.  This request asks for
@@ -1475,6 +1494,9 @@ TEST_F(DataTypeManagerImplTest, StopWithDisableSync) {
   EXPECT_EQ(DataTypeManager::STOPPED, dtm_->state());
   EXPECT_TRUE(configurer_.connected_types().empty());
   EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_count());
+  // Clearing of Nigori in this case happens outside of DataTypeManager, namely
+  // via SyncEngine::Shutdown().
+  EXPECT_EQ(0, clear_nigori_data_count());
 }
 
 TEST_F(DataTypeManagerImplTest, PurgeDataOnStarting) {
@@ -1544,6 +1566,7 @@ TEST_F(DataTypeManagerImplTest, PurgeDataOnReconfiguring) {
   EXPECT_EQ(DataTypeSet(), FinishDownload());
   ASSERT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
   ASSERT_EQ(1U, configurer_.connected_types().size());
+  ASSERT_EQ(0, clear_nigori_data_count());
 
   // Also Stop(CLEAR_METADATA) has been called on the controller since the type
   // is no longer enabled.
