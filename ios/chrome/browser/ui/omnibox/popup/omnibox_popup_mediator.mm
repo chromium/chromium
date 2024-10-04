@@ -93,6 +93,9 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 // debug mode.
 @property(nonatomic, assign) RemoteSuggestionsService* remoteSuggestionsService;
 
+// Whether the omnibox has a thumbnail.
+@property(nonatomic, assign) BOOL hasThumbnail;
+
 @end
 
 @implementation OmniboxPopupMediator {
@@ -541,6 +544,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   formatter.incognito = _incognito;
   formatter.defaultSearchEngineIsGoogle = self.defaultSearchEngineIsGoogle;
   formatter.pedalData = [self.pedalAnnotator pedalForMatch:match];
+  formatter.isMultimodal = self.hasThumbnail;
 
   if (formatter.suggestionGroupId) {
     omnibox::GroupId groupId =

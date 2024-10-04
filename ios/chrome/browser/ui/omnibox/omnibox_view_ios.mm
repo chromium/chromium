@@ -776,6 +776,9 @@ void OmniboxViewIOS::SetThumbnailImage(UIImage* image) {
   thumbnail_image_before_edit_ = image;
   thumbnail_deleted_ = NO;
   [consumer_ setThumbnailImage:image];
+  if (popup_provider_) {
+    popup_provider_->SetHasThumbnail(image != nil);
+  }
 }
 
 void OmniboxViewIOS::AcceptThumbnailEdits() {
@@ -793,10 +796,20 @@ void OmniboxViewIOS::RevertThumbnailEdits() {
   if (thumbnail_deleted_) {
     [consumer_ setThumbnailImage:thumbnail_image_before_edit_];
     thumbnail_deleted_ = NO;
+    if (popup_provider_) {
+      popup_provider_->SetHasThumbnail(thumbnail_image_before_edit_ != nil);
+    }
   }
 }
 
 void OmniboxViewIOS::RemoveThumbnail() {
   thumbnail_deleted_ = YES;
   [consumer_ setThumbnailImage:nil];
+  if (popup_provider_) {
+    popup_provider_->SetHasThumbnail(false);
+  }
+  if (model()) {
+    model()->UpdateInput(/*has_selected_text=*/false,
+                         /*prevent_inline_autocomplete=*/true);
+  }
 }

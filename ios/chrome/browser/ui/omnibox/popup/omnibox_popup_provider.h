@@ -15,6 +15,7 @@ class OmniboxPopupProvider {
   virtual void SetTextAlignment(NSTextAlignment alignment) = 0;
   virtual void SetSemanticContentAttribute(
       UISemanticContentAttribute semanticContentAttrbute) = 0;
+  virtual void SetHasThumbnail(bool has_thumbnail) = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_OMNIBOX_POPUP_PROVIDER_H_

@@ -280,11 +280,10 @@ UIColor* DimColorIncognito() {
                                    color:suggestionTextColor
                                 dimColor:dimColor];
 
-    if (self.isTailSuggestion) {
+    if (self.isTailSuggestion || self.isMultimodal) {
       NSMutableAttributedString* mutableString =
           [[NSMutableAttributedString alloc] init];
       NSAttributedString* tailSuggestPrefix =
-          // TODO(crbug.com/40264215): Do we want to localize the ellipsis ?
           [self attributedStringWithString:@"... "
                            classifications:NULL
                                  smallFont:NO

@@ -44,6 +44,7 @@ class OmniboxPopupViewIOS : public OmniboxPopupView,
   void SetSemanticContentAttribute(
       UISemanticContentAttribute semanticContentAttribute) override;
   bool IsPopupOpen() override;
+  void SetHasThumbnail(bool has_thumbnail) override;
 
   // OmniboxPopupViewControllerDelegate implementation.
   bool IsStarredMatch(const AutocompleteMatch& match) const override;

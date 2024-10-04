@@ -76,6 +76,10 @@ void OmniboxPopupViewIOS::SetSemanticContentAttribute(
   [mediator_ setSemanticContentAttribute:semanticContentAttribute];
 }
 
+void OmniboxPopupViewIOS::SetHasThumbnail(bool has_thumbnail) {
+  [mediator_ setHasThumbnail:has_thumbnail];
+}
+
 #pragma mark - OmniboxPopupViewControllerDelegate
 
 bool OmniboxPopupViewIOS::IsStarredMatch(const AutocompleteMatch& match) const {
