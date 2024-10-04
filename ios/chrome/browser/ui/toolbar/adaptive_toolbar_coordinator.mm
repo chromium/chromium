@@ -164,18 +164,6 @@
   // Implemented in primary and secondary toolbars directly.
 }
 
-- (void)setTabGridButtonIPHHighlighted:(BOOL)iphHighlighted {
-  [self.mediator updateConsumerWithTabGridButtonIPHHighlighted:iphHighlighted];
-}
-
-- (void)setNewTabButtonIPHHighlighted:(BOOL)iphHighlighted {
-  [self.mediator updateConsumerWithNewTabButtonIPHHighlighted:iphHighlighted];
-}
-
-- (void)showShareButtonIPHAfterLocationBarUnfocus {
-  // no-op, handled in ToolbarCoordinator.
-}
-
 #pragma mark - ToolbarCoordinatee
 
 - (id<PopupMenuUIUpdating>)popupMenuUIUpdater {
@@ -190,10 +178,7 @@
       isIncognito ? ToolbarStyle::kIncognito : ToolbarStyle::kNormal;
 
   ToolbarButtonActionsHandler* actionHandler =
-      [[ToolbarButtonActionsHandler alloc]
-          initWithEngagementTracker:feature_engagement::TrackerFactory::
-                                        GetForProfile(
-                                            self.browser->GetProfile())];
+      [[ToolbarButtonActionsHandler alloc] init];
 
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
 

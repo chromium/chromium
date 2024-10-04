@@ -68,7 +68,6 @@ class TabBasedIPHBrowserAgent : public BrowserUserData<TabBasedIPHBrowserAgent>,
   // UrlLoadingObserver
   void TabDidLoadUrl(const GURL& url,
                      ui::PageTransition transition_type) override;
-  void NewTabDidLoadUrl(const GURL& url, bool user_initiated) override;
 
   // WebStateObserver
   void DidStartNavigation(web::WebState* web_state,

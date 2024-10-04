@@ -24,9 +24,6 @@ class WebStateID;
 // Commands for tab strip changes.
 @protocol TabStripCommands
 
-// Set the `iphHighlighted` state for the new tab button on the tab strip.
-- (void)setNewTabButtonOnTabStripIPHHighlighted:(BOOL)IPHHighlighted;
-
 // Shows the tab group creation view.
 - (void)showTabStripGroupCreationForTabs:
     (const std::set<web::WebStateID>&)identifiers;

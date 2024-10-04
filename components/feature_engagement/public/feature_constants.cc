@@ -540,18 +540,9 @@ BASE_FEATURE(kIPHiOSPromoCredentialProviderExtensionFeature,
 BASE_FEATURE(kIPHiOSPromoDefaultBrowserReminderFeature,
              "IPH_iOSPromoDefaultBrowserReminder",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHiOSNewTabToolbarItemFeature,
-             "IPH_iOSNewTabToolbarItemFeature",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHiOSTabGridToolbarItemFeature,
-             "IPH_iOSTabGridToolbarItemFeature",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSHistoryOnOverflowMenuFeature,
              "IPH_iOSHistoryOnOverflowMenuFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHiOSShareToolbarItemFeature,
-             "IPH_iOSShareToolbarItemFeature",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSPromoPostRestoreDefaultBrowserFeature,
              "IPH_iOSPromoPostRestoreDefaultBrowser",
              base::FEATURE_ENABLED_BY_DEFAULT);

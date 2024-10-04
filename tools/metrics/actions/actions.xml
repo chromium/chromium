@@ -46048,8 +46048,6 @@ should be able to be added at any place in this file.
       label="For Enhanced Safe Browsing Promo feature"/>
   <suffix name="iOSLensOverlayEntrypointTip"
       label="For iOSLensOverlayEntrypoint IPH feature"/>
-  <suffix name="iOSNewTabToolbarItemFeature"
-      label="For iOSNewTabToolbarItemFeature feature"/>
   <suffix name="iOSOverflowMenuCustomization"
       label="For iOSOverflowMenuCustomization feature"/>
   <suffix name="iOSPageInfoRevamp"
@@ -46087,16 +46085,12 @@ should be able to be added at any place in this file.
       label="For iOSReplaceSyncPromosWithSignInPromos feature"/>
   <suffix name="iOSSavedTabGroupClosed"
       label="For Saved Tab Group closed for the first time."/>
-  <suffix name="iOSShareToolbarItemFeature"
-      label="For iOSShareToolbarItemFeature feature"/>
   <suffix name="iOSSwipeBackForwardFeature"
       label="For iOSSwipeBackForwardFeature feature"/>
   <suffix name="iOSSwipeToolbarToChangeTabFeature"
       label="For iOSSwipeToolbarToChangeTabFeature feature"/>
   <suffix name="iOSTabGridSwipeRightForIncognito"
       label="For iOSTabGridSwipeRightForIncognito feature"/>
-  <suffix name="iOSTabGridToolbarItemFeature"
-      label="For iOSTabGridToolbarItemFeature feature"/>
   <suffix name="IPH_DefaultBrowserPromoMagicStack"
       label="For Default browser promo in Magic Stack."/>
   <suffix name="IPH_DefaultBrowserPromoMessages"

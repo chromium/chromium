@@ -9,9 +9,6 @@
 
 @implementation FakeTabStripHandler
 
-- (void)setNewTabButtonOnTabStripIPHHighlighted:(BOOL)IPHHighlighted {
-}
-
 - (void)showTabStripGroupCreationForTabs:
     (const std::set<web::WebStateID>&)identifiers {
   _identifiersForTabGroupCreation = identifiers;

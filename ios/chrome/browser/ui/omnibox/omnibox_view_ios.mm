@@ -569,8 +569,6 @@ void OmniboxViewIOS::OnCopy() {
   }
 
   StoreItemInPasteboard(item);
-
-  [toolbar_commands_handler_ showShareButtonIPHAfterLocationBarUnfocus];
 }
 
 void OmniboxViewIOS::WillPaste() {

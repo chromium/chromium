@@ -2984,12 +2984,6 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_OPEN_IOS_SETTINGS" desc="Text of the primary button to open iOS settings page. [iOS only]">
         Go to Settings…
       </message>
-      <message name="IDS_IOS_OPEN_NEW_TAB_IPH_ANNOUNCEMENT" desc="Announcement for the New Tab Tip in-product help promotion, explaining that new tabs can be added.  Read by Text To Speech. [iOS only]" meaning="The user has never created a new tab, and a bubble is displayed pointing to the new tab button to inform users how to create tabs and switch between them.">
-        You can open a new tab from the <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL">$1<ex>new tab</ex></ph> button.
-      </message>
-      <message name="IDS_IOS_OPEN_NEW_TAB_IPH_TEXT" desc="Text for the New Tab Button in-product help promotion, explaining that new tabs can be added. [iOS only]" meaning="The user has never created a new tab, and a bubble is displayed pointing to the new tab button to inform users how to create tabs and switch between them.">
-        You can open a new tab here.
-      </message>
       <message name="IDS_IOS_OPEN_REPEATEDLY_ANOTHER_APP" desc="Alert to let the user know that the website is trying repeatedly to open another application. [iOS only]">
         This site is repeatedly trying to open another application.
       </message>
@@ -4665,12 +4659,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SEARCH_WITH_TITLE_SEARCH_WITH" desc="Edit menu button title to open a tab with a Search query of the current selection. Will contain the search provider. [Length: 25em]." meaning="Edit menu Search button [Length: 25em]">
         Search with <ph name="SEARCH_PROVIDER">$1<ex>Google</ex></ph>
       </message>
-      <message name="IDS_IOS_SEE_ALL_OPEN_TABS_IPH_ANNOUNCEMENT" desc="Announcement for the tab grid button's in-product help, explaining that all open tabs can be accessed from the Tab Switcher. Read by Text To Speech. [iOS only]">
-        You can access all your open tabs from the Tab Switcher.
-      </message>
-      <message name="IDS_IOS_SEE_ALL_OPEN_TABS_IPH_TEXT" desc="Text for the tab grid button's in-product help, explaining that all open tabs can be seen. [iOS only]">
-        You can find all your open tabs here.
-      </message>
       <message name="IDS_IOS_SEGMENTED_DEFAULT_BROWSER_VIDEO_PROMO_DEVICE_SWITCHER_TITLE" desc="Title for the segmented generic default browser promo view, shown to users identified as Desktop Users or Android switchers.">
         Get the best from the Browser you love
       </message>
@@ -5079,12 +5067,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_SHARE_PAGE_BUTTON_LABEL" desc="Label of a button which will initiate a share flow for the current page. [iOS only]">
         Share page…
-      </message>
-      <message name="IDS_IOS_SHARE_THIS_PAGE_IPH_TEXT" desc="Text for the share button's in-product help, explaining that this button can be used to share this page. [iOS only]">
-        You can share this page here.
-      </message>
-      <message name="IDS_IOS_SHARE_THIS_PAGE_IPH_ANNOUNCEMENT" desc="The announcement of the share button's in-product help, explaining to the user they can share this page from the share button. The in-product help is displayed as a bubble pointing to the menu button. Read by Text To Speech. [iOS only]">
-        You can share this page here from the share button.
       </message>
       <message name="IDS_IOS_SHARE_TO_CLIPBOARD_SUCCESS" desc="Message displayed when the copy link (in Share… menu) action has succeeded. [Length: 30em] [iOS only]">
         Link copied

@@ -2006,51 +2006,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
-  if (kIPHiOSNewTabToolbarItemFeature.name == feature->name) {
-    // The IPH of the new tab button on the tool bar (at bottom on iPhone or on
-    // top on iPad).
-    std::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(EQUAL, 0);
-    // The user has opened the url from omnibox for >= 2 times in the past week.
-    config->used = EventConfig(feature_engagement::events::kOpenUrlFromOmnibox,
-                               Comparator(GREATER_THAN_OR_EQUAL, 2), 7, 7);
-    // The IPH is shown at most 1 time a week.
-    config->trigger = EventConfig("iph_new_tab_toolbar_item_trigger",
-                                  Comparator(EQUAL, 0), 7, 7);
-    // The user hasn't used the new tab toolbar item.
-    config->event_configs.insert(
-        EventConfig(feature_engagement::events::kNewTabToolbarItemUsed,
-                    Comparator(EQUAL, 0), k10YearsInDays, k10YearsInDays));
-    // The IPH is shown at most 2 times a year.
-    config->event_configs.insert(EventConfig("iph_new_tab_toolbar_item_trigger",
-                                             Comparator(LESS_THAN, 2), 365,
-                                             365));
-    return config;
-  }
-
-  if (kIPHiOSTabGridToolbarItemFeature.name == feature->name) {
-    // The IPH of the tab grid button on the tool bar (at bottom on iPhone or on
-    // top on iPad).
-    std::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(EQUAL, 0);
-    // The user hasn't used the tab grid toolbar item.
-    config->used =
-        EventConfig(feature_engagement::events::kTabGridToolbarItemUsed,
-                    Comparator(EQUAL, 0), k10YearsInDays, k10YearsInDays);
-    // The IPH is shown at most 1 time a week.
-    config->trigger = EventConfig("iph_tab_grid_toolbar_item_trigger",
-                                  Comparator(EQUAL, 0), 7, 7);
-    // The IPH is shown at most 2 times a year.
-    config->event_configs.insert(
-        EventConfig("iph_tab_grid_toolbar_item_trigger",
-                    Comparator(LESS_THAN, 2), 365, 365));
-    return config;
-  }
-
   if (kIPHiOSHistoryOnOverflowMenuFeature.name == feature->name) {
     std::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
@@ -2071,24 +2026,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->event_configs.insert(EventConfig(
         feature_engagement::events::kOpenUrlFromOmnibox,
         Comparator(GREATER_THAN, 2), k10YearsInDays, k10YearsInDays));
-    return config;
-  }
-
-  if (kIPHiOSShareToolbarItemFeature.name == feature->name) {
-    std::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(EQUAL, 0);
-    // The user hasn't tapped the share on the toolbar.
-    config->used =
-        EventConfig(feature_engagement::events::kShareToolbarItemUsed,
-                    Comparator(EQUAL, 0), k10YearsInDays, k10YearsInDays);
-    // The IPH is shown at most 1 time a week.
-    config->trigger =
-        EventConfig("share_toolbar_item_trigger", Comparator(EQUAL, 0), 7, 7);
-    // The IPH is shown 2 times a year.
-    config->event_configs.insert(EventConfig(
-        "share_toolbar_item_trigger", Comparator(LESS_THAN, 2), 365, 365));
     return config;
   }
 

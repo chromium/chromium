@@ -8,8 +8,6 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "components/feature_engagement/public/event_constants.h"
-#import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/iph_for_new_chrome_user/model/tab_based_iph_browser_agent.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -52,9 +50,6 @@
 
 - (void)tabGridTouchUp {
   [self.applicationHandler displayTabGridInMode:TabGridOpeningMode::kDefault];
-
-  _engagementTracker->NotifyEvent(
-      feature_engagement::events::kTabGridToolbarItemUsed);
 }
 
 - (void)toolsMenuAction {
@@ -63,9 +58,6 @@
 
 - (void)shareAction {
   [self.activityHandler sharePage];
-
-  _engagementTracker->NotifyEvent(
-      feature_engagement::events::kShareToolbarItemUsed);
 }
 
 - (void)reloadAction {
@@ -84,9 +76,6 @@
       [OpenNewTabCommand commandWithIncognito:self.incognito
                                   originPoint:center];
   [self.applicationHandler openURLInNewTab:command];
-
-  _engagementTracker->NotifyEvent(
-      feature_engagement::events::kNewTabToolbarItemUsed);
 
   [IntentDonationHelper donateIntent:IntentType::kOpenNewTab];
 }

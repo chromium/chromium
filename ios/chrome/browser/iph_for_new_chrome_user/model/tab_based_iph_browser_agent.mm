@@ -100,25 +100,12 @@ void TabBasedIPHBrowserAgent::TabDidLoadUrl(
   ResetFeatureStatesAndRemoveIPHViews();
   web::WebState* current_web_state = web_state_list_->GetActiveWebState();
   if (current_web_state) {
-    if ((transition_type & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) ||
-        (transition_type & ui::PAGE_TRANSITION_FORWARD_BACK)) {
-      [HelpHandler()
-          presentInProductHelpWithType:InProductHelpType::kNewTabToolbarItem];
-    }
     GURL visible = current_web_state->GetLastCommittedURL();
     if (url == visible &&
         transition_type & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR &&
         url != kChromeUINewTabURL) {
       NotifyMultiGestureRefreshEvent();
     }
-  }
-}
-
-void TabBasedIPHBrowserAgent::NewTabDidLoadUrl(const GURL& url,
-                                               bool user_initiated) {
-  if (user_initiated) {
-    [HelpHandler()
-        presentInProductHelpWithType:InProductHelpType::kTabGridToolbarItem];
   }
 }
 

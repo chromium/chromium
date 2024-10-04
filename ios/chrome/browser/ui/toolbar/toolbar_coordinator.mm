@@ -83,9 +83,6 @@
   /// Indicates whether the fakebox was pinned on last signal to focus from
   /// the fakebox.
   BOOL _fakeboxPinned;
-  /// Whether to show the share button IPH next time the location bar gets
-  /// unfocused.
-  BOOL _showShareButtonIPHOnNextLocationBarUnfocus;
   /// Command handler for showing the IPH.
   id<HelpCommands> _helpHandler;
 }
@@ -532,22 +529,6 @@
   }
 }
 
-- (void)setTabGridButtonIPHHighlighted:(BOOL)iphHighlighted {
-  for (id<ToolbarCommands> coordinator in self.coordinators) {
-    [coordinator setTabGridButtonIPHHighlighted:iphHighlighted];
-  }
-}
-
-- (void)setNewTabButtonIPHHighlighted:(BOOL)iphHighlighted {
-  for (id<ToolbarCommands> coordinator in self.coordinators) {
-    [coordinator setNewTabButtonIPHHighlighted:iphHighlighted];
-  }
-}
-
-- (void)showShareButtonIPHAfterLocationBarUnfocus {
-  _showShareButtonIPHOnNextLocationBarUnfocus = YES;
-}
-
 #pragma mark - ToolbarMediatorDelegate
 
 - (void)transitionOmniboxToToolbarType:(ToolbarType)toolbarType {
@@ -635,14 +616,6 @@
 
 - (void)focusTransitionDidComplete:(BOOL)focused
                         completion:(ProceduralBlock)completion {
-  if (!focused && _showShareButtonIPHOnNextLocationBarUnfocus) {
-    // Must call this display method after the animation is done, because the
-    // display depends on the location of the share button to anchor the IPH,
-    // doing it in the middle of the animtion will lead to the anchoring point
-    // being off.
-    [_helpHandler presentInProductHelpWithType:InProductHelpType::kShareButton];
-    _showShareButtonIPHOnNextLocationBarUnfocus = NO;
-  }
   if (completion) {
     completion();
     completion = nil;

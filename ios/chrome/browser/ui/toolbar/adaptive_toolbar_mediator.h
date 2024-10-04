@@ -51,10 +51,6 @@ class WebStateList;
 
 /// Updates the consumer to conforms to `webState`.
 - (void)updateConsumerForWebState:(web::WebState*)webState;
-/// Updates the consumer's tab grid button with the `iphHighlighted` state.
-- (void)updateConsumerWithTabGridButtonIPHHighlighted:(BOOL)iphHighlighted;
-/// Updates the consumer's new tab button with the `iphHighlighted` state.
-- (void)updateConsumerWithNewTabButtonIPHHighlighted:(BOOL)iphHighlighted;
 /// Stops observing all objects.
 - (void)disconnect;
 

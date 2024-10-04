@@ -67,10 +67,6 @@
 // Triggers the slide-in animation for the toolbar with direction determined
 // from `fromBelow`.
 - (void)triggerToolbarSlideInAnimationFromBelow:(BOOL)fromBelow;
-// Set the IPH highlighted state of the tab grid button.
-- (void)setTabGridButtonIPHHighlighted:(BOOL)iphHighlighted;
-// Set the IPH highlighted state of the new tab button.
-- (void)setNewTabButtonIPHHighlighted:(BOOL)iphHighlighted;
 // Shows the animation when transitioning to a prerendered page.
 - (void)showPrerenderingAnimation;
 

@@ -33,10 +33,6 @@ enum class ToolbarTabGridButtonStyle;
 - (void)setPageThemeColor:(UIColor*)themeColor;
 // Sets the under page background color.
 - (void)setUnderPageBackgroundColor:(UIColor*)underPageBackgroundColor;
-// Sets the IPH highlighted state of the tab grid button.
-- (void)setTabGridButtonIPHHighlighted:(BOOL)iphHighlighted;
-// Sets the IPH highlighted state of the new tab button.
-- (void)setNewTabButtonIPHHighlighted:(BOOL)iphHighlighted;
 // Sets the Tab Grid button style.
 - (void)setTabGridButtonStyle:(ToolbarTabGridButtonStyle)tabGridButtonStyle;
 @end

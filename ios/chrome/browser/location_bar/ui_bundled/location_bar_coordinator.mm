@@ -454,9 +454,6 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
 - (void)locationBarCopyTapped {
   StoreURLInPasteboard(self.webState->GetVisibleURL());
-  id<HelpCommands> helpHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands);
-  [helpHandler presentInProductHelpWithType:InProductHelpType::kShareButton];
 }
 
 - (void)locationBarRequestScribbleTargetFocus {

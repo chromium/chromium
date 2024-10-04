@@ -88,29 +88,6 @@ void ReloadFromOmnibox() {
   [super tearDown];
 }
 
-// Tests that the New Tab IPH can be displayed when opening an URL from omnibox.
-- (void)testNewTabIPH {
-  RelaunchWithIPHFeature(@"IPH_iOSNewTabToolbarItemFeature",
-                         /*safari_switcher=*/YES);
-  [self openURLFromOmniboxWithIsAfterNewAppLaunch:YES];
-
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:grey_accessibilityID(
-                                              @"BubbleViewLabelIdentifier")];
-}
-
-// Tests that the Tab Grid IPH can be displayed when opening a new tab and there
-// are multiple tabs.
-- (void)testTabGridIPH {
-  RelaunchWithIPHFeature(@"IPH_iOSTabGridToolbarItemFeature",
-                         /*safari_switcher=*/YES);
-  [ChromeEarlGreyUI openNewTab];
-  [ChromeEarlGrey waitForMainTabCount:2];
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:grey_accessibilityID(
-                                              @"BubbleViewLabelIdentifier")];
-}
-
 // Tests that the pull-to-refresh IPH is atttempted when user taps the omnibox
 // to reload the same page, and disappears after the user navigates away.
 - (void)testPullToRefreshIPHAfterReloadFromOmniboxAndDisappearsAfterNavigation {

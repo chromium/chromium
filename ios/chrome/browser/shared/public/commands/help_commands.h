@@ -32,12 +32,6 @@ enum class InProductHelpType : NSInteger {
   /// Help bubble to inform the user that their tracked packages will appear in
   /// the Magic Stack.
   kParcelTracking,
-  /// Help bubble for the share button.
-  kShareButton,
-  /// Help bubble for the tab grid button in the toolbar.
-  kTabGridToolbarItem,
-  /// Help bubble for the new tab toolbar button.
-  kNewTabToolbarItem,
   /// Fullscreen help bubble for the pull-to-refresh gesture.
   kPullToRefresh,
   /// Fullscreen help bubble for the gesture to swipe to navigate back/forward.

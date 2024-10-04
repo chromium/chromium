@@ -136,11 +136,6 @@
 
 #pragma mark - TabStripCommands
 
-- (void)setNewTabButtonOnTabStripIPHHighlighted:(BOOL)IPHHighlighted {
-  [self.tabStripViewController
-      setNewTabButtonOnTabStripIPHHighlighted:IPHHighlighted];
-}
-
 - (void)showTabStripGroupCreationForTabs:
     (const std::set<web::WebStateID>&)identifiers {
   [self hideTabStripGroupCreation];

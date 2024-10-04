@@ -86,14 +86,6 @@
   [self updateShareMenuForWebState:webState];
 }
 
-- (void)updateConsumerWithTabGridButtonIPHHighlighted:(BOOL)iphHighlighted {
-  [self.consumer setTabGridButtonIPHHighlighted:iphHighlighted];
-}
-
-- (void)updateConsumerWithNewTabButtonIPHHighlighted:(BOOL)iphHighlighted {
-  [self.consumer setNewTabButtonIPHHighlighted:iphHighlighted];
-}
-
 - (void)disconnect {
   self.webContentAreaOverlayPresenter = nullptr;
   self.navigationBrowserAgent = nullptr;

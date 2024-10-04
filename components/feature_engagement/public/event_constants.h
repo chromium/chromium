@@ -175,17 +175,8 @@ extern const char kDockingPromoRemindMeLater[];
 // The user opened an url from omnibox.
 extern const char kOpenUrlFromOmnibox[];
 
-// The new tab toolbar item is used.
-extern const char kNewTabToolbarItemUsed[];
-
-// The tab grid toolbar item is used.
-extern const char kTabGridToolbarItemUsed[];
-
 // The history item on overflow menu is used.
 extern const char kHistoryOnOverflowMenuUsed[];
-
-// The share item on the toolbar is used.
-extern const char kShareToolbarItemUsed[];
 
 // The user has triggered the Lens button in the Omnibox keyboard.
 extern const char kLensButtonKeyboardUsed[];
