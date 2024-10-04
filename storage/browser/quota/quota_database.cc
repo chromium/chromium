@@ -1034,9 +1034,6 @@ QuotaError QuotaDatabase::EnsureOpened() {
       .page_size = 4096,
       .cache_size = 500,
   };
-  if (base::FeatureList::IsEnabled(features::kDisableQuotaDbFullFSync)) {
-    options.flush_to_media = false;
-  }
 
   db_ = std::make_unique<sql::Database>(std::move(options));
   meta_table_ = std::make_unique<sql::MetaTable>();
