@@ -147,6 +147,7 @@ class ReactiveAudioImpl implements ReactiveAudio {
   revoke(): void {
     this.audio.pause();
     this.revokeAudio();
+    this.audio.src = '';
     this.animationFrameController.stop();
     this.recordingId = null;
   }
