@@ -920,6 +920,30 @@ BUILDERS = {
             'MacBookAir7,2_x86-64-i5-5350U_Intel Broadwell HD Graphics 6000_8192_APPLE SSD SM0128G'
         },
     },
+    'mac-intel-perf': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'mac',
+        'dimension': {
+            'cpu':
+            'x86-64',
+            'gpu':
+            '8086:3e9b',
+            'os':
+            'Mac-15',
+            'pool':
+            'chrome.tests.perf',
+            'synthetic_product_name':
+            'Macmini8,1_x86-64-i7-8700B_Intel UHD Graphics 630_65536_APPLE SSD AP1024M'
+        },
+    },
     'mac-laptop_low_end-perf-pgo': {
         'tests': [
             {

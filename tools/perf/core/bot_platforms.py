@@ -504,6 +504,17 @@ _MAC_LOW_END_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
 _MAC_LOW_END_EXECUTABLE_CONFIGS = frozenset([
     _load_library_perf_tests(),
 ])
+_MAC_INTEL_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
+    'blink_perf.display_locking',
+    'v8.runtime_stats.top_25',
+])
+_MAC_INTEL_EXECUTABLE_CONFIGS = frozenset([
+    _base_perftests(300),
+    # _dawn_perf_tests(330),    # b/332611618
+    _tint_benchmark(),
+    _views_perftests(),
+    _load_library_perf_tests(),
+])
 _MAC_M1_MINI_2020_BENCHMARK_CONFIGS = PerfSuite(
     OFFICIAL_BENCHMARK_CONFIGS).Remove([
         'blink_perf.display_locking',
@@ -740,6 +751,13 @@ MAC_LOW_END_LAPTOP_PGO = PerfPlatform(
     'mac',
     executables=_MAC_LOW_END_EXECUTABLE_CONFIGS,
     pinpoint_only=True)
+MAC_INTEL = PerfPlatform('mac-intel-perf',
+                         'Mac Mini 8,1, Core i7 3.2 GHz',
+                         _MAC_INTEL_BENCHMARK_CONFIGS,
+                         24,
+                         'mac',
+                         executables=_MAC_INTEL_EXECUTABLE_CONFIGS,
+                         crossbench=_CROSSBENCH_BENCHMARKS_ALL)
 MAC_M1_MINI_2020 = PerfPlatform(
     'mac-m1_mini_2020-perf',
     'Mac M1 Mini 2020',

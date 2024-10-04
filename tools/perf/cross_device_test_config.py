@@ -238,6 +238,19 @@ TARGET_DEVICES = {
         },
         'speedometer3.crossbench': 20,
     },
+    'mac-intel-perf': {
+        'jetstream2': {
+            'JetStream2': 5,
+        },
+        'jetstream2.crossbench': 5,
+        'speedometer2': {
+            'Speedometer2': 20,
+        },
+        'speedometer3': {
+            'Speedometer3': 20,
+        },
+        'speedometer3.crossbench': 20,
+    },
     'mac-m1_mini_2020-perf': {
         'jetstream2': {
             'JetStream2': 5,
