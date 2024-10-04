@@ -1042,6 +1042,23 @@ void PopupViewViews::CreateSuggestionViews() {
                   std::move(filter_match), password_favicon_loader_.get()));
           rows_.push_back(row_view);
 
+          // Set element identifiers for tests.
+          if (kSuggestions[current_line_number].type ==
+              SuggestionType::kRetrievePredictionImprovements) {
+            row_view->SetProperty(
+                views::kElementIdentifierKey,
+                kAutofillPredictionImprovementsTriggerElementId);
+          } else if (kSuggestions[current_line_number].type ==
+                     SuggestionType::kFillPredictionImprovements) {
+            row_view->SetProperty(views::kElementIdentifierKey,
+                                  kAutofillPredictionImprovementsFillElementId);
+          } else if (kSuggestions[current_line_number].type ==
+                     SuggestionType::kPredictionImprovementsError) {
+            row_view->SetProperty(
+                views::kElementIdentifierKey,
+                kAutofillPredictionImprovementsErrorElementId);
+          }
+
           const base::Feature* const feature_for_iph =
               kSuggestions[current_line_number].feature_for_iph;
 
