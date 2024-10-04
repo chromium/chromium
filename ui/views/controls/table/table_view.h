@@ -21,7 +21,6 @@
 namespace ui {
 
 struct AXActionData;
-struct AXNodeData;
 
 }  // namespace ui
 
@@ -267,7 +266,6 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 

@@ -779,6 +779,79 @@ TEST_P(TableViewTest, UpdateVirtualAccessibilityChildrenBoundsWithResize) {
                                expected_bounds_after_resize);
 }
 
+TEST_P(TableViewTest, AccessibleTableColumnCount) {
+  const ViewAccessibility& view_accessibility = table_->GetViewAccessibility();
+  ui::AXNodeData data;
+  view_accessibility.GetAccessibleNodeData(&data);
+  EXPECT_EQ(helper_->visible_col_count(),
+            static_cast<size_t>(data.GetIntAttribute(
+                ax::mojom::IntAttribute::kTableColumnCount)));
+
+  table_->SetColumnVisibility(1, false);
+
+  data = ui::AXNodeData();
+  view_accessibility.GetAccessibleNodeData(&data);
+  EXPECT_EQ(helper_->visible_col_count(),
+            static_cast<size_t>(data.GetIntAttribute(
+                ax::mojom::IntAttribute::kTableColumnCount)));
+
+  std::vector<ui::TableColumn> new_columns(3);
+
+  data = ui::AXNodeData();
+  view_accessibility.GetAccessibleNodeData(&data);
+  EXPECT_EQ(helper_->visible_col_count(),
+            static_cast<size_t>(data.GetIntAttribute(
+                ax::mojom::IntAttribute::kTableColumnCount)));
+}
+
+TEST_P(TableViewTest, AccessibleTableRowCount) {
+  const ViewAccessibility& view_accessibility = table_->GetViewAccessibility();
+  ui::AXNodeData data;
+  view_accessibility.GetAccessibleNodeData(&data);
+  EXPECT_EQ(table_->GetRowCount(),
+            static_cast<size_t>(
+                data.GetIntAttribute(ax::mojom::IntAttribute::kTableRowCount)));
+
+  // Move rows to validate OnItemsMoved.
+  model_->MoveRows(0, 1, 1);
+  data = ui::AXNodeData();
+  view_accessibility.GetAccessibleNodeData(&data);
+  EXPECT_EQ(table_->GetRowCount(),
+            static_cast<size_t>(
+                data.GetIntAttribute(ax::mojom::IntAttribute::kTableRowCount)));
+
+  // Change rows to validate OnItemsChanged.
+  model_->ChangeRow(3, -1, 0);
+  data = ui::AXNodeData();
+  view_accessibility.GetAccessibleNodeData(&data);
+  EXPECT_EQ(table_->GetRowCount(),
+            static_cast<size_t>(
+                data.GetIntAttribute(ax::mojom::IntAttribute::kTableRowCount)));
+
+  // Remove rows to validate OnItemsRemoved.
+  model_->RemoveRow(0);
+  data = ui::AXNodeData();
+  view_accessibility.GetAccessibleNodeData(&data);
+  EXPECT_EQ(table_->GetRowCount(),
+            static_cast<size_t>(
+                data.GetIntAttribute(ax::mojom::IntAttribute::kTableRowCount)));
+
+  // Add rows to validate OnItemsAdded
+  model_->AddRows(1, 2, /*value_multiplier=*/10);
+  data = ui::AXNodeData();
+  view_accessibility.GetAccessibleNodeData(&data);
+  EXPECT_EQ(table_->GetRowCount(),
+            static_cast<size_t>(
+                data.GetIntAttribute(ax::mojom::IntAttribute::kTableRowCount)));
+
+  table_->OnModelChanged();
+  data = ui::AXNodeData();
+  view_accessibility.GetAccessibleNodeData(&data);
+  EXPECT_EQ(table_->GetRowCount(),
+            static_cast<size_t>(
+                data.GetIntAttribute(ax::mojom::IntAttribute::kTableRowCount)));
+}
+
 TEST_P(TableViewTest, UpdateVirtualAccessibilityChildrenBoundsHideColumn) {
   // Hide 1 column and check the bounds are updated.
   table_->SetColumnVisibility(1, false);
