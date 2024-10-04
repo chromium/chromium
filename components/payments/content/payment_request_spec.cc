@@ -82,7 +82,7 @@ PaymentRequestSpec::PaymentRequestSpec(
 
   app_store_billing_methods_.insert(methods::kGooglePlayBilling);
 }
-PaymentRequestSpec::~PaymentRequestSpec() {}
+PaymentRequestSpec::~PaymentRequestSpec() = default;
 
 void PaymentRequestSpec::UpdateWith(mojom::PaymentDetailsPtr details) {
   DCHECK(details_);

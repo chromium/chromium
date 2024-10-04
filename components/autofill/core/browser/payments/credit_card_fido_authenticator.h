@@ -80,7 +80,7 @@ class CreditCardFidoAuthenticator
   };
   class Requester {
    public:
-    virtual ~Requester() {}
+    virtual ~Requester() = default;
     virtual void OnFIDOAuthenticationComplete(
         const FidoAuthenticationResponse& response) = 0;
     virtual void OnFidoAuthorizationComplete(bool did_succeed) = 0;

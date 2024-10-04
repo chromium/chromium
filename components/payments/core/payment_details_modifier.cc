@@ -20,7 +20,7 @@ static const char kPaymentDetailsModifierData[] = "data";
 
 }  // namespace
 
-PaymentDetailsModifier::PaymentDetailsModifier() {}
+PaymentDetailsModifier::PaymentDetailsModifier() = default;
 PaymentDetailsModifier::~PaymentDetailsModifier() = default;
 
 PaymentDetailsModifier::PaymentDetailsModifier(

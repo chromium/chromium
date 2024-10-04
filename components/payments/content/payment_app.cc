@@ -33,7 +33,7 @@ int GetSortingGroup(const PaymentApp& app) {
 PaymentApp::PaymentApp(int icon_resource_id, Type type)
     : icon_resource_id_(icon_resource_id), type_(type) {}
 
-PaymentApp::~PaymentApp() {}
+PaymentApp::~PaymentApp() = default;
 
 const SkBitmap* PaymentApp::icon_bitmap() const {
   return nullptr;

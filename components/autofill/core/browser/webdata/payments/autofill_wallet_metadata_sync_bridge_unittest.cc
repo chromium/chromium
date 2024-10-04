@@ -1299,7 +1299,7 @@ class AutofillWalletMetadataSyncBridgeRemoteChangesTest
     : public testing::WithParamInterface<RemoteChangesMode>,
       public AutofillWalletMetadataSyncBridgeTest {
  public:
-  AutofillWalletMetadataSyncBridgeRemoteChangesTest() {}
+  AutofillWalletMetadataSyncBridgeRemoteChangesTest() = default;
 
   AutofillWalletMetadataSyncBridgeRemoteChangesTest(
       const AutofillWalletMetadataSyncBridgeRemoteChangesTest&) = delete;

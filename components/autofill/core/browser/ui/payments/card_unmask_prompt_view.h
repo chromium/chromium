@@ -25,8 +25,8 @@ class CardUnmaskPromptView {
                                      bool allow_retry) = 0;
 
  protected:
-  CardUnmaskPromptView() {}
-  virtual ~CardUnmaskPromptView() {}
+  CardUnmaskPromptView() = default;
+  virtual ~CardUnmaskPromptView() = default;
 };
 
 }  // namespace autofill

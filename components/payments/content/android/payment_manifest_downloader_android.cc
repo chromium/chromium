@@ -34,7 +34,7 @@ class DownloadCallback {
   DownloadCallback(const DownloadCallback&) = delete;
   DownloadCallback& operator=(const DownloadCallback&) = delete;
 
-  ~DownloadCallback() {}
+  ~DownloadCallback() = default;
 
   void OnPaymentMethodManifestDownload(const GURL& url_after_redirects,
                                        const std::string& content,
@@ -82,7 +82,7 @@ PaymentManifestDownloaderAndroid::PaymentManifestDownloaderAndroid(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : downloader_(std::move(log), csp_checker, std::move(url_loader_factory)) {}
 
-PaymentManifestDownloaderAndroid::~PaymentManifestDownloaderAndroid() {}
+PaymentManifestDownloaderAndroid::~PaymentManifestDownloaderAndroid() = default;
 
 void PaymentManifestDownloaderAndroid::DownloadPaymentMethodManifest(
     JNIEnv* env,

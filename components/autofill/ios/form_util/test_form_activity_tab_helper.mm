@@ -13,7 +13,7 @@ namespace autofill {
 TestFormActivityTabHelper::TestFormActivityTabHelper(web::WebState* web_state)
     : web_state_(web_state) {}
 
-TestFormActivityTabHelper::~TestFormActivityTabHelper() {}
+TestFormActivityTabHelper::~TestFormActivityTabHelper() = default;
 
 void TestFormActivityTabHelper::FormActivityRegistered(
     web::WebFrame* sender_frame,

@@ -46,7 +46,7 @@ class PaymentApp {
 
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Should be called with method name (e.g., "https://google.com/pay") and
     // json-serialized stringified details.

@@ -67,7 +67,7 @@ PaymentResponseHelper::PaymentResponseHelper(
   selected_app_->InvokePaymentApp(weak_ptr_factory_.GetWeakPtr());
 }
 
-PaymentResponseHelper::~PaymentResponseHelper() {}
+PaymentResponseHelper::~PaymentResponseHelper() = default;
 
 void PaymentResponseHelper::OnInstrumentDetailsReady(
     const std::string& method_name,

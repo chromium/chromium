@@ -240,7 +240,7 @@ class AutofillWebDataBackendImpl
   // reference-counted objects.
   class SupportsUserDataAggregatable : public base::SupportsUserData {
    public:
-    SupportsUserDataAggregatable() {}
+    SupportsUserDataAggregatable() = default;
 
     SupportsUserDataAggregatable(const SupportsUserDataAggregatable&) = delete;
     SupportsUserDataAggregatable& operator=(

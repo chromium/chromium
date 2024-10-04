@@ -9,11 +9,11 @@
 
 namespace autofill {
 
-TestSubmitDocumentInfo::TestSubmitDocumentInfo() {}
+TestSubmitDocumentInfo::TestSubmitDocumentInfo() = default;
 
 TestFormActivityObserver::TestFormActivityObserver(web::WebState* web_state)
     : web_state_(web_state) {}
-TestFormActivityObserver::~TestFormActivityObserver() {}
+TestFormActivityObserver::~TestFormActivityObserver() = default;
 
 TestSubmitDocumentInfo* TestFormActivityObserver::submit_document_info() {
   return submit_document_info_.get();

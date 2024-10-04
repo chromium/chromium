@@ -25,7 +25,7 @@ class TestCardNameFixFlowView : public CardNameFixFlowView {
 
 class CardNameFixFlowControllerImplGenericTest {
  public:
-  CardNameFixFlowControllerImplGenericTest() {}
+  CardNameFixFlowControllerImplGenericTest() = default;
 
   CardNameFixFlowControllerImplGenericTest(
       const CardNameFixFlowControllerImplGenericTest&) = delete;
@@ -72,7 +72,7 @@ class CardNameFixFlowControllerImplTest
     : public CardNameFixFlowControllerImplGenericTest,
       public testing::Test {
  public:
-  CardNameFixFlowControllerImplTest() {}
+  CardNameFixFlowControllerImplTest() = default;
 
   CardNameFixFlowControllerImplTest(const CardNameFixFlowControllerImplTest&) =
       delete;

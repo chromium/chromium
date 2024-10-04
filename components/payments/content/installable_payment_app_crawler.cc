@@ -57,7 +57,7 @@ InstallablePaymentAppCrawler::InstallablePaymentAppCrawler(
       number_of_web_app_manifest_to_parse_(0),
       number_of_web_app_icons_to_download_and_decode_(0) {}
 
-InstallablePaymentAppCrawler::~InstallablePaymentAppCrawler() {}
+InstallablePaymentAppCrawler::~InstallablePaymentAppCrawler() = default;
 
 void InstallablePaymentAppCrawler::Start(
     const std::vector<mojom::PaymentMethodDataPtr>& requested_method_data,

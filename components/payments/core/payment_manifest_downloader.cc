@@ -136,7 +136,7 @@ PaymentManifestDownloader::PaymentManifestDownloader(
   DCHECK(url_loader_factory_);
 }
 
-PaymentManifestDownloader::~PaymentManifestDownloader() {}
+PaymentManifestDownloader::~PaymentManifestDownloader() = default;
 
 void PaymentManifestDownloader::DownloadPaymentMethodManifest(
     const url::Origin& merchant_origin,

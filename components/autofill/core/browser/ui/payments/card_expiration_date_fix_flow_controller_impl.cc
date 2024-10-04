@@ -22,7 +22,7 @@
 namespace autofill {
 
 CardExpirationDateFixFlowControllerImpl::
-    CardExpirationDateFixFlowControllerImpl() {}
+    CardExpirationDateFixFlowControllerImpl() = default;
 
 CardExpirationDateFixFlowControllerImpl::
     ~CardExpirationDateFixFlowControllerImpl() {

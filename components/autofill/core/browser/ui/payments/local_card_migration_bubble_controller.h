@@ -16,14 +16,14 @@ class LocalCardMigrationBubble;
 // to upload credit cards stored in browser to Google Payments.
 class LocalCardMigrationBubbleController {
  public:
-  LocalCardMigrationBubbleController() {}
+  LocalCardMigrationBubbleController() = default;
 
   LocalCardMigrationBubbleController(
       const LocalCardMigrationBubbleController&) = delete;
   LocalCardMigrationBubbleController& operator=(
       const LocalCardMigrationBubbleController&) = delete;
 
-  virtual ~LocalCardMigrationBubbleController() {}
+  virtual ~LocalCardMigrationBubbleController() = default;
 
   virtual void OnConfirmButtonClicked() = 0;
   virtual void OnCancelButtonClicked() = 0;

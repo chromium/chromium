@@ -38,7 +38,7 @@ class PaymentResponseHelperTest : public testing::Test,
     test_personal_data_manager_.address_data_manager().AddProfile(*address_);
     test_app_ = std::make_unique<TestPaymentApp>("method-name");
   }
-  ~PaymentResponseHelperTest() override {}
+  ~PaymentResponseHelperTest() override = default;
 
   // PaymentRequestState::Delegate:
   void OnPaymentResponseReady(mojom::PaymentResponsePtr response) override {

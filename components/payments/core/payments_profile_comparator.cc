@@ -30,7 +30,7 @@ PaymentsProfileComparator::PaymentsProfileComparator(
     const PaymentOptionsProvider& options)
     : autofill::AutofillProfileComparator(app_locale), options_(options) {}
 
-PaymentsProfileComparator::~PaymentsProfileComparator() {}
+PaymentsProfileComparator::~PaymentsProfileComparator() = default;
 
 PaymentsProfileComparator::ProfileFields
 PaymentsProfileComparator::GetMissingProfileFields(

@@ -103,7 +103,7 @@ FormSuggestion* SimpleFormSuggestion(std::u16string value,
 // Test fixture for AutofillAgent testing.
 class AutofillAgentTests : public web::WebTest {
  public:
-  AutofillAgentTests() {}
+  AutofillAgentTests() = default;
 
   AutofillAgentTests(const AutofillAgentTests&) = delete;
   AutofillAgentTests& operator=(const AutofillAgentTests&) = delete;

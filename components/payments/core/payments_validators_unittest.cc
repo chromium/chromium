@@ -19,7 +19,7 @@ namespace {
 struct CurrencyCodeTestCase {
   CurrencyCodeTestCase(const char* code, bool expected_valid)
       : code(code), expected_valid(expected_valid) {}
-  ~CurrencyCodeTestCase() {}
+  ~CurrencyCodeTestCase() = default;
 
   const char* code;
   bool expected_valid;
@@ -73,7 +73,7 @@ INSTANTIATE_TEST_SUITE_P(
 struct TestCase {
   TestCase(const char* input, bool expected_valid)
       : input(input), expected_valid(expected_valid) {}
-  ~TestCase() {}
+  ~TestCase() = default;
 
   const char* input;
   bool expected_valid;

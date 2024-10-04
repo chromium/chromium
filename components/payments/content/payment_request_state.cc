@@ -94,7 +94,7 @@ PaymentRequestState::PaymentRequestState(
   spec_->AddObserver(this);
 }
 
-PaymentRequestState::~PaymentRequestState() {}
+PaymentRequestState::~PaymentRequestState() = default;
 
 content::WebContents* PaymentRequestState::GetWebContents() {
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);

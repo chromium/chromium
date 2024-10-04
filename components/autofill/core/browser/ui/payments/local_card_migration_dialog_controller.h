@@ -21,14 +21,14 @@ class MigratableCreditCard;
 // dialog views.
 class LocalCardMigrationDialogController {
  public:
-  LocalCardMigrationDialogController() {}
+  LocalCardMigrationDialogController() = default;
 
   LocalCardMigrationDialogController(
       const LocalCardMigrationDialogController&) = delete;
   LocalCardMigrationDialogController& operator=(
       const LocalCardMigrationDialogController&) = delete;
 
-  virtual ~LocalCardMigrationDialogController() {}
+  virtual ~LocalCardMigrationDialogController() = default;
 
   virtual LocalCardMigrationDialogState GetViewState() const = 0;
   virtual const std::vector<MigratableCreditCard>& GetCardList() const = 0;

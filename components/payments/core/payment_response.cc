@@ -8,7 +8,7 @@
 
 namespace payments {
 
-PaymentResponse::PaymentResponse() {}
+PaymentResponse::PaymentResponse() = default;
 PaymentResponse::~PaymentResponse() = default;
 
 bool PaymentResponse::operator==(const PaymentResponse& other) const {

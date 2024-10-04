@@ -44,7 +44,7 @@ PaymentHandlerHost::PaymentHandlerHost(
           content::WebContents::FromJavaWebContents(web_contents),
           /*delegate=*/listener_.AsWeakPtr()) {}
 
-PaymentHandlerHost::~PaymentHandlerHost() {}
+PaymentHandlerHost::~PaymentHandlerHost() = default;
 
 jboolean PaymentHandlerHost::IsWaitingForPaymentDetailsUpdate(
     JNIEnv* env) const {

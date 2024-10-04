@@ -21,12 +21,12 @@ class FormData;
 // becomes invalid.
 class FormActivityObserver {
  public:
-  FormActivityObserver() {}
+  FormActivityObserver() = default;
 
   FormActivityObserver(const FormActivityObserver&) = delete;
   FormActivityObserver& operator=(const FormActivityObserver&) = delete;
 
-  virtual ~FormActivityObserver() {}
+  virtual ~FormActivityObserver() = default;
 
   // Called when the user is typing on a form field in the main frame or in a
   // same-origin iframe. |params.input_missing| is indicating if there is any

@@ -25,7 +25,7 @@ static const char kPaymentDetailsTotal[] = "total";
 
 }  // namespace
 
-PaymentDetails::PaymentDetails() {}
+PaymentDetails::PaymentDetails() = default;
 PaymentDetails::~PaymentDetails() = default;
 
 PaymentDetails::PaymentDetails(const PaymentDetails& other) {

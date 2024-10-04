@@ -14,7 +14,7 @@ namespace autofill {
 // Only used on mobile.
 class CardNameFixFlowController {
  public:
-  virtual ~CardNameFixFlowController() {}
+  virtual ~CardNameFixFlowController() = default;
 
   // Interaction.
   virtual void OnConfirmNameDialogClosed() = 0;
