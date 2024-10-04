@@ -75,17 +75,14 @@
   }
 
   .managed-icon {
-    width: 32px;
-    height: 32px;
+    --iron-icon-fill-color: var(--cros-sys-primary);
   }
 </style>
 
 <cr-dialog id="dialog" show-on-attach>
   <div slot="title" id="title">
-    <div class="managed-icon-container">
-      <!-- TODO(b/342340599): Make this color sensitive. -->
-      <img src="chrome://resources/images/business.svg"
-        alt="Managed Icon" class="managed-icon">
+    <div id="icon">
+      <iron-icon class="managed-icon" icon="skyvault:enterprise"></iron-icon>
     </div>
     <div id="title-text"></div>
   </div>

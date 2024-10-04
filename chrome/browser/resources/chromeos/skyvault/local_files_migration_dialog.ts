@@ -12,6 +12,8 @@ import 'chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_page_host_style.css.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import './skyvault_icons.html.js';
 import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import './strings.m.js';

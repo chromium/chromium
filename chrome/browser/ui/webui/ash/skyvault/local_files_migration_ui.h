@@ -18,6 +18,11 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
+
+namespace ui {
+class ColorChangeHandler;
+}
 
 namespace policy::local_user_files {
 
@@ -46,6 +51,11 @@ class LocalFilesMigrationUI : public ui::MojoWebDialogUI,
   // Binds the Mojo interface for PageHandlerFactory.
   void BindInterface(mojo::PendingReceiver<mojom::PageHandlerFactory> receiver);
 
+  // Binds the color change handler.
+  void BindInterface(
+      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+          receiver);
+
   // mojom::PageHandlerFactory implementation:
   // Creates a PageHandler to handle communication with the WebUI page.
   void CreatePageHandler(
@@ -67,6 +77,8 @@ class LocalFilesMigrationUI : public ui::MojoWebDialogUI,
   std::unique_ptr<LocalFilesMigrationPageHandler> handler_;
   // Mojo communication
   mojo::Receiver<mojom::PageHandlerFactory> factory_receiver_{this};
+
+  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 
   base::WeakPtrFactory<LocalFilesMigrationUI> weak_factory_{this};
 

@@ -9,13 +9,18 @@ build_webui("build") {
 
   static_files = [ "local_files.html" ]
   web_component_files = [ "local_files_migration_dialog.ts" ]
-  non_web_component_files = [ "local_files_browser_proxy.ts" ]
+  non_web_component_files = [
+    "local_files.ts",
+    "local_files_browser_proxy.ts",
+  ]
 
   mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/ash/skyvault/local_files_migration.mojom-webui.ts" ]
   mojo_files_deps =
       [ "//chrome/browser/ui/webui/ash/skyvault:mojo_bindings_ts__generator" ]
 
-  html_to_wrapper_template = "native"
+  html_to_wrapper_template = "detect"
+
+  icons_html_files = [ "skyvault_icons.html" ]
 
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [
@@ -23,6 +28,7 @@ build_webui("build") {
     "//ash/webui/common/resources/cr_elements:build_ts",
     "//third_party/cros-components:cros_components_ts",
     "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]

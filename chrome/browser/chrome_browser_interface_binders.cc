@@ -1227,6 +1227,7 @@ void PopulateChromeWebUIFrameBinders(
       ash::app_install::AppInstallDialogUI, ash::SanitizeDialogUI,
       ash::printing::print_preview::PrintPreviewCrosUI,
       ash::extended_updates::ExtendedUpdatesUI, ash::graduation::GraduationUI,
+      policy::local_user_files::LocalFilesMigrationUI,
 #endif
       NewTabPageUI, OmniboxPopupUI, BookmarksSidePanelUI, CustomizeChromeUI,
       InternalsUI, ReadingListUI, TabSearchUI, WebuiGalleryUI,
