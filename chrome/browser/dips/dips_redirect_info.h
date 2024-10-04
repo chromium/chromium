@@ -60,7 +60,10 @@ struct DIPSRedirectInfo {
   DIPSRedirectInfo(const UrlAndSourceId& url,
                    DIPSRedirectType redirect_type,
                    SiteDataAccessType access_type,
-                   base::Time time);
+                   base::Time time,
+                   bool was_response_cached,
+                   int response_code,
+                   base::TimeDelta server_bounce_delay);
   // Constructor for client-side redirects.
   DIPSRedirectInfo(const UrlAndSourceId& url,
                    DIPSRedirectType redirect_type,
@@ -69,6 +72,16 @@ struct DIPSRedirectInfo {
                    base::TimeDelta client_bounce_delay,
                    bool has_sticky_activation,
                    bool web_authn_assertion_request_succeeded);
+  DIPSRedirectInfo(const UrlAndSourceId& url,
+                   DIPSRedirectType redirect_type,
+                   SiteDataAccessType access_type,
+                   base::Time time,
+                   base::TimeDelta client_bounce_delay,
+                   bool has_sticky_activation,
+                   bool web_authn_assertion_request_succeeded,
+                   bool was_response_cached,
+                   int response_code,
+                   base::TimeDelta server_bounce_delay);
   DIPSRedirectInfo(const DIPSRedirectInfo&);
   ~DIPSRedirectInfo();
 
@@ -100,6 +113,11 @@ struct DIPSRedirectInfo {
   // For client redirects, whether the user ever triggered a web authn assertion
   // call.
   const bool web_authn_assertion_request_succeeded;
+
+  // The following properties are only applicable for server-side redirects:
+  const bool was_response_cached;
+  const int response_code;
+  const base::TimeDelta server_bounce_delay;
 };
 
 // a movable DIPSRedirectInfo, essentially

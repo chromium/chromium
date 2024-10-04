@@ -15,6 +15,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/default_clock.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/optional_ref.h"
 #include "chrome/browser/dips/cookie_access_filter.h"
@@ -25,6 +26,7 @@
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/dedicated_worker_service.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_handle_timing.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/shared_worker_service.h"
@@ -209,8 +211,17 @@ class ServerBounceDetectionState
   ServerBounceDetectionState();
   ~ServerBounceDetectionState() override;
 
+  struct ServerRedirectData {
+    const int http_response_code;
+    const base::TimeDelta bounce_delay;
+    const bool was_response_cached;
+    const GURL destination_url;
+  };
+
   DIPSNavigationStart navigation_start;
   CookieAccessFilter filter;
+  std::vector<ServerRedirectData> server_redirects;
+  base::TimeTicks last_server_redirect;
 
  private:
   explicit ServerBounceDetectionState(
@@ -233,6 +244,9 @@ class DIPSNavigationHandle {
   virtual const GURL& GetPreviousPrimaryMainFrameURL() const = 0;
   virtual bool HasCommitted() const = 0;
   virtual const std::vector<GURL>& GetRedirectChain() const = 0;
+  virtual bool WasResponseCached() = 0;
+  // Get the HTTP response code from the navigation.
+  virtual int GetHTTPResponseCode() = 0;
   // This method has one important (simplifying) change from
   // content::NavigationHandle::HasUserGesture(): it returns true if the
   // navigation was not renderer-initiated.
@@ -271,6 +285,7 @@ class DIPSBounceDetector {
   const base::Clock* GetClock() { return clock_.get(); }
   // The following methods are based on WebContentsObserver, simplified.
   void DidStartNavigation(DIPSNavigationHandle* navigation_handle);
+  void DidRedirectNavigation(DIPSNavigationHandle* navigation_handle);
   void OnClientSiteDataAccessed(const GURL& url, CookieOperation op);
   // Note: `navigation_handle` may be null if this server cookie access is
   // associated with a document rather than a navigation.
@@ -409,6 +424,8 @@ class RedirectChainDetector
   // Start WebContentsObserver overrides:
   void PrimaryPageChanged(content::Page& page) override;
   void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override;
+  void DidRedirectNavigation(
       content::NavigationHandle* navigation_handle) override;
   void OnCookiesAccessed(content::RenderFrameHost* render_frame_host,
                          const content::CookieAccessDetails& details) override;

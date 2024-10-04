@@ -384,6 +384,7 @@ class DIPSBounceDetectorBrowserTest
 
   void SetUpOnMainThread() override {
     prerender_test_helper_.RegisterServerRequestMonitor(embedded_test_server());
+    net::test_server::RegisterDefaultHandlers(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
     host_resolver()->AddRule("*", "127.0.0.1");
     SetUpDIPSWebContentsObserver();
@@ -2039,6 +2040,43 @@ IN_PROC_BROWSER_TEST_P(
             (GetParam().write_redirect_grants && !GetParam().require_aba_flow)
                 ? CONTENT_SETTING_ALLOW
                 : CONTENT_SETTING_BLOCK);
+}
+
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
+                       RedirectInfoHttpStatusPersistence) {
+  WebContents* const web_contents = GetActiveWebContents();
+
+  // The "final" URL will not have any server redirects.
+  GURL final_url = embedded_test_server()->GetURL("/echo");
+  // The "302" and "303" URLs will have a server redirect to the final URL,
+  // giving a 302 and 303 HTTP response code status, respectively.
+  GURL redirect_303 = embedded_test_server()->GetURL("/server-redirect-303?" +
+                                                     final_url.spec());
+  GURL redirect_302 = embedded_test_server()->GetURL("/server-redirect-302?" +
+                                                     final_url.spec());
+  // The "301" URL will give a 301 response code and redirect to the "302" URL.
+  GURL redirect_301 = embedded_test_server()->GetURL("/server-redirect-301?" +
+                                                     redirect_302.spec());
+
+  // Navigate to a URL that will give a 301 redirect to another URL that will
+  // give a 302 redirect, before settling on a third URL.
+  ASSERT_TRUE(content::NavigateToURL(web_contents, redirect_301, final_url));
+
+  // Do client redirect to a URL that gives a 303 redirect.
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, redirect_303, final_url));
+
+  RedirectChainDetector* wco =
+      RedirectChainDetector::FromWebContents(web_contents);
+  const DIPSRedirectContext& context = wco->CommittedRedirectContext();
+
+  ASSERT_EQ(context.size(), 4u);
+
+  EXPECT_EQ(context.AtForTesting(0).response_code, 301);
+  EXPECT_EQ(context.AtForTesting(1).response_code, 302);
+  // The client redirect does not have an explicit HTTP response status.
+  EXPECT_EQ(context.AtForTesting(2).response_code, 0);
+  EXPECT_EQ(context.AtForTesting(3).response_code, 303);
 }
 
 const RedirectHeuristicFlags kRedirectHeuristicTestCases[] = {

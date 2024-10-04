@@ -639,6 +639,16 @@ class DIPSNavigationHandleImpl : public DIPSNavigationHandle {
     return handle_->GetRedirectChain();
   }
 
+  bool WasResponseCached() override { return handle_->WasResponseCached(); }
+
+  int GetHTTPResponseCode() override {
+    const net::HttpResponseHeaders* headers = handle_->GetResponseHeaders();
+    if (headers == nullptr) {
+      return 0;
+    }
+    return headers->response_code();
+  }
+
  private:
   raw_ptr<NavigationHandle> handle_;
 };
@@ -663,6 +673,8 @@ void DIPSBounceDetector::DidStartNavigation(
   auto now = tick_clock_->NowTicks();
 
   auto* server_bounce_detection_state = navigation_handle->GetServerState();
+
+  server_bounce_detection_state->last_server_redirect = now;
 
   // A user gesture indicates no client-redirect. And, we won't consider a
   // client-redirect to be a bounce if we timedout on the
@@ -701,6 +713,40 @@ void DIPSBounceDetector::DidStartNavigation(
           /*web_authn_assertion_request_succeeded=*/
           client_detection_state_->last_successful_web_authn_assertion_time
               .has_value());
+}
+
+void RedirectChainDetector::DidRedirectNavigation(
+    NavigationHandle* navigation_handle) {
+  DUMP_WILL_BE_CHECK(!navigation_handle->IsSameDocument());
+  DUMP_WILL_BE_CHECK(!navigation_handle->HasCommitted());
+
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
+
+  DIPSNavigationHandleImpl dips_handle(navigation_handle);
+  detector_.DidRedirectNavigation(&dips_handle);
+}
+
+void DIPSBounceDetector::DidRedirectNavigation(
+    DIPSNavigationHandle* navigation_handle) {
+  ServerBounceDetectionState* server_state =
+      navigation_handle->GetServerState();
+  if (!server_state) {
+    return;
+  }
+
+  auto now = tick_clock_->NowTicks();
+  base::TimeDelta bounce_delay = now - server_state->last_server_redirect;
+  server_state->last_server_redirect = now;
+
+  server_state->server_redirects.push_back(
+      ServerBounceDetectionState::ServerRedirectData({
+          .http_response_code = navigation_handle->GetHTTPResponseCode(),
+          .bounce_delay = bounce_delay,
+          .was_response_cached = navigation_handle->WasResponseCached(),
+          .destination_url = GURL(navigation_handle->GetURL()),
+      }));
 }
 
 void RedirectChainDetector::NotifyStorageAccessed(
@@ -1007,13 +1053,41 @@ void DIPSBounceDetector::DidFinishNavigation(
   server_state->filter.Filter(navigation_handle->GetRedirectChain(),
                               &access_types);
 
-  for (size_t i = 0; i < access_types.size() - 1; i++) {
+  // The length of the redirect chain should be equal to the number of server
+  // redirects observed by the `DidRedirectNavigation` handler (plus one
+  // additional element for the destination URL). The exception to this is in
+  // the case a URL client-redirects to itself. Then the redirect chain will
+  // have a duplicate entry prepended to itself (but there will be no server
+  // redirect).
+  //
+  // See http://crbug.com/371004127 for more context.
+  CHECK_GT(access_types.size(), server_state->server_redirects.size());
+  // Use the length difference between the redirect chain and number of server
+  // redirects to calculate an offset. When creating instances of
+  // `DIPSRedirectInfo`, we avoid earlier entries within the redirect chain.
+  size_t offset =
+      access_types.size() - (server_state->server_redirects.size() + 1);
+  for (size_t i = 0; i < server_state->server_redirects.size(); i++) {
+    // The next item in the redirect chain should be equal to the destination
+    // URL recorded by the corresponding redirect navigation.
+    DCHECK_EQ(
+        navigation_handle->GetRedirectChain()[i + offset + 1].host_piece(),
+        server_state->server_redirects[i].destination_url.host_piece());
+    DCHECK_EQ(
+        navigation_handle->GetRedirectChain()[i + offset + 1].path_piece(),
+        server_state->server_redirects[i].destination_url.path_piece());
     redirects.push_back(std::make_unique<DIPSRedirectInfo>(
-        /*url=*/UrlAndSourceId(navigation_handle->GetRedirectChain()[i],
-                               navigation_handle->GetRedirectSourceId(i)),
+        /*url=*/UrlAndSourceId(
+            navigation_handle->GetRedirectChain()[i + offset],
+            navigation_handle->GetRedirectSourceId(i + offset)),
         /*redirect_type=*/DIPSRedirectType::kServer,
-        /*access_type=*/access_types[i],
-        /*time=*/clock_->Now()));
+        /*access_type=*/access_types[i + offset],
+        /*time=*/clock_->Now(),
+        /*was_response_cached=*/
+        server_state->server_redirects[i].was_response_cached,
+        /*response_code=*/server_state->server_redirects[i].http_response_code,
+        /*server_bounce_delay=*/
+        server_state->server_redirects[i].bounce_delay));
   }
 
   if (navigation_handle->HasCommitted()) {
@@ -1031,7 +1105,10 @@ void DIPSBounceDetector::DidFinishNavigation(
                                navigation_handle->GetRedirectSourceId(i)),
         /*redirect_type=*/DIPSRedirectType::kServer,
         /*access_type=*/access_types[i],
-        /*time=*/clock_->Now()));
+        /*time=*/clock_->Now(),
+        /*was_response_cached=*/navigation_handle->WasResponseCached(),
+        /*response_code=*/navigation_handle->GetHTTPResponseCode(),
+        /*server_bounce_delay=*/now - server_state->last_server_redirect));
     committed_redirect_context_.HandleUncommitted(
         std::move(server_state->navigation_start), std::move(redirects));
   }

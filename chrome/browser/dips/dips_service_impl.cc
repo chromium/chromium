@@ -102,6 +102,20 @@ inline void UmaHistogramClearedSitesCount(DIPSCookieMode mode, int size) {
                                size);
 }
 
+inline void UmaHistogramBounceDelay(base::TimeDelta sample) {
+  base::UmaHistogramTimes("Privacy.DIPS.ServerBounceDelay", sample);
+}
+
+inline void UmaHistogramBounceChainDelay(base::TimeDelta sample) {
+  base::UmaHistogramTimes("Privacy.DIPS.ServerBounceChainDelay", sample);
+}
+
+inline void UmaHistogramBounceStatusCode(int response_code, bool cached) {
+  base::UmaHistogramSparse(cached ? "Privacy.DIPS.BounceStatusCode.Cached"
+                                  : "Privacy.DIPS.BounceStatusCode.NoCache",
+                           response_code);
+}
+
 inline void UmaHistogramDeletion(DIPSCookieMode mode,
                                  DIPSDeletionAction action) {
   base::UmaHistogramEnumeration(
@@ -375,6 +389,14 @@ void DIPSServiceImpl::HandleRedirectChain(
     }
   }
 
+  base::TimeDelta total_server_bounce_delay;
+  for (const auto& redirect : redirects) {
+    if (redirect->redirect_type == DIPSRedirectType::kServer) {
+      total_server_bounce_delay += redirect->server_bounce_delay;
+    }
+  }
+  UmaHistogramBounceChainDelay(total_server_bounce_delay);
+
   chain->cookie_mode = GetCookieMode();
   // Copy the URL out before |redirects| is moved, to avoid use-after-move.
   GURL url = redirects[0]->url.url;
@@ -556,6 +578,12 @@ void DIPSServiceImpl::HandleRedirect(
       ClassifyRedirect(redirect.access_type, redirect.has_interaction.value());
   UmaHistogramBounceCategory(category, chain.cookie_mode.value(),
                              redirect.redirect_type);
+
+  if (redirect.redirect_type == DIPSRedirectType::kServer) {
+    UmaHistogramBounceDelay(redirect.server_bounce_delay);
+    UmaHistogramBounceStatusCode(redirect.response_code,
+                                 redirect.was_response_cached);
+  }
 }
 
 void DIPSServiceImpl::OnTimerFired() {
