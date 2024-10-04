@@ -105,6 +105,8 @@ class UrlBarViewBinder {
             }
         } else if (UrlBarProperties.SELECT_ALL_ON_FOCUS.equals(propertyKey)) {
             view.setSelectAllOnFocus(model.get(UrlBarProperties.SELECT_ALL_ON_FOCUS));
+        } else if (UrlBarProperties.LONG_CLICK_LISTENER.equals(propertyKey)) {
+            view.setOnLongClickListener(model.get(UrlBarProperties.LONG_CLICK_LISTENER));
         }
     }
 

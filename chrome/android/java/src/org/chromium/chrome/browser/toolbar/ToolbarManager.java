@@ -276,6 +276,7 @@ public class ToolbarManager
     private OnAttachStateChangeListener mAttachStateChangeListener;
     private final BackPressManager mBackPressManager;
     private final UserEducationHelper mUserEducationHelper;
+    private final ToolbarLongPressMenuHandler mToolbarLongPressMenuHandler;
 
     private HomeButtonCoordinator mHomeButtonCoordinator;
     private ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;
@@ -780,6 +781,10 @@ public class ToolbarManager
                             mTabModelSelectorSupplier);
         }
 
+        mToolbarLongPressMenuHandler = new ToolbarLongPressMenuHandler(/* context= */ mActivity);
+        OnLongClickListener onLongClickListener =
+                mToolbarLongPressMenuHandler.getOnLongClickListener();
+
         mToolbar =
                 createTopToolbarCoordinator(
                         controlContainer,
@@ -787,7 +792,8 @@ public class ToolbarManager
                         buttonDataProviders,
                         browsingModeThemeColorProvider,
                         initializeWithIncognitoColors,
-                        mConstraintsProxy);
+                        mConstraintsProxy,
+                        onLongClickListener);
         mTabStripHeightSupplier = new ObservableSupplierImpl<>(mToolbar.getTabStripHeight());
         mActionModeController =
                 new ActionModeController(
@@ -867,7 +873,8 @@ public class ToolbarManager
                             tabModelSelectorSupplier,
                             new LocationBarEmbedderUiOverrides(),
                             baseChromeLayout,
-                            bottomWindowPaddingSupplier);
+                            bottomWindowPaddingSupplier,
+                            onLongClickListener);
             toolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
             toolbarLayout.setBrowserControlsVisibilityDelegate(mControlsVisibilityDelegate);
             mLocationBar = locationBarCoordinator;
@@ -1346,7 +1353,8 @@ public class ToolbarManager
             List<ButtonDataProvider> buttonDataProviders,
             ThemeColorProvider browsingModeThemeColorProvider,
             boolean initializeWithIncognitoColors,
-            ObservableSupplier<Integer> constraintsSupplier) {
+            ObservableSupplier<Integer> constraintsSupplier,
+            OnLongClickListener onLongClickListener) {
         TopToolbarCoordinator toolbar =
                 new TopToolbarCoordinator(
                         controlContainer,
@@ -1374,7 +1382,8 @@ public class ToolbarManager
                         mFullscreenManager,
                         mTabObscuringHandler,
                         mDesktopWindowStateProvider,
-                        mTabStripTransitionDelegateSupplier);
+                        mTabStripTransitionDelegateSupplier,
+                        onLongClickListener);
 
         mHomepageStateListener =
                 () -> {

@@ -367,7 +367,8 @@ public class SearchActivity extends AsyncInitializationActivity
                         /* tabModelSelectorSupplier= */ null,
                         mLocationBarUiOverrides,
                         null,
-                        /* bottomWindowPaddingSupplier */ () -> 0);
+                        /* bottomWindowPaddingSupplier */ () -> 0,
+                        /* onLongClickListener= */ null);
         mLocationBarCoordinator.setUrlBarFocusable(true);
         mLocationBarCoordinator.setShouldShowMicButtonWhenUnfocused(true);
         mLocationBarCoordinator.getOmniboxStub().addUrlFocusChangeListener(this);

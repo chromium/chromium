@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
@@ -154,6 +155,7 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param desktopWindowStateProvider The {@link DesktopWindowStateProvider} instance.
      * @param tabStripTransitionDelegateSupplier Supplier for the {@link
      *     TabStripTransitionDelegate}.
+     * @param onLongClickListener @{@link OnLongClickListener} for the toolbar.
      */
     public TopToolbarCoordinator(
             ToolbarControlContainer controlContainer,
@@ -181,7 +183,8 @@ public class TopToolbarCoordinator implements Toolbar {
             FullscreenManager fullscreenManager,
             TabObscuringHandler tabObscuringHandler,
             @Nullable DesktopWindowStateProvider desktopWindowStateProvider,
-            OneshotSupplier<TabStripTransitionDelegate> tabStripTransitionDelegateSupplier) {
+            OneshotSupplier<TabStripTransitionDelegate> tabStripTransitionDelegateSupplier,
+            @Nullable OnLongClickListener onLongClickListener) {
         mControlContainer = controlContainer;
         mToolbarLayout = toolbarLayout;
         mMenuButtonCoordinator = browsingModeMenuButtonCoordinator;
@@ -199,6 +202,7 @@ public class TopToolbarCoordinator implements Toolbar {
         mDesktopWindowStateProvider = desktopWindowStateProvider;
         mTrackerSupplier = new ObservableSupplierImpl<>();
         mTabStripTransitionDelegateSupplier = tabStripTransitionDelegateSupplier;
+        mToolbarLayout.setOnLongClickListener(onLongClickListener);
 
         controlContainer.setPostInitializationDependencies(
                 this,

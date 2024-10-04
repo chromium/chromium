@@ -1296,7 +1296,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                             /* focusChangeCallback= */ (unused) -> {},
                             this,
                             new NoOpkeyboardVisibilityDelegate(),
-                            isIncognitoBranded());
+                            isIncognitoBranded(),
+                            /* onLongClickListener= */ null);
             mTabCreator = tabCreator;
             mTouchTargetSize = getResources().getDimensionPixelSize(R.dimen.min_touch_target_size);
             updateColors();

@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.view.ActionMode;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
@@ -155,6 +156,7 @@ public class LocationBarCoordinator
      *     out of this region to be fully visible and interactable. This is used to ensure the
      *     suggestions list draws edge to edge when appropriate. This should only be used when the
      *     soft keyboard is not visible.
+     * @param onLongClickListener @{@link OnLongClickListener} for the url bar.
      */
     public LocationBarCoordinator(
             View locationBarLayout,
@@ -191,7 +193,8 @@ public class LocationBarCoordinator
             @Nullable ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             LocationBarEmbedderUiOverrides uiOverrides,
             @Nullable View baseChromeLayout,
-            Supplier<Integer> bottomWindowPaddingSupplier) {
+            Supplier<Integer> bottomWindowPaddingSupplier,
+            @Nullable OnLongClickListener onLongClickListener) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
         mWindowDelegate = windowDelegate;
         mWindowAndroid = windowAndroid;
@@ -251,7 +254,8 @@ public class LocationBarCoordinator
                         mCallbackController.makeCancelable(mLocationBarMediator::onUrlFocusChange),
                         mLocationBarMediator,
                         windowAndroid.getKeyboardDelegate(),
-                        isIncognito);
+                        isIncognito,
+                        onLongClickListener);
         mAutocompleteCoordinator =
                 new AutocompleteCoordinator(
                         mLocationBarLayout,
