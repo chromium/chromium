@@ -368,6 +368,10 @@ extern const char kEnableReadingListSignInPromoDescription[];
 extern const char kEnableSignedOutViewDemotionName[];
 extern const char kEnableSignedOutViewDemotionDescription[];
 
+// Title and description for the flag to enable stale identites.
+extern const char kEnableStaleIdentitiesName[];
+extern const char kEnableStaleIdentitiesDescription[];
+
 // Title and description for the flag to enable filtering experiments by Google
 // group membership.
 extern const char kEnableVariationsGoogleGroupFilteringName[];

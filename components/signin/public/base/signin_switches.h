@@ -125,6 +125,10 @@ BASE_DECLARE_FEATURE(kEnableClearCut);
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kRemoveSignedInAccountsDialog);
+
+// Features to enable stale identities.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kEnableStaleIdentities);
 #endif
 
 // Pre-connectes the network socket for the Account Capabilities fetch, after

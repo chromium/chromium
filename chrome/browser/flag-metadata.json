@@ -4014,6 +4014,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "enable-stale-identities",
+    "owners": [ "jlebel@chromium.org", "chrome-signin-team@google.com" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "enable-standard-device-bound-session-credentials",
     "owners": [ "chlily@chromium.org",  "kristianm@chromium.org"],
     "expiry_milestone": 132

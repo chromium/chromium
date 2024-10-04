@@ -148,6 +148,10 @@ BASE_FEATURE(kEnableClearCut,
 BASE_FEATURE(kRemoveSignedInAccountsDialog,
              "RemoveSignedInAccountsDialog",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableStaleIdentities,
+             "EnableStaleIdentities",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
