@@ -296,6 +296,9 @@ rtc::scoped_refptr<webrtc::VideoFrameBuffer> ConvertToWebRtcVideoFrameBuffer(
       << video_frame->AsHumanReadableString();
 
   auto create_placeholder_frame = [](const media::VideoFrame& frame) {
+    LOG(ERROR)
+        << "Mapping frame failed. Generating black frame instead. Frame: "
+        << frame.AsHumanReadableString();
     return MakeFrameAdapter(media::VideoFrame::CreateColorFrame(
         frame.natural_size(), 0u, 0x80, 0x80, frame.timestamp()));
   };
