@@ -32,6 +32,8 @@ void TestResponseHolder::OnResponse(mojom::ResponseChunkPtr chunk) {
 
 void TestResponseHolder::OnComplete(mojom::ResponseSummaryPtr summary) {
   complete_ = true;
+  input_token_count_ = summary->input_token_count;
+  output_token_count_ = summary->output_token_count;
   run_loop_.Quit();
 }
 

@@ -6406,6 +6406,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Stage">
     <variant name="Context" summary="context"/>
+    <variant name="Execute" summary="execute"/>
     <variant name="Output" summary="output"/>
   </token>
 </histogram>
@@ -6420,6 +6421,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Stage">
     <variant name="Context" summary="context"/>
+    <variant name="Execute" summary="execute"/>
     <variant name="Output" summary="output"/>
   </token>
 </histogram>

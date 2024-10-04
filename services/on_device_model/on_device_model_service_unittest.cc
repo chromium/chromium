@@ -340,6 +340,24 @@ TEST_F(OnDeviceModelServiceTest, MultipleSessionsIgnoreContext) {
       ElementsAre("Context: apple\n", "Context: banana\n", "Input: orange\n"));
 }
 
+TEST_F(OnDeviceModelServiceTest, CountTokens) {
+  auto model = LoadModel();
+
+  TestResponseHolder response;
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver());
+  session->AddContext(MakeInput("cheese"), {});
+  session->AddContext(MakeInput("more"), {});
+
+  std::string input = "cheddar";
+  session->Execute(MakeInput(input), response.BindRemote());
+  response.WaitForCompletion();
+
+  EXPECT_THAT(response.input_token_count(), input.size());
+  // 2 context + 1 input.
+  EXPECT_THAT(response.output_token_count(), 3);
+}
+
 TEST_F(OnDeviceModelServiceTest, AddContextWithTokenLimits) {
   auto model = LoadModel();
 
