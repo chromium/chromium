@@ -291,16 +291,15 @@ const std::array<int, 1> kFeatureListForGpuControlTestingEntry26 = {
     TEST_FEATURE_0,
 };
 
-const char* const kMachineModelNameForEntry26[4] = {
+const std::array<const char* const, 4> kMachineModelNameForEntry26 = {{
     "Nexus 4",
     "XT1032",
     "GT-.*",
     "SCH-.*",
-};
+}};
 
 const GpuControlList::MachineModelInfo kMachineModelInfoForEntry26 = {
-    std::size(kMachineModelNameForEntry26),  // machine model name size
-    kMachineModelNameForEntry26,             // machine model names
+    base::span(kMachineModelNameForEntry26),  // machine model names
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
      GpuControlList::kVersionSchemaCommon, nullptr,
      nullptr},  // machine model version
@@ -310,14 +309,13 @@ const std::array<int, 1> kFeatureListForGpuControlTestingEntry27 = {
     TEST_FEATURE_0,
 };
 
-const char* const kMachineModelNameForEntry27Exception0[1] = {
-    "Nexus.*",
-};
+const std::array<const char* const, 1> kMachineModelNameForEntry27Exception0 = {
+    {
+        "Nexus.*",
+    }};
 
 const GpuControlList::MachineModelInfo kMachineModelInfoForEntry27Exception0 = {
-    std::size(
-        kMachineModelNameForEntry27Exception0),  // machine model name size
-    kMachineModelNameForEntry27Exception0,       // machine model names
+    base::span(kMachineModelNameForEntry27Exception0),  // machine model names
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
      GpuControlList::kVersionSchemaCommon, nullptr,
      nullptr},  // machine model version
@@ -327,13 +325,12 @@ const std::array<int, 1> kFeatureListForGpuControlTestingEntry28 = {
     TEST_FEATURE_0,
 };
 
-const char* const kMachineModelNameForEntry28[1] = {
+const std::array<const char* const, 1> kMachineModelNameForEntry28 = {{
     "MacBookPro",
-};
+}};
 
 const GpuControlList::MachineModelInfo kMachineModelInfoForEntry28 = {
-    std::size(kMachineModelNameForEntry28),  // machine model name size
-    kMachineModelNameForEntry28,             // machine model names
+    base::span(kMachineModelNameForEntry28),  // machine model names
     {GpuControlList::kEQ, GpuControlList::kVersionStyleNumerical,
      GpuControlList::kVersionSchemaCommon, "7.1",
      nullptr},  // machine model version
@@ -343,21 +340,19 @@ const std::array<int, 1> kFeatureListForGpuControlTestingEntry29 = {
     TEST_FEATURE_0,
 };
 
-const char* const kMachineModelNameForEntry29[1] = {
+const std::array<const char* const, 1> kMachineModelNameForEntry29 = {{
     "MacBookPro",
-};
+}};
 
 const GpuControlList::MachineModelInfo kMachineModelInfoForEntry29 = {
-    std::size(kMachineModelNameForEntry29),  // machine model name size
-    kMachineModelNameForEntry29,             // machine model names
+    base::span(kMachineModelNameForEntry29),  // machine model names
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
      GpuControlList::kVersionSchemaCommon, nullptr,
      nullptr},  // machine model version
 };
 
 const GpuControlList::MachineModelInfo kMachineModelInfoForEntry29Exception0 = {
-    0,        // machine model name size
-    nullptr,  // machine model names
+    base::span<const char* const>(),  // machine model names
     {GpuControlList::kGT, GpuControlList::kVersionStyleNumerical,
      GpuControlList::kVersionSchemaCommon, "7.1",
      nullptr},  // machine model version

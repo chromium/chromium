@@ -342,13 +342,12 @@ bool GpuControlList::GLStrings::Contains(const GPUInfo& gpu_info) const {
 }
 
 bool GpuControlList::MachineModelInfo::Contains(const GPUInfo& gpu_info) const {
-  if (machine_model_name_size > 0) {
+  if (machine_model_names.size() > 0) {
     if (gpu_info.machine_model_name.empty())
       return false;
     bool found_match = false;
-    for (size_t ii = 0; ii < machine_model_name_size; ++ii) {
-      if (RE2::FullMatch(gpu_info.machine_model_name,
-                         machine_model_names[ii])) {
+    for (auto* const machine_model_name : machine_model_names) {
+      if (RE2::FullMatch(gpu_info.machine_model_name, machine_model_name)) {
         found_match = true;
         break;
       }

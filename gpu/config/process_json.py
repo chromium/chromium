@@ -364,12 +364,13 @@ def write_machine_model_info(entry_id, is_exception, exception_id,
     model_name_var_name = 'kMachineModelNameForEntry' + str(entry_id)
     if is_exception:
       model_name_var_name += 'Exception' + str(exception_id)
-    data_helper_file.write('const char* const %s[%d] = {\n' %
-                           (model_name_var_name, len(machine_model_name)))
+    data_helper_file.write(
+        'const std::array<const char* const, %d> %s = {{\n' %
+        (len(machine_model_name), model_name_var_name))
     for item in machine_model_name:
       write_string(item, data_helper_file)
       data_helper_file.write(',\n')
-    data_helper_file.write('};\n\n')
+    data_helper_file.write('}};\n\n')
   var_name = None
   if machine_model_name or machine_model_version:
     var_name = 'kMachineModelInfoForEntry' + str(entry_id)
@@ -379,13 +380,11 @@ def write_machine_model_info(entry_id, is_exception, exception_id,
     data_helper_file.write(
       'const GpuControlList::MachineModelInfo %s = {\n' % var_name)
     if machine_model_name:
-      data_helper_file.write('std::size(%s),  // machine model name size\n' %
-                             model_name_var_name)
-      data_helper_file.write('%s,  // machine model names\n' %
+      data_helper_file.write('base::span(%s),  // machine model names\n' %
                              model_name_var_name)
     else:
-      data_helper_file.write('0,  // machine model name size\n')
-      data_helper_file.write('nullptr,  // machine model names\n')
+      data_helper_file.write(
+          'base::span<const char* const>(),  // machine model names\n')
     write_version(machine_model_version, 'machine model version',
                   data_helper_file)
     data_helper_file.write('};\n\n')
@@ -924,8 +923,6 @@ def process_json_file(json_filepath, list_tag,
   data_header_file.write(_DO_NOT_EDIT_WARNING)
   write_header_file_guard(data_header_file, output_header_filename, path, True)
   data_header_file.write('#include <array>\n\n')
-  if export_tag == 'CONTENT_EXPORT ':
-    data_header_file.write('#include "content/common/content_export.h"\n')
   data_header_file.write('#include "gpu/config/gpu_control_list.h"\n\n')
   data_header_file.write('namespace gpu {\n')
   data_header_file.write(
@@ -1001,27 +998,6 @@ def process_gpu_control_list_testing(script_dir, output_dir):
       'GpuControlTesting')
 
 
-def process_gpu_data_manager_testing(script_dir, output_dir):
-  total_features = load_software_rendering_list_features(
-      os.path.join(script_dir, 'gpu_feature_type.h'))
-  process_json_file(
-      os.path.join(output_dir, 'gpu_data_manager_testing.json'),
-      'GpuDataManagerTesting',
-      'gpu_feature_type.h',
-      total_features,
-      'GPU_FEATURE_TYPE_',
-      os.path.join(output_dir, 'gpu_data_manager_testing_autogen.h'),
-      os.path.join(output_dir, 'gpu_data_manager_testing_autogen.cc'),
-      os.path.join(output_dir,
-                   'gpu_data_manager_testing_arrays_and_structs_autogen.h'),
-      os.path.join(output_dir, 'gpu_data_manager_testing_exceptions_autogen.h'),
-      'content/browser/gpu',
-      '',
-      True,
-      None,
-      'GpuManagerTesting')
-
-
 def write_test_entry_enums(input_json_filepath, output_entry_enums_filepath,
                            path, list_tag):
   json_file = open(input_json_filepath, 'rb')
@@ -1081,15 +1057,6 @@ def main(argv):
                      'gpu_control_list_testing_entry_enums_autogen.h'),
         'gpu/config',
         'GpuControlListTesting')
-    chrome_root_dir = os.path.abspath(os.path.join(script_dir, '../../'))
-    gpu_data_manager_dir = os.path.join(chrome_root_dir, 'content/browser/gpu')
-    process_gpu_data_manager_testing(script_dir, gpu_data_manager_dir)
-    write_test_entry_enums(
-        os.path.join(gpu_data_manager_dir, 'gpu_data_manager_testing.json'),
-        os.path.join(gpu_data_manager_dir,
-                     'gpu_data_manager_testing_entry_enums_autogen.h'),
-        'content/browser/gpu',
-        'GpuDataManagerTesting')
 
 
 if __name__ == '__main__':

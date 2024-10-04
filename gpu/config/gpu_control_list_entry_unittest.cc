@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
 #include "build/build_config.h"
@@ -111,10 +106,11 @@ TEST_F(GpuControlListEntryTest, AllExceptNVidiaOnLinuxEntry) {
   const Entry& entry =
       GetEntry(kGpuControlListEntryTest_AllExceptNVidiaOnLinuxEntry);
   EXPECT_EQ(kOsLinux, entry.conditions.os_type);
-  const GpuControlList::OsType os_type[] = {kOsMacosx, kOsWin, kOsLinux,
-                                            kOsChromeOS, kOsAndroid};
-  for (size_t i = 0; i < std::size(os_type); ++i)
-    EXPECT_FALSE(entry.Contains(os_type[i], "10.6", gpu_info()));
+  const GpuControlList::OsType os_types[] = {kOsMacosx, kOsWin, kOsLinux,
+                                             kOsChromeOS, kOsAndroid};
+  for (auto os_type : os_types) {
+    EXPECT_FALSE(entry.Contains(os_type, "10.6", gpu_info()));
+  }
 }
 
 TEST_F(GpuControlListEntryTest, AllExceptIntelOnLinuxEntry) {

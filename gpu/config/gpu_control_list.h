@@ -156,10 +156,7 @@ class GPU_EXPORT GpuControlList {
   };
 
   struct GPU_EXPORT MachineModelInfo {
-    size_t machine_model_name_size;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #global-scope
-    RAW_PTR_EXCLUSION const char* const* machine_model_names;
+    base::span<const char* const> machine_model_names;
     Version machine_model_version;
 
     bool Contains(const GPUInfo& gpu_info) const;
