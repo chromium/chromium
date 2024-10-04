@@ -16687,6 +16687,21 @@
             ]
         }
     ],
+    "PasswordlessSetup": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AllowPasswordlessSetup"
+                    ]
+                }
+            ]
+        }
+    ],
     "Path2DPaintCache": [
         {
             "platforms": [
@@ -17117,24 +17132,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "CrOSLateBootMigrateToModernPin"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PinTimeoutSetup": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AllowPinTimeoutSetup",
-                        "CrOSLateBootEnableModernPin",
-                        "SeparatePasswordAndPinOnLogin",
-                        "WebAuthNAuthDialogMerge"
                     ]
                 }
             ]
