@@ -3043,8 +3043,9 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
   handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
-      key::kGraduationEnablementStatus, ash::prefs::kGraduationEnablementStatus,
-      chrome_schema, SCHEMA_ALLOW_UNKNOWN,
+      key::kContentTransferEnablementStatus,
+      ash::prefs::kGraduationEnablementStatus, chrome_schema,
+      SCHEMA_ALLOW_UNKNOWN,
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
   handlers->AddHandler(std::make_unique<HelpMeReadPolicyHandler>());

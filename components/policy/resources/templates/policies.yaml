@@ -1292,7 +1292,7 @@ policies:
   1291: TabCompareSettings
   1292: AdHocCodeSigningForPWAsEnabled
   1293: KioskWebAppOfflineEnabled
-  1294: GraduationEnablementStatus
+  1294: ContentTransferEnablementStatus
   1295: HelpMeReadSettings
   1296: GenAiDefaultSettings
   1297: KioskActiveWiFiCredentialsScopeChangeEnabled

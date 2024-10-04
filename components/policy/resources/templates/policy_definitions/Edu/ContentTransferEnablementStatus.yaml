@@ -1,0 +1,68 @@
+caption: Configure when the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> Content Transfer tool is available
+desc: |-
+  This policy enables the Content Transfer app for managed users. The Content Transfer app helps users transfer their data from their managed account to a consumer account.
+
+  If <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE">is_enabled</ph> is set to <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE_TRUE">true</ph>, the Content Transfer app will be shown on and between the start and end dates according to the local time.
+
+  If <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE">is_enabled</ph> is set to <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE_FALSE">false</ph> or unset, the app will not be shown.
+
+  If <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE">start_date</ph> is unset, then the app is shown until the end date.
+
+  If <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_END_DATE_VALUE">end_date</ph> is unset, then the app is shown indefinitely from the start date.
+
+  If both <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE">start_date</ph> and <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_END_DATE_VALUE">end_date</ph> are unset, the app is shown indefinitely. If the start and end dates are invalid, then the Content Transfer app will not be shown. This includes if the provided dates are non-existent or the end date is before the start date.
+
+  Data transfer with Takeout also needs to be enabled in order for the Content Transfer app to work properly. See https://support.google.com/a/answer/6364687 for additional information.
+example_value:
+  is_enabled: true
+  start_date:
+    day: 8
+    month: 7
+    year: 2024
+  end_date:
+    day: 8
+    month: 12
+    year: 2024
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- courtneywong@chromium.org
+- file://chrome/browser/ash/child_accounts/OWNERS
+schema:
+  properties:
+    is_enabled:
+      type: boolean
+    start_date:
+      properties:
+        day:
+          maximum: 31
+          minimum: 1
+          type: integer
+        month:
+          maximum: 12
+          minimum: 1
+          type: integer
+        year:
+          minimum: 0
+          type: integer
+      type: object
+    end_date:
+      properties:
+        day:
+          maximum: 31
+          minimum: 1
+          type: integer
+        month:
+          maximum: 12
+          minimum: 1
+          type: integer
+        year:
+          minimum: 0
+          type: integer
+      type: object
+  type: object
+future_on:
+- chrome_os
+tags: []
+type: dict
