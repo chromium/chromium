@@ -277,13 +277,25 @@ bool MediaFoundationServiceMonitor::IsHardwareSecureDecryptionDisabledByPref() {
 bool MediaFoundationServiceMonitor::IsHardwareSecureDecryptionAllowedForSite(
     const GURL& site) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  static bool allow_per_site_uma_logged = false;
 
   auto earliest_enable_time =
       GetEarliestEnableTime(GetDisabledTimesPerSite(site));
   DVLOG(1) << __func__ << ": site='" << site
            << "' earliest_enable_time=" << earliest_enable_time;
 
-  return base::Time::Now() > earliest_enable_time;
+  bool result = base::Time::Now() > earliest_enable_time;
+
+  // Note: This UMA gets reported once per browser session. It is possible that
+  // multiple sites report different result. However, only the first visited
+  // site will record UMA until the browser session restarts.
+  if (!allow_per_site_uma_logged) {
+    base::UmaHistogramBoolean(
+        "Media.EME.Widevine.HardwareSecure.AllowedForSite", result);
+    allow_per_site_uma_logged = true;
+  }
+
+  return result;
 }
 
 // static
