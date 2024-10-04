@@ -91,6 +91,12 @@ class TestingApplicationContext : public ApplicationContext {
   PushNotificationService* GetPushNotificationService() override;
   os_crypt_async::OSCryptAsync* GetOSCryptAsync() override;
   AdditionalFeaturesController* GetAdditionalFeaturesController() override;
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+  optimization_guide::OnDeviceModelServiceController*
+  GetOnDeviceModelServiceController(
+      base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
+          on_device_component_manager) override;
+#endif  // BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
