@@ -96,4 +96,64 @@ id<GREYMatcher> IdentityButtonMatcher(NSString* email) {
       assertWithMatcher:grey_notNil()];
 }
 
+// Tests identity change from the root.
+- (void)testIdentityChangeFromTheRoot {
+  FakeSystemIdentity* primaryIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:primaryIdentity];
+  [SigninEarlGreyUI signinWithFakeIdentity:primaryIdentity];
+
+  FakeSystemIdentity* secondaryIdentity = [FakeSystemIdentity fakeIdentity2];
+  [SigninEarlGrey addFakeIdentity:secondaryIdentity];
+
+  [DriveFilePickerAppInterface startChoosingFilesInCurrentWebState];
+  [DriveFilePickerAppInterface showDriveFilePicker];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      DriveFilePickerNavigationViewControllerMatcher()];
+
+  [[EarlGrey
+      selectElementWithMatcher:IdentityButtonMatcher(primaryIdentity.userEmail)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabel(
+                     secondaryIdentity.userEmail)] performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:IdentityButtonMatcher(
+                                          secondaryIdentity.userEmail)]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Tests identity change when browsing a drive folder.
+- (void)testIdentityChangeAfterBrowsing {
+  FakeSystemIdentity* primaryIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:primaryIdentity];
+  [SigninEarlGreyUI signinWithFakeIdentity:primaryIdentity];
+
+  FakeSystemIdentity* secondaryIdentity = [FakeSystemIdentity fakeIdentity2];
+  [SigninEarlGrey addFakeIdentity:secondaryIdentity];
+
+  [DriveFilePickerAppInterface startChoosingFilesInCurrentWebState];
+  [DriveFilePickerAppInterface showDriveFilePicker];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      DriveFilePickerNavigationViewControllerMatcher()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kDriveFilePickerMyDriveItemIdentifier)]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:IdentityButtonMatcher(primaryIdentity.userEmail)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabel(
+                     secondaryIdentity.userEmail)] performAction:grey_tap()];
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_accessibilityID(
+                          kDriveFilePickerRootTitleAccessibilityIdentifier)];
+  [[EarlGrey selectElementWithMatcher:IdentityButtonMatcher(
+                                          secondaryIdentity.userEmail)]
+      assertWithMatcher:grey_notNil()];
+}
+
 @end

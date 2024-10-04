@@ -17,6 +17,15 @@ extern NSString* const kDriveFilePickerFilterButtonIdentifier;
 extern NSString* const kDriveFilePickerSortButtonIdentifier;
 // Accessibility identifier of the identity button.
 extern NSString* const kDriveFilePickerIdentityIdentifier;
+// Accessibility identifier of the root title view.
+extern NSString* const kDriveFilePickerRootTitleAccessibilityIdentifier;
+
+extern NSString* const kDriveFilePickerMyDriveItemIdentifier;
+extern NSString* const kDriveFilePickerSharedDrivesItemIdentifier;
+extern NSString* const kDriveFilePickerComputersItemIdentifier;
+extern NSString* const kDriveFilePickerStarredItemIdentifier;
+extern NSString* const kDriveFilePickerRecentItemIdentifier;
+extern NSString* const kDriveFilePickerSharedWithMeItemIdentifier;
 
 // Different types of collection which can be displayed in the file picker.
 enum class DriveFilePickerCollectionType {

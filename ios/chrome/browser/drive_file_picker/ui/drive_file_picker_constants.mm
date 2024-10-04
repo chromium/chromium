@@ -14,3 +14,17 @@ NSString* const kDriveFilePickerSortButtonIdentifier =
     @"kDriveFilePickerSortButtonIdentifier";
 NSString* const kDriveFilePickerIdentityIdentifier =
     @"kDriveFilePickerIdentityIdentifier";
+NSString* const kDriveFilePickerRootTitleAccessibilityIdentifier =
+    @"kDriveFilePickerRootTitleAccessibilityIdentifier";
+NSString* const kDriveFilePickerMyDriveItemIdentifier =
+    @"kDriveFilePickerMyDriveItemIdentifier";
+NSString* const kDriveFilePickerSharedDrivesItemIdentifier =
+    @"kDriveFilePickerSharedDrivesItemIdentifier";
+NSString* const kDriveFilePickerComputersItemIdentifier =
+    @"kDriveFilePickerComputersItemIdentifier";
+NSString* const kDriveFilePickerStarredItemIdentifier =
+    @"kDriveFilePickerStarredItemIdentifier";
+NSString* const kDriveFilePickerRecentItemIdentifier =
+    @"kDriveFilePickerRecentItemIdentifier";
+NSString* const kDriveFilePickerSharedWithMeItemIdentifier =
+    @"kDriveFilePickerSharedWithMeItemIdentifier";

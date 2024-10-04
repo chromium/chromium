@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_item.h"
 
+#import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -12,19 +13,6 @@ namespace {
 
 // The point size of the icons.
 const CGFloat kIconPointSize = 18;
-
-NSString* const kDriveFilePickerMyDriveItemIdentifier =
-    @"kDriveFilePickerMyDriveItemIdentifier";
-NSString* const kDriveFilePickerSharedDrivesItemIdentifier =
-    @"kDriveFilePickerSharedDrivesItemIdentifier";
-NSString* const kDriveFilePickerComputersItemIdentifier =
-    @"kDriveFilePickerComputersItemIdentifier";
-NSString* const kDriveFilePickerStarredItemIdentifier =
-    @"kDriveFilePickerStarredItemIdentifier";
-NSString* const kDriveFilePickerRecentItemIdentifier =
-    @"kDriveFilePickerRecentItemIdentifier";
-NSString* const kDriveFilePickerSharedWithMeItemIdentifier =
-    @"kDriveFilePickerSharedWithMeItemIdentifier";
 
 }  // namespace
 

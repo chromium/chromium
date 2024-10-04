@@ -604,6 +604,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   }
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
+  cell.accessibilityIdentifier = item.identifier;
 
   return cell;
 }
@@ -635,6 +636,8 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 #else
   self.navigationItem.titleView = CreateGoogleDriveTitleLabel();
 #endif
+  self.navigationItem.titleView.accessibilityIdentifier =
+      kDriveFilePickerRootTitleAccessibilityIdentifier;
 }
 
 - (void)setBackground:(DriveFilePickerBackground)background {
