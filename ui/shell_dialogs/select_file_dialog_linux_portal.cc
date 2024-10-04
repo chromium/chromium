@@ -521,15 +521,8 @@ void SelectFileDialogLinuxPortal::DialogInfo::SelectFileImplOnBusThread(
   AppendOptions(&writer, response_handle_token, default_path,
                 default_path_exists, filter_set);
 
-  // The sender part of the handle object contains the D-Bus connection name
-  // without the prefix colon and with all dots replaced with underscores.
-  std::string sender_part;
-  base::ReplaceChars(bus->GetConnectionName().substr(1), ".", "_",
-                     &sender_part);
-
-  dbus::ObjectPath expected_handle_path(
-      base::StringPrintf("/org/freedesktop/portal/desktop/request/%s/%s",
-                         sender_part.c_str(), response_handle_token.c_str()));
+  dbus::ObjectPath expected_handle_path(base::nix::XdgDesktopPortalRequestPath(
+      bus->GetConnectionName(), response_handle_token));
 
   response_handle_ =
       bus->GetObjectProxy(kXdgPortalService, expected_handle_path);
