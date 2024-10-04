@@ -133,6 +133,20 @@ TEST(AutofillPredictionImprovementsUtilsTest,
   EXPECT_TRUE(IsFormEligibleForFillingByFieldCriteria(form));
 }
 
+// Test that a form with an eligible but unfocusable field is not eligible.
+TEST(
+    AutofillPredictionImprovementsUtilsTest,
+    IsFormEligibleForFillingByFieldTypeCriteria_SingleUnfocusableEligibleField) {
+  FormData form_data;
+  FormStructure form(form_data);
+  FormStructureTestApi form_test_api(form);
+
+  AutofillField& prediction_improvement_field = form_test_api.PushField();
+  AddImprovedPredictionType(prediction_improvement_field);
+  prediction_improvement_field.set_is_focusable(false);
+  EXPECT_FALSE(IsFormEligibleForFillingByFieldCriteria(form));
+}
+
 // Test that a form with an eligible field is overall eligible.
 TEST(
     AutofillPredictionImprovementsUtilsTest,
