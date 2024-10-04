@@ -467,7 +467,16 @@ void AutocompleteResult::SortAndCull(
               std::make_unique<IOSIpadWebZpsSection>(suggestion_groups_map_));
         }
       } else {
-        if (omnibox::IsNTPPage(page_classification)) {
+        if (omnibox::IsLensSearchbox(page_classification)) {
+          switch (page_classification) {
+            case OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX:
+              sections.push_back(std::make_unique<IOSLensMultimodalZpsSection>(
+                  suggestion_groups_map_));
+              break;
+            default:
+              NOTREACHED_IN_MIGRATION();
+          }
+        } else if (omnibox::IsNTPPage(page_classification)) {
           sections.push_back(
               std::make_unique<IOSNTPZpsSection>(suggestion_groups_map_));
         } else if (omnibox::IsSearchResultsPage(page_classification)) {

@@ -421,6 +421,14 @@ IOSWebZpsSection::IOSWebZpsSection(omnibox::GroupConfigMap& group_configs)
                             },
                             group_configs) {}
 
+IOSLensMultimodalZpsSection::IOSLensMultimodalZpsSection(
+    omnibox::GroupConfigMap& group_configs)
+    : ZpsSection(10,
+                 {
+                     {10, omnibox::GROUP_MULTIMODAL},
+                 },
+                 group_configs) {}
+
 IOSIpadNTPZpsSection::IOSIpadNTPZpsSection(
     omnibox::GroupConfigMap& group_configs)
     : ZpsSection(10,

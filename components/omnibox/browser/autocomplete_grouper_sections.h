@@ -261,6 +261,15 @@ class IOSWebZpsSection : public ZpsSectionWithMVTiles {
   explicit IOSWebZpsSection(omnibox::GroupConfigMap& group_configs);
 };
 
+// Section expressing the iOS ZPS limits and grouping for the Lens mutimodal
+// searchbox.
+// - up to 10 suggestions total.
+//  - up to 10 search suggestions.
+class IOSLensMultimodalZpsSection : public ZpsSection {
+ public:
+  explicit IOSLensMultimodalZpsSection(omnibox::GroupConfigMap& group_configs);
+};
+
 // Section expressing the iPad ZPS limits and grouping for the NTP.
 // - up to 10 suggestions total.
 //  - up to 1 clipboard suggestion.

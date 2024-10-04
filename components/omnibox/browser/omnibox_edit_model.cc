@@ -1110,6 +1110,11 @@ void OmniboxEditModel::StartZeroSuggestRequest(
   input_.set_focus_type(user_clobbered_permanent_text
                             ? metrics::OmniboxFocusType::INTERACTION_CLOBBER
                             : metrics::OmniboxFocusType::INTERACTION_FOCUS);
+  // Set the lens overlay interaction response, if available.
+  if (std::optional<lens::proto::LensOverlayInteractionResponse> response =
+          controller_->client()->GetLensOverlayInteractionResponse()) {
+    input_.set_lens_overlay_interaction_response(*response);
+  }
   controller_->StartAutocomplete(input_);
 }
 
