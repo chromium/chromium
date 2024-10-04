@@ -729,7 +729,8 @@ void CanvasResourceSharedImage::CopyRenderingResultsToGpuMemoryBuffer(
     return;
   }
 
-  auto surface = SkSurfaces::WrapPixels(CreateSkImageInfo(), mapping->Memory(0),
+  auto surface = SkSurfaces::WrapPixels(CreateSkImageInfo(),
+                                        mapping->GetMemoryForPlane(0).data(),
                                         mapping->Stride(0));
   SkPixmap pixmap;
   image->peekPixels(&pixmap);
