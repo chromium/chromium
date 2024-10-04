@@ -318,7 +318,7 @@ class TaskSetFinishedTaskImpl : public TileTask {
  public:
   explicit TaskSetFinishedTaskImpl(
       base::SequencedTaskRunner* task_runner,
-      base::RepeatingClosure on_task_set_finished_callback)
+      base::OnceClosure on_task_set_finished_callback)
       : TileTask(TileTask::SupportsConcurrentExecution::kYes,
                  TileTask::SupportsBackgroundThreadPriority::kYes),
         task_runner_(task_runner),
@@ -340,12 +340,14 @@ class TaskSetFinishedTaskImpl : public TileTask {
   ~TaskSetFinishedTaskImpl() override = default;
 
   void TaskSetFinished() {
-    task_runner_->PostTask(FROM_HERE, on_task_set_finished_callback_);
+    CHECK(on_task_set_finished_callback_);
+    task_runner_->PostTask(FROM_HERE,
+                           std::move(on_task_set_finished_callback_));
   }
 
  private:
   raw_ptr<base::SequencedTaskRunner> task_runner_;
-  const base::RepeatingClosure on_task_set_finished_callback_;
+  base::OnceClosure on_task_set_finished_callback_;
 };
 
 class DidFinishRunningAllTilesTask : public TileTask {
@@ -1997,8 +1999,8 @@ scoped_refptr<TileTask> TileManager::CreateTaskSetFinishedTask(
     void (TileManager::*callback)()) {
   return base::MakeRefCounted<TaskSetFinishedTaskImpl>(
       task_runner_,
-      base::BindRepeating(callback,
-                          task_set_finished_weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(callback,
+                     task_set_finished_weak_ptr_factory_.GetWeakPtr()));
 }
 
 std::unique_ptr<base::trace_event::ConvertableToTraceFormat>
