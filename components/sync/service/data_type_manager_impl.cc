@@ -472,55 +472,6 @@ DataTypeController* DataTypeManagerImpl::GetControllerForTest(DataType type) {
   return controllers_.at(type).get();
 }
 
-// static
-DataTypeSet DataTypeManagerImpl::GetDataTypesInState(
-    DataTypeConfigState state,
-    const DataTypeConfigStateMap& state_map) {
-  DataTypeSet types;
-  for (const auto& [type, config_state] : state_map) {
-    if (config_state == state) {
-      types.Put(type);
-    }
-  }
-  return types;
-}
-
-// static
-void DataTypeManagerImpl::SetDataTypesState(DataTypeConfigState state,
-                                            DataTypeSet types,
-                                            DataTypeConfigStateMap* state_map) {
-  for (DataType type : types) {
-    (*state_map)[type] = state;
-  }
-}
-
-DataTypeManagerImpl::DataTypeConfigStateMap
-DataTypeManagerImpl::BuildDataTypeConfigStateMap(
-    const DataTypeSet& types_being_configured) const {
-  // 1. Add the difference between `preferred_types_` and the failed types
-  //    (which is what GetEnabledTypes() returns) as CONFIGURE_INACTIVE.
-  // 2. Among those, flip `types_being_configured` to CONFIGURE_ACTIVE.
-  // 3. Set non-enabled user types as DISABLED. Note that this includes failed
-  //    types too, as they have been previously excluded in step 1.
-  const DataTypeSet enabled_types = GetEnabledTypes();
-  const DataTypeSet disabled_types =
-      Difference(Union(UserTypes(), ControlTypes()), enabled_types);
-  const DataTypeSet to_configure =
-      Intersection(enabled_types, types_being_configured);
-
-  DVLOG(1) << "Enabling: " << DataTypeSetToDebugString(enabled_types);
-  DVLOG(1) << "Configuring: " << DataTypeSetToDebugString(to_configure);
-  DVLOG(1) << "Disabling: " << DataTypeSetToDebugString(disabled_types);
-
-  CHECK(disabled_types.HasAll(data_type_status_table_.GetFailedTypes()));
-
-  DataTypeConfigStateMap config_state_map;
-  SetDataTypesState(CONFIGURE_INACTIVE, enabled_types, &config_state_map);
-  SetDataTypesState(CONFIGURE_ACTIVE, to_configure, &config_state_map);
-  SetDataTypesState(DISABLED, disabled_types, &config_state_map);
-  return config_state_map;
-}
-
 void DataTypeManagerImpl::Restart() {
   CHECK(configurer_);
 
@@ -745,23 +696,20 @@ void DataTypeManagerImpl::StartNextConfiguration() {
 
 DataTypeConfigurer::ConfigureParams
 DataTypeManagerImpl::PrepareConfigureParams() {
-  // Divide up the types into their corresponding actions:
-  // - Types which are newly enabled are downloaded.
-  // - Types which have encountered a cryptographer error (crypto_types) are
-  //   unapplied (local state is purged but sync state is not).
-  // - All types not in the routing info (types just disabled) are deleted.
-  // - Everything else (enabled types and already disabled types) is not
-  //   touched.
-  const DataTypeConfigStateMap config_state_map =
-      BuildDataTypeConfigStateMap(configuration_types_queue_.front());
-  const DataTypeSet active_types =
-      GetDataTypesInState(CONFIGURE_ACTIVE, config_state_map);
+  const DataTypeSet enabled_types = GetEnabledTypes();
   const DataTypeSet disabled_types =
-      GetDataTypesInState(DISABLED, config_state_map);
+      Difference(Union(UserTypes(), ControlTypes()), enabled_types);
+  const DataTypeSet types_to_configure =
+      Intersection(enabled_types, configuration_types_queue_.front());
 
-  DCHECK(Intersection(active_types, disabled_types).empty());
+  DVLOG(1) << "Enabling: " << DataTypeSetToDebugString(enabled_types);
+  DVLOG(1) << "Configuring: " << DataTypeSetToDebugString(types_to_configure);
+  DVLOG(1) << "Disabling: " << DataTypeSetToDebugString(disabled_types);
 
-  DataTypeSet types_to_download = Difference(active_types, downloaded_types_);
+  CHECK(disabled_types.HasAll(data_type_status_table_.GetFailedTypes()));
+
+  DataTypeSet types_to_download =
+      Difference(types_to_configure, downloaded_types_);
   // Commit-only types never require downloading.
   types_to_download.RemoveAll(CommitOnlyTypes());
   if (!types_to_download.empty()) {
@@ -931,16 +879,16 @@ DataTypeSet DataTypeManagerImpl::GetDataTypesWithPermanentErrors() const {
   return data_type_status_table_.GetFatalErrorTypes();
 }
 
-DataTypeSet DataTypeManagerImpl::GetPurgedDataTypes() const {
-  DataTypeSet purged_types;
+DataTypeSet DataTypeManagerImpl::GetStoppedDataTypesExcludingNigori() const {
+  DataTypeSet stopped_types;
 
   for (const auto& [type, controller] : controllers_) {
     if (controller->state() == DataTypeController::NOT_RUNNING) {
-      purged_types.Put(type);
+      stopped_types.Put(type);
     }
   }
 
-  return purged_types;
+  return stopped_types;
 }
 
 DataTypeSet DataTypeManagerImpl::GetActiveProxyDataTypes() const {

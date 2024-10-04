@@ -108,9 +108,10 @@ class DataTypeManager {
   // completes the set will be updated.
   virtual DataTypeSet GetActiveDataTypes() const = 0;
 
-  // Returns the datatypes that are stopped that are known to have cleared their
-  // local sync metadata.
-  virtual DataTypeSet GetPurgedDataTypes() const = 0;
+  // Returns the datatypes that are stopped, with or without having cleared
+  // metadata. This function never returns Nigori, which is a control type and
+  // hence never fully stopped.
+  virtual DataTypeSet GetStoppedDataTypesExcludingNigori() const = 0;
 
   // Returns the datatypes that are configured but not connected to the sync
   // engine. Note that during configuration, this will be empty.

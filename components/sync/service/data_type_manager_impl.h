@@ -51,7 +51,7 @@ class DataTypeManagerImpl : public DataTypeManager,
   DataTypeSet GetRegisteredDataTypes() const override;
   DataTypeSet GetDataTypesForTransportOnlyMode() const override;
   DataTypeSet GetActiveDataTypes() const override;
-  DataTypeSet GetPurgedDataTypes() const override;
+  DataTypeSet GetStoppedDataTypesExcludingNigori() const override;
   DataTypeSet GetActiveProxyDataTypes() const override;
   DataTypeSet GetTypesWithPendingDownloadForInitialSync() const override;
   DataTypeSet GetDataTypesWithPermanentErrors() const override;
@@ -82,31 +82,6 @@ class DataTypeManagerImpl : public DataTypeManager,
   bool needs_reconfigure_for_test() const { return needs_reconfigure_; }
 
  private:
-  enum DataTypeConfigState {
-    // Actively being configured. Data of such types will be downloaded if not
-    // present locally.
-    // TODO(crbug.com/40901755): Rename these enums to avoid 'active' in the
-    // name, as it has a different meaning in the public API.
-    CONFIGURE_ACTIVE,
-    // Already configured or to be configured in future. Data of such types is
-    // left as it is, no downloading or purging.
-    CONFIGURE_INACTIVE,
-    // Not syncing, either disabled by user or for any other reason such as
-    // errors.
-    DISABLED,
-  };
-  using DataTypeConfigStateMap = std::map<DataType, DataTypeConfigState>;
-
-  // Return data types in `state_map` that match `state`.
-  static DataTypeSet GetDataTypesInState(
-      DataTypeConfigState state,
-      const DataTypeConfigStateMap& state_map);
-
-  // Set state of `types` in `state_map` to `state`.
-  static void SetDataTypesState(DataTypeConfigState state,
-                                DataTypeSet types,
-                                DataTypeConfigStateMap* state_map);
-
   // Prepare the parameters for the configurer's configuration.
   DataTypeConfigurer::ConfigureParams PrepareConfigureParams();
 
@@ -135,9 +110,6 @@ class DataTypeManagerImpl : public DataTypeManager,
 
   // Calls data type controllers of requested types to connect.
   void ConnectDataTypes();
-
-  DataTypeConfigStateMap BuildDataTypeConfigStateMap(
-      const DataTypeSet& types_being_configured) const;
 
   // Start configuration of next set of types in `configuration_types_queue_`
   // (if any exist, does nothing otherwise).

@@ -44,7 +44,7 @@ class SyncBackendMigratorTest : public testing::Test {
   // Marks all types in |unsynced_types| as unsynced  and all other
   // types as synced.
   void SetUnsyncedTypes(DataTypeSet unsynced_types) {
-    ON_CALL(manager_, GetPurgedDataTypes())
+    ON_CALL(manager_, GetStoppedDataTypesExcludingNigori())
         .WillByDefault(Return(unsynced_types));
   }
 

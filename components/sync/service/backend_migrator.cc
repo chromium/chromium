@@ -152,22 +152,22 @@ void BackendMigrator::OnConfigureDoneImpl(
   }
 
   if (state_ == DISABLING_TYPES) {
-    DataTypeSet purged_types = manager_->GetPurgedDataTypes();
+    DataTypeSet stopped_types = manager_->GetStoppedDataTypesExcludingNigori();
     // NIGORI does not have a controller and is hence not managed by
-    // DataTypeManager, which means it's never returned in GetPurgedDataTypes().
-    // Luckily, there's no need to wait until NIGORI is purged, because that
-    // takes effect immediately.
+    // DataTypeManager, which means it's never returned in
+    // GetStoppedDataTypesExcludingNigori(). Luckily, there's no need to wait
+    // until NIGORI is purged, because that takes effect immediately.
     // TODO(crbug.com/40154783): try to find better way to implement this logic.
-    purged_types.Put(NIGORI);
+    stopped_types.Put(NIGORI);
 
-    if (!purged_types.HasAll(to_migrate_)) {
-      SLOG(WARNING) << "Set of purged types: "
-                    << DataTypeSetToDebugString(purged_types)
+    if (!stopped_types.HasAll(to_migrate_)) {
+      SLOG(WARNING) << "Set of stopped types: "
+                    << DataTypeSetToDebugString(stopped_types)
                     << " does not contain types to migrate: "
                     << DataTypeSetToDebugString(to_migrate_)
                     << "; not re-enabling yet due to "
                     << DataTypeSetToDebugString(
-                           Difference(to_migrate_, purged_types));
+                           Difference(to_migrate_, stopped_types));
       return;
     }
 
