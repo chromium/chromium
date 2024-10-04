@@ -58,10 +58,11 @@ class AutofillPredictionImprovementsManager
   std::vector<autofill::Suggestion> GetSuggestions(
       const std::vector<autofill::Suggestion>& autofill_suggestions,
       const autofill::FormFieldData& field) override;
-  bool IsFormAndFieldEligible(const autofill::FormStructure& form,
-                              const autofill::AutofillField& field) override;
-  bool IsUserEligible() override;
-  bool ShouldProvidePredictionImprovements(const GURL& url) override;
+  bool IsFormAndFieldEligible(
+      const autofill::FormStructure& form,
+      const autofill::AutofillField& field) const override;
+  bool IsUserEligible() const override;
+  bool ShouldProvidePredictionImprovements(const GURL& url) const override;
   void UserFeedbackReceived(
       autofill::AutofillPredictionImprovementsDelegate::UserFeedback feedback)
       override;
@@ -73,7 +74,9 @@ class AutofillPredictionImprovementsManager
   void MaybeImportForm(std::unique_ptr<autofill::FormStructure> form,
                        ImportFormCallback callback) override;
   void HasDataStored(HasDataCallback callback) override;
-  void GoToSettings() override;
+  bool ShouldDisplayIph(const autofill::FormStructure& form,
+                        const autofill::AutofillField& field) const override;
+  void GoToSettings() const override;
 
   // Methods for strike counting of rejected forms.
   bool IsFormBlockedForImport(const autofill::FormStructure& form) const;

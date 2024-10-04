@@ -28,7 +28,7 @@ class MockAutofillPredictionImprovementsDelegate
   MOCK_METHOD(bool,
               ShouldProvidePredictionImprovements,
               (const GURL& url),
-              (override));
+              (const override));
   MOCK_METHOD(void,
               UserFeedbackReceived,
               (AutofillPredictionImprovementsDelegate::UserFeedback feedback),
@@ -37,8 +37,8 @@ class MockAutofillPredictionImprovementsDelegate
               IsFormAndFieldEligible,
               (const autofill::FormStructure& form,
                const autofill::AutofillField& field),
-              (override));
-  MOCK_METHOD(bool, IsUserEligible, (), (override));
+              (const override));
+  MOCK_METHOD(bool, IsUserEligible, (), (const override));
   MOCK_METHOD(void, UserClickedLearnMore, (), (override));
   MOCK_METHOD(void,
               OnClickedTriggerSuggestion,
@@ -52,7 +52,11 @@ class MockAutofillPredictionImprovementsDelegate
                ImportFormCallback callback),
               (override));
   MOCK_METHOD(void, HasDataStored, (HasDataCallback callback), (override));
-  MOCK_METHOD(void, GoToSettings, (), (override));
+  MOCK_METHOD(bool,
+              ShouldDisplayIph,
+              (const autofill::FormStructure& form, const AutofillField& field),
+              (const override));
+  MOCK_METHOD(void, GoToSettings, (), (const override));
 };
 
 }  // namespace autofill

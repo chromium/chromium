@@ -32,7 +32,7 @@ class AutofillPredictionImprovementsDelegate {
   enum class UserFeedback { kThumbsUp, kThumbsDown };
 
   using UpdateSuggestionsCallback =
-      base::RepeatingCallback<void(std::vector<autofill::Suggestion>,
+      base::RepeatingCallback<void(std::vector<Suggestion>,
                                    autofill::AutofillSuggestionTriggerSource)>;
   // `ImportFormCallback` carries `to_be_upserted_entries` that will be shown in
   // the Autofill prediction improvements prompt. The prompt then notifies the
@@ -57,15 +57,15 @@ class AutofillPredictionImprovementsDelegate {
   // Returns whether `form` and `field` are eligible for the improved prediction
   // experience.
   virtual bool IsFormAndFieldEligible(const FormStructure& form,
-                                      const AutofillField& field) = 0;
+                                      const AutofillField& field) const = 0;
 
   // Returns whether the current user is eligible for the improved prediction
   // experience.
-  virtual bool IsUserEligible() = 0;
+  virtual bool IsUserEligible() const = 0;
 
   // Returns `true` if the corresponding feature is enabled and optimization can
   // be applied.
-  virtual bool ShouldProvidePredictionImprovements(const GURL& url) = 0;
+  virtual bool ShouldProvidePredictionImprovements(const GURL& url) const = 0;
 
   // Called when a feedback about the feature is given by the user.
   virtual void UserFeedbackReceived(UserFeedback feedback) = 0;
@@ -77,8 +77,8 @@ class AutofillPredictionImprovementsDelegate {
   // Called when the `SuggestionType::kRetrievePredictionImprovements`
   // suggestion was accepted.
   virtual void OnClickedTriggerSuggestion(
-      const autofill::FormData& form,
-      const autofill::FormFieldData& trigger_field,
+      const FormData& form,
+      const FormFieldData& trigger_field,
       UpdateSuggestionsCallback update_suggestions_callback) = 0;
 
   // Forwards `form` and `callback` to the user annotations service which calls
@@ -87,13 +87,18 @@ class AutofillPredictionImprovementsDelegate {
       std::unique_ptr<autofill::FormStructure> form_structure,
       ImportFormCallback callback) = 0;
 
-  // Checks if there is any data stored in the profile's user annotations that can be used for
-  // filling and runs the `callback` accordingly.
+  // Checks if there is any data stored in the profile's user annotations that
+  // can be used for filling and runs the `callback` accordingly.
   virtual void HasDataStored(HasDataCallback callback) = 0;
+
+  // Returns whether we should suggest to the user enabling the prediction
+  // improvements pref in chrome://settings.
+  virtual bool ShouldDisplayIph(const FormStructure& form,
+                                const AutofillField& field) const = 0;
 
   // Opens the subpage of chrome settings that deals with managing information
   // stored by the prediction improvements system.
-  virtual void GoToSettings() = 0;
+  virtual void GoToSettings() const = 0;
 };
 
 }  // namespace autofill

@@ -311,13 +311,13 @@ bool AutofillPredictionImprovementsManager::HasImprovedPredictionsForField(
 
 bool AutofillPredictionImprovementsManager::IsFormAndFieldEligible(
     const autofill::FormStructure& form,
-    const autofill::AutofillField& field) {
+    const autofill::AutofillField& field) const {
   return IsFieldEligibleByTypeCriteria(field) &&
          IsFormEligibleForFillingByFieldCriteria(form) &&
          ShouldProvidePredictionImprovements(form.main_frame_origin().GetURL());
 }
 
-bool AutofillPredictionImprovementsManager::IsUserEligible() {
+bool AutofillPredictionImprovementsManager::IsUserEligible() const {
   return client_->IsUserEligible();
 }
 
@@ -412,7 +412,7 @@ void AutofillPredictionImprovementsManager::UserClickedLearnMore() {
 }
 
 bool AutofillPredictionImprovementsManager::ShouldProvidePredictionImprovements(
-    const GURL& url) {
+    const GURL& url) const {
   if (!IsUserEligible()) {
     return false;
   }
@@ -557,7 +557,14 @@ void AutofillPredictionImprovementsManager::HasDataStored(
   std::move(callback).Run(HasData(false));
 }
 
-void AutofillPredictionImprovementsManager::GoToSettings() {
+bool AutofillPredictionImprovementsManager::ShouldDisplayIph(
+    const autofill::FormStructure& form,
+    const autofill::AutofillField& field) const {
+  return !client_->IsAutofillPredictionImprovementsEnabledPref() &&
+         IsFormAndFieldEligible(form, field);
+}
+
+void AutofillPredictionImprovementsManager::GoToSettings() const {
   client_->OpenPredictionImprovementsSettings();
 }
 
