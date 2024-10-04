@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 #import "ios/chrome/browser/web/model/web_navigation_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/navigation/web_state_policy_decider_bridge.h"
@@ -122,6 +123,8 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
   base::WeakPtr<WebStateList> _webStateList;
   /// Whether the interface is in dark mode.
   BOOL _isDarkMode;
+  /// The last commited progress to the loading bar.
+  float _lastCommitedProgress;
 }
 
 - (instancetype)
@@ -218,10 +221,12 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
 }
 
 - (void)handleSearchRequestStarted {
+  _lastCommitedProgress = kProgressBarLensRequestStarted;
   [_consumer setLoadingProgress:kProgressBarLensRequestStarted];
 }
 
 - (void)handleSearchRequestErrored {
+  _lastCommitedProgress = kProgressBarFull;
   [_consumer setLoadingProgress:kProgressBarFull];
 }
 
@@ -267,6 +272,15 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
 }
 
 - (void)webState:(web::WebState*)webState
+    didStartNavigation:(web::NavigationContext*)navigationContext {
+  BOOL isSameDocument = navigationContext->IsSameDocument();
+  // Disregard same document navigation from initiating progress loading.
+  if (!isSameDocument) {
+    _lastCommitedProgress = 0;
+  }
+}
+
+- (void)webState:(web::WebState*)webState
     didFinishNavigation:(web::NavigationContext*)navigationContext {
   _isInflightRequestLensInitiated = NO;
 }
@@ -285,6 +299,11 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
                     kProgressBarLensResponseReceived, kProgressBarFull);
   }
 
+  if (progress <= _lastCommitedProgress) {
+    return;
+  }
+
+  _lastCommitedProgress = progress;
   [_consumer setLoadingProgress:progress];
 }
 
