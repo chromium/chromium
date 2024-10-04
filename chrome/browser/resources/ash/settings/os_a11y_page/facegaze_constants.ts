@@ -29,6 +29,7 @@ export const FaceGazeActions: MacroName[] = [
   MacroName.MOUSE_LONG_CLICK_LEFT,
   MacroName.RESET_CURSOR,
   MacroName.TOGGLE_DICTATION,
+  MacroName.KEY_PRESS_SCREENSHOT,
   MacroName.KEY_PRESS_TOGGLE_OVERVIEW,
   MacroName.KEY_PRESS_MEDIA_PLAY_PAUSE,
   MacroName.TOGGLE_SCROLL_MODE,
@@ -229,6 +230,8 @@ export class FaceGazeUtils {
         return 'faceGazeMacroLabelResetCursor';
       case MacroName.TOGGLE_DICTATION:
         return 'faceGazeMacroLabelToggleDictation';
+      case MacroName.KEY_PRESS_SCREENSHOT:
+        return 'faceGazeMacroLabelScreenshot';
       case MacroName.KEY_PRESS_TOGGLE_OVERVIEW:
         return 'faceGazeMacroLabelToggleOverview';
       case MacroName.KEY_PRESS_MEDIA_PLAY_PAUSE:

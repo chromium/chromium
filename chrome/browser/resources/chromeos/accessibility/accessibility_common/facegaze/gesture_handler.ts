@@ -273,6 +273,8 @@ export class GestureHandler {
         return new KeyPressMacro(name, {key: KeyCode.MEDIA_LAUNCH_APP1});
       case MacroName.KEY_PRESS_MEDIA_PLAY_PAUSE:
         return new KeyPressMacro(name, {key: KeyCode.MEDIA_PLAY_PAUSE});
+      case MacroName.KEY_PRESS_SCREENSHOT:
+        return new KeyPressMacro(name, {key: KeyCode.SNAPSHOT});
       case MacroName.OPEN_FACEGAZE_SETTINGS:
         return new CustomCallbackMacro(MacroName.OPEN_FACEGAZE_SETTINGS, () => {
           chrome.accessibilityPrivate.openSettingsSubpage(

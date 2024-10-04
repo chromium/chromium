@@ -180,6 +180,9 @@ export enum MacroName {
   // A custom key combination, defined by the user.
   CUSTOM_KEY_COMBINATION = 51,
 
+  // Takes a screenshot.
+  KEY_PRESS_SCREENSHOT = 52,
+
   // Any new actions should match with Voice Access's semantic tags where
   // possible.
 }

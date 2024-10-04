@@ -1403,6 +1403,9 @@
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_SUB_LABEL_TOGGLE_SCROLL_MODE" desc="This text describes how users can scroll on their computer using their face when in scroll mode.">
     Once you start scroll mode, move your head in the direction you'd like to scroll
   </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_LABEL_SCREENSHOT" desc="This text describes an action that a user can take on their computer to take a screenshot.">
+    Take a screenshot
+  </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_KEYBOARD_LABEL_ONE_MODIFIER" desc="The label for a custom key combination containing a key and one modifier key. For example, ctrl + c.">
     <ph name="MODIFIER">$1<ex>ctrl</ex></ph> + <ph name="KEY">$2<ex>c</ex></ph>
   </message>
