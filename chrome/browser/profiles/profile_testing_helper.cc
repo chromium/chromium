@@ -7,10 +7,10 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 ProfileTestingHelper::ProfileTestingHelper()
     : manager_(TestingBrowserProcess::GetGlobal()) {}
@@ -40,7 +40,7 @@ void ProfileTestingHelper::SetUp() {
   ASSERT_TRUE(guest_profile_otr_->IsOffTheRecord());
   ASSERT_TRUE(guest_profile_otr_->IsGuestSession());
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
   system_profile_ = manager_.CreateSystemProfile();
   ASSERT_TRUE(system_profile_);
   ASSERT_FALSE(system_profile_->IsOffTheRecord());
@@ -49,9 +49,9 @@ void ProfileTestingHelper::SetUp() {
   ASSERT_TRUE(system_profile_otr_);
   ASSERT_TRUE(system_profile_otr_->IsOffTheRecord());
   ASSERT_TRUE(system_profile_otr_->IsSystemProfile());
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   signin_profile_ =
       manager_.CreateTestingProfile(ash::kSigninBrowserContextBaseName);
   ASSERT_TRUE(signin_profile_);
@@ -88,5 +88,5 @@ void ProfileTestingHelper::SetUp() {
   ASSERT_TRUE(ash::IsLockScreenAppBrowserContext(lockscreenapp_profile_otr_));
   ASSERT_FALSE(ash::IsUserBrowserContext(lockscreenapp_profile_otr_));
   ASSERT_TRUE(lockscreenapp_profile_otr_->IsOffTheRecord());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }

@@ -20,7 +20,7 @@
 #include "device/fido/mac/credential_store.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "device/fido/cros/credential_store.h"
 #endif
 
@@ -60,7 +60,7 @@ KeyedService* ProfileStatisticsFactory::BuildServiceInstanceFor(
       std::make_unique<::device::fido::mac::TouchIdCredentialStore>(
           ChromeWebAuthenticationDelegate::TouchIdAuthenticatorConfigForProfile(
               profile));
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
       std::make_unique<
           ::device::fido::cros::PlatformAuthenticatorCredentialStore>();
 #else
