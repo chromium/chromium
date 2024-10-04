@@ -13,6 +13,7 @@
 #include "base/i18n/message_formatter.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -42,6 +43,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/grit/components_scaled_resources.h"
+#include "components/language/core/common/locale_util.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
@@ -92,6 +94,14 @@ std::u16string InsertBrandedPasswordManager(int message_id) {
           IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE));
 }
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+bool IsSystemInEnglishLanguage() {
+  return g_browser_process != nullptr &&
+         language::ExtractBaseLanguage(
+             g_browser_process->GetApplicationLocale()) == "en";
+}
+#endif
+
 content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     Profile* profile,
     content::WebUI* web_ui) {
@@ -102,6 +112,27 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       source,
       base::make_span(kPasswordManagerResources, kPasswordManagerResourcesSize),
       IDR_PASSWORD_MANAGER_PASSWORD_MANAGER_HTML);
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (IsSystemInEnglishLanguage()) {
+    // Until https://github.com/w3c/manifest/pull/1101 is implemented, we avoid
+    // serving these English text images to users with a different locale. The
+    // PWA install will simply fall back to the non-rich install dialog if
+    // these resources 404.
+    source->AddResourcePath(
+        "images/password_manager_screenshot_checkup_1x.png",
+        IDR_PASSWORD_MANAGER_IMAGES_PASSWORD_MANAGER_SCREENSHOT_CHECKUP_1X_EN_PNG);
+    source->AddResourcePath(
+        "images/password_manager_screenshot_checkup_2x.png",
+        IDR_PASSWORD_MANAGER_IMAGES_PASSWORD_MANAGER_SCREENSHOT_CHECKUP_2X_EN_PNG);
+    source->AddResourcePath(
+        "images/password_manager_screenshot_passwords_1x.png",
+        IDR_PASSWORD_MANAGER_IMAGES_PASSWORD_MANAGER_SCREENSHOT_PASSWORDS_1X_EN_PNG);
+    source->AddResourcePath(
+        "images/password_manager_screenshot_passwords_2x.png",
+        IDR_PASSWORD_MANAGER_IMAGES_PASSWORD_MANAGER_SCREENSHOT_PASSWORDS_2X_EN_PNG);
+  }
+#endif
 
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
   source->AddResourcePaths(
