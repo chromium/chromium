@@ -11,6 +11,9 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/time/time.h"
+#import "components/autofill/core/common/form_data.h"
+#import "components/autofill/core/common/form_field_data.h"
+#import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/form_util/autofill_test_with_web_state.h"
 #import "components/autofill/ios/form_util/form_activity_observer.h"
@@ -26,6 +29,9 @@
 
 using autofill::FieldRendererId;
 using autofill::FormActivityParams;
+using autofill::FormControlType;
+using autofill::FormData;
+using autofill::FormFieldData;
 using autofill::FormRemovalParams;
 using autofill::FormRendererId;
 using autofill::test::kTrackFormMutationsDelayInMs;
@@ -37,6 +43,41 @@ using ::testing::Not;
 using ::testing::StrEq;
 using ::testing::UnorderedElementsAre;
 using web::WebFrame;
+
+namespace {
+// Default maximum length for text input fields defined by W3C.
+constexpr uint64_t kTextInputFieldMaxLength = 524288;
+// HTML containing one form with a text field and a submit button.
+constexpr NSString* kTestHTMLForm = @"<form name='form-name'>"
+                                     "<input type='text' id='text'/>"
+                                     "<input type='submit' id='button'/>"
+                                     "</form>";
+
+// Returns the `FormData` representation of the form in `kTestHTMLForm`.
+[[nodiscard]] FormData BuildTestFormData(std::string frame_id) {
+  FormData test_form_data;
+  test_form_data.set_name(u"form-name");
+  test_form_data.set_url(GURL("https://chromium.test/"));
+  test_form_data.set_action(GURL("https://chromium.test/"));
+  test_form_data.set_name_attribute(u"form-name");
+  test_form_data.set_renderer_id(FormRendererId(1));
+  test_form_data.set_frame_id(frame_id);
+
+  FormFieldData test_field_data;
+  test_field_data.set_name(u"text");
+  test_field_data.set_form_control_type(FormControlType::kInputText);
+  test_field_data.set_renderer_id(FieldRendererId(2));
+  test_field_data.set_id_attribute(u"text");
+  // user_edited is true when the sources of inputs are not being tracked.
+  test_field_data.set_is_user_edited(true);
+  test_field_data.set_max_length(kTextInputFieldMaxLength);
+
+  test_form_data.set_fields({test_field_data});
+
+  return test_form_data;
+}
+
+}  // namespace
 
 // Tests fixture for autofill::FormActivityTabHelper class.
 class FormActivityTabHelperTest : public AutofillTestWithWebState {
@@ -97,30 +138,20 @@ class FormActivityTabHelperTest : public AutofillTestWithWebState {
 
 // Tests that observer is called on form submission using submit control.
 TEST_F(FormActivityTabHelperTest, TestObserverDocumentSubmitted) {
-  LoadHtml(@"<form name='form-name'>"
-            "<input type='submit' id='submit'/>"
-            "</form>");
+  LoadHtml(kTestHTMLForm);
 
   WebFrame* main_frame = WaitForMainFrame();
   ASSERT_TRUE(main_frame);
 
   ASSERT_FALSE(observer_->submit_document_info());
-  const std::string kTestFormName("form-name");
 
-  std::string mainFrameID = main_frame->GetFrameId();
-  const std::string kTestFormData =
-      std::string("[{\"name\":\"form-name\",\"origin\":\"https://chromium.test/"
-                  "\",\"action\":\"https://chromium.test/\","
-                  "\"name_attribute\":\"form-name\",\"id_attribute\":\"\","
-                  "\"renderer_id\":\"1\",\"frame_id\":\"") +
-      mainFrameID + std::string("\"}]");
+  FormData test_form_data = BuildTestFormData(main_frame->GetFrameId());
 
-  ExecuteJavaScript(@"document.getElementById('submit').click();");
+  ExecuteJavaScript(@"document.getElementById('button').click();");
   ASSERT_TRUE(observer_->submit_document_info());
   EXPECT_EQ(web_state(), observer_->submit_document_info()->web_state);
   EXPECT_EQ(main_frame, observer_->submit_document_info()->sender_frame);
-  EXPECT_EQ(kTestFormName, observer_->submit_document_info()->form_name);
-  EXPECT_EQ(kTestFormData, observer_->submit_document_info()->form_data);
+  EXPECT_EQ(test_form_data, observer_->submit_document_info()->form_data);
 
   EXPECT_FALSE(observer_->submit_document_info()->has_user_gesture);
 
@@ -133,29 +164,18 @@ TEST_F(FormActivityTabHelperTest, TestObserverDocumentSubmitted) {
 
 // Tests that observer is called on form submission using submit() method.
 TEST_F(FormActivityTabHelperTest, TestFormSubmittedHook) {
-  LoadHtml(@"<form name='form-name' id='form'>"
-            "<input type='submit'/>"
-            "</form>");
+  LoadHtml(kTestHTMLForm);
 
   WebFrame* main_frame = WaitForMainFrame();
   ASSERT_TRUE(main_frame);
 
   ASSERT_FALSE(observer_->submit_document_info());
-  const std::string kTestFormName("form-name");
+  FormData kTestFormData = BuildTestFormData(main_frame->GetFrameId());
 
-  std::string mainFrameID = main_frame->GetFrameId();
-  const std::string kTestFormData =
-      std::string("[{\"name\":\"form-name\",\"origin\":\"https://chromium.test/"
-                  "\",\"action\":\"https://chromium.test/\","
-                  "\"name_attribute\":\"form-name\",\"id_attribute\":\"form\","
-                  "\"renderer_id\":\"1\",\"frame_id\":\"") +
-      mainFrameID + std::string("\"}]");
-
-  ExecuteJavaScript(@"document.getElementById('form').submit();");
+  ExecuteJavaScript(@"document.forms[0].submit();");
   ASSERT_TRUE(observer_->submit_document_info());
   EXPECT_EQ(web_state(), observer_->submit_document_info()->web_state);
   EXPECT_EQ(main_frame, observer_->submit_document_info()->sender_frame);
-  EXPECT_EQ(kTestFormName, observer_->submit_document_info()->form_name);
   EXPECT_EQ(kTestFormData, observer_->submit_document_info()->form_data);
   EXPECT_FALSE(observer_->submit_document_info()->has_user_gesture);
 
@@ -181,7 +201,7 @@ TEST_F(FormActivityTabHelperTest, FormSubmittedFromSameOriginIFrame) {
       @"submit_input').click();");
   autofill::TestSubmitDocumentInfo* info = observer_->submit_document_info();
   ASSERT_TRUE(info);
-  EXPECT_EQ("form1", info->form_name);
+  EXPECT_EQ(u"form1", info->form_data.name());
 }
 
 // Tests that observer is called on form activity (input event).

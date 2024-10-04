@@ -127,10 +127,9 @@ const char kFrameIdKey[] = "frame_id";
 #pragma mark - FormActivityObserver
 
 - (void)webState:(web::WebState*)webState
-    didSubmitDocumentWithFormNamed:(const std::string&)formName
-                          withData:(const std::string&)formData
-                    hasUserGesture:(BOOL)hasUserGesture
-                           inFrame:(web::WebFrame*)frame {
+    didSubmitDocumentWithFormData:(const FormData&)formData
+                   hasUserGesture:(BOOL)hasUserGesture
+                          inFrame:(web::WebFrame*)frame {
   DCHECK_EQ(_webState, webState);
   GURL pageURL = webState->GetLastCommittedURL();
   if (pageURL.DeprecatedGetOriginAsURL() != frame->GetSecurityOrigin()) {
@@ -138,23 +137,11 @@ const char kFrameIdKey[] = "frame_id";
     // origin.
     return;
   }
-  if (!self.delegate || formData.empty()) {
+  if (!self.delegate) {
     return;
   }
 
-  autofill::FieldDataManager* fieldDataManager =
-      autofill::FieldDataManagerFactoryIOS::FromWebFrame(frame);
-
-  std::vector<FormData> forms;
-  NSString* nsFormData = [NSString stringWithUTF8String:formData.c_str()];
-  autofill::ExtractFormsData(nsFormData, false, std::u16string(), pageURL,
-                             pageURL.DeprecatedGetOriginAsURL(),
-                             *fieldDataManager, frame->GetFrameId(), &forms);
-  if (forms.size() != 1) {
-    return;
-  }
-
-  [self.delegate formHelper:self didSubmitForm:forms[0] inFrame:frame];
+  [self.delegate formHelper:self didSubmitForm:formData inFrame:frame];
 }
 
 #pragma mark - Private methods

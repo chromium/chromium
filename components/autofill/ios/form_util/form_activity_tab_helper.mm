@@ -5,15 +5,20 @@
 #import "components/autofill/ios/form_util/form_activity_tab_helper.h"
 
 #import <Foundation/Foundation.h>
-#include <optional>
+
+#import <optional>
 
 #import "base/functional/bind.h"
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/values.h"
+#import "components/autofill/core/common/field_data_manager.h"
+#import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_util.h"
+#import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/form_util/form_activity_observer.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
@@ -22,6 +27,9 @@
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 
+using autofill::FieldDataManager;
+using autofill::FieldDataManagerFactoryIOS;
+using autofill::FormData;
 using base::SysUTF8ToNSString;
 
 namespace {
@@ -191,8 +199,25 @@ void FormActivityTabHelper::FormSubmissionHandler(
   if (maybe_form_data) {
     form_data = *maybe_form_data;
   }
+
+  FieldDataManager* fieldDataManager =
+      FieldDataManagerFactoryIOS::FromWebFrame(sender_frame);
+
+  std::vector<FormData> forms;
+
+  bool success = autofill::ExtractFormsData(
+      base::SysUTF8ToNSString(form_data), true, base::UTF8ToUTF16(form_name),
+      web_state->GetLastCommittedURL(), sender_frame->GetSecurityOrigin(),
+      *fieldDataManager, sender_frame->GetFrameId(), &forms);
+
+  if (!success || forms.size() != 1) {
+    return;
+  }
+
+  FormData form = forms[0];
+
   for (auto& observer : observers_) {
-    observer.DocumentSubmitted(web_state, sender_frame, form_name, form_data,
+    observer.DocumentSubmitted(web_state, sender_frame, form,
                                submitted_by_user);
   }
 }

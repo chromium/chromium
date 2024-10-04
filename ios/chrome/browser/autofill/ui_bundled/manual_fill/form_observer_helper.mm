@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/form_observer_helper.h"
 
+#import "components/autofill/core/common/form_data.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
@@ -65,19 +66,16 @@
 }
 
 - (void)webState:(web::WebState*)webState
-    didSubmitDocumentWithFormNamed:(const std::string&)formName
-                          withData:(const std::string&)formData
-                    hasUserGesture:(BOOL)hasUserGesture
-                           inFrame:(web::WebFrame*)frame {
-  if ([self.delegate respondsToSelector:@selector
-                     (webState:
-                         didSubmitDocumentWithFormNamed:withData:hasUserGesture
-                                                       :inFrame:)]) {
+    didSubmitDocumentWithFormData:(const autofill::FormData&)formData
+                   hasUserGesture:(BOOL)hasUserGesture
+                          inFrame:(web::WebFrame*)frame {
+  if ([self.delegate
+          respondsToSelector:@selector
+          (webState:didSubmitDocumentWithFormData:hasUserGesture:inFrame:)]) {
     [self.delegate webState:webState
-        didSubmitDocumentWithFormNamed:formName
-                              withData:formData
-                        hasUserGesture:hasUserGesture
-                               inFrame:frame];
+        didSubmitDocumentWithFormData:formData
+                       hasUserGesture:hasUserGesture
+                              inFrame:frame];
   }
 }
 

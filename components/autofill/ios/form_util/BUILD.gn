@@ -23,6 +23,7 @@ source_set("form_util") {
     "//base",
     "//components/autofill/core/common",
     "//components/autofill/ios/browser:util",
+    "//components/autofill/ios/common",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
   ]
@@ -206,6 +207,7 @@ source_set("test_support") {
     ":form_util_feature",
     "//base",
     "//base/test:test_support",
+    "//components/autofill/core/common",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",

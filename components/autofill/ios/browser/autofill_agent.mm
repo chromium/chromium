@@ -852,10 +852,9 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 }
 
 - (void)webState:(web::WebState*)webState
-    didSubmitDocumentWithFormNamed:(const std::string&)formName
-                          withData:(const std::string&)formData
-                    hasUserGesture:(BOOL)hasUserGesture
-                           inFrame:(web::WebFrame*)frame {
+    didSubmitDocumentWithFormData:(const FormData&)formData
+                   hasUserGesture:(BOOL)hasUserGesture
+                          inFrame:(web::WebFrame*)frame {
   if (![self isAutofillEnabled] || !frame) {
     return;
   }
@@ -866,24 +865,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
     return;
   }
 
-  FieldDataManager* fieldDataManager =
-      FieldDataManagerFactoryIOS::FromWebFrame(frame);
-
-  FormDataVector forms;
-
-  bool success = autofill::ExtractFormsData(
-      base::SysUTF8ToNSString(formData), true, base::UTF8ToUTF16(formName),
-      webState->GetLastCommittedURL(), frame->GetSecurityOrigin(),
-      *fieldDataManager, frame->GetFrameId(), &forms);
-
-  if (!success || forms.empty()) {
-    return;
-  }
-
-  // Exactly one form should be extracted.
-  DCHECK_EQ(1U, forms.size());
-  FormData form = forms[0];
-  driver->FormSubmitted(form,
+  driver->FormSubmitted(formData,
                         /*known_success=*/false,
                         autofill::mojom::SubmissionSource::FORM_SUBMISSION);
 }
