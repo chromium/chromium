@@ -12,12 +12,14 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
+#include "chrome/browser/ui/views/data_sharing/data_sharing_open_group_helper.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
@@ -226,4 +228,37 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest,
       data_sharing::GroupId(fake_collab_id), fake_access_token);
   url = data_sharing::GenerateWebUIUrl(token, browser()->profile());
   EXPECT_EQ(url.value().spec(), expected_join_flow_url);
+}
+
+IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, Foo) {
+  std::string fake_collab_id = "fake_collab_id";
+  tab_groups::LocalTabGroupID local_group_id = InstrumentATabGroup();
+  auto* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+          browser()->profile());
+  std::optional<tab_groups::SavedTabGroup> group_copy =
+      tab_group_service->GetGroup(local_group_id);
+
+  // Mock up a shared group.
+  group_copy->SetCollaborationId(fake_collab_id);
+
+  RunTestSequence(
+      SaveGroupLeaveEditorBubbleOpen(local_group_id),
+      WaitForShow(kTabGroupHeaderElementId),
+      EnsurePresent(kTabGroupEditorBubbleId),
+      PressButton(kTabGroupEditorBubbleCloseGroupButtonId),
+      FinishTabstripAnimations(), WaitForHide(kTabGroupHeaderElementId),
+      Do([=, this]() {
+        DataSharingOpenGroupHelper* open_group_helper =
+            browser()
+                ->browser_window_features()
+                ->data_sharing_open_group_helper();
+        open_group_helper->OpenTabGroupWhenAvailable(fake_collab_id);
+
+        // Mock group sync from remote.
+        open_group_helper->OnTabGroupAdded(group_copy.value(),
+                                           tab_groups::TriggerSource::REMOTE);
+      }),
+      // The group is opened into the tab strip.
+      WaitForShow(kTabGroupHeaderElementId));
 }

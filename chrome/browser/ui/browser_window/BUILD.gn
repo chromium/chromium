@@ -33,6 +33,7 @@ source_set("impl") {
     "//chrome/browser/ui/views/side_panel",
     "//chrome/browser/ui/views/toolbar",
     "//components/commerce/core:feature_list",
+    "//components/data_sharing/public:public",
     "//components/lens:features",
     "//components/profile_metrics",
     "//components/saved_tab_groups/public",

@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/profiles/profile.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/ui/toasts/toast_service.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/data_sharing/data_sharing_open_group_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
@@ -36,6 +38,8 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/data_sharing/public/data_sharing_service.h"
+#include "components/data_sharing/public/features.h"
 #include "components/lens/lens_features.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/saved_tab_groups/public/features.h"
@@ -158,6 +162,15 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
   if ((browser->is_type_normal() || browser->is_type_app()) &&
       base::FeatureList::IsEnabled(toast_features::kToastFramework)) {
     toast_service_ = std::make_unique<ToastService>(browser);
+  }
+
+  data_sharing::DataSharingService* service =
+      data_sharing::DataSharingServiceFactory::GetForProfile(
+          browser->profile());
+  if (service && service->GetServiceStatus().IsAllowedToJoin() &&
+      tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
+    data_sharing_open_group_helper_ =
+        std::make_unique<DataSharingOpenGroupHelper>(browser);
   }
 }
 

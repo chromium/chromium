@@ -19,6 +19,7 @@ class SidePanelUI;
 class TabStripModel;
 class ToastController;
 class ToastService;
+class DataSharingOpenGroupHelper;
 
 namespace extensions {
 class ExtensionSidePanelManager;
@@ -133,6 +134,10 @@ class BrowserWindowFeatures {
     return extension_side_panel_manager_.get();
   }
 
+  DataSharingOpenGroupHelper* data_sharing_open_group_helper() {
+    return data_sharing_open_group_helper_.get();
+  }
+
  protected:
   BrowserWindowFeatures();
 
@@ -175,6 +180,8 @@ class BrowserWindowFeatures {
   // tab-scoped extension side-panel manager.
   std::unique_ptr<extensions::ExtensionSidePanelManager>
       extension_side_panel_manager_;
+
+  std::unique_ptr<DataSharingOpenGroupHelper> data_sharing_open_group_helper_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_

@@ -4237,7 +4237,7 @@ static_library("browser") {
       "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/apps",
       "//chrome/browser/ui/apps:impl",
-      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/browser_window:impl",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/commerce",
       "//chrome/browser/ui/commerce:impl",
@@ -4409,6 +4409,7 @@ static_library("browser") {
       # gets modularized.
       "//chrome/browser/ui/toolbar/cast:impl",
 
+      "//chrome/browser/ui/browser_window:impl",
       "//chrome/browser/task_manager:impl",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/views/toolbar",
