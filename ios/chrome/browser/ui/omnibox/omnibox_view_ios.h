@@ -42,7 +42,8 @@ class OmniboxViewIOS : public OmniboxView,
                  id<OmniboxCommands> omnibox_focuser,
                  id<OmniboxFocusDelegate> focus_delegate,
                  id<ToolbarCommands> toolbar_commands_handler,
-                 id<OmniboxViewConsumer> consumer);
+                 id<OmniboxViewConsumer> consumer,
+                 bool is_lens_overlay);
 
   ~OmniboxViewIOS() override;
 
@@ -223,6 +224,8 @@ class OmniboxViewIOS : public OmniboxView,
 
   // Whether the popup was scrolled during this omnibox interaction.
   bool suggestions_list_scrolled_ = false;
+  // Whether it's the lens overlay omnibox.
+  bool is_lens_overlay_;
 
   raw_ptr<OmniboxPopupProvider> popup_provider_;  // weak
 

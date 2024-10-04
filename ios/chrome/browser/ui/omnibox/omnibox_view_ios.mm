@@ -56,7 +56,8 @@ OmniboxViewIOS::OmniboxViewIOS(OmniboxTextFieldIOS* field,
                                id<OmniboxCommands> omnibox_focuser,
                                id<OmniboxFocusDelegate> focus_delegate,
                                id<ToolbarCommands> toolbar_commands_handler,
-                               id<OmniboxViewConsumer> consumer)
+                               id<OmniboxViewConsumer> consumer,
+                               bool is_lens_overlay)
     : OmniboxView(std::move(client)),
       field_(field),
       omnibox_focuser_(omnibox_focuser),
@@ -64,6 +65,7 @@ OmniboxViewIOS::OmniboxViewIOS(OmniboxTextFieldIOS* field,
       toolbar_commands_handler_(toolbar_commands_handler),
       consumer_(consumer),
       ignore_popup_updates_(false),
+      is_lens_overlay_(is_lens_overlay),
       popup_provider_(nullptr) {
   DCHECK(field_);
 }
@@ -354,8 +356,15 @@ void OmniboxViewIOS::OnDidBeginEditing() {
   OnBeforePossibleChange();
 
   if (model()) {
-    model()->StartZeroSuggestRequest();
     model()->OnSetFocus(/*control_down=*/false);
+
+    if (is_lens_overlay_ && field_.userText.length) {
+      model()->SetUserText(base::SysNSStringToUTF16(field_.userText));
+      model()->StartAutocomplete(/*has_selected_text=*/false,
+                                 /*prevent_inline_autocomplete=*/true);
+    } else {
+      model()->StartZeroSuggestRequest();
+    }
   }
 
   // If the omnibox is displaying a URL and the popup is not showing, set the
@@ -363,9 +372,11 @@ void OmniboxViewIOS::OnDidBeginEditing() {
   // leave the default behavior of positioning the cursor at the end of the
   // text.  If the popup is already open, that means that the omnibox is
   // regaining focus after a popup scroll took focus away, so the pre-edit
-  // behavior should not be invoked.
-  if (!popup_was_open_before_editing_began)
+  // behavior should not be invoked. When `is_lens_overlay_` is true, the
+  // omnibox only display search terms.
+  if (!popup_was_open_before_editing_began && !is_lens_overlay_) {
     [field_ enterPreEditState];
+  }
 
   // `location_bar_` is only forwarding the call to the BVC. This should only
   // happen when the omnibox is being focused and it starts showing the popup;
