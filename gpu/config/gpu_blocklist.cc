@@ -16,7 +16,7 @@ GpuBlocklist::~GpuBlocklist() = default;
 
 // static
 std::unique_ptr<GpuBlocklist> GpuBlocklist::Create() {
-  return Create(kSoftwareRenderingListEntries);
+  return Create(GetSoftwareRenderingListEntries());
 }
 
 // static
@@ -52,7 +52,7 @@ std::unique_ptr<GpuBlocklist> GpuBlocklist::Create(
 bool GpuBlocklist::AreEntryIndicesValid(
     const std::vector<uint32_t>& entry_indices) {
   return GpuControlList::AreEntryIndicesValid(
-      entry_indices, kSoftwareRenderingListEntries.size());
+      entry_indices, GetSoftwareRenderingListEntries().size());
 }
 
 }  // namespace gpu

@@ -39,9 +39,9 @@ class GpuControlListEntryTest : public testing::Test {
   }
 
   const Entry& GetEntry(size_t index) {
-    EXPECT_LT(index, kGpuControlListTestingEntries.size());
-    EXPECT_EQ(index + 1, kGpuControlListTestingEntries[index].id);
-    return kGpuControlListTestingEntries[index];
+    EXPECT_LT(index, GetGpuControlListTestingEntries().size());
+    EXPECT_EQ(index + 1, GetGpuControlListTestingEntries()[index].id);
+    return GetGpuControlListTestingEntries()[index];
   }
 
   size_t CountFeature(const Entry& entry, int feature) {

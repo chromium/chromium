@@ -206,19 +206,31 @@ class GPU_EXPORT GpuControlList {
     OsType os_type;
     Version os_version;
     uint32_t vendor_id;
-    size_t device_size;
+    base::span<const Device> devices;
+    MultiGpuCategory multi_gpu_category;
+    MultiGpuStyle multi_gpu_style;
     // RAW_PTR_EXCLUSION: since these pointers only ever point to other
     // globals, and `Conditions` itself is used to construct globals, using
     // raw_ptr would add additional (unnecessary) complexity with
     // `NoDestructor`.
-    RAW_PTR_EXCLUSION const Device* devices;
-    MultiGpuCategory multi_gpu_category;
-    MultiGpuStyle multi_gpu_style;
     RAW_PTR_EXCLUSION const DriverInfo* driver_info;
     RAW_PTR_EXCLUSION const GLStrings* gl_strings;
     RAW_PTR_EXCLUSION const MachineModelInfo* machine_model_info;
     RAW_PTR_EXCLUSION const IntelConditions* intel_conditions;
     RAW_PTR_EXCLUSION const More* more;
+
+    Conditions(OsType os_type,
+               Version os_version,
+               uint32_t vendor_id,
+               base::span<const Device> devices,
+               MultiGpuCategory multi_gpu_category,
+               MultiGpuStyle multi_gpu_style,
+               const DriverInfo* driver_info,
+               const GLStrings* gl_strings,
+               const MachineModelInfo* machine_model_info,
+               const IntelConditions* intel_conditions,
+               const More* more);
+    Conditions(const Conditions& other);
 
     bool Contains(OsType os_type,
                   const std::string& os_version,

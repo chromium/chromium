@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/config/gpu_control_list.h"
 
 #include <utility>
@@ -450,6 +445,32 @@ bool GpuControlList::IntelConditions::Contains(
   return false;
 }
 
+GpuControlList::Conditions::Conditions(
+    OsType os_type,
+    Version os_version,
+    uint32_t vendor_id,
+    base::span<const Device> devices,
+    MultiGpuCategory multi_gpu_category,
+    MultiGpuStyle multi_gpu_style,
+    const DriverInfo* driver_info,
+    const GLStrings* gl_strings,
+    const MachineModelInfo* machine_model_info,
+    const IntelConditions* intel_conditions,
+    const More* more)
+    : os_type(os_type),
+      os_version(os_version),
+      vendor_id(vendor_id),
+      devices(devices),
+      multi_gpu_category(multi_gpu_category),
+      multi_gpu_style(multi_gpu_style),
+      driver_info(driver_info),
+      gl_strings(gl_strings),
+      machine_model_info(machine_model_info),
+      intel_conditions(intel_conditions),
+      more(more) {}
+
+GpuControlList::Conditions::Conditions(const Conditions& other) = default;
+
 bool GpuControlList::Conditions::Contains(OsType target_os_type,
                                           const std::string& target_os_version,
                                           const GPUInfo& gpu_info) const {
@@ -494,7 +515,7 @@ bool GpuControlList::Conditions::Contains(OsType target_os_type,
     if (intel_conditions) {
       found = intel_conditions->Contains(candidates, gpu_info);
     } else {
-      if (device_size == 0) {
+      if (devices.size() == 0) {
         for (auto& candidate : candidates) {
           if (vendor_id == candidate.vendor_id) {
             found = true;
@@ -502,7 +523,7 @@ bool GpuControlList::Conditions::Contains(OsType target_os_type,
           }
         }
       } else {
-        for (size_t ii = 0; !found && ii < device_size; ++ii) {
+        for (size_t ii = 0; !found && ii < devices.size(); ++ii) {
           uint32_t device_id = devices[ii].device_id;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
           uint32_t revision = devices[ii].revision;

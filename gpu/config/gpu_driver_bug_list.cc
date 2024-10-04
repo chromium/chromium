@@ -36,7 +36,7 @@ GpuDriverBugList::~GpuDriverBugList() = default;
 
 // static
 std::unique_ptr<GpuDriverBugList> GpuDriverBugList::Create() {
-  return Create(kGpuDriverBugListEntries);
+  return Create(GetGpuDriverBugListEntries());
 }
 
 // static
@@ -105,8 +105,8 @@ void GpuDriverBugList::AppendAllWorkarounds(
 // static
 bool GpuDriverBugList::AreEntryIndicesValid(
     const std::vector<uint32_t>& entry_indices) {
-  return GpuControlList::AreEntryIndicesValid(entry_indices,
-                                              kGpuDriverBugListEntries.size());
+  return GpuControlList::AreEntryIndicesValid(
+      entry_indices, GetGpuDriverBugListEntries().size());
 }
 
 }  // namespace gpu

@@ -168,7 +168,7 @@ def get_feature_set(features, total_feature_set):
 
 def write_features(feature_set, feature_name_prefix, var_name,
                    data_helper_file):
-  data_helper_file.write('const std::array<int, %d> %s = {\n' %
+  data_helper_file.write('static const std::array<int, %d> %s = {\n' %
                          (len(feature_set), var_name))
   for feature in feature_set.keys():
     data_helper_file.write(feature_name_prefix + feature.upper())
@@ -182,7 +182,7 @@ def write_disabled_extension_list(entry_kind, entry_id, data, data_file,
     var_name = 'k%sForEntry%d' % (entry_kind, entry_id)
     # define the list
     data_helper_file.write(
-        'const std::array<const char* const, %d> %s = {\n' %
+        'static const std::array<const char* const, %d> %s = {\n' %
         (len(data), var_name))
     for item in data:
       write_string(item, data_helper_file)
@@ -201,7 +201,7 @@ def write_gl_strings(entry_id, is_exception, exception_id, data,
     if is_exception:
       var_name += 'Exception' + str(exception_id)
     # define the GL strings
-    data_helper_file.write('const GpuControlList::GLStrings %s = {\n' %
+    data_helper_file.write('static const GpuControlList::GLStrings %s = {\n' %
                            var_name)
     for item in data:
       write_string(item, data_helper_file)
@@ -269,7 +269,7 @@ def write_driver_info(entry_id, is_exception, exception_id, driver_vendor,
   if is_exception:
     var_name += 'Exception' + str(exception_id)
   # define the GL strings
-  data_helper_file.write('const GpuControlList::DriverInfo %s = {\n' %
+  data_helper_file.write('static const GpuControlList::DriverInfo %s = {\n' %
                          var_name)
   write_string_value(driver_vendor, 'driver_vendor', data_helper_file)
   write_version(driver_version, 'driver_version', data_helper_file)
@@ -286,7 +286,7 @@ def write_number_list(entry_id, data_type, name_tag, data, is_exception,
     if is_exception:
       var_name += 'Exception' + str(exception_id)
     # define the list
-    data_helper_file.write('const std::array<%s, %d> %s = {\n' %
+    data_helper_file.write('static const std::array<%s, %d> %s = {\n' %
                            (data_type, len(data), var_name))
     for item in data:
       data_helper_file.write(str(item))
@@ -340,19 +340,18 @@ def write_device_list(entry_id, device_id, device_revision, is_exception,
     if is_exception:
       var_name += 'Exception' + str(exception_id)
     # define the list
-    data_helper_file.write('const GpuControlList::Device %s[%d] = {\n' %
-                           (var_name, len(device_id)))
+    data_helper_file.write(
+        'static const std::array<GpuControlList::Device, %d> %s = {{\n' %
+        (len(device_id), var_name))
     for ii in range(device_size):
       data_helper_file.write('{%s, %s},\n' %
                              (device_id[ii], device_revision[ii]))
-    data_helper_file.write('};\n\n')
+    data_helper_file.write('}};\n\n')
     # reference the list
-    data_file.write('std::size(%s),  // Devices size\n' % var_name)
-    data_file.write('%s,  // Devices\n' % var_name)
+    data_file.write('base::span(%s),  // Devices\n' % var_name)
   else:
     assert not device_revision
-    data_file.write('0,  // Devices size\n')
-    data_file.write('nullptr,  // Devices\n')
+    data_file.write('base::span<const GpuControlList::Device>(),  // Devices\n')
 
 
 def write_machine_model_info(entry_id, is_exception, exception_id,
@@ -365,7 +364,7 @@ def write_machine_model_info(entry_id, is_exception, exception_id,
     if is_exception:
       model_name_var_name += 'Exception' + str(exception_id)
     data_helper_file.write(
-        'const std::array<const char* const, %d> %s = {{\n' %
+        'static const std::array<const char* const, %d> %s = {{\n' %
         (len(machine_model_name), model_name_var_name))
     for item in machine_model_name:
       write_string(item, data_helper_file)
@@ -378,7 +377,7 @@ def write_machine_model_info(entry_id, is_exception, exception_id,
       var_name += 'Exception' + str(exception_id)
     # define machine model info
     data_helper_file.write(
-      'const GpuControlList::MachineModelInfo %s = {\n' % var_name)
+      'static const GpuControlList::MachineModelInfo %s = {\n' % var_name)
     if machine_model_name:
       data_helper_file.write('base::span(%s),  // machine model names\n' %
                              model_name_var_name)
@@ -663,7 +662,8 @@ def write_entry_more_data(entry_id, is_exception, exception_id, gl_type,
   var_name = 'kMoreForEntry' + str(entry_id) + suffix
   if is_exception:
     var_name += 'Exception' + str(exception_id)
-  data_helper_file.write('const GpuControlList::More %s = {\n' % var_name)
+  data_helper_file.write(
+      'static const GpuControlList::More %s = {\n' % var_name)
   write_gl_type(gl_type, data_helper_file)
   write_version(gl_version, 'gl_version', data_helper_file)
   write_version(pixel_shader_version, 'pixel_shader_version', data_helper_file)
@@ -699,7 +699,7 @@ def write_intel_conditions(entry_id, is_exception, exception_id,
     if is_exception:
       var_name_series += 'Exception' + str(exception_id)
     data_helper_file.write(
-        'const std::array<IntelGpuSeriesType, %d> %s = {{\n' %
+        'static const std::array<IntelGpuSeriesType, %d> %s = {{\n' %
         (len(intel_gpu_series_list), var_name_series))
     intel_gpu_series_map = {
       'broadwater': 'kBroadwater',
@@ -750,7 +750,7 @@ def write_intel_conditions(entry_id, is_exception, exception_id,
   if is_exception:
     var_name += 'Exception' + str(exception_id)
   data_helper_file.write(
-      'const GpuControlList::IntelConditions %s = {\n' % var_name)
+      'static const GpuControlList::IntelConditions %s = {\n' % var_name)
   if var_name_series:
     data_helper_file.write(
         'base::span(%s),  // intel_gpu_series_list\n' % var_name_series)
@@ -810,7 +810,7 @@ def write_entry(entry, total_feature_set, feature_name_prefix,
     exception_count = len(exceptions)
     exception_var = 'kExceptionsForEntry' + str(entry_id)
     data_exception_file.write(
-        'const std::array<GpuControlList::Conditions, %d> %s = {{\n' %
+        'static const std::array<GpuControlList::Conditions, %d> %s = {{\n' %
         (exception_count, exception_var))
     for index in range(exception_count):
       exception = exceptions[index]
@@ -862,23 +862,18 @@ def process_json_file(json_filepath, list_tag,
   data_file.write(_LICENSE)
   data_file.write(_DO_NOT_EDIT_WARNING)
   data_file.write('#include "%s/%s"\n\n' % (path, output_header_filename))
+  data_file.write('#include <array>\n')
   data_file.write('#include <iterator>\n\n')
-  data_file.write('#include "%s/%s"\n' % (path, output_helper_filename))
-  data_file.write('#include "%s/%s"\n\n' % (path, output_exception_filename))
+  data_file.write('#include "gpu/config/%s"\n\n' % feature_header_filename)
   data_helper_file = open(output_helper_filepath, 'w')
   data_helper_file.write(_LICENSE)
   data_helper_file.write(_DO_NOT_EDIT_WARNING)
   write_header_file_guard(data_helper_file, output_helper_filename, path, True)
-  data_helper_file.write('#include <array>\n\n')
-  data_helper_file.write('#include "gpu/config/%s"\n\n' %
-                         feature_header_filename)
-  data_helper_file.write('namespace gpu {\n')
   data_exception_file = open(output_exception_filepath, 'w')
   data_exception_file.write(_LICENSE)
   data_exception_file.write(_DO_NOT_EDIT_WARNING)
   write_header_file_guard(data_exception_file, output_exception_filename, path,
                           True)
-  data_exception_file.write('namespace gpu {\n')
   data_file.write('namespace gpu {\n\n')
   entry_count = 0
   ids = []
@@ -897,7 +892,12 @@ def process_json_file(json_filepath, list_tag,
         continue
     entry_count += 1
   data_file.write(
-      'const std::array<GpuControlList::Entry, %d> k%sEntries = {{\n' %
+      'const std::array<GpuControlList::Entry, %d>& Get%sEntries() {\n\n' %
+      (entry_count, list_tag))
+  data_file.write('#include "%s/%s"\n' % (path, output_helper_filename))
+  data_file.write('#include "%s/%s"\n\n' % (path, output_exception_filename))
+  data_file.write(
+      'static const std::array<GpuControlList::Entry, %d> k%sEntries = {{\n' %
       (entry_count, list_tag))
   for index in range(len(json_data['entries'])):
     entry = json_data['entries'][index]
@@ -909,12 +909,12 @@ def process_json_file(json_filepath, list_tag,
     write_entry(entry, total_features, feature_tag, unique_symbol_id,
                 data_file, data_helper_file, data_exception_file)
   data_file.write('}};\n')
+  data_file.write('return k%sEntries;\n' % list_tag)
+  data_file.write('}\n')
   data_file.write('}  // namespace gpu\n')
   data_file.close()
-  data_helper_file.write('}  // namespace gpu\n')
   write_header_file_guard(data_helper_file, output_helper_filename, path, False)
   data_helper_file.close()
-  data_exception_file.write('}  // namespace gpu\n')
   write_header_file_guard(data_exception_file, output_exception_filename, path,
                           False)
   data_exception_file.close()
@@ -925,9 +925,9 @@ def process_json_file(json_filepath, list_tag,
   data_header_file.write('#include <array>\n\n')
   data_header_file.write('#include "gpu/config/gpu_control_list.h"\n\n')
   data_header_file.write('namespace gpu {\n')
-  data_header_file.write(
-      '%sextern const std::array<GpuControlList::Entry, %d> k%sEntries;\n' %
-      (export_tag, entry_count, list_tag))
+  func_dec = (
+      '%sextern const std::array<GpuControlList::Entry, %d>& Get%sEntries();\n')
+  data_header_file.write(func_dec % (export_tag, entry_count, list_tag))
   data_header_file.write('}  // namespace gpu\n')
   write_header_file_guard(data_header_file, output_header_filename, path, False)
   data_header_file.close()
