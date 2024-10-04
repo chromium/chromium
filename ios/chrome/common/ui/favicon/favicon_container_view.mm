@@ -4,6 +4,8 @@
 
 #import "ios/chrome/common/ui/favicon/favicon_container_view.h"
 
+#import <UIKit/UIKit.h>
+
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -58,6 +60,17 @@ const CGFloat kFaviconContainerWidth = 30;
       [self.heightAnchor constraintEqualToConstant:kFaviconContainerWidth],
       [self.widthAnchor constraintEqualToAnchor:self.heightAnchor],
     ]];
+
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits = @[
+        UITraitUserInterfaceIdiom.self, UITraitUserInterfaceStyle.self,
+        UITraitDisplayGamut.self, UITraitAccessibilityContrast.self,
+        UITraitUserInterfaceLevel.self
+      ];
+
+      [self registerForTraitChanges:traits
+                         withAction:@selector(updateColorOnTraitChange:)];
+    }
   }
   return self;
 }
@@ -80,14 +93,16 @@ const CGFloat kFaviconContainerWidth = 30;
   }
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  if ([self.traitCollection
-          hasDifferentColorAppearanceComparedToTraitCollection:
-              previousTraitCollection]) {
-    [self resetColor];
+  if (@available(iOS 17, *)) {
+    return;
   }
+
+  [self updateColorOnTraitChange:previousTraitCollection];
 }
+#endif
 
 - (void)resetColor {
   if (self.customBackgroundColor) {
@@ -101,6 +116,16 @@ const CGFloat kFaviconContainerWidth = 30;
   self.layer.borderColor = self.customBorderColor
                                ? self.customBorderColor.CGColor
                                : [UIColor colorNamed:kSeparatorColor].CGColor;
+}
+
+#pragma mark - Private
+
+- (void)updateColorOnTraitChange:(UITraitCollection*)previousTraitCollection {
+  if ([self.traitCollection
+          hasDifferentColorAppearanceComparedToTraitCollection:
+              previousTraitCollection]) {
+    [self resetColor];
+  }
 }
 
 @end
