@@ -14,6 +14,7 @@
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/resource_coordinator/time.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/organization/trigger_policies.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -30,7 +31,8 @@ constexpr int kMinTabCountForNudge = 15;
 constexpr double kStaleTabPercentageThreshold = 0.10;
 }  // namespace
 
-TabDeclutterController::TabDeclutterController(TabStripModel* tab_strip_model)
+TabDeclutterController::TabDeclutterController(
+    BrowserWindowInterface* browser_window_interface)
     : stale_tab_threshold_duration_(
           features::kTabstripDeclutterStaleThresholdDuration.Get()),
       declutter_timer_interval_(
@@ -42,7 +44,15 @@ TabDeclutterController::TabDeclutterController(TabStripModel* tab_strip_model)
           base::DefaultTickClock::GetInstance())),
       next_nudge_valid_time_ticks_(usage_tick_clock_->NowTicks() +
                                    nudge_timer_interval_),
-      tab_strip_model_(tab_strip_model) {
+      tab_strip_model_(browser_window_interface->GetTabStripModel()),
+      is_active_(false) {
+  browser_subscriptions_.push_back(
+      browser_window_interface->RegisterDidBecomeActive(base::BindRepeating(
+          &TabDeclutterController::DidBecomeActive, base::Unretained(this))));
+  browser_subscriptions_.push_back(
+      browser_window_interface->RegisterDidBecomeInactive(base::BindRepeating(
+          &TabDeclutterController::DidBecomeInactive, base::Unretained(this))));
+
   StartDeclutterTimer();
 }
 
@@ -57,6 +67,11 @@ void TabDeclutterController::StartDeclutterTimer() {
 
 void TabDeclutterController::ProcessStaleTabs() {
   CHECK(features::IsTabstripDeclutterEnabled());
+
+  if (!is_active_) {
+    return;
+  }
+
   std::vector<tabs::TabModel*> tabs = GetStaleTabs();
 
   for (auto& observer : observers_) {
@@ -124,6 +139,15 @@ void TabDeclutterController::DeclutterTabs(
 
     excluded_tabs_.clear();
   }
+}
+
+void TabDeclutterController::DidBecomeActive(BrowserWindowInterface* browser) {
+  is_active_ = true;
+}
+
+void TabDeclutterController::DidBecomeInactive(
+    BrowserWindowInterface* browser) {
+  is_active_ = false;
 }
 
 void TabDeclutterController::ExcludeFromStaleTabs(tabs::TabModel* tab_model) {

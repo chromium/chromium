@@ -7,6 +7,7 @@
 #include <memory>
 #include <set>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -17,6 +18,7 @@
 
 class TabStripModel;
 class TabSearchContainer;
+class BrowserWindowInterface;
 
 namespace tabs {
 
@@ -24,7 +26,8 @@ namespace tabs {
 // browser.
 class TabDeclutterController {
  public:
-  explicit TabDeclutterController(TabStripModel* tab_strip_model);
+  explicit TabDeclutterController(
+      BrowserWindowInterface* browser_window_interface);
   TabDeclutterController(const TabDeclutterController&) = delete;
   TabDeclutterController& operator=(const TabDeclutterController& other) =
       delete;
@@ -58,7 +61,6 @@ class TabDeclutterController {
 
   void SetTimerForTesting(const base::TickClock* tick_clock,
                           scoped_refptr<base::SequencedTaskRunner> task_runner);
-
   virtual std::vector<tabs::TabModel*> GetStaleTabs();
   TabStripModel* tab_strip_model() { return tab_strip_model_; }
 
@@ -66,6 +68,9 @@ class TabDeclutterController {
 
   // Closes the tabs from the tabstrip if they are present.
   void DeclutterTabs(std::vector<tabs::TabModel*> tab_models);
+
+  void DidBecomeActive(BrowserWindowInterface* browser_window_interface);
+  void DidBecomeInactive(BrowserWindowInterface* browser_window_interface);
 
  private:
   void StartDeclutterTimer();
@@ -94,6 +99,10 @@ class TabDeclutterController {
   base::ObserverList<TabDeclutterObserver> observers_;
   raw_ptr<TabStripModel> tab_strip_model_;
   std::vector<tabs::TabModel*> excluded_tabs_;
+
+  bool is_active_;
+  // Holds subscriptions for BrowserWindowInterface callbacks.
+  std::vector<base::CallbackListSubscription> browser_subscriptions_;
 };
 
 }  // namespace tabs

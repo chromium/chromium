@@ -22,6 +22,8 @@
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
@@ -66,8 +68,8 @@ constexpr char kTabName6[] = "Tab 6";
 
 class MockTabDeclutterController : public tabs::TabDeclutterController {
  public:
-  explicit MockTabDeclutterController(TabStripModel* tab_strip_model)
-      : TabDeclutterController(tab_strip_model) {}
+  explicit MockTabDeclutterController(BrowserWindowInterface* browser)
+      : TabDeclutterController(browser) {}
 
   MOCK_METHOD(std::vector<tabs::TabModel*>, GetStaleTabs, (), (override));
 };
@@ -930,8 +932,15 @@ class TabSearchPageHandlerDeclutterTest : public TabSearchPageHandlerTest {
     tab_strip_model_delegate_ = std::make_unique<TestTabStripModelDelegate>();
     tab_strip_model_ = std::make_unique<TabStripModel>(
         tab_strip_model_delegate_.get(), testing_profile_.get());
-    tab_declutter_controller_ =
-        std::make_unique<MockTabDeclutterController>(tab_strip_model_.get());
+
+    browser_window_interface_ = std::make_unique<MockBrowserWindowInterface>();
+    ON_CALL(*browser_window_interface_, GetTabStripModel)
+        .WillByDefault(::testing::Return(tab_strip_model_.get()));
+
+    tab_declutter_controller_ = std::make_unique<MockTabDeclutterController>(
+        browser_window_interface_.get());
+    tab_declutter_controller_->DidBecomeActive(browser_window_interface_.get());
+
     webui_controller()->InstallTabDeclutterController(
         tab_declutter_controller());
   }
@@ -960,6 +969,7 @@ class TabSearchPageHandlerDeclutterTest : public TabSearchPageHandlerTest {
   std::unique_ptr<TestTabStripModelDelegate> tab_strip_model_delegate_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
   std::unique_ptr<MockTabDeclutterController> tab_declutter_controller_;
+  std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
   tabs::PreventTabFeatureInitialization prevent_;
 };
 

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
-
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -20,6 +18,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -27,6 +26,7 @@
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab_organization_button.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -268,7 +268,6 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
 
   AddTabsWithLastActiveTime(12, 2);
   AddTabsWithLastActiveTime(4, 8);
-  browser()->window()->Activate();
 
   base::TimeDelta initial_nudge_interval =
       tab_declutter_controller()->nudge_timer_interval();
@@ -377,4 +376,40 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
   EXPECT_FALSE(std::find(processed_stale_tabs.begin(),
                          processed_stale_tabs.end(),
                          tab_to_exclude) != processed_stale_tabs.end());
+}
+
+IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
+                       TestInactiveBrowserDoesNotDeclutterTabs) {
+  // Activate another browser.
+  Browser* const second_browser = CreateBrowser(browser()->profile());
+  ASSERT_TRUE(AddTabAtIndexToBrowser(second_browser, 0, GURL("about:blank"),
+                                     ui::PageTransition::PAGE_TRANSITION_LINK));
+
+  ui_test_utils::BrowserActivationWaiter browser_waiter(second_browser);
+  second_browser->window()->Activate();
+  browser_waiter.WaitForActivation();
+  resource_coordinator::GetTabLifecycleUnitSource()
+      ->SetFocusedTabStripModelForTesting(second_browser->tab_strip_model());
+
+  FakeTabDeclutterObserver fake_observer;
+  tab_declutter_controller()->AddObserver(&fake_observer);
+
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner);
+
+  tab_declutter_controller()->SetTimerForTesting(
+      task_runner->GetMockTickClock(), task_runner);
+
+  // Add 4 tabs that are 8 days old. These are all stale.
+  AddTabsWithLastActiveTime(4, 8);
+
+  // Make one of the tabs pinned and another grouped.
+  browser()->tab_strip_model()->SetTabPinned(1, true);
+  browser()->tab_strip_model()->AddToNewGroup(std::vector<int>{2});
+
+  task_runner->FastForwardBy(
+      tab_declutter_controller()->declutter_timer_interval());
+
+  EXPECT_EQ(fake_observer.stale_tabs_processed_count(), 0);
+  EXPECT_EQ(fake_observer.trigger_declutter_ui_visibility_count(), 0);
 }

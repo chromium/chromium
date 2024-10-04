@@ -6035,6 +6035,8 @@ static_library("test_support") {
 
   if (!is_android) {
     sources += [
+      "browser_window/test/mock_browser_window_interface.cc",
+      "browser_window/test/mock_browser_window_interface.h",
       "passwords/credential_manager_dialog_controller_mock.cc",
       "passwords/credential_manager_dialog_controller_mock.h",
       "passwords/manage_passwords_ui_controller_mock.cc",
@@ -6051,6 +6053,7 @@ static_library("test_support") {
       "webui/help/test_version_updater.h",
     ]
     deps += [
+      "//chrome/browser/ui/browser_window:browser_window",
       "//chrome/browser/ui/content_settings:test_support",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/test:test_support_ui",

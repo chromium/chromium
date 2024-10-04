@@ -98,8 +98,7 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
     if (features::IsTabstripDeclutterEnabled() &&
         browser->GetProfile()->IsRegularProfile()) {
       tab_declutter_controller_ =
-          std::make_unique<tabs::TabDeclutterController>(
-              browser->GetTabStripModel());
+          std::make_unique<tabs::TabDeclutterController>(browser);
     }
   }
 
