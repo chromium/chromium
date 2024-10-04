@@ -152,7 +152,7 @@ constexpr char kTestShippingFormString[] = R"(
     <label for="zip">ZIP code:</label>
      <input type="text" id="zip"><br>
     <label for="country">Country:</label>
-     <select id="country">
+     <select style="appearance:base-select" id="country">
      <option value="" selected="yes">--</option>
      <option value="CA">Canada</option>
      <option value="US">United States</option>
@@ -1491,7 +1491,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillFormWithRepeatedField) {
           <label for="zip">ZIP code:</label>
            <input type="text" id="zip"><br>
           <label for="country">Country:</label>
-           <select id="country">
+           <select style="appearance:base-select" id="country">
            <option value="" selected="yes">--</option>
            <option value="CA">Canada</option>
            <option value="US">United States</option>
@@ -1543,7 +1543,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
           <label for="zip">ZIP code:</label>
            <input type="text" id="zip"><br>
           <label for="country">Country:</label>
-           <select id="country">
+           <select style="appearance:base-select" id="country">
            <option value="" selected="yes">--</option>
            <option value="CA">Canada</option>
            <option value="US">United States</option>
@@ -1728,7 +1728,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillEvents) {
           <label for="zip">ZIP code:</label>
            <input type="text" id="zip"><br>
           <label for="country">Country:</label>
-           <select id="country">
+           <select style="appearance:base-select" id="country">
            <option value="" selected="yes">--</option>
            <option value="CA">Canada</option>
            <option value="US">United States</option>
@@ -1795,7 +1795,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillAfterTranslate) {
           <label for="z">ZIP code:</label>
            <input type="text" id="z"><br>
           <label for="co">Country:</label>
-           <select id="co">
+           <select style="appearance:base-select" id="co">
            <option value="" selected="yes">--</option>
            <option value="CA">Canada</option>
            <option value="US">United States</option>
@@ -1932,7 +1932,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
       <label for="zip">ZIP code:</label>
        <input type="text" id="zip"><br>
       <label for="country">Country:</label>
-       <select id="country">
+       <select style="appearance:base-select" id="country">
        <option value="" selected="yes">--</option>
        <option value="CA">Canada</option>
        <option value="US">United States</option>
