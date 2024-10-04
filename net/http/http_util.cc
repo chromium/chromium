@@ -108,7 +108,7 @@ std::string HttpUtil::SpecForRequest(const GURL& url) {
 }
 
 // static
-void HttpUtil::ParseContentType(const std::string& content_type_str,
+void HttpUtil::ParseContentType(std::string_view content_type_str,
                                 std::string* mime_type,
                                 std::string* charset,
                                 bool* had_charset,

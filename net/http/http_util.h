@@ -61,7 +61,7 @@ class NET_EXPORT HttpUtil {
   // content_type_str contains a mime type and charset value, respectively.  If
   // |boundary| is not null, then |*boundary| will be assigned the (unquoted)
   // value of the boundary parameter, if any.
-  static void ParseContentType(const std::string& content_type_str,
+  static void ParseContentType(std::string_view content_type_str,
                                std::string* mime_type,
                                std::string* charset,
                                bool* had_charset,

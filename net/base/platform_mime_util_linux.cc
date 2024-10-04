@@ -50,7 +50,7 @@ bool PlatformMimeUtil::GetPlatformMimeTypeFromExtension(
 #endif  // BUILDFLAG(IS_ANDROID)
 
 bool PlatformMimeUtil::GetPlatformPreferredExtensionForMimeType(
-    const std::string& mime_type,
+    std::string_view mime_type,
     base::FilePath::StringType* ext) const {
   // xdg_mime doesn't provide an API to get extension from a MIME type, so we
   // rely on the mappings hardcoded in mime_util.cc .
@@ -58,7 +58,7 @@ bool PlatformMimeUtil::GetPlatformPreferredExtensionForMimeType(
 }
 
 void PlatformMimeUtil::GetPlatformExtensionsForMimeType(
-    const std::string& mime_type,
+    std::string_view mime_type,
     std::unordered_set<base::FilePath::StringType>* extensions) const {
   // xdg_mime doesn't provide an API to get extension from a MIME type, so we
   // rely on the mappings hardcoded in mime_util.cc .

@@ -52,7 +52,7 @@ NET_EXPORT bool GetMimeTypeFromFile(const base::FilePath& file_path,
 // Returns true if a corresponding file extension exists.  The extension is
 // returned without a prefixed dot, ex "html".
 NET_EXPORT bool GetPreferredExtensionForMimeType(
-    const std::string& mime_type,
+    std::string_view mime_type,
     base::FilePath::StringType* extension);
 
 // Returns true if this the mime_type_pattern matches a given mime-type.
@@ -68,7 +68,7 @@ NET_EXPORT bool MatchesMimeType(std::string_view mime_type_pattern,
 // If |params| is non-NULL, clears it and sets it with name-value pairs of
 // parsed parameters. Parsing of parameters is lenient, and invalid params are
 // ignored.
-NET_EXPORT bool ParseMimeType(const std::string& type_str,
+NET_EXPORT bool ParseMimeType(std::string_view type_str,
                               std::string* mime_type,
                               base::StringPairs* params);
 
@@ -103,7 +103,7 @@ NET_EXPORT bool ParseMimeTypeWithoutParameter(std::string_view type_string,
 // the HTTP media type header field, Content-Type. In such cases, the media
 // type passed here may contain the multiple values separated by commas.
 NET_EXPORT std::optional<std::string> ExtractMimeTypeFromMediaType(
-    const std::string& type_string,
+    std::string_view type_string,
     bool accept_comma_separated);
 
 // Returns true if the |type_string| is a top-level type of any media type
@@ -114,7 +114,7 @@ NET_EXPORT std::optional<std::string> ExtractMimeTypeFromMediaType(
 // This method doesn't check that the input conforms to token ABNF, so if input
 // is experimental type strings, you need to check check that before using
 // this method.
-NET_EXPORT bool IsValidTopLevelMimeType(const std::string& type_string);
+NET_EXPORT bool IsValidTopLevelMimeType(std::string_view type_string);
 
 // Get the extensions associated with the given mime type.
 //
@@ -123,7 +123,7 @@ NET_EXPORT bool IsValidTopLevelMimeType(const std::string& type_string);
 // the existing elements in the the provided vector.  Instead, we append the
 // result to it.  The new extensions are returned in no particular order.
 NET_EXPORT void GetExtensionsForMimeType(
-    const std::string& mime_type,
+    std::string_view mime_type,
     std::vector<base::FilePath::StringType>* extensions);
 
 // Generates a random MIME multipart boundary.
