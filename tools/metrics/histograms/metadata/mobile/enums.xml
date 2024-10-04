@@ -263,6 +263,7 @@ chromium-metrics-reviews@google.com.
   <int value="30" label="Tab Group Indicator Entry"/>
   <int value="31" label="Autofill Manual Fallback Plus Address Entry"/>
   <int value="32" label="Tab Group Indicator on NTP Entry"/>
+  <int value="33" label="Last Visited History Entry"/>
 </enum>
 
 <enum name="IOSShareAction">

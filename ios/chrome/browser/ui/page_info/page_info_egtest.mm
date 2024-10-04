@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/overlays/model/public/web_content_area/alert_constants.h"
 #import "ios/chrome/browser/permissions/ui_bundled/permissions_app_interface.h"
 #import "ios/chrome/browser/permissions/ui_bundled/permissions_constants.h"
+#import "ios/chrome/browser/ui/menu/menu_action_type.h"
 #import "ios/chrome/browser/ui/page_info/features.h"
 #import "ios/chrome/browser/ui/page_info/page_info_app_interface.h"
 #import "ios/chrome/browser/ui/page_info/page_info_constants.h"
@@ -37,6 +38,8 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using chrome_test_util::DeleteButton;
+
 namespace {
 
 using ::base::test::ios::kWaitForUIElementTimeout;
@@ -44,8 +47,15 @@ using ::base::test::ios::WaitUntilConditionOrTimeout;
 using chrome_test_util::HistoryEntry;
 using chrome_test_util::NavigationBarDoneButton;
 
+// Endpoints for the local server.
+char kURL1[] = "/firstURL";
+char kURL2[] = "/secondURL";
 // Title and content of the external website used for testing.
 const char kTitleAndContentOfExternalWebsite[] = "Example Domain";
+// URL (as string) of the external website.
+const char kURLExternalWebsiteString[] = "https://www.example.com";
+// URL of the external website.
+const GURL kURLExternalWebsite = GURL(kURLExternalWebsiteString);
 
 // Matcher infobar modal camera permissions switch.
 id<GREYMatcher> CameraPermissionsSwitch(BOOL isOn) {
@@ -114,6 +124,20 @@ void ExpectPermissionChangedHistograms(ContentSettingsType type) {
                            kOriginInfoPermissionChangedBlockedHistogram)],
       @"PermissionChanged.Blocked histogram not logged.");
   ExpectPageInfoActionHistograms(page_info::PAGE_INFO_CHANGED_PERMISSION);
+}
+
+void ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
+    int count,
+    MenuActionType action) {
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:count
+             forBucket:static_cast<int>(action)
+          forHistogram:@"Mobile.ContextMenu.LastVisitedHistoryEntry.Actions"],
+      @"Mobile.ContextMenu.LastVisitedHistoryEntry.Actions histogram for the "
+      @"%d action "
+      @"page entries did not have count %d.",
+      static_cast<int>(action), count);
 }
 
 }  // namespace
@@ -509,10 +533,9 @@ void ExpectPermissionChangedHistograms(ContentSettingsType type) {
 // previous visit to the current website.
 - (void)testLastVisitedSectionWithNoPreviousVisit {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  GURL URL("https://www.example.com/");
 
-  AddAboutThisSiteHint(URL);
-  [ChromeEarlGrey loadURL:URL];
+  AddAboutThisSiteHint(kURLExternalWebsite);
+  [ChromeEarlGrey loadURL:kURLExternalWebsite];
   [ChromeEarlGreyUI openPageInfo];
 
   // Check that Last Visited section is not displayed.
@@ -526,15 +549,15 @@ void ExpectPermissionChangedHistograms(ContentSettingsType type) {
 // presented.
 - (void)testLastVisitedSectionDisplaysYesterday {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  GURL URL("https://www.example.com/");
 
   // Create an entry in History which took place one day ago on `URL`.
   const base::Time oneDayAgo = base::Time::Now() - base::Hours(24);
-  [ChromeEarlGrey addHistoryServiceTypedURL:URL visitTimestamp:oneDayAgo];
+  [ChromeEarlGrey addHistoryServiceTypedURL:kURLExternalWebsite
+                             visitTimestamp:oneDayAgo];
 
   // Visit `url` and open Page Info.
-  AddAboutThisSiteHint(URL);
-  [ChromeEarlGrey loadURL:URL];
+  AddAboutThisSiteHint(kURLExternalWebsite);
+  [ChromeEarlGrey loadURL:kURLExternalWebsite];
   [ChromeEarlGreyUI openPageInfo];
 
   // Wait for the Last Visited row to be displayed.
@@ -552,15 +575,16 @@ void ExpectPermissionChangedHistograms(ContentSettingsType type) {
 // Tests that tapping on the Last Visited row reveals the Last Visited subpage.
 - (void)testLastVisitedSubpage {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  GURL URL("https://www.example.com/");
 
-  // Create an entry in History which took place one day ago on `URL`.
+  // Create an entry in History which took place one day ago on
+  // `kURLExternalWebsite`.
   const base::Time oneDayAgo = base::Time::Now() - base::Hours(24);
-  [ChromeEarlGrey addHistoryServiceTypedURL:URL visitTimestamp:oneDayAgo];
+  [ChromeEarlGrey addHistoryServiceTypedURL:kURLExternalWebsite
+                             visitTimestamp:oneDayAgo];
 
   // Visit `URL` and open Page Info.
-  AddAboutThisSiteHint(URL);
-  [ChromeEarlGrey loadURL:URL];
+  AddAboutThisSiteHint(kURLExternalWebsite);
+  [ChromeEarlGrey loadURL:kURLExternalWebsite];
   [ChromeEarlGreyUI openPageInfo];
 
   // Check that tapping on the Last Visited Row leads to the Last Visited
@@ -576,9 +600,12 @@ void ExpectPermissionChangedHistograms(ContentSettingsType type) {
               base::UTF16ToUTF8(
                   url_formatter::
                       FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
-                          URL)),
+                          kURLExternalWebsite)),
               kTitleAndContentOfExternalWebsite)]
       assertWithMatcher:grey_notNil()];
+
+  // Assert that page_info::PAGE_INFO_HISTORY_OPENED metric was recorded.
+  ExpectPageInfoActionHistograms(page_info::PAGE_INFO_HISTORY_OPENED);
 }
 
 // Tests that tapping on the show full history button leads to the history page.
@@ -586,15 +613,16 @@ void ExpectPermissionChangedHistograms(ContentSettingsType type) {
 // Visited subpage.
 - (void)testLastVisitedSubpageOpensFullHistory {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  GURL URL("https://www.example.com/");
 
-  // Create an entry in History which took place one day ago on `URL`.
+  // Create an entry in History which took place one day ago on
+  // `kURLExternalWebsite`.
   const base::Time oneDayAgo = base::Time::Now() - base::Hours(24);
-  [ChromeEarlGrey addHistoryServiceTypedURL:URL visitTimestamp:oneDayAgo];
+  [ChromeEarlGrey addHistoryServiceTypedURL:kURLExternalWebsite
+                             visitTimestamp:oneDayAgo];
 
   // Visit `URL` and open Page Info.
-  AddAboutThisSiteHint(URL);
-  [ChromeEarlGrey loadURL:URL];
+  AddAboutThisSiteHint(kURLExternalWebsite);
+  [ChromeEarlGrey loadURL:kURLExternalWebsite];
   [ChromeEarlGreyUI openPageInfo];
 
   // Open Last Visited page.
@@ -623,24 +651,71 @@ void ExpectPermissionChangedHistograms(ContentSettingsType type) {
               base::UTF16ToUTF8(
                   url_formatter::
                       FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
-                          URL)),
+                          kURLExternalWebsite)),
               kTitleAndContentOfExternalWebsite)]
       assertWithMatcher:grey_notNil()];
+
+  // Assert that page_info::PAGE_INFO_SHOW_FULL_HISTORY_CLICKED metric was
+  // recorded.
+  ExpectPageInfoActionHistograms(
+      page_info::PAGE_INFO_SHOW_FULL_HISTORY_CLICKED);
+}
+
+// Tests that tapping on a history entry from the Last Visited subpage dismisses
+// Page Info (which presents the Last Visited subpage) and opens the
+// corresponding URL.
+- (void)testOpeningURLFromLastVisitedDismissesPageInfo {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+
+  // Create an entry in History which took place one day ago on
+  // `kURLExternalWebsite`.
+  const base::Time oneDayAgo = base::Time::Now() - base::Hours(24);
+  [ChromeEarlGrey addHistoryServiceTypedURL:kURLExternalWebsite
+                             visitTimestamp:oneDayAgo];
+
+  // Visit `URL` and open Page Info.
+  AddAboutThisSiteHint(kURLExternalWebsite);
+  [ChromeEarlGrey loadURL:kURLExternalWebsite];
+  [ChromeEarlGreyUI openPageInfo];
+
+  // Open Last Visited page.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_PAGE_INFO_HISTORY))]
+      performAction:grey_tap()];
+
+  // Tap on the latest history entry from the Last Visited subpage.
+  [[[EarlGrey
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          kURLExternalWebsite)),
+              kTitleAndContentOfExternalWebsite)] atIndex:0]
+      performAction:grey_tap()];
+
+  // Assert that the corresponding URL was opened.
+  [ChromeEarlGrey
+      waitForWebStateContainingText:kTitleAndContentOfExternalWebsite];
+
+  // Assert that page_info::PAGE_INFO_HISTORY_ENTRY_CLICKED metric was recorded.
+  ExpectPageInfoActionHistograms(page_info::PAGE_INFO_HISTORY_ENTRY_CLICKED);
 }
 
 // Tests that tapping on a history entry dismisses both full history and the
 // underlying Page Info (which presents the Last Visited subpage).
 - (void)testOpeningURLFromFullHistoryDismissesPageInfo {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  GURL URL("https://www.example.com/");
 
-  // Create an entry in History which took place one day ago on `URL`.
+  // Create an entry in History which took place one day ago on
+  // `kURLExternalWebsite`.
   const base::Time oneDayAgo = base::Time::Now() - base::Hours(24);
-  [ChromeEarlGrey addHistoryServiceTypedURL:URL visitTimestamp:oneDayAgo];
+  [ChromeEarlGrey addHistoryServiceTypedURL:kURLExternalWebsite
+                             visitTimestamp:oneDayAgo];
 
   // Visit `URL` and open Page Info.
-  AddAboutThisSiteHint(URL);
-  [ChromeEarlGrey loadURL:URL];
+  AddAboutThisSiteHint(kURLExternalWebsite);
+  [ChromeEarlGrey loadURL:kURLExternalWebsite];
   [ChromeEarlGreyUI openPageInfo];
 
   // Open Last Visited page.
@@ -664,12 +739,328 @@ void ExpectPermissionChangedHistograms(ContentSettingsType type) {
               base::UTF16ToUTF8(
                   url_formatter::
                       FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
-                          URL)),
+                          kURLExternalWebsite)),
               kTitleAndContentOfExternalWebsite)] atIndex:1]
       performAction:grey_tap()];
 
   [ChromeEarlGrey
       waitForWebStateContainingText:kTitleAndContentOfExternalWebsite];
+}
+
+// Tests display and selection of 'Open in New Tab' in a context menu on a
+// history entry from the Last Visited subpage.
+- (void)testContextMenuOpenInNewTab {
+  // At the beginning of the test, the Context Menu Last Visited History Entry
+  // Actions metric should be empty.
+  ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
+      /*count=*/0, /*action=*/MenuActionType::OpenInNewTab);
+
+  // Create an entry in History which took place one day ago on
+  // `kURLExternalWebsite`.
+  const base::Time oneDayAgo = base::Time::Now() - base::Hours(24);
+  [ChromeEarlGrey addHistoryServiceTypedURL:kURLExternalWebsite
+                             visitTimestamp:oneDayAgo];
+
+  // Visit `kURLExternalWebsite`.
+  AddAboutThisSiteHint(kURLExternalWebsite);
+  [ChromeEarlGrey loadURL:kURLExternalWebsite];
+
+  // Open Page Info.
+  [ChromeEarlGreyUI openPageInfo];
+
+  // Open Last Visited page.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_PAGE_INFO_HISTORY))]
+      performAction:grey_tap()];
+
+  // Long press on the latest history element.
+  [[[EarlGrey
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          kURLExternalWebsite)),
+              kTitleAndContentOfExternalWebsite)] atIndex:0]
+      performAction:grey_longPress()];
+
+  // Select "Open in New Tab" and confirm that new tab is opened with selected
+  // URL.
+  [ChromeEarlGrey verifyOpenInNewTabActionWithURL:kURLExternalWebsiteString];
+
+  // Assert that the Context Menu Last Visited History Entry Actions metric is
+  // populated.
+  ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
+      /*count=*/1, /*action=*/MenuActionType::OpenInNewTab);
+}
+
+// Tests display and selection of 'Open in New Window' in a context menu on a
+// history entry from the Last Visited subpage.
+- (void)testContextMenuOpenInNewWindow {
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  }
+
+  // At the beginning of the test, the Context Menu Last Visited History Entry
+  // Actions metric should be empty.
+  ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
+      /*count=*/0, /*action=*/MenuActionType::OpenInNewWindow);
+
+  // Create an entry in History which took place one day ago on
+  // `kURLExternalWebsite`.
+  const base::Time oneDayAgo = base::Time::Now() - base::Hours(24);
+  [ChromeEarlGrey addHistoryServiceTypedURL:kURLExternalWebsite
+                             visitTimestamp:oneDayAgo];
+
+  // Visit `kURLExternalWebsite`.
+  AddAboutThisSiteHint(kURLExternalWebsite);
+  [ChromeEarlGrey loadURL:kURLExternalWebsite];
+
+  // Open Page Info.
+  [ChromeEarlGreyUI openPageInfo];
+
+  // Open Last Visited page.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_PAGE_INFO_HISTORY))]
+      performAction:grey_tap()];
+
+  // Long press on the latest history element.
+  [[[EarlGrey
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          kURLExternalWebsite)),
+              kTitleAndContentOfExternalWebsite)] atIndex:0]
+      performAction:grey_longPress()];
+
+  // Select "Open in New Window" and confirm that new window is opened with
+  // selected URL.
+  [ChromeEarlGrey
+      verifyOpenInNewWindowActionWithContent:kTitleAndContentOfExternalWebsite];
+
+  // Assert that the Context Menu History Entry Actions metric is populated.
+  ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
+      /*count=*/1, /*action=*/MenuActionType::OpenInNewWindow);
+}
+
+// Tests display and selection of 'Open in New Incognito Tab' in a context menu
+// on a history entry from the Last Visited subpage.
+- (void)testContextMenuOpenInNewIncognitoTab {
+  // At the beginning of the test, the Context Menu Last Visited History Entry
+  // Actions metric should be empty.
+  ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
+      /*count=*/0, /*action=*/MenuActionType::OpenInNewIncognitoTab);
+
+  // Create an entry in History which took place one day ago on
+  // `kURLExternalWebsite`.
+  const base::Time oneDayAgo = base::Time::Now() - base::Hours(24);
+  [ChromeEarlGrey addHistoryServiceTypedURL:kURLExternalWebsite
+                             visitTimestamp:oneDayAgo];
+
+  // Visit `kURLExternalWebsite`.
+  AddAboutThisSiteHint(kURLExternalWebsite);
+  [ChromeEarlGrey loadURL:kURLExternalWebsite];
+
+  // Open Page Info.
+  [ChromeEarlGreyUI openPageInfo];
+
+  // Open Last Visited page.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_PAGE_INFO_HISTORY))]
+      performAction:grey_tap()];
+
+  // Long press on the latest history element.
+  [[[EarlGrey
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          kURLExternalWebsite)),
+              kTitleAndContentOfExternalWebsite)] atIndex:0]
+      performAction:grey_longPress()];
+
+  // Select "Open in New Incognito Tab" and confirm that new tab is opened in
+  // incognito with the selected URL.
+  [ChromeEarlGrey verifyOpenInIncognitoActionWithURL:kURLExternalWebsiteString];
+
+  // Assert that the Context Menu Last Visited History Entry Actions metric is
+  // populated.
+  ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
+      /*count=*/1, /*action=*/MenuActionType::OpenInNewIncognitoTab);
+}
+
+// Tests display and selection of 'Copy URL' in a context menu on a history
+// entry from the Last Visited subpage.
+- (void)testContextMenuCopy {
+  // At the beginning of the test, the Context Menu Last Visited History Entry
+  // Actions metric should be empty.
+  ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
+      /*count=*/0, /*action=*/MenuActionType::CopyURL);
+
+  // Create an entry in History which took place one day ago on
+  // `kURLExternalWebsite`.
+  const base::Time oneDayAgo = base::Time::Now() - base::Hours(24);
+  [ChromeEarlGrey addHistoryServiceTypedURL:kURLExternalWebsite
+                             visitTimestamp:oneDayAgo];
+
+  // Visit `kURLExternalWebsite`.
+  AddAboutThisSiteHint(kURLExternalWebsite);
+  [ChromeEarlGrey loadURL:kURLExternalWebsite];
+
+  // Open Page Info.
+  [ChromeEarlGreyUI openPageInfo];
+
+  // Open Last Visited page.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_PAGE_INFO_HISTORY))]
+      performAction:grey_tap()];
+
+  // Long press on the latest history element.
+  [[[EarlGrey
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          kURLExternalWebsite)),
+              kTitleAndContentOfExternalWebsite)] atIndex:0]
+      performAction:grey_longPress()];
+
+  // Tap "Copy URL" and wait for the URL to be copied to the pasteboard.
+  [ChromeEarlGrey
+      verifyCopyLinkActionWithText:[NSString
+                                       stringWithUTF8String:kURLExternalWebsite
+                                                                .spec()
+                                                                .c_str()]];
+
+  // Assert that the Context Menu Last Visited History Entry Actions metric is
+  // populated.
+  ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
+      /*count=*/1, /*action=*/MenuActionType::CopyURL);
+}
+
+// Tests display and selection of "Share" in the context menu for a history
+// entry from the Last Visited subpage.
+- (void)testContextMenuShare {
+  // At the beginning of the test, the Context Menu Last Visited History Entry
+  // Actions metric should be empty.
+  ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
+      /*count=*/0, /*action=*/MenuActionType::Share);
+
+  // Create an entry in History which took place one day ago on
+  // `kURLExternalWebsite`.
+  const base::Time oneDayAgo = base::Time::Now() - base::Hours(24);
+  [ChromeEarlGrey addHistoryServiceTypedURL:kURLExternalWebsite
+                             visitTimestamp:oneDayAgo];
+
+  // Visit `kURLExternalWebsite`.
+  AddAboutThisSiteHint(kURLExternalWebsite);
+  [ChromeEarlGrey loadURL:kURLExternalWebsite];
+
+  // Open Page Info.
+  [ChromeEarlGreyUI openPageInfo];
+
+  // Open Last Visited page.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_PAGE_INFO_HISTORY))]
+      performAction:grey_tap()];
+
+  // Long press on the history element.
+  [[EarlGrey
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          kURLExternalWebsite)),
+              kTitleAndContentOfExternalWebsite)]
+      performAction:grey_longPress()];
+
+  [ChromeEarlGrey
+      verifyShareActionWithURL:kURLExternalWebsite
+                     pageTitle:[NSString
+                                   stringWithUTF8String:
+                                       kTitleAndContentOfExternalWebsite]];
+
+  // Assert that the Context Menu Last Visited History Entry Actions metric is
+  // populated.
+  ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
+      /*count=*/1, /*action=*/MenuActionType::Share);
+}
+
+// Tests the Delete context menu action for a History entry from the Last
+// Visited subpage.
+- (void)testContextMenuDelete {
+  // At the beginning of the test, the Context Menu Last Visited History Entry
+  // Actions metric should be empty.
+  ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
+      /*count=*/0, /*action=*/MenuActionType::Delete);
+
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL URL1 = self.testServer->GetURL(kURL1);
+  const GURL URL2 = self.testServer->GetURL(kURL2);
+
+  // Create two entries in History which took place one day ago and two days
+  // ago, respectively.
+  const base::Time oneDayAgo = base::Time::Now() - base::Hours(24);
+  const base::Time twoDaysAgo = base::Time::Now() - base::Hours(48);
+  [ChromeEarlGrey addHistoryServiceTypedURL:URL1 visitTimestamp:oneDayAgo];
+  [ChromeEarlGrey addHistoryServiceTypedURL:URL2 visitTimestamp:twoDaysAgo];
+
+  // Visit `URL1`.
+  AddAboutThisSiteHint(URL1);
+  [ChromeEarlGrey loadURL:URL1];
+
+  // Open Page Info.
+  [ChromeEarlGreyUI openPageInfo];
+
+  // Open Last Visited page.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_PAGE_INFO_HISTORY))]
+      performAction:grey_tap()];
+
+  // Long press on the history element.
+  [[EarlGrey
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          URL1)),
+              URL1.GetContent())] performAction:grey_longPress()];
+
+  [[EarlGrey selectElementWithMatcher:DeleteButton()] performAction:grey_tap()];
+
+  // Wait for the animations to be done.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          URL2)),
+              URL2.GetContent())];
+
+  // Assert that the deleted entry is gone.
+  [[EarlGrey
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          URL1)),
+              URL1.GetContent())] assertWithMatcher:grey_nil()];
+
+  // Assert that the Context Menu Last Visited History Entry Actions metric is
+  // populated.
+  ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
+      /*count=*/1, /*action=*/MenuActionType::Delete);
+
+  // Assert that page_info::PAGE_INFO_HISTORY_ENTRY_REMOVED metric was recorded.
+  ExpectPageInfoActionHistograms(page_info::PAGE_INFO_HISTORY_ENTRY_REMOVED);
 }
 
 // Tests that we don't crash when showing the page info twice (prevent

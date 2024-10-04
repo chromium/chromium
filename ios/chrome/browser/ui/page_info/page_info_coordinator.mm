@@ -236,6 +236,9 @@
 
 - (void)showLastVisitedPage {
   CHECK(IsPageInfoLastVisitedIOSEnabled());
+  base::RecordAction(base::UserMetricsAction("PageInfo.History.Opened"));
+  base::UmaHistogramEnumeration(page_info::kWebsiteSettingsActionHistogram,
+                                page_info::PAGE_INFO_HISTORY_OPENED);
   self.lastVisitedCoordinator = [[PageInfoLastVisitedCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:self.browser

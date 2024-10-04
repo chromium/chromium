@@ -186,6 +186,8 @@ chromium-metrics-reviews@google.com.
     <variant name="BookmarkFolder" summary="Bookmark folder"/>
     <variant name="HistoryEntry" summary="History entry"/>
     <variant name="InactiveTabsEntry" summary="Inactive Tabs entry"/>
+    <variant name="LastVisitedHistoryEntry"
+        summary="History entry in Last Visited"/>
     <variant name="MostVisitedEntry" summary="Most Visited entry"/>
     <variant name="OmniboxMostVisitedEntry"
         summary="Omnibox Most Visited entry"/>

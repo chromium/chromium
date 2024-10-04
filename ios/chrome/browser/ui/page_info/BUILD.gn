@@ -206,6 +206,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/permissions/ui_bundled:constants",
     "//ios/chrome/browser/permissions/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/ui/menu:menu_action_type",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/web/public/permissions",

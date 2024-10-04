@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/ui/menu/menu_action_type.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/features.h"
 #import "ios/chrome/common/string_util.h"
@@ -121,6 +122,18 @@ void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
                 @"HistoryPageEntries bucket "
                 @"page entries did not have count %d.",
                 count);
+}
+
+void ExpectContextMenuHistoryEntryActionsHistogram(int count,
+                                                   MenuActionType action) {
+  GREYAssertNil([MetricsAppInterface
+                     expectCount:count
+                       forBucket:static_cast<int>(action)
+                    forHistogram:@"Mobile.ContextMenu.HistoryEntry.Actions"],
+                @"Mobile.ContextMenu.HistoryEntry.Actions histogram for the "
+                @"%d action "
+                @"page entries did not have count %d.",
+                static_cast<int>(action), count);
 }
 
 }  // namespace
@@ -615,6 +628,11 @@ void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
 // Tests display and selection of 'Open in New Tab' in a context menu on a
 // history entry.
 - (void)testContextMenuOpenInNewTab {
+  // At the beginning of the test, the Context Menu History Entry Actions metric
+  // should be empty.
+  ExpectContextMenuHistoryEntryActionsHistogram(
+      /*count=*/0, /*action=*/MenuActionType::OpenInNewTab);
+
   [self loadTestURLs];
   [self openHistoryPanel];
 
@@ -631,6 +649,10 @@ void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
   // Select "Open in New Tab" and confirm that new tab is opened with selected
   // URL.
   [ChromeEarlGrey verifyOpenInNewTabActionWithURL:_URL1.GetContent()];
+
+  // Assert that the Context Menu History Entry Actions metric is populated.
+  ExpectContextMenuHistoryEntryActionsHistogram(
+      /*count=*/1, /*action=*/MenuActionType::OpenInNewTab);
 }
 
 // Tests display and selection of 'Open in New Window' in a context menu on a
@@ -638,6 +660,11 @@ void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
 - (void)testContextMenuOpenInNewWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+
+  // At the beginning of the test, the Context Menu History Entry Actions metric
+  // should be empty.
+  ExpectContextMenuHistoryEntryActionsHistogram(
+      /*count=*/0, /*action=*/MenuActionType::OpenInNewWindow);
 
   [self loadTestURLs];
   [self openHistoryPanel];
@@ -653,11 +680,20 @@ void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
               kTitle1)] performAction:grey_longPress()];
 
   [ChromeEarlGrey verifyOpenInNewWindowActionWithContent:kResponse1];
+
+  // Assert that the Context Menu History Entry Actions metric is populated.
+  ExpectContextMenuHistoryEntryActionsHistogram(
+      /*count=*/1, /*action=*/MenuActionType::OpenInNewWindow);
 }
 
 // Tests display and selection of 'Open in New Incognito Tab' in a context menu
 // on a history entry.
 - (void)testContextMenuOpenInNewIncognitoTab {
+  // At the beginning of the test, the Context Menu History Entry Actions metric
+  // should be empty.
+  ExpectContextMenuHistoryEntryActionsHistogram(
+      /*count=*/0, /*action=*/MenuActionType::OpenInNewIncognitoTab);
+
   [self loadTestURLs];
   [self openHistoryPanel];
 
@@ -674,11 +710,20 @@ void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
   // Select "Open in New Incognito Tab" and confirm that new tab is opened in
   // incognito with the selected URL.
   [ChromeEarlGrey verifyOpenInIncognitoActionWithURL:_URL1.GetContent()];
+
+  // Assert that the Context Menu History Entry Actions metric is populated.
+  ExpectContextMenuHistoryEntryActionsHistogram(
+      /*count=*/1, /*action=*/MenuActionType::OpenInNewIncognitoTab);
 }
 
 // Tests display and selection of 'Copy URL' in a context menu on a history
 // entry.
 - (void)testContextMenuCopy {
+  // At the beginning of the test, the Context Menu History Entry Actions metric
+  // should be empty.
+  ExpectContextMenuHistoryEntryActionsHistogram(
+      /*count=*/0, /*action=*/MenuActionType::CopyURL);
+
   [self loadTestURLs];
   [self openHistoryPanel];
 
@@ -697,11 +742,20 @@ void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
       verifyCopyLinkActionWithText:[NSString
                                        stringWithUTF8String:_URL1.spec()
                                                                 .c_str()]];
+
+  // Assert that the Context Menu History Entry Actions metric is populated.
+  ExpectContextMenuHistoryEntryActionsHistogram(
+      /*count=*/1, /*action=*/MenuActionType::CopyURL);
 }
 
 // Tests display and selection of "Share" in the context menu for a history
 // entry.
 - (void)testContextMenuShare {
+  // At the beginning of the test, the Context Menu History Entry Actions metric
+  // should be empty.
+  ExpectContextMenuHistoryEntryActionsHistogram(
+      /*count=*/0, /*action=*/MenuActionType::Share);
+
   [self loadTestURLs];
   [self openHistoryPanel];
 
@@ -718,6 +772,10 @@ void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
   [ChromeEarlGrey
       verifyShareActionWithURL:_URL1
                      pageTitle:[NSString stringWithUTF8String:kTitle1]];
+
+  // Assert that the Context Menu History Entry Actions metric is populated.
+  ExpectContextMenuHistoryEntryActionsHistogram(
+      /*count=*/1, /*action=*/MenuActionType::Share);
 }
 
 // Tests the Delete context menu action for a History entry.
@@ -725,6 +783,10 @@ void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
   // Assert that the DeleteBrowsingData histogram is empty at the beginning of
   // the test.
   ExpectDeleteBrowsingDataHistoryHistogram(0);
+  // At the beginning of the test, the Context Menu History Entry Actions metric
+  // should be empty.
+  ExpectContextMenuHistoryEntryActionsHistogram(
+      /*count=*/0, /*action=*/MenuActionType::Delete);
 
   [self loadTestURLs];
   [self openHistoryPanel];
@@ -780,6 +842,9 @@ void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
   // Assert that the DeleteBrowsingData histogram contains one bucket after one
   // deletion was requested.
   ExpectDeleteBrowsingDataHistoryHistogram(1);
+  // Assert that the Context Menu History Entry Actions metric is populated.
+  ExpectContextMenuHistoryEntryActionsHistogram(
+      /*count=*/1, /*action=*/MenuActionType::Delete);
 }
 
 // Tests that the VC can be dismissed by swiping down.

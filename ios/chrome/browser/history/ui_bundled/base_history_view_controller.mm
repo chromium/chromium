@@ -90,8 +90,6 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
     TableViewLinkHeaderFooterItemDelegate> {
   // Closure to request next page of history.
   base::OnceClosure _query_history_continuation;
-  // Object to manage insertion of history entries into the table view model.
-  HistoryEntryInserter* _entryInserter;
   // The current status message for the tableView, it might be nil.
   NSString* _currentStatusMessage;
   // The current query for visible history entries.
@@ -101,7 +99,6 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
   // Handler for URL drag interactions.
   TableViewURLDragDropHandler* _dragDropHandler;
 }
-
 // YES if there are no results to show.
 @property(nonatomic, assign) BOOL empty;
 // YES if the history panel should show a notice about additional forms of
@@ -116,6 +113,8 @@ const CGFloat kSeparationSpaceBetweenSections = 9;
     NSMutableArray<NSIndexPath*>* filteredOutEntriesIndexPaths;
 // YES if the table should be filtered by the next received query result.
 @property(nonatomic, assign) BOOL filterQueryResult;
+// Object to manage insertion of history entries into the table view model.
+@property(nonatomic, strong) HistoryEntryInserter* entryInserter;
 @end
 
 @implementation BaseHistoryViewController

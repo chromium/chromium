@@ -30793,6 +30793,15 @@ should be able to be added at any place in this file.
   <description>History subpage opened in PageInfo.</description>
 </action>
 
+<action name="PageInfo.History.ShowFullHistoryClicked">
+  <owner>cristianciacu@google.com</owner>
+  <owner>fsenra@google.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    Show full history button clicked from Last Visited page.
+  </description>
+</action>
+
 <action name="PageInfo.Opened">
   <owner>olesiamarukhno@google.com</owner>
   <owner>dullweber@chromium.org</owner>

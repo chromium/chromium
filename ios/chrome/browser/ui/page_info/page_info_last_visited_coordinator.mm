@@ -4,6 +4,10 @@
 
 #import "ios/chrome/browser/ui/page_info/page_info_last_visited_coordinator.h"
 
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "components/page_info/core/page_info_action.h"
 #import "ios/chrome/browser/history/ui_bundled/base_history_coordinator+subclassing.h"
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator.h"
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator_delegate.h"
@@ -80,6 +84,10 @@
 
 - (void)displayFullHistory {
   CHECK(IsPageInfoLastVisitedIOSEnabled());
+  base::RecordAction(
+      base::UserMetricsAction("PageInfo.History.ShowFullHistoryClicked"));
+  base::UmaHistogramEnumeration(page_info::kWebsiteSettingsActionHistogram,
+                                page_info::PAGE_INFO_SHOW_FULL_HISTORY_CLICKED);
   self.historyCoordinator = [[HistoryCoordinator alloc]
       initWithBaseViewController:_baseNavigationController
                          browser:self.browser];
@@ -108,6 +116,10 @@
 
 - (BaseHistoryViewController*)viewController {
   return _viewController;
+}
+
+- (MenuScenarioHistogram)scenario {
+  return kMenuScenarioHistogramLastVisitedHistoryEntry;
 }
 
 @end

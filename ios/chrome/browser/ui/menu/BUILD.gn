@@ -9,11 +9,11 @@ source_set("menu") {
     "action_factory.mm",
     "browser_action_factory.h",
     "browser_action_factory.mm",
-    "menu_action_type.h",
     "menu_histograms.h",
     "menu_histograms.mm",
   ]
   deps = [
+    ":menu_action_type",
     "//base",
     "//components/open_from_clipboard",
     "//components/prefs",
@@ -51,6 +51,12 @@ source_set("tab_context_menu_delegate") {
   ]
 }
 
+source_set("menu_action_type") {
+  sources = [ "menu_action_type.h" ]
+
+  deps = []
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -59,6 +65,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":menu",
+    ":menu_action_type",
     "//base",
     "//base/test:test_support",
     "//components/policy/core/common:common_constants",

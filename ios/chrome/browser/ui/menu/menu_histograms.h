@@ -43,6 +43,7 @@ enum MenuScenarioHistogram {
   kMenuScenarioHistogramTabGroupIndicatorEntry = 30,
   kMenuScenarioHistogramAutofillManualFallbackPlusAddressEntry = 31,
   kMenuScenarioHistogramTabGroupIndicatorNTPEntry = 32,
+  kMenuScenarioHistogramLastVisitedHistoryEntry = 33,
   kMenuScenarioHistogramCount,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/mobile/enums.xml)

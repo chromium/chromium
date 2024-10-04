@@ -4,10 +4,13 @@
 
 #import "ios/chrome/browser/ui/page_info/page_info_last_visited_view_controller.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "components/page_info/core/page_info_action.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/history/ui_bundled/base_history_view_controller+subclassing.h"
+#import "ios/chrome/browser/history/ui_bundled/history_entry_item.h"
 #import "ios/chrome/browser/history/ui_bundled/history_table_view_controller_delegate.h"
 #import "ios/chrome/browser/history/ui_bundled/history_ui_constants.h"
 #import "ios/chrome/browser/ui/page_info/page_info_last_visited_view_controller_delegate.h"
@@ -87,9 +90,32 @@ enum ItemType : NSInteger {
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  // TODO(crbug.com/364824898): Record metrics when the clicked item is of type
-  // `kItemTypeHistoryEntry`.
+  // Only record metrics if a ItemTypeHistoryEntry was selected.
+  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+  if (item.type == kItemTypeHistoryEntry) {
+    base::RecordAction(
+        base::UserMetricsAction("PageInfo.History.EntryClicked"));
+    base::UmaHistogramEnumeration(page_info::kWebsiteSettingsActionHistogram,
+                                  page_info::PAGE_INFO_HISTORY_ENTRY_CLICKED);
+  }
   [super tableView:tableView didSelectRowAtIndexPath:indexPath];
+}
+
+#pragma mark - HistoryEntryItemDelegate
+
+- (void)historyEntryItemDidRequestDelete:(HistoryEntryItem*)item {
+  // Only record metrics if the selected history entry is valid.
+  NSInteger sectionIdentifier =
+      [self.entryInserter sectionIdentifierForTimestamp:item.timestamp];
+  if ([self.tableViewModel hasSectionForSectionIdentifier:sectionIdentifier] &&
+      [self.tableViewModel hasItem:item
+           inSectionWithIdentifier:sectionIdentifier]) {
+    base::RecordAction(
+        base::UserMetricsAction("PageInfo.History.EntryRemoved"));
+    base::UmaHistogramEnumeration(page_info::kWebsiteSettingsActionHistogram,
+                                  page_info::PAGE_INFO_HISTORY_ENTRY_REMOVED);
+  }
+  [super historyEntryItemDidRequestDelete:item];
 }
 
 #pragma mark - Private methods

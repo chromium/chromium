@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/history/ui_bundled/history_clear_browsing_data_coordinator_delegate.h"
 #import "ios/chrome/browser/history/ui_bundled/history_table_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
+#import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/features.h"
 
 @interface HistoryCoordinator () <HistoryClearBrowsingDataCoordinatorDelegate> {
@@ -104,6 +105,10 @@
 
 - (BaseHistoryViewController*)viewController {
   return _viewController;
+}
+
+- (MenuScenarioHistogram)scenario {
+  return kMenuScenarioHistogramHistoryEntry;
 }
 
 - (void)setHistoryClearBrowsingDataCoordinator:

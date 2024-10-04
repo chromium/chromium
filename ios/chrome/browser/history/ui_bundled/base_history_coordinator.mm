@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
-#import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 
@@ -115,6 +114,10 @@ history::WebHistoryService* WebHistoryServiceGetter(
   NOTREACHED() << "This should be implemented in subclasses.";
 }
 
+- (MenuScenarioHistogram)scenario {
+  NOTREACHED() << "This should be implemented in subclasses.";
+}
+
 - (void)dismissWithCompletion:(ProceduralBlock)completionHandler {
   [_sharingCoordinator stop];
   _sharingCoordinator = nil;
@@ -159,11 +162,11 @@ history::WebHistoryService* WebHistoryServiceGetter(
     BaseHistoryCoordinator* strongSelf = weakSelf;
 
     // Record that this context menu was shown to the user.
-    RecordMenuShown(kMenuScenarioHistogramHistoryEntry);
+    RecordMenuShown(self.scenario);
 
-    BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
-        initWithBrowser:strongSelf.browser
-               scenario:kMenuScenarioHistogramHistoryEntry];
+    BrowserActionFactory* actionFactory =
+        [[BrowserActionFactory alloc] initWithBrowser:strongSelf.browser
+                                             scenario:self.scenario];
 
     NSMutableArray<UIMenuElement*>* menuElements =
         [[NSMutableArray alloc] init];
