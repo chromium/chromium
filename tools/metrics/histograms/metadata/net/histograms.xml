@@ -5495,7 +5495,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SSL_Connection_Error_ECH" enum="NetErrorCodes"
-    expires_after="2024-07-21">
+    expires_after="2025-01-03">
   <owner>davidben@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -5503,6 +5503,9 @@ chromium-metrics-reviews@google.com.
     Recorded for connections to servers that advertise support for Encrypted
     ClientHello (ECH) in DNS. (Specifically, connections where the HTTPS record
     used included an ECHConfigList.)
+
+    Warning: this histogram was expired from 2024-07-21 to 2024-10-03; data may
+    be missing.
   </summary>
 </histogram>
 
