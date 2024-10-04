@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -1408,8 +1409,8 @@ TEST_F(PopupViewViewsTest, CellSubPopupResetAfterSuggestionsUpdates) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // `PopupViewViewsTest` is not used in death tests because it sets up a complex
 // environment (namely creates a `TestingProfile`) that fails to be created in
-// the sub-process (see `ASSERT_DEATH` doc for details). This fail hides
-// the real death reason to be tested.
+// the sub-process (see `EXPECT_CHECK_DEATH_WITH` doc for details). This fail
+// hides the real death reason to be tested.
 using PopupViewViewsDeathTest = ChromeViewsTestBase;
 TEST_F(PopupViewViewsDeathTest, OpenSubPopupWithNoChildrenCheckCrash) {
   NiceMock<MockAutofillPopupController> controller;
@@ -1432,7 +1433,7 @@ TEST_F(PopupViewViewsDeathTest, OpenSubPopupWithNoChildrenCheckCrash) {
   std::string expected_message = "can_open_sub_popup";
 #endif  // defined(NDEBUG) && defined(OFFICIAL_BUILD)
 
-  ASSERT_DEATH(
+  EXPECT_CHECK_DEATH_WITH(
       view_ptr->SetSelectedCell(CellIndex{0, CellType::kControl},
                                 PopupCellSelectionSource::kNonUserInput),
       expected_message);
