@@ -87,24 +87,35 @@ base::debug::CrashKeyString* GetDumpWillBeCheckCrashKey() {
 #endif  // BUILDFLAG(IS_NACL)
 }
 
+#if !BUILDFLAG(IS_NACL)
+base::debug::CrashKeyString* GetFatalMilestoneCrashKey() {
+  static auto* const key = ::base::debug::AllocateCrashKeyString(
+      "Logging-FATAL_MILESTONE", base::debug::CrashKeySize::Size32);
+  return key;
+}
+#endif  // BUILDFLAG(IS_NACL)
+
+void MaybeSetFatalMilestoneCrashKey(base::NotFatalUntil fatal_milestone) {
+#if !BUILDFLAG(IS_NACL)
+  if (fatal_milestone == base::NotFatalUntil::NoSpecifiedMilestoneInternal) {
+    return;
+  }
+  base::debug::SetCrashKeyString(
+      GetFatalMilestoneCrashKey(),
+      base::NumberToString(base::to_underlying(fatal_milestone)));
+#endif  // BUILDFLAG(IS_NACL)
+}
+
 void DumpWithoutCrashing(base::debug::CrashKeyString* message_key,
-                         const std::string& crash_string,
+                         const logging::LogMessage* log_message,
                          const base::Location& location,
                          base::NotFatalUntil fatal_milestone) {
+  const std::string crash_string = log_message->BuildCrashString();
 #if !BUILDFLAG(IS_NACL)
-  static auto* const fatal_milestone_key =
-      ::base::debug::AllocateCrashKeyString("Logging-FATAL_MILESTONE",
-                                            base::debug::CrashKeySize::Size32);
-  std::optional<base::debug::ScopedCrashKeyString> scoped_fatal_milestone_key;
-  // Store the fatal milestone only when one is provided.
-  if (fatal_milestone != base::NotFatalUntil::NoSpecifiedMilestoneInternal) {
-    scoped_fatal_milestone_key.emplace(
-        fatal_milestone_key,
-        base::NumberToString(base::to_underlying(fatal_milestone)));
-  }
-  // Always store the crash string.
   base::debug::ScopedCrashKeyString scoped_message_key(message_key,
                                                        crash_string);
+
+  MaybeSetFatalMilestoneCrashKey(fatal_milestone);
 #endif  // !BUILDFLAG(IS_NACL)
   // Copy the crash message to stack memory to make sure it can be recovered in
   // crash dumps. This is easier to recover in minidumps than crash keys during
@@ -115,6 +126,22 @@ void DumpWithoutCrashing(base::debug::CrashKeyString* message_key,
   // process has died). This attempts to prevent us from flooding ourselves with
   // repeat reports for the same bug.
   base::debug::DumpWithoutCrashing(location, base::Days(30));
+
+#if !BUILDFLAG(IS_NACL)
+  base::debug::ClearCrashKeyString(GetFatalMilestoneCrashKey());
+#endif  // !BUILDFLAG(IS_NACL)
+}
+
+void HandleCheckErrorLogMessage(base::debug::CrashKeyString* message_key,
+                                const logging::LogMessage* log_message,
+                                const base::Location& location,
+                                base::NotFatalUntil fatal_milestone) {
+  if (log_message->severity() == logging::LOGGING_FATAL) {
+    // Set NotFatalUntil key if applicable for when we die in ~LogMessage.
+    MaybeSetFatalMilestoneCrashKey(fatal_milestone);
+  } else {
+    DumpWithoutCrashing(message_key, log_message, location, fatal_milestone);
+  }
 }
 
 class NotReachedLogMessage : public LogMessage {
@@ -126,10 +153,8 @@ class NotReachedLogMessage : public LogMessage {
         location_(location),
         fatal_milestone_(fatal_milestone) {}
   ~NotReachedLogMessage() override {
-    if (severity() != logging::LOGGING_FATAL) {
-      DumpWithoutCrashing(GetNotReachedCrashKey(), BuildCrashString(),
-                          location_, fatal_milestone_);
-    }
+    HandleCheckErrorLogMessage(GetNotReachedCrashKey(), this, location_,
+                               fatal_milestone_);
   }
 
  private:
@@ -145,10 +170,9 @@ class DCheckLogMessage : public LogMessage {
                    LOGGING_DCHECK),
         location_(location) {}
   ~DCheckLogMessage() override {
-    if (severity() != logging::LOGGING_FATAL) {
-      DumpWithoutCrashing(GetDCheckCrashKey(), BuildCrashString(), location_,
-                          base::NotFatalUntil::NoSpecifiedMilestoneInternal);
-    }
+    HandleCheckErrorLogMessage(
+        GetDCheckCrashKey(), this, location_,
+        base::NotFatalUntil::NoSpecifiedMilestoneInternal);
   }
 
  private:
@@ -164,10 +188,8 @@ class CheckLogMessage : public LogMessage {
         location_(location),
         fatal_milestone_(fatal_milestone) {}
   ~CheckLogMessage() override {
-    if (severity() != logging::LOGGING_FATAL) {
-      DumpWithoutCrashing(GetDumpWillBeCheckCrashKey(), BuildCrashString(),
-                          location_, fatal_milestone_);
-    }
+    HandleCheckErrorLogMessage(GetDumpWillBeCheckCrashKey(), this, location_,
+                               fatal_milestone_);
   }
 
  private:
@@ -186,10 +208,9 @@ class DCheckWin32ErrorLogMessage : public Win32ErrorLogMessage {
                              err),
         location_(location) {}
   ~DCheckWin32ErrorLogMessage() override {
-    if (severity() != logging::LOGGING_FATAL) {
-      DumpWithoutCrashing(GetDCheckCrashKey(), BuildCrashString(), location_,
-                          base::NotFatalUntil::NoSpecifiedMilestoneInternal);
-    }
+    HandleCheckErrorLogMessage(
+        GetDCheckCrashKey(), this, location_,
+        base::NotFatalUntil::NoSpecifiedMilestoneInternal);
   }
 
  private:
@@ -205,10 +226,9 @@ class DCheckErrnoLogMessage : public ErrnoLogMessage {
                         err),
         location_(location) {}
   ~DCheckErrnoLogMessage() override {
-    if (severity() != logging::LOGGING_FATAL) {
-      DumpWithoutCrashing(GetDCheckCrashKey(), BuildCrashString(), location_,
-                          base::NotFatalUntil::NoSpecifiedMilestoneInternal);
-    }
+    HandleCheckErrorLogMessage(
+        GetDCheckCrashKey(), this, location_,
+        base::NotFatalUntil::NoSpecifiedMilestoneInternal);
   }
 
  private:
