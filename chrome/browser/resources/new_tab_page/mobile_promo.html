@@ -6,5 +6,8 @@
 </div>
 <div id="descriptionAndQrCodeContainer">
   <div id="description">$i18n{mobilePromoDescription}</div>
-  <div id="qrCode"></div>
+  <div id="qrCodeContainer">
+    <img id="qrCode" src="data:image/webp;base64,${this.qrCode_}"
+        ?hidden="${!this.qrCode_}">
+  </div>
 </div>

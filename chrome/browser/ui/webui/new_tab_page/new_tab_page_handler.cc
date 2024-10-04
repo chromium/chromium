@@ -66,6 +66,7 @@
 #include "components/omnibox/browser/omnibox.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/qr_code_generator/bitmap_generator.h"
 #include "components/search/ntp_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_provider_logos/logo_service.h"
@@ -79,8 +80,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/theme_provider.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/codec/webp_codec.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/image/image_skia_rep_default.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
@@ -96,6 +99,10 @@ constexpr auto kModuleInteractionNames =
     base::MakeFixedFlatSet<std::string_view>(
         {kDisableInteraction, kDismissInteraction, kIgnoreInteraction,
          kUseInteraction});
+
+const char kMobilePromoQRCodeURL[] =
+    "https://apps.apple.com/app/apple-store/"
+    "id535886823?pt=9008&ct=desktop-chr-passwords&mt=8";
 
 // Returns a list of module IDs that are eligible for HATS.
 std::vector<std::string> GetSurveyEligibleModuleIds() {
@@ -416,6 +423,27 @@ base::Value::Dict MakeModuleInteractionTriggerIdDictionary() {
   }
 
   return std::move(*value_with_error).TakeDict();
+}
+
+std::string MakeMobilePromoQRCode() {
+  auto generated_code = qr_code_generator::GenerateImage(
+      base::as_byte_span(std::string_view(kMobilePromoQRCodeURL)),
+      qr_code_generator::ModuleStyle::kCircles,
+      qr_code_generator::LocatorStyle::kRounded,
+      qr_code_generator::CenterImage::kDino,
+      qr_code_generator::QuietZone::kIncluded);
+
+  if (!generated_code.has_value()) {
+    return "";
+  }
+
+  SkBitmap bitmap = generated_code.value().GetRepresentation(1.0f).GetBitmap();
+  std::vector<unsigned char> encoded_bitmap;
+  bool result = gfx::WebpCodec::Encode(bitmap, 100, &encoded_bitmap);
+  if (!result) {
+    return "";
+  }
+  return base::Base64Encode(encoded_bitmap);
 }
 
 }  // namespace
@@ -1462,4 +1490,11 @@ const std::string& NewTabPageHandler::GetSurveyTriggerIdForModuleAndInteraction(
   }
 
   return kNoTriggerId;
+}
+
+void NewTabPageHandler::GetMobilePromoQrCode(
+    GetMobilePromoQrCodeCallback callback) {
+  // TODO(crbug.com/369871205): Check other conditions before returning the
+  // generated QR code.
+  std::move(callback).Run(MakeMobilePromoQRCode());
 }

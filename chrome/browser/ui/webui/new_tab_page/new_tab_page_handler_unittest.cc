@@ -1167,6 +1167,23 @@ TEST_F(NewTabPageHandlerTest, IncrementWallpaperSearchButtonShownCount) {
   mock_page_.FlushForTesting();
 }
 
+TEST_F(NewTabPageHandlerTest, GetMobilePromoQrCode) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(ntp_features::kNtpMobilePromo);
+
+  std::string encodedQrCode;
+  base::MockCallback<NewTabPageHandler::GetMobilePromoQrCodeCallback> callback;
+  EXPECT_CALL(callback, Run(_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&encodedQrCode](const std::basic_string<char>& code) {
+            encodedQrCode = std::move(code);
+          }));
+  handler_->GetMobilePromoQrCode(callback.Get());
+
+  EXPECT_NE("", encodedQrCode);
+}
+
 class NewTabPageHandlerHaTSTest : public NewTabPageHandlerTest {
  public:
   static constexpr char kSampleModuleId[] = "sample_module_id";

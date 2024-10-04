@@ -55,12 +55,11 @@
     width: 185px;
   }
 
-  #qrCode {
-    /* TODO(b/371020885): Replace background with QR code. */
-    background: var(--color-new-tab-page-module-item-background);
+  #qrCodeContainer {
     border: 1px;
     border-color: var(--color-new-tab-page-most-visited-tile-background);
     border-radius: 8px;
+    overflow: hidden;
     display: flex;
     height: 80px;
     justify-content: center;

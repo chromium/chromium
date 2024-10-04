@@ -280,6 +280,8 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
 
     test(`mobile promo hides if default promo renders`, async () => {
       const canShowPromo = true;
+      newTabPageHandler.setResultFor(
+          'getMobilePromoQrCode', Promise.resolve({qrCode: 'abc'}));
       const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
       assertTrue(isVisible(middleSlotPromo.$.promoAndDismissContainer));
       assertFalse(isVisible(middleSlotPromo.$.mobilePromo));
@@ -287,6 +289,8 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
 
     test(`mobile promo shows if default promo doesn't render`, async () => {
       const canShowPromo = false;
+      newTabPageHandler.setResultFor(
+          'getMobilePromoQrCode', Promise.resolve({qrCode: 'abc'}));
       const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
       assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
       assertTrue(isVisible(middleSlotPromo.$.mobilePromo));

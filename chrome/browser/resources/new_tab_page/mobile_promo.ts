@@ -6,6 +6,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './mobile_promo.css.js';
 import {getHtml} from './mobile_promo.html.js';
+import {NewTabPageProxy} from './new_tab_page_proxy.js';
 
 /**
  * @fileoverview This file provides a custom element for displaying a mobile
@@ -22,6 +23,25 @@ export class MobilePromoElement extends CrLitElement {
 
   override render() {
     return getHtml.bind(this)();
+  }
+
+  static override get properties() {
+    return {
+      qrCode_: {
+        type: String,
+        reflect: true,
+      },
+    };
+  }
+
+  protected qrCode_: string;
+
+  constructor() {
+    super();
+    NewTabPageProxy.getInstance().handler.getMobilePromoQrCode().then(
+        ({qrCode}) => {
+          this.qrCode_ = qrCode;
+        });
   }
 }
 

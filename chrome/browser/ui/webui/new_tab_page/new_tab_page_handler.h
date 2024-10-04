@@ -139,6 +139,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
       bool visible,
       new_tab_page::mojom::CustomizeChromeSection section) override;
   void IncrementCustomizeChromeButtonOpenCount() override;
+  void GetMobilePromoQrCode(GetMobilePromoQrCodeCallback callback) override;
   void MaybeShowFeaturePromo(
       new_tab_page::mojom::IphFeature iph_feature) override;
   void IncrementWallpaperSearchButtonShownCount() override;

@@ -27,6 +27,7 @@ export {IframeElement} from './iframe.js';
 export {ProcessedFile, processFile} from './image_processor.js';
 export {LogoElement} from './logo.js';
 export {recordDuration, recordLoadDuration, recordOccurence, recordPerdecage} from './metrics_utils.js';
+export {MobilePromoElement} from './mobile_promo.js';
 export {NewTabPageProxy} from './new_tab_page_proxy.js';
 export {checkTransparency, isBMP, isPNG, isWebP} from './transparency.js';
 export {$$} from './utils.js';
