@@ -1366,14 +1366,17 @@ class BottomSheet extends FrameLayout
     void onAppHeaderHeightChanged(int appHeaderHeight) {
         assert mSheetContainer != null : "Sheet container should not be null.";
         var params = (MarginLayoutParams) mSheetContainer.getLayoutParams();
-        Log.i(
-                TAG,
-                "Current top margin="
-                        + params.topMargin
-                        + ", previous app header height="
-                        + mAppHeaderHeight
-                        + ", new app header height="
-                        + appHeaderHeight);
+        if (params.topMargin != mAppHeaderHeight) {
+            // Log to track cases where the top margin was updated by some other source.
+            Log.i(
+                    TAG,
+                    "Current top margin="
+                            + params.topMargin
+                            + ", previous app header height="
+                            + mAppHeaderHeight
+                            + ", new app header height="
+                            + appHeaderHeight);
+        }
         mAppHeaderHeight = appHeaderHeight;
         if (appHeaderHeight != params.topMargin) {
             params.topMargin = appHeaderHeight;
