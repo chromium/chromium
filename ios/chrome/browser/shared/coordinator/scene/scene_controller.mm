@@ -582,10 +582,9 @@ void OnListFamilyMembersResponse(
            .URLContexts) {
     URLOpenerParams* params =
         [[URLOpenerParams alloc] initWithUIOpenURLContext:context];
-    [self
-        openTabFromLaunchWithParams:params
-                 startupInformation:self.sceneState.appState.startupInformation
-                           appState:self.sceneState.appState];
+    [self openTabFromLaunchWithParams:params
+                   startupInformation:self.sceneState.appState
+                                          .startupInformation];
   }
   if (self.sceneState.connectionOptions.shortcutItem) {
     userActivityBrowserAgent->Handle3DTouchApplicationShortcuts(
@@ -2995,15 +2994,14 @@ using UserFeedbackDataCallback =
 }
 
 - (void)openTabFromLaunchWithParams:(URLOpenerParams*)params
-                 startupInformation:(id<StartupInformation>)startupInformation
-                           appState:(AppState*)appState {
+                 startupInformation:(id<StartupInformation>)startupInformation {
   if (params) {
     [URLOpener handleLaunchOptions:params
                          tabOpener:self
              connectionInformation:self
                 startupInformation:startupInformation
-                          appState:appState
-                       prefService:self.currentInterface.profile->GetPrefs()];
+                       prefService:self.currentInterface.profile->GetPrefs()
+                         initStage:self.sceneState.profileState.initStage];
   }
 }
 
@@ -3960,7 +3958,7 @@ using UserFeedbackDataCallback =
         connectionInformation:self
            startupInformation:self.sceneState.appState.startupInformation
                   prefService:self.currentInterface.profile->GetPrefs()
-                    initStage:self.sceneState.appState.initStage];
+                    initStage:self.sceneState.profileState.initStage];
   }
 }
 

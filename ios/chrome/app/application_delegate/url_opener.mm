@@ -8,7 +8,6 @@
 
 #import "base/metrics/histogram_macros.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/application_delegate/tab_opening.h"
 #import "ios/chrome/app/application_delegate/url_opener_params.h"
@@ -38,7 +37,7 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
     connectionInformation:(id<ConnectionInformation>)connectionInformation
        startupInformation:(id<StartupInformation>)startupInformation
               prefService:(PrefService*)prefService
-                initStage:(AppInitStage)initStage {
+                initStage:(ProfileInitStage)initStage {
   NSURL* URL = options.URL;
   NSString* sourceApplication = options.sourceApplication;
 
@@ -62,7 +61,7 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
                               MOBILE_SESSION_CALLER_APP_COUNT);
   }
 
-  if (initStage == AppInitStage::kFirstRun) {
+  if (initStage == ProfileInitStage::kFirstRun) {
     UMA_HISTOGRAM_ENUMERATION("FirstRun.LaunchSource", [params launchSource],
                               first_run::LAUNCH_SIZE);
   } else if (applicationActive) {
@@ -135,8 +134,8 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
                   tabOpener:(id<TabOpening>)tabOpener
       connectionInformation:(id<ConnectionInformation>)connectionInformation
          startupInformation:(id<StartupInformation>)startupInformation
-                   appState:(AppState*)appState
-                prefService:(PrefService*)prefService {
+                prefService:(PrefService*)prefService
+                  initStage:(ProfileInitStage)initStage {
   if (options.URL) {
     // This method is always called when the SceneState transitions to
     // SceneActivationLevelForegroundActive, and before the handling of
@@ -148,7 +147,7 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
         connectionInformation:connectionInformation
            startupInformation:startupInformation
                   prefService:prefService
-                    initStage:appState.initStage];
+                    initStage:initStage];
   }
 }
 
