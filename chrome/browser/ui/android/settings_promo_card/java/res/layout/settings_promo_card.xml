@@ -7,8 +7,12 @@ found in the LICENSE file.
 
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/settings_promo_card_container"
     style="@style/PreferenceLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
+
+    <include
+        layout="@layout/promo_card_view_large"
+        android:id="@+id/promo_card_view"/>
+
 </FrameLayout>

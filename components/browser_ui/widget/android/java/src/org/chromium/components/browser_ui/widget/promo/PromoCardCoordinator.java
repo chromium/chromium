@@ -46,32 +46,63 @@ public class PromoCardCoordinator {
     /**
      * Create the Coordinator of PromoCard that owns the view and the change process. Default to
      * create the large variance.
+     *
      * @param context Context used to create the view.
      * @param model {@link PropertyModel} built with {@link PromoCardProperties}.
      * @param featureName Name of the feature of this promo. Will be used to create keys for
-     *         SharedPreference.
+     *     SharedPreference.
      */
-    public PromoCardCoordinator(Context context, PropertyModel model, String featureName) {
-        this(context, model, featureName, LayoutStyle.COMPACT);
+    public static PromoCardCoordinator create(
+            Context context, PropertyModel model, String featureName) {
+        return PromoCardCoordinator.create(context, model, featureName, LayoutStyle.COMPACT);
     }
 
     /**
-     * Create the Coordinator of PromoCard that owns the view and the change process.
+     * Create the view and the Coordinator of PromoCard that owns the view and the change process.
+     *
      * @param context Context used to create the view.
      * @param model {@link PropertyModel} built with {@link PromoCardProperties}.
      * @param featureName Name of the feature of this promo. Will be used to create keys for
-     *         SharedPreference.
+     *     SharedPreference.
      * @param layoutStyle {@link LayoutStyle} used for the promo.
      */
-    public PromoCardCoordinator(
+    public static PromoCardCoordinator create(
             Context context,
             PropertyModel model,
             String featureName,
             @LayoutStyle int layoutStyle) {
-        mPromoCardView =
+        PromoCardView promoCardView =
                 (PromoCardView)
                         LayoutInflater.from(context)
                                 .inflate(getPromoLayout(layoutStyle), null, false);
+        return new PromoCardCoordinator(promoCardView, model, featureName);
+    }
+
+    /**
+     * Create the Coordinator of PromoCard that owns the view and the change process.
+     *
+     * @param context Context used to create the view.
+     * @param model {@link PropertyModel} built with {@link PromoCardProperties}.
+     * @param featureName Name of the feature of this promo. Will be used to create keys for
+     *     SharedPreference.
+     * @param layoutStyle {@link LayoutStyle} used for the promo.
+     */
+    public static PromoCardCoordinator createFromView(
+            View view, PropertyModel model, String featureName) {
+        return new PromoCardCoordinator((PromoCardView) view, model, featureName);
+    }
+
+    /**
+     * Create the Coordinator of PromoCard that owns the view and the change process.
+     *
+     * @param view the {@link PromoCardView}
+     * @param model {@link PropertyModel} built with {@link PromoCardProperties}.
+     * @param featureName Name of the feature of this promo. Will be used to create keys for
+     *     SharedPreference.
+     */
+    public PromoCardCoordinator(PromoCardView view, PropertyModel model, String featureName) {
+        mPromoCardView = view;
+
         mModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         model, mPromoCardView, new PromoCardViewBinder());
@@ -110,7 +141,7 @@ public class PromoCardCoordinator {
         return mFeatureName;
     }
 
-    private @LayoutRes int getPromoLayout(@LayoutStyle int layoutStyle) {
+    private static @LayoutRes int getPromoLayout(@LayoutStyle int layoutStyle) {
         switch (layoutStyle) {
             case LayoutStyle.LARGE:
                 return R.layout.promo_card_view_large;

@@ -11,6 +11,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 
@@ -46,6 +48,8 @@ public class DefaultBrowserPromoCardTest {
 
     private Activity mActivity;
 
+    private DefaultBrowserPromoCard mPromoCard;
+
     @Before
     public void setup() {
         mActivity = spy(Robolectric.buildActivity(TestActivity.class).setup().get());
@@ -57,13 +61,23 @@ public class DefaultBrowserPromoCardTest {
         mActivity.finish();
     }
 
+    private DefaultBrowserPromoCard initializePromoCard() {
+        DefaultBrowserPromoCard card =
+                new DefaultBrowserPromoCard(
+                        mActivity,
+                        mMockDefaultBrowserPromoUtils,
+                        mTestTracker,
+                        mOnDisplayChangedCallback);
+        View view = LayoutInflater.from(mActivity).inflate(R.layout.promo_card_view_large, null);
+        card.setUpPromoCardView(view);
+        return card;
+    }
+
     @Test
     public void testShowPromo() {
         when(mTestTracker.shouldTriggerHelpUI(any())).thenReturn(true).thenReturn(false);
         when(mMockDefaultBrowserPromoUtils.shouldShowNonRoleManagerPromo(any())).thenReturn(true);
-        DefaultBrowserPromoCard card =
-                new DefaultBrowserPromoCard(
-                        mActivity, mMockDefaultBrowserPromoUtils, mTestTracker, () -> {});
+        DefaultBrowserPromoCard card = initializePromoCard();
         Assert.assertTrue(card.isPromoShowing());
         Assert.assertNotNull(card.getView());
 
@@ -76,6 +90,7 @@ public class DefaultBrowserPromoCardTest {
     public void testPromoNotShown() {
         when(mTestTracker.shouldTriggerHelpUI(any())).thenReturn(false);
         when(mMockDefaultBrowserPromoUtils.shouldShowNonRoleManagerPromo(any())).thenReturn(true);
+
         DefaultBrowserPromoCard card =
                 new DefaultBrowserPromoCard(
                         mActivity, mMockDefaultBrowserPromoUtils, mTestTracker, () -> {});
@@ -87,12 +102,7 @@ public class DefaultBrowserPromoCardTest {
         when(mTestTracker.shouldTriggerHelpUI(any())).thenReturn(true);
         when(mMockDefaultBrowserPromoUtils.shouldShowNonRoleManagerPromo(any())).thenReturn(true);
 
-        DefaultBrowserPromoCard card =
-                new DefaultBrowserPromoCard(
-                        mActivity,
-                        mMockDefaultBrowserPromoUtils,
-                        mTestTracker,
-                        mOnDisplayChangedCallback);
+        DefaultBrowserPromoCard card = initializePromoCard();
 
         ((ImageButton) card.getView().findViewById(R.id.promo_close_button)).performClick();
 
@@ -106,12 +116,7 @@ public class DefaultBrowserPromoCardTest {
         when(mTestTracker.shouldTriggerHelpUI(any())).thenReturn(true);
         when(mMockDefaultBrowserPromoUtils.shouldShowNonRoleManagerPromo(any())).thenReturn(true);
 
-        DefaultBrowserPromoCard card =
-                new DefaultBrowserPromoCard(
-                        mActivity,
-                        mMockDefaultBrowserPromoUtils,
-                        mTestTracker,
-                        mOnDisplayChangedCallback);
+        DefaultBrowserPromoCard card = initializePromoCard();
 
         ((Button) card.getView().findViewById(R.id.promo_primary_button)).performClick();
         verify(mActivity, times(1)).startActivity(any(), any());

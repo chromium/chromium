@@ -87,7 +87,8 @@ public class PromoCardImpressionTest {
                                     .with(PromoCardProperties.HAS_SECONDARY_BUTTON, false)
                                     .build();
 
-                    mCoordinator = new PromoCardCoordinator(sActivity, mModel, "impression-test");
+                    mCoordinator =
+                            PromoCardCoordinator.create(sActivity, mModel, "impression-test");
                     View promoView = mCoordinator.getView();
 
                     if (hidePromo) promoView.setVisibility(View.INVISIBLE);

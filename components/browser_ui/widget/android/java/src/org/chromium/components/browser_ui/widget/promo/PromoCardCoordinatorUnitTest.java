@@ -45,7 +45,7 @@ public class PromoCardCoordinatorUnitTest {
 
     private void setupCoordinator(@LayoutStyle int layoutStyle) {
         mPromoCardCoordinator =
-                new PromoCardCoordinator(mActivity, mModel, "test-feature", layoutStyle);
+                PromoCardCoordinator.create(mActivity, mModel, "test-feature", layoutStyle);
         mView = (PromoCardView) mPromoCardCoordinator.getView();
         Assert.assertNotNull("PromoCardView is null", mView);
     }

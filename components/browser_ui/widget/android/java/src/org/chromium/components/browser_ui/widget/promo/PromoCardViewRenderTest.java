@@ -83,7 +83,8 @@ public class PromoCardViewRenderTest extends BlankUiTestActivityTestCase {
     private void setPromoCard(@LayoutStyle int variance) {
         Activity activity = getActivity();
 
-        mPromoCardCoordinator = new PromoCardCoordinator(activity, mModel, "render-test", variance);
+        mPromoCardCoordinator =
+                PromoCardCoordinator.create(activity, mModel, "render-test", variance);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

@@ -21,6 +21,13 @@ public interface SettingsPromoCardProvider {
     }
 
     /**
+     * Sets up the promo card view.
+     *
+     * @param view The {@link PromoCardView} that should be set up.
+     */
+    void setUpPromoCardView(View view);
+
+    /**
      * Gets the {@link View} that holds the content to be displayed in the settings promo card.
      *
      * @return The content view.

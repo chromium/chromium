@@ -9,12 +9,13 @@ import android.content.Intent;
 import android.provider.Settings;
 import android.view.View;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.settings_promo_card.SettingsPromoCardProvider.State;
 import org.chromium.components.browser_ui.widget.promo.PromoCardCoordinator;
-import org.chromium.components.browser_ui.widget.promo.PromoCardCoordinator.LayoutStyle;
 import org.chromium.components.browser_ui.widget.promo.PromoCardProperties;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -28,8 +29,7 @@ public class DefaultBrowserPromoCard implements SettingsPromoCardProvider {
     private final Runnable mOnDisplayStateChanged;
 
     private @State int mState = State.PROMO_HIDDEN;
-    private PropertyModel mPropertyModel;
-    private PromoCardCoordinator mCardCoordinator;
+    @Nullable private PromoCardCoordinator mCardCoordinator;
 
     /**
      * Construct and initialize DefaultBrowserPromoCard view, to be added to the
@@ -49,11 +49,16 @@ public class DefaultBrowserPromoCard implements SettingsPromoCardProvider {
                 && tracker.shouldTriggerHelpUI(
                         FeatureConstants.DEFAULT_BROWSER_PROMO_SETTING_CARD)) {
             mState = State.PROMO_SHOWING;
-            mPropertyModel = buildPropertyModel();
-            mCardCoordinator =
-                    new PromoCardCoordinator(
-                            context, mPropertyModel, "default-browser-promo", LayoutStyle.LARGE);
         }
+    }
+
+    @Override
+    public void setUpPromoCardView(View view) {
+        assert mState == State.PROMO_SHOWING;
+
+        mCardCoordinator =
+                PromoCardCoordinator.createFromView(
+                        view, buildPropertyModel(), "default-browser-promo");
     }
 
     private PropertyModel buildPropertyModel() {
@@ -116,7 +121,7 @@ public class DefaultBrowserPromoCard implements SettingsPromoCardProvider {
         if (mState != State.PROMO_HIDDEN) {
             mState = State.PROMO_HIDDEN;
             mOnDisplayStateChanged.run();
-            mCardCoordinator.destroy();
+            if (mCardCoordinator != null) mCardCoordinator.destroy();
         }
     }
 }

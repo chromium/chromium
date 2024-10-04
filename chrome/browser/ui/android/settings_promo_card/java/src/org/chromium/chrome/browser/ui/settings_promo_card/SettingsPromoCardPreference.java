@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ui.settings_promo_card;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
@@ -36,11 +35,10 @@ public class SettingsPromoCardPreference extends Preference {
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
         setVisible(false);
+
         if (mProvider != null && mProvider.isPromoShowing()) {
-            ViewGroup container = (ViewGroup) holder.itemView;
-            container.removeAllViews();
-            container.addView(mProvider.getView());
-            setVisible(mProvider.isPromoShowing());
+            mProvider.setUpPromoCardView(holder.findViewById(R.id.promo_card_view));
+            setVisible(true);
         }
     }
 
