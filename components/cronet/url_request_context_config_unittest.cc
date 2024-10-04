@@ -206,7 +206,7 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
 
   EXPECT_TRUE(quic_params->close_sessions_on_ip_change);
   EXPECT_FALSE(quic_params->goaway_sessions_on_ip_change);
-  EXPECT_FALSE(quic_params->allow_server_migration);
+  EXPECT_TRUE(quic_params->allow_server_migration);
   EXPECT_FALSE(quic_params->migrate_sessions_on_network_change_v2);
   EXPECT_FALSE(quic_params->migrate_sessions_early_v2);
   EXPECT_FALSE(quic_params->migrate_idle_sessions);
@@ -504,7 +504,7 @@ TEST(URLRequestContextConfigTest, SetQuicServerMigrationOptions) {
           // User-Agent request header field.
           "fake agent",
           // JSON encoded experimental options.
-          "{\"QUIC\":{\"allow_server_migration\":true}}",
+          "{\"QUIC\":{\"allow_server_migration\":false}}",
           // MockCertVerifier to use for testing purposes.
           std::unique_ptr<net::CertVerifier>(),
           // Enable network quality estimator.
@@ -524,7 +524,7 @@ TEST(URLRequestContextConfigTest, SetQuicServerMigrationOptions) {
   const net::QuicParams* quic_params = context->quic_context()->params();
 
   EXPECT_FALSE(quic_params->close_sessions_on_ip_change);
-  EXPECT_TRUE(quic_params->allow_server_migration);
+  EXPECT_FALSE(quic_params->allow_server_migration);
 }
 
 // Tests that goaway_sessions_on_ip_changes can be set on via

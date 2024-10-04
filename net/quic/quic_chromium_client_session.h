@@ -737,7 +737,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   quic::QuicSSLConfig GetSSLConfig() const override;
 
   // QuicSpdyClientSessionBase methods:
-  void OnConfigNegotiated() override;
   void OnProofValid(
       const quic::QuicCryptoClientConfig::CachedState& cached) override;
   void OnProofVerifyDetailsAvailable(

@@ -486,10 +486,9 @@ TEST_P(QuicSessionPoolProxyJobTest,
        ProxiedQuicSessionWithServerPreferredAddressShouldNotMigrate) {
   IPEndPoint server_preferred_address = IPEndPoint(IPAddress(1, 2, 3, 4), 123);
   FLAGS_quic_enable_chaos_protection = false;
-
-  // Enable server preferred address on the client side.
-  quic_params_->connection_options.push_back(quic::kSPAD);
-
+  if (!quic_params_->allow_server_migration) {
+    quic_params_->connection_options.push_back(quic::kSPAD);
+  }
   Initialize();
 
   GURL url("https://www.example.org/");

@@ -199,7 +199,7 @@ struct NET_EXPORT QuicParams {
       kMaxMigrationsToNonDefaultNetworkOnPathDegrading;
   // If true, allows migration of QUIC connections to a server-specified
   // alternate server address.
-  bool allow_server_migration = false;
+  bool allow_server_migration = true;
   // If true, allows QUIC to use alternative services with a different
   // hostname from the origin.
   bool allow_remote_alt_svc = true;

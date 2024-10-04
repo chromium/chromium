@@ -541,6 +541,9 @@ QuicSessionPool::QuicSessionPool(
   if (params_.disable_tls_zero_rtt) {
     SetQuicFlag(quic_disable_client_tls_zero_rtt, true);
   }
+  if (params_.allow_server_migration) {
+    SetQuicFlag(quic_always_support_server_preferred_address, true);
+  }
   InitializeMigrationOptions();
   cert_verifier_->AddObserver(this);
   CertDatabase::GetInstance()->AddObserver(this);

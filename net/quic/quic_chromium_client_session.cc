@@ -1655,43 +1655,6 @@ quic::QuicSSLConfig QuicChromiumClientSession::GetSSLConfig() const {
   return config;
 }
 
-void QuicChromiumClientSession::OnConfigNegotiated() {
-  quic::QuicSpdyClientSessionBase::OnConfigNegotiated();
-  if (!session_pool_ || !session_pool_->allow_server_migration()) {
-    return;
-  }
-  if (!config()->HasReceivedPreferredAddressConnectionIdAndToken()) {
-    return;
-  }
-
-  // Server has sent an alternate address to connect to.
-  IPEndPoint old_address;
-  GetDefaultSocket()->GetPeerAddress(&old_address);
-
-  // Migrate only if address families match.
-  IPEndPoint new_address;
-  if (old_address.GetFamily() == ADDRESS_FAMILY_IPV6) {
-    if (!config()->HasReceivedIPv6AlternateServerAddress()) {
-      return;
-    }
-    new_address = ToIPEndPoint(config()->ReceivedIPv6AlternateServerAddress());
-  } else if (old_address.GetFamily() == ADDRESS_FAMILY_IPV4) {
-    if (!config()->HasReceivedIPv4AlternateServerAddress()) {
-      return;
-    }
-    new_address = ToIPEndPoint(config()->ReceivedIPv4AlternateServerAddress());
-  }
-  DCHECK_EQ(new_address.GetFamily(), old_address.GetFamily());
-
-  // Specifying handles::kInvalidNetworkHandle for the |network| parameter
-  // causes the session to use the default network for the new socket.
-  // DoNothingAs is passed in as `migration_callback` because OnConfigNegotiated
-  // does not need to do anything directly with the migration result.
-  Migrate(handles::kInvalidNetworkHandle, new_address,
-          /*close_session_on_error=*/true,
-          base::DoNothingAs<void(MigrationResult)>());
-}
-
 void QuicChromiumClientSession::SetDefaultEncryptionLevel(
     quic::EncryptionLevel level) {
   if (!callback_.is_null() &&

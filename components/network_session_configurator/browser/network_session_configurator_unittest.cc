@@ -90,7 +90,7 @@ TEST_F(NetworkSessionConfiguratorTest, Defaults) {
   EXPECT_FALSE(quic_params_.retry_on_alternate_network_before_handshake);
   EXPECT_FALSE(quic_params_.migrate_idle_sessions);
   EXPECT_TRUE(quic_params_.initial_rtt_for_handshake.is_zero());
-  EXPECT_FALSE(quic_params_.allow_server_migration);
+  EXPECT_TRUE(quic_params_.allow_server_migration);
   EXPECT_TRUE(params_.quic_host_allowlist.empty());
   EXPECT_TRUE(quic_params_.retransmittable_on_wire_timeout.is_zero());
   EXPECT_FALSE(quic_params_.disable_tls_zero_rtt);
@@ -359,6 +359,17 @@ TEST_F(NetworkSessionConfiguratorTest,
   ParseFieldTrials();
 
   EXPECT_FALSE(quic_params_.ignore_ip_matching_when_finding_existing_sessions);
+}
+
+TEST_F(NetworkSessionConfiguratorTest, DonotAllowServerMigration) {
+  std::map<std::string, std::string> field_trial_params;
+  field_trial_params["allow_server_migration"] = "false";
+  base::AssociateFieldTrialParams("QUIC", "Enabled", field_trial_params);
+  base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
+
+  ParseFieldTrials();
+
+  EXPECT_FALSE(quic_params_.allow_server_migration);
 }
 
 TEST_F(NetworkSessionConfiguratorTest,
