@@ -81,7 +81,8 @@ autofill::Suggestion CreateChildSuggestionForFilling(
 autofill::Suggestion CreateLoadingSuggestion() {
   autofill::Suggestion loading_suggestion(
       autofill::SuggestionType::kPredictionImprovementsLoadingState);
-  loading_suggestion.icon = autofill::Suggestion::Icon::kAccount;
+  loading_suggestion.icon =
+      autofill::Suggestion::Icon::kAutofillPredictionImprovements;
   loading_suggestion.is_acceptable = false;
   return loading_suggestion;
 }

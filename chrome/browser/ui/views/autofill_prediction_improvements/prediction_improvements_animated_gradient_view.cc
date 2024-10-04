@@ -12,6 +12,7 @@
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/native_theme/native_theme.h"
@@ -30,25 +31,22 @@ constexpr float kGradientAngleInRad = base::DegToRad(45.0f);
 // Helper angle.
 constexpr float k90DegInRad = base::DegToRad(90.0f);
 // Top rectangle showing the animated gradient.
-constexpr float kRectTopWidth = 148;
-constexpr float kRectTopHeight = 14;
-constexpr SkRect kRectTop = {.fLeft = 0,
-                             .fTop = 0,
-                             .fRight = kRectTopWidth,
-                             .fBottom = kRectTopHeight};
+constexpr float kRectTopWidth = 196;
+constexpr float kRectHeight = 14;
+constexpr gfx::RectF kRectTop(0.0f, 0.0f, kRectTopWidth, kRectHeight);
 // Bottom rectangle showing the animated gradient.
 constexpr float kGapBetweenRects = 8;
 constexpr float kRectBottomWidth = 148;
-constexpr float kRectBottomDistanceToTop = kRectTopHeight + kGapBetweenRects;
-constexpr SkRect kRectBottom = {
-    .fLeft = 0,
-    .fTop = kRectBottomDistanceToTop,
-    .fRight = kRectBottomWidth,
-    .fBottom = kRectBottomDistanceToTop + kRectTopHeight};
+constexpr float kRectBottomDistanceToTop = kRectHeight + kGapBetweenRects;
+constexpr gfx::RectF kRectBottom(0.0f,
+                                 kRectBottomDistanceToTop,
+                                 kRectBottomWidth,
+                                 kRectHeight);
 // Width of `PredictionImprovementsAnimatedGradientView`.
-constexpr int kWidth = kRectBottom.fRight;
+constexpr int kWidth = kRectTop.right();
 // Height of `PredictionImprovementsAnimatedGradientView`.
-constexpr int kHeight = kRectBottom.fBottom;
+constexpr int kHeight = kRectBottom.bottom();
+
 // Duration of one animation cycle.
 constexpr base::TimeDelta kAnimationDuration = base::Seconds(3);
 // Multiplier to extend the length of the gradient from 3-stops to 4-stops.
@@ -101,7 +99,9 @@ constexpr float kGradientLengthMultiplier = 1.5;
 
 PredictionImprovementsAnimatedGradientView::
     PredictionImprovementsAnimatedGradientView()
-    : end_point_offset_(CalculateGradientEndPoint()),
+    : corner_radius_(ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+          views::Emphasis::kLow)),
+      end_point_offset_(CalculateGradientEndPoint()),
       overflow_point_x_value_(CalculateOverflowPointXValue()),
       animation_{{gfx::MultiAnimation::Part{kAnimationDuration,
                                             gfx::Tween::Type::LINEAR}}} {
@@ -109,10 +109,8 @@ PredictionImprovementsAnimatedGradientView::
   SetFocusBehavior(FocusBehavior::NEVER);
   SetSize(gfx::Size(kWidth, kHeight));
   SetPreferredSize(size());
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      ui::kColorDropdownBackground,
-      ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-          views::Emphasis::kMedium)));
+  SetBackground(
+      views::CreateThemedSolidBackground(ui::kColorDropdownBackground));
 
   animation_.set_delegate(this);
   animation_.Start();
@@ -136,8 +134,8 @@ void PredictionImprovementsAnimatedGradientView::OnPaint(gfx::Canvas* canvas) {
   views::View::OnPaintBackground(canvas);
 
   if (is_first_paint_) {
-    // Set gradient colors and `mask_` on first paint to ensure that
-    // `ui::ColorProvider` and `views::LayoutProvider` instances are available.
+    // Set gradient colors on first paint to ensure that the `ui::ColorProvider`
+    // instance is available.
     if (ui::ColorProvider* color_provider = GetColorProvider()) {
       const SkColor4f start_and_end_color = SkColor4f::FromColor(
           color_provider->GetColor(ui::kColorDropdownBackground));
@@ -148,13 +146,6 @@ void PredictionImprovementsAnimatedGradientView::OnPaint(gfx::Canvas* canvas) {
                               ui::kColorSysGradientPrimary)),
                           start_and_end_color};
     }
-    if (const views::LayoutProvider* layout_provider = GetLayoutProvider()) {
-      const int corner_radius =
-          layout_provider->GetCornerRadiusMetric(views::Emphasis::kLow);
-      mask_.addRoundRect(kRectTop, corner_radius, corner_radius);
-      mask_.moveTo(kRectBottom.x(), kRectBottom.y());
-      mask_.addRoundRect(kRectBottom, corner_radius, corner_radius);
-    }
     is_first_paint_ = false;
   }
 
@@ -163,7 +154,8 @@ void PredictionImprovementsAnimatedGradientView::OnPaint(gfx::Canvas* canvas) {
   flags.setAntiAlias(true);
   flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setShader(CreateGradientForCurrentAnimationState());
-  canvas->DrawPath(mask_, flags);
+  canvas->DrawRoundRect(kRectTop, corner_radius_, flags);
+  canvas->DrawRoundRect(kRectBottom, corner_radius_, flags);
   canvas->Restore();
 }
 

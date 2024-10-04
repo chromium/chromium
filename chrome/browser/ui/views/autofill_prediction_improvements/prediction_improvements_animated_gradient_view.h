@@ -20,10 +20,10 @@ namespace autofill_prediction_improvements {
 // size `kWidth` and `kHeight`,
 //              `kWidth`
 // +-------------------------------+
+// |  __________________________   |
+// | (________`kRectTop`________)  | `kHeight`
 // |  _________________            |
-// | (____`kRectTop`___)           | `kHeight`
-// |  ___________________________  |
-// | (_______`kRectBottom`_______) |
+// | (__`kRectBottom`__)           |
 // +-------------------------------+
 // bars `kRectTop` and `kRectBottom` will be visible in the UI, showing the
 // animated gradient "washing" over them.
@@ -121,6 +121,9 @@ class PredictionImprovementsAnimatedGradientView
       // to 4 stops (by multiplying by 1.5).
       SkColors::kWhite};
 
+  // Corner radius of the rectangles painted in this view.
+  const int corner_radius_;
+
   // The gradient end point offset. For `current_animation_state_ == 0.0` this
   // is equal to the end point of the gradient. In other cases its x component
   // is shifted by `current_animation_state_ * overflow_point_x_value_`.
@@ -135,9 +138,6 @@ class PredictionImprovementsAnimatedGradientView
 
   // The current animation state has values between 0.0 and 1.0.
   double current_animation_state_ = 0;
-
-  // Path that actually shows the animated gradient. This is set on first paint.
-  SkPath mask_;
 
   // Will be set to `false` on first paint.
   bool is_first_paint_ = true;
