@@ -87,6 +87,8 @@ const CGFloat kAnimationHeightPercent = 0.70;
   [super viewDidAppear:animated];
   [_animationViewWrapper play];
   _isAnimationPlaying = YES;
+  UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                  self.view);
 }
 
 - (CGSize)preferredContentSize {

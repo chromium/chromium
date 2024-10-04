@@ -209,7 +209,7 @@ const CGFloat kMenuSymbolSize = 18;
   _containerViewController = [[LensOverlayContainerViewController alloc]
       initWithLensOverlayCommandsHandler:self];
   _containerViewController.modalPresentationStyle =
-      UIModalPresentationOverFullScreen;
+      UIModalPresentationOverCurrentContext;
   _containerViewController.modalTransitionStyle =
       UIModalTransitionStyleCrossDissolve;
 }
