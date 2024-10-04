@@ -76,7 +76,8 @@ class DataTypeManagerImpl : public DataTypeManager,
 
   // `ModelLoadManagerDelegate` implementation.
   void OnAllDataTypesReadyForConfigure() override;
-  void OnSingleDataTypeWillStop(DataType type, const SyncError& error) override;
+  void OnSingleDataTypeWillStop(DataType type,
+                                const std::optional<SyncError>& error) override;
 
   bool needs_reconfigure_for_test() const { return needs_reconfigure_; }
 

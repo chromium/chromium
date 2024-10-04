@@ -36,7 +36,7 @@ class MockModelLoadManagerDelegate : public ModelLoadManagerDelegate {
   MOCK_METHOD(void, OnAllDataTypesReadyForConfigure, (), (override));
   MOCK_METHOD(void,
               OnSingleDataTypeWillStop,
-              (DataType, const SyncError& error),
+              (DataType, const std::optional<SyncError>& error),
               (override));
 };
 

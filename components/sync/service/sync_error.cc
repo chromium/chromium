@@ -9,8 +9,6 @@
 
 namespace syncer {
 
-SyncError::SyncError() = default;
-
 SyncError::SyncError(const base::Location& location,
                      ErrorType error_type,
                      const std::string& message,
@@ -18,67 +16,40 @@ SyncError::SyncError(const base::Location& location,
     : location_(location),
       message_(message),
       data_type_(data_type),
-      error_type_(error_type) {
-  CHECK_NE(error_type, UNSET);
-}
+      error_type_(error_type) {}
 
 SyncError::~SyncError() = default;
 
-bool SyncError::IsSet() const {
-  return error_type_ != UNSET;
-}
-
 const base::Location& SyncError::location() const {
-  DCHECK(IsSet());
   return location_;
 }
 
 const std::string& SyncError::message() const {
-  DCHECK(IsSet());
   return message_;
 }
 
 DataType SyncError::data_type() const {
-  DCHECK(IsSet());
   return data_type_;
 }
 
 SyncError::ErrorType SyncError::error_type() const {
-  DCHECK(IsSet());
   return error_type_;
 }
 
 std::string SyncError::GetMessagePrefix() const {
-  std::string type_message;
   switch (error_type_) {
     case MODEL_ERROR:
-      type_message = "model error was encountered: ";
-      break;
+      return "model error was encountered: ";
     case CONFIGURATION_ERROR:
-      type_message = "configuration error was encountered: ";
-      break;
+      return "configuration error was encountered: ";
     case CRYPTO_ERROR:
-      type_message = "cryptographer error was encountered: ";
-      break;
+      return "cryptographer error was encountered: ";
     case UNREADY_ERROR:
-      type_message = "unready error was encountered: ";
-      break;
+      return "unready error was encountered: ";
     case DATATYPE_POLICY_ERROR:
-      type_message = "disabled due to configuration constraints: ";
-      break;
-    case UNSET:
-      NOTREACHED_IN_MIGRATION() << "Invalid error type";
-      break;
+      return "disabled due to configuration constraints: ";
   }
-  return type_message;
-}
-
-std::string SyncError::ToString() const {
-  if (!IsSet()) {
-    return std::string();
-  }
-  return location_.ToString() + ", " + DataTypeToDebugString(data_type_) + " " +
-         GetMessagePrefix() + message_;
+  NOTREACHED();
 }
 
 }  // namespace syncer

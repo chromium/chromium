@@ -91,8 +91,9 @@ void ModelLoadManager::Configure(DataTypeSet preferred_types_without_errors,
     for (const auto& [type, dtc] : *controllers_) {
       // Use CLEAR_METADATA in this case to avoid that two independent model
       // instances maintain their own copy of sync metadata.
-      StopDatatypeImpl(SyncError(), SyncStopMetadataFate::CLEAR_METADATA,
-                       dtc.get(), base::DoNothing());
+      StopDatatypeImpl(/*error=*/std::nullopt,
+                       SyncStopMetadataFate::CLEAR_METADATA, dtc.get(),
+                       base::DoNothing());
     }
   } else {
     // If the sync mode hasn't changed, stop only the types that are not
@@ -113,7 +114,7 @@ void ModelLoadManager::Configure(DataTypeSet preferred_types_without_errors,
         }
         DVLOG(1) << "ModelLoadManager: stop " << dtc->name()
                  << " with metadata fate " << static_cast<int>(metadata_fate);
-        StopDatatypeImpl(SyncError(), metadata_fate, dtc.get(),
+        StopDatatypeImpl(/*error=*/std::nullopt, metadata_fate, dtc.get(),
                          base::DoNothing());
       }
     }
@@ -129,7 +130,6 @@ void ModelLoadManager::Configure(DataTypeSet preferred_types_without_errors,
 void ModelLoadManager::StopDatatype(DataType type,
                                     SyncStopMetadataFate metadata_fate,
                                     SyncError error) {
-  DCHECK(error.IsSet());
   preferred_types_without_errors_.Remove(type);
 
   DataTypeController* dtc = controllers_->find(type)->second.get();
@@ -142,7 +142,7 @@ void ModelLoadManager::StopDatatype(DataType type,
 }
 
 void ModelLoadManager::StopDatatypeImpl(
-    const SyncError& error,
+    const std::optional<SyncError>& error,
     SyncStopMetadataFate metadata_fate,
     DataTypeController* dtc,
     DataTypeController::StopCallback callback) {
@@ -201,7 +201,8 @@ void ModelLoadManager::Stop(SyncStopMetadataFate metadata_fate) {
   for (const auto& [type, dtc] : *controllers_) {
     // We don't really wait until all datatypes have been fully stopped, which
     // is only required (and in fact waited for) when Configure() is called.
-    StopDatatypeImpl(SyncError(), metadata_fate, dtc.get(), base::DoNothing());
+    StopDatatypeImpl(/*error=*/std::nullopt, metadata_fate, dtc.get(),
+                     base::DoNothing());
     DVLOG(1) << "ModelLoadManager: Stopped " << dtc->name();
   }
 

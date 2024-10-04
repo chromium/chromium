@@ -31,19 +31,9 @@ DataTypeStatusTable::DataTypeStatusTable(const DataTypeStatusTable& other) =
 
 DataTypeStatusTable::~DataTypeStatusTable() = default;
 
-void DataTypeStatusTable::UpdateFailedDataTypes(const TypeErrorMap& errors) {
-  DVLOG(1) << "Setting " << errors.size() << " new failed types.";
-
-  for (const auto& [data_type, error] : errors) {
-    UpdateFailedDataType(data_type, error);
-  }
-}
-
 bool DataTypeStatusTable::UpdateFailedDataType(DataType type,
                                                const SyncError& error) {
   switch (error.error_type()) {
-    case SyncError::UNSET:
-      NOTREACHED();
     case SyncError::MODEL_ERROR:
     case SyncError::CONFIGURATION_ERROR:
       return data_type_errors_.emplace(type, error).second;

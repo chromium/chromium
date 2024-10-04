@@ -23,10 +23,6 @@ class DataTypeStatusTable {
 
   // Copy and assign welcome.
 
-  // Update the failed datatypes. Types will be added to their corresponding
-  // error map based on their |error_type()|.
-  void UpdateFailedDataTypes(const TypeErrorMap& errors);
-
   // Update an individual failed datatype. The type will be added to its
   // corresponding error map based on |error.error_type()|. Returns true if
   // there was an actual change.

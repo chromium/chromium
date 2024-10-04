@@ -45,8 +45,9 @@ class ModelLoadManagerDelegate {
   // error occurred during loading. Can be called for types that are not
   // connected or have already failed but should not be called for the same
   // error multiple times.
-  virtual void OnSingleDataTypeWillStop(DataType type,
-                                        const SyncError& error) = 0;
+  virtual void OnSingleDataTypeWillStop(
+      DataType type,
+      const std::optional<SyncError>& error) = 0;
 
   virtual ~ModelLoadManagerDelegate() = default;
 };
@@ -78,8 +79,7 @@ class ModelLoadManager {
   // Can be called at any time. Synchronously stops all datatypes.
   void Stop(SyncStopMetadataFate metadata_fate);
 
-  // Stops an individual datatype `type`. `error` must be an actual error (i.e.
-  // not UNSET).
+  // Stops an individual datatype `type`.
   void StopDatatype(DataType type,
                     SyncStopMetadataFate metadata_fate,
                     SyncError error);
@@ -94,7 +94,7 @@ class ModelLoadManager {
   void ModelLoadCallback(DataType type, const std::optional<ModelError>& error);
 
   // A helper to stop an individual datatype.
-  void StopDatatypeImpl(const SyncError& error,
+  void StopDatatypeImpl(const std::optional<SyncError>& error,
                         SyncStopMetadataFate metadata_fate,
                         DataTypeController* dtc,
                         DataTypeController::StopCallback callback);

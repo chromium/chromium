@@ -47,16 +47,6 @@ DataTypeController::TypeMap BuildControllerMap(
   return type_map;
 }
 
-DataTypeStatusTable::TypeErrorMap GenerateCryptoErrorsForTypes(
-    DataTypeSet encrypted_types) {
-  DataTypeStatusTable::TypeErrorMap crypto_errors;
-  for (DataType type : encrypted_types) {
-    crypto_errors[type] =
-        SyncError(FROM_HERE, SyncError::CRYPTO_ERROR, "", type);
-  }
-  return crypto_errors;
-}
-
 ConfigureReason GetReasonForProgrammaticReconfigure(
     ConfigureReason original_reason) {
   // This reconfiguration can happen within the first configure cycle and in
@@ -146,7 +136,6 @@ DataTypeManagerImpl::DataTypeManagerImpl(
 
   // Check if any of the controllers are already in a FAILED state, and if so,
   // mark them accordingly in the status table.
-  DataTypeStatusTable::TypeErrorMap existing_errors;
   for (const auto& [type, controller] : controllers_) {
     DataTypeController::State state = controller->state();
     CHECK(state == DataTypeController::NOT_RUNNING ||
@@ -155,15 +144,15 @@ DataTypeManagerImpl::DataTypeManagerImpl(
         << DataTypeToDebugString(type);
 
     if (state == DataTypeController::FAILED) {
-      existing_errors[type] =
+      data_type_status_table_.UpdateFailedDataType(
+          type,
           SyncError(FROM_HERE, SyncError::MODEL_ERROR,
-                    "Preexisting controller error on Sync startup", type);
+                    "Preexisting controller error on Sync startup", type));
     }
 
     // TODO(crbug.com/40901755): query the initial state of preconditions.
     // Currently it breaks some DCHECKs in SyncServiceImpl.
   }
-  data_type_status_table_.UpdateFailedDataTypes(existing_errors);
 }
 
 DataTypeManagerImpl::~DataTypeManagerImpl() = default;
@@ -376,10 +365,7 @@ TypeStatusMapForDebugging DataTypeManagerImpl::GetTypeStatusMapForDebugging(
 
     if (base::Contains(data_type_error_map, type)) {
       const SyncError& error = data_type_error_map.at(type);
-      DCHECK(error.IsSet());
       switch (error.error_type()) {
-        case SyncError::UNSET:
-          NOTREACHED();
         case SyncError::MODEL_ERROR:
         case SyncError::CONFIGURATION_ERROR:
         case SyncError::CRYPTO_ERROR:
@@ -558,15 +544,14 @@ void DataTypeManagerImpl::Restart() {
 
   // Check for new data type errors. This can happen if the controller
   // encountered an error while it was NOT_RUNNING or STOPPING.
-  DataTypeStatusTable::TypeErrorMap existing_errors;
   for (const auto& [type, controller] : controllers_) {
     if (controller->state() == DataTypeController::FAILED) {
-      existing_errors[type] =
+      data_type_status_table_.UpdateFailedDataType(
+          type,
           SyncError(FROM_HERE, SyncError::MODEL_ERROR,
-                    "Preexisting controller error on configuration", type);
+                    "Preexisting controller error on configuration", type));
     }
   }
-  data_type_status_table_.UpdateFailedDataTypes(existing_errors);
 
   // Check for new or resolved data type crypto errors.
   if (encryption_handler_->HasCryptoError()) {
@@ -574,9 +559,10 @@ void DataTypeManagerImpl::Restart() {
         encryption_handler_->GetAllEncryptedDataTypes();
     encrypted_types.RetainAll(preferred_types_);
     encrypted_types.RemoveAll(data_type_status_table_.GetCryptoErrorTypes());
-    DataTypeStatusTable::TypeErrorMap crypto_errors =
-        GenerateCryptoErrorsForTypes(encrypted_types);
-    data_type_status_table_.UpdateFailedDataTypes(crypto_errors);
+    for (DataType type : encrypted_types) {
+      data_type_status_table_.UpdateFailedDataType(
+          type, SyncError(FROM_HERE, SyncError::CRYPTO_ERROR, "", type));
+    }
   } else {
     data_type_status_table_.ResetCryptoErrors();
   }
@@ -714,13 +700,12 @@ void DataTypeManagerImpl::ConfigurationCompleted(
   downloaded_types_.PutAll(succeeded_configuration_types);
 
   if (!failed_configuration_types.empty()) {
-    DataTypeStatusTable::TypeErrorMap errors;
     for (DataType type : failed_configuration_types) {
-      SyncError error(FROM_HERE, SyncError::CONFIGURATION_ERROR,
-                      "Backend failed to download and configure type.", type);
-      errors[type] = error;
+      data_type_status_table_.UpdateFailedDataType(
+          type,
+          SyncError(FROM_HERE, SyncError::CONFIGURATION_ERROR,
+                    "Backend failed to download and configure type.", type));
     }
-    data_type_status_table_.UpdateFailedDataTypes(errors);
     needs_reconfigure_ = true;
   }
 
@@ -825,8 +810,9 @@ DataTypeManagerImpl::PrepareConfigureParams() {
   return params;
 }
 
-void DataTypeManagerImpl::OnSingleDataTypeWillStop(DataType type,
-                                                   const SyncError& error) {
+void DataTypeManagerImpl::OnSingleDataTypeWillStop(
+    DataType type,
+    const std::optional<SyncError>& error) {
   // OnSingleDataTypeWillStop() may get called even if the configurer was never
   // set, if a Stop() happens while the SyncEngine was initializing or while
   // DataTypeManager was already stopped (to clear sync metadata).
@@ -838,14 +824,14 @@ void DataTypeManagerImpl::OnSingleDataTypeWillStop(DataType type,
   configured_proxy_types_.Remove(type);
 
   // Reconfigure only if the data type is stopped with an error.
-  if (!error.IsSet()) {
+  if (!error.has_value()) {
     return;
   }
 
   // When the `type` is stopped due to precondition changes, it should already
   // be marked failed. Update the status table with the error for the other
   // cases (which should only be possible when loading models).
-  data_type_status_table_.UpdateFailedDataType(type, error);
+  data_type_status_table_.UpdateFailedDataType(type, *error);
   needs_reconfigure_ = true;
   last_requested_context_.reason =
       GetReasonForProgrammaticReconfigure(last_requested_context_.reason);

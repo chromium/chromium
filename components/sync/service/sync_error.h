@@ -21,8 +21,6 @@ class SyncError {
   // in the datatype being disabled) from actionable sync errors (which might
   // have more complicated results).
   enum ErrorType {
-    // No error.
-    UNSET,
     // A datatype model reported an error.
     MODEL_ERROR,
     // The configuration procedure (usually the initial download) failed.
@@ -38,12 +36,8 @@ class SyncError {
     DATATYPE_POLICY_ERROR,
   };
 
-  // Default constructor refers to "no error", and IsSet() will return false.
-  SyncError();
-
-  // Create a new Sync error of type |error_type| triggered by |data_type|
-  // from the specified location. IsSet() will return true afterward. Will
-  // create and print an error specific message to LOG(ERROR).
+  // Create a new Sync error of type `error_type` triggered by `data_type`
+  // from the specified location.
   SyncError(const base::Location& location,
             ErrorType error_type,
             const std::string& message,
@@ -52,10 +46,6 @@ class SyncError {
   SyncError& operator=(const SyncError& other) = default;
   ~SyncError();
 
-  // Whether this is a valid error or not.
-  bool IsSet() const;
-
-  // These must only be called if IsSet() is true.
   const base::Location& location() const;
   const std::string& message() const;
   DataType data_type() const;
@@ -64,14 +54,11 @@ class SyncError {
   // Type specific message prefix for logging and UI purposes.
   std::string GetMessagePrefix() const;
 
-  // Returns empty string is IsSet() is false.
-  std::string ToString() const;
-
  private:
   base::Location location_;
   std::string message_;
-  DataType data_type_ = UNSPECIFIED;
-  ErrorType error_type_ = UNSET;
+  DataType data_type_;
+  ErrorType error_type_;
 };
 
 }  // namespace syncer
