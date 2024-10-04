@@ -175,7 +175,7 @@ void SignedExchangeHandler::SetShouldIgnoreCertValidityPeriodErrorForTesting(
 SignedExchangeHandler::SignedExchangeHandler(
     bool is_secure_transport,
     bool has_nosniff,
-    std::string content_type,
+    std::string_view content_type,
     std::unique_ptr<net::SourceStream> body,
     ExchangeHeadersCallback headers_callback,
     std::unique_ptr<SignedExchangeCertFetcherFactory> cert_fetcher_factory,
@@ -231,7 +231,7 @@ SignedExchangeHandler::SignedExchangeHandler(
                            "content type must be "
                            "\"application/signed-exchange;v=b3\". But the "
                            "response content type was \"%s\"",
-                           content_type.c_str()));
+                           std::string(content_type).c_str()));
     // Proceed to extract and redirect to the fallback URL.
   }
 

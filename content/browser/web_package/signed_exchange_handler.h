@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -99,7 +100,7 @@ class CONTENT_EXPORT SignedExchangeHandler {
   SignedExchangeHandler(
       bool is_secure_transport,
       bool has_nosniff,
-      std::string content_type,
+      std::string_view content_type,
       std::unique_ptr<net::SourceStream> body,
       ExchangeHeadersCallback headers_callback,
       std::unique_ptr<SignedExchangeCertFetcherFactory> cert_fetcher_factory,

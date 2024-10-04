@@ -115,13 +115,13 @@ SignedExchangeLoader::SignedExchangeLoader(
   } else {
     // Can't use HttpResponseHeaders::GetMimeType() because
     // SignedExchangeHandler checks "v=" parameter.
-    std::string content_type;
-    outer_response_head_->headers->EnumerateHeader(nullptr, "content-type",
-                                                   &content_type);
+    std::optional<std::string_view> content_type =
+        outer_response_head_->headers->EnumerateHeader(nullptr, "content-type");
 
     signed_exchange_handler_ = std::make_unique<SignedExchangeHandler>(
         network::IsUrlPotentiallyTrustworthy(outer_request_.url),
-        web_package::HasNoSniffHeader(*outer_response_head_), content_type,
+        web_package::HasNoSniffHeader(*outer_response_head_),
+        content_type.value_or(std::string_view()),
         std::make_unique<network::DataPipeToSourceStream>(
             std::move(outer_response_body)),
         base::BindOnce(&SignedExchangeLoader::OnHTTPExchangeFound,

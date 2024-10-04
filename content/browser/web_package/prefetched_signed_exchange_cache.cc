@@ -4,6 +4,7 @@
 
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 
+#include <optional>
 #include <string_view>
 #include <utility>
 
@@ -295,11 +296,12 @@ bool CanStoreEntry(const PrefetchedSignedExchangeCacheEntry& entry) {
   // by the network layer and PrefetchedSignedExchangeCache stores decoded
   // response bodies, so we can safely ignore varying on the "Accept-Encoding"
   // header.
-  std::string value;
+  std::optional<std::string_view> value;
   size_t iter = 0;
-  while (outer_headers->EnumerateHeader(&iter, "vary", &value)) {
-    if (!base::EqualsCaseInsensitiveASCII(value, "accept-encoding"))
+  while ((value = outer_headers->EnumerateHeader(&iter, "vary"))) {
+    if (!base::EqualsCaseInsensitiveASCII(*value, "accept-encoding")) {
       return false;
+    }
   }
   return true;
 }

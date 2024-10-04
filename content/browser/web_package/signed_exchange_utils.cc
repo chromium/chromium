@@ -80,7 +80,7 @@ bool ShouldHandleAsSignedHTTPExchange(
 }
 
 std::optional<SignedExchangeVersion> GetSignedExchangeVersion(
-    const std::string& content_type) {
+    std::string_view content_type) {
   // https://wicg.github.io/webpackage/loading.html#signed-exchange-version
   // Step 1. Let mimeType be the supplied MIME type of response. [spec text]
   // |content_type| is the supplied MIME type.
@@ -97,9 +97,7 @@ std::optional<SignedExchangeVersion> GetSignedExchangeVersion(
   std::map<std::string, std::string> params;
   if (semicolon != std::string_view::npos) {
     net::HttpUtil::NameValuePairsIterator parser(
-        std::string_view(content_type.begin() + semicolon + 1,
-                         content_type.end()),
-        ';');
+        content_type.substr(semicolon + 1), ';');
     while (parser.GetNext()) {
       params[base::ToLowerASCII(parser.name())] = parser.value();
     }
@@ -274,11 +272,12 @@ void SetVerificationTimeForTesting(
 }
 
 bool IsCookielessOnlyExchange(const net::HttpResponseHeaders& inner_headers) {
-  std::string value;
+  std::optional<std::string_view> value;
   size_t iter = 0;
-  while (inner_headers.EnumerateHeader(&iter, "Vary", &value)) {
-    if (base::EqualsCaseInsensitiveASCII(value, "cookie"))
+  while ((value = inner_headers.EnumerateHeader(&iter, "Vary"))) {
+    if (base::EqualsCaseInsensitiveASCII(*value, "cookie")) {
       return true;
+    }
   }
   return false;
 }
