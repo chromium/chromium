@@ -20,7 +20,7 @@ PaymentHandlerPermissionContext::PaymentHandlerPermissionContext(
                             blink::mojom::PermissionsPolicyFeature::kNotFound) {
 }
 
-PaymentHandlerPermissionContext::~PaymentHandlerPermissionContext() {}
+PaymentHandlerPermissionContext::~PaymentHandlerPermissionContext() = default;
 
 void PaymentHandlerPermissionContext::DecidePermission(
     permissions::PermissionRequestData request_data,

@@ -23,7 +23,7 @@ PermissionRequestID::PermissionRequestID(content::GlobalRenderFrameHostId id,
                                          RequestLocalId request_local_id)
     : global_render_frame_host_id_(id), request_local_id_(request_local_id) {}
 
-PermissionRequestID::~PermissionRequestID() {}
+PermissionRequestID::~PermissionRequestID() = default;
 
 PermissionRequestID::PermissionRequestID(const PermissionRequestID&) = default;
 PermissionRequestID& PermissionRequestID::operator=(

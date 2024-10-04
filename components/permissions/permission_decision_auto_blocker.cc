@@ -570,7 +570,7 @@ PermissionDecisionAutoBlocker::PermissionDecisionAutoBlocker(
     HostContentSettingsMap* settings_map)
     : settings_map_(settings_map), clock_(base::DefaultClock::GetInstance()) {}
 
-PermissionDecisionAutoBlocker::~PermissionDecisionAutoBlocker() {}
+PermissionDecisionAutoBlocker::~PermissionDecisionAutoBlocker() = default;
 
 void PermissionDecisionAutoBlocker::PlaceUnderEmbargo(
     const GURL& request_origin,

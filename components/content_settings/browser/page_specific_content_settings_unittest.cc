@@ -1517,7 +1517,7 @@ TEST_F(PageSpecificContentSettingsTest, MediaBlockedStateIsResetIfMediaUsed) {
 class PageSpecificContentSettingsIframeTest
     : public PageSpecificContentSettingsTest {
  public:
-  PageSpecificContentSettingsIframeTest() {}
+  PageSpecificContentSettingsIframeTest() = default;
 
   void SetUp() override { PageSpecificContentSettingsTest::SetUp(); }
 

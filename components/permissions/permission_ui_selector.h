@@ -66,7 +66,7 @@ class PermissionUiSelector {
 
   using DecisionMadeCallback = base::OnceCallback<void(const Decision&)>;
 
-  virtual ~PermissionUiSelector() {}
+  virtual ~PermissionUiSelector() = default;
 
   // Determines whether animations should be suppressed because we're very
   // confident the user does not want notifications (e.g. they're abusive).

@@ -20,7 +20,7 @@ SensorPermissionContext::SensorPermissionContext(
                             blink::mojom::PermissionsPolicyFeature::kNotFound) {
 }
 
-SensorPermissionContext::~SensorPermissionContext() {}
+SensorPermissionContext::~SensorPermissionContext() = default;
 
 void SensorPermissionContext::UpdateTabContext(const PermissionRequestID& id,
                                                const GURL& requesting_frame,

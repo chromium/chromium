@@ -68,7 +68,7 @@ class TestPermissionContext : public PermissionContextBase {
   TestPermissionContext(const TestPermissionContext&) = delete;
   TestPermissionContext& operator=(const TestPermissionContext&) = delete;
 
-  ~TestPermissionContext() override {}
+  ~TestPermissionContext() override = default;
 
   const std::vector<ContentSetting>& decisions() const { return decisions_; }
 
@@ -201,8 +201,8 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
       delete;
 
  protected:
-  PermissionContextBaseTests() {}
-  ~PermissionContextBaseTests() override {}
+  PermissionContextBaseTests() = default;
+  ~PermissionContextBaseTests() override = default;
 
   // Accept or dismiss the permission prompt.
   void RespondToPermission(TestPermissionContext* context,
