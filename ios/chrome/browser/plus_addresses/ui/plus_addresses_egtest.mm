@@ -118,7 +118,8 @@ void ExpectModalTimeSample(
 
   if ([self isRunningTest:@selector(testGenericErrorAlert)]) {
     config.features_enabled_and_params.push_back(
-        {plus_addresses::features::kPlusAddressIOSErrorStatesEnabled, {}});
+        {plus_addresses::features::kPlusAddressIOSErrorAndLoadingStatesEnabled,
+         {}});
   }
 
   return config;

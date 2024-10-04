@@ -192,7 +192,8 @@
     (plus_addresses::metrics::PlusAddressModalCompletionStatus)status {
   [self.consumer notifyError:status];
   if (base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressIOSErrorStatesEnabled)) {
+          plus_addresses::features::
+              kPlusAddressIOSErrorAndLoadingStatesEnabled)) {
     [_delegate showErrorAlert];
   }
 }
