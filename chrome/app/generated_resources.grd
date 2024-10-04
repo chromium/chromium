@@ -9041,17 +9041,29 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
 
       <!-- Bookmarks strings -->
-      <!-- TODO(crbug.com/363277495): Update and mark translateable. -->
-      <message name="IDS_BOOKMARKS_MOVE_TO_ACCOUNT_DIALOG_TITLE" translateable="false" desc="Title for the dialog that offers the user to move a bookmark from their device to their signed-in account.">
+      <message name="IDS_BOOKMARKS_MOVE_TO_ACCOUNT_DIALOG_TITLE" desc="Title for the dialog that offers the user to move a bookmark from their device to their signed-in account.">
         Save to a folder in your Google Account?
       </message>
-      <!-- TODO(crbug.com/363277495): Update and mark translateable. -->
-      <message name="IDS_BOOKMARKS_MOVE_TO_ACCOUNT_DIALOG_SUBTITLE" translateable="false" desc="Subtitle for the dialog that offers the user to move a bookmark from their device to their signed-in account.">
-        This bookmark is saved only on this device. You can save it in your Google Account.
+      <message name="IDS_BOOKMARKS_MOVE_TO_ACCOUNT_DIALOG_SUBTITLE" desc="Subtitle for the dialog that offers the user to move a bookmark from their device to their signed-in account.">
+        This bookmark is saved only to this device. If you save it to <ph name="ACCOUNT_FOLDER">$1<ex>Account Bookmarks</ex></ph>, this bookmark will also be saved in your account.
       </message>
-      <!-- TODO(crbug.com/363277495): Update and mark translateable. -->
-      <message name="IDS_BOOKMARKS_MOVE_TO_ACCOUNT_DIALOG_OK_BUTTON_LABEL" translateable="false" desc="OK button label for the dialog that offers the user to move a bookmark from their device to their signed-in account.">
+      <message name="IDS_BOOKMARKS_MOVE_TO_ACCOUNT_DIALOG_FOLDER_SUBTITLE" desc="Subtitle for the dialog that offers the user to move a bookmark folder from their device to their signed-in account.">
+        This folder is saved only to this device. If you save it to <ph name="ACCOUNT_FOLDER">$1<ex>Account Bookmarks</ex></ph>, this folder will also be saved in your account.
+      </message>
+      <message name="IDS_BOOKMARKS_MOVE_TO_ACCOUNT_DIALOG_OK_BUTTON_LABEL" desc="OK button label for the dialog that offers the user to move a bookmark from their device to their signed-in account.">
         Save in account
+      </message>
+      <message name="IDS_BOOKMARKS_MOVE_TO_DEVICE_DIALOG_TITLE" desc="Title for the dialog that offers the user to move a bookmark from their signed-in account to their device.">
+        Save to a folder only on this device?
+      </message>
+      <message name="IDS_BOOKMARKS_MOVE_TO_DEVICE_DIALOG_SUBTITLE" desc="Subtitle for the dialog that offers the user to move a bookmark from their signed-in account to their device.">
+        <ph name="LOCAL_FOLDER">$1<ex>Local Bookmarks</ex></ph> is saved only to this device. If you move this bookmark to <ph name="LOCAL_FOLDER">$1<ex>Local Bookmarks</ex></ph>, you’ll no longer get it on your other devices.
+      </message>
+      <message name="IDS_BOOKMARKS_MOVE_TO_DEVICE_DIALOG_FOLDER_SUBTITLE" desc="Subtitle for the dialog that offers the user to move a bookmark folder from their signed-in account to their device.">
+        <ph name="LOCAL_FOLDER">$1<ex>Local Bookmarks</ex></ph> is saved only to this device. If you move this folder to <ph name="LOCAL_FOLDER">$1<ex>Local Bookmarks</ex></ph>, you’ll no longer get it on your other devices.
+      </message>
+      <message name="IDS_BOOKMARKS_MOVE_TO_DEVICE_DIALOG_OK_BUTTON_LABEL" desc="OK button label for the dialog that offers the user to move a bookmark from their signed-in account to their device.">
+        Save to device
       </message>
       <message name="IDS_BOOKMARKS_SORT_BY_TYPE" desc="Menu item label for selecting the bookmarks sort type.">
         Sort by <ph name="SORT_TYPE">$1<ex>Newest</ex></ph>
