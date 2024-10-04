@@ -224,9 +224,9 @@ class BoundSessionCookieControllerImplTest
     on_bound_session_throttler_params_changed_call_count_++;
   }
 
-  void OnPersistentErrorEncountered(
-      BoundSessionCookieController* controller) override {
-    on_persistent_error_encountered_called_ = true;
+  void OnPersistentErrorEncountered(BoundSessionCookieController* controller,
+                                    Result refresh_error) override {
+    on_persistent_error_encountered_refresh_error_ = refresh_error;
   }
 
   void SetExpirationTimeAndNotify(const std::string& cookie_name,
@@ -293,8 +293,8 @@ class BoundSessionCookieControllerImplTest
     return on_bound_session_throttler_params_changed_call_count_;
   }
 
-  bool on_persistent_error_encountered_called() {
-    return on_persistent_error_encountered_called_;
+  std::optional<Result> on_persistent_error_encountered_refresh_error() {
+    return on_persistent_error_encountered_refresh_error_;
   }
 
   void ResetOnBoundSessionThrottlerParamsChangedCallCount() {
@@ -385,7 +385,7 @@ class BoundSessionCookieControllerImplTest
   std::unique_ptr<BoundSessionCookieControllerImpl>
       bound_session_cookie_controller_;
   size_t on_bound_session_throttler_params_changed_call_count_ = 0;
-  bool on_persistent_error_encountered_called_ = false;
+  std::optional<Result> on_persistent_error_encountered_refresh_error_;
 };
 
 TEST_F(BoundSessionCookieControllerImplTest, KeyLoadedOnStartup) {
@@ -578,7 +578,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
 TEST_F(BoundSessionCookieControllerImplTest,
        RequestBlockedOnCookieRefreshFailedWithPersistentError) {
   CompletePendingRefreshRequestIfAny();
-  EXPECT_FALSE(on_persistent_error_encountered_called());
+  EXPECT_FALSE(on_persistent_error_encountered_refresh_error());
 
   BoundSessionCookieController* controller = bound_session_cookie_controller();
   task_environment()->FastForwardBy(base::Minutes(12));
@@ -597,7 +597,8 @@ TEST_F(BoundSessionCookieControllerImplTest,
   // Simulate refresh completes with persistent failure.
   SimulateCompleteRefreshRequest(Result::kServerPersistentError, std::nullopt);
   task_environment()->RunUntilIdle();
-  EXPECT_TRUE(on_persistent_error_encountered_called());
+  EXPECT_EQ(on_persistent_error_encountered_refresh_error(),
+            Result::kServerPersistentError);
   EXPECT_TRUE(future.IsReady());
   EXPECT_EQ(future.Get(),
             ResumeBlockedRequestsTrigger::kCookieRefreshFetchFailure);
@@ -653,7 +654,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
     RunTestStep(step);
   }
 
-  EXPECT_FALSE(on_persistent_error_encountered_called());
+  EXPECT_FALSE(on_persistent_error_encountered_refresh_error());
   EXPECT_THAT(
       histogram_tester()->GetAllSamples(
           "Signin.BoundSessionCredentials.ResumeThrottledRequestsTrigger"),
