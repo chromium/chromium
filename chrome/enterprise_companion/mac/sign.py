@@ -28,10 +28,21 @@ def notarize(tool_path, file):
     return subprocess.run([tool_path, "--file", file])
 
 
+# Create a zip archive containing the input directory and save it to
+# output/enterprise_companion.zip. That is, if `input` is
+# /path/to/ChromeEnterpriseCompanion.app, the resulting zip will contain
+# ChromeEnterpriseCompanion.app.
 def copy(input, output):
+    # Use the system zip/unzip because Python's zipfile doesn't preserve
+    # file metadata and symlinks.
     input = os.path.normpath(input)
     output = os.path.normpath(output)
-    shutil.copytree(input, os.path.join(output, os.path.basename(input)))
+    subprocess.check_call([
+        'zip', '-r',
+        os.path.join(output, 'enterprise_companion.zip'),
+        os.path.basename(input)
+    ],
+                          cwd=os.path.dirname(input))
 
 
 def main(options):
