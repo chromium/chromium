@@ -411,6 +411,12 @@ void ClearPrimaryAccountForProfile(
 }
 #endif
 
+std::string GetKeepAliveOriginName(ProfileKeepAliveOrigin origin) {
+  std::ostringstream oss;
+  oss << origin;
+  return oss.str();
+}
+
 }  // namespace
 
 ProfileManager::ProfileManager(const base::FilePath& user_data_dir)
@@ -1287,9 +1293,13 @@ void ProfileManager::RemoveKeepAlive(const Profile* profile,
     // ProfileManager.
     VLOG(1) << "RemoveKeepAlive(" << profile->GetDebugName() << ", " << origin
             << ") called before the Profile was added to the "
-            << "ProfileManager. The keepalive was not removed. (this is OK in "
-            << "unit tests, wheres Profile may not be registered with the "
-            << "ProfileManager)";
+            << "ProfileManager. The keepalive was not removed.";
+    // TODO(crbug.com/368360956): Not incrementing the refcount will cause
+    // `profile` to get destroyed too early. Remove or convert to a CHECK() once
+    // the root cause is fixed.
+    SCOPED_CRASH_KEY_STRING32("ProfileKeepAlive", "origin",
+                              GetKeepAliveOriginName(origin));
+    base::debug::DumpWithoutCrashing();
     return;
   }
 

@@ -31,8 +31,16 @@ ScopedProfileKeepAlive::ScopedProfileKeepAlive(const Profile* profile,
   DCHECK(profile_);
   // |profile_manager| can be nullptr in tests.
   auto* profile_manager = g_browser_process->profile_manager();
-  if (profile_manager)
+  if (profile_manager) {
     profile_manager->AddKeepAlive(profile_.get(), origin_);
+  } else {
+    // TODO(crbug.com/368360956): Not incrementing the refcount will cause
+    // `profile` to get destroyed too early. Remove or convert to a CHECK() once
+    // the root cause is fixed.
+    SCOPED_CRASH_KEY_STRING32("ProfileKeepAlive", "origin",
+                              GetOriginName(origin));
+    base::debug::DumpWithoutCrashing();
+  }
 }
 
 ScopedProfileKeepAlive::~ScopedProfileKeepAlive() {
