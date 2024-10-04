@@ -38,7 +38,7 @@ namespace {
 constexpr char kChallengeItemKey[] = "challenge";
 constexpr char kSessionIdItemKey[] = "session_id";
 const size_t kMaxAssertionRequestsAllowed = 5;
-const size_t kMaxVerifySignatureFailuresAllowed = 1;
+const size_t kMaxGenerateAssertionFailuresAllowed = 1;
 
 bool IsExpectedCookie(
     const GURL& url,
@@ -377,9 +377,10 @@ void BoundSessionRefreshCookieFetcherImpl::OnGenerateBindingKeyAssertion(
       assertion_or_error.error_or(SessionBindingHelper::kNoErrorForMetrics));
 
   if (!assertion_or_error.has_value()) {
-    if (assertion_or_error.error() ==
-            SessionBindingHelper::Error::kVerifySignatureFailure &&
-        generate_assertion_attempt < kMaxVerifySignatureFailuresAllowed) {
+    // `assertion_or_error.error()` doesn't expose enough information to
+    // decide whether an error was transient or permanent. As permanent errors
+    // are issued almost immediately, it's acceptable to retry on them.
+    if (generate_assertion_attempt < kMaxGenerateAssertionFailuresAllowed) {
       RefreshWithChallenge(challenge, generate_assertion_attempt + 1);
       return;
     }
