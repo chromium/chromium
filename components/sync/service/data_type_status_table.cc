@@ -80,7 +80,7 @@ DataTypeStatusTable::TypeErrorMap DataTypeStatusTable::GetAllErrors() const {
 DataTypeSet DataTypeStatusTable::GetFailedTypes() const {
   DataTypeSet result = GetFatalErrorTypes();
   result.PutAll(GetCryptoErrorTypes());
-  result.PutAll(GetUnreadyErrorTypes());
+  result.PutAll(GetTypesFromErrorMap(unready_errors_));
   return result;
 }
 
@@ -93,11 +93,6 @@ DataTypeSet DataTypeStatusTable::GetFatalErrorTypes() const {
 
 DataTypeSet DataTypeStatusTable::GetCryptoErrorTypes() const {
   DataTypeSet result = GetTypesFromErrorMap(crypto_errors_);
-  return result;
-}
-
-DataTypeSet DataTypeStatusTable::GetUnreadyErrorTypes() const {
-  DataTypeSet result = GetTypesFromErrorMap(unready_errors_);
   return result;
 }
 

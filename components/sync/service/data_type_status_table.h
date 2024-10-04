@@ -58,9 +58,6 @@ class DataTypeStatusTable {
   // Returns the types that are failing due to cryptographer errors.
   DataTypeSet GetCryptoErrorTypes() const;
 
-  // Returns the types that cannot be configured due to not being ready.
-  DataTypeSet GetUnreadyErrorTypes() const;
-
  private:
   // List of data types that failed due to runtime errors and should be
   // disabled. ResetDataTypeError can remove them from this list.

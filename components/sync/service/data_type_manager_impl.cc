@@ -494,36 +494,27 @@ void DataTypeManagerImpl::SetDataTypesState(DataTypeConfigState state,
 DataTypeManagerImpl::DataTypeConfigStateMap
 DataTypeManagerImpl::BuildDataTypeConfigStateMap(
     const DataTypeSet& types_being_configured) const {
-  // 1. Get the failed types (due to fatal, crypto, and unready errors).
-  // 2. Add the difference between preferred_types_ and the failed types as
-  //    CONFIGURE_INACTIVE.
-  // 3. Flip |types_being_configured| to CONFIGURE_ACTIVE.
-  // 4. Set non-enabled user types as DISABLED.
-  // 5. Set the fatal, crypto, and unready types to their respective states.
-  const DataTypeSet fatal_types = data_type_status_table_.GetFatalErrorTypes();
-  const DataTypeSet crypto_types =
-      data_type_status_table_.GetCryptoErrorTypes();
-  // Types with unready errors do not count as unready if they've been disabled.
-  const DataTypeSet unready_types = Intersection(
-      data_type_status_table_.GetUnreadyErrorTypes(), preferred_types_);
-
+  // 1. Add the difference between `preferred_types_` and the failed types
+  //    (which is what GetEnabledTypes() returns) as CONFIGURE_INACTIVE.
+  // 2. Among those, flip `types_being_configured` to CONFIGURE_ACTIVE.
+  // 3. Set non-enabled user types as DISABLED. Note that this includes failed
+  //    types too, as they have been previously excluded in step 1.
   const DataTypeSet enabled_types = GetEnabledTypes();
-
   const DataTypeSet disabled_types =
       Difference(Union(UserTypes(), ControlTypes()), enabled_types);
   const DataTypeSet to_configure =
       Intersection(enabled_types, types_being_configured);
+
   DVLOG(1) << "Enabling: " << DataTypeSetToDebugString(enabled_types);
   DVLOG(1) << "Configuring: " << DataTypeSetToDebugString(to_configure);
   DVLOG(1) << "Disabling: " << DataTypeSetToDebugString(disabled_types);
+
+  CHECK(disabled_types.HasAll(data_type_status_table_.GetFailedTypes()));
 
   DataTypeConfigStateMap config_state_map;
   SetDataTypesState(CONFIGURE_INACTIVE, enabled_types, &config_state_map);
   SetDataTypesState(CONFIGURE_ACTIVE, to_configure, &config_state_map);
   SetDataTypesState(DISABLED, disabled_types, &config_state_map);
-  SetDataTypesState(FATAL, fatal_types, &config_state_map);
-  SetDataTypesState(CRYPTO, crypto_types, &config_state_map);
-  SetDataTypesState(UNREADY, unready_types, &config_state_map);
   return config_state_map;
 }
 
@@ -748,20 +739,12 @@ DataTypeManagerImpl::PrepareConfigureParams() {
   //   touched.
   const DataTypeConfigStateMap config_state_map =
       BuildDataTypeConfigStateMap(configuration_types_queue_.front());
-  const DataTypeSet fatal_types = GetDataTypesInState(FATAL, config_state_map);
-  const DataTypeSet crypto_types =
-      GetDataTypesInState(CRYPTO, config_state_map);
-  const DataTypeSet unready_types =
-      GetDataTypesInState(UNREADY, config_state_map);
   const DataTypeSet active_types =
       GetDataTypesInState(CONFIGURE_ACTIVE, config_state_map);
   const DataTypeSet inactive_types =
       GetDataTypesInState(CONFIGURE_INACTIVE, config_state_map);
-
-  DataTypeSet disabled_types = GetDataTypesInState(DISABLED, config_state_map);
-  disabled_types.PutAll(fatal_types);
-  disabled_types.PutAll(crypto_types);
-  disabled_types.PutAll(unready_types);
+  const DataTypeSet disabled_types =
+      GetDataTypesInState(DISABLED, config_state_map);
 
   DCHECK(Intersection(active_types, disabled_types).empty());
 
@@ -784,15 +767,10 @@ DataTypeManagerImpl::PrepareConfigureParams() {
 
   // TODO(crbug.com/40154783): "Purging" logic is only implemented for NIGORI -
   // verify whether it is actually needed at all.
-  DataTypeSet types_to_purge = DataTypeSet::All();
+  DataTypeSet types_to_purge = ControlTypes();
   types_to_purge.RemoveAll(downloaded_types_);
   types_to_purge.RemoveAll(active_types);
   types_to_purge.RemoveAll(inactive_types);
-  types_to_purge.RemoveAll(unready_types);
-
-  DCHECK(Intersection(active_types, types_to_purge).empty());
-
-  DCHECK(Intersection(downloaded_types_, crypto_types).empty());
 
   DVLOG(1) << "Types " << DataTypeSetToDebugString(types_to_download)
            << " added; calling ConfigureDataTypes";

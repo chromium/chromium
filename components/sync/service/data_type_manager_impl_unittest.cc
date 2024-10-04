@@ -1512,8 +1512,6 @@ TEST_F(DataTypeManagerImplTest, PurgeDataOnStarting) {
   ASSERT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
   ASSERT_EQ(1U, configurer_.connected_types().size());
 
-  // This should have purged the data for the excluded type.
-  EXPECT_TRUE(configurer_.last_params().to_purge.Has(BOOKMARKS));
   // Stop(CLEAR_METADATA) is called if (re)started without the type.
   EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_count());
 }
@@ -1547,8 +1545,6 @@ TEST_F(DataTypeManagerImplTest, PurgeDataOnReconfiguring) {
   ASSERT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
   ASSERT_EQ(1U, configurer_.connected_types().size());
 
-  // This should have purged the data for the excluded type.
-  EXPECT_TRUE(configurer_.last_params().to_purge.Has(BOOKMARKS));
   // Also Stop(CLEAR_METADATA) has been called on the controller since the type
   // is no longer enabled.
   EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_count());

@@ -83,15 +83,15 @@ class DataTypeManagerImpl : public DataTypeManager,
 
  private:
   enum DataTypeConfigState {
-    CONFIGURE_ACTIVE,    // Actively being configured. Data of such types
-                         // will be downloaded if not present locally.
-    CONFIGURE_INACTIVE,  // Already configured or to be configured in future.
-                         // Data of such types is left as it is, no
-                         // downloading or purging.
-    DISABLED,            // Not syncing. Disabled by user.
-    FATAL,               // Not syncing due to unrecoverable error.
-    CRYPTO,              // Not syncing due to a cryptographer error.
-    UNREADY,             // Not syncing due to transient error.
+    // Actively being configured. Data of such types will be downloaded if not
+    // present locally.
+    CONFIGURE_ACTIVE,
+    // Already configured or to be configured in future. Data of such types is
+    // left as it is, no downloading or purging.
+    CONFIGURE_INACTIVE,
+    // Not syncing, either disabled by user or for any other reason such as
+    // errors.
+    DISABLED,
   };
   using DataTypeConfigStateMap = std::map<DataType, DataTypeConfigState>;
 
