@@ -7,6 +7,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {HistoryClustersAppElement} from './app.js';
 
 export function getHtml(this: HistoryClustersAppElement) {
+  // clang-format off
   return html`<!--_html_template_start_-->
 <cr-toolbar-search-field id="searchbox"
     @search-changed="${this.onSearchChanged_}"
@@ -15,6 +16,16 @@ export function getHtml(this: HistoryClustersAppElement) {
     @contextmenu="${this.onContextMenu_}"
     icon-override="${this.searchIcon_}">
 </cr-toolbar-search-field>
+${this.enableHistoryEmbeddings_ ? html`
+<div id="historyEmbeddingsDisclaimer">
+  $i18n{historyEmbeddingsDisclaimer}
+</div>
+` : ''}
+${this.shouldShowHistoryEmbeddingsResults_() ? html`
+<cr-history-embeddings
+    .searchQuery="${this.query}">
+</cr-history_embeddings>
+` : ''}
 <history-clusters id="historyClusters"
     query="${this.query}"
     path="journeys"
@@ -23,4 +34,5 @@ export function getHtml(this: HistoryClustersAppElement) {
     .scrollTarget="${this.scrollTarget_}">
 </history-clusters>
 <!--_html_template_end_-->`;
+  // clang-format on
 }

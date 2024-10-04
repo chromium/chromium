@@ -27,3 +27,11 @@
   padding-block-start: 0;
   padding-block-end: var(--sp-body-padding);
 }
+
+#historyEmbeddingsDisclaimer {
+  color: var(--cr-secondary-text-color);
+  font-size: 11px;
+  line-height: 16px;
+  margin-block-end: 16px;
+  padding: 0 16px;
+}

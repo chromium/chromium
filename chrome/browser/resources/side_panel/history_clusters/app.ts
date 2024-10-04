@@ -5,6 +5,7 @@
 import './strings.m.js';
 import 'chrome://resources/cr_components/history_clusters/browser_proxy.js';
 import 'chrome://resources/cr_components/history_clusters/clusters.js';
+import 'chrome://resources/cr_components/history_embeddings/history_embeddings.js';
 import 'chrome://resources/cr_components/history_embeddings/icons.html.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 
@@ -113,6 +114,19 @@ export class HistoryClustersAppElement extends CrLitElement {
     if (this.$.searchbox) {
       this.$.searchbox.setValue(event.detail);
     }
+  }
+
+  protected shouldShowHistoryEmbeddingsResults_(): boolean {
+    if (!this.enableHistoryEmbeddings_) {
+      return false;
+    }
+
+    if (!this.query) {
+      return false;
+    }
+
+    return this.query.split(' ').filter(part => part.length > 0).length >=
+        loadTimeData.getInteger('historyEmbeddingsSearchMinimumWordCount');
   }
 }
 declare global {
