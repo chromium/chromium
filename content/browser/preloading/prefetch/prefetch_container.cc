@@ -660,7 +660,15 @@ PrefetchContainer::Key::Key(
 
 PrefetchContainer::Key::~Key() = default;
 
-PrefetchContainer::Key::Key(const Key&) = default;
+PrefetchContainer::Key::Key(PrefetchContainer::Key&& other) = default;
+
+PrefetchContainer::Key& PrefetchContainer::Key::operator=(
+    PrefetchContainer::Key&& other) = default;
+
+PrefetchContainer::Key::Key(const PrefetchContainer::Key& other) = default;
+
+PrefetchContainer::Key& PrefetchContainer::Key::operator=(
+    const PrefetchContainer::Key& other) = default;
 
 PrefetchContainer::Reader::Reader() : Reader(nullptr, 0) {}
 

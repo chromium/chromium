@@ -107,9 +107,13 @@ class CollectMatchCandidatesTestHelper {
   std::vector<PrefetchContainer::Key> KeysOfCollectMatchCandidatesGeneric(
       const PrefetchContainer::Key& navigated_key) {
     std::vector<PrefetchContainer::Key> candidate_keys;
-    for (auto& container : CollectMatchCandidatesGeneric(
-             owned_prefetches_, navigated_key,
-             /*serving_page_metrics_container=*/nullptr)) {
+    // We must bind the following value instead of using `std::get()` in `for`
+    // due to a lifetime issue before C++23:
+    // https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p2718r0.html
+    auto [candidates, _] = CollectMatchCandidatesGeneric(
+        owned_prefetches_, navigated_key,
+        /*serving_page_metrics_container=*/nullptr);
+    for (const auto* container : candidates) {
       candidate_keys.push_back(container->key());
     }
     return candidate_keys;

@@ -176,7 +176,11 @@ class CONTENT_EXPORT PrefetchContainer {
     Key(std::optional<blink::DocumentToken> referring_document_token, GURL url);
     ~Key();
 
-    Key(const Key&);
+    // Movable and copyable.
+    Key(Key&& other);
+    Key& operator=(Key&& other);
+    Key(const Key& other);
+    Key& operator=(const Key& other);
 
     bool operator==(const Key& rhs) const = default;
     bool operator<(const Key& rhs) const {
@@ -204,10 +208,9 @@ class CONTENT_EXPORT PrefetchContainer {
     friend CONTENT_EXPORT std::ostream& operator<<(std::ostream& ostream,
                                                    const Key& prefetch_key);
 
-    const absl::variant<std::optional<blink::DocumentToken>,
-                        net::NetworkIsolationKey>
+    absl::variant<std::optional<blink::DocumentToken>, net::NetworkIsolationKey>
         referring_document_token_or_nik_;
-    const GURL url_;
+    GURL url_;
   };
 
   // Observer interface to listen to lifecycle events of `PrefetchContainer`.

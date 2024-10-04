@@ -4570,12 +4570,12 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   //
   // - Prefetch for https://example.com/index.html, path is
   //      PrefetchMatchResolver2::FindPrefetchInternal()
-  //   -> PrefetchService::CollectPotentiallyMatchingPrefetchContainers()
+  //   -> PrefetchService::CollectMatchCandidates()
   //   -> PrefetchContainer::UpdateServingPageMetrics()
   //   value is 0.456 s.
   // - Prefetch for https://example.com/index.html?a=1, path is
   //      PrefetchMatchResolver2::FindPrefetchInternal()
-  //   -> PrefetchService::CollectPotentiallyMatchingPrefetchContainers()
+  //   -> PrefetchService::CollectMatchCandidates()
   //   -> PrefetchContainer::UpdateServingPageMetrics()
   //   value is std::nullopt.
   // - Prefetch for https://example.com/index.html, path is

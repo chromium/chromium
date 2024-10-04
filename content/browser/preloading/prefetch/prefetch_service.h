@@ -153,13 +153,22 @@ class CONTENT_EXPORT PrefetchService {
   GetAllForUrlWithoutRefAndQueryForTesting(
       const PrefetchContainer::Key& key) const;
 
-  // Helper function for |GetPrefetchToServe|, which collects
-  // |PrefetchContainer|s that are potentially matching. Corresponds to 3.4. of
+  // Returns candidate `PrefetchContainer`s and servable states for matching
+  // process. Corresponds to 3.4. of
   // https://wicg.github.io/nav-speculation/prefetch.html#wait-for-a-matching-prefetch-record
-  std::vector<PrefetchContainer*> CollectPotentiallyMatchingPrefetchContainers(
-      const PrefetchContainer::Key& key,
-      base::WeakPtr<PrefetchServingPageMetricsContainer>
-          serving_page_metrics_container);
+  //
+  // Note that `PrefetchContainer::GetServableState()` depends on
+  // `base::TimeTicks::now()` and can expire (can change from `kServable` to
+  // `kNotServable`) in the minute between two calls. Deciding something with
+  // multiple `PrefetchContainer::GetServableState()` calls can lead
+  // inconsistent state. To avoid that, we record `ServableState` in the
+  // `flat_map` at the beginning of matching process and refer to it.
+  std::pair<
+      std::vector<PrefetchContainer*>,
+      base::flat_map<PrefetchContainer::Key, PrefetchContainer::ServableState>>
+  CollectMatchCandidates(const PrefetchContainer::Key& key,
+                         base::WeakPtr<PrefetchServingPageMetricsContainer>
+                             serving_page_metrics_container);
 
   base::WeakPtr<PrefetchService> GetWeakPtr();
 

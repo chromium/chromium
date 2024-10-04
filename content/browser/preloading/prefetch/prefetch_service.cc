@@ -1402,8 +1402,10 @@ void PrefetchService::DumpPrefetchesForDebug() const {
 #endif  // DCHECK_IS_ON()
 }
 
-std::vector<PrefetchContainer*>
-PrefetchService::CollectPotentiallyMatchingPrefetchContainers(
+std::pair<
+    std::vector<PrefetchContainer*>,
+    base::flat_map<PrefetchContainer::Key, PrefetchContainer::ServableState>>
+PrefetchService::CollectMatchCandidates(
     const PrefetchContainer::Key& key,
     base::WeakPtr<PrefetchServingPageMetricsContainer>
         serving_page_metrics_container) {
@@ -1495,9 +1497,8 @@ void PrefetchService::GetPrefetchToServe(
   CHECK(!UseNewWaitLoop());
 
   DumpPrefetchesForDebug();
-  auto potential_matching_prefetches =
-      CollectPotentiallyMatchingPrefetchContainers(
-          key, std::move(serving_page_metrics_container));
+  auto [potential_matching_prefetches, _] =
+      CollectMatchCandidates(key, std::move(serving_page_metrics_container));
   DVLOG(1) << "PrefetchService::GetPrefetchToServe(" << key
            << "): Potential matched with "
            << potential_matching_prefetches.size() << " prefetch containers.";

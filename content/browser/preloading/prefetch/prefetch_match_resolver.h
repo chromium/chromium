@@ -149,15 +149,6 @@ class CONTENT_EXPORT PrefetchMatchResolver2 final
     ~CandidateData();
 
     base::WeakPtr<PrefetchContainer> prefetch_container;
-    // `PrefetchContainer::GetServableState()` depends on
-    // `base::TimeTicks::now()` and can expires (can become `kServable` to
-    // `kNotServable`) in the minute between two calls. Deciding something with
-    // multiple `PrefetchContainer::GetServableState()` calls can lead
-    // inconsistent state. To avoid that, we record `ServableState` at the
-    // beginning of `FindPrefethInternal()` and refer to it in the method.
-    //
-    // One can use this field only during `FindPrefethInternal()`.
-    PrefetchContainer::ServableState cached_servable_state;
     std::unique_ptr<base::OneShotTimer> timeout_timer;
   };
 
@@ -189,11 +180,9 @@ class CONTENT_EXPORT PrefetchMatchResolver2 final
   // -> `StartWaitFor()` (optional, if servable state is
   //    `kShouldBlockUntilHead`)
   // -> `UnregisterCandidate()` (required)
-  void RegisterCandidate(PrefetchContainer& prefetch_container,
-                         PrefetchContainer::ServableState servable_state);
-  // `StartWaitFor()` should be called only from `FindPrefetchInternal()`
-  // (because it uses `CandidateData::cached_servable_state`).
-  void StartWaitFor(const PrefetchContainer::Key& prefetch_key);
+  void RegisterCandidate(PrefetchContainer& prefetch_container);
+  void StartWaitFor(const PrefetchContainer::Key& prefetch_key,
+                    PrefetchContainer::ServableState servable_state);
   void UnregisterCandidate(const PrefetchContainer::Key& prefetch_key,
                            bool is_served);
   void OnTimeout(PrefetchContainer::Key prefetch_key);
@@ -311,7 +300,8 @@ std::vector<T*> CollectPotentialMatchPrefetchContainers(
 // future. See implementation for the detailed conditions.
 template <class T>
   requires MatchCandidate<T>
-bool IsCandidateAvailable(const T& candidate) {
+bool IsCandidateAvailable(const T& candidate,
+                          PrefetchContainer::ServableState servable_state) {
   if (candidate.HasPrefetchBeenConsideredToServe()) {
     DVLOG(1) << "CollectMatchCandidatesGeneric: skipped because already "
                 "considered to serve: candidate = "
@@ -319,7 +309,7 @@ bool IsCandidateAvailable(const T& candidate) {
     return false;
   }
 
-  switch (candidate.GetServableState(PrefetchCacheableDuration())) {
+  switch (servable_state) {
     case PrefetchContainer::ServableState::kNotServable:
       DVLOG(1) << "CollectMatchCandidatesGeneric: skipped because not "
                   "servable: candidate = "
@@ -361,7 +351,10 @@ bool IsCandidateAvailable(const T& candidate) {
 // `PrefetchMatchResolver2::FindPrefetch()` with mock `PrefetchContainer`.
 template <class T>
   requires MatchCandidate<T>
-std::vector<T*> CollectMatchCandidatesGeneric(
+std::pair<
+    std::vector<T*>,
+    base::flat_map<PrefetchContainer::Key, PrefetchContainer::ServableState>>
+CollectMatchCandidatesGeneric(
     const std::map<PrefetchContainer::Key, std::unique_ptr<T>>& prefetches,
     const PrefetchContainer::Key& navigated_key,
     base::WeakPtr<PrefetchServingPageMetricsContainer>
@@ -375,13 +368,20 @@ std::vector<T*> CollectMatchCandidatesGeneric(
   }
 
   std::vector<T*> candidates_available;
-  for (auto* candidate : candidates) {
-    if (IsCandidateAvailable(*candidate)) {
+  // See the comment of `PrefetchService::CollectMatchCandidates()`.
+  base::flat_map<PrefetchContainer::Key, PrefetchContainer::ServableState>
+      servable_states;
+  for (T* candidate : candidates) {
+    PrefetchContainer::ServableState servable_state =
+        candidate->GetServableState(PrefetchCacheableDuration());
+    if (IsCandidateAvailable(*candidate, servable_state)) {
       candidates_available.push_back(candidate);
+      servable_states.emplace(candidate->key(), servable_state);
     }
   }
 
-  return candidates_available;
+  return std::make_pair(std::move(candidates_available),
+                        std::move(servable_states));
 }
 
 }  // namespace content
