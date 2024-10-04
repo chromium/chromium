@@ -20,7 +20,7 @@
 namespace ash {
 namespace {
 
-constexpr base::TimeDelta kBubbleViewDisplayTime = base::Seconds(3);
+constexpr base::TimeDelta kBubbleViewDisplayTime = base::Seconds(2);
 
 // Starting at the time the bubble is shown, events that would normally close
 // the bubble are ignored for this grace period, to prevent the bubble from

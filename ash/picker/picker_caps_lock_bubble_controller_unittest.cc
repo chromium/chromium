@@ -60,11 +60,11 @@ TEST_F(PickerCapsLockBubbleControllerTest,
   input_field.Focus();
 
   ime_keyboard.SetCapsLockEnabled(true);
-  task_environment()->FastForwardBy(base::Seconds(2));
+  task_environment()->FastForwardBy(base::Seconds(1));
   ime_keyboard.SetCapsLockEnabled(false);
 
   EXPECT_TRUE(controller.bubble_view_for_testing());
-  task_environment()->FastForwardBy(base::Seconds(2));
+  task_environment()->FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(controller.bubble_view_for_testing());
   task_environment()->FastForwardBy(base::Seconds(2));
   EXPECT_FALSE(controller.bubble_view_for_testing());
