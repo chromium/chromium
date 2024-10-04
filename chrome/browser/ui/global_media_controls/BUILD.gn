@@ -113,7 +113,7 @@ source_set("unit_tests") {
     "supplemental_device_picker_producer_unittest.cc",
   ]
 
-  if (is_linux || is_chromeos_lacros) {
+  if (is_linux) {
     sources += [ "media_notification_device_monitor_unittest.cc" ]
   }
 
@@ -138,7 +138,7 @@ source_set("unit_tests") {
     "//ui/gfx:test_support",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chrome/browser/ash/crosapi:test_support" ]
   }
 }

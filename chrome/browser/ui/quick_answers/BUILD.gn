@@ -10,6 +10,8 @@ source_set("quick_answers") {
   sources = [
     "quick_answers_controller_impl.cc",
     "quick_answers_controller_impl.h",
+    "quick_answers_state_ash.cc",
+    "quick_answers_state_ash.h",
     "quick_answers_ui_controller.cc",
     "quick_answers_ui_controller.h",
     "ui/quick_answers_text_label.cc",
@@ -35,6 +37,7 @@ source_set("quick_answers") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
+    "//ash",
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/chromeos/read_write_cards",
@@ -45,43 +48,21 @@ source_set("quick_answers") {
     "//chrome/browser/ui/quick_answers/ui:retry_view",
     "//chrome/browser/ui/quick_answers/ui:typography",
     "//chrome/browser/ui/views/editor_menu:utils",
+    "//chromeos/components/kiosk",
     "//chromeos/components/magic_boost/public/cpp/views",
     "//chromeos/components/quick_answers",
     "//chromeos/components/quick_answers/public/cpp:constants",
-    "//chromeos/components/quick_answers/public/cpp:cpp",
+    "//chromeos/components/quick_answers/public/cpp",
     "//chromeos/components/quick_answers/public/cpp:prefs",
     "//chromeos/constants:constants",
     "//chromeos/strings:strings_grit",
     "//chromeos/ui/vector_icons",
     "//components/account_id",
+    "//components/language/core/browser",
     "//components/omnibox/browser:vector_icons",
     "//components/prefs",
     "//content/public/browser",
     "//ui/views/controls/webview",
     "//ui/wm",
   ]
-
-  if (is_chromeos_ash) {
-    sources += [
-      "quick_answers_state_ash.cc",
-      "quick_answers_state_ash.h",
-    ]
-    deps += [
-      "//ash",
-      "//chromeos/components/kiosk:kiosk",
-      "//components/language/core/browser:browser",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    sources += [
-      "lacros/quick_answers_state_lacros.cc",
-      "lacros/quick_answers_state_lacros.h",
-    ]
-    deps += [
-      "//chrome/browser/ui",
-      "//chromeos/components/kiosk:kiosk",
-      "//chromeos/lacros:lacros",
-    ]
-  }
 }

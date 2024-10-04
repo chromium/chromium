@@ -16,9 +16,11 @@ source_set("magic_boost") {
     "magic_boost_opt_in_card.cc",
     "magic_boost_opt_in_card.h",
   ]
+
   deps = [
     ":magic_boost_constants",
     "//base",
+    "//chrome/browser/ash/magic_boost",
     "//chrome/browser/resources:component_extension_resources",
     "//chrome/browser/ui/chromeos/read_write_cards",
     "//chrome/browser/ui/views/editor_menu:utils",
@@ -35,17 +37,6 @@ source_set("magic_boost") {
 
   if (is_chrome_branded) {
     deps += [ "//chromeos/ash/resources/internal/strings" ]
-  }
-
-  if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash/magic_boost" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/lacros",
-      "//mojo/public/cpp/bindings",
-    ]
   }
 }
 

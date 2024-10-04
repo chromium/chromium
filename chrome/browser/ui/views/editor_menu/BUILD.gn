@@ -38,6 +38,8 @@ source_set("utils") {
 source_set("editor_menu") {
   sources = [
     "editor_manager.h",
+    "editor_manager_ash.cc",
+    "editor_manager_ash.h",
     "editor_manager_factory.cc",
     "editor_manager_factory.h",
     "editor_menu_controller_impl.cc",
@@ -49,6 +51,7 @@ source_set("editor_menu") {
     ":views",
     "//ash/webui/settings/public/constants:mojom",
     "//base",
+    "//chrome/browser/ash/input_method",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/chromeos/read_write_cards",
     "//chromeos/components/editor_menu/public/cpp",
@@ -59,24 +62,6 @@ source_set("editor_menu") {
     "//ui/gfx",
     "//ui/views",
   ]
-
-  if (is_chromeos_ash) {
-    sources += [
-      "editor_manager_ash.cc",
-      "editor_manager_ash.h",
-    ]
-
-    deps += [ "//chrome/browser/ash/input_method" ]
-  }
-
-  if (is_chromeos_lacros) {
-    sources += [
-      "editor_manager_lacros.cc",
-      "editor_manager_lacros.h",
-    ]
-
-    deps += [ "//chromeos/lacros" ]
-  }
 }
 
 source_set("views") {
