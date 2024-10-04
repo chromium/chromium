@@ -8802,21 +8802,6 @@
             ]
         }
     ],
-    "ESBInfobarPromo": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnhancedSafeBrowsingPromo"
-                    ]
-                }
-            ]
-        }
-    ],
     "EagerPrefetchBlockUntilHeadDifferentTimeoutsRetrospective": [
         {
             "platforms": [
