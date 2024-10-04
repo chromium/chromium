@@ -1102,32 +1102,35 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
   }
 
   bool allow_overlay = false;
+  if (frame_resource->shared_image->usage().Has(
+          gpu::SHARED_IMAGE_USAGE_SCANOUT)) {
 #if BUILDFLAG(IS_WIN)
-  // Windows direct composition path only supports NV12 video overlays.
-  allow_overlay =
-      output_format_ == GpuVideoAcceleratorFactories::OutputFormat::NV12;
+    // Windows direct composition path only supports NV12 video overlays.
+    allow_overlay =
+        output_format_ == GpuVideoAcceleratorFactories::OutputFormat::NV12;
 #else
-  switch (output_format_) {
-    case GpuVideoAcceleratorFactories::OutputFormat::YV12:
-      allow_overlay = video_frame_allow_overlay;
-      break;
-    case GpuVideoAcceleratorFactories::OutputFormat::P010:
-    case GpuVideoAcceleratorFactories::OutputFormat::NV12:
-      allow_overlay = true;
-      break;
-    case GpuVideoAcceleratorFactories::OutputFormat::XR30:
-    case GpuVideoAcceleratorFactories::OutputFormat::XB30:
+    switch (output_format_) {
+      case GpuVideoAcceleratorFactories::OutputFormat::YV12:
+        allow_overlay = video_frame_allow_overlay;
+        break;
+      case GpuVideoAcceleratorFactories::OutputFormat::P010:
+      case GpuVideoAcceleratorFactories::OutputFormat::NV12:
+        allow_overlay = true;
+        break;
+      case GpuVideoAcceleratorFactories::OutputFormat::XR30:
+      case GpuVideoAcceleratorFactories::OutputFormat::XB30:
 #if BUILDFLAG(IS_MAC)
-      allow_overlay = IOSurfaceCanSetColorSpace(color_space);
+        allow_overlay = IOSurfaceCanSetColorSpace(color_space);
 #else
-      // TODO(crbug.com/41350508): Enable this for ChromeOS.
-      allow_overlay = false;
+        // TODO(crbug.com/41350508): Enable this for ChromeOS.
+        allow_overlay = false;
 #endif
-      break;
-    case GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED:
-      break;
-  }
+        break;
+      case GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED:
+        break;
+    }
 #endif  // BUILDFLAG(IS_WIN)
+  }
   frame->metadata().allow_overlay = allow_overlay;
   frame->metadata().read_lock_fences_enabled = true;
   frame->metadata().is_webgpu_compatible = is_webgpu_compatible;
