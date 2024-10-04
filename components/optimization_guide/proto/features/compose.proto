@@ -43,10 +43,13 @@ message ComposeRequest {
   // Contains information scraped from the page.
   ComposePageMetadata page_metadata = 3;
 
-  // Next ID: 2
+  // Next ID: 3
   message GenerateParams {
     // User written input text.
     string user_input = 1;
+
+    // Generate using the user selected mode.
+    ComposeUpfrontInputMode upfront_input_mode = 2;
   }
 
   // Next ID: 5
@@ -101,7 +104,7 @@ message ComposeResponse {
 
 // Any data collected on the client outside of the model request and response.
 // This includes user feedback, and metrics about feature usage.
-// Next Id: 11
+// Next Id: 12
 message ComposeQuality {
   FinalStatus final_status = 1;
 
@@ -129,6 +132,9 @@ message ComposeQuality {
   // Was this session a successful session.
   FinalModelStatus final_model_status = 10;
 
+  // The input mode used for this request.
+  ComposeUpfrontInputMode mode = 11;
+
   reserved 3;
 }
 
@@ -143,6 +149,19 @@ message Int128 {
   uint64 high = 1;
 
   uint64 low = 2;
+}
+
+// User selected mode. The UNSPECIFIED entry is used to specify the mode is
+// unaltered or 'default'.
+// Next ID: 4
+enum ComposeUpfrontInputMode {
+  COMPOSE_UNSPECIFIED_MODE = 0;
+
+  COMPOSE_POLISH_MODE = 1;
+
+  COMPOSE_ELABORATE_MODE = 2;
+
+  COMPOSE_FORMALIZE_MODE = 3;
 }
 
 // User selected tone. Here the UNSPECIFIED entry is used to specify the tone is
