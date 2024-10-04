@@ -2165,6 +2165,7 @@ chromium-metrics-reviews@google.com.
   <int value="1298" label="DataURLWhitespacePreservationEnabled"/>
   <int value="1299" label="AllowExcludeDisplayInMirrorMode"/>
   <int value="1300" label="AutofillPredictionSettings"/>
+  <int value="1301" label="ArcOpenLinksInBrowserByDefault"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

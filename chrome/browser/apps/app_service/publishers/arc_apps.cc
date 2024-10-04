@@ -469,12 +469,13 @@ bool PackageShouldDefaultHandleLinksInBrowser(const std::string& package_name) {
   return allowlist.contains(package_name);
 }
 
-// Returns true if the given `profile` is managed, and therefore should open
-// supported links inside the app by default.
-bool IsProfileManaged(Profile* profile) {
-  // TODO(crbug.com/40272292): Remove once we have policy control over link
-  // capturing behavior.
-  return profile->GetProfilePolicyConnector()->IsManaged();
+// Returns the value of the policy ArcOpenLinksInBrowserByDefault.
+// For managed users it is false by default, for consumer accounts it is always
+// true.
+bool IsArcOpenLinksInBrowserByDefault(Profile* profile) {
+  return !profile->GetProfilePolicyConnector()->IsManaged() ||
+         profile->GetPrefs()->GetBoolean(
+             arc::prefs::kArcOpenLinksInBrowserByDefault);
 }
 
 // Returns the hard-coded Play Store intent filters. This is a stop-gap solution
@@ -1294,11 +1295,12 @@ void ArcApps::OnArcSupportedLinksChanged(
         // If the app is specifically allowed to handle links by default.
         AppShouldDefaultHandleLinksInApp(app_id);
 
-    // Managed users are temporarily opted out of this behavior (b/280056133)
-    // and always apply updates from the ARC side, except for an allowlist of
-    // apps which handle links in the browser to improve the user experience.
-    if (IsProfileManaged(profile_) && !PackageShouldDefaultHandleLinksInBrowser(
-                                          supported_link->package_name)) {
+    // Managed users apply updates from the ARC side by default, except for an
+    // allowlist of apps which handle links in the browser to improve the user
+    // experience. This policy that can be changed by enterprise admin.
+    if (!IsArcOpenLinksInBrowserByDefault(profile_) &&
+        !PackageShouldDefaultHandleLinksInBrowser(
+            supported_link->package_name)) {
       allow_update = true;
     }
 

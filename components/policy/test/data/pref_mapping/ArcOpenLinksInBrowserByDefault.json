@@ -1,0 +1,40 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set)",
+        "policies": { },
+        "prefs": {
+          "arc.open_links_in_browser_by_default": {
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "Policy sets the default value for enterprise users",
+        "policies": {
+          "ArcOpenLinksInBrowserByDefault": false
+        },
+        "prefs": {
+          "arc.open_links_in_browser_by_default": {
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "Policy value changed by enterprise admin",
+        "policies": {
+          "ArcOpenLinksInBrowserByDefault": true
+        },
+        "prefs": {
+          "arc.open_links_in_browser_by_default": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

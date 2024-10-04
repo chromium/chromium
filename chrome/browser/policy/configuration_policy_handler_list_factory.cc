@@ -1739,6 +1739,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kAllowExcludeDisplayInMirrorMode,
     prefs::kAllowExcludeDisplayInMirrorMode,
     base::Value::Type::BOOLEAN},
+  { key::kArcOpenLinksInBrowserByDefault,
+    arc::prefs::kArcOpenLinksInBrowserByDefault,
+    base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)

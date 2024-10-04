@@ -155,6 +155,11 @@ const char kArcVmDataMigrationNotificationFirstShownTime[] =
 // An integer preference to indicate the status of ARCVM /data migration.
 const char kArcVmDataMigrationStatus[] = "arc.vm_data_migration_status";
 
+// A preference that indicates whether links supported by Android apps should be
+// opened in the browser by default.
+const char kArcOpenLinksInBrowserByDefault[] =
+    "arc.open_links_in_browser_by_default";
+
 // ======== LOCAL STATE PREFS ========
 // ANR count which is currently pending, not flashed to UMA.
 const char kAnrPendingCount[] = "arc.anr_pending_count";
@@ -251,6 +256,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kArcInitialSettingsPending, false);
   registry->RegisterBooleanPref(kArcInitialLocationSettingSyncRequired, true);
   registry->RegisterStringPref(kArcLastSetAppLocale, std::string());
+  registry->RegisterBooleanPref(kArcOpenLinksInBrowserByDefault, false);
   registry->RegisterBooleanPref(kArcPaiStarted, false);
   registry->RegisterBooleanPref(kArcFastAppReinstallStarted, false);
   registry->RegisterListPref(kArcFastAppReinstallPackages);

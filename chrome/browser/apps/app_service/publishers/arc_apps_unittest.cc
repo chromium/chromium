@@ -527,6 +527,32 @@ TEST_F(ArcAppsPublisherManagedProfileTest, SetSupportedLinksByDefault) {
                         GURL("https://www.example.com/foo")));
 }
 
+// Verifies that a call to set the default supported links preference from the
+// ARC system is ignored if the policy ArcOpenLinksInBrowserByDefault for
+// a managed profile is set to true.
+TEST_F(ArcAppsPublisherManagedProfileTest, SetSupportedLinksDisabledByPolicy) {
+  constexpr char kTestAuthority[] = "www.example.com";
+  const auto& fake_apps = arc_test()->fake_apps();
+  std::string package_name = fake_apps[0]->package_name;
+  std::string app_id = ArcAppListPrefs::GetAppId(fake_apps[0]->package_name,
+                                                 fake_apps[0]->activity);
+  arc_test()->app_instance()->SendRefreshAppList(fake_apps);
+  profile()->GetPrefs()->SetBoolean(arc::prefs::kArcOpenLinksInBrowserByDefault,
+                                    true);
+
+  // Update intent filters and supported links for the app, as if it was just
+  // installed.
+  intent_helper()->OnIntentFiltersUpdatedForPackage(
+      package_name, CreateFilterList(package_name, {kTestAuthority}));
+  VerifyIntentFilters(app_id, {kTestAuthority});
+  intent_helper()->OnSupportedLinksChanged(
+      CreateSupportedLinks(package_name), {},
+      arc::mojom::SupportedLinkChangeSource::kArcSystem);
+
+  ASSERT_EQ(std::nullopt, preferred_apps().FindPreferredAppForUrl(
+                              GURL("https://www.example.com/foo")));
+}
+
 TEST_F(ArcAppsPublisherManagedProfileTest,
        SetSupportedLinksIgnoresWorkspaceInstall) {
   constexpr char kTestAuthority[] = "drive.google.com";

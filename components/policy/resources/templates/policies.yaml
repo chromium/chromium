@@ -1299,6 +1299,7 @@ policies:
   1298: DataURLWhitespacePreservationEnabled
   1299: AllowExcludeDisplayInMirrorMode
   1300: AutofillPredictionSettings
+  1301: ArcOpenLinksInBrowserByDefault
 
 atomic_groups:
   1: Homepage
