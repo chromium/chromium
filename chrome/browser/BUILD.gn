@@ -384,8 +384,6 @@ static_library("browser") {
     "dips/dips_database_migrator.h",
     "dips/dips_navigation_flow_detector.cc",
     "dips/dips_navigation_flow_detector.h",
-    "dips/dips_navigation_flow_detector_wrapper.cc",
-    "dips/dips_navigation_flow_detector_wrapper.h",
     "dips/dips_redirect_info.cc",
     "dips/dips_redirect_info.h",
     "dips/dips_service.h",

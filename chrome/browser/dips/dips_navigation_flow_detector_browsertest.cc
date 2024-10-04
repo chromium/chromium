@@ -13,7 +13,6 @@
 #include "base/test/test_timeouts.h"
 #include "base/types/expected.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
-#include "chrome/browser/dips/dips_navigation_flow_detector_wrapper.h"
 #include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -182,16 +181,7 @@ class DipsNavigationFlowDetectorTest : public PlatformBrowserTest {
   }
 
   DipsNavigationFlowDetector* GetDetector() {
-#if BUILDFLAG(IS_ANDROID)
     return DipsNavigationFlowDetector::FromWebContents(GetActiveWebContents());
-#else
-    return browser()
-        ->tab_strip_model()
-        ->GetActiveTab()
-        ->tab_features()
-        ->dips_navigation_flow_detector_wrapper()
-        ->GetDetector();
-#endif
   }
 
  private:

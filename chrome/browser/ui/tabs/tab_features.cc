@@ -11,7 +11,6 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
-#include "chrome/browser/dips/dips_navigation_flow_detector_wrapper.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
 #include "chrome/browser/fingerprinting_protection/chrome_fingerprinting_protection_web_contents_helper_factory.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
@@ -100,9 +99,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     permission_indicators_tab_data_ =
         std::make_unique<permissions::PermissionIndicatorsTabData>(
             tab.GetContents());
-
-    dips_navigation_flow_detector_wrapper_ =
-        std::make_unique<DipsNavigationFlowDetectorWrapper>(tab);
 
     user_annotations_web_contents_observer_ =
         user_annotations::UserAnnotationsWebContentsObserver::

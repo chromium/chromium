@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 
 class ChromeAutofillPredictionImprovementsClient;
-class DipsNavigationFlowDetectorWrapper;
 class FedCmAccountSelectionViewController;
 class LensOverlayController;
 class Profile;
@@ -100,10 +99,6 @@ class TabFeatures {
     return side_panel_registry_.get();
   }
 
-  DipsNavigationFlowDetectorWrapper* dips_navigation_flow_detector_wrapper() {
-    return dips_navigation_flow_detector_wrapper_.get();
-  }
-
   ChromeAutofillPredictionImprovementsClient*
   chrome_autofill_prediction_improvements_client() {
     return chrome_autofill_prediction_improvements_client_.get();
@@ -167,9 +162,6 @@ class TabFeatures {
   // Responsible for the customize chrome tab-scoped side panel.
   std::unique_ptr<customize_chrome::SidePanelController>
       customize_chrome_side_panel_controller_;
-
-  std::unique_ptr<DipsNavigationFlowDetectorWrapper>
-      dips_navigation_flow_detector_wrapper_;
 
   std::unique_ptr<user_annotations::UserAnnotationsWebContentsObserver>
       user_annotations_web_contents_observer_;
