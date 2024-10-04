@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/birch/birch_data_provider.h"
-#include "ash/public/cpp/coral_util.h"
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_controller.h"
 #include "ash/wm/coral/coral_controller.h"
 #include "base/containers/flat_map.h"
@@ -45,7 +44,7 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
   void RemoveGroup(const int group_id);
 
   // Add item with `key` to the coral item remover blocklist.
-  void RemoveItem(const coral::mojom::EntityPtr& item);
+  void RemoveItem(const coral::mojom::EntityKeyPtr& key);
 
   const CoralRequest& GetCoralRequestForTest() const { return request_; }
 

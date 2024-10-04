@@ -220,9 +220,9 @@ void BirchCoralProvider::RemoveGroup(const int cluster_id) {
   groups_.erase(groups_.find(cluster_id));
 }
 
-void BirchCoralProvider::RemoveItem(const coral::mojom::EntityPtr& item) {
+void BirchCoralProvider::RemoveItem(const coral::mojom::EntityKeyPtr& key) {
   CHECK(coral_item_remover_);
-  coral_item_remover_->RemoveItem(item);
+  coral_item_remover_->RemoveItem(key);
 }
 
 void BirchCoralProvider::OverrideCoralResponseForTest(
@@ -306,10 +306,11 @@ void BirchCoralProvider::HandleCoralResponse(
     std::vector<GURL> page_urls;
     std::vector<std::string> app_ids;
     for (const auto& entity : groups_[i]->entities) {
-      if (entity->is_tab()) {
-        page_urls.push_back(entity->get_tab()->url);
-      } else if (entity->is_app()) {
-        app_ids.push_back(entity->get_app()->id);
+      if (entity->is_tab_url()) {
+        page_urls.push_back(entity->get_tab_url());
+      }
+      if (entity->is_app_id()) {
+        app_ids.push_back(entity->get_app_id());
       }
     }
     items.emplace_back(base::UTF8ToUTF16(groups_[i]->title),
