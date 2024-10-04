@@ -546,7 +546,8 @@ void AccountConsistencyService::OnAccountsInCookieUpdated(
 
   // If signed-in accounts have been recently restored through GAIA cookie
   // restoration then run the relevant callback to finish the update process.
-  if (accounts_in_cookie_jar_info.GetSignedInAccounts().size() > 0) {
+  if (accounts_in_cookie_jar_info.GetPotentiallyInvalidSignedInAccounts()
+          .size() > 0) {
     RunGaiaCookiesRestoredCallbacks(/*has_cookie_changed=*/YES);
   }
 }

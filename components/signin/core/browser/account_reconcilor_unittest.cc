@@ -2170,9 +2170,12 @@ TEST_F(AccountReconcilorMirrorTest, GetAccountsFromCookieSuccess) {
   signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info =
       identity_test_env()->identity_manager()->GetAccountsInCookieJar();
   ASSERT_TRUE(accounts_in_cookie_jar_info.AreAccountsFresh());
-  ASSERT_EQ(1u, accounts_in_cookie_jar_info.GetSignedInAccounts().size());
-  ASSERT_EQ(account_id,
-            accounts_in_cookie_jar_info.GetSignedInAccounts()[0].id);
+  ASSERT_EQ(1u,
+            accounts_in_cookie_jar_info.GetPotentiallyInvalidSignedInAccounts()
+                .size());
+  ASSERT_EQ(account_id, accounts_in_cookie_jar_info
+                            .GetPotentiallyInvalidSignedInAccounts()[0]
+                            .id);
   ASSERT_EQ(0u, accounts_in_cookie_jar_info.GetSignedOutAccounts().size());
 }
 
@@ -2206,9 +2209,12 @@ TEST_F(AccountReconcilorMirrorTest, EnableReconcileWhileAlreadyRunning) {
   signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info =
       identity_test_env()->identity_manager()->GetAccountsInCookieJar();
   ASSERT_TRUE(accounts_in_cookie_jar_info.AreAccountsFresh());
-  ASSERT_EQ(1u, accounts_in_cookie_jar_info.GetSignedInAccounts().size());
-  ASSERT_EQ(account_id,
-            accounts_in_cookie_jar_info.GetSignedInAccounts()[0].id);
+  ASSERT_EQ(1u,
+            accounts_in_cookie_jar_info.GetPotentiallyInvalidSignedInAccounts()
+                .size());
+  ASSERT_EQ(account_id, accounts_in_cookie_jar_info
+                            .GetPotentiallyInvalidSignedInAccounts()[0]
+                            .id);
   ASSERT_EQ(0u, accounts_in_cookie_jar_info.GetSignedOutAccounts().size());
 }
 
@@ -2228,7 +2234,9 @@ TEST_F(AccountReconcilorMirrorTest, GetAccountsFromCookieFailure) {
   signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info =
       identity_test_env()->identity_manager()->GetAccountsInCookieJar();
   ASSERT_FALSE(accounts_in_cookie_jar_info.AreAccountsFresh());
-  ASSERT_EQ(0u, accounts_in_cookie_jar_info.GetSignedInAccounts().size());
+  ASSERT_EQ(0u,
+            accounts_in_cookie_jar_info.GetPotentiallyInvalidSignedInAccounts()
+                .size());
   ASSERT_EQ(0u, accounts_in_cookie_jar_info.GetSignedOutAccounts().size());
   // List accounts retries once on |UNEXPECTED_SERVICE_RESPONSE| errors with
   // backoff protection.

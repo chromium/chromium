@@ -1458,9 +1458,10 @@ IN_PROC_BROWSER_TEST_F(DiceExplicitSigninRollbackBrowserTest,
   signin::AccountsInCookieJarInfo cookie_jar =
       GetIdentityManager()->GetAccountsInCookieJar();
   ASSERT_TRUE(cookie_jar.AreAccountsFresh());
-  ASSERT_EQ(cookie_jar.GetSignedInAccounts().size(), 1u);
-  EXPECT_TRUE(gaia::AreEmailsSame(cookie_jar.GetSignedInAccounts()[0].email,
-                                  kMainGmailEmail));
+  ASSERT_EQ(cookie_jar.GetPotentiallyInvalidSignedInAccounts().size(), 1u);
+  EXPECT_TRUE(gaia::AreEmailsSame(
+      cookie_jar.GetPotentiallyInvalidSignedInAccounts()[0].email,
+      kMainGmailEmail));
 }
 
 IN_PROC_BROWSER_TEST_F(DiceExplicitSigninRollbackBrowserTest,
@@ -1481,9 +1482,10 @@ IN_PROC_BROWSER_TEST_F(DiceExplicitSigninRollbackBrowserTest,
   signin::AccountsInCookieJarInfo cookie_jar =
       GetIdentityManager()->GetAccountsInCookieJar();
   ASSERT_TRUE(cookie_jar.AreAccountsFresh());
-  ASSERT_EQ(cookie_jar.GetSignedInAccounts().size(), 1u);
-  EXPECT_TRUE(gaia::AreEmailsSame(cookie_jar.GetSignedInAccounts()[0].email,
-                                  kMainGmailEmail));
+  ASSERT_EQ(cookie_jar.GetPotentiallyInvalidSignedInAccounts().size(), 1u);
+  EXPECT_TRUE(gaia::AreEmailsSame(
+      cookie_jar.GetPotentiallyInvalidSignedInAccounts()[0].email,
+      kMainGmailEmail));
 }
 
 class DiceExplicitSigninBrowserTest : public InProcessBrowserTest {

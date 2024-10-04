@@ -615,7 +615,7 @@ void AccountReconcilor::OnAccountsInCookieUpdated(
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
     const GoogleServiceAuthError& error) {
   const std::vector<gaia::ListedAccount>& accounts(
-      accounts_in_cookie_jar_info.GetSignedInAccounts());
+      accounts_in_cookie_jar_info.GetPotentiallyInvalidSignedInAccounts());
   VLOG(1) << "AccountReconcilor::OnAccountsInCookieUpdated: "
           << "CookieJar " << accounts.size() << " accounts, "
           << "Reconcilor's state is " << is_reconcile_started_ << ", "

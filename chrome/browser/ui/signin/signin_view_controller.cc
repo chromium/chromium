@@ -182,7 +182,8 @@ void HandleSignoutConfirmationChoice(
       signin::AccountsInCookieJarInfo accounts_in_cookies =
           identity_manager->GetAccountsInCookieJar();
       if (!accounts_in_cookies.AreAccountsFresh() ||
-          !accounts_in_cookies.GetSignedInAccounts().empty()) {
+          !accounts_in_cookies.GetPotentiallyInvalidSignedInAccounts()
+               .empty()) {
         browser->signin_view_controller()->ShowGaiaLogoutTab(
             token_signout_source);
       }

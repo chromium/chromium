@@ -95,9 +95,9 @@ base::flat_set<std::string> GetAllGaiaIdsForKeyedPreferences(
   // cookies.
 
   // `base::flat_set` has an optimized constructor from a vector.
-  base::flat_set<std::string> gaia_ids(
-      base::ToVector(accounts_in_cookie_jar_info.GetSignedInAccounts(),
-                     &gaia::ListedAccount::gaia_id));
+  base::flat_set<std::string> gaia_ids(base::ToVector(
+      accounts_in_cookie_jar_info.GetPotentiallyInvalidSignedInAccounts(),
+      &gaia::ListedAccount::gaia_id));
 
   for (const gaia::ListedAccount& account :
        accounts_in_cookie_jar_info.GetSignedOutAccounts()) {

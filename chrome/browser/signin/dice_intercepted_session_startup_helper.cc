@@ -33,7 +33,7 @@ namespace {
 bool CookieInfoContains(const signin::AccountsInCookieJarInfo& cookie_info,
                         const CoreAccountId& account_id) {
   const std::vector<gaia::ListedAccount>& accounts =
-      cookie_info.GetSignedInAccounts();
+      cookie_info.GetPotentiallyInvalidSignedInAccounts();
   return base::Contains(accounts, account_id, &gaia::ListedAccount::id);
 }
 

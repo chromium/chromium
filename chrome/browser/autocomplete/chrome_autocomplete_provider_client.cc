@@ -397,7 +397,7 @@ bool ChromeAutocompleteProviderClient::IsAuthenticated() const {
   const auto* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
   return identity_manager && !identity_manager->GetAccountsInCookieJar()
-                                  .GetSignedInAccounts()
+                                  .GetPotentiallyInvalidSignedInAccounts()
                                   .empty();
 }
 

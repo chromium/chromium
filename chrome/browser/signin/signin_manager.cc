@@ -246,7 +246,7 @@ CoreAccountInfo SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
       identity_manager_->GetAccountsInCookieJar();
 
   std::vector<gaia::ListedAccount> cookie_accounts =
-      cookie_info.GetSignedInAccounts();
+      cookie_info.GetPotentiallyInvalidSignedInAccounts();
 
   // Fresh cookies and loaded tokens are needed to compute the UPA.
   if (cookie_info.AreAccountsFresh()) {

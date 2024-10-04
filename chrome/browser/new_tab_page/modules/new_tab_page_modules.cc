@@ -71,7 +71,7 @@ bool HasModulesEnabled(
               switches::kSignedOutNtpModulesSwitch) ||
           (/* Can be null if Chrome signin is disabled. */ identity_manager &&
            identity_manager->GetAccountsInCookieJar()
-                   .GetSignedInAccounts()
+                   .GetPotentiallyInvalidSignedInAccounts()
                    .size() > 0));
 }
 

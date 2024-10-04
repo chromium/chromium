@@ -102,7 +102,7 @@ void AccountInvestigator::OnAccountsInCookieUpdated(
   }
 
   const std::vector<ListedAccount>& signed_in_accounts(
-      accounts_in_cookie_jar_info.GetSignedInAccounts());
+      accounts_in_cookie_jar_info.GetPotentiallyInvalidSignedInAccounts());
   const std::vector<ListedAccount>& signed_out_accounts(
       accounts_in_cookie_jar_info.GetSignedOutAccounts());
 
@@ -217,8 +217,9 @@ void AccountInvestigator::TryPeriodicReport() {
       identity_manager_->GetAccountsInCookieJar();
   if (accounts_in_cookie_jar_info.AreAccountsFresh() &&
       !WaitingForExtendedInfo(identity_manager_)) {
-    DoPeriodicReport(accounts_in_cookie_jar_info.GetSignedInAccounts(),
-                     accounts_in_cookie_jar_info.GetSignedOutAccounts());
+    DoPeriodicReport(
+        accounts_in_cookie_jar_info.GetPotentiallyInvalidSignedInAccounts(),
+        accounts_in_cookie_jar_info.GetSignedOutAccounts());
   } else {
     periodic_pending_ = true;
   }

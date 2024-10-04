@@ -59,7 +59,7 @@ void WebSigninBridge::OnAccountsInCookieUpdated(
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
     const GoogleServiceAuthError& error) {
   for (const auto& account :
-       accounts_in_cookie_jar_info.GetSignedInAccounts()) {
+       accounts_in_cookie_jar_info.GetPotentiallyInvalidSignedInAccounts()) {
     if (account.valid && account.gaia_id == signin_account_.gaia) {
       OnSigninCompleted(GoogleServiceAuthError());
       return;

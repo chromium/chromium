@@ -3617,7 +3617,7 @@ void EnclaveManager::HandleIdentityChange(bool is_post_load) {
     // enclave state.
     const base::flat_set<std::string> gaia_ids_in_cookie_jar =
         base::STLSetUnion<base::flat_set<std::string>>(
-            GetGaiaIDs(in_jar.GetSignedInAccounts()),
+            GetGaiaIDs(in_jar.GetPotentiallyInvalidSignedInAccounts()),
             GetGaiaIDs(in_jar.GetSignedOutAccounts()));
     const base::flat_set<std::string> gaia_ids_in_state =
         GetGaiaIDs(local_state_->users());

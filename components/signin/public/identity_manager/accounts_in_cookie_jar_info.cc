@@ -4,6 +4,9 @@
 
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 
+#include <algorithm>
+#include <iterator>
+
 namespace signin {
 
 AccountsInCookieJarInfo::AccountsInCookieJarInfo() = default;
@@ -13,8 +16,12 @@ AccountsInCookieJarInfo::AccountsInCookieJarInfo(
     const std::vector<gaia::ListedAccount>& signed_in_accounts,
     const std::vector<gaia::ListedAccount>& signed_out_accounts)
     : accounts_are_fresh_(accounts_are_fresh),
-      signed_in_accounts_(signed_in_accounts),
-      signed_out_accounts_(signed_out_accounts) {}
+      potentially_invalid_signed_in_accounts_(signed_in_accounts),
+      signed_out_accounts_(signed_out_accounts) {
+  std::ranges::copy_if(potentially_invalid_signed_in_accounts_,
+                       std::back_inserter(valid_signed_in_accounts_),
+                       [](const gaia::ListedAccount& a) { return a.valid; });
+}
 
 AccountsInCookieJarInfo::AccountsInCookieJarInfo(
     const AccountsInCookieJarInfo& other) = default;
@@ -28,8 +35,18 @@ bool AccountsInCookieJarInfo::AreAccountsFresh() const {
 }
 
 const std::vector<gaia::ListedAccount>&
+AccountsInCookieJarInfo::GetValidSignedInAccounts() const {
+  return valid_signed_in_accounts_;
+}
+
+const std::vector<gaia::ListedAccount>&
+AccountsInCookieJarInfo::GetPotentiallyInvalidSignedInAccounts() const {
+  return potentially_invalid_signed_in_accounts_;
+}
+
+const std::vector<gaia::ListedAccount>&
 AccountsInCookieJarInfo::GetSignedInAccounts() const {
-  return signed_in_accounts_;
+  return GetPotentiallyInvalidSignedInAccounts();
 }
 
 const std::vector<gaia::ListedAccount>&

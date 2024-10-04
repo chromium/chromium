@@ -130,16 +130,19 @@ class IdentityManager : public KeyedService,
     virtual void OnRefreshTokensLoaded() {}
 
     // Called whenever the list of Gaia accounts in the cookie jar has changed.
-    // The result of `accounts_in_cookie_jar_info.GetSignedInAccounts()` is
-    // ordered by the order of the accounts in the cookie.
     //
-    // This observer method is also called when fetching the list of accounts
-    // in Gaia cookies fails after a number of internal retries. In this case:
-    // * `error` hold the last error to fetch the list of accounts;
-    // * `accounts_in_cookie_jar_info.AreAccountsFresh()` is set to false as
-    //   the accounts information is considered stale;
-    // * `accounts_in_cookie_jar_info.GetSignedInAccounts()` returns the last
-    //   list of known accounts in the cookie jar.
+    // This observer method is also called when fetching the list of accounts in
+    // Gaia cookies fails after a number of internal retries.
+    //
+    // * `accounts_in_cookie_jar_info` contains the information about accounts
+    //    cookies. Accounts in this object are ordered by the order of accounts
+    //    in the cookie. If fetching accounts failed or hasn't finished yet,
+    //    this object will contain the last known state of accounts in the
+    //    cookie jar. See `AccountsInCookieJarInfo` documentation for more
+    //    details on the information available there.
+    // * `error` holds the last error that occurred while fetching the list of
+    //    accounts (or `GoogleServiceAuthError::AuthErrorNone()`, if fetching
+    //    succeeded).
     virtual void OnAccountsInCookieUpdated(
         const AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
         const GoogleServiceAuthError& error) {}

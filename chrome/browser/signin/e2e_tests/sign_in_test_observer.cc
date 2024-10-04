@@ -113,7 +113,7 @@ int SignInTestObserver::CountSignedInAccountsInCookie() const {
     return -1;
   }
 
-  return accounts_in_cookie_jar.GetSignedInAccounts().size();
+  return accounts_in_cookie_jar.GetPotentiallyInvalidSignedInAccounts().size();
 }
 
 bool SignInTestObserver::HasValidPrimarySyncAccount() const {

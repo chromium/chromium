@@ -234,7 +234,7 @@ void GAIAInfoUpdateService::OnAccountsInCookieUpdated(
     // now, it will be regenerated soon via OnExtendedAccountInfoUpdated() once
     // downloaded).
     for (gaia::ListedAccount account :
-         accounts_in_cookie_jar_info.GetSignedInAccounts()) {
+         accounts_in_cookie_jar_info.GetPotentiallyInvalidSignedInAccounts()) {
       UpdateAnyAccount(
           identity_manager_->FindExtendedAccountInfoByAccountId(account.id));
     }

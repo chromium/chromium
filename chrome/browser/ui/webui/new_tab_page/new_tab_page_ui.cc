@@ -139,7 +139,9 @@ bool HasCredentials(Profile* profile) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   return
       /* Can be null if Chrome signin is disabled. */ identity_manager &&
-      !identity_manager->GetAccountsInCookieJar().GetSignedInAccounts().empty();
+      !identity_manager->GetAccountsInCookieJar()
+           .GetPotentiallyInvalidSignedInAccounts()
+           .empty();
 }
 
 content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {

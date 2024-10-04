@@ -268,7 +268,7 @@ class SingleClientSessionsSyncTest : public SyncTest {
     base::RunLoop run_loop;
     EXPECT_EQ(expected_cookie_jar_mismatch,
               GetClient(0)->service()->HasCookieJarMismatch(
-                  cookies.GetSignedInAccounts()));
+                  cookies.GetPotentiallyInvalidSignedInAccounts()));
     GetClient(0)->service()->OnAccountsInCookieUpdatedWithCallback(
         cookies, run_loop.QuitClosure());
     run_loop.Run();

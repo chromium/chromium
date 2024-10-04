@@ -1855,10 +1855,11 @@ void SyncServiceImpl::OnAccountsInCookieUpdatedWithCallback(
     return;
   }
 
-  bool cookie_jar_mismatch =
-      HasCookieJarMismatch(accounts_in_cookie_jar_info.GetSignedInAccounts());
+  bool cookie_jar_mismatch = HasCookieJarMismatch(
+      accounts_in_cookie_jar_info.GetPotentiallyInvalidSignedInAccounts());
   bool cookie_jar_empty =
-      accounts_in_cookie_jar_info.GetSignedInAccounts().empty();
+      accounts_in_cookie_jar_info.GetPotentiallyInvalidSignedInAccounts()
+          .empty();
 
   DVLOG(1) << "Cookie jar mismatch: " << cookie_jar_mismatch;
   DVLOG(1) << "Cookie jar empty: " << cookie_jar_empty;
