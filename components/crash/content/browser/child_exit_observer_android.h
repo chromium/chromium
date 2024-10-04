@@ -109,7 +109,7 @@ class ChildExitObserver : public content::BrowserChildProcessObserver,
     // OnChildExit may be called twice for the same process.
     virtual void OnChildExit(const TerminationInfo& info) = 0;
 
-    virtual ~Client() {}
+    virtual ~Client() = default;
   };
   ChildExitObserver();
   ~ChildExitObserver() override;

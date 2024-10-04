@@ -28,7 +28,7 @@ FallbackCrashHandlerLauncher::FallbackCrashHandlerLauncher() {
   memset(&exception_pointers_, 0, sizeof(exception_pointers_));
 }
 
-FallbackCrashHandlerLauncher::~FallbackCrashHandlerLauncher() {}
+FallbackCrashHandlerLauncher::~FallbackCrashHandlerLauncher() = default;
 
 bool FallbackCrashHandlerLauncher::Initialize(
     const base::CommandLine& program,

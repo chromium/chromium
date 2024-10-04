@@ -74,7 +74,7 @@ CrashMetricsReporter::CrashMetricsReporter()
               base::ObserverListThreadSafe<CrashMetricsReporter::Observer>>()) {
 }
 
-CrashMetricsReporter::~CrashMetricsReporter() {}
+CrashMetricsReporter::~CrashMetricsReporter() = default;
 
 void CrashMetricsReporter::AddObserver(
     CrashMetricsReporter::Observer* observer) {

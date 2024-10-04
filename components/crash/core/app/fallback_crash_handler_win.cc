@@ -69,7 +69,7 @@ void AcquireMemoryMetrics(const base::Process& process,
 FallbackCrashHandler::FallbackCrashHandler()
     : thread_id_(base::kInvalidThreadId), exception_ptrs_(0UL) {}
 
-FallbackCrashHandler::~FallbackCrashHandler() {}
+FallbackCrashHandler::~FallbackCrashHandler() = default;
 
 bool FallbackCrashHandler::ParseCommandLine(const base::CommandLine& cmd_line) {
   // Retrieve the handle to the process to dump.

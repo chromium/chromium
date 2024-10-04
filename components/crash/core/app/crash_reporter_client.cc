@@ -38,8 +38,8 @@ CrashReporterClient* GetCrashReporterClient() {
   return g_client;
 }
 
-CrashReporterClient::CrashReporterClient() {}
-CrashReporterClient::~CrashReporterClient() {}
+CrashReporterClient::CrashReporterClient() = default;
+CrashReporterClient::~CrashReporterClient() = default;
 
 #if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_ANDROID)
 void CrashReporterClient::SetCrashReporterClientIdFromGUID(

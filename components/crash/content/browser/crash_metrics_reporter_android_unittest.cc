@@ -17,13 +17,13 @@ namespace crash_reporter {
 
 class CrashMetricsReporterObserver : public CrashMetricsReporter::Observer {
  public:
-  CrashMetricsReporterObserver() {}
+  CrashMetricsReporterObserver() = default;
 
   CrashMetricsReporterObserver(const CrashMetricsReporterObserver&) = delete;
   CrashMetricsReporterObserver& operator=(const CrashMetricsReporterObserver&) =
       delete;
 
-  ~CrashMetricsReporterObserver() {}
+  ~CrashMetricsReporterObserver() = default;
 
   // CrashMetricsReporter::Observer:
   void OnCrashDumpProcessed(int rph_id,

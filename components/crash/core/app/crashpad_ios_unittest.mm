@@ -21,7 +21,7 @@ namespace {
 // them and restores null values on destruction.
 class ScopedTestCrashDatabaseDir {
  public:
-  ScopedTestCrashDatabaseDir() {}
+  ScopedTestCrashDatabaseDir() = default;
 
   void Init() {
     ASSERT_FALSE(crash_reporter::internal::GetCrashReportDatabase());
