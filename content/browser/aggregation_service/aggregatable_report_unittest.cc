@@ -1571,10 +1571,6 @@ TEST(AggregatableReportPayloadLengthTest, With20Contributions) {
                 /*filtering_id_max_bytes=*/std::nullopt),
             747);
   EXPECT_EQ(AggregatableReport::ComputeTeeBasedPayloadLengthInBytesForTesting(
-                /*num_contributions=*/20u,
-                /*filtering_id_max_bytes=*/std::nullopt),
-            747);
-  EXPECT_EQ(AggregatableReport::ComputeTeeBasedPayloadLengthInBytesForTesting(
                 /*num_contributions=*/20u, /*filtering_id_max_bytes=*/1u),
             847);
 }
