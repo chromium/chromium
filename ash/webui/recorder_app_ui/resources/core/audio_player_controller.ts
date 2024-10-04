@@ -9,7 +9,14 @@ import {
 
 import {useRecordingDataManager} from './lit/context.js';
 import {ScopedAsyncEffect} from './reactive/lit.js';
-import {computed, ReadonlySignal, Signal, signal} from './reactive/signal.js';
+import {
+  computed,
+  Dispose,
+  effect,
+  ReadonlySignal,
+  Signal,
+  signal,
+} from './reactive/signal.js';
 import {AnimationFrameController} from './utils/animation_frame_controller.js';
 import {assertInstanceof} from './utils/assert.js';
 
@@ -180,6 +187,8 @@ export class AudioPlayerController implements ReactiveController {
   // This is marked as protected to suppress the unused member error.
   protected readonly loadAudioData: ScopedAsyncEffect;
 
+  private setMediaSessionTitleEffectDispose: Dispose|null = null;
+
   private audio = new ReactiveAudioImpl();
 
   constructor(
@@ -210,8 +219,30 @@ export class AudioPlayerController implements ReactiveController {
     });
   }
 
+  hostConnected(): void {
+    if (this.setMediaSessionTitleEffectDispose === null) {
+      // TODO(pihsun): Have a ScopedEffect without the async part to simplify
+      // this.
+      this.setMediaSessionTitleEffectDispose = effect(() => {
+        const id = this.recordingId.value;
+        if (id === null) {
+          return;
+        }
+        const metadata = this.recordingDataManager.getMetadata(id).value;
+        if (metadata === null) {
+          return;
+        }
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: metadata.title,
+        });
+      });
+    }
+  }
+
   hostDisconnected(): void {
     this.audio.revoke();
+    this.setMediaSessionTitleEffectDispose?.();
+    this.setMediaSessionTitleEffectDispose = null;
   }
 
   get currentTime(): Signal<number> {
