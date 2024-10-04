@@ -92,11 +92,12 @@ public class PriceInsightsBottomSheetViewBinder {
             }
             View priceHistoryChart = model.get(PRICE_HISTORY_CHART);
             priceHistoryChart.setId(PRICE_HISTORY_CHART_ID);
-            int chartHeight =
-                    priceHistoryChart
-                            .getContext()
-                            .getResources()
-                            .getDimensionPixelSize(R.dimen.price_history_chart_height);
+            Resources resources = priceHistoryChart.getContext().getResources();
+            priceHistoryChart.setContentDescription(
+                    resources.getString(
+                            R.string.price_history_chart_content_description,
+                            model.get(PRICE_TRACKING_TITLE)));
+            int chartHeight = resources.getDimensionPixelSize(R.dimen.price_history_chart_height);
             priceHistoryChart.setLayoutParams(
                     new LayoutParams(LayoutParams.MATCH_PARENT, chartHeight));
             priceHistoryLayout.addView(priceHistoryChart);
