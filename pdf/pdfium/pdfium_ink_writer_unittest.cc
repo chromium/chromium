@@ -120,9 +120,8 @@ TEST_P(PDFiumInkWriterTest, Basic) {
       InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumPage* pdfium_page = engine->GetPage(0);
-  ASSERT_TRUE(pdfium_page);
-  FPDF_PAGE page = pdfium_page->GetPage();
+  PDFiumPage& pdfium_page = GetPDFiumPageForTest(*engine, 0);
+  FPDF_PAGE page = pdfium_page.GetPage();
   ASSERT_TRUE(page);
 
   auto brush =
@@ -150,9 +149,8 @@ TEST_P(PDFiumInkWriterTest, EmptyStroke) {
       InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumPage* pdfium_page = engine->GetPage(0);
-  ASSERT_TRUE(pdfium_page);
-  FPDF_PAGE page = pdfium_page->GetPage();
+  PDFiumPage& pdfium_page = GetPDFiumPageForTest(*engine, 0);
+  FPDF_PAGE page = pdfium_page.GetPage();
   ASSERT_TRUE(page);
 
   auto brush =

@@ -114,9 +114,9 @@ class PDFiumOnDemandSearchifierTest : public PDFiumTestBase {
   }
 
   // Returns all characters in the page.
-  std::string GetPageText(chrome_pdf::PDFiumPage* page) {
+  std::string GetPageText(chrome_pdf::PDFiumPage& page) {
     return base::UTF16ToUTF8(
-        chrome_pdf::PDFiumRange::AllTextOnPage(page).GetText());
+        chrome_pdf::PDFiumRange::AllTextOnPage(&page).GetText());
   }
 
   int performed_ocrs() const { return performed_ocrs_; }
@@ -166,7 +166,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, OnePageWithImages) {
   EXPECT_TRUE(page.IsPageSearchified());
 
   // The page has two images.
-  std::string page_text = GetPageText(&page);
+  std::string page_text = GetPageText(page);
   ASSERT_EQ(page_text, "OCR Text 0\r\nOCR Text 1");
 }
 
@@ -176,7 +176,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, MultiplePagesWithImages) {
 
   // Trigger page load and verify needing searchify.
   for (int page = 0; page < kPageCount; page++) {
-    engine()->GetPage(page)->GetPage();
+    GetPDFiumPageForTest(*engine(), page).GetPage();
     ASSERT_TRUE(engine()->PageNeedsSearchify(page));
   }
 
@@ -194,10 +194,10 @@ TEST_P(PDFiumOnDemandSearchifierTest, MultiplePagesWithImages) {
   WaitUntilIdle(searchifier, future.GetCallback());
   ASSERT_TRUE(future.Wait());
   ASSERT_EQ(performed_ocrs(), 4);
-  EXPECT_EQ(GetPageText(engine()->GetPage(0)), "OCR Text 0");
-  EXPECT_EQ(GetPageText(engine()->GetPage(1)), "OCR Text 1");
-  EXPECT_EQ(GetPageText(engine()->GetPage(2)), "OCR Text 2");
-  EXPECT_EQ(GetPageText(engine()->GetPage(3)), "OCR Text 3");
+  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine(), 0)), "OCR Text 0");
+  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine(), 1)), "OCR Text 1");
+  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine(), 2)), "OCR Text 2");
+  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine(), 3)), "OCR Text 3");
 }
 
 TEST_P(PDFiumOnDemandSearchifierTest, MultiplePagesWithUnload) {
@@ -206,10 +206,11 @@ TEST_P(PDFiumOnDemandSearchifierTest, MultiplePagesWithUnload) {
 
   // Trigger page load for all.
   for (int page = 0; page < kPageCount; page++) {
-    ASSERT_TRUE(engine()->GetPage(page)->GetPage());
+    ASSERT_TRUE(GetPDFiumPageForTest(*engine(), page).GetPage());
   }
 
-  engine()->GetPage(0)->Unload();
+  PDFiumPage& page = GetPDFiumPageForTest(*engine(), 0);
+  page.Unload();
 
   PDFiumOnDemandSearchifier* searchifier = engine()->GetSearchifierForTesting();
   ASSERT_TRUE(searchifier);
@@ -223,13 +224,13 @@ TEST_P(PDFiumOnDemandSearchifierTest, MultiplePagesWithUnload) {
   ASSERT_EQ(performed_ocrs(), kPageCount - 1);
 
   // First page is not searchified.
-  std::string page_text = GetPageText(engine()->GetPage(0));
+  std::string page_text = GetPageText(page);
   EXPECT_TRUE(page_text.empty());
 
   // Other pages are searchified.
-  EXPECT_EQ(GetPageText(engine()->GetPage(1)), "OCR Text 0");
-  EXPECT_EQ(GetPageText(engine()->GetPage(2)), "OCR Text 1");
-  EXPECT_EQ(GetPageText(engine()->GetPage(3)), "OCR Text 2");
+  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine(), 1)), "OCR Text 0");
+  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine(), 2)), "OCR Text 1");
+  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine(), 3)), "OCR Text 2");
 }
 
 TEST_P(PDFiumOnDemandSearchifierTest, OcrCancellation) {
@@ -238,7 +239,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, OcrCancellation) {
 
   // Trigger page load for all.
   for (int page = 0; page < kPageCount; page++) {
-    ASSERT_TRUE(engine()->GetPage(page)->GetPage());
+    ASSERT_TRUE(GetPDFiumPageForTest(*engine(), page).GetPage());
   }
 
   StartSearchify();
