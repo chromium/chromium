@@ -73,8 +73,6 @@ namespace {
 
 RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
   switch (request_type) {
-    case RequestType::kAccessibilityEvents:
-      return RequestTypeForUma::PERMISSION_ACCESSIBILITY_EVENTS;
     case RequestType::kArSession:
       return RequestTypeForUma::PERMISSION_AR;
 #if !BUILDFLAG(IS_ANDROID)
@@ -230,8 +228,6 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
       return "LocalFonts";
     case RequestTypeForUma::PERMISSION_IDLE_DETECTION:
       return "IdleDetection";
-    case RequestTypeForUma::PERMISSION_ACCESSIBILITY_EVENTS:
-      return "AccessibilityEvents";
     case RequestTypeForUma::PERMISSION_FILE_SYSTEM_ACCESS:
       return "FileSystemAccess";
     case RequestTypeForUma::CAPTURED_SURFACE_CONTROL:
@@ -1393,10 +1389,6 @@ void PermissionUmaUtil::RecordPermissionAction(
     case ContentSettingsType::IDLE_DETECTION:
       base::UmaHistogramEnumeration("Permissions.Action.IdleDetection", action,
                                     PermissionAction::NUM);
-      break;
-    case ContentSettingsType::ACCESSIBILITY_EVENTS:
-      base::UmaHistogramEnumeration("Permissions.Action.AccessibilityEvents",
-                                    action, PermissionAction::NUM);
       break;
     case ContentSettingsType::CAPTURED_SURFACE_CONTROL:
       base::UmaHistogramEnumeration("Permissions.Action.CapturedSurfaceControl",

@@ -53,8 +53,6 @@
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
-#include "third_party/blink/renderer/core/aom/accessible_node.h"
-#include "third_party/blink/renderer/core/aom/computed_accessible_node.h"
 #include "third_party/blink/renderer/core/css/container_query_data.h"
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -2631,26 +2629,6 @@ String Element::ComputedNameNoLifecycleUpdate() {
   return ax_context.GetAXObjectCache().ComputedNameForNode(this);
 }
 
-AccessibleNode* Element::ExistingAccessibleNode() const {
-  if (!RuntimeEnabledFeatures::AccessibilityObjectModelEnabled()) {
-    return nullptr;
-  }
-
-  if (const ElementRareDataVector* data = GetElementRareData()) {
-    return data->GetAccessibleNode();
-  }
-  return nullptr;
-}
-
-AccessibleNode* Element::accessibleNode() {
-  if (!RuntimeEnabledFeatures::AccessibilityObjectModelEnabled()) {
-    return nullptr;
-  }
-
-  ElementRareDataVector& rare_data = EnsureElementRareData();
-  return rare_data.EnsureAccessibleNode(this);
-}
-
 void Element::ariaNotify(const String& announcement,
                          const AriaNotificationOptions* options) {
   DCHECK(RuntimeEnabledFeatures::AriaNotifyEnabled());
@@ -3264,10 +3242,6 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
     DCHECK(!data->HasPseudoElements() ||
            GetDocument().StatePreservingAtomicMoveInProgress());
 
-    if (AccessibleNode* accessible_node = ExistingAccessibleNode()) {
-      accessible_node->DetachedFromDocument();
-      data->ClearAccessibleNode();
-    }
   }
 
   if (auto* const frame = document.GetFrame()) {

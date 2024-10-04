@@ -5599,20 +5599,6 @@ void AXNodeObject::AddMenuListPopupChildren() {
   AddNodeChildren();
 }
 
-void AXNodeObject::AddAccessibleNodeChildren() {
-  Element* element = GetElement();
-  if (!element)
-    return;
-
-  AccessibleNode* accessible_node = element->ExistingAccessibleNode();
-  if (!accessible_node)
-    return;
-
-  for (const auto& child : accessible_node->GetChildren()) {
-    AddChildAndCheckIncluded(AXObjectCache().GetOrCreate(child, this));
-  }
-}
-
 void AXNodeObject::AddOwnedChildren() {
   AXObjectVector owned_children;
   AXObjectCache().ValidatedAriaOwnedChildren(this, owned_children);
@@ -5673,9 +5659,6 @@ void AXNodeObject::AddChildrenImpl() {
   CHECK_ATTACHED();
 
   AddPopupChildren();
-  CHECK_ATTACHED();
-
-  AddAccessibleNodeChildren();
   CHECK_ATTACHED();
 
   AddOwnedChildren();
@@ -6033,6 +6016,13 @@ bool AXNodeObject::HasInternalsAttribute(Element& element,
   return element.EnsureElementInternals().HasAttribute(attribute);
 }
 
+// ARIA attributes are true if they are not empty, "false" or "undefined".
+bool AXNodeObject::IsAriaAttributeTrue(const QualifiedName& attribute) const {
+  const AtomicString& value = GetAttribute(attribute);
+  return !value.empty() && !EqualIgnoringASCIICase(value, "undefined") &&
+         !EqualIgnoringASCIICase(value, "false");
+}
+
 const AtomicString& AXNodeObject::GetInternalsAttribute(
     Element& element,
     const QualifiedName& attribute) const {
@@ -6274,7 +6264,8 @@ AXObject::AXObjectVector AXNodeObject::ErrorMessage() const {
   if (GetInvalidState() == ax::mojom::blink::InvalidState::kFalse)
     return AXObjectVector();
 
-  AXObjectVector aria_error_messages = ErrorMessageFromAria();
+  AXObjectVector aria_error_messages =
+      RelationVectorFromAria(html_names::kAriaErrormessageAttr);
   if (aria_error_messages.size() > 0) {
     return aria_error_messages;
   }
@@ -6287,26 +6278,26 @@ AXObject::AXObjectVector AXNodeObject::ErrorMessage() const {
   return AXObjectVector();
 }
 
-AXObject::AXObjectVector AXNodeObject::ErrorMessageFromAria() const {
+AXObject::AXObjectVector AXNodeObject::RelationVectorFromAria(
+    const QualifiedName& attr_name) const {
   Element* el = GetElement();
   if (!el) {
     return AXObjectVector();
   }
 
   HeapVector<Member<Element>> elements_from_attribute;
-  if (!ElementsFromAttribute(el, elements_from_attribute,
-                             html_names::kAriaErrormessageAttr)) {
+  if (!ElementsFromAttribute(el, elements_from_attribute, attr_name)) {
     return AXObjectVector();
   }
 
-  AXObjectVector error_messages;
+  AXObjectVector objects;
   for (Element* element : elements_from_attribute) {
     AXObject* obj = AXObjectCache().Get(element);
     if (obj && !obj->IsIgnored()) {
-      error_messages.push_back(obj);
+      objects.push_back(obj);
     }
   }
-  return error_messages;
+  return objects;
 }
 
 AXObject::AXObjectVector AXNodeObject::ErrorMessageFromHTML() const {

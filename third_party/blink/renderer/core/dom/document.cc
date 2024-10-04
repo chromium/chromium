@@ -99,7 +99,6 @@
 #include "third_party/blink/renderer/core/animation/pending_animations.h"
 #include "third_party/blink/renderer/core/animation/worklet_animation_controller.h"
 #include "third_party/blink/renderer/core/annotation/annotation_agent_container_impl.h"
-#include "third_party/blink/renderer/core/aom/computed_accessible_node.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
@@ -8894,15 +8893,6 @@ bool Document::ChildrenCanHaveStyle() const {
   if (LayoutObject* view = GetLayoutView())
     return view->CanHaveChildren();
   return false;
-}
-
-ComputedAccessibleNode* Document::GetOrCreateComputedAccessibleNode(AXID axid) {
-  DCHECK(axid) << "Invalid ax_id";
-  if (AXObjectCache* cache = ExistingAXObjectCache()) {
-    return cache->GetOrCreateComputedAccessibleNode(axid);
-  }
-
-  return nullptr;
 }
 
 void Document::SetShowBeforeUnloadDialog(bool show_dialog) {

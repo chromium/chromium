@@ -68,7 +68,6 @@ PermissionToSchedulingFeature(PermissionType permission_name) {
           kRequestedStorageAccessGrant;
     case PermissionType::PROTECTED_MEDIA_IDENTIFIER:
     case PermissionType::DURABLE_STORAGE:
-    case PermissionType::ACCESSIBILITY_EVENTS:
     case PermissionType::CLIPBOARD_READ_WRITE:
     case PermissionType::CLIPBOARD_SANITIZED_WRITE:
     case PermissionType::PAYMENT_HANDLER:

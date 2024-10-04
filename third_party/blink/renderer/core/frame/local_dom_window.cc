@@ -62,7 +62,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy_manager.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
-#include "third_party/blink/renderer/core/aom/computed_accessible_node.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/dom_window_css.h"
@@ -1724,17 +1723,6 @@ CSSStyleDeclaration* LocalDOMWindow::getComputedStyle(
   DCHECK(elt);
   return MakeGarbageCollected<CSSComputedStyleDeclaration>(elt, false,
                                                            pseudo_elt);
-}
-
-ScriptPromise<ComputedAccessibleNode> LocalDOMWindow::getComputedAccessibleNode(
-    ScriptState* script_state,
-    Element* element) {
-  DCHECK(element);
-  auto* resolver = MakeGarbageCollected<ComputedAccessibleNodePromiseResolver>(
-      script_state, *element);
-  auto promise = resolver->Promise();
-  resolver->ComputeAccessibleNode();
-  return promise;
 }
 
 double LocalDOMWindow::devicePixelRatio() const {

@@ -1539,8 +1539,6 @@ void WebTestControlHost::SetPermission(const std::string& name,
     type = blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER;
   } else if (name == "background-sync") {
     type = blink::PermissionType::BACKGROUND_SYNC;
-  } else if (name == "accessibility-events") {
-    type = blink::PermissionType::ACCESSIBILITY_EVENTS;
   } else if (name == "clipboard-read-write") {
     type = blink::PermissionType::CLIPBOARD_READ_WRITE;
   } else if (name == "clipboard-sanitized-write") {

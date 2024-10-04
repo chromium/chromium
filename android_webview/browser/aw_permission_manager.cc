@@ -359,7 +359,6 @@ void AwPermissionManager::RequestPermissions(
       case PermissionType::NOTIFICATIONS:
       case PermissionType::DURABLE_STORAGE:
       case PermissionType::BACKGROUND_SYNC:
-      case PermissionType::ACCESSIBILITY_EVENTS:
       case PermissionType::CLIPBOARD_READ_WRITE:
       case PermissionType::PAYMENT_HANDLER:
       case PermissionType::BACKGROUND_FETCH:
@@ -583,7 +582,6 @@ PermissionStatus AwPermissionManager::GetPermissionStatusInternal(
       // These permissions are always forwarded to the app to handle.
       return PermissionStatus::ASK;
 
-    case blink::PermissionType::ACCESSIBILITY_EVENTS:
     case blink::PermissionType::AR:
     case blink::PermissionType::AUTOMATIC_FULLSCREEN:
     case blink::PermissionType::BACKGROUND_FETCH:
@@ -737,7 +735,6 @@ void AwPermissionManager::CancelPermissionRequest(int request_id) {
       case PermissionType::AUDIO_CAPTURE:
       case PermissionType::VIDEO_CAPTURE:
       case PermissionType::BACKGROUND_SYNC:
-      case PermissionType::ACCESSIBILITY_EVENTS:
       case PermissionType::CLIPBOARD_READ_WRITE:
       case PermissionType::CLIPBOARD_SANITIZED_WRITE:
       case PermissionType::PAYMENT_HANDLER:

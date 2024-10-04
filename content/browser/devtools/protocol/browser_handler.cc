@@ -148,8 +148,6 @@ Response PermissionDescriptorToPermissionType(
   } else if (name == "ambient-light-sensor" || name == "accelerometer" ||
              name == "gyroscope" || name == "magnetometer") {
     *permission_type = PermissionType::SENSORS;
-  } else if (name == "accessibility-events") {
-    *permission_type = PermissionType::ACCESSIBILITY_EVENTS;
   } else if (name == "clipboard-read") {
     *permission_type = PermissionType::CLIPBOARD_READ_WRITE;
   } else if (name == "clipboard-write") {
@@ -233,9 +231,6 @@ Response FromProtocolPermissionType(
     *out_type = PermissionType::BACKGROUND_SYNC;
   } else if (type == protocol::Browser::PermissionTypeEnum::Sensors) {
     *out_type = PermissionType::SENSORS;
-  } else if (type ==
-             protocol::Browser::PermissionTypeEnum::AccessibilityEvents) {
-    *out_type = PermissionType::ACCESSIBILITY_EVENTS;
   } else if (type ==
              protocol::Browser::PermissionTypeEnum::ClipboardReadWrite) {
     *out_type = PermissionType::CLIPBOARD_READ_WRITE;

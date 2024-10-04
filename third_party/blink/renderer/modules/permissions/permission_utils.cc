@@ -97,8 +97,6 @@ String PermissionNameToString(PermissionName name) {
       return "background_sync";
     case PermissionName::SENSORS:
       return "sensors";
-    case PermissionName::ACCESSIBILITY_EVENTS:
-      return "accessibility_events";
     case PermissionName::CLIPBOARD_READ:
       return "clipboard_read";
     case PermissionName::CLIPBOARD_WRITE:
@@ -288,14 +286,6 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
     }
 
     return CreatePermissionDescriptor(PermissionName::SENSORS);
-  }
-  if (name == V8PermissionName::Enum::kAccessibilityEvents) {
-    if (!RuntimeEnabledFeatures::AccessibilityObjectModelEnabled()) {
-      exception_state.ThrowTypeError(
-          "Accessibility Object Model is not enabled.");
-      return nullptr;
-    }
-    return CreatePermissionDescriptor(PermissionName::ACCESSIBILITY_EVENTS);
   }
   if (name == V8PermissionName::Enum::kClipboardRead ||
       name == V8PermissionName::Enum::kClipboardWrite) {

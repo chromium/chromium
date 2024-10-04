@@ -134,9 +134,6 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
     case ContentSettingsType::SENSORS:
       *out = PermissionType::SENSORS;
       break;
-    case ContentSettingsType::ACCESSIBILITY_EVENTS:
-      *out = PermissionType::ACCESSIBILITY_EVENTS;
-      break;
     case ContentSettingsType::CLIPBOARD_READ_WRITE:
       *out = PermissionType::CLIPBOARD_READ_WRITE;
       break;
@@ -315,8 +312,6 @@ ContentSettingsType PermissionUtil::PermissionTypeToContentSettingTypeSafe(
       return ContentSettingsType::BACKGROUND_SYNC;
     case PermissionType::SENSORS:
       return ContentSettingsType::SENSORS;
-    case PermissionType::ACCESSIBILITY_EVENTS:
-      return ContentSettingsType::ACCESSIBILITY_EVENTS;
     case PermissionType::CLIPBOARD_READ_WRITE:
       return ContentSettingsType::CLIPBOARD_READ_WRITE;
     case PermissionType::CLIPBOARD_SANITIZED_WRITE:

@@ -38,15 +38,12 @@
 #include "base/ranges/algorithm.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
-#include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/public/mojom/render_accessibility.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/renderer/core/accessibility/scoped_blink_ax_event_intent.h"
 #include "third_party/blink/renderer/core/aom/accessible_node.h"
-#include "third_party/blink/renderer/core/aom/computed_accessible_node.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
@@ -118,8 +115,6 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_relation_cache.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_slider.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_validation_message.h"
-#include "third_party/blink/renderer/modules/accessibility/ax_virtual_object.h"
-#include "third_party/blink/renderer/modules/permissions/permission_utils.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -824,9 +819,6 @@ AXObjectCacheImpl::AXObjectCacheImpl(Document& document,
       ax_mode_(ax_mode),
       validation_message_axid_(0),
       active_aria_modal_dialog_(nullptr),
-      accessibility_event_permission_(mojom::blink::PermissionStatus::ASK),
-      permission_service_(document.GetExecutionContext()),
-      permission_observer_receiver_(this, document.GetExecutionContext()),
       render_accessibility_host_(document.GetExecutionContext()),
       ax_tree_source_(BlinkAXTreeSource::Create(*this)) {
   lifecycle_.AdvanceTo(AXObjectCacheLifecycle::kDeferTreeUpdates);
@@ -1051,17 +1043,6 @@ AXObject* AXObjectCacheImpl::Get(const Node* node) {
   if (!node)
     return nullptr;
 
-#if DCHECK_IS_ON()
-  if (const Element* element = DynamicTo<Element>(node)) {
-    if (AccessibleNode* accessible_node = element->ExistingAccessibleNode()) {
-      DCHECK(!accessible_node_mapping_.Contains(accessible_node))
-          << "The accessible node directly attached to an element should not "
-             "have its own AXObject: "
-          << element;
-    }
-  }
-#endif
-
   AXID node_id = static_cast<AXID>(DOMNodeIds::ExistingIdForNode(node));
   if (!node_id) {
     // An ID hasn't yet been generated for this DOM node, but ::CreateAndInit()
@@ -1111,39 +1092,6 @@ AXObject* AXObjectCacheImpl::Get(AbstractInlineTextBox* inline_text_box) {
   DCHECK(!result->IsDetached() || IsDisposing())
       << "Detached AXInlineTextBox in map: " << "AXID#" << ax_id
       << " Node=" << inline_text_box->GetText();
-#endif
-  return result;
-}
-
-AXObject* AXObjectCacheImpl::Get(AccessibleNode* accessible_node) {
-  if (!accessible_node)
-    return nullptr;
-
-  if (accessible_node->element()) {
-    DCHECK(!accessible_node_mapping_.Contains(accessible_node))
-        << "The accessible node directly attached to an element should not "
-           "have its own AXObject: "
-        << accessible_node->element();
-    // When the AccessibleNode is attached to an element, return the element's
-    // accessible object instead.
-    return Get(accessible_node->element());
-  }
-
-  auto it_ax = accessible_node_mapping_.find(accessible_node);
-  AXID ax_id = it_ax != accessible_node_mapping_.end() ? it_ax->value : 0;
-  if (!ax_id)
-    return nullptr;
-  DCHECK(!WTF::IsHashTraitsEmptyOrDeletedValue<HashTraits<AXID>>(ax_id));
-
-  auto it_result = objects_.find(ax_id);
-  AXObject* result = it_result != objects_.end() ? it_result->value : nullptr;
-#if DCHECK_IS_ON()
-  DCHECK(result) << "Had AXID for accessible_node but no entry in objects_";
-  DCHECK(IsA<AXVirtualObject>(result));
-  // Do not allow detached objects except when disposing entire tree.
-  DCHECK(!result->IsDetached() || IsDisposing())
-      << "Detached AXVirtualObject in map: " << "AXID#" << ax_id
-      << " Node=" << accessible_node->element();
 #endif
   return result;
 }
@@ -1311,39 +1259,6 @@ AXObject* AXObjectCacheImpl::CreateFromNode(Node* node) {
 AXObject* AXObjectCacheImpl::CreateFromInlineTextBox(
     AbstractInlineTextBox* inline_text_box) {
   return MakeGarbageCollected<AXInlineTextBox>(inline_text_box, *this);
-}
-
-AXObject* AXObjectCacheImpl::GetOrCreate(AccessibleNode* accessible_node,
-                                         AXObject* parent) {
-  if (AXObject* obj = Get(accessible_node))
-    return obj;
-
-  // New AXObjects cannot be created when the tree is frozen.
-  if (IsFrozen()) {
-    return nullptr;
-  }
-
-  DCHECK_EQ(accessible_node->GetDocument(), &GetDocument());
-
-  DCHECK(parent)
-      << "A virtual object must have a parent, and cannot exist without one. "
-         "The parent is set when the object is constructed.";
-
-  DCHECK(!accessible_node->element())
-      << "The accessible node directly attached to an element should not "
-         "have its own AXObject, since the AXObject will be keyed off of the "
-         "element instead: "
-      << accessible_node->element();
-
-  if (!parent->CanHaveChildren())
-    return nullptr;
-
-  AXObject* new_obj =
-      MakeGarbageCollected<AXVirtualObject>(*this, accessible_node);
-  const AXID ax_id = AssociateAXID(new_obj);
-  accessible_node_mapping_.Set(accessible_node, ax_id);
-  new_obj->Init(parent);
-  return new_obj;
 }
 
 AXObject* AXObjectCacheImpl::GetOrCreate(const Node* node, AXObject* parent) {
@@ -1584,8 +1499,6 @@ void AXObjectCacheImpl::Remove(AXObject* object, bool notify_parent) {
     Remove(object->GetNode(), notify_parent);
   } else if (object->GetLayoutObject()) {
     Remove(object->GetLayoutObject(), notify_parent);
-  } else if (object->GetAccessibleNode()) {
-    Remove(object->GetAccessibleNode(), notify_parent);
   } else {
     Remove(object->AXObjectID(), notify_parent);
   }
@@ -1657,25 +1570,6 @@ void AXObjectCacheImpl::Remove(AXID ax_id, bool notify_parent) {
     }
     active_aria_modal_dialog_ = nullptr;
   }
-}
-
-// This is safe to call even if there isn't a current mapping.
-void AXObjectCacheImpl::Remove(AccessibleNode* accessible_node) {
-  Remove(accessible_node, /* notify_parent */ true);
-}
-
-void AXObjectCacheImpl::Remove(AccessibleNode* accessible_node,
-                               bool notify_parent) {
-  DCHECK(accessible_node);
-
-  auto iter = accessible_node_mapping_.find(accessible_node);
-  if (iter == accessible_node_mapping_.end())
-    return;
-
-  AXID ax_id = iter->value;
-  accessible_node_mapping_.erase(iter);
-
-  Remove(ax_id, notify_parent);
 }
 
 void AXObjectCacheImpl::Remove(LayoutObject* layout_object,
@@ -1992,11 +1886,9 @@ void AXObjectCacheImpl::RemoveReferencesToAXID(AXID obj_id) {
     }
     // Allow the new AXObject for the same node to be serialized correctly.
     nodes_with_pending_children_changed_.erase(obj_id);
-    computed_node_mapping_.erase(obj_id);
   } else {
     // Non-DOM ids should never find their way into these maps.
     DCHECK(!fixed_or_sticky_node_ids_.Contains(obj_id));
-    DCHECK(!computed_node_mapping_.Contains(obj_id));
     DCHECK(!nodes_with_pending_children_changed_.Contains(obj_id));
   }
 }
@@ -2800,11 +2692,6 @@ void AXObjectCacheImpl::ChildrenChanged(const LayoutObject* layout_object) {
     return;
 
   ChildrenChanged(node);
-}
-
-void AXObjectCacheImpl::ChildrenChanged(AccessibleNode* accessible_node) {
-  DCHECK(accessible_node);
-  ChildrenChanged(Get(accessible_node));
 }
 
 void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* node) {
@@ -3944,14 +3831,6 @@ void AXObjectCacheImpl::HandleClicked(Node* node) {
   }
 }
 
-void AXObjectCacheImpl::HandleAttributeChanged(
-    const QualifiedName& attr_name,
-    AccessibleNode* accessible_node) {
-  if (!accessible_node)
-    return;
-  MarkAXObjectDirty(Get(accessible_node));
-}
-
 void AXObjectCacheImpl::HandleAriaNotification(
     const Node* node,
     const String& announcement,
@@ -4169,9 +4048,7 @@ void AXObjectCacheImpl::HandleRoleMaybeChangedWithCleanLayout(Node* node) {
 // Role changes are disallowed by the spec but we must handle it gracefully, see
 // https://www.w3.org/TR/wai-aria-1.1/#h-roles for more information.
 void AXObjectCacheImpl::HandleRoleChangeWithCleanLayout(Node* node) {
-  if (!node)
-    return;  // Virtual AOM node.
-
+  DCHECK(node);
   DCHECK(!node->GetDocument().NeedsLayoutTreeUpdateForNode(*node));
 
   // Remove the current object and make the parent reconsider its children.
@@ -4961,8 +4838,6 @@ void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayoutHelper(
                                      event_intents);
 
   obj->UpdateCachedAttributeValuesIfNeeded(true);
-
-  computed_node_mapping_.erase(obj->AXObjectID());
 }
 
 void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayout(AXObject* obj) {
@@ -5909,7 +5784,6 @@ void AXObjectCacheImpl::HandleLoadComplete(Document* document) {
   // browser. The AT regards popups as part of a widget, and a load start or
   // load complete event would only potentially confuse the AT.
   if (!IsPopup(*document) && !IsInitialEmptyDocument(*document)) {
-    AddPermissionStatusListener();
     DeferTreeUpdate(TreeUpdateReason::kPostNotificationFromHandleLoadComplete,
                     document, ax::mojom::blink::Event::kLoadComplete);
   }
@@ -6022,95 +5896,16 @@ void AXObjectCacheImpl::SetCanvasObjectBounds(HTMLCanvasElement* canvas,
   obj->SetElementRect(rect, ax_canvas);
 }
 
-void AXObjectCacheImpl::AddPermissionStatusListener() {
-  if (!document_->GetExecutionContext())
-    return;
-
-  // Passing an Origin to Mojo crashes if the host is empty because
-  // blink::SecurityOrigin sets unique to false, but url::Origin sets
-  // unique to true. This only happens for some obscure corner cases
-  // like on Android where the system registers unusual protocol handlers,
-  // and we don't need any special permissions in those cases.
-  //
-  // http://crbug.com/759528 and http://crbug.com/762716
-  if (document_->Url().Protocol() != "file" &&
-      document_->Url().Host().empty()) {
-    return;
-  }
-
-  if (permission_service_.is_bound())
-    permission_service_.reset();
-
-  ConnectToPermissionService(
-      document_->GetExecutionContext(),
-      permission_service_.BindNewPipeAndPassReceiver(
-          document_->GetTaskRunner(TaskType::kUserInteraction)));
-
-  if (permission_observer_receiver_.is_bound())
-    permission_observer_receiver_.reset();
-
-  mojo::PendingRemote<mojom::blink::PermissionObserver> observer;
-  permission_observer_receiver_.Bind(
-      observer.InitWithNewPipeAndPassReceiver(),
-      document_->GetTaskRunner(TaskType::kUserInteraction));
-  permission_service_->AddPermissionObserver(
-      CreatePermissionDescriptor(
-          mojom::blink::PermissionName::ACCESSIBILITY_EVENTS),
-      accessibility_event_permission_, std::move(observer));
-}
-
-void AXObjectCacheImpl::OnPermissionStatusChange(
-    mojom::PermissionStatus status) {
-  accessibility_event_permission_ = status;
-}
-
-ComputedAccessibleNode* AXObjectCacheImpl::GetOrCreateComputedAccessibleNode(
-    AXID axid) {
-  auto iter = computed_node_mapping_.find(axid);
-  if (iter != computed_node_mapping_.end()) {
-    return iter->value;
-  }
-
-  ComputedAccessibleNode* ax_node =
-      MakeGarbageCollected<ComputedAccessibleNode>(axid, document_);
-  computed_node_mapping_.insert(axid, ax_node);
-
-  return ax_node;
-}
-
-bool AXObjectCacheImpl::CanCallAOMEventListeners() const {
-  return accessibility_event_permission_ == mojom::PermissionStatus::GRANTED;
-}
-
-void AXObjectCacheImpl::RequestAOMEventListenerPermission() {
-  if (accessibility_event_permission_ != mojom::PermissionStatus::ASK)
-    return;
-
-  if (!permission_service_.is_bound())
-    return;
-
-  permission_service_->RequestPermission(
-      CreatePermissionDescriptor(
-          mojom::blink::PermissionName::ACCESSIBILITY_EVENTS),
-      LocalFrame::HasTransientUserActivation(document_->GetFrame()),
-      WTF::BindOnce(&AXObjectCacheImpl::OnPermissionStatusChange,
-                    WrapPersistent(this)));
-}
-
 void AXObjectCacheImpl::Trace(Visitor* visitor) const {
   visitor->Trace(agents_);
-  visitor->Trace(computed_node_mapping_);
   visitor->Trace(document_);
   visitor->Trace(popup_document_);
   visitor->Trace(last_selected_from_active_descendant_);
-  visitor->Trace(accessible_node_mapping_);
   visitor->Trace(layout_object_mapping_);
   visitor->Trace(inline_text_box_object_mapping_);
   visitor->Trace(active_aria_modal_dialog_);
 
   visitor->Trace(objects_);
-  visitor->Trace(permission_service_);
-  visitor->Trace(permission_observer_receiver_);
   visitor->Trace(tree_update_callback_queue_main_);
   visitor->Trace(tree_update_callback_queue_popup_);
   visitor->Trace(render_accessibility_host_);

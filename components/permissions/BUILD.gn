@@ -29,8 +29,6 @@ source_set("permissions") {
     "bluetooth_delegate_impl.h",
     "chooser_controller.cc",
     "chooser_controller.h",
-    "contexts/accessibility_permission_context.cc",
-    "contexts/accessibility_permission_context.h",
     "contexts/automatic_fullscreen_permission_context.cc",
     "contexts/automatic_fullscreen_permission_context.h",
     "contexts/bluetooth_chooser_context.cc",

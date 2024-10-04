@@ -34,14 +34,10 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
-#include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/public/mojom/render_accessibility.mojom-blink.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache_base.h"
 #include "third_party/blink/renderer/core/accessibility/blink_ax_event_intent.h"
-#include "third_party/blink/renderer/core/aom/computed_accessible_node.h"
 #include "third_party/blink/renderer/core/editing/commands/selection_for_undo_step.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -106,9 +102,7 @@ struct TextChangedOperation {
 };
 
 // This class should only be used from inside the accessibility directory.
-class MODULES_EXPORT AXObjectCacheImpl
-    : public AXObjectCacheBase,
-      public mojom::blink::PermissionObserver {
+class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
  public:
   static AXObjectCache* Create(Document&, const ui::AXMode&);
 
@@ -183,7 +177,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   AXObject* ChildrenChanged(AXObject*);
   void ChildrenChangedWithCleanLayout(AXObject*);
   void ChildrenChanged(Node*) override;
-  void ChildrenChanged(AccessibleNode*) override;
   void ChildrenChanged(const LayoutObject*) override;
   void SlotAssignmentWillChange(Node*) override;
   void CheckedStateChanged(Node*) override;
@@ -212,7 +205,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   // Removes AXObject backed by passed-in object, if there is one.
   // It will also notify the parent that its children have changed, so that the
   // parent will recompute its children and be reserialized.
-  void Remove(AccessibleNode*) override;
   void Remove(Node*) override;
   void RemovePopup(Document*) override;
   void Remove(AbstractInlineTextBox*) override;
@@ -303,8 +295,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   void HandleLoadStart(Document*) override;
   void HandleLoadComplete(Document*) override;
   void HandleClicked(Node*) override;
-  void HandleAttributeChanged(const QualifiedName& attr_name,
-                              AccessibleNode*) override;
 
   void HandleAriaNotification(const Node*,
                               const String&,
@@ -367,16 +357,12 @@ class MODULES_EXPORT AXObjectCacheImpl
   // Note that these functions do NOT guarantee that an AXObject will
   // be created. For instance, not all HTMLElements can have an AXObject,
   // such as <head> or <script> tags.
-  AXObject* GetOrCreate(AccessibleNode*, AXObject* parent);
   AXObject* GetOrCreate(LayoutObject*, AXObject* parent);
   AXObject* GetOrCreate(LayoutObject* layout_object);
   AXObject* GetOrCreate(const Node*, AXObject* parent) override;
   AXObject* GetOrCreate(Node*, AXObject* parent);
   AXObject* GetOrCreate(AbstractInlineTextBox*, AXObject* parent);
 
-  // Return an AXObject for the AccessibleNode. If the AccessibleNode is
-  // attached to an element, will return the AXObject for that element instead.
-  AXObject* Get(AccessibleNode*);
   AXObject* Get(AbstractInlineTextBox*);
 
   // Get an AXObject* backed by the passed-in DOM node.
@@ -469,16 +455,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   void AddToFixedOrStickyNodeList(const AXObject* object);
 
   bool MayHaveHTMLLabel(const HTMLElement& elem);
-
-  // Synchronously returns whether or not we currently have permission to
-  // call AOM event listeners.
-  bool CanCallAOMEventListeners() const;
-
-  // This is called when an accessibility event is triggered and there are
-  // AOM event listeners registered that would have been called.
-  // Asynchronously requests permission from the user. If permission is
-  // granted, it only applies to the next event received.
-  void RequestAOMEventListenerPermission();
 
   // For built-in HTML form validation messages.
   AXObject* ValidationMessageObjectIfInvalid();
@@ -662,8 +638,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   // Used by outside classes, mainly RenderAccessibilityImpl, to inform
   // AXObjectCacheImpl that a serialization was sent.
   void OnSerializationStartSend() override;
-
-  ComputedAccessibleNode* GetOrCreateComputedAccessibleNode(AXID) override;
 
 #if DCHECK_IS_ON()
   // This is called after a node's included status changes, to update the
@@ -855,7 +829,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   // It will also notify the parent that its children have changed, so that the
   // parent will recompute its children and be reserialized, unless
   // |notify_parent| is passed in as false.
-  void Remove(AccessibleNode*, bool notify_parent);
   void Remove(LayoutObject*, bool notify_parent);
   void Remove(AbstractInlineTextBox*, bool notify_parent);
 
@@ -947,7 +920,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   // AXIDs for AXNodeObjects reuse the int ids in dom_node_id, all other AXIDs
   // are negative in order to avoid a conflict.
   HeapHashMap<AXID, Member<AXObject>> objects_;
-  HeapHashMap<Member<AccessibleNode>, AXID> accessible_node_mapping_;
   // When the AXObject is backed by layout, its AXID can be looked up in
   // layout_object_mapping_. When the AXObject is backed by a node, its
   // AXID can be looked up via node->GetDomNodeId().
@@ -1016,14 +988,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   AXObject* NearestExistingAncestor(Node*);
 
   Settings* GetSettings();
-
-  // Start listenening for updates to the AOM accessibility event permission.
-  void AddPermissionStatusListener();
-
-  // mojom::blink::PermissionObserver implementation.
-  // Called when we get an updated AOM event listener permission value from
-  // the browser.
-  void OnPermissionStatusChange(mojom::PermissionStatus) override;
 
   // When a <tr> or <td> is inserted or removed, the containing table may have
   // gained or lost rows or columns.
@@ -1112,15 +1076,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   // `processing_deferred_events_` for more details.
   void NotifyParentChildrenChanged(AXObject* parent);
 
-  // Whether the user has granted permission for the user to install event
-  // listeners for accessibility events using the AOM.
-  mojom::PermissionStatus accessibility_event_permission_;
-  // The permission service, enabling us to check for event listener
-  // permission.
-  HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
-  HeapMojoReceiver<mojom::blink::PermissionObserver, AXObjectCacheImpl>
-      permission_observer_receiver_;
-
   // Queued callbacks.
   TreeUpdateCallbackQueue tree_update_callback_queue_main_;
   TreeUpdateCallbackQueue tree_update_callback_queue_popup_;
@@ -1205,10 +1160,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   // insertion. The items in the vector are in the order that the operations
   // were made in.
   HashMap<AXID, WTF::Vector<TextChangedOperation>> text_operation_in_node_ids_;
-
-  // Used to keep track of which ComputedAccessibleNodes have already been
-  // instantiated in this document to avoid constructing duplicates.
-  HeapHashMap<AXID, Member<ComputedAccessibleNode>> computed_node_mapping_;
 
   // A set of ARIA notifications that have yet to be added to `ax_tree_data`.
   HashMap<AXID, AriaNotifications> aria_notifications_;

@@ -52,8 +52,6 @@ class AbstractInlineTextBox;
 class AriaNotifications;
 class AriaNotificationOptions;
 class AXObject;
-class AccessibleNode;
-class ComputedAccessibleNode;
 class HTMLCanvasElement;
 class HTMLOptionElement;
 class HTMLFrameOwnerElement;
@@ -92,7 +90,6 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual void SelectionChanged(Node*) = 0;
   virtual void ChildrenChanged(Node*) = 0;
   virtual void ChildrenChanged(const LayoutObject*) = 0;
-  virtual void ChildrenChanged(AccessibleNode*) = 0;
   virtual void SlotAssignmentWillChange(Node*) = 0;
   virtual void CheckedStateChanged(Node*) = 0;
   virtual void ListboxOptionStateChanged(HTMLOptionElement*) = 0;
@@ -105,7 +102,6 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   // Removes AXObject backed by passed-in object, if there is one.
   // Will also notify the parent that its children have changed, so that the
   // parent will recompute its children and be reserialized.
-  virtual void Remove(AccessibleNode*) = 0;
   virtual void Remove(Node*) = 0;
   virtual void RemoveSubtree(const Node*) = 0;
   virtual void RemoveSubtree(const Node*, bool remove_root) = 0;
@@ -162,10 +158,6 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   // If |force|, then process regardless of any active batching or pauses.
   virtual void CommitAXUpdates(Document&, bool force) = 0;
 
-  // Changes to virtual Accessibility Object Model nodes.
-  virtual void HandleAttributeChanged(const QualifiedName& attr_name,
-                                      AccessibleNode*) = 0;
-
   // Handles a notification from the `ariaNotify` API.
   virtual void HandleAriaNotification(const Node*,
                                       const String&,
@@ -205,8 +197,6 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual AXObject* Root() = 0;
 
   virtual AXID GenerateAXID() const = 0;
-
-  virtual ComputedAccessibleNode* GetOrCreateComputedAccessibleNode(AXID) = 0;
 
   typedef AXObjectCache* (*AXObjectCacheCreateFunction)(Document&,
                                                         const ui::AXMode&);

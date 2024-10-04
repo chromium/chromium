@@ -34,7 +34,7 @@ enum class PermissionType {
   BACKGROUND_SYNC = 10,
   // FLASH = 11,
   SENSORS = 12,
-  ACCESSIBILITY_EVENTS = 13,
+  // ACCESSIBILITY_EVENTS = 13,  // Deprecated.
   // CLIPBOARD_READ = 14, // Replaced by CLIPBOARD_READ_WRITE in M81.
   // CLIPBOARD_WRITE = 15, // Replaced by CLIPBOARD_SANITIZED_WRITE in M81.
   PAYMENT_HANDLER = 16,

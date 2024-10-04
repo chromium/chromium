@@ -48,7 +48,6 @@ class AccessibilityControllerBindings
   v8::Local<v8::Object> FocusedElement();
   v8::Local<v8::Object> RootElement();
   v8::Local<v8::Object> AccessibleElementById(const std::string& id);
-  bool CanCallAOMEventListeners() const;
   void Reset();
 
   base::WeakPtr<AccessibilityController> controller_;
@@ -102,8 +101,6 @@ AccessibilityControllerBindings::GetObjectTemplateBuilder(
       .SetProperty("rootElement", &AccessibilityControllerBindings::RootElement)
       .SetMethod("accessibleElementById",
                  &AccessibilityControllerBindings::AccessibleElementById)
-      .SetProperty("canCallAOMEventListeners",
-                   &AccessibilityControllerBindings::CanCallAOMEventListeners)
       // TODO(hajimehoshi): These are for backward compatibility. Remove them.
       .SetMethod("addNotificationListener",
                  &AccessibilityControllerBindings::SetNotificationListener)
@@ -140,10 +137,6 @@ v8::Local<v8::Object> AccessibilityControllerBindings::AccessibleElementById(
     const std::string& id) {
   return controller_ ? controller_->AccessibleElementById(id)
                      : v8::Local<v8::Object>();
-}
-
-bool AccessibilityControllerBindings::CanCallAOMEventListeners() const {
-  return controller_ ? controller_->CanCallAOMEventListeners() : false;
 }
 
 void AccessibilityControllerBindings::Reset() {
@@ -295,11 +288,6 @@ v8::Local<v8::Object> AccessibilityController::AccessibleElementById(
 
   return FindAccessibleElementByIdRecursive(
       root_element, blink::WebString::FromUTF8(id.c_str()));
-}
-
-bool AccessibilityController::CanCallAOMEventListeners() const {
-  return GetAccessibilityObjectForMainFrame()
-      .CanCallAOMEventListenersForTesting();
 }
 
 v8::Local<v8::Object>

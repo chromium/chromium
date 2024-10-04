@@ -293,9 +293,11 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   Node* GetNode() const final;
   LayoutObject* GetLayoutObject() const final;
 
-  // DOM and layout tree access.
+  // ARIA attribute access: use these methods in order to ensure that values
+  // are also retrieved from elementInternals on custom elements.
   bool HasAttribute(const QualifiedName&) const override;
   const AtomicString& GetAttribute(const QualifiedName&) const override;
+  bool IsAriaAttributeTrue(const QualifiedName& attribute) const override;
 
   // Modify or take an action on an object.
   bool OnNativeBlurAction() final;
@@ -312,12 +314,13 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   // exists. Error messages from ARIA will always override native error
   // messages.
   AXObjectVector ErrorMessage() const override;
-  // Gets a list of nodes specified by `aria-errormessage` that form an error
-  // message for this node, if any exist.
-  AXObjectVector ErrorMessageFromAria() const override;
   // Gets a list of nodes created from HTML validation that form an error
   // message for this node, if any exist.
   AXObjectVector ErrorMessageFromHTML() const override;
+  // Gets a list of nodes specified by `aria-errormessage`, `aria-controls`,
+  // etc. that form an error message for this node, if any exist.
+  AXObjectVector RelationVectorFromAria(
+      const QualifiedName& attr_name) const override;
 
   // Position in set and Size of set
   int PosInSet() const override;

@@ -115,131 +115,6 @@ interface Accelerometer : Sensor
     getter y
     getter z
     method constructor
-interface AccessibleNode : EventTarget
-    attribute @@toStringTag
-    getter activeDescendant
-    getter atomic
-    getter autocomplete
-    getter busy
-    getter checked
-    getter childNodes
-    getter colCount
-    getter colIndex
-    getter colIndexText
-    getter colSpan
-    getter controls
-    getter current
-    getter describedBy
-    getter details
-    getter disabled
-    getter errorMessage
-    getter expanded
-    getter flowTo
-    getter hasPopup
-    getter hidden
-    getter invalid
-    getter keyShortcuts
-    getter label
-    getter labeledBy
-    getter level
-    getter live
-    getter modal
-    getter multiline
-    getter multiselectable
-    getter onaccessibleclick
-    getter onaccessiblecontextmenu
-    getter onaccessibledecrement
-    getter onaccessiblefocus
-    getter onaccessibleincrement
-    getter onaccessiblescrollintoview
-    getter orientation
-    getter owns
-    getter placeholder
-    getter posInSet
-    getter pressed
-    getter readOnly
-    getter relevant
-    getter required
-    getter role
-    getter roleDescription
-    getter rowCount
-    getter rowIndex
-    getter rowIndexText
-    getter rowSpan
-    getter selected
-    getter setSize
-    getter sort
-    getter valueMax
-    getter valueMin
-    getter valueNow
-    getter valueText
-    method appendChild
-    method constructor
-    method removeChild
-    setter activeDescendant
-    setter atomic
-    setter autocomplete
-    setter busy
-    setter checked
-    setter colCount
-    setter colIndex
-    setter colIndexText
-    setter colSpan
-    setter controls
-    setter current
-    setter describedBy
-    setter details
-    setter disabled
-    setter errorMessage
-    setter expanded
-    setter flowTo
-    setter hasPopup
-    setter hidden
-    setter invalid
-    setter keyShortcuts
-    setter label
-    setter labeledBy
-    setter level
-    setter live
-    setter modal
-    setter multiline
-    setter multiselectable
-    setter onaccessibleclick
-    setter onaccessiblecontextmenu
-    setter onaccessibledecrement
-    setter onaccessiblefocus
-    setter onaccessibleincrement
-    setter onaccessiblescrollintoview
-    setter orientation
-    setter owns
-    setter placeholder
-    setter posInSet
-    setter pressed
-    setter readOnly
-    setter relevant
-    setter required
-    setter role
-    setter roleDescription
-    setter rowCount
-    setter rowIndex
-    setter rowIndexText
-    setter rowSpan
-    setter selected
-    setter setSize
-    setter sort
-    setter valueMax
-    setter valueMin
-    setter valueNow
-    setter valueText
-interface AccessibleNodeList
-    attribute @@toStringTag
-    getter length
-    method @@iterator
-    method add
-    method constructor
-    method item
-    method remove
-    setter length
 interface AmbientLightSensor : Sensor
     attribute @@toStringTag
     getter illuminance
@@ -1582,45 +1457,6 @@ interface CompressionStream
     getter readable
     getter writable
     method constructor
-interface ComputedAccessibleNode
-    attribute @@toStringTag
-    getter atomic
-    getter autocomplete
-    getter busy
-    getter checked
-    getter colCount
-    getter colIndex
-    getter colSpan
-    getter disabled
-    getter expanded
-    getter firstChild
-    getter keyShortcuts
-    getter lastChild
-    getter level
-    getter modal
-    getter multiline
-    getter multiselectable
-    getter name
-    getter nextSibling
-    getter parent
-    getter placeholder
-    getter posInSet
-    getter previousSibling
-    getter readOnly
-    getter required
-    getter role
-    getter roleDescription
-    getter rowCount
-    getter rowIndex
-    getter rowSpan
-    getter selected
-    getter setSize
-    getter valueMax
-    getter valueMin
-    getter valueNow
-    getter valueText
-    method constructor
-    method ensureUpToDate
 interface ConstantSourceNode : AudioScheduledSourceNode
     attribute @@toStringTag
     getter offset
@@ -2549,7 +2385,6 @@ interface EditContext : EventTarget
 interface Element : Node
     attribute @@toStringTag
     attribute @@unscopables
-    getter accessibleNode
     getter anchorElement
     getter ariaActiveDescendantElement
     getter ariaAtomic
@@ -13127,7 +12962,6 @@ namespace console
     method find
     method focus
     method gc
-    method getComputedAccessibleNode
     method getComputedStyle
     method getDigitalGoodsService
     method getLockScreenData

@@ -230,7 +230,6 @@ public class AwPermissionQueryApiTest extends AwParameterizedTest {
         // These permissions are blocked behind feature flags that are not enabled
         // in WebView.
         runTestCase("ambient-light-sensor", "not_enabled");
-        runTestCase("accessibility-events", "not_enabled");
         runTestCase("system-wake-lock", "not_enabled");
         runTestCase("local-fonts", "not_enabled");
         runTestCase("captured-surface-control", "not_enabled");

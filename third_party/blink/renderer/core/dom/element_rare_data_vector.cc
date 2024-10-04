@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/dom/element_rare_data_vector.h"
 
 #include "third_party/blink/renderer/core/animation/element_animations.h"
-#include "third_party/blink/renderer/core/aom/accessible_node.h"
 #include "third_party/blink/renderer/core/css/container_query_data.h"
 #include "third_party/blink/renderer/core/css/cssom/inline_style_property_map.h"
 #include "third_party/blink/renderer/core/css/inline_css_style_declaration.h"
@@ -281,17 +280,6 @@ const ElementInternals* ElementRareDataVector::GetElementInternals() const {
 ElementInternals& ElementRareDataVector::EnsureElementInternals(
     HTMLElement& target) {
   return EnsureField<ElementInternals>(FieldId::kElementInternals, target);
-}
-
-AccessibleNode* ElementRareDataVector::GetAccessibleNode() const {
-  return static_cast<AccessibleNode*>(GetField(FieldId::kAccessibleNode));
-}
-AccessibleNode* ElementRareDataVector::EnsureAccessibleNode(
-    Element* owner_element) {
-  return &EnsureField<AccessibleNode>(FieldId::kAccessibleNode, owner_element);
-}
-void ElementRareDataVector::ClearAccessibleNode() {
-  SetField(FieldId::kAccessibleNode, nullptr);
 }
 
 DisplayLockContext* ElementRareDataVector::EnsureDisplayLockContext(

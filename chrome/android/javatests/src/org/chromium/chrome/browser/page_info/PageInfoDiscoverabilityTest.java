@@ -93,10 +93,6 @@ public class PageInfoDiscoverabilityTest {
             // ParameterSet.value = {ContentSettingsType, isInSiteSettings}
             parameters.add(
                     new ParameterSet()
-                            .name("RequestType.kAccessibilityEvents")
-                            .value(ContentSettingsType.ACCESSIBILITY_EVENTS, false));
-            parameters.add(
-                    new ParameterSet()
                             .name("RequestType.kArSession")
                             .value(ContentSettingsType.AR, true));
             parameters.add(

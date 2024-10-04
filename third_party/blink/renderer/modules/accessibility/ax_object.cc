@@ -51,7 +51,6 @@
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/accessibility/axid.h"
 #include "third_party/blink/renderer/core/aom/accessible_node.h"
-#include "third_party/blink/renderer/core/aom/accessible_node_list.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
@@ -133,7 +132,6 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_range.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_selection.h"
-#include "third_party/blink/renderer/modules/accessibility/ax_sparse_attribute_setter.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "third_party/blink/renderer/platform/language.h"
@@ -496,8 +494,9 @@ void AddIntListAttributeFromObjects(ax::mojom::blink::IntListAttribute attr,
   DCHECK(node_data);
   std::vector<int32_t> ids;
   for (const auto& obj : objects) {
-    if (!obj->IsIgnored())
+    if (!obj->IsIgnored()) {
       ids.push_back(obj->AXObjectID());
+    }
   }
   if (!ids.empty())
     node_data->AddIntListAttribute(attr, ids);
@@ -533,6 +532,20 @@ bool TruncateAndAddStringAttribute(
     }
   }
   return false;
+}
+
+void AddIntAttribute(const AXObject* obj,
+                     ax::mojom::blink::IntAttribute node_data_attr,
+                     const QualifiedName& attr_name,
+                     ui::AXNodeData* node_data,
+                     int min_value = INT_MIN) {
+  const AtomicString& value = obj->GetAttribute(attr_name);
+  if (!value.empty()) {
+    int value_as_int = value.ToInt();
+    if (value_as_int >= min_value) {
+      node_data->AddIntAttribute(node_data_attr, value_as_int);
+    }
+  }
 }
 
 void AddIntListAttributeFromOffsetVector(
@@ -921,10 +934,9 @@ AXObject* AXObject::ComputeParent() const {
 AXObject* AXObject::ComputeParentOrNull() const {
   CHECK(!IsDetached());
 
-  CHECK(GetNode() || GetLayoutObject() || IsVirtualObject())
-      << "Can't compute parent on AXObjects without a backing Node "
-         "LayoutObject, "
-         " or AccessibleNode. Objects without those must set the "
+  CHECK(GetNode() || GetLayoutObject())
+      << "Can't compute parent on AXObjects without a backing Node or "
+         "LayoutObject. Objects without those must set the "
          "parent in Init(), |this| = "
       << RoleValue();
 
@@ -937,9 +949,6 @@ AXObject* AXObject::ComputeParentOrNull() const {
         << AXObjectCache().Get(GetNode());
   } else if (AXObjectCache().IsAriaOwned(this)) {
     ax_parent = AXObjectCache().ValidatedAriaOwner(this);
-  } else if (IsVirtualObject()) {
-    ax_parent =
-        ComputeAccessibleNodeParent(AXObjectCache(), *GetAccessibleNode());
   }
   if (!ax_parent) {
     ax_parent = ComputeNonARIAParent(AXObjectCache(), GetNode());
@@ -1117,26 +1126,6 @@ bool AXObject::CanHaveChildren(Element& element) {
 }
 
 // static
-AXObject* AXObject::ComputeAccessibleNodeParent(
-    AXObjectCacheImpl& cache,
-    AccessibleNode& accessible_node) {
-  if (AccessibleNode* parent_accessible_node = accessible_node.GetParent()) {
-    if (AXObject* parent = cache.Get(parent_accessible_node))
-      return parent;
-
-    // Compute grandparent first, since constructing parent AXObject for
-    // |accessible_node| requires grandparent to be provided.
-    AXObject* grandparent_object =
-        AXObject::ComputeAccessibleNodeParent(cache, *parent_accessible_node);
-
-    if (grandparent_object)
-      return cache.GetOrCreate(parent_accessible_node, grandparent_object);
-  }
-
-  return nullptr;
-}
-
-// static
 HTMLMapElement* AXObject::GetMapForImage(Node* image) {
   if (!IsA<HTMLImageElement>(image))
     return nullptr;
@@ -1196,15 +1185,6 @@ Element* AXObject::GetAOMPropertyOrARIAAttribute(
     return nullptr;
 
   return AccessibleNode::GetPropertyOrARIAAttribute(element, property);
-}
-
-bool AXObject::HasAOMProperty(AOMRelationListProperty property,
-                              HeapVector<Member<Element>>& result) const {
-  Element* element = GetElement();
-  if (!element)
-    return false;
-
-  return AccessibleNode::GetProperty(element, property, result);
 }
 
 bool AXObject::HasAOMPropertyOrARIAAttribute(
@@ -1289,14 +1269,6 @@ bool AXObject::HasAOMPropertyOrARIAAttribute(AOMStringProperty property,
 
   result = AccessibleNode::GetPropertyOrARIAAttribute(element, property);
   return !result.IsNull();
-}
-
-AccessibleNode* AXObject::GetAccessibleNode() const {
-  Element* element = GetElement();
-  if (!element)
-    return nullptr;
-
-  return element->ExistingAccessibleNode();
 }
 
 namespace {
@@ -2097,42 +2069,29 @@ void AXObject::SerializeScrollAttributes(ui::AXNodeData* node_data) const {
                              max_scroll_offset.y());
 }
 
-void AXObject::SerializeSparseAttributes(ui::AXNodeData* node_data) const {
-  if (IsVirtualObject()) {
-    AccessibleNode* accessible_node = GetAccessibleNode();
-    if (accessible_node) {
-      AXNodeDataAOMPropertyClient property_client(*ax_object_cache_,
-                                                  *node_data);
-      accessible_node->GetAllAOMProperties(&property_client);
-    }
+void AXObject::SerializeRelationAttributes(ui::AXNodeData* node_data) const {
+  // No need to call this for objects without an element, as relations are
+  // only possible between elements.
+  DCHECK(GetElement());
+
+  // TODO(accessibility) Consider checking role before serializing
+  // aria-activedescendant, aria-errormessage.
+
+  if (AXObject* active_descendant = ActiveDescendant()) {
+    node_data->AddIntAttribute(
+        ax::mojom::blink::IntAttribute::kActivedescendantId,
+        active_descendant->AXObjectID());
   }
 
-  Element* element = GetElement();
-  if (!element)
-    return;
-
-  AXSparseAttributeSetterMap& setter_map = GetAXSparseAttributeSetterMap();
-  AttributeCollection attributes = element->AttributesWithoutUpdate();
-  HashSet<QualifiedName> set_attributes;
-  for (const Attribute& attr : attributes) {
-    set_attributes.insert(attr.GetName());
-    AXSparseSetterFunc callback;
-    auto it = setter_map.find(attr.GetName());
-    if (it == setter_map.end())
-      continue;
-    it->value.Run(this, node_data, attr.Value());
-  }
-
-  if (!element->DidAttachInternals())
-    return;
-  const auto& internals_attributes =
-      element->EnsureElementInternals().GetAttributes();
-  for (const QualifiedName& attr : internals_attributes.Keys()) {
-    auto it = setter_map.find(attr);
-    if (set_attributes.Contains(attr) || it == setter_map.end())
-      continue;
-    it->value.Run(this, node_data, internals_attributes.at(attr));
-  }
+  AddIntListAttributeFromObjects(
+      ax::mojom::blink::IntListAttribute::kControlsIds,
+      RelationVectorFromAria(html_names::kAriaControlsAttr), node_data);
+  AddIntListAttributeFromObjects(
+      ax::mojom::blink::IntListAttribute::kDetailsIds,
+      RelationVectorFromAria(html_names::kAriaDetailsAttr), node_data);
+  AddIntListAttributeFromObjects(
+      ax::mojom::blink::IntListAttribute::kFlowtoIds,
+      RelationVectorFromAria(html_names::kAriaFlowtoAttr), node_data);
 }
 
 void AXObject::SerializeStyleAttributes(ui::AXNodeData* node_data) const {
@@ -2219,16 +2178,11 @@ void AXObject::SerializeStyleAttributes(ui::AXNodeData* node_data) const {
 
 void AXObject::SerializeTableAttributes(ui::AXNodeData* node_data) const {
   if (ui::IsTableLike(RoleValue())) {
-    int aria_colcount = AriaColumnCount();
-    if (aria_colcount) {
-      node_data->AddIntAttribute(
-          ax::mojom::blink::IntAttribute::kAriaColumnCount, aria_colcount);
-    }
-    int aria_rowcount = AriaRowCount();
-    if (aria_rowcount) {
-      node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kAriaRowCount,
-                                 aria_rowcount);
-    }
+    AddIntAttribute(this, ax::mojom::blink::IntAttribute::kAriaColumnCount,
+                    html_names::kAriaColcountAttr, node_data,
+                    ColumnCount() + 1);
+    AddIntAttribute(this, ax::mojom::blink::IntAttribute::kAriaRowCount,
+                    html_names::kAriaRowcountAttr, node_data, RowCount() + 1);
   }
 
   if (ui::IsTableRow(RoleValue())) {
@@ -2243,8 +2197,13 @@ void AXObject::SerializeTableAttributes(ui::AXNodeData* node_data) const {
   }
 
   if (ui::IsCellOrTableHeader(RoleValue())) {
+    // Both HTML rowspan/colspan and ARIA rowspan/colspan are serialized.
+    AddIntAttribute(this, ax::mojom::blink::IntAttribute::kAriaCellColumnSpan,
+                    html_names::kAriaColspanAttr, node_data, 1);
     node_data->AddIntAttribute(
         ax::mojom::blink::IntAttribute::kTableCellColumnSpan, ColumnSpan());
+    AddIntAttribute(this, ax::mojom::blink::IntAttribute::kAriaCellRowSpan,
+                    html_names::kAriaRowspanAttr, node_data, 1);
     node_data->AddIntAttribute(
         ax::mojom::blink::IntAttribute::kTableCellRowSpan, RowSpan());
   }
@@ -2252,18 +2211,10 @@ void AXObject::SerializeTableAttributes(ui::AXNodeData* node_data) const {
   if (ui::IsCellOrTableHeader(RoleValue()) || ui::IsTableRow(RoleValue())) {
     // aria-rowindex and aria-colindex are supported on cells, headers and
     // rows.
-    int aria_rowindex = AriaRowIndex();
-    if (aria_rowindex) {
-      node_data->AddIntAttribute(
-          ax::mojom::blink::IntAttribute::kAriaCellRowIndex, aria_rowindex);
-    }
-
-    int aria_colindex = AriaColumnIndex();
-    if (aria_colindex) {
-      node_data->AddIntAttribute(
-          ax::mojom::blink::IntAttribute::kAriaCellColumnIndex, aria_colindex);
-    }
-
+    AddIntAttribute(this, ax::mojom::blink::IntAttribute::kAriaCellRowIndex,
+                    html_names::kAriaRowindexAttr, node_data, 1);
+    AddIntAttribute(this, ax::mojom::blink::IntAttribute::kAriaCellColumnIndex,
+                    html_names::kAriaColindexAttr, node_data, 1);
     if (RuntimeEnabledFeatures::AriaRowColIndexTextEnabled()) {
       // TODO(accessibility): Remove deprecated attribute support for
       // aria-rowtext/aria-coltext once Sheets uses standard attribute names
@@ -2413,9 +2364,35 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
   TruncateAndAddStringAttribute(
       node_data, ax::mojom::blink::StringAttribute::kUrl, Url().GetString());
 
-  SerializeSparseAttributes(node_data);
-
   if (Element* element = GetElement()) {
+    SerializeRelationAttributes(node_data);
+
+    TruncateAndAddStringAttribute(
+        node_data, ax::mojom::blink::StringAttribute::kAriaBrailleLabel,
+        GetAttribute(html_names::kAriaBraillelabelAttr));
+    if (RoleValue() != ax::mojom::blink::Role::kGenericContainer) {
+      // ARIA 1.2 prohibits aria-roledescription on the "generic" role.
+      TruncateAndAddStringAttribute(
+          node_data,
+          ax::mojom::blink::StringAttribute::kAriaBrailleRoleDescription,
+          GetAttribute(html_names::kAriaBrailleroledescriptionAttr));
+      TruncateAndAddStringAttribute(
+          node_data, ax::mojom::blink::StringAttribute::kRoleDescription,
+          GetAttribute(html_names::kAriaRoledescriptionAttr));
+    }
+    TruncateAndAddStringAttribute(
+        node_data, ax::mojom::blink::StringAttribute::kKeyShortcuts,
+        GetAttribute(html_names::kAriaKeyshortcutsAttr));
+    if (RuntimeEnabledFeatures::AccessibilityAriaVirtualContentEnabled()) {
+      TruncateAndAddStringAttribute(
+          node_data, ax::mojom::blink::StringAttribute::kVirtualContent,
+          GetAttribute(html_names::kAriaVirtualcontentAttr));
+    }
+
+    if (IsAriaAttributeTrue(html_names::kAriaBusyAttr)) {
+      node_data->AddBoolAttribute(ax::mojom::blink::BoolAttribute::kBusy, true);
+    }
+
     // Do not send the value attribute for non-atomic text fields in order to
     // improve the performance of the cross-process communication with the
     // browser process, and since it can be easily computed in that process.
@@ -2766,10 +2743,6 @@ bool AXObject::IsSlider() const {
 }
 
 bool AXObject::IsValidationMessage() const {
-  return false;
-}
-
-bool AXObject::IsVirtualObject() const {
   return false;
 }
 
@@ -3152,9 +3125,6 @@ bool AXObject::IsHovered() const {
 }
 
 bool AXObject::IsLineBreakingObject() const {
-  // Not all AXObjects have an associated node or layout object. They could be
-  // virtual accessibility nodes, for example.
-  //
   // We assume that most images on the Web are inline.
   return !IsImage() && ui::IsStructure(RoleValue()) &&
          !IsA<SVGElement>(GetNode());
@@ -3829,89 +3799,6 @@ const AXObject* AXObject::InertRoot() const {
   return nullptr;
 }
 
-bool AXObject::DispatchEventToAOMEventListeners(Event& event) {
-  HeapVector<Member<AccessibleNode>> event_path;
-  for (AXObject* ancestor = this; ancestor;
-       ancestor = ancestor->ParentObject()) {
-    AccessibleNode* ancestor_accessible_node = ancestor->GetAccessibleNode();
-    if (!ancestor_accessible_node)
-      continue;
-
-    if (!ancestor_accessible_node->HasEventListeners(event.type()))
-      continue;
-
-    event_path.push_back(ancestor_accessible_node);
-  }
-
-  // Short-circuit: if there are no AccessibleNodes attached anywhere
-  // in the ancestry of this node, exit.
-  if (!event_path.size())
-    return false;
-
-  // Check if the user has granted permission for this domain to use
-  // AOM event listeners yet. This may trigger an infobar, but we shouldn't
-  // block, so whatever decision the user makes will apply to the next
-  // event received after that.
-  //
-  // Note that we only ask the user about this permission the first
-  // time an event is received that actually would have triggered an
-  // event listener. However, if the user grants this permission, it
-  // persists for this origin from then on.
-  if (!AXObjectCache().CanCallAOMEventListeners()) {
-    AXObjectCache().RequestAOMEventListenerPermission();
-    return false;
-  }
-
-  // Since we now know the AOM is being used in this document, get the
-  // AccessibleNode for the target element and create it if necessary -
-  // otherwise we wouldn't be able to set the event target. However note
-  // that if it didn't previously exist it won't be part of the event path.
-  AccessibleNode* target = GetAccessibleNode();
-  if (!target) {
-    if (Element* element = GetElement())
-      target = element->accessibleNode();
-  }
-  if (!target)
-    return false;
-  event.SetTarget(target);
-
-  // Capturing phase.
-  event.SetEventPhase(Event::PhaseType::kCapturingPhase);
-  for (int i = static_cast<int>(event_path.size()) - 1; i >= 0; i--) {
-    // Don't call capturing event listeners on the target. Note that
-    // the target may not necessarily be in the event path which is why
-    // we check here.
-    if (event_path[i] == target)
-      break;
-
-    event.SetCurrentTarget(event_path[i]);
-    event_path[i]->FireEventListeners(event);
-    if (event.PropagationStopped())
-      return true;
-  }
-
-  // Targeting phase.
-  event.SetEventPhase(Event::PhaseType::kAtTarget);
-  event.SetCurrentTarget(event_path[0]);
-  event_path[0]->FireEventListeners(event);
-  if (event.PropagationStopped())
-    return true;
-
-  // Bubbling phase.
-  event.SetEventPhase(Event::PhaseType::kBubblingPhase);
-  for (wtf_size_t i = 1; i < event_path.size(); i++) {
-    event.SetCurrentTarget(event_path[i]);
-    event_path[i]->FireEventListeners(event);
-    if (event.PropagationStopped())
-      return true;
-  }
-
-  if (event.defaultPrevented())
-    return true;
-
-  return false;
-}
-
 bool AXObject::IsDescendantOfDisabledNode() {
   CheckCanAccessCachedValues();
 
@@ -4028,9 +3915,7 @@ bool AXObject::ComputeIsIgnoredButIncludedInTree() {
           << "Object has layout object but no node and is not anonymous: "
           << GetLayoutObject();
     } else {
-      // Include virtual objects.
-      DCHECK(IsVirtualObject())
-          << "Nodeless, layout-less object found with role " << RoleValue();
+      NOTREACHED();
     }
     // By including all of these objects in the tree, it is ensured that
     // ClearChildren() will be able to find these children and detach them
@@ -4466,23 +4351,6 @@ bool AXObject::SupportsARIASetSizeAndPosInSet() const {
            ancestor.current_->RoleValue() == ax::mojom::blink::Role::kTreeGrid;
   }
   return ui::IsSetLike(RoleValue()) || ui::IsItemLike(RoleValue());
-}
-
-bool AXObject::IsProhibited(ax::mojom::blink::StringAttribute attribute) const {
-  // ARIA 1.2 prohibits aria-roledescription on the "generic" role.
-  if (attribute == ax::mojom::blink::StringAttribute::kRoleDescription)
-    return RoleValue() == ax::mojom::blink::Role::kGenericContainer;
-  return false;
-}
-
-bool AXObject::IsProhibited(
-    ax::mojom::blink::IntListAttribute attribute) const {
-  // ARIA 1.2 prohibits exposure of aria-errormessage when aria-invalid is
-  // false.
-  if (attribute == ax::mojom::blink::IntListAttribute::kErrormessageIds) {
-    return GetInvalidState() == ax::mojom::blink::InvalidState::kFalse;
-  }
-  return false;
 }
 
 std::string AXObject::GetProhibitedNameError(
@@ -6887,49 +6755,6 @@ AXObject* AXObject::CellForColumnAndRow(unsigned target_column_index,
   return nullptr;
 }
 
-int AXObject::AriaColumnCount() const {
-  if (!IsTableLikeRole())
-    return 0;
-
-  int32_t col_count;
-  if (!HasAOMPropertyOrARIAAttribute(AOMIntProperty::kColCount, col_count))
-    return 0;
-
-  if (col_count > static_cast<int>(ColumnCount()))
-    return col_count;
-
-  // Spec says that if all of the columns are present in the DOM, it
-  // is not necessary to set this attribute as the user agent can
-  // automatically calculate the total number of columns.
-  // It returns 0 in order not to set this attribute.
-  if (col_count == static_cast<int>(ColumnCount()) || col_count != -1)
-    return 0;
-
-  return -1;
-}
-
-int AXObject::AriaRowCount() const {
-  if (!IsTableLikeRole())
-    return 0;
-
-  int32_t row_count;
-  if (!HasAOMPropertyOrARIAAttribute(AOMIntProperty::kRowCount, row_count))
-    return 0;
-
-  if (row_count > static_cast<int>(RowCount()))
-    return row_count;
-
-  // Spec says that if all of the rows are present in the DOM, it is
-  // not necessary to set this attribute as the user agent can
-  // automatically calculate the total number of rows.
-  // It returns 0 in order not to set this attribute.
-  if (row_count == static_cast<int>(RowCount()) || row_count != -1)
-    return 0;
-
-  // In the spec, -1 explicitly means an unknown number of rows.
-  return -1;
-}
-
 unsigned AXObject::ColumnIndex() const {
   return 0;
 }
@@ -6944,22 +6769,6 @@ unsigned AXObject::ColumnSpan() const {
 
 unsigned AXObject::RowSpan() const {
   return IsTableCellLikeRole() ? 1 : 0;
-}
-
-unsigned AXObject::AriaColumnIndex() const {
-  // Return the ARIA column index if it has been set. Otherwise return a default
-  // value of 0.
-  uint32_t col_index = 0;
-  HasAOMPropertyOrARIAAttribute(AOMUIntProperty::kColIndex, col_index);
-  return col_index;
-}
-
-unsigned AXObject::AriaRowIndex() const {
-  // Return the ARIA row index if it has been set. Otherwise return a default
-  // value of 0.
-  uint32_t row_index = 0;
-  HasAOMPropertyOrARIAAttribute(AOMUIntProperty::kRowIndex, row_index);
-  return row_index;
 }
 
 AXObject::AXObjectVector AXObject::TableRowChildren() const {
@@ -7258,20 +7067,12 @@ bool AXObject::PerformAction(const ui::AXActionData& action_data) {
   }
 }
 
+// TODO(crbug.com/369945541): remove these unnecessary methods.
 bool AXObject::RequestDecrementAction() {
-  Event* event =
-      Event::CreateCancelable(event_type_names::kAccessibledecrement);
-  if (DispatchEventToAOMEventListeners(*event))
-    return true;
-
   return OnNativeDecrementAction();
 }
 
 bool AXObject::RequestClickAction() {
-  Event* event = Event::CreateCancelable(event_type_names::kAccessibleclick);
-  if (DispatchEventToAOMEventListeners(*event))
-    return true;
-
   return OnNativeClickAction();
 }
 
@@ -7331,19 +7132,10 @@ bool AXObject::OnNativeClickAction() {
 }
 
 bool AXObject::RequestFocusAction() {
-  Event* event = Event::CreateCancelable(event_type_names::kAccessiblefocus);
-  if (DispatchEventToAOMEventListeners(*event))
-    return true;
-
   return OnNativeFocusAction();
 }
 
 bool AXObject::RequestIncrementAction() {
-  Event* event =
-      Event::CreateCancelable(event_type_names::kAccessibleincrement);
-  if (DispatchEventToAOMEventListeners(*event))
-    return true;
-
   return OnNativeIncrementAction();
 }
 
@@ -7352,11 +7144,6 @@ bool AXObject::RequestScrollToGlobalPointAction(const gfx::Point& point) {
 }
 
 bool AXObject::RequestScrollToMakeVisibleAction() {
-  Event* event =
-      Event::CreateCancelable(event_type_names::kAccessiblescrollintoview);
-  if (DispatchEventToAOMEventListeners(*event))
-    return true;
-
   return OnNativeScrollToMakeVisibleAction();
 }
 
@@ -7410,11 +7197,6 @@ bool AXObject::RequestSetValueAction(const String& value) {
 }
 
 bool AXObject::RequestShowContextMenuAction() {
-  Event* event =
-      Event::CreateCancelable(event_type_names::kAccessiblecontextmenu);
-  if (DispatchEventToAOMEventListeners(*event))
-    return true;
-
   return OnNativeShowContextMenuAction();
 }
 

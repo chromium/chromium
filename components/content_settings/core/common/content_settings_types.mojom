@@ -100,7 +100,8 @@ enum ContentSettingsType {
   // provide a custom accessibility experience. Requires explicit user consent
   // because some users may not want sites to know they're using assistive
   // technology.
-  ACCESSIBILITY_EVENTS,
+  // Deprecated in M131.
+  DEPRECATED_ACCESSIBILITY_EVENTS,
 
   // Used to store whether to allow a website to install a payment handler.
   PAYMENT_HANDLER,

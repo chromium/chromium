@@ -70,7 +70,6 @@ class Vector2dF;
 
 namespace blink {
 
-class AccessibleNode;
 class AnchorElementObserver;
 class AnchorPositionScrollData;
 class AriaNotificationOptions;
@@ -514,9 +513,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   const AtomicString& ComputedRoleNoLifecycleUpdate();
   String computedName();
   String ComputedNameNoLifecycleUpdate();
-
-  AccessibleNode* ExistingAccessibleNode() const;
-  AccessibleNode* accessibleNode();
 
   void ariaNotify(const String& announcement,
                   const AriaNotificationOptions* options);

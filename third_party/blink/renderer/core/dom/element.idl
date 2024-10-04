@@ -153,9 +153,6 @@ dictionary CheckVisibilityOptions {
     [RuntimeEnabled=ComputedAccessibilityInfo] readonly attribute DOMString? computedRole;
     [RuntimeEnabled=ComputedAccessibilityInfo] readonly attribute DOMString? computedName;
 
-    // Accessibility Object Model
-    [RuntimeEnabled=AccessibilityObjectModel] readonly attribute AccessibleNode? accessibleNode;
-
     // ARIA Notify API
     // https://github.com/WICG/aom/blob/gh-pages/notification-api.md
     [RuntimeEnabled=AriaNotify] void ariaNotify(DOMString announcement, optional AriaNotificationOptions options = {});

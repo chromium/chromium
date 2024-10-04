@@ -6,7 +6,6 @@
 
 #include "build/build_config.h"
 #include "components/background_sync/background_sync_permission_context.h"
-#include "components/permissions/contexts/accessibility_permission_context.h"
 #include "components/permissions/contexts/camera_pan_tilt_zoom_permission_context.h"
 #include "components/permissions/contexts/clipboard_read_write_permission_context.h"
 #include "components/permissions/contexts/clipboard_sanitized_write_permission_context.h"
@@ -59,9 +58,6 @@ CreateDefaultPermissionContexts(content::BrowserContext* browser_context,
   DCHECK(delegates.media_stream_device_enumerator);
   DCHECK(delegates.nfc_permission_context_delegate);
 
-  permission_contexts[ContentSettingsType::ACCESSIBILITY_EVENTS] =
-      std::make_unique<permissions::AccessibilityPermissionContext>(
-          browser_context);
   permission_contexts[ContentSettingsType::AR] =
       std::make_unique<permissions::WebXrPermissionContext>(
           browser_context, ContentSettingsType::AR);

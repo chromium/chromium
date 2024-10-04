@@ -778,14 +778,11 @@ const AXPosition AXPosition::AsValidDOMPosition(
   if ((IsTextPosition() &&
        (!container->GetClosestNode() ||
         container->GetClosestNode()->IsMarkerPseudoElement())) ||
-      container->IsVirtualObject() ||
       (!child && last_child &&
        (!last_child->GetClosestNode() ||
-        last_child->GetClosestNode()->IsMarkerPseudoElement() ||
-        last_child->IsVirtualObject())) ||
+        last_child->GetClosestNode()->IsMarkerPseudoElement())) ||
       (child && (!child->GetClosestNode() ||
-                 child->GetClosestNode()->IsMarkerPseudoElement() ||
-                 child->IsVirtualObject()))) {
+                 child->GetClosestNode()->IsMarkerPseudoElement()))) {
     AXPosition result;
     if (adjustment_behavior == AXPositionAdjustmentBehavior::kMoveRight)
       result = CreateNextPosition();

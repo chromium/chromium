@@ -72,7 +72,6 @@ struct AXRelativeBounds;
 namespace blink {
 
 class AbstractInlineTextBox;
-class AccessibleNodeList;
 class AXObject;
 class AXObjectCacheImpl;
 class LayoutObject;
@@ -346,8 +345,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual const AtomicString& GetAOMPropertyOrARIAAttribute(
       AOMStringProperty) const;
   Element* GetAOMPropertyOrARIAAttribute(AOMRelationProperty) const;
-  bool HasAOMProperty(AOMRelationListProperty,
-                      HeapVector<Member<Element>>& result) const;
   bool HasAOMPropertyOrARIAAttribute(AOMRelationListProperty,
                                      HeapVector<Member<Element>>& result) const;
   virtual bool HasAOMPropertyOrARIAAttribute(AOMBooleanProperty,
@@ -359,7 +356,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool HasAOMPropertyOrARIAAttribute(AOMFloatProperty, float& result) const;
   bool HasAOMPropertyOrARIAAttribute(AOMStringProperty,
                                      AtomicString& result) const;
-  virtual AccessibleNode* GetAccessibleNode() const;
   virtual AbstractInlineTextBox* GetInlineTextBox() const { return nullptr; }
 
   // Serialize the properties of this node into |node_data|.
@@ -374,7 +370,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual bool IsAXRadioInput() const;
   virtual bool IsSlider() const;
   virtual bool IsValidationMessage() const;
-  virtual bool IsVirtualObject() const;
 
   // Returns true if this object is an ARIA text field, i.e. it is neither an
   // <input> nor a <textarea>, but it has an ARIA role of textbox, searchbox or
@@ -906,10 +901,11 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual void AriaOwnsElements(AXObjectVector& owns) const {}
   virtual void AriaDescribedbyElements(AXObjectVector&) const {}
   virtual AXObjectVector ErrorMessage() const { return AXObjectVector(); }
-  virtual AXObjectVector ErrorMessageFromAria() const {
+  virtual AXObjectVector ErrorMessageFromHTML() const {
     return AXObjectVector();
   }
-  virtual AXObjectVector ErrorMessageFromHTML() const {
+  virtual AXObjectVector RelationVectorFromAria(
+      const QualifiedName& attr_name) const {
     return AXObjectVector();
   }
 
@@ -974,12 +970,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual int PosInSet() const { return 0; }
   virtual int SetSize() const { return 0; }
   bool SupportsARIASetSizeAndPosInSet() const;
-
-  // Returns true if the attribute is prohibited (e.g. by ARIA), and we plan
-  // to enforce that prohibition. An example of something prohibited that we
-  // do not enforce is aria-label/aria-labelledby on certain text containers.
-  bool IsProhibited(ax::mojom::blink::StringAttribute attribute) const;
-  bool IsProhibited(ax::mojom::blink::IntListAttribute attribute) const;
 
   // Helpers for menulist, aka <select size=1>.
   bool IsMenuList() const;
@@ -1258,11 +1248,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Does not take aria-owns into account.
   static AXObject* ComputeNonARIAParent(AXObjectCacheImpl& cache, Node* node);
 
-  // Compute parent for an AccessibleNode, which is not backed up a DOM node
-  // or layout object.
-  static AXObject* ComputeAccessibleNodeParent(AXObjectCacheImpl& cache,
-                                               AccessibleNode& accessible_node);
-
   // Returns true if |parent_| is null and not at the root.
   bool IsMissingParent() const;
 
@@ -1367,10 +1352,14 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // specified in the <meta> tag, the Accept-Language HTTP header, the default
   // language of the browser's UI.
   AtomicString Language() const;
+
+  // ARIA attribute access: use these methods in order to ensure that values
+  // are also retrieved from elementInternals on custom elements.
   virtual bool HasAttribute(const QualifiedName&) const { return false; }
   virtual const AtomicString& GetAttribute(const QualifiedName&) const {
     return g_null_atom;
   }
+  virtual bool IsAriaAttributeTrue(const QualifiedName&) const { return false; }
 
   // Scrollable containers.
   bool IsScrollableContainer() const;
@@ -1399,10 +1388,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual unsigned RowIndex() const;
   virtual unsigned ColumnSpan() const;
   virtual unsigned RowSpan() const;
-  unsigned AriaColumnIndex() const;
-  unsigned AriaRowIndex() const;
-  int AriaColumnCount() const;
-  int AriaRowCount() const;
   virtual ax::mojom::blink::SortDirection GetSortDirection() const {
     return ax::mojom::blink::SortDirection::kNone;
   }
@@ -1430,8 +1415,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual bool InternalSetAccessibilityFocusAction();
   virtual bool InternalClearAccessibilityFocusAction();
 
-  // Native implementations of actions that aren't handled by AOM
-  // event listeners. These all return true if handled.
+  // Native implementations of actions. These all return true if handled.
   virtual bool OnNativeDecrementAction();
   virtual bool OnNativeClickAction();
   virtual bool OnNativeBlurAction();
@@ -1465,9 +1449,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual bool IsEmbeddingElement() const { return false; }
   // Is this a widget that requires container widget.
   bool IsSubWidget() const;
-
-  static void AccessibleNodeListToElementVector(const AccessibleNodeList&,
-                                                HeapVector<Member<Element>>&);
 
   // Given two AX objects, returns the lowest common ancestor and the child
   // indices in that ancestor corresponding to the branch under which each
@@ -1553,9 +1534,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool CanSetSelectedAttribute() const;
   const AXObject* InertRoot() const;
 
-  // Returns true if the event was handled.
-  bool DispatchEventToAOMEventListeners(Event&);
-
   // Finds table, table row, and table cell parents and children
   // skipping over generic containers.
   AXObjectVector TableRowChildren() const;
@@ -1582,8 +1560,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   void SerializeScreenReaderAttributes(ui::AXNodeData* node_data) const;
   void SerializeOtherScreenReaderAttributes(ui::AXNodeData* node_data) const;
   void SerializeMathContent(ui::AXNodeData* node_data) const;
+  void SerializeRelationAttributes(ui::AXNodeData* node_data) const;
   void SerializeScrollAttributes(ui::AXNodeData* node_data) const;
-  void SerializeSparseAttributes(ui::AXNodeData* node_data) const;
   void SerializeStyleAttributes(ui::AXNodeData* node_data) const;
   void SerializeTableAttributes(ui::AXNodeData* node_data) const;
   void SerializeUnignoredAttributes(ui::AXNodeData* node_data,
@@ -1690,7 +1668,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // This might be needed when another tree with some generated content should
   // be stitched into the current tree.
   //
-  // TODO(nektar): Use sparse data to store this value since it is not needed by
+  // TODO(accessibility): Store in AXObjectCacheImpl since it is not needed by
   // most objects taking up valuable space.
   std::optional<ui::AXTreeID> child_tree_id_;
 

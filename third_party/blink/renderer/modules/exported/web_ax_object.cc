@@ -1014,13 +1014,6 @@ void WebAXObject::MarkPluginDescendantDirty(ui::AXNodeID node_id) {
   private_->AXObjectCache().MarkPluginDescendantDirty(node_id);
 }
 
-bool WebAXObject::CanCallAOMEventListenersForTesting() const {
-  if (IsDetached())
-    return false;
-
-  return private_->AXObjectCache().CanCallAOMEventListeners();
-}
-
 WebString WebAXObject::ToString(bool verbose) const {
   if (private_.IsNull())
     return WebString("[Null]");

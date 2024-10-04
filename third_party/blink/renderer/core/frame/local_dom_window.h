@@ -65,7 +65,6 @@ namespace blink {
 
 class BarProp;
 class CSSStyleDeclaration;
-class ComputedAccessibleNode;
 class CustomElementRegistry;
 class Document;
 class DocumentInit;
@@ -343,10 +342,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   CSSStyleDeclaration* getComputedStyle(
       Element*,
       const String& pseudo_elt = String()) const;
-
-  // Acessibility Object Model
-  ScriptPromise<ComputedAccessibleNode> getComputedAccessibleNode(ScriptState*,
-                                                                  Element*);
 
   // WebKit animation extensions
   int requestAnimationFrame(V8FrameRequestCallback*);

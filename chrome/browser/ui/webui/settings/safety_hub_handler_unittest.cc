@@ -1031,7 +1031,6 @@ TEST_F(SafetyHubHandlerTest, RevokeAllContentSettingTypes) {
           // clang-format off
           ContentSettingsType::MIDI,
           ContentSettingsType::DURABLE_STORAGE,
-          ContentSettingsType::ACCESSIBILITY_EVENTS,
           ContentSettingsType::NFC,
           ContentSettingsType::FILE_SYSTEM_READ_GUARD,
           ContentSettingsType::CAMERA_PAN_TILT_ZOOM,

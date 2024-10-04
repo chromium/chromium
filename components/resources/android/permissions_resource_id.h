@@ -23,8 +23,6 @@
 #endif
 
 DECLARE_RESOURCE_ID(IDR_ANDROID_GLOBE, R.drawable.ic_globe_24dp)
-DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_ACCESSIBILITY_EVENTS,
-                    R.drawable.infobar_accessibility_events)
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_CLIPBOARD,
                     R.drawable.gm_filled_content_paste_24)
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_FOLDER, R.drawable.ic_folder_blue_24dp)

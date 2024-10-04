@@ -48,8 +48,6 @@ std::string GetPermissionString(PermissionType permission) {
       return "BackgroundSync";
     case PermissionType::SENSORS:
       return "Sensors";
-    case PermissionType::ACCESSIBILITY_EVENTS:
-      return "AccessibilityEvents";
     case PermissionType::CLIPBOARD_READ_WRITE:
       return "ClipboardReadWrite";
     case PermissionType::CLIPBOARD_SANITIZED_WRITE:
@@ -168,7 +166,6 @@ PermissionTypeToPermissionsPolicyFeature(PermissionType permission) {
     // TODO(crbug.com/1384434): decouple this to separated types of sensor,
     // with a corresponding permission policy.
     case PermissionType::SENSORS:
-    case PermissionType::ACCESSIBILITY_EVENTS:
     case PermissionType::PAYMENT_HANDLER:
     case PermissionType::BACKGROUND_FETCH:
     case PermissionType::WAKE_LOCK_SYSTEM:
@@ -262,8 +259,6 @@ std::optional<PermissionType> PermissionDescriptorInfoToPermissionType(
       return PermissionType::BACKGROUND_SYNC;
     case PermissionName::SENSORS:
       return PermissionType::SENSORS;
-    case PermissionName::ACCESSIBILITY_EVENTS:
-      return PermissionType::ACCESSIBILITY_EVENTS;
     case PermissionName::CLIPBOARD_READ:
       return PermissionType::CLIPBOARD_READ_WRITE;
     case PermissionName::CLIPBOARD_WRITE:
