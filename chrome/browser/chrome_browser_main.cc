@@ -2063,6 +2063,14 @@ bool ChromeBrowserMainParts::ProcessSingletonNotificationCallback(
     return false;
   }
 
+  // Drop the request if this or the requesting process is running with
+  // automation enabled to avoid hard to cope with startup races.
+  if (command_line.HasSwitch(switches::kEnableAutomation) ||
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableAutomation)) {
+    return false;
+  }
+
   // Drop the request if headless mode is in effect or the request is from
   // a headless Chrome process.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
