@@ -255,6 +255,13 @@
       <property name="format" value="MockitoAnnotations.initMocks"/>
       <property name="message" value="Prefer to use MockitoJUnit.Rule for consistency unless timing of when exactly mocks are initialized is required."/>
     </module>
+    <module name="RegexpSinglelineJava">
+      <property name="id" value="SetDecorFitsSystemWindowsCheck"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="[Ww]indow(Compat)?.setDecorFitsSystemWindows"/>
+      <property name="ignoreComments" value="true"/>
+      <property name="message" value="setDecorFitsSystemWindows will change the window flag at activity level, and requires coordination. Use org.chromium.browser_ui.edge_to_edge.EdgeToEdgeStateProvider if possible. (crbug.com/41492646)"/>
+    </module>
   </module>
   <module name="RegexpMultiline">
     <property name="id" value="VisibleForTestingForTesting"/>

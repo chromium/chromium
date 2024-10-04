@@ -8,6 +8,8 @@
   <!-- FooTest.java, FooTestUtil.java, and FooTestUtils.java do not need to use SharedPreferencesManager. -->
   <suppress id="UseSharedPreferencesManagerFromChromeCheck"
             files="Test(Utils?)?\.java"/>
+  <!-- SetDecorFitsSystemWindowsCheck does not applicable to EdgeToEdgeStateProvider itself. -->
+  <suppress id="SetDecorFitsSystemWindowsCheck" files="EdgeToEdgeStateProvider(.*Test)?\.java"/>
   <!-- All other usages of the app SharedPreference should go through
        ContextUtils. -->
   <suppress id="DefaultSharedPreferencesCheck" files="src/chrome/"/>

@@ -7,6 +7,7 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/components/browser_ui/edge_to_edge/BaseSystemBarColorHelper.java",
+    "java/src/org/chromium/components/browser_ui/edge_to_edge/EdgeToEdgeStateProvider.java",
     "java/src/org/chromium/components/browser_ui/edge_to_edge/EdgeToEdgeSystemBarColorHelper.java",
     "java/src/org/chromium/components/browser_ui/edge_to_edge/SystemBarColorHelper.java",
     "java/src/org/chromium/components/browser_ui/edge_to_edge/WindowSystemBarColorHelper.java",
@@ -15,6 +16,7 @@ android_library("java") {
     "//base:base_java",
     "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_utils_java",
   ]
@@ -23,6 +25,7 @@ android_library("java") {
 robolectric_library("junit") {
   testonly = true
   sources = [
+    "java/src/org/chromium/components/browser_ui/edge_to_edge/EdgeToEdgeStateProviderUnitTest.java",
     "java/src/org/chromium/components/browser_ui/edge_to_edge/EdgeToEdgeSystemBarColorHelperUnitTest.java",
     "java/src/org/chromium/components/browser_ui/edge_to_edge/WindowSystemBarColorHelperUnitTest.java",
   ]
@@ -32,6 +35,7 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_no_recycler_view_java",
