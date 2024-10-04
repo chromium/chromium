@@ -68,6 +68,11 @@
 
 - (void)disconnect {
   _shoppingService = nil;
+  _bookmarkModel = nil;
+  _prefService = nil;
+  _pushNotificationService = nil;
+  _authenticationService = nil;
+  _imageFetcher = nil;
 }
 
 - (void)reset {
@@ -254,6 +259,26 @@
 
 - (commerce::ShoppingService*)shoppingServiceForTesting {
   return self->_shoppingService;
+}
+
+- (bookmarks::BookmarkModel*)bookmarkModelForTesting {
+  return self->_bookmarkModel;
+}
+
+- (PrefService*)prefServiceForTesting {
+  return self->_prefService;
+}
+
+- (PushNotificationService*)pushNotificationServiceForTesting {
+  return self->_pushNotificationService;
+}
+
+- (AuthenticationService*)authenticationServiceForTesting {
+  return self->_authenticationService;
+}
+
+- (image_fetcher::ImageDataFetcher*)imageFetcherForTesting {
+  return self->_imageFetcher.get();
 }
 
 - (PriceTrackingPromoItem*)priceTrackingPromoItemForTesting {

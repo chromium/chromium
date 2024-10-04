@@ -8,8 +8,11 @@
 #import <UserNotifications/UserNotifications.h>
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/test/test_bookmark_client.h"
 #import "components/commerce/core/mock_shopping_service.h"
 #import "components/commerce/core/pref_names.h"
+#import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
@@ -59,11 +62,14 @@ class PriceTrackingPromoMediatorTest : public PlatformTest {
                           signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
     shopping_service_ = std::make_unique<commerce::MockShoppingService>();
+    bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
     push_notification_service_ = ios::provider::CreatePushNotificationService();
     mediator_ = [[PriceTrackingPromoMediator alloc]
         initWithShoppingService:shopping_service_.get()
-                  bookmarkModel:nil
-                   imageFetcher:nil
+                  bookmarkModel:bookmark_model_.get()
+                   imageFetcher:std::make_unique<
+                                    image_fetcher::ImageDataFetcher>(
+                                    browser_state_->GetSharedURLLoaderFactory())
                     prefService:&pref_service_
         pushNotificationService:push_notification_service_.get()
           authenticationService:auth_service_];
@@ -94,6 +100,8 @@ class PriceTrackingPromoMediatorTest : public PlatformTest {
 
   NSString* gaia_id() { return identity_.gaiaID; }
 
+  bookmarks::BookmarkModel* bookmark_model() { return bookmark_model_.get(); }
+
  protected:
   std::unique_ptr<PushNotificationService> push_notification_service_;
   TestingPrefServiceSimple pref_service_;
@@ -104,6 +112,7 @@ class PriceTrackingPromoMediatorTest : public PlatformTest {
   raw_ptr<AuthenticationService> auth_service_;
   id<SystemIdentity> identity_;
   std::unique_ptr<commerce::MockShoppingService> shopping_service_;
+  std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   PriceTrackingPromoMediator* mediator_;
   std::unique_ptr<ScopedBlockSwizzler> notification_center_swizzler_;
   id mock_notification_center_;
@@ -127,8 +136,18 @@ TEST_F(PriceTrackingPromoMediatorTest, TestAllowPriceTrackingNotifications) {
 // Test disconnecting the mediator.
 TEST_F(PriceTrackingPromoMediatorTest, TestDisconnect) {
   EXPECT_NE(nil, mediator().shoppingServiceForTesting);
+  EXPECT_NE(nil, mediator().bookmarkModelForTesting);
+  EXPECT_NE(nil, mediator().prefServiceForTesting);
+  EXPECT_NE(nil, mediator().pushNotificationServiceForTesting);
+  EXPECT_NE(nil, mediator().authenticationServiceForTesting);
+  EXPECT_NE(nil, mediator().imageFetcherForTesting);
   [mediator() disconnect];
   EXPECT_EQ(nil, mediator().shoppingServiceForTesting);
+  EXPECT_EQ(nil, mediator().bookmarkModelForTesting);
+  EXPECT_EQ(nil, mediator().prefServiceForTesting);
+  EXPECT_EQ(nil, mediator().pushNotificationServiceForTesting);
+  EXPECT_EQ(nil, mediator().authenticationServiceForTesting);
+  EXPECT_EQ(nil, mediator().imageFetcherForTesting);
 }
 
 // Resets card and fetches most recent subscription, if available.
