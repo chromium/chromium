@@ -252,6 +252,12 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
   raw_ptr<ReadAnythingAppModel> model_ = nullptr;
 };
 
+TEST_F(ReadAnythingAppModelTest, IsDocs_FalseBeforeTreeInitialization) {
+  // Before any tree initialization, IsDocs should return false instead of
+  // crashing.
+  EXPECT_FALSE((new ReadAnythingAppModel())->IsDocs());
+}
+
 TEST_F(ReadAnythingAppModelTest, FontName) {
   EXPECT_EQ(string_constants::kReadAnythingPlaceholderFontName, FontName());
 
