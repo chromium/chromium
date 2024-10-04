@@ -1566,6 +1566,8 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
   response_dict.Set("devToolsConsoleInsights",
                     std::move(console_insights_dict));
 
+  // TODO(crbug.com/369540372): Remove the dogfood dict once DevTools is
+  // updated to use the non-dogfood `freestyler_dict`.
   base::Value::Dict freestyler_dogfood_dict;
   freestyler_dogfood_dict.Set(
       "enabled",
@@ -1579,6 +1581,29 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
         features::kDevToolsFreestylerDogfoodUserTier.Get()));
   response_dict.Set("devToolsFreestylerDogfood",
                     std::move(freestyler_dogfood_dict));
+
+  base::Value::Dict freestyler_dict;
+  if (base::FeatureList::IsEnabled(::features::kDevToolsFreestyler)) {
+    freestyler_dict.Set("enabled", base::FeatureList::IsEnabled(
+                                       ::features::kDevToolsFreestyler));
+    freestyler_dict.Set("modelId", features::kDevToolsFreestylerModelId.Get());
+    freestyler_dict.Set("temperature",
+                        features::kDevToolsFreestylerTemperature.Get());
+    freestyler_dict.Set("userTier",
+                        features::kDevToolsFreestylerUserTier.GetName(
+                            features::kDevToolsFreestylerUserTier.Get()));
+  } else {
+    freestyler_dict.Set("enabled", base::FeatureList::IsEnabled(
+                                       ::features::kDevToolsFreestylerDogfood));
+    freestyler_dict.Set("modelId",
+                        features::kDevToolsFreestylerDogfoodModelId.Get());
+    freestyler_dict.Set("temperature",
+                        features::kDevToolsFreestylerDogfoodTemperature.Get());
+    freestyler_dict.Set(
+        "userTier", features::kDevToolsFreestylerDogfoodUserTier.GetName(
+                        features::kDevToolsFreestylerDogfoodUserTier.Get()));
+  }
+  response_dict.Set("devToolsFreestyler", std::move(freestyler_dict));
 
   base::Value::Dict explain_this_resource_dogfood_dict;
   explain_this_resource_dogfood_dict.Set(

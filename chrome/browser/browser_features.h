@@ -68,6 +68,12 @@ enum class DevToolsFreestylerUserTier {
 
 extern const base::FeatureParam<DevToolsFreestylerUserTier> kDevToolsFreestylerDogfoodUserTier;
 
+BASE_DECLARE_FEATURE(kDevToolsFreestyler);
+extern const base::FeatureParam<std::string> kDevToolsFreestylerModelId;
+extern const base::FeatureParam<double> kDevToolsFreestylerTemperature;
+extern const base::FeatureParam<DevToolsFreestylerUserTier>
+    kDevToolsFreestylerUserTier;
+
 BASE_DECLARE_FEATURE(kDevToolsExplainThisResourceDogfood);
 extern const base::FeatureParam<std::string>
     kDevToolsExplainThisResourceDogfoodModelId;
