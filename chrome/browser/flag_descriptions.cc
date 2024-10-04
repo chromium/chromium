@@ -4384,11 +4384,17 @@ const char kChimeAndroidSdkDescription[] =
     "Enable Chime SDK to receive push notification.";
 const char kChimeAndroidSdkName[] = "Use Chime SDK";
 
-const char kClankDefaultBrowserPromoName[] = "Clank default browther promo";
+const char kClankDefaultBrowserPromoName[] = "Clank default browser promo 2";
 const char kClankDefaultBrowserPromoDescription[] =
     "When enabled, show additional non-intrusive entry points to allow users "
     "to set Chrome as their default browser, if the trigger conditions are "
     "met.";
+
+const char kClankDefaultBrowserPromoRoleManagerName[] =
+    "Clank default browser Promo Role Manager ";
+const char kClankDefaultBrowserPromoRoleManagerDescription[] =
+    "Sets the Role Manager Default Browser Promo for testing the new "
+    "Default Browser Promo Feature";
 
 const char kClearLoginDatabaseForAllMigratedUPMUsersDescription[] =
     "This feature clears LoginDatabase for all users when UPM is properly "

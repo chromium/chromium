@@ -11846,6 +11846,12 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
+    {"clank-default-browser-promo-role-manager",
+     flag_descriptions::kClankDefaultBrowserPromoRoleManagerName,
+     flag_descriptions::kClankDefaultBrowserPromoRoleManagerDescription,
+     kOsAndroid,
+     SINGLE_DISABLE_VALUE_TYPE(switches::kDisableDefaultBrowserPromo)},
+
     {"clank-default-browser-promo2",
      flag_descriptions::kClankDefaultBrowserPromoName,
      flag_descriptions::kClankDefaultBrowserPromoDescription, kOsAndroid,

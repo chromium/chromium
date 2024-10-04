@@ -2552,6 +2552,9 @@ extern const char kChimeAndroidSdkName[];
 extern const char kClankDefaultBrowserPromoName[];
 extern const char kClankDefaultBrowserPromoDescription[];
 
+extern const char kClankDefaultBrowserPromoRoleManagerName[];
+extern const char kClankDefaultBrowserPromoRoleManagerDescription[];
+
 extern const char kClearLoginDatabaseForAllMigratedUPMUsersDescription[];
 extern const char kClearLoginDatabaseForAllMigratedUPMUsersName[];
 
