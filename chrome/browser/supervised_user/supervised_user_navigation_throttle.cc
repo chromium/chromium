@@ -223,9 +223,9 @@ void SupervisedUserNavigationThrottle::OnInterstitialResult(
         CancelDeferredNavigation(
             content::NavigationThrottle::ThrottleCheckResult(
                 CANCEL, net::ERR_BLOCKED_BY_CLIENT,
-                supervised_user::CreateReauthenticationInterstitial(
-                    *navigation_handle(),
-                    GetVerificationPurposeFromFilteringReason(reason_))));
+                supervised_user::
+                    CreateReauthenticationInterstitialForBlockedSites(
+                        *navigation_handle(), reason_)));
         return;
       }
 #endif
@@ -245,22 +245,6 @@ void SupervisedUserNavigationThrottle::OnInterstitialResult(
 
 namespace supervised_user {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-SupervisedUserVerificationPage::VerificationPurpose
-GetVerificationPurposeFromFilteringReason(FilteringBehaviorReason reason) {
-  switch (reason) {
-    case FilteringBehaviorReason::DEFAULT:
-      return SupervisedUserVerificationPage::VerificationPurpose::
-          DEFAULT_BLOCKED_SITE;
-    case FilteringBehaviorReason::ASYNC_CHECKER:
-      return SupervisedUserVerificationPage::VerificationPurpose::
-          SAFE_SITES_BLOCKED_SITE;
-    case FilteringBehaviorReason::MANUAL:
-      return SupervisedUserVerificationPage::VerificationPurpose::
-          MANUAL_BLOCKED_SITE;
-    default:
-      NOTREACHED_NORETURN();
-  }
-}
 
 bool ShouldShowReAuthInterstitial(content::NavigationHandle& navigation_handle,
                                   bool is_main_frame) {

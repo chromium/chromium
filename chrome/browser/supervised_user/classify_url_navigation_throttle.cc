@@ -228,9 +228,8 @@ void ClassifyUrlNavigationThrottle::OnInterstitialResult(
         CancelDeferredNavigation(
             content::NavigationThrottle::ThrottleCheckResult(
                 CANCEL, net::ERR_BLOCKED_BY_CLIENT,
-                CreateReauthenticationInterstitial(
-                    *navigation_handle(),
-                    GetVerificationPurposeFromFilteringReason(result.reason))));
+                CreateReauthenticationInterstitialForBlockedSites(
+                    *navigation_handle(), result.reason)));
         return;
       }
 #endif

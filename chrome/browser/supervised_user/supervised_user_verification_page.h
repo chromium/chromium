@@ -14,7 +14,6 @@
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/supervised_user/core/browser/child_account_service.h"
 #include "content/public/browser/web_contents.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 
 class GURL;
 
@@ -29,31 +28,14 @@ enum class FamilyLinkUserReauthenticationInterstitialState : int {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:FamilyLinkUserReauthenticationInterstitialState)
 
-// This class is responsible for showing/hiding the interstitial page that
-// occurs when a supervised user tries to access a page that requires
-// verification.
+// This class provides common functionalities for the supervised user
+// re-authentication interstitials, such as opening the re-auth url in a new tab
+// and closing this tab automatically on successful re-auth .
 class SupervisedUserVerificationPage
     : public security_interstitials::SecurityInterstitialPage {
  public:
-  // The purpose of the re-authentication interstitial determines its layout and
-  // displayed texts.
-  enum class VerificationPurpose {
-    REAUTH_REQUIRED_SITE,  // Show the interstitial for YouTube, which requires
-                           // authentication to determine content restrictions.
-    DEFAULT_BLOCKED_SITE,  // Show the interstitial for blocked sites.
-                           // Re-authentication is needed so that supervised
-                           // users can ask for parent's approval.
-    SAFE_SITES_BLOCKED_SITE,  // Show the interstitial for sites blocked by the
-                              // explicit sites checker.
-    MANUAL_BLOCKED_SITE,  // Show the interstitial for sites blocked manually.
-  };
-
   // The status of the interstitial used for metrics recording purposes.
   enum class Status { SHOWN, REAUTH_STARTED, REAUTH_COMPLETED };
-
-  // Interstitial type, used in tests.
-  static const security_interstitials::SecurityInterstitialPage::TypeID
-      kTypeForTesting;
 
   // Whether the user is in a suitable auth state for this page to be shown.
   static bool ShouldShowPage(
@@ -67,14 +49,10 @@ class SupervisedUserVerificationPage
       content::WebContents* web_contents,
       const std::string& email_to_reauth,
       const GURL& request_url,
-      VerificationPurpose verification_purpose,
       supervised_user::ChildAccountService* child_account_service,
-      ukm::SourceId source_id,
       std::unique_ptr<
           security_interstitials::SecurityInterstitialControllerClient>
-          controller_client,
-      bool is_main_frame = true,
-      bool has_second_custodian = false);
+          controller_client);
 
   SupervisedUserVerificationPage(const SupervisedUserVerificationPage&) =
       delete;
@@ -83,15 +61,13 @@ class SupervisedUserVerificationPage
 
   ~SupervisedUserVerificationPage() override;
 
-  // SecurityInterstitialPage method:
-  security_interstitials::SecurityInterstitialPage::TypeID GetTypeForTesting()
-      override;
-
  protected:
   void CommandReceived(const std::string& command) override;
-  void PopulateInterstitialStrings(base::Value::Dict& load_time_data) override;
   void OnInterstitialClosing() override;
   int GetHTMLTemplateId() override;
+  virtual void RecordReauthStatusMetrics(Status status) = 0;
+  void PopulateCommonStrings(base::Value::Dict& load_time_data);
+  bool IsReauthCompleted();
 
  private:
   void CloseSignInTabs();
@@ -99,22 +75,13 @@ class SupervisedUserVerificationPage
   // are known to be part of the sign-in flow.
   bool IsSignInUrl(const GURL& url);
   void OnGoogleAuthStateUpdate();
-  void PopulateStringsForSharedHTML(base::Value::Dict& load_time_data);
-  void RecordReauthStatusMetrics(Status status);
-  void RecordYouTubeReauthStatusUkm(Status status);
-  void RecordBlockedUrlReauthStatusUma(Status status);
-  int GetBlockMessageReasonId();
-  bool is_reauth_complete_ = false;
+  bool is_reauth_completed_ = false;
   base::CallbackListSubscription google_auth_state_subscription_;
   const std::string email_to_reauth_;
   const GURL request_url_;
   const GURL sign_in_continue_url_;
   const GURL reauth_url_;
-  const VerificationPurpose verification_purpose_;
   raw_ptr<supervised_user::ChildAccountService> child_account_service_;
-  ukm::SourceId source_id_;
-  bool is_main_frame_;
-  bool has_second_custodian_;
   // List with unique tab identifiers for spawned sign-in tabs.
   std::list<uint32_t> signin_tabs_handle_id_list_;
   base::WeakPtrFactory<SupervisedUserVerificationPage> weak_factory_{this};

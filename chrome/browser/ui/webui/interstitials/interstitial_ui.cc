@@ -51,6 +51,7 @@
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"  // nogncheck
 #include "components/supervised_user/core/browser/supervised_user_interstitial.h"
+#include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -75,7 +76,8 @@
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/supervised_user/supervised_user_verification_controller_client.h"
-#include "chrome/browser/supervised_user/supervised_user_verification_page.h"
+#include "chrome/browser/supervised_user/supervised_user_verification_page_blocked_sites.h"
+#include "chrome/browser/supervised_user/supervised_user_verification_page_youtube.h"
 #endif
 
 using security_interstitials::TestSafeBrowsingBlockingPageQuiet;
@@ -395,13 +397,13 @@ std::unique_ptr<EnterpriseWarnPage> CreateEnterpriseWarnPage(
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-std::unique_ptr<SupervisedUserVerificationPage>
-CreateSupervisedUserVerificationPage(content::WebContents* web_contents,
-                                     bool is_main_frame) {
+std::unique_ptr<SupervisedUserVerificationPageForYouTube>
+CreateSupervisedUserVerificationPageForYouTube(
+    content::WebContents* web_contents,
+    bool is_main_frame) {
   const GURL kRequestUrl("https://supervised-user-verification.example.net");
-  return std::make_unique<SupervisedUserVerificationPage>(
+  return std::make_unique<SupervisedUserVerificationPageForYouTube>(
       web_contents, "first.last@gmail.com", kRequestUrl,
-      SupervisedUserVerificationPage::VerificationPurpose::REAUTH_REQUIRED_SITE,
       /*child_account_service*/ nullptr, ukm::kInvalidSourceId,
       std::make_unique<SupervisedUserVerificationControllerClient>(
           web_contents,
@@ -412,22 +414,21 @@ CreateSupervisedUserVerificationPage(content::WebContents* web_contents,
       is_main_frame);
 }
 
-std::unique_ptr<SupervisedUserVerificationPage>
-CreateSupervisedUserVerificationPageForBlockedSite(
+std::unique_ptr<SupervisedUserVerificationPageForBlockedSites>
+CreateSupervisedUserVerificationPageForBlockedSites(
     content::WebContents* web_contents,
     bool is_main_frame) {
   const GURL kRequestUrl("https://supervised-user-verification.example.net");
-  return std::make_unique<SupervisedUserVerificationPage>(
+  return std::make_unique<SupervisedUserVerificationPageForBlockedSites>(
       web_contents, "first.last@gmail.com", kRequestUrl,
-      SupervisedUserVerificationPage::VerificationPurpose::DEFAULT_BLOCKED_SITE,
-      /*child_account_service*/ nullptr, ukm::kInvalidSourceId,
+      /*child_account_service*/ nullptr,
       std::make_unique<SupervisedUserVerificationControllerClient>(
           web_contents,
           Profile::FromBrowserContext(web_contents->GetBrowserContext())
               ->GetPrefs(),
           g_browser_process->GetApplicationLocale(),
           GURL(chrome::kChromeUINewTabURL), kRequestUrl),
-      is_main_frame);
+      supervised_user::FilteringBehaviorReason::DEFAULT, is_main_frame);
 }
 #endif
 
@@ -614,17 +615,17 @@ void InterstitialHTMLSource::StartDataRequest(
     interstitial_delegate = CreateHttpsOnlyModePage(web_contents);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   } else if (path_without_query == "/supervised-user-verify") {
-    interstitial_delegate = CreateSupervisedUserVerificationPage(
+    interstitial_delegate = CreateSupervisedUserVerificationPageForYouTube(
         web_contents, /*is_main_frame=*/true);
   } else if (path_without_query == "/supervised-user-verify-blocked-site") {
-    interstitial_delegate = CreateSupervisedUserVerificationPageForBlockedSite(
+    interstitial_delegate = CreateSupervisedUserVerificationPageForBlockedSites(
         web_contents, /*is_main_frame=*/true);
   } else if (path_without_query == "/supervised-user-verify-subframe") {
-    interstitial_delegate = CreateSupervisedUserVerificationPage(
+    interstitial_delegate = CreateSupervisedUserVerificationPageForYouTube(
         web_contents, /*is_main_frame=*/false);
   } else if (path_without_query ==
              "/supervised-user-verify-blocked-site-subframe") {
-    interstitial_delegate = CreateSupervisedUserVerificationPageForBlockedSite(
+    interstitial_delegate = CreateSupervisedUserVerificationPageForBlockedSites(
         web_contents, /*is_main_frame=*/false);
 #endif
   }

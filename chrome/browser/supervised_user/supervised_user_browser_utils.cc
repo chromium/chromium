@@ -42,7 +42,8 @@
 #include "components/user_manager/user_type.h"
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/supervised_user/supervised_user_verification_controller_client.h"
-#include "chrome/browser/supervised_user/supervised_user_verification_page.h"
+#include "chrome/browser/supervised_user/supervised_user_verification_page_blocked_sites.h"
+#include "chrome/browser/supervised_user/supervised_user_verification_page_youtube.h"
 #endif
 
 namespace supervised_user {
@@ -158,9 +159,35 @@ void AssertChildStatusOfTheUser(Profile* profile, bool is_child) {
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-std::string CreateReauthenticationInterstitial(
+std::string CreateReauthenticationInterstitialForYouTube(
+    content::NavigationHandle& navigation_handle) {
+  content::WebContents* web_contents = navigation_handle.GetWebContents();
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  GURL request_url = navigation_handle.GetURL();
+  bool is_main_frame = navigation_handle.GetNavigatingFrameType() ==
+                       content::FrameType::kPrimaryMainFrame;
+
+  std::unique_ptr<SupervisedUserVerificationPageForYouTube> blocking_page =
+      std::make_unique<SupervisedUserVerificationPageForYouTube>(
+          web_contents, profile->GetProfileUserName(), request_url,
+          ChildAccountServiceFactory::GetForProfile(profile),
+          navigation_handle.GetNextPageUkmSourceId(),
+          std::make_unique<SupervisedUserVerificationControllerClient>(
+              web_contents, profile->GetPrefs(),
+              g_browser_process->GetApplicationLocale(),
+              GURL(chrome::kChromeUINewTabURL), request_url),
+          is_main_frame);
+
+  std::string interstitial_html = blocking_page->GetHTMLContents();
+  security_interstitials::SecurityInterstitialTabHelper::AssociateBlockingPage(
+      &navigation_handle, std::move(blocking_page));
+  return interstitial_html;
+}
+
+std::string CreateReauthenticationInterstitialForBlockedSites(
     content::NavigationHandle& navigation_handle,
-    SupervisedUserVerificationPage::VerificationPurpose verification_purpose) {
+    FilteringBehaviorReason block_reason) {
   content::WebContents* web_contents = navigation_handle.GetWebContents();
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -168,21 +195,19 @@ std::string CreateReauthenticationInterstitial(
       SupervisedUserServiceFactory::GetForProfile(profile);
   bool has_second_custodian =
       !supervised_user_service->GetSecondCustodianName().empty();
-  supervised_user::ChildAccountService* child_account_service =
-      ChildAccountServiceFactory::GetForProfile(profile);
   GURL request_url = navigation_handle.GetURL();
   bool is_main_frame = navigation_handle.GetNavigatingFrameType() ==
                        content::FrameType::kPrimaryMainFrame;
-  std::unique_ptr<SupervisedUserVerificationPage> blocking_page =
-      std::make_unique<SupervisedUserVerificationPage>(
+
+  std::unique_ptr<SupervisedUserVerificationPageForBlockedSites> blocking_page =
+      std::make_unique<SupervisedUserVerificationPageForBlockedSites>(
           web_contents, profile->GetProfileUserName(), request_url,
-          verification_purpose, child_account_service,
-          navigation_handle.GetNextPageUkmSourceId(),
+          ChildAccountServiceFactory::GetForProfile(profile),
           std::make_unique<SupervisedUserVerificationControllerClient>(
               web_contents, profile->GetPrefs(),
               g_browser_process->GetApplicationLocale(),
               GURL(chrome::kChromeUINewTabURL), request_url),
-          is_main_frame, has_second_custodian);
+          block_reason, is_main_frame, has_second_custodian);
 
   std::string interstitial_html = blocking_page->GetHTMLContents();
   security_interstitials::SecurityInterstitialTabHelper::AssociateBlockingPage(

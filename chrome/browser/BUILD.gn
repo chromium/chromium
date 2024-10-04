@@ -6917,6 +6917,10 @@ static_library("browser") {
       "supervised_user/linux_mac_windows/supervised_user_web_content_handler_impl.h",
       "supervised_user/supervised_user_verification_page.cc",
       "supervised_user/supervised_user_verification_page.h",
+      "supervised_user/supervised_user_verification_page_blocked_sites.cc",
+      "supervised_user/supervised_user_verification_page_blocked_sites.h",
+      "supervised_user/supervised_user_verification_page_youtube.cc",
+      "supervised_user/supervised_user_verification_page_youtube.h",
     ]
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust/key_management/browser",

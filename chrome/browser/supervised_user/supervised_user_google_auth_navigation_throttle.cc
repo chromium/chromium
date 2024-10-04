@@ -15,6 +15,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
+#include "chrome/browser/supervised_user/supervised_user_verification_page_blocked_sites.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/google/core/common/google_util.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
@@ -186,9 +187,8 @@ SupervisedUserGoogleAuthNavigationThrottle::ShouldProceed() {
 
   // Cancel the navigation and show the re-authentication page.
   std::string interstitial_html =
-      supervised_user::CreateReauthenticationInterstitial(
-          *navigation_handle(), SupervisedUserVerificationPage::
-                                    VerificationPurpose::REAUTH_REQUIRED_SITE);
+      supervised_user::CreateReauthenticationInterstitialForYouTube(
+          *navigation_handle());
   return content::NavigationThrottle::ThrottleCheckResult(
       content::NavigationThrottle::CANCEL, net::ERR_BLOCKED_BY_CLIENT,
       interstitial_html);

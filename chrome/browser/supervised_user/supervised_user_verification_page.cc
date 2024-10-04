@@ -25,18 +25,6 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "ui/base/l10n/l10n_util.h"
 
-using security_interstitials::MetricsHelper;
-
-namespace {
-constexpr char kBlockedSiteVerifyItsYouInterstitialStateHistogramName[] =
-    "FamilyLinkUser.BlockedSiteVerifyItsYouInterstitialState";
-}  // namespace
-
-// static
-const security_interstitials::SecurityInterstitialPage::TypeID
-    SupervisedUserVerificationPage::kTypeForTesting =
-        &SupervisedUserVerificationPage::kTypeForTesting;
-
 // static
 bool SupervisedUserVerificationPage::ShouldShowPage(
     const supervised_user::ChildAccountService& child_account_service) {
@@ -64,14 +52,10 @@ SupervisedUserVerificationPage::SupervisedUserVerificationPage(
     content::WebContents* web_contents,
     const std::string& email_to_reauth,
     const GURL& request_url,
-    VerificationPurpose verification_purpose,
     supervised_user::ChildAccountService* child_account_service,
-    ukm::SourceId source_id,
     std::unique_ptr<
         security_interstitials::SecurityInterstitialControllerClient>
-        controller_client,
-    bool is_main_frame,
-    bool has_second_custodian)
+        controller_client)
     : security_interstitials::SecurityInterstitialPage(
           web_contents,
           request_url,
@@ -81,11 +65,7 @@ SupervisedUserVerificationPage::SupervisedUserVerificationPage(
       sign_in_continue_url_(GaiaUrls::GetInstance()->blank_page_url()),
       reauth_url_(signin::GetChromeReauthURL(
           {.email = email_to_reauth_, .continue_url = sign_in_continue_url_})),
-      verification_purpose_(verification_purpose),
-      child_account_service_(child_account_service),
-      source_id_(source_id),
-      is_main_frame_(is_main_frame),
-      has_second_custodian_(has_second_custodian) {
+      child_account_service_(child_account_service) {
   if (child_account_service_) {
     // Reloads the interstitial to continue navigation once the supervised user
     // is authenticated. Also closes the sign-in tabs opened by this
@@ -94,20 +74,10 @@ SupervisedUserVerificationPage::SupervisedUserVerificationPage(
         child_account_service_->ObserveGoogleAuthState(base::BindRepeating(
             &SupervisedUserVerificationPage::OnGoogleAuthStateUpdate,
             weak_factory_.GetWeakPtr()));
-    RecordReauthStatusMetrics(Status::SHOWN);
   }
 }
 
-SupervisedUserVerificationPage::~SupervisedUserVerificationPage() {
-  if (is_reauth_complete_) {
-    RecordReauthStatusMetrics(Status::REAUTH_COMPLETED);
-  }
-}
-
-security_interstitials::SecurityInterstitialPage::TypeID
-SupervisedUserVerificationPage::GetTypeForTesting() {
-  return SupervisedUserVerificationPage::kTypeForTesting;
-}
+SupervisedUserVerificationPage::~SupervisedUserVerificationPage() = default;
 
 void SupervisedUserVerificationPage::CloseSignInTabs() {
   while (!signin_tabs_handle_id_list_.empty()) {
@@ -154,71 +124,14 @@ void SupervisedUserVerificationPage::OnGoogleAuthStateUpdate() {
     return;
   }
 
-  // Record the re-authentication metrics in the destructor, since this method
-  // maybe be invoked more than once.
-  is_reauth_complete_ = true;
+  // Re-authentication metrics will be recorded in the destructor, since this
+  // method could be invoked more than once.
+  is_reauth_completed_ = true;
   if (base::FeatureList::IsEnabled(
           supervised_user::kCloseSignTabsFromReauthenticationInterstitial)) {
     CloseSignInTabs();
   }
   controller()->Reload();
-}
-
-void SupervisedUserVerificationPage::PopulateInterstitialStrings(
-    base::Value::Dict& load_time_data) {
-  PopulateStringsForSharedHTML(load_time_data);
-  load_time_data.Set("optInLink", l10n_util::GetStringUTF16(
-                                      IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE));
-  load_time_data.Set(
-      "enhancedProtectionMessage",
-      l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE));
-
-  switch (verification_purpose_) {
-    case VerificationPurpose::REAUTH_REQUIRED_SITE:
-      load_time_data.Set(
-          "tabTitle",
-          l10n_util::GetStringUTF16(IDS_SUPERVISED_USER_VERIFY_PAGE_TAB_TITLE));
-      load_time_data.Set(
-          "heading",
-          is_main_frame_
-              ? l10n_util::GetStringUTF16(
-                    IDS_SUPERVISED_USER_VERIFY_PAGE_PRIMARY_HEADING)
-              : l10n_util::GetStringUTF16(
-                    IDS_SUPERVISED_USER_VERIFY_PAGE_SUBFRAME_YOUTUBE_HEADING));
-      load_time_data.Set(
-          "primaryParagraph",
-          l10n_util::GetStringUTF16(
-              IDS_SUPERVISED_USER_VERIFY_PAGE_PRIMARY_PARAGRAPH));
-      break;
-    case VerificationPurpose::DEFAULT_BLOCKED_SITE:
-    case VerificationPurpose::SAFE_SITES_BLOCKED_SITE:
-    case VerificationPurpose::MANUAL_BLOCKED_SITE:
-      load_time_data.Set(
-          "tabTitle", l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_TITLE));
-      load_time_data.Set(
-          "heading",
-          is_main_frame_
-              ? l10n_util::GetStringUTF16(IDS_CHILD_BLOCK_INTERSTITIAL_HEADER)
-              : l10n_util::GetStringUTF16(
-                    IDS_SUPERVISED_USER_VERIFY_PAGE_SUBFRAME_BLOCKED_SITE_HEADING));
-      load_time_data.Set(
-          "primaryParagraph",
-          l10n_util::GetStringUTF16(
-              IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_NOT_SIGNED_IN));
-      load_time_data.Set("show_blocked_site_message", true);
-      load_time_data.Set(
-          "blockedSiteMessageHeader",
-          l10n_util::GetStringUTF8(IDS_GENERIC_SITE_BLOCK_HEADER));
-      load_time_data.Set("blockedSiteMessageReason",
-                         l10n_util::GetStringUTF8(GetBlockMessageReasonId()));
-      break;
-    default:
-      NOTREACHED_NORETURN();
-  }
-
-  load_time_data.Set("primaryButtonText",
-                     l10n_util::GetStringUTF16(
-                         IDS_SUPERVISED_USER_VERIFY_PAGE_PRIMARY_BUTTON));
 }
 
 void SupervisedUserVerificationPage::OnInterstitialClosing() {}
@@ -227,7 +140,7 @@ int SupervisedUserVerificationPage::GetHTMLTemplateId() {
   return IDR_SECURITY_INTERSTITIAL_HTML;
 }
 
-void SupervisedUserVerificationPage::PopulateStringsForSharedHTML(
+void SupervisedUserVerificationPage::PopulateCommonStrings(
     base::Value::Dict& load_time_data) {
   load_time_data.Set("overridable", false);
   load_time_data.Set("hide_primary_button", false);
@@ -237,95 +150,15 @@ void SupervisedUserVerificationPage::PopulateStringsForSharedHTML(
   load_time_data.Set("openDetails", "");
   load_time_data.Set("explanationParagraph", "");
   load_time_data.Set("finalParagraph", "");
-
-  if (is_main_frame_) {
-    load_time_data.Set("type", "SUPERVISED_USER_VERIFY");
-  } else {
-    load_time_data.Set("type", "SUPERVISED_USER_VERIFY_SUBFRAME");
-  }
+  load_time_data.Set("optInLink", l10n_util::GetStringUTF16(
+                                      IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE));
+  load_time_data.Set(
+      "enhancedProtectionMessage",
+      l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE));
 }
 
-void SupervisedUserVerificationPage::RecordReauthStatusMetrics(Status status) {
-  if (!is_main_frame_) {
-    // Do not record metrics for subframe interstitials.
-    return;
-  }
-
-  switch (verification_purpose_) {
-    case VerificationPurpose::REAUTH_REQUIRED_SITE:
-      RecordYouTubeReauthStatusUkm(status);
-      break;
-    case VerificationPurpose::DEFAULT_BLOCKED_SITE:
-    case VerificationPurpose::SAFE_SITES_BLOCKED_SITE:
-    case VerificationPurpose::MANUAL_BLOCKED_SITE:
-      RecordBlockedUrlReauthStatusUma(status);
-      break;
-    default:
-      NOTREACHED();
-  }
-}
-
-void SupervisedUserVerificationPage::RecordYouTubeReauthStatusUkm(
-    Status status) {
-  CHECK_EQ(verification_purpose_, VerificationPurpose::REAUTH_REQUIRED_SITE);
-
-  auto builder =
-      ukm::builders::FamilyLinkUser_ReauthenticationInterstitial(source_id_);
-  switch (status) {
-    case Status::SHOWN:
-      builder.SetInterstitialShown(true);
-      break;
-    case Status::REAUTH_STARTED:
-      builder.SetReauthenticationStarted(true);
-      break;
-    case Status::REAUTH_COMPLETED:
-      builder.SetReauthenticationCompleted(true);
-      break;
-    default:
-      NOTREACHED();
-  }
-  builder.Record(ukm::UkmRecorder::Get());
-}
-
-void SupervisedUserVerificationPage::RecordBlockedUrlReauthStatusUma(
-    Status status) {
-  CHECK_NE(verification_purpose_, VerificationPurpose::REAUTH_REQUIRED_SITE);
-
-  auto state =
-      FamilyLinkUserReauthenticationInterstitialState::kInterstitialShown;
-  switch (status) {
-    case Status::SHOWN:
-      break;
-    case Status::REAUTH_STARTED:
-      state = FamilyLinkUserReauthenticationInterstitialState::
-          kReauthenticationStarted;
-      break;
-    case Status::REAUTH_COMPLETED:
-      state = FamilyLinkUserReauthenticationInterstitialState::
-          kReauthenticationCompleted;
-      break;
-    default:
-      NOTREACHED();
-  }
-  base::UmaHistogramEnumeration(
-      kBlockedSiteVerifyItsYouInterstitialStateHistogramName, state);
-}
-
-int SupervisedUserVerificationPage::GetBlockMessageReasonId() {
-  switch (verification_purpose_) {
-    case VerificationPurpose::DEFAULT_BLOCKED_SITE:
-      return has_second_custodian_
-                 ? IDS_CHILD_BLOCK_MESSAGE_DEFAULT_MULTI_PARENT
-                 : IDS_CHILD_BLOCK_MESSAGE_DEFAULT_SINGLE_PARENT;
-    case VerificationPurpose::SAFE_SITES_BLOCKED_SITE:
-      return IDS_SUPERVISED_USER_BLOCK_MESSAGE_SAFE_SITES;
-    case VerificationPurpose::MANUAL_BLOCKED_SITE:
-      return has_second_custodian_
-                 ? IDS_CHILD_BLOCK_MESSAGE_MANUAL_MULTI_PARENT
-                 : IDS_CHILD_BLOCK_MESSAGE_MANUAL_SINGLE_PARENT;
-    default:
-      NOTREACHED_NORETURN();
-  }
+bool SupervisedUserVerificationPage::IsReauthCompleted() {
+  return is_reauth_completed_;
 }
 
 void SupervisedUserVerificationPage::CommandReceived(
