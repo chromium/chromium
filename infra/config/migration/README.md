@@ -41,21 +41,6 @@ Commands assume the working directory is //infra/config.
     This should run without error and produce .json files for the migrated
     builders.
 
-1. Some manual modifications may be necessary to the starlark files:
-
-    * buildozer reformats the entire file, some of this is undesirable.
-    * Top-level function calls added by the script should be reformatted so that
-      each argument is on its own line (it's not possible to force this with
-      buildozer).
-    * Comments associated with the entries in test_suite_exceptions.pyl and
-      waterfalls.pyl should be transferred to the newly added starlark
-      declarations
-    * Tests that are removed require a reason specified. The script puts in a
-      reason string that will prevent the change from being submitted. This
-      allows for confirming the generated files, without risking an undocumented
-      removal. This may overlap with the previous bullet point since comments on
-      the removal may serve as an adequate value for the reason field.
-
 1. Remove the entries for all migrated builders from
   //testing/buildbot/waterfalls.pyl and
   //testing/buildbot/test_suite_exceptions.pyl. In waterfalls.pyl, make sure to
@@ -72,28 +57,33 @@ Commands assume the working directory is //infra/config.
     ./migration/post-migrate-targets.py
     ```
 
-    This will regenerate the .json files in //testing/buildbot, replace test
-    suite definitions with bundle definitions for any test suites no longer
-    referenced in //testing/buildbot, mark mixins and variants that are no
-    longer referenced from //testing/buildbot so that they no longer generate
-    pyl entries and regenerate all of the config files.
+    This will do the following:
+    * Regenerate the .json files in //testing/buildbot.
+    * Replace test suite definitions with bundle definitions for any test suites
+      no longer referenced in //testing/buildbot.
+    * Mark mixins and variants that are no longer referenced in
+      //testing/buildbot so that they no longer generate pyl entries.
+    * Mark isolates that are no longer referenced in //testing/buildbot so that
+      they no longer trigger an error from //testing/buildbot/check.py.
+    * Regenerate all //infra/config config files and sync necessary .pyl files
+      to //testing/buildbot.
 
-1. Some manual work will need to be done to transfer any comments on the removed
-   test suite declarations to the corresponding bundle declarations.
+1. Some manual modifications may be necessary to the starlark files:
 
-1. Isolates that are no longer referenced by any builder in
-  //testing/buildbot/waterfalls.pyl should have their declaration
-  updated to set skip_usage_check=True. These isolates can be found by
-  running
-
-    ```sh
-    ../../testing/buildbot/check.py
-    ```
-
-    Isolates can be defined by one of: compile targets in
-    //infra/config/targets/compile_targets.star, binaries in
-    //infra/config/targets/binaries.star or junit tests in
-    //infra/config/targets/tests.star.
+    * buildozer reformats the entire file, some of this is undesirable.
+    * Top-level function calls added by the script should be reformatted so that
+      each argument is on its own line (it's not possible to force this with
+      buildozer).
+    * Comments associated with the entries in test_suite_exceptions.pyl and
+      waterfalls.pyl should be transferred to the newly added starlark
+      declarations
+    * Tests that are removed require a reason specified. The script puts in a
+      reason string that will prevent the change from being submitted. This
+      allows for confirming the generated files, without risking an undocumented
+      removal. This may overlap with the previous bullet point since comments on
+      the removal may serve as an adequate value for the reason field.
+    * Comments associated with removed test suite declarations should be
+      transferred to the corresponding bundle declarations.
 
 ## buildozer
 

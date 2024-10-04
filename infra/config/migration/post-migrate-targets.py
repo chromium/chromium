@@ -31,6 +31,7 @@ import values
 _THIS_DIR = pathlib.Path(__file__).parent
 _INFRA_CONFIG_DIR = _THIS_DIR.parent
 _TESTING_BUILDBOT_DIR = (_INFRA_CONFIG_DIR / '../../testing/buildbot').resolve()
+_TARGETS_DIR = _INFRA_CONFIG_DIR / 'targets'
 
 
 def _convert_basic_suite(
@@ -99,7 +100,7 @@ class _SuiteToMigrate:
 
 
 def _update_suites(suites_to_migrate: dict[str, _SuiteToMigrate]) -> None:
-  bundles_star = _INFRA_CONFIG_DIR / 'targets/bundles.star'
+  bundles_star = _TARGETS_DIR / 'bundles.star'
 
   # Find the existing bundles so that we can determine where each bundle should
   # go to maintain sorted order (the file is already sorted)
@@ -118,7 +119,7 @@ def _update_suites(suites_to_migrate: dict[str, _SuiteToMigrate]) -> None:
     return f'before {bundles[idx]}'
 
   for suite_name, suite in sorted(suites_to_migrate.items()):
-    suites_star = _INFRA_CONFIG_DIR / f'targets/{suite.suite_type}.star'
+    suites_star = _TARGETS_DIR / f'{suite.suite_type}.star'
     buildozer.run(f'new targets.bundle {suite_name} {get_before(suite_name)}',
                   f'{bundles_star}:__pkg__')
     for key, value in suite.attrs.items():
@@ -146,6 +147,11 @@ _UNREFERENCED_MIXINS_RE = re.compile(
 
 _UNREFERENCED_VARIANTS_RE = re.compile(
     r'The following variants were unreferenced: (\{.+\})')
+
+
+# check.py outputs the referenced names like name1, name2, name3
+_UNREFERENCED_ISOLATES_RE = re.compile(
+    '^(.+) are listed in gn_isolate_map.pyl but not in any .json files$')
 
 
 def main():
@@ -190,7 +196,7 @@ def main():
   match = _UNREFERENCED_MIXINS_RE.search(ret.stderr)
   if match:
     unreferenced_mixin_names = ast.literal_eval(match.group(1))
-    mixins_star = _INFRA_CONFIG_DIR / 'targets/mixins.star'
+    mixins_star = _TARGETS_DIR / 'mixins.star'
     buildozer.run(
         'set generate_pyl_entry False',
         *(f'{mixins_star}:{mixin_name}'
@@ -209,7 +215,7 @@ def main():
   match = _UNREFERENCED_VARIANTS_RE.search(ret.stderr)
   if match:
     unreferenced_variant_names = ast.literal_eval(match.group(1))
-    variants_star = _INFRA_CONFIG_DIR / 'targets/variants.star'
+    variants_star = _TARGETS_DIR / 'variants.star'
     buildozer.run(
         'set generate_pyl_entry False',
         *(f'{variants_star}:{variant_name}'
@@ -224,6 +230,46 @@ def main():
 
     if _UNREFERENCED_VARIANTS_RE.search(ret.stderr):
       raise Exception('unreferenced variants still exist after update')
+
+  def check_check():
+    return subprocess.run([_TESTING_BUILDBOT_DIR / 'check.py'],
+                          capture_output=True,
+                          encoding='utf-8')
+
+  ret = check_check()
+
+  match = _UNREFERENCED_ISOLATES_RE.match(ret.stderr)
+  if match:
+    unreferenced_isolate_names = sorted(match.group(1).split(', '))
+    # Isolate entries can be created by binary, compile target or junit test
+    # declarations and we don't know what declaration produced the entry just
+    # from the name, so try them until we find one. Do tests last since there
+    # are some tests that have the same name as binaries that wouldn't support
+    # the necessary argument.
+    files = [
+        _TARGETS_DIR / 'binaries.star',
+        _TARGETS_DIR / 'compile_targets.star',
+        _TARGETS_DIR / 'tests.star',
+    ]
+
+    comment = 'All references have been moved to starlark'.replace(' ', r'\ ')
+    for isolate_name in unreferenced_isolate_names:
+      for file in files:
+        success = buildozer.try_run('set skip_usage_check True',
+                                    f'comment skip_usage_check {comment}',
+                                    f'{file}:{isolate_name}')
+        if success:
+          break
+
+    # Regenerating the configs updates gn_usolate_map.pyl so that check.py
+    # should no longer complain about unreferenced isolates and allow us to see
+    # if there's any other errors
+    subprocess.check_call([_INFRA_CONFIG_DIR / 'main.star'])
+
+    ret = check_check()
+
+    if _UNREFERENCED_ISOLATES_RE.match(ret.stderr):
+      raise Exception('unreferenced isolates still exist after update')
 
   subprocess.check_call([_INFRA_CONFIG_DIR / 'scripts/sync-pyl-files.py'])
   subprocess.check_call(['lucicfg', 'fmt'], cwd=_INFRA_CONFIG_DIR)
