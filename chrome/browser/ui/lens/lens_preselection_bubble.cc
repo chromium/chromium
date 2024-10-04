@@ -9,14 +9,19 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/grit/branded_strings.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/lens/lens_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "lens_preselection_bubble.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/color/color_provider.h"
 #include "ui/display/screen.h"
@@ -25,6 +30,10 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/button/menu_button.h"
+#include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
@@ -38,12 +47,15 @@ const int kPreselectionBubbleMinY = 8;
 
 }  // namespace
 
-LensPreselectionBubble::LensPreselectionBubble(views::View* anchor_view,
-                                               bool offline,
-                                               ExitClickedCallback callback)
+LensPreselectionBubble::LensPreselectionBubble(
+    base::WeakPtr<LensOverlayController> lens_overlay_controller,
+    views::View* anchor_view,
+    bool offline,
+    ExitClickedCallback callback)
     : BubbleDialogDelegateView(anchor_view,
                                views::BubbleBorder::NONE,
                                views::BubbleBorder::NO_SHADOW),
+      lens_overlay_controller_(lens_overlay_controller),
       offline_(offline),
       callback_(std::move(callback)) {
   // Toast bubble doesn't have any buttons, cannot be active, and should not be
@@ -78,6 +90,21 @@ void LensPreselectionBubble::Init() {
   label_->SetMultiLine(false);
   label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label_->SetAllowCharacterBreak(false);
+  if (lens::features::IsLensOverlayContextualSearchboxEnabled()) {
+    auto button = views::CreateVectorImageButtonWithNativeTheme(
+        base::RepeatingClosure(), kHelpMenuIcon, 20,
+        kColorLensOverlayToastForeground, kColorLensOverlayToastForeground);
+    button->SetTooltipText(l10n_util::GetStringUTF16(
+        IDS_SIDE_PANEL_HEADER_MORE_INFO_BUTTON_TOOLTIP));
+    more_info_button_ = AddChildView(std::move(button));
+    more_info_button_->SetButtonController(
+        std::make_unique<views::MenuButtonController>(
+            more_info_button_,
+            base::BindRepeating(&LensPreselectionBubble::OpenMoreInfoMenu,
+                                base::Unretained(this)),
+            std::make_unique<views::Button::DefaultButtonControllerDelegate>(
+                more_info_button_)));
+  }
   layout->set_between_child_spacing(8);
   // Need to set this false so label color token doesn't get changed by
   // changed by SetEnabledColor() color mapper. Color tokens provided
@@ -152,6 +179,46 @@ void LensPreselectionBubble::OnThemeChanged() {
     exit_button_->SetBorder(views::CreateRoundedRectBorder(
         1, 48, color_provider->GetColor(kColorLensOverlayToastButtonBorder)));
     exit_button_->SetBgColorIdOverride(kColorLensOverlayToastBackground);
+  }
+}
+
+void LensPreselectionBubble::OpenMoreInfoMenu() {
+  auto menu_model = std::make_unique<ui::SimpleMenuModel>(this);
+  menu_model->AddItem(COMMAND_MY_ACTIVITY,
+                      l10n_util::GetStringUTF16(IDS_LENS_OVERLAY_MY_ACTIVITY));
+  menu_model->AddItem(COMMAND_LEARN_MORE,
+                      l10n_util::GetStringUTF16(IDS_LENS_OVERLAY_LEARN_MORE));
+  menu_model->AddItem(COMMAND_SEND_FEEDBACK,
+                      l10n_util::GetStringUTF16(IDS_LENS_SEND_FEEDBACK));
+  more_info_menu_model_ = std::move(menu_model);
+  menu_runner_ = std::make_unique<views::MenuRunner>(
+      more_info_menu_model_.get(), views::MenuRunner::HAS_MNEMONICS);
+  menu_runner_->RunMenuAt(more_info_button_->GetWidget(),
+                          static_cast<views::MenuButtonController*>(
+                              more_info_button_->button_controller()),
+                          more_info_button_->GetAnchorBoundsInScreen(),
+                          views::MenuAnchorPosition::kTopRight,
+                          ui::MENU_SOURCE_NONE);
+}
+
+void LensPreselectionBubble::ExecuteCommand(int command_id, int event_flags) {
+  CHECK(lens_overlay_controller_);
+  switch (command_id) {
+    case COMMAND_MY_ACTIVITY: {
+      lens_overlay_controller_->ActivityRequestedByEvent(event_flags);
+      break;
+    }
+    case COMMAND_LEARN_MORE: {
+      lens_overlay_controller_->InfoRequestedByEvent(event_flags);
+      break;
+    }
+    case COMMAND_SEND_FEEDBACK: {
+      lens_overlay_controller_->FeedbackRequestedByEvent(event_flags);
+      break;
+    }
+    default: {
+      NOTREACHED() << "Unknown option";
+    }
   }
 }
 

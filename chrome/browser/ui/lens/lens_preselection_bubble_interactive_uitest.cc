@@ -46,7 +46,7 @@ class LensPreselectionBubbleInteractiveUiTest : public InteractiveBrowserTest {
     return Do(base::BindLambdaForTesting([&]() {
       preselection_widget_ = views::BubbleDialogDelegateView::CreateBubble(
           std::make_unique<lens::LensPreselectionBubble>(
-              browser()->TopContainer(),
+              /*lens_overlay_controller=*/nullptr, browser()->TopContainer(),
               net::NetworkChangeNotifier::IsOffline(),
               base::BindRepeating(
                   &LensPreselectionBubbleInteractiveUiTest::ExitClickedCallback,

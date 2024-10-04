@@ -2251,6 +2251,7 @@ void LensOverlayController::ShowPreselectionBubble() {
   if (!preselection_widget_) {
     preselection_widget_ = views::BubbleDialogDelegateView::CreateBubble(
         std::make_unique<lens::LensPreselectionBubble>(
+            weak_factory_.GetWeakPtr(),
             tab_->GetBrowserWindowInterface()->TopContainer(),
             net::NetworkChangeNotifier::IsOffline(),
             base::BindRepeating(&LensOverlayController::CloseUIAsync,
