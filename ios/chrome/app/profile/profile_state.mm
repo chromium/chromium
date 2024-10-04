@@ -107,15 +107,15 @@
 }
 
 - (void)setInitStage:(ProfileInitStage)initStage {
-  CHECK_GE(initStage, ProfileInitStage::kLoadProfile);
+  CHECK_GE(initStage, ProfileInitStage::kStart);
   CHECK_LE(initStage, ProfileInitStage::kFinal);
 
-  if (initStage == ProfileInitStage::kLoadProfile) {
-    // Support setting the initStage to InitStageLoadProfile for startup.
-    CHECK_EQ(_initStage, ProfileInitStage::kLoadProfile);
+  if (initStage == ProfileInitStage::kStart) {
+    // Support setting the initStage to kStart for startup.
+    CHECK_EQ(_initStage, ProfileInitStage::kStart);
   } else {
-    // After InitStageLoadProfile, the init stages must be incremented by one
-    // only. If a stage needs to be skipped, it can just be a no-op.
+    // After kLoadProfile, the init stages must be incremented by one only. If a
+    // stage needs to be skipped, it can just be a no-op.
     CHECK_EQ(base::to_underlying(initStage),
              base::to_underlying(_initStage) + 1);
   }
@@ -162,7 +162,7 @@
   [_observers addObserver:observer];
 
   const ProfileInitStage initStage = self.initStage;
-  if (initStage > ProfileInitStage::kLoadProfile &&
+  if (initStage > ProfileInitStage::kStart &&
       [observer respondsToSelector:@selector
                 (profileState:didTransitionToInitStage:fromInitStage:)]) {
     const ProfileInitStage prevStage =

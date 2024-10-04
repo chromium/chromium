@@ -30,6 +30,9 @@
     didTransitionToInitStage:(ProfileInitStage)nextInitStage
                fromInitStage:(ProfileInitStage)fromInitStage {
   switch (nextInitStage) {
+    case ProfileInitStage::kStart:
+      break;
+
     case ProfileInitStage::kLoadProfile:
       break;
 

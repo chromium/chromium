@@ -12,6 +12,9 @@
 // Profile initialisation stages. The app will go sequentially in-order through
 // each stage each time a new profile is added.
 enum class ProfileInitStage {
+  // Initial stage, nothing initialized yet.
+  kStart,
+
   // Perform all asynch operation to load profile's preferences from disk.
   kLoadProfile,
 
