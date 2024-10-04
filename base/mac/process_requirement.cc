@@ -31,6 +31,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "build/branding_buildflags.h"
 
 using base::apple::ScopedCFTypeRef;
@@ -141,14 +142,8 @@ base::expected<ValidationCategory, int> ValidationCategoryOfCurrentProcess() {
 // each of the validation categories we're interested in.
 base::expected<ValidationCategory, OSStatus>
 FallbackValidationCategoryOfCurrentProcess() {
-  ScopedCFTypeRef<SecCodeRef> self_code;
-  if (OSStatus status =
-          SecCodeCopySelf(kSecCSDefaultFlags, self_code.InitializeInto())) {
-    OSSTATUS_LOG(ERROR, status)
-        << "Unable to derive validation category for current "
-           "process. Failed to copy code object";
-    return base::unexpected(status);
-  }
+  ASSIGN_OR_RETURN(ScopedCFTypeRef<SecCodeRef> self_code,
+                   DynamicCodeObjectForCurrentProcess());
 
   // Do initial validation without a requirement to detect problems with the
   // code signature itself. We do basic validation only as the validation is

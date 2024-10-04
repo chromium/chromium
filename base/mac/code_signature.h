@@ -13,6 +13,7 @@
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/base_export.h"
+#include "base/types/expected.h"
 
 namespace base::mac {
 
@@ -57,6 +58,15 @@ OSStatus ProcessIdIsSignedAndFulfillsRequirement_DoNotUse(
 BASE_EXPORT
 base::apple::ScopedCFTypeRef<SecRequirementRef> RequirementFromString(
     std::string_view requirement_string);
+
+// Return a SecCodeRef representing the current process.
+//
+// Validation performed against this code object will validate the running
+// process only, and will not verify that the application matches the copy on
+// disk.
+BASE_EXPORT
+base::expected<base::apple::ScopedCFTypeRef<SecCodeRef>, OSStatus>
+DynamicCodeObjectForCurrentProcess();
 
 }  // namespace base::mac
 
