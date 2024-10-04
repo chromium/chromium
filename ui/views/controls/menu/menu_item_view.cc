@@ -123,17 +123,37 @@ void MenuItemView::OnThemeChanged() {
   // Force updating as the colors may have changed.
   if (!IsScheduledForDeletion())
     UpdateSelectionBasedState(ShouldPaintAsSelected(PaintMode::kNormal));
+
+  // Update the name when the theme changes, as the name depends on few
+  // attributes like title, minor_text, which are likely to change with the
+  // theme.
+  UpdateAccessibleName();
 }
 
 void MenuItemView::UpdateAccessibleCheckedState() {
   if (type_ == Type::kCheckbox || type_ == Type::kRadio) {
     bool is_checked =
         GetDelegate() && GetDelegate()->IsItemChecked(GetCommand());
-    GetViewAccessibility().SetCheckedState(
+    const ax::mojom::CheckedState checked_state =
         is_checked ? ax::mojom::CheckedState::kTrue
-                   : ax::mojom::CheckedState::kFalse);
+                   : ax::mojom::CheckedState::kFalse;
+    GetViewAccessibility().SetCheckedState(checked_state);
+    if (auto* submenuview_accessibility = GetSubmenuViewAccessibility()) {
+      submenuview_accessibility->SetCheckedState(checked_state);
+    }
+    if (auto* scrollview_accessibility =
+            GetScrollViewContainerViewAccessibility()) {
+      scrollview_accessibility->SetCheckedState(checked_state);
+    }
   } else {
     GetViewAccessibility().RemoveCheckedState();
+    if (auto* submenuview_accessibility = GetSubmenuViewAccessibility()) {
+      submenuview_accessibility->RemoveCheckedState();
+    }
+    if (auto* scrollview_accessibility =
+            GetScrollViewContainerViewAccessibility()) {
+      scrollview_accessibility->RemoveCheckedState();
+    }
   }
 }
 
@@ -180,29 +200,13 @@ std::u16string MenuItemView::GetTooltipText(const gfx::Point& p) const {
              : std::u16string();
 }
 
-void MenuItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->SetName(CalculateAccessibleName());
-
-  switch (type_) {
-    case Type::kSubMenu:
-    case Type::kActionableSubMenu:
-      // Note: This is neither necessary nor sufficient for macOS. See
-      // CreateSubmenu() for virtual child creation and explanation.
-      node_data->SetHasPopup(ax::mojom::HasPopup::kMenu);
-      break;
-    case Type::kCheckbox:
-    case Type::kRadio:
-    case Type::kTitle:
-    case Type::kNormal:
-    case Type::kSeparator:
-    case Type::kEmpty:
-    case Type::kHighlighted:
-      // No additional accessibility states currently for these menu states.
-      break;
-  }
-}
-
 bool MenuItemView::HandleAccessibleAction(const ui::AXActionData& action_data) {
+  // Ensure that if menu-controller is null, default action should be
+  // performend.
+  if (!GetMenuController()) {
+    return View::HandleAccessibleAction(action_data);
+  }
+
   switch (action_data.action) {
     case ax::mojom::Action::kExpand: {
       DCHECK(HasSubmenu());
@@ -428,7 +432,7 @@ SubmenuView* MenuItemView::CreateSubmenu() {
 
   submenu_ = std::make_unique<SubmenuView>(/*parent=*/this);
   submenu_->SetProperty(kElementIdentifierKey, submenu_id_);
-
+  UpdateAccessibleHasPopup();
 #if BUILDFLAG(IS_MAC)
   // All MenuItemViews of Type kSubMenu have a respective SubmenuView.
   // However, in the Views hierarchy, this SubmenuView is not a child of the
@@ -868,6 +872,7 @@ MenuItemView::MenuItemView(MenuItemView* parent,
       command_(command) {
   GetViewAccessibility().set_needs_ax_tree_manager(true);
   UpdateAccessibleRole();
+  UpdateAccessibleHasPopup();
   if (type_ == Type::kCheckbox || type_ == Type::kRadio) {
     radio_check_image_view_ = AddChildView(std::make_unique<ImageView>());
     bool show_check_radio_icon =
@@ -1223,7 +1228,7 @@ std::u16string MenuItemView::CalculateAccessibleName() const {
     // |title_|.
     View* child = children().front();
     ui::AXNodeData child_node_data;
-    child->GetAccessibleNodeData(&child_node_data);
+    child->GetViewAccessibility().GetAccessibleNodeData(&child_node_data);
     item_text =
         child_node_data.GetString16Attribute(ax::mojom::StringAttribute::kName);
   } else {
@@ -1528,13 +1533,37 @@ int MenuItemView::GetVerticalMargin() const {
              : config.item_vertical_margin;
 }
 
+ViewAccessibility* MenuItemView::GetSubmenuViewAccessibility() {
+  return submenu_ ? &submenu_->GetViewAccessibility() : nullptr;
+}
+
+ViewAccessibility* MenuItemView::GetScrollViewContainerViewAccessibility() {
+  return submenu_ && submenu_->GetScrollViewContainer()
+             ? &submenu_->GetScrollViewContainer()->GetViewAccessibility()
+             : nullptr;
+}
+
 void MenuItemView::UpdateAccessibleKeyShortcuts() {
   char16_t mnemonic = GetMnemonic();
   if (mnemonic != '\0') {
-    GetViewAccessibility().SetKeyShortcuts(
-        base::UTF16ToUTF8(std::u16string(1, mnemonic)));
+    std::string key_shortcuts = base::UTF16ToUTF8(std::u16string(1, mnemonic));
+    GetViewAccessibility().SetKeyShortcuts(key_shortcuts);
+    if (auto* submenuview_accessibility = GetSubmenuViewAccessibility()) {
+      submenuview_accessibility->SetKeyShortcuts(key_shortcuts);
+    }
+    if (auto* scrollview_accessibility =
+            GetScrollViewContainerViewAccessibility()) {
+      scrollview_accessibility->SetKeyShortcuts(key_shortcuts);
+    }
   } else {
     GetViewAccessibility().RemoveKeyShortcuts();
+    if (auto* submenuview_accessibility = GetSubmenuViewAccessibility()) {
+      submenuview_accessibility->RemoveKeyShortcuts();
+    }
+    if (auto* scrollview_accessibility =
+            GetScrollViewContainerViewAccessibility()) {
+      scrollview_accessibility->RemoveKeyShortcuts();
+    }
   }
 }
 
@@ -1554,6 +1583,59 @@ void MenuItemView::UpdateAccessibleRole() {
     default:
       GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
       break;
+  }
+}
+
+void MenuItemView::UpdateAccessibleHasPopup() {
+  switch (type_) {
+    case Type::kSubMenu:
+    case Type::kActionableSubMenu:
+      // Note: This is neither necessary nor sufficient for macOS. See
+      // CreateSubmenu() for virtual child creation and explanation.
+      GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kMenu);
+      if (auto* submenuview_accessibility = GetSubmenuViewAccessibility()) {
+        submenuview_accessibility->SetHasPopup(ax::mojom::HasPopup::kMenu);
+      }
+      if (auto* scrollview_accessibility =
+              GetScrollViewContainerViewAccessibility()) {
+        scrollview_accessibility->SetHasPopup(ax::mojom::HasPopup::kMenu);
+      }
+      break;
+    case Type::kCheckbox:
+    case Type::kRadio:
+    case Type::kTitle:
+    case Type::kNormal:
+    case Type::kSeparator:
+    case Type::kEmpty:
+    case Type::kHighlighted:
+      // No additional accessibility states currently for these menu states.
+      break;
+  }
+}
+
+void MenuItemView::UpdateAccessibleName() {
+  std::u16string accessible_name = CalculateAccessibleName();
+  if (accessible_name.empty()) {
+    GetViewAccessibility().SetName(
+        std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+    if (auto* submenuview_accessibility = GetSubmenuViewAccessibility()) {
+      submenuview_accessibility->SetName(
+          std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+    }
+    if (auto* scrollview_accessibility =
+            GetScrollViewContainerViewAccessibility()) {
+      scrollview_accessibility->SetName(
+          std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+    }
+  } else {
+    GetViewAccessibility().SetName(accessible_name);
+    if (auto* submenuview_accessibility = GetSubmenuViewAccessibility()) {
+      submenuview_accessibility->SetName(accessible_name);
+    }
+    if (auto* scrollview_accessibility =
+            GetScrollViewContainerViewAccessibility()) {
+      scrollview_accessibility->SetName(accessible_name);
+    }
   }
 }
 

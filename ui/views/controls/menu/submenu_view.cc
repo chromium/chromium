@@ -299,19 +299,6 @@ gfx::Size SubmenuView::CalculatePreferredSize(
   return gfx::Size(width, height + insets.height());
 }
 
-void SubmenuView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // Inherit most of the state from the parent menu item, except the role and
-  // the orientation.
-  if (parent_menu_item_) {
-    // TODO(crbug.com/325137417): To ensure the name is set for
-    // parent_menu_item_, the role must be assigned before calling
-    // GetAccessibleNodeData. Omitting this role could disrupt functionality, as
-    // the AXNodeData::SetName() function checks for the relevant role.
-    node_data->role = parent_menu_item_->GetViewAccessibility().GetCachedRole();
-    parent_menu_item_->GetAccessibleNodeData(node_data);
-  }
-}
-
 void SubmenuView::PaintChildren(const PaintInfo& paint_info) {
   View::PaintChildren(paint_info);
 
@@ -611,6 +598,14 @@ bool SubmenuView::GetShowSelection(const MenuItemView* item) const {
 }
 
 MenuScrollViewContainer* SubmenuView::GetScrollViewContainer() {
+  // Perform null checks for scroll_view_container and MenuController since
+  // MenuScrollViewContainer constructor is invoked later, which uses
+  // menucontroller to determine the value of the use_ash_system_ui_layout_
+  // variable.
+  if (!scroll_view_container_ && !parent_menu_item_->GetMenuController()) {
+    return nullptr;
+  }
+
   if (!scroll_view_container_) {
     scroll_view_container_ = std::make_unique<MenuScrollViewContainer>(this);
     // Otherwise MenuHost would delete us.

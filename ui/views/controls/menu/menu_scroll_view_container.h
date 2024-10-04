@@ -41,7 +41,6 @@ class VIEWS_EXPORT MenuScrollViewContainer : public View {
 
   // View:
   gfx::Insets GetInsets() const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   gfx::Size CalculatePreferredSize(
       const SizeBounds& available_size) const override;
   void OnPaintBackground(gfx::Canvas* canvas) override;

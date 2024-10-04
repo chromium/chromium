@@ -263,6 +263,7 @@ MenuScrollViewContainer::MenuScrollViewContainer(SubmenuView* content_view)
   CreateBorder();
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kMenuBar);
+  GetViewAccessibility().SetIsVertical(true);
   // On macOS, NSMenus are not supposed to have anything wrapped around them. To
   // allow VoiceOver to recognize this as a menu and to read aloud the total
   // number of items inside it, we ignore the MenuScrollViewContainer (which
@@ -307,15 +308,6 @@ gfx::Insets MenuScrollViewContainer::GetInsets() const {
   return View::GetInsets() + additional_insets_;
 }
 
-void MenuScrollViewContainer::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // TODO(crbug.com/325137417): To ensure the name is set for content_view, the
-  // role must be assigned before calling GetAccessibleNodeData. Omitting this
-  // role could disrupt functionality, as the AXNodeData::SetName() function
-  // checks for the relevant role.
-  node_data->role = content_view_->GetViewAccessibility().GetCachedRole();
-  // Get the name from the submenu view.
-  content_view_->GetAccessibleNodeData(node_data);
-}
 
 gfx::Size MenuScrollViewContainer::CalculatePreferredSize(
     const SizeBounds& available_size) const {

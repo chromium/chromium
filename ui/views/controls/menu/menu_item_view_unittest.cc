@@ -183,27 +183,43 @@ TEST_F(MenuItemViewUnitTest, NotifiesSelectedChanged) {
 TEST_F(MenuItemViewUnitTest, AccessibleKeyShortcutsTest) {
   views::TestMenuItemView root_menu;
 
-  // Append MenuItemViews.
   views::MenuItemView* item1 = root_menu.AppendMenuItem(1, u"&Item 1");
   views::MenuItemView* item2 = root_menu.AppendMenuItem(2, u"It&em 2");
-  ui::AXNodeData data1, data2;
+  views::MenuItemView* item3 = root_menu.AppendSubMenu(1, u"Su&menu 1");
+  SubmenuView* submenu = item3->GetSubmenu();
+
+  ui::AXNodeData data1, data2, data3, data4;
 
   if (MenuConfig::instance().use_mnemonics) {
     item1->GetViewAccessibility().GetAccessibleNodeData(&data1);
     item2->GetViewAccessibility().GetAccessibleNodeData(&data2);
+    item3->GetViewAccessibility().GetAccessibleNodeData(&data3);
+    submenu->GetViewAccessibility().GetAccessibleNodeData(&data4);
     EXPECT_FALSE(
         data1.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
     EXPECT_FALSE(
         data2.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
+    EXPECT_FALSE(
+        data3.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
+    EXPECT_FALSE(
+        data4.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
 
     root_menu.set_has_mnemonics(true);
     data1 = ui::AXNodeData();
     data2 = ui::AXNodeData();
+    data3 = ui::AXNodeData();
+    data4 = ui::AXNodeData();
     item1->GetViewAccessibility().GetAccessibleNodeData(&data1);
     item2->GetViewAccessibility().GetAccessibleNodeData(&data2);
+    item3->GetViewAccessibility().GetAccessibleNodeData(&data3);
+    submenu->GetViewAccessibility().GetAccessibleNodeData(&data4);
     EXPECT_EQ("i", data1.GetStringAttribute(
                        ax::mojom::StringAttribute::kKeyShortcuts));
     EXPECT_EQ("e", data2.GetStringAttribute(
+                       ax::mojom::StringAttribute::kKeyShortcuts));
+    EXPECT_EQ("m", data3.GetStringAttribute(
+                       ax::mojom::StringAttribute::kKeyShortcuts));
+    EXPECT_EQ("m", data4.GetStringAttribute(
                        ax::mojom::StringAttribute::kKeyShortcuts));
 
     item1->set_may_have_mnemonics(false);
@@ -216,29 +232,49 @@ TEST_F(MenuItemViewUnitTest, AccessibleKeyShortcutsTest) {
     item1->set_may_have_mnemonics(true);
     data1 = ui::AXNodeData();
     data2 = ui::AXNodeData();
+    data3 = ui::AXNodeData();
+    data4 = ui::AXNodeData();
     item1->GetViewAccessibility().GetAccessibleNodeData(&data1);
     item2->GetViewAccessibility().GetAccessibleNodeData(&data2);
+    item3->GetViewAccessibility().GetAccessibleNodeData(&data3);
+    submenu->GetViewAccessibility().GetAccessibleNodeData(&data4);
     EXPECT_FALSE(
         data1.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
     EXPECT_FALSE(
         data2.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
+    EXPECT_FALSE(
+        data3.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
+    EXPECT_FALSE(
+        data4.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
   } else {
     item1->GetViewAccessibility().GetAccessibleNodeData(&data1);
     item2->GetViewAccessibility().GetAccessibleNodeData(&data2);
+    item3->GetViewAccessibility().GetAccessibleNodeData(&data3);
+    submenu->GetViewAccessibility().GetAccessibleNodeData(&data4);
     EXPECT_FALSE(
         data1.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
     EXPECT_FALSE(
         data2.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
+    EXPECT_FALSE(
+        data3.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
+    EXPECT_FALSE(
+        data4.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
 
     root_menu.set_has_mnemonics(true);
     data1 = ui::AXNodeData();
     data2 = ui::AXNodeData();
     item1->GetViewAccessibility().GetAccessibleNodeData(&data1);
     item2->GetViewAccessibility().GetAccessibleNodeData(&data2);
+    item3->GetViewAccessibility().GetAccessibleNodeData(&data3);
+    submenu->GetViewAccessibility().GetAccessibleNodeData(&data4);
     EXPECT_FALSE(
         data1.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
     EXPECT_FALSE(
         data2.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
+    EXPECT_FALSE(
+        data3.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
+    EXPECT_FALSE(
+        data4.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
   }
 }
 
@@ -718,6 +754,54 @@ TEST_F(MenuItemViewPaintUnitTest, AccessibleCheckedStateChange) {
       .GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetCheckedState(), GetCheckedStatus(command, type));
   EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kNone);
+
+  data = ui::AXNodeData();
+  type = views::MenuItemView::Type::kSubMenu;
+  AddItem(command, type);
+  menu_item_view()
+      ->GetMenuItemByID(command)
+      ->GetSubmenu()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), GetCheckedStatus(command, type));
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kNone);
+}
+
+TEST_F(MenuItemViewPaintUnitTest, AccessibleHasPopup) {
+  int command = 1000;
+  auto type = views::MenuItemView::Type::kNormal;
+  ui::AXNodeData data1, data2;
+
+  auto AddItem = [this](auto command_, auto type_) {
+    menu_item_view()->AddMenuItemAt(
+        0, command_, u"No custom colors", std::u16string(), std::u16string(),
+        ui::ImageModel(), ui::ImageModel(), type_, ui::NORMAL_SEPARATOR,
+        std::nullopt, std::nullopt, std::nullopt);
+  };
+
+  type = views::MenuItemView::Type::kCheckbox;
+  AddItem(command, type);
+  menu_item_view()
+      ->GetMenuItemByID(command)
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&data1);
+  EXPECT_FALSE(data1.HasIntAttribute(ax::mojom::IntAttribute::kHasPopup));
+
+  data1 = ui::AXNodeData();
+  type = views::MenuItemView::Type::kSubMenu;
+  AddItem(command, type);
+  menu_item_view()
+      ->GetMenuItemByID(command)
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&data1);
+  EXPECT_EQ(data1.GetHasPopup(), ax::mojom::HasPopup::kMenu);
+
+  menu_item_view()
+      ->GetMenuItemByID(command)
+      ->GetSubmenu()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&data2);
+  EXPECT_EQ(data2.GetHasPopup(), ax::mojom::HasPopup::kMenu);
 }
 
 // Sets up a custom MenuDelegate that expects functions aren't called. See
