@@ -60,9 +60,8 @@
   NSMutableArray<HistoryElement*>* _historyStack;
   /// Current lens result.
   id<ChromeLensOverlayResult> _currentLensResult;
-  /// Whether the URL navigation from the next lensResult should be ignored.
-  /// More detail in `goBack`.
-  BOOL _skipLoadingNextLensResultURL;
+  /// Whether the next navigation is a reload.
+  BOOL _isReloading;
 }
 
 - (instancetype)initWithIsIncognito:(BOOL)isIncognito {
@@ -106,7 +105,7 @@
   _webStateObserverBridge.reset();
   [_historyStack removeAllObjects];
   _currentLensResult = nil;
-  _skipLoadingNextLensResultURL = NO;
+  _isReloading = NO;
 }
 
 #pragma mark - SearchEngineObserving
@@ -128,7 +127,10 @@
 - (void)webState:(web::WebState*)webState
     didStartNavigation:(web::NavigationContext*)navigationContext {
   if (navigationContext && !navigationContext->IsSameDocument()) {
-    [self addURLToHistory:navigationContext->GetUrl()];
+    const GURL& URL = navigationContext->GetUrl();
+    if ([self shouldAddURLToHistory:URL]) {
+      [self addURLToHistory:URL];
+    }
   }
 }
 
@@ -195,16 +197,9 @@
   // If the LensResult is different, reload the result.
   HistoryElement* lastEntry = _historyStack.lastObject;
   if (lastEntry.lensResult != _currentLensResult) {
-    // When reloading, ignore the URL navigation. URL from lensResult doesn't
-    // contains sub navigations (navigations with the same lensResult). The
-    // correct URL is loaded below.
-    _skipLoadingNextLensResultURL = YES;
+    _isReloading = YES;
     [self.lensHandler reloadResult:lastEntry.lensResult];
   }
-
-  // Reloading the URL will add a new history entry on `didStartNavigation`.
-  [_historyStack removeLastObject];
-  [self.resultConsumer loadResultsURL:lastEntry.URL];
 }
 
 #pragma mark OmniboxFocusDelegate
@@ -234,10 +229,12 @@
     didGenerateResult:(id<ChromeLensOverlayResult>)result {
   RecordAction(base::UserMetricsAction("Mobile.LensOverlay.NewResult"));
   _currentLensResult = result;
-  if (!_skipLoadingNextLensResultURL) {
-    [self.resultConsumer loadResultsURL:result.searchResultURL];
+  // When reloading, replace the last object.
+  if (_isReloading) {
+    [_historyStack removeLastObject];
+    _isReloading = NO;
   }
-  _skipLoadingNextLensResultURL = NO;
+  [self.resultConsumer loadResultsURL:result.searchResultURL];
 
   if (result.isTextSelection) {
     [self.omniboxCoordinator setThumbnailImage:nil];
@@ -298,6 +295,21 @@
   [self.omniboxCoordinator updateOmniboxState];
   [self.omniboxCoordinator
       setThumbnailImage:_currentLensResult.selectionPreviewImage];
+}
+
+/// Whether the navigation to `URL` with the `_currentLensResult` should be
+/// added to the history stack.
+- (BOOL)shouldAddURLToHistory:(const GURL&)URL {
+  if (!_historyStack.count) {
+    return YES;
+  }
+
+  // TODO(crbug.com/370708965): Add sub-navigation support for the latest
+  // result. When supporting sub-navigation. Don't add the
+  // URL to the history stack if the only change is dark/light mode.
+
+  // Only add lens result change to the history.
+  return _historyStack.lastObject.lensResult != _currentLensResult;
 }
 
 /// Adds the URL navigation to the `historyStack`.
