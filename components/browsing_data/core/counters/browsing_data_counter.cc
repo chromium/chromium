@@ -24,7 +24,7 @@ static const int kDelayUntilReadyToShowResultMs = 1000;
 BrowsingDataCounter::BrowsingDataCounter()
     : initialized_(false), use_delay_(true), state_(State::IDLE) {}
 
-BrowsingDataCounter::~BrowsingDataCounter() {}
+BrowsingDataCounter::~BrowsingDataCounter() = default;
 
 void BrowsingDataCounter::Init(PrefService* pref_service,
                                ClearBrowsingDataTab clear_browsing_data_tab,

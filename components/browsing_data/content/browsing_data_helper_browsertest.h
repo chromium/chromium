@@ -18,7 +18,7 @@
 template <typename T>
 class BrowsingDataHelperCallback {
  public:
-  BrowsingDataHelperCallback() {}
+  BrowsingDataHelperCallback() = default;
 
   BrowsingDataHelperCallback(const BrowsingDataHelperCallback&) = delete;
   BrowsingDataHelperCallback& operator=(const BrowsingDataHelperCallback&) =
