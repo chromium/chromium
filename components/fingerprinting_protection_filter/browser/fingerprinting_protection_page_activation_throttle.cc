@@ -52,7 +52,7 @@ FingerprintingProtectionPageActivationThrottle::WillProcessResponse() {
 
 const char*
 FingerprintingProtectionPageActivationThrottle::GetNameForLogging() {
-  return "FingerprintingProtectionPageActivationThrottle";
+  return kPageActivationThrottleNameForLogging;
 }
 
 ActivationDecision
@@ -74,8 +74,7 @@ void FingerprintingProtectionPageActivationThrottle::NotifyResult(
   if (decision == ActivationDecision::UNKNOWN) {
     return;
   }
-  ActivationLevel activation_level =
-      fingerprinting_protection_filter::features::kActivationLevel.Get();
+  ActivationLevel activation_level = features::kActivationLevel.Get();
   if (profile_interaction_manager_.get()) {
     activation_level = profile_interaction_manager_->OnPageActivationComputed(
         navigation_handle(), activation_level, &decision);

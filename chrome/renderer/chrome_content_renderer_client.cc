@@ -90,6 +90,9 @@
 #include "components/error_page/common/error.h"
 #include "components/error_page/common/localized_error.h"
 #include "components/feed/feed_feature_list.h"
+#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
+#include "components/fingerprinting_protection_filter/renderer/renderer_agent.h"
+#include "components/fingerprinting_protection_filter/renderer/unverified_ruleset_dealer.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
 #include "components/history_clusters/core/config.h"
@@ -473,6 +476,13 @@ void ChromeContentRendererClient::RenderThreadStarted() {
   subresource_filter_ruleset_dealer_ =
       std::make_unique<subresource_filter::UnverifiedRulesetDealer>();
 
+  if (fingerprinting_protection_filter::features::
+          IsFingerprintingProtectionFeatureEnabled()) {
+    fingerprinting_protection_ruleset_dealer_ = std::make_unique<
+        fingerprinting_protection_filter::UnverifiedRulesetDealer>();
+    thread->AddObserver(fingerprinting_protection_ruleset_dealer_.get());
+  }
+
   phishing_model_setter_ =
       std::make_unique<safe_browsing::PhishingModelSetterImpl>();
 
@@ -746,6 +756,15 @@ void ChromeContentRendererClient::RenderFrameCreated(
         new subresource_filter::SubresourceFilterAgent(
             render_frame, subresource_filter_ruleset_dealer_.get());
     subresource_filter_agent->Initialize();
+  }
+
+  if (fingerprinting_protection_filter::features::
+          IsFingerprintingProtectionFeatureEnabled() &&
+      fingerprinting_protection_ruleset_dealer_) {
+    auto* fingerprinting_protection_renderer_agent =
+        new fingerprinting_protection_filter::RendererAgent(
+            render_frame, fingerprinting_protection_ruleset_dealer_.get());
+    fingerprinting_protection_renderer_agent->Initialize();
   }
 
 #if !BUILDFLAG(IS_ANDROID)

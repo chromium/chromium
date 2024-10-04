@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/subresource_filter/content/shared/renderer/filter_utils.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
@@ -29,58 +30,6 @@ namespace proto = url_pattern_index::proto;
 namespace {
 
 using WebLoadPolicy = blink::WebDocumentSubresourceFilter::LoadPolicy;
-
-proto::ElementType ToElementType(
-    blink::mojom::RequestContextType request_context) {
-  switch (request_context) {
-    case blink::mojom::RequestContextType::AUDIO:
-    case blink::mojom::RequestContextType::VIDEO:
-    case blink::mojom::RequestContextType::TRACK:
-      return proto::ELEMENT_TYPE_MEDIA;
-    case blink::mojom::RequestContextType::BEACON:
-    case blink::mojom::RequestContextType::PING:
-      return proto::ELEMENT_TYPE_PING;
-    case blink::mojom::RequestContextType::EMBED:
-    case blink::mojom::RequestContextType::OBJECT:
-    case blink::mojom::RequestContextType::PLUGIN:
-      return proto::ELEMENT_TYPE_OBJECT;
-    case blink::mojom::RequestContextType::EVENT_SOURCE:
-    case blink::mojom::RequestContextType::FETCH:
-    case blink::mojom::RequestContextType::XML_HTTP_REQUEST:
-      return proto::ELEMENT_TYPE_XMLHTTPREQUEST;
-    case blink::mojom::RequestContextType::FAVICON:
-    case blink::mojom::RequestContextType::IMAGE:
-    case blink::mojom::RequestContextType::IMAGE_SET:
-      return proto::ELEMENT_TYPE_IMAGE;
-    case blink::mojom::RequestContextType::FONT:
-      return proto::ELEMENT_TYPE_FONT;
-    case blink::mojom::RequestContextType::FRAME:
-    case blink::mojom::RequestContextType::FORM:
-    case blink::mojom::RequestContextType::HYPERLINK:
-    case blink::mojom::RequestContextType::IFRAME:
-    case blink::mojom::RequestContextType::INTERNAL:
-    case blink::mojom::RequestContextType::LOCATION:
-      return proto::ELEMENT_TYPE_SUBDOCUMENT;
-    case blink::mojom::RequestContextType::SCRIPT:
-    case blink::mojom::RequestContextType::SERVICE_WORKER:
-    case blink::mojom::RequestContextType::SHARED_WORKER:
-      return proto::ELEMENT_TYPE_SCRIPT;
-    case blink::mojom::RequestContextType::STYLE:
-    case blink::mojom::RequestContextType::XSLT:
-      return proto::ELEMENT_TYPE_STYLESHEET;
-
-    case blink::mojom::RequestContextType::PREFETCH:
-    case blink::mojom::RequestContextType::SUBRESOURCE:
-      return proto::ELEMENT_TYPE_OTHER;
-
-    case blink::mojom::RequestContextType::CSP_REPORT:
-    case blink::mojom::RequestContextType::DOWNLOAD:
-    case blink::mojom::RequestContextType::MANIFEST:
-    case blink::mojom::RequestContextType::UNSPECIFIED:
-    default:
-      return proto::ELEMENT_TYPE_UNSPECIFIED;
-  }
-}
 
 WebLoadPolicy ToWebLoadPolicy(LoadPolicy load_policy) {
   switch (load_policy) {

@@ -36,6 +36,7 @@ if (use_blink) {
       "//components/subresource_filter/core/browser",
       "//components/subresource_filter/core/mojom",
       "//content/public/browser",
+      "//mojo/public/cpp/bindings",
       "//services/metrics/public/cpp:ukm_builders",
     ]
     deps = [

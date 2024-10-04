@@ -8,8 +8,12 @@
 #include <optional>
 #include <string_view>
 
+#include "base/memory/weak_ptr.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
-#include "components/fingerprinting_protection_filter/renderer/renderer_agent.h"
+#include "components/fingerprinting_protection_filter/renderer/mock_renderer_agent.h"
+#include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -25,19 +29,39 @@ class MockThrottleDelegate : public blink::URLLoaderThrottle::Delegate {
  public:
   ~MockThrottleDelegate() override = default;
 
-  MOCK_METHOD2(CancelWithError, void(int, std::string_view));
-  MOCK_METHOD0(Resume, void());
+  void CancelWithError(int error_code, std::string_view message) override {
+    if (error_code == net::ERR_BLOCKED_BY_CLIENT &&
+        message == "FingerprintingProtection") {
+      // Only accept calls with the expected error code and message.
+      cancel_called_ = true;
+    }
+  }
+
+  void Resume() override { resume_called_ = true; }
+
+  bool WasCancelCalled() { return cancel_called_; }
+
+  bool WasResumeCalled() { return resume_called_; }
+
+ private:
+  bool cancel_called_ = false;
+  bool resume_called_ = false;
 };
 
 class MockRendererURLLoaderThrottle : public RendererURLLoaderThrottle {
  public:
-  explicit MockRendererURLLoaderThrottle(RendererAgent* renderer_agent)
-      : RendererURLLoaderThrottle(renderer_agent,
-                                  /*local_frame_token=*/std::nullopt) {}
+  explicit MockRendererURLLoaderThrottle()
+      : RendererURLLoaderThrottle(
+            base::SingleThreadTaskRunner::GetCurrentDefault(),
+            /*local_frame_token=*/std::nullopt) {}
+
+  void InjectRendererAgent(base::WeakPtr<RendererAgent> renderer_agent) {
+    SetRendererAgentForTesting(renderer_agent);
+  }
 
  protected:
   // Simplify URL list matching.
-  bool ShouldAllowRequest() override {
+  bool ShouldAllowRequest(subresource_filter::LoadPolicy load_policy) override {
     return GetCurrentURL() != GURL("https://blocked.com/");
   }
 };
@@ -45,13 +69,15 @@ class MockRendererURLLoaderThrottle : public RendererURLLoaderThrottle {
 class RendererURLLoaderThrottleTest : public ::testing::Test {
  protected:
   RendererURLLoaderThrottleTest()
-      : renderer_agent_(/*render_frame=*/nullptr, /*ruleset_dealer=*/nullptr) {
+      : renderer_agent_(/*ruleset_dealer=*/nullptr,
+                        /*is_top_level_main_frame=*/true,
+                        /*has_valid_opener=*/false) {
     throttle_delegate_ = std::make_unique<MockThrottleDelegate>();
-    // Initialize the throttle with a valid `RendererAgent` that doesn't do
+    // Initialize the throttle with a valid `MockRendererAgent` that doesn't do
     // anything.
-    throttle_ =
-        std::make_unique<MockRendererURLLoaderThrottle>(&renderer_agent_);
+    throttle_ = std::make_unique<MockRendererURLLoaderThrottle>();
     throttle_->set_delegate(throttle_delegate_.get());
+    throttle_->InjectRendererAgent(renderer_agent_.GetWeakPtr());
   }
 
   ~RendererURLLoaderThrottleTest() override = default;
@@ -72,10 +98,9 @@ class RendererURLLoaderThrottleTest : public ::testing::Test {
     throttle_->OnActivationComputed(activation_state);
   }
 
-  base::test::TaskEnvironment message_loop_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  RendererAgent renderer_agent_;
-  std::unique_ptr<RendererURLLoaderThrottle> throttle_;
+  base::test::TaskEnvironment message_loop_;
+  MockRendererAgent renderer_agent_;
+  std::unique_ptr<MockRendererURLLoaderThrottle> throttle_;
   std::unique_ptr<MockThrottleDelegate> throttle_delegate_;
 };
 
@@ -85,7 +110,7 @@ TEST_F(RendererURLLoaderThrottleTest, DoesNotDeferHttpsImageUrl) {
   network::ResourceRequest request =
       GetResourceRequest(url, network::mojom::RequestDestination::kImage);
   throttle_->WillStartRequest(&request, &defer);
-  message_loop_.RunUntilIdle();
+  EXPECT_FALSE(defer);
 
   auto response_head = network::mojom::URLResponseHead::New();
   throttle_->WillProcessResponse(url, response_head.get(), &defer);
@@ -98,6 +123,7 @@ TEST_F(RendererURLLoaderThrottleTest, DoesNotDeferChromeUrl) {
   network::ResourceRequest request =
       GetResourceRequest(url, network::mojom::RequestDestination::kScript);
   throttle_->WillStartRequest(&request, &defer);
+  EXPECT_FALSE(defer);
 
   auto response_head = network::mojom::URLResponseHead::New();
   throttle_->WillProcessResponse(url, response_head.get(), &defer);
@@ -110,7 +136,7 @@ TEST_F(RendererURLLoaderThrottleTest, DoesNotDeferIframeUrl) {
   network::ResourceRequest request =
       GetResourceRequest(url, network::mojom::RequestDestination::kIframe);
   throttle_->WillStartRequest(&request, &defer);
-  message_loop_.RunUntilIdle();
+  EXPECT_FALSE(defer);
 
   auto response_head = network::mojom::URLResponseHead::New();
   throttle_->WillProcessResponse(url, response_head.get(), &defer);
@@ -124,10 +150,6 @@ TEST_F(RendererURLLoaderThrottleTest,
   network::ResourceRequest request =
       GetResourceRequest(url, network::mojom::RequestDestination::kScript);
   throttle_->WillStartRequest(&request, &defer);
-  message_loop_.RunUntilIdle();
-
-  auto response_head = network::mojom::URLResponseHead::New();
-  throttle_->WillProcessResponse(url, response_head.get(), &defer);
   EXPECT_TRUE(defer);
 }
 
@@ -139,7 +161,7 @@ TEST_F(RendererURLLoaderThrottleTest,
       GetResourceRequest(url, network::mojom::RequestDestination::kScript);
   SetActivationLevel(subresource_filter::mojom::ActivationLevel::kDisabled);
   throttle_->WillStartRequest(&request, &defer);
-  message_loop_.RunUntilIdle();
+  EXPECT_FALSE(defer);
 
   auto response_head = network::mojom::URLResponseHead::New();
   throttle_->WillProcessResponse(url, response_head.get(), &defer);
@@ -154,13 +176,13 @@ TEST_F(RendererURLLoaderThrottleTest, ResumesSafeUrlLoad) {
   // Don't set activation before the request starts so that it will be
   // deferred.
   throttle_->WillStartRequest(&request, &defer);
-  message_loop_.RunUntilIdle();
   EXPECT_TRUE(defer);
 
   SetActivationLevel(subresource_filter::mojom::ActivationLevel::kEnabled);
-  EXPECT_CALL(*throttle_delegate_, Resume());
-  // `Resume()` is called by posting a task.
-  message_loop_.RunUntilIdle();
+  auto* throttle_delegate_ptr = throttle_delegate_.get();
+  EXPECT_TRUE(base::test::RunUntil([throttle_delegate_ptr]() {
+    return throttle_delegate_ptr->WasResumeCalled();
+  }));
 
   // Reset `defer` - the throttle will not modify it except when it decides to
   // defer.
@@ -178,15 +200,13 @@ TEST_F(RendererURLLoaderThrottleTest, BlocksMatchingUrlLoad) {
   // Don't set activation before the request starts so that it will be
   // deferred.
   throttle_->WillStartRequest(&request, &defer);
-  message_loop_.RunUntilIdle();
   EXPECT_TRUE(defer);
 
   SetActivationLevel(subresource_filter::mojom::ActivationLevel::kEnabled);
-  EXPECT_CALL(*throttle_delegate_,
-              CancelWithError(testing::Eq(net::ERR_BLOCKED_BY_CLIENT),
-                              testing::Eq("FingerprintingProtection")));
-  // `CancelWithError()` is called by posting a task.
-  message_loop_.RunUntilIdle();
+  auto* throttle_delegate_ptr = throttle_delegate_.get();
+  EXPECT_TRUE(base::test::RunUntil([throttle_delegate_ptr]() {
+    return throttle_delegate_ptr->WasCancelCalled();
+  }));
 }
 
 TEST_F(RendererURLLoaderThrottleTest,
@@ -198,13 +218,13 @@ TEST_F(RendererURLLoaderThrottleTest,
   // Don't set activation before the request starts so that it will be
   // deferred.
   throttle_->WillStartRequest(&request, &defer);
-  message_loop_.RunUntilIdle();
   EXPECT_TRUE(defer);
 
   SetActivationLevel(subresource_filter::mojom::ActivationLevel::kDisabled);
-  EXPECT_CALL(*throttle_delegate_, Resume());
-  // `Resume()` is called by posting a task.
-  message_loop_.RunUntilIdle();
+  auto* throttle_delegate_ptr = throttle_delegate_.get();
+  EXPECT_TRUE(base::test::RunUntil([throttle_delegate_ptr]() {
+    return throttle_delegate_ptr->WasResumeCalled();
+  }));
 
   // Reset `defer` - the throttle will not modify it except when it decides to
   // defer.
@@ -223,13 +243,13 @@ TEST_F(RendererURLLoaderThrottleTest,
   // Don't set activation before the request starts so that it will be
   // deferred.
   throttle_->WillStartRequest(&request, &defer);
-  message_loop_.RunUntilIdle();
   EXPECT_TRUE(defer);
 
   SetActivationLevel(subresource_filter::mojom::ActivationLevel::kDryRun);
-  EXPECT_CALL(*throttle_delegate_, Resume());
-  // `Resume()` is called by posting a task.
-  message_loop_.RunUntilIdle();
+  auto* throttle_delegate_ptr = throttle_delegate_.get();
+  EXPECT_TRUE(base::test::RunUntil([throttle_delegate_ptr]() {
+    return throttle_delegate_ptr->WasResumeCalled();
+  }));
 
   // Reset `defer` - the throttle will not modify it except when it decides to
   // defer.

@@ -26,6 +26,9 @@ const char ActivationDecisionHistogramName[] =
 const char ActivationLevelHistogramName[] =
     "FingerprintingProtection.PageLoad.ActivationLevel";
 
+const char kPageActivationThrottleNameForLogging[] =
+    "FingerprintingProtectionPageActivationThrottle";
+
 // Console messages
 // ----------------
 

@@ -4,6 +4,8 @@
 
 static_library("renderer") {
   sources = [
+    "filter_utils.cc",
+    "filter_utils.h",
     "web_document_subresource_filter_impl.cc",
     "web_document_subresource_filter_impl.h",
   ]

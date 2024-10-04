@@ -21,6 +21,7 @@ if (use_blink) {
       "//components/subresource_filter/content/shared/renderer",
       "//components/subresource_filter/core/common",
       "//components/subresource_filter/core/mojom",
+      "//components/url_pattern_index/proto:url_pattern_index",
       "//content/public/renderer",
       "//mojo/public/cpp/bindings",
       "//services/network/public/mojom",
@@ -35,6 +36,22 @@ if (use_blink) {
     ]
   }
 
+  source_set("test_support") {
+    testonly = true
+    sources = [
+      "mock_renderer_agent.cc",
+      "mock_renderer_agent.h",
+    ]
+    public_deps = [
+      ":renderer",
+      "//components/fingerprinting_protection_filter/mojom",
+      "//components/subresource_filter/core/common",
+      "//components/subresource_filter/core/mojom",
+      "//testing/gmock",
+      "//url",
+    ]
+  }
+
   source_set("unit_tests") {
     testonly = true
     sources = [
@@ -42,12 +59,16 @@ if (use_blink) {
       "renderer_url_loader_throttle_unittest.cc",
     ]
     deps = [
-      ":renderer",
+      ":test_support",
       "//base",
       "//base/test:test_support",
+      "//components/subresource_filter/content/shared/renderer",
       "//components/subresource_filter/core/common",
       "//components/subresource_filter/core/common:test_support",
       "//components/subresource_filter/core/mojom",
+      "//content/public/renderer",
+      "//net",
+      "//services/network/public/cpp",
       "//services/network/public/cpp",
       "//services/network/public/mojom",
       "//testing/gmock",

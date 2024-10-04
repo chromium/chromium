@@ -9,11 +9,13 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/optional_ref.h"
+#include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
+#include "content/public/renderer/render_frame.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -34,7 +36,7 @@ class RendererAgent;
 class RendererURLLoaderThrottle : public blink::URLLoaderThrottle {
  public:
   RendererURLLoaderThrottle(
-      RendererAgent* renderer_agent,
+      scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
       base::optional_ref<const blink::LocalFrameToken> local_frame_token);
 
   RendererURLLoaderThrottle(const RendererURLLoaderThrottle&) = delete;
@@ -49,14 +51,22 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle {
       const GURL& url,
       network::mojom::RequestDestination request_destination);
 
-  // Notifies the throttle of the activation decision that it should adhere to
-  // when deciding whether to defer, resume, or cancel a resource load.
+  // Callback to notify throttles of their associated `RendererAgent`.
+  // Should be passed to a task runner on the main thread.
+  void OnRendererAgentLocated(base::WeakPtr<RendererAgent> renderer_agent);
+
+  // Callback to notify throttles of page-level activation (i.e. whether to
+  // attempt filtering or simply resume the request). Should be passed to
+  // a `RendererAgent` associated with the same `RenderFrame` as the throttle.
   void OnActivationComputed(
       const subresource_filter::mojom::ActivationState& activation_state);
 
-  // blink::URLLoaderThrottle:
-  void DetachFromCurrentSequence() override;
+  // Callback to notify throttles of the policy to apply to a URL that has been
+  // checked against the filtering ruleset. Should be passed to a
+  // `RendererAgent` associated with the same `RenderFrame` as the throttle.
+  void OnLoadPolicyCalculated(subresource_filter::LoadPolicy load_policy);
 
+  // blink::URLLoaderThrottle:
   void WillStartRequest(network::ResourceRequest* request,
                         bool* defer) override;
 
@@ -68,19 +78,27 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle {
       net::HttpRequestHeaders* modified_headers,
       net::HttpRequestHeaders* modified_cors_exempt_headers) override;
 
-  void WillProcessResponse(const GURL& response_url,
-                           network::mojom::URLResponseHead* response_head,
-                           bool* defer) override;
-
   const char* NameForLoggingWillProcessResponse() override;
+
+  base::WeakPtr<RendererURLLoaderThrottle> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
 
  protected:
   // This function is protected virtual to allow mocking in tests.
-  //
-  // Checks the filter for the current document to determine the load policy.
-  virtual bool ShouldAllowRequest();
+  virtual bool ShouldAllowRequest(subresource_filter::LoadPolicy load_policy);
 
   GURL GetCurrentURL() { return current_url_; }
+
+  // Only to be used to inject an agent in unittests in the absence of a
+  // frame.
+  void SetRendererAgentForTesting(base::WeakPtr<RendererAgent> renderer_agent) {
+    // Since we don't have a `RenderFrame` and can't set the agent the normal
+    // way, we need to pretend we are waiting for it for resource loads to be
+    // deferred until activation arrives.
+    waiting_for_agent_ = true;
+    renderer_agent_ = renderer_agent;
+  }
 
  private:
   // Checks whether filtering is activated or not, and if so, whether the URL
@@ -93,8 +111,13 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle {
   // computed or check whether it should be filtered otherwise.
   void ProcessRequestStep(const GURL& latest_url, bool* defer);
 
-  // Owned by `ChromeContentRendererClient` and outlives this throttle.
-  raw_ptr<RendererAgent> renderer_agent_;
+  // Whether we are still waiting for the `RendererAgent` that this throttle's
+  // request corresponds to to be retrieved.
+  bool waiting_for_agent_ = true;
+
+  // Lives on a different thread, as `RendererAgent` instances are owned by
+  // `ChromeContentRendererClient`. Must be dereferenced on the main thread.
+  base::WeakPtr<RendererAgent> renderer_agent_;
 
   const std::optional<blink::LocalFrameToken> frame_token_;
 
@@ -102,7 +125,9 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle {
   network::mojom::RequestDestination request_destination_;
   bool deferred_ = false;
   std::optional<subresource_filter::mojom::ActivationState> activation_state_;
+
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner_;
 
   base::WeakPtrFactory<RendererURLLoaderThrottle> weak_factory_{this};
 };

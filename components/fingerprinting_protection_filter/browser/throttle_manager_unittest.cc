@@ -6,12 +6,16 @@
 
 #include <map>
 #include <memory>
+#include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
 #include "components/fingerprinting_protection_filter/browser/test_support.h"
@@ -19,6 +23,7 @@
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/subresource_filter/content/shared/browser/child_frame_navigation_test_utils.h"
+#include "components/subresource_filter/content/shared/browser/utils.h"
 #include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
@@ -35,6 +40,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -71,6 +77,39 @@ enum PageActivationNotificationTiming {
   WILL_PROCESS_RESPONSE,
 };
 
+class FakeRendererAgent {
+ public:
+  explicit FakeRendererAgent(content::WebContents* web_contents) {
+    ThrottleManager::BindReceiver(
+        remote_.BindNewEndpointAndPassDedicatedReceiver(),
+        &web_contents->GetPrimaryPage().GetMainDocument());
+    RequestActivation();
+  }
+
+  std::optional<bool> LastActivated() {
+    if (!last_activation_) {
+      return std::nullopt;
+    }
+    bool activated = last_activation_->activation_level !=
+                     subresource_filter::mojom::ActivationLevel::kDisabled;
+    return activated;
+  }
+
+ private:
+  void RequestActivation() {
+    remote_->CheckActivation(base::BindOnce(
+        &FakeRendererAgent::OnActivationComputed, base::Unretained(this)));
+  }
+
+  void OnActivationComputed(
+      subresource_filter::mojom::ActivationStatePtr activation_state) {
+    last_activation_ = std::move(activation_state);
+  }
+
+  mojo::AssociatedRemote<mojom::FingerprintingProtectionHost> remote_;
+  subresource_filter::mojom::ActivationStatePtr last_activation_;
+};
+
 // Simple throttle that sends page-level activation to the manager for a
 // specific set of URLs.
 class MockPageActivationThrottle : public content::NavigationThrottle {
@@ -89,11 +128,14 @@ class MockPageActivationThrottle : public content::NavigationThrottle {
     dry_run_state.activation_level =
         subresource_filter::mojom::ActivationLevel::kDryRun;
 
+    subresource_filter::mojom::ActivationState disabled_state;
+    disabled_state.activation_level =
+        subresource_filter::mojom::ActivationLevel::kDisabled;
+
     mock_page_activations_[GURL(kTestURLWithActivation)] = enabled_state;
     mock_page_activations_[GURL(kTestURLWithActivation2)] = enabled_state;
     mock_page_activations_[GURL(kTestURLWithDryRun)] = dry_run_state;
-    mock_page_activations_[GURL(kTestURLWithNoActivation)] =
-        subresource_filter::mojom::ActivationState();
+    mock_page_activations_[GURL(kTestURLWithNoActivation)] = disabled_state;
   }
 
   MockPageActivationThrottle(const MockPageActivationThrottle&) = delete;
@@ -120,13 +162,20 @@ class MockPageActivationThrottle : public content::NavigationThrottle {
       PageActivationNotificationTiming throttle_state) {
     if (throttle_state == activation_throttle_state_) {
       auto it = mock_page_activations_.find(navigation_handle()->GetURL());
-      if (it != mock_page_activations_.end()) {
-        auto* web_contents_helper =
-            FingerprintingProtectionWebContentsHelper::FromWebContents(
-                navigation_handle()->GetWebContents());
-        if (web_contents_helper) {
+      auto* web_contents_helper =
+          navigation_handle()->GetWebContents()
+              ? FingerprintingProtectionWebContentsHelper::FromWebContents(
+                    navigation_handle()->GetWebContents())
+              : nullptr;
+      if (subresource_filter::IsInSubresourceFilterRoot(navigation_handle()) &&
+          web_contents_helper) {
+        if (it != mock_page_activations_.end()) {
           web_contents_helper->NotifyPageActivationComputed(
               navigation_handle(), it->second,
+              subresource_filter::ActivationDecision::ACTIVATED);
+        } else {
+          web_contents_helper->NotifyPageActivationComputed(
+              navigation_handle(), subresource_filter::mojom::ActivationState(),
               subresource_filter::ActivationDecision::ACTIVATED);
         }
       }
@@ -162,6 +211,7 @@ class ThrottleManagerTest
     content::RenderViewHostTestHarness::SetUp();
     content::WebContents* web_contents =
         RenderViewHostTestHarness::web_contents();
+    CreateAgentForHost(web_contents->GetPrimaryMainFrame());
 
     // Initialize the ruleset dealer with a blocklist suffix rule.
     std::vector<proto::UrlRule> rules;
@@ -195,8 +245,23 @@ class ThrottleManagerTest
   void TearDown() override {
     test_support_.reset();
     dealer_handle_.reset();
-    base::RunLoop().RunUntilIdle();
     content::RenderViewHostTestHarness::TearDown();
+  }
+
+  void ExpectActivationSignalForFrame(
+      content::RenderFrameHost* rfh,
+      bool expect_activation,
+      bool expect_activation_sent_to_agent = true) {
+    FakeRendererAgent* agent = agent_map_[rfh].get();
+    EXPECT_TRUE(base::test::RunUntil([expect_activation, agent]() {
+      return expect_activation ==
+             (agent->LastActivated() && *agent->LastActivated());
+    }));
+    EXPECT_TRUE(
+        base::test::RunUntil([expect_activation_sent_to_agent, agent]() {
+          return expect_activation_sent_to_agent ==
+                 agent->LastActivated().has_value();
+        }));
   }
 
   // Helper methods:
@@ -267,14 +332,22 @@ class ThrottleManagerTest
   }
 
  protected:
-  // content::WebContentsObserver
+  // content::WebContentsObserver:
+  void RenderFrameCreated(content::RenderFrameHost* new_host) override {
+    CreateAgentForHost(new_host);
+  }
+
+  void RenderFrameDeleted(content::RenderFrameHost* host) override {
+    agent_map_.erase(host);
+  }
+
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override {
     if (navigation_handle->IsSameDocument()) {
       return;
     }
 
-    // Inject the proper throttles at this time.
+    // Inject the proper throttles.
     std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
     PageActivationNotificationTiming state =
         ::testing::UnitTest::GetInstance()->current_test_info()->value_param()
@@ -291,14 +364,24 @@ class ThrottleManagerTest
     }
 
     created_fp_throttle_for_last_navigation_ = false;
-    for (auto& it : throttles) {
-      if (strcmp(it->GetNameForLogging(),
-                 "FingerprintingProtectionPageActivationThrottle") == 0) {
+    for (size_t i = 0; i < throttles.size(); i++) {
+      if (strcmp(throttles[i]->GetNameForLogging(),
+                 kPageActivationThrottleNameForLogging) == 0) {
         created_fp_throttle_for_last_navigation_ = true;
-        // continue;
+        // Delete the prod activation throttle so it doesn't interfere with
+        // tests.
+        throttles.erase(throttles.begin() + i);
+        i--;
+        continue;
       }
-      navigation_handle->RegisterThrottleForTesting(std::move(it));
+      navigation_handle->RegisterThrottleForTesting(std::move(throttles[i]));
     }
+  }
+
+  void CreateAgentForHost(content::RenderFrameHost* host) {
+    auto new_agent = std::make_unique<FakeRendererAgent>(
+        RenderViewHostTestHarness::web_contents());
+    agent_map_[host] = std::move(new_agent);
   }
 
   ThrottleManager* throttle_manager() {
@@ -313,6 +396,9 @@ class ThrottleManagerTest
   VerifiedRulesetDealer::Handle* dealer_handle() {
     return dealer_handle_.get();
   }
+
+  std::map<content::RenderFrameHost*, std::unique_ptr<FakeRendererAgent>>
+      agent_map_;
 
  private:
   FingerprintingProtectionWebContentsHelper* web_contents_helper() {
@@ -400,6 +486,8 @@ TEST_P(ThrottleManagerEnabledTest,
 
   // Commit a navigation that triggers page level activation.
   NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
+  CreateAgentForHost(main_rfh());
+  ExpectActivationSignalForFrame(main_rfh(), /*expect_activation=*/true);
 
   // A disallowed subframe navigation should be successfully filtered.
   CreateSubframeWithTestNavigation(
@@ -427,6 +515,8 @@ TEST_P(ThrottleManagerEnabledTest, NoPageActivation) {
 
   // Commit a navigation that does not trigger page level activation.
   NavigateAndCommitMainFrame(GURL(kTestURLWithNoActivation));
+  CreateAgentForHost(main_rfh());
+  ExpectActivationSignalForFrame(main_rfh(), /*expect_activation=*/false);
   EXPECT_TRUE(ManagerHasRulesetHandle());
 
   // A disallowed subframe navigation should not be filtered.
@@ -441,25 +531,31 @@ TEST_P(ThrottleManagerEnabledTest, NoPageActivation) {
                     .size());
 }
 
-// TODO(https://crbug.com/40280666): Dry run mode is not yet implemented and
-// should be treated as if activation is enabled normally.
-TEST_P(ThrottleManagerEnabledTest, ActivateMainFrameAndFilterDryRun) {
+TEST_P(ThrottleManagerEnabledTest, ActivateMainFrameAndDoNotFilterDryRun) {
   // Commit a navigation that triggers page level activation.
   NavigateAndCommitMainFrame(GURL(kTestURLWithDryRun));
+  CreateAgentForHost(main_rfh());
+  ExpectActivationSignalForFrame(main_rfh(), /*expect_activation=*/true);
 
+  // Child frames should not be filtered.
   CreateSubframeWithTestNavigation(
       GURL("https://www.example.com/disallowed.html"), main_rfh());
-  EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE,
-            SimulateStartAndGetResult(navigation_simulator()).action());
-
-  // Check that the frame is still activated once communication with blink is
-  // implemented.
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateStartAndGetResult(navigation_simulator()));
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateCommitAndGetResult(navigation_simulator()));
+  content::RenderFrameHost* child =
+      navigation_simulator()->GetFinalRenderFrameHost();
+  // But they should still be activated.
+  ExpectActivationSignalForFrame(child, /*expect_activation=*/true);
 }
 
 TEST_P(ThrottleManagerEnabledTest,
        ActivateMainFrameAndFilterSubframeNavigationOnRedirect) {
   // Commit a navigation that triggers page level activation.
   NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
+  CreateAgentForHost(main_rfh());
+  ExpectActivationSignalForFrame(main_rfh(), /*expect_activation=*/true);
 
   // A disallowed subframe navigation via redirect should be successfully
   // filtered.
@@ -474,12 +570,37 @@ TEST_P(ThrottleManagerEnabledTest,
                 .action());
 }
 
+TEST_P(ThrottleManagerEnabledTest,
+       ActivateMainFrameAndDoNotFilterSubframeNavigation) {
+  // Commit a navigation that triggers page level activation.
+  NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
+  CreateAgentForHost(main_rfh());
+  ExpectActivationSignalForFrame(main_rfh(), /*expect_activation=*/true);
+
+  // An allowed subframe navigation should complete successfully.
+  CreateSubframeWithTestNavigation(
+      GURL("https://www.example.com/allowed1.html"), main_rfh());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateStartAndGetResult(navigation_simulator()));
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateRedirectAndGetResult(
+                navigation_simulator(),
+                GURL("https://www.example.com/allowed2.html")));
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateCommitAndGetResult(navigation_simulator()));
+  content::RenderFrameHost* child =
+      navigation_simulator()->GetFinalRenderFrameHost();
+  ExpectActivationSignalForFrame(child, /*expect_activation=*/true);
+}
+
 // This should fail if the throttle manager notifies the delegate twice of a
 // disallowed load for the same page load.
 TEST_P(ThrottleManagerEnabledTest,
        ActivateMainFrameAndFilterTwoSubframeNavigations) {
   // Commit a navigation that triggers page level activation.
   NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
+  CreateAgentForHost(main_rfh());
+  ExpectActivationSignalForFrame(main_rfh(), /*expect_activation=*/true);
 
   CreateSubframeWithTestNavigation(
       GURL("https://www.example.com/1/disallowed.html"), main_rfh());
@@ -496,6 +617,8 @@ TEST_P(ThrottleManagerEnabledTest,
        ActivateTwoMainFramesAndFilterTwoSubframeNavigations) {
   // Commit a navigation that triggers page level activation.
   NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
+  CreateAgentForHost(main_rfh());
+  ExpectActivationSignalForFrame(main_rfh(), /*expect_activation=*/true);
 
   // A disallowed subframe navigation should be successfully filtered.
   CreateSubframeWithTestNavigation(
@@ -505,6 +628,8 @@ TEST_P(ThrottleManagerEnabledTest,
 
   // Commit another navigation that triggers page level activation.
   NavigateAndCommitMainFrame(GURL(kTestURLWithActivation2));
+  CreateAgentForHost(main_rfh());
+  ExpectActivationSignalForFrame(main_rfh(), /*expect_activation=*/true);
 
   CreateSubframeWithTestNavigation(
       GURL("https://www.example.com/2/disallowed.html"), main_rfh());
@@ -514,6 +639,8 @@ TEST_P(ThrottleManagerEnabledTest,
 
 TEST_P(ThrottleManagerEnabledTest, DoNotFilterForInactiveFrame) {
   NavigateAndCommitMainFrame(GURL("https://do-not-activate.html"));
+  CreateAgentForHost(main_rfh());
+  ExpectActivationSignalForFrame(main_rfh(), /*expect_activation=*/false);
 
   // A subframe navigation should complete successfully.
   CreateSubframeWithTestNavigation(GURL("https://www.example.com/allowed.html"),
@@ -522,6 +649,9 @@ TEST_P(ThrottleManagerEnabledTest, DoNotFilterForInactiveFrame) {
             SimulateStartAndGetResult(navigation_simulator()).action());
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             SimulateCommitAndGetResult(navigation_simulator()).action());
+  content::RenderFrameHost* child =
+      navigation_simulator()->GetFinalRenderFrameHost();
+  ExpectActivationSignalForFrame(child, /*expect_activation=*/false);
 }
 
 TEST_P(ThrottleManagerEnabledTest, SameSiteNavigation_RulesetIsPreserved) {
@@ -535,21 +665,26 @@ TEST_P(ThrottleManagerEnabledTest, SameSiteNavigation_RulesetIsPreserved) {
       GURL(base::StringPrintf("%sanother_page.html", kTestURLWithActivation));
 
   NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
+  CreateAgentForHost(main_rfh());
+  ExpectActivationSignalForFrame(main_rfh(), /*expect_activation=*/true);
   EXPECT_TRUE(ManagerHasRulesetHandle());
 
   NavigateAndCommitMainFrame(same_site_url);
   EXPECT_TRUE(ManagerHasRulesetHandle());
 
-  // A subframe navigation should still be blocked.
+  // A subframe navigation should not be blocked because we are not activated
+  // on the current main frame.
   CreateSubframeWithTestNavigation(
       GURL("https://www.example.com/disallowed.html"), main_rfh());
-  EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE,
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
             SimulateStartAndGetResult(navigation_simulator()).action());
 }
 
 TEST_P(ThrottleManagerEnabledTest,
        SameSiteFailedNavigation_MaintainActivation) {
   NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
+  CreateAgentForHost(main_rfh());
+  ExpectActivationSignalForFrame(main_rfh(), /*expect_activation=*/true);
   EXPECT_TRUE(ManagerHasRulesetHandle());
 
   GURL same_site_inactive_url =
@@ -566,68 +701,66 @@ TEST_P(ThrottleManagerEnabledTest,
             SimulateStartAndGetResult(navigation_simulator()).action());
 }
 
-TEST_P(ThrottleManagerEnabledTest, FailedNavigationToErrorPage_NoActivation) {
-  NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
-  EXPECT_TRUE(ManagerHasRulesetHandle());
-
-  GURL same_site_inactive_url =
-      GURL(base::StringPrintf("%sinactive.html", kTestURLWithActivation));
-
-  CreateTestNavigation(same_site_inactive_url, main_rfh());
-  SimulateFailedNavigation(navigation_simulator(), net::ERR_FAILED);
-
-  CreateSubframeWithTestNavigation(
-      GURL("https://www.example.com/disallowed.html"), main_rfh());
-  EXPECT_EQ(content::NavigationThrottle::PROCEED,
-            SimulateStartAndGetResult(navigation_simulator()).action());
-  EXPECT_EQ(content::NavigationThrottle::PROCEED,
-            SimulateCommitAndGetResult(navigation_simulator()).action());
-}
-
 // Ensure activation propagates into great-grandchild frames, including cross
 // process ones.
 TEST_P(ThrottleManagerEnabledTest, ActivationPropagation) {
   NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
+  CreateAgentForHost(main_rfh());
+  ExpectActivationSignalForFrame(main_rfh(), /*expect_activation=*/true);
 
   // Navigate a subframe to a URL that is not itself disallowed. Subresource
   // filtering for this subframe document should still be activated.
   CreateSubframeWithTestNavigation(GURL("https://www.a.com/allowed.html"),
                                    main_rfh());
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
-            SimulateStartAndGetResult(navigation_simulator()).action());
+            SimulateStartAndGetResult(navigation_simulator()));
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
-            SimulateCommitAndGetResult(navigation_simulator()).action());
+            SimulateCommitAndGetResult(navigation_simulator()));
+  content::RenderFrameHost* subframe1 =
+      navigation_simulator()->GetFinalRenderFrameHost();
+  CreateAgentForHost(subframe1);
+  ExpectActivationSignalForFrame(subframe1, /*expect_activation=*/true);
 
   // Navigate a sub-subframe to a URL that is not itself disallowed. Subresource
   // filtering for this subframe document should still be activated.
-  content::RenderFrameHost* subframe1 =
-      navigation_simulator()->GetFinalRenderFrameHost();
   CreateSubframeWithTestNavigation(GURL("https://www.b.com/allowed.html"),
                                    subframe1);
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
-            SimulateStartAndGetResult(navigation_simulator()).action());
+            SimulateStartAndGetResult(navigation_simulator()));
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
-            SimulateCommitAndGetResult(navigation_simulator()).action());
-
+            SimulateCommitAndGetResult(navigation_simulator()));
   content::RenderFrameHost* subframe2 =
       navigation_simulator()->GetFinalRenderFrameHost();
+  CreateAgentForHost(subframe2);
+  ExpectActivationSignalForFrame(subframe2, /*expect_activation=*/true);
+
+  // A final, nested subframe navigation is filtered.
   CreateSubframeWithTestNavigation(GURL("https://www.c.com/disallowed.html"),
                                    subframe2);
   EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE,
-            SimulateStartAndGetResult(navigation_simulator()).action());
+            SimulateStartAndGetResult(navigation_simulator()));
 }
 
-// Same-site navigations within a single RFH should persist activation.
+// Same-site navigations within a single RFH should stop activation.
 TEST_P(ThrottleManagerEnabledTest, SameSiteNavigationStopsActivation) {
-  NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
+  // The test assumes the previous page gets deleted after navigation. Disable
+  // back/forward cache to ensure that it doesn't get preserved in the cache.
+  DisableBackForwardCacheForTesting(
+      RenderViewHostTestHarness::web_contents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
-  // Mock a same-site navigation, in the same RFH.
+  NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
+  CreateAgentForHost(main_rfh());
+  ExpectActivationSignalForFrame(main_rfh(), /*expect_activation=*/true);
+
   NavigateAndCommitMainFrame(
       GURL(base::StringPrintf("%s/some_path/", kTestURLWithActivation)));
 
+  // A navigation to a URL on the blocklist should be allowed to proceed - i.e.
+  // no activation and the blocklist isn't checked.
   CreateSubframeWithTestNavigation(
       GURL("https://www.example.com/disallowed.html"), main_rfh());
-  EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE,
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
             SimulateStartAndGetResult(navigation_simulator()).action());
 }
 
@@ -710,7 +843,7 @@ TEST_P(ThrottleManagerEnabledTest, ThrottleManagerLifetime_Basic) {
   // Now that the navigation committed, it should be associated with the current
   // page.
   EXPECT_FALSE(navigation_simulator()->GetNavigationHandle());
-  ASSERT_EQ(main_rfh()->GetLastCommittedURL(), kTestURLWithNoActivation);
+  ASSERT_EQ(main_rfh()->GetLastCommittedURL(), GURL(kTestURLWithNoActivation));
   EXPECT_EQ(ThrottleManager::FromPage(main_rfh()->GetPage()),
             throttle_manager_at_start);
 
@@ -787,6 +920,8 @@ TEST_P(ThrottleManagerEnabledTest,
        ActivateMainFrameAndFilterFencedFrameNavigation) {
   // Commit a navigation that triggers page level activation.
   NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
+  CreateAgentForHost(main_rfh());
+  ExpectActivationSignalForFrame(main_rfh(), /*expect_activation=*/true);
 
   // A disallowed fenced frame navigation should be successfully filtered.
   CreateFencedFrameWithTestNavigation(
@@ -799,6 +934,8 @@ TEST_P(ThrottleManagerEnabledTest,
        ActivateMainFrameAndFilterFencedFrameNavigationOnRedirect) {
   // Commit a navigation that triggers page level activation.
   NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
+  CreateAgentForHost(main_rfh());
+  ExpectActivationSignalForFrame(main_rfh(), /*expect_activation=*/true);
 
   // A disallowed subframe navigation via redirect should be successfully
   // filtered.
@@ -817,6 +954,8 @@ TEST_P(ThrottleManagerEnabledTest,
 // cross process ones.
 TEST_P(ThrottleManagerEnabledTest, ActivationPropagation_FencedFrame) {
   NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
+  CreateAgentForHost(main_rfh());
+  ExpectActivationSignalForFrame(main_rfh(), /*expect_activation=*/true);
 
   // Navigate a fenced frame to a URL that is not itself disallowed. Subresource
   // filtering for this fenced frame document should still be activated.
@@ -826,22 +965,26 @@ TEST_P(ThrottleManagerEnabledTest, ActivationPropagation_FencedFrame) {
             SimulateStartAndGetResult(navigation_simulator()).action());
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             SimulateCommitAndGetResult(navigation_simulator()).action());
+  content::RenderFrameHost* fenced_frame1 =
+      navigation_simulator()->GetFinalRenderFrameHost();
+  CreateAgentForHost(fenced_frame1);
+  ExpectActivationSignalForFrame(fenced_frame1, /*expect_activation=*/true);
 
   // Navigate a nested fenced frame to a URL that is not itself disallowed.
   // Subresource filtering for this fenced frame document should still be
   // activated.
-  content::RenderFrameHost* fenced_frame1 =
-      navigation_simulator()->GetFinalRenderFrameHost();
   CreateFencedFrameWithTestNavigation(GURL("https://www.b.com/allowed.html"),
                                       fenced_frame1);
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             SimulateStartAndGetResult(navigation_simulator()).action());
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             SimulateCommitAndGetResult(navigation_simulator()).action());
-
-  // A final, nested fenced frame navigation is filtered.
   content::RenderFrameHost* fenced_frame2 =
       navigation_simulator()->GetFinalRenderFrameHost();
+  CreateAgentForHost(fenced_frame2);
+  ExpectActivationSignalForFrame(fenced_frame2, /*expect_activation=*/true);
+
+  // A final, nested fenced frame navigation is filtered.
   CreateFencedFrameWithTestNavigation(GURL("https://www.c.com/disallowed.html"),
                                       fenced_frame2);
   EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE,
@@ -854,7 +997,7 @@ TEST_P(ThrottleManagerEnabledTest, ActivationPropagation_FencedFrame) {
             SimulateStartAndGetResult(navigation_simulator()).action());
 }
 
-TEST_P(ThrottleManagerEnabledTest, SafeBrowsingThrottleCreation) {
+TEST_P(ThrottleManagerEnabledTest, ActivationThrottleCreation) {
   // The throttle should be created on a main frame navigation.
   NavigateAndCommitMainFrame(GURL(kTestURLWithNoActivation));
   EXPECT_TRUE(created_fp_throttle_for_current_navigation());

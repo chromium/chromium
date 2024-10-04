@@ -103,6 +103,7 @@
 #include "components/component_updater/timer_update_scheduler.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
+#include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_ruleset_publisher.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/gcm_driver/gcm_driver.h"
@@ -1526,14 +1527,13 @@ void BrowserProcessImpl::CreateFingerprintingProtectionRulesetService() {
   base::FilePath user_data_dir;
   base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
 
-  // TODO(https://crbug.com/347304498): Use FP publisher once
-  // UnverifiedRulesetDealer is used.
   fingerprinting_protection_ruleset_service_ =
       subresource_filter::RulesetService::Create(
           fingerprinting_protection_filter::
               kFingerprintingProtectionRulesetConfig,
           local_state(), user_data_dir,
-          subresource_filter::SafeBrowsingRulesetPublisher::Factory());
+          fingerprinting_protection_filter::
+              FingerprintingProtectionRulesetPublisher::Factory());
 }
 
 #if !BUILDFLAG(IS_ANDROID)

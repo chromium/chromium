@@ -217,7 +217,8 @@ void FingerprintingProtectionWebContentsHelper::DidStartNavigation(
   }
 
   std::unique_ptr<ThrottleManager> new_manager =
-      ThrottleManager::CreateForNewPage(dealer_handle_.get(), *this);
+      ThrottleManager::CreateForNewPage(dealer_handle_.get(), *this,
+                                        *navigation_handle);
 
   throttle_managers_.insert(new_manager.get());
 
