@@ -263,6 +263,12 @@ void TraverseDomForFourDigitCombinations(
     base::OnceCallback<void(const std::vector<std::string>&)>
         potential_matches);
 
+// Attempts to update `FormFieldData::user_input_` of `field`, whose DOM element
+// is identified by `element_id`, using `field_data_manager`.
+void MaybeUpdateUserInput(FormFieldData& field,
+                          FieldRendererId element_id,
+                          const FieldDataManager& field_data_manager);
+
 // The following functions exist in as internal helper functions in
 // form_autofill_util.cc and are exposed here just for testing purposes. Check
 // the wrapped functions in the .cc file for documentation.

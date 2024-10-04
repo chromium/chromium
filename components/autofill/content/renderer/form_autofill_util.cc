@@ -1665,7 +1665,7 @@ std::vector<WebElement> GetIframeElements(const WebDocument& document,
 
 // Returns if a script-modified username or credit card number is suitable to
 // store in Password Manager/Autofill given `typed_value`.
-bool ScriptModifiedUsernameOrCreditCardNumberAcceptable(
+bool IsScriptModifiedValueAcceptable(
     const std::u16string& value,
     const std::u16string& typed_value,
     const FieldDataManager& field_data_manager) {
@@ -1964,25 +1964,9 @@ void WebFormControlElementToFormField(
       element.SelectedText().Utf16().substr(0, kMaxSelectedTextLength));
   field->set_allows_writing_suggestions(element.WritingSuggestions());
 
-  // If the field was autofilled or the user typed into it, check the value
-  // stored in |field_data_manager| against the value property of the DOM
-  // element. If they differ, then the scripts on the website modified the
-  // value afterwards. Store the original value as the |typed_value|, unless
-  // this is one of recognised situations when the site-modified value is more
-  // useful for filling.
-  if (field_data_manager &&
-      field->properties_mask() & (FieldPropertiesFlags::kUserTyped |
-                                  FieldPropertiesFlags::kAutofilled)) {
-    // The typed value is preserved for all passwords. It is also preserved for
-    // potential usernames and credit cards, as long as the |value| is not
-    // deemed acceptable.
-    std::u16string user_input =
-        field_data_manager->GetUserInput(GetFieldRendererId(element));
-    if (field->form_control_type() == FormControlType::kInputPassword ||
-        !ScriptModifiedUsernameOrCreditCardNumberAcceptable(
-            field->value(), user_input, *field_data_manager)) {
-      field->set_user_input(std::move(user_input).substr(0, kMaxStringLength));
-    }
+  if (field_data_manager) {
+    MaybeUpdateUserInput(*field, GetFieldRendererId(element),
+                         *field_data_manager);
   }
 }
 
@@ -2824,6 +2808,32 @@ void TraverseDomForFourDigitCombinations(
 
   std::move(potential_matches)
       .Run(std::vector<std::string>(matches.begin(), matches.end()));
+}
+
+void MaybeUpdateUserInput(FormFieldData& field,
+                          FieldRendererId element_id,
+                          const FieldDataManager& field_data_manager) {
+  // If the field was autofilled or the user typed into it, check the value
+  // stored in `field_data_manager` against the value property of the DOM
+  // `element`. If they differ, then the scripts on the website modified the
+  // value afterwards. Store the original value as the `user_input`, unless
+  // this is one of recognised situations when the site-modified value is more
+  // useful for filling.
+  if (FieldPropertiesMask properties_mask =
+          field_data_manager.HasFieldData(element_id)
+              ? field_data_manager.GetFieldPropertiesMask(element_id)
+              : FieldPropertiesMask();
+      properties_mask &
+      (FieldPropertiesFlags::kUserTyped | FieldPropertiesFlags::kAutofilled)) {
+    // The user input is preserved for all passwords. It is also preserved for
+    // other fields, as long as `value` is not acceptable.
+    std::u16string user_input = field_data_manager.GetUserInput(element_id);
+    if (field.form_control_type() == FormControlType::kInputPassword ||
+        !IsScriptModifiedValueAcceptable(field.value(), user_input,
+                                         field_data_manager)) {
+      field.set_user_input(std::move(user_input).substr(0, kMaxStringLength));
+    }
+  }
 }
 
 std::u16string GetAriaLabelForTesting(  // IN-TEST

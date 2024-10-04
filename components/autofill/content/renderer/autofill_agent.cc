@@ -1762,6 +1762,8 @@ void AutofillAgent::JavaScriptChangedValue(WebFormControlElement element,
         it != fields.end()) {
       it->set_value(element.Value().Utf16());
       it->set_is_autofilled(element.IsAutofilled());
+      form_util::MaybeUpdateUserInput(
+          *it, form_util::GetFieldRendererId(element), field_data_manager());
     }
     provisionally_saved_form()->set_fields(std::move(fields));
   }
