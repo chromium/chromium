@@ -186,6 +186,13 @@ SessionImpl::SessionImpl(
       optimization_guide_logger_(optimization_guide_logger),
       model_quality_uploader_service_(model_quality_uploader_service),
       sampling_params_(ResolveSamplingParams(config_params, on_device_opts)) {
+  if (config_params && config_params->on_device_execution_timeout) {
+    on_device_execution_timeout_ =
+        *(config_params->on_device_execution_timeout);
+  } else {
+    on_device_execution_timeout_ =
+        features::GetOnDeviceModelTimeForInitialResponse();
+  }
   if (on_device_opts && on_device_opts->ShouldUse()) {
     on_device_state_.emplace(std::move(*on_device_opts), this);
     // Prewarm the initial session to make sure the service is started.
@@ -409,7 +416,7 @@ void SessionImpl::ExecuteModel(
   on_device_state_->log_ai_data_request = std::move(log_ai_data_request);
   on_device_state_->start = base::TimeTicks::Now();
   on_device_state_->timer_for_first_response.Start(
-      FROM_HERE, features::GetOnDeviceModelTimeForInitialResponse(),
+      FROM_HERE, on_device_execution_timeout_,
       base::BindOnce(&SessionImpl::OnSessionTimedOut, base::Unretained(this)));
 
   auto options = on_device_model::mojom::InputOptions::New();

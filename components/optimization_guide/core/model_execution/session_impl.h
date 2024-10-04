@@ -349,6 +349,9 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   std::unique_ptr<google::protobuf::MessageLite> context_;
   base::TimeTicks context_start_time_;
 
+  // The timeout value for on device model execution.
+  base::TimeDelta on_device_execution_timeout_;
+
   // Last message executed.
   std::unique_ptr<google::protobuf::MessageLite> last_message_;
 
