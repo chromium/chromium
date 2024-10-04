@@ -49,13 +49,11 @@ source_set("configs") {
     }
   }
 
-  # Includes Ash Chrome and Lacros Chrome
   if (is_chromeos) {
-    deps += [ "//chromeos/constants" ]
-  }
-
-  if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ui/webui/ash/config" ]
+    deps += [
+      "//chrome/browser/ui/webui/ash/config",
+      "//chromeos/constants",
+    ]
   }
 }
 
@@ -77,10 +75,6 @@ source_set("webui_util") {
     "//services/network/public/mojom",
     "//ui/resources",
   ]
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/startup" ]
-  }
 }
 
 source_set("webui") {
