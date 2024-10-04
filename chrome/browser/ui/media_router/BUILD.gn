@@ -40,13 +40,6 @@ source_set("media_router") {
     "//media:shared_memory_support",
     "//url",
   ]
-
-  if (is_chromeos_lacros) {
-    sources += [
-      "cast_notification_controller_lacros.h",
-      "cast_notification_controller_lacros_factory.h",
-    ]
-  }
 }
 
 source_set("impl") {
@@ -92,14 +85,6 @@ source_set("impl") {
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
-  if (is_chromeos_lacros) {
-    sources += [
-      "cast_notification_controller_lacros.cc",
-      "cast_notification_controller_lacros_factory.cc",
-    ]
-    deps += [ "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature" ]
-  }
 }
 
 source_set("browser_tests") {
@@ -143,9 +128,4 @@ source_set("unit_tests") {
     "//extensions:test_support",
     "//url",
   ]
-
-  if (is_chromeos_lacros) {
-    sources += [ "cast_notification_controller_lacros_unittest.cc" ]
-    deps += [ "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature" ]
-  }
 }
