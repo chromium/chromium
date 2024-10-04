@@ -20,6 +20,8 @@ source_set("features") {
 
 static_library("base") {
   sources = [
+    "account_pref_utils.cc",
+    "account_pref_utils.h",
     "client_tag_hash.cc",
     "client_tag_hash.h",
     "command_line_switches.cc",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_SERVICE_ACCOUNT_PREF_UTILS_H_
-#define COMPONENTS_SYNC_SERVICE_ACCOUNT_PREF_UTILS_H_
+#ifndef COMPONENTS_SYNC_BASE_ACCOUNT_PREF_UTILS_H_
+#define COMPONENTS_SYNC_BASE_ACCOUNT_PREF_UTILS_H_
 
 #include <vector>
 
@@ -95,4 +95,4 @@ void KeepAccountKeyedPrefValuesOnlyForUsers(
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_SERVICE_ACCOUNT_PREF_UTILS_H_
+#endif  // COMPONENTS_SYNC_BASE_ACCOUNT_PREF_UTILS_H_

@@ -31,8 +31,8 @@
 #include "components/saved_tab_groups/tab_group_sync_bridge_mediator.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
+#include "components/sync/base/account_pref_utils.h"
 #include "components/sync/model/data_type_controller_delegate.h"
-#include "components/sync/service/account_pref_utils.h"
 
 namespace tab_groups {
 namespace {

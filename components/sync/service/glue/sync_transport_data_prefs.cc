@@ -14,9 +14,9 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/gaia_id_hash.h"
+#include "components/sync/base/account_pref_utils.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
-#include "components/sync/service/account_pref_utils.h"
 
 namespace syncer {
 
