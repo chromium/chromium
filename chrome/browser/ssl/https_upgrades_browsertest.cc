@@ -1343,7 +1343,7 @@ IN_PROC_BROWSER_TEST_P(
   // HFM service runs this on startup, but we can't set the test clock before it
   // runs, and we need to move the clock forward for this to work. So call it
   // explicitly again here.
-  hfm_service->CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstMode();
+  hfm_service->CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstBalancedMode();
   size_t initial_navigation_count = hfm_service->GetRecentNavigationCount();
 
   // Use a different hostname than the PRE_ test so that we don't hit the
@@ -1511,7 +1511,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // Advance the clock and try auto-enabling HFM.
   clock.Advance(base::Days(1));
-  hfm_service->CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstMode();
+  hfm_service->CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstBalancedMode();
 
   // The interstitial should only be displayed if HFM is enabled by the pref
   // and not by the Typically Secure User heuristic.

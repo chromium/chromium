@@ -275,15 +275,18 @@ HttpsFirstModeService::HttpsFirstModeService(Profile* profile,
 }
 
 void HttpsFirstModeService::AfterStartup() {
-  if (base::FeatureList::IsEnabled(
-          features::kHttpsFirstModeV2ForTypicallySecureUsers)) {
-    CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstMode();
-  }
+  CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstBalancedMode();
   MaybeEnableHttpsFirstModeForEngagedSites(base::OnceClosure());
 }
 
 void HttpsFirstModeService::
-    CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstMode() {
+    CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstBalancedMode() {
+  if (!base::FeatureList::IsEnabled(
+          features::kHttpsFirstModeV2ForTypicallySecureUsers) ||
+      !IsBalancedModeAvailable()) {
+    return;
+  }
+
   // If HFM or the auto-enable prefs were previously set, do not modify them.
   if (profile_->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled) ||
       profile_->GetPrefs()->HasPrefPath(prefs::kHttpsFirstBalancedMode) ||
@@ -293,12 +296,13 @@ void HttpsFirstModeService::
   if (!IsUserTypicallySecure()) {
     return;
   }
-  // The prefs must be set in this order, as setting kHttpsOnlyModeEnabled
-  // will cause kHttpsOnlyModeAutoEnabled to be reset to false.
+  // The prefs must be set in this order, as setting kHttpsFirstBalancedMode
+  // will cause kHttpsFirstBalancedModeEnabledByTypicallySecureHeuristic to be
+  // reset to false.
   // TODO(crbug.com/349860796): Consider having the typically-secure heuristic
   // turn on Balanced Mode instead.
   keep_http_allowlist_on_next_pref_change_ = true;
-  profile_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kHttpsFirstBalancedMode, true);
   profile_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeAutoEnabled, true);
 }
 
@@ -343,8 +347,9 @@ bool HttpsFirstModeService::
     IsInterstitialEnabledByTypicallySecureUserHeuristic() const {
   return base::FeatureList::IsEnabled(
              features::kHttpsFirstModeV2ForTypicallySecureUsers) &&
+         IsBalancedModeAvailable() &&
          profile_->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeAutoEnabled) &&
-         profile_->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled);
+         profile_->GetPrefs()->GetBoolean(prefs::kHttpsFirstBalancedMode);
 }
 
 void HttpsFirstModeService::RecordHttpsUpgradeFallbackEvent() {
