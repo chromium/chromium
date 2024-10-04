@@ -287,8 +287,8 @@ class UrlRequestTest : public ::testing::TestWithParam<
   UrlRequestTest& operator=(const UrlRequestTest&) = delete;
 
  protected:
-  UrlRequestTest() {}
-  ~UrlRequestTest() override {}
+  UrlRequestTest() = default;
+  ~UrlRequestTest() override = default;
 
   void SetUp() override { EXPECT_TRUE(cronet::TestServer::Start()); }
 

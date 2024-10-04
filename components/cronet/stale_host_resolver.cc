@@ -333,7 +333,7 @@ StaleHostResolver::StaleHostResolver(
   DCHECK_LE(0, stale_options.max_stale_uses);
 }
 
-StaleHostResolver::~StaleHostResolver() {}
+StaleHostResolver::~StaleHostResolver() = default;
 
 void StaleHostResolver::OnShutdown() {
   inner_resolver_->OnShutdown();

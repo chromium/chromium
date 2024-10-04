@@ -20,8 +20,8 @@ class CronetStructTest : public ::testing::Test {
 
   void TearDown() override {}
 
-  CronetStructTest() {}
-  ~CronetStructTest() override {}
+  CronetStructTest() = default;
+  ~CronetStructTest() override = default;
 };
 
 // Test Struct Cronet_Error setters and getters.

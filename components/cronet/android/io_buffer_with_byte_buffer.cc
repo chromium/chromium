@@ -27,7 +27,7 @@ IOBufferWithByteBuffer::IOBufferWithByteBuffer(
       initial_position_(position),
       initial_limit_(limit) {}
 
-IOBufferWithByteBuffer::~IOBufferWithByteBuffer() {}
+IOBufferWithByteBuffer::~IOBufferWithByteBuffer() = default;
 
 ByteBufferWithIOBuffer::ByteBufferWithIOBuffer(
     JNIEnv* env,
@@ -41,6 +41,6 @@ ByteBufferWithIOBuffer::ByteBufferWithIOBuffer(
   byte_buffer_.Reset(env, java_buffer.obj());
 }
 
-ByteBufferWithIOBuffer::~ByteBufferWithIOBuffer() {}
+ByteBufferWithIOBuffer::~ByteBufferWithIOBuffer() = default;
 
 }  // namespace cronet
