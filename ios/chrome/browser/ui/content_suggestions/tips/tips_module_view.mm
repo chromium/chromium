@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/icon_detail_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_module_state.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -97,11 +98,31 @@ NSString* const kEnhancedSafeBrowsingAccessibilityID =
       [symbolName isEqualToString:kListBulletClipboardSymbol] ||
       [symbolName isEqualToString:kGlobeAmericasSymbol];
 
+  // Determine the background color of the symbol based on the
+  // name of the tip.
+  UIColor* symbolBackgroundColor;
+  switch (tip) {
+    case segmentation_platform::TipIdentifier::kAddressBarPosition:
+      symbolBackgroundColor = [UIColor colorNamed:kPurple500Color];
+      break;
+    case segmentation_platform::TipIdentifier::kSavePasswords:
+    case segmentation_platform::TipIdentifier::kAutofillPasswords:
+      symbolBackgroundColor = [UIColor colorNamed:kYellow500Color];
+      break;
+    case segmentation_platform::TipIdentifier::kEnhancedSafeBrowsing:
+      symbolBackgroundColor = [UIColor colorNamed:kBlueColor];
+      break;
+    default:
+      symbolBackgroundColor = [UIColor colorNamed:kBackgroundColor];
+  }
+
   _contentView = [[IconDetailView alloc]
                 initWithTitle:[self titleText:tip]
                   description:[self descriptionTextForTip:tip]
                    layoutType:IconDetailViewLayoutType::kHero
                    symbolName:symbolName
+           symbolColorPalette:@[ [UIColor whiteColor] ]
+        symbolBackgroundColor:symbolBackgroundColor
             usesDefaultSymbol:isDefaultSymbol
                 showCheckmark:NO
       accessibilityIdentifier:[self accessibilityIdentifierForTip:tip]];

@@ -48,12 +48,12 @@ UIImageView* IconForSymbol(NSString* symbol,
 
 // Returns a UIView for the given `icon` wrapped in a container with
 // `containerColor`.
-UIView* IconInSquareContainer(UIImageView* icon, NSString* containerColor) {
+UIView* IconInSquareContainer(UIImageView* icon, UIColor* containerColor) {
   UIView* square_view = [[UIView alloc] init];
 
   square_view.translatesAutoresizingMaskIntoConstraints = NO;
   square_view.layer.cornerRadius = kIconSquareContainerRadius;
-  square_view.backgroundColor = [UIColor colorNamed:containerColor];
+  square_view.backgroundColor = containerColor;
 
   icon.contentMode = UIViewContentModeScaleAspectFit;
 
@@ -74,6 +74,10 @@ UIView* IconInSquareContainer(UIImageView* icon, NSString* containerColor) {
 @implementation IconView {
   // The symbol name for the icon.
   NSString* _symbol;
+  // The color palette of the icon.
+  NSArray<UIColor*>* _symbolColorPalette;
+  // The background color of the icon.
+  UIColor* _symbolBackgroundColor;
   // The width of the symbol.
   CGFloat _symbolWidth;
   // YES if `_symbol` is a default symbol name. (NO if `_symbol` is a custom
@@ -87,13 +91,16 @@ UIView* IconInSquareContainer(UIImageView* icon, NSString* containerColor) {
   // The view containing the icon.
   UIView* _icon;
 }
-
 - (instancetype)initWithDefaultSymbol:(NSString*)defaultSymbolName
+                   symbolColorPalette:(NSArray<UIColor*>*)symbolColorPalette
+                symbolBackgroundColor:(UIColor*)symbolBackgroundColor
                           symbolWidth:(CGFloat)symbolWidth
                         compactLayout:(BOOL)compactLayout
                              inSquare:(BOOL)inSquare {
   if ((self = [super init])) {
     _symbol = defaultSymbolName;
+    _symbolColorPalette = symbolColorPalette;
+    _symbolBackgroundColor = symbolBackgroundColor;
     _symbolWidth = symbolWidth;
     _defaultSymbol = YES;
     _compactLayout = compactLayout;
@@ -103,19 +110,46 @@ UIView* IconInSquareContainer(UIImageView* icon, NSString* containerColor) {
   return self;
 }
 
+- (instancetype)initWithDefaultSymbol:(NSString*)defaultSymbolName
+                          symbolWidth:(CGFloat)symbolWidth
+                        compactLayout:(BOOL)compactLayout
+                             inSquare:(BOOL)inSquare {
+  return [self initWithDefaultSymbol:defaultSymbolName
+                  symbolColorPalette:@[ [UIColor whiteColor] ]
+               symbolBackgroundColor:[UIColor colorNamed:kBlue500Color]
+                         symbolWidth:symbolWidth
+                       compactLayout:compactLayout
+                            inSquare:inSquare];
+}
+
 - (instancetype)initWithCustomSymbol:(NSString*)customSymbolName
+                  symbolColorPalette:(NSArray<UIColor*>*)symbolColorPalette
+               symbolBackgroundColor:(UIColor*)symbolBackgroundColor
                          symbolWidth:(CGFloat)symbolWidth
                        compactLayout:(BOOL)compactLayout
                             inSquare:(BOOL)inSquare {
   if ((self = [super init])) {
     _symbol = customSymbolName;
+    _symbolColorPalette = symbolColorPalette;
+    _symbolBackgroundColor = symbolBackgroundColor;
     _symbolWidth = symbolWidth;
     _defaultSymbol = NO;
     _compactLayout = compactLayout;
     _inSquare = inSquare;
   }
-
   return self;
+}
+
+- (instancetype)initWithCustomSymbol:(NSString*)customSymbolName
+                         symbolWidth:(CGFloat)symbolWidth
+                       compactLayout:(BOOL)compactLayout
+                            inSquare:(BOOL)inSquare {
+  return [self initWithCustomSymbol:customSymbolName
+                 symbolColorPalette:@[ [UIColor whiteColor] ]
+              symbolBackgroundColor:[UIColor colorNamed:kBlue500Color]
+                        symbolWidth:symbolWidth
+                      compactLayout:compactLayout
+                           inSquare:inSquare];
 }
 
 #pragma mark - UIView
@@ -146,25 +180,10 @@ UIView* IconInSquareContainer(UIImageView* icon, NSString* containerColor) {
 
 // Creates the type-specific icon.
 - (UIView*)createIcon {
-  // Compact, in-square icons are displayed in light blue.
-  if (_inSquare && _compactLayout) {
-    UIImageView* icon = IconForSymbol(_symbol, _symbolWidth, _defaultSymbol,
-                                      @[ [UIColor colorNamed:kBlue500Color] ]);
+  UIImageView* icon =
+      IconForSymbol(_symbol, _symbolWidth, _defaultSymbol, _symbolColorPalette);
 
-    return IconInSquareContainer(icon, kBlueHaloColor);
-  }
-
-  // Non-compact, in-square icons are displayed in white.
-  if (_inSquare) {
-    UIImageView* icon = IconForSymbol(_symbol, _symbolWidth, _defaultSymbol,
-                                      @[ [UIColor whiteColor] ]);
-
-    return IconInSquareContainer(icon, kBlue500Color);
-  }
-
-  // By default, display icons in gray, with a square container.
-  return IconForSymbol(_symbol, _symbolWidth, _defaultSymbol,
-                       @[ [UIColor colorNamed:kGrey500Color] ]);
+  return IconInSquareContainer(icon, _symbolBackgroundColor);
 }
 
 @end

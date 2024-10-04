@@ -36,6 +36,41 @@ enum class IconDetailViewLayoutType {
 @interface IconDetailView : UIView
 
 // Initializer for creating an `IconDetailView` with the
+// given `title`, `description`, `layoutType`, `symbolName`,
+// `symbolColorPalette`, `symbolBackgroundColor` (and whether it
+// `usesDefaultSymbol`), `symbolwidth`, and `accessibilityIdentifier`. This
+// initializer provides a streamlined way to set up an `IconDetailView`
+// instance. When `showCheckmark` is true, the icon is displayed with a green
+// checkmark to indicate a completed state.
+- (instancetype)initWithTitle:(NSString*)title
+                  description:(NSString*)description
+                   layoutType:(IconDetailViewLayoutType)layoutType
+                   symbolName:(NSString*)symbolName
+           symbolColorPalette:(NSArray<UIColor*>*)symbolColorPalette
+        symbolBackgroundColor:(UIColor*)symbolBackgroundColor
+            usesDefaultSymbol:(BOOL)usesDefaultSymbol
+                  symbolWidth:(CGFloat)symbolwidth
+                showCheckmark:(BOOL)showCheckmark
+      accessibilityIdentifier:(NSString*)accessibilityIdentifier;
+
+// Initializer for creating an `IconDetailView` with the
+// given `title`, `description`, `layoutType`, `symbolName`,
+// `symbolColorPalette`, `symbolBackgroundColor` (and whether it
+// `usesDefaultSymbol`), and `accessibilityIdentifier`. This initializer
+// provides a streamlined way to set up an `IconDetailView` instance. When
+// `showCheckmark` is true, the icon is displayed with a green checkmark to
+// indicate a completed state.
+- (instancetype)initWithTitle:(NSString*)title
+                  description:(NSString*)description
+                   layoutType:(IconDetailViewLayoutType)layoutType
+                   symbolName:(NSString*)symbolName
+           symbolColorPalette:(NSArray<UIColor*>*)symbolColorPalette
+        symbolBackgroundColor:(UIColor*)symbolBackgroundColor
+            usesDefaultSymbol:(BOOL)usesDefaultSymbol
+                showCheckmark:(BOOL)showCheckmark
+      accessibilityIdentifier:(NSString*)accessibilityIdentifier;
+
+// Initializer for creating an `IconDetailView` with the
 // given `title`, `description`, `layoutType`, `symbolName` (and whether it
 // `usesDefaultSymbol`), `symbolWidth`, and `accessibilityIdentifier`.
 // This initializer provides a streamlined way to set up an

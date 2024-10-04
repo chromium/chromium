@@ -75,6 +75,12 @@ UIImageView* CheckmarkIcon() {
   // The symbol to be displayed in the view.
   NSString* _symbolName;
 
+  // The color palette of the symbol displayed in the view.
+  NSArray<UIColor*>* _symbolColorPalette;
+
+  // The background color of the symbol displayed in the view.
+  UIColor* _symbolBackgroundColor;
+
   // The width of the symbol.
   CGFloat _symbolWidth;
 
@@ -97,6 +103,8 @@ UIImageView* CheckmarkIcon() {
                   description:(NSString*)description
                    layoutType:(IconDetailViewLayoutType)layoutType
                    symbolName:(NSString*)symbolName
+           symbolColorPalette:(NSArray<UIColor*>*)symbolColorPalette
+        symbolBackgroundColor:(UIColor*)symbolBackgroundColor
             usesDefaultSymbol:(BOOL)usesDefaultSymbol
                   symbolWidth:(CGFloat)symbolWidth
                 showCheckmark:(BOOL)showCheckmark
@@ -106,6 +114,8 @@ UIImageView* CheckmarkIcon() {
     _description = description;
     _layoutType = layoutType;
     _symbolName = symbolName;
+    _symbolColorPalette = symbolColorPalette;
+    _symbolBackgroundColor = symbolBackgroundColor;
     _usesDefaultSymbol = usesDefaultSymbol;
     _symbolWidth = symbolWidth;
     _showCheckmark = showCheckmark;
@@ -119,6 +129,8 @@ UIImageView* CheckmarkIcon() {
                   description:(NSString*)description
                    layoutType:(IconDetailViewLayoutType)layoutType
                    symbolName:(NSString*)symbolName
+           symbolColorPalette:(NSArray<UIColor*>*)symbolColorPalette
+        symbolBackgroundColor:(UIColor*)symbolBackgroundColor
             usesDefaultSymbol:(BOOL)usesDefaultSymbol
                 showCheckmark:(BOOL)showCheckmark
       accessibilityIdentifier:(NSString*)accessibilityIdentifier {
@@ -126,6 +138,47 @@ UIImageView* CheckmarkIcon() {
                   description:description
                    layoutType:layoutType
                    symbolName:symbolName
+           symbolColorPalette:symbolColorPalette
+        symbolBackgroundColor:symbolBackgroundColor
+            usesDefaultSymbol:usesDefaultSymbol
+                  symbolWidth:kIconSize
+                showCheckmark:showCheckmark
+      accessibilityIdentifier:accessibilityIdentifier];
+}
+
+- (instancetype)initWithTitle:(NSString*)title
+                  description:(NSString*)description
+                   layoutType:(IconDetailViewLayoutType)layoutType
+                   symbolName:(NSString*)symbolName
+            usesDefaultSymbol:(BOOL)usesDefaultSymbol
+                  symbolWidth:(CGFloat)symbolWidth
+                showCheckmark:(BOOL)showCheckmark
+      accessibilityIdentifier:(NSString*)accessibilityIdentifier {
+  return [self initWithTitle:title
+                  description:description
+                   layoutType:layoutType
+                   symbolName:symbolName
+           symbolColorPalette:@[ [UIColor whiteColor] ]
+        symbolBackgroundColor:[UIColor colorNamed:kBackgroundColor]
+            usesDefaultSymbol:usesDefaultSymbol
+                  symbolWidth:kIconSize
+                showCheckmark:showCheckmark
+      accessibilityIdentifier:accessibilityIdentifier];
+}
+
+- (instancetype)initWithTitle:(NSString*)title
+                  description:(NSString*)description
+                   layoutType:(IconDetailViewLayoutType)layoutType
+                   symbolName:(NSString*)symbolName
+            usesDefaultSymbol:(BOOL)usesDefaultSymbol
+                showCheckmark:(BOOL)showCheckmark
+      accessibilityIdentifier:(NSString*)accessibilityIdentifier {
+  return [self initWithTitle:title
+                  description:description
+                   layoutType:layoutType
+                   symbolName:symbolName
+           symbolColorPalette:@[ [UIColor whiteColor] ]
+        symbolBackgroundColor:[UIColor colorNamed:kBackgroundColor]
             usesDefaultSymbol:usesDefaultSymbol
                   symbolWidth:kIconSize
                 showCheckmark:showCheckmark
@@ -167,15 +220,20 @@ UIImageView* CheckmarkIcon() {
 
   BOOL isHeroLayout = _layoutType == IconDetailViewLayoutType::kHero;
 
-  IconView* icon = _usesDefaultSymbol
-                       ? [[IconView alloc] initWithDefaultSymbol:_symbolName
-                                                     symbolWidth:_symbolWidth
-                                                   compactLayout:!isHeroLayout
-                                                        inSquare:YES]
-                       : [[IconView alloc] initWithCustomSymbol:_symbolName
-                                                    symbolWidth:_symbolWidth
-                                                  compactLayout:!isHeroLayout
-                                                       inSquare:YES];
+  IconView* icon =
+      _usesDefaultSymbol
+          ? [[IconView alloc] initWithDefaultSymbol:_symbolName
+                                 symbolColorPalette:_symbolColorPalette
+                              symbolBackgroundColor:_symbolBackgroundColor
+                                        symbolWidth:_symbolWidth
+                                      compactLayout:!isHeroLayout
+                                           inSquare:YES]
+          : [[IconView alloc] initWithCustomSymbol:_symbolName
+                                symbolColorPalette:_symbolColorPalette
+                             symbolBackgroundColor:_symbolBackgroundColor
+                                       symbolWidth:_symbolWidth
+                                     compactLayout:!isHeroLayout
+                                          inSquare:YES];
 
   // When the item is displayed in a hero-style layout, the icon is more
   // prominently displayed via an icon container view.

@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/types.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
 #import "ios/chrome/common/channel_info.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -176,6 +177,18 @@ bool IsDefault(SafetyCheckState* state) {
                        layoutType:(IconDetailViewLayoutType)layoutType {
   NSString* symbolName = [self symbolNameForItemType:itemType];
 
+  // Determine the symbol color palette and symbol background color based on the
+  // layout.
+  NSArray<UIColor*>* symbolColorPalette = @[ [UIColor whiteColor] ];
+  UIColor* symbolBackgroundColor = [UIColor colorNamed:kBlue500Color];
+
+  // Compact, in-square icons are displayed in blue with a light blue
+  // container.
+  if (layoutType == IconDetailViewLayoutType::kCompact) {
+    symbolColorPalette = @[ [UIColor colorNamed:kBlue500Color] ];
+    symbolBackgroundColor = [UIColor colorNamed:kBlueHaloColor];
+  }
+
   // `kInfoCircleSymbol` is the only default symbol used within the Safety Check
   // view(s).
   BOOL usesDefaultSymbol = [symbolName isEqualToString:kInfoCircleSymbol];
@@ -187,6 +200,8 @@ bool IsDefault(SafetyCheckState* state) {
                                    : [self compactDescriptionText:itemType])
                    layoutType:layoutType
                    symbolName:symbolName
+           symbolColorPalette:symbolColorPalette
+        symbolBackgroundColor:symbolBackgroundColor
             usesDefaultSymbol:usesDefaultSymbol
                 showCheckmark:(itemType == SafetyCheckItemType::kAllSafe)
       accessibilityIdentifier:[self
