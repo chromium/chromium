@@ -6897,13 +6897,16 @@
             ],
             "experiments": [
                 {
-                    "name": "enabled_swappiness_60",
+                    "name": "EnabledSwappiness195",
+                    "params": {
+                        "Swappiness": "195"
+                    },
                     "enable_features": [
                         "CrOSLateBootSplitGenerations"
                     ]
                 },
                 {
-                    "name": "enabled_swappiness_140",
+                    "name": "EnabledSwappiness140",
                     "params": {
                         "Swappiness": "140"
                     },
@@ -6912,18 +6915,9 @@
                     ]
                 },
                 {
-                    "name": "enabled_swappiness_180",
+                    "name": "EnabledSwappiness180",
                     "params": {
                         "Swappiness": "180"
-                    },
-                    "enable_features": [
-                        "CrOSLateBootSplitGenerations"
-                    ]
-                },
-                {
-                    "name": "enabled_swappiness_195",
-                    "params": {
-                        "Swappiness": "195"
                     },
                     "enable_features": [
                         "CrOSLateBootSplitGenerations"
