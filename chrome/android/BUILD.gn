@@ -294,7 +294,6 @@ if (current_toolchain == default_toolchain) {
     deps = [
       "//chrome/browser/locale:delegate_public_impl_java",
       "//chrome/browser/touch_to_fill/password_manager/android/internal:resource_provider_public_impl_java",
-      "//chrome/browser/ui/android/hats/internal:provider_public_impl_java",
     ]
   }
 
