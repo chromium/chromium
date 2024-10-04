@@ -10,12 +10,8 @@ CoralItemRemover::CoralItemRemover() = default;
 
 CoralItemRemover::~CoralItemRemover() = default;
 
-void CoralItemRemover::RemoveItem(const coral::mojom::EntityKey& key) {
-  removed_content_items_.insert(coral_util::GetIdentifier(key));
-}
-
-void CoralItemRemover::RemoveItem(const coral::mojom::EntityKeyPtr& key) {
-  removed_content_items_.insert(coral_util::GetIdentifier(key));
+void CoralItemRemover::RemoveItem(const coral::mojom::EntityPtr& item) {
+  removed_content_items_.insert(coral_util::GetIdentifier(item));
 }
 
 void CoralItemRemover::RemoveItem(const coral::mojom::Entity& item) {

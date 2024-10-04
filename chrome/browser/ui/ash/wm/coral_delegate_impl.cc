@@ -24,11 +24,11 @@ std::unique_ptr<app_restore::RestoreData> CoralGroupToRestoreData(
   auto restore_data = std::make_unique<app_restore::RestoreData>();
   std::vector<GURL> tab_urls;
   std::vector<std::string> app_ids;
-  for (const coral::mojom::EntityKeyPtr& entity : group->entities) {
-    if (entity->is_tab_url()) {
-      tab_urls.push_back(entity->get_tab_url());
-    } else if (entity->is_app_id()) {
-      app_ids.push_back(entity->get_app_id());
+  for (const coral::mojom::EntityPtr& entity : group->entities) {
+    if (entity->is_tab()) {
+      tab_urls.push_back(entity->get_tab()->url);
+    } else if (entity->is_app()) {
+      app_ids.push_back(entity->get_app()->id);
     }
   }
 
@@ -138,12 +138,12 @@ void CoralDelegateImpl::LaunchPostLoginGroup(coral::mojom::GroupPtr group) {
 void CoralDelegateImpl::MoveTabsInGroupToNewDesk(coral::mojom::GroupPtr group) {
   Browser* target_browser = nullptr;
   for (const auto& entity : group->entities) {
-    if (!entity->is_tab_url()) {
+    if (!entity->is_tab()) {
       continue;
     }
 
     // Find the index of the tab item on its browser window.
-    const auto& tab_url = entity->get_tab_url();
+    const auto& tab_url = entity->get_tab()->url;
     int tab_index = -1;
     Browser* source_browser = FindTabOnActiveDesk(tab_url, tab_index);
     if (source_browser) {
