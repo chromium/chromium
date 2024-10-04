@@ -58,12 +58,17 @@ main {
 }
 
 .tangible-sync-style .title {
-  margin: 12px 0;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  margin: 0.75rem 0;
 }
 
 .tangible-sync-style .subtitle {
   color: var(--cr-secondary-text-color);
+  font-size: 1rem;
+  line-height: 1.5rem;
   margin: 0;
+  text-align: center;
 }
 
 .disclaimer-container {

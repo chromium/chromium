@@ -25,12 +25,18 @@ main {
   margin-inline: auto;
 }
 
-.title {
+.tangible-sync-style .title {
+  font-size: 1.5rem;
+  line-height: 2rem;
   margin: 0;
+  margin-block-end: 0.75rem;
   text-align: center;
 }
 
-.subtitle {
+.tangible-sync-style .subtitle {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  margin-block-start: 0;
   text-align: center;
 }
 
@@ -64,6 +70,7 @@ main {
 }
 
 .pill .icon {
+  color: var(--google-grey-700);
   flex: 0 0 20px;
   height: 20px;
   width: 20px;
@@ -86,5 +93,8 @@ main {
 @media (prefers-color-scheme: dark) {
   .pill {
     background-color: var(--cr-fallback-color-surface);
+  }
+  .pill .icon {
+    color: var(--google-grey-500);
   }
 }

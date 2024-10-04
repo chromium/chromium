@@ -68,8 +68,9 @@ ${this.useUpdatedUi_ ? html`
         ?hidden="${this.showProcessing_}">
       ${this.proceedLabel_}
     </cr-button>
-    <cr-button id="cancel-button" @click="${this.onCancel_}"
-        ?hidden="${!this.allowCancel_()}">
+    <cr-button id="cancel-button"
+        class="${this.isModalDialog_ ? 'tonal-button' : ''}"
+        @click="${this.onCancel_}" ?hidden="${!this.allowCancel_()}">
       ${this.cancelLabel_}
     </cr-button>
   </div>
