@@ -265,7 +265,6 @@ class IndexedDBTest
             quota_manager_proxy_.get(),
             /*blob_storage_context=*/mojo::NullRemote(),
             /*file_system_access_context=*/mojo::NullRemote(),
-            base::SequencedTaskRunner::GetCurrentDefault(),
             base::SequencedTaskRunner::GetCurrentDefault())) {
     scoped_feature_list_.InitWithFeatureStates(
         {{net::features::kThirdPartyStoragePartitioning,
@@ -364,7 +363,6 @@ class IndexedDBTest
         base::FilePath(), quota_manager_proxy_.get(),
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(),
-        base::SequencedTaskRunner::GetCurrentDefault(),
         base::SequencedTaskRunner::GetCurrentDefault());
   }
 

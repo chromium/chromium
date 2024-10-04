@@ -296,15 +296,11 @@ class IndexedDBDataItemReader : public storage::mojom::BlobDataItemReader {
   IndexedDBDataItemReader(const base::FilePath& file_path,
                           base::Time expected_modification_time,
                           base::OnceCallback<void(const base::FilePath&)>
-                              on_last_receiver_disconnected,
-                          scoped_refptr<base::TaskRunner> io_task_runner)
+                              on_last_receiver_disconnected)
       : file_path_(file_path),
         expected_modification_time_(std::move(expected_modification_time)),
         on_last_receiver_disconnected_(
-            std::move(on_last_receiver_disconnected)),
-        io_task_runner_(std::move(io_task_runner)) {
-    DCHECK(io_task_runner_);
-
+            std::move(on_last_receiver_disconnected)) {
     // The `BlobStorageContext` will disconnect when the blob is no longer
     // referenced.
     receivers_.set_disconnect_handler(
@@ -329,18 +325,8 @@ class IndexedDBDataItemReader : public storage::mojom::BlobDataItemReader {
             mojo::ScopedDataPipeProducerHandle pipe,
             ReadCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-    ReadCallback result_callback = base::BindPostTask(
-        base::SequencedTaskRunner::GetCurrentDefault(), std::move(callback));
-    io_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &MakeFileStreamAdapterAndRead,
-            storage::FileStreamReader::CreateForLocalFile(
-                base::ThreadPool::CreateTaskRunner(
-                    {base::MayBlock(), base::TaskPriority::USER_BLOCKING}),
-                file_path_, offset, expected_modification_time_),
-            std::move(pipe), std::move(result_callback), length));
+    OpenFileAndReadIntoPipe(file_path_, offset, length, std::move(pipe),
+                            std::move(callback));
   }
 
   void ReadSideData(ReadSideDataCallback callback) override {
@@ -369,10 +355,6 @@ class IndexedDBDataItemReader : public storage::mojom::BlobDataItemReader {
   base::OnceCallback<void(const base::FilePath&)>
       on_last_receiver_disconnected_;
 
-  // net::FileStream (used by LocalFileStreamReader) needs to be run
-  // on an IO thread for asynchronous file operations on Windows.
-  const scoped_refptr<base::TaskRunner> io_task_runner_;
-
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
@@ -399,7 +381,6 @@ BucketContext::BucketContext(
     const base::FilePath& data_path,
     Delegate&& delegate,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
-    scoped_refptr<base::TaskRunner> io_task_runner,
     mojo::PendingRemote<storage::mojom::BlobStorageContext>
         blob_storage_context,
     mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
@@ -408,7 +389,6 @@ BucketContext::BucketContext(
     : bucket_info_(std::move(bucket_info)),
       data_path_(data_path),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
-      io_task_runner_(std::move(io_task_runner)),
       blob_storage_context_(std::move(blob_storage_context)),
       file_system_access_context_(std::move(file_system_access_context)),
       delegate_(std::move(delegate)) {
@@ -1204,8 +1184,7 @@ void BucketContext::BindFileReader(
     auto reader = std::make_unique<IndexedDBDataItemReader>(
         path, expected_modification_time,
         base::BindOnce(&BucketContext::RemoveBoundReaders,
-                       base::Unretained(this)),
-        io_task_runner_);
+                       base::Unretained(this)));
     itr = file_reader_map_
               .insert({path, std::make_tuple(std::move(reader),
                                              base::ScopedClosureRunner(

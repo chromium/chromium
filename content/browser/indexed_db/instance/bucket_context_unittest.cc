@@ -54,7 +54,6 @@ class BucketContextTest : public testing::Test {
     bucket_context_ = std::make_unique<BucketContext>(
         bucket_info, base::FilePath(), BucketContext::Delegate(),
         quota_manager_proxy_,
-        /*io_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault(),
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(), base::DoNothing());
   }

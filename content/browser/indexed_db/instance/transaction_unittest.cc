@@ -13,7 +13,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -81,7 +80,6 @@ class TransactionTest : public testing::Test {
         GetOrCreateBucket(
             storage::BucketInitParams::ForDefaultBucket(storage_key)),
         temp_dir_.GetPath(), std::move(delegate), quota_manager_->proxy(),
-        /*io_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault(),
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(), base::DoNothing());
 

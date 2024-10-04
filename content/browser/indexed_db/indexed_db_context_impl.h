@@ -70,7 +70,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
           blob_storage_context,
       mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
           file_system_access_context,
-      scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       scoped_refptr<base::SequencedTaskRunner> custom_task_runner);
 
   ~IndexedDBContextImpl() override;
@@ -285,7 +284,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
   bool in_memory() const { return base_data_path_.empty(); }
 
   const scoped_refptr<base::SequencedTaskRunner> idb_task_runner_;
-  const scoped_refptr<base::TaskRunner> io_task_runner_;
 
   // Bound and accessed on the `idb_task_runner_`.
   mojo::Remote<storage::mojom::BlobStorageContext> blob_storage_context_;

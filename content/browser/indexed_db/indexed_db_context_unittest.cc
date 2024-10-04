@@ -76,7 +76,6 @@ class IndexedDBContextTest : public testing::Test {
         temp_dir_.GetPath(), quota_manager_proxy_,
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(),
-        base::SequencedTaskRunner::GetCurrentDefault(),
         base::SequencedTaskRunner::GetCurrentDefault());
   }
 

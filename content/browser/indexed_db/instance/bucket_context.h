@@ -173,7 +173,6 @@ class CONTENT_EXPORT BucketContext
                 const base::FilePath& data_path,
                 Delegate&& delegate,
                 scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
-                scoped_refptr<base::TaskRunner> io_task_runner,
                 mojo::PendingRemote<storage::mojom::BlobStorageContext>
                     blob_storage_context,
                 mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
@@ -478,9 +477,6 @@ class CONTENT_EXPORT BucketContext
   base::TimeTicks bucket_space_remaining_timestamp_;
 
   // Members in the following block are used for `CreateAllExternalObjects`.
-  // This handle to the content IO thread is necessary because
-  // net::FileStream::Context can only be used from an IO thread on Windows.
-  const scoped_refptr<base::TaskRunner> io_task_runner_;
   // Mojo connection to `BlobStorageContext`, which runs on the IO thread.
   mojo::Remote<storage::mojom::BlobStorageContext> blob_storage_context_;
   // Mojo connection to `FileSystemAccessContextImpl`, which runs on the UI

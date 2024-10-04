@@ -73,7 +73,6 @@ class DatabaseTest : public ::testing::Test {
     bucket_context_ = std::make_unique<BucketContext>(
         storage::BucketInfo(), temp_dir_.GetPath(), std::move(delegate),
         quota_manager_proxy_,
-        /*io_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault(),
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(), base::DoNothing());
 
