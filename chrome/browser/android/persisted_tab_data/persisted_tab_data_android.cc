@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/persisted_tab_data/persisted_tab_data_android.h"
 
+#include "base/check_deref.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/android/persisted_tab_data/persisted_tab_data_config_android.h"
 #include "chrome/browser/android/persisted_tab_data/persisted_tab_data_storage_android.h"
@@ -71,58 +72,78 @@ void PersistedTabDataAndroid::From(base::WeakPtr<TabAndroid> tab_android,
   if (tab_android->GetUserData(user_data_key)) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(from_callback),
-                       static_cast<PersistedTabDataAndroid*>(
-                           tab_android->GetUserData(user_data_key))));
-  } else {
-    std::unique_ptr<PersistedTabDataConfigAndroid>
-        persisted_tab_data_config_android = PersistedTabDataConfigAndroid::Get(
-            user_data_key, tab_android->profile());
-    std::string cached_callback_key =
-        GetCachedCallbackKey(tab_android.get(), user_data_key);
-    std::vector<FromCallback>& callbacks =
-        PersistedTabDataAndroid::GetCachedCallbackMap()[cached_callback_key];
-    callbacks.push_back(std::move(from_callback));
-    // A restore is already in-flight, so just wait for it to complete.
-    if (callbacks.size() > 1) {
-      return;
-    }
+        base::BindOnce(
+            [](base::WeakPtr<TabAndroid> tab_android, const void* user_data_key,
+               FromCallback from_callback) {
+              // Note: the simple and obvious thing would be to simply post a
+              // task with a pointer to the `PersistedTabDataAndroid` here.
+              // Unfortunately, that may result in a dangling pointer if the
+              // `TabAndroid` is destroyed after the check above, but before the
+              // task runs. Instead, post a task and repeat the lookup if
+              // `TabAndroid` is still live.
+              //
+              // In addition, treat it as a programmer error if something
+              // removes the user data for `user_data_key` in between the first
+              // check and the second lookup. This won't catch ABA errors, but
+              // it's better than nothing...
+              auto* data =
+                  tab_android
+                      ? static_cast<PersistedTabDataAndroid*>(&CHECK_DEREF(
+                            tab_android->GetUserData(user_data_key)))
+                      : nullptr;
+              std::move(from_callback).Run(data);
+            },
+            std::move(tab_android), user_data_key, std::move(from_callback)));
 
-    persisted_tab_data_config_android->persisted_tab_data_storage_android()
-        ->Restore(
-            tab_android->GetAndroidId(),
-            persisted_tab_data_config_android->data_id(),
-            base::BindOnce(
-                [](base::WeakPtr<TabAndroid> tab_android,
-                   SupplierCallback supplier_callback,
-                   const void* user_data_key,
-                   const std::vector<uint8_t>& data) {
-                  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-                  if (!tab_android) {
-                    return;
-                  }
-
-                  tab_android->SetUserData(
-                      user_data_key,
-                      std::move(supplier_callback).Run(tab_android.get()));
-                  PersistedTabDataAndroid* persisted_tab_data_android =
-                      static_cast<PersistedTabDataAndroid*>(
-                          tab_android->GetUserData(user_data_key));
-                  if (data.empty()) {
-                    // No PersistedTabData found - use default result of the
-                    // supplier (no deserialization) and save for use across
-                    // restarts.
-                    persisted_tab_data_android->Save();
-                  } else {
-                    persisted_tab_data_android->Deserialize(data);
-                  }
-
-                  persisted_tab_data_android->RunCallbackOnUIThread(
-                      tab_android.get(), user_data_key);
-                },
-                tab_android->GetWeakPtr(), std::move(supplier_callback),
-                user_data_key));
+    return;
   }
+
+  std::unique_ptr<PersistedTabDataConfigAndroid>
+      persisted_tab_data_config_android = PersistedTabDataConfigAndroid::Get(
+          user_data_key, tab_android->profile());
+  std::string cached_callback_key =
+      GetCachedCallbackKey(tab_android.get(), user_data_key);
+  std::vector<FromCallback>& callbacks =
+      PersistedTabDataAndroid::GetCachedCallbackMap()[cached_callback_key];
+  callbacks.push_back(std::move(from_callback));
+  // A restore is already in-flight, so just wait for it to complete.
+  if (callbacks.size() > 1) {
+    return;
+  }
+
+  persisted_tab_data_config_android->persisted_tab_data_storage_android()
+      ->Restore(
+          tab_android->GetAndroidId(),
+          persisted_tab_data_config_android->data_id(),
+          base::BindOnce(
+              [](base::WeakPtr<TabAndroid> tab_android,
+                 SupplierCallback supplier_callback, const void* user_data_key,
+                 const std::vector<uint8_t>& data) {
+                DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+                if (!tab_android) {
+                  return;
+                }
+
+                tab_android->SetUserData(
+                    user_data_key,
+                    std::move(supplier_callback).Run(tab_android.get()));
+                PersistedTabDataAndroid* persisted_tab_data_android =
+                    static_cast<PersistedTabDataAndroid*>(
+                        tab_android->GetUserData(user_data_key));
+                if (data.empty()) {
+                  // No PersistedTabData found - use default result of the
+                  // supplier (no deserialization) and save for use across
+                  // restarts.
+                  persisted_tab_data_android->Save();
+                } else {
+                  persisted_tab_data_android->Deserialize(data);
+                }
+
+                persisted_tab_data_android->RunCallbackOnUIThread(
+                    tab_android.get(), user_data_key);
+              },
+              tab_android->GetWeakPtr(), std::move(supplier_callback),
+              user_data_key));
 }
 
 void PersistedTabDataAndroid::Save() {
