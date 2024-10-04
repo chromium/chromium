@@ -4065,10 +4065,6 @@ crbug.com/824848 external/wpt/html/semantics/links/following-hyperlinks/activati
 crbug.com/825733 [ Win ] media/color-profile-video-seek-filter.html [ Failure Pass Timeout ]
 crbug.com/754986 media/video-transformed.html [ Failure Pass ]
 
-# Sheriff 2018-03-29
-crbug.com/827209 [ Release Win ] fast/events/middleClickAutoscroll-latching.html [ Failure Pass Timeout ]
-crbug.com/827209 [ Linux ] fast/events/middleClickAutoscroll-latching.html [ Failure Pass Timeout ]
-
 # Sheriff 2018-04-11
 crbug.com/831796 fast/events/autoscroll-in-textfield.html [ Failure Pass ]
 
@@ -8180,3 +8176,8 @@ crbug.com/371060464 external/wpt/compute-pressure/compute_pressure_disconnect_id
 crbug.com/371060464 external/wpt/compute-pressure/compute_pressure_disconnect_idempotent.https.window.html?globalScope=window [ Crash Pass ]
 crbug.com/371060464 external/wpt/compute-pressure/compute_pressure_disconnect_immediately.https.window.html?globalScope=dedicated_worker [ Crash Pass ]
 crbug.com/371060464 external/wpt/compute-pressure/compute_pressure_disconnect_immediately.https.window.html?globalScope=window [ Crash Pass ]
+
+# Gardener 2024-10-04
+crbug.com/827209 [ Release Win ] fast/events/middleClickAutoscroll-latching.html [ Failure Pass Timeout ]
+crbug.com/827209 [ Linux ] fast/events/middleClickAutoscroll-latching.html [ Failure Pass Timeout ]
+crbug.com/827209 [ Mac14 ] fast/events/middleClickAutoscroll-latching.html [ Failure Pass Timeout ]
