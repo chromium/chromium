@@ -31,9 +31,7 @@ void FakeScannerProfileScopedDelegate::FetchActionsForImage(
     scoped_refptr<base::RefCountedMemory> jpeg_bytes,
     base::OnceCallback<void(ScannerActionsResponse)> callback) {
   std::move(callback).Run(base::ok(std::vector<ScannerAction>{
-      ScannerAction(
-          /*display_name=*/"Open Url",
-          /*command=*/OpenUrlCommand{.url = GURL("https://www.google.com")}),
+      OpenUrlAction{.url = GURL("https://www.google.com")},
   }));
 }
 

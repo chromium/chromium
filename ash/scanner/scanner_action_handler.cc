@@ -29,12 +29,12 @@ void HandleScannerAction(const ScannerAction& action,
                          base::OnceCallback<void(bool)> callback) {
   std::visit(
       base::Overloaded{
-          [&](const OpenUrlCommand& command) {
-            OpenInBrowserTab(command.url);
+          [&](const OpenUrlAction& action) {
+            OpenInBrowserTab(action.url);
             std::move(callback).Run(true);
           },
       },
-      action.command);
+      action);
 }
 
 }  // namespace ash

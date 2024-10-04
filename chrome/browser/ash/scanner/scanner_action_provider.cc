@@ -4,21 +4,20 @@
 
 #include "chrome/browser/ash/scanner/scanner_action_provider.h"
 
-#include <string_view>
+#include <utility>
 #include <vector>
 
 #include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/public/cpp/scanner/scanner_enums.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/types/expected.h"
 #include "url/gurl.h"
 
 namespace {
 
-constexpr std::string_view kDisplayName = "Open Search";
-
 ash::ScannerAction CreateOpenUrlAction(const GURL& url) {
-  return ash::ScannerAction(kDisplayName, ash::OpenUrlCommand{url});
+  return ash::OpenUrlAction{url};
 }
 
 }  // namespace
