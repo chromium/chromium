@@ -74,7 +74,7 @@ public class CachedFlagsSharedPreferences {
     }
 
     /** Decodes a previously encoded map. Returns empty map on parse error. */
-    static Map<String, String> decodeJsonEncodedMap(String value) {
+    public static Map<String, String> decodeJsonEncodedMap(String value) {
         Map<String, String> resultingMap = new HashMap<>();
         if (value.isEmpty()) {
             return resultingMap;

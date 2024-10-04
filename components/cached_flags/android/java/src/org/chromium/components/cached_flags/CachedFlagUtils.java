@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.base.cached_flags;
+package org.chromium.components.cached_flags;
 
 import android.content.SharedPreferences;
+
+import org.chromium.base.cached_flags.CachedFlagsSharedPreferences;
 
 import java.util.List;
 

@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.hub;
 
-import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
 
 /** Common hub feature utils for public use. */
 public class HubFieldTrial {

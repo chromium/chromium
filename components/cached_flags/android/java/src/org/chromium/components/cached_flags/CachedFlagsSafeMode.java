@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.base.cached_flags;
+package org.chromium.components.cached_flags;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -15,6 +15,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.cached_flags.CachedFlagsSharedPreferences;
+import org.chromium.base.cached_flags.ValuesReturned;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.version_info.VersionInfo;
@@ -28,7 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Controls Safe Mode for {@link CachedFlag}.
  *
- * Safe Mode is a mechanism that allows Chrome to prevent crashes gated behind flags used before
+ * <p>Safe Mode is a mechanism that allows Chrome to prevent crashes gated behind flags used before
  * native from becoming a crash loop that cannot be recovered from by disabling the experiment.
  */
 public class CachedFlagsSafeMode {
@@ -111,9 +113,9 @@ public class CachedFlagsSafeMode {
     }
 
     /**
-     * Call at an early point in the path that leads to caching flags. If onEndCheckpoint()
-     * does not get called before the next run, this run will be considered a crash for purposes of
-     * counting the crash streak and entering Safe Mode.
+     * Call at an early point in the path that leads to caching flags. If onEndCheckpoint() does not
+     * get called before the next run, this run will be considered a crash for purposes of counting
+     * the crash streak and entering Safe Mode.
      */
     public void onStartOrResumeCheckpoint() {
         if (mEndCheckpointWritten.get()) {

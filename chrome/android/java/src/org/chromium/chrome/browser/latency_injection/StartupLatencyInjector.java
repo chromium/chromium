@@ -6,9 +6,9 @@ package org.chromium.chrome.browser.latency_injection;
 
 import org.chromium.base.TimeUtils;
 import org.chromium.base.TimeUtils.UptimeMillisTimer;
-import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.cached_flags.IntCachedFieldTrialParameter;
 
 public final class StartupLatencyInjector {
     private static final String LATENCY_INJECTION_PARAM = "latency_injection_amount_millis";

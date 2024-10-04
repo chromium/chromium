@@ -1,0 +1,57 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  deps = [
+    "//base:base_cached_flags_java",
+    "//base:base_java",
+    "//base:base_shared_preferences_java",
+    "//base/version_info/android:version_constants_java",
+    "//build/android:build_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+
+  sources = [
+    "android/java/src/org/chromium/components/cached_flags/AllCachedFieldTrialParameters.java",
+    "android/java/src/org/chromium/components/cached_flags/BooleanCachedFieldTrialParameter.java",
+    "android/java/src/org/chromium/components/cached_flags/CachedFieldTrialParameter.java",
+    "android/java/src/org/chromium/components/cached_flags/CachedFlag.java",
+    "android/java/src/org/chromium/components/cached_flags/CachedFlagUtils.java",
+    "android/java/src/org/chromium/components/cached_flags/CachedFlagsSafeMode.java",
+    "android/java/src/org/chromium/components/cached_flags/DoubleCachedFieldTrialParameter.java",
+    "android/java/src/org/chromium/components/cached_flags/IntCachedFieldTrialParameter.java",
+    "android/java/src/org/chromium/components/cached_flags/StringCachedFieldTrialParameter.java",
+  ]
+}
+
+robolectric_library("junit") {
+  sources = [
+    "android/java/src/org/chromium/components/cached_flags/CachedFeatureFlagsSafeModeUnitTest.java",
+    "android/java/src/org/chromium/components/cached_flags/CachedFieldTrialParameterUnitTest.java",
+    "android/java/src/org/chromium/components/cached_flags/CachedFlagUnitTest.java",
+  ]
+  deps = [
+    ":java",
+    "//base:base_cached_flags_java",
+    "//base:base_java",
+    "//base:base_java_process_launcher_test_support",
+    "//base:base_java_test_support",
+    "//base:base_java_test_support_uncommon",
+    "//base:base_junit_test_support",
+    "//base:base_shared_preferences_java",
+    "//base/test:public_transit_robolectric_tests_java",
+    "//base/test:test_support_java",
+    "//testing/android/instrumentation:test_runner_java",
+    "//third_party/android_deps:guava_android_java",
+    "//third_party/android_deps:org_mockito_mockito_core_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//third_party/junit:junit",
+  ]
+}

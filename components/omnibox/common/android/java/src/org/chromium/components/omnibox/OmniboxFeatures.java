@@ -11,10 +11,10 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
-import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
-import org.chromium.base.cached_flags.CachedFieldTrialParameter;
-import org.chromium.base.cached_flags.CachedFlag;
-import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
+import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
+import org.chromium.components.cached_flags.CachedFieldTrialParameter;
+import org.chromium.components.cached_flags.CachedFlag;
+import org.chromium.components.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.DeviceInput;
 

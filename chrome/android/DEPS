@@ -29,6 +29,7 @@ include_rules = [
   "+components/browser_ui/webshare/android",
   "+components/browser_ui/widget/android",
   "+components/browsing_data/content/android/java",
+  "+components/cached_flags/android",
   "+components/commerce/core",
   "+components/content_capture",
   "+components/content_settings",

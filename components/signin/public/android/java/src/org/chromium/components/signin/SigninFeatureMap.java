@@ -8,7 +8,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
-import org.chromium.base.cached_flags.CachedFlag;
+import org.chromium.components.cached_flags.CachedFlag;
 
 import java.util.List;
 

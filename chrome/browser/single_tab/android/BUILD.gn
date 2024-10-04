@@ -17,7 +17,6 @@ android_library("java") {
   ]
   deps = [
     ":java_resources",
-    "//base:base_cached_flags_java",
     "//base:base_java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/flags:java",
@@ -31,6 +30,7 @@ android_library("java") {
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/widget/android:java",
     "//components/browser_ui/widget/android:java_resources",
+    "//components/cached_flags:java",
     "//components/embedder_support/android:util_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",

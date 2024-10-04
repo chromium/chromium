@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.suggestions;
 
 import android.app.Activity;
 
-import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegateImpl;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -19,6 +18,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationDialogManager;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
+import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.base.cached_flags;
+package org.chromium.components.cached_flags;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -17,10 +17,12 @@ import org.junit.runner.RunWith;
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.FeatureMap;
-import org.chromium.base.cached_flags.CachedFlagsSafeMode.Behavior;
+import org.chromium.base.cached_flags.ValuesOverridden;
+import org.chromium.base.cached_flags.ValuesReturned;
 import org.chromium.base.task.test.PausedExecutorTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.BaseFlagTestRule;
+import org.chromium.components.cached_flags.CachedFlagsSafeMode.Behavior;
 
 import java.util.Arrays;
 

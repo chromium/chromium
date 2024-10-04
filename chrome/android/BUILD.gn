@@ -1245,6 +1245,7 @@ if (current_toolchain == default_toolchain) {
       "//components/browser_ui/widget/android:java",
       "//components/browser_ui/widget/android:test_support_java",
       "//components/browsing_data/core:java",
+      "//components/cached_flags:junit",
       "//components/commerce/core:proto_java",
       "//components/commerce/core/android:core_java",
       "//components/content_capture/android:java",

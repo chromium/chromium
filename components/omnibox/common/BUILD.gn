@@ -47,8 +47,8 @@ if (is_android) {
       ":jni_headers",
     ]
     deps = [
-      "//base:base_cached_flags_java",
       "//base:base_java",
+      "//components/cached_flags:java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
       "//third_party/omnibox_proto:omnibox_proto_java",
@@ -59,9 +59,9 @@ if (is_android) {
   robolectric_library("junit") {
     sources = [ "android/java/src/org/chromium/components/omnibox/OmniboxFeaturesTest.java" ]
     deps = [
-      "//base:base_cached_flags_java",
       "//base:base_java_test_support",
       "//base:base_junit_test_support",
+      "//components/cached_flags:java",
       "//components/omnibox/common:features_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/junit",

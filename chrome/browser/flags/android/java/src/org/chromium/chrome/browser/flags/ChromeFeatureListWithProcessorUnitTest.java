@@ -15,10 +15,10 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureList;
-import org.chromium.base.cached_flags.CachedFlag;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.components.cached_flags.CachedFlag;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;

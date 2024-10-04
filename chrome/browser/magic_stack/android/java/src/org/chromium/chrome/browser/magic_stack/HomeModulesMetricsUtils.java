@@ -12,12 +12,12 @@ import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
+import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
 
 /** The utility class for magic stack. */
 public class HomeModulesMetricsUtils {

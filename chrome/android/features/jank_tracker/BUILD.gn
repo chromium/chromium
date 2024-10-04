@@ -11,8 +11,8 @@ android_library("jank_tracker_java") {
       [ "java/src/org/chromium/chrome/browser/JankTrackerExperiment.java" ]
 
   deps = [
-    "//base:base_cached_flags_java",
     "//base:base_java",
     "//chrome/browser/flags:java",
+    "//components/cached_flags:java",
   ]
 }

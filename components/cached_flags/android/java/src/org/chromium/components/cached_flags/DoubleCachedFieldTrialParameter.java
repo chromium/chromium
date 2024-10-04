@@ -2,23 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.base.cached_flags;
+package org.chromium.components.cached_flags;
 
 import android.content.SharedPreferences;
 
 import androidx.annotation.AnyThread;
 
 import org.chromium.base.FeatureMap;
+import org.chromium.base.cached_flags.CachedFlagsSharedPreferences;
+import org.chromium.base.cached_flags.ValuesOverridden;
+import org.chromium.base.cached_flags.ValuesReturned;
 import org.chromium.base.supplier.Supplier;
 
-/** An int-type {@link CachedFieldTrialParameter}. */
-public class IntCachedFieldTrialParameter extends CachedFieldTrialParameter {
-    private final int mDefaultValue;
-    private Supplier<Integer> mValueSupplier;
+/** A double-type {@link CachedFieldTrialParameter}. */
+public class DoubleCachedFieldTrialParameter extends CachedFieldTrialParameter {
+    private final double mDefaultValue;
+    private Supplier<Double> mValueSupplier;
 
-    public IntCachedFieldTrialParameter(
-            FeatureMap featureMap, String featureName, String variationName, int defaultValue) {
-        super(featureMap, featureName, variationName, FieldTrialParameterType.INT);
+    public DoubleCachedFieldTrialParameter(
+            FeatureMap featureMap, String featureName, String variationName, double defaultValue) {
+        super(featureMap, featureName, variationName, FieldTrialParameterType.DOUBLE);
         mDefaultValue = defaultValue;
     }
 
@@ -26,31 +29,31 @@ public class IntCachedFieldTrialParameter extends CachedFieldTrialParameter {
      * @return the value of the field trial parameter that should be used in this run.
      */
     @AnyThread
-    public int getValue() {
+    public double getValue() {
         CachedFlagsSafeMode.getInstance().onFlagChecked();
 
         String preferenceName = getSharedPreferenceKey();
 
-        Integer value = ValuesOverridden.getInt(preferenceName);
+        Double value = ValuesOverridden.getDouble(preferenceName);
         if (value != null) {
             return value;
         }
 
-        return ValuesReturned.getReturnedOrNewIntValue(preferenceName, getValueSupplier());
+        return ValuesReturned.getReturnedOrNewDoubleValue(preferenceName, getValueSupplier());
     }
 
-    private Supplier<Integer> getValueSupplier() {
+    private Supplier<Double> getValueSupplier() {
         if (mValueSupplier == null) {
             mValueSupplier =
                     () -> {
                         String preferenceName = getSharedPreferenceKey();
-                        Integer value =
+                        Double value =
                                 CachedFlagsSafeMode.getInstance()
-                                        .getIntFieldTrialParam(preferenceName, mDefaultValue);
+                                        .getDoubleFieldTrialParam(preferenceName, mDefaultValue);
                         if (value == null) {
                             value =
                                     CachedFlagsSharedPreferences.getInstance()
-                                            .readInt(preferenceName, mDefaultValue);
+                                            .readDouble(preferenceName, mDefaultValue);
                         }
                         return value;
                     };
@@ -58,16 +61,18 @@ public class IntCachedFieldTrialParameter extends CachedFieldTrialParameter {
         return mValueSupplier;
     }
 
-    public int getDefaultValue() {
+    public double getDefaultValue() {
         return mDefaultValue;
     }
 
     @Override
     void writeCacheValueToEditor(final SharedPreferences.Editor editor) {
-        final int value =
-                mFeatureMap.getFieldTrialParamByFeatureAsInt(
-                        getFeatureName(), getParameterName(), getDefaultValue());
-        editor.putInt(getSharedPreferenceKey(), value);
+        // Matches the conversion used in SharedPreferencesManager#writeDouble().
+        final long value =
+                Double.doubleToRawLongBits(
+                        mFeatureMap.getFieldTrialParamByFeatureAsDouble(
+                                getFeatureName(), getParameterName(), getDefaultValue()));
+        editor.putLong(getSharedPreferenceKey(), value);
     }
 
     /**
@@ -78,7 +83,7 @@ public class IntCachedFieldTrialParameter extends CachedFieldTrialParameter {
      *
      * @param overrideValue the value to be returned
      */
-    public void setForTesting(int overrideValue) {
+    public void setForTesting(double overrideValue) {
         ValuesOverridden.setOverrideForTesting(
                 getSharedPreferenceKey(), String.valueOf(overrideValue));
     }

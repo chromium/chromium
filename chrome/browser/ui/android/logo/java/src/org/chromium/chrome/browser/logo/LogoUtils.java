@@ -10,8 +10,8 @@ import android.view.ViewGroup.MarginLayoutParams;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

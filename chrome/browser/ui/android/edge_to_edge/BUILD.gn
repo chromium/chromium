@@ -17,7 +17,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/NavigationBarColorProvider.java",
   ]
   deps = [
-    "//base:base_cached_flags_java",
     "//base:base_java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/browser_controls/android:java",
@@ -26,6 +25,7 @@ android_library("java") {
     "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/android/native_page:java",
     "//components/browser_ui/display_cutout/android:java",
+    "//components/cached_flags:java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",

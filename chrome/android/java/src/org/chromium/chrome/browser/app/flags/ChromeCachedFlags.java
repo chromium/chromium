@@ -12,10 +12,6 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.cached_flags.CachedFieldTrialParameter;
-import org.chromium.base.cached_flags.CachedFlag;
-import org.chromium.base.cached_flags.CachedFlagUtils;
-import org.chromium.base.cached_flags.CachedFlagsSafeMode;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
@@ -50,6 +46,10 @@ import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
+import org.chromium.components.cached_flags.CachedFieldTrialParameter;
+import org.chromium.components.cached_flags.CachedFlag;
+import org.chromium.components.cached_flags.CachedFlagUtils;
+import org.chromium.components.cached_flags.CachedFlagsSafeMode;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.signin.SigninFeatureMap;
 

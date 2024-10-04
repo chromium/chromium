@@ -82,6 +82,7 @@ include_rules = [
   "+components/browser_ui/strings",
   "+components/browser_ui/styles",
   "+components/browsing_data/content",
+  "+components/cached_flags",
   "+components/continuous_search/common",
   "+components/continuous_search/browser",
   "+components/browsing_data/core",

@@ -28,24 +28,28 @@ public abstract class ValuesOverridden {
         sOverridesTestFeatures.put(preferenceKey, overrideValue);
     }
 
-    static Boolean getBool(String preferenceName) {
+    /** Get the Map of boolean preferences with overridden values. */
+    public static Boolean getBool(String preferenceName) {
         if (sOverridesTestFeatures == null) return null;
         String stringValue = sOverridesTestFeatures.get(preferenceName);
         return stringValue != null ? Boolean.valueOf(stringValue) : null;
     }
 
-    static String getString(String preferenceName) {
+    /** Get the Map of String preferences with overridden values. */
+    public static String getString(String preferenceName) {
         if (sOverridesTestFeatures == null) return null;
         return sOverridesTestFeatures.get(preferenceName);
     }
 
-    static Integer getInt(String preferenceName) {
+    /** Get the Map of int preferences with overridden values. */
+    public static Integer getInt(String preferenceName) {
         if (sOverridesTestFeatures == null) return null;
         String stringValue = sOverridesTestFeatures.get(preferenceName);
         return stringValue != null ? Integer.valueOf(stringValue) : null;
     }
 
-    static Double getDouble(String preferenceName) {
+    /** Get the Map of double preferences with overridden values. */
+    public static Double getDouble(String preferenceName) {
         if (sOverridesTestFeatures == null) return null;
         String stringValue = sOverridesTestFeatures.get(preferenceName);
         return stringValue != null ? Double.valueOf(stringValue) : null;
