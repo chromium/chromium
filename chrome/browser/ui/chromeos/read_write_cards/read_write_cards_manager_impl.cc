@@ -103,6 +103,17 @@ ReadWriteCardsManagerImpl::GetControllers(
     const editor_menu::EditorContext& editor_context) {
   const bool should_show_editor_menu =
       editor_menu_controller_ && params.is_editable;
+
+  bool editor_is_blocked =
+      editor_context.mode == editor_menu::EditorMode::kHardBlocked ||
+      editor_context.mode == editor_menu::EditorMode::kSoftBlocked;
+
+  // Before branching off to MagicBoost, ensure top level funnel metrics for
+  // Editor are recorded when the feature is blocked from use.
+  if (should_show_editor_menu && editor_is_blocked) {
+    editor_menu_controller_->LogEditorMode(editor_context.mode);
+  }
+
   auto opt_in_features = GetMagicBoostOptInFeatures(params, editor_context);
 
   if (opt_in_features) {
@@ -131,14 +142,9 @@ ReadWriteCardsManagerImpl::GetControllers(
   // If Magic Boost is not enabled, each feature (besides Mahi which only uses
   // Magic Boost) will have its own opt-in flow, provided within each individual
   // controller.
-  if (should_show_editor_menu) {
+  if (should_show_editor_menu && !editor_is_blocked) {
     // Use editor menu if available.
-    if (editor_context.mode != editor_menu::EditorMode::kHardBlocked &&
-        editor_context.mode != editor_menu::EditorMode::kSoftBlocked) {
-      return {editor_menu_controller_->GetWeakPtr()};
-    }
-
-    editor_menu_controller_->LogEditorMode(editor_context.mode);
+    return {editor_menu_controller_->GetWeakPtr()};
   }
 
   // Otherwise, use Quick Answers and Mahi if available.
