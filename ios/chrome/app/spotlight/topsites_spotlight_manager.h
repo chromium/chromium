@@ -16,8 +16,8 @@
 
 @interface TopSitesSpotlightManager : BaseSpotlightManager
 
-+ (TopSitesSpotlightManager*)topSitesSpotlightManagerWithBrowserState:
-    (ChromeBrowserState*)browserState;
++ (TopSitesSpotlightManager*)topSitesSpotlightManagerWithProfile:
+    (ProfileIOS*)profile;
 
 - (instancetype)init NS_UNAVAILABLE;
 

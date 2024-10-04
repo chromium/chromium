@@ -21,11 +21,11 @@ class ReadingListModel;
 /// Model observed by this instance.
 @property(nonatomic, assign, readonly) ReadingListModel* model;
 
-/// Convenience initializer with browser state.
+/// Convenience initializer with profile.
 /// Returns a new instance of ReadingListSpotlightManager and retrieves all
-/// dependencies from `browserState`.
-+ (ReadingListSpotlightManager*)readingListSpotlightManagerWithBrowserState:
-    (ChromeBrowserState*)browserState;
+/// dependencies from `profile`.
++ (ReadingListSpotlightManager*)readingListSpotlightManagerWithProfile:
+    (ProfileIOS*)profile;
 
 - (instancetype)
     initWithLargeIconService:(favicon::LargeIconService*)largeIconService

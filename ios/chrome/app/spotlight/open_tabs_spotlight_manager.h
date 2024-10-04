@@ -21,11 +21,11 @@ class BrowserList;
 /// Model observed by this instance.
 @property(nonatomic, assign, readonly) BrowserList* browserList;
 
-/// Convenience initializer with browser state.
+/// Convenience initializer with profile.
 /// Returns a new instance of OpenTabsSpotlightManager and retrieves all
-/// dependencies from `browserState`.
-+ (OpenTabsSpotlightManager*)openTabsSpotlightManagerWithBrowserState:
-    (ChromeBrowserState*)browserState;
+/// dependencies from `profile`.
++ (OpenTabsSpotlightManager*)openTabsSpotlightManagerWithProfile:
+    (ProfileIOS*)profile;
 
 - (instancetype)
     initWithLargeIconService:(favicon::LargeIconService*)largeIconService

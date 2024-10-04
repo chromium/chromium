@@ -47,15 +47,15 @@
 
 @implementation ReadingListSpotlightManager
 
-+ (ReadingListSpotlightManager*)readingListSpotlightManagerWithBrowserState:
-    (ChromeBrowserState*)browserState {
++ (ReadingListSpotlightManager*)readingListSpotlightManagerWithProfile:
+    (ProfileIOS*)profile {
   favicon::LargeIconService* largeIconService =
-      IOSChromeLargeIconServiceFactory::GetForBrowserState(browserState);
+      IOSChromeLargeIconServiceFactory::GetForProfile(profile);
 
   return [[ReadingListSpotlightManager alloc]
       initWithLargeIconService:largeIconService
               readingListModel:ReadingListModelFactory::GetInstance()
-                                   ->GetForBrowserState(browserState)
+                                   ->GetForProfile(profile)
             spotlightInterface:[SpotlightInterface defaultInterface]
          searchableItemFactory:
              [[SearchableItemFactory alloc]

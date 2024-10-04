@@ -84,10 +84,10 @@ const int kBatchSize = 100;
 
 #pragma mark - public
 
-+ (OpenTabsSpotlightManager*)openTabsSpotlightManagerWithBrowserState:
-    (ChromeBrowserState*)browserState {
++ (OpenTabsSpotlightManager*)openTabsSpotlightManagerWithProfile:
+    (ProfileIOS*)profile {
   favicon::LargeIconService* largeIconService =
-      IOSChromeLargeIconServiceFactory::GetForBrowserState(browserState);
+      IOSChromeLargeIconServiceFactory::GetForProfile(profile);
   SearchableItemFactory* searchableItemFactory = [[SearchableItemFactory alloc]
       initWithLargeIconService:largeIconService
                         domain:spotlight::DOMAIN_OPEN_TABS
@@ -95,8 +95,7 @@ const int kBatchSize = 100;
 
   return [[OpenTabsSpotlightManager alloc]
       initWithLargeIconService:largeIconService
-                   browserList:BrowserListFactory::GetForBrowserState(
-                                   browserState)
+                   browserList:BrowserListFactory::GetForProfile(profile)
             spotlightInterface:[SpotlightInterface defaultInterface]
          searchableItemFactory:searchableItemFactory];
 }

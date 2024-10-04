@@ -38,8 +38,8 @@ class BookmarkNode;
 /// Number of pending large icon tasks.
 @property(nonatomic, assign) NSUInteger pendingLargeIconTasksCount;
 
-+ (BookmarksSpotlightManager*)bookmarksSpotlightManagerWithBrowserState:
-    (ChromeBrowserState*)browserState;
++ (BookmarksSpotlightManager*)bookmarksSpotlightManagerWithProfile:
+    (ProfileIOS*)profile;
 
 /// Checks the date of the latest global indexation and reindex all bookmarks if
 /// needed.

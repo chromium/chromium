@@ -76,16 +76,16 @@ class ReadingListSpotlightManagerTest : public PlatformTest {
     initial_entries.push_back(base::MakeRefCounted<ReadingListEntry>(
         GURL(kTestURL2), kTestTitle2, base::Time::Now()));
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         ReadingListModelFactory::GetInstance(),
         base::BindRepeating(&BuildReadingListModelWithFakeStorage,
                             std::move(initial_entries)));
 
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
 
-    model_ = ReadingListModelFactory::GetInstance()->GetForBrowserState(
-        browser_state_.get());
+    model_ =
+        ReadingListModelFactory::GetInstance()->GetForProfile(profile_.get());
 
     CreateMockLargeIconService();
     spotlightInterface_ = [[FakeSpotlightInterface alloc] init];
@@ -115,7 +115,7 @@ class ReadingListSpotlightManagerTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   testing::StrictMock<favicon::MockFaviconService> mock_favicon_service_;
   std::unique_ptr<favicon::LargeIconServiceImpl> large_icon_service_;
   base::CancelableTaskTracker cancelable_task_tracker_;

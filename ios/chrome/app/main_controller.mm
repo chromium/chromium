@@ -637,7 +637,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
 
     [_spotlightManagers
         addObject:[SpotlightManager
-                      spotlightManagerWithBrowserState:chromeBrowserState]];
+                      spotlightManagerWithProfile:chromeBrowserState]];
 
     ShareExtensionService* service =
         ShareExtensionServiceFactory::GetForProfile(chromeBrowserState);

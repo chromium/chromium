@@ -80,8 +80,8 @@ class OpenTabsSpotlightManagerTest : public PlatformTest {
  public:
   OpenTabsSpotlightManagerTest() {
     CreateMockLargeIconService();
-    TestChromeBrowserState::Builder test_cbs_builder;
-    test_chrome_browser_state_ = std::move(test_cbs_builder).Build();
+    TestProfileIOS::Builder builder;
+    test_profile_ = std::move(builder).Build();
     searchableItemFactory_ = [[FakeSearchableItemFactory alloc]
         initWithDomain:spotlight::DOMAIN_OPEN_TABS];
   }
@@ -97,20 +97,19 @@ class OpenTabsSpotlightManagerTest : public PlatformTest {
               spotlightInterface:fakeSpotlightInterface_
            searchableItemFactory:searchableItemFactory_];
 
-    browser_ = std::make_unique<TestBrowser>(test_chrome_browser_state_.get());
+    browser_ = std::make_unique<TestBrowser>(test_profile_.get());
   }
 
   void TearDown() override { [manager_ shutdown]; }
 
  protected:
   BrowserList* CreateBrowserList() {
-    return BrowserListFactory::GetForBrowserState(
-        test_chrome_browser_state_.get());
+    return BrowserListFactory::GetForProfile(test_profile_.get());
   }
 
   FakeWebState* CreateWebState(WebStateList* web_state_list) {
     auto test_web_state = std::make_unique<FakeWebState>();
-    test_web_state->SetBrowserState(test_chrome_browser_state_.get());
+    test_web_state->SetBrowserState(test_profile_.get());
     test_web_state->SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
     FakeWebState* test_web_state_ptr = test_web_state.get();
@@ -140,7 +139,7 @@ class OpenTabsSpotlightManagerTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<ChromeBrowserState> test_chrome_browser_state_;
+  std::unique_ptr<ProfileIOS> test_profile_;
   FakeSearchableItemFactory* searchableItemFactory_;
   testing::StrictMock<favicon::MockFaviconService> mock_favicon_service_;
   std::unique_ptr<favicon::LargeIconServiceImpl> large_icon_service_;
