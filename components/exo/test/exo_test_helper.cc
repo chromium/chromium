@@ -136,17 +136,6 @@ ExoTestHelper::ExoTestHelper() {
 ExoTestHelper::~ExoTestHelper() {}
 
 // static
-std::unique_ptr<gfx::GpuMemoryBuffer> ExoTestHelper::CreateGpuMemoryBuffer(
-    const gfx::Size& size,
-    gfx::BufferFormat format) {
-  return aura::Env::GetInstance()
-      ->context_factory()
-      ->GetGpuMemoryBufferManager()
-      ->CreateGpuMemoryBuffer(size, format, gfx::BufferUsage::GPU_READ,
-                              gpu::kNullSurfaceHandle, nullptr);
-}
-
-// static
 std::unique_ptr<Buffer> ExoTestHelper::CreateBuffer(
     ShellSurfaceBase* shell_surface,
     gfx::BufferFormat format) {

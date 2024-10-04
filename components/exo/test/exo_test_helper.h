@@ -73,11 +73,6 @@ class ExoTestHelper {
 
   ~ExoTestHelper();
 
-  // Creates a GpuMemoryBuffer instance that can be used for tests.
-  static std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
-      const gfx::Size& size,
-      gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888);
-
   // Creates an exo::Buffer that has the size of the given
   // shell surface.
   static std::unique_ptr<Buffer> CreateBuffer(
