@@ -15,7 +15,7 @@ AuthenticatorAssertionResponse::AuthenticatorAssertionResponse(
     const Vector<uint8_t> client_data_json,
     const Vector<uint8_t> authenticator_data,
     const Vector<uint8_t> signature,
-    const std::optional<Vector<uint8_t>> optional_user_handle)
+    std::optional<Vector<uint8_t>> optional_user_handle)
     : AuthenticatorAssertionResponse(
           DOMArrayBuffer::Create(client_data_json),
           DOMArrayBuffer::Create(authenticator_data),
