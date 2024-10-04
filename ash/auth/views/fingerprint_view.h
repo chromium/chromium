@@ -95,6 +95,7 @@ class ASH_EXPORT FingerprintView : public views::View,
   ui::ColorId GetIconColorIdFromState() const;
   int GetTextIdFromState() const;
   int GetA11yTextIdFromState() const;
+  bool NeedA11yAlertFromState() const;
 
   // Visual components:
   raw_ptr<views::Label> label_ = nullptr;

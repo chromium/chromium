@@ -19,6 +19,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/containers/flat_tree.h"
 #include "base/functional/bind.h"
@@ -197,6 +198,10 @@ void FingerprintView::SetState(FingerprintState state) {
   reset_state_.Stop();
   state_ = state;
   DisplayCurrentState();
+  if (NeedA11yAlertFromState()) {
+    label_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
+                                     /*send_native_event=*/true);
+  }
 }
 
 void FingerprintView::SetHasPin(bool has_pin) {
@@ -356,6 +361,22 @@ int FingerprintView::GetA11yTextIdFromState() const {
       return IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_PASSWORD_REQUIRED;
     case FingerprintState::UNAVAILABLE:
       NOTREACHED();
+  }
+}
+
+bool FingerprintView::NeedA11yAlertFromState() const {
+  CHECK(!has_success_);
+  switch (state_) {
+    case FingerprintState::AVAILABLE_DEFAULT:
+      return false;
+    case FingerprintState::AVAILABLE_WITH_FAILED_ATTEMPT:
+    case FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING:
+    case FingerprintState::DISABLED_FROM_ATTEMPTS:
+    case FingerprintState::DISABLED_FROM_TIMEOUT:
+      return true;
+    case FingerprintState::UNAVAILABLE:
+      CHECK_IS_TEST();
+      return false;
   }
 }
 
