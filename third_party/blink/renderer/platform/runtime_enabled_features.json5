@@ -944,6 +944,11 @@
       status: "stable",
     },
     {
+      // https://chromestatus.com/feature/5082469066604544
+      name: "CSSCaretAnimation",
+      status: "test",
+    },
+    {
       // Fix for https://issues.chromium.org/40280846 .  Shipped in M130.
       // Should be safe to remove a bit after M130 has shipped to stable.
       name: "CSSCascadeCorrectScope",

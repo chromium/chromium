@@ -116,6 +116,7 @@ breakBefore
 breakInside
 bufferedRendering
 captionSide
+caretAnimation
 caretColor
 clear
 clip

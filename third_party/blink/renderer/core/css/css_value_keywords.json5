@@ -880,6 +880,7 @@
     "anywhere",
 
     // hyphens
+    // caret-animation
     "manual",
 
     // -webkit-appearance

@@ -2631,6 +2631,17 @@
       invalidate: ["layout", "paint"],
     },
     {
+      name: "caret-animation",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      inherited: true,
+      field_template: "keyword",
+      keywords: ["auto", "manual"],
+      default_value: "auto",
+      typedom_types: ["Keyword"],
+      invalidate: ["paint"],
+      runtime_flag: "CSSCaretAnimation",
+    },
+    {
       name: "caret-color",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
       interpolable: true,

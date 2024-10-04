@@ -122,6 +122,7 @@ break-before: auto
 break-inside: auto
 buffered-rendering: auto
 caption-side: top
+caret-animation: auto
 caret-color: rgb(0, 0, 0)
 clear: none
 clip: auto

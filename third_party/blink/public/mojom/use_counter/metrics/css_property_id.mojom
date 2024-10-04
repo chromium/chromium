@@ -865,6 +865,7 @@ enum CSSSampleId {
     kTextWrapStyle = 806,
     kMasonryTrack = 807,
     kMasonrySlack = 808,
+    kCaretAnimation = 809,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).
