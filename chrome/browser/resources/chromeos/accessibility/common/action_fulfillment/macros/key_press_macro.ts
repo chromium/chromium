@@ -33,10 +33,13 @@ export class KeyPressMacro extends Macro {
   override run(): RunMacroResult {
     const key = this.keyCombination_.key;
     const modifiers = this.keyCombination_.modifiers || {};
+    // To avoid the modifiers getting stripped away, do not use rewriters if
+    // there are modifiers.
+    const useRewriters = this.keyCombination_.modifiers ? false : true;
     if (this.runCount_ === 0) {
-      EventGenerator.sendKeyDown(key, modifiers, /*use_rewriters=*/ true);
+      EventGenerator.sendKeyDown(key, modifiers, useRewriters);
     } else if (this.runCount_ === 1) {
-      EventGenerator.sendKeyUp(key, modifiers, /*use_rewriters=*/ true);
+      EventGenerator.sendKeyUp(key, modifiers, useRewriters);
     } else {
       console.error('Key press macro cannot be run more than twice.');
       return this.createRunMacroResult_(
