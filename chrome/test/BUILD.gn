@@ -3091,7 +3091,7 @@ if (!is_android) {
       "../browser/ui/views/autofill/payments/offer_notification_icon_view_browsertest.cc",
       "../browser/ui/views/bluetooth_device_credentials_view_browsertest.cc",
       "../browser/ui/views/bluetooth_device_pair_confirm_view_browsertest.cc",
-      "../browser/ui/views/bookmarks/bookmark_account_storage_change_dialog_browsertest.cc",
+      "../browser/ui/views/bookmarks/bookmark_account_storage_move_dialog_browsertest.cc",
       "../browser/ui/views/bookmarks/bookmark_bar_view_browsertest.cc",
       "../browser/ui/views/bookmarks/bookmark_bar_view_test_helper.h",
       "../browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar_browsertest.cc",

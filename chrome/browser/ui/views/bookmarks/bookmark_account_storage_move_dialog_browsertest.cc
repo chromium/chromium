@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/bookmarks/bookmark_account_storage_change_dialog.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_account_storage_move_dialog.h"
 
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -14,16 +14,17 @@
 
 namespace {
 
-class BookmarkAccountStorageChangeDialogTest : public DialogBrowserTest {
+// Tests that show the dialog, take a screenshot and compare against a baseline.
+class BookmarkAccountStorageMoveDialogPixelTest : public DialogBrowserTest {
  public:
-  BookmarkAccountStorageChangeDialogTest() = default;
+  BookmarkAccountStorageMoveDialogPixelTest() = default;
 
-  BookmarkAccountStorageChangeDialogTest(
-      const BookmarkAccountStorageChangeDialogTest&) = delete;
-  BookmarkAccountStorageChangeDialogTest& operator=(
-      const BookmarkAccountStorageChangeDialogTest&) = delete;
+  BookmarkAccountStorageMoveDialogPixelTest(
+      const BookmarkAccountStorageMoveDialogPixelTest&) = delete;
+  BookmarkAccountStorageMoveDialogPixelTest& operator=(
+      const BookmarkAccountStorageMoveDialogPixelTest&) = delete;
 
-  ~BookmarkAccountStorageChangeDialogTest() override = default;
+  ~BookmarkAccountStorageMoveDialogPixelTest() override = default;
 
   void ShowUi(const std::string& name) override {
     signin::IdentityManager* identity_manager =
@@ -34,13 +35,11 @@ class BookmarkAccountStorageChangeDialogTest : public DialogBrowserTest {
                                       "https://avatar.com/avatar.png",
                                       gfx::test::CreateImage(/*size=*/32));
 
-    ShowBookmarkAccountStorageChangeDialog(browser());
+    ShowBookmarkAccountStorageMoveDialog(browser());
   }
 };
 
-IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageChangeDialogTest, Show) {
-  set_baseline("5807574");
-
+IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageMoveDialogPixelTest, Show) {
   ShowAndVerifyUi();
 }
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/bookmarks/bookmark_account_storage_change_dialog.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_account_storage_move_dialog.h"
 
 #include <memory>
 #include <utility>
@@ -34,7 +34,7 @@ const int kAvatarSize = 16;
 
 }  // namespace
 
-void ShowBookmarkAccountStorageChangeDialog(Browser* browser) {
+void ShowBookmarkAccountStorageMoveDialog(Browser* browser) {
   // Retrieve info about the signed-in account. Use GetOriginalProfile() because
   // the dialog can be shown in incognito.
   signin::IdentityManager* identity_manager =
@@ -63,7 +63,7 @@ void ShowBookmarkAccountStorageChangeDialog(Browser* browser) {
   // TODO(crbug.com/354896249): Register button callback to move bookmark(s).
   std::unique_ptr<ui::DialogModel> model =
       ui::DialogModel::Builder()
-          .SetInternalName("MoveBookmarkToAccountDialog")
+          .SetInternalName("BookmarkAccountStorageMoveDialog")
           .SetTitle(l10n_util::GetStringUTF16(
               IDS_BOOKMARKS_MOVE_TO_ACCOUNT_DIALOG_TITLE))
           .SetSubtitle(l10n_util::GetStringUTF16(

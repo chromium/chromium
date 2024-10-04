@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_ACCOUNT_STORAGE_CHANGE_DIALOG_H_
-#define CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_ACCOUNT_STORAGE_CHANGE_DIALOG_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_ACCOUNT_STORAGE_MOVE_DIALOG_H_
+#define CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_ACCOUNT_STORAGE_MOVE_DIALOG_H_
 
 class Browser;
 
@@ -11,6 +11,6 @@ class Browser;
 // from local-only storage to the signed-in account, or the other way around.
 // Must only be called if there is a signed-in account.
 // TODO(crbug.com/354896249): Take a dismissal callback as argument.
-void ShowBookmarkAccountStorageChangeDialog(Browser* browser);
+void ShowBookmarkAccountStorageMoveDialog(Browser* browser);
 
-#endif  // CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_ACCOUNT_STORAGE_CHANGE_DIALOG_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_ACCOUNT_STORAGE_MOVE_DIALOG_H_

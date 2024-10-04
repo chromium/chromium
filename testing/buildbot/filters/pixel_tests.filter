@@ -67,7 +67,7 @@ LocalCardMigrationBrowserUiTest.*
 *MemorySaverChipInteractiveTest.*
 *MemorySaverFaviconTreatmentTest.*
 *MemorySaverImprovedFaviconTreatmentTest.*
-MoveBookmarksToAccountDialogTest*
+BookmarkAccountStorageMoveDialogPixelTest*
 NewTabPageTest.*
 OfferNotificationBubbleViewPixelBrowserTest.*
 OutdatedUpgradeBubbleTest.*
