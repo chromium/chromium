@@ -329,7 +329,7 @@ class ProductSpecificationsServiceTest : public testing::Test {
 
   void VerifyProductSpecificationsSet(
       const base::Uuid uuid,
-      const std::optional<ProductSpecificationsSet> expected) {
+      std::optional<ProductSpecificationsSet> expected) {
     base::RunLoop loop;
     service()->GetSetByUuid(
         uuid, base::BindOnce(
@@ -344,7 +344,7 @@ class ProductSpecificationsServiceTest : public testing::Test {
                       EXPECT_EQ(expected.value().urls(), set.value().urls());
                     }
                   },
-                  expected)
+                  std::move(expected))
                   .Then(loop.QuitClosure()));
     loop.Run();
   }
