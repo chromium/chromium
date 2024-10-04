@@ -10,6 +10,7 @@ import android.os.Build;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.components.webauthn.CredManSupport;
@@ -59,7 +60,7 @@ public class CredManSupportProvider {
 
         if (DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN)) {
             CredManUiRecommender recommender =
-                    CredManUiRecommenderProvider.getOrCreate().getCredManUiRecommender();
+                    ServiceLoaderUtil.maybeCreate(CredManUiRecommender.class);
             boolean customUiRecommended =
                     recommender == null ? false : recommender.recommendsCustomUi();
             boolean gpmInCredMan =
