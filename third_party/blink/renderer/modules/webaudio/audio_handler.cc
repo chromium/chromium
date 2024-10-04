@@ -239,11 +239,10 @@ void AudioHandler::SetChannelCountMode(V8ChannelCountMode::Enum mode,
   DCHECK(IsMainThread());
   DeferredTaskHandler::GraphAutoLocker locker(Context());
 
-  if (channel_count_mode_ == mode) {
-    return;
-  }
   new_channel_count_mode_ = mode;
-  Context()->GetDeferredTaskHandler().AddChangedChannelCountMode(this);
+  if (new_channel_count_mode_ != channel_count_mode_) {
+    Context()->GetDeferredTaskHandler().AddChangedChannelCountMode(this);
+  }
 }
 
 V8ChannelInterpretation::Enum AudioHandler::ChannelInterpretation() {
