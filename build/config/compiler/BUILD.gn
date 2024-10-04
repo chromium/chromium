@@ -98,8 +98,7 @@ declare_args() {
   # nonsensical for said projects.
   clang_use_default_sample_profile =
       chrome_pgo_phase == 0 && build_with_chromium && is_official_build &&
-      ((is_android && (current_cpu == "arm" || current_cpu == "x86")) ||
-       chromeos_is_browser_only)
+      ((is_android && !is_high_end_android) || chromeos_is_browser_only)
 
   # This configuration is used to select a default profile in Chrome OS based on
   # the microarchitectures we are using. This is only used if
