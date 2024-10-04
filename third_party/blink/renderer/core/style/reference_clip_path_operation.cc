@@ -6,6 +6,10 @@
 
 namespace blink {
 
+bool ReferenceClipPathOperation::IsLoading() const {
+  return resource_ && resource_->IsLoading();
+}
+
 void ReferenceClipPathOperation::AddClient(SVGResourceClient& client) {
   if (resource_) {
     resource_->AddClient(client);

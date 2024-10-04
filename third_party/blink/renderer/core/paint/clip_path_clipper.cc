@@ -354,9 +354,13 @@ std::optional<gfx::RectF> ClipPathClipper::LocalClipPathBoundingBox(
     return reference_box;
   }
 
-  DCHECK_EQ(clip_path.GetType(), ClipPathOperation::kReference);
-  LayoutSVGResourceClipper* clipper = ResolveElementReference(
-      object, To<ReferenceClipPathOperation>(clip_path));
+  const auto& reference_clip = To<ReferenceClipPathOperation>(clip_path);
+  if (reference_clip.IsLoading()) {
+    return gfx::RectF();
+  }
+
+  LayoutSVGResourceClipper* clipper =
+      ResolveElementReference(object, reference_clip);
   if (!clipper)
     return std::nullopt;
 
@@ -430,8 +434,12 @@ bool ClipPathClipper::HitTest(const LayoutObject& clip_path_owner,
     path.AddRoundedRect(rounded_reference_box);
     return location.Intersects(path);
   }
-  const LayoutSVGResourceClipper* clipper = ResolveElementReference(
-      clip_path_owner, To<ReferenceClipPathOperation>(clip_path));
+  const auto& reference_clip = To<ReferenceClipPathOperation>(clip_path);
+  if (reference_clip.IsLoading()) {
+    return false;
+  }
+  const LayoutSVGResourceClipper* clipper =
+      ResolveElementReference(clip_path_owner, reference_clip);
   if (!clipper) {
     return true;
   }
@@ -486,6 +494,9 @@ static std::optional<Path> PathBasedClipInternal(
 
   if (const auto* reference_clip =
           DynamicTo<ReferenceClipPathOperation>(clip_path)) {
+    if (reference_clip->IsLoading()) {
+      return Path();
+    }
     LayoutSVGResourceClipper* resource_clipper =
         ResolveElementReference(clip_path_owner, *reference_clip);
     if (!resource_clipper)
@@ -543,14 +554,15 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
     bool rest_of_the_chain_already_appled = false;
     const LayoutObject* current_object = &layout_object;
     while (!rest_of_the_chain_already_appled && current_object) {
-      const ClipPathOperation* clip_path =
-          current_object->StyleRef().ClipPath();
-      if (!clip_path)
+      const auto* reference_clip =
+          To<ReferenceClipPathOperation>(current_object->StyleRef().ClipPath());
+      if (!reference_clip || reference_clip->IsLoading()) {
         break;
+      }
       // We wouldn't have reached here if the current clip-path is a shape,
       // because it would have been applied as a path-based clip already.
-      LayoutSVGResourceClipper* resource_clipper = ResolveElementReference(
-          *current_object, To<ReferenceClipPathOperation>(*clip_path));
+      LayoutSVGResourceClipper* resource_clipper =
+          ResolveElementReference(*current_object, *reference_clip);
       if (!resource_clipper)
         break;
 
