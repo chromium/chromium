@@ -369,8 +369,8 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // mixed mirror mode in the next display configuration. (Use SetMirrorMode()
   // to immediately switch to mixed mirror mode.)
   void set_mixed_mirror_mode_params(
-      const std::optional<MixedMirrorModeParams> mixed_params) {
-    mixed_mirror_mode_params_ = mixed_params;
+      std::optional<MixedMirrorModeParams> mixed_params) {
+    mixed_mirror_mode_params_ = std::move(mixed_params);
   }
 
   void dec_screen_capture_active_counter() {
