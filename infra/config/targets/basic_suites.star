@@ -2789,7 +2789,6 @@ targets.legacy_basic_suite(
             args = [
                 "--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --enable-features=SkiaGraphite",
             ],
-            ci_only = True,
         ),
         "expected_color_pixel_passthrough_graphite_test": targets.legacy_test_config(
             mixins = [
