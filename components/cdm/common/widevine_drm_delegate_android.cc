@@ -21,9 +21,9 @@ const uint8_t kWidevineUuid[16] = {
 
 }  // namespace
 
-WidevineDrmDelegateAndroid::WidevineDrmDelegateAndroid() {}
+WidevineDrmDelegateAndroid::WidevineDrmDelegateAndroid() = default;
 
-WidevineDrmDelegateAndroid::~WidevineDrmDelegateAndroid() {}
+WidevineDrmDelegateAndroid::~WidevineDrmDelegateAndroid() = default;
 
 const std::vector<uint8_t> WidevineDrmDelegateAndroid::GetUUID() const {
   return std::vector<uint8_t>(kWidevineUuid,
