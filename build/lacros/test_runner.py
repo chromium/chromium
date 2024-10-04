@@ -121,7 +121,6 @@ _TARGETS_REQUIRE_MOJO_CROSAPI = [
     # are allowed. For now we only enable crosapi in targets that run tests
     # serially.
     'interactive_ui_tests',
-    'lacros_chrome_browsertests',
 ]
 
 # Default test filter file for each target. These filter files will be
@@ -131,8 +130,6 @@ _DEFAULT_FILTER_FILES_MAPPING = {
     'components_unittests': 'linux-lacros.components_unittests.filter',
     'content_browsertests': 'linux-lacros.content_browsertests.filter',
     'interactive_ui_tests': 'linux-lacros.interactive_ui_tests.filter',
-    'lacros_chrome_browsertests':
-    'linux-lacros.lacros_chrome_browsertests.filter',
     'sync_integration_tests': 'linux-lacros.sync_integration_tests.filter',
     'unit_tests': 'linux-lacros.unit_tests.filter',
 }

@@ -67,7 +67,6 @@ class TestRunnerTest(unittest.TestCase):
 
   @parameterized.expand([
       'browser_tests', 'components_browsertests', 'content_browsertests',
-      'lacros_chrome_browsertests',
       'browser_tests --enable-pixel-output-in-tests'
   ])
   @mock.patch.object(os,
@@ -115,23 +114,12 @@ class TestRunnerTest(unittest.TestCase):
       ]
       if '--enable-pixel-output-in-tests' not in command_parts:
         expected_ash_chrome_args.append('--disable-gl-drawing-for-tests')
-      if command == 'lacros_chrome_browsertests':
-        expected_ash_chrome_args.append(
-            '--lacros-mojo-socket-for-testing=/tmp/ash-data/lacros.sock')
       self.assertListEqual(expected_ash_chrome_args, ash_chrome_args[1:])
       ash_chrome_env = mock_popen.call_args_list[0][1].get('env', {})
       self.assertDictEqual({'XDG_RUNTIME_DIR': '/tmp/xdg'}, ash_chrome_env)
 
       test_args = mock_popen.call_args_list[1][0][0]
-      if command == 'lacros_chrome_browsertests':
-        self.assertListEqual([
-            command, '--test-launcher-filter-file=/a/b/filter',
-            '--lacros-mojo-socket-for-testing=/tmp/ash-data/lacros.sock',
-            '--ash-chrome-path=' + ash_chrome_args[0],
-            '--unique-ash-dir=/tmp/unique'
-        ], test_args)
-      else:
-        self.assertListEqual(test_args[:len(command_parts)], command_parts)
+      self.assertListEqual(test_args[:len(command_parts)], command_parts)
 
       test_env = mock_popen.call_args_list[1][1].get('env', {})
       self.assertDictEqual(
