@@ -136,9 +136,12 @@ void MaybeDismissNotification() {
 // Opt in to Tips Notications via the SetUpList long-press menu. Mark all
 // Tips Notifications as "sent", except for the ones included in `types`.
 - (void)optInToTipsNotifications:(std::vector<TipsNotificationType>)types {
+  // Ensure that the SetUpList reloads.
+  [ChromeEarlGrey closeCurrentTab];
+  [ChromeEarlGrey openNewTab];
   // Long press the SetUpList module.
   id<GREYMatcher> setUpList =
-      grey_accessibilityID(set_up_list::kDefaultBrowserItemID);
+      grey_accessibilityID(set_up_list::kSetUpListContainerID);
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:setUpList];
   [[EarlGrey selectElementWithMatcher:setUpList]
       performAction:grey_longPress()];
@@ -165,7 +168,7 @@ void MaybeDismissNotification() {
 - (void)turnOffTipsNotifications {
   // Long press the SetUpList module.
   id<GREYMatcher> setUpList =
-      grey_accessibilityID(set_up_list::kDefaultBrowserItemID);
+      grey_accessibilityID(set_up_list::kSetUpListContainerID);
   [[EarlGrey selectElementWithMatcher:setUpList]
       performAction:grey_longPress()];
 
@@ -312,8 +315,7 @@ void MaybeDismissNotification() {
 }
 
 // Tests that the Lens Promo appears when tapping on the Lens notification.
-// TODO(crbug.com/370897273): Test is flaky on various bots.
-- (void)DISABLED_testEnhancedSafeBrowsingNotification {
+- (void)testEnhancedSafeBrowsingNotification {
   MaybeDismissNotification();
   [ChromeEarlGreyUI waitForAppToIdle];
   [self optInToTipsNotifications:{}];

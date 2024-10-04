@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_consumer_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_consumer_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
@@ -183,7 +184,10 @@
     view.commandHandler = config.commandHandler;
     [compactedSetUpListViews addObject:view];
   }
-  return [[MultiRowContainerView alloc] initWithViews:compactedSetUpListViews];
+  UIView* view =
+      [[MultiRowContainerView alloc] initWithViews:compactedSetUpListViews];
+  view.accessibilityIdentifier = set_up_list::kSetUpListContainerID;
+  return view;
 }
 
 - (UIView*)tipsViewForConfig:(TipsModuleState*)state {

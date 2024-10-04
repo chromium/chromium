@@ -18,5 +18,6 @@ constexpr NSString* const kAccessibilityID = @"set_up_list::kAccessibilityID";
 constexpr NSString* const kExpandButtonID = @"set_up_list::kExpandButtonID";
 constexpr NSString* const kMenuButtonID = @"set_up_list::kMenuButtonID";
 constexpr NSString* const kAllSetID = @"set_up_list::kAllSetID";
+constexpr NSString* const kSetUpListContainerID = @"kSetUpListContainerID";
 
 }  // namespace set_up_list

@@ -20,6 +20,7 @@ extern NSString* const kAccessibilityID;
 extern NSString* const kExpandButtonID;
 extern NSString* const kMenuButtonID;
 extern NSString* const kAllSetID;
+extern NSString* const kSetUpListContainerID;
 
 }  // namespace set_up_list
 
