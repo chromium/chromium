@@ -1366,10 +1366,22 @@ public class CustomTabsConnection {
     void showSignInToastIfNecessary(CustomTabsSessionToken session, Intent intent) {}
 
     /**
+     * Shows a toast about any possible sign in issues encountered during custom tab startup.
+     *
      * @param session The session that the corresponding custom tab is assigned to.
      * @param intent The intent that launched the custom tab.
-     * @param windowAndroid The android window
-     * @param profileProviderSupplier
+     * @param profileProviderSupplier The supplier of the current profile.
+     */
+    void showSignInToastIfNecessary(
+            CustomTabsSessionToken session,
+            Intent intent,
+            Supplier<ProfileProvider> profileProviderSupplier) {}
+
+    /**
+     * @param session The session that the corresponding custom tab is assigned to.
+     * @param intent The intent that launched the custom tab.
+     * @param windowAndroid The android window.
+     * @param profileProviderSupplier The supplier of the current profile.
      */
     void maybeShowAccountMismatchNotification(
             CustomTabsSessionToken session,

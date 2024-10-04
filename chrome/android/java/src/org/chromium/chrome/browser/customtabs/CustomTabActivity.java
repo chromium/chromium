@@ -228,6 +228,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         }
 
         mConnection.showSignInToastIfNecessary(mSession, getIntent());
+        mConnection.showSignInToastIfNecessary(mSession, getIntent(), getProfileProviderSupplier());
 
         new CustomTabTrustedCdnPublisherUrlVisibility(
                 getWindowAndroid(),
