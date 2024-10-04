@@ -21,6 +21,7 @@
 #import "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #import "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
@@ -151,6 +152,7 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
 - (void)allowPriceTrackingNotifications {
   base::RecordAction(
       base::UserMetricsAction("Commerce.PriceTracking.MagicStackPromo.Allow"));
+  [self.NTPActionsDelegate priceTrackingPromoOpened];
   __weak PriceTrackingPromoMediator* weakSelf = self;
   [PushNotificationUtil requestPushNotificationPermission:^(
                             BOOL granted, BOOL promptShown, NSError* error) {

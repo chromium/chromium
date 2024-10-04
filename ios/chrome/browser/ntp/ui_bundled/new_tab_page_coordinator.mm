@@ -1406,6 +1406,13 @@
   [self dismissCustomizationMenu];
 }
 
+- (void)priceTrackingPromoOpened {
+  RecordMagicStackClick(ContentSuggestionsModuleType::kPriceTrackingPromo,
+                        [self isStartSurface]);
+  RecordHomeAction(IOSHomeActionType::kPriceTrackingPromo,
+                   [self isStartSurface]);
+}
+
 #pragma mark - OverscrollActionsControllerDelegate
 
 - (void)overscrollActionNewTab:(OverscrollActionsController*)controller {
