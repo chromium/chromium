@@ -20,7 +20,7 @@
 
 ProfileAttributesStorageIOS::ProfileAttributesStorageIOS(PrefService* prefs)
     : prefs_(prefs) {
-  // Populate the cache
+  // Populate the cache.
   for (const auto pair : prefs_->GetDict(prefs::kProfileInfoCache)) {
     sorted_keys_.push_back(pair.first);
   }
@@ -113,36 +113,11 @@ ProfileAttributesStorageIOS::GetAttributesForProfileWithName(
   return GetAttributesForProfileAtIndex(index);
 }
 
-void ProfileAttributesStorageIOS::UpdateAttributesForProfileAtIndex(
-    size_t index,
-    ProfileAttributesCallback callback) {
-  DCHECK_LT(index, sorted_keys_.size());
-  const std::string& name = sorted_keys_[index];
-  const base::Value::Dict* values =
-      prefs_->GetDict(prefs::kProfileInfoCache).FindDict(name);
-
-  base::Value::Dict updated_values =
-      std::move(callback).Run(ProfileAttributesIOS(name, values)).GetStorage();
-  if (!values || *values != updated_values) {
-    ScopedDictPrefUpdate update(prefs_, prefs::kProfileInfoCache);
-    update->Set(name, std::move(updated_values));
-  }
-}
-
 void ProfileAttributesStorageIOS::UpdateAttributesForProfileWithName(
     std::string_view name,
     ProfileAttributesCallback callback) {
   const size_t index = GetIndexOfProfileWithName(name);
   UpdateAttributesForProfileAtIndex(index, std::move(callback));
-}
-
-size_t ProfileAttributesStorageIOS::GetIndexOfProfileWithName(
-    std::string_view name) const {
-  auto iterator = base::ranges::lower_bound(sorted_keys_, name);
-  if (iterator == sorted_keys_.end() || *iterator != name) {
-    return std::string::npos;
-  }
-  return std::distance(sorted_keys_.begin(), iterator);
 }
 
 void ProfileAttributesStorageIOS::SetProfileNameForSceneID(
@@ -177,4 +152,29 @@ void ProfileAttributesStorageIOS::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kNumberOfProfiles, 0);
   registry->RegisterListPref(prefs::kLastActiveProfiles);
   registry->RegisterDictionaryPref(prefs::kProfileForScene);
+}
+
+void ProfileAttributesStorageIOS::UpdateAttributesForProfileAtIndex(
+    size_t index,
+    ProfileAttributesCallback callback) {
+  DCHECK_LT(index, sorted_keys_.size());
+  const std::string& name = sorted_keys_[index];
+  const base::Value::Dict* values =
+      prefs_->GetDict(prefs::kProfileInfoCache).FindDict(name);
+
+  base::Value::Dict updated_values =
+      std::move(callback).Run(ProfileAttributesIOS(name, values)).GetStorage();
+  if (!values || *values != updated_values) {
+    ScopedDictPrefUpdate update(prefs_, prefs::kProfileInfoCache);
+    update->Set(name, std::move(updated_values));
+  }
+}
+
+size_t ProfileAttributesStorageIOS::GetIndexOfProfileWithName(
+    std::string_view name) const {
+  auto iterator = base::ranges::lower_bound(sorted_keys_, name);
+  if (iterator == sorted_keys_.end() || *iterator != name) {
+    return std::string::npos;
+  }
+  return std::distance(sorted_keys_.begin(), iterator);
 }
