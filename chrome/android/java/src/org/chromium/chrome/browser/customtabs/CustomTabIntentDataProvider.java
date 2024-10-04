@@ -935,17 +935,18 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     private void addOpenInBrowserOption(Intent intent, Context context) {
         boolean usingInteractiveOmnibox =
                 CustomTabsConnection.getInstance().shouldEnableOmniboxForIntent(this);
+
         int openInBrowserState =
                 IntentUtils.safeGetIntExtra(
                         intent,
                         EXTRA_OPEN_IN_BROWSER_STATE,
-                        usingInteractiveOmnibox
-                                ? CustomTabsButtonState.BUTTON_STATE_DEFAULT
-                                : CustomTabsButtonState.BUTTON_STATE_OFF);
+                        CustomTabsButtonState.BUTTON_STATE_DEFAULT);
 
-        if (openInBrowserState == CustomTabsButtonState.BUTTON_STATE_DEFAULT
-                && isInteractiveOmniboxAllowed()) {
-            openInBrowserState = CustomTabsButtonState.BUTTON_STATE_ON;
+        if (openInBrowserState == CustomTabsButtonState.BUTTON_STATE_DEFAULT) {
+            openInBrowserState =
+                    usingInteractiveOmnibox
+                            ? CustomTabsButtonState.BUTTON_STATE_ON
+                            : CustomTabsButtonState.BUTTON_STATE_OFF;
         }
 
         if (openInBrowserState == CustomTabsButtonState.BUTTON_STATE_ON) {
