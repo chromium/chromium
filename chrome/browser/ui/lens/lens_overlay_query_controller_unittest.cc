@@ -18,6 +18,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/lens_features.h"
+#include "components/variations/variations.mojom.h"
+#include "components/variations/variations_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/common/api_error_codes.h"
 #include "net/base/url_util.h"
@@ -43,9 +45,6 @@ constexpr char kTestSuggestSignals[] = "suggest_signals";
 
 // The fake server session id.
 constexpr char kTestServerSessionId[] = "server_session_id";
-
-// The fake api key to use for fetching requests.
-constexpr char kTestApiKey[] = "test_api_key";
 
 // The locale to use.
 constexpr char kLocale[] = "en-US";
@@ -84,6 +83,20 @@ constexpr char kTimeZone[] = "America/Los_Angeles";
 
 // The parameter key for gen204 request.
 constexpr char kGen204IdentifierQueryParameter[] = "plla";
+
+// Fake VariationsClient for testing. Without it, tests crash.
+class FakeVariationsClient : public variations::VariationsClient {
+ public:
+  bool IsOffTheRecord() const override { return false; }
+
+  variations::mojom::VariationsHeadersPtr GetVariationsHeaders()
+      const override {
+    base::flat_map<variations::mojom::GoogleWebVisibility, std::string>
+        headers = {
+            {variations::mojom::GoogleWebVisibility::FIRST_PARTY, "123xyz"}};
+    return variations::mojom::VariationsHeaders::New(headers);
+  }
+};
 
 class FakeEndpointFetcher : public EndpointFetcher {
  public:
@@ -141,6 +154,8 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
                                    gen204_controller) {}
   ~LensOverlayQueryControllerMock() override = default;
 
+  // TOOD(b/370562017): Write tests for cluster info flow.
+  lens::LensOverlayServerClusterInfoResponse fake_cluster_info_response_;
   lens::LensOverlayObjectsResponse fake_objects_response_;
   lens::LensOverlayInteractionResponse fake_interaction_response_;
   lens::LensOverlayClientLogs sent_client_logs_;
@@ -151,25 +166,32 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
   int num_full_page_translate_gen204_pings_sent_ = 0;
 
  protected:
-  // Mocked to avoid making actual server call. Instead, returns a fake
-  // response.
-  void PerformFetchRequest(
+  std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
       lens::LensOverlayServerRequest* request,
-      std::vector<std::string>* request_headers,
-      base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
-          fetcher_created_callback,
-      EndpointFetcherCallback response_received_callback) override {
+      const GURL& fetch_url,
+      const std::string& http_method,
+      const std::vector<std::string>& request_headers,
+      const std::vector<std::string>& cors_exempt_headers) override {
     lens::LensOverlayServerResponse fake_server_response;
-    if (request->has_objects_request()) {
+    std::string fake_server_response_string;
+    if (!request) {
+      // Cluster info request.
+      fake_server_response_string =
+          fake_cluster_info_response_.SerializeAsString();
+    } else if (request->has_objects_request()) {
+      // Full image request.
       sent_objects_request_.CopyFrom(request->objects_request());
       fake_server_response.mutable_objects_response()->CopyFrom(
           fake_objects_response_);
+      fake_server_response_string = fake_server_response.SerializeAsString();
       sent_request_id_.CopyFrom(
           request->objects_request().request_context().request_id());
     } else if (request->has_interaction_request()) {
+      // Interaction request.
       sent_interaction_request_.CopyFrom(request->interaction_request());
       fake_server_response.mutable_interaction_response()->CopyFrom(
           fake_interaction_response_);
+      fake_server_response_string = fake_server_response.SerializeAsString();
       sent_request_id_.CopyFrom(
           request->interaction_request().request_context().request_id());
     } else {
@@ -177,17 +199,13 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
     }
     sent_client_logs_.CopyFrom(request->client_logs());
 
+    // Create the fake endpoint fetcher to return the fake response.
     EndpointResponse fake_endpoint_response;
-    fake_endpoint_response.response = fake_server_response.SerializeAsString();
+    fake_endpoint_response.response = fake_server_response_string;
     fake_endpoint_response.http_status_code =
         google_apis::ApiErrorCode::HTTP_SUCCESS;
-    std::unique_ptr<FakeEndpointFetcher> endpoint_fetcher =
-        std::make_unique<FakeEndpointFetcher>(fake_endpoint_response);
-    EndpointFetcher* fetcher = endpoint_fetcher.get();
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(fetcher_created_callback),
-                                  std::move(endpoint_fetcher)));
-    fetcher->PerformRequest(std::move(response_received_callback), kTestApiKey);
+
+    return std::make_unique<FakeEndpointFetcher>(fake_endpoint_response);
   }
 
   void SendLatencyGen204IfEnabled(int64_t latency_ms,
@@ -204,7 +222,9 @@ class LensOverlayQueryControllerTest : public testing::Test {
  public:
   LensOverlayQueryControllerTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP,
-                          base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+                          base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    fake_variations_client_ = std::make_unique<FakeVariationsClient>();
+  }
 
   lens::LensOverlayGen204Controller* GetGen204Controller() {
     return gen204_controller_.get();
@@ -271,6 +291,7 @@ class LensOverlayQueryControllerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<lens::FakeLensOverlayGen204Controller> gen204_controller_;
+  std::unique_ptr<FakeVariationsClient> fake_variations_client_;
 
   TestingProfile* profile() { return profile_.get(); }
 
@@ -298,8 +319,7 @@ TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
       full_image_response_future;
   LensOverlayQueryControllerMock query_controller(
       full_image_response_future.GetRepeatingCallback(), base::NullCallback(),
-      base::NullCallback(), base::NullCallback(),
-      profile()->GetVariationsClient(),
+      base::NullCallback(), base::NullCallback(), fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
       lens::LensOverlayInvocationSource::kAppMenu,
       /*use_dark_mode=*/false, GetGen204Controller());
@@ -356,7 +376,7 @@ TEST_F(LensOverlayQueryControllerTest,
       url_response_future.GetRepeatingCallback(),
       interaction_data_response_future.GetRepeatingCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
-      profile()->GetVariationsClient(),
+      fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
       lens::LensOverlayInvocationSource::kAppMenu,
       /*use_dark_mode=*/false, GetGen204Controller());
@@ -449,7 +469,7 @@ TEST_F(LensOverlayQueryControllerTest,
       url_response_future.GetRepeatingCallback(),
       interaction_data_response_future.GetRepeatingCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
-      profile()->GetVariationsClient(),
+      fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
       lens::LensOverlayInvocationSource::kAppMenu,
       /*use_dark_mode=*/false, GetGen204Controller());
@@ -552,7 +572,7 @@ TEST_F(LensOverlayQueryControllerTest,
       url_response_future.GetRepeatingCallback(),
       interaction_data_response_future.GetRepeatingCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
-      profile()->GetVariationsClient(),
+      fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
       lens::LensOverlayInvocationSource::kAppMenu,
       /*use_dark_mode=*/false, GetGen204Controller());
@@ -651,7 +671,7 @@ TEST_F(LensOverlayQueryControllerTest,
       url_response_future.GetRepeatingCallback(),
       interaction_data_response_future.GetRepeatingCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
-      profile()->GetVariationsClient(),
+      fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
       lens::LensOverlayInvocationSource::kAppMenu,
       /*use_dark_mode=*/false, GetGen204Controller());
@@ -704,7 +724,7 @@ TEST_F(LensOverlayQueryControllerTest,
       url_response_future.GetRepeatingCallback(),
       interaction_data_response_future.GetRepeatingCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
-      profile()->GetVariationsClient(),
+      fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
       lens::LensOverlayInvocationSource::kAppMenu,
       /*use_dark_mode=*/false, GetGen204Controller());
@@ -792,7 +812,7 @@ TEST_F(LensOverlayQueryControllerTest,
       url_response_future.GetRepeatingCallback(),
       interaction_data_response_future.GetRepeatingCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
-      profile()->GetVariationsClient(),
+      fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
       lens::LensOverlayInvocationSource::kAppMenu,
       /*use_dark_mode=*/false, GetGen204Controller());
@@ -850,7 +870,7 @@ TEST_F(LensOverlayQueryControllerTest,
       url_response_future.GetRepeatingCallback(),
       interaction_data_response_future.GetRepeatingCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
-      profile()->GetVariationsClient(),
+      fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
       lens::LensOverlayInvocationSource::kAppMenu,
       /*use_dark_mode=*/false, GetGen204Controller());
@@ -906,7 +926,7 @@ TEST_F(LensOverlayQueryControllerTest,
       url_response_future.GetRepeatingCallback(),
       interaction_data_response_future.GetRepeatingCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
-      profile()->GetVariationsClient(),
+      fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
       lens::LensOverlayInvocationSource::kAppMenu,
       /*use_dark_mode=*/false, GetGen204Controller());

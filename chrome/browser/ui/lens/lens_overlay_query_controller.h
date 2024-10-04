@@ -135,16 +135,14 @@ class LensOverlayQueryController {
       lens::mojom::SemanticEvent event);
 
  protected:
-  // Creates an endpoint fetcher with the given request_headers to perform the
-  // given request. Calls fetcher_created_callback when the EndpointFetcher is
-  // created to keep it alive while the request is being made.
-  // response_received_callback is invoked once the request returns a response.
-  virtual void PerformFetchRequest(
+  // Returns the EndpointFetcher to use with the given params. Protected to
+  // allow overriding in tests to mock server responses.
+  virtual std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
       lens::LensOverlayServerRequest* request,
-      std::vector<std::string>* request_headers,
-      base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
-          fetcher_created_callback,
-      EndpointFetcherCallback response_received_callback);
+      const GURL& fetch_url,
+      const std::string& http_method,
+      const std::vector<std::string>& request_headers,
+      const std::vector<std::string>& cors_exempt_headers);
 
   // Sends a latency Gen204 ping if enabled.
   virtual void SendLatencyGen204IfEnabled(int64_t latency_ms,
@@ -345,6 +343,17 @@ class LensOverlayQueryController {
 
   // Runs the interaction callback with empty response data, for errors.
   void RunInteractionCallbackForError();
+
+  // Creates an endpoint fetcher with the given request_headers to perform the
+  // given request. Calls fetcher_created_callback when the EndpointFetcher is
+  // created to keep it alive while the request is being made.
+  // response_received_callback is invoked once the request returns a response.
+  void PerformFetchRequest(
+      lens::LensOverlayServerRequest* request,
+      std::vector<std::string>* request_headers,
+      base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
+          fetcher_created_callback,
+      EndpointFetcherCallback response_received_callback);
 
   // Creates a client context proto to be attached to a server request.
   lens::LensOverlayClientContext CreateClientContext();

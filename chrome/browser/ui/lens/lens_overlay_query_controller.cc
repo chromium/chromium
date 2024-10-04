@@ -376,64 +376,36 @@ void LensOverlayQueryController::SendSemanticEventGen204IfEnabled(
   gen204_controller_->SendSemanticEventGen204IfEnabled(event);
 }
 
-void LensOverlayQueryController::PerformFetchRequest(
+std::unique_ptr<EndpointFetcher>
+LensOverlayQueryController::CreateEndpointFetcher(
     lens::LensOverlayServerRequest* request,
-    std::vector<std::string>* request_headers,
-    base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
-        fetcher_created_callback,
-    EndpointFetcherCallback response_received_callback) {
-  CHECK(request);
-  CHECK(request_headers);
-
-  // Serialize the request to a string to include as the request post data.
+    const GURL& fetch_url,
+    const std::string& http_method,
+    const std::vector<std::string>& request_headers,
+    const std::vector<std::string>& cors_exempt_headers) {
+  // If provided, serialize the request to a string to include as the request
+  // post data.
   std::string request_string;
-  CHECK(request->SerializeToString(&request_string));
-
-  // Get client experiment variations to include in the request.
-  std::vector<std::string> cors_exempt_headers =
-      CreateVariationsHeaders(variations_client_->GetVariationsHeaders());
-
-  // Generate the URL to fetch to and include the server session id if present.
-  GURL fetch_url = GURL(lens::features::GetLensOverlayEndpointURL());
-  if (cluster_info_.has_value()) {
-    // The endpoint fetches should use the server session id from the cluster
-    // info.
-    fetch_url = net::AppendOrReplaceQueryParameter(
-        fetch_url, kSessionIdQueryParameterKey,
-        cluster_info_->server_session_id());
+  if (request) {
+    CHECK(request->SerializeToString(&request_string));
   }
 
-  // Create the EndpointFetcher, responsible for making the request using our
-  // given params.
-  std::unique_ptr<EndpointFetcher> endpoint_fetcher =
-      std::make_unique<EndpointFetcher>(
-          /*url_loader_factory=*/profile_
-              ? profile_->GetURLLoaderFactory().get()
-              : g_browser_process->shared_url_loader_factory(),
-          /*url=*/fetch_url,
-          /*http_method=*/kHttpPostMethod,
-          /*content_type=*/kContentType,
-          base::Milliseconds(
-              lens::features::GetLensOverlayServerRequestTimeout()),
-          /*post_data=*/request_string,
-          /*headers=*/*request_headers,
-          /*cors_exempt_headers=*/cors_exempt_headers,
-          /*annotation_tag=*/kTrafficAnnotationTag, chrome::GetChannel(),
-          /*request_params=*/
-          EndpointFetcher::RequestParams::Builder()
-              .SetCredentialsMode(CredentialsMode::kInclude)
-              .Build());
-  EndpointFetcher* fetcher = endpoint_fetcher.get();
-
-  // Run callback that the fetcher was created. This is used to keep the
-  // endpoint_fetcher alive while the request is made.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(fetcher_created_callback),
-                                std::move(endpoint_fetcher)));
-
-  // Finally, perform the request.
-  fetcher->PerformRequest(std::move(response_received_callback),
-                          google_apis::GetAPIKey().c_str());
+  return std::make_unique<EndpointFetcher>(
+      /*url_loader_factory=*/profile_
+          ? profile_->GetURLLoaderFactory().get()
+          : g_browser_process->shared_url_loader_factory(),
+      /*url=*/fetch_url,
+      /*http_method=*/http_method,
+      /*content_type=*/kContentType,
+      base::Milliseconds(lens::features::GetLensOverlayServerRequestTimeout()),
+      /*post_data=*/request_string,
+      /*headers=*/request_headers,
+      /*cors_exempt_headers=*/cors_exempt_headers,
+      /*annotation_tag=*/kTrafficAnnotationTag, chrome::GetChannel(),
+      /*request_params=*/
+      EndpointFetcher::RequestParams::Builder()
+          .SetCredentialsMode(CredentialsMode::kInclude)
+          .Build());
 }
 
 void LensOverlayQueryController::SendLatencyGen204IfEnabled(
@@ -477,22 +449,8 @@ void LensOverlayQueryController::PerformClusterInfoFetchRequest(
   // Create the EndpointFetcher, responsible for making the request using our
   // given params. Store in class variable to keep endpoint fetcher alive until
   // the request is made.
-  cluster_info_endpoint_fetcher_ = std::make_unique<EndpointFetcher>(
-      /*url_loader_factory=*/profile_
-          ? profile_->GetURLLoaderFactory().get()
-          : g_browser_process->shared_url_loader_factory(),
-      /*url=*/fetch_url,
-      /*http_method=*/kHttpGetMethod,
-      /*content_type=*/kContentType,
-      base::Milliseconds(lens::features::GetLensOverlayServerRequestTimeout()),
-      /*post_data=*/"",
-      /*headers=*/request_headers,
-      /*cors_exempt_headers=*/cors_exempt_headers,
-      /*annotation_tag=*/kTrafficAnnotationTag, chrome::GetChannel(),
-      /*request_params=*/
-      EndpointFetcher::RequestParams::Builder()
-          .SetCredentialsMode(CredentialsMode::kInclude)
-          .Build());
+  cluster_info_endpoint_fetcher_ = CreateEndpointFetcher(
+      nullptr, fetch_url, kHttpGetMethod, request_headers, cors_exempt_headers);
 
   // Finally, perform the request.
   cluster_info_endpoint_fetcher_->PerformRequest(
@@ -1068,6 +1026,47 @@ void LensOverlayQueryController::RunInteractionCallbackForError() {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(interaction_data_callback_,
                                 lens::proto::LensOverlayInteractionResponse()));
+}
+
+void LensOverlayQueryController::PerformFetchRequest(
+    lens::LensOverlayServerRequest* request,
+    std::vector<std::string>* request_headers,
+    base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
+        fetcher_created_callback,
+    EndpointFetcherCallback response_received_callback) {
+  CHECK(request);
+  CHECK(request_headers);
+
+  // Get client experiment variations to include in the request.
+  std::vector<std::string> cors_exempt_headers =
+      CreateVariationsHeaders(variations_client_->GetVariationsHeaders());
+
+  // Generate the URL to fetch to and include the server session id if present.
+  GURL fetch_url = GURL(lens::features::GetLensOverlayEndpointURL());
+  if (cluster_info_.has_value()) {
+    // The endpoint fetches should use the server session id from the cluster
+    // info.
+    fetch_url = net::AppendOrReplaceQueryParameter(
+        fetch_url, kSessionIdQueryParameterKey,
+        cluster_info_->server_session_id());
+  }
+
+  // Create the EndpointFetcher, responsible for making the request using our
+  // given params.
+  std::unique_ptr<EndpointFetcher> endpoint_fetcher =
+      CreateEndpointFetcher(request, fetch_url, kHttpPostMethod,
+                            *request_headers, cors_exempt_headers);
+  EndpointFetcher* fetcher = endpoint_fetcher.get();
+
+  // Run callback that the fetcher was created. This is used to keep the
+  // endpoint_fetcher alive while the request is made.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(fetcher_created_callback),
+                                std::move(endpoint_fetcher)));
+
+  // Finally, perform the request.
+  fetcher->PerformRequest(std::move(response_received_callback),
+                          google_apis::GetAPIKey().c_str());
 }
 
 lens::LensOverlayClientContext
