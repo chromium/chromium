@@ -35,6 +35,7 @@ using google_apis::UploadRangeResponse;
 namespace drive {
 
 namespace {
+
 // Upload data is split to multiple HTTP request each conveying kUploadChunkSize
 // bytes (except the request for uploading the last chunk of data).
 // The value must be a multiple of 512KB according to the spec of GData WAPI and
@@ -58,6 +59,15 @@ void RecordDriveUploadProtocol(DriveUploadProtocol protocol) {
   UMA_HISTOGRAM_ENUMERATION("Drive.UploadProtocol", protocol,
                             UPLOAD_METHOD_MAX_VALUE);
 }
+
+// Wrapper around base::GetFileSize(), as it is currently overloaded, so
+// base::BindOnce() cannot figure out which version to use.
+// TODO(crbug.com/371234479): Remove this after removing the deprecated version
+// of base::GetFileSize().
+std::optional<int64_t> GetFileSizeWrapper(const base::FilePath& file_path) {
+  return base::GetFileSize(file_path);
+}
+
 }  // namespace
 
 // Refcounted helper class to manage batch request. DriveUploader uses the class
@@ -265,9 +275,7 @@ CancelCallbackOnce DriveUploader::StartUploadFile(
 
   UploadFileInfo* info_ptr = upload_file_info.get();
   blocking_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&base::GetFileSize, info_ptr->file_path,
-                     &info_ptr->content_length),
+      FROM_HERE, base::BindOnce(&GetFileSizeWrapper, info_ptr->file_path),
       base::BindOnce(&DriveUploader::StartUploadFileAfterGetFileSize,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(upload_file_info),
@@ -278,14 +286,16 @@ CancelCallbackOnce DriveUploader::StartUploadFile(
 void DriveUploader::StartUploadFileAfterGetFileSize(
     std::unique_ptr<UploadFileInfo> upload_file_info,
     StartInitiateUploadCallback start_initiate_upload_callback,
-    bool get_file_size_result) {
+    std::optional<int64_t> maybe_file_size) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  if (!get_file_size_result) {
+  if (!maybe_file_size.has_value()) {
     UploadFailed(std::move(upload_file_info), HTTP_NOT_FOUND);
     return;
   }
-  DCHECK_GE(upload_file_info->content_length, 0);
+
+  CHECK_GE(maybe_file_size.value(), 0);
+  upload_file_info->content_length = maybe_file_size.value();
 
   if (upload_file_info->cancelled) {
     UploadFailed(std::move(upload_file_info), CANCELLED);

@@ -9,6 +9,7 @@
 
 #include "base/files/file_util.h"
 
+#include <algorithm>
 #include <string_view>
 
 #include "base/task/sequenced_task_runner.h"
@@ -409,12 +410,20 @@ bool CreateDirectory(const FilePath& full_path) {
   return CreateDirectoryAndGetError(full_path, nullptr);
 }
 
-bool GetFileSize(const FilePath& file_path, int64_t* file_size) {
+std::optional<int64_t> GetFileSize(const FilePath& file_path) {
   File::Info info;
   if (!GetFileInfo(file_path, &info)) {
+    return std::nullopt;
+  }
+  return info.size;
+}
+
+bool GetFileSize(const FilePath& file_path, int64_t* file_size) {
+  std::optional<int64_t> maybe_size = GetFileSize(file_path);
+  if (!maybe_size.has_value()) {
     return false;
   }
-  *file_size = info.size;
+  *file_size = maybe_size.value();
   return true;
 }
 

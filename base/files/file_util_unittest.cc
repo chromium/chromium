@@ -381,18 +381,23 @@ TEST_F(FileUtilTest, FileAndDirectorySize) {
   // should return 53 bytes.
   FilePath file_01 = temp_dir_.GetPath().Append(FPL("The file 01.txt"));
   CreateTextFile(file_01, L"12345678901234567890");
-  int64_t size_f1 = 0;
-  ASSERT_TRUE(GetFileSize(file_01, &size_f1));
-  EXPECT_EQ(20ll, size_f1);
+
+  std::optional<int64_t> size_f1 = GetFileSize(file_01);
+  ASSERT_THAT(size_f1, testing::Optional(20));
+  int64_t size_f1_out = 0;
+  ASSERT_TRUE(GetFileSize(file_01, &size_f1_out));
+  EXPECT_EQ(size_f1.value(), size_f1_out);
 
   FilePath subdir_path = temp_dir_.GetPath().Append(FPL("Level2"));
   CreateDirectory(subdir_path);
 
   FilePath file_02 = subdir_path.Append(FPL("The file 02.txt"));
   CreateTextFile(file_02, L"123456789012345678901234567890");
-  int64_t size_f2 = 0;
-  ASSERT_TRUE(GetFileSize(file_02, &size_f2));
-  EXPECT_EQ(30ll, size_f2);
+  std::optional<int64_t> size_f2 = GetFileSize(file_02);
+  ASSERT_THAT(size_f2, testing::Optional(30));
+  int64_t size_f2_out = 0;
+  ASSERT_TRUE(GetFileSize(file_02, &size_f2_out));
+  EXPECT_EQ(size_f2.value(), size_f2_out);
 
   FilePath subsubdir_path = subdir_path.Append(FPL("Level3"));
   CreateDirectory(subsubdir_path);
@@ -401,7 +406,7 @@ TEST_F(FileUtilTest, FileAndDirectorySize) {
   CreateTextFile(file_03, L"123");
 
   int64_t computed_size = ComputeDirectorySize(temp_dir_.GetPath());
-  EXPECT_EQ(size_f1 + size_f2 + 3, computed_size);
+  EXPECT_EQ(size_f1.value() + size_f2.value() + 3, computed_size);
 }
 
 TEST_F(FileUtilTest, NormalizeFilePathBasic) {

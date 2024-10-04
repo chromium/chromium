@@ -672,8 +672,8 @@ gfx::ImageSkia ConvertFaviconBitmapsToImageSkia(
       image_skia.AddRepresentation(
           gfx::ImageSkiaRep(bitmap_to_resize, largest_favicon_scale));
     } else {
-      image_skia.AddRepresentation(
-          gfx::ImageSkiaRep(bitmap, (float)size / gfx::kFaviconSize));
+      image_skia.AddRepresentation(gfx::ImageSkiaRep(
+          bitmap, static_cast<float>(size) / gfx::kFaviconSize));
     }
   }
 
@@ -957,10 +957,10 @@ class WriteIconsJob {
 uint64_t AccumulateIconsSizeForApp(std::vector<base::FilePath> icon_paths) {
   uint64_t total_size = 0;
 
-  for (base::FilePath icon_path : icon_paths) {
-    int64_t file_size;
-    if (base::GetFileSize(std::move(icon_path), &file_size)) {
-      total_size += file_size;
+  for (const base::FilePath& icon_path : icon_paths) {
+    std::optional<int64_t> file_size = base::GetFileSize(icon_path);
+    if (file_size.has_value()) {
+      total_size += file_size.value();
     }
   }
   return total_size;
