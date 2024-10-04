@@ -145,6 +145,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
       // TODO: b/358373261 - Add traffic annotation.
       return MISSING_TRAFFIC_ANNOTATION;
     case ModelBasedCapabilityKey::kHistorySearch:
+    case ModelBasedCapabilityKey::kHistoryQueryIntent:
     case ModelBasedCapabilityKey::kPromptApi:
     case ModelBasedCapabilityKey::kSummarize:
       // On-device only feature.

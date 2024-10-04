@@ -82,6 +82,9 @@ std::string_view GetStringNameForModelExecutionFeature(
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_HISTORY_SEARCH:
       return "HistorySearch";
     case proto::ModelExecutionFeature::
+        MODEL_EXECUTION_FEATURE_HISTORY_QUERY_INTENT:
+      return "HistoryQueryIntent";
+    case proto::ModelExecutionFeature::
         MODEL_EXECUTION_FEATURE_FORMS_PREDICTIONS:
       return "FormsPredictions";
     case proto::ModelExecutionFeature::
