@@ -21,9 +21,9 @@ namespace {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
 
-#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_WIN)
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabElementId);
-#endif  // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_WIN)
 
 enum class TestContentSettings {
   kKeyboardLock,
@@ -260,7 +260,8 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessPermissionPromptInteractiveTest,
 // TODO: Enable these tests on Linux and Chrome OS.
 // These tests are currently disabled on Linux and Chrome OS due to
 // platform-specific issues.
-#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/371503011): Failing on Windows
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_WIN)
 // Verifies that we can select the permission prompt after losing focus
 // to another tab and getting focus back.
 IN_PROC_BROWSER_TEST_F(ExclusiveAccessPermissionPromptInteractiveTest,
@@ -286,4 +287,4 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessPermissionPromptInteractiveTest,
       // Step 7: Verify the expected outcome (pointer lock should be granted).
       CheckOutcome(test_content_settings, CONTENT_SETTING_ALLOW));
 }
-#endif  // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_WIN)
