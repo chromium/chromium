@@ -3861,7 +3861,11 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, ProfileShutDown) {
       "[{\"interactive\": true, \"url\": \"" + auth_url.spec() + "\"}]";
   RunFunctionAsync(function.get(), args);
   CloseBrowserSynchronously(browser());
-  EXPECT_EQ(std::string(errors::kBrowserContextShutDown),
+
+  // Because the navigation to auth_url is still ongoing when profile shutdown
+  // starts, it will be canceled before proceeding with shutdown, and hence the
+  // error message below will reflect a canceled navigation.
+  EXPECT_EQ(std::string(errors::kPageLoadFailure),
             WaitForError(function.get()));
   base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
       FROM_HERE, std::move(keep_alive));

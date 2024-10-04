@@ -1873,6 +1873,23 @@ void RenderFrameHostImpl::ClearAllPrefetchedSignedExchangeCache() {
     it.second->ClearPrefetchedSignedExchangeCache();
 }
 
+// static
+void RenderFrameHostImpl::CancelAllNavigationsForBrowserContextShutdown(
+    BrowserContext* browser_context) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(browser_context->ShutdownStarted());
+  RoutingIDFrameMap* frames = g_routing_id_frame_map.Pointer();
+  for (auto it : *frames) {
+    auto* rfhi = it.second;
+    if (rfhi->GetBrowserContext() == browser_context) {
+      rfhi->ResetOwnedNavigationRequests(
+          NavigationDiscardReason::kWillRemoveFrame);
+      rfhi->frame_tree_node()->CancelNavigation(
+          NavigationDiscardReason::kWillRemoveFrame);
+    }
+  }
+}
+
 // TODO(crbug.com/40183788): Get/SetCodeCacheHostReceiverHandler are used only
 // for a test in content/browser/service_worker/service_worker_browsertest
 // that tests a bad message is returned on an incorrect origin. Try to find a

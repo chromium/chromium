@@ -32,6 +32,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/profile_destruction_waiter.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/omnibox/browser/omnibox_view.h"
@@ -2082,6 +2083,60 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
       test_ukm_recorder()->GetEntriesByName(Entry::kEntryName);
   EXPECT_EQ(1u, ukm_entries.size());
   test_ukm_recorder()->ExpectEntrySourceHasUrl(ukm_entries[0], skippable_url);
+}
+
+// Verify that profile shutdown cancels an ongoing navigation for a WebContents
+// in that profile, even if the shutdown logic forgets to clean up the
+// WebContents itself (which would normally cancel all navigations in it). See
+// https://crbug.com/40274462.
+IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
+                       NavigationCanceledOnProfileShutdown) {
+  Browser* incognito = CreateIncognitoBrowser();
+  Profile* incognito_profile =
+      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/false);
+  ASSERT_TRUE(incognito_profile);
+
+  // Create a custom WebContents in which to perform a navigation. Note that we
+  // explicitly do not use GetActiveWebContents() from the `incognito` browser,
+  // since we will be closing that window to shut down the profile, and that
+  // will destroy all of its tabs and WebContents, which also implicitly cancels
+  // navigations. The purpose of this test is to test the fallback logic for
+  // navigations in WebContents that isn't closed this way.
+  std::unique_ptr<content::WebContents> incognito_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(incognito_profile));
+
+  // Start a second navigation but don't let it proceed past the request start
+  // stage.
+  GURL url(embedded_test_server()->GetURL("b.com", "/title2.html"));
+  content::TestNavigationManager manager(incognito_contents.get(), url);
+  incognito_contents->GetController().LoadURL(
+      url, content::Referrer(), ui::PAGE_TRANSITION_LINK, std::string());
+  EXPECT_TRUE(manager.WaitForRequestStart());
+
+  // Destroy the incognito profile. This should trigger navigation cancellation,
+  // which should dispatch DidFinishNavigation.
+  ProfileDestructionWaiter profile_destruction_waiter(incognito_profile);
+  bool was_navigation_canceled = false;
+  content::DidFinishNavigationObserver observer(
+      incognito_contents.get(),
+      base::BindLambdaForTesting(
+          [&](content::NavigationHandle* navigation_handle) {
+            if (navigation_handle->GetURL() != url) {
+              return;
+            }
+            EXPECT_FALSE(navigation_handle->HasCommitted());
+            was_navigation_canceled = true;
+          }));
+  incognito->window()->Close();
+  profile_destruction_waiter.Wait();
+
+  // Make sure the navigation was canceled during profile destruction.
+  ASSERT_TRUE(was_navigation_canceled);
+
+  // The `incognito_contents` wasn't destroyed as part of closing the normal
+  // incognito window since we created it manually. Ensure it's destroyed now.
+  incognito_contents.reset();
 }
 
 // Ensure that starting a navigation out of a sad tab hides the sad tab right

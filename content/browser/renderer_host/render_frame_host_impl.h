@@ -379,6 +379,25 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Clears the all prefetched cached signed exchanges.
   static void ClearAllPrefetchedSignedExchangeCache();
 
+  // Walk through all RenderFrameHosts in the specified `browser_context` and
+  // cancel navigations that are happening in them. This is assumed to be called
+  // on a `browser_context` that's shutting down.
+  //
+  // Ideally, this shouldn't be necessary, as BrowserContext cleanup should also
+  // trigger features above //content to clean up their WebContents, and
+  // destroying a WebContents cancels any ongoing navigations as part of
+  // destroying the frame tree. Unfortunately, there are bugs where this isn't
+  // happening and where the culprits are difficult to find (e.g.,
+  // https://crbug.com/40062641, https://crbug.com/40243371,
+  // https://crbug.com/358487779). This code attempts to limit potential damage
+  // when this happens by at least making sure that any ongoing navigations are
+  // canceled, since allowing them to proceed may lead to broken assumptions in
+  // the navigation stack. For example, the navigation response might attempt to
+  // create a RenderFrameHost in a new process in the destroyed BrowserContext
+  // and crash.
+  static void CancelAllNavigationsForBrowserContextShutdown(
+      BrowserContext* browser_context);
+
   // TODO(crbug.com/40183788): Get/SetCodeCacheHostReceiverHandler are used only
   // for a test in content/browser/service_worker/service_worker_browsertest
   // that tests a bad message is returned on an incorrect origin. Try to find a

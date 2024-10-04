@@ -19,6 +19,7 @@
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_manager.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/speech/tts_controller_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/storage_partition_impl_map.h"
@@ -53,6 +54,12 @@ void RegisterMediaLearningTask(
   // (`feature_provider`).
   learning_session->RegisterTask(task);
 }
+
+// Kill switch that controls whether to cancel navigations as part of
+// BrowserContext shutdown. See https://crbug.com/40274462.
+BASE_FEATURE(kCancelNavigationsDuringBrowserContextShutdown,
+             "CancelNavigationsDuringBrowserContextShutdown",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 
@@ -136,6 +143,13 @@ void BrowserContextImpl::NotifyWillBeDestroyed() {
   will_be_destroyed_soon_ = true;
 
   self_->ForEachLoadedStoragePartition(&NotifyContextWillBeDestroyed);
+
+  // Cancel navigations that are happening in the BrowserContext that's going
+  // away.
+  if (base::FeatureList::IsEnabled(
+          kCancelNavigationsDuringBrowserContextShutdown)) {
+    RenderFrameHostImpl::CancelAllNavigationsForBrowserContextShutdown(self_);
+  }
 
   // Also forcibly release keep alive refcounts on RenderProcessHosts, to ensure
   // they destruct before the BrowserContext does.
