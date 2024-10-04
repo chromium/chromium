@@ -376,10 +376,6 @@ source_set("web_applications") {
       "isolated_web_apps/policy/isolated_web_app_policy_constants.h",
       "isolated_web_apps/policy/isolated_web_app_policy_manager.cc",
       "isolated_web_apps/policy/isolated_web_app_policy_manager.h",
-      "migrations/adobe_express_oem_to_default_migration.cc",
-      "migrations/adobe_express_oem_to_default_migration.h",
-      "migrations/migrate_preinstalls_to_aps.cc",
-      "migrations/migrate_preinstalls_to_aps.h",
       "os_integration/web_app_run_on_os_login_chromeos.cc",
       "os_integration/web_app_shortcut_chromeos.cc",
       "web_app_run_on_os_login_manager.cc",
@@ -601,9 +597,14 @@ source_set("web_applications") {
       "//chrome/browser/ash/drive",
       "//chrome/browser/ash/profiles",
       "//chrome/browser/ash/system_web_apps/types",
+      "//chrome/browser/web_applications/ash/migrations",
       "//chrome/common/chromeos/extensions",
       "//chromeos/ash/components/browser_context_helper",
     ]
+
+    # TODO(b/332804822): Resolve circular includes.
+    allow_circular_includes_from =
+        [ "//chrome/browser/web_applications/ash/migrations" ]
   }
 
   if (is_chromeos_lacros) {
@@ -1064,8 +1065,6 @@ source_set("web_applications_browser_tests") {
   if (is_chromeos) {
     sources += [
       "commands/install_app_from_verified_manifest_command_browsertest.cc",
-      "migrations/adobe_express_oem_to_default_migration_browsertest.cc",
-      "migrations/migrate_preinstalls_to_aps_browsertest.cc",
       "web_app_run_on_os_login_manager_browsertest.cc",
 
       # TODO(crbug.com/40274058): Support automatic IWA updates on other

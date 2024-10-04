@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/migrations/migrate_preinstalls_to_aps.h"
+#include "chrome/browser/web_applications/ash/migrations/migrate_preinstalls_to_aps.h"
 
 #include <string_view>
 #include <vector>

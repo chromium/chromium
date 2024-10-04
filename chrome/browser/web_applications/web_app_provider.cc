@@ -60,9 +60,9 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/feature_list.h"
+#include "chrome/browser/web_applications/ash/migrations/adobe_express_oem_to_default_migration.h"
+#include "chrome/browser/web_applications/ash/migrations/migrate_preinstalls_to_aps.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
-#include "chrome/browser/web_applications/migrations/adobe_express_oem_to_default_migration.h"
-#include "chrome/browser/web_applications/migrations/migrate_preinstalls_to_aps.h"
 #include "chrome/browser/web_applications/web_app_run_on_os_login_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 #endif
