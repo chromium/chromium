@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.webauth.authenticator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.hardware.usb.UsbAccessory;
 import android.os.Build;
 import android.provider.Settings;
 import android.util.Pair;
@@ -72,8 +71,6 @@ class CableAuthenticator implements AuthenticationContextProvider {
     private final String mQRURI;
     // mLinkQR stores whether a QR transaction should send linking information.
     private boolean mLinkQR;
-    // mAccessory contains the USB device, if operating in USB mode.
-    private UsbAccessory mAccessory;
 
     // mHandle is the opaque ID returned by the native code to ensure that
     // |stop| doesn't apply to a transaction that this instance didn't create.
@@ -99,7 +96,6 @@ class CableAuthenticator implements AuthenticationContextProvider {
             long registration,
             byte[] secret,
             boolean isFcmNotification,
-            UsbAccessory accessory,
             byte[] serverLink,
             byte[] fcmEvent,
             String qrURI) {
@@ -108,7 +104,6 @@ class CableAuthenticator implements AuthenticationContextProvider {
         mFCMEvent = fcmEvent;
         mServerLinkData = serverLink;
         mQRURI = qrURI;
-        mAccessory = accessory;
 
         // networkContext can only be used from the UI thread, therefore all
         // short-lived work is done on that thread.
@@ -388,7 +383,7 @@ class CableAuthenticator implements AuthenticationContextProvider {
         mLinkQR = link;
     }
 
-    /** Called to indicate that either USB or Bluetooth transports are ready for processing. */
+    /** Called to indicate that Bluetooth transports are ready for processing. */
     void onTransportReady() {
         ThreadUtils.assertOnUiThread();
 
@@ -398,10 +393,6 @@ class CableAuthenticator implements AuthenticationContextProvider {
             mHandle = CableAuthenticatorJni.get().startQR(this, getName(), mQRURI, mLinkQR);
         } else if (mFCMEvent != null) {
             mHandle = CableAuthenticatorJni.get().startCloudMessage(this, mFCMEvent);
-        } else {
-            mHandle =
-                    CableAuthenticatorJni.get()
-                            .startUSB(this, new USBHandler(mContext, mTaskRunner, mAccessory));
         }
     }
 
@@ -447,12 +438,6 @@ class CableAuthenticator implements AuthenticationContextProvider {
                 long registration,
                 long networkContext,
                 @JniType("std::vector<uint8_t>") byte[] secret);
-
-        /**
-         * Called to instruct the C++ code to start a new transaction using |usbDevice|. Returns an
-         * opaque value that can be passed to |stop| to cancel this transaction.
-         */
-        long startUSB(CableAuthenticator cableAuthenticator, USBHandler usbDevice);
 
         /**
          * Called to instruct the C++ code to start a new transaction based on the contents of a QR

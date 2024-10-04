@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.webauth.authenticator;
 
 import android.content.Intent;
-import android.hardware.usb.UsbAccessory;
-import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.util.Base64;
 
@@ -28,16 +26,10 @@ import org.chromium.chrome.browser.webauthn.CableAuthenticatorModuleProvider;
  *
  * <p>It hosts the {@link Fragment} that drives the security key process, which pulls in the dynamic
  * feature module containing the needed code.
- *
- * <p>Note: it does *not* handle USB intents when a computer is connected via USB cable. See {@link
- * CableAuthenticatorUSBActivity}.
  */
 public class CableAuthenticatorActivity extends ChromeBaseAppCompatActivity {
     private static final String TAG = "CableAuthActivity";
     static final String EXTRA_SHOW_FRAGMENT_ARGUMENTS = "show_fragment_args";
-    // See https://developer.android.com/guide/topics/connectivity/usb/accessory#java
-    static final String USB_ACCESSORY_ATTACHED =
-            "android.hardware.usb.action.USB_ACCESSORY_ATTACHED";
     static final String SERVER_LINK_EXTRA =
             "org.chromium.chrome.browser.webauth.authenticator.ServerLink";
     static final String QR_EXTRA = "org.chromium.chrome.browser.webauth.authenticator.QR";
@@ -61,19 +53,7 @@ public class CableAuthenticatorActivity extends ChromeBaseAppCompatActivity {
 
         Bundle arguments;
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_AUTHN_ENABLE_CABLE_AUTHENTICATOR)) {
-            if (intent.getAction() != null && intent.getAction().equals(USB_ACCESSORY_ATTACHED)) {
-                // This can be triggered by an implicit intent if a desktop
-                // Chrome is connected via USB. This is used to expose the
-                // phone's security key to the desktop.
-                UsbAccessory accessory =
-                        (UsbAccessory) intent.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
-
-                // The specific extra of interest is filtered out rather than
-                // passing intent's whole Bundle because the external Intent
-                // is untrusted.
-                arguments = new Bundle();
-                arguments.putParcelable(UsbManager.EXTRA_ACCESSORY, accessory);
-            } else if (intent.getAction() != null
+            if (intent.getAction() != null
                     && intent.getAction().equals(Intent.ACTION_VIEW)
                     && intent.getData() != null) {
                 // This is from Play Services and contains a FIDO URL scanned from a
@@ -98,24 +78,9 @@ public class CableAuthenticatorActivity extends ChromeBaseAppCompatActivity {
                 arguments = intent.getBundleExtra(EXTRA_SHOW_FRAGMENT_ARGUMENTS);
             }
         } else {
-            // The cable authenticator is disabled. Only handle USB accessory intents.
-            if (intent.getAction() != null && intent.getAction().equals(USB_ACCESSORY_ATTACHED)) {
-                // This can be triggered by an implicit intent if a desktop
-                // Chrome is connected via USB. This is used to expose the
-                // phone's security key to the desktop.
-                UsbAccessory accessory =
-                        (UsbAccessory) intent.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
-
-                // The specific extra of interest is filtered out rather than
-                // passing intent's whole Bundle because the external Intent
-                // is untrusted.
-                arguments = new Bundle();
-                arguments.putParcelable(UsbManager.EXTRA_ACCESSORY, accessory);
-            } else {
-                // Silently drop unhandled intents.
-                finish();
-                return;
-            }
+            // Silently drop unhandled intents.
+            finish();
+            return;
         }
 
         Fragment fragment = new CableAuthenticatorModuleProvider();

@@ -40,7 +40,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/features/cablev2_authenticator/jni_headers/BLEAdvert_jni.h"
 #include "chrome/android/features/cablev2_authenticator/jni_headers/CableAuthenticator_jni.h"
-#include "chrome/android/features/cablev2_authenticator/jni_headers/USBHandler_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;
@@ -57,7 +56,7 @@ enum class CableV2MobileEvent {
   kQRRead = 0,
   kServerLink = 1,
   kCloudMessage = 2,
-  kUSB = 3,
+  kDeprecatedUsb = 3,
   kSetup = 4,
   kTunnelServerConnected = 5,
   kHandshakeCompleted = 6,
@@ -67,7 +66,7 @@ enum class CableV2MobileEvent {
   kNeedInteractive = 10,
   kInteractionReady = 11,
   kLinkingNotRequested = 12,
-  kUSBSuccess = 13,
+  kDeprecatedUsbSuccess = 13,
   kStoppedWhileAwaitingTunnelServerConnection = 14,
   kStoppedWhileAwaitingHandshake = 15,
   kStoppedWhileAwaitingRequest = 16,
@@ -156,11 +155,6 @@ struct GlobalData {
   std::optional<device::cablev2::authenticator::Platform::GetAssertionCallback>
       pending_get_assertion_callback;
 
-  // usb_callback holds the callback that receives data from a USB connection.
-  std::optional<
-      base::RepeatingCallback<void(std::optional<base::span<const uint8_t>>)>>
-      usb_callback;
-
   // server_link_tunnel_id contains the derived tunnel ID for server–link
   // transactions. May be |nullopt| if the current transaction is not
   // server-linked. This is used as an event ID when logging.
@@ -180,7 +174,6 @@ void ResetGlobalData() {
   global_data.current_transaction.reset();
   global_data.pending_make_credential_callback.reset();
   global_data.pending_get_assertion_callback.reset();
-  global_data.usb_callback.reset();
 }
 
 void RecordEvent(const GlobalData* global_data, CableV2MobileEvent event) {
@@ -226,10 +219,8 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
   typedef base::OnceCallback<void(InteractionReadyCallback)>
       InteractionNeededCallback;
 
-  AndroidPlatform(JNIEnv* env,
-                  const JavaRef<jobject>& cable_authenticator,
-                  bool is_usb)
-      : env_(env), cable_authenticator_(cable_authenticator), is_usb_(is_usb) {
+  AndroidPlatform(JNIEnv* env, const JavaRef<jobject>& cable_authenticator)
+      : env_(env), cable_authenticator_(cable_authenticator) {
     DCHECK(env_->IsInstanceOf(
         cable_authenticator_.obj(),
         org_chromium_chrome_browser_webauth_authenticator_CableAuthenticator_clazz(
@@ -368,10 +359,6 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
     }
     RecordResult(&global_data, result);
 
-    if (is_usb_ && result == CableV2MobileResult::kSuccess) {
-      RecordEvent(nullptr, CableV2MobileEvent::kUSBSuccess);
-    }
-
     // The transaction might fail before interactive mode, thus
     // |cable_authenticator_| may be empty.
     if (cable_authenticator_) {
@@ -400,63 +387,8 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
   ScopedJavaGlobalRef<jobject> cable_authenticator_;
   std::optional<base::ElapsedTimer> tunnel_server_connect_time_;
 
-  // is_usb_ is true if this object was created in order to respond to a client
-  // connected over USB.
-  const bool is_usb_;
-
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<AndroidPlatform> weak_factory_{this};
-};
-
-// USBTransport wraps the Java |USBHandler| object so that
-// |authenticator::Platform| can use it as a transport.
-class USBTransport : public device::cablev2::authenticator::Transport {
- public:
-  USBTransport(JNIEnv* env, ScopedJavaGlobalRef<jobject> usb_device)
-      : env_(env), usb_device_(std::move(usb_device)) {
-    DCHECK(env_->IsInstanceOf(
-        usb_device_.obj(),
-        org_chromium_chrome_browser_webauth_authenticator_USBHandler_clazz(
-            env)));
-  }
-
-  ~USBTransport() override { Java_USBHandler_close(env_, usb_device_); }
-
-  // GetCallback returns callback which will be called repeatedly with data from
-  // the USB connection, forwarded via the Java code.
-  base::RepeatingCallback<void(std::optional<base::span<const uint8_t>>)>
-  GetCallback() {
-    return base::BindRepeating(&USBTransport::OnData,
-                               weak_factory_.GetWeakPtr());
-  }
-
-  // Transport:
-  void StartReading(
-      base::RepeatingCallback<void(Update)> update_callback) override {
-    callback_ = update_callback;
-    Java_USBHandler_startReading(env_, usb_device_);
-  }
-
-  void Write(device::cablev2::PayloadType payload_type,
-             std::vector<uint8_t> data) override {
-    Java_USBHandler_write(env_, usb_device_, data);
-  }
-
- private:
-  void OnData(std::optional<base::span<const uint8_t>> data) {
-    if (!data) {
-      callback_.Run(Disconnected::kDisconnected);
-    } else {
-      callback_.Run(
-          std::make_pair(device::cablev2::PayloadType::kCTAP,
-                         device::fido_parsing_utils::Materialize(*data)));
-    }
-  }
-
-  const raw_ptr<JNIEnv> env_;
-  const ScopedJavaGlobalRef<jobject> usb_device_;
-  base::RepeatingCallback<void(Update)> callback_;
-  base::WeakPtrFactory<USBTransport> weak_factory_{this};
 };
 
 }  // anonymous namespace
@@ -503,28 +435,6 @@ static void JNI_CableAuthenticator_Setup(JNIEnv* env,
       reinterpret_cast<network::mojom::NetworkContext*>(network_context_long);
 }
 
-static jlong JNI_CableAuthenticator_StartUSB(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& cable_authenticator,
-    const JavaParamRef<jobject>& usb_device) {
-  GlobalData& global_data = GetGlobalData();
-  RecordEvent(&global_data, CableV2MobileEvent::kUSB);
-
-  auto transport = std::make_unique<USBTransport>(
-      env, ScopedJavaGlobalRef<jobject>(usb_device));
-  DCHECK(!global_data.usb_callback);
-  global_data.usb_callback = transport->GetCallback();
-
-  global_data.current_transaction =
-      device::cablev2::authenticator::TransactWithPlaintextTransport(
-          std::make_unique<AndroidPlatform>(env, cable_authenticator,
-                                            /*is_usb=*/true),
-          std::unique_ptr<device::cablev2::authenticator::Transport>(
-              transport.release()));
-
-  return ++global_data.instance_num;
-}
-
 static jlong JNI_CableAuthenticator_StartQR(
     JNIEnv* env,
     const JavaParamRef<jobject>& cable_authenticator,
@@ -553,8 +463,7 @@ static jlong JNI_CableAuthenticator_StartQR(
       CableV2MobileEvent::kStoppedWhileAwaitingTunnelServerConnection;
   global_data.current_transaction =
       device::cablev2::authenticator::TransactFromQRCodeDeprecated(
-          std::make_unique<AndroidPlatform>(env, cable_authenticator,
-                                            /*is_usb=*/false),
+          std::make_unique<AndroidPlatform>(env, cable_authenticator),
           global_data.network_context, *global_data.root_secret,
           authenticator_name, decoded_qr->secret, decoded_qr->peer_identity,
           link ? global_data.registration->contact_id() : std::nullopt);
@@ -607,8 +516,7 @@ static jlong JNI_CableAuthenticator_StartServerLink(
 
   global_data.current_transaction =
       device::cablev2::authenticator::TransactFromQRCodeDeprecated(
-          std::make_unique<AndroidPlatform>(env, cable_authenticator,
-                                            /*is_usb=*/false),
+          std::make_unique<AndroidPlatform>(env, cable_authenticator),
           global_data.network_context, dummy_root_secret,
           dummy_authenticator_name, qr_secret, peer_identity, std::nullopt);
 
@@ -641,8 +549,7 @@ static jlong JNI_CableAuthenticator_StartCloudMessage(
       CableV2MobileEvent::kStoppedWhileAwaitingTunnelServerConnection;
   global_data.current_transaction =
       device::cablev2::authenticator::TransactFromFCMDeprecated(
-          std::make_unique<AndroidPlatform>(env, cable_authenticator,
-                                            /*is_usb=*/false),
+          std::make_unique<AndroidPlatform>(env, cable_authenticator),
           global_data.network_context, *global_data.root_secret,
           event->routing_id, event->tunnel_id, event->pairing_id,
           event->client_nonce, event->contact_id);
@@ -748,18 +655,4 @@ static void JNI_CableAuthenticator_OnAuthenticatorAssertionResponse(
   }
 
   std::move(callback).Run(ctap_status, nullptr);
-}
-
-static void JNI_USBHandler_OnUSBData(JNIEnv* env,
-                                     const JavaParamRef<jbyteArray>& usb_data) {
-  GlobalData& global_data = GetGlobalData();
-  if (!global_data.usb_callback) {
-    return;
-  }
-
-  if (!usb_data) {
-    global_data.usb_callback->Run(std::nullopt);
-  } else {
-    global_data.usb_callback->Run(JavaByteArrayToByteVector(env, usb_data));
-  }
 }

@@ -5842,14 +5842,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
          Sign-in failed
       </message>
 
-      <message name="IDS_CABLEV2_USB_DISCON_TITLE" desc="The title of a screen that advises the user to disconnect their phone. This shows when the user has connected their phone to their computer using a USB cable and needs to disconnect it once they have finished their current actions.">
-         Connected with USB cable
-      </message>
-
-      <message name="IDS_CABLEV2_USB_DISCON_BODY" desc="The body of a screen that advises the user to disconnect their phone. This shows when the user has connected their phone to their computer using a USB cable and needs to disconnect it once they have finished their current actions.">
-         Disconnect when you’re done
-      </message>
-
       <message name="IDS_CABLEV2_SERVERLINK_CONNECTING_TO_YOUR_DEVICE" desc="The title of a screen that is shown when a user is connecting their phone to a desktop or laptop computer in order to sign in with it.">
          Connecting to your device…
       </message>

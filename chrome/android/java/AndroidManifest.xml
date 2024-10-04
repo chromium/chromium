@@ -865,25 +865,6 @@ by a child template that "extends" this file.
         android:launchMode="singleTop">
         </activity>
 
-        <!-- configChanges is set here to prevent the destruction of the
-             activity after configuration changes. Since the bulk of this
-             activity's logic is in a feature module, restoring the activity
-             via a Bundle doesn't work. -->
-        <activity
-        android:name="org.chromium.chrome.browser.webauth.authenticator.CableAuthenticatorUSBActivity"
-        android:configChanges="density|fontScale|keyboard|keyboardHidden|layoutDirection|locale|mcc|mnc|navigation|orientation|screenLayout|screenSize|smallestScreenSize|touchscreen|uiMode"
-        android:theme="@style/Theme.Chromium.Activity.Fullscreen"
-        android:label="@string/cablev2_activity_title"
-        android:exported="false"
-        android:excludeFromRecents="true"
-        android:launchMode="singleTop">
-            <intent-filter>
-                 <action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED" />
-            </intent-filter>
-            <meta-data android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED"
-                android:resource="@xml/phone_as_a_security_key_accessory_filter" />
-        </activity>
-
         <receiver
             android:name="org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.DisclosureAcceptanceBroadcastReceiver"
             android:exported="false" />

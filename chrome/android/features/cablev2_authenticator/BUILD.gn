@@ -12,7 +12,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/webauth/authenticator/BLEAdvert.java",
     "java/src/org/chromium/chrome/browser/webauth/authenticator/CableAuthenticator.java",
     "java/src/org/chromium/chrome/browser/webauth/authenticator/CableAuthenticatorUI.java",
-    "java/src/org/chromium/chrome/browser/webauth/authenticator/USBHandler.java",
   ]
 
   deps = [
@@ -43,7 +42,6 @@ generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/webauth/authenticator/BLEAdvert.java",
     "java/src/org/chromium/chrome/browser/webauth/authenticator/CableAuthenticator.java",
-    "java/src/org/chromium/chrome/browser/webauth/authenticator/USBHandler.java",
   ]
   split_name = "cablev2_authenticator"
 }
@@ -54,12 +52,10 @@ android_resources("java_resources") {
     "java/res/drawable-night/cable_qr_code.xml",
     "java/res/drawable/ble.xml",
     "java/res/drawable/cable_qr_code.xml",
-    "java/res/drawable/usb_conn_disconnect.xml",
     "java/res/layout-sw600dp/cablev2_ble_enable.xml",
     "java/res/layout-sw600dp/cablev2_qr.xml",
     "java/res/layout/cablev2_ble_enable.xml",
     "java/res/layout/cablev2_qr.xml",
-    "java/res/layout/cablev2_usb_attached.xml",
     "java/res/values/attrs.xml",
   ]
   deps = [ "//chrome/android:chrome_app_java_resources" ]

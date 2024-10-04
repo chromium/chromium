@@ -13,8 +13,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
-import android.hardware.usb.UsbAccessory;
-import android.hardware.usb.UsbManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -64,10 +62,6 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener, F
     // causes Android to draw on top of it) is made.
     private static final int BLE_SCREEN_DELAY_SECS = 2;
 
-    // USB_PROMPT_TIMEOUT_SECS is the number of seconds the spinner will show
-    // for before being replaced with a prompt to connect via USB cable.
-    private static final int USB_PROMPT_TIMEOUT_SECS = 20;
-
     private static final String FCM_EXTRA = "org.chromium.chrome.modules.cablev2_authenticator.FCM";
     private static final String EVENT_EXTRA =
             "org.chromium.chrome.modules.cablev2_authenticator.EVENT";
@@ -99,7 +93,6 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener, F
     private enum Mode {
         QR, // QR code scanned by external app.
         FCM, // Triggered by user selecting notification; handshake already running.
-        USB, // Triggered by connecting via USB.
         SERVER_LINK, // Triggered by GMSCore forwarding from GAIA.
     }
 
@@ -121,7 +114,6 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener, F
         BLUETOOTH_ENABLED,
         BLUETOOTH_ADVERTISE_PERMISSION_REQUESTED,
         BLUETOOTH_READY,
-        RUNNING_USB,
         RUNNING_BLE,
         ERROR,
     }
@@ -159,7 +151,6 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener, F
     private View mErrorView;
     private View mSpinnerView;
     private View mBLEEnableView;
-    private View mUSBView;
     private View mQRConfirmView;
 
     // mCurrentView is one of the above views depending on which is currently showing.
@@ -178,15 +169,11 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener, F
         final Context context = getContext();
 
         Bundle arguments = getArguments();
-        final UsbAccessory accessory =
-                (UsbAccessory) arguments.getParcelable(UsbManager.EXTRA_ACCESSORY);
         final byte[] serverLink = arguments.getByteArray(SERVER_LINK_EXTRA);
         final byte[] fcmEvent = arguments.getByteArray(EVENT_EXTRA);
         final Uri qrFromArguments = (Uri) arguments.getParcelable(QR_EXTRA);
         final String qrURI = qrFromArguments == null ? null : qrFromArguments.toString();
-        if (accessory != null) {
-            mMode = Mode.USB;
-        } else if (arguments.getBoolean(FCM_EXTRA)) {
+        if (arguments.getBoolean(FCM_EXTRA)) {
             mMode = Mode.FCM;
         } else if (serverLink != null) {
             mErrorCode = CableAuthenticator.validateServerLinkData(serverLink);
@@ -226,7 +213,6 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener, F
                         registration,
                         secret,
                         mMode == Mode.FCM,
-                        accessory,
                         serverLink,
                         fcmEvent,
                         qrURI);
@@ -300,12 +286,6 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener, F
 
                 case START_MODE:
                     switch (mMode) {
-                        case USB:
-                            // USB mode doesn't require Bluetooth.
-                            mState = State.RUNNING_USB;
-                            mAuthenticator.onTransportReady();
-                            break;
-
                         case SERVER_LINK:
                         case FCM:
                         case QR:
@@ -397,7 +377,6 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener, F
                     break;
 
                 case RUNNING_BLE:
-                case RUNNING_USB:
                     return;
 
                 case ERROR:
@@ -444,9 +423,6 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener, F
             case ENABLE_BLUETOOTH_PERMISSION_REQUESTED:
             case REQUEST_BLUETOOTH_ENABLE:
                 return mBLEEnableView;
-
-            case RUNNING_USB:
-                return mUSBView;
 
             case ERROR:
                 fillOutErrorUI(mErrorCode);
@@ -512,7 +488,6 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener, F
 
         mSpinnerView = createSpinnerScreen(inflater, container);
         mBLEEnableView = inflater.inflate(R.layout.cablev2_ble_enable, container, false);
-        mUSBView = inflater.inflate(R.layout.cablev2_usb_attached, container, false);
 
         mQRConfirmView = inflater.inflate(R.layout.cablev2_qr, container, false);
         mQRAllowButton = mQRConfirmView.findViewById(R.id.qr_connect);
@@ -626,10 +601,6 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener, F
 
                 mStatusText.setText(getResources().getString(id));
                 break;
-
-            case USB:
-                // In USB mode everything should happen immediately.
-                break;
         }
     }
 
@@ -742,13 +713,7 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener, F
                                             getResources().getString(id),
                                             Toast.LENGTH_SHORT)
                                     .show();
-
-                            // Finish the Activity unless we're connected via USB. In that case
-                            // we continue to show a message advising the user to disconnect
-                            // the cable because the USB connection is in AOA mode.
-                            if (mMode != Mode.USB) {
-                                getActivity().finish();
-                            }
+                            getActivity().finish();
                         });
     }
 

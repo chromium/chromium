@@ -463,19 +463,6 @@
         android:permission="com.google.android.gms.auth.cryptauth.permission.CABLEV2_SERVER_LINK"
         android:theme="@style/Theme.Chromium.Activity.Fullscreen">
     </activity>  # DIFF-ANCHOR: a1fac31f
-    <activity  # DIFF-ANCHOR: b21cfcff
-        android:name="org.chromium.chrome.browser.webauth.authenticator.CableAuthenticatorUSBActivity"
-        android:configChanges="density|fontScale|keyboard|keyboardHidden|layoutDirection|locale|mcc|mnc|navigation|orientation|screenLayout|screenSize|smallestScreenSize|touchscreen|uiMode"
-        android:excludeFromRecents="true"
-        android:exported="false"
-        android:label="@string/cablev2_activity_title"
-        android:launchMode="singleTop"
-        android:theme="@style/Theme.Chromium.Activity.Fullscreen">
-      <intent-filter>  # DIFF-ANCHOR: 5873407a
-        <action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED"/>
-      </intent-filter>  # DIFF-ANCHOR: 5873407a
-      <meta-data android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED" android:resource="@xml/phone_as_a_security_key_accessory_filter"/>
-    </activity>  # DIFF-ANCHOR: b21cfcff
     <activity  # DIFF-ANCHOR: 1d9b4077
         android:name="org.chromium.components.media_router.caf.remoting.CafExpandedControllerActivity"
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
