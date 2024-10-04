@@ -221,12 +221,12 @@ void BrowsingDataRemoverImpl::RemoveWithFilterAndReply(
 }
 
 void BrowsingDataRemoverImpl::RemoveStorageBucketsAndReply(
-    const std::optional<StoragePartitionConfig> storage_partition_config,
+    std::optional<StoragePartitionConfig> storage_partition_config,
     const blink::StorageKey& storage_key,
     const std::set<std::string>& storage_buckets,
     base::OnceClosure callback) {
   DCHECK(callback);
-  GetStoragePartition(storage_partition_config)
+  GetStoragePartition(std::move(storage_partition_config))
       ->ClearDataForBuckets(
           storage_key, storage_buckets,
           base::BindPostTaskToCurrentDefault(

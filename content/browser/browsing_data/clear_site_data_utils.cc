@@ -34,22 +34,22 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
  public:
   SiteDataClearer(
       BrowserContext* browser_context,
-      const std::optional<StoragePartitionConfig> storage_partition_config,
+      std::optional<StoragePartitionConfig> storage_partition_config,
       const url::Origin& origin,
       const ClearSiteDataTypeSet clear_site_data_types,
       const std::set<std::string>& storage_buckets_to_remove,
       bool avoid_closing_connections,
-      const std::optional<net::CookiePartitionKey> cookie_partition_key,
-      const std::optional<blink::StorageKey> storage_key,
+      std::optional<net::CookiePartitionKey> cookie_partition_key,
+      std::optional<blink::StorageKey> storage_key,
       bool partitioned_state_allowed_only,
       base::OnceClosure callback)
-      : storage_partition_config_(storage_partition_config),
+      : storage_partition_config_(std::move(storage_partition_config)),
         origin_(origin),
         clear_site_data_types_(clear_site_data_types),
         storage_buckets_to_remove_(storage_buckets_to_remove),
         avoid_closing_connections_(avoid_closing_connections),
-        cookie_partition_key_(cookie_partition_key),
-        storage_key_(storage_key),
+        cookie_partition_key_(std::move(cookie_partition_key)),
+        storage_key_(std::move(storage_key)),
         partitioned_state_allowed_only_(partitioned_state_allowed_only),
         callback_(std::move(callback)),
         pending_task_count_(0),
@@ -206,13 +206,13 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
 
 void ClearSiteData(
     base::WeakPtr<BrowserContext> browser_context,
-    const std::optional<StoragePartitionConfig> storage_partition_config,
+    std::optional<StoragePartitionConfig> storage_partition_config,
     const url::Origin& origin,
     const ClearSiteDataTypeSet clear_site_data_types,
     const std::set<std::string>& storage_buckets_to_remove,
     bool avoid_closing_connections,
-    const std::optional<net::CookiePartitionKey> cookie_partition_key,
-    const std::optional<blink::StorageKey> storage_key,
+    std::optional<net::CookiePartitionKey> cookie_partition_key,
+    std::optional<blink::StorageKey> storage_key,
     bool partitioned_state_allowed_only,
     base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

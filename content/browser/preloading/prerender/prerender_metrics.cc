@@ -244,11 +244,11 @@ PrerenderCancellationReason::DisallowedMojoInterface() const {
 
 PrerenderMismatchedHeaders::PrerenderMismatchedHeaders(
     const std::string& header_name,
-    const std::optional<std::string> initial_value,
-    const std::optional<std::string> activation_value)
+    std::optional<std::string> initial_value,
+    std::optional<std::string> activation_value)
     : header_name(header_name),
-      initial_value(initial_value),
-      activation_value(activation_value) {}
+      initial_value(std::move(initial_value)),
+      activation_value(std::move(activation_value)) {}
 
 PrerenderMismatchedHeaders::~PrerenderMismatchedHeaders() = default;
 
