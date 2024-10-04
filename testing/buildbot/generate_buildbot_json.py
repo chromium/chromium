@@ -1226,12 +1226,14 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
 
         update_tests = functools.partial(update_tests_uncurried, full_suite)
 
+        mixins = mtx_test_suite_config.get('mixins', [])
         if (variants := mtx_test_suite_config.get('variants')):
-          mixins = mtx_test_suite_config.get('mixins', [])
           result = self.resolve_variants(basic_test_def, variants, mixins)
           update_tests(result)
         else:
-          suite = basic_suites[test_suite]
+          suite = copy.deepcopy(basic_suites[test_suite])
+          for test_config in suite.values():
+            test_config['mixins'] = test_config.get('mixins', []) + mixins
           update_tests(suite)
       matrix_compound_suites[matrix_suite_name] = full_suite
 

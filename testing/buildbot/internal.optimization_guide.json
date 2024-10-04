@@ -824,6 +824,7 @@
         "name": "chrome_ml_unittests",
         "swarming": {
           "dimensions": {
+            "gce": "1",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
@@ -842,6 +843,7 @@
         "name": "optimization_guide_browser_tests",
         "swarming": {
           "dimensions": {
+            "gce": "1",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
@@ -860,6 +862,7 @@
         "name": "optimization_guide_components_unittests",
         "swarming": {
           "dimensions": {
+            "gce": "1",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
@@ -935,6 +938,7 @@
         "name": "optimization_guide_unittests",
         "swarming": {
           "dimensions": {
+            "gce": "1",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
@@ -963,6 +967,7 @@
         },
         "swarming": {
           "dimensions": {
+            "gce": "1",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
@@ -985,6 +990,7 @@
         },
         "swarming": {
           "dimensions": {
+            "gce": "1",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
@@ -1241,6 +1247,7 @@
         "name": "chrome_ml_unittests",
         "swarming": {
           "dimensions": {
+            "gce": "1",
             "os": "Ubuntu-22.04",
             "pool": "chrome.tests.intelligence"
           },
@@ -1260,6 +1267,7 @@
         "name": "optimization_guide_browser_tests",
         "swarming": {
           "dimensions": {
+            "gce": "1",
             "os": "Ubuntu-22.04",
             "pool": "chrome.tests.intelligence"
           },
@@ -1279,6 +1287,7 @@
         "name": "optimization_guide_components_unittests",
         "swarming": {
           "dimensions": {
+            "gce": "1",
             "os": "Ubuntu-22.04",
             "pool": "chrome.tests.intelligence"
           },
@@ -1339,6 +1348,7 @@
         "name": "optimization_guide_unittests",
         "swarming": {
           "dimensions": {
+            "gce": "1",
             "os": "Ubuntu-22.04",
             "pool": "chrome.tests.intelligence"
           },
@@ -1368,6 +1378,7 @@
         },
         "swarming": {
           "dimensions": {
+            "gce": "1",
             "os": "Ubuntu-22.04",
             "pool": "chrome.tests.intelligence"
           },
@@ -1391,6 +1402,7 @@
         },
         "swarming": {
           "dimensions": {
+            "gce": "1",
             "os": "Ubuntu-22.04",
             "pool": "chrome.tests.intelligence"
           },
@@ -1576,6 +1588,7 @@
         "name": "chrome_ml_unittests",
         "swarming": {
           "dimensions": {
+            "gce": "1",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
@@ -1594,6 +1607,7 @@
         "name": "optimization_guide_browser_tests",
         "swarming": {
           "dimensions": {
+            "gce": "1",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
@@ -1612,6 +1626,7 @@
         "name": "optimization_guide_components_unittests",
         "swarming": {
           "dimensions": {
+            "gce": "1",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
@@ -1687,6 +1702,7 @@
         "name": "optimization_guide_unittests",
         "swarming": {
           "dimensions": {
+            "gce": "1",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
@@ -1715,6 +1731,7 @@
         },
         "swarming": {
           "dimensions": {
+            "gce": "1",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
@@ -1737,6 +1754,7 @@
         },
         "swarming": {
           "dimensions": {
+            "gce": "1",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
