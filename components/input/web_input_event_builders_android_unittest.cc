@@ -209,8 +209,8 @@ TEST(WebInputEventBuilderAndroidTest, WebMouseEventCoordinates) {
   ui::MotionEventAndroid motion_event(
       AttachCurrentThread(), nullptr, kPixToDip, 0.f, 0.f, 0.f,
       base::TimeTicks() + base::Nanoseconds(kEventTimeNs),
-      AMOTION_EVENT_ACTION_DOWN, 1, 0, -1, 0, 0, 1, AMETA_ALT_ON, raw_offset_x,
-      raw_offset_y, false, &p0, nullptr);
+      AMOTION_EVENT_ACTION_DOWN, 1, 0, -1, 0, 0, 1, AMETA_ALT_ON, 0,
+      raw_offset_x, raw_offset_y, false, &p0, nullptr);
 
   WebMouseEvent web_event = input::WebMouseEventBuilder::Build(
       motion_event, blink::WebInputEvent::Type::kMouseDown, 1,

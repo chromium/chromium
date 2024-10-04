@@ -256,6 +256,7 @@ MotionEventAndroid::MotionEventAndroid(JNIEnv* env,
                                        jint android_gesture_classification,
                                        jint android_button_state,
                                        jint android_meta_state,
+                                       jint source,
                                        jfloat raw_offset_x_pixels,
                                        jfloat raw_offset_y_pixels,
                                        jboolean for_touch_handle,
@@ -267,6 +268,7 @@ MotionEventAndroid::MotionEventAndroid(JNIEnv* env,
       tick_multiplier_(tick_multiplier),
       time_sec_(oldest_event_time.ToUptimeMillis() /
                 base::Time::kMillisecondsPerSecond),
+      source_(source),
       for_touch_handle_(for_touch_handle),
       cached_oldest_event_time_(FromAndroidTime(oldest_event_time)),
       cached_latest_event_time_(FromAndroidTime(latest_event_time)),
@@ -308,6 +310,7 @@ MotionEventAndroid::MotionEventAndroid(JNIEnv* env,
                                        jint android_gesture_classification,
                                        jint android_button_state,
                                        jint android_meta_state,
+                                       jint source,
                                        jfloat raw_offset_x_pixels,
                                        jfloat raw_offset_y_pixels,
                                        jboolean for_touch_handle,
@@ -329,6 +332,7 @@ MotionEventAndroid::MotionEventAndroid(JNIEnv* env,
                          android_gesture_classification,
                          android_button_state,
                          android_meta_state,
+                         source,
                          raw_offset_x_pixels,
                          raw_offset_y_pixels,
                          for_touch_handle,
@@ -344,6 +348,7 @@ MotionEventAndroid::MotionEventAndroid(const MotionEventAndroid& e)
       ticks_y_(e.ticks_y_),
       tick_multiplier_(e.tick_multiplier_),
       time_sec_(e.time_sec_),
+      source_(e.source_),
       for_touch_handle_(e.for_touch_handle_),
       cached_oldest_event_time_(e.cached_oldest_event_time_),
       cached_latest_event_time_(e.cached_latest_event_time_),
@@ -397,6 +402,10 @@ MotionEventAndroid::Action MotionEventAndroid::GetAction() const {
 
 int MotionEventAndroid::GetActionButton() const {
   return cached_action_button_;
+}
+
+int MotionEventAndroid::GetSource() const {
+  return source_;
 }
 
 MotionEvent::Classification MotionEventAndroid::GetClassification() const {

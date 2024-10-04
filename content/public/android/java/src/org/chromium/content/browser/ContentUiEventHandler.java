@@ -101,7 +101,9 @@ public class ContentUiEventHandler implements UserData {
                         event.getX(),
                         event.getY(),
                         event.getAxisValue(MotionEvent.AXIS_HSCROLL),
-                        event.getAxisValue(MotionEvent.AXIS_VSCROLL));
+                        event.getAxisValue(MotionEvent.AXIS_VSCROLL),
+                        event.getMetaState(),
+                        event.getSource());
     }
 
     private boolean onMouseEvent(MotionEvent event, boolean shouldConvertToMouseEvent) {
@@ -232,7 +234,9 @@ public class ContentUiEventHandler implements UserData {
                 float x,
                 float y,
                 float ticksX,
-                float ticksY);
+                float ticksY,
+                int metaState,
+                int source);
 
         void sendMouseEvent(
                 long nativeContentUiEventHandler,

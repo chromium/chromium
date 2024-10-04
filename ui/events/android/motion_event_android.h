@@ -67,6 +67,7 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
                      jint android_gesture_classification,
                      jint android_button_state,
                      jint meta_state,
+                     jint source,
                      jfloat raw_offset_x_pixels,
                      jfloat raw_offset_y_pixels,
                      jboolean for_touch_handle,
@@ -89,6 +90,7 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
                      jint android_gesture_classification,
                      jint android_button_state,
                      jint meta_state,
+                     jint source,
                      jfloat raw_offset_x_pixels,
                      jfloat raw_offset_y_pixels,
                      jboolean for_touch_handle,
@@ -147,6 +149,7 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
   int GetFlags() const override;
 
   int GetActionButton() const;
+  int GetSource() const;
   Classification GetClassification() const override;
   float ticks_x() const { return ticks_x_; }
   float ticks_y() const { return ticks_y_; }
@@ -184,6 +187,7 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
   const float ticks_y_;
   const float tick_multiplier_;
   const uint64_t time_sec_;
+  const int source_;
 
   const bool for_touch_handle_;
 

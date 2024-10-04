@@ -93,7 +93,9 @@ void ContentUiEventHandler::SendMouseWheelEvent(
     jfloat x,
     jfloat y,
     jfloat ticks_x,
-    jfloat ticks_y) {
+    jfloat ticks_y,
+    jint meta_state,
+    jint source) {
   auto* event_handler = GetRenderWidgetHostView();
   if (!event_handler)
     return;
@@ -114,9 +116,9 @@ void ContentUiEventHandler::SendMouseWheelEvent(
       env, nullptr, 1.f / view->GetDipScale(), ticks_x, ticks_y,
       pixels_per_tick, base::TimeTicks::FromJavaNanoTime(time_ns),
       0 /* action */, 1 /* pointer_count */, 0 /* history_size */,
-      0 /* action_index */, 0, 0, 0, 0, 0 /* raw_offset_x_pixels */,
-      0 /* raw_offset_y_pixels */, false /* for_touch_handle */, &pointer,
-      nullptr);
+      0 /* action_index */, 0, 0, 0, meta_state, source,
+      0 /* raw_offset_x_pixels */, 0 /* raw_offset_y_pixels */,
+      false /* for_touch_handle */, &pointer, nullptr);
   event_handler->OnMouseWheelEvent(event);
 }
 
@@ -150,9 +152,9 @@ void ContentUiEventHandler::SendMouseEvent(JNIEnv* env,
       base::TimeTicks::FromJavaNanoTime(time_ns), android_action,
       1 /* pointer_count */, 0 /* history_size */, 0 /* action_index */,
       android_action_button, 0 /* gesture_classification */,
-      android_button_state, android_meta_state, 0 /* raw_offset_x_pixels */,
-      0 /* raw_offset_y_pixels */, false /* for_touch_handle */, &pointer,
-      nullptr);
+      android_button_state, android_meta_state, 0 /* source */,
+      0 /* raw_offset_x_pixels */, 0 /* raw_offset_y_pixels */,
+      false /* for_touch_handle */, &pointer, nullptr);
   event_handler->OnMouseEvent(event);
 }
 
