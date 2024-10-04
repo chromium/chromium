@@ -1754,7 +1754,7 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
   void DrawDelegatedInkTrail() {
     SkCanvas canvas;
     static_cast<DelegatedInkPointRendererSkia*>(ink_renderer())
-        ->DrawDelegatedInkTrail(&canvas);
+        ->DrawDelegatedInkTrail(&canvas, gfx::Transform());
   }
 
   int GetPathPointCount() { return ink_renderer()->GetPathPointCountForTest(); }
@@ -1840,14 +1840,6 @@ TEST_F(SkiaDelegatedInkRendererTest, SkiaDelegatedInkRendererFilteringPoints) {
   EXPECT_EQ(1, UniqueStoredPointerIds());
   EXPECT_EQ(kInitialDelegatedPoints, StoredPointsForPointerId(kPointerId));
 
-  // No metadata has been provided yet, so filtering shouldn't occur and all
-  // points should still exist after a FinalizePath() call.
-  FinalizePathAndCheckHistograms(base::TimeDelta::Min(),
-                                 base::TimeDelta::Min());
-
-  EXPECT_EQ(1, UniqueStoredPointerIds());
-  EXPECT_EQ(kInitialDelegatedPoints, StoredPointsForPointerId(kPointerId));
-
   // Now provide metadata with a timestamp matching one of the points to
   // confirm that earlier points are removed and later points remain.
   const int kInkPointForMetadata = 1;
@@ -1856,14 +1848,14 @@ TEST_F(SkiaDelegatedInkRendererTest, SkiaDelegatedInkRendererFilteringPoints) {
       kInkPointForMetadata, kDiameter, SkColors::kBlack, gfx::RectF());
 
   // The histogram should count one in the bucket that is the difference between
-  // the latest point stored and the metadata. No prediction should occur with
-  // 3 provided points, so the *WithoutPrediction histogram should count
-  // the difference between the last point and the metadata, while the
-  // *WithPrediction* histogram should count 1 in the 0 bucket.
+  // the latest point stored and the metadata. The *WithoutPrediction histogram
+  // should count the difference between the last point and the metadata, while
+  // the *WithPrediction* histogram should count 1 in the 7ms bucket because
+  // prediction can occer with linear resampling and 2 input points.
   base::TimeDelta bucket_without_prediction =
       last_ink_point(kPointerId).timestamp() - metadata.timestamp();
   FinalizePathAndCheckHistograms(bucket_without_prediction,
-                                 base::Milliseconds(0));
+                                 base::Milliseconds(7));
 
   EXPECT_EQ(kInitialDelegatedPoints - kInkPointForMetadata,
             StoredPointsForPointerId(kPointerId));

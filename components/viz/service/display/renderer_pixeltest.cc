@@ -6244,6 +6244,7 @@ class DelegatedInkTest : public VizPixelTestWithParam,
     // delegated ink trail damage rect is wrong, because the whole frame is
     // always redrawn otherwise.
     renderer_settings_.partial_swap_enabled = true;
+    feature_list_.InitAndEnableFeature(features::kRenderPassDrawnRect);
     VizPixelTestWithParam::SetUp();
     EXPECT_TRUE(VizPixelTestWithParam::renderer_->use_partial_swap());
 
@@ -6460,26 +6461,42 @@ TEST_P(DelegatedInkWithPredictionTest, DelegatedInkTrailAfterBatchedQuads) {
                          cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
-// Confirm that delegated ink trails are not drawn on non-root render passes.
+// Delegated ink trail is drawn on a non root render pass, with the correct
+// transforms.
 TEST_P(DelegatedInkWithPredictionTest, SimpleTrailNonRootRenderPass) {
-  gfx::Rect rect(this->device_viewport_size_);
+  gfx::Rect viewport_rect(this->device_viewport_size_);
+  constexpr int kInset = 20;
+  constexpr int kTargetPassId = 2;
+  AggregatedRenderPassId root_pass_id{1};
+  auto root_pass =
+      CreateTestRootRenderPass(root_pass_id, viewport_rect, gfx::Rect());
 
-  AggregatedRenderPassId child_id{2};
-  auto child_pass = CreateTestRenderPass(child_id, rect, gfx::Transform());
+  AggregatedRenderPassId child_pass_id{kTargetPassId};
+  gfx::Rect pass_rect(this->device_viewport_size_);
+  pass_rect.Inset(kInset);
+  gfx::Rect child_pass_local_rect = gfx::Rect(pass_rect.size());
+  gfx::Transform transform_to_root;
+  transform_to_root.Translate(pass_rect.OffsetFromOrigin());
+  transform_to_root.RotateAboutZAxis(10);
+  auto child_pass = CreateTestRenderPass(child_pass_id, child_pass_local_rect,
+                                         transform_to_root);
+  SharedQuadState* shared_state_without_rrect =
+      CreateTestSharedQuadState(gfx::Transform(), child_pass_local_rect,
+                                child_pass.get(), gfx::MaskFilterInfo());
+  gfx::Rect yellow_rect = child_pass_local_rect;
+  yellow_rect.Offset(30, -60);
+  auto* yellow = child_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+  yellow->SetNew(shared_state_without_rrect, yellow_rect, yellow_rect,
+                 SkColors::kYellow, false);
 
-  SharedQuadState* child_shared_state = CreateTestSharedQuadState(
-      gfx::Transform(), rect, child_pass.get(), gfx::MaskFilterInfo());
+  gfx::Rect white_rect = child_pass_local_rect;
+  auto* white = child_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+  white->SetNew(shared_state_without_rrect, white_rect, white_rect,
+                SkColors::kWhite, false);
 
-  auto* color_quad = child_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
-  color_quad->SetNew(child_shared_state, rect, rect, SkColors::kGreen, false);
-
-  AggregatedRenderPassId root_id{1};
-  auto root_pass = CreateTestRootRenderPass(root_id, rect, rect);
-
-  SharedQuadState* root_shared_state = CreateTestSharedQuadState(
-      gfx::Transform(), rect, root_pass.get(), gfx::MaskFilterInfo());
-
-  CreateTestRenderPassDrawQuad(root_shared_state, rect, child_id,
+  SharedQuadState* pass_shared_state = CreateTestSharedQuadState(
+      transform_to_root, pass_rect, root_pass.get(), gfx::MaskFilterInfo());
+  CreateTestRenderPassDrawQuad(pass_shared_state, pass_rect, child_pass_id,
                                root_pass.get());
 
   auto* child_pass_ptr = child_pass.get();
@@ -6488,23 +6505,89 @@ TEST_P(DelegatedInkWithPredictionTest, SimpleTrailNonRootRenderPass) {
   pass_list.push_back(std::move(child_pass));
   pass_list.push_back(std::move(root_pass));
 
-  // Values for a simple delegated ink trail, numbers chosen arbitrarily.
-  const gfx::PointF kFirstPoint(156.f, 111.f);
+  // Simulate the user drawing a horizontal line.
+  const gfx::PointF kFirstPoint(156.f, 87.23f);
   const base::TimeTicks kFirstTimestamp = base::TimeTicks::Now();
   CreateAndSendPoint(kFirstPoint, kFirstTimestamp);
   CreateAndSendPointFromLastPoint(gfx::PointF(119, 87.23f));
-  CreateAndSendPointFromLastPoint(gfx::PointF(74.222f, 95.4f));
+  CreateAndSendPointFromLastPoint(gfx::PointF(75, 87.23f));
 
   const gfx::RectF kPresentationArea(0, 0, 200, 200);
   CreateAndSendMetadata(kFirstPoint, 19.177f, SkColors::kRed, kFirstTimestamp,
-                        kPresentationArea, /*render_pass_id=*/1);
+                        kPresentationArea, /*render_pass_id=*/kTargetPassId);
 
-  // This will only check what was drawn in the child pass, which should never
-  // contain a delegated ink trail, so it should be solid green.
+  // Check that the ink trail is drawn on the child render pass. The trail
+  // should be slightly diagonal since the pass has been rotated; albeit in the
+  // opposite direction. That way when the pass is drawn relative to the root,
+  // the trail will appear horizontal.
   EXPECT_TRUE(this->RunPixelTestWithCopyOutputRequest(
       &pass_list, child_pass_ptr,
-      base::FilePath(FILE_PATH_LITERAL("green.png")),
-      cc::AlphaDiscardingExactPixelComparator()));
+      base::FilePath(
+          FILE_PATH_LITERAL("delegated_ink_trail_non_root_render_pass.png")),
+      cc::FuzzyPixelComparator().DiscardAlpha().SetErrorPixelsPercentageLimit(
+          1.0f)));
+}
+
+// Delegated ink trail is not drawn when the metadata is outside of the
+// render pass area.
+TEST_P(DelegatedInkWithPredictionTest, NonIntersectingMetadata) {
+  gfx::Rect viewport_rect(this->device_viewport_size_);
+  constexpr int kInset = 20;
+
+  AggregatedRenderPassId root_pass_id{1};
+  auto root_pass =
+      CreateTestRootRenderPass(root_pass_id, viewport_rect, gfx::Rect());
+
+  AggregatedRenderPassId child_pass_id{2};
+  gfx::Rect pass_rect(this->device_viewport_size_);
+  pass_rect.Inset(kInset);
+  gfx::Rect child_pass_local_rect = gfx::Rect(pass_rect.size());
+  gfx::Transform transform_to_root;
+  transform_to_root.Translate(pass_rect.OffsetFromOrigin());
+  auto child_pass = CreateTestRenderPass(child_pass_id, child_pass_local_rect,
+                                         transform_to_root);
+
+  SharedQuadState* shared_state_without_rrect =
+      CreateTestSharedQuadState(gfx::Transform(), child_pass_local_rect,
+                                child_pass.get(), gfx::MaskFilterInfo());
+
+  gfx::Rect white_rect = child_pass_local_rect;
+  auto* white = child_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+  white->SetNew(shared_state_without_rrect, white_rect, white_rect,
+                SkColors::kWhite, false);
+
+  SharedQuadState* pass_shared_state = CreateTestSharedQuadState(
+      transform_to_root, pass_rect, root_pass.get(), gfx::MaskFilterInfo());
+  CreateTestRenderPassDrawQuad(pass_shared_state, pass_rect, child_pass_id,
+                               root_pass.get());
+
+  auto* child_pass_ptr = child_pass.get();
+
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(child_pass));
+  pass_list.push_back(std::move(root_pass));
+
+  // Simulate the user drawing a diagonal line. First pass is outside child
+  // render pass output rect.
+  const gfx::PointF kFirstPoint(5, 5);
+  const base::TimeTicks kFirstTimestamp = base::TimeTicks::Now();
+  CreateAndSendPoint(kFirstPoint, kFirstTimestamp);
+  // Subsequent points are inside the child render pass.
+  CreateAndSendPointFromLastPoint(gfx::PointF(25, 25));
+  CreateAndSendPointFromLastPoint(gfx::PointF(50, 50));
+
+  const gfx::RectF kPresentationArea(0, 0, 200, 200);
+  CreateAndSendMetadata(kFirstPoint, 5, SkColors::kRed, kFirstTimestamp,
+                        kPresentationArea, /*render_pass_id=*/1);
+
+  // Check that the ink trail is not drawn on the render pass because the
+  // delegated ink metadata is outside the bounds of the render pass output
+  // rect.
+  EXPECT_TRUE(this->RunPixelTestWithCopyOutputRequest(
+      &pass_list, child_pass_ptr,
+      base::FilePath(FILE_PATH_LITERAL("no-trail-white.png")),
+      cc::FuzzyPixelComparator().DiscardAlpha().SetErrorPixelsPercentageLimit(
+          1.0f)));
 }
 
 // Draw two different trails that are made up of sets of DelegatedInkPoints with
