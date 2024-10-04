@@ -127,6 +127,7 @@
 #if DCHECK_IS_ON()
 #include "third_party/blink/renderer/modules/accessibility/ax_debug_utils.h"
 #endif
+#include "third_party/blink/renderer/bindings/core/v8/v8_highlight_type.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_image_map_link.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_inline_text_box.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
@@ -590,27 +591,18 @@ int32_t ToAXMarkerType(DocumentMarker::MarkerType marker_type) {
   return static_cast<int32_t>(result);
 }
 
-int32_t ToAXHighlightType(const AtomicString& highlight_type) {
-  DEFINE_STATIC_LOCAL(const AtomicString, type_highlight, ("highlight"));
-  DEFINE_STATIC_LOCAL(const AtomicString, type_spelling_error,
-                      ("spelling-error"));
-  DEFINE_STATIC_LOCAL(const AtomicString, type_grammar_error,
-                      ("grammar-error"));
-  ax::mojom::blink::HighlightType result =
-      ax::mojom::blink::HighlightType::kNone;
-  if (highlight_type == type_highlight)
-    result = ax::mojom::blink::HighlightType::kHighlight;
-  else if (highlight_type == type_spelling_error)
-    result = ax::mojom::blink::HighlightType::kSpellingError;
-  else if (highlight_type == type_grammar_error)
-    result = ax::mojom::blink::HighlightType::kGrammarError;
-
-  // Check that |highlight_type| is one of the static AtomicStrings defined
-  // above or "none", so if there are more HighlightTypes added, they should
-  // also be taken into account in this function.
-  DCHECK(result != ax::mojom::blink::HighlightType::kNone ||
-         highlight_type == "none");
-  return static_cast<int32_t>(result);
+int32_t ToAXHighlightType(const V8HighlightType& highlight_type) {
+  switch (highlight_type.AsEnum()) {
+    case V8HighlightType::Enum::kHighlight:
+      return static_cast<int32_t>(ax::mojom::blink::HighlightType::kHighlight);
+    case V8HighlightType::Enum::kSpellingError:
+      return static_cast<int32_t>(
+          ax::mojom::blink::HighlightType::kSpellingError);
+    case V8HighlightType::Enum::kGrammarError:
+      return static_cast<int32_t>(
+          ax::mojom::blink::HighlightType::kGrammarError);
+  }
+  NOTREACHED();
 }
 
 const AXObject* FindAncestorWithAriaHidden(const AXObject* start) {
