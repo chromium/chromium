@@ -13,6 +13,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_supported_type.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
@@ -175,8 +176,8 @@ class ClipboardHtmlWriter final : public ClipboardWriter {
                          html_data->ByteLength());
     const KURL& url = local_frame->GetDocument()->Url();
     DOMParser* dom_parser = DOMParser::Create(promise_->GetScriptState());
-    const Document* doc =
-        dom_parser->parseFromString(html_string, keywords::kTextHtml);
+    const Document* doc = dom_parser->parseFromString(
+        html_string, V8SupportedType(V8SupportedType::Enum::kTextHtml));
     DCHECK(doc);
     String serialized_html = CreateMarkup(doc, kIncludeNode, kResolveAllURLs);
     Write(serialized_html, url);
@@ -213,8 +214,8 @@ class ClipboardSvgWriter final : public ClipboardWriter {
     }
 
     DOMParser* dom_parser = DOMParser::Create(promise_->GetScriptState());
-    const Document* doc =
-        dom_parser->parseFromString(svg_string, AtomicString("image/svg+xml"));
+    const Document* doc = dom_parser->parseFromString(
+        svg_string, V8SupportedType(V8SupportedType::Enum::kImageSvgXml));
     Write(CreateMarkup(doc, kIncludeNode, kResolveAllURLs));
   }
 
