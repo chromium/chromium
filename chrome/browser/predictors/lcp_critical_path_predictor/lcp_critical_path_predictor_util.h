@@ -11,6 +11,7 @@
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "components/sqlite_proto/key_value_data.h"
 #include "components/sqlite_proto/key_value_table.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom.h"
 
 namespace url {
@@ -95,10 +96,11 @@ struct LcppDataInputs {
   // This field keeps the number of preloaded font that is going to be recorded
   // to the database again.
   size_t font_url_reenter_count = 0;
-  // This field keeps the subresource URLs as a key, and the TimeDelta as a
-  // value. TimeDelta stores the duration from navigation start to resource
-  // loading start time.
-  std::map<GURL, base::TimeDelta> subresource_urls;
+  // This field keeps the subresource URLs as a key, and the TimeDelta and
+  // destination as a value. TimeDelta stores the duration from navigation
+  // start to resource loading start time.
+  std::map<GURL, std::pair<base::TimeDelta, network::mojom::RequestDestination>>
+      subresource_urls;
 
   // URLs of preloaded but not actually used resources.
   std::vector<GURL> unused_preload_resources;

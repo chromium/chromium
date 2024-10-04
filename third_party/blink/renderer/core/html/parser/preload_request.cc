@@ -195,7 +195,7 @@ Resource* PreloadRequest::Start(Document* document) {
   params.SetIsPotentiallyLCPInfluencer(is_potentially_lcp_influencer_);
 
   if (LCPCriticalPathPredictor* lcpp = document->GetFrame()->GetLCPP()) {
-    lcpp->OnStartPreload(url);
+    lcpp->OnStartPreload(url, resource_type_);
   }
 
   return PreloadHelper::StartPreload(resource_type_, params, *document);

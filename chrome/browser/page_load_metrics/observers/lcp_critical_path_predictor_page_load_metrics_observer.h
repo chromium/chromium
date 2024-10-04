@@ -10,6 +10,7 @@
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "content/public/browser/page_user_data.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "url/origin.h"
 
 namespace internal {
@@ -90,7 +91,8 @@ class LcpCriticalPathPredictorPageLoadMetricsObserver
   void AppendFetchedFontUrl(const GURL& font_url, bool hit);
   void AppendFetchedSubresourceUrl(
       const GURL& subresource_url,
-      const base::TimeDelta& subresource_load_start);
+      const base::TimeDelta& subresource_load_start,
+      network::mojom::RequestDestination request_destination);
 
  private:
   // PageLoadMetricsObserver implementation:

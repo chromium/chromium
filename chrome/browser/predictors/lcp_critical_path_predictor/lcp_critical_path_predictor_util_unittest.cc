@@ -141,6 +141,16 @@ LcppStringFrequencyStatData MakeData(std::map<std::string, double> main_buckets,
   return data;
 }
 
+void InitializeSubresourceUrlDestinationsBucket(
+    LcppData& lcpp_data,
+    const std::vector<std::pair<std::string, int32_t>>& urls) {
+  for (const auto& url : urls) {
+    lcpp_data.mutable_lcpp_stat()
+        ->mutable_fetched_subresource_url_destination()
+        ->insert({url.first, url.second});
+  }
+}
+
 }  // namespace
 
 TEST(UpdateLcppStringFrequencyStatDataTest, Base) {
@@ -1231,7 +1241,10 @@ class LcppDataMapTest : public testing::Test {
 
   void LearnSubresourceUrls(
       const GURL& url,
-      const std::map<GURL, base::TimeDelta>& subresource_urls) {
+      const std::map<
+          GURL,
+          std::pair<base::TimeDelta, network::mojom::RequestDestination>>&
+          subresource_urls) {
     LcppDataInputs inputs;
     inputs.subresource_urls = subresource_urls;
     LearnLcpp(url, inputs);
@@ -1530,41 +1543,81 @@ TEST_P(LcppDataMapFeatures, LearnSubresourceUrls) {
   EXPECT_EQ(2U, config.max_lcpp_histogram_buckets);
   InitializeDB(config);
   EXPECT_TRUE(GetDataMap().empty());
+  const network::mojom::RequestDestination kEmpty =
+      network::mojom::RequestDestination::kEmpty;
+  const int32_t kEmptyValue = static_cast<int32_t>(kEmpty);
+  const network::mojom::RequestDestination kImage =
+      network::mojom::RequestDestination::kImage;
+  const int32_t kImageValue = static_cast<int32_t>(kImage);
+  const std::string kUrl = "example.test";
+  const GURL kGURL = GURL("http://" + kUrl);
+  const std::string kJpegA = "https://" + kUrl + "/a.jpeg";
+  const std::string kJpegB = "https://" + kUrl + "/b.jpeg";
 
   auto SumOfFontUrlFrequency = [this](const LcppData& data) {
     return SumOfLcppStringFrequencyStatData(
         data.lcpp_stat().fetched_subresource_url_stat());
   };
   for (int i = 0; i < 2; ++i) {
-    LearnSubresourceUrls(GURL("http://example.test"),
-                         {
-                             {GURL("https://a.test/a.jpeg"), base::Seconds(1)},
-                             {GURL("https://b.test/b.jpeg"), base::Seconds(2)},
-                         });
+    LearnSubresourceUrls(
+        kGURL, {
+                   {GURL(kJpegA), std::make_pair(base::Seconds(1), kEmpty)},
+                   {GURL(kJpegB), std::make_pair(base::Seconds(2), kImage)},
+               });
   }
   {
-    LcppData data = CreateLcppData("example.test", 10);
-    InitializeSubresourceUrlsBucket(
-        data, {GURL("https://a.test/a.jpeg"), GURL("https://b.test/b.jpeg")},
-        2);
-    InitializeSubresourceUrlsOtherBucket(data, 0);
-    EXPECT_EQ(data, GetDataMap().at("example.test"));
-    EXPECT_DOUBLE_EQ(4, SumOfFontUrlFrequency(data));
+    LcppData expected = CreateLcppData(kUrl, 10);
+    InitializeSubresourceUrlsBucket(expected, {GURL(kJpegA), GURL(kJpegB)}, 2);
+    InitializeSubresourceUrlsOtherBucket(expected, 0);
+    InitializeSubresourceUrlDestinationsBucket(
+        expected, {std::make_pair(kJpegA, kEmptyValue),
+                   std::make_pair(kJpegB, kImageValue)});
+    const LcppData& result = GetDataMap().at(kUrl);
+    EXPECT_EQ(expected, result) << expected << result;
+    EXPECT_DOUBLE_EQ(4, SumOfFontUrlFrequency(result));
   }
-  for (int i = 0; i < 3; ++i) {
-    LearnSubresourceUrls(GURL("http://example.test"),
-                         {
-                             {GURL("https://c.test/a.jpeg"), base::Seconds(1)},
-                             {GURL("https://d.test/b.jpeg"), base::Seconds(2)},
-                         });
+
+  const std::string kJpegC = "https://" + kUrl + "/c.jpeg";
+  const std::string kJpegD = "https://" + kUrl + "/d.jpeg";
+
+  LearnSubresourceUrls(
+      kGURL, {
+                 {GURL(kJpegC), std::make_pair(base::Seconds(1), kEmpty)},
+                 {GURL(kJpegD), std::make_pair(base::Seconds(2), kImage)},
+             });
+  {
+    // New URLs are not recorded due to less frequency.
+    LcppData expected = CreateLcppData(kUrl, 10);
+    InitializeSubresourceUrlsBucket(expected, {GURL(kJpegA), GURL(kJpegB)},
+                                    1.6);
+    InitializeSubresourceUrlsOtherBucket(expected, 1.8);
+    InitializeSubresourceUrlDestinationsBucket(
+        expected, {std::make_pair(kJpegA, kEmptyValue),
+                   std::make_pair(kJpegB, kImageValue)});
+    const LcppData& result = GetDataMap().at(kUrl);
+    EXPECT_EQ(expected, result) << expected << result;
+    EXPECT_DOUBLE_EQ(5, SumOfFontUrlFrequency(result));
+  }
+
+  for (int i = 0; i < 2; ++i) {
+    LearnSubresourceUrls(
+        kGURL, {
+                   {GURL(kJpegC), std::make_pair(base::Seconds(1), kEmpty)},
+                   {GURL(kJpegD), std::make_pair(base::Seconds(2), kImage)},
+               });
   }
   {
-    LcppData data = CreateLcppData("example.test", 10);
-    InitializeSubresourceUrlsBucket(data, {GURL("https://c.test/a.jpeg")}, 1);
-    InitializeSubresourceUrlsBucket(data, {GURL("https://d.test/b.jpeg")}, 0.8);
-    InitializeSubresourceUrlsOtherBucket(data, 3.2);
-    EXPECT_EQ(data, GetDataMap().at("example.test"));
-    EXPECT_DOUBLE_EQ(5, SumOfFontUrlFrequency(data));
+    // Now they are recorded.
+    LcppData expected = CreateLcppData(kUrl, 10);
+    InitializeSubresourceUrlsBucket(expected, {GURL(kJpegC)}, 1);
+    InitializeSubresourceUrlsBucket(expected, {GURL(kJpegD)}, 0.8);
+    InitializeSubresourceUrlsOtherBucket(expected, 3.2);
+    InitializeSubresourceUrlDestinationsBucket(
+        expected, {std::make_pair(kJpegC, kEmptyValue),
+                   std::make_pair(kJpegD, kImageValue)});
+    const LcppData& result = GetDataMap().at("example.test");
+    EXPECT_EQ(expected, result) << expected << result;
+    EXPECT_DOUBLE_EQ(5, SumOfFontUrlFrequency(result));
   }
 }
 

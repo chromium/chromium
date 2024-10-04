@@ -44,6 +44,7 @@ message LcppStat {
   optional LcppStringFrequencyStatData fetched_subresource_url_stat = 4;
   optional LcppStringFrequencyStatData preconnect_origin_stat = 5;
   optional LcppStringFrequencyStatData unused_preload_stat = 6;
+  map<string, int32> fetched_subresource_url_destination = 7;
 }
 
 // `LcppKeyStat` contains `LcppStat` for each key in `lcpp_stat_map`, where

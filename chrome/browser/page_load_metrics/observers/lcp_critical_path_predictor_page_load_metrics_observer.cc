@@ -42,12 +42,14 @@ size_t GetLCPPFontURLPredictorMaxUrlCountPerOrigin() {
 }
 
 void RemoveFetchedSubresourceUrlsAfterLCP(
-    std::map<GURL, base::TimeDelta>& fetched_subresource_urls,
+    std::map<GURL,
+             std::pair<base::TimeDelta, network::mojom::RequestDestination>>&
+        fetched_subresource_urls,
     const base::TimeDelta& lcp) {
   // Remove subresource that came after LCP because such subresource
   // wouldn't affect LCP.
-  std::erase_if(fetched_subresource_urls, [&](const auto& url_and_time) {
-    return url_and_time.second > lcp;
+  std::erase_if(fetched_subresource_urls, [&](const auto& url_and_time_type) {
+    return url_and_time_type.second.first > lcp;
   });
 }
 
@@ -251,8 +253,10 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::AppendFetchedFontUrl(
 }
 
 void LcpCriticalPathPredictorPageLoadMetricsObserver::
-    AppendFetchedSubresourceUrl(const GURL& subresource_url,
-                                const base::TimeDelta& subresource_load_start) {
+    AppendFetchedSubresourceUrl(
+        const GURL& subresource_url,
+        const base::TimeDelta& subresource_load_start,
+        network::mojom::RequestDestination request_destination) {
   if (!lcpp_data_inputs_) {
     lcpp_data_inputs_.emplace();
   }
@@ -272,8 +276,9 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::
       "Blink.LCPP.NavigationToStartPreload.MainFrame.EachSubresource.Time",
       subresource_load_start);
   if (!lcpp_data_inputs_->subresource_urls.contains(subresource_url)) {
-    lcpp_data_inputs_->subresource_urls.emplace(subresource_url,
-                                                subresource_load_start);
+    lcpp_data_inputs_->subresource_urls.emplace(
+        subresource_url,
+        std::make_pair(subresource_load_start, request_destination));
   }
 }
 

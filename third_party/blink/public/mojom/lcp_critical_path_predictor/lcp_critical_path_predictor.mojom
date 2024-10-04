@@ -6,6 +6,7 @@ module blink.mojom;
 
 import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/fetch_api.mojom";
 import "url/mojom/url.mojom";
 
 // Interface for LCP Critical Path Predictor from the renderer process.
@@ -39,7 +40,9 @@ interface LCPCriticalPathPredictorHost {
   // - and the `subresource_url` scheme is HTTP or HTTPS,
   // Otherwise, the renderer will be killed.
   // 'subresource_load_start' is the duration from navigation start to resource loading start time.
-  NotifyFetchedSubresource(url.mojom.Url subresource_url, mojo_base.mojom.TimeDelta subresource_load_start);
+  // 'request_destination' is the corresponding subresource's destination.
+  NotifyFetchedSubresource(url.mojom.Url subresource_url, mojo_base.mojom.TimeDelta subresource_load_start,
+    network.mojom.RequestDestination request_destination);
 
   // Let the LCPP know the list of resource URLs which are preloaded but actually never used.
   SetUnusedPreloads(array<url.mojom.Url> unused_preloads);

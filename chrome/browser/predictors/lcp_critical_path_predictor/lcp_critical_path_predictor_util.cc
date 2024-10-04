@@ -491,7 +491,10 @@ bool RecordFetchedFontUrlsHistogram(const LoadingPredictorConfig& config,
 
 bool RecordFetchedSubresourceUrlsHistogram(
     const LoadingPredictorConfig& config,
-    const std::map<GURL, base::TimeDelta>& fetched_subresource_urls,
+    const std::map<
+        GURL,
+        std::pair<base::TimeDelta, network::mojom::RequestDestination>>&
+        fetched_subresource_urls,
     LcppStat& stat) {
   // `time_and_urls` keeps URLs (and its fetch timings) in a reversed
   // event order. The URL count that can be stored in the database is
@@ -499,9 +502,14 @@ bool RecordFetchedSubresourceUrlsHistogram(
   // URLs that were fetched in the beginning of navigation.
   std::vector<std::pair<base::TimeDelta, std::string>> time_and_urls;
   time_and_urls.reserve(fetched_subresource_urls.size());
-  for (const auto& [subresource_url, resource_load_start] :
+  for (const auto& [subresource_url, time_and_request_destination] :
        fetched_subresource_urls) {
-    time_and_urls.emplace_back(resource_load_start, subresource_url.spec());
+    time_and_urls.emplace_back(time_and_request_destination.first,
+                               subresource_url.spec());
+
+    stat.mutable_fetched_subresource_url_destination()->insert(
+        {subresource_url.spec(),
+         static_cast<int32_t>(time_and_request_destination.second)});
   }
   // Reverse sort `time_and_urls`. That is why `rbegin` and `rend`
   // instead of `begin` and `end`.
@@ -520,6 +528,9 @@ bool RecordFetchedSubresourceUrlsHistogram(
   }
   *stat.mutable_fetched_subresource_url_stat() =
       updater->ToLcppStringFrequencyStatData();
+  for (const auto& dropped_url : updater->dropped_entries()) {
+    stat.mutable_fetched_subresource_url_destination()->erase(dropped_url);
+  }
   return updater->has_updated();
 }
 

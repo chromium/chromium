@@ -7,6 +7,7 @@
 
 #include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom.h"
 
 namespace predictors {
@@ -49,7 +50,8 @@ class LCPCriticalPathPredictorHost
   void NotifyFetchedFont(const GURL& font_url, bool hit) override;
   void NotifyFetchedSubresource(
       const GURL& subresource_url,
-      base::TimeDelta subresource_load_start) override;
+      base::TimeDelta subresource_load_start,
+      network::mojom::RequestDestination request_destination) override;
 };
 
 }  // namespace predictors

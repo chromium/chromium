@@ -121,6 +121,15 @@ std::ostream& operator<<(std::ostream& os,
   return os;
 }
 
+std::ostream& operator<<(
+    std::ostream& os,
+    const google::protobuf::Map<std::string, int32_t>& data) {
+  for (const auto& [url, value] : data) {
+    os << "\t\t\t\t[" << url << ", " << value << "]" << std::endl;
+  }
+  return os;
+}
+
 std::ostream& operator<<(std::ostream& os, const LcppData& data) {
   os << "[" << data.host() << "," << data.last_visit_time() << "]" << std::endl;
   os << "lcpp_stat:" << std::endl;
@@ -157,6 +166,10 @@ std::ostream& operator<<(std::ostream& os, const LcppStat& stat) {
   // Output fetched_subresource_url_stat.
   os << "\t\t" << "fetched_subresource_url_stat:" << std::endl;
   os << stat.fetched_subresource_url_stat();
+
+  // Output fetched_subresource_url_destination.
+  os << "\t\t" << "fetched_subresource_url_destination:" << std::endl;
+  os << stat.fetched_subresource_url_destination();
 
   return os;
 }
@@ -212,12 +225,32 @@ bool operator==(const LcppStringFrequencyStatData& lhs,
   return true;
 }
 
+bool operator==(const google::protobuf::Map<std::string, int32_t>& lhs,
+                const google::protobuf::Map<std::string, int32_t>& rhs) {
+  if (lhs.size() != rhs.size()) {
+    return false;
+  }
+
+  for (const auto& [url, value] : lhs) {
+    const auto it = rhs.find(url);
+    if (it == rhs.end()) {
+      return false;
+    }
+    if (value != it->second) {
+      return false;
+    }
+  }
+  return true;
+}
+
 bool operator==(const LcppStat& lhs, const LcppStat& rhs) {
   return lhs.lcp_element_locator_stat() == rhs.lcp_element_locator_stat() &&
          lhs.lcp_script_url_stat() == rhs.lcp_script_url_stat() &&
          lhs.fetched_font_url_stat() == rhs.fetched_font_url_stat() &&
          lhs.fetched_subresource_url_stat() ==
-             rhs.fetched_subresource_url_stat();
+             rhs.fetched_subresource_url_stat() &&
+         lhs.fetched_subresource_url_destination() ==
+             rhs.fetched_subresource_url_destination();
 }
 
 bool operator==(const LcppData& lhs, const LcppData& rhs) {

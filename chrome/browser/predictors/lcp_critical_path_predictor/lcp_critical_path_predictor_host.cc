@@ -135,7 +135,8 @@ void LCPCriticalPathPredictorHost::NotifyFetchedFont(const GURL& font_url,
 
 void LCPCriticalPathPredictorHost::NotifyFetchedSubresource(
     const GURL& subresource_url,
-    base::TimeDelta subresource_load_start) {
+    base::TimeDelta subresource_load_start,
+    network::mojom::RequestDestination request_destination) {
   if (!base::FeatureList::IsEnabled(
           blink::features::kHttpDiskCachePrewarming)) {
     ReportBadMessageAndDeleteThis(
@@ -174,7 +175,8 @@ void LCPCriticalPathPredictorHost::NotifyFetchedSubresource(
   if (!plmo) {
     return;
   }
-  plmo->AppendFetchedSubresourceUrl(subresource_url, subresource_load_start);
+  plmo->AppendFetchedSubresourceUrl(subresource_url, subresource_load_start,
+                                    request_destination);
 }
 
 }  // namespace predictors

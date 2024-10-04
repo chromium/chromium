@@ -21,6 +21,7 @@ namespace blink {
 
 class LocalFrame;
 class Element;
+enum class ResourceType : uint8_t;
 
 // The LCPCriticalPathPredictor optimizes page load experience by utilizing
 // data collected by previous page loads. It sources hint data to various parts
@@ -76,7 +77,7 @@ class CORE_EXPORT LCPCriticalPathPredictor final
       const Element& lcp_element,
       std::optional<const KURL> maybe_image_url);
   void OnFontFetched(const KURL& url);
-  void OnStartPreload(const KURL& url);
+  void OnStartPreload(const KURL& url, const ResourceType& resource_type);
   void OnOutermostMainFrameDocumentLoad();
   void OnWarnedUnusedPreloads(const Vector<KURL>& unused_preloads);
 
