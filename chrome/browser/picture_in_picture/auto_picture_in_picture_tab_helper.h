@@ -131,6 +131,10 @@ class AutoPictureInPictureTabHelper
   // can keep the auto-pip setting embargo up to date.
   void OnUserClosedWindow();
 
+  // Notification that our tab became active.  This is our signal to close up
+  // any auto-pip window we have open, though there might also not be one.
+  void OnTabBecameActive();
+
  private:
   explicit AutoPictureInPictureTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<AutoPictureInPictureTabHelper>;

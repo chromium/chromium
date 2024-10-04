@@ -106,8 +106,21 @@ void AutoPictureInPictureTabHelper::OnTabActivatedChanged(
     bool is_tab_activated) {
   is_tab_activated_ = is_tab_activated;
   if (is_tab_activated_) {
-    MaybeExitAutoPictureInPicture();
+    OnTabBecameActive();
   } else {
+    auto* active_contents = tab_strip_observer_helper_->GetActiveWebContents();
+    if (auto* active_tab_helper =
+            active_contents ? FromWebContents(active_contents) : nullptr) {
+      // There is a tab helper that's associated with the newly active contents.
+      // Since it's unclear whether we find out about the activation change
+      // before it does, notify it now.  This gives it the opportunity to close
+      // any auto-pip window it has before we try to autopip and find that
+      // there's a pip window already.  It's also possible that there is no pip
+      // window, or that it's not associated with the active tab, which is also
+      // fine.  Whatever the pip state is after this, we'll just believe it.
+      active_tab_helper->OnTabBecameActive();
+    }
+
     MaybeEnterAutoPictureInPicture();
   }
 }
@@ -221,10 +234,18 @@ bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture(
     return false;
   }
 
-  // Do not autopip if the tab is already in PiP.
-  if (is_in_picture_in_picture_) {
+  // Do not replace any PiP with autopip.  In the special case where the
+  // incoming active tab owns a pip window that will close as a result of the
+  // tab switch, it should have closed already by now.  Either it received a
+  // notification from its tab strip helper, or we notified it, depending on
+  // which one of us was notified by our respective tab strip helper.
+  if (PictureInPictureWindowManager::GetInstance()->GetWebContents() !=
+      nullptr) {
     return false;
   }
+
+  // Since nobody has a pip window, we shouldn't think we do.
+  CHECK(!is_in_picture_in_picture_);
 
   // The user may block autopip via a content setting. Also, if we're in an
   // incognito window, then we should treat "ask" as "block". This should be the
@@ -359,6 +380,18 @@ void AutoPictureInPictureTabHelper::OnUserClosedWindow() {
 
   // There might be the auto-pip setting UI shown, so forward this.
   auto_pip_setting_helper_->OnUserClosedWindow();
+}
+
+void AutoPictureInPictureTabHelper::OnTabBecameActive() {
+  // We're the newly active tab, possibly before we've been notified by the tab
+  // strip helper.  See if there's an autopip instance to close, and close it.
+  // We may be called more than once for the same tab switch operation, once
+  // from our tab strip observer and once from an incoming tab's tab helper.
+  // This is because the order of the observers matters on the tab strip helper;
+  // we don't know whether the outgoing or incoming tab will be notified first.
+  // As a result, the outgoing tab notifies the incoming tab unconditionally, so
+  // that the incoming tab has the opportunity to close pip.
+  MaybeExitAutoPictureInPicture();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AutoPictureInPictureTabHelper);

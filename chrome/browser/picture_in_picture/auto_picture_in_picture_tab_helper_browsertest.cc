@@ -369,6 +369,27 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
         audio_focus_observer_->BindNewPipeAndPassRemote());
   }
 
+  void WaitForAutoPip(content::WebContents* opener_web_contents) {
+    if (PictureInPictureWindowManager::GetInstance()->GetWebContents() ==
+        opener_web_contents) {
+      return;
+    }
+    content::MediaStartStopObserver enter_pip_observer(
+        opener_web_contents,
+        content::MediaStartStopObserver::Type::kEnterPictureInPicture);
+    enter_pip_observer.Wait();
+    // Wait: this doesn't guarantee that it opened pip yet.  i think it means we
+    // sent the action.  however, it should guarantee that the tab helper is in
+    // the right state.  actually, the wait checks for a WebContentsObserver to
+    // change into the "have pip" state, which might guarantee it.
+  }
+
+  // Switch to a tab that contains `web_contents`.
+  void SwitchToExistingTab(content::WebContents* web_contents) {
+    browser()->tab_strip_model()->ActivateTabAt(
+        browser()->tab_strip_model()->GetIndexOfWebContents(web_contents));
+  }
+
   void SwitchToNewTabAndWaitForAutoPip() {
     auto* opener_web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
@@ -403,9 +424,7 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
     content::MediaStartStopObserver exit_pip_observer(
         opener_web_contents,
         content::MediaStartStopObserver::Type::kExitPictureInPicture);
-    browser()->tab_strip_model()->ActivateTabAt(
-        browser()->tab_strip_model()->GetIndexOfWebContents(
-            opener_web_contents));
+    SwitchToExistingTab(opener_web_contents);
     exit_pip_observer.Wait();
 
     // There should no longer be a picture-in-picture window.
@@ -823,6 +842,8 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
         content::MediaStartStopObserver::Type::kEnterPictureInPicture);
     OpenNewTab(browser());
     enter_pip_observer.Wait();
+    // NOTE: this does not guarantee that pip is opened, only that the
+    // mediasession action has been sent.
   }
 
   // Fetch the overlay view from the browser window.
@@ -1010,9 +1031,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   EXPECT_TRUE(original_web_contents->HasPictureInPictureDocument());
 
   // Switch back to the original tab.
-  browser()->tab_strip_model()->ActivateTabAt(
-      browser()->tab_strip_model()->GetIndexOfWebContents(
-          original_web_contents));
+  SwitchToExistingTab(original_web_contents);
 
   // The pip window should still be open.
   EXPECT_TRUE(original_web_contents->HasPictureInPictureDocument());
@@ -1051,7 +1070,8 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   EXPECT_TRUE(original_web_contents->HasPictureInPictureDocument());
   EXPECT_FALSE(second_web_contents->HasPictureInPictureDocument());
 
-  // Switch back to the original tab.
+  // Switch back to the original tab.  Since the original tab is in autopip,
+  // switching back to it should allow the second tab's autopip to replace it.
   {
     content::MediaStartStopObserver exit_pip_observer(
         original_web_contents,
@@ -1059,9 +1079,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
     content::MediaStartStopObserver enter_pip_observer(
         second_web_contents,
         content::MediaStartStopObserver::Type::kEnterPictureInPicture);
-    browser()->tab_strip_model()->ActivateTabAt(
-        browser()->tab_strip_model()->GetIndexOfWebContents(
-            original_web_contents));
+    SwitchToExistingTab(original_web_contents);
     exit_pip_observer.Wait();
     enter_pip_observer.Wait();
   }
@@ -1071,30 +1089,19 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   EXPECT_TRUE(second_web_contents->HasPictureInPictureDocument());
 
   // Open a third tab.
+  // Nothing should change, because leaving the original page while the second
+  // page's autopip window is open will not replace the second page's autopip
+  // window unless the second page is becoming active.
+  OpenNewTab(browser());
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureDocument());
+  EXPECT_TRUE(second_web_contents->HasPictureInPictureDocument());
+
+  // Switch back to the second tab.
   {
     content::MediaStartStopObserver exit_pip_observer(
         second_web_contents,
         content::MediaStartStopObserver::Type::kExitPictureInPicture);
-    content::MediaStartStopObserver enter_pip_observer(
-        original_web_contents,
-        content::MediaStartStopObserver::Type::kEnterPictureInPicture);
-    OpenNewTab(browser());
-    exit_pip_observer.Wait();
-    enter_pip_observer.Wait();
-  }
-
-  // The original tab should now be in picture-in-picture.
-  EXPECT_TRUE(original_web_contents->HasPictureInPictureDocument());
-  EXPECT_FALSE(second_web_contents->HasPictureInPictureDocument());
-
-  // Switch back to the original tab.
-  {
-    content::MediaStartStopObserver exit_pip_observer(
-        original_web_contents,
-        content::MediaStartStopObserver::Type::kExitPictureInPicture);
-    browser()->tab_strip_model()->ActivateTabAt(
-        browser()->tab_strip_model()->GetIndexOfWebContents(
-            original_web_contents));
+    SwitchToExistingTab(second_web_contents);
     exit_pip_observer.Wait();
   }
 
@@ -1155,9 +1162,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   EXPECT_FALSE(original_web_contents->HasPictureInPictureDocument());
 
   // Switch back to the original tab.
-  browser()->tab_strip_model()->ActivateTabAt(
-      browser()->tab_strip_model()->GetIndexOfWebContents(
-          original_web_contents));
+  SwitchToExistingTab(original_web_contents);
 
   // There should still be no picture-in-picture window.
   EXPECT_FALSE(original_web_contents->HasPictureInPictureVideo());
@@ -1170,8 +1175,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   content::MediaStartStopObserver enter_pip_observer(
       original_web_contents,
       content::MediaStartStopObserver::Type::kEnterPictureInPicture);
-  browser()->tab_strip_model()->ActivateTabAt(
-      browser()->tab_strip_model()->GetIndexOfWebContents(second_web_contents));
+  SwitchToExistingTab(second_web_contents);
   enter_pip_observer.Wait();
 
   // A picture-in-picture window should automatically open.
@@ -1182,9 +1186,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   content::MediaStartStopObserver exit_pip_observer(
       original_web_contents,
       content::MediaStartStopObserver::Type::kExitPictureInPicture);
-  browser()->tab_strip_model()->ActivateTabAt(
-      browser()->tab_strip_model()->GetIndexOfWebContents(
-          original_web_contents));
+  SwitchToExistingTab(original_web_contents);
   exit_pip_observer.Wait();
 
   // There should no longer be a picture-in-picture window.
@@ -1298,9 +1300,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   OpenNewTab(browser());
 
   // Immediately switch back to the original tab.
-  browser()->tab_strip_model()->ActivateTabAt(
-      browser()->tab_strip_model()->GetIndexOfWebContents(
-          original_web_contents));
+  SwitchToExistingTab(original_web_contents);
 
   // When the page enters autopip after its delay it should immediately be
   // exited.
@@ -1525,4 +1525,44 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
     auto samples = histograms.GetHistogramSamplesSinceCreation(histogram_name);
     EXPECT_GE(samples->TotalCount(), 1);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
+                       DoesNotCloseAutomaticallyOpenedPip) {
+  // Load a page that registers for autopip.
+  LoadCameraMicrophonePage(browser());
+  auto* first_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GetUserMediaAndAccept(first_web_contents);
+
+  // Load a second page that registers for autopip.  This should trigger autopip
+  // from `first_web_contents`.
+  OpenNewTab(browser());
+  WaitForAutoPip(first_web_contents);
+  LoadCameraMicrophonePage(browser());
+  auto* second_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GetUserMediaAndAccept(second_web_contents);
+
+  // Open a third page.  The pip window from `first_web_contents` should stay
+  // open, since autopip should not overwrite another autopip instance.
+  OpenNewTab(browser());
+  EXPECT_EQ(PictureInPictureWindowManager::GetInstance()->GetWebContents(),
+            first_web_contents);
+
+  // Switch back to the second tab.  Nothing should change.
+  SwitchToExistingTab(second_web_contents);
+
+  // Switch back to the original tab.  Since this is the pip owner, it should
+  // close and the second tab should autopip.
+  SwitchToExistingTab(first_web_contents);
+  WaitForAutoPip(second_web_contents);
+  EXPECT_TRUE(second_web_contents->HasPictureInPictureDocument());
+
+  // Now switch to the second tab and verify that it works that way too.  This
+  // is important, since the tab strip observers for the two tabs could be
+  // triggered in either order.
+  SwitchToExistingTab(second_web_contents);
+  WaitForAutoPip(first_web_contents);
+  EXPECT_TRUE(first_web_contents->HasPictureInPictureDocument());
 }

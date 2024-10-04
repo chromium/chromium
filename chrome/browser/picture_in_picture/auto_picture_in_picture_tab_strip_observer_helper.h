@@ -49,6 +49,9 @@ class AutoPictureInPictureTabStripObserverHelper
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
 
+  // Convenience method to get the WebContents for the active tab, if any.
+  content::WebContents* GetActiveWebContents() const;
+
  private:
   void UpdateIsTabActivated(const TabStripModel* tab_strip_model);
 
