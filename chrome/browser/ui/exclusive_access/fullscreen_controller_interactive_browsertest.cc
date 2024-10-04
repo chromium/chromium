@@ -551,8 +551,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ASSERT_FALSE(IsExclusiveAccessBubbleDisplayed());
 }
 
-// TODO: crbug.com/336428594 - Flaky on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO: crbug.com/371511161 - Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_SecondPointerLockShowsBubble DISABLED_SecondPointerLockShowsBubble
 #else
 #define MAYBE_SecondPointerLockShowsBubble SecondPointerLockShowsBubble
