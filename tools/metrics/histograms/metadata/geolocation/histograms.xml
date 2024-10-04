@@ -57,6 +57,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Geolocation.CoreLocationProvider.TimeToFirstPosition"
+    units="ms" expires_after="2025-07-01">
+  <owner>alvinji@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records the time duration for getting the first valid Geoposition.
+  </summary>
+</histogram>
+
 <histogram name="Geolocation.GeolocationImpl.ClientId"
     enum="GeolocationClientId" expires_after="2025-03-23">
   <owner>mattreynolds@chromium.org</owner>

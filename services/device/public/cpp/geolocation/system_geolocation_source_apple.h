@@ -6,6 +6,7 @@
 #define SERVICES_DEVICE_PUBLIC_CPP_GEOLOCATION_SYSTEM_GEOLOCATION_SOURCE_APPLE_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/network_change_notifier.h"
 #include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
@@ -122,6 +123,9 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSourceApple
   // error encountered, or be empty to indicate a successful session with no
   // errors.
   std::optional<CoreLocationSessionResult> session_result_;
+  // Time when position watching started. Used to calculate the time to first
+  // position is updated.
+  base::TimeTicks watch_start_time_;
   base::WeakPtrFactory<SystemGeolocationSourceApple> weak_ptr_factory_{this};
 };
 

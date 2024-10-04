@@ -67,7 +67,18 @@ void SystemGeolocationSourceApple::PermissionUpdated() {
 void SystemGeolocationSourceApple::PositionUpdated(
     const mojom::Geoposition& position) {
   CHECK(main_task_runner_->BelongsToCurrentThread());
-  position_received_ = true;
+
+  // Record the time to first position update. This is only done once to capture
+  // the initial position acquisition time.
+  if (!position_received_) {
+    const base::TimeDelta time_to_first_position =
+        base::TimeTicks::Now() - watch_start_time_;
+    UmaHistogramCustomTimes(
+        "Geolocation.CoreLocationProvider.TimeToFirstPosition",
+        time_to_first_position, base::Milliseconds(1), base::Seconds(10), 100);
+    position_received_ = true;
+  }
+
   position_observers_->Notify(FROM_HERE, &PositionObserver::OnPositionUpdated,
                               position);
 }
@@ -94,6 +105,7 @@ void SystemGeolocationSourceApple::PositionError(
 void SystemGeolocationSourceApple::StartWatchingPositionInternal(
     bool high_accuracy) {
   CHECK(main_task_runner_->BelongsToCurrentThread());
+  watch_start_time_ = base::TimeTicks::Now();
   if (high_accuracy) {
     location_manager_.desiredAccuracy = kCLLocationAccuracyBest;
   } else {
