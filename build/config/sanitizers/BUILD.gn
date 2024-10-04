@@ -318,10 +318,8 @@ config("common_sanitizer_flags") {
 
 config("asan_flags") {
   cflags = []
-  rustflags = []
   if (is_asan) {
     cflags += [ "-fsanitize=address" ]
-    rustflags += [ "-Zsanitizer=address" ]
     if (!is_win && !is_apple && !is_fuchsia) {
       # TODO(crbug.com/1459233, crbug.com/1462248): This causes asan
       # odr-violation errors in rust code, and link failures for cros/asan.
