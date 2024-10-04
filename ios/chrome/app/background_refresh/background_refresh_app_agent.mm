@@ -14,9 +14,16 @@
 #import "ios/chrome/app/background_refresh/app_refresh_provider.h"
 #import "ios/chrome/app/background_refresh/background_refresh_metrics.h"
 #import "ios/chrome/app/background_refresh_constants.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
 namespace {
+
+// Debug NSUserDefaults key used to reset debug data. If the stored value of
+// this key is less than `resetDataValue`, then all of the foillowing debug
+// data counts are reset to 0.
+NSString* resetDebugDataKey = @"debug_number_of_triggered_background_refreshes";
+NSInteger resetDebugDataValue = 1;
 
 // Debug NSUserDefaults key used to collect debug data.
 NSString* triggeredBackgroundRefreshesKey =
@@ -44,6 +51,12 @@ NSString* appStateBackgroundCountDuringBackgroundRefreshKey =
 // Number of times systemTriggeredRefreshForTask was run with no due tasks.
 NSString* noTasksDueCountDuringBackgroundRefreshKey =
     @"debug_no_tasks_due_count_during_background_refresh";
+
+// Debug NSUserDefaults key used to collect debug data.
+// Number of times systemTriggeredRefreshForTask was with the last startup not
+// being clean (as defined by ApplicationContext::WasLastShutdownClean());
+NSString* dirtyShutdownDuringAppRefreshKey =
+    @"debug_dirty_shutdown_during_app_refresh";
 
 }  // namespace
 
@@ -94,6 +107,16 @@ NSString* noTasksDueCountDuringBackgroundRefreshKey =
 
 #pragma mark - SceneObservingAppAgent
 
+- (void)appDidEnterForeground {
+  // Log if the last session was cleanly shutdown.
+  if (!GetApplicationContext()->WasLastShutdownClean()) {
+    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+    [defaults
+        setInteger:[defaults integerForKey:dirtyShutdownDuringAppRefreshKey] + 1
+            forKey:dirtyShutdownDuringAppRefreshKey];
+  }
+}
+
 - (void)appDidEnterBackground {
   [self requestAppRefreshWithDelay:30 * 60.0];  // 30 minutes.
 }
@@ -102,6 +125,9 @@ NSString* noTasksDueCountDuringBackgroundRefreshKey =
 
 - (void)registerBackgroundRefreshTask {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+
+  // TODO(crbug.com/354918794): Remove debug logging once not needed anymore.
+  [self maybeResetDebugData];
 
   auto handler = ^(BGTask* task) {
     [self systemTriggeredExecutionForTask:task];
@@ -319,6 +345,26 @@ NSString* noTasksDueCountDuringBackgroundRefreshKey =
   if (delay == 0.0) {
     [[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:
                                            kAppBackgroundRefreshTaskIdentifier];
+  }
+}
+
+// TODO(crbug.com/354918794): Remove this method once not needed anymore.
+- (void)maybeResetDebugData {
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  NSInteger resetValue = [defaults integerForKey:resetDebugDataKey];
+  if (resetValue < resetDebugDataValue) {
+    NSArray* debugKeys = @[
+      triggeredBackgroundRefreshesKey,
+      appStateActiveCountDuringBackgroundRefreshKey,
+      appStateInactiveCountDuringBackgroundRefreshKey,
+      appStateBackgroundCountDuringBackgroundRefreshKey,
+      noTasksDueCountDuringBackgroundRefreshKey,
+      dirtyShutdownDuringAppRefreshKey
+    ];
+    for (NSString* key in debugKeys) {
+      [defaults setInteger:0 forKey:key];
+    }
+    [defaults setInteger:resetDebugDataValue forKey:resetDebugDataKey];
   }
 }
 

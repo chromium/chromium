@@ -22,6 +22,7 @@ source_set("background_refresh") {
     "//ios/chrome/app:constants",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/application_delegate:observing_app_state_agent",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common",
     "//ios/web/public/thread",
