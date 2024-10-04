@@ -58,7 +58,6 @@ per-file chrome_crash_reporter_client*=file://components/crash/OWNERS
 
 per-file chrome_exe_main_mac.cc=file://ui/base/cocoa/OWNERS
 
-per-file main_dll_loader_win.cc=brucedawson@chromium.org
 per-file main_dll_loader_win.cc=wfh@chromium.org
 
 per-file framework.exports=file://build/mac/OWNERS
