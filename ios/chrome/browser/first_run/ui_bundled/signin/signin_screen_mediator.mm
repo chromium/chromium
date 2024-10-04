@@ -132,10 +132,12 @@
   [self.consumer setUIEnabled:NO];
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock startSignInCompletion = ^() {
-    [authenticationFlow startSignInWithCompletion:^(BOOL success) {
+    [authenticationFlow startSignInWithCompletion:^(
+                            SigninCoordinatorResult result) {
       [weakSelf.consumer setUIEnabled:YES];
-      if (!success)
+      if (result != SigninCoordinatorResultSuccess) {
         return;
+      }
       [weakSelf.logger
           logSigninCompletedWithResult:SigninCoordinatorResultSuccess
                           addedAccount:weakSelf.addedAccount];

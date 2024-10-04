@@ -2268,13 +2268,12 @@ struct EnhancedSafeBrowsingActivePromoData
                             PROMO_ACTION_NO_SIGNIN_PROMO
                callback:^(SigninCoordinatorResult result,
                           SigninCompletionInfo* completionInfo) {
-                 BOOL success = result == SigninCoordinatorResultSuccess;
-                 [weakSelf didFinishSignin:success];
+                 [weakSelf didFinishSignin];
                }];
   [self.applicationHandler showSignin:command baseViewController:self];
 }
 
-- (void)didFinishSignin:(BOOL)signedIn {
+- (void)didFinishSignin {
   if (_settingsAreDismissed) {
     return;
   }
@@ -2657,7 +2656,7 @@ struct EnhancedSafeBrowsingActivePromoData
   // updated. Otherwise, it would lead to an UI glitch either while the sign
   // in UI is appearing or disappearing. The TableView will be reloaded once
   // the animation is finished.
-  // See: -[SettingsTableViewController didFinishSignin:].
+  // See: -[SettingsTableViewController didFinishSignin].
   if (self.isSigninInProgress)
     return;
   // Sign in state changes are rare. Just reload the entire table when

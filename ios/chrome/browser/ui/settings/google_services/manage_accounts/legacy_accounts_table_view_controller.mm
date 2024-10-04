@@ -525,18 +525,18 @@ constexpr CGFloat kErrorSymbolSize = 22.;
             promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO
                callback:^(SigninCoordinatorResult result,
                           SigninCompletionInfo* completionInfo) {
-                 BOOL success = result == SigninCoordinatorResultSuccess;
-                 [weakSelf handleDidAddAccount:success];
+                 [weakSelf handleDidAddAccount:result];
                }];
   [_applicationHandler showSignin:command baseViewController:self];
 }
 
-- (void)handleDidAddAccount:(BOOL)success {
+- (void)handleDidAddAccount:(SigninCoordinatorResult)result {
   // TODO(crbug.com/40229802): Remove the following line when todo bug will be
   // fixed.
   [self allowUserInteraction];
   [self handleAuthenticationOperationDidFinish];
-  if (success && _closeSettingsOnAddAccount) {
+  if (result == SigninCoordinatorResult::SigninCoordinatorResultSuccess &&
+      _closeSettingsOnAddAccount) {
     [_applicationHandler closeSettingsUI];
   }
 }

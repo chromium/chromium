@@ -72,9 +72,6 @@ using signin_metrics::AccessPoint;
   // interrupted.
   ProceduralBlock _interruptionCompletion;
 
-  // Indicates that the account switch flow was interrupted.
-  BOOL _interrupted;
-
   // Callback to execute when there we know the user won’t have any more
   // opportunity to cancel.
   void (^_userDecisionCompletion)();
@@ -151,7 +148,6 @@ using signin_metrics::AccessPoint;
   }
   CHECK(_authenticationFlow);
   _interruptionCompletion = [completion copy];
-  _interrupted = YES;
   [_authenticationFlow interruptWithAction:action];
 }
 
@@ -188,9 +184,10 @@ using signin_metrics::AccessPoint;
 
   __weak __typeof(self) weakSelf = self;
   _authenticationFlow.userDecisionCompletion = _userDecisionCompletion;
-  [_authenticationFlow startSignInWithCompletion:^(BOOL success) {
-    [weakSelf signinDoneWithSucess:success];
-  }];
+  [_authenticationFlow
+      startSignInWithCompletion:^(SigninCoordinatorResult result) {
+        [weakSelf signinDoneWithResult:result];
+      }];
 }
 
 - (void)triggerAccountSwitchSnackbarWithIdentity {
@@ -230,32 +227,31 @@ using signin_metrics::AccessPoint;
   }
 }
 
-- (void)signinDoneWithSucess:(BOOL)success {
-  SigninCoordinatorResult signinResult;
-  if (success) {
-    [self triggerAccountSwitchSnackbarWithIdentity];
-    signinResult = SigninCoordinatorResult::SigninCoordinatorResultSuccess;
-  } else {
-    ProfileIOS* profile = _browser->GetProfile();
-    if (ChromeAccountManagerServiceFactory::GetForProfile(profile)
-            ->IsValidIdentity(_fromIdentity)) {
-      // Sign-in to new identity failed, we sign the user back in their previous
-      // account.
-      _authenticationService->SignIn(
-          _fromIdentity,
-          signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH);
-    }
-    if (_interrupted) {
-      signinResult =
-          SigninCoordinatorResult::SigninCoordinatorResultInterrupted;
-    } else {
-      signinResult =
-          SigninCoordinatorResult::SigninCoordinatorResultCanceledByUser;
-    }
+- (void)signinDoneWithResult:(SigninCoordinatorResult)signinResult {
+  SigninCompletionInfo* completionInfo = nil;
+  switch (signinResult) {
+    case SigninCoordinatorResult::SigninCoordinatorResultSuccess:
+      [self triggerAccountSwitchSnackbarWithIdentity];
+      completionInfo =
+          [SigninCompletionInfo signinCompletionInfoWithIdentity:_newIdentity];
+      break;
+    case SigninCoordinatorResult::SigninCoordinatorResultInterrupted:
+    case SigninCoordinatorResult::SigninCoordinatorResultCanceledByUser:
+    case SigninCoordinatorResult::SigninCoordinatorResultDisabled:
+      ProfileIOS* profile = _browser->GetProfile();
+      if (ChromeAccountManagerServiceFactory::GetForProfile(profile)
+              ->IsValidIdentity(_fromIdentity)) {
+        // Sign-in to new identity failed, we sign the user back in their
+        // previous account.
+        _authenticationService->SignIn(
+            _fromIdentity, signin_metrics::AccessPoint::
+                               ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH);
+      }
+      completionInfo =
+          [SigninCompletionInfo signinCompletionInfoWithIdentity:nil];
+      break;
   }
 
-  SigninCompletionInfo* completionInfo = [SigninCompletionInfo
-      signinCompletionInfoWithIdentity:success ? _newIdentity : nil];
   [self runCompletionCallbackWithSigninResult:signinResult
                                completionInfo:completionInfo];
   _accountSwitchInProgress.RunAndReset();

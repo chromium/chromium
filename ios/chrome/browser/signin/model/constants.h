@@ -9,6 +9,8 @@
 
 #import "base/containers/enum_set.h"
 
+typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
+
 // Error domain for authentication error.
 extern NSString* kAuthenticationErrorDomain;
 
@@ -59,7 +61,7 @@ namespace signin_ui {
 
 // Completion callback for a sign-in operation.
 // `success` is YES if the operation was successful.
-using SigninCompletionCallback = void (^)(BOOL success);
+using SigninCompletionCallback = void (^)(SigninCoordinatorResult success);
 
 // Completion callback for a sign-out operation.
 // `success` is YES if the operation was successful.

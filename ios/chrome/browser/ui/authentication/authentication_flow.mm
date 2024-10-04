@@ -111,8 +111,8 @@ bool HasMachineLevelPolicies() {
 // `_signInCompletion` when finished.
 - (void)continueSignin;
 
-// Runs `_signInCompletion` asynchronously with `success` argument.
-- (void)completeSignInWithSuccess:(BOOL)success;
+// Runs `_signInCompletion` asynchronously with `result` argument.
+- (void)completeSignInWithResult:(SigninCoordinatorResult)result;
 
 // Cancels the current sign-in flow.
 - (void)cancelFlowWithReason:(CancelationReason)byUser;
@@ -184,6 +184,7 @@ bool HasMachineLevelPolicies() {
     _postSignInActions = postSignInActions;
     _presentingViewController = presentingViewController;
     _state = BEGIN;
+    _cancelationReason = CancelationReason::kNotCanceled;
   }
   return self;
 }
@@ -375,13 +376,26 @@ bool HasMachineLevelPolicies() {
       [self fetchCapabilities];
       return;
     case COMPLETE_WITH_SUCCESS:
-      [self completeSignInWithSuccess:YES];
+      [self completeSignInWithResult:SigninCoordinatorResult::
+                                         SigninCoordinatorResultSuccess];
       return;
     case COMPLETE_WITH_FAILURE:
       if (_didSignIn) {
         [_performer signOutImmediatelyFromProfile:profile];
       }
-      [self completeSignInWithSuccess:NO];
+      SigninCoordinatorResult result;
+      switch (_cancelationReason) {
+        case CancelationReason::kFailed:
+          result = SigninCoordinatorResult::SigninCoordinatorResultInterrupted;
+          break;
+        case CancelationReason::kUserCanceled:
+          result =
+              SigninCoordinatorResult::SigninCoordinatorResultCanceledByUser;
+          break;
+        case CancelationReason::kNotCanceled:
+          NOTREACHED();
+      }
+      [self completeSignInWithResult:result];
       return;
     case CLEANUP_BEFORE_DONE: {
       // Clean up asynchronously to ensure that `self` does not die while
@@ -454,10 +468,10 @@ bool HasMachineLevelPolicies() {
       })];
 }
 
-- (void)completeSignInWithSuccess:(BOOL)success {
+- (void)completeSignInWithResult:(SigninCoordinatorResult)result {
   DCHECK(_signInCompletion)
-      << "`completeSignInWithSuccess` should not be called twice.";
-  if (success) {
+      << "`completeSignInWithResult` should not be called twice.";
+  if (result == SigninCoordinatorResult::SigninCoordinatorResultSuccess) {
     base::UmaHistogramEnumeration("Signin.AccountType.SigninConsent",
                                   _identityToSignInHostedDomain.length > 0
                                       ? SigninAccountType::kManaged
@@ -466,7 +480,7 @@ bool HasMachineLevelPolicies() {
   if (_signInCompletion) {
     SigninCompletionCallback signInCompletion = _signInCompletion;
     _signInCompletion = nil;
-    signInCompletion(success);
+    signInCompletion(result);
   }
   if (_shouldShowSigninSnackbar) {
     [_performer completePostSignInActions:_postSignInActions

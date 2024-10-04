@@ -164,9 +164,10 @@ void SignInWithoutSync(id<SystemIdentity> identity) {
                    accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN
              postSignInActions:PostSignInActionSet({PostSignInAction::kNone})
       presentingViewController:viewController];
-  [authenticationFlow startSignInWithCompletion:^(BOOL success) {
-    authenticationFlow = nil;
-  }];
+  [authenticationFlow
+      startSignInWithCompletion:^(SigninCoordinatorResult result) {
+        authenticationFlow = nil;
+      }];
 }
 
 void ResetHistorySyncPreferencesForTesting() {

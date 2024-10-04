@@ -84,10 +84,18 @@ class AuthenticationFlowTest : public PlatformTest {
     fake_system_identity_manager()->AddIdentity(managed_identity2_);
 
     run_loop_ = std::make_unique<base::RunLoop>();
-    sign_in_completion_ = ^(BOOL success) {
+    sign_in_completion_ = ^(SigninCoordinatorResult result) {
       run_loop_->Quit();
-      signin_result_ =
-          success ? signin::Tribool::kTrue : signin::Tribool::kFalse;
+      switch (result) {
+        case SigninCoordinatorResult::SigninCoordinatorResultSuccess:
+          signin_result_ = signin::Tribool::kTrue;
+          break;
+        case SigninCoordinatorResult::SigninCoordinatorResultInterrupted:
+        case SigninCoordinatorResult::SigninCoordinatorResultCanceledByUser:
+        case SigninCoordinatorResult::SigninCoordinatorResultDisabled:
+          signin_result_ = signin::Tribool::kFalse;
+          break;
+      }
     };
   }
 

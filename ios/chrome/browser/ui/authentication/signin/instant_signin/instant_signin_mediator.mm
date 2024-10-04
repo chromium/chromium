@@ -20,8 +20,6 @@ using signin_metrics::PromoAction;
   raw_ptr<syncer::SyncService> _syncService;
   AuthenticationFlow* _authenticationFlow;
   AccessPoint _accessPoint;
-  // YES if the sign-in is interrupted.
-  BOOL _interrupted;
   // Completion block to call once AuthenticationFlow is done while being
   // interrupted.
   ProceduralBlock _interruptionCompletion;
@@ -46,9 +44,10 @@ using signin_metrics::PromoAction;
   _authenticationFlow = authenticationFlow;
   signin_metrics::RecordSigninUserActionForAccessPoint(_accessPoint);
   __weak __typeof(self) weakSelf = self;
-  [_authenticationFlow startSignInWithCompletion:^(BOOL success) {
-    [weakSelf signInFlowCompletedForSignInOnlyWithSuccess:success];
-  }];
+  [_authenticationFlow
+      startSignInWithCompletion:^(SigninCoordinatorResult result) {
+        [weakSelf signInFlowCompletedForSignInOnlyWithResult:result];
+      }];
 }
 
 - (void)disconnect {
@@ -60,7 +59,6 @@ using signin_metrics::PromoAction;
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion {
   CHECK(_authenticationFlow);
-  _interrupted = YES;
   _interruptionCompletion = [completion copy];
   [_authenticationFlow interruptWithAction:action];
 }
@@ -68,20 +66,13 @@ using signin_metrics::PromoAction;
 #pragma mark - Private
 
 // Called when the sign-in flow is over.
-- (void)signInFlowCompletedForSignInOnlyWithSuccess:(BOOL)success {
+- (void)signInFlowCompletedForSignInOnlyWithResult:
+    (SigninCoordinatorResult)result {
   CHECK(_authenticationFlow);
   _authenticationFlow.delegate = nil;
   _authenticationFlow = nil;
   ProceduralBlock interruptionCompletion = _interruptionCompletion;
   _interruptionCompletion = nil;
-  SigninCoordinatorResult result;
-  if (success) {
-    result = SigninCoordinatorResultSuccess;
-  } else if (_interrupted) {
-    result = SigninCoordinatorResultInterrupted;
-  } else {
-    result = SigninCoordinatorResultCanceledByUser;
-  }
   [self.delegate instantSigninMediator:self didSigninWithResult:result];
   if (interruptionCompletion) {
     interruptionCompletion();
