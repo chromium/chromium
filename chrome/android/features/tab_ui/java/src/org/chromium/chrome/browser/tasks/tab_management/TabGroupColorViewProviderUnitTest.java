@@ -13,8 +13,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.tasks.tab_management.SharedGroupObserverTestHelper.GROUP_MEMBER1;
-import static org.chromium.chrome.browser.tasks.tab_management.SharedGroupObserverTestHelper.GROUP_MEMBER2;
+import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_MEMBER1;
+import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_MEMBER2;
 
 import android.app.Activity;
 import android.content.Context;
@@ -39,6 +39,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
 import org.chromium.components.data_sharing.ServiceStatus;
+import org.chromium.components.data_sharing.SharedGroupTestHelper;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -65,7 +66,7 @@ public class TabGroupColorViewProviderUnitTest {
     @Captor private ArgumentCaptor<DataSharingService.Observer> mSharingObserverCaptor;
     @Captor private ArgumentCaptor<Callback<GroupDataOrFailureOutcome>> mReadGroupCallbackCaptor;
 
-    private SharedGroupObserverTestHelper mSharedGroupObserverTestHelper;
+    private SharedGroupTestHelper mSharedGroupTestHelper;
     private Context mContext;
     private TabGroupColorViewProvider mRegularColorViewProvider;
     private TabGroupColorViewProvider mIncognitoColorViewProvider;
@@ -75,9 +76,8 @@ public class TabGroupColorViewProviderUnitTest {
         when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
         when(mDataSharingService.getServiceStatus()).thenReturn(mServiceStatus);
 
-        mSharedGroupObserverTestHelper =
-                new SharedGroupObserverTestHelper(
-                        mDataSharingService, mTabGroupSyncService, mReadGroupCallbackCaptor);
+        mSharedGroupTestHelper =
+                new SharedGroupTestHelper(mDataSharingService, mReadGroupCallbackCaptor);
 
         mActivityScenarioRule.getScenario().onActivity(this::onActivityCreated);
     }
@@ -193,7 +193,7 @@ public class TabGroupColorViewProviderUnitTest {
         mSharingObserverCaptor
                 .getValue()
                 .onGroupAdded(
-                        SharedGroupObserverTestHelper.newGroupData(
+                        SharedGroupTestHelper.newGroupData(
                                 COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2));
     }
 

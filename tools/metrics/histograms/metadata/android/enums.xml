@@ -1114,6 +1114,10 @@ chromium-metrics-reviews@google.com.
   <int value="51" label="PromptHatsQuickDelete"/>
   <int value="52" label="PromptHatsSafetyHub"/>
   <int value="53" label="DefaultBrowserPromo"/>
+  <int value="54" label="TabRemovedThroughCollaboration"/>
+  <int value="55" label="TabNavigatedThroughCollaboration"/>
+  <int value="56" label="CollaborationUserJoined"/>
+  <int value="57" label="CollaborationRemoved"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/messages/android/message_enums.h:MessageIdentifier) -->

@@ -405,6 +405,14 @@ public class MessagesMetrics {
                 return "PromptHatsSafetyHub";
             case MessageIdentifier.DEFAULT_BROWSER_PROMO:
                 return "DefaultBrowserPromo";
+            case MessageIdentifier.TAB_REMOVED_THROUGH_COLLABORATION:
+                return "TabRemovedThroughCollaboration";
+            case MessageIdentifier.TAB_NAVIGATED_THROUGH_COLLABORATION:
+                return "TabNavigatedThroughCollaboration";
+            case MessageIdentifier.COLLABORATION_USER_JOINED:
+                return "CollaborationUserJoined";
+            case MessageIdentifier.COLLABORATION_REMOVED:
+                return "CollaborationRemoved";
             default:
                 return "Unknown";
         }

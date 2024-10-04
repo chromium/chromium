@@ -20,6 +20,7 @@ if (is_android) {
 
     deps = [
       ":java",
+      ":messages_java",
       "//base:base_java",
       "//base:service_loader_java",
       "//build/android:build_java",
@@ -84,7 +85,6 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingImplFactory.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingNotificationManager.java",
-      "android/java/src/org/chromium/chrome/browser/data_sharing/InstantMessageDelegateImpl.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/MemberPickerListenerImpl.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/NoOpDataSharingSDKDelegateImpl.java",
     ]
@@ -96,21 +96,15 @@ if (is_android) {
       "//chrome/browser/notifications:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/tab:java",
-      "//chrome/browser/tab_group:java",
-      "//chrome/browser/tab_group_sync/messaging/android:factory_java",
       "//chrome/browser/ui/android/strings:ui_strings_grd",
       "//components/browser_ui/notifications/android:java",
       "//components/browser_ui/styles/android:java_resources",
       "//components/data_sharing/public:public_java",
       "//components/data_sharing/public/protocol:proto_java",
-      "//components/messages/android:java",
-      "//components/saved_tab_groups/messaging/android:java",
       "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/android_sdk:android_window_extensions_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
-      "//third_party/androidx:androidx_core_core_java",
       "//third_party/jni_zero:jni_zero_java",
-      "//ui/android:ui_java",
       "//url:url_java",
     ]
   }
@@ -139,6 +133,29 @@ if (is_android) {
     ]
   }
 
+  android_library("messages_java") {
+    resources_package = "org.chromium.chrome.browser.data_sharing"
+    sources = [ "android/java/src/org/chromium/chrome/browser/data_sharing/InstantMessageDelegateImpl.java" ]
+
+    deps = [
+      ":java_resources",
+      "//base:base_java",
+      "//base:supplier_java",
+      "//chrome/android:chrome_app_java_resources",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/browser/tab:java",
+      "//chrome/browser/tab_group:java",
+      "//chrome/browser/tab_group_sync/messaging/android:factory_java",
+      "//components/data_sharing/public:public_java",
+      "//components/messages/android:java",
+      "//components/saved_tab_groups/messaging/android:java",
+      "//components/saved_tab_groups/public:java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_core_core_java",
+      "//ui/android:ui_java",
+    ]
+  }
+
   android_library("invitation_dialog_java") {
     resources_package =
         "org.chromium.chrome.browser.data_sharing.ui.invitation_dialog"
@@ -159,21 +176,30 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingNotificationManagerUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingTabGroupUtilsUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/InstantMessageDelegateImplUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/ui/shared_image_tiles/SharedImageTilesCoordinatorUnitTest.java",
     ]
     deps = [
       ":java",
+      ":messages_java",
       ":shared_image_tiles_java",
       "//base:base_java",
       "//base:base_junit_test_support",
       "//chrome/browser/notifications:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/tab:java",
+      "//chrome/browser/tab_group:java",
       "//chrome/browser/tab_group_sync:factory_java",
+      "//chrome/browser/tab_group_sync/messaging/android:factory_java",
       "//chrome/browser/tabmodel:java",
       "//chrome/test/android:chrome_java_unit_test_support",
       "//components/browser_ui/notifications/android:java",
+      "//components/data_sharing:test_support_java",
       "//components/data_sharing/public:public_java",
+      "//components/messages/android:factory_java",
+      "//components/messages/android:java",
+      "//components/messages/android:manager_java",
+      "//components/saved_tab_groups/messaging/android:java",
       "//components/saved_tab_groups/public:java",
       "//content/public/android:content_full_java",
       "//third_party/android_deps:robolectric_all_java",

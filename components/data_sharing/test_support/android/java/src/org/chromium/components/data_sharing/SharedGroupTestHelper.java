@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management;
+package org.chromium.components.data_sharing;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
@@ -11,52 +11,49 @@ import static org.mockito.Mockito.verify;
 import org.mockito.ArgumentCaptor;
 
 import org.chromium.base.Callback;
-import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
-import org.chromium.components.data_sharing.GroupData;
-import org.chromium.components.data_sharing.GroupMember;
-import org.chromium.components.data_sharing.PeopleGroupActionFailure;
 import org.chromium.components.data_sharing.member_role.MemberRole;
-import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
-/** Test helpers for {@link SharedGroupObserver} tests. */
-public class SharedGroupObserverTestHelper {
-    public static final String EMAIL1 = "one@gmail.com";
-    public static final String EMAIL2 = "two@gmail.com";
+/**
+ * Test helpers for creating data_sharing objects and mocking calls to {@link DataSharingService}.
+ */
+public class SharedGroupTestHelper {
     public static final String GAIA_ID1 = "gaiaId1";
     public static final String GAIA_ID2 = "gaiaId2";
+    public static final String DISPLAY_NAME1 = "Jane Doe";
+    public static final String DISPLAY_NAME2 = "John Doe";
+    public static final String EMAIL1 = "one@gmail.com";
+    public static final String EMAIL2 = "two@gmail.com";
+    public static final String GIVEN_NAME1 = "Jane";
+    public static final String GIVEN_NAME2 = "John";
     public static final GroupMember GROUP_MEMBER1 =
-            newGroupMember(GAIA_ID1, EMAIL1, MemberRole.OWNER);
+            newGroupMember(GAIA_ID1, DISPLAY_NAME1, EMAIL1, MemberRole.OWNER, GIVEN_NAME1);
     public static final GroupMember GROUP_MEMBER2 =
-            newGroupMember(GAIA_ID2, EMAIL2, MemberRole.MEMBER);
+            newGroupMember(GAIA_ID2, DISPLAY_NAME2, EMAIL2, MemberRole.MEMBER, GIVEN_NAME2);
 
     private final DataSharingService mDataSharingService;
-    private final TabGroupSyncService mTabGroupSyncService;
     private final ArgumentCaptor<Callback<GroupDataOrFailureOutcome>> mReadGroupCallbackCaptor;
 
     /**
      * @param mockDataSharingService A mock {@link DataSharingService}.
-     * @param mockTabGroupSyncService A mock {@link TabGroupSyncService}.
+     * @param readGroupCallbackCaptor Will capture the read group callback.
      */
-    public SharedGroupObserverTestHelper(
+    public SharedGroupTestHelper(
             DataSharingService mockDataSharingService,
-            TabGroupSyncService mockTabGroupSyncService,
             ArgumentCaptor<Callback<GroupDataOrFailureOutcome>> readGroupCallbackCaptor) {
         mDataSharingService = mockDataSharingService;
-        mTabGroupSyncService = mockTabGroupSyncService;
         mReadGroupCallbackCaptor = readGroupCallbackCaptor;
     }
 
     /** Creates a new group member. */
     private static GroupMember newGroupMember(
-            String gaiaId, String email, @MemberRole int memberRole) {
+            String gaiaId,
+            String displayName,
+            String email,
+            @MemberRole int memberRole,
+            String givenName) {
         return new GroupMember(
-                gaiaId,
-                /* displayName= */ null,
-                email,
-                memberRole,
-                /* avatarUrl= */ null,
-                /* givenName= */ null);
+                gaiaId, displayName, email, memberRole, /* avatarUrl= */ null, givenName);
     }
 
     /** Creates new group data. */
