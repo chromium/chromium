@@ -91,6 +91,16 @@ const CGFloat kMenuSymbolSize = 18;
 
 }  // namespace
 
+// Indicates the state of the bottom sheet
+typedef NS_ENUM(NSUInteger, SheetDetentState) {
+  // The bottom sheet is locked in large detent.
+  SheetStateLockedInLargeDetent,
+  // The bottom sheet is free to oscilate between medium and large.
+  SheetStateUnrestrictedMovement,
+  // The bottom sheet is presenting the consent dialog sheet.
+  SheetStateConsentDialog,
+};
+
 @interface LensOverlayCoordinator () <
     LensOverlayCommands,
     UISheetPresentationControllerDelegate,
@@ -655,7 +665,57 @@ const CGFloat kMenuSymbolSize = 18;
   }];
 }
 
+- (void)restrictSheetToLargeDetent:(BOOL)restrictToLargeDetent {
+  UISheetPresentationController* sheet =
+      _resultViewController.sheetPresentationController;
+
+  if (restrictToLargeDetent) {
+    [self requestMaximizeBottomSheet];
+    [self adjustDetentsOfBottomSheet:sheet
+                            forState:SheetStateLockedInLargeDetent];
+  } else {
+    [self adjustDetentsOfBottomSheet:sheet
+                            forState:SheetStateUnrestrictedMovement];
+  }
+}
+
 #pragma mark - private
+
+// Adjust the detents of the given sheet based on the sheet state.
+- (void)adjustDetentsOfBottomSheet:(UISheetPresentationController*)sheet
+                          forState:(SheetDetentState)state {
+  if (!sheet) {
+    return;
+  }
+
+  UISheetPresentationControllerDetent* largeDetent =
+      [UISheetPresentationControllerDetent largeDetent];
+  UISheetPresentationControllerDetent* mediumDetent =
+      [UISheetPresentationControllerDetent mediumDetent];
+
+  switch (state) {
+    case SheetStateUnrestrictedMovement:
+      sheet.detents = @[ mediumDetent, largeDetent ];
+      break;
+    case SheetStateLockedInLargeDetent:
+      sheet.detents = @[ largeDetent ];
+      break;
+    case SheetStateConsentDialog:
+      __weak UIViewController* weakConsentController = _consentViewController;
+      auto preferredHeightForContent = ^CGFloat(
+          id<UISheetPresentationControllerDetentResolutionContext> context) {
+        return weakConsentController.preferredContentSize.height;
+      };
+      UISheetPresentationControllerDetent* consentDialogDetent =
+          [UISheetPresentationControllerDetent
+              customDetentWithIdentifier:kCustomConsentSheetDetentIdentifier
+                                resolver:preferredHeightForContent];
+      sheet.detents = @[ consentDialogDetent ];
+      break;
+  }
+
+  sheet.largestUndimmedDetentIdentifier = largeDetent.identifier;
+}
 
 // Lens needs to have visibility into the user's identity and whether the search
 // should be incognito or not.
@@ -753,6 +813,7 @@ const CGFloat kMenuSymbolSize = 18;
 
   _mediator.omniboxCoordinator = _omniboxCoordinator;
   _mediator.toolbarConsumer = _resultViewController;
+  _mediator.presentationDelegate = self;
   _omniboxCoordinator.focusDelegate = _mediator;
 }
 
@@ -914,23 +975,7 @@ const CGFloat kMenuSymbolSize = 18;
       _consentViewController.sheetPresentationController;
   sheet.delegate = self;
   sheet.prefersEdgeAttachedInCompactHeight = YES;
-  sheet.largestUndimmedDetentIdentifier =
-      [UISheetPresentationControllerDetent largeDetent].identifier;
-
-  __weak LensOverlayConsentViewController* weakConsentViewController =
-      _consentViewController;
-
-  auto resolver = ^CGFloat(
-      id<UISheetPresentationControllerDetentResolutionContext> context) {
-    return [weakConsentViewController preferredContentSize].height;
-  };
-
-  UISheetPresentationControllerDetent* customDetent =
-      [UISheetPresentationControllerDetent
-          customDetentWithIdentifier:kCustomConsentSheetDetentIdentifier
-                            resolver:resolver];
-
-  sheet.detents = @[ customDetent ];
+  [self adjustDetentsOfBottomSheet:sheet forState:SheetStateConsentDialog];
 
   [_containerViewController presentViewController:_consentViewController
                                          animated:YES
@@ -949,14 +994,10 @@ const CGFloat kMenuSymbolSize = 18;
       _resultViewController.sheetPresentationController;
   sheet.delegate = self;
   sheet.prefersEdgeAttachedInCompactHeight = YES;
-  sheet.largestUndimmedDetentIdentifier =
-      [UISheetPresentationControllerDetent largeDetent].identifier;
-  sheet.detents = @[
-    [UISheetPresentationControllerDetent mediumDetent],
-    [UISheetPresentationControllerDetent largeDetent]
-  ];
   sheet.prefersGrabberVisible = YES;
   sheet.preferredCornerRadius = 14;
+  [self adjustDetentsOfBottomSheet:sheet
+                          forState:SheetStateUnrestrictedMovement];
 
   // Adjust the occlusion insets so that selections in the bottom half of the
   // screen are repositioned, to avoid being hidden by the bottom sheet.

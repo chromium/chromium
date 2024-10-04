@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client_delegate.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_bottom_sheet_presentation_delegate.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_result_consumer.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_mutator.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
@@ -47,6 +48,10 @@ class WebState;
 
 /// Lens backend handler.
 @property(nonatomic, weak) id<ChromeLensOverlay> lensHandler;
+
+/// Presentation delegate for requesting bottom sheet resizing.
+@property(nonatomic, weak) id<LensOverlayBottomSheetPresentationDelegate>
+    presentationDelegate;
 
 /// Active`webState` observed by this mediator.
 @property(nonatomic, assign) web::WebState* webState;

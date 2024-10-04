@@ -16,6 +16,9 @@
 // Request resizing the bottom sheet to minimum size.
 - (void)requestMinimizeBottomSheet;
 
+// Whether to restrict sheet to stay into the large detent.
+- (void)restrictSheetToLargeDetent:(BOOL)restrictToLargeDetent;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_UI_LENS_OVERLAY_BOTTOM_SHEET_PRESENTATION_DELEGATE_H_

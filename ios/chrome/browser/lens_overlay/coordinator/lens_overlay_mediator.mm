@@ -175,12 +175,14 @@
   [self.omniboxCoordinator focusOmnibox];
   [self.toolbarConsumer setOmniboxFocused:YES];
   [self.omniboxCoordinator.animatee setClearButtonFaded:NO];
+  [self.presentationDelegate restrictSheetToLargeDetent:YES];
 }
 
 - (void)defocusOmnibox {
   [self.omniboxCoordinator endEditing];
   [self.toolbarConsumer setOmniboxFocused:NO];
   [self.omniboxCoordinator.animatee setClearButtonFaded:YES];
+  [self.presentationDelegate restrictSheetToLargeDetent:NO];
 }
 
 - (void)goBack {
