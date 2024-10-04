@@ -30,8 +30,6 @@ sync_protocol_sources = [
   "experiments_specifics.proto",
   "extension_setting_specifics.proto",
   "extension_specifics.proto",
-  "favicon_image_specifics.proto",
-  "favicon_tracking_specifics.proto",
   "gaia_password_reuse.proto",
   "get_updates_caller_info.proto",
   "history_delete_directive_specifics.proto",

@@ -30,8 +30,6 @@ import "components/sync/protocol/dictionary_specifics.proto";
 import "components/sync/protocol/experiments_specifics.proto";
 import "components/sync/protocol/extension_setting_specifics.proto";
 import "components/sync/protocol/extension_specifics.proto";
-import "components/sync/protocol/favicon_image_specifics.proto";
-import "components/sync/protocol/favicon_tracking_specifics.proto";
 import "components/sync/protocol/history_delete_directive_specifics.proto";
 import "components/sync/protocol/history_specifics.proto";
 import "components/sync/protocol/managed_user_setting_specifics.proto";
@@ -170,14 +168,16 @@ message EntitySpecifics {
     EmptySpecifics synced_notification = 153108 [deprecated = true];
     EmptySpecifics synced_notification_app_info = 235816 [deprecated = true];
     ExperimentsSpecifics experiments = 161496 [deprecated = true];
-    FaviconTrackingSpecifics favicon_tracking = 181534 [deprecated = true];
-    FaviconImageSpecifics favicon_image = 182019 [deprecated = true];
     EmptySpecifics managed_user = 194582 [deprecated = true];
     ManagedUserSharedSettingSpecifics managed_user_shared_setting = 202026
         [deprecated = true];
     EmptySpecifics managed_user_allowlist = 306060 [deprecated = true];
     TypedUrlSpecifics typed_url = 40781 [deprecated = true];
   }
+  reserved 181534;
+  reserved "favicon_tracking";
+  reserved 182019;
+  reserved "favicon_image";
   reserved 218175;
   reserved "wifi_credential";
   reserved 223759;
