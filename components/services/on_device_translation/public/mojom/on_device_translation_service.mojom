@@ -11,14 +11,6 @@ import "sandbox/policy/mojom/context.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
 
-// The file that is part of the language package.
-struct OnDeviceTranslationLanguagePackageFile {
-  // The relative path of the file within the language package.
-  mojo_base.mojom.FilePath relative_path;
-  // The read only file handle of the file.
-  mojo_base.mojom.ReadOnlyFile file;
-};
-
 // The language package information of the TranslateKit library.
 // Normally, `language1` and `language2` are input from hard-coded dictionary
 // information within Chromium, but they can also be specified from the command
@@ -30,14 +22,36 @@ struct OnDeviceTranslationLanguagePackage {
   // The second ISO 639 language code of the language pair (eg:"en"). This can
   // either be both source or target language.
   string language2;
-  // The list of files that are part of the language package.
-  array<OnDeviceTranslationLanguagePackageFile> files;
+};
+
+// The interface that provides file operations for the OnDeviceTranslation
+// service. This interface is implemented in the browser process and its methods
+// are called from the OnDeviceTranslation service.
+// Note: The translation library performs file operations synchronously,
+// necessitating the use of synchronous IPC methods.
+interface FileOperationProxy {
+  // Returns if the file exists and whether it is a directory.
+  // `package_index` is the index of the language package in the config.
+  // `relative_path` is the relative path in the language package.
+  [Sync] FileExists(uint32 package_index,
+                    mojo_base.mojom.FilePath relative_path)
+      => (bool exists, bool is_directory);
+
+  // Returns the file handle of the file. If the file does not exist, it will
+  // return an invalid handle.
+  // `package_index` is the index of the language package in the config.
+  // `relative_path` is the relative path in the language package.
+  [Sync] Open(uint32 package_index,
+              mojo_base.mojom.FilePath relative_path)
+      => (mojo_base.mojom.ReadOnlyFile? file);
 };
 
 // The list of language package information.
 struct OnDeviceTranslationServiceConfig {
   // The list of language packages.
   array<OnDeviceTranslationLanguagePackage> packages;
+  // The file operation proxy used by the service.
+  pending_remote<FileOperationProxy> file_operation_proxy;
 };
 
 

@@ -17,6 +17,7 @@
 #include "base/types/pass_key.h"
 #include "components/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
 #include "components/services/on_device_translation/translate_kit_structs.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace on_device_translation {
 
@@ -187,9 +188,7 @@ class TranslateKitClient {
                                         std::uintptr_t user_data);
   TranslatorTranslateFn translator_translate_func_;
 
-  mojom::OnDeviceTranslationServiceConfigPtr config_;
-  std::set<std::string> directories_;
-  std::map<std::string, base::File> files_;
+  mojo::Remote<mojom::FileOperationProxy> file_operation_proxy_;
 };
 
 }  // namespace on_device_translation

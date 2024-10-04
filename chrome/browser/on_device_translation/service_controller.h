@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/no_destructor.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
 #include "components/services/on_device_translation/public/mojom/translator.mojom.h"
@@ -54,6 +55,8 @@ class OnDeviceTranslationServiceController {
  private:
   friend base::NoDestructor<OnDeviceTranslationServiceController>;
 
+  class FileOperationProxyImpl;
+
   // The information of a language pack.
   struct LanguagePackInfo {
     std::string language1;
@@ -79,24 +82,13 @@ class OnDeviceTranslationServiceController {
   // Called when the language pack key pref is changed.
   void OnLanguagePackKeyPrefChanged(const std::string& pref_name);
 
-  // Starts opening the language pack files.
-  void StartOpeningLanguagePackFiles();
-
-  // Opens the language pack files on the background thread.
-  static on_device_translation::mojom::OnDeviceTranslationServiceConfigPtr
-  OpenLanguagePackFilesOnBackgrond(std::vector<LanguagePackInfo> packages);
-
-  // Called when the language packages are opened.
-  void OnLauguagePackagesOpened(
-      on_device_translation::mojom::OnDeviceTranslationServiceConfigPtr);
+  // Send the service config to the translation service.
+  void SendServiceConfig();
 
   // Get a list of LanguagePackInfo from the command line flag
   // `--translate-kit-packages`.
   static std::optional<std::vector<LanguagePackInfo>>
   GetLanguagePackInfoFromCommandLine();
-
-  // Whether the initial language packages are passed to the service.
-  bool initial_config_passed_ = false;
 
   // TODO(crbug.com/335374928): implement the error handling for the translation
   // service crash.
@@ -110,7 +102,10 @@ class OnDeviceTranslationServiceController {
   // line flag `--translate-kit-packages` is not set.
   const std::optional<std::vector<LanguagePackInfo>>
       language_packs_from_command_line_;
-  std::vector<base::OnceClosure> pending_tasks_;
+  // The file operation proxy to access the files on disk. This is deleted on
+  // a background task runner.
+  std::unique_ptr<FileOperationProxyImpl, base::OnTaskRunnerDeleter>
+      file_operation_proxy_;
 };
 
 #endif  // CHROME_BROWSER_ON_DEVICE_TRANSLATION_SERVICE_CONTROLLER_H_

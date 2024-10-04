@@ -16,6 +16,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/services/on_device_translation/proto/translate_kit_api.pb.h"
 #include "components/services/on_device_translation/public/cpp/features.h"
@@ -63,6 +64,44 @@ uint64_t ReadOnlyMemoryRegionLength(std::uintptr_t memory_map_ptr,
   CHECK(memory_map_ptr);
   return reinterpret_cast<base::MemoryMappedFile*>(memory_map_ptr)->length();
 }
+
+bool ParseFilePath(const char* file_name,
+                   size_t file_name_size,
+                   uint32_t& package_index,
+                   base::FilePath& relative_path) {
+  std::string path(file_name, file_name_size);
+  // The TranslateKit only use ASCII paths.
+  CHECK(base::IsStringASCII(path));
+#if BUILDFLAG(IS_WIN)
+  base::ReplaceChars(path, "/", "\\", &path);
+#endif  // BUILDFLAG(IS_WIN)
+  base::FilePath virtual_path = base::FilePath::FromASCII(path);
+  // The TranslateKit doesn't use '..'.
+  CHECK(!virtual_path.ReferencesParent());
+  // The TranslateKit must use an absolute path.
+  CHECK(virtual_path.IsAbsolute());
+  const std::vector<base::FilePath::StringType> components =
+      virtual_path.GetComponents();
+#if BUILDFLAG(IS_WIN)
+  // Windows:  "X:\0\bar"  ->  [ "X:", "\\", "0", "bar" ]
+  //                                         ^^^ : component_idx = 2
+  size_t component_idx = 2;
+#else
+  // Posix:  "/0/bar"  ->  [ "/", "0", "bar" ]
+  //                              ^^^ : component_idx = 1
+  size_t component_idx = 1;
+#endif  // BUILDFLAG(IS_WIN)
+  CHECK_GT(components.size(), component_idx + 1);
+  CHECK(base::StringToUint(components[component_idx], &package_index));
+  ++component_idx;
+  base::FilePath result;
+  for (; component_idx < components.size(); ++component_idx) {
+    result = result.Append(components[component_idx]);
+  }
+  relative_path = result;
+  return true;
+}
+
 }  // namespace
 
 // static
@@ -139,13 +178,10 @@ void TranslateKitClient::SetConfig(
   if (!MaybeInitialize()) {
     return;
   }
-  config_ = std::move(config);
-  directories_.clear();
-  files_.clear();
-
+  file_operation_proxy_.Bind(std::move(config->file_operation_proxy));
   chrome::on_device_translation::TranslateKitLanguagePackageConfig config_proto;
   size_t index = 0;
-  for (const auto& package : config_->packages) {
+  for (const auto& package : config->packages) {
     // Generate a virtual absolute file path for the package.
     // On Windows, set the package path to a fake drive letter 'X:' to avoid
     // the file path validation in the TranslateKit.
@@ -159,19 +195,6 @@ void TranslateKitClient::SetConfig(
     new_package->set_language1(package->language1);
     new_package->set_language2(package->language2);
     new_package->set_package_path(package_path);
-
-    for (const auto& file : package->files) {
-      // Calling AsUTF8Unsafe() is safe here because we have already checked the
-      // file name is ASCII in the browser process.
-      // We intentionally use '/' for the directory separator even on Windows,
-      // because TranslateKit uses '/' as the directory separator.
-      const std::string file_path =
-          base::StrCat({package_path, "/", file->relative_path.AsUTF8Unsafe()});
-      const std::size_t found = file_path.rfind('/');
-      CHECK(found != std::string::npos);
-      directories_.insert(file_path.substr(0, found));
-      files_[file_path] = std::move(file->file);
-    }
   }
 
   const std::string packages_str = config_proto.SerializeAsString();
@@ -276,18 +299,18 @@ bool TranslateKitClient::FileExists(const char* file_name,
 bool TranslateKitClient::FileExistsImpl(const char* file_name,
                                         size_t file_name_size,
                                         bool* is_directory) {
-  std::string file_name_str(file_name, file_name_size);
-  if (!config_) {
+  if (!file_operation_proxy_) {
     return false;
   }
-  if (directories_.contains(file_name_str)) {
-    *is_directory = true;
-    return true;
+  uint32_t package_index = 0;
+  base::FilePath relative_path;
+  if (!ParseFilePath(file_name, file_name_size, package_index, relative_path)) {
+    return false;
   }
-  if (files_.find(file_name_str) != files_.end()) {
-    return true;
-  }
-  return false;
+  bool exists = false;
+  file_operation_proxy_->FileExists(package_index, relative_path, &exists,
+                                    is_directory);
+  return exists;
 }
 
 // static
@@ -304,14 +327,23 @@ std::uintptr_t TranslateKitClient::OpenForReadOnlyMemoryMap(
 std::uintptr_t TranslateKitClient::OpenForReadOnlyMemoryMapImpl(
     const char* file_name,
     size_t file_name_size) {
-  std::string file_name_str(file_name, file_name_size);
-  auto it = files_.find(file_name_str);
-  if (it != files_.end()) {
-    std::unique_ptr<base::MemoryMappedFile> mapped_file =
-        std::make_unique<base::MemoryMappedFile>();
-    if (mapped_file->Initialize(it->second.Duplicate())) {
-      return reinterpret_cast<std::uintptr_t>(mapped_file.release());
-    }
+  if (!file_operation_proxy_) {
+    return 0;
+  }
+  uint32_t package_index = 0;
+  base::FilePath relative_path;
+  if (!ParseFilePath(file_name, file_name_size, package_index, relative_path)) {
+    return 0;
+  }
+  base::File file;
+  file_operation_proxy_->Open(package_index, relative_path, &file);
+  if (!file.IsValid()) {
+    return 0;
+  }
+  std::unique_ptr<base::MemoryMappedFile> mapped_file =
+      std::make_unique<base::MemoryMappedFile>();
+  if (mapped_file->Initialize(std::move(file))) {
+    return reinterpret_cast<std::uintptr_t>(mapped_file.release());
   }
   return 0;
 }

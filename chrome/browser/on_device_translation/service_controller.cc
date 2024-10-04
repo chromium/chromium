@@ -6,6 +6,7 @@
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/no_destructor.h"
@@ -29,6 +30,8 @@
 #include "components/services/on_device_translation/public/mojom/translator.mojom.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_host_passkeys.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
@@ -37,8 +40,8 @@
 using on_device_translation::kLanguagePackComponentConfigMap;
 using on_device_translation::LanguagePackKey;
 using on_device_translation::ToLanguageCode;
+using on_device_translation::mojom::FileOperationProxy;
 using on_device_translation::mojom::OnDeviceTranslationLanguagePackage;
-using on_device_translation::mojom::OnDeviceTranslationLanguagePackageFile;
 using on_device_translation::mojom::OnDeviceTranslationLanguagePackagePtr;
 using on_device_translation::mojom::OnDeviceTranslationServiceConfig;
 using on_device_translation::mojom::OnDeviceTranslationServiceConfigPtr;
@@ -91,6 +94,67 @@ std::set<LanguagePackKey> GetInstalledLanguagePacks() {
 }
 
 }  // namespace
+
+// Implementation of FileOperationProxy. It is used to provide file operations
+// to the OnDeviceTranslationService. This is created on the UI thread and
+// destroyed on the background thread of the passed `task_runner`.
+class OnDeviceTranslationServiceController::FileOperationProxyImpl
+    : public FileOperationProxy {
+ public:
+  FileOperationProxyImpl(
+      mojo::PendingReceiver<FileOperationProxy> proxy_receiver,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      std::vector<base::FilePath> package_pathes)
+      : receiver_(this, std::move(proxy_receiver), task_runner),
+        package_pathes_(std::move(package_pathes)) {}
+  ~FileOperationProxyImpl() override = default;
+
+  // FileOperationProxy implementation:
+  void FileExists(uint32_t package_index,
+                  const base::FilePath& relative_path,
+                  FileExistsCallback callback) override {
+    const base::FilePath file_path = GetFilePath(package_index, relative_path);
+    if (file_path.empty()) {
+      // Invalid `path` was passed.
+      std::move(callback).Run(/*exists=*/false, /*is_directory=*/false);
+      return;
+    }
+    if (!base::PathExists(file_path)) {
+      // File doesn't exist.
+      std::move(callback).Run(/*exists=*/false, /*is_directory=*/false);
+      return;
+    }
+    std::move(callback).Run(
+        /*exists=*/true,
+        /*is_directory=*/base::DirectoryExists(file_path));
+  }
+  void Open(uint32_t package_index,
+            const base::FilePath& relative_path,
+            OpenCallback callback) override {
+    const base::FilePath file_path = GetFilePath(package_index, relative_path);
+    std::move(callback).Run(
+        file_path.empty() ? base::File()
+                          : base::File(file_path, base::File::FLAG_OPEN |
+                                                      base::File::FLAG_READ));
+  }
+
+ private:
+  base::FilePath GetFilePath(uint32_t package_index,
+                             const base::FilePath& relative_path) {
+    if (package_index >= package_pathes_.size()) {
+      // Invalid package index.
+      return base::FilePath();
+    }
+    if (relative_path.IsAbsolute() || relative_path.ReferencesParent()) {
+      // Invalid relative path.
+      return base::FilePath();
+    }
+    return package_pathes_[package_index].Append(relative_path);
+  }
+
+  mojo::Receiver<FileOperationProxy> receiver_{this};
+  std::vector<base::FilePath> package_pathes_;
+};
 
 // static
 base::FilePath
@@ -158,7 +222,8 @@ OnDeviceTranslationServiceController::GetLanguagePackInfoFromCommandLine() {
 }
 
 OnDeviceTranslationServiceController::OnDeviceTranslationServiceController()
-    : language_packs_from_command_line_(GetLanguagePackInfoFromCommandLine()) {
+    : language_packs_from_command_line_(GetLanguagePackInfoFromCommandLine()),
+      file_operation_proxy_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {
   // Initialize the pref change registrar.
   pref_change_registrar_.Init(g_browser_process->local_state());
   // Start listening to pref changes for language pack keys.
@@ -195,7 +260,7 @@ OnDeviceTranslationServiceController::OnDeviceTranslationServiceController()
               content::ServiceProcessHostPreloadLibraries::GetPassKey())
 #endif
           .Pass());
-  StartOpeningLanguagePackFiles();
+  SendServiceConfig();
 }
 
 OnDeviceTranslationServiceController::~OnDeviceTranslationServiceController() =
@@ -209,15 +274,6 @@ void OnDeviceTranslationServiceController::CreateTranslator(
   MaybeTriggerLanguagePackInstall(source_lang, target_lang);
   // TODO(crbug.com/358030919): Implement a logic to defer the CreateTranslator
   // IPC call when a new language pack was installed.
-  if (!initial_config_passed_) {
-    // Queue the task to `pending_tasks_` until the initial configuration is
-    // sent to the service.
-    pending_tasks_.emplace_back(
-        base::BindOnce(&OnDeviceTranslationServiceController::CreateTranslator,
-                       base::Unretained(this), source_lang, target_lang,
-                       std::move(receiver), std::move(callback)));
-    return;
-  }
   service_remote_->CreateTranslator(source_lang, target_lang,
                                     std::move(receiver), std::move(callback));
 }
@@ -229,14 +285,6 @@ void OnDeviceTranslationServiceController::CanTranslate(
   MaybeTriggerLanguagePackInstall(source_lang, target_lang);
   // TODO(crbug.com/358030919): Implement a logic to defer the CanTranslate
   // IPC call when a new language pack was installed.
-  if (!initial_config_passed_) {
-    // Queue the task to `pending_tasks_` until the initial configuration is
-    // sent to the service.
-    pending_tasks_.emplace_back(base::BindOnce(
-        &OnDeviceTranslationServiceController::CanTranslate,
-        base::Unretained(this), source_lang, target_lang, std::move(callback)));
-    return;
-  }
   service_remote_->CanTranslate(source_lang, target_lang, std::move(callback));
 }
 
@@ -311,90 +359,37 @@ void OnDeviceTranslationServiceController::RegisterLanguagePackComponent(
 // Called when the language pack key pref is changed.
 void OnDeviceTranslationServiceController::OnLanguagePackKeyPrefChanged(
     const std::string& pref_name) {
-  StartOpeningLanguagePackFiles();
+  SendServiceConfig();
 }
 
-// Start opening the language pack files.
-void OnDeviceTranslationServiceController::StartOpeningLanguagePackFiles() {
-  scoped_refptr<base::SequencedTaskRunner> task_runner =
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
-  task_runner->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&OnDeviceTranslationServiceController::
-                         OpenLanguagePackFilesOnBackgrond,
-                     GetLanguagePackInfo()),
-      base::BindOnce(
-          &OnDeviceTranslationServiceController::OnLauguagePackagesOpened,
-          base::Unretained(this)));
-}
-
-// static
-// Opens the language pack files on the background thread.
-OnDeviceTranslationServiceConfigPtr
-OnDeviceTranslationServiceController::OpenLanguagePackFilesOnBackgrond(
-    std::vector<LanguagePackInfo> packages) {
+// Sends config to the service.
+void OnDeviceTranslationServiceController::SendServiceConfig() {
+  const auto packages = GetLanguagePackInfo();
   auto config = OnDeviceTranslationServiceConfig::New();
+
+  std::vector<base::FilePath> package_pathes;
   for (const auto& package : packages) {
     auto mojo_package = OnDeviceTranslationLanguagePackage::New();
     mojo_package->language1 = package.language1;
     mojo_package->language2 = package.language2;
-    // Retrieves all the files in the sub-directories. The language package
-    // files are stored in the sub-directories of the package path.
-    base::FileEnumerator(package.package_path,
-                         /*recursive=*/false, base::FileEnumerator::DIRECTORIES)
-        .ForEach([&](const base::FilePath& directory_path) {
-          // Ignore the directories that are not ASCII.
-          if (!base::IsStringASCII(directory_path.BaseName().value())) {
-            return;
-          }
-          base::FileEnumerator(directory_path,
-                               /*recursive=*/false, base::FileEnumerator::FILES)
-              .ForEach([&](const base::FilePath& file_path) {
-                // Ignore the files that are not ASCII.
-                if (!base::IsStringASCII(file_path.BaseName().value())) {
-                  return;
-                }
-                auto file = base::File(
-                    file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-                if (file.IsValid()) {
-                  // Calling AsUTF8Unsafe() is safe here because we have already
-                  // checked the file name is ASCII.
-                  // We intentionally use '/' for the directory separator even
-                  // on Windows, because TranslateKit uses '/' as the directory
-                  // separator.
-                  const std::string file_path_str =
-                      base::StrCat({directory_path.BaseName().AsUTF8Unsafe(),
-                                    "/", file_path.BaseName().AsUTF8Unsafe()});
-                  mojo_package->files.push_back(
-                      OnDeviceTranslationLanguagePackageFile::New(
-                          base::FilePath::FromASCII(file_path_str),
-                          std::move(file)));
-                } else {
-                  LOG(ERROR) << "Invalid " << file_path;
-                }
-              });
-        });
     config->packages.push_back(std::move(mojo_package));
+    package_pathes.push_back(package.package_path);
   }
-  return config;
-}
-
-// Called when the language packages are opened.
-void OnDeviceTranslationServiceController::OnLauguagePackagesOpened(
-    OnDeviceTranslationServiceConfigPtr config) {
-  // Note: we call SetServiceConfig() even when `initial_config_passed_` is set.
-  // This is intended to notify the new language pack component update.
+  mojo::PendingReceiver<FileOperationProxy> proxy_receiver =
+      config->file_operation_proxy.InitWithNewPipeAndPassReceiver();
   service_remote_->SetServiceConfig(std::move(config));
-  if (initial_config_passed_) {
-    return;
-  }
-  // Runs queued tasks after sending the config to the service.
-  initial_config_passed_ = true;
-  auto tasks = std::move(pending_tasks_);
-  for (auto& task : tasks) {
-    std::move(task).Run();
-  }
+
+  // Create a task runner to run the FileOperationProxy.
+  scoped_refptr<base::SequencedTaskRunner> task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
+  // Create the FileOperationProxy which lives in the background thread of
+  // `task_runner`.
+  file_operation_proxy_ =
+      std::unique_ptr<FileOperationProxyImpl, base::OnTaskRunnerDeleter>(
+          new FileOperationProxyImpl(std::move(proxy_receiver), task_runner,
+                                     std::move(package_pathes)),
+          base::OnTaskRunnerDeleter(task_runner));
 }
 
 // static
