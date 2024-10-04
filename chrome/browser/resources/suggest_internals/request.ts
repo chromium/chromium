@@ -81,6 +81,9 @@ export class SuggestRequestElement extends PolymerElement {
   }
 
   private computePageClassification_(): string {
+    if (!this.request.url.url) {
+      return '';
+    }
     // Find pgcl value in request url.
     const url = new URL(this.request.url.url);
     const queryMatches = url.search.match(/pgcl=(?<pgcl>[^&]*)/);
