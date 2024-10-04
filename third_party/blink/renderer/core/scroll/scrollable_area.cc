@@ -47,13 +47,13 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/html/anchor_element_viewport_position_tracker.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
-#include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -1219,9 +1219,10 @@ void ScrollableArea::OnScrollFinished(bool scroll_did_end) {
       active_smooth_scroll_type_.reset();
       UpdateSnappedTargetsAndEnqueueScrollSnapChange();
       if (Node* node = EventTargetNode()) {
-        if (auto* anchor_element_interaction_tracker =
-                node->GetDocument().GetAnchorElementInteractionTracker()) {
-          anchor_element_interaction_tracker->OnScrollEnd();
+        if (auto* viewport_position_tracker =
+                AnchorElementViewportPositionTracker::MaybeGetOrCreateFor(
+                    node->GetDocument())) {
+          viewport_position_tracker->OnScrollEnd();
         }
         if (RuntimeEnabledFeatures::ScrollEndEventsEnabled()) {
           node->GetDocument().EnqueueScrollEndEventForNode(node);

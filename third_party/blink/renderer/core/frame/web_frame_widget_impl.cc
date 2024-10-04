@@ -97,6 +97,7 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/html/anchor_element_viewport_position_tracker.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/document_fenced_frames.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
@@ -113,7 +114,6 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
-#include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
 #include "third_party/blink/renderer/core/page/context_menu_controller.h"
@@ -1321,9 +1321,10 @@ void WebFrameWidgetImpl::SendEndOfScrollEvents(
     scrollable_area->SetImplSnapStrategy(nullptr);
   }
 
-  if (auto* anchor_element_interaction_tracker =
-          target_node->GetDocument().GetAnchorElementInteractionTracker()) {
-    anchor_element_interaction_tracker->OnScrollEnd();
+  if (auto* viewport_position_tracker =
+          AnchorElementViewportPositionTracker::MaybeGetOrCreateFor(
+              target_node->GetDocument())) {
+    viewport_position_tracker->OnScrollEnd();
   }
 
   if (RuntimeEnabledFeatures::ScrollEndEventsEnabled()) {

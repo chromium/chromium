@@ -11,6 +11,7 @@
 #include "third_party/blink/public/mojom/preloading/anchor_element_interaction_host.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/html/anchor_element_viewport_position_tracker.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -22,8 +23,6 @@ namespace blink {
 
 class Document;
 class HTMLAnchorElementBase;
-class IntersectionObserver;
-class IntersectionObserverEntry;
 class PointerEvent;
 
 // AnchorElementMetricsSender is responsible to send anchor element metrics to
@@ -38,25 +37,27 @@ class PointerEvent;
 //    AnchorElementMetricsSender::AddAnchorElement is called and a reference to
 //    the element is stored. The first time this happens, the sender is created,
 //    which registers itself for lifecycle callbacks.
-// 2) If any elements enter the viewport, the intersection observer will call
-//    AnchorElementMetricsSender::UpdateVisibleAnchors. Elements are collected
-//    in entered_viewport_messages_ and will be reported after the next layout.
-// 3) On the next layout, AnchorElementMetricsSender::DidFinishLifecycleUpdate
+// 2) On the next layout, AnchorElementMetricsSender::DidFinishLifecycleUpdate
 //    is called, and it goes over the collected anchor elements. Elements that
 //    are visible are reported to the browser via ReportNewAnchorElements. We
-//    also may add an element to the intersection observer that watches for
-//    elements entering/leaving the viewport. The anchor elements collected in
-//    AnchorElementMetricsSender are all dropped. In particular, this drops
-//    elements that are not visible. They will never be reported even if they
-//    become visible later, unless the are reinserted into the DOM. This is not
-//    ideal, but simpler, keeps resource usage low, and seems to work well
-//    enough on the sites I've looked at. Also, elements that entered the
+//    also may report an element to AnchorElementViewportPositionTracker that
+//    watches for elements entering/leaving the viewport. The anchor elements
+//    collected in AnchorElementMetricsSender are all dropped. In particular,
+//    this drops elements that are not visible. They will never be reported even
+//    if they become visible later, unless the are reinserted into the DOM. This
+//    is not ideal, but simpler, keeps resource usage low, and seems to work
+//    well enough on the sites I've looked at. Also, elements that entered the
 //    viewport will be reported using ReportAnchorElementsEnteredViewport. We
 //    stop observing lifecycle changes until the next anchor being added or
 //    entering/existing the viewport, when we again wait for the next layout.
+// 3) AnchorElementMetricsSender relies on AnchorElementViewportPositionTracker
+//    to get notified about when anchors enter/leave viewport. Elements that
+//    enter the viewport are collected in entered_viewport_messages_ and will
+//    be reported after the next layout.
 class CORE_EXPORT AnchorElementMetricsSender final
     : public GarbageCollected<AnchorElementMetricsSender>,
       public LocalFrameView::LifecycleNotificationObserver,
+      public AnchorElementViewportPositionTracker::Observer,
       public Supplement<Document> {
  public:
   static const char kSupplementName[];
@@ -101,25 +102,10 @@ class CORE_EXPORT AnchorElementMetricsSender final
   void SetTickClockForTesting(const base::TickClock* clock);
   void SetNowAsNavigationStartForTesting();
   void FireUpdateTimerForTesting();
-  IntersectionObserver* GetIntersectionObserverForTesting();
-
-  // Creates AnchorElementMetrics from anchor element if possible. Then records
-  // the metrics, and sends them to the browser process.
-  void UpdateVisibleAnchors(
-      const HeapVector<Member<IntersectionObserverEntry>>& entries);
 
   // Report the pointer event for the anchor element.
   void MaybeReportAnchorElementPointerEvent(HTMLAnchorElementBase& element,
                                             const PointerEvent& pointer_event);
-
-  // Record and send metrics to the browser process about the position of
-  // tracked anchor elements in the viewport.
-  void MaybeReportAnchorElementsPositionOnScrollEnd();
-
-  // Called when a pointerdown is about to be dispatched to any Node in |this|'s
-  // document or local subframes. Record the location of the pointer event for
-  // future metrics computation.
-  void RecordPointerDown(const PointerEvent& pointer_event);
 
   void Trace(Visitor*) const override;
 
@@ -153,9 +139,13 @@ class CORE_EXPORT AnchorElementMetricsSender final
 
   void RegisterForLifecycleNotifications();
 
-  void PositionUpdateTimerFired(TimerBase*);
-
-  void ComputeAnchorElementsPositionUpdates();
+  // AnchorElementViewportPositionTracker::Observer overrides
+  void ViewportIntersectionUpdate(
+      const HeapVector<Member<const HTMLAnchorElementBase>>& entered_viewport,
+      const HeapVector<Member<const HTMLAnchorElementBase>>& left_viewport)
+      override;
+  void AnchorPositionsUpdated(
+      HeapVector<Member<AnchorPositionUpdate>>& position_updates) override;
 
   // Mock timestamp for navigation start used for testing.
   std::optional<base::TimeTicks> mock_navigation_start_for_testing_;
@@ -197,11 +187,6 @@ class CORE_EXPORT AnchorElementMetricsSender final
 
   // Cached field trial param values.
   const int random_anchor_sampling_period_;
-  const wtf_size_t max_number_of_observations_;
-  const base::TimeDelta intersection_observer_delay_;
-
-  Member<IntersectionObserver> intersection_observer_;
-  HeapHashSet<WeakMember<const HTMLAnchorElementBase>> anchors_in_viewport_;
 
   WTF::Vector<mojom::blink::AnchorElementEnteredViewportPtr>
       entered_viewport_messages_;
@@ -225,49 +210,6 @@ class CORE_EXPORT AnchorElementMetricsSender final
   const base::TickClock* clock_;
 
   bool is_registered_for_lifecycle_notifications_ = false;
-
-  // The y-coordinate of the last pointerdown (in the visual viewport coordinate
-  // space and offset by the height of the browser top-controls), reported in
-  // |RecordPointerDown|. Used to compute |position_update_messages_|.
-  std::optional<float> last_pointer_down_ = std::nullopt;
-  // Indicates that we should populate |position_update_messages_| in
-  // |DidFinishLifecycleUpdate|.
-  bool should_compute_positions_after_next_lifecycle_update_ = false;
-  // Used to timeout waiting for |UpdateVisibleAnchors| being called after
-  // |MaybeReportAnchorElementsPositionOnScrollEnd| is called. The timer is
-  // stopped when |UpdateVisibleAnchors| is called.
-  HeapTaskRunnerTimer<AnchorElementMetricsSender> position_update_timer_;
-
-  // These two sets, together, contain the anchors sampled in to be observed
-  // by `intersection_observer_, ordered by their priority (currently,
-  // `ratio_area`).
-  //
-  // The top `max_number_of_observations_` entries are observed at any one
-  // time (and exist in `observed_anchors_`).
-  //
-  //  non_observed_anchors_     observed_anchors_ (size capped)
-  // +-----------------------+ +-------------------------------+
-  // | .1 A1 | .2 A2 | .3 A3 | | .4 A4 | .5 A5 | .6 A6 | .7 A7 |
-  // +-----------------------+ +-------------------------------+
-  //
-  // If an anchor is added, the first element of `observed_anchors_`
-  // might be moved to `non_observed_anchors_` to make room.
-  // If an observed anchor is removed, the last element of
-  // `non_observed_anchors_` is moved to `observed_anchors_`
-  struct AnchorObservation {
-    // mojom::blink::AnchorElementMetrics::ratio_area * 100 (see documentation
-    // in navigation_predictor.mojom).
-    int percent_area;
-    // DOMNodeId for the anchor this AnchorObservation is created for.
-    DOMNodeId dom_node_id;
-
-    bool operator==(const AnchorObservation&) const = default;
-    auto operator<=>(const AnchorObservation&) const = default;
-  };
-  std::set<AnchorObservation> observed_anchors_
-      ALLOW_DISCOURAGED_TYPE("WTF::HashSet lacks key sorting.");
-  std::set<AnchorObservation> not_observed_anchors_
-      ALLOW_DISCOURAGED_TYPE("WTF::HashSet lacks key sorting.");
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

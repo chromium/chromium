@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/frame/screen.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics_sender.h"
+#include "third_party/blink/renderer/core/html/anchor_element_viewport_position_tracker.h"
 #include "third_party/blink/renderer/core/pointer_type_names.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 
@@ -246,9 +247,10 @@ void AnchorElementInteractionTracker::OnPointerEvent(
     last_pointer_down_locations_[1] = last_pointer_down_locations_[0];
     last_pointer_down_locations_[0] = pointer_event.screenY();
 
-    if (auto* sender = AnchorElementMetricsSender::GetForFrame(
-            GetDocument()->GetFrame())) {
-      sender->RecordPointerDown(pointer_event);
+    if (auto* viewport_position_tracker =
+            AnchorElementViewportPositionTracker::MaybeGetOrCreateFor(
+                *GetDocument())) {
+      viewport_position_tracker->RecordPointerDown(pointer_event);
     }
   }
 
@@ -345,13 +347,6 @@ void AnchorElementInteractionTracker::OnClickEvent(
                       ".ClickDistanceFromPreviousPointerDown",
                       orientation_pattern}),
         shifted_normalized_click_distance);
-  }
-}
-
-void AnchorElementInteractionTracker::OnScrollEnd() {
-  if (auto* sender =
-          AnchorElementMetricsSender::GetForFrame(GetDocument()->GetFrame())) {
-    sender->MaybeReportAnchorElementsPositionOnScrollEnd();
   }
 }
 

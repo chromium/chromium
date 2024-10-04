@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics.h"
+#include "third_party/blink/renderer/core/html/anchor_element_viewport_position_tracker.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
@@ -283,7 +284,7 @@ class AnchorElementMetricsSenderTest : public SimTest {
 
   void ProcessPositionUpdates() {
     platform_->RunForPeriodSeconds(ConvertDOMHighResTimeStampToSeconds(
-        AnchorElementMetricsSender::From(GetDocument())
+        AnchorElementViewportPositionTracker::MaybeGetOrCreateFor(GetDocument())
             ->GetIntersectionObserverForTesting()
             ->delay()));
     GetDocument().View()->UpdateAllLifecyclePhasesForTest();
@@ -1078,8 +1079,9 @@ TEST_F(AnchorElementMetricsSenderTest, MaxIntersectionObservations) {
 
   ProcessEvents(3);
   ASSERT_EQ(1u, hosts_.size());
-  auto* intersection_observer = AnchorElementMetricsSender::From(GetDocument())
-                                    ->GetIntersectionObserverForTesting();
+  auto* intersection_observer =
+      AnchorElementViewportPositionTracker::MaybeGetOrCreateFor(GetDocument())
+          ->GetIntersectionObserverForTesting();
   EXPECT_EQ(hosts_[0]->elements_.size(), 3u);
   EXPECT_EQ(intersection_observer->Observations().size(), 3u);
 
@@ -1146,8 +1148,9 @@ TEST_F(AnchorElementMetricsSenderTest, AnchorUnobservedByIntersectionObserver) {
     <body></body>
   )html");
 
-  auto* intersection_observer = AnchorElementMetricsSender::From(GetDocument())
-                                    ->GetIntersectionObserverForTesting();
+  auto* intersection_observer =
+      AnchorElementViewportPositionTracker::MaybeGetOrCreateFor(GetDocument())
+          ->GetIntersectionObserverForTesting();
 
   auto* anchor_1 = AddAnchor("one", 100);
   ProcessEvents(1);
@@ -1217,8 +1220,9 @@ TEST_F(AnchorElementMetricsSenderTest,
   ProcessEvents(1);
   ASSERT_EQ(1u, hosts_.size());
   auto* host = hosts_[0].get();
-  auto* intersection_observer = AnchorElementMetricsSender::From(GetDocument())
-                                    ->GetIntersectionObserverForTesting();
+  auto* intersection_observer =
+      AnchorElementViewportPositionTracker::MaybeGetOrCreateFor(GetDocument())
+          ->GetIntersectionObserverForTesting();
 
   EXPECT_EQ(host->elements_.size(), 1u);
   EXPECT_EQ(intersection_observer->Observations().size(), 1u);
@@ -1247,7 +1251,7 @@ TEST_F(AnchorElementMetricsSenderTest, IntersectionObserverDelay) {
   main_resource.Complete("");
 
   IntersectionObserver* intersection_observer =
-      AnchorElementMetricsSender::From(GetDocument())
+      AnchorElementViewportPositionTracker::MaybeGetOrCreateFor(GetDocument())
           ->GetIntersectionObserverForTesting();
   EXPECT_EQ(intersection_observer->delay(), 252.0);
 }

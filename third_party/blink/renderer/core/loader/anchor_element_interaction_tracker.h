@@ -85,7 +85,6 @@ class BLINK_EXPORT AnchorElementInteractionTracker
   void OnPointerEvent(EventTarget& target, const PointerEvent& pointer_event);
   void OnClickEvent(HTMLAnchorElementBase& anchor,
                     const MouseEvent& click_event);
-  void OnScrollEnd();
 
   void HoverTimerFired(TimerBase*);
   void Trace(Visitor* visitor) const;
