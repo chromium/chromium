@@ -200,7 +200,7 @@ const CGFloat kButtonAnimationDuration = 0.2f;
 
   // Progress bar.
   _progressBar.translatesAutoresizingMaskIntoConstraints = NO;
-  _progressBar.hidden = YES;
+  [_progressBar setHidden:YES animated:NO completion:nil];
   [_omniboxContainer addSubview:_progressBar];
 
   NSLayoutConstraint* omniboxLeadingConstraint =
