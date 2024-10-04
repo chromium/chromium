@@ -54,11 +54,9 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   TabGroupSyncServiceImpl(const TabGroupSyncServiceImpl&) = delete;
   TabGroupSyncServiceImpl& operator=(const TabGroupSyncServiceImpl&) = delete;
 
-  // Called to set a coordinator that will manage all interactions with the tab
-  // model UI layer.
-  void SetCoordinator(std::unique_ptr<TabGroupSyncCoordinator> coordinator);
-
   // TabGroupSyncService implementation.
+  void SetTabGroupSyncDelegate(
+      std::unique_ptr<TabGroupSyncDelegate> delegate) override;
   void AddGroup(SavedTabGroup group) override;
   void RemoveGroup(const LocalTabGroupID& local_id) override;
   void RemoveGroup(const base::Uuid& sync_id) override;
@@ -138,6 +136,11 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
 
   // For testing only.
   void SetIsInitializedForTesting(bool initialized) override;
+
+  // Called to set a coordinator that will manage all interactions with the tab
+  // model UI layer.
+  void SetCoordinator(std::unique_ptr<TabGroupSyncCoordinator> coordinator);
+
   SavedTabGroupModel* GetModelForTesting() { return model_.get(); }
 
  private:

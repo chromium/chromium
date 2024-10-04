@@ -10,6 +10,7 @@
 #import "components/password_manager/core/browser/sharing/fake_recipients_fetcher.h"
 #import "components/password_manager/ios/fake_bulk_leak_check_service.h"
 #import "components/plus_addresses/fake_plus_address_service.h"
+#import "components/saved_tab_groups/delegate/tab_group_sync_delegate.h"
 #import "components/saved_tab_groups/public/features.h"
 #import "components/saved_tab_groups/tab_group_sync_coordinator.h"
 #import "components/saved_tab_groups/tab_group_sync_coordinator_impl.h"
@@ -40,6 +41,9 @@ namespace tests_hook {
 
 class IOSFakeTabGroupSyncService : public tab_groups::FakeTabGroupSyncService {
  public:
+  void SetTabGroupSyncDelegate(
+      std::unique_ptr<tab_groups::TabGroupSyncDelegate> delegate) override;
+
   void SetCoordinator(
       std::unique_ptr<tab_groups::TabGroupSyncCoordinator> coordinator);
 
@@ -49,13 +53,18 @@ class IOSFakeTabGroupSyncService : public tab_groups::FakeTabGroupSyncService {
   std::unique_ptr<tab_groups::TabGroupSyncCoordinator> coordinator_;
 };
 
+void IOSFakeTabGroupSyncService::SetTabGroupSyncDelegate(
+    std::unique_ptr<tab_groups::TabGroupSyncDelegate> delegate) {
+  auto coordinator = std::make_unique<tab_groups::TabGroupSyncCoordinatorImpl>(
+      std::move(delegate), this);
+  SetCoordinator(std::move(coordinator));
+}
+
 void IOSFakeTabGroupSyncService::SetCoordinator(
     std::unique_ptr<tab_groups::TabGroupSyncCoordinator> coordinator) {
   CHECK(!coordinator_);
   coordinator_ = std::move(coordinator);
-  if (tab_groups::IsTabGroupSyncCoordinatorEnabled()) {
-    AddObserver(coordinator_.get());
-  }
+  AddObserver(coordinator_.get());
 }
 
 bool DisableAppGroupAccess() {

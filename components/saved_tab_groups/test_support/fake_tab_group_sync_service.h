@@ -19,6 +19,8 @@ class FakeTabGroupSyncService : public TabGroupSyncService {
   ~FakeTabGroupSyncService() override;
 
   // TabGroupSyncService override.
+  void SetTabGroupSyncDelegate(
+      std::unique_ptr<TabGroupSyncDelegate> delegate) override;
   void AddGroup(SavedTabGroup group) override;
   void RemoveGroup(const LocalTabGroupID& local_id) override;
   void RemoveGroup(const base::Uuid& sync_id) override;

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SAVED_TAB_GROUPS_TEST_SUPPORT_MOCK_TAB_GROUP_SYNC_SERVICE_H_
 #define COMPONENTS_SAVED_TAB_GROUPS_TEST_SUPPORT_MOCK_TAB_GROUP_SYNC_SERVICE_H_
 
+#include "components/saved_tab_groups/delegate/tab_group_sync_delegate.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -16,6 +17,9 @@ class MockTabGroupSyncService : public TabGroupSyncService {
   MockTabGroupSyncService();
   ~MockTabGroupSyncService() override;
 
+  MOCK_METHOD(void,
+              SetTabGroupSyncDelegate,
+              (std::unique_ptr<TabGroupSyncDelegate>));
   MOCK_METHOD(void, AddGroup, (SavedTabGroup));
   MOCK_METHOD(void, RemoveGroup, (const LocalTabGroupID&));
   MOCK_METHOD(void, RemoveGroup, (const base::Uuid&));

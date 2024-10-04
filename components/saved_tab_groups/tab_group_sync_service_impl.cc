@@ -16,6 +16,7 @@
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/saved_tab_groups/delegate/tab_group_sync_delegate.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/pref_names.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
@@ -29,6 +30,7 @@
 #include "components/saved_tab_groups/stats.h"
 #include "components/saved_tab_groups/sync_data_type_configuration.h"
 #include "components/saved_tab_groups/tab_group_sync_bridge_mediator.h"
+#include "components/saved_tab_groups/tab_group_sync_coordinator_impl.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/sync/base/account_pref_utils.h"
@@ -170,6 +172,13 @@ TabGroupSyncServiceImpl::GetSavedTabGroupControllerDelegate() {
 base::WeakPtr<syncer::DataTypeControllerDelegate>
 TabGroupSyncServiceImpl::GetSharedTabGroupControllerDelegate() {
   return sync_bridge_mediator_->GetSharedTabGroupControllerDelegate();
+}
+
+void TabGroupSyncServiceImpl::SetTabGroupSyncDelegate(
+    std::unique_ptr<TabGroupSyncDelegate> delegate) {
+  auto coordinator =
+      std::make_unique<TabGroupSyncCoordinatorImpl>(std::move(delegate), this);
+  SetCoordinator(std::move(coordinator));
 }
 
 void TabGroupSyncServiceImpl::AddGroup(SavedTabGroup group) {

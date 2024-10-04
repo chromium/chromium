@@ -42,6 +42,11 @@ TabGroupSyncServiceProxy::TabGroupSyncServiceProxy(
 
 TabGroupSyncServiceProxy::~TabGroupSyncServiceProxy() = default;
 
+void TabGroupSyncServiceProxy::SetTabGroupSyncDelegate(
+    std::unique_ptr<TabGroupSyncDelegate> delegate) {
+  NOTIMPLEMENTED();
+}
+
 void TabGroupSyncServiceProxy::AddGroup(SavedTabGroup group) {
   service_->model()->Add(std::move(group));
 }

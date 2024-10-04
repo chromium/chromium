@@ -30,6 +30,7 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace tab_groups {
+class TabGroupSyncDelegate;
 class TabGroupSyncMetricsLogger;
 
 // A RAII class that pauses local tab model observers when required.
@@ -101,6 +102,11 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   // Disallow copy/assign.
   TabGroupSyncService(const TabGroupSyncService&) = delete;
   TabGroupSyncService& operator=(const TabGroupSyncService&) = delete;
+
+  // Called to set a delegate that will manage all interactions with the tab
+  // model UI layer.
+  virtual void SetTabGroupSyncDelegate(
+      std::unique_ptr<TabGroupSyncDelegate> delegate) = 0;
 
   // Mutator methods invoked to notify the service about the local changes.
   // The service will notify the observers accordingly, i.e. notify sync to

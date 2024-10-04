@@ -29,10 +29,7 @@
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
-#include "components/saved_tab_groups/sync_data_type_configuration.h"
-#include "components/saved_tab_groups/tab_group_sync_coordinator_impl.h"
-#include "components/saved_tab_groups/tab_group_sync_metrics_logger_impl.h"
-#include "components/saved_tab_groups/tab_group_sync_service_impl.h"
+#include "components/saved_tab_groups/tab_group_sync_service_test_utils.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
@@ -91,31 +88,20 @@ class TabGroupSyncDelegateBrowserTest : public InProcessBrowserTest,
     auto model = std::make_unique<SavedTabGroupModel>();
     model_ = model.get();
 
-    auto saved_config = std::make_unique<SyncDataTypeConfiguration>(
-        std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
-            syncer::SAVED_TAB_GROUP,
-            base::BindRepeating(&syncer::ReportUnrecoverableError,
-                                chrome::GetChannel())),
-        DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
-
     syncer::DeviceInfoTracker* device_info_tracker =
         DeviceInfoSyncServiceFactory::GetForProfile(profile)
             ->GetDeviceInfoTracker();
-    auto metrics_logger =
-        std::make_unique<TabGroupSyncMetricsLoggerImpl>(device_info_tracker);
 
-    auto service = std::make_unique<TabGroupSyncServiceImpl>(
-        std::move(model), std::move(saved_config), nullptr, profile->GetPrefs(),
-        std::move(metrics_logger), nullptr, nullptr);
+    auto service = test::CreateTabGroupSyncService(
+        std::move(model), DataTypeStoreServiceFactory::GetForProfile(profile),
+        profile->GetPrefs(), device_info_tracker,
+        /*optimization_guide=*/nullptr,
+        /*identity_manager=*/nullptr);
 
     std::unique_ptr<TabGroupSyncDelegateDesktop> delegate =
         std::make_unique<TabGroupSyncDelegateDesktop>(service.get(), profile);
+    service->SetTabGroupSyncDelegate(std::move(delegate));
 
-    std::unique_ptr<TabGroupSyncCoordinatorImpl> coordinator =
-        std::make_unique<TabGroupSyncCoordinatorImpl>(std::move(delegate),
-                                                      service.get());
-
-    service->SetCoordinator(std::move(coordinator));
     service->SetIsInitializedForTesting(true);
     service_ = service.get();
     return std::move(service);
@@ -124,7 +110,7 @@ class TabGroupSyncDelegateBrowserTest : public InProcessBrowserTest,
   base::test::ScopedFeatureList features_;
   base::CallbackListSubscription subscription_;
   raw_ptr<SavedTabGroupModel> model_;
-  raw_ptr<TabGroupSyncServiceImpl> service_;
+  raw_ptr<TabGroupSyncService> service_;
 };
 
 IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,

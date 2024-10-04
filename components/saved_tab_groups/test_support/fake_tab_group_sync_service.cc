@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "components/saved_tab_groups/delegate/tab_group_sync_delegate.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
@@ -42,6 +43,9 @@ namespace tab_groups {
 FakeTabGroupSyncService::FakeTabGroupSyncService() = default;
 
 FakeTabGroupSyncService::~FakeTabGroupSyncService() = default;
+
+void FakeTabGroupSyncService::SetTabGroupSyncDelegate(
+    std::unique_ptr<TabGroupSyncDelegate> delegate) {}
 
 void FakeTabGroupSyncService::SaveGroup(SavedTabGroup group) {
   const base::Uuid sync_id = group.saved_guid();

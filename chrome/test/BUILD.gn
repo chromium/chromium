@@ -2195,6 +2195,7 @@ if (!is_android) {
       "//components/safe_browsing/core/common",
       "//components/safe_browsing/core/common/proto:client_model_proto",
       "//components/saved_tab_groups:core",
+      "//components/saved_tab_groups:service_test_utils",
       "//components/saved_tab_groups:tab_group_sync_bridge",
       "//components/search",
       "//components/security_interstitials/content:proto",
