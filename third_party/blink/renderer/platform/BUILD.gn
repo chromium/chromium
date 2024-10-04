@@ -1203,6 +1203,8 @@ component("platform") {
     "graphics/static_bitmap_image.h",
     "graphics/static_bitmap_image_to_video_frame_copier.cc",
     "graphics/static_bitmap_image_to_video_frame_copier.h",
+    "graphics/static_bitmap_image_transform.cc",
+    "graphics/static_bitmap_image_transform.h",
     "graphics/stroke_data.cc",
     "graphics/stroke_data.h",
     "graphics/styled_stroke_data.cc",
