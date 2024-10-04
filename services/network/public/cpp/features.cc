@@ -479,7 +479,7 @@ BASE_FEATURE(kTreatNullIPAsPublicAddressSpace,
 // resource request only if the request includes a DevTools request id.
 BASE_FEATURE(kCloneDevToolsConnectionOnlyIfRequested,
              "CloneDevToolsConnectionOnlyIfRequested",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kStorageAccessHeaders,
              "StorageAccessHeaders",
