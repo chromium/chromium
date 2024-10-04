@@ -30,6 +30,26 @@ public class ReorderDelegate {
     // Internal state.
     private boolean mInitialized;
 
+    // Reorder state
+    boolean mInReorderMode;
+    StripLayoutTab mInteractingTab;
+
+    boolean getInReorderMode() {
+        return mInReorderMode;
+    }
+
+    void setInReorderMode(boolean inReorderMode) {
+        mInReorderMode = inReorderMode;
+    }
+
+    StripLayoutTab getInteractingTab() {
+        return mInteractingTab;
+    }
+
+    void setInteractingTab(StripLayoutTab interactingTab) {
+        mInteractingTab = interactingTab;
+    }
+
     /**
      * Passes the dependencies needed in this delegate. Passed here as they aren't ready on
      * instantiation.
