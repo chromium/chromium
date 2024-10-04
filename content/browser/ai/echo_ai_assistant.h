@@ -26,8 +26,8 @@ class EchoAIAssistant : public blink::mojom::AIAssistant {
   void Prompt(const std::string& input,
               mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
                   pending_responder) override;
-  void Fork(mojo::PendingReceiver<blink::mojom::AIAssistant> session,
-            ForkCallback callback) override;
+  void Fork(mojo::PendingRemote<blink::mojom::AIManagerCreateAssistantClient>
+                client) override;
   void Destroy() override;
   void CountPromptTokens(const std::string& input,
                          CountPromptTokensCallback callback) override;

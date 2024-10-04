@@ -34,11 +34,10 @@ class AIManagerKeyedService : public KeyedService,
                    AIContextBoundObjectSet::ReceiverContext host);
   void CreateAssistantForCloning(
       base::PassKey<AIAssistant> pass_key,
-      mojo::PendingReceiver<blink::mojom::AIAssistant> receiver,
       blink::mojom::AIAssistantSamplingParamsPtr sampling_params,
       AIContextBoundObjectSet* context_bound_object_set,
       const AIAssistant::Context& context,
-      CreateAssistantCallback callback);
+      mojo::Remote<blink::mojom::AIManagerCreateAssistantClient> client_remote);
 
   size_t GetReceiversSizeForTesting() { return receivers_.size(); }
 
@@ -51,11 +50,8 @@ class AIManagerKeyedService : public KeyedService,
   // `blink::mojom::AIManager` implementation.
   void CanCreateAssistant(CanCreateAssistantCallback callback) override;
   void CreateAssistant(
-      mojo::PendingReceiver<blink::mojom::AIAssistant> receiver,
-      blink::mojom::AIAssistantSamplingParamsPtr sampling_params,
-      const std::optional<std::string>& system_prompt,
-      std::vector<blink::mojom::AIAssistantInitialPromptPtr> initial_prompts,
-      CreateAssistantCallback callback) override;
+      mojo::PendingRemote<blink::mojom::AIManagerCreateAssistantClient> client,
+      blink::mojom::AIAssistantCreateOptionsPtr options) override;
   void GetModelInfo(GetModelInfoCallback callback) override;
   void CreateWriter(
       mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client,
@@ -83,7 +79,6 @@ class AIManagerKeyedService : public KeyedService,
   // Creates an `AIAssistant`, either as a new session, or as a clone of
   // an existing session with its context copied.
   std::unique_ptr<AIAssistant> CreateAssistantInternal(
-      mojo::PendingReceiver<blink::mojom::AIAssistant> receiver,
       const blink::mojom::AIAssistantSamplingParamsPtr& sampling_params,
       AIContextBoundObjectSet* context_bound_object_set,
       const std::optional<const AIAssistant::Context>& context = std::nullopt);

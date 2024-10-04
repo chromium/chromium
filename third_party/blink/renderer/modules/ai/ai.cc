@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/modules/ai/ai_assistant_factory.h"
 #include "third_party/blink/renderer/modules/ai/ai_rewriter_factory.h"
 #include "third_party/blink/renderer/modules/ai/ai_summarizer_factory.h"
-#include "third_party/blink/renderer/modules/ai/ai_text_session.h"
 #include "third_party/blink/renderer/modules/ai/ai_writer_factory.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -21,15 +20,12 @@ namespace blink {
 AI::AI(ExecutionContext* context)
     : ExecutionContextClient(context),
       task_runner_(context->GetTaskRunner(TaskType::kInternalDefault)),
-      ai_remote_(context),
-      text_session_factory_(
-          MakeGarbageCollected<AITextSessionFactory>(context, task_runner_)) {}
+      ai_remote_(context) {}
 
 void AI::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   visitor->Trace(ai_remote_);
-  visitor->Trace(text_session_factory_);
   visitor->Trace(ai_assistant_factory_);
   visitor->Trace(ai_summarizer_factory_);
   visitor->Trace(ai_writer_factory_);

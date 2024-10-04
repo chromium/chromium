@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/ai/ai_assistant.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 
@@ -40,6 +41,29 @@ class AITestUtils {
 
    private:
     mojo::Receiver<blink::mojom::ModelStreamingResponder> receiver_{this};
+  };
+
+  class MockCreateAssistantClient
+      : public blink::mojom::AIManagerCreateAssistantClient {
+   public:
+    MockCreateAssistantClient();
+    ~MockCreateAssistantClient() override;
+    MockCreateAssistantClient(const MockCreateAssistantClient&) = delete;
+    MockCreateAssistantClient& operator=(const MockCreateAssistantClient&) =
+        delete;
+
+    mojo::PendingRemote<blink::mojom::AIManagerCreateAssistantClient>
+    BindNewPipeAndPassRemote();
+
+    MOCK_METHOD(void,
+                OnResult,
+                (mojo::PendingRemote<blink::mojom::AIAssistant> assistant,
+                 blink::mojom::AIAssistantInfoPtr info),
+                (override));
+
+   private:
+    mojo::Receiver<blink::mojom::AIManagerCreateAssistantClient> receiver_{
+        this};
   };
 
   class AITestBase : public ChromeRenderViewHostTestHarness {

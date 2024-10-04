@@ -90,23 +90,20 @@ interface AIManagerCreateSummarizerClient {
 
 // The manager that could create a new session for the model.
 interface AIManager {
-  // Returns if it is possible to create a text session. For example, when
+  // Returns if it is possible to create an assistant. For example, when
   // the service in charge of model loading and session creation is not
   // available, this should return false.
   CanCreateAssistant() => (ModelAvailabilityCheckResult result);
-  // Creates a new session and returns the text session info if the session is
-  // created successfully.
+  // Creates a new assistant.
   // Note that this could return nullptr even if the previous
   // `CanCreateAssistant()` returns `kReadily`, because some errors can only
-  // occur when we actually create the text session.
+  // occur when we actually create the assistant.
   // See the explainer (https://github.com/explainers-by-googlers/prompt-api)
   // for more information about the meaning of each parameter.
   CreateAssistant(
-    pending_receiver<blink.mojom.AIAssistant> session,
-    AIAssistantSamplingParams? sampling_params,
-    string? system_prompt,
-    array<AIAssistantInitialPrompt> initial_prompts
-  ) => (AIAssistantInfo? info);
+    pending_remote<AIManagerCreateAssistantClient> client,
+    AIAssistantCreateOptions options
+  );
   // Returns if it is possible to create a summarizer. For example, when
   // the service in charge of model loading and session creation is not
   // available, this should return false.

@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/ai/ai_summarizer_capabilities.h"
-#include "third_party/blink/renderer/modules/ai/ai_text_session_factory.h"
 
 namespace blink {
 

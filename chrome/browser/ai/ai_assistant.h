@@ -10,14 +10,12 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/supports_user_data.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_context_bound_object_set.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/features/prompt_api.pb.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/render_frame_host.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/blink/public/mojom/ai/ai_assistant.mojom.h"
@@ -32,7 +30,8 @@ class AIAssistant : public AIContextBoundObject,
   using PromptApiPrompt = optimization_guide::proto::PromptApiPrompt;
   using PromptApiRequest = optimization_guide::proto::PromptApiRequest;
   using CreateAssistantCallback =
-      base::OnceCallback<void(blink::mojom::AIAssistantInfoPtr)>;
+      base::OnceCallback<void(mojo::PendingRemote<blink::mojom::AIAssistant>,
+                              blink::mojom::AIAssistantInfoPtr)>;
 
   // The Context class manages the history of prompt input and output, which are
   // used to build the context when performing the next execution. Context is
@@ -93,7 +92,7 @@ class AIAssistant : public AIContextBoundObject,
       std::unique_ptr<
           optimization_guide::OptimizationGuideModelExecutor::Session> session,
       base::WeakPtr<content::BrowserContext> browser_context,
-      mojo::PendingReceiver<blink::mojom::AIAssistant> receiver,
+      mojo::PendingRemote<blink::mojom::AIAssistant> pending_remote,
       AIContextBoundObjectSet* session_set,
       const std::optional<const Context>& context = std::nullopt);
   AIAssistant(const AIAssistant&) = delete;
@@ -108,8 +107,8 @@ class AIAssistant : public AIContextBoundObject,
   void Prompt(const std::string& input,
               mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
                   pending_responder) override;
-  void Fork(mojo::PendingReceiver<blink::mojom::AIAssistant> session,
-            ForkCallback callback) override;
+  void Fork(mojo::PendingRemote<blink::mojom::AIManagerCreateAssistantClient>
+                client) override;
   void Destroy() override;
   void CountPromptTokens(const std::string& input,
                          CountPromptTokensCallback callback) override;
@@ -121,6 +120,7 @@ class AIAssistant : public AIContextBoundObject,
       std::vector<blink::mojom::AIAssistantInitialPromptPtr> initial_prompts,
       CreateAssistantCallback callback);
   blink::mojom::AIAssistantInfoPtr GetAssistantInfo();
+  mojo::PendingRemote<blink::mojom::AIAssistant> TakePendingRemote();
 
  private:
   void ModelExecutionCallback(
@@ -159,6 +159,7 @@ class AIAssistant : public AIContextBoundObject,
   // `context_bound_object_set_`.
   const raw_ptr<AIContextBoundObjectSet> context_bound_object_set_;
 
+  mojo::PendingRemote<blink::mojom::AIAssistant> pending_remote_;
   mojo::Receiver<blink::mojom::AIAssistant> receiver_;
 
   base::WeakPtrFactory<AIAssistant> weak_ptr_factory_{this};

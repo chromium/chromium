@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/web/web_console_message.h"
+#include "third_party/blink/renderer/modules/ai/ai_capability_availability.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_mojo_session_create_client.h"
 #include "third_party/blink/renderer/modules/ai/ai_summarizer.h"

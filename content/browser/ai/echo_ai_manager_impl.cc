@@ -39,18 +39,21 @@ void EchoAIManagerImpl::CanCreateAssistant(
 }
 
 void EchoAIManagerImpl::CreateAssistant(
-    mojo::PendingReceiver<blink::mojom::AIAssistant> receiver,
-    blink::mojom::AIAssistantSamplingParamsPtr sampling_params,
-    const std::optional<std::string>& system_prompt,
-    std::vector<blink::mojom::AIAssistantInitialPromptPtr> initial_prompts,
-    CreateAssistantCallback callback) {
+    mojo::PendingRemote<blink::mojom::AIManagerCreateAssistantClient> client,
+    blink::mojom::AIAssistantCreateOptionsPtr options) {
+  mojo::Remote<blink::mojom::AIManagerCreateAssistantClient> client_remote(
+      std::move(client));
+  mojo::PendingRemote<blink::mojom::AIAssistant> assistant;
   mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAIAssistant>(),
-                              std::move(receiver));
-  std::move(callback).Run(blink::mojom::AIAssistantInfo::New(
-      optimization_guide::features::GetOnDeviceModelMaxTokensForContext(),
-      blink::mojom::AIAssistantSamplingParams::New(
-          optimization_guide::features::GetOnDeviceModelDefaultTopK(),
-          optimization_guide::features::GetOnDeviceModelDefaultTemperature())));
+                              assistant.InitWithNewPipeAndPassReceiver());
+  client_remote->OnResult(
+      std::move(assistant),
+      blink::mojom::AIAssistantInfo::New(
+          optimization_guide::features::GetOnDeviceModelMaxTokensForContext(),
+          blink::mojom::AIAssistantSamplingParams::New(
+              optimization_guide::features::GetOnDeviceModelDefaultTopK(),
+              optimization_guide::features::
+                  GetOnDeviceModelDefaultTemperature())));
 }
 
 void EchoAIManagerImpl::CanCreateSummarizer(
@@ -64,10 +67,10 @@ void EchoAIManagerImpl::CreateSummarizer(
     blink::mojom::AISummarizerCreateOptionsPtr options) {
   mojo::Remote<blink::mojom::AIManagerCreateSummarizerClient> client_remote(
       std::move(client));
-  mojo::PendingRemote<blink::mojom::AISummarizer> summarzier;
+  mojo::PendingRemote<blink::mojom::AISummarizer> summarizer;
   mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAISummarizer>(),
-                              summarzier.InitWithNewPipeAndPassReceiver());
-  client_remote->OnResult(std::move(summarzier));
+                              summarizer.InitWithNewPipeAndPassReceiver());
+  client_remote->OnResult(std::move(summarizer));
 }
 
 void EchoAIManagerImpl::GetModelInfo(GetModelInfoCallback callback) {

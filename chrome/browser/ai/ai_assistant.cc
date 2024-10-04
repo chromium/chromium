@@ -24,7 +24,6 @@
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/features/prompt_api.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
-#include "third_party/blink/public/mojom/ai/ai_assistant.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 
@@ -156,13 +155,14 @@ AIAssistant::AIAssistant(
     std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
         session,
     base::WeakPtr<content::BrowserContext> browser_context,
-    mojo::PendingReceiver<blink::mojom::AIAssistant> receiver,
+    mojo::PendingRemote<blink::mojom::AIAssistant> pending_remote,
     AIContextBoundObjectSet* context_bound_object_set,
     const std::optional<const Context>& context)
     : session_(std::move(session)),
       browser_context_(browser_context),
       context_bound_object_set_(context_bound_object_set),
-      receiver_(this, std::move(receiver)) {
+      pending_remote_(std::move(pending_remote)),
+      receiver_(this, pending_remote_.InitWithNewPipeAndPassReceiver()) {
   if (context.has_value()) {
     // If the context is provided, it will be used in this session.
     context_ = std::make_unique<Context>(context.value());
@@ -210,7 +210,7 @@ void AIAssistant::InitializeContextWithInitialPrompts(
   // TODO(crbug.com/351935691): make sure the error is explicitly returned and
   // handled accordingly.
   if (!size) {
-    std::move(callback).Run(/*info=*/nullptr);
+    std::move(callback).Run(TakePendingRemote(), /*info=*/nullptr);
     return;
   }
 
@@ -218,7 +218,7 @@ void AIAssistant::InitializeContextWithInitialPrompts(
   if (size > max_token) {
     // The session cannot be created if the system prompt contains more tokens
     // than the limit.
-    std::move(callback).Run(/*info=*/nullptr);
+    std::move(callback).Run(TakePendingRemote(), /*info=*/nullptr);
     return;
   }
 
@@ -227,7 +227,7 @@ void AIAssistant::InitializeContextWithInitialPrompts(
   initial_prompts.prompts.Swap(initial_request.mutable_initial_prompts());
   context_ = std::make_unique<Context>(max_token, std::move(initial_prompts),
                                        context_->use_prompt_api_proto());
-  std::move(callback).Run(GetAssistantInfo());
+  std::move(callback).Run(TakePendingRemote(), GetAssistantInfo());
 }
 
 void AIAssistant::AddPromptHistoryAndSendCompletion(
@@ -314,27 +314,27 @@ void AIAssistant::Prompt(
                           responder_id));
 }
 
-void AIAssistant::Fork(mojo::PendingReceiver<blink::mojom::AIAssistant> session,
-                       ForkCallback callback) {
+void AIAssistant::Fork(
+    mojo::PendingRemote<blink::mojom::AIManagerCreateAssistantClient> client) {
+  mojo::Remote<blink::mojom::AIManagerCreateAssistantClient> client_remote(
+      std::move(client));
   if (!browser_context_) {
     // The `browser_context_` is already destroyed before the renderer owner
     // is gone.
-    std::move(callback).Run(nullptr);
+    client_remote->OnResult(mojo::PendingRemote<blink::mojom::AIAssistant>(),
+                            /*info=*/nullptr);
     return;
   }
-
-  AIManagerKeyedService* service =
-      AIManagerKeyedServiceFactory::GetAIManagerKeyedService(
-          browser_context_.get());
 
   const optimization_guide::SamplingParams sampling_param =
       session_->GetSamplingParams();
 
-  service->CreateAssistantForCloning(
-      base::PassKey<AIAssistant>(), std::move(session),
-      blink::mojom::AIAssistantSamplingParams::New(sampling_param.top_k,
-                                                   sampling_param.temperature),
-      context_bound_object_set_, *context_, std::move(callback));
+  AIManagerKeyedServiceFactory::GetAIManagerKeyedService(browser_context_.get())
+      ->CreateAssistantForCloning(
+          base::PassKey<AIAssistant>(),
+          blink::mojom::AIAssistantSamplingParams::New(
+              sampling_param.top_k, sampling_param.temperature),
+          context_bound_object_set_, *context_, std::move(client_remote));
 }
 
 void AIAssistant::Destroy() {
@@ -368,4 +368,9 @@ void AIAssistant::CountPromptTokens(const std::string& input,
 
   session_->GetContextSizeInTokens(*context_->MaybeFormatRequest(request),
                                    std::move(callback));
+}
+
+mojo::PendingRemote<blink::mojom::AIAssistant>
+AIAssistant::TakePendingRemote() {
+  return std::move(pending_remote_);
 }

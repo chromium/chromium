@@ -18,6 +18,14 @@ AITestUtils::MockModelStreamingResponder::BindNewPipeAndPassRemote() {
   return receiver_.BindNewPipeAndPassRemote();
 }
 
+AITestUtils::MockCreateAssistantClient::MockCreateAssistantClient() = default;
+AITestUtils::MockCreateAssistantClient::~MockCreateAssistantClient() = default;
+
+mojo::PendingRemote<blink::mojom::AIManagerCreateAssistantClient>
+AITestUtils::MockCreateAssistantClient::BindNewPipeAndPassRemote() {
+  return receiver_.BindNewPipeAndPassRemote();
+}
+
 AITestUtils::AITestBase::AITestBase() = default;
 AITestUtils::AITestBase::~AITestBase() = default;
 

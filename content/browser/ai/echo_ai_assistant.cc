@@ -64,15 +64,21 @@ void EchoAIAssistant::Prompt(
 }
 
 void EchoAIAssistant::Fork(
-    mojo::PendingReceiver<blink::mojom::AIAssistant> session,
-    ForkCallback callback) {
+    mojo::PendingRemote<blink::mojom::AIManagerCreateAssistantClient> client) {
+  mojo::Remote<blink::mojom::AIManagerCreateAssistantClient> client_remote(
+      std::move(client));
+  mojo::PendingRemote<blink::mojom::AIAssistant> assistant;
+
   mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAIAssistant>(),
-                              std::move(session));
-  std::move(callback).Run(blink::mojom::AIAssistantInfo::New(
-      optimization_guide::features::GetOnDeviceModelMaxTokensForContext(),
-      blink::mojom::AIAssistantSamplingParams::New(
-          optimization_guide::features::GetOnDeviceModelDefaultTopK(),
-          optimization_guide::features::GetOnDeviceModelDefaultTemperature())));
+                              assistant.InitWithNewPipeAndPassReceiver());
+  client_remote->OnResult(
+      std::move(assistant),
+      blink::mojom::AIAssistantInfo::New(
+          optimization_guide::features::GetOnDeviceModelMaxTokensForContext(),
+          blink::mojom::AIAssistantSamplingParams::New(
+              optimization_guide::features::GetOnDeviceModelDefaultTopK(),
+              optimization_guide::features::
+                  GetOnDeviceModelDefaultTemperature())));
 }
 
 void EchoAIAssistant::Destroy() {

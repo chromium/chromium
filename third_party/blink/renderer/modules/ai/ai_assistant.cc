@@ -9,31 +9,100 @@
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/mojom/ai/ai_assistant.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/modules/ai/ai_assistant_factory.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
-#include "third_party/blink/renderer/modules/ai/ai_text_session.h"
+#include "third_party/blink/renderer/modules/ai/ai_mojo_session_create_client.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
-AIAssistant::AIAssistant(ExecutionContext* context,
-                         AITextSession* text_session,
-                         scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : ExecutionContextClient(context),
-      text_session_(text_session),
-      task_runner_(task_runner) {
-  auto info = text_session_->GetInfo();
+namespace {
+
+class CloneAssistantClient
+    : public GarbageCollected<CloneAssistantClient>,
+      public mojom::blink::AIManagerCreateAssistantClient,
+      public AIMojoSessionCreateClient<AIAssistant> {
+ public:
+  CloneAssistantClient(AIAssistant* assistant,
+                       ScriptPromiseResolver<AIAssistant>* resolver,
+                       AbortSignal* signal,
+                       base::PassKey<AIAssistant> pass_key)
+      : AIMojoSessionCreateClient(assistant, resolver, signal),
+        pass_key_(pass_key),
+        assistant_(assistant),
+        receiver_(this, assistant->GetExecutionContext()) {
+    mojo::PendingRemote<mojom::blink::AIManagerCreateAssistantClient>
+        client_remote;
+    receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(),
+                   assistant->GetTaskRunner());
+    assistant_->GetAIAssistantRemote()->Fork(std::move(client_remote));
+  }
+  ~CloneAssistantClient() override = default;
+
+  CloneAssistantClient(const CloneAssistantClient&) = delete;
+  CloneAssistantClient& operator=(const CloneAssistantClient&) = delete;
+
+  void Trace(Visitor* visitor) const override {
+    AIMojoSessionCreateClient::Trace(visitor);
+    visitor->Trace(assistant_);
+    visitor->Trace(receiver_);
+  }
+
+  void OnResult(mojo::PendingRemote<mojom::blink::AIAssistant> assistant_remote,
+                mojom::blink::AIAssistantInfoPtr info) override {
+    if (!GetResolver()) {
+      return;
+    }
+
+    if (info) {
+      AIAssistant* cloned_assistant = MakeGarbageCollected<AIAssistant>(
+          assistant_->GetExecutionContext(), std::move(assistant_remote),
+          assistant_->GetTaskRunner(), std::move(info),
+          assistant_->GetCurrentTokens());
+      GetResolver()->Resolve(cloned_assistant);
+    } else {
+      GetResolver()->RejectWithDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          kExceptionMessageUnableToCloneSession);
+    }
+
+    Cleanup();
+  }
+
+ private:
+  base::PassKey<AIAssistant> pass_key_;
+  Member<AIAssistant> assistant_;
+  HeapMojoReceiver<mojom::blink::AIManagerCreateAssistantClient,
+                   CloneAssistantClient>
+      receiver_;
+};
+
+}  // namespace
+
+AIAssistant::AIAssistant(
+    ExecutionContext* execution_context,
+    mojo::PendingRemote<mojom::blink::AIAssistant> pending_remote,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    blink::mojom::blink::AIAssistantInfoPtr info,
+    uint64_t current_tokens)
+    : ExecutionContextClient(execution_context),
+      current_tokens_(current_tokens),
+      task_runner_(task_runner),
+      assistant_remote_(execution_context) {
+  assistant_remote_.Bind(std::move(pending_remote), task_runner);
   if (info) {
-    SetInfo(std::move(info));
+    SetInfo(base::PassKey<AIAssistant>(), std::move(info));
   }
 }
 
 void AIAssistant::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
-  visitor->Trace(text_session_);
+  visitor->Trace(assistant_remote_);
 }
 
 ScriptPromise<IDLString> AIAssistant::prompt(ScriptState* script_state,
@@ -52,7 +121,7 @@ ScriptPromise<IDLString> AIAssistant::prompt(ScriptState* script_state,
                                  AIMetrics::AISessionType::kAssistant),
                              int(input.CharactersSizeInBytes()));
 
-  if (!text_session_) {
+  if (!assistant_remote_) {
     ThrowSessionDestroyedException(exception_state);
     return ScriptPromise<IDLString>();
   }
@@ -62,7 +131,7 @@ ScriptPromise<IDLString> AIAssistant::prompt(ScriptState* script_state,
       AIMetrics::AISessionType::kAssistant,
       WTF::BindOnce(&AIAssistant::OnResponseComplete,
                     WrapWeakPersistent(this)));
-  text_session_->GetAIRemote()->Prompt(input, std::move(pending_remote));
+  assistant_remote_->Prompt(input, std::move(pending_remote));
   return promise;
 }
 
@@ -82,7 +151,7 @@ ReadableStream* AIAssistant::promptStreaming(ScriptState* script_state,
                                  AIMetrics::AISessionType::kAssistant),
                              int(input.CharactersSizeInBytes()));
 
-  if (!text_session_) {
+  if (!assistant_remote_) {
     ThrowSessionDestroyedException(exception_state);
     return nullptr;
   }
@@ -93,7 +162,7 @@ ReadableStream* AIAssistant::promptStreaming(ScriptState* script_state,
           AIMetrics::AISessionType::kAssistant,
           WTF::BindOnce(&AIAssistant::OnResponseComplete,
                         WrapWeakPersistent(this)));
-  text_session_->GetAIRemote()->Prompt(input, std::move(pending_remote));
+  assistant_remote_->Prompt(input, std::move(pending_remote));
   return readable_stream;
 }
 
@@ -111,35 +180,13 @@ ScriptPromise<AIAssistant> AIAssistant::clone(ScriptState* script_state,
   ScriptPromiseResolver<AIAssistant>* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<AIAssistant>>(script_state);
 
-  if (!text_session_) {
+  if (!assistant_remote_) {
     ThrowSessionDestroyedException(exception_state);
     return resolver->Promise();
   }
 
-  AITextSession* cloned_session =
-      MakeGarbageCollected<AITextSession>(GetExecutionContext(), task_runner_);
-  AIAssistant* cloned_assistant = MakeGarbageCollected<AIAssistant>(
-      GetExecutionContext(), cloned_session, task_runner_);
-  cloned_assistant->current_tokens_ = current_tokens_;
-  text_session_->GetAIRemote()->Fork(
-      cloned_assistant->text_session_->GetModelSessionReceiver(),
-      WTF::BindOnce(
-          [](ScriptPromiseResolver<AIAssistant>* resolver,
-             AIAssistant* cloned_assistant,
-             blink::mojom::blink::AIAssistantInfoPtr info) {
-            if (info) {
-              cloned_assistant->SetInfo(info->Clone());
-              cloned_assistant->text_session_->SetInfo(
-                  base::PassKey<AIAssistant>(), std::move(info));
-              resolver->Resolve(cloned_assistant);
-            } else {
-              resolver->Reject(DOMException::Create(
-                  kExceptionMessageUnableToCloneSession,
-                  DOMException::GetErrorName(
-                      DOMExceptionCode::kInvalidStateError)));
-            }
-          },
-          WrapPersistent(resolver), WrapPersistent(cloned_assistant)));
+  MakeGarbageCollected<CloneAssistantClient>(this, resolver, /*signal=*/nullptr,
+                                             base::PassKey<AIAssistant>());
 
   return resolver->Promise();
 }
@@ -161,12 +208,12 @@ ScriptPromise<IDLUnsignedLongLong> AIAssistant::countPromptTokens(
       MakeGarbageCollected<ScriptPromiseResolver<IDLUnsignedLongLong>>(
           script_state);
 
-  if (!text_session_) {
+  if (!assistant_remote_) {
     ThrowSessionDestroyedException(exception_state);
     return resolver->Promise();
   }
 
-  text_session_->GetAIRemote()->CountPromptTokens(
+  assistant_remote_->CountPromptTokens(
       input,
       WTF::BindOnce([](ScriptPromiseResolver<IDLUnsignedLongLong>* resolver,
                        uint32_t size) { resolver->Resolve(size); },
@@ -187,9 +234,9 @@ void AIAssistant::destroy(ScriptState* script_state,
       AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kAssistant),
       AIMetrics::AIAPI::kSessionDestroy);
 
-  if (text_session_) {
-    text_session_->GetAIRemote()->Destroy();
-    text_session_ = nullptr;
+  if (assistant_remote_) {
+    assistant_remote_->Destroy();
+    assistant_remote_.reset();
   }
 }
 
@@ -199,11 +246,25 @@ void AIAssistant::OnResponseComplete(std::optional<uint64_t> current_tokens) {
   }
 }
 
-void AIAssistant::SetInfo(const blink::mojom::blink::AIAssistantInfoPtr info) {
+void AIAssistant::SetInfo(std::variant<base::PassKey<AIAssistantFactory>,
+                                       base::PassKey<AIAssistant>> pass_key,
+                          const blink::mojom::blink::AIAssistantInfoPtr info) {
   CHECK(info);
   top_k_ = info->sampling_params->top_k;
   temperature_ = info->sampling_params->temperature;
   max_tokens_ = info->max_tokens;
+}
+
+HeapMojoRemote<mojom::blink::AIAssistant>& AIAssistant::GetAIAssistantRemote() {
+  return assistant_remote_;
+}
+
+scoped_refptr<base::SequencedTaskRunner> AIAssistant::GetTaskRunner() {
+  return task_runner_;
+}
+
+uint64_t AIAssistant::GetCurrentTokens() {
+  return current_tokens_;
 }
 
 }  // namespace blink

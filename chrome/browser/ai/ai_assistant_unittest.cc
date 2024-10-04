@@ -9,7 +9,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/bind.h"
 #include "chrome/browser/ai/ai_test_utils.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
@@ -19,7 +18,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/ai/ai_assistant.mojom.h"
-#include "third_party/blink/public/mojom/ai/ai_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
 
 using testing::_;
@@ -221,16 +219,31 @@ class AIAssistantTest : public AITestUtils::AITestBase {
           return session;
         });
 
-    mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     mojo::Remote<blink::mojom::AIAssistant> mock_session;
-    ai_manager->CreateAssistant(
-        mock_session.BindNewPipeAndPassReceiver(),
-        std::move(options.sampling_params), options.system_prompt,
-        std::move(options.initial_prompts), base::NullCallback());
+    AITestUtils::MockCreateAssistantClient mock_create_assistant_client;
+    base::RunLoop creation_run_loop;
+    EXPECT_CALL(mock_create_assistant_client, OnResult(_, _))
+        .WillOnce(testing::Invoke(
+            [&](mojo::PendingRemote<blink::mojom::AIAssistant> assistant,
+                blink::mojom::AIAssistantInfoPtr info) {
+              EXPECT_TRUE(assistant);
+              mock_session =
+                  mojo::Remote<blink::mojom::AIAssistant>(std::move(assistant));
+              creation_run_loop.Quit();
+            }));
+
+    mojo::Remote<blink::mojom::AIManager> mock_remote = GetAIManagerRemote();
+
+    mock_remote->CreateAssistant(
+        mock_create_assistant_client.BindNewPipeAndPassRemote(),
+        blink::mojom::AIAssistantCreateOptions::New(
+            std::move(options.sampling_params), options.system_prompt,
+            std::move(options.initial_prompts)));
+    creation_run_loop.Run();
 
     AITestUtils::MockModelStreamingResponder mock_responder;
 
-    base::RunLoop run_loop;
+    base::RunLoop responder_run_loop;
     // This is run twice because the response is returned together with
     // `is_complete` set to true.
     EXPECT_CALL(mock_responder, OnResponse(_, _, _))
@@ -246,12 +259,12 @@ class AIAssistantTest : public AITestUtils::AITestBase {
                       std::optional<uint64_t> current_tokens) {
           EXPECT_EQ(status,
                     blink::mojom::ModelStreamingResponseStatus::kComplete);
-          run_loop.Quit();
+          responder_run_loop.Quit();
         });
 
     mock_session->Prompt(options.prompt_input,
                          mock_responder.BindNewPipeAndPassRemote());
-    run_loop.Run();
+    responder_run_loop.Run();
   }
 
  private:

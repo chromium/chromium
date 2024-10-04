@@ -44,11 +44,8 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
   void CanCreateAssistant(CanCreateAssistantCallback callback) override;
 
   void CreateAssistant(
-      mojo::PendingReceiver<::blink::mojom::AIAssistant> receiver,
-      blink::mojom::AIAssistantSamplingParamsPtr sampling_params,
-      const std::optional<std::string>& system_prompt,
-      std::vector<blink::mojom::AIAssistantInitialPromptPtr> initial_prompts,
-      CreateAssistantCallback callback) override;
+      mojo::PendingRemote<blink::mojom::AIManagerCreateAssistantClient> client,
+      blink::mojom::AIAssistantCreateOptionsPtr options) override;
 
   void CanCreateSummarizer(CanCreateSummarizerCallback callback) override;
 

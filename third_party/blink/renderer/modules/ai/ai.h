@@ -17,7 +17,6 @@ namespace blink {
 class AIAssistantFactory;
 class AIRewriterFactory;
 class AISummarizerFactory;
-class AITextSessionFactory;
 class AIWriterFactory;
 
 // The class is the entry point of all the built-in AI APIs. It provides the
@@ -44,7 +43,6 @@ class AI final : public ScriptWrappable, public ExecutionContextClient {
  private:
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HeapMojoRemote<mojom::blink::AIManager> ai_remote_;
-  Member<AITextSessionFactory> text_session_factory_;
   Member<AIAssistantFactory> ai_assistant_factory_;
   Member<AISummarizerFactory> ai_summarizer_factory_;
   Member<AIWriterFactory> ai_writer_factory_;

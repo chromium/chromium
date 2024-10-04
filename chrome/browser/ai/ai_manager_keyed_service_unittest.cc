@@ -96,17 +96,20 @@ TEST_F(AIManagerKeyedServiceTest, NoUAFWithInvalidOnDeviceModelPath) {
 TEST_F(AIManagerKeyedServiceTest, AIContextBoundObjectSet) {
   SetupMockOptimizationGuideKeyedService();
 
-  base::MockCallback<blink::mojom::AIManager::CreateAssistantCallback> callback;
+  mojo::Remote<blink::mojom::AIAssistant> mock_session;
+  AITestUtils::MockCreateAssistantClient mock_create_assistant_client;
   base::RunLoop run_loop;
-  EXPECT_CALL(callback, Run(_))
-      .Times(AtMost(1))
-      .WillOnce(Invoke([&](blink::mojom::AIAssistantInfoPtr result) {
-        EXPECT_TRUE(result);
-        run_loop.Quit();
-      }));
+  EXPECT_CALL(mock_create_assistant_client, OnResult(_, _))
+      .WillOnce(testing::Invoke(
+          [&](mojo::PendingRemote<blink::mojom::AIAssistant> assistant,
+              blink::mojom::AIAssistantInfoPtr info) {
+            EXPECT_TRUE(assistant);
+            mock_session =
+                mojo::Remote<blink::mojom::AIAssistant>(std::move(assistant));
+            run_loop.Quit();
+          }));
 
   mojo::Remote<blink::mojom::AIManager> mock_remote = GetAIManagerRemote();
-  mojo::Remote<blink::mojom::AIAssistant> mock_session;
   // Initially the `AIContextBoundObjectSet` only contains the
   // `AIManagerReceiverRemover`.
   base::WeakPtr<AIContextBoundObjectSet> context_bound_objects =
@@ -116,10 +119,13 @@ TEST_F(AIManagerKeyedServiceTest, AIContextBoundObjectSet) {
 
   // After creating one `AIAssistant`, the `AIContextBoundObjectSet` contains 2
   // elements.
-  mock_remote->CreateAssistant(mock_session.BindNewPipeAndPassReceiver(),
-                               /*sampling_params=*/nullptr,
-                               /*system_prompt=*/std::nullopt,
-                               /*initial_prompts=*/{}, callback.Get());
+  mock_remote->CreateAssistant(
+      mock_create_assistant_client.BindNewPipeAndPassRemote(),
+      blink::mojom::AIAssistantCreateOptions::New(
+          /*sampling_params=*/nullptr,
+          /*system_prompt=*/std::nullopt,
+          /*initial_prompts=*/
+          std::vector<blink::mojom::AIAssistantInitialPromptPtr>()));
   run_loop.Run();
   ASSERT_EQ(2u, context_bound_objects->GetSizeForTesting());
 

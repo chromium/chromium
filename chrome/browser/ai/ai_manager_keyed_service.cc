@@ -33,7 +33,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/ai/ai_assistant.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
@@ -353,7 +353,6 @@ void AIManagerKeyedService::CanCreateAssistant(
 }
 
 std::unique_ptr<AIAssistant> AIManagerKeyedService::CreateAssistantInternal(
-    mojo::PendingReceiver<blink::mojom::AIAssistant> receiver,
     const blink::mojom::AIAssistantSamplingParamsPtr& sampling_params,
     AIContextBoundObjectSet* context_bound_object_set,
     const std::optional<const AIAssistant::Context>& context) {
@@ -383,36 +382,53 @@ std::unique_ptr<AIAssistant> AIManagerKeyedService::CreateAssistantInternal(
     return nullptr;
   }
 
+  mojo::PendingRemote<blink::mojom::AIAssistant> pending_remote;
+
   return std::make_unique<AIAssistant>(
-      std::move(session), browser_context_->GetWeakPtr(), std::move(receiver),
-      context_bound_object_set, context);
+      std::move(session), browser_context_->GetWeakPtr(),
+      std::move(pending_remote), context_bound_object_set, context);
 }
 
 void AIManagerKeyedService::CreateAssistant(
-    mojo::PendingReceiver<blink::mojom::AIAssistant> receiver,
-    blink::mojom::AIAssistantSamplingParamsPtr sampling_params,
-    const std::optional<std::string>& system_prompt,
-    std::vector<blink::mojom::AIAssistantInitialPromptPtr> initial_prompts,
-    CreateAssistantCallback callback) {
-  // Since this is a mojo IPC implementation, the context should be non-null;
+    mojo::PendingRemote<blink::mojom::AIManagerCreateAssistantClient> client,
+    blink::mojom::AIAssistantCreateOptionsPtr options) {
+  blink::mojom::AIAssistantSamplingParamsPtr sampling_params =
+      std::move(options->sampling_params);
+  const std::optional<std::string>& system_prompt = options->system_prompt;
+  std::vector<blink::mojom::AIAssistantInitialPromptPtr>& initial_prompts =
+      options->initial_prompts;
+  // Since this is a mojo IPC implementation, the context should be
+  // non-null;
   AIContextBoundObjectSet* context_bound_object_set =
       AIContextBoundObjectSet::GetFromContext(receivers_.current_context());
-  std::unique_ptr<AIAssistant> session = CreateAssistantInternal(
-      std::move(receiver), sampling_params, context_bound_object_set);
+  std::unique_ptr<AIAssistant> session =
+      CreateAssistantInternal(sampling_params, context_bound_object_set);
+  mojo::Remote<blink::mojom::AIManagerCreateAssistantClient> client_remote(
+      std::move(client));
   if (!session) {
     // TODO(crbug.com/343325183): probably we should consider returning an error
     // enum and throw a clear exception from the blink side.
-    std::move(callback).Run(nullptr);
+    client_remote->OnResult(mojo::PendingRemote<blink::mojom::AIAssistant>(),
+                            /*info=*/nullptr);
     return;
   }
 
   if (system_prompt.has_value() || !initial_prompts.empty()) {
     // If the initial prompt is provided, we need to set it and invoke the
     // callback after this, because the token counting happens asynchronously.
-    session->SetInitialPrompts(system_prompt, std::move(initial_prompts),
-                               std::move(callback));
+    session->SetInitialPrompts(
+        system_prompt, std::move(initial_prompts),
+        base::BindOnce(
+            [](mojo::Remote<blink::mojom::AIManagerCreateAssistantClient>
+                   client_remote,
+               mojo::PendingRemote<blink::mojom::AIAssistant> remote,
+               blink::mojom::AIAssistantInfoPtr info) {
+              client_remote->OnResult(std::move(remote), std::move(info));
+            },
+            std::move(client_remote)));
   } else {
-    std::move(callback).Run(session->GetAssistantInfo());
+    client_remote->OnResult(session->TakePendingRemote(),
+                            session->GetAssistantInfo());
   }
 
   context_bound_object_set->AddContextBoundObject(std::move(session));
@@ -536,21 +552,22 @@ void AIManagerKeyedService::
 
 void AIManagerKeyedService::CreateAssistantForCloning(
     base::PassKey<AIAssistant> pass_key,
-    mojo::PendingReceiver<blink::mojom::AIAssistant> receiver,
     blink::mojom::AIAssistantSamplingParamsPtr sampling_params,
     AIContextBoundObjectSet* context_bound_object_set,
     const AIAssistant::Context& context,
-    CreateAssistantCallback callback) {
+    mojo::Remote<blink::mojom::AIManagerCreateAssistantClient> client_remote) {
   std::unique_ptr<AIAssistant> session = CreateAssistantInternal(
-      std::move(receiver), sampling_params, context_bound_object_set, context);
+      sampling_params, context_bound_object_set, context);
   if (!session) {
-    std::move(callback).Run(nullptr);
+    client_remote->OnResult(mojo::PendingRemote<blink::mojom::AIAssistant>(),
+                            /*info=*/nullptr);
     return;
   }
 
   blink::mojom::AIAssistantInfoPtr session_info = session->GetAssistantInfo();
   context_bound_object_set->AddContextBoundObject(std::move(session));
-  std::move(callback).Run(std::move(session_info));
+  client_remote->OnResult(session->TakePendingRemote(),
+                          std::move(session_info));
 }
 
 void AIManagerKeyedService::OnModelPathValidationComplete(
