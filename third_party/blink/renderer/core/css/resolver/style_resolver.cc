@@ -2518,7 +2518,10 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
   MatchedPropertiesCache::Key key(match_result);
 
   bool can_use_cache = key.IsValid();
-  if (UsesHighlightPseudoInheritance(style_request.pseudo_id)) {
+  // NOTE: Do not add anything here without also adding it to
+  // MatchedPropertiesCache::IsCacheable(); you would be inserting
+  // elements that can never be fetched.
+  if (state.UsesHighlightPseudoInheritance()) {
     // Some pseudo-elements, like ::highlight, are special in that
     // they inherit _non-inherited_ properties from their parent.
     // This is different from what the MPC expects; it checks that

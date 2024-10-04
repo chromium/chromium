@@ -317,6 +317,10 @@ bool MatchedPropertiesCache::IsCacheable(const StyleResolverState& state) {
     return false;
   }
 
+  // See StyleResolver::ApplyMatchedCache() for comments.
+  if (state.UsesHighlightPseudoInheritance()) {
+    return false;
+  }
   if (!state.GetElement().GetCascadeFilter().IsEmpty()) {
     // The result of applying properties with the same matching declarations can
     // be different if the cascade filter is different.
