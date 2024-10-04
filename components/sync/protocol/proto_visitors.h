@@ -1328,6 +1328,7 @@ VISIT_PROTO_FIELDS(const sync_pb::SessionWindow& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::SharedTabGroup& proto) {
   VISIT(title);
   VISIT_ENUM(color);
+  VISIT(originating_tab_group_guid);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SharedTab& proto) {

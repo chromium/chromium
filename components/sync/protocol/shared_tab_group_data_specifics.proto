@@ -52,6 +52,9 @@ message SharedTabGroup {
   }
   // The color of the tab group, mapped to tab_groups::TabGroupColorId.
   optional Color color = 2;
+
+  // Saved tab group GUID from which this shared tab group was created.
+  optional string originating_tab_group_guid = 3;
 }
 
 message SharedTab {
