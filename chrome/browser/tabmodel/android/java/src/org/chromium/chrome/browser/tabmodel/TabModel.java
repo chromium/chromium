@@ -123,14 +123,6 @@ public interface TabModel extends TabList {
     void moveTab(int id, int newIndex);
 
     /**
-     * To be called when this model should be destroyed. The model should no longer be used after
-     * this.
-     *
-     * <p>As a result of this call, all {@link Tab}s owned by this model should be destroyed.
-     */
-    void destroy();
-
-    /**
      * Returns a supplier for the number of tabs in this tab model. This does not count tabs that
      * are pending closure.
      */

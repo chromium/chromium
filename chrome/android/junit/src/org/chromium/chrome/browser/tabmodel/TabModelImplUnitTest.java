@@ -139,7 +139,7 @@ public class TabModelImplUnitTest {
     }
 
     /** Create a {@link TabModel} to use for the test. */
-    private TabModel createTabModel(boolean isActive, boolean isIncognito) {
+    private TabModelImpl createTabModel(boolean isActive, boolean isIncognito) {
         AsyncTabParamsManager realAsyncTabParamsManager =
                 AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
         TabModelOrderControllerImpl orderController =
@@ -384,7 +384,7 @@ public class TabModelImplUnitTest {
     @Test
     @SmallTest
     public void testGetTabById() {
-        TabModel tabModel = createTabModel(/* isActive= */ true, /* isIncognito= */ false);
+        TabModelImpl tabModel = createTabModel(/* isActive= */ true, /* isIncognito= */ false);
         createTabModel(/* isActive= */ false, /* isIncognito= */ true);
 
         Tab tab1 = createTab(tabModel);
@@ -403,8 +403,7 @@ public class TabModelImplUnitTest {
     @Test
     @SmallTest
     public void testGetTabsNavigatedInTimeWindow() {
-        TabModelImpl tabModel =
-                (TabModelImpl) createTabModel(/* isActive= */ true, /* isIncognito= */ false);
+        TabModelImpl tabModel = createTabModel(/* isActive= */ true, /* isIncognito= */ false);
         MockTab tab1 = (MockTab) createTab(tabModel, 0, Tab.INVALID_TAB_ID);
         tab1.setLastNavigationCommittedTimestampMillis(200);
 
@@ -430,8 +429,7 @@ public class TabModelImplUnitTest {
         when(mTabModelFilterProvider.getTabModelFilter(/* isIncognito= */ false))
                 .thenReturn(mTabGroupModelFilter);
 
-        TabModelImpl tabModel =
-                (TabModelImpl) createTabModel(/* isActive= */ true, /* isIncognito= */ false);
+        TabModelImpl tabModel = createTabModel(/* isActive= */ true, /* isIncognito= */ false);
 
         MockTab tab1 = (MockTab) createTab(tabModel, 0, Tab.INVALID_TAB_ID);
         tab1.setLastNavigationCommittedTimestampMillis(200);

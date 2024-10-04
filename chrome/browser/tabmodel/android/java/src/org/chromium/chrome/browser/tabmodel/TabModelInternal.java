@@ -15,4 +15,12 @@ public interface TabModelInternal extends TabModel {
      * @param active Whether the tab model is active.
      */
     /* package */ void setActive(boolean active);
+
+    /**
+     * To be called when this model should be destroyed. The model should no longer be used after
+     * this.
+     *
+     * <p>As a result of this call, all {@link Tab}s owned by this model should be destroyed.
+     */
+    /* package */ void destroy();
 }
