@@ -625,7 +625,7 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, TypicallySecureUser_NewProfile) {
 
   // A fallback event should be a no-op for a new profile.
   hfm_service->RecordHttpsUpgradeFallbackEvent();
-  hfm_service->CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstBalancedMode();
+  hfm_service->CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstMode();
 
   EXPECT_FALSE(
       profile()->GetPrefs()->HasPrefPath(prefs::kHttpsUpgradeFallbacks));
@@ -637,8 +637,6 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, TypicallySecureUser_NewProfile) {
 
 // Typically Secure User fallback entries pref written by an older version of
 // Chrome should be handled properly by new versions.
-// This can't be a TypicallySecureUserTest because we need to write the prefs
-// before creating the service.
 TEST_F(HttpsFirstModeSettingsTrackerTest, TypicallySecureUser_OldVersion) {
   // Write an empty pref without the "start_heuristic_timestamp" key.
   base::Value::Dict new_base_pref;
@@ -649,11 +647,9 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, TypicallySecureUser_OldVersion) {
   clock.SetNow(now);
   profile()->SetCreationTimeForTesting(now - base::Days(20));
 
-  // Enable the feature flags explicitly for this test.
-  feature_list()->InitWithFeatures(
-      /*enabled_features=*/{features::kHttpsFirstModeV2ForTypicallySecureUsers,
-                            features::kHttpsFirstBalancedMode},
-      /*disabled_features=*/{});
+  // Enable the feature flag explicitly for this test.
+  feature_list()->InitAndEnableFeature(
+      features::kHttpsFirstModeV2ForTypicallySecureUsers);
 
   HttpsFirstModeService* hfm_service =
       CreateHttpsFirstModeServiceAndWaitForTypicallySecureUserPrefInitialized(
@@ -671,7 +667,7 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, TypicallySecureUser_OldVersion) {
   // A fallback event should be a no-op as the last fallback event is too
   // recent.
   hfm_service->RecordHttpsUpgradeFallbackEvent();
-  hfm_service->CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstBalancedMode();
+  hfm_service->CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstMode();
 
   EXPECT_TRUE(
       profile()->GetPrefs()->HasPrefPath(prefs::kHttpsUpgradeFallbacks));
@@ -682,18 +678,13 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, TypicallySecureUser_OldVersion) {
   EXPECT_EQ(1u, hfm_service->GetFallbackEntryCountForTesting());
 }
 
-class HttpsFirstModeSettingsTrackerTypicallySecureUserTest
-    : public HttpsFirstModeSettingsTrackerTest {
+class TypicallySecureUserTest : public HttpsFirstModeSettingsTrackerTest {
  public:
-  HttpsFirstModeSettingsTrackerTypicallySecureUserTest() {
+  TypicallySecureUserTest() {
     base::FieldTrialParams feature_params;
     feature_params["min-recent-navigations"] = "5";
-    feature_list()->InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::
-                                   kHttpsFirstModeV2ForTypicallySecureUsers,
-                               feature_params},
-                              {features::kHttpsFirstBalancedMode, {}}},
-        /*disabled_features=*/{});
+    feature_list()->InitAndEnableFeatureWithParameters(
+        features::kHttpsFirstModeV2ForTypicallySecureUsers, feature_params);
   }
 
  protected:
@@ -717,8 +708,7 @@ class HttpsFirstModeSettingsTrackerTypicallySecureUserTest
 
   void RecordFallbackEventAndMaybeEnableHttpsFirstMode() {
     hfm_service()->RecordHttpsUpgradeFallbackEvent();
-    hfm_service()
-        ->CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstBalancedMode();
+    hfm_service()->CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstMode();
   }
   void IncrementRecentNavigationCount(size_t count) {
     for (size_t i = 0; i < count; i++) {
@@ -737,7 +727,7 @@ class HttpsFirstModeSettingsTrackerTypicallySecureUserTest
 
 // An old profile should initialize the prefs related to Typically Secure User
 // heuristic.
-TEST_F(HttpsFirstModeSettingsTrackerTypicallySecureUserTest, ProfileOldEnough) {
+TEST_F(TypicallySecureUserTest, ProfileOldEnough) {
   SetSiteEngagementScoreForTypicallySecureUserHeuristic();
 
   EXPECT_TRUE(
@@ -763,8 +753,7 @@ TEST_F(HttpsFirstModeSettingsTrackerTypicallySecureUserTest, ProfileOldEnough) {
 
 // Checks that Typically Secure Heuristic must observe navigations for at least
 // a week before enabling HFM pref.
-TEST_F(HttpsFirstModeSettingsTrackerTypicallySecureUserTest,
-       EnablePrefWhenObservedForLongEnough) {
+TEST_F(TypicallySecureUserTest, EnablePrefWhenObservedForLongEnough) {
   base::Time now = clock()->Now();
   EXPECT_FALSE(
       profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled));
@@ -800,8 +789,7 @@ TEST_F(HttpsFirstModeSettingsTrackerTypicallySecureUserTest,
       profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeAutoEnabled));
 
   clock()->SetNow(now + base::Days(9) + base::Hours(1));
-  hfm_service()
-      ->CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstBalancedMode();
+  hfm_service()->CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstMode();
   EXPECT_EQ(2u, hfm_service()->GetFallbackEntryCountForTesting());
 
   // Last fallback event is now a day old, but we don't have enough recent
@@ -815,28 +803,21 @@ TEST_F(HttpsFirstModeSettingsTrackerTypicallySecureUserTest,
 
   // Do lots of navigations. Should enable HFM now.
   IncrementRecentNavigationCount(100u);
-  hfm_service()
-      ->CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstBalancedMode();
+  hfm_service()->CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstMode();
   EXPECT_TRUE(
       hfm_service()->IsInterstitialEnabledByTypicallySecureUserHeuristic());
+  EXPECT_TRUE(profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled));
   EXPECT_TRUE(
-      profile()->GetPrefs()->GetBoolean(prefs::kHttpsFirstBalancedMode));
-  EXPECT_TRUE(
-      profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeAutoEnabled));
-  // Shouldn't modify strict mode pref:
-  EXPECT_FALSE(
-      profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled));
+      profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeAutoEnabled));
 }
 
 // Checks that Typically Secure Heuristic must observe navigations for at least
 // a week before enabling HFM pref.
-TEST_F(HttpsFirstModeSettingsTrackerTypicallySecureUserTest,
+TEST_F(TypicallySecureUserTest,
        DontEnablePrefWhenObservedForLongEnoughWithManyWarnings) {
   base::Time now = clock()->Now();
   EXPECT_FALSE(
       profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled));
-  EXPECT_FALSE(
-      profile()->GetPrefs()->HasPrefPath(prefs::kHttpsFirstBalancedMode));
   EXPECT_FALSE(
       profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeAutoEnabled));
 
@@ -850,8 +831,6 @@ TEST_F(HttpsFirstModeSettingsTrackerTypicallySecureUserTest,
   // Prefs shouldn't be modified yet.
   EXPECT_FALSE(
       profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled));
-  EXPECT_FALSE(
-      profile()->GetPrefs()->HasPrefPath(prefs::kHttpsFirstBalancedMode));
   EXPECT_FALSE(
       profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeAutoEnabled));
 
@@ -867,24 +846,19 @@ TEST_F(HttpsFirstModeSettingsTrackerTypicallySecureUserTest,
   EXPECT_FALSE(
       profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled));
   EXPECT_FALSE(
-      profile()->GetPrefs()->HasPrefPath(prefs::kHttpsFirstBalancedMode));
-  EXPECT_FALSE(
       profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeAutoEnabled));
 }
 
-// Tests the usual flow of the Typically Secure User heuristic. Repeatedly calls
+// Tests for the Typically Secure User heuristic. This test repeatedly calls
 // RecordHttpsUpgradeFallbackEvent which is normally called
 // from HTTPS-Upgrade fallbacks in production code. It then checks if the
-// HTTPS-First Balanced Mode pref is enabled as expected.
-TEST_F(HttpsFirstModeSettingsTrackerTypicallySecureUserTest,
-       BalancedModeEnabled) {
+// HTTPS-First Mode pref is enabled.
+TEST_F(TypicallySecureUserTest, HFMEnabled) {
   IncrementRecentNavigationCount(5u);
 
   base::Time now = clock()->Now();
   EXPECT_FALSE(
       profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled));
-  EXPECT_FALSE(
-      profile()->GetPrefs()->HasPrefPath(prefs::kHttpsFirstBalancedMode));
   EXPECT_FALSE(
       profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeAutoEnabled));
 
@@ -899,8 +873,6 @@ TEST_F(HttpsFirstModeSettingsTrackerTypicallySecureUserTest,
   EXPECT_FALSE(
       profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled));
   EXPECT_FALSE(
-      profile()->GetPrefs()->HasPrefPath(prefs::kHttpsFirstBalancedMode));
-  EXPECT_FALSE(
       profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeAutoEnabled));
 
   clock()->SetNow(now + base::Days(3));
@@ -914,35 +886,27 @@ TEST_F(HttpsFirstModeSettingsTrackerTypicallySecureUserTest,
   // Prefs shouldn't be modified yet.
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
   EXPECT_FALSE(
-      profile()->GetPrefs()->HasPrefPath(prefs::kHttpsFirstBalancedMode));
-  EXPECT_FALSE(
       profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeAutoEnabled));
 
   // Move forward, this drops fallback #1 as it's now 9 days old.
   clock()->SetNow(now + base::Days(9));
-  hfm_service()
-      ->CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstBalancedMode();
+  hfm_service()->CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstMode();
   EXPECT_EQ(1u, hfm_service()->GetFallbackEntryCountForTesting());
   // Fallback list is now [#2] and we observed for long enough. HFM will be
   // enabled.
   EXPECT_TRUE(
       hfm_service()->IsInterstitialEnabledByTypicallySecureUserHeuristic());
-  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
-  EXPECT_TRUE(
-      profile()->GetPrefs()->GetBoolean(prefs::kHttpsFirstBalancedMode));
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
   EXPECT_TRUE(
       profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeAutoEnabled));
 
-  // Fallback #3. The fallback list is now [#2, #3]. Balanced Mode is still
-  // auto-enabled.
+  // Fallback #3. The fallback list is now [#2, #3]. HFM is still auto-enabled.
   RecordFallbackEventAndMaybeEnableHttpsFirstMode();
   EXPECT_EQ(2u, hfm_service()->GetFallbackEntryCountForTesting());
   EXPECT_TRUE(
       hfm_service()->IsInterstitialEnabledByTypicallySecureUserHeuristic());
   // Prefs are now set.
-  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
-  EXPECT_TRUE(
-      profile()->GetPrefs()->GetBoolean(prefs::kHttpsFirstBalancedMode));
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
   EXPECT_TRUE(
       profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeAutoEnabled));
 
@@ -956,9 +920,7 @@ TEST_F(HttpsFirstModeSettingsTrackerTypicallySecureUserTest,
   EXPECT_TRUE(
       hfm_service()->IsInterstitialEnabledByTypicallySecureUserHeuristic());
   // Prefs are still set.
-  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
-  EXPECT_TRUE(
-      profile()->GetPrefs()->GetBoolean(prefs::kHttpsFirstBalancedMode));
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
   EXPECT_TRUE(
       profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeAutoEnabled));
 }
@@ -993,7 +955,7 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, PrefUpdated_ShouldClearAllowlist) {
       state->IsHttpAllowedForHost("http-allowed.com", storage_partition));
 }
 
-TEST_F(HttpsFirstModeSettingsTrackerTypicallySecureUserTest,
+TEST_F(TypicallySecureUserTest,
        PrefUpdatedByHeuristic_ShouldNotClearAllowlist) {
   StatefulSSLHostStateDelegate* state =
       StatefulSSLHostStateDelegateFactory::GetForProfile(profile());
@@ -1026,8 +988,7 @@ TEST_F(HttpsFirstModeSettingsTrackerTypicallySecureUserTest,
   // events (2). However, last fallback event was too recent. Move forward
   // again.
   clock()->SetNow(now + base::Days(9) + base::Hours(1));
-  hfm_service()
-      ->CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstBalancedMode();
+  hfm_service()->CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstMode();
   EXPECT_EQ(2u, hfm_service()->GetFallbackEntryCountForTesting());
 
   // Last fallback event is now a day old, but we don't have enough recent
@@ -1037,20 +998,14 @@ TEST_F(HttpsFirstModeSettingsTrackerTypicallySecureUserTest,
   EXPECT_FALSE(
       profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled));
   EXPECT_FALSE(
-      profile()->GetPrefs()->HasPrefPath(prefs::kHttpsFirstBalancedMode));
-  EXPECT_FALSE(
       profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeAutoEnabled));
 
   // Finally, do lots of navigations. Should auto-enable HFM now.
   IncrementRecentNavigationCount(100u);
-  hfm_service()
-      ->CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstBalancedMode();
+  hfm_service()->CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstMode();
   EXPECT_TRUE(
       hfm_service()->IsInterstitialEnabledByTypicallySecureUserHeuristic());
-  EXPECT_FALSE(
-      profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled));
-  EXPECT_TRUE(
-      profile()->GetPrefs()->HasPrefPath(prefs::kHttpsFirstBalancedMode));
+  EXPECT_TRUE(profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled));
   EXPECT_TRUE(
       profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeAutoEnabled));
 

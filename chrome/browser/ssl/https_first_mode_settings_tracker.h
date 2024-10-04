@@ -77,13 +77,12 @@ class HttpsFirstModeService
   // Records an HTTPS-Upgrade fallback event if the Typically Secure heuristic
   // isn't yet enabled and evicts old fallback events.
   void RecordHttpsUpgradeFallbackEvent();
-  // Updates HTTPS-Upgrade fallback events and enables HTTPS-First Balanced Mode
+  // Updates HTTPS-Upgrade fallback events and enables HTTPS-First Mode
   // if the user typically visits secure sites.
-  // The first invocation of this method will almost always be a no-op in
-  // browser tests because the method checks that the clock is sufficiently
-  // advanced, and tests can't change the clock before getting here. Therefore,
-  // browser tests need to call this method explicitly.
-  void CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstBalancedMode();
+  // This will almost always be a no-op in browser tests because it checks that
+  // the clock is sufficiently advanced, and tests can't change the clock before
+  // getting here. Therefore, browser tests need to call this method explicitly.
+  void CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstMode();
 
   // Gets the list of engaged sites from Site Engagement service and determines
   // whether HTTPS-First Mode should be enabled on each site. Calls
