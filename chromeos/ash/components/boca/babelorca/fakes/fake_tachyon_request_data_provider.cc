@@ -20,4 +20,8 @@ std::string FakeTachyonRequestDataProvider::group_id() {
   return "group-id";
 }
 
+std::string FakeTachyonRequestDataProvider::sender_email() {
+  return "sender@email.com";
+}
+
 }  // namespace ash::babelorca

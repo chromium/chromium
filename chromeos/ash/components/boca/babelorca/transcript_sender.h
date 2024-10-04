@@ -9,7 +9,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -47,7 +46,6 @@ class TranscriptSender {
       TachyonAuthedClient* authed_client,
       TachyonRequestDataProvider* request_data_provider,
       base::Time init_timestamp,
-      std::string_view sender_email,
       const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
       Options options,
       base::OnceClosure failure_cb);
@@ -89,7 +87,6 @@ class TranscriptSender {
   const raw_ptr<TachyonAuthedClient> authed_client_;
   const raw_ptr<TachyonRequestDataProvider> request_data_provider_;
   const int64_t init_timestamp_ms_;
-  const std::string sender_email_;
   const net::NetworkTrafficAnnotationTag network_traffic_annotation_;
   const Options options_;
   base::OnceClosure failure_cb_;

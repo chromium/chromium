@@ -21,6 +21,7 @@ class TachyonRequestDataProvider {
   virtual std::string session_id() = 0;
   virtual std::string tachyon_token() = 0;
   virtual std::string group_id() = 0;
+  virtual std::string sender_email() = 0;
 
  protected:
   TachyonRequestDataProvider() = default;

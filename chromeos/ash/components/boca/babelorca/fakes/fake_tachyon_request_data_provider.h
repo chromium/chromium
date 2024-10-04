@@ -25,6 +25,7 @@ class FakeTachyonRequestDataProvider : public TachyonRequestDataProvider {
   std::string session_id() override;
   std::string tachyon_token() override;
   std::string group_id() override;
+  std::string sender_email() override;
 };
 
 }  // namespace ash::babelorca

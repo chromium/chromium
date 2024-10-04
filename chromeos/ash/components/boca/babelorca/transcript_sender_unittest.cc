@@ -30,7 +30,6 @@
 namespace ash::babelorca {
 namespace {
 
-constexpr char kSenderEmail[] = "sender@test.com";
 constexpr char kLanguage[] = "en-US";
 constexpr int64_t kInitTimestampMs = 1724792276909;
 
@@ -68,8 +67,8 @@ TEST(TranscriptSenderTest, SendOneMessageLongerThanMaxAllowed) {
   TranscriptSender sender(
       &authed_client, &request_data_provider,
       base::Time::FromMillisecondsSinceUnixEpoch(kInitTimestampMs),
-      kSenderEmail, TRAFFIC_ANNOTATION_FOR_TESTS,
-      {.max_allowed_char = kMaxAllowedChar}, failure_future.GetCallback());
+      TRAFFIC_ANNOTATION_FOR_TESTS, {.max_allowed_char = kMaxAllowedChar},
+      failure_future.GetCallback());
 
   media::SpeechRecognitionResult transcript(kTranscriptText,
                                             /*is_final=*/false);
@@ -93,7 +92,8 @@ TEST(TranscriptSenderTest, SendOneMessageLongerThanMaxAllowed) {
   EXPECT_EQ(sent_request.fanout_sender(), MessageFanout::OTHER_SENDER_DEVICES);
 
   // sender_id
-  EXPECT_EQ(sent_request.message().sender_id().id(), kSenderEmail);
+  EXPECT_EQ(sent_request.message().sender_id().id(),
+            request_data_provider.sender_email());
   EXPECT_EQ(sent_request.message().sender_id().type(), IdType::EMAIL);
   EXPECT_THAT(sent_request.message().sender_id().app(),
               testing::StrEq(kTachyonAppName));
@@ -131,8 +131,8 @@ TEST(TranscriptSenderTest, SendNewTranscript) {
   TranscriptSender sender(
       &authed_client, &request_data_provider,
       base::Time::FromMillisecondsSinceUnixEpoch(kInitTimestampMs),
-      kSenderEmail, TRAFFIC_ANNOTATION_FOR_TESTS,
-      {.max_allowed_char = kMaxAllowedChar}, failure_future.GetCallback());
+      TRAFFIC_ANNOTATION_FOR_TESTS, {.max_allowed_char = kMaxAllowedChar},
+      failure_future.GetCallback());
 
   media::SpeechRecognitionResult transcript1(kTranscriptText,
                                              /*is_final=*/true);
@@ -191,7 +191,7 @@ TEST(TranscriptSenderTest, RejectSendingAndReplyOnMaxErrorsReached) {
   TranscriptSender sender(
       &authed_client, &request_data_provider,
       base::Time::FromMillisecondsSinceUnixEpoch(kInitTimestampMs),
-      kSenderEmail, TRAFFIC_ANNOTATION_FOR_TESTS,
+      TRAFFIC_ANNOTATION_FOR_TESTS,
       {.max_allowed_char = kMaxAllowedChar, .max_errors_num = 2},
       failure_future.GetCallback());
 
@@ -226,7 +226,7 @@ TEST(TranscriptSenderTest, ResetErrorCountOnSuccess) {
   TranscriptSender sender(
       &authed_client, &request_data_provider,
       base::Time::FromMillisecondsSinceUnixEpoch(kInitTimestampMs),
-      kSenderEmail, TRAFFIC_ANNOTATION_FOR_TESTS,
+      TRAFFIC_ANNOTATION_FOR_TESTS,
       {.max_allowed_char = kMaxAllowedChar, .max_errors_num = 2},
       failure_future.GetCallback());
 
@@ -269,7 +269,7 @@ TEST(TranscriptSenderTest, InflightRequestsAreHandledOnFailure) {
   TranscriptSender sender(
       &authed_client, &request_data_provider,
       base::Time::FromMillisecondsSinceUnixEpoch(kInitTimestampMs),
-      kSenderEmail, TRAFFIC_ANNOTATION_FOR_TESTS,
+      TRAFFIC_ANNOTATION_FOR_TESTS,
       {.max_allowed_char = kMaxAllowedChar, .max_errors_num = 2},
       failure_future.GetCallback());
 
@@ -317,7 +317,7 @@ TEST_P(TranscriptSenderTest, SendTwoMessages) {
   TranscriptSender sender(
       &authed_client, &request_data_provider,
       base::Time::FromMillisecondsSinceUnixEpoch(kInitTimestampMs),
-      kSenderEmail, TRAFFIC_ANNOTATION_FOR_TESTS,
+      TRAFFIC_ANNOTATION_FOR_TESTS,
       {.max_allowed_char = GetParam().max_allowed_char}, base::DoNothing());
 
   media::SpeechRecognitionResult transcript1(GetParam().transcript1,

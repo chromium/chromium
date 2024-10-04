@@ -90,14 +90,12 @@ TranscriptSender::TranscriptSender(
     TachyonAuthedClient* authed_client,
     TachyonRequestDataProvider* request_data_provider,
     base::Time init_timestamp,
-    std::string_view sender_email,
     const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
     Options options,
     base::OnceClosure failure_cb)
     : authed_client_(authed_client),
       request_data_provider_(request_data_provider),
       init_timestamp_ms_(init_timestamp.InMillisecondsSinceUnixEpoch()),
-      sender_email_(sender_email),
       network_traffic_annotation_(network_traffic_annotation),
       options_(std::move(options)),
       failure_cb_(std::move(failure_cb)) {}
@@ -121,7 +119,8 @@ bool TranscriptSender::SendTranscriptionUpdate(
       FROM_HERE,
       base::BindOnce(CreateRequestString, std::move(message),
                      request_data_provider_->tachyon_token(),
-                     request_data_provider_->group_id(), sender_email_),
+                     request_data_provider_->group_id(),
+                     request_data_provider_->sender_email()),
       base::BindOnce(&TranscriptSender::Send, weak_ptr_factory.GetWeakPtr(),
                      /*max_retries=*/transcript.is_final ? 1 : 0));
   // Should be called after `GenerateMessage`.
