@@ -610,7 +610,7 @@ optimize: Specifies whether any optimization steps will be used. Defaults to the
           invoked to bundle JS code (using Rollup).
           |optimize_webui_host| must be specified if |optimize_webui_in_files|
           is provided.
-optimize_ webui_host: See |host| in bundle_js().
+optimize_webui_host: See |host| in bundle_js().
 optimize_webui_excludes: See |excludes| in bundle_js(). Optional.
 optimize_webui_external_paths: See |external_paths| in optimize_webui().
                                Optional.
