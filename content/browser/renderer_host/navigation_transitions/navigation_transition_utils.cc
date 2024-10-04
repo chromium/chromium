@@ -488,10 +488,11 @@ void NavigationTransitionUtils::SetSameDocumentNavigationEntryScreenshotToken(
     return;
   }
 
+  auto* last_committed_entry = nav_controller.GetLastCommittedEntry();
   if (gfx::Animation::PrefersReducedMotion()) {
-    auto* entry = nav_controller.GetLastCommittedEntry();
-    entry->navigation_transition_data().set_cache_hit_or_miss_reason(
-        CacheHitOrMissReason::kCacheMissPrefersReducedMotion);
+    last_committed_entry->navigation_transition_data()
+        .set_cache_hit_or_miss_reason(
+            CacheHitOrMissReason::kCacheMissPrefersReducedMotion);
     return;
   }
 
@@ -504,27 +505,38 @@ void NavigationTransitionUtils::SetSameDocumentNavigationEntryScreenshotToken(
     return;
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  RenderFrameHostImpl* current_rfh =
+      navigation_request.frame_tree_node()->current_frame_host();
+  RenderWidgetHostView* rwhv = current_rfh->GetView();
+  if (auto* window_android = rwhv->GetNativeView()->GetWindowAndroid();
+      !window_android || !window_android->GetCompositor()) {
+    last_committed_entry->navigation_transition_data()
+        .set_cache_hit_or_miss_reason(
+            CacheHitOrMissReason::kNoRootWindowOrCompositor);
+    return;
+  }
+#endif
+
   // NOTE: `destination_token` is to set on the last committed entry (the
   // screenshot's destination), instead of the destination entry of this
   // `navigation_request` (`navigation_request.GetNavigationEntry()`).
 
   // `blink::SameDocNavigationScreenshotDestinationToken` is guaranteed
   // non-empty.
-  nav_controller.GetLastCommittedEntry()
-      ->navigation_transition_data()
+  last_committed_entry->navigation_transition_data()
       .SetSameDocumentNavigationEntryScreenshotToken(*destination_token);
 
   CHECK(GetHostFrameSinkManager());
 
-  int request_sequence = nav_controller.GetLastCommittedEntry()
-                             ->navigation_transition_data()
+  int request_sequence = last_committed_entry->navigation_transition_data()
                              .copy_output_request_sequence();
 
   GetHostFrameSinkManager()->SetOnCopyOutputReadyCallback(
       *destination_token,
       base::BindOnce(&CacheScreenshotImpl, nav_controller.GetWeakPtr(),
                      navigation_request.GetWeakPtr(),
-                     nav_controller.GetLastCommittedEntry()->GetUniqueID(),
+                     last_committed_entry->GetUniqueID(),
                      /*is_copied_from_embedder=*/false, request_sequence,
                      SupportsETC1NonPowerOfTwo(navigation_request)));
 }
