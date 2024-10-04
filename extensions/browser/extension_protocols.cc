@@ -144,8 +144,9 @@ void GenerateBackgroundPageContents(const Extension* extension,
 base::Time GetFileLastModifiedTime(const base::FilePath& filename) {
   if (base::PathExists(filename)) {
     base::File::Info info;
-    if (base::GetFileInfo(filename, &info))
+    if (base::GetFileInfo(filename, &info)) {
       return info.last_modified;
+    }
   }
   return base::Time();
 }
@@ -163,10 +164,12 @@ std::pair<base::FilePath, base::Time> ReadResourceFilePathAndLastModifiedTime(
 bool ExtensionCanLoadInIncognito(bool is_main_frame,
                                  const Extension* extension,
                                  bool extension_enabled_in_incognito) {
-  if (!extension || !extension_enabled_in_incognito)
+  if (!extension || !extension_enabled_in_incognito) {
     return false;
-  if (!is_main_frame || extension->is_login_screen_extension())
+  }
+  if (!is_main_frame || extension->is_login_screen_extension()) {
     return true;
+  }
 
   // Only allow incognito toplevel navigations to extension resources in
   // split mode. In spanning mode, the extension must run in a single process,
@@ -219,8 +222,9 @@ bool AllowExtensionResourceLoad(const network::ResourceRequest& request,
   // process to request each other's resources. We can't do a more precise
   // check, since the renderer can lie about which extension has made the
   // request.
-  if (process_map.Contains(request.url.host(), child_id))
+  if (process_map.Contains(request.url.host(), child_id)) {
     return true;
+  }
 
   // Frame navigations to extensions have already been checked in
   // the ExtensionNavigationThrottle.
@@ -252,8 +256,9 @@ bool AllowExtensionResourceLoad(const network::ResourceRequest& request,
 // Returns true if the given URL references an icon in the given extension.
 bool URLIsForExtensionIcon(const GURL& url, const Extension* extension) {
   DCHECK(url.SchemeIs(extensions::kExtensionScheme));
-  if (!extension)
+  if (!extension) {
     return false;
+  }
 
   DCHECK_EQ(url.host(), extension->id());
   std::string_view path = url.path_piece();
@@ -270,15 +275,17 @@ bool GetDirectoryForExtensionURL(const GURL& url,
                                  const ExtensionSet& disabled_extensions,
                                  base::FilePath* out_path) {
   base::FilePath path;
-  if (extension)
+  if (extension) {
     path = extension->path();
+  }
   const Extension* disabled_extension =
       disabled_extensions.GetByID(extension_id);
   if (path.empty()) {
     // For disabled extensions, we only resolve the directory path to service
     // extension icon URL requests.
-    if (URLIsForExtensionIcon(url, disabled_extension))
+    if (URLIsForExtensionIcon(url, disabled_extension)) {
       path = disabled_extension->path();
+    }
   }
 
   if (!path.empty()) {
@@ -469,8 +476,9 @@ class FileLoaderObserver : public content::FileURLLoaderObserver {
     // TODO(asargent) - we'll need to add proper support for range headers.
     // crbug.com/369895.
     const bool is_seek_contiguous = result == bytes_read_;
-    if (result > 0 && verify_job_.get() && !is_seek_contiguous)
+    if (result > 0 && verify_job_.get() && !is_seek_contiguous) {
       verify_job_ = nullptr;
+    }
   }
 
   void OnRead(base::span<char> buffer,
@@ -491,8 +499,9 @@ class FileLoaderObserver : public content::FileURLLoaderObserver {
 
   void OnDone() override {
     base::AutoLock auto_lock(lock_);
-    if (verify_job_.get())
+    if (verify_job_.get()) {
       verify_job_->DoneReading();
+    }
   }
 
  private:
@@ -827,13 +836,15 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
       }
     }
 
-    if (g_test_handler)
+    if (g_test_handler) {
       g_test_handler->Run(&directory_path, &relative_path);
+    }
 
     extensions::ExtensionResource resource(extension_id, directory_path,
                                            relative_path);
-    if (follow_symlinks_anywhere)
+    if (follow_symlinks_anywhere) {
       resource.set_follow_symlinks_anywhere();
+    }
 
     scoped_refptr<ContentVerifier> content_verifier =
         extensions::ExtensionSystem::Get(browser_context_)->content_verifier();
@@ -891,8 +902,9 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
     // (no new ExtensionURLLoaderFactory should be created after BrowserContext
     // shutdown has started *if* all WebContents got closed before starting the
     // shutdown).
-    if (browser_context->ShutdownStarted())
+    if (browser_context->ShutdownStarted()) {
       return pending_remote;
+    }
 
     // Manages its own lifetime.
     new ExtensionURLLoaderFactory(
