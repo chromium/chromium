@@ -217,7 +217,7 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
     base::TimeTicks end_time = Now();
 
     aggregator().BeginMainFrame();
-    aggregator().RecordForcedLayoutSample(reason, start_time, end_time);
+    aggregator().EndForcedLayout(reason, start_time, end_time);
     aggregator().RecordEndOfFrameMetrics(start_time, end_time, 0, source_id(),
                                          &recorder());
     ResetAggregator();

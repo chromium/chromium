@@ -297,7 +297,6 @@ LocalFrameView::LocalFrameView(LocalFrame& frame, gfx::Rect frame_rect)
       intersection_observation_state_(kNotNeeded),
       main_thread_scrolling_reasons_(0),
       forced_layout_stack_depth_(0),
-      forced_layout_start_time_(base::TimeTicks()),
       paint_frame_count_(0),
       unique_id_(NewUniqueObjectId()),
       layout_shift_tracker_(MakeGarbageCollected<LayoutShiftTracker>(this)),
@@ -852,25 +851,31 @@ void LocalFrameView::UpdateLayout() {
   probe::DidChangeViewport(frame_.Get());
 }
 
-void LocalFrameView::WillStartForcedLayout() {
+void LocalFrameView::WillStartForcedLayout(DocumentUpdateReason reason) {
+  if (!base::TimeTicks::IsHighResolution()) {
+    return;
+  }
+
   // UpdateLayout is re-entrant for auto-sizing and plugins. So keep
   // track of stack depth to include all the time in the top-level call.
   forced_layout_stack_depth_++;
   if (forced_layout_stack_depth_ > 1)
     return;
-  forced_layout_start_time_ = base::TimeTicks::Now();
-  if (auto* metrics_aggregator = GetUkmAggregator())
-    metrics_aggregator->BeginForcedLayout();
+  if (auto* metrics_aggregator = GetUkmAggregator()) {
+    DCHECK(!forced_layout_timer_.has_value());
+    forced_layout_timer_.emplace(*metrics_aggregator, reason);
+  }
 }
 
-void LocalFrameView::DidFinishForcedLayout(DocumentUpdateReason reason) {
+void LocalFrameView::DidFinishForcedLayout() {
+  if (!base::TimeTicks::IsHighResolution()) {
+    return;
+  }
+
   CHECK_GT(forced_layout_stack_depth_, (unsigned)0);
   forced_layout_stack_depth_--;
-  if (!forced_layout_stack_depth_ && base::TimeTicks::IsHighResolution()) {
-    if (auto* metrics_aggregator = GetUkmAggregator()) {
-      metrics_aggregator->RecordForcedLayoutSample(
-          reason, forced_layout_start_time_, base::TimeTicks::Now());
-    }
+  if (!forced_layout_stack_depth_) {
+    forced_layout_timer_.reset();
   }
 }
 

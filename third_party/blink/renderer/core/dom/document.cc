@@ -2749,7 +2749,7 @@ void Document::UpdateStyleAndLayout(DocumentUpdateReason reason) {
   LocalFrameView* frame_view = View();
 
   if (reason != DocumentUpdateReason::kBeginMainFrame && frame_view)
-    frame_view->WillStartForcedLayout();
+    frame_view->WillStartForcedLayout(reason);
 
   HTMLFrameOwnerElement::PluginDisposeSuspendScope suspend_plugin_dispose;
   ScriptForbiddenScope forbid_script;
@@ -2763,7 +2763,7 @@ void Document::UpdateStyleAndLayout(DocumentUpdateReason reason) {
 
   if (!IsActive()) {
     if (reason != DocumentUpdateReason::kBeginMainFrame && frame_view)
-      frame_view->DidFinishForcedLayout(reason);
+      frame_view->DidFinishForcedLayout();
     return;
   }
 
@@ -2784,7 +2784,7 @@ void Document::UpdateStyleAndLayout(DocumentUpdateReason reason) {
   }
 
   if (reason != DocumentUpdateReason::kBeginMainFrame && frame_view)
-    frame_view->DidFinishForcedLayout(reason);
+    frame_view->DidFinishForcedLayout();
 
   if (should_update_selection_after_layout_)
     UpdateSelectionAfterLayout();

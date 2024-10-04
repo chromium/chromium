@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_VIEW_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/auto_reset.h"
 #include "base/dcheck_is_on.h"
@@ -42,6 +43,7 @@
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/frame/frame_view.h"
 #include "third_party/blink/renderer/core/frame/layout_subtree_root_list.h"
+#include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
 #include "third_party/blink/renderer/core/frame/overlay_interstitial_ad_detector.h"
 #include "third_party/blink/renderer/core/frame/sticky_ad_detector.h"
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
@@ -116,7 +118,6 @@ class ScrollableArea;
 class Scrollbar;
 class TapFriendlinessChecker;
 class TransformState;
-class LocalFrameUkmAggregator;
 class WebPluginContainerImpl;
 struct DraggableRegionValue;
 struct IntrinsicSizingInfo;
@@ -187,8 +188,8 @@ class CORE_EXPORT LocalFrameView final
   bool IsInPerformLayout() const;
 
   // Methods to capture forced layout metrics.
-  void WillStartForcedLayout();
-  void DidFinishForcedLayout(DocumentUpdateReason);
+  void WillStartForcedLayout(DocumentUpdateReason);
+  void DidFinishForcedLayout();
 
   void ClearLayoutSubtreeRoot(const LayoutObject&);
 
@@ -1183,7 +1184,8 @@ class CORE_EXPORT LocalFrameView final
 
   scoped_refptr<LocalFrameUkmAggregator> ukm_aggregator_;
   unsigned forced_layout_stack_depth_;
-  base::TimeTicks forced_layout_start_time_;
+  std::optional<LocalFrameUkmAggregator::ScopedForcedLayoutTimer>
+      forced_layout_timer_;
 
   // From the beginning of the document, how many frames have painted.
   size_t paint_frame_count_;
