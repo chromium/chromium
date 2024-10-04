@@ -53,7 +53,7 @@ std::unique_ptr<ContextualSearchContext> MakeTestContext(
 // Unit tests for the native |ContextualSearchDelegateImpl|.
 class ContextualSearchDelegateImplTest : public testing::Test {
  public:
-  ContextualSearchDelegateImplTest() {}
+  ContextualSearchDelegateImplTest() = default;
 
   ContextualSearchDelegateImplTest(const ContextualSearchDelegateImplTest&) =
       delete;
