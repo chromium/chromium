@@ -107,6 +107,8 @@ class BASE_EXPORT ProcessRequirement {
     std::optional<ValidationCategory> validation_category_;
     bool dynamic_validity_only_ = false;
     bool failed_ = false;
+    bool has_same_team_identifier_called_ = false;
+    bool has_same_certificate_type_called_ = false;
   };  // class Builder
 
   // Use Builder::Build to construct a ProcessRequirement.

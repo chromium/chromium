@@ -263,6 +263,25 @@ TEST_F(ProcessRequirementTest, ValidationCategoryDetectionFallback) {
   // those for testing at the moment.
 }
 
+TEST_F(ProcessRequirementTest, KernelFailuresAreNotFatal) {
+  // An empty team ID with a valid validation category is not a valid
+  // combination, but should not be treated as programmer error if the empty
+  // team ID came from the kernel.
+  csops_provider_.SetTeamIdentifier("");
+  csops_provider_.SetValidationCategory(CS_VALIDATION_CATEGORY_DEVELOPER_ID);
+  std::optional<ProcessRequirement> requirement =
+      ProcessRequirement::Builder().SignedWithSameIdentity().Build();
+  EXPECT_FALSE(requirement);
+
+  // A validation category of none with a non-empty team ID is not a valid
+  // combination, but should not be treated as programmer error if the
+  // validation category came from the kernel.
+  csops_provider_.SetTeamIdentifier(kTeamId);
+  csops_provider_.SetValidationCategory(CS_VALIDATION_CATEGORY_NONE);
+  requirement = ProcessRequirement::Builder().SignedWithSameIdentity().Build();
+  EXPECT_FALSE(requirement);
+}
+
 TEST_F(ProcessRequirementTest, InvalidCombinations) {
   EXPECT_DEATH(
       {

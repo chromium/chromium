@@ -258,6 +258,9 @@ ProcessRequirement::Builder::SignedWithSameIdentity() && {
 ProcessRequirement::Builder
 ProcessRequirement::Builder::HasSameTeamIdentifier() && {
   CHECK(team_identifier_.empty());
+
+  has_same_team_identifier_called_ = true;
+
   if (auto team_identifier = TeamIdentifierOfCurrentProcess();
       team_identifier.has_value()) {
     team_identifier_ = std::move(*team_identifier);
@@ -273,6 +276,8 @@ ProcessRequirement::Builder::HasSameTeamIdentifier() && {
 ProcessRequirement::Builder
 ProcessRequirement::Builder::HasSameCertificateType() && {
   CHECK(!validation_category_);
+
+  has_same_certificate_type_called_ = true;
 
   if (CSOpsProvider()->SupportsValidationCategory()) {
     auto validation_category = ValidationCategoryOfCurrentProcess();
@@ -301,24 +306,28 @@ ProcessRequirement::Builder ProcessRequirement::Builder::TeamIdentifier(
   CHECK(team_identifier_.empty());
   CHECK(base::ranges::all_of(team_identifier, base::IsAsciiAlphaNumeric<char>));
   team_identifier_ = std::move(team_identifier);
+  has_same_team_identifier_called_ = false;
   return std::move(*this);
 }
 
 ProcessRequirement::Builder
 ProcessRequirement::Builder::DeveloperIdCertificateType() && {
   validation_category_ = ValidationCategory::DeveloperId;
+  has_same_certificate_type_called_ = false;
   return std::move(*this);
 }
 
 ProcessRequirement::Builder
 ProcessRequirement::Builder::AppStoreCertificateType() && {
   validation_category_ = ValidationCategory::AppStore;
+  has_same_certificate_type_called_ = false;
   return std::move(*this);
 }
 
 ProcessRequirement::Builder
 ProcessRequirement::Builder::DevelopmentCertificateType() && {
   validation_category_ = ValidationCategory::Development;
+  has_same_certificate_type_called_ = false;
   return std::move(*this);
 }
 
@@ -339,10 +348,28 @@ std::optional<ProcessRequirement> ProcessRequirement::Builder::Build() && {
       validation_category_.value_or(ValidationCategory::None);
 
   if (validation_category == ValidationCategory::None) {
+    // A validation category of none with a non-empty team ID is not a valid
+    // combination, but should not be treated as programmer error if the
+    // validation category came from the kernel.
+    if (team_identifier_.size() && has_same_certificate_type_called_) {
+      VLOG(2) << "ProcessRequirement::Builder::Build: have team ID but kernel "
+                 "returned validation category of none -> nullopt";
+      return std::nullopt;
+    }
+
     CHECK(team_identifier_.empty())
         << "A process requirement matching on a team identifier without "
            "specifying a certificate type is unsafe.";
   } else {
+    // An empty team ID with a valid validation category is not a valid
+    // combination, but should not be treated as programmer error if the empty
+    // team ID came from the kernel.
+    if (team_identifier_.empty() && has_same_team_identifier_called_) {
+      VLOG(2) << "ProcessRequirement::Builder::Build: have validation category "
+                 "but kernel returned empty team ID -> nullopt";
+      return std::nullopt;
+    }
+
     CHECK(team_identifier_.size())
         << "A process requirement without a team identifier is unsafe as it "
            "can be matched by any signing identity of that type.";
