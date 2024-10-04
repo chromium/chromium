@@ -842,8 +842,16 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
 
 #if BUILDFLAG(ENABLE_PDF)
   if (features::IsPdfOcrEnabled()) {
+    bool pcf_ocr_may_be_needed = true;
+#if BUILDFLAG(IS_CHROMEOS)
+    // `PdfOcrControllerFactory` is not needed in the not-signed-in profile of
+    // ChromeOS as no user navigation to PDFs is possible there.
+    pcf_ocr_may_be_needed = IsSignedIn();
+#endif
     // Create the PDF OCR controller so that it can self-activate as needed.
-    screen_ai::PdfOcrControllerFactory::GetForProfile(this);
+    if (pcf_ocr_may_be_needed) {
+      screen_ai::PdfOcrControllerFactory::GetForProfile(this);
+    }
   }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
