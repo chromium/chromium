@@ -81,6 +81,34 @@ bool IsValidInSessionWindow(aura::Window* window) {
   return true;
 }
 
+// Filters out tabs that should not be embedded/clustered.
+bool IsValidTab(TabClusterUIItem* tab) {
+  aura::Window* browser_window = tab->current_info().browser_window;
+
+  // Filter out the browser window which is not on the active desk.
+  if (!desks_util::BelongsToActiveDesk(browser_window)) {
+    return false;
+  }
+
+  // Filter out non-browser tab info.
+  if (!IsBrowserWindow(browser_window)) {
+    return false;
+  }
+
+  // Filter out invalid window.
+  if (!IsValidInSessionWindow(browser_window)) {
+    return false;
+  }
+  return true;
+}
+
+// Checks whether `tab` has been meaningfully updated and we should generate
+//  and cache a new embedding in the backend.
+bool ShouldCreateEmbedding(TabClusterUIItem* tab) {
+  return tab->current_info().title != tab->old_info().title ||
+         tab->current_info().source != tab->old_info().source;
+}
+
 // Gets the data of the tabs opening on the active desk. Unordered set is used
 // because we need to dedup identical tabs, but we don't need to sort them.
 std::unordered_set<coral::mojom::TabPtr> GetInSessionTabData() {
@@ -92,26 +120,12 @@ std::unordered_set<coral::mojom::TabPtr> GetInSessionTabData() {
   }
   for (const std::unique_ptr<TabClusterUIItem>& tab :
        Shell::Get()->tab_cluster_ui_controller()->tab_items()) {
-    aura::Window* browser_window = tab->current_info().browser_window;
-
-    // Filter out the browser window which is not on the active desk.
-    if (!desks_util::BelongsToActiveDesk(browser_window)) {
-      continue;
+    if (IsValidTab(tab.get())) {
+      auto tab_mojom = coral::mojom::Tab::New();
+      tab_mojom->title = tab->current_info().title;
+      tab_mojom->url = GURL(tab->current_info().source);
+      tab_data.insert(std::move(tab_mojom));
     }
-
-    // Filter out non-browser tab info.
-    if (!IsBrowserWindow(browser_window)) {
-      continue;
-    }
-
-    // Filter out invalid window.
-    if (!IsValidInSessionWindow(browser_window)) {
-      continue;
-    }
-    auto tab_mojom = coral::mojom::Tab::New();
-    tab_mojom->title = tab->current_info().title;
-    tab_mojom->url = GURL(tab->current_info().source);
-    tab_data.insert(std::move(tab_mojom));
   }
 
   return tab_data;
@@ -176,11 +190,11 @@ BirchCoralProvider* BirchCoralProvider::Get() {
 }
 
 void BirchCoralProvider::OnTabItemAdded(TabClusterUIItem* tab_item) {
-  // TODO(yulunwu) stream tab item metadata to backend for async embedding
+  MaybeCacheTabEmbedding(tab_item);
 }
 
 void BirchCoralProvider::OnTabItemUpdated(TabClusterUIItem* tab_item) {
-  // TODO(yulunwu) stream tab item metadata to backend for async embedding
+  MaybeCacheTabEmbedding(tab_item);
 }
 
 void BirchCoralProvider::OnTabItemRemoved(TabClusterUIItem* tab_item) {}
@@ -324,6 +338,35 @@ void BirchCoralProvider::FilterCoralContentItems(
     std::vector<coral::mojom::EntityPtr>* items) {
   CHECK(coral_item_remover_);
   coral_item_remover_->FilterRemovedItems(items);
+}
+
+void BirchCoralProvider::MaybeCacheTabEmbedding(TabClusterUIItem* tab_item) {
+  if (IsValidTab(tab_item) && ShouldCreateEmbedding(tab_item)) {
+    CacheTabEmbedding(tab_item);
+  }
+}
+
+void BirchCoralProvider::CacheTabEmbedding(TabClusterUIItem* tab_item) {
+  if (!Shell::Get()->coral_controller()) {
+    return;
+  }
+  auto tab_mojom = coral::mojom::Tab::New();
+  tab_mojom->title = tab_item->current_info().title;
+  tab_mojom->url = GURL(tab_item->current_info().source);
+
+  std::vector<CoralRequest::ContentItem> active_tab_app_data;
+  active_tab_app_data.push_back(
+      coral::mojom::Entity::NewTab(std::move(tab_mojom)));
+  CoralRequest request;
+  request.set_content(std::move(active_tab_app_data));
+  Shell::Get()->coral_controller()->CacheEmbeddings(
+      std::move(request),
+      base::BindOnce(&BirchCoralProvider::HandleEmbeddingResult,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void BirchCoralProvider::HandleEmbeddingResult(bool success) {
+  // TODO(yulunwu) Add metrics.
 }
 
 }  // namespace ash

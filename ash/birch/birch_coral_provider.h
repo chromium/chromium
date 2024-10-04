@@ -73,6 +73,14 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
   // user. The list is mutated in place.
   void FilterCoralContentItems(std::vector<coral::mojom::EntityPtr>* items);
 
+  // Only cache embeddings for valid tabs/windows.
+  void MaybeCacheTabEmbedding(TabClusterUIItem* tab_item);
+
+  // Sends a request to the coral backend to cache the embedding for `tab_item`.
+  void CacheTabEmbedding(TabClusterUIItem* tab_item);
+
+  void HandleEmbeddingResult(bool success);
+
   const raw_ptr<BirchModel> birch_model_;
 
   // The request sent to the coral backend.
