@@ -85,6 +85,18 @@ extern const char kSafetyCheckNotificationsImpressionTrigger[];
 // allowed for the Safety Check notifications opt-in button.
 extern const char kSafetyCheckNotificationsImpressionLimit[];
 
+// Name of the parameter that controls whether Passwords notifications
+// are permitted to be sent to the user for Safety Check.
+extern const char kSafetyCheckAllowPasswordsNotifications[];
+
+// Name of the parameter that controls whether Safe Browsing notifications
+// are permitted to be sent to the user for Safety Check.
+extern const char kSafetyCheckAllowSafeBrowsingNotifications[];
+
+// Name of the parameter that controls whether Update Chrome notifications
+// are permitted to be sent to the user for Safety Check.
+extern const char kSafetyCheckAllowUpdateChromeNotifications[];
+
 // Defines param values for the Safety Check Notifications feature,
 // controlling how notifications are presented to the user.
 enum class SafetyCheckNotificationsExperimentalArm {
@@ -372,6 +384,21 @@ bool ShouldHideSafetyCheckModuleIfNoIssues();
 
 // Whether Safety Check Push Notifications should be sent to the user.
 bool IsSafetyCheckNotificationsEnabled();
+
+// Checks if Passwords notifications are permitted to be sent to the user
+// for Safety Check, based on the Finch parameter
+// `kSafetyCheckAllowPasswordsNotifications`.
+bool AreSafetyCheckPasswordsNotificationsAllowed();
+
+// Checks if Safe Browsing notifications are permitted to be sent to the user
+// for Safety Check, based on the Finch parameter
+// `kSafetyCheckAllowSafeBrowsingNotifications`.
+bool AreSafetyCheckSafeBrowsingNotificationsAllowed();
+
+// Checks if Update Chrome notifications are permitted to be sent to the user
+// for Safety Check, based on the Finch parameter
+// `kSafetyCheckAllowUpdateChromeNotifications`.
+bool AreSafetyCheckUpdateChromeNotificationsAllowed();
 
 // Whether the refactored implementation of the `OmahaService` is enabled.
 bool IsOmahaServiceRefactorEnabled();

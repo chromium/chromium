@@ -369,7 +369,7 @@ void SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications(
   UNNotificationRequest* password_notification =
       PasswordNotificationRequest(password_state, insecure_password_counts);
 
-  if (password_notification) {
+  if (password_notification && AreSafetyCheckPasswordsNotificationsAllowed()) {
     [UNUserNotificationCenter.currentNotificationCenter
         addNotificationRequest:password_notification
          withCompletionHandler:nil];
@@ -389,7 +389,8 @@ void SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications(
   UNNotificationRequest* safe_browsing_notification =
       SafeBrowsingNotificationRequest(safe_browsing_state);
 
-  if (safe_browsing_notification) {
+  if (safe_browsing_notification &&
+      AreSafetyCheckSafeBrowsingNotificationsAllowed()) {
     [UNUserNotificationCenter.currentNotificationCenter
         addNotificationRequest:safe_browsing_notification
          withCompletionHandler:nil];
@@ -409,7 +410,8 @@ void SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications(
   UNNotificationRequest* update_chrome_notification =
       UpdateChromeNotificationRequest(update_chrome_state);
 
-  if (update_chrome_notification) {
+  if (update_chrome_notification &&
+      AreSafetyCheckUpdateChromeNotificationsAllowed()) {
     [UNUserNotificationCenter.currentNotificationCenter
         addNotificationRequest:update_chrome_notification
          withCompletionHandler:nil];
