@@ -1776,16 +1776,6 @@
     "expiry_milestone": 132
   },
   {
-    "name": "cros-battery-saver",
-    "owners": [ "chromeos-bsm@google.com", "cwd@chromium.org" ],
-    "expiry_milestone": 138
-  },
-  {
-    "name": "cros-battery-saver-always-on",
-    "owners": [ "chromeos-bsm@google.com", "cwd@chromium.org" ],
-    "expiry_milestone": 122
-  },
-  {
     "name": "cros-block-warnings",
     "owners": [ "janlanik@google.com", "kisliaks@google.com" ],
     "expiry_milestone": 135

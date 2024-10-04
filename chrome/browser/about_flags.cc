@@ -10282,13 +10282,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media_session::features::kAudioFocusEnforcement)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"cros-battery-saver", flag_descriptions::kCrosBatterySaverName,
-     flag_descriptions::kCrosBatterySaverDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kBatterySaver)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-        //
-
     {"enable-process-per-site-up-to-main-frame-threshold",
      flag_descriptions::kEnableProcessPerSiteUpToMainFrameThresholdName,
      flag_descriptions::kEnableProcessPerSiteUpToMainFrameThresholdDescription,
@@ -10313,13 +10306,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          blink::features::kGetUserMediaDeferredDeviceSettingsSelection)},
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"cros-battery-saver-always-on",
-     flag_descriptions::kCrosBatterySaverAlwaysOnName,
-     flag_descriptions::kCrosBatterySaverAlwaysOnDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kBatterySaverAlwaysOn)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"render-document", flag_descriptions::kRenderDocumentName,
      flag_descriptions::kRenderDocumentDescription, kOsAll,
