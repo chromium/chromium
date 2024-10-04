@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/slim/frame_sink_impl.h"
 
 #include <string>
@@ -179,11 +174,10 @@ void FrameSinkImpl::UploadUIResource(cc::UIResourceId resource_id,
   constexpr gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
   gpu::SharedImageUsageSet shared_image_usage =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-  uploaded_resource.shared_image = sii->CreateSharedImage(
-      {format, resource_bitmap.GetSize(), color_space, shared_image_usage,
-       "SlimCompositorUIResource"},
-      base::span<const uint8_t>(resource_bitmap.GetPixels(),
-                                resource_bitmap.SizeInBytes()));
+  uploaded_resource.shared_image =
+      sii->CreateSharedImage({format, resource_bitmap.GetSize(), color_space,
+                              shared_image_usage, "SlimCompositorUIResource"},
+                             resource_bitmap.GetPixels());
   CHECK(uploaded_resource.shared_image);
   gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
 

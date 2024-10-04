@@ -47,6 +47,8 @@ component("color_utils") {
 component("gfx_skia") {
   sources = [
     "gfx_skia_export.h",
+    "skia_span_util.cc",
+    "skia_span_util.h",
     "skia_util.cc",
     "skia_util.h",
   ]

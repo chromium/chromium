@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "cc/trees/trace_utils.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/trees/layer_tree_host_impl.h"
 
 #include <stddef.h>
@@ -112,6 +106,7 @@
 #include "cc/trees/render_frame_metadata_observer.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/single_thread_proxy.h"
+#include "cc/trees/trace_utils.h"
 #include "cc/trees/tree_synchronizer.h"
 #include "cc/view_transition/view_transition_request.h"
 #include "components/viz/common/features.h"
@@ -150,6 +145,7 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/gfx/skia_span_util.h"
 
 namespace cc {
 namespace {
@@ -5009,7 +5005,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
       client_shared_image = sii->CreateSharedImage(
           {format, upload_size, color_space, shared_image_usage,
            "LayerTreeHostUIResource"},
-          base::span<const uint8_t>(bitmap.GetPixels(), bitmap.SizeInBytes()));
+          bitmap.GetPixels());
       CHECK(client_shared_image);
     } else {
       DCHECK_EQ(bitmap.GetFormat(), UIResourceBitmap::RGBA8);
@@ -5019,9 +5015,8 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
           SkImageInfo::MakeN32Premul(gfx::SizeToSkISize(upload_size));
       sk_sp<SkSurface> surface = SkSurfaces::WrapPixels(
           dst_info, shared_mapping.memory(), dst_info.minRowBytes());
-      surface->getCanvas()->writePixels(
-          src_info, const_cast<uint8_t*>(bitmap.GetPixels()),
-          bitmap.row_bytes(), 0, 0);
+      surface->getCanvas()->writePixels(src_info, bitmap.GetPixels().data(),
+                                        bitmap.row_bytes(), 0, 0);
     }
   } else {
     // Only support auto-resizing for N32 textures (since this is primarily for
@@ -5040,7 +5035,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
 
     SkBitmap source_bitmap;
     source_bitmap.setInfo(info, bitmap.row_bytes());
-    source_bitmap.setPixels(const_cast<uint8_t*>(bitmap.GetPixels()));
+    source_bitmap.setPixels(const_cast<uint8_t*>(bitmap.GetPixels().data()));
 
     // This applies the scale to draw the |bitmap| into |scaled_surface|. For
     // gpu compositing, we scale into a software bitmap-backed SkSurface here,
@@ -5076,9 +5071,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
       client_shared_image = sii->CreateSharedImage(
           {format, upload_size, color_space, shared_image_usage,
            "LayerTreeHostUIResource"},
-          base::span<const uint8_t>(
-              reinterpret_cast<const uint8_t*>(pixmap.addr()),
-              pixmap.computeByteSize()));
+          gfx::SkPixmapToSpan(pixmap));
       CHECK(client_shared_image);
     }
   }

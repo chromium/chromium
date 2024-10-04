@@ -39,8 +39,10 @@ per-file interpolated_transform*=vollick@chromium.org
 per-file skia_util*=danakj@chromium.org
 per-file skia_paint_util*=danakj@chromium.org
 
+# Skia span helpers.
+per-file skia_span_util*=kylechar@chromium.org
+
 # GpuFence interfaces.
-per-file gpu_fence*=dcastagna@chromium.org
 per-file gpu_fence*=spang@chromium.org
 
 # GPU memory buffer
