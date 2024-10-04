@@ -28,10 +28,10 @@ import type {FledgeState, PrivacySandboxBrowserProxy, PrivacySandboxInterest} fr
 import {PrivacySandboxBrowserProxyImpl} from './privacy_sandbox_browser_proxy.js';
 import {getTemplate} from './privacy_sandbox_fledge_subpage.html.js';
 
+// TODO(b/369853368): Remove V2 suffix from variables/code/strings.
 export interface SettingsPrivacySandboxFledgeSubpageElement {
   $: {
     fledgeToggle: SettingsToggleButtonElement,
-    footer: HTMLElement,
     footerV2: HTMLElement,
   };
 }
@@ -126,12 +126,6 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
         value: false,
         observer: 'onBlockedSitesExpanded_',
       },
-
-      // TODO(b/370758848): Cleanup Fledge Subpage by removing shouldShowV2_.
-      shouldShowV2_: {
-        type: Boolean,
-        value: true,
-      },
     };
   }
 
@@ -151,17 +145,12 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
       PrivacySandboxBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
-  private shouldShowV2_: boolean;
 
   override ready() {
     super.ready();
 
     this.privacySandboxBrowserProxy_.getFledgeState().then(
         state => this.onFledgeStateChanged_(state));
-
-    this.$.footer.querySelectorAll('a').forEach(
-        link =>
-            link.setAttribute('aria-description', this.i18n('opensInNewTab')));
 
     this.$.footerV2.querySelectorAll('a').forEach(
         link =>
