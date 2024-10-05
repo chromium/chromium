@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelper;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
@@ -41,7 +42,12 @@ public class LocaleManager implements DefaultSearchEngineDialogHelper.Delegate {
 
     /** Default constructor. */
     private LocaleManager() {
-        mDelegate = new LocaleManagerDelegateImpl();
+        LocaleManagerDelegate delegate = ServiceLoaderUtil.maybeCreate(LocaleManagerDelegate.class);
+        if (delegate == null) {
+            // Fallback if no @ServiceImpl is found.
+            delegate = new LocaleManagerDelegate();
+        }
+        mDelegate = delegate;
         mDelegate.setDefaulSearchEngineDelegate(this);
     }
 

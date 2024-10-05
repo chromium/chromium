@@ -39,8 +39,9 @@ import java.util.List;
 
 /**
  * Base class for defining methods where different behavior is required by downstream targets.
- * The correct version of LocaleManagerDelegateImpl} will be determined at compile tim
- * via build rules.
+ *
+ * <p>The correct version of {@link LocaleManagerDelegate} will be determined at runtime by
+ * ServiceLoader.
  */
 public class LocaleManagerDelegate {
     private static final String SPECIAL_LOCALE_ID = "US";
