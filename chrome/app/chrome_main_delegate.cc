@@ -46,6 +46,7 @@
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/chrome_resource_bundle_helper.h"
 #include "chrome/browser/defaults.h"
+#include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/mac/code_sign_clone_manager.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
@@ -781,6 +782,11 @@ void RecordMainStartupMetrics(const StartupTimestamps& timestamps) {
 }
 
 #if BUILDFLAG(IS_WIN)
+constexpr wchar_t kOnResourceExhaustedMessage[] =
+    L"Your computer has run out of resources and cannot start "
+    PRODUCT_SHORTNAME_STRING
+    L". Sign out of Windows or restart your computer and try again.";
+
 void OnResourceExhausted() {
   // RegisterClassEx will fail if the session's pool of ATOMs is exhausted. This
   // appears to happen most often when the browser is being driven by automation
@@ -791,14 +797,17 @@ void OnResourceExhausted() {
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kNoErrorDialogs)) {
     static constexpr wchar_t kMessageBoxTitle[] = L"System resource exhausted";
-    static constexpr wchar_t kMessage[] =
-        L"Your computer has run out of resources and cannot start "
-        PRODUCT_SHORTNAME_STRING
-        L". Sign out of Windows or restart your computer and try again.";
-    ::MessageBox(nullptr, kMessage, kMessageBoxTitle, MB_OK);
+    ::MessageBox(nullptr, kOnResourceExhaustedMessage, kMessageBoxTitle, MB_OK);
   }
   base::Process::TerminateCurrentProcessImmediately(
       chrome::RESULT_CODE_SYSTEM_RESOURCE_EXHAUSTED);
+}
+
+// Alternate version of the above handler that is used when running in headless
+// mode.
+void OnResourceExhaustedForHeadless() {
+  LOG(ERROR) << kOnResourceExhaustedMessage;
+  base::Process::TerminateCurrentProcessImmediately(EXIT_FAILURE);
 }
 #endif  // !BUILDFLAG(IS_WIN)
 
@@ -1975,7 +1984,9 @@ std::optional<int> ChromeMainDelegate::PreBrowserMain() {
 
 #if BUILDFLAG(IS_WIN)
   // Register callback to handle resource exhaustion.
-  base::win::SetOnResourceExhaustedFunction(&OnResourceExhausted);
+  base::win::SetOnResourceExhaustedFunction(
+      headless::IsHeadlessMode() ? &OnResourceExhaustedForHeadless
+                                 : &OnResourceExhausted);
 
   if (IsExtensionPointDisableSet()) {
     sandbox::SandboxFactory::GetBrokerServices()->SetStartingMitigations(
