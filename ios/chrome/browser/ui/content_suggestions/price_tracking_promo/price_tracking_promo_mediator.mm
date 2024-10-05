@@ -10,6 +10,8 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/commerce/core/pref_names.h"
@@ -35,6 +37,27 @@
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ui/base/l10n/l10n_util.h"
+
+namespace {
+
+// Enum corresponding to enums.xml's PriceTrackingPromoOptInFlow.
+// Entries should not be renumbered and numeric values should never be reused.
+enum class PriceTrackingPromoOptInFlow {
+  // User has never used notifications in the app before.
+  kFirstTime = 0,
+  // User has notifications turned on, but not for price tracking.
+  kEnablePriceTracking = 1,
+  // User has notifications turned off and will be prompted to re-enable them.
+  kReenableNotifications = 2,
+  kMaxValue = kReenableNotifications,
+};
+
+void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
+  base::UmaHistogramEnumeration(
+      "Commerce.PriceTracking.MagicStackPromo.OptInFlow", opt_in_flow);
+}
+
+}  // namespace
 
 @implementation PriceTrackingPromoMediator {
   raw_ptr<commerce::ShoppingService> _shoppingService;
@@ -126,6 +149,8 @@
 #pragma mark - PriceTrackingPromoCommands
 
 - (void)allowPriceTrackingNotifications {
+  base::RecordAction(
+      base::UserMetricsAction("Commerce.PriceTracking.MagicStackPromo.Allow"));
   __weak PriceTrackingPromoMediator* weakSelf = self;
   [PushNotificationUtil requestPushNotificationPermission:^(
                             BOOL granted, BOOL promptShown, NSError* error) {
@@ -147,11 +172,31 @@
 - (void)requestPushNotificationDoneWithGranted:(BOOL)granted
                                    promptShown:(BOOL)promptShown
                                          error:(NSError*)error {
+  // If prompt was shown, it is the first time the user has
+  // used notifications in the app.
+  if (promptShown) {
+    LogOptInFlowHistogram(PriceTrackingPromoOptInFlow::kFirstTime);
+    if (granted) {
+      base::RecordAction(base::UserMetricsAction(
+          "Commerce.PriceTracking.MagicStackPromo.FirstTime.Allow"));
+    } else {
+      base::RecordAction(base::UserMetricsAction(
+          "Commerce.PriceTracking.MagicStackPromo.FirstTime.Deny"));
+    }
+  } else if (granted) {
+    // If the prompt wasn't shown but permissions are granted, the
+    // user has previously enabled notifications in the app.
+    LogOptInFlowHistogram(PriceTrackingPromoOptInFlow::kEnablePriceTracking);
+  }
+
   if (granted && !error) {
     [self enablePriceTrackingNotificationsSettings];
     [self.dispatcher showSnackbarMessage:[self snackbarMessage]];
     [self.delegate removePriceTrackingPromo];
   } else if (!granted && !promptShown && !error) {
+    // If the prompt wasn't shown and permission is denied, the user
+    // has turned off notifications in the app before.
+    LogOptInFlowHistogram(PriceTrackingPromoOptInFlow::kReenableNotifications);
     [self.actionDelegate showPriceTrackingPromoAlertCoordinator];
   } else {
     // Catch all other scenarios e.g. first time opt in and user

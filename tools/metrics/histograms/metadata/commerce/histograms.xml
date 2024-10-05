@@ -721,6 +721,24 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </token>
 </histogram>
 
+<histogram name="Commerce.PriceTracking.MagicStackPromo.OptInFlow"
+    enum="PriceTrackingPromoOptInFlow" expires_after="2025-10-01">
+  <owner>davidjm@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records which opt in flow the user experiences when they enable price
+    tracking notificaitons in the price tracking promotion in the magic stack
+    upon tapping 'Allow price tracking notifications'. There are three flows: 1)
+    User has never enabled notifications for the app before. 2) User has enabled
+    notifications for the app but not price tracking. 3) User has turned off
+    notifications for the app.
+
+    The price tracking promotion is for users who use price tracking on another
+    platform (e.g. Desktop) but haven't discovered the feature on mobile yet.
+  </summary>
+</histogram>
+
 <histogram name="Commerce.PriceTracking.PriceInsightsSidePanel.{Action}"
     enum="PriceInsightsPriceBucket" expires_after="2025-02-23">
   <owner>yuezhanggg@chromium.org</owner>
