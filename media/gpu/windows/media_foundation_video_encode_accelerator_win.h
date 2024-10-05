@@ -37,6 +37,11 @@
 
 namespace media {
 
+struct FramerateAndResolution {
+  uint32_t frame_rate;
+  gfx::Size resoluion;
+};
+
 class VideoRateControlWrapper;
 class TemporalScalabilityIdExtractor;
 
@@ -342,7 +347,8 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // events sent by MFT encoder.
   uint32_t encoder_needs_input_counter_;
 
-  gfx::Size max_resolution_;
+  // Max supported framerate and resolution combinations.
+  std::vector<FramerateAndResolution> max_framerate_and_resolutions_;
 
   // Declared last to ensure that all weak pointers are invalidated before
   // other destructors run.
