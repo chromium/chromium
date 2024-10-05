@@ -67,12 +67,8 @@ class AIManagerKeyedService : public KeyedService,
   void OnModelPathValidationComplete(const std::string& model_path,
                                      bool is_valid_path);
 
-  void CheckModelPathOverrideCanCreateSession(
-      const std::string& model_path,
-      optimization_guide::ModelBasedCapabilityKey capability);
-  void CanOptimizationGuideKeyedServiceCreateGenericSession(
-      optimization_guide::ModelBasedCapabilityKey capability,
-      CanCreateAssistantCallback callback);
+  void CanCreateSession(optimization_guide::ModelBasedCapabilityKey capability,
+                        CanCreateAssistantCallback callback);
 
   void RemoveReceiver(mojo::ReceiverId receiver_id);
 

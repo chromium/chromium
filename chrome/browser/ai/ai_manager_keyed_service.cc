@@ -339,17 +339,8 @@ void AIManagerKeyedService::AddReceiver(
 
 void AIManagerKeyedService::CanCreateAssistant(
     CanCreateAssistantCallback callback) {
-  auto model_path =
-      optimization_guide::switches::GetOnDeviceModelExecutionOverride();
-  if (model_path) {
-    CheckModelPathOverrideCanCreateSession(
-        model_path.value(),
-        optimization_guide::ModelBasedCapabilityKey::kPromptApi);
-  }
-  // If the model path is not provided, we skip the model path check.
-  CanOptimizationGuideKeyedServiceCreateGenericSession(
-      optimization_guide::ModelBasedCapabilityKey::kPromptApi,
-      std::move(callback));
+  CanCreateSession(optimization_guide::ModelBasedCapabilityKey::kPromptApi,
+                   std::move(callback));
 }
 
 std::unique_ptr<AIAssistant> AIManagerKeyedService::CreateAssistantInternal(
@@ -436,17 +427,8 @@ void AIManagerKeyedService::CreateAssistant(
 
 void AIManagerKeyedService::CanCreateSummarizer(
     CanCreateSummarizerCallback callback) {
-  auto model_path =
-      optimization_guide::switches::GetOnDeviceModelExecutionOverride();
-  if (model_path) {
-    CheckModelPathOverrideCanCreateSession(
-        model_path.value(),
-        optimization_guide::ModelBasedCapabilityKey::kSummarize);
-  }
-  // If the model path is not provided, we skip the model path check.
-  CanOptimizationGuideKeyedServiceCreateGenericSession(
-      optimization_guide::ModelBasedCapabilityKey::kSummarize,
-      std::move(callback));
+  CanCreateSession(optimization_guide::ModelBasedCapabilityKey::kSummarize,
+                   std::move(callback));
 }
 
 void AIManagerKeyedService::CreateSummarizer(
@@ -503,23 +485,23 @@ void AIManagerKeyedService::CreateRewriter(
             std::move(client));
 }
 
-void AIManagerKeyedService::CheckModelPathOverrideCanCreateSession(
-    const std::string& model_path,
-    optimization_guide::ModelBasedCapabilityKey capability_) {
-  // If the model path is provided, we do this additional check and post a
-  // warning message to dev tools if it's invalid.
-  // This needs to be done in a task runner with `MayBlock` trait.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(IsModelPathValid, model_path),
-      base::BindOnce(&AIManagerKeyedService::OnModelPathValidationComplete,
-                     weak_factory_.GetWeakPtr(), model_path));
-}
+void AIManagerKeyedService::CanCreateSession(
+    optimization_guide::ModelBasedCapabilityKey capability,
+    CanCreateAssistantCallback callback) {
+  auto model_path =
+      optimization_guide::switches::GetOnDeviceModelExecutionOverride();
+  if (model_path.has_value()) {
+    // If the model path is provided, we do this additional check and post a
+    // warning message to dev tools if it's invalid.
+    // This needs to be done in a task runner with `MayBlock` trait.
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(IsModelPathValid, model_path.value()),
+        base::BindOnce(&AIManagerKeyedService::OnModelPathValidationComplete,
+                       weak_factory_.GetWeakPtr(), model_path.value()));
+  }
 
-void AIManagerKeyedService::
-    CanOptimizationGuideKeyedServiceCreateGenericSession(
-        optimization_guide::ModelBasedCapabilityKey capability,
-        CanCreateAssistantCallback callback) {
+  // Check if the optimization guide service can create session.
   CHECK(browser_context_);
   OptimizationGuideKeyedService* service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(
