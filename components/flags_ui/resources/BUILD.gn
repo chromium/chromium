@@ -9,17 +9,18 @@ build_webui("build") {
 
   static_files = [ "flags.html" ]
 
-  web_component_files = [
-    "experiment.ts",
+  non_web_component_files = [
+    "app.html.ts",
     "app.ts",
+    "experiment.html.ts",
+    "experiment.ts",
+    "flags_browser_proxy.ts",
   ]
+
   css_files = [
     "app.css",
     "experiment.css",
   ]
-  html_to_wrapper_template = "detect"
-
-  non_web_component_files = [ "flags_browser_proxy.ts" ]
 
   ts_composite = true
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]

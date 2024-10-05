@@ -1,3 +1,14 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {AppElement} from './app.js';
+
+export function getHtml(this: AppElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
 <div id="header">
   <div class="flex-container">
     <div class="flex search-container">
@@ -22,7 +33,7 @@
 <div id="body-container">
   <div id="flagsTemplate">
 <if expr="chromeos_lacros or chromeos_ash">
-      <div class="os-link-container" id="os-link-container"
+    <div class="os-link-container" id="os-link-container"
           ?hidden="${!this.data.showSystemFlagsLink}">
       <span id="os-flags-link-container" class="os-link-icon"></span>
       <span aria-hidden="true" id="os-link-desc">$i18n{os-flags-text1}</span>
@@ -134,3 +145,6 @@
     </div>
   </div>
 </div>
+<!--_html_template_end_-->`;
+  // clang-format on
+}
