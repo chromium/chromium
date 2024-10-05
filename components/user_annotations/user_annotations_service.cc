@@ -294,7 +294,7 @@ void UserAnnotationsService::SendFormSubmissionResult(
 void UserAnnotationsService::RemoveEntry(EntryID entry_id,
                                          base::OnceClosure callback) {
   if (!ShouldPersistUserAnnotations()) {
-    std::erase_if(entries_, [entry_id](Entry entry) {
+    std::erase_if(entries_, [entry_id](const Entry& entry) {
       return entry.entry_id == entry_id;
     });
     RecordRemoveEntryResult(UserAnnotationsExecutionResult::kSuccess);
