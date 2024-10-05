@@ -654601,6 +654601,13 @@
        {}
       ]
      ],
+     "duration.html": [
+      "245670de2aedf8e6895d5ccb59e188f8b195fc49",
+      [
+       null,
+       {}
+      ]
+     ],
      "effect-updateTiming.html": [
       "0c7a546572149de772eb2ab7ce753106a0d1774f",
       [
@@ -654804,6 +654811,13 @@
      ],
      "contain-alignment.html": [
       "8b61a9ab81ca46aa2c1530e00a7332fc70bf05cb",
+      [
+       null,
+       {}
+      ]
+     ],
+     "duration.html": [
+      "05d35801307d5c6a11a38aa7aef249a8e8223daa",
       [
        null,
        {}
@@ -687540,6 +687554,13 @@
      "DocumentTimeline": {
       "constructor.html": [
        "ca0997ac8f9012b7d019760be97e09fa0f837179",
+       [
+        null,
+        {}
+       ]
+      ],
+      "duration.tentative.html": [
+       "8a307f986e9757a80ec6ad8dc238ab9e8e4e542f",
        [
         null,
         {}
