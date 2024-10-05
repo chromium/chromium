@@ -8,11 +8,24 @@
 #include "base/values.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/ui/webui/reset_password/reset_password.mojom.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 using password_manager::metrics_util::PasswordType;
+
+class ResetPasswordUI;
+
+class ResetPasswordUIConfig
+    : public content::DefaultWebUIConfig<ResetPasswordUI> {
+ public:
+  ResetPasswordUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUIResetPasswordHost) {}
+};
 
 // The WebUI for chrome://reset-password/.
 class ResetPasswordUI : public ui::MojoWebUIController {

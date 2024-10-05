@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/webui/user_actions/user_actions_ui.h"
 #include "chrome/browser/ui/webui/version/version_ui.h"
 #include "components/nacl/common/buildflags.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/security_interstitials/content/connection_help_ui.h"
 #include "components/security_interstitials/content/known_interception_disclosure_ui.h"
 #include "content/public/browser/webui_config_map.h"
@@ -162,7 +163,20 @@
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/ui/webui/signin/batch_upload_ui.h"
+#include "chrome/browser/ui/webui/signin/dice_web_signin_intercept_ui.h"
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/webui/signin/inline_login_ui.h"
+#endif
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/ui/webui/signin/signin_reauth_ui.h"
+#endif
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+#include "chrome/browser/ui/webui/reset_password/reset_password_ui.h"
+#endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
@@ -342,7 +356,20 @@ void RegisterChromeWebUIConfigs() {
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   map.AddWebUIConfig(std::make_unique<BatchUploadUIConfig>());
+  map.AddWebUIConfig(std::make_unique<DiceWebSigninInterceptUIConfig>());
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_ASH)
+  map.AddWebUIConfig(std::make_unique<InlineLoginUIConfig>());
+#endif
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  map.AddWebUIConfig(std::make_unique<SigninReauthUIConfig>());
+#endif
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  map.AddWebUIConfig(std::make_unique<ResetPasswordUIConfig>());
+#endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
   map.AddWebUIConfig(std::make_unique<ManagedUserProfileNoticeUIConfig>());

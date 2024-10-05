@@ -219,7 +219,10 @@ source_set("login") {
 
   if (enable_dice_support || is_chromeos) {
     sources += [ "inline_login_ui.h" ]
-    public_deps += [ "//ui/web_dialogs" ]
+    public_deps += [
+      "//chrome/common",
+      "//ui/web_dialogs",
+    ]
   }
 }
 
