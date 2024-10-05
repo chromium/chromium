@@ -42,13 +42,6 @@
        {}
       ]
      ],
-     "aom-in-destroyed-iframe.html": [
-      "c8f0aca12ebbf8719228e0d857d8e5c799e3b669",
-      [
-       null,
-       {}
-      ]
-     ],
      "append-image-using-illegal-map.html": [
       "c78e74eeed7b6dfee3b267c4b81bd2f511923de9",
       [
@@ -175,34 +168,6 @@
        {}
       ]
      ],
-     "computed-accessible-child-of-pseudo-element.html": [
-      "b00ee7ba56f2caee01532f62df2dc2d81f8b3bbf",
-      [
-       null,
-       {}
-      ]
-     ],
-     "computed-accessible-text-node.html": [
-      "47183ce6ec64a630f0a6c78102337ea3f0667b7d",
-      [
-       null,
-       {}
-      ]
-     ],
-     "computed-node-checked.html": [
-      "47e715b233884fad02d03a111fe03448b1faa92e",
-      [
-       null,
-       {}
-      ]
-     ],
-     "computed-node.html": [
-      "159b217a086c0a8bbe246a976c0ad8f6c8a57dc8",
-      [
-       null,
-       {}
-      ]
-     ],
      "content-visibility-focusable-scroller-descendant.html": [
       "e9b027b5c7b94f22d17c1e726a819bb9b573612d",
       [
@@ -233,13 +198,6 @@
      ],
      "display-table-column.html": [
       "6f34f27fa7efd3e22edc6c76ac9f343487f8b7d6",
-      [
-       null,
-       {}
-      ]
-     ],
-     "displaylocked-serialize.html": [
-      "8dd8efaa6af5f48a4148dc142348888b129e53bf",
       [
        null,
        {}
@@ -422,13 +380,6 @@
      ],
      "select-in-display-none.html": [
       "dc113c76e854cf2d2a72029afe8828dab92d6b44",
-      [
-       null,
-       {}
-      ]
-     ],
-     "serialize-with-no-document.html": [
-      "f7719cf2ff1838b1125e08c5f86cf57910732c0e",
       [
        null,
        {}
@@ -165236,7 +165187,7 @@
        ]
       ],
       "line-clamp-auto-011.tentative.html": [
-       "00076a5336e89004b6a2143e9bd6c72ec9fe95e0",
+       "50513516cc9daa3d90063277f2d8d00e52db4f78",
        [
         null,
         [
@@ -165418,25 +165369,12 @@
        ]
       ],
       "line-clamp-auto-025.tentative.html": [
-       "ee394b2a76d12a276c8809577e92993e2e32e7a8",
+       "ab741d3df4d9ba823897ee1bcff1de9118353ada",
        [
         null,
         [
          [
-          "/css/css-overflow/line-clamp/reference/line-clamp-auto-025-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "line-clamp-auto-026.tentative.html": [
-       "f616cbed028a82638dfd84465e134230eb109219",
-       [
-        null,
-        [
-         [
-          "/css/css-overflow/line-clamp/reference/line-clamp-auto-026-ref.html",
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
           "=="
          ]
         ],
@@ -165508,19 +165446,6 @@
         {}
        ]
       ],
-      "line-clamp-auto-032.tentative.html": [
-       "17c6981ae33f115d8b7ab4245f44c6c837b44d1a",
-       [
-        null,
-        [
-         [
-          "/css/css-overflow/line-clamp/reference/line-clamp-auto-032-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
       "line-clamp-auto-033.tentative.html": [
        "f18d7eefb271e8529d0f2dedde8fe3fe9d7ea947",
        [
@@ -165535,12 +165460,12 @@
        ]
       ],
       "line-clamp-auto-034.tentative.html": [
-       "ebb676dfd8e0fa265ddf0280b3987fd1eb8f3587",
+       "96fe675d1b10c74516b7d2e1a38425b220817a52",
        [
         null,
         [
          [
-          "/css/css-overflow/line-clamp/reference/line-clamp-auto-034-ref.html",
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
           "=="
          ]
         ],
@@ -165574,12 +165499,12 @@
        ]
       ],
       "line-clamp-auto-037.tentative.html": [
-       "4a2fc3c82064e12b5ff282c56f4e3a03035ee9e9",
+       "37b366660241f9542b273d5999d357b8bdb497fe",
        [
         null,
         [
          [
-          "/css/css-overflow/line-clamp/reference/line-clamp-auto-011-ref.html",
+          "/css/css-overflow/line-clamp/reference/line-clamp-auto-037-ref.html",
           "=="
          ]
         ],
@@ -297603,6 +297528,19 @@
         {}
        ]
       ],
+      "text-path-transformed.html": [
+       "0c1b5a5d0e66fcd91e24692156a6e1eb0144b43e",
+       [
+        null,
+        [
+         [
+          "/svg/text/reftests/text-path-transformed-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "text-shape-inside-001.svg": [
        "248fe1a44f98099dd678e9ef63f1b97a5c09cfdf",
        [
@@ -338399,7 +338337,7 @@
         []
        ],
        "line-clamp-auto-011-ref.html": [
-        "5f7120ee39a2014f75f2f700ebedcc0b0e6e6275",
+        "27a2e7b2bc07ba80f6bfda6b6b10f2c417b27bbb",
         []
        ],
        "line-clamp-auto-016-ref.html": [
@@ -338426,14 +338364,6 @@
         "adb4b6dc6edf2a401cd4016f394c74b9bf9b89cb",
         []
        ],
-       "line-clamp-auto-025-ref.html": [
-        "a76468d6d546e1e58a15a604a2ae476cf8dfec27",
-        []
-       ],
-       "line-clamp-auto-026-ref.html": [
-        "44d503a05220fdf89caf4722961fc478ae943350",
-        []
-       ],
        "line-clamp-auto-027-ref.html": [
         "fa0ade7a61d0729dc216fe92fc9d1f49bcd31991",
         []
@@ -338450,16 +338380,12 @@
         "2d3c9d0261b7eb369d99dbd842309f697e80bad8",
         []
        ],
-       "line-clamp-auto-032-ref.html": [
-        "4768c77ddabc93d3519e671c10d584b12e8a69ad",
-        []
-       ],
-       "line-clamp-auto-034-ref.html": [
-        "8fae3b278c124db00b8f79eb0cd0b91cb8752217",
-        []
-       ],
        "line-clamp-auto-036-ref.html": [
         "0ad96e88d14a735ce9416dba2b31f5f66936b19f",
+        []
+       ],
+       "line-clamp-auto-037-ref.html": [
+        "eeb9543554d99659ed855e40d4f04be393858932",
         []
        ],
        "line-clamp-auto-with-ruby-001-ref.html": [
@@ -407163,6 +407089,10 @@
       ],
       "text-multiline-003-ref.svg": [
        "cbfce51b88e8be12f4a29945444b819066d5f74d",
+       []
+      ],
+      "text-path-transformed-ref.html": [
+       "7d2f3a2d5c32e1122f79fc55aea5b7ca88b4076c",
        []
       ],
       "text-shape-inside-001-ref.svg": [
@@ -524899,7 +524829,7 @@
      ]
     ],
     "permission-api-denied-non-standard.https.html": [
-     "ffc06781f6075ef95285af5f0d6bb91439eb9b95",
+     "94bc538f7fa941ffbfa6e84a19bd852aa4bb4445",
      [
       null,
       {
