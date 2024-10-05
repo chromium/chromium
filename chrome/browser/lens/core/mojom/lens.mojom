@@ -217,6 +217,9 @@ interface LensPage {
   // Passes the dynamic theme to WebUI.
   ThemeReceived(OverlayTheme theme);
 
+  // Sets whether the contextual searchbox should be shown to the user.
+  ShouldShowContextualSearchBox(bool should_show);
+
   // Sets a post selection region to be rendered as selected on the page.
   SetPostRegionSelection(CenterRotatedBox region);
 

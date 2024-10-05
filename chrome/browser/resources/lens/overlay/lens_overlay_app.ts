@@ -96,11 +96,9 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
             'isPointerDown)',
         reflectToAttribute: true,
       },
-      isLensOverlayContextualSearchboxEnabled: {
+      isLensOverlayContextualSearchboxVisible: {
         type: Boolean,
-        value: loadTimeData.getBoolean('enableOverlayContextualSearchbox'),
         reflectToAttribute: true,
-        readOnly: true,
       },
       theme: {
         type: Object,
@@ -142,6 +140,8 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   private shouldFadeOutButtons: boolean = false;
   // The overlay theme.
   private theme: OverlayTheme;
+  // Whether the contextual searchbox is visible to the user.
+  private isLensOverlayContextualSearchboxVisible: boolean = false;
   private toastMessage: string = '';
   // Whether the user is current focused into the searchbox.
   private isSearchboxFocused: boolean = false;
@@ -171,6 +171,8 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     const callbackRouter = this.browserProxy.callbackRouter;
     this.listenerIds = [
       callbackRouter.themeReceived.addListener(this.themeReceived.bind(this)),
+      callbackRouter.shouldShowContextualSearchBox.addListener(
+          this.shouldShowContextualSearchBox.bind(this)),
       callbackRouter.notifyResultsPanelOpened.addListener(
           this.onNotifyResultsPanelOpened.bind(this)),
       callbackRouter.notifyOverlayClosing.addListener(() => {
@@ -302,6 +304,12 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
 
   private themeReceived(theme: OverlayTheme) {
     this.theme = theme;
+  }
+
+  private shouldShowContextualSearchBox(shouldShow: boolean) {
+    this.isLensOverlayContextualSearchboxVisible =
+        loadTimeData.getBoolean('enableOverlayContextualSearchbox') &&
+        shouldShow;
   }
 
   // The user started making a selection on the selection overlay.

@@ -264,6 +264,10 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
     last_received_theme_ = std::move(theme);
   }
 
+  void ShouldShowContextualSearchBox(bool should_show) override {
+    last_received_should_show_contextual_searchbox_ = should_show;
+  }
+
   void NotifyResultsPanelOpened() override {
     did_notify_results_opened_ = true;
   }
@@ -306,6 +310,7 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
     post_region_selection_.reset();
     source_language_.clear();
     target_language_.clear();
+    last_received_should_show_contextual_searchbox_ = false;
     did_notify_results_opened_ = false;
     did_notify_overlay_closing_ = false;
     did_clear_region_selection_ = false;
@@ -320,6 +325,7 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
   SkBitmap last_received_screenshot_;
   std::optional<lens::mojom::OverlayThemePtr> last_received_theme_;
   std::vector<lens::mojom::OverlayObjectPtr> last_received_objects_;
+  bool last_received_should_show_contextual_searchbox_ = false;
   std::string source_language_;
   std::string target_language_;
   lens::mojom::TextPtr last_received_text_;
@@ -4121,6 +4127,12 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
       fake_query_controller->last_sent_underlying_content_bytes_.empty());
   ASSERT_EQ("application/pdf",
             fake_query_controller->last_sent_underlying_content_type_);
+
+  // Verify the searchbox was shown.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  EXPECT_TRUE(fake_controller->fake_overlay_page_
+                  .last_received_should_show_contextual_searchbox_);
 }
 
 IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
@@ -4157,6 +4169,12 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
       controller->get_lens_overlay_query_controller_for_testing());
   ASSERT_TRUE(
       fake_query_controller->last_sent_underlying_content_bytes_.empty());
+
+  // Verify the searchbox was hidden.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  EXPECT_FALSE(fake_controller->fake_overlay_page_
+                   .last_received_should_show_contextual_searchbox_);
 }
 
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
@@ -4526,6 +4544,12 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlEnabledTest,
       "thêrē 🐶 ©</p>\n\n</body>",
       std::string(last_sent_underlying_content_bytes.begin(),
                   last_sent_underlying_content_bytes.end()));
+
+  // Verify the searchbox was shown.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  EXPECT_TRUE(fake_controller->fake_overlay_page_
+                  .last_received_should_show_contextual_searchbox_);
 }
 
 class LensOverlayControllerContextualFeaturesDisabledTest

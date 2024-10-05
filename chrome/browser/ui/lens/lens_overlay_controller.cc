@@ -1698,7 +1698,10 @@ void LensOverlayController::InitializeOverlayUI(
   // This should only contain LensPage mojo calls and should not affect
   // `state_`.
   CHECK(page_);
+  // TODO(b/371593619), it would be more efficent to send all initialization
+  // data to the overlay web UI in a single message.
   page_->ThemeReceived(CreateTheme(init_data.color_palette_));
+  page_->ShouldShowContextualSearchBox(!init_data.page_content_bytes_.empty());
   page_->ScreenshotDataReceived(init_data.current_rgb_screenshot_);
   if (!init_data.objects_.empty()) {
     SendObjects(CopyObjects(init_data.objects_));

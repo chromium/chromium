@@ -265,7 +265,7 @@
       on-pointerleave="handlePointerLeaveSelectionOverlay">
   </lens-selection-overlay>
   <initial-gradient id="initialGradient"></initial-gradient>
-  <template is="dom-if" if="[[isLensOverlayContextualSearchboxEnabled]]">
+  <template is="dom-if" if="[[isLensOverlayContextualSearchboxVisible]]">
     <div id="searchboxContainer">
       <cr-searchbox id="searchbox" on-focus="handleSearchboxFocused"
           on-blur="handleSearchboxBlurred">
