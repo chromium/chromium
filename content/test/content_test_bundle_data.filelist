@@ -904,6 +904,8 @@ data/accessibility/aria/aria-hidden-focused-input-expected-mac.txt
 data/accessibility/aria/aria-hidden-focused-input-expected-uia-win.txt
 data/accessibility/aria/aria-hidden-focused-input-expected-win.txt
 data/accessibility/aria/aria-hidden-focused-input.html
+data/accessibility/aria/aria-hidden-focused-span-expected-blink.txt
+data/accessibility/aria/aria-hidden-focused-span.html
 data/accessibility/aria/aria-hidden-html-expected-blink.txt
 data/accessibility/aria/aria-hidden-html.html
 data/accessibility/aria/aria-hidden-iframe-body-expected-blink.txt

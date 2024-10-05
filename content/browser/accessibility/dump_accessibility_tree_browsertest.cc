@@ -1025,6 +1025,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaHiddenFocusedSpan) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-hidden-focused-span.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaHiddenLabelledBy) {
   RunAriaTest(FILE_PATH_LITERAL("aria-hidden-labelled-by.html"));
 }

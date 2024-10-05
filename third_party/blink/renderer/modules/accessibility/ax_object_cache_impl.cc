@@ -903,7 +903,7 @@ AXObject* AXObjectCacheImpl::FirstObjectWithRole(ax::mojom::blink::Role role) {
   return root->FirstObjectWithRole(role);
 }
 
-Node* AXObjectCacheImpl::FocusedNode() {
+Node* AXObjectCacheImpl::FocusedNode() const {
   Node* focused_node = document_->FocusedElement();
   if (!focused_node)
     focused_node = document_;
@@ -953,7 +953,7 @@ void AXObjectCacheImpl::UpdateAXForAllDocuments() {
   }
 }
 
-AXObject* AXObjectCacheImpl::FocusedObject() {
+AXObject* AXObjectCacheImpl::FocusedObject() const {
 #if DCHECK_IS_ON()
   DCHECK(GetDocument().Lifecycle().GetState() >=
          DocumentLifecycle::kAfterPerformLayout);
@@ -963,25 +963,44 @@ AXObject* AXObjectCacheImpl::FocusedObject() {
   }
 #endif
 
-  Node* focused_node = FocusedNode();
-  CHECK(focused_node);
-
-  AXObject* obj = Get(focused_node);
+  AXObject* obj = Get(FocusedNode());
   if (!obj) {
     // In rare cases it's possible for the focus to not exist in the tree.
     // An example would be a focused element inside of an image map that
     // gets trimmed.
     // In these cases, treat the focus as on the root object itself, so that
     // AT users have some starting point.
-    DLOG(ERROR) << "The focus was not part of the a11y tree: " << focused_node;
-    return Root();
+    DLOG(ERROR) << "The focus was not part of the a11y tree: " << FocusedNode();
+    return Get(document_);
   }
 
-  // the HTML element, for example, is focusable but has an AX object that is
-  // ignored
-  if (!obj->IsIncludedInTree())
+  // The HTML element, for example, is focusable but has an AX object that is
+  // not included in the tree.
+  if (!obj->IsIncludedInTree()) {
     obj = obj->ParentObjectIncludedInTree();
+  }
 
+  return obj;
+}
+
+AXObject* AXObjectCacheImpl::EnsureFocusedObject() {
+  DCHECK(lifecycle_.StateAllowsImmediateTreeUpdates());
+  AXObject* obj = Get(FocusedNode());
+
+  if (obj) {
+    if (!obj->IsAriaHidden()) {
+      return obj;
+    }
+    // Repair illegal usage of aria-hidden: it should never contain the focus.
+    // The aria-hidden will be ignored when this occurs.
+    DiscardBadAriaHiddenBecauseOfFocus(*obj);
+  }
+
+  // Now return the focused object of its included in the tree, otherwise
+  // return an included ancestor of the focus.
+  obj = FocusedObject();
+  CHECK(obj) << "Object could not be recreated with aria-hidden off.";
+  CHECK(!obj->IsAriaHidden());
   return obj;
 }
 
@@ -994,7 +1013,7 @@ void AXObjectCacheImpl::SetAXMode(const ui::AXMode& ax_mode) {
 }
 
 AXObject* AXObjectCacheImpl::Get(const LayoutObject* layout_object,
-                                 AXObject* parent_for_repair) {
+                                 AXObject* parent_for_repair) const {
   if (!layout_object)
     return nullptr;
 
@@ -1039,7 +1058,7 @@ AXObject* AXObjectCacheImpl::Get(const LayoutObject* layout_object,
   return result;
 }
 
-AXObject* AXObjectCacheImpl::Get(const Node* node) {
+AXObject* AXObjectCacheImpl::Get(const Node* node) const {
   if (!node)
     return nullptr;
 
@@ -1072,7 +1091,7 @@ AXObject* AXObjectCacheImpl::Get(const Node* node) {
   return result;
 }
 
-AXObject* AXObjectCacheImpl::Get(AbstractInlineTextBox* inline_text_box) {
+AXObject* AXObjectCacheImpl::Get(AbstractInlineTextBox* inline_text_box) const {
   if (!inline_text_box)
     return nullptr;
 
@@ -3079,11 +3098,15 @@ void AXObjectCacheImpl::CommitAXUpdates(Document& document, bool force) {
         MarkDocumentDirtyWithCleanLayout();
       }
 
+      // Call the queued callback methods that do processing which must occur
+      // when layout is clean. These callbacks are stored in
+      // |tree_update_callback_queue_|, and have names like
+      // FooBarredWithCleanLayout().
       if (IsDirty()) {
         if (GetPopupDocumentIfShowing()) {
-          CommitAXUpdatesImpl(*GetPopupDocumentIfShowing());
+          ProcessCleanLayoutCallbacks(*GetPopupDocumentIfShowing());
         }
-        CommitAXUpdatesImpl(document);
+        ProcessCleanLayoutCallbacks(document);
       }
     }
 
@@ -3121,6 +3144,8 @@ void AXObjectCacheImpl::CommitAXUpdates(Document& document, bool force) {
       // called, which in some cases can queue multiple aria-owns relations that
       // point to the same node to be added to the processing queue.
       relation_cache_->ProcessUpdatesWithCleanLayout();
+
+      EnsureFocusedObject();
 
       CHECK(tree_update_callback_queue_main_.empty());
       CHECK(tree_update_callback_queue_popup_.empty());
@@ -3310,14 +3335,6 @@ bool AXObjectCacheImpl::SerializeUpdatesAndEvents() {
 
   CHECK(serialization_in_flight_ == success);
   return success;
-}
-
-void AXObjectCacheImpl::CommitAXUpdatesImpl(Document& document) {
-  // Call the queued callback methods that do processing which must occur when
-  // layout is clean. These callbacks are stored in
-  // tree_update_callback_queue_, and have names like
-  // FooBarredWithCleanLayout().
-  ProcessCleanLayoutCallbacks(document);
 }
 
 bool AXObjectCacheImpl::IsParsingMainDocument() const {
@@ -3952,17 +3969,7 @@ void AXObjectCacheImpl::HandleNodeLostFocusWithCleanLayout(Node* node) {
 }
 
 void AXObjectCacheImpl::HandleNodeGainedFocusWithCleanLayout(Node* node) {
-  AXObject* obj = FocusedObject();
-
-  // Repair illegal usage of aria-hidden: it should never contain the focus.
-  // The aria-hidden will be ignored when this occurs.
-  if (obj->IsAriaHidden()) {
-    Node* focused_node = obj->GetNode();
-    DiscardBadAriaHiddenBecauseOfFocus(*obj);
-    obj = Get(focused_node);
-    CHECK(obj) << "Object could not be recreated with aria-hidden off.";
-    CHECK(!obj->IsAriaHidden());
-  }
+  AXObject* obj = EnsureFocusedObject();
 
   PostNotification(obj, ax::mojom::Event::kFocus);
 

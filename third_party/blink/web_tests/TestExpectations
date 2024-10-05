@@ -5577,13 +5577,10 @@ crbug.com/362536387 external/wpt/html/semantics/forms/the-select-element/select-
 # which is set to experimental. They will pass after work has been completed on
 # the accessibility mappings for CustomizableSelect. For now, the stable behavior
 # of these tests is tested in virtual/customizable-select-disabled.
-crbug.com/343631044 accessibility/aria-hidden-select.html [ Failure ]
 crbug.com/343631044 accessibility/native-select-activedescendant.html [ Failure ]
 crbug.com/343631044 accessibility/role-attribute.html [ Failure ]
-crbug.com/343631044 virtual/customizable-select-disabled/accessibility/aria-hidden-select.html [ Pass ]
 crbug.com/343631044 virtual/customizable-select-disabled/accessibility/native-select-activedescendant.html [ Pass ]
 crbug.com/343631044 virtual/customizable-select-disabled/accessibility/role-attribute.html [ Pass ]
-crbug.com/343631044 virtual/select-parser-relaxation/accessibility/aria-hidden-select.html [ Pass ]
 crbug.com/343631044 virtual/select-parser-relaxation/accessibility/native-select-activedescendant.html [ Pass ]
 crbug.com/343631044 virtual/select-parser-relaxation/accessibility/role-attribute.html [ Pass ]
 

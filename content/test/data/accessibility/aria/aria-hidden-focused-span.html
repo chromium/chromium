@@ -1,0 +1,25 @@
+<!--
+@BLINK-ALLOW:focus*
+@BLINK-ALLOW:hidden*
+@BLINK-ALLOW:class*
+@EXECUTE-AND-WAIT-FOR:focusSpan()
+-->
+<!-- Focusing previously unincluded aria-hidden node adds it to the tree -->
+<html>
+<body>
+<div class="hidden" aria-hidden="true">
+  <span>
+    <span class="takes-focus" tabindex="-1" role="group">
+      xyz
+    </span>
+  </span>
+</div>
+<script>
+function focusSpan() {
+  document.querySelector(".takes-focus").focus();
+  document.title = "focus-changed";
+  return "focus-changed";
+}
+</script>
+</body>
+</html>

@@ -4097,17 +4097,6 @@ bool AXObject::ComputeIsIgnoredButIncludedInTree() {
         return !IsEmbeddingElement();
       }
     }
-  } else if (IsAriaHidden() && GetLayoutObject() && !IsHiddenViaStyle() &&
-             CanSetFocusAttribute()) {
-    // Use aria-hidden nodes that are actually visible, and focusable.
-    // Note: in the future it is expected that the ARIA spec will change to
-    // specify that the aria-hidden property must be ignored if it receives
-    // focus as if the property was not set at all (aria-hidden elements that
-    // receive focus at any point not be treated as invisible/ignored at all).
-    // The implementation for that will end up acting as if the element that
-    // received focus (and its subtree) are not aria-hidden, and the condition
-    // here will no longer be necessary.
-    return true;
   }
 
   if (IsExcludedByFormControlsFilter()) {

@@ -118,8 +118,22 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   Document& GetDocument() const { return *document_; }
   // The popup document, if showing, otherwise null.
   Document* GetPopupDocumentIfShowing() const { return popup_document_.Get(); }
+  // Get the focused object or an ancestor if that is not possible.
+  // Use this if side effects are not ok, otherwise use EnsureFocusedObject().
+  // * In rare cases, the focused element might not have an associated a11y
+  // object if it's the descendant of a pruned subtree. In this case, return the
+  // root as the focus. This is more likely more likely in a fuzzer than in real
+  // content (e.g. focus is inside of an unused image map's <area>).
+  // * If the focus is on an AXObject that's not part of the included subtree
+  // that will be serialized, return the included ancestor. This is rare because
+  // focusable objects are generally part of the included subtree.
+  AXObject* FocusedObject() const;
+  // Always return a focused object, even if it's in an aria-hidden subtree.
+  // Use this method if side effects are ok, otherwise use FocusedObject().
+  // * If the focus is inside an aria-hidden subtree, discard the illegal
+  // aria-hidden and restore the subtree, then return the new AXObject.
+  AXObject* EnsureFocusedObject();
 
-  AXObject* FocusedObject();
   const ui::AXMode& GetAXMode() override;
   void SetAXMode(const ui::AXMode&) override;
 
@@ -363,16 +377,17 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   AXObject* GetOrCreate(Node*, AXObject* parent);
   AXObject* GetOrCreate(AbstractInlineTextBox*, AXObject* parent);
 
-  AXObject* Get(AbstractInlineTextBox*);
+  AXObject* Get(AbstractInlineTextBox*) const;
 
   // Get an AXObject* backed by the passed-in DOM node.
-  AXObject* Get(const Node*) override;
+  AXObject* Get(const Node*) const override;
 
   // Get an AXObject* backed by the passed-in LayoutObject, or the
   // LayoutObject's DOM node, if that is available.
   // If |parent_for_repair| is provided, and the object had been detached from
   // its parent, it will be set as the new parent.
-  AXObject* Get(const LayoutObject*, AXObject* parent_for_repair = nullptr);
+  AXObject* Get(const LayoutObject*,
+                AXObject* parent_for_repair = nullptr) const;
 
   // Return the object that has been anchored (with css anchor positioning)
   // to the input object.
@@ -841,7 +856,6 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   HeapMojoRemote<mojom::blink::RenderAccessibilityHost>&
   GetOrCreateRemoteRenderAccessibilityHost();
   WebLocalFrameClient* GetWebLocalFrameClient() const;
-  void CommitAXUpdatesImpl(Document&);
   void UpdateLifecycleIfNeeded(Document& document);
 
   // Is the main document currently parsing content, as opposed to being blocked
@@ -976,7 +990,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   void ProcessCleanLayoutCallbacks(Document&);
 
   // Get the currently focused Node (an element or a document).
-  Node* FocusedNode();
+  Node* FocusedNode() const;
 
   AXObject* FocusedImageMapUIElement(HTMLAreaElement*);
 
