@@ -1233,6 +1233,39 @@ bool AXObject::AriaBooleanAttribute(const QualifiedName& attribute,
   return true;
 }
 
+bool AXObject::AriaIntAttribute(const QualifiedName& attribute,
+                                int32_t* out_value) const {
+  const AtomicString& value = GetAttribute(attribute);
+  if (value == g_null_atom || value.empty()) {
+    if (out_value) {
+      *out_value = 0;
+    }
+    return false;
+  }
+
+  int int_value = value.ToInt();
+  int value_if_less_than_1 = 1;
+
+  if (attribute == html_names::kAriaSetsizeAttr) {
+    // -1 is a special "indeterminate" value for aria-setsize.
+    // However, any value that's not a positive number should be given the
+    // intederminate treatment.
+    value_if_less_than_1 = -1;
+  } else if (attribute == html_names::kAriaPosinsetAttr ||
+             attribute == html_names::kAriaLevelAttr) {
+    value_if_less_than_1 = 1;
+  } else {
+    // For now, try to get the illegal attribute, but catch the error.
+    NOTREACHED(base::NotFatalUntil::M133) << "Not an int attribute.";
+  }
+
+  if (out_value) {
+    *out_value = int_value < 1 ? value_if_less_than_1 : int_value;
+  }
+
+  return true;
+}
+
 bool AXObject::AriaFloatAttribute(const QualifiedName& attribute,
                                   float* out_value) const {
   const AtomicString& value = GetAttribute(attribute);
@@ -1285,30 +1318,6 @@ bool AXObject::HasAOMPropertyOrARIAAttribute(
     return false;
 
   return AccessibleNode::GetPropertyOrARIAAttribute(element, property, result);
-}
-
-bool AXObject::HasAOMPropertyOrARIAAttribute(AOMUIntProperty property,
-                                             uint32_t& result) const {
-  Element* element = GetElement();
-  if (!element)
-    return false;
-
-  bool is_null = true;
-  result =
-      AccessibleNode::GetPropertyOrARIAAttribute(element, property, is_null);
-  return !is_null;
-}
-
-bool AXObject::HasAOMPropertyOrARIAAttribute(AOMIntProperty property,
-                                             int32_t& result) const {
-  Element* element = GetElement();
-  if (!element)
-    return false;
-
-  bool is_null = true;
-  result =
-      AccessibleNode::GetPropertyOrARIAAttribute(element, property, is_null);
-  return !is_null;
 }
 
 bool AXObject::HasAOMPropertyOrARIAAttribute(AOMStringProperty property,

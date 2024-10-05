@@ -81,8 +81,6 @@ class ScrollableArea;
 class V8HighlightType;
 
 enum class AOMStringProperty;
-enum class AOMUIntProperty;
-enum class AOMIntProperty;
 enum class AOMRelationProperty;
 enum class AOMRelationListProperty;
 
@@ -345,8 +343,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   Element* GetAOMPropertyOrARIAAttribute(AOMRelationProperty) const;
   bool HasAOMPropertyOrARIAAttribute(AOMRelationListProperty,
                                      HeapVector<Member<Element>>& result) const;
-  bool HasAOMPropertyOrARIAAttribute(AOMUIntProperty, uint32_t& result) const;
-  bool HasAOMPropertyOrARIAAttribute(AOMIntProperty, int32_t& result) const;
   bool HasAOMPropertyOrARIAAttribute(AOMStringProperty,
                                      AtomicString& result) const;
   virtual AbstractInlineTextBox* GetInlineTextBox() const { return nullptr; }
@@ -1361,6 +1357,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
                             bool* out_value = nullptr) const;
   bool AriaFloatAttribute(const QualifiedName& attribute,
                           float* out_value = nullptr) const;
+  bool AriaIntAttribute(const QualifiedName& attribute,
+                        int32_t* out_value = nullptr) const;
 
   // Additional boolean ARIA convenience methods.
   bool IsAriaAttributeTrue(const QualifiedName&) const;

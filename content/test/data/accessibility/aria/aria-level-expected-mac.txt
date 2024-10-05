@@ -19,7 +19,7 @@ AXWebArea
 ++++++AXGroup AXSubrole=AXApplicationGroup
 ++++++++AXRow AXSubrole=AXOutlineRow AXDisclosing=0 AXDisclosureLevel=1 AXIndex=1 AXTitle='Tree item at level 2'
 ++++++++++AXStaticText AXValue='Tree item at level 2'
-++++++++AXRow AXSubrole=AXOutlineRow AXDisclosing=0 AXDisclosureLevel=1 AXIndex=2 AXTitle='Tree item at level 2, aria-level is 0'
+++++++++AXRow AXSubrole=AXOutlineRow AXDisclosing=0 AXDisclosureLevel=0 AXIndex=2 AXTitle='Tree item at level 2, aria-level is 0'
 ++++++++++AXStaticText AXValue='Tree item at level 2, aria-level is 0'
 ++++AXRow AXSubrole=AXOutlineRow AXDisclosing=0 AXDisclosureLevel=2 AXIndex=3 AXTitle='Tree item at level 3'
 ++++++AXStaticText AXValue='Tree item at level 3'

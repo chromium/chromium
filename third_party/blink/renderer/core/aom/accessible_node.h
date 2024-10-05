@@ -46,16 +46,6 @@ enum class AOMStringProperty {
   kVirtualContent
 };
 
-// All of the properties of AccessibleNode that have an unsigned integer type.
-enum class AOMUIntProperty {
-  kColIndex,
-  kColSpan,
-  kLevel,
-  kPosInSet,
-  kRowIndex,
-  kRowSpan,
-};
-
 enum class AOMRelationProperty {
   kActiveDescendant,
 };
@@ -69,10 +59,6 @@ enum class AOMRelationListProperty {
   kLabeledBy,
   kOwns,
 };
-
-// All of the properties of AccessibleNode that have a signed integer type.
-// (These all allow the value -1.)
-enum class AOMIntProperty { kColCount, kRowCount, kSetSize };
 
 class AccessibleNode;
 
@@ -102,13 +88,6 @@ class CORE_EXPORT AccessibleNode {
   static bool GetPropertyOrARIAAttribute(Element*,
                                          AOMRelationListProperty,
                                          HeapVector<Member<Element>>&);
-
-  static int32_t GetPropertyOrARIAAttribute(Element*,
-                                            AOMIntProperty,
-                                            bool& is_null);
-  static uint32_t GetPropertyOrARIAAttribute(Element*,
-                                             AOMUIntProperty,
-                                             bool& is_null);
 
  private:
   static bool IsStringTokenProperty(AOMStringProperty);

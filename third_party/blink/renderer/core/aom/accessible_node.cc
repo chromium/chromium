@@ -106,40 +106,6 @@ QualifiedName GetCorrespondingARIAAttribute(AOMRelationListProperty property) {
   return g_null_name;
 }
 
-QualifiedName GetCorrespondingARIAAttribute(AOMUIntProperty property) {
-  switch (property) {
-    case AOMUIntProperty::kColIndex:
-      return html_names::kAriaColindexAttr;
-    case AOMUIntProperty::kColSpan:
-      return html_names::kAriaColspanAttr;
-    case AOMUIntProperty::kLevel:
-      return html_names::kAriaLevelAttr;
-    case AOMUIntProperty::kPosInSet:
-      return html_names::kAriaPosinsetAttr;
-    case AOMUIntProperty::kRowIndex:
-      return html_names::kAriaRowindexAttr;
-    case AOMUIntProperty::kRowSpan:
-      return html_names::kAriaRowspanAttr;
-  }
-
-  NOTREACHED_IN_MIGRATION();
-  return g_null_name;
-}
-
-QualifiedName GetCorrespondingARIAAttribute(AOMIntProperty property) {
-  switch (property) {
-    case AOMIntProperty::kColCount:
-      return html_names::kAriaColcountAttr;
-    case AOMIntProperty::kRowCount:
-      return html_names::kAriaRowcountAttr;
-    case AOMIntProperty::kSetSize:
-      return html_names::kAriaSetsizeAttr;
-  }
-
-  NOTREACHED_IN_MIGRATION();
-  return g_null_name;
-}
-
 }  // namespace
 
 bool AccessibleNode::IsUndefinedAttrValue(const AtomicString& value) {
@@ -244,38 +210,6 @@ bool AccessibleNode::GetPropertyOrARIAAttribute(
     }
   }
   return true;
-}
-
-// static
-uint32_t AccessibleNode::GetPropertyOrARIAAttribute(Element* element,
-                                                    AOMUIntProperty property,
-                                                    bool& is_null) {
-  is_null = true;
-  if (!element)
-    return 0;
-
-  // Fall back on the equivalent ARIA attribute.
-  QualifiedName attribute = GetCorrespondingARIAAttribute(property);
-  AtomicString attr_value =
-      GetElementOrInternalsARIAAttribute(*element, attribute);
-  is_null = attr_value.IsNull();
-  return attr_value.GetString().ToUInt();
-}
-
-// static
-int32_t AccessibleNode::GetPropertyOrARIAAttribute(Element* element,
-                                                   AOMIntProperty property,
-                                                   bool& is_null) {
-  is_null = true;
-  if (!element)
-    return 0;
-
-  // Fall back on the equivalent ARIA attribute.
-  QualifiedName attribute = GetCorrespondingARIAAttribute(property);
-  AtomicString attr_value =
-      GetElementOrInternalsARIAAttribute(*element, attribute);
-  is_null = attr_value.IsNull();
-  return attr_value.ToInt();
 }
 
 // These properties support a list of tokens, and "undefined"/"" is

@@ -3032,10 +3032,11 @@ int AXNodeObject::HeadingLevel() const {
     return 0;
 
   if (RoleValue() == ax::mojom::blink::Role::kHeading) {
-    uint32_t level;
-    if (HasAOMPropertyOrARIAAttribute(AOMUIntProperty::kLevel, level)) {
-      if (level >= 1 && level <= 9)
+    int32_t level;
+    if (AriaIntAttribute(html_names::kAriaLevelAttr, &level)) {
+      if (level >= 1 && level <= 9) {
         return level;
+      }
     }
   }
 
@@ -3072,8 +3073,8 @@ unsigned AXNodeObject::HierarchicalLevel() const {
   if (!element)
     return 0;
 
-  uint32_t level;
-  if (HasAOMPropertyOrARIAAttribute(AOMUIntProperty::kLevel, level)) {
+  int32_t level;
+  if (AriaIntAttribute(html_names::kAriaLevelAttr, &level)) {
     if (level >= 1)
       return level;
   }
@@ -3949,9 +3950,10 @@ int AXNodeObject::PosInSet() const {
   }
 
   if (SupportsARIASetSizeAndPosInSet()) {
-    uint32_t pos_in_set;
-    if (HasAOMPropertyOrARIAAttribute(AOMUIntProperty::kPosInSet, pos_in_set))
+    int32_t pos_in_set;
+    if (AriaIntAttribute(html_names::kAriaPosinsetAttr, &pos_in_set)) {
       return pos_in_set;
+    }
   }
   return 0;
 }
@@ -3967,8 +3969,9 @@ int AXNodeObject::SetSize() const {
 
   if (SupportsARIASetSizeAndPosInSet()) {
     int32_t set_size;
-    if (HasAOMPropertyOrARIAAttribute(AOMIntProperty::kSetSize, set_size))
+    if (AriaIntAttribute(html_names::kAriaSetsizeAttr, &set_size)) {
       return set_size;
+    }
   }
   return 0;
 }
