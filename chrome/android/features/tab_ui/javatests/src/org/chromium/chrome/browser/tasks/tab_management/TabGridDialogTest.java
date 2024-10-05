@@ -75,6 +75,7 @@ import static org.chromium.ui.test.util.ViewUtils.waitForVisibleView;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
@@ -2116,18 +2117,22 @@ public class TabGridDialogTest {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1
                 || !resources.getBoolean(R.bool.window_light_navigation_bar)
                 || isTablet(cta)
-                || cta.getTabModelSelectorSupplier().get().isIncognitoBrandedModelSelected()
-                || EdgeToEdgeUtils.isEnabled()) {
+                || cta.getTabModelSelectorSupplier().get().isIncognitoBrandedModelSelected()) {
             return;
         }
-        @ColorInt int scrimDefaultColor = cta.getColor(R.color.default_scrim_color);
-        @ColorInt int navigationBarColor = SemanticColorUtils.getBottomSystemNavColor(cta);
-        @ColorInt
-        int navigationBarColorWithScrimOverlay =
-                ColorUtils.overlayColor(navigationBarColor, scrimDefaultColor);
 
-        assertEquals(cta.getWindow().getNavigationBarColor(), navigationBarColorWithScrimOverlay);
-        assertNotEquals(navigationBarColor, navigationBarColorWithScrimOverlay);
+        if (!EdgeToEdgeUtils.isEnabled()) {
+            @ColorInt int scrimDefaultColor = cta.getColor(R.color.default_scrim_color);
+            @ColorInt int navigationBarColor = SemanticColorUtils.getBottomSystemNavColor(cta);
+            @ColorInt
+            int navigationBarColorWithScrimOverlay =
+                    ColorUtils.overlayColor(navigationBarColor, scrimDefaultColor);
+            assertEquals(
+                    navigationBarColorWithScrimOverlay, cta.getWindow().getNavigationBarColor());
+            assertNotEquals(navigationBarColor, navigationBarColorWithScrimOverlay);
+        } else if (cta.getEdgeToEdgeSupplier().get().isDrawingToEdge()) {
+            assertEquals(Color.TRANSPARENT, cta.getWindow().getNavigationBarColor());
+        }
     }
 
     private boolean isPhone() {

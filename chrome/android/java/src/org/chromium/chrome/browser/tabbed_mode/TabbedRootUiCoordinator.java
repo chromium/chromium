@@ -815,6 +815,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
                     @Override
                     public void setNavigationBarScrimFraction(float scrimFraction) {
+                        // When drawing edge to edge, scrim already draws over the nav bar region.
+                        // No need to change the nav bar color.
+                        var edgeToEdgeController = mEdgeToEdgeControllerSupplier.get();
+                        if (edgeToEdgeController != null
+                                && edgeToEdgeController.isDrawingToEdge()) {
+                            return;
+                        }
+
                         TabbedNavigationBarColorController controller =
                                 mSystemUiCoordinator.getNavigationBarColorController();
                         if (controller == null) {

@@ -493,11 +493,6 @@ class TabbedNavigationBarColorController
      * @param fraction The scrim fraction in range [0, 1].
      */
     public void setNavigationBarScrimFraction(float fraction) {
-        if (mEdgeToEdgeControllerSupplier.get() != null
-                && mEdgeToEdgeControllerSupplier.get().isPageOptedIntoEdgeToEdge()) {
-            return;
-        }
-
         mNavigationBarScrimFraction = fraction;
         @ColorInt
         int scrimNavigationBarColor =
