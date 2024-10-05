@@ -10,6 +10,7 @@ dictionary AIAssistantInitialPrompt {
 };
 
 dictionary AIAssistantCreateOptions {
+  AbortSignal signal;
   [EnforceRange] unsigned long topK;
   float temperature;
   DOMString systemPrompt;

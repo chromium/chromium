@@ -190,7 +190,15 @@ ScriptPromise<AIAssistant> AIAssistantFactory::create(
     return promise;
   }
 
+  AbortSignal* signal = nullptr;
+
   if (options) {
+    signal = options->getSignalOr(nullptr);
+    if (signal && signal->aborted()) {
+      ThrowAbortedException(exception_state);
+      return ScriptPromise<AIAssistant>();
+    }
+
     if (!options->hasTopK() && !options->hasTemperature()) {
       sampling_params = nullptr;
     } else if (options->hasTopK() && options->hasTemperature()) {
@@ -241,8 +249,8 @@ ScriptPromise<AIAssistant> AIAssistantFactory::create(
   }
 
   MakeGarbageCollected<CreateAssistantClient>(
-      ai_, resolver, /*signal=*/nullptr, std::move(sampling_params),
-      system_prompt, std::move(initial_prompts));
+      ai_, resolver, signal, std::move(sampling_params), system_prompt,
+      std::move(initial_prompts));
 
   return promise;
 }

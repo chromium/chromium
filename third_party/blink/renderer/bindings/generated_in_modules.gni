@@ -134,6 +134,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_address_errors.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_address_init.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_address_init.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_assistant_clone_options.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_assistant_clone_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_assistant_create_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_assistant_create_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_assistant_initial_prompt.cc",

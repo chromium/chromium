@@ -4,6 +4,10 @@
 
 // https://github.com/explainers-by-googlers/prompt-api
 
+dictionary AIAssistantCloneOptions {
+  AbortSignal signal;
+};
+
 [
   Exposed=(Window,Worker),
   RuntimeEnabled=AIPromptAPI
@@ -48,7 +52,7 @@ interface AIAssistant {
     CallWith=ScriptState,
     RaisesException
   ]
-  Promise<AIAssistant> clone();
+  Promise<AIAssistant> clone(optional AIAssistantCloneOptions options = {});
   [
     Measure,
     CallWith=ScriptState,

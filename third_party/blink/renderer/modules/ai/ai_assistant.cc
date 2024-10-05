@@ -166,8 +166,10 @@ ReadableStream* AIAssistant::promptStreaming(ScriptState* script_state,
   return readable_stream;
 }
 
-ScriptPromise<AIAssistant> AIAssistant::clone(ScriptState* script_state,
-                                              ExceptionState& exception_state) {
+ScriptPromise<AIAssistant> AIAssistant::clone(
+    ScriptState* script_state,
+    const AIAssistantCloneOptions* options,
+    ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
     return ScriptPromise<AIAssistant>();
@@ -185,7 +187,13 @@ ScriptPromise<AIAssistant> AIAssistant::clone(ScriptState* script_state,
     return resolver->Promise();
   }
 
-  MakeGarbageCollected<CloneAssistantClient>(this, resolver, /*signal=*/nullptr,
+  AbortSignal* signal = options->getSignalOr(nullptr);
+  if (signal && signal->aborted()) {
+    ThrowAbortedException(exception_state);
+    return ScriptPromise<AIAssistant>();
+  }
+
+  MakeGarbageCollected<CloneAssistantClient>(this, resolver, signal,
                                              base::PassKey<AIAssistant>());
 
   return resolver->Promise();
