@@ -80,11 +80,9 @@ class Node;
 class ScrollableArea;
 class V8HighlightType;
 
-enum class AOMBooleanProperty;
 enum class AOMStringProperty;
 enum class AOMUIntProperty;
 enum class AOMIntProperty;
-enum class AOMFloatProperty;
 enum class AOMRelationProperty;
 enum class AOMRelationListProperty;
 
@@ -347,13 +345,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   Element* GetAOMPropertyOrARIAAttribute(AOMRelationProperty) const;
   bool HasAOMPropertyOrARIAAttribute(AOMRelationListProperty,
                                      HeapVector<Member<Element>>& result) const;
-  virtual bool HasAOMPropertyOrARIAAttribute(AOMBooleanProperty,
-                                             bool& result) const;
-  bool AOMPropertyOrARIAAttributeIsTrue(AOMBooleanProperty) const;
-  bool AOMPropertyOrARIAAttributeIsFalse(AOMBooleanProperty) const;
   bool HasAOMPropertyOrARIAAttribute(AOMUIntProperty, uint32_t& result) const;
   bool HasAOMPropertyOrARIAAttribute(AOMIntProperty, int32_t& result) const;
-  bool HasAOMPropertyOrARIAAttribute(AOMFloatProperty, float& result) const;
   bool HasAOMPropertyOrARIAAttribute(AOMStringProperty,
                                      AtomicString& result) const;
   virtual AbstractInlineTextBox* GetInlineTextBox() const { return nullptr; }
@@ -1355,11 +1348,23 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // ARIA attribute access: use these methods in order to ensure that values
   // are also retrieved from elementInternals on custom elements.
-  virtual bool HasAttribute(const QualifiedName&) const { return false; }
-  virtual const AtomicString& GetAttribute(const QualifiedName&) const {
-    return g_null_atom;
-  }
-  virtual bool IsAriaAttributeTrue(const QualifiedName&) const { return false; }
+  // For non-ARIA attributes, it's ok to just use Element methods.
+  bool HasAttribute(const QualifiedName&) const;
+  const AtomicString& GetAttribute(const QualifiedName&) const;
+  static const AtomicString& GetAttribute(Element& element,
+                                          const QualifiedName&);
+
+  // The following HasAriaFooAttribute() methods return true if the attribute
+  // is present. `out_value` is filled with the value of the attribute or a
+  // default value if the attribute is not present.
+  bool AriaBooleanAttribute(const QualifiedName& attribute,
+                            bool* out_value = nullptr) const;
+  bool AriaFloatAttribute(const QualifiedName& attribute,
+                          float* out_value = nullptr) const;
+
+  // Additional boolean ARIA convenience methods.
+  bool IsAriaAttributeTrue(const QualifiedName&) const;
+  static bool IsAriaAttributeTrue(Element& element, const QualifiedName&);
 
   // Scrollable containers.
   bool IsScrollableContainer() const;
@@ -1584,6 +1589,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   String KeyboardShortcut() const;
   void UpdateStyleAndLayoutTreeForNode(Node& node);
   void OnInheritedCachedValuesChanged();
+  static bool HasInternalsAttribute(Element&, const QualifiedName&);
+  static const AtomicString& GetInternalsAttribute(Element&,
+                                                   const QualifiedName&);
 
   bool children_dirty_ : 1 = false;
 

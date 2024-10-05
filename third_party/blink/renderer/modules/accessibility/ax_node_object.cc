@@ -2586,14 +2586,13 @@ bool AXNodeObject::IsMultiSelectable() const {
     case ax::mojom::blink::Role::kTreeGrid:
     case ax::mojom::blink::Role::kTree:
     case ax::mojom::blink::Role::kListBox:
-    case ax::mojom::blink::Role::kTabList: {
-      bool multiselectable = false;
-      if (HasAOMPropertyOrARIAAttribute(AOMBooleanProperty::kMultiselectable,
-                                        multiselectable)) {
+    case ax::mojom::blink::Role::kTabList:
+      bool multiselectable;
+      if (AriaBooleanAttribute(html_names::kAriaMultiselectableAttr,
+                               &multiselectable)) {
         return multiselectable;
       }
       break;
-    }
     default:
       break;
   }
@@ -2782,8 +2781,9 @@ AccessibilitySelectedState AXNodeObject::IsSelected() const {
 
   // The aria-selected attribute overrides automatic behaviors.
   bool is_selected;
-  if (HasAOMPropertyOrARIAAttribute(AOMBooleanProperty::kSelected, is_selected))
+  if (AriaBooleanAttribute(html_names::kAriaSelectedAttr, &is_selected)) {
     return is_selected ? kSelectedStateTrue : kSelectedStateFalse;
+  }
 
   // The selection should only follow the focus when the aria-selected attribute
   // is marked as required or implied for this element in the ARIA specs.
@@ -2817,8 +2817,9 @@ bool AXNodeObject::IsSelectedFromFocusSupported() const {
   // Any explicit assignment of aria-selected takes precedence over the implicit
   // selection based on focus.
   bool is_selected;
-  if (HasAOMPropertyOrARIAAttribute(AOMBooleanProperty::kSelected, is_selected))
+  if (AriaBooleanAttribute(html_names::kAriaSelectedAttr, &is_selected)) {
     return false;
+  }
 
   // Selection follows focus only when in a single selection container.
   const AXObject* container = ContainerWidget();
@@ -2939,8 +2940,7 @@ AXRestriction AXNodeObject::Restriction() const {
   // Check aria-readonly if supported by current role.
   bool is_read_only;
   if (SupportsARIAReadOnly() &&
-      HasAOMPropertyOrARIAAttribute(AOMBooleanProperty::kReadOnly,
-                                    is_read_only)) {
+      AriaBooleanAttribute(html_names::kAriaReadonlyAttr, &is_read_only)) {
     // ARIA overrides other readonly state markup.
     return is_read_only ? kRestrictionReadOnly : kRestrictionNone;
   }
@@ -2999,7 +2999,7 @@ AccessibilityExpanded AXNodeObject::IsExpanded() const {
   }
 
   bool expanded = false;
-  if (HasAOMPropertyOrARIAAttribute(AOMBooleanProperty::kExpanded, expanded)) {
+  if (AriaBooleanAttribute(html_names::kAriaExpandedAttr, &expanded)) {
     return expanded ? kExpandedExpanded : kExpandedCollapsed;
   }
 
@@ -3011,8 +3011,9 @@ bool AXNodeObject::IsRequired() const {
   if (form_control && form_control->IsRequired())
     return true;
 
-  if (AOMPropertyOrARIAAttributeIsTrue(AOMBooleanProperty::kRequired))
+  if (IsAriaAttributeTrue(html_names::kAriaRequiredAttr)) {
     return true;
+  }
 
   return false;
 }
@@ -3974,7 +3975,7 @@ int AXNodeObject::SetSize() const {
 
 bool AXNodeObject::ValueForRange(float* out_value) const {
   float value_now;
-  if (HasAOMPropertyOrARIAAttribute(AOMFloatProperty::kValueNow, value_now)) {
+  if (AriaFloatAttribute(html_names::kAriaValuenowAttr, &value_now)) {
     // Adjustment when the aria-valuenow is less than aria-valuemin or greater
     // than the aria-valuemax value.
     // See https://w3c.github.io/aria/#authorErrorDefaultValuesTable.
@@ -4045,9 +4046,7 @@ bool AXNodeObject::ValueForRange(float* out_value) const {
 }
 
 bool AXNodeObject::MaxValueForRange(float* out_value) const {
-  float value_max;
-  if (HasAOMPropertyOrARIAAttribute(AOMFloatProperty::kValueMax, value_max)) {
-    *out_value = value_max;
+  if (AriaFloatAttribute(html_names::kAriaValuemaxAttr, out_value)) {
     return true;
   }
 
@@ -4081,9 +4080,7 @@ bool AXNodeObject::MaxValueForRange(float* out_value) const {
 }
 
 bool AXNodeObject::MinValueForRange(float* out_value) const {
-  float value_min;
-  if (HasAOMPropertyOrARIAAttribute(AOMFloatProperty::kValueMin, value_min)) {
-    *out_value = value_min;
+  if (AriaFloatAttribute(html_names::kAriaValueminAttr, out_value)) {
     return true;
   }
 
@@ -5987,48 +5984,6 @@ Node* AXNodeObject::GetNode() const {
 
 LayoutObject* AXNodeObject::GetLayoutObject() const {
   return layout_object_;
-}
-
-bool AXNodeObject::HasAttribute(const QualifiedName& attribute) const {
-  Element* element = GetElement();
-  if (!element)
-    return false;
-  if (element->FastHasAttribute(attribute))
-    return true;
-  return HasInternalsAttribute(*element, attribute);
-}
-
-const AtomicString& AXNodeObject::GetAttribute(
-    const QualifiedName& attribute) const {
-  Element* element = GetElement();
-  if (!element)
-    return g_null_atom;
-  const AtomicString& value = element->FastGetAttribute(attribute);
-  if (!value.IsNull())
-    return value;
-  return GetInternalsAttribute(*element, attribute);
-}
-
-bool AXNodeObject::HasInternalsAttribute(Element& element,
-                                         const QualifiedName& attribute) const {
-  if (!element.DidAttachInternals())
-    return false;
-  return element.EnsureElementInternals().HasAttribute(attribute);
-}
-
-// ARIA attributes are true if they are not empty, "false" or "undefined".
-bool AXNodeObject::IsAriaAttributeTrue(const QualifiedName& attribute) const {
-  const AtomicString& value = GetAttribute(attribute);
-  return !value.empty() && !EqualIgnoringASCIICase(value, "undefined") &&
-         !EqualIgnoringASCIICase(value, "false");
-}
-
-const AtomicString& AXNodeObject::GetInternalsAttribute(
-    Element& element,
-    const QualifiedName& attribute) const {
-  if (!element.DidAttachInternals())
-    return g_null_atom;
-  return element.EnsureElementInternals().FastGetAttribute(attribute);
 }
 
 bool AXNodeObject::OnNativeBlurAction() {

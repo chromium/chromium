@@ -46,21 +46,6 @@ enum class AOMStringProperty {
   kVirtualContent
 };
 
-// All of the properties of AccessibleNode that have type "boolean".
-enum class AOMBooleanProperty {
-  kAtomic,
-  kBusy,
-  kDisabled,
-  kExpanded,
-  kHidden,
-  kModal,
-  kMultiline,
-  kMultiselectable,
-  kReadOnly,
-  kRequired,
-  kSelected
-};
-
 // All of the properties of AccessibleNode that have an unsigned integer type.
 enum class AOMUIntProperty {
   kColIndex,
@@ -88,9 +73,6 @@ enum class AOMRelationListProperty {
 // All of the properties of AccessibleNode that have a signed integer type.
 // (These all allow the value -1.)
 enum class AOMIntProperty { kColCount, kRowCount, kSetSize };
-
-// All of the properties of AccessibleNode that have a floating-point type.
-enum class AOMFloatProperty { kValueMax, kValueMin, kValueNow };
 
 class AccessibleNode;
 
@@ -121,14 +103,6 @@ class CORE_EXPORT AccessibleNode {
                                          AOMRelationListProperty,
                                          HeapVector<Member<Element>>&);
 
-  // Returns the equivalent ARIA attribute.
-  // Sets |isNull| if the attribute is not present.
-  static bool GetPropertyOrARIAAttribute(Element*,
-                                         AOMBooleanProperty,
-                                         bool& is_null);
-  static float GetPropertyOrARIAAttribute(Element*,
-                                          AOMFloatProperty,
-                                          bool& is_null);
   static int32_t GetPropertyOrARIAAttribute(Element*,
                                             AOMIntProperty,
                                             bool& is_null);

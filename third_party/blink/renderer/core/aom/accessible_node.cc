@@ -106,51 +106,6 @@ QualifiedName GetCorrespondingARIAAttribute(AOMRelationListProperty property) {
   return g_null_name;
 }
 
-QualifiedName GetCorrespondingARIAAttribute(AOMBooleanProperty property) {
-  switch (property) {
-    case AOMBooleanProperty::kAtomic:
-      return html_names::kAriaAtomicAttr;
-    case AOMBooleanProperty::kBusy:
-      return html_names::kAriaBusyAttr;
-    case AOMBooleanProperty::kDisabled:
-      return html_names::kAriaDisabledAttr;
-    case AOMBooleanProperty::kExpanded:
-      return html_names::kAriaExpandedAttr;
-    case AOMBooleanProperty::kHidden:
-      return html_names::kAriaHiddenAttr;
-    case AOMBooleanProperty::kModal:
-      return html_names::kAriaModalAttr;
-    case AOMBooleanProperty::kMultiline:
-      return html_names::kAriaMultilineAttr;
-    case AOMBooleanProperty::kMultiselectable:
-      return html_names::kAriaMultiselectableAttr;
-    case AOMBooleanProperty::kReadOnly:
-      return html_names::kAriaReadonlyAttr;
-    case AOMBooleanProperty::kRequired:
-      return html_names::kAriaRequiredAttr;
-    case AOMBooleanProperty::kSelected:
-      return html_names::kAriaSelectedAttr;
-  }
-
-  NOTREACHED_IN_MIGRATION();
-  return g_null_name;
-}
-
-QualifiedName GetCorrespondingARIAAttribute(AOMFloatProperty property) {
-  AtomicString attr_value;
-  switch (property) {
-    case AOMFloatProperty::kValueMax:
-      return html_names::kAriaValuemaxAttr;
-    case AOMFloatProperty::kValueMin:
-      return html_names::kAriaValueminAttr;
-    case AOMFloatProperty::kValueNow:
-      return html_names::kAriaValuenowAttr;
-  }
-
-  NOTREACHED_IN_MIGRATION();
-  return g_null_name;
-}
-
 QualifiedName GetCorrespondingARIAAttribute(AOMUIntProperty property) {
   switch (property) {
     case AOMUIntProperty::kColIndex:
@@ -289,38 +244,6 @@ bool AccessibleNode::GetPropertyOrARIAAttribute(
     }
   }
   return true;
-}
-
-// static
-bool AccessibleNode::GetPropertyOrARIAAttribute(Element* element,
-                                                AOMBooleanProperty property,
-                                                bool& is_null) {
-  is_null = true;
-  if (!element)
-    return false;
-
-  // Fall back on the equivalent ARIA attribute.
-  QualifiedName attribute = GetCorrespondingARIAAttribute(property);
-  AtomicString attr_value =
-      GetElementOrInternalsARIAAttribute(*element, attribute);
-  is_null = IsUndefinedAttrValue(attr_value);
-  return !is_null && !EqualIgnoringASCIICase(attr_value, "false");
-}
-
-// static
-float AccessibleNode::GetPropertyOrARIAAttribute(Element* element,
-                                                 AOMFloatProperty property,
-                                                 bool& is_null) {
-  is_null = true;
-  if (!element)
-    return 0.0;
-
-  // Fall back on the equivalent ARIA attribute.
-  QualifiedName attribute = GetCorrespondingARIAAttribute(property);
-  AtomicString attr_value =
-      GetElementOrInternalsARIAAttribute(*element, attribute);
-  is_null = attr_value.IsNull();
-  return attr_value.ToFloat();
 }
 
 // static

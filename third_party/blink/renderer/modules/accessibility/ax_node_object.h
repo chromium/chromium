@@ -293,12 +293,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   Node* GetNode() const final;
   LayoutObject* GetLayoutObject() const final;
 
-  // ARIA attribute access: use these methods in order to ensure that values
-  // are also retrieved from elementInternals on custom elements.
-  bool HasAttribute(const QualifiedName&) const override;
-  const AtomicString& GetAttribute(const QualifiedName&) const override;
-  bool IsAriaAttributeTrue(const QualifiedName& attribute) const override;
-
   // Modify or take an action on an object.
   bool OnNativeBlurAction() final;
   bool OnNativeFocusAction() final;
@@ -370,10 +364,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   void MaybeResetCache() const;
   AXObject* SetNextOnLine(AXObject* next_on_line) const;
   AXObject* SetPreviousOnLine(AXObject* previous_on_line) const;
-
-  bool HasInternalsAttribute(Element&, const QualifiedName&) const;
-  const AtomicString& GetInternalsAttribute(Element&,
-                                            const QualifiedName&) const;
 
   // This function returns the text of a tooltip associated with the element.
   // Although there are two ways of doing this, it is unlikely that an author

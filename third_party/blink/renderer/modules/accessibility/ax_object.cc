@@ -1169,6 +1169,96 @@ void AXObject::ShowAXTreeForThis() const {
 
 #endif
 
+bool AXObject::HasAttribute(const QualifiedName& attribute) const {
+  Element* element = GetElement();
+  if (!element) {
+    return false;
+  }
+  if (element->FastHasAttribute(attribute)) {
+    return true;
+  }
+  return HasInternalsAttribute(*element, attribute);
+}
+
+// static
+const AtomicString& AXObject::GetAttribute(Element& element,
+                                           const QualifiedName& attribute) {
+  const AtomicString& value = element.FastGetAttribute(attribute);
+  if (!value.IsNull()) {
+    return value;
+  }
+  return GetInternalsAttribute(element, attribute);
+}
+
+const AtomicString& AXObject::GetAttribute(
+    const QualifiedName& attribute) const {
+  return GetElement() ? GetAttribute(*GetElement(), attribute) : g_null_atom;
+}
+
+// static
+bool AXObject::HasInternalsAttribute(Element& element,
+                                     const QualifiedName& attribute) {
+  if (!element.DidAttachInternals()) {
+    return false;
+  }
+  return element.EnsureElementInternals().HasAttribute(attribute);
+}
+
+// static
+bool AXObject::IsAriaAttributeTrue(Element& element,
+                                   const QualifiedName& attribute) {
+  const AtomicString& value = GetAttribute(element, attribute);
+  return !value.empty() && !EqualIgnoringASCIICase(value, "undefined") &&
+         !EqualIgnoringASCIICase(value, "false");
+}
+
+// ARIA attributes are true if they are not empty, "false" or "undefined".
+bool AXObject::IsAriaAttributeTrue(const QualifiedName& attribute) const {
+  return GetElement() ? IsAriaAttributeTrue(*GetElement(), attribute) : false;
+}
+
+bool AXObject::AriaBooleanAttribute(const QualifiedName& attribute,
+                                    bool* out_value) const {
+  const AtomicString& value = GetAttribute(attribute);
+  if (value == g_null_atom || value.empty() ||
+      EqualIgnoringASCIICase(value, "undefined")) {
+    if (out_value) {
+      *out_value = false;
+    }
+    return false;
+  }
+  if (out_value) {
+    *out_value = !EqualIgnoringASCIICase(value, "false");
+  }
+  return true;
+}
+
+bool AXObject::AriaFloatAttribute(const QualifiedName& attribute,
+                                  float* out_value) const {
+  const AtomicString& value = GetAttribute(attribute);
+  if (value == g_null_atom) {
+    if (out_value) {
+      *out_value = 0.0;
+    }
+    return false;
+  }
+
+  if (out_value) {
+    *out_value = value.ToFloat();
+  }
+  return true;
+}
+
+// static
+const AtomicString& AXObject::GetInternalsAttribute(
+    Element& element,
+    const QualifiedName& attribute) {
+  if (!element.DidAttachInternals()) {
+    return g_null_atom;
+  }
+  return element.EnsureElementInternals().FastGetAttribute(attribute);
+}
+
 const AtomicString& AXObject::GetAOMPropertyOrARIAAttribute(
     AOMStringProperty property) const {
   Element* element = GetElement();
@@ -1197,34 +1287,6 @@ bool AXObject::HasAOMPropertyOrARIAAttribute(
   return AccessibleNode::GetPropertyOrARIAAttribute(element, property, result);
 }
 
-bool AXObject::HasAOMPropertyOrARIAAttribute(AOMBooleanProperty property,
-                                             bool& result) const {
-  Element* element = GetElement();
-  if (!element)
-    return false;
-
-  bool is_null = true;
-  result =
-      AccessibleNode::GetPropertyOrARIAAttribute(element, property, is_null);
-  return !is_null;
-}
-
-bool AXObject::AOMPropertyOrARIAAttributeIsTrue(
-    AOMBooleanProperty property) const {
-  bool result;
-  if (HasAOMPropertyOrARIAAttribute(property, result))
-    return result;
-  return false;
-}
-
-bool AXObject::AOMPropertyOrARIAAttributeIsFalse(
-    AOMBooleanProperty property) const {
-  bool result;
-  if (HasAOMPropertyOrARIAAttribute(property, result))
-    return !result;
-  return false;
-}
-
 bool AXObject::HasAOMPropertyOrARIAAttribute(AOMUIntProperty property,
                                              uint32_t& result) const {
   Element* element = GetElement();
@@ -1239,18 +1301,6 @@ bool AXObject::HasAOMPropertyOrARIAAttribute(AOMUIntProperty property,
 
 bool AXObject::HasAOMPropertyOrARIAAttribute(AOMIntProperty property,
                                              int32_t& result) const {
-  Element* element = GetElement();
-  if (!element)
-    return false;
-
-  bool is_null = true;
-  result =
-      AccessibleNode::GetPropertyOrARIAAttribute(element, property, is_null);
-  return !is_null;
-}
-
-bool AXObject::HasAOMPropertyOrARIAAttribute(AOMFloatProperty property,
-                                             float& result) const {
   Element* element = GetElement();
   if (!element)
     return false;
@@ -3662,7 +3712,7 @@ bool AXObject::IsAriaHiddenRoot() const {
   // aria-hidden:true works a bit like display:none.
   // * aria-hidden=true affects entire subtree.
   // * aria-hidden=false is a noop.
-  if (!AOMPropertyOrARIAAttributeIsTrue(AOMBooleanProperty::kHidden)) {
+  if (!IsAriaAttributeTrue(html_names::kAriaHiddenAttr)) {
     return false;
   }
 
@@ -3726,7 +3776,7 @@ bool AXObject::IsModal() const {
     return false;
 
   bool modal = false;
-  if (HasAOMPropertyOrARIAAttribute(AOMBooleanProperty::kModal, modal)) {
+  if (AriaBooleanAttribute(html_names::kAriaModalAttr, &modal)) {
     return modal;
   }
 
@@ -3811,8 +3861,9 @@ bool AXObject::ComputeIsDescendantOfDisabledNode() {
     return false;
 
   bool disabled = false;
-  if (HasAOMPropertyOrARIAAttribute(AOMBooleanProperty::kDisabled, disabled))
+  if (AriaBooleanAttribute(html_names::kAriaDisabledAttr, &disabled)) {
     return disabled;
+  }
 
   if (AXObject* parent = ParentObject()) {
     return parent->IsDescendantOfDisabledNode() || parent->IsDisabled();
@@ -5408,8 +5459,9 @@ bool AXObject::IsDisabled() const {
   // Check aria-disabled. According to ARIA in HTML section 3.1, aria-disabled
   // attribute does NOT override the native HTML disabled attribute.
   // https://www.w3.org/TR/html-aria/
-  if (AOMPropertyOrARIAAttributeIsTrue(AOMBooleanProperty::kDisabled))
+  if (IsAriaAttributeTrue(html_names::kAriaDisabledAttr)) {
     return true;
+  }
 
   // A focusable object with a disabled container.
   return cached_is_descendant_of_disabled_node_ && CanSetFocusAttribute();
@@ -5425,8 +5477,7 @@ AXRestriction AXObject::Restriction() const {
   // Check aria-readonly if supported by current role.
   bool is_read_only;
   if (SupportsARIAReadOnly() &&
-      HasAOMPropertyOrARIAAttribute(AOMBooleanProperty::kReadOnly,
-                                    is_read_only)) {
+      AriaBooleanAttribute(html_names::kAriaReadonlyAttr, &is_read_only)) {
     // ARIA overrides other readonly state markup.
     return is_read_only ? kRestrictionReadOnly : kRestrictionNone;
   }
@@ -5575,8 +5626,7 @@ bool AXObject::IsMultiline() const {
     return false;
 
   bool is_multiline = false;
-  if (HasAOMPropertyOrARIAAttribute(AOMBooleanProperty::kMultiline,
-                                    is_multiline)) {
+  if (AriaBooleanAttribute(html_names::kAriaMultilineAttr, &is_multiline)) {
     return is_multiline;
   }
 
@@ -5601,8 +5651,9 @@ AXObject* AXObject::LiveRegionRoot() {
 
 bool AXObject::LiveRegionAtomic() const {
   bool atomic = false;
-  if (HasAOMPropertyOrARIAAttribute(AOMBooleanProperty::kAtomic, atomic))
+  if (AriaBooleanAttribute(html_names::kAriaAtomicAttr, &atomic)) {
     return atomic;
+  }
 
   // ARIA roles "alert" and "status" should have an implicit aria-atomic value
   // of true.
@@ -5628,8 +5679,8 @@ bool AXObject::ContainerLiveRegionAtomic() const {
 
 bool AXObject::ContainerLiveRegionBusy() const {
   return cached_live_region_root_ &&
-         cached_live_region_root_->AOMPropertyOrARIAAttributeIsTrue(
-             AOMBooleanProperty::kBusy);
+         cached_live_region_root_->IsAriaAttributeTrue(
+             html_names::kAriaBusyAttr);
 }
 
 AXObject* AXObject::ElementAccessibilityHitTest(const gfx::Point& point) const {

@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
 #include "ui/accessibility/ax_common.h"
 
 namespace blink {
@@ -545,9 +546,8 @@ bool AXRelationCache::IsValidOwnedChild(Node& child_node) {
 
   // aria-hidden is problematic for cycles, and does not solve a known use case.
   // Easiest to omit the possibility.
-  bool is_null;
-  if (AccessibleNode::GetPropertyOrARIAAttribute(
-          child_element, AOMBooleanProperty::kHidden, is_null)) {
+  if (AXObject::IsAriaAttributeTrue(*child_element,
+                                    html_names::kAriaHiddenAttr)) {
     return false;
   }
 

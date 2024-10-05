@@ -2224,8 +2224,7 @@ void AXObjectCacheImpl::DiscardBadAriaHiddenBecauseOfFocus(AXObject& obj) {
   AXObject* bad_aria_hidden_ancestor = nullptr;
   for (AXObject* ancestor = &obj; ancestor;
        ancestor = ancestor->ParentObject()) {
-    if (ancestor->AOMPropertyOrARIAAttributeIsTrue(
-            AOMBooleanProperty::kHidden)) {
+    if (ancestor->IsAriaAttributeTrue(html_names::kAriaHiddenAttr)) {
       bad_aria_hidden_ancestor = ancestor;
       nodes_with_bad_aria_hidden.insert(ancestor->AXObjectID());
     }
@@ -5111,9 +5110,8 @@ Element* AXObjectCacheImpl::AncestorAriaModalDialog(Node* node) {
           element, AOMStringProperty::kRole);
       if (!role_str.empty() &&
           ui::IsDialog(AXObject::FirstValidRoleInRoleString(role_str))) {
-        bool is_null;
-        if (AccessibleNode::GetPropertyOrARIAAttribute(
-                element, AOMBooleanProperty::kModal, is_null) == true) {
+        if (AXObject::IsAriaAttributeTrue(*element,
+                                          html_names::kAriaModalAttr)) {
           return element;
         }
       }
