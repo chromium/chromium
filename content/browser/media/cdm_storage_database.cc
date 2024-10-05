@@ -462,6 +462,36 @@ bool CdmStorageDatabase::ClearDatabase() {
   return sql::Database::Delete(path_);
 }
 
+uint64_t CdmStorageDatabase::GetDatabaseSize() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  static constexpr char kPageCountSql[] = "PRAGMA page_count";
+  DCHECK(db_.IsSQLValid(kPageCountSql));
+
+  last_operation_ = "QueryPageCount";
+
+  sql::Statement statement_count(
+      db_.GetCachedStatement(SQL_FROM_HERE, kPageCountSql));
+  statement_count.Step();
+
+  uint64_t page_count = statement_count.ColumnInt(0);
+
+  static constexpr char kPageSizeSql[] = "PRAGMA page_size";
+  DCHECK(db_.IsSQLValid(kPageSizeSql));
+
+  last_operation_ = "QueryPageSize";
+
+  sql::Statement statement_size(
+      db_.GetCachedStatement(SQL_FROM_HERE, kPageSizeSql));
+  statement_size.Step();
+
+  uint64_t page_size = statement_size.ColumnInt(0);
+
+  last_operation_.reset();
+
+  return page_count * page_size;
+}
+
 void CdmStorageDatabase::CloseDatabaseForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
