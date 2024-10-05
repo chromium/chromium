@@ -32,6 +32,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Geolocation.CoreLocationProvider.Accuracy" units="meter"
+    expires_after="2025-03-30">
+  <owner>alvinji@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records the accuracy value (in meters) of a valid Geoposition. Values above
+    10000 meters are considered very inaccurate and are categorized into the
+    overflow bucket. This cap prioritizes accuracy resolution in the lower
+    range.
+  </summary>
+</histogram>
+
 <histogram name="Geolocation.CoreLocationProvider.ErrorCode"
     enum="CoreLocationErrorCode" expires_after="2025-07-01">
   <owner>alvinji@chromium.org</owner>
