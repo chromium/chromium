@@ -393,10 +393,8 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
   // for CWS themes.
   mixer[kColorPageInfoBackground] = {kColorToolbar};
   mixer[kColorPageInfoBackgroundTonal] = {kColorPageInfoBackground};
-  mixer[kColorPageInfoForeground] = {
-      ui::GetColorWithMaxContrast(kColorOmniboxText)};
-  mixer[kColorPageInfoSubtitleForeground] = {
-      ui::GetColorWithMaxContrast(kColorToolbarBackgroundSubtleEmphasis)};
+  mixer[kColorPageInfoForeground] = {ui::kColorSysOnSurface};
+  mixer[kColorPageInfoSubtitleForeground] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorPageInfoForegroundTonal] = {kColorPageInfoForeground};
   // Literal constants are `kOmniboxOpacityHovered` and
   // `kOmniboxOpacitySelected`. This is so that we can more cleanly use the
