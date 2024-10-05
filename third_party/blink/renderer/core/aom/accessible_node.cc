@@ -20,58 +20,6 @@ namespace blink {
 
 namespace {
 
-QualifiedName GetCorrespondingARIAAttribute(AOMStringProperty property) {
-  switch (property) {
-    case AOMStringProperty::kAutocomplete:
-      return html_names::kAriaAutocompleteAttr;
-    case AOMStringProperty::kAriaBrailleLabel:
-      return html_names::kAriaBraillelabelAttr;
-    case AOMStringProperty::kAriaBrailleRoleDescription:
-      return html_names::kAriaBrailleroledescriptionAttr;
-    case AOMStringProperty::kChecked:
-      return html_names::kAriaCheckedAttr;
-    case AOMStringProperty::kColIndexText:
-      return html_names::kAriaColindextextAttr;
-    case AOMStringProperty::kCurrent:
-      return html_names::kAriaCurrentAttr;
-    case AOMStringProperty::kDescription:
-      return html_names::kAriaDescriptionAttr;
-    case AOMStringProperty::kHasPopup:
-      return html_names::kAriaHaspopupAttr;
-    case AOMStringProperty::kInvalid:
-      return html_names::kAriaInvalidAttr;
-    case AOMStringProperty::kKeyShortcuts:
-      return html_names::kAriaKeyshortcutsAttr;
-    case AOMStringProperty::kLabel:
-      return html_names::kAriaLabelAttr;
-    case AOMStringProperty::kLive:
-      return html_names::kAriaLiveAttr;
-    case AOMStringProperty::kOrientation:
-      return html_names::kAriaOrientationAttr;
-    case AOMStringProperty::kPlaceholder:
-      return html_names::kAriaPlaceholderAttr;
-    case AOMStringProperty::kPressed:
-      return html_names::kAriaPressedAttr;
-    case AOMStringProperty::kRelevant:
-      return html_names::kAriaRelevantAttr;
-    case AOMStringProperty::kRole:
-      return html_names::kRoleAttr;
-    case AOMStringProperty::kRoleDescription:
-      return html_names::kAriaRoledescriptionAttr;
-    case AOMStringProperty::kRowIndexText:
-      return html_names::kAriaRowindextextAttr;
-    case AOMStringProperty::kSort:
-      return html_names::kAriaSortAttr;
-    case AOMStringProperty::kValueText:
-      return html_names::kAriaValuetextAttr;
-    case AOMStringProperty::kVirtualContent:
-      return html_names::kAriaVirtualcontentAttr;
-  }
-
-  NOTREACHED_IN_MIGRATION();
-  return g_null_name;
-}
-
 QualifiedName GetCorrespondingARIAAttribute(AOMRelationProperty property) {
   switch (property) {
     case AOMRelationProperty::kActiveDescendant:
@@ -108,18 +56,11 @@ QualifiedName GetCorrespondingARIAAttribute(AOMRelationListProperty property) {
 
 }  // namespace
 
-bool AccessibleNode::IsUndefinedAttrValue(const AtomicString& value) {
-  return value.empty() || EqualIgnoringASCIICase(value, "undefined");
-}
-
 // static
 const AtomicString& AccessibleNode::GetElementOrInternalsARIAAttribute(
     Element& element,
-    const QualifiedName& attribute,
-    bool is_token_attr) {
-  const AtomicString& attr_value = element.FastGetAttribute(attribute);
-  if ((attr_value != g_null_atom) &&
-      (!is_token_attr || !IsUndefinedAttrValue(attr_value))) {
+    const QualifiedName& attribute) {
+  if (const AtomicString& attr_value = element.FastGetAttribute(attribute)) {
     return attr_value;
   }
 
@@ -127,26 +68,6 @@ const AtomicString& AccessibleNode::GetElementOrInternalsARIAAttribute(
     return g_null_atom;
 
   return element.EnsureElementInternals().FastGetAttribute(attribute);
-}
-
-// static
-const AtomicString& AccessibleNode::GetPropertyOrARIAAttribute(
-    Element* element,
-    AOMStringProperty property) {
-  if (!element)
-    return g_null_atom;
-
-  const bool is_token_attr = IsStringTokenProperty(property);
-
-  // We are currently only checking ARIA attributes, instead of AccessibleNode
-  // properties. Further refactoring will be happening as the API is finalised.
-  QualifiedName attribute = GetCorrespondingARIAAttribute(property);
-  const AtomicString& attr_value =
-      GetElementOrInternalsARIAAttribute(*element, attribute, is_token_attr);
-  if (is_token_attr && IsUndefinedAttrValue(attr_value))
-    return g_null_atom;  // Attribute not set or explicitly undefined.
-
-  return attr_value;
 }
 
 // static
@@ -158,11 +79,7 @@ const AtomicString& AccessibleNode::GetPropertyOrARIAAttributeValue(
   QualifiedName attribute = GetCorrespondingARIAAttribute(property);
   const AtomicString& value =
       GetElementOrInternalsARIAAttribute(*element, attribute);
-  if (IsUndefinedAttrValue(value)) {
-    return g_null_atom;  // Attribute not set or explicitly undefined.
-  }
-
-  return value;
+  return value.empty() ? g_null_atom : value;
 }
 
 Element* AccessibleNode::GetPropertyOrARIAAttribute(
@@ -210,39 +127,6 @@ bool AccessibleNode::GetPropertyOrARIAAttribute(
     }
   }
   return true;
-}
-
-// These properties support a list of tokens, and "undefined"/"" is
-// equivalent to not setting the attribute.
-bool AccessibleNode::IsStringTokenProperty(AOMStringProperty property) {
-  switch (property) {
-    case AOMStringProperty::kAutocomplete:
-    case AOMStringProperty::kChecked:
-    case AOMStringProperty::kCurrent:
-    case AOMStringProperty::kHasPopup:
-    case AOMStringProperty::kInvalid:
-    case AOMStringProperty::kLive:
-    case AOMStringProperty::kOrientation:
-    case AOMStringProperty::kPressed:
-    case AOMStringProperty::kRelevant:
-    case AOMStringProperty::kSort:
-      return true;
-    case AOMStringProperty::kAriaBrailleLabel:
-    case AOMStringProperty::kAriaBrailleRoleDescription:
-    case AOMStringProperty::kColIndexText:
-    case AOMStringProperty::kDescription:
-    case AOMStringProperty::kKeyShortcuts:
-    case AOMStringProperty::kLabel:
-    case AOMStringProperty::kPlaceholder:
-    case AOMStringProperty::kRole:  // Is token, but ""/"undefined" not
-                                    // supported.
-    case AOMStringProperty::kRoleDescription:
-    case AOMStringProperty::kRowIndexText:
-    case AOMStringProperty::kValueText:
-    case AOMStringProperty::kVirtualContent:
-      break;
-  }
-  return false;
 }
 
 }  // namespace blink

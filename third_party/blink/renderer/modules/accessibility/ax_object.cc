@@ -1282,6 +1282,29 @@ bool AXObject::AriaFloatAttribute(const QualifiedName& attribute,
   return true;
 }
 
+const AtomicString& AXObject::AriaTokenAttribute(
+    const QualifiedName& attribute) const {
+  DEFINE_STATIC_LOCAL(const AtomicString, undefined_value, ("undefined"));
+  const AtomicString& value = GetAttribute(attribute);
+  if (attribute == html_names::kAriaAutocompleteAttr ||
+      attribute == html_names::kAriaCheckedAttr ||
+      attribute == html_names::kAriaCurrentAttr ||
+      attribute == html_names::kAriaHaspopupAttr ||
+      attribute == html_names::kAriaInvalidAttr ||
+      attribute == html_names::kAriaLiveAttr ||
+      attribute == html_names::kAriaOrientationAttr ||
+      attribute == html_names::kAriaPressedAttr ||
+      attribute == html_names::kAriaRelevantAttr ||
+      attribute == html_names::kAriaSortAttr) {
+    // These properties support a list of tokens, and "undefined"/"" is
+    // equivalent to not setting the attribute.
+    return value.empty() || value == undefined_value ? g_null_atom : value;
+  }
+  DCHECK(false) << "Not a token attribute. Use AriaFloatAttribute(), "
+                   "AriaIntAttribute(), AriaStringAttribute(), etc. instead.";
+  return value;
+}
+
 // static
 const AtomicString& AXObject::GetInternalsAttribute(
     Element& element,
@@ -1290,15 +1313,6 @@ const AtomicString& AXObject::GetInternalsAttribute(
     return g_null_atom;
   }
   return element.EnsureElementInternals().FastGetAttribute(attribute);
-}
-
-const AtomicString& AXObject::GetAOMPropertyOrARIAAttribute(
-    AOMStringProperty property) const {
-  Element* element = GetElement();
-  if (!element)
-    return g_null_atom;
-
-  return AccessibleNode::GetPropertyOrARIAAttribute(element, property);
 }
 
 Element* AXObject::GetAOMPropertyOrARIAAttribute(
@@ -1318,16 +1332,6 @@ bool AXObject::HasAOMPropertyOrARIAAttribute(
     return false;
 
   return AccessibleNode::GetPropertyOrARIAAttribute(element, property, result);
-}
-
-bool AXObject::HasAOMPropertyOrARIAAttribute(AOMStringProperty property,
-                                             AtomicString& result) const {
-  Element* element = GetElement();
-  if (!element)
-    return false;
-
-  result = AccessibleNode::GetPropertyOrARIAAttribute(element, property);
-  return !result.IsNull();
 }
 
 namespace {
@@ -2279,7 +2283,7 @@ void AXObject::SerializeTableAttributes(ui::AXNodeData* node_data) const {
       // aria-rowtext/aria-coltext once Sheets uses standard attribute names
       // aria-rowindextext/aria-colindextext.
       AtomicString aria_cell_row_index_text =
-          GetAOMPropertyOrARIAAttribute(AOMStringProperty::kRowIndexText);
+          GetAttribute(html_names::kAriaRowindextextAttr);
       if (aria_cell_row_index_text.empty()) {
         aria_cell_row_index_text =
             GetAttribute(DeprecatedAriaRowtextAttrName());
@@ -2288,7 +2292,7 @@ void AXObject::SerializeTableAttributes(ui::AXNodeData* node_data) const {
           node_data, ax::mojom::blink::StringAttribute::kAriaCellRowIndexText,
           aria_cell_row_index_text);
       AtomicString aria_cell_column_index_text =
-          GetAOMPropertyOrARIAAttribute(AOMStringProperty::kColIndexText);
+          GetAttribute(html_names::kAriaColindextextAttr);
       if (aria_cell_column_index_text.empty()) {
         aria_cell_column_index_text =
             GetAttribute(DeprecatedAriaColtextAttrName());
@@ -2692,8 +2696,7 @@ AXObject* AXObject::GetControlsListboxForTextfieldCombobox() const {
 const AtomicString& AXObject::GetRoleStringForSerialization(
     ui::AXNodeData* node_data) const {
   // All ARIA roles are exposed in xml-roles.
-  if (const AtomicString& role_str =
-          GetAOMPropertyOrARIAAttribute(AOMStringProperty::kRole)) {
+  if (const AtomicString& role_str = GetAttribute(html_names::kRoleAttr)) {
     return role_str;
   }
 
@@ -2964,7 +2967,7 @@ bool AXObject::IsCheckable() const {
     case ax::mojom::blink::Role::kTreeItem:
     case ax::mojom::blink::Role::kListBoxOption:
     case ax::mojom::blink::Role::kMenuListOption:
-      return AriaCheckedIsPresent();
+      return AriaTokenAttribute(html_names::kAriaCheckedAttr) != g_null_atom;
     default:
       return false;
   }
@@ -3007,10 +3010,10 @@ ax::mojom::blink::CheckedState AXObject::CheckedState() const {
 
   // Try ARIA checked/pressed state
   const ax::mojom::blink::Role role = RoleValue();
-  const auto prop = role == ax::mojom::blink::Role::kToggleButton
-                        ? AOMStringProperty::kPressed
-                        : AOMStringProperty::kChecked;
-  const AtomicString& checked_attribute = GetAOMPropertyOrARIAAttribute(prop);
+  const QualifiedName& prop = role == ax::mojom::blink::Role::kToggleButton
+                                  ? html_names::kAriaPressedAttr
+                                  : html_names::kAriaCheckedAttr;
+  const AtomicString& checked_attribute = AriaTokenAttribute(prop);
   if (checked_attribute) {
     if (EqualIgnoringASCIICase(checked_attribute, "mixed")) {
       if (role == ax::mojom::blink::Role::kCheckBox ||
@@ -4927,8 +4930,7 @@ String AXObject::AriaTextAlternative(
         NameSource(*found_text_alternative, html_names::kAriaLabelAttr));
     name_sources->back().type = name_from;
   }
-  const AtomicString& aria_label =
-      GetAOMPropertyOrARIAAttribute(AOMStringProperty::kLabel);
+  const AtomicString& aria_label = GetAttribute(html_names::kAriaLabelAttr);
   if (!aria_label.GetString().ContainsOnlyWhitespaceOrEmpty()) {
     text_alternative = aria_label;
 
@@ -5062,8 +5064,6 @@ bool AXObject::AriaLabelledbyElementVector(
 
 // static
 bool AXObject::IsNameFromAriaAttribute(Element* element) {
-  // TODO(accessibility) Make this work for virtual nodes.
-
   if (!element)
     return false;
 
@@ -5072,8 +5072,8 @@ bool AXObject::IsNameFromAriaAttribute(Element* element) {
     return true;
   }
 
-  const AtomicString& aria_label = AccessibleNode::GetPropertyOrARIAAttribute(
-      element, AOMStringProperty::kLabel);
+  const AtomicString& aria_label =
+      GetAttribute(*element, html_names::kAriaLabelAttr);
   if (!aria_label.GetString().ContainsOnlyWhitespaceOrEmpty()) {
     return true;
   }
@@ -5120,13 +5120,16 @@ AXObject* AXObject::PreviousOnLine() const {
 
 std::optional<const DocumentMarker::MarkerType>
 AXObject::GetAriaSpellingOrGrammarMarker() const {
+  // TODO(accessibility) It looks like we are walking ancestors when we
+  // shouldn't need to do that. At the most we should need get this via
+  // GetClosestElement().
   AtomicString aria_invalid_value;
   const AncestorsIterator iter = std::find_if(
       UnignoredAncestorsBegin(), UnignoredAncestorsEnd(),
       [&aria_invalid_value](const AXObject& ancestor) {
-        return ancestor.HasAOMPropertyOrARIAAttribute(
-                   AOMStringProperty::kInvalid, aria_invalid_value) ||
-               ancestor.IsLineBreakingObject();
+        aria_invalid_value =
+            ancestor.AriaTokenAttribute(html_names::kAriaInvalidAttr);
+        return aria_invalid_value || ancestor.IsLineBreakingObject();
       });
 
   if (iter == UnignoredAncestorsEnd())
@@ -5197,16 +5200,6 @@ ax::mojom::blink::DefaultActionVerb AXObject::Action() const {
         return ax::mojom::blink::DefaultActionVerb::kClick;
       return ax::mojom::blink::DefaultActionVerb::kClickAncestor;
   }
-}
-
-bool AXObject::AriaPressedIsPresent() const {
-  AtomicString result;
-  return HasAOMPropertyOrARIAAttribute(AOMStringProperty::kPressed, result);
-}
-
-bool AXObject::AriaCheckedIsPresent() const {
-  AtomicString result;
-  return HasAOMPropertyOrARIAAttribute(AOMStringProperty::kChecked, result);
 }
 
 bool AXObject::SupportsARIAExpanded() const {
@@ -5396,7 +5389,7 @@ const AtomicString& AXObject::LiveRegionStatus() const {
   DEFINE_STATIC_LOCAL(const AtomicString, live_region_status_off, ("off"));
 
   const AtomicString& live_region_status =
-      GetAOMPropertyOrARIAAttribute(AOMStringProperty::kLive);
+      AriaTokenAttribute(html_names::kAriaLiveAttr);
   // These roles have implicit live region status.
   if (live_region_status.empty()) {
     switch (RoleValue()) {
@@ -5420,7 +5413,7 @@ const AtomicString& AXObject::LiveRegionRelevant() const {
   DEFINE_STATIC_LOCAL(const AtomicString, default_live_region_relevant,
                       ("additions text"));
   const AtomicString& relevant =
-      GetAOMPropertyOrARIAAttribute(AOMStringProperty::kRelevant);
+      AriaTokenAttribute(html_names::kAriaRelevantAttr);
 
   // Default aria-relevant = "additions text".
   if (relevant.empty())
@@ -5489,10 +5482,10 @@ ax::mojom::blink::Role AXObject::RawAriaRole() const {
 }
 
 ax::mojom::blink::Role AXObject::DetermineRawAriaRole() const {
-  const AtomicString& aria_role =
-      GetAOMPropertyOrARIAAttribute(AOMStringProperty::kRole);
-  if (aria_role.IsNull() || aria_role.empty())
+  const AtomicString& aria_role = GetAttribute(html_names::kRoleAttr);
+  if (aria_role.empty()) {
     return ax::mojom::blink::Role::kUnknown;
+  }
   return FirstValidRoleInRoleString(aria_role);
 }
 
@@ -5511,8 +5504,7 @@ ax::mojom::blink::Role AXObject::DetermineAriaRole() const {
     // ChromeVox will ignore the aria-roledescription. It only speaks the role
     // description on certain roles, and ignores it on the generic role.
     // See also https://github.com/w3c/aria/issues/1463.
-    if (const AtomicString& role_str =
-            GetAOMPropertyOrARIAAttribute(AOMStringProperty::kRole)) {
+    if (const AtomicString& role_str = GetAttribute(html_names::kRoleAttr)) {
       return FirstValidRoleInRoleString(role_str,
                                         /*ignore_form_and_region*/ true);
     }
@@ -7898,8 +7890,9 @@ bool AXObject::SupportsARIAReadOnly() const {
 ax::mojom::blink::Role AXObject::ButtonRoleType() const {
   // If aria-pressed is present, then it should be exposed as a toggle button.
   // http://www.w3.org/TR/wai-aria/states_and_properties#aria-pressed
-  if (AriaPressedIsPresent())
+  if (AriaTokenAttribute(html_names::kAriaPressedAttr)) {
     return ax::mojom::blink::Role::kToggleButton;
+  }
 
   // If aria-haspopup is present and is not "dialog", expose as a popup button,
   // which is exposed in MSAA/IA2 with a role of button menu. Note that this is

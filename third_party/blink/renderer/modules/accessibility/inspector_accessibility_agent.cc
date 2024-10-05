@@ -295,9 +295,9 @@ void FillWidgetProperties(AXObject& ax_object,
     properties.emplace_back(CreateProperty(
         AXPropertyNameEnum::Valuetext,
         CreateValue(
-            ax_object
-                .GetAOMPropertyOrARIAAttribute(AOMStringProperty::kValueText)
-                .GetString())));
+            node_data
+                .GetStringAttribute(ax::mojom::blink::StringAttribute::kValue)
+                .c_str())));
   }
 }
 

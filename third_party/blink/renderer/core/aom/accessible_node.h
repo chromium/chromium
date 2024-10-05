@@ -64,19 +64,9 @@ class AccessibleNode;
 
 class CORE_EXPORT AccessibleNode {
  public:
-  // Does the attribute value match one of the ARIA undefined patterns for
-  // boolean and token properties?
-  // These include the empty string ("") or "undefined" as a literal.
-  // See ARIA 1.1 Sections 6.2 and 6.3, as well as properties that specifically
-  // indicate a supported value of "undefined".
-  static bool IsUndefinedAttrValue(const AtomicString&);
-
   // Returns the value of the given string property if the
   // Element has an AccessibleNode, otherwise returns the equivalent
   // ARIA attribute.
-  static const AtomicString& GetPropertyOrARIAAttribute(Element*,
-                                                        AOMStringProperty);
-
   static const AtomicString& GetPropertyOrARIAAttributeValue(
       Element* element,
       AOMRelationProperty property);
@@ -90,11 +80,9 @@ class CORE_EXPORT AccessibleNode {
                                          HeapVector<Member<Element>>&);
 
  private:
-  static bool IsStringTokenProperty(AOMStringProperty);
   static const AtomicString& GetElementOrInternalsARIAAttribute(
       Element& element,
-      const QualifiedName& attribute,
-      bool is_token_attr = false);
+      const QualifiedName& attribute);
 };
 
 }  // namespace blink

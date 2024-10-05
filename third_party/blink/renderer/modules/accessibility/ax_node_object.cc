@@ -276,8 +276,8 @@ bool ShouldIgnoreListItem(blink::Node* node) {
   if (IsA<blink::HTMLMenuElement>(*parent) ||
       IsA<blink::HTMLUListElement>(*parent) ||
       IsA<blink::HTMLOListElement>(*parent)) {
-    AtomicString role = blink::AccessibleNode::GetPropertyOrARIAAttribute(
-        parent, blink::AOMStringProperty::kRole);
+    AtomicString role =
+        blink::AXObject::GetAttribute(*parent, blink::html_names::kRoleAttr);
     if (!role.empty() && role != "list" && role != "directory") {
       return true;
     }
@@ -1483,24 +1483,22 @@ ax::mojom::blink::SortDirection AXNodeObject::GetSortDirection() const {
     return ax::mojom::blink::SortDirection::kNone;
   }
 
-  const AtomicString& aria_sort =
-      GetAOMPropertyOrARIAAttribute(AOMStringProperty::kSort);
-  if (aria_sort.empty()) {
-    return ax::mojom::blink::SortDirection::kNone;
+  if (const AtomicString& aria_sort =
+          AriaTokenAttribute(html_names::kAriaSortAttr)) {
+    if (EqualIgnoringASCIICase(aria_sort, "none")) {
+      return ax::mojom::blink::SortDirection::kNone;
+    }
+    if (EqualIgnoringASCIICase(aria_sort, "ascending")) {
+      return ax::mojom::blink::SortDirection::kAscending;
+    }
+    if (EqualIgnoringASCIICase(aria_sort, "descending")) {
+      return ax::mojom::blink::SortDirection::kDescending;
+    }
+    // Technically, illegal values should be exposed as is, but this does
+    // not seem to be worth the implementation effort at this time.
+    return ax::mojom::blink::SortDirection::kOther;
   }
-  if (EqualIgnoringASCIICase(aria_sort, "none")) {
-    return ax::mojom::blink::SortDirection::kNone;
-  }
-  if (EqualIgnoringASCIICase(aria_sort, "ascending")) {
-    return ax::mojom::blink::SortDirection::kAscending;
-  }
-  if (EqualIgnoringASCIICase(aria_sort, "descending")) {
-    return ax::mojom::blink::SortDirection::kDescending;
-  }
-
-  // Technically, illegal values should be exposed as is, but this does
-  // not seem to be worth the implementation effort at this time.
-  return ax::mojom::blink::SortDirection::kOther;
+  return ax::mojom::blink::SortDirection::kNone;
 }
 
 AXObject* AXNodeObject::CellForColumnAndRow(unsigned target_column_index,
@@ -1624,8 +1622,7 @@ bool AXNodeObject::IsDataTable() const {
   }
 
   // If it has an ARIA role, it's definitely a data table.
-  AtomicString role;
-  if (HasAOMPropertyOrARIAAttribute(AOMStringProperty::kRole, role)) {
+  if (HasAttribute(html_names::kRoleAttr)) {
     return true;
   }
 
@@ -1939,7 +1936,7 @@ ax::mojom::blink::Role AXNodeObject::RoleFromLayoutObjectOrNode() const {
   // Minimum role:
   // TODO(accessibility) if (AXObjectCache().IsInternalUICheckerOn()) assert,
   // because it is a bad code smell and usually points to other problems.
-  if (GetElement() && !GetElement()->FastHasAttribute(html_names::kRoleAttr)) {
+  if (GetElement() && !HasAttribute(html_names::kRoleAttr)) {
     if (IsPopup() != ax::mojom::blink::IsPopup::kNone ||
         GetElement()->FastHasAttribute(html_names::kAutofocusAttr) ||
         GetElement()->FastHasAttribute(html_names::kDraggableAttr)) {
@@ -2399,8 +2396,7 @@ static Element* SiblingWithAriaRole(String role, Node* node) {
     if (!element)
       continue;
     const AtomicString& sibling_aria_role =
-        AccessibleNode::GetPropertyOrARIAAttribute(element,
-                                                   AOMStringProperty::kRole);
+        blink::AXObject::GetAttribute(*element, html_names::kRoleAttr);
     if (EqualIgnoringASCIICase(sibling_aria_role, role))
       return element;
   }
@@ -3133,11 +3129,13 @@ String AXNodeObject::AutoComplete() const {
 
   if (IsAtomicTextField() || IsARIATextField()) {
     const AtomicString& aria_auto_complete =
-        GetAOMPropertyOrARIAAttribute(AOMStringProperty::kAutocomplete)
-            .LowerASCII();
+        AriaTokenAttribute(html_names::kAriaAutocompleteAttr);
     // Illegal values must be passed through, according to CORE-AAM.
-    if (!aria_auto_complete.IsNull())
-      return aria_auto_complete == "none" ? String() : aria_auto_complete;
+    if (aria_auto_complete) {
+      return aria_auto_complete == "none" ? String()
+                                          : aria_auto_complete.LowerASCII();
+      ;
+    }
   }
 
   if (auto* input = DynamicTo<HTMLInputElement>(GetNode())) {
@@ -3384,7 +3382,7 @@ const AtomicString& AXNodeObject::EffectiveTarget() const {
 
 AccessibilityOrientation AXNodeObject::Orientation() const {
   const AtomicString& aria_orientation =
-      GetAOMPropertyOrARIAAttribute(AOMStringProperty::kOrientation);
+      AriaTokenAttribute(html_names::kAriaOrientationAttr);
   AccessibilityOrientation orientation = kAccessibilityOrientationUndefined;
   if (EqualIgnoringASCIICase(aria_orientation, "horizontal"))
     orientation = kAccessibilityOrientationHorizontal;
@@ -3859,53 +3857,57 @@ float AXNodeObject::FontWeight() const {
 
 ax::mojom::blink::AriaCurrentState AXNodeObject::GetAriaCurrentState() const {
   const AtomicString& attribute_value =
-      GetAOMPropertyOrARIAAttribute(AOMStringProperty::kCurrent);
-  if (attribute_value.IsNull())
+      AriaTokenAttribute(html_names::kAriaCurrentAttr);
+  if (attribute_value.IsNull()) {
     return ax::mojom::blink::AriaCurrentState::kNone;
-  if (attribute_value.empty() ||
-      EqualIgnoringASCIICase(attribute_value, "false"))
+  }
+  if (EqualIgnoringASCIICase(attribute_value, "false")) {
     return ax::mojom::blink::AriaCurrentState::kFalse;
-  if (EqualIgnoringASCIICase(attribute_value, "true"))
-    return ax::mojom::blink::AriaCurrentState::kTrue;
-  if (EqualIgnoringASCIICase(attribute_value, "page"))
+  }
+  if (EqualIgnoringASCIICase(attribute_value, "page")) {
     return ax::mojom::blink::AriaCurrentState::kPage;
-  if (EqualIgnoringASCIICase(attribute_value, "step"))
+  }
+  if (EqualIgnoringASCIICase(attribute_value, "step")) {
     return ax::mojom::blink::AriaCurrentState::kStep;
-  if (EqualIgnoringASCIICase(attribute_value, "location"))
+  }
+  if (EqualIgnoringASCIICase(attribute_value, "location")) {
     return ax::mojom::blink::AriaCurrentState::kLocation;
-  if (EqualIgnoringASCIICase(attribute_value, "date"))
+  }
+  if (EqualIgnoringASCIICase(attribute_value, "date")) {
     return ax::mojom::blink::AriaCurrentState::kDate;
-  if (EqualIgnoringASCIICase(attribute_value, "time"))
+  }
+  if (EqualIgnoringASCIICase(attribute_value, "time")) {
     return ax::mojom::blink::AriaCurrentState::kTime;
-  // An unknown value should return true.
-  if (!attribute_value.empty())
-    return ax::mojom::blink::AriaCurrentState::kTrue;
+  }
 
-  return AXObject::GetAriaCurrentState();
+  // An unknown value should return true.
+  return ax::mojom::blink::AriaCurrentState::kTrue;
 }
 
 ax::mojom::blink::InvalidState AXNodeObject::GetInvalidState() const {
   // First check aria-invalid.
-  const AtomicString& attribute_value =
-      GetAOMPropertyOrARIAAttribute(AOMStringProperty::kInvalid);
-  // aria-invalid="false".
-  if (EqualIgnoringASCIICase(attribute_value, "false"))
-    return ax::mojom::blink::InvalidState::kFalse;
-  // In most cases, aria-invalid="spelling"| "grammar" are used on inline text
-  // elements, and are exposed via Markers() as if they are native errors.
-  // Therefore, they are exposed as InvalidState:kNone here in order to avoid
-  // exposing the state twice, and to prevent superfluous "invalid"
-  // announcements in some screen readers.
-  // On text fields, they are simply exposed as if aria-invalid="true".
-  if (EqualIgnoringASCIICase(attribute_value, "spelling") ||
-      EqualIgnoringASCIICase(attribute_value, "grammar")) {
-    return RoleValue() == ax::mojom::blink::Role::kTextField
-               ? ax::mojom::blink::InvalidState::kTrue
-               : ax::mojom::blink::InvalidState::kNone;
-  }
-  // Any other non-empty value is considered true.
-  if (!attribute_value.empty()) {
-    return ax::mojom::blink::InvalidState::kTrue;
+  if (const AtomicString& attribute_value =
+          AriaTokenAttribute(html_names::kAriaInvalidAttr)) {
+    // aria-invalid="false".
+    if (EqualIgnoringASCIICase(attribute_value, "false")) {
+      return ax::mojom::blink::InvalidState::kFalse;
+    }
+    // In most cases, aria-invalid="spelling"| "grammar" are used on inline text
+    // elements, and are exposed via Markers() as if they are native errors.
+    // Therefore, they are exposed as InvalidState:kNone here in order to avoid
+    // exposing the state twice, and to prevent superfluous "invalid"
+    // announcements in some screen readers.
+    // On text fields, they are simply exposed as if aria-invalid="true".
+    if (EqualIgnoringASCIICase(attribute_value, "spelling") ||
+        EqualIgnoringASCIICase(attribute_value, "grammar")) {
+      return RoleValue() == ax::mojom::blink::Role::kTextField
+                 ? ax::mojom::blink::InvalidState::kTrue
+                 : ax::mojom::blink::InvalidState::kNone;
+    }
+    // Any other non-empty value is considered true.
+    if (!attribute_value.empty()) {
+      return ax::mojom::blink::InvalidState::kTrue;
+    }
   }
 
   // Next check for native the invalid state.
@@ -4300,10 +4302,7 @@ String AXNodeObject::GetValueForControl(AXObjectSet& visited) const {
   }
 
   if (IsRangeValueSupported()) {
-    String aria_value_text =
-        GetAOMPropertyOrARIAAttribute(AOMStringProperty::kValueText)
-            .GetString();
-    return aria_value_text;
+    return GetAttribute(html_names::kAriaValuetextAttr).GetString();
   }
 
   // Handle other HTML input elements that aren't text controls, like date and
@@ -4353,9 +4352,8 @@ ax::mojom::blink::Role AXNodeObject::RawAriaRole() const {
 }
 
 ax::mojom::blink::HasPopup AXNodeObject::HasPopup() const {
-  const AtomicString& has_popup =
-      GetAOMPropertyOrARIAAttribute(AOMStringProperty::kHasPopup);
-  if (!has_popup.IsNull()) {
+  if (const AtomicString& has_popup =
+          AriaTokenAttribute(html_names::kAriaHaspopupAttr)) {
     if (EqualIgnoringASCIICase(has_popup, "false"))
       return ax::mojom::blink::HasPopup::kFalse;
 
@@ -6664,7 +6662,7 @@ String AXNodeObject::NativeTextAlternative(
       source.type = name_from;
     }
     const AtomicString& aria_placeholder =
-        GetAOMPropertyOrARIAAttribute(AOMStringProperty::kPlaceholder);
+        GetAttribute(html_names::kAriaPlaceholderAttr);
     if (!aria_placeholder.empty()) {
       text_alternative = aria_placeholder;
       if (name_sources) {
@@ -6873,8 +6871,7 @@ String AXNodeObject::NativeTextAlternative(
       }
       if (Element* document_element = document->documentElement()) {
         const AtomicString& aria_label =
-            AccessibleNode::GetPropertyOrARIAAttribute(
-                document_element, AOMStringProperty::kLabel);
+            GetAttribute(*document_element, html_names::kAriaLabelAttr);
         if (!aria_label.empty()) {
           text_alternative = aria_label;
 
@@ -7104,8 +7101,8 @@ String AXNodeObject::Description(
   // aria-description overrides any HTML-based accessible description,
   // but not aria-describedby.
   const AtomicString& aria_desc =
-      GetAOMPropertyOrARIAAttribute(AOMStringProperty::kDescription);
-  if (!aria_desc.IsNull()) {
+      GetAttribute(html_names::kAriaDescriptionAttr);
+  if (aria_desc) {
     description_from = ax::mojom::blink::DescriptionFrom::kAriaDescription;
     description = aria_desc;
     if (description_sources) {
@@ -7455,7 +7452,7 @@ String AXNodeObject::Placeholder(ax::mojom::blink::NameFrom name_from) const {
     return native_placeholder;
 
   const AtomicString& aria_placeholder =
-      GetAOMPropertyOrARIAAttribute(AOMStringProperty::kPlaceholder);
+      GetAttribute(html_names::kAriaPlaceholderAttr);
   if (!aria_placeholder.empty())
     return aria_placeholder;
 
@@ -7482,9 +7479,10 @@ String AXNodeObject::GetValueContributionToName(AXObjectSet& visited) const {
 
   if (IsRangeValueSupported()) {
     const AtomicString& aria_valuetext =
-        GetAOMPropertyOrARIAAttribute(AOMStringProperty::kValueText);
-    if (!aria_valuetext.IsNull())
+        GetAttribute(html_names::kAriaValuetextAttr);
+    if (aria_valuetext) {
       return aria_valuetext.GetString();
+    }
     float value;
     if (ValueForRange(&value))
       return String::Number(value);

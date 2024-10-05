@@ -5113,8 +5113,8 @@ Element* AXObjectCacheImpl::AncestorAriaModalDialog(Node* node) {
   do {
     Element* element = DynamicTo<Element>(node);
     if (element) {
-      const AtomicString& role_str = AccessibleNode::GetPropertyOrARIAAttribute(
-          element, AOMStringProperty::kRole);
+      const AtomicString& role_str =
+          AXObject::GetAttribute(*element, html_names::kRoleAttr);
       if (!role_str.empty() &&
           ui::IsDialog(AXObject::FirstValidRoleInRoleString(role_str))) {
         if (AXObject::IsAriaAttributeTrue(*element,

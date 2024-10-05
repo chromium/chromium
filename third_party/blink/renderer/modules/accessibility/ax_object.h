@@ -80,7 +80,6 @@ class Node;
 class ScrollableArea;
 class V8HighlightType;
 
-enum class AOMStringProperty;
 enum class AOMRelationProperty;
 enum class AOMRelationListProperty;
 
@@ -338,13 +337,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // Wrappers that retrieve either an Accessibility Object Model property,
   // or the equivalent ARIA attribute, in that order.
-  virtual const AtomicString& GetAOMPropertyOrARIAAttribute(
-      AOMStringProperty) const;
   Element* GetAOMPropertyOrARIAAttribute(AOMRelationProperty) const;
   bool HasAOMPropertyOrARIAAttribute(AOMRelationListProperty,
                                      HeapVector<Member<Element>>& result) const;
-  bool HasAOMPropertyOrARIAAttribute(AOMStringProperty,
-                                     AtomicString& result) const;
   virtual AbstractInlineTextBox* GetInlineTextBox() const { return nullptr; }
 
   // Serialize the properties of this node into |node_data|.
@@ -944,8 +939,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // as well.
   bool IsRichlyEditable() const;
 
-  bool AriaCheckedIsPresent() const;
-  bool AriaPressedIsPresent() const;
   bool SupportsARIAExpanded() const;
   bool SupportsARIAReadOnly() const;
 
@@ -1359,6 +1352,13 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
                           float* out_value = nullptr) const;
   bool AriaIntAttribute(const QualifiedName& attribute,
                         int32_t* out_value = nullptr) const;
+  const AtomicString& AriaTokenAttribute(const QualifiedName& attribute) const;
+  // AriaStringAttribute() is a synonym for GetAttribute(), because it does
+  // not need to do any additional processing on the value.
+  const AtomicString& AriaStringAttribute(
+      const QualifiedName& attribute) const {
+    return GetAttribute(attribute);
+  }
 
   // Additional boolean ARIA convenience methods.
   bool IsAriaAttributeTrue(const QualifiedName&) const;
