@@ -54,11 +54,6 @@ constexpr net::NetworkTrafficAnnotationTag kRegistrationTrafficAnnotation =
 
 constexpr int kBufferSize = 4096;
 
-// A server will provide a list of acceptable algorithms in the future.
-constexpr crypto::SignatureVerifier::SignatureAlgorithm
-    kAcceptableAlgorithms[] = {crypto::SignatureVerifier::ECDSA_SHA256,
-                               crypto::SignatureVerifier::RSA_PKCS1_SHA256};
-
 // New session registration doesn't block the user and can be done with a delay.
 constexpr unexportable_keys::BackgroundTaskPriority kTaskPriority =
     unexportable_keys::BackgroundTaskPriority::kBestEffort;
@@ -136,12 +131,14 @@ void CreateTokenAsync(
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
     std::string challenge,
     const GURL& registration_url,
+    base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
+        supported_algos,
     std::optional<std::string> authorization,
     base::OnceCallback<
         void(std::optional<RegistrationFetcher::RegistrationTokenResult>)>
         callback) {
   unexportable_key_service.GenerateSigningKeySlowlyAsync(
-      kAcceptableAlgorithms, kTaskPriority,
+      supported_algos, kTaskPriority,
       base::BindOnce(&OnKeyGenerated, std::ref(unexportable_key_service),
                      std::move(challenge), registration_url,
                      std::move(authorization), std::move(callback)));
@@ -212,12 +209,12 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
   }
 
   RegistrationFetcherImpl(
-      RegistrationFetcherParam registration_params,
+      GURL fetcher_endpoint,
       unexportable_keys::UnexportableKeyService& key_service,
       const URLRequestContext* context,
       const IsolationInfo& isolation_info,
       RegistrationFetcher::RegistrationCompleteCallback callback)
-      : registration_params_(std::move(registration_params)),
+      : fetcher_endpoint_(fetcher_endpoint),
         key_service_(key_service),
         context_(context),
         isolation_info_(isolation_info),
@@ -239,9 +236,8 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
 
  private:
   void StartFetchingRegistration(const std::string& registration_token) {
-    request_ =
-        context_->CreateRequest(registration_params_.registration_endpoint(),
-                                IDLE, this, kRegistrationTrafficAnnotation);
+    request_ = context_->CreateRequest(fetcher_endpoint_, IDLE, this,
+                                       kRegistrationTrafficAnnotation);
     request_->set_method("POST");
     request_->SetLoadFlags(LOAD_DISABLE_CACHE);
     request_->set_allow_credentials(true);
@@ -282,7 +278,7 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
   }
 
   // State passed in to constructor
-  RegistrationFetcherParam registration_params_;
+  GURL fetcher_endpoint_;
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
   raw_ptr<const URLRequestContext> context_;
   IsolationInfo isolation_info_;
@@ -323,15 +319,15 @@ void RegistrationFetcher::StartCreateTokenAndFetch(
   std::string authorization =
       registration_params.authorization().value_or(std::string());
 
-  RegistrationFetcherImpl* fetcher =
-      new RegistrationFetcherImpl(std::move(registration_params), key_service,
-                                  context, isolation_info, std::move(callback));
+  RegistrationFetcherImpl* fetcher = new RegistrationFetcherImpl(
+      registration_params.registration_endpoint(), key_service, context,
+      isolation_info, std::move(callback));
 
   // base::Unretained() is safe because the fetcher cannot be destroyed until
   // after this callback is run, as it controls its own lifetime.
   CreateTokenAsync(
       key_service, std::move(challenge), registration_endpoint,
-      std::move(authorization),
+      registration_params.supported_algos(), std::move(authorization),
       base::BindOnce(&RegistrationFetcherImpl::OnRegistrationTokenCreated,
                      base::Unretained(fetcher)));
 }
@@ -353,8 +349,11 @@ void RegistrationFetcher::CreateTokenAsyncForTesting(
     base::OnceCallback<
         void(std::optional<RegistrationFetcher::RegistrationTokenResult>)>
         callback) {
+  constexpr crypto::SignatureVerifier::SignatureAlgorithm supported_algos[] = {
+      crypto::SignatureVerifier::ECDSA_SHA256,
+      crypto::SignatureVerifier::RSA_PKCS1_SHA256};
   CreateTokenAsync(unexportable_key_service, std::move(challenge),
-                   registration_url, std::move(authorization),
+                   registration_url, supported_algos, std::move(authorization),
                    std::move(callback));
 }
 
