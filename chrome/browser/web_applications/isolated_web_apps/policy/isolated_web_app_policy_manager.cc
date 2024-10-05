@@ -47,6 +47,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -632,6 +633,7 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
       case WebAppManagement::kWebAppStore:
       case WebAppManagement::kOneDriveIntegration:
       case WebAppManagement::kSync:
+      case WebAppManagement::kUserInstalled:
       case WebAppManagement::kApsDefault:
       case WebAppManagement::kDefault: {
         NOTREACHED();

@@ -902,10 +902,11 @@ TEST_F(WebAppRegistrarTest, CountUserInstalledApps) {
 
   // User-installed apps have one of the following types:
   // - `WebAppManagement::kSync`
+  // - `WebAppManagement::kUserInstalled`
   // - `WebAppManagement::kWebAppStore`
   // - `WebAppManagement::kOneDriveIntegration`
   // - `WebAppManagement::kIwaUserInstalled`
-  EXPECT_EQ(4, registrar().CountUserInstalledApps());
+  EXPECT_EQ(5, registrar().CountUserInstalledApps());
 }
 
 TEST_F(WebAppRegistrarTest, CountUserInstalledAppsDiy) {

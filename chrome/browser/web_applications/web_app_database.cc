@@ -251,6 +251,8 @@ WebAppManagement::Type ProtoToWebAppManagement(WebAppManagementProto type) {
       return WebAppManagement::Type::kWebAppStore;
     case WebAppManagementProto::SYNC:
       return WebAppManagement::Type::kSync;
+    case WebAppManagementProto::USER_INSTALLED:
+      return WebAppManagement::Type::kUserInstalled;
     case WebAppManagementProto::DEFAULT:
       return WebAppManagement::Type::kDefault;
     case WebAppManagementProto::IWA_SHIMLESS_RMA:
@@ -282,6 +284,8 @@ WebAppManagementProto WebAppManagementToProto(WebAppManagement::Type type) {
       return WebAppManagementProto::WEBAPPSTORE;
     case WebAppManagement::Type::kSync:
       return WebAppManagementProto::SYNC;
+    case WebAppManagement::Type::kUserInstalled:
+      return WebAppManagementProto::USER_INSTALLED;
     case WebAppManagement::Type::kDefault:
       return WebAppManagementProto::DEFAULT;
     case WebAppManagement::Type::kIwaShimlessRma:
@@ -478,6 +482,8 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
       web_app.sources_.Has(WebAppManagement::kWebAppStore));
   local_data->mutable_sources()->set_sync(
       web_app.sources_.Has(WebAppManagement::kSync));
+  local_data->mutable_sources()->set_user_installed(
+      web_app.sources_.Has(WebAppManagement::kUserInstalled));
   local_data->mutable_sources()->set_default_(
       web_app.sources_.Has(WebAppManagement::kDefault));
   local_data->mutable_sources()->set_sub_app(
@@ -995,6 +1001,8 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   sources.PutOrRemove(WebAppManagement::kWebAppStore,
                       local_data.sources().web_app_store());
   sources.PutOrRemove(WebAppManagement::kSync, local_data.sources().sync());
+  sources.PutOrRemove(WebAppManagement::kUserInstalled,
+                      local_data.sources().user_installed());
   sources.PutOrRemove(WebAppManagement::kDefault,
                       local_data.sources().default_());
   sources.PutOrRemove(WebAppManagement::kOem, local_data.sources().oem());

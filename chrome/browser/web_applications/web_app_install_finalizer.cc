@@ -637,6 +637,7 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
     case WebAppManagement::kWebAppStore:
     case WebAppManagement::kOneDriveIntegration:
     case WebAppManagement::kSync:
+    case WebAppManagement::kUserInstalled:
     case WebAppManagement::kIwaUserInstalled:
       synchronize_options.reason = SHORTCUT_CREATION_BY_USER;
       break;
@@ -723,7 +724,9 @@ void WebAppInstallFinalizer::WriteExternalConfigMapInfo(
     GURL install_url,
     std::vector<std::string> additional_policy_ids) {
   DCHECK(!(source == WebAppManagement::Type::kSync && is_placeholder));
+  DCHECK(!(source == WebAppManagement::Type::kUserInstalled && is_placeholder));
   if (source != WebAppManagement::Type::kSync &&
+      source != WebAppManagement::Type::kUserInstalled &&
       !WebAppManagement::IsIwaType(source)) {
     web_app.AddPlaceholderInfoToManagementExternalConfigMap(source,
                                                             is_placeholder);

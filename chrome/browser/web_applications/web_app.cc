@@ -410,6 +410,7 @@ bool WebApp::CanUserUninstallWebApp() const {
 
 bool WebApp::WasInstalledByUser() const {
   return sources_.Has(WebAppManagement::kSync) ||
+         sources_.Has(WebAppManagement::kUserInstalled) ||
          sources_.Has(WebAppManagement::kWebAppStore) ||
          sources_.Has(WebAppManagement::kOneDriveIntegration) ||
          sources_.Has(WebAppManagement::kIwaUserInstalled);
@@ -765,6 +766,7 @@ void WebApp::AddPlaceholderInfoToManagementExternalConfigMap(
     WebAppManagement::Type type,
     bool is_placeholder) {
   DCHECK_NE(type, WebAppManagement::Type::kSync);
+  DCHECK_NE(type, WebAppManagement::Type::kUserInstalled);
   CHECK(!WebAppManagement::IsIwaType(type)) << type;
   management_to_external_config_map_[type].is_placeholder = is_placeholder;
 }
@@ -773,6 +775,7 @@ void WebApp::AddInstallURLToManagementExternalConfigMap(
     WebAppManagement::Type type,
     GURL install_url) {
   DCHECK_NE(type, WebAppManagement::Type::kSync);
+  DCHECK_NE(type, WebAppManagement::Type::kUserInstalled);
   CHECK(!WebAppManagement::IsIwaType(type)) << type;
   DCHECK(install_url.is_valid());
   management_to_external_config_map_[type].install_urls.emplace(
@@ -783,6 +786,7 @@ void WebApp::AddPolicyIdToManagementExternalConfigMap(
     WebAppManagement::Type type,
     std::string policy_id) {
   DCHECK_NE(type, WebAppManagement::Type::kSync);
+  DCHECK_NE(type, WebAppManagement::Type::kUserInstalled);
   CHECK(!WebAppManagement::IsIwaType(type)) << type;
   DCHECK(!policy_id.empty());
   management_to_external_config_map_[type].additional_policy_ids.emplace(
