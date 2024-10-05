@@ -10,7 +10,9 @@ namespace compose::hats {
 struct HatsFields {
   // Hats String data fields:
 
-  static constexpr char kSessionID[] = "Prompt and page context ID";
+  static constexpr char kSessionID[] =
+      "Execution ID linked to your recent input and page context";
+
   static constexpr char kURL[] = "Url";
   static constexpr char kLocale[] = "Locale";
   // Hats  Bits data fields:

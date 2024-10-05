@@ -475,7 +475,9 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
           "A safety filter edited a response in this session",
           "Any error appeared in this session",
           "This session started with nudge"},
-      std::vector<std::string>{"Prompt and page context ID", "Url", "Locale"});
+      std::vector<std::string>{
+          "Execution ID linked to your recent input and page context", "Url",
+          "Locale"});
 
   survey_configs.emplace_back(
       &compose::features::kHappinessTrackingSurveysForComposeClose,
@@ -486,7 +488,9 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
           "A safety filter edited a response in this session",
           "Any error appeared in this session",
           "This session started with nudge"},
-      std::vector<std::string>{"Prompt and page context ID", "Url", "Locale"});
+      std::vector<std::string>{
+          "Execution ID linked to your recent input and page context", "Url",
+          "Locale"});
 
   survey_configs.emplace_back(
       &compose::features::kHappinessTrackingSurveysForComposeNudgeClose,
