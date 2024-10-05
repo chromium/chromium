@@ -213,7 +213,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3703994572283698466"><ph name="BEGIN_LINK_CROS_OSS" />Kode irekiko software<ph name="END_LINK_CROS_OSS" /> gehigarriari esker da posible Chrome OS; adibidez, <ph name="BEGIN_LINK_LINUX_OSS" />Linux-eko garapen-ingurunea<ph name="END_LINK_LINUX_OSS" /> erabiltzen da.</translation>
 <translation id="3716540481907974026">ChromeOS Flex-en bertsioa</translation>
 <translation id="3718181793972440140">Gailuko elementu bat ezabatuko da. Geroago datuak eskuratu nahi izanez gero, hasi saioa Chrome-n <ph name="USER_EMAIL" /> gisa.</translation>
-<translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Kentzea gomendatzen dizu Chrome-k. <ph name="BEGIN_LINK" />Lortu luzapen bateragarriei buruzko informazio gehiago<ph name="END_LINK" />}other{Kentzea gomendatzen dizu Chrome-k. <ph name="BEGIN_LINK" />Lortu luzapen bateragarriei buruzko informazio gehiago<ph name="END_LINK" />}}</translation>
+<translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Kentzea gomendatzen dizu Chrome-k. <ph name="BEGIN_LINK" />Lortu onartzen diren luzapenei buruzko informazio gehiago<ph name="END_LINK" />}other{Kentzea gomendatzen dizu Chrome-k. <ph name="BEGIN_LINK" />Lortu onartzen diren luzapenei buruzko informazio gehiago<ph name="END_LINK" />}}</translation>
 <translation id="3744202345691150878">Lortu Chrome OS erabiltzeko laguntza</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Saioa hastean gertatu den errore bat dela eta, ChromeOS Flex-ek ezin izan ditu sinkronizatu zure datuak.</translation>
@@ -337,7 +337,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="5530733413481476019">Bizkortu Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Abiarazte-errorea: exekutatu instalatzailea erabiltzaile arrunt gisa, ez administratzaile gisa.</translation>
-<translation id="5602351063754773347">Kentzea gomendatzen dizu Chrome-k. <ph name="BEGIN_LINK" />Lortu luzapen bateragarriei buruzko informazio gehiago<ph name="END_LINK" /></translation>
+<translation id="5602351063754773347">Kentzea gomendatzen dizu Chrome-k. <ph name="BEGIN_LINK" />Lortu onartzen diren luzapenei buruzko informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome-k gehiago egiten du sarean zu babesteko</translation>
 <translation id="565744775970812598">Baliteke <ph name="FILE_NAME" /> arriskutsua izatea; horregatik, blokeatu egin du Chrome-k.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Chrome berriro exekutatzeko eskatu dizu administratzaileak, eguneratzea aplikatzeko}=1{Chrome berriro exekutatzeko eskatu dizu administratzaileak, eguneratzea aplikatzeko. Ezkutuko moduko leihoa ez da berriro irekiko.}other{Chrome berriro exekutatzeko eskatu dizu administratzaileak, eguneratzea aplikatzeko. Ezkutuko moduko # leihoak ez dira berriro irekiko.}}</translation>

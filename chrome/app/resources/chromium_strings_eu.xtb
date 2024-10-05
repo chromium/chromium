@@ -220,7 +220,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="439358628917130594">Gailua erabili aurretik, <ph name="MANAGER" /> kudeatzaileak jarraian azalduko diren Zerbitzu-baldintzak irakurtzeko eta onartzeko eskatzen dizu. Baldintzok ez dituzte hedatuko, aldatuko edo mugatuko Chromium OS-ren Baldintzak.</translation>
 <translation id="4407044323746248786">Chromium-etik irten nahi duzu hala ere?</translation>
 <translation id="4415566066719264597">Onartu Chromium atzeko planoan abiaraztea</translation>
-<translation id="4419831163359812184">{NUM_EXTENSIONS,plural, =1{Kentzea gomendatzen dizu Chromium-ek. <ph name="BEGIN_LINK" />Lortu luzapen bateragarriei buruzko informazio gehiago<ph name="END_LINK" />}other{Kentzea gomendatzen dizu Chromium-ek. <ph name="BEGIN_LINK" />Lortu luzapen bateragarriei buruzko informazio gehiago<ph name="END_LINK" />}}</translation>
+<translation id="4419831163359812184">{NUM_EXTENSIONS,plural, =1{Kentzea gomendatzen dizu Chromium-ek. <ph name="BEGIN_LINK" />Lortu onartzen diren luzapenei buruzko informazio gehiago<ph name="END_LINK" />}other{Kentzea gomendatzen dizu Chromium-ek. <ph name="BEGIN_LINK" />Lortu onartzen diren luzapenei buruzko informazio gehiago<ph name="END_LINK" />}}</translation>
 <translation id="4423735387467980091">Pertsonalizatu eta kontrolatu Chromium</translation>
 <translation id="4427306783828095590">Babes handiagoa eskaintzen du phishingaren eta malwarearen aurka</translation>
 <translation id="4434353761996769206">Instalatzailearen errorea: <ph name="INSTALLER_ERROR" /></translation>
@@ -491,7 +491,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Eskubide guztiak erreserbatuta.</translation>
 <translation id="8372327902843331129">Pasahitzak eta bestelako datuak zure gailu guztietan gordeta edukitzeko, hasi saioa Chromium-en. Saioa hasi ondoren, pasahitz hau zure Google-ko kontuan gordeko da.</translation>
 <translation id="837460953767177950">Chromium berrabiarazi beharko duzu ondoren.</translation>
-<translation id="8397248745433792218">Kentzea gomendatzen dizu Chromium-ek. <ph name="BEGIN_LINK" />Lortu luzapen bateragarriei buruzko informazio gehiago<ph name="END_LINK" /></translation>
+<translation id="8397248745433792218">Kentzea gomendatzen dizu Chromium-ek. <ph name="BEGIN_LINK" />Lortu onartzen diren luzapenei buruzko informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">Garatzaileak luzapena desargitaratu du, eta agian ez da segurua. Ken ezazu Chromium-etik, bisitatzen dituzun webguneetan zure datuak ikusi eta aldatu ezin izan ditzan, informazio pertsonala barne.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Exekutatu Chromium berriro egun bateko epean}other{Exekutatu Chromium berriro # eguneko epean}}</translation>
 <translation id="8453117565092476964">Instalatzailearen artxiboa hondatuta dago edo baliogabea da. Deskargatu Chromium berriro.</translation>
