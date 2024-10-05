@@ -115,7 +115,7 @@ std::optional<ModelError> UserEventSyncBridge::ApplyIncrementalSyncChanges(
   std::erase_if(
       in_flight_nav_linked_events_,
       [&deleted_event_times](
-          const std::pair<int64_t, sync_pb::UserEventSpecifics> kv) {
+          const std::pair<int64_t, sync_pb::UserEventSpecifics>& kv) {
         return deleted_event_times.contains(kv.second.event_time_usec());
       });
 
