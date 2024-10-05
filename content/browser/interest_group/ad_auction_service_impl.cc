@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <cstddef>
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
@@ -10,6 +9,7 @@
 
 #include "content/browser/interest_group/ad_auction_service_impl.h"
 
+#include <cstddef>
 #include <map>
 #include <memory>
 #include <optional>
