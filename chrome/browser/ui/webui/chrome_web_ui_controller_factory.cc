@@ -125,7 +125,6 @@
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/app_home/app_home_ui.h"
 #include "chrome/browser/ui/webui/welcome/helpers.h"
-#include "chrome/browser/ui/webui/welcome/welcome_ui.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -234,13 +233,6 @@ WebUIController* NewWebUI<HistoryClustersInternalsUI>(WebUI* web_ui,
           history_clusters_internals::kChromeUIHistoryClustersInternalsHost));
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-template <>
-WebUIController* NewWebUI<WelcomeUI>(WebUI* web_ui, const GURL& url) {
-  return new WelcomeUI(web_ui, url);
-}
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
 // Returns a function that can be used to create the right type of WebUI for a
 // tab, based on its URL. Returns nullptr if the URL doesn't have WebUI
 // associated with it.
@@ -324,13 +316,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<SyncConfirmationUI>;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  if (url.host_piece() == chrome::kChromeUIWelcomeHost &&
-      welcome::IsEnabled(profile)) {
-    return &NewWebUI<WelcomeUI>;
-  }
-#endif
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
   if (url.host_piece() == chrome::kChromeUILensOverlayHost) {
