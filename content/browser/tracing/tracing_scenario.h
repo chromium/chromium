@@ -31,7 +31,7 @@ class CONTENT_EXPORT TracingScenarioBase {
   const std::string& scenario_name() const { return scenario_name_; }
 
  protected:
-  explicit TracingScenarioBase(const std::string scenario_name);
+  explicit TracingScenarioBase(std::string scenario_name);
 
   virtual bool OnStartTrigger(const BackgroundTracingRule* rule) = 0;
   virtual bool OnStopTrigger(const BackgroundTracingRule* rule) = 0;

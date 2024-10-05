@@ -240,12 +240,12 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   friend class BrowserAccessibility;  // Needs access to our constructor.
 
  private:
-  static size_t CommonPrefixLength(const std::u16string a,
-                                   const std::u16string b);
-  static size_t CommonSuffixLength(const std::u16string a,
-                                   const std::u16string b);
-  static size_t CommonEndLengths(const std::u16string a,
-                                 const std::u16string b);
+  static size_t CommonPrefixLength(const std::u16string& a,
+                                   const std::u16string& b);
+  static size_t CommonSuffixLength(const std::u16string& a,
+                                   const std::u16string& b);
+  static size_t CommonEndLengths(const std::u16string& a,
+                                 const std::u16string& b);
 
   // BrowserAccessibility overrides.
   BrowserAccessibility* PlatformGetLowestPlatformAncestor() const override;

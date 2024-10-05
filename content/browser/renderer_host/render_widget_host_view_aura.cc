@@ -1687,7 +1687,7 @@ void RenderWidgetHostViewAura::ExtendSelectionAndDelete(
 void RenderWidgetHostViewAura::ExtendSelectionAndReplace(
     size_t before,
     size_t after,
-    const std::u16string_view replacement_text) {
+    std::u16string_view replacement_text) {
   auto* input_handler = GetFrameWidgetInputHandlerForFocusedWidget();
   if (!input_handler) {
     return;

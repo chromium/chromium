@@ -56,7 +56,7 @@ std::unique_ptr<base::trace_event::TracedValue> CacheStorageTracedValue(
     const std::vector<blink::mojom::BatchOperationPtr>& operation_list);
 
 std::unique_ptr<base::trace_event::TracedValue> CacheStorageTracedValue(
-    const std::vector<std::u16string> string_list);
+    const std::vector<std::u16string>& string_list);
 
 std::unique_ptr<base::trace_event::TracedValue> CacheStorageTracedValue(
     const std::vector<blink::mojom::CacheEntryPtr>& entries);

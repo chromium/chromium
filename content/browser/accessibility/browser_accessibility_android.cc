@@ -1541,8 +1541,9 @@ int BrowserAccessibilityAndroid::GetTextChangeRemovedCount() const {
 }
 
 // static
-size_t BrowserAccessibilityAndroid::CommonPrefixLength(const std::u16string a,
-                                                       const std::u16string b) {
+size_t BrowserAccessibilityAndroid::CommonPrefixLength(
+    const std::u16string& a,
+    const std::u16string& b) {
   size_t a_len = a.length();
   size_t b_len = b.length();
   size_t i = 0;
@@ -1553,8 +1554,9 @@ size_t BrowserAccessibilityAndroid::CommonPrefixLength(const std::u16string a,
 }
 
 // static
-size_t BrowserAccessibilityAndroid::CommonSuffixLength(const std::u16string a,
-                                                       const std::u16string b) {
+size_t BrowserAccessibilityAndroid::CommonSuffixLength(
+    const std::u16string& a,
+    const std::u16string& b) {
   size_t a_len = a.length();
   size_t b_len = b.length();
   size_t i = 0;
@@ -1568,8 +1570,8 @@ size_t BrowserAccessibilityAndroid::CommonSuffixLength(const std::u16string a,
 // |BrowserAccessibilityCocoa::computeTextEdit|.
 //
 // static
-size_t BrowserAccessibilityAndroid::CommonEndLengths(const std::u16string a,
-                                                     const std::u16string b) {
+size_t BrowserAccessibilityAndroid::CommonEndLengths(const std::u16string& a,
+                                                     const std::u16string& b) {
   size_t prefix_len = CommonPrefixLength(a, b);
   // Remove the matching prefix before finding the suffix. Otherwise, if
   // old_value_ is "a" and new_value_ is "aa", "a" will be double-counted as

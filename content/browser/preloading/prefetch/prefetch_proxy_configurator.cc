@@ -36,7 +36,7 @@ PrefetchProxyConfigurator::MaybeCreatePrefetchProxyConfigurator(
 }
 
 PrefetchProxyConfigurator::PrefetchProxyConfigurator(const GURL& proxy_url,
-                                                     const std::string api_key)
+                                                     const std::string& api_key)
     : prefetch_proxy_chain_(net::GetSchemeFromUriScheme(proxy_url.scheme()),
                             net::HostPortPair::FromURL(proxy_url)),
       clock_(base::DefaultClock::GetInstance()) {

@@ -225,7 +225,7 @@ base::Value ConditionToValue(
 }
 
 bool IsValidSources(
-    const std::vector<blink::ServiceWorkerRouterSource> sources) {
+    const std::vector<blink::ServiceWorkerRouterSource>& sources) {
   if (sources.empty()) {
     // At least a source must exist.
     RecordSetupError(ServiceWorkerRouterEvaluatorErrorEnums::kEmptySource);

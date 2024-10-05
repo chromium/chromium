@@ -2594,7 +2594,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // https://crsrc.org/c/components/enterprise/common/proto/legacy_tech_events.proto
   virtual void ReportLegacyTechEvent(
       content::RenderFrameHost* render_frame_host,
-      const std::string type,
+      const std::string& type,
       const GURL& url,
       const GURL& frame_url,
       const std::string& filename,

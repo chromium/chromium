@@ -211,7 +211,7 @@ class IdpTestServer {
 
   std::string ConvertToJsonDictionary(
       const std::map<std::string, std::string>& data,
-      const std::vector<std::string> types) {
+      const std::vector<std::string>& types) {
     std::string out = "{";
     for (auto it : data) {
       out += "\"" + it.first + "\":\"" + it.second + "\",";

@@ -7475,7 +7475,7 @@ ChromeContentBrowserClient::GetAsyncCheckTracker(
 
 void ChromeContentBrowserClient::ReportLegacyTechEvent(
     content::RenderFrameHost* render_frame_host,
-    const std::string type,
+    const std::string& type,
     const GURL& url,
     const GURL& frame_url,
     const std::string& filename,

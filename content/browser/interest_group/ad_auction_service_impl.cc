@@ -1073,7 +1073,7 @@ void AdAuctionServiceImpl::MaybeLogPrivateAggregationFeatures(
 }
 
 void AdAuctionServiceImpl::ReturnEmptyGetInterestGroupAdAuctionDataCallback(
-    const std::string msg) {
+    const std::string& msg) {
   if (!ba_data_callbacks_.empty()) {
     BiddingAndAuctionDataConstructionState& state = ba_data_callbacks_.front();
 

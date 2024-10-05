@@ -237,7 +237,7 @@ class CookieRetrieverNetworkService
     : public base::RefCounted<CookieRetrieverNetworkService> {
  public:
   static void Retrieve(network::mojom::CookieManager* cookie_manager,
-                       const std::vector<GURL> urls,
+                       const std::vector<GURL>& urls,
                        const net::NetworkIsolationKey& network_isolation_key,
                        const net::SiteForCookies& site_for_cookies,
                        std::unique_ptr<GetCookiesCallback> callback) {

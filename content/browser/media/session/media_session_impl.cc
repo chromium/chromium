@@ -143,7 +143,7 @@ bool IsSizesAtLeast(const std::vector<gfx::Size>& sizes, int min_size) {
   return check_size;
 }
 
-std::u16string SanitizeMediaTitle(const std::u16string title) {
+std::u16string SanitizeMediaTitle(const std::u16string& title) {
   std::u16string out;
   base::TrimString(title, u" ", &out);
   return out;

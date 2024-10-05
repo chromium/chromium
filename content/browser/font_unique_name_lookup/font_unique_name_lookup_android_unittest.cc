@@ -46,7 +46,7 @@ std::vector<base::FilePath> AndroidFontFilesList() {
 }
 
 std::vector<base::FilePath> SplitFontFilesList(
-    const std::vector<base::FilePath> font_files,
+    const std::vector<base::FilePath>& font_files,
     bool return_second_half) {
   CHECK_GT(font_files.size(), 2u);
   auto start_copy = font_files.begin();

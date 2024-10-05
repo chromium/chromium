@@ -188,7 +188,7 @@ bool PreLockdownSandboxHook(base::span<const uint8_t> delegate_blob) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-void SetUtilityThreadName(const std::string utility_sub_type) {
+void SetUtilityThreadName(const std::string& utility_sub_type) {
   // Typical utility sub-types are audio.mojom.AudioService or
   // proxy_resolver.mojom.ProxyResolverFactory. Using the full sub-type as part
   // of the thread name is too verbose so we take the text in front of the first
@@ -196,8 +196,8 @@ void SetUtilityThreadName(const std::string utility_sub_type) {
   // audio.CrUtilityMain and proxy_resolver.CrUtilityMain. If there is no period
   // then the entire utility_sub_type string will be put in front.
   auto first_period = utility_sub_type.find('.');
-  base::PlatformThread::SetName(
-      (utility_sub_type.substr(0, first_period) + ".CrUtilityMain").c_str());
+  base::PlatformThread::SetName(utility_sub_type.substr(0, first_period) +
+                                ".CrUtilityMain");
 }
 
 }  // namespace

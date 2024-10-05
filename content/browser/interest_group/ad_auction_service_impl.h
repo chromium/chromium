@@ -194,7 +194,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   // On failing to fetch ad auction data, call the first callback in
   // ba_data_callbacks_ & start loading the next following request in
   // ba_data_callbacks_.
-  void ReturnEmptyGetInterestGroupAdAuctionDataCallback(const std::string msg);
+  void ReturnEmptyGetInterestGroupAdAuctionDataCallback(const std::string& msg);
   void LoadAuctionDataAndKeyForNextQueuedRequest();
   void OnGotAuctionData(base::Uuid request_id, BiddingAndAuctionData data);
   void OnGotBiddingAndAuctionServerKey(

@@ -5,6 +5,7 @@
 #include "content/browser/tracing/tracing_scenario.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/hash/md5.h"
 #include "base/memory/ptr_util.h"
@@ -83,8 +84,8 @@ uint32_t TracingScenarioBase::TriggerNameHash(
       base::StrCat({scenario_name(), ".", triggered_rule->rule_id()}));
 }
 
-TracingScenarioBase::TracingScenarioBase(const std::string scenario_name)
-    : scenario_name_(scenario_name),
+TracingScenarioBase::TracingScenarioBase(std::string scenario_name)
+    : scenario_name_(std::move(scenario_name)),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 // static

@@ -124,7 +124,7 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
 
   void AddResponse(const GURL& url,
                    net::HttpStatusCode http_status,
-                   const std::string mime_type,
+                   const std::string& mime_type,
                    const std::string& content) {
     auto head = network::mojom::URLResponseHead::New();
     std::string raw_header = "HTTP/1.1 " + base::NumberToString(http_status) +
