@@ -38,7 +38,6 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
-import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -48,6 +47,7 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -77,6 +77,7 @@ public class TabArchiverTest {
 
     private @Mock Clock mClock;
     private @Mock TabModelSelector mSelector;
+    private @Mock TabWindowManager mTabWindowManager;
 
     private ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
     private TabArchiver mTabArchiver;
@@ -120,7 +121,7 @@ public class TabArchiverTest {
                                         mArchivedTabModel,
                                         mArchivedTabCreator,
                                         AsyncTabParamsManagerSingleton.getInstance(),
-                                        TabWindowManagerSingleton.getInstance(),
+                                        mTabWindowManager,
                                         mTabArchiveSettings,
                                         mClock));
         mUserActionTester = new UserActionTester();
@@ -132,6 +133,17 @@ public class TabArchiverTest {
                 () -> {
                     // Clear out all archived tabs between tests.
                     mArchivedTabModel.closeTabs(TabClosureParams.closeAllTabs().build());
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testDestroy() throws Exception {
+        runOnUiThreadBlocking(
+                () -> {
+                    mTabArchiver.initDeclutter();
+                    mTabArchiver.destroy();
+                    verify(mTabWindowManager).removeObserver(mTabArchiver);
                 });
     }
 

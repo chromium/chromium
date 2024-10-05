@@ -48,7 +48,7 @@ public interface TabWindowManager {
     /** Add an observer. */
     void addObserver(Observer observer);
 
-    /** Removes an observer.s */
+    /** Removes an observer. */
     void removeObserver(Observer observer);
 
     /**

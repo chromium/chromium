@@ -227,6 +227,11 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
             mHistoricalTabModelObserver = null;
         }
 
+        if (mTabArchiver != null) {
+            mTabArchiver.destroy();
+            mTabArchiver = null;
+        }
+
         super.destroy();
     }
 

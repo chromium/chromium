@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.tabmodel.TabList.INVALID_TAB_INDEX;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.CallbackController;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -41,6 +42,7 @@ public class TabArchiver implements TabWindowManager.Observer {
         void onDeclutterPassCompleted();
     }
 
+    private final CallbackController mCallbackController = new CallbackController();
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final TabModel mArchivedTabModel;
     private final TabCreator mArchivedTabCreator;
@@ -73,6 +75,12 @@ public class TabArchiver implements TabWindowManager.Observer {
         mTabWindowManager = tabWindowManager;
         mTabArchiveSettings = tabArchiveSettings;
         mClock = clock;
+    }
+
+    /** Destroys this object. */
+    public void destroy() {
+        mCallbackController.destroy();
+        mTabWindowManager.removeObserver(this);
     }
 
     public void addObserver(Observer observer) {
@@ -215,38 +223,42 @@ public class TabArchiver implements TabWindowManager.Observer {
 
     private void archiveEligibleTabsFromTabModelSelector(TabModelSelector selector) {
         ThreadUtils.postOnUiThread(
-                () -> {
-                    int numExistingRegularTabsFound = 0;
-                    TabModel model = selector.getModel(/* isIncognito= */ false);
-                    int activeTabId = TabModelUtils.getCurrentTabId(model);
-                    for (int i = 0; i < model.getCount(); ) {
-                        Tab tab = model.getTabAt(i);
-                        // If there's an existing archived tab for the tab id, then we've run into a
-                        // case where the tab metadata file wasn't updated after an archive or
-                        // restore pass. Remove the tab from the regular tab model since the tab
-                        // was already archived.
-                        Tab archivedTab = mArchivedTabModel.getTabById(tab.getId());
-                        if (archivedTab != null) {
-                            numExistingRegularTabsFound++;
-                            model.closeTabs(
-                                    TabClosureParams.closeTab(tab).allowUndo(false).build());
-                        } else if (activeTabId != tab.getId() && isTabEligibleForArchive(tab)) {
-                            archiveAndRemoveTab(model, tab);
-                        } else {
-                            i++;
-                        }
-                    }
-                    mSelectorsQueuedForDeclutter--;
-                    RecordHistogram.recordCount1000Histogram(
-                            "Tabs.TabArchived.FoundDuplicateInRegularModel",
-                            numExistingRegularTabsFound);
+                mCallbackController.makeCancelable(
+                        () -> {
+                            int numExistingRegularTabsFound = 0;
+                            TabModel model = selector.getModel(/* isIncognito= */ false);
+                            int activeTabId = TabModelUtils.getCurrentTabId(model);
+                            for (int i = 0; i < model.getCount(); ) {
+                                Tab tab = model.getTabAt(i);
+                                // If there's an existing archived tab for the tab id, then we've
+                                // run into a case where the tab metadata file wasn't updated after
+                                // an archive or restore pass. Remove the tab from the regular tab
+                                // model since the tab was already archived.
+                                Tab archivedTab = mArchivedTabModel.getTabById(tab.getId());
+                                if (archivedTab != null) {
+                                    numExistingRegularTabsFound++;
+                                    model.closeTabs(
+                                            TabClosureParams.closeTab(tab)
+                                                    .allowUndo(false)
+                                                    .build());
+                                } else if (activeTabId != tab.getId()
+                                        && isTabEligibleForArchive(tab)) {
+                                    archiveAndRemoveTab(model, tab);
+                                } else {
+                                    i++;
+                                }
+                            }
+                            mSelectorsQueuedForDeclutter--;
+                            RecordHistogram.recordCount1000Histogram(
+                                    "Tabs.TabArchived.FoundDuplicateInRegularModel",
+                                    numExistingRegularTabsFound);
 
-                    if (mSelectorsQueuedForDeclutter == 0) {
-                        for (Observer obs : mObservers) {
-                            obs.onDeclutterPassCompleted();
-                        }
-                    }
-                });
+                            if (mSelectorsQueuedForDeclutter == 0) {
+                                for (Observer obs : mObservers) {
+                                    obs.onDeclutterPassCompleted();
+                                }
+                            }
+                        }));
     }
 
     private boolean isTabEligibleForArchive(Tab tab) {
