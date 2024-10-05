@@ -96,6 +96,7 @@ source_set("sandbox_linux_unittests_sources") {
   deps = [
     ":sandbox",
     ":sandbox_linux_test_utils",
+    ":sandbox_services_headers",
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
