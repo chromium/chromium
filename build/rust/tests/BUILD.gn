@@ -23,7 +23,6 @@ group("deps") {
   # All the rest require Rust.
   if (toolchain_has_rust) {
     deps += [
-      "//build/rust/tests/bindgen_cpp_test",
       "//build/rust/tests/bindgen_static_fns_test",
       "//build/rust/tests/bindgen_test",
       "//build/rust/tests/test_aliased_deps",
