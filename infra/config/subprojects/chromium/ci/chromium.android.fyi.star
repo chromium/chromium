@@ -1114,15 +1114,6 @@ ci.builder(
                     shards = 12,
                 ),
             ),
-            "webview_trichrome_64_cts_tests full_mode": targets.remove(
-                reason = "https://crbug.com/353915320",
-            ),
-            "webview_trichrome_64_cts_tests instant_mode": targets.remove(
-                reason = "https://crbug.com/353915320",
-            ),
-            "webview_trichrome_64_cts_tests_no_field_trial": targets.remove(
-                reason = "https://crbug.com/353915320",
-            ),
         },
     ),
     targets_settings = targets.settings(

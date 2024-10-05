@@ -4295,9 +4295,11 @@ ci.builder(
             "x86-64",
         ],
         per_test_modifications = {
-            "android_browsertests": targets.remove(
-                # https://crbug.com/345100678
-                reason = "These tests are not ready to run on a non FYI CI",
+            "android_browsertests": targets.mixin(
+                args = [
+                    # https://crbug.com/361042311
+                    "--gtest_filter=-All/SharedStorageChromeBrowserTest.CrossOriginWorklet_SelectURL_Success/*",
+                ],
             ),
             "base_unittests": targets.mixin(
                 args = [
@@ -4314,9 +4316,13 @@ ci.builder(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.chrome_public_unit_test_apk.filter",
                 ],
             ),
-            # https://crbug.com/365788368
-            "content_browsertests": targets.remove(
-                reason = "These tests are not ready to run on a non FYI CI",
+            "content_browsertests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.content_browsertests.filter",
+                ],
+                swarming = targets.swarming(
+                    shards = 40,
+                ),
             ),
             "content_shell_test_apk": targets.mixin(
                 args = [
