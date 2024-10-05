@@ -20,7 +20,7 @@
 
 namespace optimization_guide {
 class OptimizationGuideDecider;
-}
+}  // namespace optimization_guide
 
 namespace autofill {
 class FormStructure;
@@ -116,6 +116,8 @@ class AutofillPredictionImprovementsManager
   bool HasImprovedPredictionsForField(const autofill::FormFieldData& field);
 
   void OnReceivedAXTreeForFormImport(
+      const GURL& url,
+      const std::string& title,
       std::unique_ptr<autofill::FormStructure> form,
       ImportFormCallback callback,
       optimization_guide::proto::AXTreeUpdate ax_tree_update);

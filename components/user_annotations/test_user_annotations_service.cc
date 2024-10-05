@@ -42,6 +42,8 @@ void TestUserAnnotationsService::RemoveAllEntries(base::OnceClosure callback) {
 }
 
 void TestUserAnnotationsService::AddFormSubmission(
+    const GURL& url,
+    const std::string& title,
     optimization_guide::proto::AXTreeUpdate ax_tree_update,
     std::unique_ptr<autofill::FormStructure> form,
     ImportFormCallback callback) {

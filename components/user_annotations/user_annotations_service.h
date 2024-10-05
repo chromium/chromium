@@ -77,6 +77,8 @@ class UserAnnotationsService : public KeyedService {
   // notify `this` about the user's decision. `form` is assumed to never be
   // `nullptr`. Virtual for testing.
   virtual void AddFormSubmission(
+      const GURL& url,
+      const std::string& title,
       optimization_guide::proto::AXTreeUpdate ax_tree_update,
       std::unique_ptr<autofill::FormStructure> form,
       ImportFormCallback callback);

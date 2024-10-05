@@ -38,4 +38,9 @@ bool ShouldPersistUserAnnotations() {
                                                  "persist_annotations", false);
 }
 
+bool ShouldExtractAXTreeForFormsAnnotations() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kUserAnnotations, "should_extract_ax_tree_for_forms_annotations", false);
+}
+
 }  // namespace user_annotations

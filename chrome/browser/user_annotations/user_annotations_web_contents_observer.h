@@ -12,6 +12,10 @@
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace ui {
 struct AXTreeUpdate;
 }  // namespace ui
@@ -42,12 +46,17 @@ class UserAnnotationsWebContentsObserver
 
  private:
   // Callback invoked when AXTree for the frame has been snapshotted.
-  void OnAXTreeSnapshotted(const autofill::FormData& form,
+  void OnAXTreeSnapshotted(const GURL& url,
+                           const std::string& title,
+                           const autofill::FormData& form,
                            ui::AXTreeUpdate& snapshot);
 
   // The service for storing user annotations. Owned by the profile that owns
   // the web contents. Guaranteed to outlive `this`.
   const raw_ref<UserAnnotationsService> user_annotations_service_;
+
+  // The web contents `this` is attached to. Guaranteed to outlive `this`.
+  const raw_ref<content::WebContents> web_contents_;
 
   // Helper for observing all AutofillManagers of a WebContents.
   autofill::ScopedAutofillManagersObservation autofill_managers_observation_{

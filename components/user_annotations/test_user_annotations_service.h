@@ -43,7 +43,9 @@ class TestUserAnnotationsService : public UserAnnotationsService {
 
   // UserAnnotationsService:
   bool ShouldAddFormSubmissionForURL(const GURL& url) override;
-  void AddFormSubmission(optimization_guide::proto::AXTreeUpdate ax_tree_update,
+  void AddFormSubmission(const GURL& url,
+                         const std::string& title,
+                         optimization_guide::proto::AXTreeUpdate ax_tree_update,
                          std::unique_ptr<autofill::FormStructure> form,
                          ImportFormCallback callback) override;
   void RetrieveAllEntries(

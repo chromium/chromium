@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check_deref.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider_factory.h"
@@ -24,7 +25,8 @@ namespace user_annotations {
 UserAnnotationsWebContentsObserver::UserAnnotationsWebContentsObserver(
     content::WebContents* web_contents,
     user_annotations::UserAnnotationsService* user_annotations_service)
-    : user_annotations_service_(CHECK_DEREF(user_annotations_service)) {
+    : user_annotations_service_(CHECK_DEREF(user_annotations_service)),
+      web_contents_(CHECK_DEREF(web_contents)) {
   // Always ensure AutofillClientProvider is instantiated prior to observing the
   // AutofillManager. TabHelpers are currently not instantiated before
   // TabFeatures in the tab restore case. See crbug.com/362038320 for more
@@ -76,16 +78,25 @@ void UserAnnotationsWebContentsObserver::OnFormSubmitted(
     return;
   }
 
-  autofill_managers_observation_.web_contents()->RequestAXTreeSnapshot(
-      base::BindOnce(&UserAnnotationsWebContentsObserver::OnAXTreeSnapshotted,
-                     weak_ptr_factory_.GetWeakPtr(), form),
-      ui::kAXModeWebContentsOnly,
-      /*max_nodes=*/500,
-      /*timeout=*/{},
-      content::WebContents::AXTreeSnapshotPolicy::kSameOriginDirectDescendants);
+  std::string title = base::UTF16ToUTF8(web_contents_->GetTitle());
+  if (user_annotations::ShouldExtractAXTreeForFormsAnnotations()) {
+    autofill_managers_observation_.web_contents()->RequestAXTreeSnapshot(
+        base::BindOnce(&UserAnnotationsWebContentsObserver::OnAXTreeSnapshotted,
+                       weak_ptr_factory_.GetWeakPtr(), form.url(), title, form),
+        ui::kAXModeWebContentsOnly,
+        /*max_nodes=*/500,
+        /*timeout=*/{},
+        content::WebContents::AXTreeSnapshotPolicy::
+            kSameOriginDirectDescendants);
+  } else {
+    ui::AXTreeUpdate snapshot;
+    OnAXTreeSnapshotted(form.url(), title, form, snapshot);
+  }
 }
 
 void UserAnnotationsWebContentsObserver::OnAXTreeSnapshotted(
+    const GURL& url,
+    const std::string& title,
     const autofill::FormData& form,
     ui::AXTreeUpdate& snapshot) {
   optimization_guide::proto::AXTreeUpdate ax_tree;
@@ -94,8 +105,8 @@ void UserAnnotationsWebContentsObserver::OnAXTreeSnapshotted(
   // UserAnnotationService, since AutofillManager::Observer doesn't have access
   // to the parsed form.
   user_annotations_service_->AddFormSubmission(
-      std::move(ax_tree), std::make_unique<autofill::FormStructure>(form),
-      base::DoNothing());
+      url, title, std::move(ax_tree),
+      std::make_unique<autofill::FormStructure>(form), base::DoNothing());
 }
 
 }  // namespace user_annotations

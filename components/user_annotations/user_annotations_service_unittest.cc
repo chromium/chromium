@@ -88,7 +88,7 @@ class UserAnnotationsServiceTest : public testing::Test,
     std::unique_ptr<autofill::FormStructure> form =
         std::make_unique<autofill::FormStructure>(form_data);
     service()->AddFormSubmission(
-        ax_tree_update, std::move(form),
+        GURL("example.com"), "title", ax_tree_update, std::move(form),
         base::BindLambdaForTesting(
             [&entries](
                 std::unique_ptr<autofill::FormStructure> form,
@@ -162,6 +162,8 @@ struct FormsAnnotationsTestRequest {
   optimization_guide::proto::Any forms_annotations_response;
   optimization_guide::proto::AXTreeUpdate ax_tree;
   autofill::FormData form_data;
+  GURL url;
+  std::string title;
 };
 
 // Returns sample annotations for tests.
@@ -190,7 +192,8 @@ FormsAnnotationsTestRequest CreateSampleFormsAnnotationsTestRequest() {
   optimization_guide::proto::AXTreeUpdate ax_tree;
   ax_tree.mutable_tree_data()->set_title("title");
 
-  return {forms_annotations_response, ax_tree, form_data};
+  return {forms_annotations_response, ax_tree, form_data, GURL("example.com"),
+          "title"};
 }
 
 TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
@@ -429,7 +432,7 @@ TEST_P(UserAnnotationsServiceTest, FormNotImported) {
           test_request.forms_annotations_response, CreateLogEntry()));
 
   service()->AddFormSubmission(
-      test_request.ax_tree,
+      test_request.url, test_request.title, test_request.ax_tree,
       std::make_unique<autofill::FormStructure>(test_request.form_data),
       base::BindLambdaForTesting(
           [](std::unique_ptr<autofill::FormStructure> form,

@@ -7,6 +7,7 @@
 #include "base/task/current_thread.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
@@ -99,6 +100,7 @@ class MockAutofillPredictionImprovementsClient
               (),
               (override));
   MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (override));
+  MOCK_METHOD(std::string, GetTitle, (), (override));
   MOCK_METHOD(user_annotations::UserAnnotationsService*,
               GetUserAnnotationsService,
               (),
@@ -186,6 +188,7 @@ class AutofillPredictionImprovementsManagerTest
                                                 {{"skip_allowlist", "true"}});
     ON_CALL(client_, GetFillingEngine).WillByDefault(Return(&filling_engine_));
     ON_CALL(client_, GetLastCommittedURL).WillByDefault(ReturnRef(url_));
+    ON_CALL(client_, GetTitle).WillByDefault(Return("title"));
     ON_CALL(client_, GetUserAnnotationsService)
         .WillByDefault(Return(&user_annotations_service_));
     ON_CALL(client_, IsUserEligible).WillByDefault(Return(true));
@@ -581,7 +584,20 @@ INSTANTIATE_TEST_SUITE_P(
 
 class AutofillPredictionImprovementsManagerImportFormTest
     : public AutofillPredictionImprovementsManagerTest,
-      public testing::WithParamInterface<bool> {};
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  AutofillPredictionImprovementsManagerImportFormTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        user_annotations::kUserAnnotations,
+        {{"should_extract_ax_tree_for_forms_annotations",
+          std::get<1>(GetParam()) ? "true" : "false"}});
+  }
+
+  bool ShouldExtractAXTree() { return std::get<1>(GetParam()); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 // Tests that `import_form_callback` is run with added entries if the import was
 // successful.
@@ -611,10 +627,14 @@ TEST_P(AutofillPredictionImprovementsManagerImportFormTest,
       autofill::AutofillPredictionImprovementsDelegate::ImportFormCallback>
       import_form_callback;
   AutofillPredictionImprovementsClient::AXTreeCallback axtree_received_callback;
-  EXPECT_CALL(client_, GetAXTree)
-      .WillOnce(MoveArg<0>(&axtree_received_callback));
+  if (ShouldExtractAXTree()) {
+    EXPECT_CALL(client_, GetAXTree)
+        .WillOnce(MoveArg<0>(&axtree_received_callback));
+  } else {
+    EXPECT_CALL(client_, GetAXTree).Times(0);
+  }
   user_annotations_service_.SetShouldImportFormData(
-      /*should_import_form_data=*/GetParam());
+      /*should_import_form_data=*/std::get<0>(GetParam()));
 
   std::vector<optimization_guide::proto::UserAnnotationsEntry>
       user_annotations_entries;
@@ -622,13 +642,17 @@ TEST_P(AutofillPredictionImprovementsManagerImportFormTest,
       .WillOnce(SaveArg<1>(&user_annotations_entries));
   manager_->MaybeImportForm(std::move(eligible_form_structure),
                             import_form_callback.Get());
-  std::move(axtree_received_callback).Run({});
-  EXPECT_THAT(user_annotations_entries.empty(), !GetParam());
+  if (ShouldExtractAXTree()) {
+    std::move(axtree_received_callback).Run({});
+  }
+  EXPECT_THAT(user_annotations_entries.empty(), !std::get<0>(GetParam()));
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         AutofillPredictionImprovementsManagerImportFormTest,
-                         testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    AutofillPredictionImprovementsManagerImportFormTest,
+    testing::Combine(/*should_import_form_data=*/testing::Bool(),
+                     /*extract_ax_tree=*/testing::Bool()));
 
 // Tests that if the pref is disabled, `import_form_callback` is run with an
 // empty list of entries and nothing is forwarded to the

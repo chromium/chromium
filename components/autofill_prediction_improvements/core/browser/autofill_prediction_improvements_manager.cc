@@ -506,21 +506,31 @@ void AutofillPredictionImprovementsManager::MaybeImportForm(
     return;
   }
 
-  // TODO(crbug.com/366222226): Ensure the AX tree retrieval is not delayed,
-  // e.g. by async filters added in future.
-  client_->GetAXTree(base::BindOnce(
-      &AutofillPredictionImprovementsManager::OnReceivedAXTreeForFormImport,
-      weak_ptr_factory_.GetWeakPtr(), std::move(form), std::move(callback)));
+  if (user_annotations::ShouldExtractAXTreeForFormsAnnotations()) {
+    // TODO(crbug.com/366222226): Ensure the AX tree retrieval is not delayed,
+    // e.g. by async filters added in future.
+    client_->GetAXTree(base::BindOnce(
+        &AutofillPredictionImprovementsManager::OnReceivedAXTreeForFormImport,
+        weak_ptr_factory_.GetWeakPtr(), client_->GetLastCommittedURL(),
+        client_->GetTitle(), std::move(form), std::move(callback)));
+  } else {
+    OnReceivedAXTreeForFormImport(
+        client_->GetLastCommittedURL(), client_->GetTitle(), std::move(form),
+        std::move(callback), optimization_guide::proto::AXTreeUpdate());
+  }
 }
 
 void AutofillPredictionImprovementsManager::OnReceivedAXTreeForFormImport(
+    const GURL& url,
+    const std::string& title,
     std::unique_ptr<autofill::FormStructure> form,
     ImportFormCallback callback,
     optimization_guide::proto::AXTreeUpdate ax_tree_update) {
   if (user_annotations::UserAnnotationsService* user_annotations_service =
           client_->GetUserAnnotationsService()) {
     user_annotations_service->AddFormSubmission(
-        std::move(ax_tree_update), std::move(form), std::move(callback));
+        url, title, std::move(ax_tree_update), std::move(form),
+        std::move(callback));
     return;
   }
   std::move(callback).Run(std::move(form), /*to_be_upserted_entries=*/{},

@@ -30,6 +30,8 @@ std::vector<std::string> GetAllowedHostsForFormsAnnotations();
 // Whether the user annotations should be persisted in database.
 bool ShouldPersistUserAnnotations();
 
+bool ShouldExtractAXTreeForFormsAnnotations();
+
 }  // namespace user_annotations
 
 #endif  // COMPONENTS_USER_ANNOTATIONS_USER_ANNOTATIONS_FEATURES_H_

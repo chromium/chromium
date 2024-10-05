@@ -5,6 +5,7 @@
 #include "chrome/browser/autofill_prediction_improvements/chrome_autofill_prediction_improvements_client.h"
 
 #include "base/check_deref.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/feedback/public/feedback_source.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
@@ -107,6 +108,10 @@ ChromeAutofillPredictionImprovementsClient::GetFillingEngine() {
 
 const GURL& ChromeAutofillPredictionImprovementsClient::GetLastCommittedURL() {
   return GetWebContents().GetPrimaryMainFrame()->GetLastCommittedURL();
+}
+
+std::string ChromeAutofillPredictionImprovementsClient::GetTitle() {
+  return base::UTF16ToUTF8(GetWebContents().GetTitle());
 }
 
 user_annotations::UserAnnotationsService*

@@ -45,6 +45,9 @@ class AutofillPredictionImprovementsClient {
   // Returns the last committed URL of the primary main frame.
   virtual const GURL& GetLastCommittedURL() = 0;
 
+  // Returns the title of the web contents.
+  virtual std::string GetTitle() = 0;
+
   // Returns a pointer to the current profile's `UserAnnotationsService`. Can be
   // `nullptr`.
   virtual user_annotations::UserAnnotationsService*
