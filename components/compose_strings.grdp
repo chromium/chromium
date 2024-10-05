@@ -17,11 +17,11 @@
   <message name="IDS_COMPOSE_SUGGESTION_LABEL" desc="The label beneath the main text in the Autofill suggestion that a user sees after interacting with a supported text element.">
     Powered by Google
   </message>
-  <message name="IDS_COMPOSE_SUGGESTION_SAVED_TEXT" desc="The main text displayed in the Autofill suggestion that a user sees after interacting with a supported text element, indicating that user state was saved.">
-    Resume writing
+  <message name="IDS_COMPOSE_SUGGESTION_SAVED_TEXT" desc="Main text of a notification that the current text field has an open 'Help me write' session. Clicking the notification will re-open the 'Help me write' dialog.">
+    Continue writing
   </message>
-  <message name="IDS_COMPOSE_SUGGESTION_SAVED_LABEL" desc="The label beneath the main text in the Autofill suggestion that a user sees after interacting with a supported text element, indicating that user state was saved.">
-    Open to continue
+  <message name="IDS_COMPOSE_SUGGESTION_SAVED_LABEL" desc="The label beneath the main text of a notification that the current text field has an open 'Help me write' session. Clicking on the notification will re-open the 'Help me write' dialog.">
+    Open to resume
   </message>
   <message name="IDS_COMPOSE_SUGGESTION_AX_MESSAGE_ON_SHOW_PROACTIVE" desc="The message read out by a screen reader when the Compose nudge is shown.">
     Help me write. Tab and press enter to open
