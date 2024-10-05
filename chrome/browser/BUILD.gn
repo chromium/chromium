@@ -1804,6 +1804,11 @@ static_library("browser") {
     "//chrome/browser/ui/safety_hub:impl",
     "//chrome/browser/ui/prefs:impl",
     "//chrome/browser/profiles:profiles_extra_parts_impl",
+
+    # TODO(crbug.com/): This is needed because tab_contents code
+    # includes c/b/enterprise/connectors/analyzis/content_analysis_delegate.h
+    # and c/b/translate/chrome_translate_client.h.
+    "//chrome/browser/ui/tab_contents:impl",
   ]
 
   if (!is_chromeos_lacros) {
@@ -1978,6 +1983,8 @@ static_library("browser") {
     "//chrome/browser/ui/safety_hub",
     "//chrome/browser/ui/safety_hub:impl",
     "//chrome/browser/ui/startup:startup_tab",
+    "//chrome/browser/ui/tab_contents",
+    "//chrome/browser/ui/tab_contents:impl",
     "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui:configs",

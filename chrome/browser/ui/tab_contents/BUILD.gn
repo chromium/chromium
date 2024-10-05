@@ -1,0 +1,133 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/enterprise/buildflags/buildflags.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+source_set("tab_contents") {
+  sources = [
+    "chrome_web_contents_view_delegate.h",
+    "core_tab_helper.h",
+  ]
+
+  if (!is_android) {
+    sources += [ "tab_contents_iterator.h" ]
+  }
+
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    sources += [
+      "chrome_web_contents_menu_helper.h",
+      "chrome_web_contents_view_handle_drop.h",
+    ]
+  }
+
+  public_deps = [
+    "//base",
+    "//chrome/common:mojo_bindings",
+    "//components/lens",
+    "//components/search_engines",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//url",
+  ]
+  if (!is_android) {
+    public_deps += [ "//chrome/browser/ui:browser_list" ]
+  }
+}
+
+source_set("impl") {
+  sources = [ "core_tab_helper.cc" ]
+
+  if (!is_android) {
+    sources += [ "tab_contents_iterator.cc" ]
+  }
+
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    sources += [
+      "chrome_web_contents_menu_helper.cc",
+      "chrome_web_contents_view_handle_drop.cc",
+    ]
+  }
+
+  deps = [
+    ":tab_contents",
+    "//build:branding_buildflags",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/safe_browsing",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/common:non_code_constants",
+    "//components/enterprise/common:files_scan_data",
+    "//components/lens:buildflags",
+    "//components/lens:features",
+    "//components/search",
+    "//components/strings:components_strings",
+    "//components/translate/core/browser",
+    "//components/translate/core/common",
+    "//content/public/browser",
+    "//content/public/common",
+    "//extensions/buildflags",
+    "//net",
+    "//skia",
+    "//third_party/blink/public/common:headers",
+    "//ui/base",
+    "//ui/base/clipboard:file_info",
+    "//ui/gfx/codec",
+  ]
+  if (!is_android) {
+    deps += [
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/views/side_panel",
+    ]
+  }
+  if (enable_extensions) {
+    deps += [ "//components/guest_view/browser" ]
+  }
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+if (!is_android) {
+  source_set("unit_tests") {
+    testonly = true
+    sources = [
+      "chrome_web_contents_menu_helper_unittest.cc",
+      "core_tab_helper_unittest.cc",
+      "tab_contents_iterator_unittest.cc",
+    ]
+
+    deps = [
+      "//base/test:test_support",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/ui:browser_list",
+      "//chrome/browser/ui/tab_contents",
+      "//chrome/browser/ui/tabs:tab_enums",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/test:test_support",
+      "//components/lens:features",
+      "//components/lens:lens_mojo",
+      "//components/prefs",
+      "//components/safe_browsing/core/common:features",
+      "//components/safe_browsing/core/common:safe_browsing_prefs",
+      "//components/search_engines",
+      "//components/sync_preferences",
+      "//components/sync_preferences:test_support",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//third_party/libwebp:libwebp_webp",
+      "//ui/gfx:test_support",
+      "//ui/gfx/codec",
+    ]
+
+    if (enterprise_cloud_content_analysis) {
+      sources += [ "chrome_web_contents_view_handle_drop_unittest.cc" ]
+      deps += [ "//chrome/browser/enterprise/connectors/test:test_support" ]
+    }
+  }
+}

@@ -486,6 +486,7 @@ if (!is_android) {
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/startup:startup_tab",
+      "//chrome/browser/ui/tab_contents",
       "//chrome/common:non_code_constants",
       "//chrome/test:test_support",
       "//components/commerce/core:feature_list",

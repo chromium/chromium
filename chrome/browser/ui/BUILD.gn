@@ -134,9 +134,6 @@ static_library("ui") {
     "storage_pressure_bubble.h",
     "sync/tab_contents_synced_tab_delegate.cc",
     "sync/tab_contents_synced_tab_delegate.h",
-    "tab_contents/chrome_web_contents_view_delegate.h",
-    "tab_contents/core_tab_helper.cc",
-    "tab_contents/core_tab_helper.h",
     "tab_dialogs.cc",
     "tab_dialogs.h",
     "tab_helpers.cc",
@@ -421,6 +418,8 @@ static_library("ui") {
     "//chrome/browser/ui/prefs",
     "//chrome/browser/ui/prefs:impl",
     "//chrome/browser/ui/safety_hub",
+    "//chrome/browser/ui/tab_contents",
+    "//chrome/browser/ui/tab_contents:impl",
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/zoom",
@@ -720,15 +719,16 @@ static_library("ui") {
     # - popunder_preventer.cc includes //c/b/ui/tabs/tab_strip_model.h.
     "//chrome/browser/ui/blocked_content:impl",
 
-    "//chrome/browser/ui/bluetooth:impl",
     "//chrome/browser/picture_in_picture:impl",
     "//chrome/browser/ui/autofill:impl",
+    "//chrome/browser/ui/bluetooth:impl",
+    "//chrome/browser/ui/tab_contents:impl",
     "//chrome/browser/search_engine_choice:impl",
     "//chrome/browser/profiles:profile_attributes_impl",
     "//chrome/browser/profiles:profile_util_impl",
     "//chrome/browser/signin:impl",
 
-    # TODO(crbug.com/): It includes //c/b/ui/browser_dialogs.h and //c/b/ui/url_identity.h
+    # TODO(crbug.com/366272539): It includes //c/b/ui/browser_dialogs.h.
     "//chrome/browser/ui/file_system_access:impl",
 
     "//chrome/browser/content_settings:content_settings_factory_impl",
@@ -1222,8 +1222,6 @@ static_library("ui") {
       "sync/browser_synced_window_delegates_getter.h",
       "sync/profile_signin_confirmation_helper.cc",
       "sync/profile_signin_confirmation_helper.h",
-      "tab_contents/tab_contents_iterator.cc",
-      "tab_contents/tab_contents_iterator.h",
       "tab_modal_confirm_dialog_delegate.cc",
       "tab_modal_confirm_dialog_delegate.h",
       "tab_sharing/tab_sharing_infobar_delegate.cc",
@@ -3050,10 +3048,6 @@ static_library("ui") {
       "passwords/password_cross_domain_confirmation_popup_controller_impl.h",
       "startup/web_app_startup_utils.cc",
       "startup/web_app_startup_utils.h",
-      "tab_contents/chrome_web_contents_menu_helper.cc",
-      "tab_contents/chrome_web_contents_menu_helper.h",
-      "tab_contents/chrome_web_contents_view_handle_drop.cc",
-      "tab_contents/chrome_web_contents_view_handle_drop.h",
       "views/autofill/payments/webauthn_dialog_view.cc",
       "views/autofill/payments/webauthn_dialog_view.h",
       "views/close_bubble_on_tab_activation_helper.cc",
