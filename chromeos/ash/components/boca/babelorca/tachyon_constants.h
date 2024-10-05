@@ -14,6 +14,8 @@ inline constexpr char kSigninGaiaUrl[] =
     "https://instantmessaging-pa.googleapis.com/v1/registration:signingaia";
 inline constexpr char kSendMessageUrl[] =
     "https://instantmessaging-pa.googleapis.com/v1/message:send";
+inline constexpr char kReceiveMessagesUrl[] =
+    "https://instantmessaging-pa.googleapis.com/v1/messages:receive";
 
 inline constexpr char kOauthHeaderTemplate[] = "Authorization: Bearer %s";
 
