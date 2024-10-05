@@ -6960,7 +6960,7 @@ crbug.com/726075 [ Linux ] virtual/gpu/fast/canvas/canvas-imageSmoothing-disable
 # Gardener 2023-12-01
 crbug.com/1506782 fast/dom/HTMLImageElement/image-sizes-1x.html [ Failure Pass ]
 
-crbug.com/1509073 [ Debug ] external/wpt/clipboard-apis/async-navigator-clipboard-write-multiple.tentative.https.sub.html [ Timeout Crash Pass ]
+crbug.com/1509073 [ Debug ] external/wpt/clipboard-apis/async-navigator-clipboard-write-multiple.tentative.https.sub.html [ Crash Pass Timeout ]
 crbug.com/1509073 [ Release ] external/wpt/clipboard-apis/async-navigator-clipboard-write-multiple.tentative.https.sub.html [ Timeout ]
 
 # b:315306014 Link Preview hides alt+click and tests fail iff Link Preview is enabled.
