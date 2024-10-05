@@ -7,7 +7,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_writer_create_options.h"
-#include "third_party/blink/renderer/modules/ai/ai_mojo_session_create_client.h"
+#include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
 #include "third_party/blink/renderer/modules/ai/ai_writer.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -23,20 +23,21 @@ const char kExceptionMessageUnableToCreateWriter[] =
 
 class CreateWriterClient : public GarbageCollected<CreateWriterClient>,
                            public mojom::blink::AIManagerCreateWriterClient,
-                           public AIMojoSessionCreateClient<AIWriter> {
+                           public AIMojoClient<AIWriter> {
  public:
   CreateWriterClient(AI* ai,
                      ScriptPromiseResolver<AIWriter>* resolver,
                      AbortSignal* signal,
                      String shared_context_string)
-      : AIMojoSessionCreateClient(ai, resolver, signal),
+      : AIMojoClient(ai, resolver, signal),
+        ai_(ai),
         receiver_(this, ai->GetExecutionContext()),
         shared_context_string_(shared_context_string) {
     mojo::PendingRemote<mojom::blink::AIManagerCreateWriterClient>
         client_remote;
     receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(),
                    ai->GetTaskRunner());
-    GetAI()->GetAIRemote()->CreateWriter(
+    ai_->GetAIRemote()->CreateWriter(
         std::move(client_remote),
         mojom::blink::AIWriterCreateOptions::New(shared_context_string_));
   }
@@ -46,7 +47,8 @@ class CreateWriterClient : public GarbageCollected<CreateWriterClient>,
   CreateWriterClient& operator=(const CreateWriterClient&) = delete;
 
   void Trace(Visitor* visitor) const override {
-    AIMojoSessionCreateClient::Trace(visitor);
+    AIMojoClient::Trace(visitor);
+    visitor->Trace(ai_);
     visitor->Trace(receiver_);
   }
 
@@ -56,8 +58,8 @@ class CreateWriterClient : public GarbageCollected<CreateWriterClient>,
     }
     if (writer) {
       GetResolver()->Resolve(MakeGarbageCollected<AIWriter>(
-          GetAI()->GetExecutionContext(), GetAI()->GetTaskRunner(),
-          std::move(writer), shared_context_string_));
+          ai_->GetExecutionContext(), ai_->GetTaskRunner(), std::move(writer),
+          shared_context_string_));
     } else {
       GetResolver()->Reject(DOMException::Create(
           kExceptionMessageUnableToCreateWriter,
@@ -67,6 +69,7 @@ class CreateWriterClient : public GarbageCollected<CreateWriterClient>,
   }
 
  private:
+  Member<AI> ai_;
   HeapMojoReceiver<mojom::blink::AIManagerCreateWriterClient,
                    CreateWriterClient>
       receiver_;

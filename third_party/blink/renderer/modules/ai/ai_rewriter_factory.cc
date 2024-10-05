@@ -8,7 +8,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_rewriter_create_options.h"
-#include "third_party/blink/renderer/modules/ai/ai_mojo_session_create_client.h"
+#include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
 #include "third_party/blink/renderer/modules/ai/ai_rewriter.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -48,7 +48,7 @@ mojom::blink::AIRewriterLength ToMojoAIRewriterLength(V8AIRewriterLength tone) {
 
 class CreateRewriterClient : public GarbageCollected<CreateRewriterClient>,
                              public mojom::blink::AIManagerCreateRewriterClient,
-                             public AIMojoSessionCreateClient<AIRewriter> {
+                             public AIMojoClient<AIRewriter> {
  public:
   CreateRewriterClient(AI* ai,
                        ScriptPromiseResolver<AIRewriter>* resolver,
@@ -56,7 +56,8 @@ class CreateRewriterClient : public GarbageCollected<CreateRewriterClient>,
                        V8AIRewriterTone tone,
                        V8AIRewriterLength length,
                        String shared_context_string)
-      : AIMojoSessionCreateClient(ai, resolver, signal),
+      : AIMojoClient(ai, resolver, signal),
+        ai_(ai),
         receiver_(this, ai->GetExecutionContext()),
         shared_context_string_(shared_context_string),
         tone_(tone),
@@ -65,7 +66,7 @@ class CreateRewriterClient : public GarbageCollected<CreateRewriterClient>,
         client_remote;
     receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(),
                    ai->GetTaskRunner());
-    GetAI()->GetAIRemote()->CreateRewriter(
+    ai_->GetAIRemote()->CreateRewriter(
         std::move(client_remote),
         mojom::blink::AIRewriterCreateOptions::New(
             shared_context_string_, ToMojoAIRewriterTone(tone),
@@ -77,7 +78,8 @@ class CreateRewriterClient : public GarbageCollected<CreateRewriterClient>,
   CreateRewriterClient& operator=(const CreateRewriterClient&) = delete;
 
   void Trace(Visitor* visitor) const override {
-    AIMojoSessionCreateClient::Trace(visitor);
+    AIMojoClient::Trace(visitor);
+    visitor->Trace(ai_);
     visitor->Trace(receiver_);
   }
 
@@ -88,8 +90,8 @@ class CreateRewriterClient : public GarbageCollected<CreateRewriterClient>,
     }
     if (rewriter) {
       GetResolver()->Resolve(MakeGarbageCollected<AIRewriter>(
-          GetAI()->GetExecutionContext(), GetAI()->GetTaskRunner(),
-          std::move(rewriter), shared_context_string_, tone_, length_));
+          ai_->GetExecutionContext(), ai_->GetTaskRunner(), std::move(rewriter),
+          shared_context_string_, tone_, length_));
     } else {
       GetResolver()->Reject(DOMException::Create(
           kExceptionMessageUnableToCreateRewriter,
@@ -99,6 +101,7 @@ class CreateRewriterClient : public GarbageCollected<CreateRewriterClient>,
   }
 
  private:
+  Member<AI> ai_;
   HeapMojoReceiver<mojom::blink::AIManagerCreateRewriterClient,
                    CreateRewriterClient>
       receiver_;

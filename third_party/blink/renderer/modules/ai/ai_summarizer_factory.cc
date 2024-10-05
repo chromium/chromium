@@ -6,9 +6,10 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/web/web_console_message.h"
+#include "third_party/blink/renderer/modules/ai/ai.h"
 #include "third_party/blink/renderer/modules/ai/ai_capability_availability.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
-#include "third_party/blink/renderer/modules/ai/ai_mojo_session_create_client.h"
+#include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
 #include "third_party/blink/renderer/modules/ai/ai_summarizer.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
@@ -54,13 +55,14 @@ mojom::blink::AISummarizerLength ToMojoSummarizerLength(
 
 class CreateSummarizerClient
     : public GarbageCollected<CreateSummarizerClient>,
-      public AIMojoSessionCreateClient<AISummarizer>,
+      public AIMojoClient<AISummarizer>,
       public mojom::blink::AIManagerCreateSummarizerClient {
  public:
   explicit CreateSummarizerClient(AI* ai,
                                   const AISummarizerCreateOptions* options,
                                   ScriptPromiseResolver<AISummarizer>* resolver)
-      : AIMojoSessionCreateClient(ai, resolver, options->getSignalOr(nullptr)),
+      : AIMojoClient(ai, resolver, options->getSignalOr(nullptr)),
+        ai_(ai),
         receiver_(this, ai->GetExecutionContext()),
         type_(options->type()),
         format_(options->format()),
@@ -73,8 +75,8 @@ class CreateSummarizerClient
     mojo::PendingRemote<mojom::blink::AIManagerCreateSummarizerClient>
         client_remote;
     receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(),
-                   GetAI()->GetTaskRunner());
-    GetAI()->GetAIRemote()->CreateSummarizer(
+                   ai_->GetTaskRunner());
+    ai_->GetAIRemote()->CreateSummarizer(
         std::move(client_remote),
         mojom::blink::AISummarizerCreateOptions::New(
             shared_context_, ToMojoSummarizerType(type_),
@@ -82,7 +84,8 @@ class CreateSummarizerClient
   }
 
   void Trace(Visitor* visitor) const override {
-    AIMojoSessionCreateClient::Trace(visitor);
+    AIMojoClient::Trace(visitor);
+    visitor->Trace(ai_);
     visitor->Trace(receiver_);
   }
 
@@ -92,13 +95,13 @@ class CreateSummarizerClient
       // The creation was aborted by the user.
       return;
     }
-    if (!GetAI()->GetExecutionContext() || !remote_summarizer) {
+    if (!ai_->GetExecutionContext() || !remote_summarizer) {
       GetResolver()->Reject(DOMException::Create(
           kExceptionMessageUnableToCreateSession,
           DOMException::GetErrorName(DOMExceptionCode::kInvalidStateError)));
     } else {
       AISummarizer* summarizer = MakeGarbageCollected<AISummarizer>(
-          GetAI()->GetExecutionContext(), GetAI()->GetTaskRunner(),
+          ai_->GetExecutionContext(), ai_->GetTaskRunner(),
           std::move(remote_summarizer), shared_context_, type_, format_,
           length_);
       GetResolver()->Resolve(summarizer);
@@ -107,6 +110,7 @@ class CreateSummarizerClient
   }
 
  private:
+  Member<AI> ai_;
   HeapMojoReceiver<mojom::blink::AIManagerCreateSummarizerClient,
                    CreateSummarizerClient>
       receiver_;

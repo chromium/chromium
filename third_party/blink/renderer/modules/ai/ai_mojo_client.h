@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_MOJO_SESSION_CREATE_CLIENT_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_MOJO_SESSION_CREATE_CLIENT_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_MOJO_CLIENT_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_MOJO_CLIENT_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
@@ -15,17 +15,16 @@
 
 namespace blink {
 
-// AIMojoSessionCreateClient is a base class for AI object factories
-// to create a mojo session. It adds observers for the execution context
-// lifecycle and the abort signal. The resources will be freed when the
-// execution context gets destroyed or the user explicitly aborts.
+// AIMojoClient is a base class for the renderer to send a mojo IPC to the AI
+// component. It adds observers for the execution context lifecycle and the
+// abort signal. The resources will be freed when the execution context gets
+// destroyed or the user explicitly aborts.
 template <typename V8SessionObjectType>
-class AIMojoSessionCreateClient : public ContextLifecycleObserver {
+class AIMojoClient : public ContextLifecycleObserver {
  public:
-  AIMojoSessionCreateClient(
-      ExecutionContextClient* context_client,
-      ScriptPromiseResolver<V8SessionObjectType>* resolver,
-      AbortSignal* abort_signal)
+  AIMojoClient(ExecutionContextClient* context_client,
+               ScriptPromiseResolver<V8SessionObjectType>* resolver,
+               AbortSignal* abort_signal)
       : context_client_(context_client),
         resolver_(resolver),
         abort_signal_(abort_signal) {
@@ -33,8 +32,8 @@ class AIMojoSessionCreateClient : public ContextLifecycleObserver {
     SetContextLifecycleNotifier(context_client_->GetExecutionContext());
     if (abort_signal_) {
       CHECK(!abort_signal_->aborted());
-      abort_handle_ = abort_signal_->AddAlgorithm(WTF::BindOnce(
-          &AIMojoSessionCreateClient::OnAborted, WrapWeakPersistent(this)));
+      abort_handle_ = abort_signal_->AddAlgorithm(
+          WTF::BindOnce(&AIMojoClient::OnAborted, WrapWeakPersistent(this)));
     }
   }
 
@@ -47,7 +46,7 @@ class AIMojoSessionCreateClient : public ContextLifecycleObserver {
     visitor->Trace(abort_handle_);
   }
 
-  ~AIMojoSessionCreateClient() override = default;
+  ~AIMojoClient() override = default;
 
  protected:
   ScriptPromiseResolver<V8SessionObjectType>* GetResolver() {
@@ -63,8 +62,6 @@ class AIMojoSessionCreateClient : public ContextLifecycleObserver {
       abort_handle_ = nullptr;
     }
   }
-
-  AI* GetAI() { return static_cast<AI*>(context_client_.Get()); }
 
  private:
   // `ContextLifecycleObserver` implementation
@@ -84,9 +81,9 @@ class AIMojoSessionCreateClient : public ContextLifecycleObserver {
   Member<ScriptPromiseResolver<V8SessionObjectType>> resolver_;
   Member<AbortSignal> abort_signal_;
   Member<AbortSignal::AlgorithmHandle> abort_handle_;
-  SelfKeepAlive<AIMojoSessionCreateClient> keep_alive_{this};
+  SelfKeepAlive<AIMojoClient> keep_alive_{this};
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_MOJO_SESSION_CREATE_CLIENT_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_MOJO_CLIENT_H_

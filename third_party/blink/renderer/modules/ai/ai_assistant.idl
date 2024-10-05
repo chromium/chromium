@@ -8,6 +8,10 @@ dictionary AIAssistantCloneOptions {
   AbortSignal signal;
 };
 
+dictionary AIAssistantPromptOptions {
+  AbortSignal signal;
+};
+
 [
   Exposed=(Window,Worker),
   RuntimeEnabled=AIPromptAPI
@@ -18,13 +22,19 @@ interface AIAssistant {
     CallWith=ScriptState,
     RaisesException
   ]
-  Promise<DOMString> prompt(DOMString input);
+  Promise<DOMString> prompt(
+    DOMString input,
+    optional AIAssistantPromptOptions options = {}
+  );
   [
     Measure,
     CallWith=ScriptState,
     RaisesException
   ]
-  ReadableStream promptStreaming(DOMString input);
+  ReadableStream promptStreaming(
+    DOMString input,
+    optional AIAssistantPromptOptions options = {}
+  );
 
   [
     Measure,
@@ -32,7 +42,8 @@ interface AIAssistant {
     RaisesException
   ]
   Promise<unsigned long long> countPromptTokens(
-    DOMString input
+    DOMString input,
+    optional AIAssistantPromptOptions options = {}
   );
 
   [Measure]

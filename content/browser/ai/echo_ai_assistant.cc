@@ -92,9 +92,13 @@ void EchoAIAssistant::Destroy() {
   responder_set_.Clear();
 }
 
-void EchoAIAssistant::CountPromptTokens(const std::string& input,
-                                        CountPromptTokensCallback callback) {
-  std::move(callback).Run(input.size());
+void EchoAIAssistant::CountPromptTokens(
+    const std::string& input,
+    mojo::PendingRemote<blink::mojom::AIAssistantCountPromptTokensClient>
+        client) {
+  mojo::Remote<blink::mojom::AIAssistantCountPromptTokensClient>(
+      std::move(client))
+      ->OnResult(input.size());
 }
 
 }  // namespace content

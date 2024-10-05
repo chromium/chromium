@@ -74,6 +74,14 @@ interface AIManagerCreateAssistantClient {
   );
 };
 
+// The client interface that receives the number of tokens counted by the
+// AIManager.
+interface AIAssistantCountPromptTokensClient {
+  // Called with a created assistant's mojo interface as a result for the
+  // CountPromptTokens() method of the AIManager.
+  OnResult(uint32 number_of_tokens);
+};
+
 // A session for a model that allows executing an input and streaming the
 // output.
 interface AIAssistant {
@@ -97,5 +105,8 @@ interface AIAssistant {
   Destroy();
   // Counts the number of token in the given prompt text `input` which can
   // be an arbitrary string from the JavaScript API.
-  CountPromptTokens(string input) => (uint32 number_of_tokens);
+  CountPromptTokens(
+    string input,
+    pending_remote<AIAssistantCountPromptTokensClient> client
+  );
 };

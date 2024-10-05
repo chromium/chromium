@@ -29,8 +29,10 @@ class EchoAIAssistant : public blink::mojom::AIAssistant {
   void Fork(mojo::PendingRemote<blink::mojom::AIManagerCreateAssistantClient>
                 client) override;
   void Destroy() override;
-  void CountPromptTokens(const std::string& input,
-                         CountPromptTokensCallback callback) override;
+  void CountPromptTokens(
+      const std::string& input,
+      mojo::PendingRemote<blink::mojom::AIAssistantCountPromptTokensClient>
+          client) override;
 
  private:
   void DoMockExecution(const std::string& input,

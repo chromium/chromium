@@ -360,14 +360,24 @@ blink::mojom::AIAssistantInfoPtr AIAssistant::GetAssistantInfo() {
           session_sampling_params.top_k, session_sampling_params.temperature));
 }
 
-void AIAssistant::CountPromptTokens(const std::string& input,
-                                    CountPromptTokensCallback callback) {
+void AIAssistant::CountPromptTokens(
+    const std::string& input,
+    mojo::PendingRemote<blink::mojom::AIAssistantCountPromptTokensClient>
+        client) {
   PromptApiRequest request;
   *request.add_current_prompts() =
       MakePrompt(PromptApiRole::PROMPT_API_ROLE_USER, input);
 
-  session_->GetContextSizeInTokens(*context_->MaybeFormatRequest(request),
-                                   std::move(callback));
+  session_->GetContextSizeInTokens(
+      *context_->MaybeFormatRequest(request),
+      base::BindOnce(
+          [](mojo::Remote<blink::mojom::AIAssistantCountPromptTokensClient>
+                 client_remote,
+             uint32_t number_of_tokens) {
+            client_remote->OnResult(number_of_tokens);
+          },
+          mojo::Remote<blink::mojom::AIAssistantCountPromptTokensClient>(
+              std::move(client))));
 }
 
 mojo::PendingRemote<blink::mojom::AIAssistant>

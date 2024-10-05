@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/modules/ai/ai_assistant_capabilities.h"
 #include "third_party/blink/renderer/modules/ai/ai_capability_availability.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
-#include "third_party/blink/renderer/modules/ai/ai_mojo_session_create_client.h"
+#include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -42,7 +42,7 @@ mojom::blink::AIAssistantInitialPromptRole AIAssistantInitialPromptRole(
 class CreateAssistantClient
     : public GarbageCollected<CreateAssistantClient>,
       public mojom::blink::AIManagerCreateAssistantClient,
-      public AIMojoSessionCreateClient<AIAssistant> {
+      public AIMojoClient<AIAssistant> {
  public:
   CreateAssistantClient(
       AI* ai,
@@ -51,13 +51,14 @@ class CreateAssistantClient
       mojom::blink::AIAssistantSamplingParamsPtr sampling_params,
       WTF::String system_prompt,
       Vector<mojom::blink::AIAssistantInitialPromptPtr> initial_prompts)
-      : AIMojoSessionCreateClient(ai, resolver, signal),
+      : AIMojoClient(ai, resolver, signal),
+        ai_(ai),
         receiver_(this, ai->GetExecutionContext()) {
     mojo::PendingRemote<mojom::blink::AIManagerCreateAssistantClient>
         client_remote;
     receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(),
                    ai->GetTaskRunner());
-    GetAI()->GetAIRemote()->CreateAssistant(
+    ai_->GetAIRemote()->CreateAssistant(
         std::move(client_remote), mojom::blink::AIAssistantCreateOptions::New(
                                       std::move(sampling_params), system_prompt,
                                       std::move(initial_prompts)));
@@ -68,7 +69,8 @@ class CreateAssistantClient
   CreateAssistantClient& operator=(const CreateAssistantClient&) = delete;
 
   void Trace(Visitor* visitor) const override {
-    AIMojoSessionCreateClient::Trace(visitor);
+    AIMojoClient::Trace(visitor);
+    visitor->Trace(ai_);
     visitor->Trace(receiver_);
   }
 
@@ -80,8 +82,8 @@ class CreateAssistantClient
 
     if (info) {
       AIAssistant* assistant = MakeGarbageCollected<AIAssistant>(
-          GetAI()->GetExecutionContext(), std::move(assistant_remote),
-          GetAI()->GetTaskRunner(), std::move(info), /*current_tokens=*/0);
+          ai_->GetExecutionContext(), std::move(assistant_remote),
+          ai_->GetTaskRunner(), std::move(info), /*current_tokens=*/0);
       GetResolver()->Resolve(assistant);
     } else {
       GetResolver()->RejectWithDOMException(
@@ -92,6 +94,7 @@ class CreateAssistantClient
   }
 
  private:
+  Member<AI> ai_;
   HeapMojoReceiver<mojom::blink::AIManagerCreateAssistantClient,
                    CreateAssistantClient>
       receiver_;

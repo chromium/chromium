@@ -9,6 +9,7 @@
 #include "third_party/blink/public/mojom/ai/ai_assistant.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_assistant_clone_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_assistant_prompt_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/modules/ai/ai_assistant_factory.h"
@@ -34,13 +35,16 @@ class AIAssistant final : public ScriptWrappable,
   // ai_assistant.idl implementation.
   ScriptPromise<IDLString> prompt(ScriptState* script_state,
                                   const WTF::String& input,
+                                  const AIAssistantPromptOptions* options,
                                   ExceptionState& exception_state);
   ReadableStream* promptStreaming(ScriptState* script_state,
                                   const WTF::String& input,
+                                  const AIAssistantPromptOptions* options,
                                   ExceptionState& exception_state);
   ScriptPromise<IDLUnsignedLongLong> countPromptTokens(
       ScriptState* script_state,
       const WTF::String& input,
+      const AIAssistantPromptOptions* options,
       ExceptionState& exception_state);
   uint64_t maxTokens() const { return max_tokens_; }
   uint64_t tokensSoFar() const { return current_tokens_; }

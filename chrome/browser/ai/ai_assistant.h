@@ -110,8 +110,10 @@ class AIAssistant : public AIContextBoundObject,
   void Fork(mojo::PendingRemote<blink::mojom::AIManagerCreateAssistantClient>
                 client) override;
   void Destroy() override;
-  void CountPromptTokens(const std::string& input,
-                         CountPromptTokensCallback callback) override;
+  void CountPromptTokens(
+      const std::string& input,
+      mojo::PendingRemote<blink::mojom::AIAssistantCountPromptTokensClient>
+          client) override;
 
   // Format the initial prompts, gets the token count, updates the session,
   // and passes the session information back through the callback.
