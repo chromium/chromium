@@ -8,13 +8,15 @@
 }
 
 .card {
-  background: var(--cr-card-background-color);
+  background: var(--color-history-embeddings-background,
+      var(--cr-card-background-color));
   border-radius: var(--cr-card-border-radius);
   box-shadow: var(--cr-card-shadow);
 }
 
 :host([enable-answers_]) .card {
-  background: var(--cr-fallback-color-surface1);
+  background: var(--color-history-embeddings-with-answers-background,
+      var(--cr-fallback-color-surface1));
   border-radius: 16px;
   box-shadow: none;
   padding-block: 16px;
@@ -29,7 +31,8 @@ h2 {
   font-size: 16px;
   font-weight: 500;
   line-height: 24px;
-  color: var(--cr-primary-text-color);
+  color: var(--color-history-embeddings-foreground,
+      var(--cr-primary-text-color));
 }
 
 h2 cr-icon {
@@ -55,7 +58,8 @@ h2 cr-icon {
 
 :host([enable-answers_]) .answer-source {
   align-items: center;
-  color: var(--cr-secondary-text-color);
+  color: var(--color-history-embeddings-foreground-subtle,
+      var(--cr-secondary-text-color));
   display: inline-flex;
   font-size: 11px;
   gap: 4px;
@@ -77,7 +81,8 @@ h2 cr-icon {
 hr {
   border: 0;
   height: 1px;
-  background: var(--cr-fallback-color-divider);
+  background: var(--color-history-embeddings-divider,
+      var(--cr-fallback-color-divider));
   margin: 0px 24px;
 }
 
@@ -101,7 +106,8 @@ cr-url-list-item:hover + hr {
 
 :host([enable-answers_]) .result-item {
   align-items: center;
-  color: var(--cr-primary-text-color);
+  color: var(--color-history-embeddings-foreground,
+      var(--cr-primary-text-color));
   display: flex;
   gap: 16px;
   padding: 8px 24px;
@@ -109,7 +115,8 @@ cr-url-list-item:hover + hr {
 }
 
 :host([enable-answers_]) .result-image {
-  background: var(--cr-fallback-color-neutral-container);
+  background: var(--color-history-embeddings-image-background,
+      var(--cr-fallback-color-neutral-container));
   border-radius: 8px;
   flex-shrink: 0;
   height: 58px;
@@ -145,7 +152,8 @@ cr-url-list-item:hover + hr {
 }
 
 :host([enable-answers_]) .result-url {
-  color: var(--cr-secondary-text-color);
+  color: var(--color-history-embeddings-foreground-subtle,
+      var(--cr-secondary-text-color));
   font-size: 11px;
 }
 
@@ -162,7 +170,8 @@ cr-url-list-item:hover + hr {
 }
 
 :host([enable-answers_]) .time {
-  color: var(--cr-secondary-text-color);
+  color: var(--color-history-embeddings-foreground-subtle,
+      var(--cr-secondary-text-color));
   font-size: 11px;
   line-height: 16px;
   margin-inline-start: 0;
@@ -180,11 +189,8 @@ cr-url-list-item:hover + hr {
   align-items: center;
   gap: 8px;
   padding: 16px 24px 24px;
-  color: var(--cr-secondary-text-color);
-}
-
-a {
-  color: var(--cr-link-color);
+  color: var(--color-history-embeddings-foreground-subtle,
+      var(--cr-secondary-text-color));
 }
 
 .source-passage {
@@ -196,7 +202,8 @@ a {
 }
 
 .source-passage-line {
-  background: var(--cr-fallback-color-divider);
+  background: var(--color-history-embeddings-divider,
+      var(--cr-fallback-color-divider));
   width: 1px;
   margin-inline-start: 20px;
   margin-inline-end: 36px;

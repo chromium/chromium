@@ -9,8 +9,12 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --gradient-start-color_: var(--cr-fallback-color-primary-container);
-  --gradient-end-color_: rgb(231, 248, 237);
+  --gradient-start-color_: var(
+      --color-history-embeddings-image-background-gradient-start,
+      var(--cr-fallback-color-primary-container));
+  --gradient-end-color_: var(
+      --color-history-embeddings-image-background-gradient-end,
+      rgb(231, 248, 237));
   --illustration-color_: var(--gradient-end-color_);
   align-items: center;
   background: linear-gradient(131deg,
@@ -28,7 +32,9 @@
 
 @media (prefers-color-scheme: dark) {
   :host {
-    --gradient-end-color_: rgb(15, 82, 35);
+    --gradient-end-color_: var(
+      --color-history-embeddings-image-background-gradient-end,
+      rgb(15, 82, 35));
     --illustration-color_: var(--gradient-start-color_);
   }
 }

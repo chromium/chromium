@@ -167,6 +167,15 @@
   /* Frame caption colors. */ \
   E_CPONLY(kColorFrameCaptionActive) \
   E_CPONLY(kColorFrameCaptionInactive) \
+  /* History embedding colors. */ \
+  E_CPONLY(kColorHistoryEmbeddingsBackground) \
+  E_CPONLY(kColorHistoryEmbeddingsDivider) \
+  E_CPONLY(kColorHistoryEmbeddingsForeground) \
+  E_CPONLY(kColorHistoryEmbeddingsForegroundSubtle) \
+  E_CPONLY(kColorHistoryEmbeddingsImageBackground) \
+  E_CPONLY(kColorHistoryEmbeddingsImageBackgroundGradientEnd) \
+  E_CPONLY(kColorHistoryEmbeddingsImageBackgroundGradientStart) \
+  E_CPONLY(kColorHistoryEmbeddingsWithAnswersBackground) \
   /* InfoBar colors. */ \
   E_CPONLY(kColorInfoBarBackground) \
   E_CPONLY(kColorInfoBarButtonIcon) \

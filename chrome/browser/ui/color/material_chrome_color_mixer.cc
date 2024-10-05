@@ -285,6 +285,21 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorFlyingIndicatorForeground] = {kColorToolbarButtonIcon};
   mixer[kColorFrameCaptionActive] = {ui::kColorSysOnHeaderPrimary};
   mixer[kColorFrameCaptionInactive] = {ui::kColorSysOnHeaderPrimaryInactive};
+
+  // History Embeddings colors.
+  mixer[kColorHistoryEmbeddingsBackground] = {ui::kColorSysSurface};
+  mixer[kColorHistoryEmbeddingsDivider] = {ui::kColorSysDivider};
+  mixer[kColorHistoryEmbeddingsForeground] = {ui::kColorSysOnSurface};
+  mixer[kColorHistoryEmbeddingsForegroundSubtle] = {
+      ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorHistoryEmbeddingsImageBackground] = {
+      ui::kColorSysNeutralContainer};
+  mixer[kColorHistoryEmbeddingsImageBackgroundGradientEnd] = {
+      ui::kColorSysGradientTertiary};
+  mixer[kColorHistoryEmbeddingsImageBackgroundGradientStart] = {
+      ui::kColorSysGradientPrimary};
+  mixer[kColorHistoryEmbeddingsWithAnswersBackground] = {ui::kColorSysSurface1};
+
   mixer[kColorTabHoverCardSecondaryText] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorInfoBarBackground] = {ui::kColorSysBase};
   mixer[kColorInfoBarButtonIcon] = {ui::kColorSysOnSurfaceSubtle};
