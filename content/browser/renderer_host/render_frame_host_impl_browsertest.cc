@@ -108,6 +108,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/switches.h"
@@ -297,6 +298,55 @@ bool NavigateToURLAndDoNotWaitForLoadStop(Shell* window, const GURL& url) {
   EXPECT_TRUE(observer.WaitForNavigationFinished());
   return url ==
          window->web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL();
+}
+
+// Navigates an iframe nested within another iframe to the specified URL via
+// Javascript executed from the outer document. Also, this waits for the
+// navigation to finish.
+void NavigateToURLFromGrandparentDocument(Shell* window, const GURL& url) {
+  RenderFrameHostImpl* rfh_grandparent =
+      static_cast<WebContentsImpl*>(window->web_contents())
+          ->GetPrimaryMainFrame();
+  RenderFrameHostImpl* rfh_parent =
+      rfh_grandparent->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* rfh_child =
+      rfh_parent->child_at(0)->current_frame_host();
+
+  // If we are navigating from a.com/ to a.com/#x or vice versa, we expect this
+  // to be a same-document navigation.
+  bool expected_is_same_document =
+      rfh_child->GetLastCommittedURL().GetWithoutRef() == url.GetWithoutRef();
+
+  TestNavigationManager navigation_manager(window->web_contents(), url);
+  NavigationHandleObserver navigation_observer(window->web_contents(), url);
+  ASSERT_TRUE(
+      ExecJs(rfh_grandparent,
+             JsReplace("frames[0].frames[0].location.href = $1;", url)));
+
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
+
+  ASSERT_FALSE(navigation_observer.is_error());
+  ASSERT_EQ(navigation_observer.last_committed_url(), url);
+  rfh_child = rfh_parent->child_at(0)->current_frame_host();
+  ASSERT_EQ(navigation_observer.frame_tree_node_id(),
+            rfh_child->GetFrameTreeNodeId());
+
+  EXPECT_EQ(navigation_observer.is_same_document(), expected_is_same_document);
+}
+
+// Returns the `initiator_origin` member of the last committed frame navigation
+// entry corresponding to `rfh`. For more information on the returned value, see
+// `FrameNavigationEntry::initiator_origin()`.
+std::optional<url::Origin> GetInitiatorOrigin(RenderFrameHostImpl* rfh) {
+  FrameTreeNode* frame_tree_node = rfh->frame_tree_node();
+  FrameNavigationEntry* frame_navigation_entry =
+      frame_tree_node->frame_tree()
+          .controller()
+          .GetLastCommittedEntry()
+          ->GetFrameEntry(frame_tree_node);
+  EXPECT_TRUE(frame_navigation_entry);
+
+  return frame_navigation_entry->initiator_origin();
 }
 
 using blink::mojom::BlockingDetails;
@@ -4170,6 +4220,157 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                               ->ComputeIsolationInfoForNavigation(secure_url)
                               .site_for_cookies()));
   }
+}
+
+// Verifies that when a document navigates a cross-origin grandchild frame to
+// a new origin, the corresponding FrameNavigationEntry initiator origin equals
+// the document origin.
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTest,
+    InitiatorOriginForCrossDocumentNavigationInCrossOriginGrandchild) {
+  GURL a_url = embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b(c))");
+  EXPECT_TRUE(NavigateToURL(shell(), a_url));
+
+  RenderFrameHostImpl* rfh_a = web_contents()->GetPrimaryMainFrame();
+  RenderFrameHostImpl* rfh_b = rfh_a->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* rfh_c = rfh_b->child_at(0)->current_frame_host();
+
+  // The initiator origin should begin as b.com since it created the iframe.
+  EXPECT_EQ(embedded_test_server()->GetOrigin("b.com"),
+            GetInitiatorOrigin(rfh_c));
+
+  // Navigate to d.com/title1.html from the outer document.
+  GURL d_url = embedded_test_server()->GetURL("d.com", "/title1.html");
+  NavigateToURLFromGrandparentDocument(shell(), d_url);
+
+  RenderFrameHostImpl* rfh_d = rfh_b->child_at(0)->current_frame_host();
+
+  // A navigation initiated by the outer document should update the initiator to
+  // the origin of that document.
+  EXPECT_EQ(url::Origin::Create(a_url), GetInitiatorOrigin(rfh_d));
+}
+
+class RenderFrameHostImplSiteIsolationBrowserTest
+    : public RenderFrameHostImplBrowserTest,
+      public testing::WithParamInterface<bool> {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    if (disable_site_isolation_) {
+      command_line->AppendSwitch(switches::kDisableSiteIsolation);
+    } else {
+      command_line->AppendSwitch(switches::kSitePerProcess);
+    }
+    RenderFrameHostImplBrowserTest::SetUpCommandLine(command_line);
+  }
+
+ private:
+  bool disable_site_isolation_ = GetParam();
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         RenderFrameHostImplSiteIsolationBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "SiteIsolationDisabled"
+                                             : "SiteIsolationEnabled";
+                         });
+
+// Verifies that when a document navigates a cross-origin grandchild frame to
+// a fragment URL (i.e. a same-document navigation), the corresponding
+// FrameNavigationEntry initiator origin equals the document origin.
+IN_PROC_BROWSER_TEST_P(
+    RenderFrameHostImplSiteIsolationBrowserTest,
+    InitiatorOriginForSameDocumentNavigationInCrossOriginGrandchild) {
+  GURL a_url = embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b(c))");
+
+  EXPECT_TRUE(NavigateToURL(shell(), a_url));
+
+  RenderFrameHostImpl* rfh_a = web_contents()->GetPrimaryMainFrame();
+  RenderFrameHostImpl* rfh_b = rfh_a->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* rfh_c = rfh_b->child_at(0)->current_frame_host();
+
+  // The initiator origin should begin as b.com since it created the iframe.
+  EXPECT_EQ(embedded_test_server()->GetOrigin("b.com"),
+            GetInitiatorOrigin(rfh_c));
+
+  // Do a same-document navigation from the outer document.
+  GURL c_url_with_fragment =
+      GURL(base::StrCat({rfh_c->GetLastCommittedURL().spec(), "#x"}));
+  NavigateToURLFromGrandparentDocument(shell(), c_url_with_fragment);
+
+  // A navigation initiated by the outer document should update the initiator to
+  // the origin of that document.
+  if (AreAllSitesIsolatedForTesting()) {
+    EXPECT_EQ(url::Origin::Create(a_url), GetInitiatorOrigin(rfh_c));
+  } else {
+    // TODO(crbug.com/367440964): The origin of the same-document navigation is
+    // currently used in place of the actual initiator_origin:
+    // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/renderer_host/navigation_request.cc;l=1495-1497;drc=e66b343b5554785a32ad988bfe5c3c524f5e1857
+    EXPECT_EQ(url::Origin::Create(c_url_with_fragment),
+              GetInitiatorOrigin(rfh_c));
+  }
+}
+
+// Verifies that when a document navigates a same-origin grandchild frame to
+// a new origin, the corresponding FrameNavigationEntry initiator origin equals
+// the document origin.
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTest,
+    InitiatorOriginForCrossDocumentNavigationInSameOriginGrandchild) {
+  GURL a_url = embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b(a))");
+
+  EXPECT_TRUE(NavigateToURL(shell(), a_url));
+
+  RenderFrameHostImpl* rfh_a = web_contents()->GetPrimaryMainFrame();
+  RenderFrameHostImpl* rfh_b = rfh_a->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* rfh_a2 = rfh_b->child_at(0)->current_frame_host();
+
+  // The initiator origin should begin as b.com since it created the iframe.
+  EXPECT_EQ(embedded_test_server()->GetOrigin("b.com"),
+            GetInitiatorOrigin(rfh_a2));
+
+  // Navigate to d.com/title1.html from the outer document.
+  GURL d_url = embedded_test_server()->GetURL("d.com", "/title1.html");
+  NavigateToURLFromGrandparentDocument(shell(), d_url);
+
+  RenderFrameHostImpl* rfh_d = rfh_b->child_at(0)->current_frame_host();
+
+  // A navigation initiated by the outer document should update the initiator to
+  // the origin of that document.
+  EXPECT_EQ(embedded_test_server()->GetOrigin("a.com"),
+            GetInitiatorOrigin(rfh_d));
+}
+
+// Verifies that when a document navigates a same-origin grandchild frame to a
+// fragment URL (i.e. a same-document navigation), the corresponding
+// FrameNavigationEntry initiator origin equals the document origin.
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTest,
+    InitiatorOriginForSameDocumentNavigationInSameOriginGrandchild) {
+  GURL a_url = embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b(a))");
+
+  EXPECT_TRUE(NavigateToURL(shell(), a_url));
+
+  RenderFrameHostImpl* rfh_a = web_contents()->GetPrimaryMainFrame();
+  RenderFrameHostImpl* rfh_b = rfh_a->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* rfh_a2 = rfh_b->child_at(0)->current_frame_host();
+
+  // The initiator origin should begin as b.com since it created the iframe.
+  EXPECT_EQ(embedded_test_server()->GetOrigin("b.com"),
+            GetInitiatorOrigin(rfh_a2));
+
+  // Do a same-document navigation from the outer document.
+  GURL a_url_with_fragment =
+      GURL(base::StrCat({rfh_a2->GetLastCommittedURL().spec(), "#x"}));
+  NavigateToURLFromGrandparentDocument(shell(), a_url_with_fragment);
+
+  // A navigation initiated by the outer document should update the initiator to
+  // the origin of that document.
+  EXPECT_EQ(embedded_test_server()->GetOrigin("a.com"),
+            GetInitiatorOrigin(rfh_a2));
 }
 
 // Test that when ancestor iframes differ in scheme that the SiteForCookies
