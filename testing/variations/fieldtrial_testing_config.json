@@ -12035,21 +12035,6 @@
             ]
         }
     ],
-    "IOSSegmentationPlatformEphemeralCardRanker": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SegmentationPlatformEphemeralCardRanker"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSShareInWebContextMenu": [
         {
             "platforms": [
@@ -17818,6 +17803,22 @@
                         "IPH_PriceTrackingPageActionIconLabelFeature"
                     ],
                     "disable_features": []
+                }
+            ]
+        }
+    ],
+    "PriceTrackingPromo": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20241004",
+                    "enable_features": [
+                        "PriceTrackingPromo",
+                        "SegmentationPlatformEphemeralCardRanker"
+                    ]
                 }
             ]
         }
