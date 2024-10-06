@@ -538,10 +538,12 @@ using segmentation_platform::TipIdentifier;
   [_mostVisitedTilesMediator refreshMostVisitedTiles];
   [_safetyCheckMediator reset];
   [_parcelTrackingMediator reset];
+  [_priceTrackingPromoMediator reset];
   [_magicStackRankingModel fetchLatestMagicStackRanking];
   // Fetch after resetting ranking since parcels could be returned
   // synchronously.
   [_parcelTrackingMediator fetchTrackedParcels];
+  [_priceTrackingPromoMediator fetchLatestSubscription];
 }
 
 #pragma mark - ContentSuggestionsCommands
