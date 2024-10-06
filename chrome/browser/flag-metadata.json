@@ -4102,6 +4102,16 @@
     "expiry_milestone": 131
   },
   {
+    "name": "enable-task-manager-clank",
+    "owners": [
+      "lokeric@google.com",
+      "oka@google.com",
+      "mwoj@google.com",
+      "chromeos-velocity@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-task-manager-desktop-refresh",
     "owners": [
       "mwoj@google.com",

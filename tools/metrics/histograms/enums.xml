@@ -20510,6 +20510,7 @@ from previous Chrome versions.
   <int value="75747474" label="disable-webview-signin-flow"/>
   <int value="77886794" label="AllowRepeatedUpdates:enabled"/>
   <int value="77946316" label="PrefixWebAppWindowsWithAppName:disabled"/>
+  <int value="78296348" label="TaskManagerClank:enabled"/>
   <int value="78781399" label="AppDeduplicationServiceFondue:disabled"/>
   <int value="78900745"
       label="SharedHighlightingRefinedMaxContextWords:disabled"/>
@@ -22728,6 +22729,7 @@ from previous Chrome versions.
   <int value="991192182" label="InfobarScrollOptimization:enabled"/>
   <int value="991462028"
       label="WebViewSynthesizePageLoadOnlyOnInitialMainDocumentAccess:enabled"/>
+  <int value="991641564" label="TaskManagerClank:disabled"/>
   <int value="992066588" label="SHA1ServerSignature:disabled"/>
   <int value="993486662" label="BorealisForceBetaClient:enabled"/>
   <int value="993539774" label="EnforceAshExtensionKeeplist:enabled"/>

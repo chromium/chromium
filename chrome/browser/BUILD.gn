@@ -1587,6 +1587,8 @@ static_library("browser") {
     "tab_group_sync/tab_group_sync_utils.h",
     "tab_group_sync/tab_group_trial.cc",
     "tab_group_sync/tab_group_trial.h",
+    "task_manager/task_manager_features.cc",
+    "task_manager/task_manager_features.h",
     "tpcd/experiment/eligibility_service.cc",
     "tpcd/experiment/eligibility_service.h",
     "tpcd/experiment/eligibility_service_factory.cc",
