@@ -273,6 +273,7 @@ chromium-metrics-reviews@google.com.
       summary="Request from Mahi provider for summary"/>
   <variant name="OrcaProvider" summary="Request from Orca provider"/>
   <variant name="SnapperProvider" summary="Request from Snapper provider"/>
+  <variant name="WalrusProvider" summary="Request from Walrus provider"/>
 </variants>
 
 <variants name="NumWindows">

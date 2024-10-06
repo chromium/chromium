@@ -18,6 +18,8 @@ COMPONENT_EXPORT(MANTA) BASE_DECLARE_FEATURE(kOrcaUseProdServer);
 
 COMPONENT_EXPORT(MANTA) BASE_DECLARE_FEATURE(kSeaPenUseProdServer);
 
+COMPONENT_EXPORT(MANTA) BASE_DECLARE_FEATURE(kWalrusUseProdServer);
+
 COMPONENT_EXPORT(MANTA) bool IsMantaServiceEnabled();
 
 COMPONENT_EXPORT(MANTA) bool IsOrcaUseProdServerEnabled();
@@ -25,6 +27,8 @@ COMPONENT_EXPORT(MANTA) bool IsOrcaUseProdServerEnabled();
 COMPONENT_EXPORT(MANTA) bool IsSeaPenUseProdServerEnabled();
 
 COMPONENT_EXPORT(MANTA) bool IsMahiUseProdServerEnabled();
+
+COMPONENT_EXPORT(MANTA) bool IsWalrusUseProdServerEnabled();
 
 }  // namespace manta::features
 

@@ -25,6 +25,11 @@ BASE_FEATURE(kMahiUseProdServer,
              "MahiUseProdServer",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables Walrus Prod Server
+BASE_FEATURE(kWalrusUseProdServer,
+             "WalrusUseProdServer",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool IsMantaServiceEnabled() {
   return base::FeatureList::IsEnabled(kMantaService);
 }
@@ -39,6 +44,10 @@ bool IsSeaPenUseProdServerEnabled() {
 
 bool IsMahiUseProdServerEnabled() {
   return base::FeatureList::IsEnabled(kMahiUseProdServer);
+}
+
+bool IsWalrusUseProdServerEnabled() {
+  return base::FeatureList::IsEnabled(kWalrusUseProdServer);
 }
 
 }  // namespace manta::features

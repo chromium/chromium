@@ -88,6 +88,10 @@ void LogTimeCost(const MantaMetricType request_type,
       base::UmaHistogramTimes("Ash.MantaService.AnchovyProvider.TimeCost",
                               time_cost);
       break;
+    case MantaMetricType::kWalrus:
+      base::UmaHistogramTimes("Ash.MantaService.WalrusProvider.TimeCost",
+                              time_cost);
+      break;
   }
 }
 
@@ -117,6 +121,10 @@ void LogMantaStatusCode(const MantaMetricType request_type,
     case MantaMetricType::kAnchovy:
       base::UmaHistogramEnumeration(
           "Ash.MantaService.AnchovyProvider.StatusCode", status_code);
+      break;
+    case MantaMetricType::kWalrus:
+      base::UmaHistogramEnumeration(
+          "Ash.MantaService.WalrusProvider.StatusCode", status_code);
       break;
   }
 }
