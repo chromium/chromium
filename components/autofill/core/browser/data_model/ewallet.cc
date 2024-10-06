@@ -18,7 +18,8 @@ Ewallet::Ewallet(int64_t instrument_id,
                  GURL display_icon_url,
                  std::u16string ewallet_name,
                  std::u16string account_display_name,
-                 base::flat_set<std::u16string> supported_payment_link_uris)
+                 base::flat_set<std::u16string> supported_payment_link_uris,
+                 bool is_fido_enrolled)
     : ewallet_name_(std::move(ewallet_name)),
       account_display_name_(std::move(account_display_name)),
       supported_payment_link_uris_(std::move(supported_payment_link_uris)),
@@ -26,7 +27,8 @@ Ewallet::Ewallet(int64_t instrument_id,
           instrument_id,
           nickname,
           display_icon_url,
-          DenseSet({PaymentInstrument::PaymentRail::kPaymentHyperlink})) {}
+          DenseSet({PaymentInstrument::PaymentRail::kPaymentHyperlink}),
+          is_fido_enrolled) {}
 Ewallet::Ewallet(const Ewallet& other) = default;
 Ewallet& Ewallet::operator=(const Ewallet& other) = default;
 Ewallet::~Ewallet() = default;

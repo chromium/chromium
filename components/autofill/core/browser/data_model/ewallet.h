@@ -32,7 +32,8 @@ class Ewallet {
           GURL display_icon_url,
           std::u16string ewallet_name,
           std::u16string account_display_name,
-          base::flat_set<std::u16string> supported_payment_link_uris);
+          base::flat_set<std::u16string> supported_payment_link_uris,
+          bool is_fido_enrolled);
   Ewallet(const Ewallet& other);
   Ewallet& operator=(const Ewallet& other);
   ~Ewallet();
