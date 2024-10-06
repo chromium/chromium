@@ -306,6 +306,7 @@ class CONTENT_EXPORT AuctionWorkletManager {
       const GURL& decision_logic_url,
       const std::optional<GURL>& trusted_scoring_signals_url,
       std::optional<uint16_t> experiment_group_id,
+      const std::optional<url::Origin>& trusted_scoring_signals_coordinator,
       base::OnceClosure worklet_available_callback,
       FatalErrorCallback fatal_error_callback,
       std::unique_ptr<WorkletHandle>& out_worklet_handle,

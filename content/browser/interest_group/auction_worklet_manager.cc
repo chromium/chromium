@@ -270,8 +270,7 @@ AuctionWorkletManager::WorkletOwner::WorkletOwner(
   // `kFledgeTrustedSignalsKVv2Support` is enabled, call
   // `GetBiddingAndAuctionServerKey` to fetch `trusted_signals_kvv2_public_key_`
   // with the bound callback `OnTrustedSignalsKVv2KeyFetched()`.
-  if (worklet_info_.type == WorkletType::kBidder &&
-      worklet_info_.trusted_signals_coordinator.has_value() &&
+  if (worklet_info_.trusted_signals_coordinator.has_value() &&
       base::FeatureList::IsEnabled(
           blink::features::kFledgeTrustedSignalsKVv2Support)) {
     DCHECK(!waiting_on_trusted_signals_kvv2_public_key_);
@@ -605,7 +604,8 @@ void AuctionWorkletManager::WorkletOwner::LoadWorkletIfReady(
           worklet_info_.signals_url, worklet_manager_->top_window_origin(),
           GetAuctionWorkletPermissionsPolicyState(delegate->GetFrame(),
                                                   worklet_info_.script_url),
-          worklet_info_.experiment_group_id, /*public_key=*/nullptr);
+          worklet_info_.experiment_group_id,
+          std::move(trusted_signals_kvv2_public_key_));
       seller_worklet_.set_disconnect_with_reason_handler(base::BindOnce(
           &WorkletOwner::OnWorkletDisconnected, base::Unretained(this)));
       break;
@@ -912,6 +912,7 @@ void AuctionWorkletManager::RequestSellerWorklet(
     const GURL& decision_logic_url,
     const std::optional<GURL>& trusted_scoring_signals_url,
     std::optional<uint16_t> experiment_group_id,
+    const std::optional<url::Origin>& trusted_scoring_signals_coordinator,
     base::OnceClosure worklet_available_callback,
     FatalErrorCallback fatal_error_callback,
     std::unique_ptr<WorkletHandle>& out_worklet_handle,
@@ -923,7 +924,7 @@ void AuctionWorkletManager::RequestSellerWorklet(
                           /*needs_cors_for_additional_bid=*/false,
                           experiment_group_id,
                           /*trusted_bidding_signals_slot_size_param=*/"",
-                          /*trusted_signals_coordinator=*/std::nullopt);
+                          trusted_scoring_signals_coordinator);
   RequestWorkletByKey(std::move(worklet_info), std::move(devtools_auction_id),
                       std::move(worklet_available_callback),
                       std::move(fatal_error_callback), out_worklet_handle,
