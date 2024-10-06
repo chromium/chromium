@@ -192,35 +192,6 @@ class CompositorImpl::ScopedCachedBackBuffer {
   uint32_t cache_id_;
 };
 
-class CompositorImpl::ReadbackRefImpl
-    : public ui::WindowAndroidCompositor::ReadbackRef {
- public:
-  ReadbackRefImpl(base::WeakPtr<CompositorImpl> weakptr,
-                  const viz::SurfaceId& surface_id_to_copy);
-  ~ReadbackRefImpl() override;
-
- private:
-  base::WeakPtr<CompositorImpl> compositor_weakptr_;
-  std::unique_ptr<cc::slim::LayerTree::ScopedKeepSurfaceAlive> keep_alive_;
-};
-
-CompositorImpl::ReadbackRefImpl::ReadbackRefImpl(
-    base::WeakPtr<CompositorImpl> weakptr,
-    const viz::SurfaceId& surface_id_to_copy)
-    : compositor_weakptr_(std::move(weakptr)) {
-  DCHECK(compositor_weakptr_);
-  DCHECK(compositor_weakptr_->host_);
-  keep_alive_ = compositor_weakptr_->host_->CreateScopedKeepSurfaceAlive(
-      surface_id_to_copy);
-}
-
-CompositorImpl::ReadbackRefImpl::~ReadbackRefImpl() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (compositor_weakptr_) {
-    compositor_weakptr_->DecrementPendingReadbacks();
-  }
-}
-
 // static
 Compositor* Compositor::Create(CompositorClient* client,
                                gfx::NativeWindow root_window) {
@@ -407,7 +378,7 @@ void CompositorImpl::TearDownDisplayAndUnregisterRootFrameSink() {
   // Make a best effort to try to complete pending readbacks.
   // TODO(crbug.com/40480324): Consider doing this in a better way,
   // ideally with the guarantee of readbacks completing.
-  if (display_private_ && pending_readbacks_) {
+  if (display_private_ && !pending_surface_copies_.empty()) {
     // Note that while this is not a Sync IPC, the call to
     // InvalidateFrameSinkId below will end up triggering a sync call to
     // FrameSinkManager::DestroyCompositorFrameSink, as this is the root
@@ -637,12 +608,19 @@ void CompositorImpl::DidLoseLayerTreeFrameSink() {
   client_->DidSwapFrame(0);
 }
 
-std::unique_ptr<ui::WindowAndroidCompositor::ReadbackRef>
-CompositorImpl::TakeReadbackRef(const viz::SurfaceId& surface_id) {
+ui::WindowAndroidCompositor::ScopedKeepSurfaceAliveCallback
+CompositorImpl::TakeScopedKeepSurfaceAliveCallback(
+    const viz::SurfaceId& surface_id) {
   DCHECK(surface_id.is_valid());
-  ++pending_readbacks_;
-  return std::make_unique<ReadbackRefImpl>(weak_factory_.GetWeakPtr(),
-                                           surface_id);
+  CHECK(pending_surface_copies_.find(pending_surface_copy_id_) ==
+        pending_surface_copies_.end());
+  pending_surface_copies_[pending_surface_copy_id_] =
+      host_->CreateScopedKeepSurfaceAlive(surface_id);
+  PendingSurfaceCopyId pending_surface_copy_id(pending_surface_copy_id_);
+  ++(*pending_surface_copy_id_);
+  return base::BindOnce(&CompositorImpl::RemoveScopedKeepSurfaceAlive,
+                        weak_factory_.GetWeakPtr(),
+                        std::move(pending_surface_copy_id));
 }
 
 void CompositorImpl::RequestCopyOfOutputOnRootLayer(
@@ -902,11 +880,6 @@ void CompositorImpl::SetDidSwapBuffersCallbackEnabled(bool enable) {
   }
 }
 
-void CompositorImpl::DecrementPendingReadbacks() {
-  DCHECK_GT(pending_readbacks_, 0u);
-  --pending_readbacks_;
-}
-
 void CompositorImpl::AddSimpleBeginFrameObserver(
     ui::HostBeginFrameObserver::SimpleBeginFrameObserver* obs) {
   DCHECK(obs);
@@ -940,6 +913,13 @@ void CompositorImpl::MaybeUpdateObserveBeginFrame() {
       GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
   display_private_->SetStandaloneBeginFrameObserver(
       host_begin_frame_observer_->GetBoundRemote());
+}
+
+void CompositorImpl::RemoveScopedKeepSurfaceAlive(
+    const PendingSurfaceCopyId& scoped_keep_surface_alive_id) {
+  CHECK(pending_surface_copies_.find(scoped_keep_surface_alive_id) !=
+        pending_surface_copies_.end());
+  pending_surface_copies_.erase(scoped_keep_surface_alive_id);
 }
 
 void CompositorImpl::AddFrameSubmissionObserver(

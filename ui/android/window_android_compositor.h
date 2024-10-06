@@ -27,26 +27,19 @@ class UI_ANDROID_EXPORT WindowAndroidCompositor {
  public:
   virtual ~WindowAndroidCompositor() {}
 
-  // Ref must be destroyed on same thread as WindowAndroidCompositor.
-  class ReadbackRef {
-   public:
-    virtual ~ReadbackRef() = default;
-
-   protected:
-    ReadbackRef() = default;
-  };
-
   class FrameSubmissionObserver : public base::CheckedObserver {
    public:
     virtual void DidSubmitCompositorFrame() {}
   };
 
-  // While there are outstanding ReadbackRefs, Compositor will attempt to
-  // ensure any pending viz::CopyOutputRequest in any part of the compositor
-  // surface tree are fulfilled in a timely manner. `surface_id` corresponds to
-  // the `Surface` being copied. The GPU contents of this `surface_id` are kept
-  // alive as long as there is an outstanding `ReadbackRef` for it.
-  virtual std::unique_ptr<ReadbackRef> TakeReadbackRef(
+  // While there are outstanding `ScopedKeepSurfaceAlive`, Compositor will
+  // attempt to ensure any pending `viz::CopyOutputRequest` in any part of the
+  // compositor surface tree are fulfilled in a timely manner. `surface_id`
+  // corresponds to the `Surface` being copied. The GPU contents of this
+  // `surface_id` are kept alive as long as there is an outstanding
+  // `ScopedKeepSurfaceAlive` for it.
+  using ScopedKeepSurfaceAliveCallback = base::OnceCallback<void()>;
+  virtual ScopedKeepSurfaceAliveCallback TakeScopedKeepSurfaceAliveCallback(
       const viz::SurfaceId& surface_id) = 0;
   virtual void RequestCopyOfOutputOnRootLayer(
       std::unique_ptr<viz::CopyOutputRequest> request) = 0;

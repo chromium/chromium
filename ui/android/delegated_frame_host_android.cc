@@ -159,26 +159,34 @@ void DelegatedFrameHostAndroid::CopyFromCompositingSurface(
   DCHECK(CanCopyFromCompositingSurface());
 
   const viz::SurfaceId surface_id(frame_sink_id_, local_surface_id_);
-  std::unique_ptr<ui::WindowAndroidCompositor::ReadbackRef> readback_ref;
+
+  ui::WindowAndroidCompositor::ScopedKeepSurfaceAliveCallback
+      keep_surface_alive;
   if (view_->GetWindowAndroid() && view_->GetWindowAndroid()->GetCompositor()) {
-    readback_ref =
-        view_->GetWindowAndroid()->GetCompositor()->TakeReadbackRef(surface_id);
+    keep_surface_alive = view_->GetWindowAndroid()
+                             ->GetCompositor()
+                             ->TakeScopedKeepSurfaceAliveCallback(surface_id);
   }
+
   std::unique_ptr<viz::CopyOutputRequest> request =
       std::make_unique<viz::CopyOutputRequest>(
           viz::CopyOutputRequest::ResultFormat::RGBA,
           viz::CopyOutputRequest::ResultDestination::kSystemMemory,
           base::BindOnce(
-              [](base::OnceCallback<void(const SkBitmap&)> callback,
-                 std::unique_ptr<ui::WindowAndroidCompositor::ReadbackRef>
-                     readback_ref,
+              [](base::OnceCallback<void(const SkBitmap&)> copy_result,
+                 ui::WindowAndroidCompositor::ScopedKeepSurfaceAliveCallback
+                     keep_alive,
                  std::unique_ptr<viz::CopyOutputResult> result) {
+                if (keep_alive) {
+                  std::move(keep_alive).Run();
+                }
                 auto scoped_bitmap = result->ScopedAccessSkBitmap();
-                std::move(callback).Run(scoped_bitmap.GetOutScopedBitmap());
+                std::move(copy_result).Run(scoped_bitmap.GetOutScopedBitmap());
               },
-              std::move(callback), std::move(readback_ref)));
-  // The readback ref holds a reference to the compositor which must only be
-  // accessed on the current thread. Since the result callback can be dispatched
+              std::move(callback), std::move(keep_surface_alive)));
+
+  // `CopyOutputRequestCallback` holds a `ReadbackRefCallback` which must only
+  // be executed on the UI thread. Since the result callback can be dispatched
   // on any thread by default, explicitly set the result task runner to the
   // current thread.
   request->set_result_task_runner(

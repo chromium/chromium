@@ -1745,9 +1745,12 @@ void CheckSurfaceRangeRemovedAfterCopy(viz::SurfaceRange range,
                                        CompositorImpl* compositor,
                                        base::RepeatingClosure resume_test,
                                        const SkBitmap& btimap) {
-  ASSERT_FALSE(!compositor->GetLayerTreeForTesting()
-                    ->GetSurfaceRangesForTesting()
-                    .contains(range));
+  // The surface range is removed first when the browser receives the result
+  // of the copy request. Then the result callback (including this function) is
+  // run.
+  ASSERT_FALSE(compositor->GetLayerTreeForTesting()
+                   ->GetSurfaceRangesForTesting()
+                   .contains(range));
   std::move(resume_test).Run();
 }
 
