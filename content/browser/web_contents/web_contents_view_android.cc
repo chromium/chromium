@@ -906,6 +906,9 @@ void WebContentsViewAndroid::OnSizeChanged() {
 
 void WebContentsViewAndroid::OnPhysicalBackingSizeChanged(
     std::optional<base::TimeDelta> deadline_override) {
+  if (back_forward_animation_manager_) {
+    back_forward_animation_manager_->OnPhysicalBackingSizeChanged();
+  }
   if (web_contents_->GetRenderWidgetHostView())
     web_contents_->SendScreenRects();
 }

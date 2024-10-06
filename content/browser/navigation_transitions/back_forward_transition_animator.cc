@@ -138,6 +138,9 @@ const char* AnimationAbortReasonToString(AnimationAbortReason abort_reason) {
       return "kCompositorDetached";
     case AnimationAbortReason::kAnimationManagerDestroyed:
       return "kAnimationManagerDestroyed";
+    case BackForwardTransitionAnimator::AnimationAbortReason::
+        kPhysicalSizeChanged:
+      return "kPhysicalSizeChanged";
   }
   NOTREACHED();
 }

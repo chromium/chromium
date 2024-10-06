@@ -46,6 +46,7 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Root Window Visibility Changed"/>
   <int value="16" label="Compositor Detached"/>
   <int value="17" label="Animation Manager Destroyed"/>
+  <int value="18" label="Physical size changed mid-animation"/>
 </enum>
 
 <enum name="AutomaticBeaconOutcome">

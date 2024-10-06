@@ -3118,6 +3118,33 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
+                       AbortAnimationOnPhysicalSizeChange) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          SwipeEdge::LEFT, NavType::kBackward);
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.3));
+
+  TestNavigationManager back_nav_to_red(web_contents(), RedURL());
+
+  TestFuture<AnimatorState> destroyed;
+  GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
+  GetAnimationManager()->OnGestureInvoked();
+  EXPECT_TRUE(back_nav_to_red.WaitForRequestStart());
+
+  web_contents()->GetNativeView()->OnPhysicalBackingSizeChanged(
+      gfx::Size(1, 1));
+
+  // The navigation should proceed regardless of the animation.
+  EXPECT_TRUE(back_nav_to_red.WaitForNavigationFinished());
+
+  EXPECT_TRUE(destroyed.Wait());
+  EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
                        ScreenshotCompression) {
   SkBitmap expected_pixels;
   {

@@ -174,7 +174,11 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
     // still intact, thus bypassing other observer hooks.
     kAnimationManagerDestroyed = 17,
 
-    kMaxValue = kAnimationManagerDestroyed
+    // Abort the animation when the physical size of the screen has changed.
+    // This can happen when the user rotates the phone mid-animation.
+    kPhysicalSizeChanged = 18,
+
+    kMaxValue = kPhysicalSizeChanged
   };
 
   // Indicates what animation state caused input event suppression.

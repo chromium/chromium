@@ -127,6 +127,8 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
   // after the navigation.
   void OnPostNavigationFirstFrameTimeout();
 
+  void OnPhysicalBackingSizeChanged();
+
   WebContentsViewAndroid* web_contents_view_android() const {
     return web_contents_view_android_;
   }

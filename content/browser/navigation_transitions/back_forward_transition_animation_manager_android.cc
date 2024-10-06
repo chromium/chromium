@@ -255,6 +255,15 @@ void BackForwardTransitionAnimationManagerAndroid::
   DestroyAnimator();
 }
 
+void BackForwardTransitionAnimationManagerAndroid::
+    OnPhysicalBackingSizeChanged() {
+  if (!animator_) {
+    return;
+  }
+  animator_->AbortAnimation(AnimationAbortReason::kPhysicalSizeChanged);
+  DestroyAnimator();
+}
+
 SkBitmap BackForwardTransitionAnimationManagerAndroid::
     MaybeCopyContentAreaAsBitmapSync() {
   return web_contents_view_android()
