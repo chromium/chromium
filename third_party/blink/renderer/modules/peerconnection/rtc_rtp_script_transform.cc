@@ -196,11 +196,13 @@ void RTCRtpScriptTransform::Detach() {
   encoded_video_transformer_ = nullptr;
   encoded_audio_transformer_ = nullptr;
   disconnect_callback_source_.Reset();
-  PostCrossThreadTask(
-      *rtp_transformer_task_runner_, FROM_HERE,
-      WTF::CrossThreadBindOnce(
-          &RTCRtpScriptTransformer::Clear,
-          MakeUnwrappingCrossThreadWeakHandle(*rtp_transformer_)));
+  if (rtp_transformer_) {
+    PostCrossThreadTask(
+        *rtp_transformer_task_runner_, FROM_HERE,
+        WTF::CrossThreadBindOnce(
+            &RTCRtpScriptTransformer::Clear,
+            MakeUnwrappingCrossThreadWeakHandle(*rtp_transformer_)));
+  }
 }
 
 RTCRtpScriptTransform::SendKeyFrameRequestResult
