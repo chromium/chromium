@@ -238,6 +238,10 @@ public class HubToolbarMediator {
 
     private void onSearchClicked() {
         mSearchActivityClient.requestOmniboxForResult(
-                mActivity, new GURL(UrlConstants.NTP_NON_NATIVE_URL), IntentOrigin.HUB, null);
+                mActivity,
+                new GURL(UrlConstants.NTP_NON_NATIVE_URL),
+                IntentOrigin.HUB,
+                null,
+                mPropertyModel.get(IS_INCOGNITO));
     }
 }

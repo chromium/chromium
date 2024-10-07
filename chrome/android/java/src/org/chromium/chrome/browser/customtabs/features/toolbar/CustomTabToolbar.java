@@ -1931,7 +1931,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                                             tab.getWindowAndroid().getActivity().get(),
                                             tab.getUrl(),
                                             IntentOrigin.CUSTOM_TAB,
-                                            clientPackageName);
+                                            clientPackageName,
+                                            tab.isIncognitoBranded());
                         }
                     });
 

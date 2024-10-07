@@ -71,7 +71,8 @@ public class SearchActivityClientImpl implements SearchActivityClient {
             @Nullable Activity activity,
             @NonNull GURL currentUrl,
             @IntentOrigin int intentOrigin,
-            @Nullable String referrer) {
+            @Nullable String referrer,
+            boolean isIncognito) {
         if (activity == null) return;
 
         if (referrer != null && !referrer.matches(SearchActivityExtras.REFERRER_VALIDATION_REGEX)) {
@@ -96,6 +97,7 @@ public class SearchActivityClientImpl implements SearchActivityClient {
                                 SearchActivityExtras.EXTRA_REFERRER,
                                 TextUtils.isEmpty(referrer) ? null : referrer)
                         .putExtra(SearchActivityExtras.EXTRA_SEARCH_TYPE, SearchType.TEXT)
+                        .putExtra(SearchActivityExtras.EXTRA_IS_INCOGNITO, isIncognito)
                         .addFlags(
                                 Intent.FLAG_ACTIVITY_NO_HISTORY
                                         | Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);

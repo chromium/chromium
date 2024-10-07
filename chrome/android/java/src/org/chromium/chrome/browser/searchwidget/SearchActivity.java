@@ -275,7 +275,8 @@ public class SearchActivity extends AsyncInitializationActivity
     protected void triggerLayoutInflation() {
         enableHardwareAcceleration();
         mSnackbarManager = new SnackbarManager(this, findViewById(android.R.id.content), null);
-        mSearchBoxDataProvider.initialize(this);
+        boolean isIncognito = SearchActivityUtils.getIntentIncognitoStatus(getIntent());
+        mSearchBoxDataProvider.initialize(this, isIncognito);
 
         ViewGroup rootView = (ViewGroup) getWindow().getDecorView().getRootView();
         // Setting fitsSystemWindows to false ensures that the root view doesn't consume the

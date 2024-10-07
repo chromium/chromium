@@ -43,15 +43,17 @@ public interface SearchActivityClient {
      * <p>Allows the caller to instantiate the Omnibox and retrieve Suggestions for the supplied
      * webpage. Response will be delivered via {@link Activity#onActivityResult}.
      *
-     * @param activity the current activity; may be {@code null}, in which case intent will not be
-     *     issued
-     * @param url the URL of the page to retrieve suggestions for
+     * @param activity The current activity; may be {@code null}, in which case intent will not be
+     *     issued.
+     * @param url The URL of the page to retrieve suggestions for.
      * @param intentOrigin The origin of the incoming intent.
-     * @param referrer the referrer package name
+     * @param referrer The referrer package name.
+     * @param isIncognito The incognito status of the current Activity.
      */
     public void requestOmniboxForResult(
             @Nullable Activity activity,
             @NonNull GURL currentUrl,
             @IntentOrigin int intentOrigin,
-            @Nullable String referrer);
+            @Nullable String referrer,
+            boolean isIncognito);
 }

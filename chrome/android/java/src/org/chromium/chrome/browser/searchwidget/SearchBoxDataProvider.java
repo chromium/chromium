@@ -24,6 +24,7 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
     private @ColorInt int mPrimaryColor;
     private Tab mTab;
     private GURL mGurl;
+    private boolean mIsIncognito;
 
     /**
      * Called when native library is loaded and a tab has been initialized.
@@ -42,8 +43,9 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
      *
      * @param context current context
      */
-    /* package */ void initialize(Context context) {
-        mPrimaryColor = ChromeColors.getPrimaryBackgroundColor(context, isIncognitoBranded());
+    /* package */ void initialize(Context context, boolean isIncognito) {
+        mPrimaryColor = ChromeColors.getPrimaryBackgroundColor(context, isIncognito);
+        mIsIncognito = isIncognito;
     }
 
     @Override
@@ -53,12 +55,12 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
 
     @Override
     public boolean isIncognito() {
-        return false;
+        return mIsIncognito;
     }
 
     @Override
     public boolean isIncognitoBranded() {
-        return false;
+        return mIsIncognito;
     }
 
     @Override
