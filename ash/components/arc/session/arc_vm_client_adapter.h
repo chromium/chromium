@@ -47,6 +47,13 @@ enum class ArcBinaryTranslationType {
 // 3328 is chosen because it's a rounded number (i.e. 3328 % 256 == 0).
 constexpr size_t k32bitVmRamMaxMib = 3328;
 
+// Guest memory size of 3243MiB ensures that after the guest kernel is
+// finished reserving memory for various purposes, /proc/meminfo reports at
+// least 3GiB, which is the minimum required by some apps in the Play Store.
+// This assumes all ARCVM-enabled devices have >=4GiB of RAM. In the remote
+// chance that changes, this check will need to be updated.
+inline constexpr size_t kMinVmMemorySizeMiB = 3243;
+
 // For better unit-testing.
 class ArcVmClientAdapterDelegate {
  public:
