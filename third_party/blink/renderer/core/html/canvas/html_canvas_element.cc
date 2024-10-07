@@ -106,6 +106,7 @@
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image_to_video_frame_copier.h"
+#include "third_party/blink/renderer/platform/graphics/static_bitmap_image_transform.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_video_frame_pool.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder_utils.h"
@@ -1647,10 +1648,11 @@ HTMLCanvasElement::GetSourceImageForCanvasInternal(
   }
 
   *status = kNormalSourceImageStatus;
+
   // If the alpha_disposition is already correct, or the image is opaque, this
   // is a no-op.
-  return GetImageWithAlphaDisposition(reason, std::move(image),
-                                      alpha_disposition);
+  return StaticBitmapImageTransform::GetWithAlphaDisposition(
+      reason, std::move(image), alpha_disposition);
 }
 
 bool HTMLCanvasElement::WouldTaintOrigin() const {

@@ -61,9 +61,6 @@ scoped_refptr<Image> ImageElementBase::GetSourceImageForCanvas(
     SourceImageStatus* status,
     const gfx::SizeF& default_object_size,
     const AlphaDisposition alpha_disposition) {
-  // UnpremultiplyAlpha is not implemented yet.
-  DCHECK_NE(alpha_disposition, kUnpremultiplyAlpha);
-
   ImageResourceContent* image_content = CachedImage();
   if (!GetImageLoader().ImageComplete() || !image_content) {
     *status = kIncompleteSourceImageStatus;

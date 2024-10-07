@@ -44,7 +44,6 @@ using DynamicRangeLimit = ::cc::PaintFlags::DynamicRangeLimitMixture;
 
 enum AlphaDisposition {
   kPremultiplyAlpha,
-  kUnpremultiplyAlpha,
   kDontChangeAlpha,
 };
 

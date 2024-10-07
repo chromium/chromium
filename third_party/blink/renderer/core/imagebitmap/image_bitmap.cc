@@ -254,7 +254,8 @@ scoped_refptr<StaticBitmapImage> ApplyTransformsFromOptions(
   params.source_size = options.source_size;
   params.source_rect = options.source_rect;
   params.dest_size = options.dest_size;
-  return StaticBitmapImageTransform::Apply(source, params);
+  return StaticBitmapImageTransform::Apply(FlushReason::kCreateImageBitmap,
+                                           source, params);
 }
 
 scoped_refptr<StaticBitmapImage> MakeBlankImage(
@@ -534,7 +535,8 @@ scoped_refptr<StaticBitmapImage> ImageBitmap::Transfer() {
     // This approach is slow and wateful but it is only to handle extremely
     // rare edge cases.
     if (!image_->HasOneRef()) {
-      auto copy = StaticBitmapImageTransform::Clone(image_);
+      auto copy = StaticBitmapImageTransform::Clone(
+          FlushReason::kCreateImageBitmap, image_);
       if (!copy) {
         return nullptr;
       }
@@ -587,10 +589,6 @@ void ImageBitmap::ResolvePromiseOnOriginalThread(
       UnacceleratedStaticBitmapImage::Create(std::move(skia_image),
                                              orientation);
   DCHECK(IsMainThread());
-  if (!parsed_options->premultiply_alpha) {
-    image = GetImageWithAlphaDisposition(FlushReason::kCreateImageBitmap,
-                                         std::move(image), kUnpremultiplyAlpha);
-  }
   if (!image) {
     resolver->Reject(v8::Null(resolver->GetScriptState()->GetIsolate()));
     return;
@@ -782,8 +780,8 @@ scoped_refptr<Image> ImageBitmap::GetSourceImageForCanvas(
 
   // If the alpha_disposition is already correct, or the image is opaque, this
   // is a no-op.
-  return GetImageWithAlphaDisposition(reason, std::move(image),
-                                      alpha_disposition);
+  return StaticBitmapImageTransform::GetWithAlphaDisposition(
+      reason, std::move(image), alpha_disposition);
 }
 
 gfx::SizeF ImageBitmap::ElementSize(

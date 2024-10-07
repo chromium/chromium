@@ -170,6 +170,7 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyUsingPixmap(
 // Perform all transformations using a blit, which will result in a new
 // premultiplied-alpha result.
 scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
+    FlushReason flush_reason,
     scoped_refptr<StaticBitmapImage> src,
     const StaticBitmapImageTransform::Params& options) {
   // This path will necessarily premultiply alpha. If unmultiplied alpha is
@@ -234,8 +235,7 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
   canvas.drawImageRect(paint_image, SkRect::Make(source_rect),
                        SkRect::Make(dest_size), options.sampling, &paint,
                        SkCanvas::kStrict_SrcRectConstraint);
-  return resource_provider->Snapshot(FlushReason::kCreateImageBitmap,
-                                     options.source_orientation);
+  return resource_provider->Snapshot(flush_reason, options.source_orientation);
 }
 
 // Apply the transformations indicated in `options` on `source`, and return the
@@ -243,6 +243,7 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
 // unless `force_copy` is specified, in which case it will always create a new
 // object and backing.
 scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::Apply(
+    FlushReason flush_reason,
     scoped_refptr<StaticBitmapImage> source,
     const StaticBitmapImageTransform::Params& options) {
   // Early-out for empty transformations.
@@ -274,10 +275,11 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::Apply(
   if (!options.premultiply_alpha) {
     return ApplyUsingPixmap(source, options);
   }
-  return ApplyWithBlit(source, options);
+  return ApplyWithBlit(flush_reason, source, options);
 }
 
 scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::Clone(
+    FlushReason flush_reason,
     scoped_refptr<StaticBitmapImage> source) {
   const auto info = source->GetSkImageInfo();
   StaticBitmapImageTransform::Params options;
@@ -290,7 +292,32 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::Clone(
   options.source_is_unpremul = info.alphaType() == kUnpremul_SkAlphaType;
   options.premultiply_alpha = !options.source_is_unpremul;
   options.force_copy = true;
-  return Apply(source, options);
+  return Apply(flush_reason, source, options);
+}
+
+scoped_refptr<StaticBitmapImage>
+StaticBitmapImageTransform::GetWithAlphaDisposition(
+    FlushReason flush_reason,
+    scoped_refptr<StaticBitmapImage> source,
+    AlphaDisposition alpha_disposition) {
+  switch (alpha_disposition) {
+    case kPremultiplyAlpha:
+      break;
+    case kDontChangeAlpha:
+      return source;
+  }
+
+  const auto info = source->GetSkImageInfo();
+  StaticBitmapImageTransform::Params options;
+  options.source_orientation = source->CurrentFrameOrientation();
+  options.source_size = options.source_orientation.UsesWidthAsHeight()
+                            ? gfx::Size(info.height(), info.width())
+                            : gfx::Size(info.width(), info.height());
+  options.source_rect = gfx::Rect(options.source_size);
+  options.dest_size = options.source_size;
+  options.source_is_unpremul = info.alphaType() == kUnpremul_SkAlphaType;
+  options.premultiply_alpha = true;
+  return Apply(flush_reason, source, options);
 }
 
 }  // namespace blink

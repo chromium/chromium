@@ -26,9 +26,19 @@ class PLATFORM_EXPORT StaticBitmapImageTransform {
     // If true, then the final result should be flipped vertically. This happens
     // in the space after `source_orientation` has been applied.
     bool flip_y = false;
+
+    // If true, then the final result must be premultiplied (or opaque).
     bool premultiply_alpha = true;
-    bool has_color_space_conversion = false;
+
+    // If false, then strip the color space from the input (and therefore
+    // reinterpret the image as being sRGB).
+    bool has_color_space_conversion = true;
+
+    // Set to true only if the source has kUnpremul_SkAlphaType.
     bool source_is_unpremul = false;
+
+    // If false, then strip the orientation from teh imgae (and therefore
+    // reinterpret the image as having the origin be the top-left).
     bool orientation_from_image = true;
 
     // The sampling options to use. This will be set to nearest-neighbor if no
@@ -60,12 +70,21 @@ class PLATFORM_EXPORT StaticBitmapImageTransform {
 
   // Apply the specified transform to the indcated image.
   static scoped_refptr<StaticBitmapImage> Apply(
+      FlushReason,
       scoped_refptr<StaticBitmapImage> image,
       const Params& params);
 
   // Create a copy of the input image, with a newly created backing.
   static scoped_refptr<StaticBitmapImage> Clone(
+      FlushReason,
       scoped_refptr<StaticBitmapImage> image);
+
+  // If `image` has unpremultiplied alpha, the multipl alpha. If `image` is
+  // opaque or already premultiplied, return `image.
+  static scoped_refptr<StaticBitmapImage> GetWithAlphaDisposition(
+      FlushReason,
+      scoped_refptr<StaticBitmapImage> image,
+      AlphaDisposition);
 
  private:
   // Apply the specified transform by manipulating SkPixmaps in software. This
@@ -78,6 +97,7 @@ class PLATFORM_EXPORT StaticBitmapImageTransform {
   // Apply the specified transform by using a blit. The blit may be done on the
   // GPU or may be done in software. The result is always premultiplied.
   static scoped_refptr<StaticBitmapImage> ApplyWithBlit(
+      FlushReason,
       scoped_refptr<StaticBitmapImage> image,
       const Params& params);
 };
