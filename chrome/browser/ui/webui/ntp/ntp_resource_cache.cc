@@ -252,6 +252,7 @@ void NTPResourceCache::Invalidate() {
 void NTPResourceCache::CreateNewTabIncognitoHTML(
     const content::WebContents::Getter& wc_getter) {
   ui::TemplateReplacements replacements;
+  base::Value::Dict localized_strings;
 
   // Ensure passing off-the-record profile; |profile_| is not an OTR profile.
   DCHECK(!profile_->IsOffTheRecord());
@@ -281,8 +282,6 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
       l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_LEARN_MORE_LINK);
   replacements["cookieControlsTitle"] =
       l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE);
-  replacements["cookieControlsDescription"] =
-      l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE_SUBLABEL);
 
   replacements["learnMoreLink"] = kLearnMoreIncognitoUrl;
   replacements["learnMoreA11yLabel"] = l10n_util::GetStringUTF8(
@@ -296,15 +295,20 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
     // Overwrite the cookies control title and description if 3pcd enabled.
     replacements["cookieControlsTitle"] =
         l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE);
-    replacements["cookieControlsDescription"] = l10n_util::GetStringFUTF8(
-        IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE_SUBLABEL,
-        chrome::kUserBypassHelpCenterURL,
-        l10n_util::GetStringUTF16(IDS_NEW_TAB_OPENS_HC_ARTICLE_IN_NEW_TAB));
+    localized_strings.Set(
+        "cookieControlsDescription",
+        l10n_util::GetStringFUTF16(
+            IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE_SUBLABEL,
+            chrome::kUserBypassHelpCenterURL,
+            l10n_util::GetStringUTF16(
+                IDS_NEW_TAB_OPENS_HC_ARTICLE_IN_NEW_TAB)));
 
   } else {
     replacements["hideBlockCookiesToggle"] = "";
     replacements["hideTooltipIcon"] =
         cookie_controls_service->ShouldEnforceCookieControls() ? "" : "hidden";
+    replacements["cookieControlsDescription"] =
+        l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE_SUBLABEL);
   }
 
   replacements["cookieControlsToggleChecked"] =
@@ -329,6 +333,7 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
           ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
               IDR_INCOGNITO_TAB_HTML));
   CHECK(*incognito_tab_html);
+  ui::TemplateReplacementsFromDictionaryValue(localized_strings, &replacements);
   new_tab_incognito_html_ = base::MakeRefCounted<base::RefCountedString>(
       ReplaceTemplateExpressions(*incognito_tab_html, replacements));
 }
