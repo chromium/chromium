@@ -529,7 +529,7 @@ TEST_F(AsyncDocumentSubresourceFilterTest,
 
 class SubresourceFilterComputeActivationStateTest : public ::testing::Test {
  public:
-  SubresourceFilterComputeActivationStateTest() {}
+  SubresourceFilterComputeActivationStateTest() = default;
 
   SubresourceFilterComputeActivationStateTest(
       const SubresourceFilterComputeActivationStateTest&) = delete;

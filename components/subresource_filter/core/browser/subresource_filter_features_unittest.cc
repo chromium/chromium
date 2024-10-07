@@ -120,13 +120,13 @@ void ExpectParamsGeneratePreset(
 
 class SubresourceFilterFeaturesTest : public ::testing::Test {
  public:
-  SubresourceFilterFeaturesTest() {}
+  SubresourceFilterFeaturesTest() = default;
 
   SubresourceFilterFeaturesTest(const SubresourceFilterFeaturesTest&) = delete;
   SubresourceFilterFeaturesTest& operator=(
       const SubresourceFilterFeaturesTest&) = delete;
 
-  ~SubresourceFilterFeaturesTest() override {}
+  ~SubresourceFilterFeaturesTest() override = default;
 
   void SetUp() override {
     // Reset the global configuration at the start so tests start without a

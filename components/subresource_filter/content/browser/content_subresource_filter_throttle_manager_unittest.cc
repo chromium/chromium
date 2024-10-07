@@ -156,7 +156,7 @@ class MockPageStateActivationThrottle : public content::NavigationThrottle {
   MockPageStateActivationThrottle& operator=(
       const MockPageStateActivationThrottle&) = delete;
 
-  ~MockPageStateActivationThrottle() override {}
+  ~MockPageStateActivationThrottle() override = default;
 
   // content::NavigationThrottle:
   content::NavigationThrottle::ThrottleCheckResult WillStartRequest() override {
@@ -195,14 +195,14 @@ class ContentSubresourceFilterThrottleManagerTest
       public content::WebContentsObserver,
       public ::testing::WithParamInterface<PageActivationNotificationTiming> {
  public:
-  ContentSubresourceFilterThrottleManagerTest() {}
+  ContentSubresourceFilterThrottleManagerTest() = default;
 
   ContentSubresourceFilterThrottleManagerTest(
       const ContentSubresourceFilterThrottleManagerTest&) = delete;
   ContentSubresourceFilterThrottleManagerTest& operator=(
       const ContentSubresourceFilterThrottleManagerTest&) = delete;
 
-  ~ContentSubresourceFilterThrottleManagerTest() override {}
+  ~ContentSubresourceFilterThrottleManagerTest() override = default;
 
   // content::RenderViewHostTestHarness:
   void SetUp() override {

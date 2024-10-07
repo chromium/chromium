@@ -38,7 +38,7 @@ PageLoadStatistics::PageLoadStatistics(const mojom::ActivationState& state,
                                        std::string_view uma_filter_tag)
     : activation_state_(state), uma_filter_tag_(uma_filter_tag) {}
 
-PageLoadStatistics::~PageLoadStatistics() {}
+PageLoadStatistics::~PageLoadStatistics() = default;
 
 void PageLoadStatistics::OnDocumentLoadStatistics(
     const mojom::DocumentLoadStatistics& statistics) {

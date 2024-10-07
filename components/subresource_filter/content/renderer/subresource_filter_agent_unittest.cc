@@ -143,7 +143,7 @@ constexpr const char kMainFrameLoadRulesetIsAvailableAnyActivationLevel[] =
 
 class SubresourceFilterAgentTest : public ::testing::Test {
  public:
-  SubresourceFilterAgentTest() {}
+  SubresourceFilterAgentTest() = default;
 
   SubresourceFilterAgentTest(const SubresourceFilterAgentTest&) = delete;
   SubresourceFilterAgentTest& operator=(const SubresourceFilterAgentTest&) =

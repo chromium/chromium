@@ -231,7 +231,7 @@ RulesetService::RulesetService(
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
-RulesetService::~RulesetService() {}
+RulesetService::~RulesetService() = default;
 
 void RulesetService::IndexAndStoreAndPublishRulesetIfNeeded(
     const UnindexedRulesetInfo& unindexed_ruleset_info) {

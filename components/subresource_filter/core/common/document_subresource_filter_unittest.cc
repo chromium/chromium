@@ -39,7 +39,7 @@ constexpr const char kTestAlphaURLPathSuffix[] = "alpha";
 
 class DocumentSubresourceFilterTest : public ::testing::Test {
  public:
-  DocumentSubresourceFilterTest() {}
+  DocumentSubresourceFilterTest() = default;
 
   DocumentSubresourceFilterTest(const DocumentSubresourceFilterTest&) = delete;
   DocumentSubresourceFilterTest& operator=(

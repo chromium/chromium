@@ -163,7 +163,7 @@ class SafeBrowsingPageActivationThrottleTest
   SafeBrowsingPageActivationThrottleTest& operator=(
       const SafeBrowsingPageActivationThrottleTest&) = delete;
 
-  ~SafeBrowsingPageActivationThrottleTest() override {}
+  ~SafeBrowsingPageActivationThrottleTest() override = default;
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
@@ -411,14 +411,14 @@ class SafeBrowsingPageActivationThrottleParamTest
     : public SafeBrowsingPageActivationThrottleTest,
       public ::testing::WithParamInterface<ActivationListTestData> {
  public:
-  SafeBrowsingPageActivationThrottleParamTest() {}
+  SafeBrowsingPageActivationThrottleParamTest() = default;
 
   SafeBrowsingPageActivationThrottleParamTest(
       const SafeBrowsingPageActivationThrottleParamTest&) = delete;
   SafeBrowsingPageActivationThrottleParamTest& operator=(
       const SafeBrowsingPageActivationThrottleParamTest&) = delete;
 
-  ~SafeBrowsingPageActivationThrottleParamTest() override {}
+  ~SafeBrowsingPageActivationThrottleParamTest() override = default;
 
   void Configure() override {
     const ActivationListTestData& test_data = GetParam();
@@ -501,14 +501,14 @@ class SafeBrowsingPageActivationThrottleScopeTest
     : public SafeBrowsingPageActivationThrottleTest,
       public ::testing::WithParamInterface<ActivationScopeTestData> {
  public:
-  SafeBrowsingPageActivationThrottleScopeTest() {}
+  SafeBrowsingPageActivationThrottleScopeTest() = default;
 
   SafeBrowsingPageActivationThrottleScopeTest(
       const SafeBrowsingPageActivationThrottleScopeTest&) = delete;
   SafeBrowsingPageActivationThrottleScopeTest& operator=(
       const SafeBrowsingPageActivationThrottleScopeTest&) = delete;
 
-  ~SafeBrowsingPageActivationThrottleScopeTest() override {}
+  ~SafeBrowsingPageActivationThrottleScopeTest() override = default;
 };
 
 TEST_F(SafeBrowsingPageActivationThrottleTest, NoConfigs) {

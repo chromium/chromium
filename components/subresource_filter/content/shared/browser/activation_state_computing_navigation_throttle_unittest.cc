@@ -53,7 +53,7 @@ class ActivationStateComputingNavigationThrottleTest
   ActivationStateComputingNavigationThrottleTest& operator=(
       const ActivationStateComputingNavigationThrottleTest&) = delete;
 
-  ~ActivationStateComputingNavigationThrottleTest() override {}
+  ~ActivationStateComputingNavigationThrottleTest() override = default;
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();

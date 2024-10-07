@@ -46,7 +46,7 @@ void FakeSafeBrowsingDatabaseManager::SimulateTimeout() {
   simulate_timeout_ = true;
 }
 
-FakeSafeBrowsingDatabaseManager::~FakeSafeBrowsingDatabaseManager() {}
+FakeSafeBrowsingDatabaseManager::~FakeSafeBrowsingDatabaseManager() = default;
 
 bool FakeSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
     const GURL& url,

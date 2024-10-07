@@ -36,8 +36,8 @@ const base::FilePath::CharType kOptOutFilename[] = FILE_PATH_LITERAL("OptOut");
 
 class OptOutStoreSQLTest : public testing::Test {
  public:
-  OptOutStoreSQLTest() {}
-  ~OptOutStoreSQLTest() override {}
+  OptOutStoreSQLTest() = default;
+  ~OptOutStoreSQLTest() override = default;
 
   // Called when |store_| is done loading.
   void OnLoaded(std::unique_ptr<BlocklistData> blocklist_data) {

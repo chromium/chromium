@@ -25,7 +25,7 @@ TestSubresourceFilterObserver::TestSubresourceFilterObserver(
   Observe(web_contents);
 }
 
-TestSubresourceFilterObserver::~TestSubresourceFilterObserver() {}
+TestSubresourceFilterObserver::~TestSubresourceFilterObserver() = default;
 
 void TestSubresourceFilterObserver::OnSubresourceFilterGoingAway() {
   CHECK(scoped_observation_.IsObserving());

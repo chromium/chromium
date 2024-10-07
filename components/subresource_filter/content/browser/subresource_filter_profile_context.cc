@@ -22,7 +22,7 @@ SubresourceFilterProfileContext::SubresourceFilterProfileContext(
           std::make_unique<AdsInterventionManager>(settings_manager_.get())),
       cookie_settings_(std::move(cookie_settings)) {}
 
-SubresourceFilterProfileContext::~SubresourceFilterProfileContext() {}
+SubresourceFilterProfileContext::~SubresourceFilterProfileContext() = default;
 
 void SubresourceFilterProfileContext::SetEmbedderData(
     std::unique_ptr<SubresourceFilterProfileContext::EmbedderData>
