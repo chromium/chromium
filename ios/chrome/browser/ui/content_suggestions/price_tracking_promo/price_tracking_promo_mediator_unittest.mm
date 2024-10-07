@@ -99,6 +99,7 @@ class PriceTrackingPromoMediatorTest : public PlatformTest {
   void TearDown() override {
     pref_service_.ClearPref(prefs::kFeaturePushNotificationPermissions);
     pref_service_.ClearPref(commerce::kPriceEmailNotificationsEnabled);
+    pref_service_.ClearPref(kPriceTrackingPromoDisabled);
     local_state_.ClearPref(prefs::kAppLevelPushNotificationPermissions);
     [mediator_ disconnect];
   }
@@ -229,4 +230,12 @@ TEST_F(PriceTrackingPromoMediatorTest, TestDenyPriceTrackingNotifications) {
                                                    promptShown:YES
                                                          error:nil];
   EXPECT_TRUE(pref_service()->GetBoolean(kPriceTrackingPromoDisabled));
+}
+
+TEST_F(PriceTrackingPromoMediatorTest, TestPriceTrackingPromoDisabled) {
+  id mockDelegate =
+      OCMStrictProtocolMock(@protocol(PriceTrackingPromoMediatorDelegate));
+  OCMExpect([mockDelegate removePriceTrackingPromo]);
+  mediator().delegate = mockDelegate;
+  pref_service()->SetBoolean(kPriceTrackingPromoDisabled, true);
 }
