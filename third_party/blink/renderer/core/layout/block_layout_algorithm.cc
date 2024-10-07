@@ -1446,6 +1446,9 @@ bool BlockLayoutAlgorithm::TryReuseFragmentsFromCache(
     DCHECK(result.line_count <= max_lines);
     DCHECK_EQ(line_clamp_data_.data.state, LineClampData::kClampByLines);
     line_clamp_data_.data.lines_until_clamp -= result.line_count;
+  } else if (line_clamp_data_.data.state ==
+             LineClampData::kMeasureLinesUntilBfcOffset) {
+    line_clamp_data_.data.lines_until_clamp += result.line_count;
   }
 
   // |AddPreviousItems| may have added more than one lines. Propagate baselines
