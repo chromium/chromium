@@ -1499,6 +1499,13 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         ],
     ),
     BanRule(
+        r'/#include <regex>',
+        ('<regex> is not allowed. Use third_party/re2 instead.',
+         ),
+        True,
+        [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
+    ),
+    BanRule(
         r'/#include <source_location>',
         ('<source_location> is not yet allowed. Use base/location.h instead.',
          ),

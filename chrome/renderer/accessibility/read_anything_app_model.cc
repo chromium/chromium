@@ -10,7 +10,6 @@
 #include "chrome/renderer/accessibility/read_anything_app_model.h"
 
 #include <cstddef>
-#include <regex>
 #include <string>
 
 #include "base/check.h"
