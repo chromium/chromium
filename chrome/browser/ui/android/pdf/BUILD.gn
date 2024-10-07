@@ -45,6 +45,8 @@ android_library("java") {
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_pdf_pdf_viewer_fragment_java",
+    "//third_party/androidx:custom_pdf_viewer_fragment_java",
+    "//third_party/androidx:custom_pdf_viewer_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
     "//url:url_java",

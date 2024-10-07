@@ -103,9 +103,32 @@ template("_androidx_prebuilt") {
     java_group("androidx_window_stubs_java") {
       deps = [ "//third_party/androidx/local_modifications/window:androidx_window_shims_java" ]
     }
+
+    # For M130 cherry-pick (crbug.com/370834499)
+    android_library("custom_pdf_viewer_java") {
+      sources = [ "local_modifications/pdf-viewer/java/src/androidx/pdf/viewer/PaginatedView.java" ]
+      enable_bytecode_checks = false
+      deps = [
+        ":androidx_pdf_pdf_viewer_java",
+        "//third_party/androidx:androidx_annotation_annotation_java",
+        "//third_party/androidx:androidx_core_core_java",
+      ]
+    }
+    android_library("custom_pdf_viewer_fragment_java") {
+      sources = [ "local_modifications/pdf-viewer/java/src/androidx/pdf/viewer/fragment/PdfViewerFragment.kt" ]
+      enable_bytecode_checks = false
+      deps = [
+        ":androidx_core_core_java",
+        ":androidx_fragment_fragment_ktx_java",
+        ":androidx_pdf_pdf_viewer_fragment_java",
+        ":androidx_pdf_pdf_viewer_java",
+        "//third_party/android_deps:material_design_java",
+        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      ]
+      resources_package = "androidx.pdf"
+    }
   }
 }
-
 
 template("androidx_java_prebuilt") {
   _androidx_prebuilt(target_name) {
@@ -129,6 +152,9 @@ template("androidx_android_aar_prebuilt") {
     if (target_name == "androidx_pdf_pdf_viewer_java") {
       # Target has AIDL, but we do not support it yet: http://crbug.com/644439
       ignore_aidl = true
+      jar_excluded_patterns = [ "**/PaginatedView*" ]
+    } else if (target_name == "androidx_pdf_pdf_viewer_fragment_java") {
+      jar_excluded_patterns = [ "**/PdfViewerFragment*" ]
     }
   }
 }
