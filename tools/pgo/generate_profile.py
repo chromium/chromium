@@ -28,7 +28,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
-from typing import Optional
+from typing import List, Optional
 
 _SRC_DIR = pathlib.Path(__file__).parents[2]
 _TELEMETRY_DIR = _SRC_DIR / 'third_party/catapult/telemetry'
@@ -36,15 +36,21 @@ if str(_TELEMETRY_DIR) not in sys.path:
     sys.path.append(str(_TELEMETRY_DIR))
 from telemetry.internal.backends import android_browser_backend_settings
 
-ANDROID_SETTINGS = android_browser_backend_settings.ANDROID_BACKEND_SETTINGS
+_ANDROID_SETTINGS = android_browser_backend_settings.ANDROID_BACKEND_SETTINGS
 
-exe_ext = '.exe' if sys.platform == 'win32' else ''
+_EXE_EXT = '.exe' if sys.platform == 'win32' else ''
 
-THIS_DIR = os.path.dirname(__file__)
-ROOT_DIR = f'{THIS_DIR}/../..'
-UPDATE_PY = f'{THIS_DIR}/../clang/scripts/update.py'
-LLVM_DIR = f'{ROOT_DIR}/third_party/llvm-build/Release+Asserts'
-PROFDATA = f'{LLVM_DIR}/bin/llvm-profdata' + exe_ext
+_THIS_DIR = os.path.dirname(__file__)
+_ROOT_DIR = f'{_THIS_DIR}/../..'
+_UPDATE_PY = f'{_THIS_DIR}/../clang/scripts/update.py'
+_LLVM_DIR = f'{_ROOT_DIR}/third_party/llvm-build/Release+Asserts'
+_PROFDATA = f'{_LLVM_DIR}/bin/llvm-profdata{_EXE_EXT}'
+
+# This is necessary to get proper logging on bots and locally. If this script is
+# run through run_isolated_script_test.py, a root logger would have already been
+# set up. Thus for this script's logging to appear (and not disrupt other
+# loggers) it needs to use its own logger.
+_LOGGER = logging.getLogger(__name__)
 
 
 # This error is raised when LLVM failed to merge successfully.
@@ -55,13 +61,18 @@ class MergeError(RuntimeError):
 # Use this custom Namespace to provide type checking and type hinting.
 class OptionsNamespace(argparse.Namespace):
     builddir: str
-    # Technically profiledir defaults to `None`, but it is always set before
-    # parse_args returns, so leave it as `str` to avoid type errors for methods
-    # that take an OptionsNamespace instance.
+    # Technically profiledir and outputdir default to `None`, but they are
+    # always set before parse_args returns, so leave it as `str` to avoid type
+    # errors for methods that take an OptionsNamespace instance.
+    outputdir: str
     profiledir: str
     keep_temps: bool
     android_browser: Optional[str]
     android_device_path: Optional[str]
+    # TODO(https://crbug.com/40272686): Remove this option after the bots use
+    #     this script. This is necessary for now to match the script to the
+    #     existing broken way that the bots run benchmarks.
+    run_all_android_stories: bool
     skip_profdata: bool
     run_public_benchmarks_only: bool
     temporal_trace_length: Optional[int]
@@ -78,6 +89,9 @@ def parse_args():
                         '--builddir',
                         help='Path to build directory.',
                         required=True)
+    parser.add_argument(
+        '--outputdir',
+        help='Path to store final outputs, default is builddir.')
     parser.add_argument('--profiledir',
                         help='Path to store temporary profiles, default is '
                         'builddir/profile.')
@@ -88,11 +102,17 @@ def parse_args():
     parser.add_argument('--android-browser',
                         help='The type of android browser to test, e.g. '
                         'android-trichrome-bundle.')
-    parser.add_argument('--android-device-path',
-                        help='The device path to pull profiles from. By '
-                        'default this is '
-                        '/data/data/<package>/cache/pgo_profiles/ but you can '
-                        'override it for your device if needed.')
+    parser.add_argument(
+        '--android-device-path',
+        help='The device path to pull profiles from. By '
+        'default this is /data_mirror/data_ce/null/0/<package>'
+        '/cache/pgo_profiles/ but you can override it for your '
+        'device if needed.')
+    parser.add_argument(
+        '--run-all-android-stories',
+        action='store_true',
+        default=False,
+        help='By default on android, only the last story is run.')
     parser.add_argument('--skip-profdata',
                         action='store_true',
                         default=False,
@@ -139,63 +159,103 @@ def parse_args():
     # Both are based off this variable.
     # See also https://crbug.com/1478279
     args.builddir = os.path.realpath(args.builddir)
+    _LOGGER.info(f"Build directory: {args.builddir}")
 
-    if args.android_browser and not args.android_device_path:
-        for settings in ANDROID_SETTINGS:
-            if settings.browser_type == args.android_browser:
-                package = settings.package
-                break
+    if args.android_browser:
+        _LOGGER.info(f"Android browser: {args.android_browser}")
+        if not args.android_device_path:
+            for settings in _ANDROID_SETTINGS:
+                if settings.browser_type == args.android_browser:
+                    package = settings.package
+                    break
+            else:
+                raise ValueError(
+                    f'Unable to find {args.android_browser} settings.')
+            args.android_device_path = (
+                f'/data_mirror/data_ce/null/0/{package}/cache/pgo_profiles')
+            _LOGGER.info("Using default Android device path: "
+                         f"{args.android_device_path}")
         else:
-            assert False, f'Unable to find {args.android_browser} settings.'
-        args.android_device_path = (f'/data/data/{package}/cache/pgo_profiles')
+            _LOGGER.info("Using provided Android device path: "
+                         f"{args.android_device_path}")
 
     if not args.profiledir:
         args.profiledir = f'{args.builddir}/profile'
+
+    if not args.outputdir:
+        args.outputdir = args.builddir
+
+    _LOGGER.info(f"Output directory: {args.outputdir}")
+    _LOGGER.info(f"Profile directory: {args.profiledir}")
 
     return args
 
 
 def run_profdata_merge(output_path, input_files, args: OptionsNamespace):
+    _LOGGER.info(
+        f"Merging {len(input_files)} profile files into {output_path}")
     if args.temporal_trace_length:
         extra_args = [
             '--temporal-profile-max-trace-length',
             str(args.temporal_trace_length)
         ]
+        _LOGGER.debug(
+            f"Using temporal trace length: {args.temporal_trace_length}")
+
     else:
         extra_args = []
-    proc = subprocess.run([PROFDATA, 'merge', '-o', output_path] + extra_args +
-                          input_files,
-                          check=True,
-                          capture_output=True,
-                          text=True)
+    filtered_input_files = []
+    for f in input_files:
+        if os.path.getsize(f) <= 10 * 1024 * 1024:
+            _LOGGER.warning(f'Skipping due to size <10MB: {f}')
+        else:
+            filtered_input_files.append(f)
+    assert filtered_input_files, 'No valid profraw/profdata file after filter.'
+    cmd = [_PROFDATA, 'merge', '-o', output_path
+           ] + extra_args + filtered_input_files
+    _LOGGER.debug(f"Running command: {' '.join(cmd)}")
+
+    proc = subprocess.run(cmd, check=True, capture_output=True, text=True)
     output = str(proc.stdout) + str(proc.stderr)
-    print(output)
+    _LOGGER.debug(f"llvm-profdata output:\n{output}")
     if 'invalid profile created' in output:
         # This is necessary because for some reason this invalid data is kept
         # and only a warning is issued by llvm.
         raise MergeError('Failed to generate valid profile data.')
 
 
-def run_benchmark(benchmark_args: list[str], args: OptionsNamespace):
+def run_benchmark(benchmark_args: List[str], args: OptionsNamespace):
     '''Puts profdata in {profiledir}/{args[0]}.profdata'''
+    _LOGGER.info(f"Running benchmark: {' '.join(benchmark_args)}")
 
     # Include the first 2 args since per-story benchmarks use [name, --story=s].
     name = '_'.join(benchmark_args[:2])
 
     # Clean up intermediate files from previous runs.
     profraw_path = f'{args.profiledir}/{name}/raw'
+    _LOGGER.debug(f"Raw profile path: {profraw_path}")
+
     if os.path.exists(profraw_path):
+        _LOGGER.debug(
+            f"Removing existing raw profile directory: {profraw_path}")
         shutil.rmtree(profraw_path)
     os.makedirs(profraw_path, exist_ok=True)
+
     profdata_path = f'{args.profiledir}/{name}.profdata'
+    _LOGGER.debug(f"profdata path: {profdata_path}")
     if os.path.exists(profdata_path):
+        _LOGGER.debug(f"Removing existing profdata file: {profdata_path}")
         os.remove(profdata_path)
 
     env = os.environ.copy()
     if args.android_browser:
         env['CHROME_PGO_PROFILING'] = '1'
+        _LOGGER.debug("Set environment variable CHROME_PGO_PROFILING=1")
+
     else:
         env['LLVM_PROFILE_FILE'] = f'{profraw_path}/default-%2m.profraw'
+        _LOGGER.debug("Set environment variable "
+                      f"LLVM_PROFILE_FILE={env['LLVM_PROFILE_FILE']}")
 
     cmd = ['vpython3', 'tools/perf/run_benchmark'] + benchmark_args + [
         f'--chromium-output-directory={args.builddir}',
@@ -214,29 +274,37 @@ def run_benchmark(benchmark_args: list[str], args: OptionsNamespace):
             f'--fetch-data-path-device={args.android_device_path}',
             f'--fetch-data-path-local={profraw_path}',
         ]
+        _LOGGER.debug(
+            f"Running benchmark on Android with command: {' '.join(cmd)}")
     else:
         if sys.platform == 'darwin':
             exe_path = f'{args.builddir}/Chromium.app/Contents/MacOS/Chromium'
         else:
-            exe_path = f'{args.builddir}/chrome' + exe_ext
+            exe_path = f'{args.builddir}/chrome' + _EXE_EXT
         cmd += [
             '--browser=exact',
             f'--browser-executable={exe_path}',
         ]
 
+        _LOGGER.debug(
+            f"Running benchmark locally with command: {' '.join(cmd)}")
+
     subprocess.run(cmd,
                    check=True,
                    shell=sys.platform == 'win32',
                    env=env,
-                   cwd=ROOT_DIR)
+                   cwd=_ROOT_DIR)
 
     if args.skip_profdata:
+        _LOGGER.info("Skipping profdata merging")
+
         return
 
     # Android's `adb pull` does not allow * globbing (i.e. pulling
     # pgo_profiles/*). Since the naming of profraw files can vary, pull the
     # directory and check subdirectories recursively for .profraw files.
     profraw_files = glob.glob(f'{profraw_path}/**/*.profraw', recursive=True)
+    _LOGGER.debug(f"Found {len(profraw_files)} profraw files")
     if not profraw_files:
         raise RuntimeError(f'No profraw files found in {profraw_path}')
 
@@ -244,36 +312,43 @@ def run_benchmark(benchmark_args: list[str], args: OptionsNamespace):
 
     # Test merge to prevent issues like: https://crbug.com/353702041
     with tempfile.NamedTemporaryFile() as f:
+        _LOGGER.debug("Testing profdata merge")
+
         run_profdata_merge(f.name, [profdata_path], args)
 
 
-def run_benchmark_with_repeats(benchmark_args: list[str],
+def run_benchmark_with_repeats(benchmark_args: List[str],
                                args: OptionsNamespace):
     '''Runs the benchmark with provided args, return # of times it failed.'''
     assert args.repeats > 0, 'repeats must be at least 1'
     for idx in range(args.repeats):
         try:
+            _LOGGER.info(f"Running benchmark attempt {idx + 1}/{args.repeats}")
+
             run_benchmark(benchmark_args, args)
+            _LOGGER.info(f"Benchmark succeeded on attempt {idx+1}")
+
             return idx
         except (subprocess.CalledProcessError, MergeError) as e:
             if isinstance(e, subprocess.CalledProcessError):
                 if e.stdout:
-                    print(e.stdout)
+                    _LOGGER.error(f"Stdout:\n{e.stdout}")
                 if e.stderr:
-                    print(e.stderr)
+                    _LOGGER.error(f"Stderr:\n{e.stderr}")
             if idx < args.repeats - 1:
-                logging.warning('%s', e)
-                logging.warning(
+                _LOGGER.warning('%s', e)
+                _LOGGER.warning(
                     f'Retry attempt {idx + 1} for {benchmark_args}')
             else:
-                logging.error(f'Failed {args.repeats} times')
+                _LOGGER.error(f'Failed {args.repeats} times')
                 raise e
     # This statement can never be reached due to the above `raise e` but is here
     # to appease the typechecker.
     return args.repeats
 
 
-def get_stories(benchmark_args: list[str], args: OptionsNamespace):
+def get_stories(benchmark_args: List[str], args: OptionsNamespace):
+    _LOGGER.info(f"Getting stories for benchmark: {' '.join(benchmark_args)}")
     print_stories_cmd = [
         'vpython3',
         'tools/perf/run_benchmark',
@@ -282,62 +357,90 @@ def get_stories(benchmark_args: list[str], args: OptionsNamespace):
         '--print-only-runnable',  # This is essential to skip filtered stories.
         f'--browser={args.android_browser}',
     ]
-    proc = subprocess.run(print_stories_cmd, text=True, capture_output=True)
+    _LOGGER.debug(f"Running command: {' '.join(print_stories_cmd)}")
+
+    # Avoid setting check=True here since the return code is 111 for success.
+    proc = subprocess.run(print_stories_cmd,
+                          text=True,
+                          capture_output=True,
+                          cwd=_ROOT_DIR)
+
     stories = []
     for line in proc.stdout.splitlines():
         if line and not line.startswith(('[', 'View results at')):
             stories.append(line)
+    _LOGGER.debug(f"Found {len(stories)} stories")
     return stories
 
 
-def run_benchmarks(benchmarks: list[list[str]], args: OptionsNamespace):
+def run_benchmarks(benchmarks: List[List[str]], args: OptionsNamespace):
     fail_count = 0
     for benchmark_args in benchmarks:
+        _LOGGER.info(f"Starting benchmark: {' '.join(benchmark_args)}")
         if not args.android_browser:
             fail_count += run_benchmark_with_repeats(benchmark_args, args)
         else:
-            for story in get_stories(benchmark_args, args):
+            stories = get_stories(benchmark_args, args)
+            if not args.run_all_android_stories:
+                # This is necessary to match the script to what the bots
+                # currently run (only the last story matters). By matching the
+                # bot's current method in this script, we separate the effect of
+                # using this script on the bot from the effect of fixing this
+                # bug on the bots.
+                stories = [stories[-1]]
+            for story in stories:
+                _LOGGER.info(f"Running story: {story}")
                 per_story_args = [benchmark_args[0], f'--story={story}']
                 fail_count += run_benchmark_with_repeats(per_story_args, args)
     return fail_count
 
 
 def merge_profdata(args: OptionsNamespace):
-    profile_output_path = f'{args.builddir}/profile.profdata'
+    profile_output_path = f'{args.outputdir}/profile.profdata'
+    _LOGGER.info(f"Merging all profdata files into: {profile_output_path}")
     profdata_files = glob.glob(f'{args.profiledir}/*.profdata')
+    _LOGGER.debug(f"Found {len(profdata_files)} profdata files")
     if not profdata_files:
         raise RuntimeError(f'No profdata files found in {args.profiledir}')
 
     run_profdata_merge(profile_output_path, profdata_files, args)
 
     if args.temporal_trace_length:
+        _LOGGER.info("Generating orderfile for temporal PGO")
         orderfile_cmd = [
-            PROFDATA, 'order', profile_output_path, '-o',
-            f'{args.builddir}/orderfile.txt'
+            _PROFDATA, 'order', profile_output_path, '-o',
+            f'{args.outputdir}/orderfile.txt'
         ]
+        _LOGGER.debug(f"Running command: {' '.join(orderfile_cmd)}")
+
         subprocess.run(orderfile_cmd, check=True)
 
 
 def main():
     args = parse_args()
 
-    if args.verbose >= 2:
-        level = logging.DEBUG
-    elif args.verbose == 1:
-        level = logging.INFO
-    else:
-        level = logging.WARNING
-    logging.basicConfig(
-        level=level, format='%(levelname).1s %(relativeCreated)6d %(message)s')
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter(
+        '%(levelname).1s %(relativeCreated)6d %(message)s')
+    handler.setFormatter(formatter)
+    _LOGGER.addHandler(handler)
 
-    if not os.path.exists(PROFDATA):
-        logging.warning(f'{PROFDATA} does not exist, downloading it')
-        subprocess.run([sys.executable, UPDATE_PY, '--package=coverage_tools'],
-                       check=True)
-    assert os.path.exists(PROFDATA), f'{PROFDATA} does not exist'
+    if args.verbose >= 2:
+        _LOGGER.setLevel(logging.DEBUG)
+    elif args.verbose == 1:
+        _LOGGER.setLevel(logging.INFO)
+    else:
+        _LOGGER.setLevel(logging.WARN)
+
+    if not os.path.exists(_PROFDATA):
+        _LOGGER.warning(f'{_PROFDATA} does not exist, downloading it')
+        subprocess.run(
+            [sys.executable, _UPDATE_PY, '--package=coverage_tools'],
+            check=True)
+    assert os.path.exists(_PROFDATA), f'{_PROFDATA} does not exist'
 
     if os.path.exists(args.profiledir):
-        logging.warning('Removing %s', args.profiledir)
+        _LOGGER.warning('Removing %s', args.profiledir)
         shutil.rmtree(args.profiledir)
 
     # Run the shortest benchmarks first to fail early if anything is wrong.
@@ -370,7 +473,7 @@ def main():
 
     fail_count = run_benchmarks(benchmarks, args)
     if fail_count:
-        logging.warning(f'Of the {len(benchmarks)} benchmarks, there were '
+        _LOGGER.warning(f'Of the {len(benchmarks)} benchmarks, there were '
                         f'{fail_count} failures that were resolved by repeat '
                         'runs.')
 
@@ -378,7 +481,7 @@ def main():
         merge_profdata(args)
 
     if not args.keep_temps:
-        logging.info('Cleaning up %s, use --keep-temps to keep it.',
+        _LOGGER.info('Cleaning up %s, use --keep-temps to keep it.',
                      args.profiledir)
         shutil.rmtree(args.profiledir, ignore_errors=True)
 

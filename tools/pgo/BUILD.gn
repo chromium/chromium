@@ -1,0 +1,31 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+# See this import and define other suffixes as needed:
+# import("//tools/perf/chrome_telemetry_build/android_browser_types.gni")
+
+isolated_script_test(
+    "generate_profile_android_clank_trichrome_chrome_google_64_32_bundle") {
+  script = "//tools/pgo/generate_profile.py"
+  args = [
+    # Assume that we are running this script from the output directory.
+    "--builddir",
+    ".",
+    "--android-browser",
+    "android-trichrome-chrome-google-64-32-bundle",
+  ]
+}
+
+isolated_script_test("generate_profile_android_clank_trichrome_bundle") {
+  script = "//tools/pgo/generate_profile.py"
+  args = [
+    # Assume that we are running this script from the output directory.
+    "--builddir",
+    ".",
+    "--android-browser",
+    "android-trichrome-bundle",
+  ]
+}
