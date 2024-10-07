@@ -81,33 +81,35 @@ void VideoStreamCoordinator::ConnectToDevice(
     return;
   }
 
-  if (video_stream_view_) {
-    // Wait till the preview is actually shown.
-    if (video_stream_view_->width() == 0) {
-      connect_to_device_params_.emplace(device_info, std::move(video_source));
-      return;
-    }
-
-    // Using double the view width when choosing preferred format. This provides
-    // more information to the interpolation algorithm, so scaled images appear
-    // sharper.
-    int requested_format_width = 2 * video_stream_view_->width();
-    video_frame_handler_ =
-        std::make_unique<capture_mode::CameraVideoFrameHandler>(
-            content::GetContextFactory(), std::move(video_source),
-            video_format_comparison::GetClosestVideoFormat(
-                device_info.supported_formats, requested_format_width),
-            // TODO: Add testing to check that we pass the right device id to
-            // CameraVideoFrameHandler.
-            device_info.descriptor.device_id);
-
-    video_frame_handler_->StartHandlingFrames(/*delegate=*/this);
-
-    has_requested_any_video_feed_ = true;
-    video_stream_request_time_ = base::TimeTicks::Now();
-
-    throbber_->Start();
+  if (!video_stream_view_) {
+    return;
   }
+
+  // Wait till the preview is actually shown.
+  if (video_stream_view_->width() == 0) {
+    connect_to_device_params_.emplace(device_info, std::move(video_source));
+    return;
+  }
+
+  // Using double the view width when choosing preferred format. This provides
+  // more information to the interpolation algorithm, so scaled images appear
+  // sharper.
+  int requested_format_width = 2 * video_stream_view_->width();
+  video_frame_handler_ =
+      std::make_unique<capture_mode::CameraVideoFrameHandler>(
+          content::GetContextFactory(), std::move(video_source),
+          video_format_comparison::GetClosestVideoFormat(
+              device_info.supported_formats, requested_format_width),
+          // TODO: Add testing to check that we pass the right device id to
+          // CameraVideoFrameHandler.
+          device_info.descriptor.device_id);
+
+  video_frame_handler_->StartHandlingFrames(/*delegate=*/this);
+
+  has_requested_any_video_feed_ = true;
+  video_stream_request_time_ = base::TimeTicks::Now();
+
+  throbber_->Start();
 }
 
 // capture_mode::CameraVideoFrameHandler::Delegate implementation.
@@ -183,12 +185,21 @@ void VideoStreamCoordinator::OnViewIsDeleting(views::View* observed_view) {
   video_stream_view_ = nullptr;
 }
 
+VideoStreamCoordinator::ConnectToDeviceParams::ConnectToDeviceParams(
+    const media::VideoCaptureDeviceInfo& device_info,
+    mojo::Remote<video_capture::mojom::VideoSource> video_source)
+    : device_info(device_info), video_source(std::move(video_source)) {}
+
+VideoStreamCoordinator::ConnectToDeviceParams::~ConnectToDeviceParams() =
+    default;
+
 void VideoStreamCoordinator::OnViewBoundsChanged(views::View* observed_view) {
   CHECK(scoped_observation_.IsObservingSource(observed_view));
   if (observed_view->width() > 0 && connect_to_device_params_) {
-    ConnectToDevice(connect_to_device_params_->first,
-                    std::move(connect_to_device_params_->second));
+    const auto device_info = std::move(connect_to_device_params_->device_info);
+    auto remote = std::move(connect_to_device_params_->video_source);
     connect_to_device_params_.reset();
+    ConnectToDevice(device_info, std::move(remote));
   }
 }
 

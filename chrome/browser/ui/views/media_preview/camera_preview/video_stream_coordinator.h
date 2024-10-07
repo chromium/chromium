@@ -81,6 +81,21 @@ class VideoStreamCoordinator
   void OnClosing();
 
  private:
+  // Input parameters for ConnectToDevice() method.
+  struct ConnectToDeviceParams {
+    ConnectToDeviceParams(
+        const media::VideoCaptureDeviceInfo& device_info,
+        mojo::Remote<video_capture::mojom::VideoSource> video_source);
+    ~ConnectToDeviceParams();
+
+    ConnectToDeviceParams(const ConnectToDeviceParams&) = delete;
+    ConnectToDeviceParams& operator=(const ConnectToDeviceParams& rules) =
+        delete;
+
+    const media::VideoCaptureDeviceInfo device_info;
+    mojo::Remote<video_capture::mojom::VideoSource> video_source;
+  };
+
   void StopInternal(mojo::Remote<video_capture::mojom::VideoSourceProvider>
                         video_source_provider = {});
 
@@ -107,9 +122,7 @@ class VideoStreamCoordinator
   bool has_permission_ = false;
   bool has_requested_any_video_feed_ = false;
 
-  std::optional<std::pair<media::VideoCaptureDeviceInfo,
-                          mojo::Remote<video_capture::mojom::VideoSource>>>
-      connect_to_device_params_;
+  std::optional<ConnectToDeviceParams> connect_to_device_params_;
   base::ScopedObservation<views::View, views::ViewObserver> scoped_observation_{
       this};
 };
