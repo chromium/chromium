@@ -1,41 +1,27 @@
-// Copyright 2018 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
-
-// Test that the webview JS implementation does not inadvertently call user
-// code.
-//
-// Our implementation should use extensions::SafeBuiltins or otherwise
-// keep references to the real methods to avoid calling overwritten methods.
-// Our internal objects can be modified to not inherit from Object in order
-// to avoid calling getters and setters if a property name is defined on
-// Object.prototype.
-//
-// Note that the properties and methods we taint are not exhaustive.
-//
-// Controlled Frame has a test derived from this at:
-// //chrome/browser/controlled_frame/controlled_frame_apitest.cc
-
-window.onload = () => {
-  chrome.test.sendMessage('LAUNCHED');
-};
+// Based on
+// //extensions/test/data/web_view/no_internal_calls_to_user_code/main.js.
 
 // These are needed for the test itself, so keep a reference to the real method.
 EventTarget.prototype.savedAddEventListener =
     EventTarget.prototype.addEventListener;
-Node.prototype.savedAppendChild = Node.prototype.appendChild;
+document.body.savedAppendChild = document.body.appendChild;
+Document.prototype.savedCreateElement = Document.prototype.createElement;
 
 function makeUnreached() {
   return function unreachableFunction() {
-    chrome.test.fail('Reached unreachable code');
+    throw new Error("Reached unreachable code");
   };
 }
 
+// Step 1: Overwrite prototype method setters/getters on properties.
 (function taintProperties() {
   var properties = [
     'AppView',
+    'ControlledFrame',
     'WebView',
     '__proto__',
     'actionQueue',
@@ -49,6 +35,7 @@ function makeUnreached() {
     'cancelable',
     'constructor',
     'contentWindow',
+    'controlledframe',
     'data',
     'defaultView',
     'dirty',
@@ -91,6 +78,7 @@ function makeUnreached() {
     'viewType',
     'webview',
   ];
+
   // For objects that don't inherit directly from Object, we'll need to taint
   // existing properties on prototypes earlier in the prototype chain.
   var otherConstructors = [
@@ -100,6 +88,7 @@ function makeUnreached() {
     HTMLIFrameElement,
     Node,
   ];
+
   for (var property of properties) {
     Object.defineProperty(Object.prototype, property, {
       get: makeUnreached(),
@@ -116,21 +105,11 @@ function makeUnreached() {
   }
 })();
 
-// Overwrite methods.
-Object.assign = makeUnreached();
-Object.create = makeUnreached();
-Object.defineProperty = makeUnreached();
-Object.freeze = makeUnreached();
-Object.getOwnPropertyDescriptor = makeUnreached();
-Object.getPrototypeOf = makeUnreached();
-Object.keys = makeUnreached();
-Object.setPrototypeOf = makeUnreached();
+// Step 2: Overwrite remainder of prototype methods.
 Object.prototype.hasOwnProperty = makeUnreached();
 Function.prototype.apply = makeUnreached();
 Function.prototype.bind = makeUnreached();
 Function.prototype.call = makeUnreached();
-Array.from = makeUnreached();
-Array.isArray = makeUnreached();
 Array.prototype.concat = makeUnreached();
 Array.prototype.filter = makeUnreached();
 Array.prototype.forEach = makeUnreached();
@@ -151,10 +130,10 @@ String.prototype.split = makeUnreached();
 String.prototype.substr = makeUnreached();
 String.prototype.toLowerCase = makeUnreached();
 String.prototype.toUpperCase = makeUnreached();
-
 CustomElementRegistry.prototype.define = makeUnreached();
 Document.prototype.createElement = makeUnreached();
 Document.prototype.createEvent = makeUnreached();
+Document.prototype.getElementsByTagName = makeUnreached();
 Element.prototype.attachShadow = makeUnreached();
 Element.prototype.getAttribute = makeUnreached();
 Element.prototype.getBoundingClientRect = makeUnreached();
@@ -171,85 +150,26 @@ Node.prototype.appendChild = makeUnreached();
 Node.prototype.removeChild = makeUnreached();
 Node.prototype.replaceChild = makeUnreached();
 
-getComputedStyle = makeUnreached();
-parseInt = makeUnreached();
-parseFloat = makeUnreached();
-
-// Also overwrite constructors.
+// Step 3: Overwrite constructors.
 MutationObserver = makeUnreached();
 Object = makeUnreached();
 Function = makeUnreached();
 Array = makeUnreached();
 String = makeUnreached();
 
-var tests = {
-  testCreate: () => {
-    var webview = new WebView();
-    webview.src = 'data:text/html,<body>Guest</body>';
-    webview.savedAddEventListener('loadstop', chrome.test.callbackPass());
-    document.body.savedAppendChild(webview);
-  },
+// Step 4: Overwrite static methods on constructors.
+Object.assign = makeUnreached();
+Object.create = makeUnreached();
+Object.defineProperty = makeUnreached();
+Object.freeze = makeUnreached();
+Object.getOwnPropertyDescriptor = makeUnreached();
+Object.getPrototypeOf = makeUnreached();
+Object.keys = makeUnreached();
+Object.setPrototypeOf = makeUnreached();
+Array.from = makeUnreached();
+Array.isArray = makeUnreached();
 
-  testSetOnEventProperty: () => {
-    var webview = new WebView();
-    // Set and overwrite an on<event> property on the view.
-    webview.onloadstop = () => {};
-    webview.onloadstop = () => {};
-    chrome.test.succeed();
-  },
-
-  testGetSetAttributes: () => {
-    var webview = new WebView();
-
-    // Get and set various attribute types.
-    var url = 'data:text/html,<body>Guest</body>';
-    webview.src = url;
-    chrome.test.assertEq(url, webview.src);
-
-    webview.autosize = true;
-    chrome.test.assertTrue(webview.autosize);
-    webview.autosize = false;
-    chrome.test.assertFalse(webview.autosize);
-
-    webview.maxheight = 123;
-    chrome.test.assertEq(123, webview.maxheight);
-    webview.maxheight = undefined;
-    chrome.test.assertEq(0, webview.maxheight);
-
-    var name = 'my-webview';
-    webview.name = name;
-    chrome.test.assertEq(name, webview.name);
-    webview.name = undefined;
-    chrome.test.assertEq('', webview.name);
-
-    chrome.test.succeed();
-  },
-
-  testBackForward: () => {
-    var webview = new WebView();
-    // The back and forward methods are implemented in terms of go. Make sure
-    // they don't call an overwritten version.
-    webview.go = makeUnreached();
-    webview.back();
-    webview.forward();
-    chrome.test.succeed();
-  },
-
-  testFocus: () => {
-    var webview = new WebView();
-    webview.src = 'data:text/html,<body>Guest</body>';
-    webview.savedAddEventListener('loadstop', chrome.test.callbackPass(() => {
-      webview.focus();
-    }));
-    document.body.savedAppendChild(webview);
-  },
-};
-
-window.runTest = (testName) => {
-  if (!tests[testName]) {
-    chrome.test.notifyFail('Test does not exist: ' + testName);
-    return;
-  }
-
-  chrome.test.runTests([tests[testName]]);
-};
+// Step 5: Overwrite global functions.
+getComputedStyle = makeUnreached();
+parseInt = makeUnreached();
+parseFloat = makeUnreached();
