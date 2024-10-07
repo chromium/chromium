@@ -101,6 +101,8 @@ export class HeaderElement extends PolymerElement {
     if (!inputValue) {
       if (this.subtitle) {
         this.getInput_().value = this.subtitle;
+        // Move the cursor back to the end of the input.
+        this.getInput_().select(this.subtitle.length, this.subtitle.length);
       }
       return;
     }

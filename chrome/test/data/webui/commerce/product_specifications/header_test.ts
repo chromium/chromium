@@ -127,6 +127,10 @@ suite('HeaderTest', () => {
     input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
     await waitAfterNextRender(header);
 
+    // Ensure the cursor is at the end of the input.
+    assertTrue(input.$.input.selectionStart === input.value.length);
+    assertTrue(input.$.input.selectionEnd === input.value.length);
+
     assertEquals(subtitle, header.subtitle);
     assertEquals(subtitle, input.value);
   });
