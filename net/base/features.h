@@ -614,6 +614,11 @@ NET_EXPORT BASE_DECLARE_FEATURE(kNoVarySearchIgnoreUnrecognizedKeys);
 // values is considered invalid, and the entire eTLD group will be dropped.
 NET_EXPORT BASE_DECLARE_FEATURE(kEncryptedAndPlaintextValuesAreInvalid);
 
+// Kill switch for Static CT Log (aka Tiled Log aka Sunlight)
+// enforcements in Certificate Transparency policy checks. If disabled, SCTs
+// from Static CT Logs will simply be ignored.
+NET_EXPORT BASE_DECLARE_FEATURE(kEnableStaticCTAPIEnforcement);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_
