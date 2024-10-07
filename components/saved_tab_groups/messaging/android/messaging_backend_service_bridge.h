@@ -25,11 +25,17 @@ class MessagingBackendServiceBridge
   static base::android::ScopedJavaLocalRef<jobject>
   GetBridgeForMessagingBackendService(MessagingBackendService* service);
 
+  static std::unique_ptr<MessagingBackendServiceBridge> CreateForTest(
+      MessagingBackendService* service);
+
   MessagingBackendServiceBridge(const MessagingBackendServiceBridge&) = delete;
   MessagingBackendServiceBridge& operator=(
       const MessagingBackendServiceBridge&) = delete;
 
   ~MessagingBackendServiceBridge() override;
+
+  // Returns the companion Java object for this bridge.
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
   // Methods called from Java via JNI.
   bool IsInitialized(JNIEnv* env,
@@ -52,6 +58,7 @@ class MessagingBackendServiceBridge
       jint j_type);
 
  private:
+  friend class MessagingBackendServiceBridgeTest;
   explicit MessagingBackendServiceBridge(MessagingBackendService* service);
 
   // MessagingBackendService::PersistentMessageObserver implementation.

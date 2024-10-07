@@ -19,7 +19,7 @@ import java.util.Optional;
 
 /** Implementation of {@link MessagingBackendService} that connects to the native counterpart. */
 @JNINamespace("tab_groups::messaging::android")
-public class MessagingBackendServiceBridge implements MessagingBackendService {
+/*package*/ class MessagingBackendServiceBridge implements MessagingBackendService {
     private static String getSyncId(EitherId id) {
         if (id == null || !id.isSyncId()) {
             return null;

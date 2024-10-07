@@ -4,6 +4,7 @@
 
 #include "components/saved_tab_groups/messaging/android/messaging_backend_service_bridge.h"
 
+#include <memory>
 #include <optional>
 
 #include "base/android/jni_android.h"
@@ -40,7 +41,15 @@ MessagingBackendServiceBridge::GetBridgeForMessagingBackendService(
   MessagingBackendServiceBridge* bridge =
       static_cast<MessagingBackendServiceBridge*>(
           service->GetUserData(kMessagingBackendServiceBridgeUserDataKey));
-  return base::android::ScopedJavaLocalRef<jobject>(bridge->java_ref_);
+  return bridge->GetJavaObject();
+}
+
+// static
+std::unique_ptr<MessagingBackendServiceBridge>
+MessagingBackendServiceBridge::CreateForTest(MessagingBackendService* service) {
+  MessagingBackendServiceBridge* bridge =
+      new MessagingBackendServiceBridge(service);
+  return base::WrapUnique(bridge);
 }
 
 MessagingBackendServiceBridge::MessagingBackendServiceBridge(
@@ -59,6 +68,11 @@ MessagingBackendServiceBridge::~MessagingBackendServiceBridge() {
 
   Java_MessagingBackendServiceBridge_onNativeDestroyed(
       base::android::AttachCurrentThread(), java_ref_);
+}
+
+base::android::ScopedJavaLocalRef<jobject>
+MessagingBackendServiceBridge::GetJavaObject() {
+  return base::android::ScopedJavaLocalRef<jobject>(java_ref_);
 }
 
 bool MessagingBackendServiceBridge::IsInitialized(

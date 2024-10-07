@@ -28,6 +28,16 @@ source_set("messaging") {
   ]
 }
 
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+  deps = []
+
+  if (is_android) {
+    deps += [ "//components/saved_tab_groups/messaging/android:unit_tests" ]
+  }
+}
+
 if (is_android) {
   java_cpp_enum("jni_enums") {
     visibility = [ "//components/saved_tab_groups/messaging/android:*" ]
