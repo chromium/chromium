@@ -55,7 +55,9 @@ class GWSPageLoadMetricsObserver
     kFromNewTabPage,
     kStartedInBackground,
     kStartedInBackgroundFromNewTabPage,
-    kMaxValue = kStartedInBackground,
+    kFromGWSPage,
+    kStartedInBackgroundFromGWSPage,
+    kMaxValue = kStartedInBackgroundFromGWSPage,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:NavigationSourceTypeEnum)
 

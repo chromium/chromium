@@ -19,6 +19,7 @@
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
+#include "components/page_load_metrics/common/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "components/page_load_metrics/google/browser/gws_abandoned_page_load_metrics_observer.h"
 #include "content/public/browser/navigation_handle.h"
@@ -106,6 +107,23 @@ bool IsNavigationFromNewTabPage(
       return false;
   }
 }
+
+GWSPageLoadMetricsObserver::NavigationSourceType GetBackgroundedState(
+    GWSPageLoadMetricsObserver::NavigationSourceType type) {
+  switch (type) {
+    case GWSPageLoadMetricsObserver::kFromNewTabPage:
+      return GWSPageLoadMetricsObserver::kStartedInBackgroundFromNewTabPage;
+    case GWSPageLoadMetricsObserver::kFromGWSPage:
+      return GWSPageLoadMetricsObserver::kStartedInBackgroundFromGWSPage;
+    case GWSPageLoadMetricsObserver::kUnknown:
+      return GWSPageLoadMetricsObserver::kStartedInBackground;
+    case GWSPageLoadMetricsObserver::kStartedInBackgroundFromGWSPage:
+    case GWSPageLoadMetricsObserver::kStartedInBackgroundFromNewTabPage:
+    case GWSPageLoadMetricsObserver::kStartedInBackground:
+      // Types that already have backgrounded types
+      return type;
+  }
+}
 }  // namespace
 
 GWSPageLoadMetricsObserver::GWSPageLoadMetricsObserver() {
@@ -125,17 +143,20 @@ GWSPageLoadMetricsObserver::OnStart(
     base::trace_event::EmitNamedTrigger("gws-navigation-start");
   }
 
-  // Determine the source of the navigation. Since `kFromNewTabPage` and
-  // kStartedInBackground` may not be mutual exclusive, we also consider the
-  // case where both cases may be satisfied (i.e. check if the
-  // navigation comes from background and was from NTP).
+  // Determine the source of the navigation.
   if (IsFromNewTabPage(navigation_handle)) {
     source_type_ = kFromNewTabPage;
+  } else if (page_load_metrics::IsGoogleSearchResultUrl(
+                 currently_committed_url)) {
+    source_type_ = kFromGWSPage;
   }
+
+  // Since `kFromNewTabPage` / `kFromGWSPage` and `kStartedInBackground` may
+  // not be mutual exclusive, we also consider the case where both cases may
+  // be satisfied (i.e. check if the navigation comes from background and was
+  // from NTP/ GWS).
   if (!started_in_foreground) {
-    source_type_ = source_type_ == kFromNewTabPage
-                       ? kStartedInBackgroundFromNewTabPage
-                       : kStartedInBackground;
+    source_type_ = GetBackgroundedState(source_type_);
   }
 
   return CONTINUE_OBSERVING;
