@@ -10,9 +10,6 @@ import re
 import subprocess
 import sys
 
-
-_REPO_ROOT = os.path.abspath(os.path.dirname(__file__))
-
 # TODO(dcheng): It's kind of horrible that this is copy and pasted from
 # presubmit_canned_checks.py, but it's far easier than any of the alternatives.
 def _ReportErrorFileAndLine(filename, line_num, dummy_line):
@@ -83,8 +80,7 @@ class MockInputApi(object):
         self.files = []
         self.is_committing = False
         self.change = MockChange([])
-        self.presubmit_local_path = os.path.dirname(
-            os.path.abspath(sys.argv[0]))
+        self.presubmit_local_path = os.path.dirname(__file__)
         self.is_windows = sys.platform == 'win32'
         self.no_diffs = False
         # Although this makes assumptions about command line arguments used by
@@ -92,19 +88,8 @@ class MockInputApi(object):
         # verbosity via the input api.
         self.verbose = '--verbose' in sys.argv
 
-    def InitFiles(self, files):
-        self.files = files
-        files_that_exist = {
-            p.AbsoluteLocalPath()
-            for p in files if p.Action() != 'D'
-        }
-
-        def mock_exists(path):
-            if not os.path.isabs(path):
-                path = os.path.join(self.presubmit_local_path, path)
-            return path in files_that_exist
-
-        self.os_path.exists = mock_exists
+    def CreateMockFileInPath(self, f_list):
+        self.os_path.exists = lambda x: x in f_list
 
     def AffectedFiles(self, file_filter=None, include_deletes=True):
         for file in self.files:
@@ -161,7 +146,7 @@ class MockInputApi(object):
         if hasattr(filename, 'AbsoluteLocalPath'):
             filename = filename.AbsoluteLocalPath()
         for file_ in self.files:
-            if filename in (file_.LocalPath(), file_.AbsoluteLocalPath()):
+            if file_.LocalPath() == filename:
                 return '\n'.join(file_.NewContents())
         # Otherwise, file is not in our mock API.
         raise IOError("No such file or directory: '%s'" % filename)
@@ -262,7 +247,7 @@ class MockFile(object):
         return self._local_path
 
     def AbsoluteLocalPath(self):
-        return os.path.join(_REPO_ROOT, self._local_path)
+        return self._local_path
 
     def GenerateScmDiff(self):
         return self._scm_diff
@@ -288,7 +273,9 @@ class MockFile(object):
 
 
 class MockAffectedFile(MockFile):
-    pass
+
+    def AbsoluteLocalPath(self):
+        return self._local_path
 
 
 class MockChange(object):
@@ -314,6 +301,3 @@ class MockChange(object):
 
     def GitFootersFromDescription(self):
         return self.footers
-
-    def RepositoryRoot(self):
-        return _REPO_ROOT
