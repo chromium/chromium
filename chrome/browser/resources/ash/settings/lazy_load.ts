@@ -320,6 +320,7 @@ export {SettingsAccountManagerSubpageElement} from './os_people_page/account_man
 export {SettingsUsersAddUserDialogElement} from './os_people_page/add_user_dialog.js';
 export {FingerprintBrowserProxy, FingerprintBrowserProxyImpl, FingerprintInfo, FingerprintResultType} from './os_people_page/fingerprint_browser_proxy.js';
 export {SettingsFingerprintListSubpageElement} from './os_people_page/fingerprint_list_subpage.js';
+export {GraduationSettingsCardElement} from './os_people_page/graduation/graduation_settings_card.js';
 export {SettingsLockScreenElement} from './os_people_page/lock_screen_subpage.js';
 export {OsSettingsPersonalizationOptionsElement} from './os_people_page/os_personalization_options.js';
 export {OsSyncBrowserProxy, OsSyncBrowserProxyImpl, OsSyncPrefs} from './os_people_page/os_sync_browser_proxy.js';

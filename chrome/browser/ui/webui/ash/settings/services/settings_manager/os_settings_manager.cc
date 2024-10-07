@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/device/display_settings/display_settings_provider.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings/input_device_settings_provider.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_sections.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/people/graduation_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/app_permission_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/hierarchy.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_handler.h"
@@ -66,6 +67,7 @@ OsSettingsManager::OsSettingsManager(
       app_parental_controls_handler_(
           std::make_unique<AppParentalControlsHandler>(app_service_proxy,
                                                        profile)),
+      graduation_handler_(std::make_unique<GraduationHandler>(profile)),
       input_device_settings_provider_(
           std::make_unique<InputDeviceSettingsProvider>()),
       display_settings_provider_(std::make_unique<DisplaySettingsProvider>()),
@@ -97,6 +99,7 @@ void OsSettingsManager::Shutdown() {
   shortcut_input_provider_.reset();
   display_settings_provider_.reset();
   input_device_settings_provider_.reset();
+  graduation_handler_.reset();
   app_notification_handler_.reset();
   app_permission_handler_.reset();
   search_handler_.reset();

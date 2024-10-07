@@ -21,6 +21,7 @@ import '../parental_controls_page/parental_controls_page.js';
 import '../parental_controls_page/parental_controls_settings_card.js';
 import './account_manager_settings_card.js';
 import './additional_accounts_settings_card.js';
+import './graduation/graduation_settings_card.js';
 
 import {ProfileInfo, ProfileInfoBrowserProxyImpl} from '/shared/settings/people_page/profile_info_browser_proxy.js';
 import {SignedInState, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
@@ -137,6 +138,13 @@ export class OsSettingsPeoplePageElement extends
       showPasswordPromptDialog_: {
         type: Boolean,
         value: false,
+      },
+
+      isGraduationEnabled_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean('isGraduationEnabled');
+        },
       },
 
       /**

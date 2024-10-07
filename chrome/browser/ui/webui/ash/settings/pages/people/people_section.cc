@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/edusumer/graduation_utils.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
@@ -468,6 +469,22 @@ void AddParentalControlStrings(content::WebUIDataSource* html_source,
                           are_parental_control_settings_allowed);
 }
 
+void AddGraduationStrings(content::WebUIDataSource* html_source,
+                          Profile* profile) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"graduationSectionTitle", IDS_SETTINGS_GRADUATION_SECTION_TITLE},
+      {"graduationRowTitle", IDS_SETTINGS_GRADUATION_ROW_TITLE},
+      {"graduationRowSubtitle", IDS_SETTINGS_GRADUATION_ROW_SUBTITLE}};
+
+  html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  bool is_graduation_enabled =
+      features::IsGraduationEnabled() &&
+      profile->GetProfilePolicyConnector()->IsManaged() &&
+      graduation::IsEligibleForGraduation(profile->GetPrefs());
+  html_source->AddBoolean("isGraduationEnabled", is_graduation_enabled);
+}
+
 bool IsSameAccount(const ::account_manager::AccountKey& account_key,
                    const AccountId& account_id) {
   switch (account_key.account_type()) {
@@ -582,6 +599,7 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   AddUsersStrings(html_source);
   AddParentalControlStrings(html_source,
                             ShouldShowParentalControlSettings(profile()));
+  AddGraduationStrings(html_source, profile());
 
   ::settings::AddPasswordPromptDialogStrings(html_source);
 

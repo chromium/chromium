@@ -415,5 +415,37 @@ suite('<os-settings-people-page>', () => {
 
           assertNull(parentalControlsSettingsCard);
         });
+
+    test('Graduation settings card is shown when app is enabled', async () => {
+      loadTimeData.overrideValues({
+        isGraduationEnabled: true,
+      });
+
+      createPage();
+      await accountManagerBrowserProxy.whenCalled('getAccounts');
+      await syncBrowserProxy.whenCalled('getSyncStatus');
+      flush();
+
+      const graduationSettingsCard =
+          peoplePage.shadowRoot!.querySelector('graduation-settings-card');
+      assertTrue(isVisible(graduationSettingsCard));
+    });
+
+    test(
+        'Graduation settings card is not shown when app is disabled',
+        async () => {
+          loadTimeData.overrideValues({
+            isGraduationEnabled: false,
+          });
+
+          createPage();
+          await accountManagerBrowserProxy.whenCalled('getAccounts');
+          await syncBrowserProxy.whenCalled('getSyncStatus');
+          flush();
+
+          const graduationSettingsCard =
+              peoplePage.shadowRoot!.querySelector('graduation-settings-card');
+          assertNull(graduationSettingsCard);
+        });
   }
 });

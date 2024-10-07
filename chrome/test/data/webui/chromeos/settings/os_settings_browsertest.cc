@@ -1671,6 +1671,11 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
 }
 
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       OsPeoplePageGraduationSettingsCard) {
+  RunSettingsTest("os_people_page/graduation_settings_card_test.js");
+}
+
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsPeoplePageOsSyncControlsSubpage) {
   RunSettingsTest("os_people_page/os_sync_controls_subpage_test.js");
 }

@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/files/mojom/google_drive_handler.mojom-forward.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/files/mojom/one_drive_handler.mojom-forward.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/files/one_drive_page_handler_factory.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/people/mojom/graduation_handler.mojom-forward.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/mojom/app_permission_handler.mojom-forward.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/search/magic_boost_notice_page_handler_factory.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/search/mojom/magic_boost_handler.mojom-forward.h"
@@ -142,6 +143,11 @@ class OSSettingsUI : public ui::MojoWebUIController {
   void BindInterface(
       mojo::PendingReceiver<app_permission::mojom::AppPermissionsHandler>
           receiver);
+
+  // Instantiates implementor of the mojom::GraduationHandler mojo
+  // interface passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<graduation::mojom::GraduationHandler> receiver);
 
   // Instantiates implementor of the mojom::InputDeviceSettingsProvider mojo
   // interface passing the pending receiver that will be internally bound.

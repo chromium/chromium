@@ -1,0 +1,12 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.settings.graduation.mojom;
+
+// Interface that supports integration between the Graduation settings UI and
+// ChromeOS.
+interface GraduationHandler {
+  // Opens the Graduation SWA.
+  LaunchGraduationApp();
+};

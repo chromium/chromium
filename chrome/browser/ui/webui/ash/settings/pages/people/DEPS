@@ -1,4 +1,6 @@
 include_rules = [
+  "+ash/edusumer",
+
   # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
   # details.
   "-chrome",
@@ -26,6 +28,7 @@ include_rules = [
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/signin",
   "+chrome/browser/sync",
+  "+chrome/browser/ui/chrome_pages.h",
   "+chrome/browser/ui/ui_features.h",
   "+chrome/browser/ui/webui/ash/account_manager",
   "+chrome/browser/ui/webui/ash/add_supervision",

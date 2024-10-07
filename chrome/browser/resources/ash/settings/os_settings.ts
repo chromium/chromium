@@ -206,6 +206,7 @@ export * as appParentalControlsHandlerMojom from './mojom-webui/app_parental_con
 export * as appPermissionHandlerMojom from './mojom-webui/app_permission_handler.mojom-webui.js';
 export * as crosAudioConfigMojom from './mojom-webui/cros_audio_config.mojom-webui.js';
 export * as displaySettingsProviderMojom from './mojom-webui/display_settings_provider.mojom-webui.js';
+export * as graduationHandlerMojom from './mojom-webui/graduation_handler.mojom-webui.js';
 export * as personalizationSearchMojom from './mojom-webui/personalization_search.mojom-webui.js';
 export * as routesMojom from './mojom-webui/routes.mojom-webui.js';
 export * as searchMojom from './mojom-webui/search.mojom-webui.js';
@@ -254,6 +255,7 @@ export {OneDriveBrowserProxy, OneDrivePageCallbackRouter, OneDrivePageHandlerRem
 export {createPageAvailability as createPageAvailabilityForTesting, OsPageAvailability} from './os_page_availability.js';
 export {AccountManagerSettingsCardElement} from './os_people_page/account_manager_settings_card.js';
 export {AdditionalAccountsSettingsCardElement} from './os_people_page/additional_accounts_settings_card.js';
+export {setGraduationHandlerProviderForTesting} from './os_people_page/graduation/mojo_interface_provider.js';
 export {OsSettingsPeoplePageElement} from './os_people_page/os_people_page.js';
 export {MetricsConsentBrowserProxy, MetricsConsentBrowserProxyImpl, MetricsConsentState} from './os_privacy_page/metrics_consent_browser_proxy.js';
 export {setAppPermissionProviderForTesting} from './os_privacy_page/mojo_interface_provider.js';

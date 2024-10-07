@@ -306,6 +306,7 @@ build_webui_tests("build") {
     "os_people_page/add_user_dialog_test.ts",
     "os_people_page/additional_accounts_settings_card_test.ts",
     "os_people_page/fingerprint_list_subpage_test.ts",
+    "os_people_page/graduation_settings_card_test.ts",
     "os_people_page/os_people_page_test.ts",
     "os_people_page/os_sync_controls_subpage_test.ts",
     "os_people_page/personalization_options_test.ts",
@@ -319,6 +320,7 @@ build_webui_tests("build") {
     "os_people_page/test_os_sync_browser_proxy.ts",
     "os_people_page/test_parental_controls_browser_proxy.ts",
     "os_people_page/test_profile_info_browser_proxy.ts",
+    "os_people_page/test_graduation_handler_provider.ts",
 
     "os_printing_page/cups_print_server_test.ts",
     "os_printing_page/cups_printer_dialog_test.ts",

@@ -150,6 +150,8 @@ void ShowAppManagementPage(Profile* profile,
                            const std::string& app_id,
                            ash::settings::AppManagementEntryPoint entry_point);
 
+void ShowGraduationApp(Profile* profile);
+
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
