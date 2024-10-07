@@ -3217,10 +3217,8 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowInFormOverruleVotes) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kUsernameFirstFlowFallbackCrowdsourcing,
-                            features::kUsernameFirstFlowWithIntermediateValues,
                             features::
-                                kUsernameFirstFlowWithIntermediateValuesVoting,
-                            features::kUsernameFirstFlowStoreSeveralValues},
+                                kUsernameFirstFlowWithIntermediateValuesVoting},
       /*disabled_features=*/{});
   CreateFormManager(submitted_form_);
   fetcher_->NotifyFetchCompleted();
@@ -3276,10 +3274,8 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowPositiveInFormOverruleVote) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kUsernameFirstFlowFallbackCrowdsourcing,
-                            features::kUsernameFirstFlowWithIntermediateValues,
                             features::
-                                kUsernameFirstFlowWithIntermediateValuesVoting,
-                            features::kUsernameFirstFlowStoreSeveralValues},
+                                kUsernameFirstFlowWithIntermediateValuesVoting},
       /*disabled_features=*/{});
 
   CreateFormManager(submitted_form_);
@@ -3339,10 +3335,8 @@ TEST_P(PasswordFormManagerTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kUsernameFirstFlowFallbackCrowdsourcing,
-                            features::kUsernameFirstFlowWithIntermediateValues,
                             features::
-                                kUsernameFirstFlowWithIntermediateValuesVoting,
-                            features::kUsernameFirstFlowStoreSeveralValues},
+                                kUsernameFirstFlowWithIntermediateValuesVoting},
       /*disabled_features=*/{});
 
   CreateFormManager(submitted_form_);
@@ -3394,9 +3388,7 @@ TEST_P(PasswordFormManagerTest,
        UsernameFirstFlowWithIntermediaryFieldsAndPrefilledUsername) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kUsernameFirstFlowFallbackCrowdsourcing,
-                            features::kUsernameFirstFlowWithIntermediateValues,
-                            features::kUsernameFirstFlowStoreSeveralValues},
+      /*enabled_features=*/{features::kUsernameFirstFlowFallbackCrowdsourcing},
       /*disabled_features=*/{});
 
   CreateFormManager(submitted_form_);
@@ -3484,10 +3476,8 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowSendVotesOnRecentFields) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kUsernameFirstFlowFallbackCrowdsourcing,
-                            features::kUsernameFirstFlowWithIntermediateValues,
                             features::
-                                kUsernameFirstFlowWithIntermediateValuesVoting,
-                            features::kUsernameFirstFlowStoreSeveralValues},
+                                kUsernameFirstFlowWithIntermediateValuesVoting},
       /*disabled_features=*/{});
   CreateFormManager(observed_form_only_password_fields_);
   fetcher_->NotifyFetchCompleted();
@@ -3740,10 +3730,8 @@ TEST_P(PasswordFormManagerTest, NoSingleUsernameVotingOnUnrelatedWebsite) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kUsernameFirstFlowFallbackCrowdsourcing,
-                            features::kUsernameFirstFlowWithIntermediateValues,
                             features::
-                                kUsernameFirstFlowWithIntermediateValuesVoting,
-                            features::kUsernameFirstFlowStoreSeveralValues},
+                                kUsernameFirstFlowWithIntermediateValuesVoting},
       /*disabled_features=*/{});
   // Simulate user input in a single username form.
   constexpr char16_t kPossibleUsername[] = u"possible_username";

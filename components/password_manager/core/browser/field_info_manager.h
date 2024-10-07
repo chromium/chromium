@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/task/single_thread_task_runner.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/signatures.h"
@@ -21,8 +20,6 @@
 namespace password_manager {
 
 struct FormPredictions;
-
-constexpr base::TimeDelta kFieldInfoLifetime = base::Minutes(5);
 
 struct FieldInfo {
   // Id of the PasswordManagerDriver which corresponds to the frame of the

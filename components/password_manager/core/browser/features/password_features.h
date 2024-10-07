@@ -158,14 +158,6 @@ BASE_DECLARE_FEATURE(kUseExtensionListForPSLMatching);
 // and we don't need additional signals.
 BASE_DECLARE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing);
 
-// Enables storing more possible username values in the LRU cache. Part of the
-// `kUsernameFirstFlowWithIntermediateValues` feature.
-BASE_DECLARE_FEATURE(kUsernameFirstFlowStoreSeveralValues);
-
-// Enables tolerating intermediate fields like OTP or CAPTCHA
-// between username and password fields in Username First Flow.
-BASE_DECLARE_FEATURE(kUsernameFirstFlowWithIntermediateValues);
-
 // Enables new prediction that is based on votes from Username First Flow with
 // Intermediate Values.
 BASE_DECLARE_FEATURE(kUsernameFirstFlowWithIntermediateValuesPredictions);
@@ -184,15 +176,6 @@ BASE_DECLARE_FEATURE(kUseNewEncryptionMethod);
 BASE_DECLARE_FEATURE(kEncryptAllPasswordsWithOSCryptAsync);
 
 // All features parameters in alphabetical order.
-
-// If `kUsernameFirstFlowStoreSeveralValues` is enabled, the size of LRU
-// cache that stores all username candidates outside the form.
-extern const base::FeatureParam<int> kMaxSingleUsernameFieldsToStore;
-
-// If `kUsernameFirstFlowWithIntermediateValues` is enabled, after this amount
-// of minutes single username will not be used in the save prompt.
-extern const base::FeatureParam<int> kSingleUsernameTimeToLive;
-
 }  // namespace password_manager::features
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FEATURES_PASSWORD_FEATURES_H_

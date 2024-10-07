@@ -3811,21 +3811,6 @@ const char kUsernameFirstFlowFallbackCrowdsourcingDescription[] =
     "and the value's type(or pattern) in the latter (e.g. email-like, "
     "phone-like, arbitrary string).";
 
-const char kUsernameFirstFlowStoreSeveralValuesName[] =
-    "Username First Flow store several possible username values";
-const char kUsernameFirstFlowStoreSeveralValuesDescription[] =
-    "Store several values as a possible username value instead of only one. "
-    "This flag is part of Username First Flow with intermediate values "
-    "feature.";
-
-const char kUsernameFirstFlowWithIntermediateValuesName[] =
-    "Username first flow with intermediate values";
-const char kUsernameFirstFlowWithIntermediateValuesDescription[] =
-    "Support username first flow with intermediate values. Username first flow "
-    "is login/sign-up flow where a user has to type username first on one page "
-    "and then password on another page. Intermediate fields are usually an OTP "
-    "field or CAPTCHA.";
-
 const char kUsernameFirstFlowWithIntermediateValuesPredictionsName[] =
     "Predictions on Username first flow with intermediate values";
 const char kUsernameFirstFlowWithIntermediateValuesPredictionsDescription[] =

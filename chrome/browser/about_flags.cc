@@ -4862,20 +4862,6 @@ const FeatureEntry kFeatureEntries[] = {
         FEATURE_VALUE_TYPE(media::kMediaFoundationD3D11VideoCapture),
     },
 #endif  // BUILDFLAG(IS_WIN)
-    {"debug-packed-apps", flag_descriptions::kDebugPackedAppName,
-     flag_descriptions::kDebugPackedAppDescription, kOsDesktop,
-     SINGLE_VALUE_TYPE(switches::kDebugPackedApps)},
-    {"username-first-flow-store-several-values",
-     flag_descriptions::kUsernameFirstFlowStoreSeveralValuesName,
-     flag_descriptions::kUsernameFirstFlowStoreSeveralValuesDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kUsernameFirstFlowStoreSeveralValues)},
-    {"username-first-flow-with-intermediate-values",
-     flag_descriptions::kUsernameFirstFlowWithIntermediateValuesName,
-     flag_descriptions::kUsernameFirstFlowWithIntermediateValuesDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kUsernameFirstFlowWithIntermediateValues)},
     {"username-first-flow-with-intermediate-values-predictions",
      flag_descriptions::kUsernameFirstFlowWithIntermediateValuesPredictionsName,
      flag_descriptions::

@@ -1454,10 +1454,6 @@ PasswordFormManager::FindBestPossibleUsernameCandidate(
         possible_usernames) {
   std::optional<UsernameFoundOutsideOfForm> result = std::nullopt;
   // Search for a candidate among all recently user modified fields.
-  // If `kUsernameFirstFlowWithIntermediateValues` feature is off, the most
-  // recent user-typed field is picked if available.
-  // If `kUsernameFirstFlowWithIntermediateValues` feature is on, look for
-  // other field in cache that has a higher priority.
   for (auto [field_identifier, candidate_username] : possible_usernames) {
     if (!IsPossibleSingleUsernameAvailable(candidate_username)) {
       continue;
@@ -1467,11 +1463,7 @@ PasswordFormManager::FindBestPossibleUsernameCandidate(
     auto [priority, password_form_had_matching_username] =
         GivePriorityToUsernameFoundOutsideOfForm(candidate_username,
                                                  *parsed_submitted_form_.get());
-    if (!result.has_value() ||
-        (priority > result.value().priority &&
-         base::FeatureList::IsEnabled(
-             password_manager::features::
-                 kUsernameFirstFlowWithIntermediateValues))) {
+    if (!result.has_value() || priority > result.value().priority) {
       result = {priority, password_form_had_matching_username,
                 candidate_username};
     }

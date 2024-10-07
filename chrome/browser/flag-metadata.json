@@ -9120,24 +9120,14 @@
     "expiry_milestone": 118
   },
   {
-    "name": "username-first-flow-store-several-values",
-    "owners": [ "kazinova@google.com", "shaikhitdin@google.com"],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "username-first-flow-with-intermediate-values",
-    "owners": [ "kazinova@google.com", "shaikhitdin@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "username-first-flow-with-intermediate-values-predictions",
     "owners": [ "kazinova@google.com", "shaikhitdin@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 135
   },
   {
     "name": "username-first-flow-with-intermediate-values-voting",
     "owners": [ "kazinova@google.com", "shaikhitdin@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 135
   },
   {
     "name": "vc-background-replace",

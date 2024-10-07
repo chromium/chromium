@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/field_info_manager.h"
 
 #include "base/i18n/case_conversion.h"
+#include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
 
 using autofill::FieldRendererId;
@@ -82,7 +83,7 @@ void FieldInfoManager::AddFieldInfo(
   // Safe to use "this", because the timer will be destructed before "this" is
   // destructed.
   field_info_cache_.back().timer->Start(
-      FROM_HERE, kFieldInfoLifetime, this,
+      FROM_HERE, kSingleUsernameTimeToLive, this,
       &FieldInfoManager::ClearOldestFieldInfoEntry);
 
   FieldInfo& field_info = field_info_cache_.back().field_info;

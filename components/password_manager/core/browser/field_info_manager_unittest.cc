@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
+#include "components/password_manager/core/browser/password_manager_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using autofill::FieldRendererId;
@@ -75,11 +76,11 @@ TEST_F(FieldInfoManagerTest, InfoAddedRetrievedAndExpired) {
   EXPECT_TRUE(manager_->GetFieldInfo(kAnotherDomain).empty());
 
   // Check that the info is still accessible.
-  task_environment_.FastForwardBy(kFieldInfoLifetime / 2);
+  task_environment_.FastForwardBy(kSingleUsernameTimeToLive / 2);
   EXPECT_EQ(manager_->GetFieldInfo(kTestDomain), expected_info);
 
   // The info should not be accessible anymore
-  task_environment_.FastForwardBy(kFieldInfoLifetime / 2);
+  task_environment_.FastForwardBy(kSingleUsernameTimeToLive / 2);
   EXPECT_TRUE(manager_->GetFieldInfo(kTestDomain).empty());
 }
 

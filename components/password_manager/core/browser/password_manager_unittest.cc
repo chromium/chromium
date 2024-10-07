@@ -52,6 +52,7 @@
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -4548,12 +4549,6 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowSavingWithServerPredictions) {
 // field and no username server prediction inside the password form, username is
 // overwritten.
 TEST_P(PasswordManagerTest, UsernameFirstFlowSignUpFormWithIntermediaryFields) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {password_manager::features::kUsernameFirstFlowStoreSeveralValues,
-       password_manager::features::kUsernameFirstFlowWithIntermediateValues},
-      /*disabled_features_*/ {});
   // Simulate the user typed a previously not saved username in the username
   // form.
   PasswordForm username_form(MakeSimpleFormWithOnlyUsernameField());
@@ -4642,12 +4637,6 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowSignUpFormWithIntermediaryFields) {
 // prioritized, even if there is more recently user typed possible username
 // candidate that is without server prediction.
 TEST_P(PasswordManagerTest, UsernameFirstFlowSignInFormWithIntermediaryFields) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {password_manager::features::kUsernameFirstFlowStoreSeveralValues,
-       password_manager::features::kUsernameFirstFlowWithIntermediateValues},
-      /*disabled_features_*/ {});
   // Simulate the user typed a previously not saved username in the username
   // form.
   PasswordForm username_form(MakeSimpleFormWithOnlyUsernameField());
@@ -4714,12 +4703,6 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowSignInFormWithIntermediaryFields) {
 // suggested as a username in "save password" prompt, even though there are text
 // fields in the password form.
 TEST_P(PasswordManagerTest, UsernameFirstFlowSavingOnPasswordFormWithCaptcha) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {password_manager::features::kUsernameFirstFlowStoreSeveralValues,
-       password_manager::features::kUsernameFirstFlowWithIntermediateValues},
-      /*disabled_features_*/ {});
   // Simulate the user typed a previously not saved username in the username
   // form.
   PasswordForm username_form(MakeSimpleFormWithOnlyUsernameField());
@@ -4788,13 +4771,6 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowSavingOnPasswordFormWithCaptcha) {
 // sign-up form.
 TEST_P(PasswordManagerTest,
        UsernameFirstFlowSavingSignUpFormWithServerOverride) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {password_manager::features::kUsernameFirstFlowStoreSeveralValues,
-       password_manager::features::kUsernameFirstFlowWithIntermediateValues},
-      /*disabled_features_*/ {});
-
   // Simulate the user typed a previously not saved username in the username
   // form.
   PasswordForm username_form(MakeSimpleFormWithOnlyUsernameField());
@@ -4880,13 +4856,6 @@ TEST_P(PasswordManagerTest,
 // show username in save password prompt.
 TEST_P(PasswordManagerTest,
        UsernameFirstFlowSavingSignInFormWithStaleServerOverride) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {password_manager::features::kUsernameFirstFlowStoreSeveralValues,
-       password_manager::features::kUsernameFirstFlowWithIntermediateValues},
-      /*disabled_features=*/{});
-
   // Simulate that user typed into a text field outside of the password form.
   PasswordForm stale_username_form(MakeSimpleFormWithOnlyUsernameField());
   const std::u16string stale_single_username = u"stale_single_username";
@@ -4899,9 +4868,7 @@ TEST_P(PasswordManagerTest,
       /*is_likely_otp=*/false);
 
   // Make single username form stale by fast forwarding time.
-  task_environment_.FastForwardBy(
-      base::Minutes(features::kSingleUsernameTimeToLive.Get()) +
-      base::Seconds(5));
+  task_environment_.FastForwardBy(kSingleUsernameTimeToLive + base::Seconds(5));
   EXPECT_TRUE(manager()->possible_usernames().begin()->second.IsStale());
 
   // Simulate that a password form which contains no username, but other text
@@ -4947,12 +4914,6 @@ TEST_P(PasswordManagerTest,
 // candidate that is without server prediction.
 TEST_P(PasswordManagerTest,
        UsernameFirstFlowWithIntermediaryFieldsAndAutocomplete) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {password_manager::features::kUsernameFirstFlowStoreSeveralValues,
-       password_manager::features::kUsernameFirstFlowWithIntermediateValues},
-      /*disabled_features_*/ {});
   // Simulate the user typed a previously not saved username in the username
   // form.
   PasswordForm username_form(MakeSimpleFormWithOnlyUsernameField());
@@ -5100,68 +5061,6 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowKeepServerPredictions) {
                   ->possible_usernames()
                   .begin()
                   ->second.HasSingleUsernameServerPrediction());
-}
-
-// Tests that Password Manager's behavior on usernames outside of the password
-// form can be controlled by Finch config param. Modifies LRU cache's size that
-// stores possible single usernames by a finch param. Then, single username
-// override will not be considered as a candidate for password form with
-// username and password fields.
-TEST_P(PasswordManagerTest, UsernameFirstFlowCacheSizeFromFinchParam) {
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(test_form_url_))
-      .WillRepeatedly(Return(true));
-  base::test::ScopedFeatureList features;
-  base::FieldTrialParams feature_parameters{
-      {features::kMaxSingleUsernameFieldsToStore.name, "1"}};
-  features.InitAndEnableFeatureWithParameters(
-      features::kUsernameFirstFlowStoreSeveralValues, feature_parameters);
-  // Reinitialize `PasswordManager` class, so that cache size is picked from the
-  // finch feature param.
-  manager_ = std::make_unique<PasswordManager>(&client_);
-  manager_->set_leak_factory(
-      std::make_unique<testing::NiceMock<MockLeakDetectionCheckFactory>>());
-
-  // Simulate the user typed in a username form.
-  PasswordForm username_form(MakeSimpleFormWithOnlyUsernameField());
-  const std::u16string username = u"newusername@gmail.com";
-  EXPECT_CALL(driver_, GetLastCommittedURL())
-      .WillRepeatedly(ReturnRef(username_form.url));
-  manager()->OnUserModifiedNonPasswordField(
-      &driver_, username_form.form_data.fields()[0].renderer_id(),
-      /*value=*/username,
-      /*autocomplete_attribute_has_username=*/false,
-      /*is_likely_otp=*/false);
-  manager()->ProcessAutofillPredictions(
-      &driver_, username_form.form_data,
-      CreateServerPredictions(username_form.form_data,
-                              {{0, FieldType::SINGLE_USERNAME}},
-                              /*is_override=*/true));
-
-  // Simulate that a form which contains username and password fields is added
-  // to the page.
-  PasswordForm password_form(MakeSimpleForm());
-  manager()->OnPasswordFormsParsed(&driver_, {password_form.form_data});
-  manager()->OnPasswordFormsRendered(
-      &driver_, /*visible_forms_data=*/{password_form.form_data});
-
-  // Simulate user modifying the text fields inside password form.
-  manager()->OnUserModifiedNonPasswordField(
-      &driver_, password_form.form_data.fields()[0].renderer_id(),
-      /*value=*/password_form.form_data.fields()[0].value(),
-      /*autocomplete_attribute_has_username=*/false,
-      /*is_likely_otp=*/false);
-
-  std::unique_ptr<PasswordFormManagerForUI> form_manager;
-  EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword)
-      .WillOnce(MoveArgAndReturn<0>(&form_manager, false));
-  task_environment_.RunUntilIdle();
-  OnPasswordFormSubmitted(password_form.form_data);
-  manager()->OnPasswordFormsRendered(&driver_, /*visible_forms_data=*/{});
-  ASSERT_TRUE(form_manager);
-  // Even though there was a text field with single username override, it
-  // wasn't picked since the LRU cache size is limited to 1.
-  EXPECT_THAT(form_manager->GetPendingCredentials(),
-              FormMatches(password_form));
 }
 
 // Tests submitting an OTP password form after a single username form.
