@@ -1075,7 +1075,9 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_AUTO_GRANT_SANITIZED_CLIPBOARD_WRITE,
                 "Auto-grant clipboard sanitized text write permission with user gesture. "
                         + "Enabled by default."),
-
+        Flag.baseFeature(
+                "AllowSensorsToEnterBfcache",
+                "Allow pages with sensors to enter back/forward cache."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
