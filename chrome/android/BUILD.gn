@@ -1126,6 +1126,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/tab_group_sync:features_java",
       "//chrome/browser/tab_group_sync:java",
       "//chrome/browser/tab_group_sync:junit",
+      "//chrome/browser/tab_group_sync/messaging/android:factory_java",
       "//chrome/browser/tab_resumption:junit",
       "//chrome/browser/tab_ui/android:java",
       "//chrome/browser/tab_ui/android:junit",

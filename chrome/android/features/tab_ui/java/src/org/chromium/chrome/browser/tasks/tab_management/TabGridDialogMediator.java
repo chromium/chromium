@@ -22,13 +22,13 @@ import androidx.core.content.ContextCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.Token;
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tab_group_sync.messaging.MessagingBackendServiceFactory;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -69,7 +70,13 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.messaging.EitherId.EitherGroupId;
+import org.chromium.components.tab_group_sync.messaging.MessagingBackendService;
+import org.chromium.components.tab_group_sync.messaging.MessagingBackendService.PersistentMessageObserver;
+import org.chromium.components.tab_group_sync.messaging.PersistentMessage;
+import org.chromium.components.tab_group_sync.messaging.UserAction;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -78,9 +85,12 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.EmptyTextWatcher;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * A mediator for the TabGridDialog component, responsible for communicating with the components'
@@ -189,6 +199,9 @@ public class TabGridDialogMediator
     private final @Nullable TabGroupSyncService mTabGroupSyncService;
     private final @Nullable DataSharingService mDataSharingService;
     private final @Nullable TransitiveSharedGroupObserver mTransitiveSharedGroupObserver;
+    private final @Nullable MessagingBackendService mMessagingBackendService;
+    private final @Nullable MessagingBackendService.PersistentMessageObserver
+            mPersistentMessageObserver;
     private final TabModelObserver mTabModelObserver;
     private final TabGroupModelFilterObserver mTabGroupModelFilterObserver;
     private final Runnable mScrimClickRunnable;
@@ -257,14 +270,33 @@ public class TabGridDialogMediator
                 mTransitiveSharedGroupObserver
                         .getCollaborationIdSupplier()
                         .addObserver(mOnCollaborationIdChanged);
+                mMessagingBackendService =
+                        MessagingBackendServiceFactory.getForProfile(mOriginalProfile);
+                mPersistentMessageObserver =
+                        new PersistentMessageObserver() {
+                            @Override
+                            public void displayPersistentMessage(PersistentMessage message) {
+                                updateOnMatch(message);
+                            }
+
+                            @Override
+                            public void hidePersistentMessage(PersistentMessage message) {
+                                updateOnMatch(message);
+                            }
+                        };
+                mMessagingBackendService.addPersistentMessageObserver(mPersistentMessageObserver);
             } else {
                 mDataSharingService = null;
                 mTransitiveSharedGroupObserver = null;
+                mMessagingBackendService = null;
+                mPersistentMessageObserver = null;
             }
         } else {
             mTabGroupSyncService = null;
             mDataSharingService = null;
             mTransitiveSharedGroupObserver = null;
+            mMessagingBackendService = null;
+            mPersistentMessageObserver = null;
         }
 
         mTabModelObserver =
@@ -625,6 +657,9 @@ public class TabGridDialogMediator
         }
         if (mDesktopWindowStateProvider != null) {
             mDesktopWindowStateProvider.removeObserver(this);
+        }
+        if (mMessagingBackendService != null && mPersistentMessageObserver != null) {
+            mMessagingBackendService.removePersistentMessageObserver(mPersistentMessageObserver);
         }
     }
 
@@ -1019,7 +1054,7 @@ public class TabGridDialogMediator
 
     private void onCollaborationIdChanged(@Nullable String collaborationId) {
         if (TabShareUtils.isCollaborationIdValid(collaborationId)) {
-            showOrUpdateCollaborationActivityMessageCard(collaborationId);
+            showOrUpdateCollaborationActivityMessageCard();
 
             assert mSharedImageTilesCoordinator != null;
             mSharedImageTilesCoordinator.updateCollaborationId(collaborationId);
@@ -1240,16 +1275,39 @@ public class TabGridDialogMediator
         mCollaborationActivityPropertyModel = null;
     }
 
-    private void showOrUpdateCollaborationActivityMessageCard(@Nullable String collaborationId) {
-        if (collaborationId == null) {
+    private @Nullable Token getCurrentTabGroupId() {
+        TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+        Tab tab = filter.getTabModel().getTabById(mCurrentTabId);
+        return tab == null ? null : tab.getTabGroupId();
+    }
+
+    private void updateOnMatch(PersistentMessage message) {
+        if (message.attribution.localTabGroupId == null) return;
+        @Nullable Token token = getCurrentTabGroupId();
+        if (Objects.equals(token, message.attribution.localTabGroupId.tabGroupId)) {
+            showOrUpdateCollaborationActivityMessageCard();
+        }
+    }
+
+    private void showOrUpdateCollaborationActivityMessageCard() {
+        @Nullable Token currentTabGroupId = getCurrentTabGroupId();
+        if (currentTabGroupId == null) {
             assert mCollaborationActivityPropertyModel == null;
             return;
         }
 
-        // TODO(crbug.com/348731400): Fetch these numbers from the activity backend.
-        int tabsAdded = BuildConfig.IS_FOR_TEST ? 1 : 0;
-        int tabsChanged = BuildConfig.IS_FOR_TEST ? 2 : 0;
-        int tabsClosed = BuildConfig.IS_FOR_TEST ? 3 : 0;
+        EitherGroupId eitherGroupId =
+                EitherGroupId.createLocalId(new LocalTabGroupId(currentTabGroupId));
+        List<PersistentMessage> messages =
+                mMessagingBackendService.getMessagesForGroup(
+                        eitherGroupId, /* type= */ Optional.empty());
+        Map<Integer, Integer> actionCounts = new HashMap<>();
+        for (PersistentMessage message : messages) {
+            actionCounts.merge(message.action, 1, Integer::sum);
+        }
+        int tabsAdded = actionCounts.getOrDefault(UserAction.TAB_ADDED, 0);
+        int tabsChanged = actionCounts.getOrDefault(UserAction.TAB_NAVIGATED, 0);
+        int tabsClosed = actionCounts.getOrDefault(UserAction.TAB_REMOVED, 0);
         if (tabsAdded == 0 && tabsChanged == 0 && tabsClosed == 0) {
             removeCollaborationActivityMessageCard();
             return;
@@ -1260,9 +1318,7 @@ public class TabGridDialogMediator
                     new CollaborationActivityMessageCardViewModel(
                             mActivity,
                             this::showRecentActivityOrDismissActivityMessageCard,
-                            (unused) -> {
-                                removeCollaborationActivityMessageCard();
-                            });
+                            (unused) -> removeCollaborationActivityMessageCard());
         }
         mCollaborationActivityPropertyModel.updateDescriptionText(
                 mActivity, tabsAdded, tabsChanged, tabsClosed);
