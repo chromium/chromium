@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_detection_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_detector.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/modules/ai/on_device_translation/ai_language_detector.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -26,34 +27,8 @@ void LanguageDetector::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-HeapVector<Member<LanguageDetectionResult>> ConvertResult(
-    WTF::Vector<LanguagePrediction> predictions) {
-  HeapVector<Member<LanguageDetectionResult>> result;
-  for (const auto& prediction : predictions) {
-    auto* one = MakeGarbageCollected<LanguageDetectionResult>();
-    result.push_back(one);
-    one->setDetectedLanguage(String(prediction.language));
-    one->setConfidence(prediction.score);
-  }
-  return result;
-}
-
-void OnDetectComplete(
-    ScriptPromiseResolver<IDLSequence<LanguageDetectionResult>>* resolver,
-    base::expected<WTF::Vector<LanguagePrediction>, DetectLanguageError>
-        result) {
-  if (result.has_value()) {
-    // Order the result from most to least confident.
-    std::sort(result.value().rbegin(), result.value().rend());
-    resolver->Resolve(ConvertResult(result.value()));
-  } else {
-    switch (result.error()) {
-      case DetectLanguageError::kUnavailable:
-        resolver->Reject("Model not available");
-    }
-  }
-}
-
+// TODO(crbug.com/349927087): The new version is AILanguageDetector::detect().
+// Delete this old version.
 ScriptPromise<IDLSequence<LanguageDetectionResult>> LanguageDetector::detect(
     ScriptState* script_state,
     const WTF::String& input,
@@ -68,8 +43,8 @@ ScriptPromise<IDLSequence<LanguageDetectionResult>> LanguageDetector::detect(
       ScriptPromiseResolver<IDLSequence<LanguageDetectionResult>>>(
       script_state);
 
-  DetectLanguage(input,
-                 WTF::BindOnce(OnDetectComplete, WrapPersistent(resolver)));
+  DetectLanguage(input, WTF::BindOnce(AILanguageDetector::OnDetectComplete,
+                                      WrapPersistent(resolver)));
   return resolver->Promise();
 }
 

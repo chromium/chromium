@@ -2,6 +2,7 @@
 interface AI
     attribute @@toStringTag
     getter assistant
+    getter languageDetector
     getter rewriter
     getter summarizer
     getter writer
@@ -27,6 +28,21 @@ interface AIAssistantCapabilities
     getter maxTopK
     method constructor
 interface AIAssistantFactory
+    attribute @@toStringTag
+    method capabilities
+    method constructor
+    method create
+interface AILanguageDetector
+    attribute @@toStringTag
+    method constructor
+    method destroy
+    method detect
+interface AILanguageDetectorCapabilities
+    attribute @@toStringTag
+    getter available
+    method canDetect
+    method constructor
+interface AILanguageDetectorFactory
     attribute @@toStringTag
     method capabilities
     method constructor

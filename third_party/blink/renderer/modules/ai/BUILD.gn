@@ -39,6 +39,12 @@ blink_modules_sources("ai") {
     "exception_helpers.h",
     "model_execution_responder.cc",
     "model_execution_responder.h",
+    "on_device_translation/ai_language_detector.cc",
+    "on_device_translation/ai_language_detector.h",
+    "on_device_translation/ai_language_detector_capabilities.cc",
+    "on_device_translation/ai_language_detector_capabilities.h",
+    "on_device_translation/ai_language_detector_factory.cc",
+    "on_device_translation/ai_language_detector_factory.h",
   ]
 
   public_deps = [ "//third_party/blink/public/mojom:mojom_modules_blink" ]

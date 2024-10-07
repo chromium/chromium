@@ -30,6 +30,7 @@ void AI::Trace(Visitor* visitor) const {
   visitor->Trace(ai_summarizer_factory_);
   visitor->Trace(ai_writer_factory_);
   visitor->Trace(ai_rewriter_factory_);
+  visitor->Trace(ai_language_detector_factory_);
 }
 
 HeapMojoRemote<mojom::blink::AIManager>& AI::GetAIRemote() {
@@ -73,6 +74,14 @@ AIRewriterFactory* AI::rewriter() {
     ai_rewriter_factory_ = MakeGarbageCollected<AIRewriterFactory>(this);
   }
   return ai_rewriter_factory_.Get();
+}
+
+AILanguageDetectorFactory* AI::languageDetector() {
+  if (!ai_language_detector_factory_) {
+    ai_language_detector_factory_ =
+        MakeGarbageCollected<AILanguageDetectorFactory>();
+  }
+  return ai_language_detector_factory_.Get();
 }
 
 }  // namespace blink

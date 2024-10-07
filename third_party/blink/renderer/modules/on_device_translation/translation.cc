@@ -116,6 +116,8 @@ ScriptPromise<LanguageTranslator> Translation::createTranslator(
   return promise;
 }
 
+// TODO(crbug.com/349927087): The new version is
+// AILanguageDetectorCapabilities::canDetect(). Delete this old version.
 ScriptPromise<V8TranslationAvailability> Translation::canDetect(
     ScriptState* script_state,
     ExceptionState& exception_state) {
@@ -136,6 +138,8 @@ ScriptPromise<V8TranslationAvailability> Translation::canDetect(
   return promise;
 }
 
+// TODO(crbug.com/349927087): The new version is
+// AILanguageDetectorFactory::create(). Delete this old version.
 ScriptPromise<LanguageDetector> Translation::createDetector(
     ScriptState* script_state,
     ExceptionState& exception_state) {

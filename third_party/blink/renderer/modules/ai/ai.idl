@@ -37,4 +37,9 @@ interface AI {
     RuntimeEnabled=AIRewriterAPI
   ]
   readonly attribute AIRewriterFactory rewriter;
+
+  [
+    RuntimeEnabled=LanguageDetectionAPI
+  ]
+  readonly attribute AILanguageDetectorFactory languageDetector;
 };
