@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/message_formatter.h"
 #include "base/no_destructor.h"
@@ -221,7 +222,15 @@ DeletionDialogController::DialogState::DialogState(
 DeletionDialogController::DialogState::~DialogState() = default;
 
 DeletionDialogController::DeletionDialogController(Browser* browser)
-    : browser_(browser) {}
+    : profile_(browser->profile()),
+      show_dialog_model_fn_(base::BindRepeating(
+          &DeletionDialogController::CreateDialogFromBrowser,
+          base::Unretained(this),
+          browser)) {}
+DeletionDialogController::DeletionDialogController(
+    Profile* profile,
+    ShowDialogModelCallback show_dialog_model_fn)
+    : profile_(profile), show_dialog_model_fn_(show_dialog_model_fn) {}
 
 DeletionDialogController::~DeletionDialogController() = default;
 
@@ -242,7 +251,7 @@ bool DeletionDialogController::MaybeShowDialog(
     return false;
   }
 
-  if (IsDialogSkippedByUserSettings(browser_->profile(), type)) {
+  if (IsDialogSkippedByUserSettings(profile_, type)) {
     std::move(on_ok_callback).Run();
     return false;
   }
@@ -253,13 +262,13 @@ bool DeletionDialogController::MaybeShowDialog(
   state_ = std::make_unique<DeletionDialogController::DialogState>(
       type, dialog_model.get(), std::move(on_ok_callback), base::DoNothing());
 
-  chrome::ShowBrowserModal(browser_, std::move(dialog_model));
+  show_dialog_model_fn_.Run(std::move(dialog_model));
   return true;
 }
 
 void DeletionDialogController::SetPrefsPreventShowingDialogForTesting(
     bool should_prevent_dialog) {
-  auto* prefs = browser_->profile()->GetPrefs();
+  auto* prefs = profile_->GetPrefs();
   prefs->SetBoolean(
       saved_tab_groups::prefs::kTabGroupsDeletionSkipDialogOnDelete,
       should_prevent_dialog);
@@ -279,7 +288,7 @@ void DeletionDialogController::OnDialogOk() {
       state_->dialog_model
           ->GetCheckboxByUniqueId(kDeletionDialogDontAskCheckboxId)
           ->is_checked()) {
-    SetSkipDialogForType(browser_->profile(), state_->type, true);
+    SetSkipDialogForType(profile_, state_->type, true);
   }
   std::move(state_->on_ok_button_pressed).Run();
   state_.reset();
@@ -294,8 +303,7 @@ std::unique_ptr<ui::DialogModel> DeletionDialogController::BuildDialogModel(
     DialogType type,
     int tab_count,
     int group_count) {
-  DialogText strings =
-      GetDialogText(browser_->profile(), type, tab_count, group_count);
+  DialogText strings = GetDialogText(profile_, type, tab_count, group_count);
 
   return ui::DialogModel::Builder()
       .SetTitle(strings.title)
@@ -317,7 +325,18 @@ std::unique_ptr<ui::DialogModel> DeletionDialogController::BuildDialogModel(
             dialog_controller->state_.reset();
           },
           base::Unretained(this)))
+      .SetDialogDestroyingCallback(base::BindOnce(
+          [](DeletionDialogController* dialog_controller) {
+            dialog_controller->state_.reset();
+          },
+          base::Unretained(this)))
       .Build();
+}
+
+void DeletionDialogController::CreateDialogFromBrowser(
+    Browser* browser,
+    std::unique_ptr<ui::DialogModel> dialog_model) {
+  chrome::ShowBrowserModal(browser, std::move(dialog_model));
 }
 
 }  // namespace tab_groups

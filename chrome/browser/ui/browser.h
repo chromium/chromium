@@ -1407,6 +1407,8 @@ class Browser : public TabStripModelObserver,
   std::unique_ptr<chrome::BrowserCommandController> command_controller_;
 
   // Dialog controller that handles the showing of the deletion dialog.
+  // TODO (https://crbug.com/372011320) Move this to be a browser window
+  // feature.
   std::unique_ptr<tab_groups::DeletionDialogController>
       tab_group_deletion_dialog_controller_;
 

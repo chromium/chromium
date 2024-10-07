@@ -452,6 +452,7 @@ if (!is_android) {
       "supports_handles_unittest.cc",
       "tab_collection_storage_unittest.cc",
       "tab_collection_unittest.cc",
+      "tab_group_deletion_dialog_controller_unittest.cc",
       "tab_menu_model_unittest.cc",
       "tab_strip_model_stats_recorder_unittest.cc",
       "tab_strip_model_unittest.cc",

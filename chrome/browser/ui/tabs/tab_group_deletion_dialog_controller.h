@@ -16,8 +16,12 @@ class DialogModel;
 }
 
 class Browser;
+class Profile;
 
 namespace tab_groups {
+
+typedef base::RepeatingCallback<void(std::unique_ptr<ui::DialogModel>)>
+    ShowDialogModelCallback;
 
 // Controller that is responsible for showing/hiding and performing callbacks
 // for group deletions. Manages the state on a per-browser basis. Browsers can
@@ -56,6 +60,9 @@ class DeletionDialogController {
   };
 
   explicit DeletionDialogController(Browser* browser);
+  DeletionDialogController(Profile* profile,
+                           ShowDialogModelCallback show_dialog_model);
+
   DeletionDialogController(const DeletionDialogController&) = delete;
   DeletionDialogController& operator=(const DeletionDialogController&) = delete;
   ~DeletionDialogController();
@@ -86,17 +93,24 @@ class DeletionDialogController {
                                                     int tab_count = 0,
                                                     int group_count = 0);
 
+  void CreateDialogFromBrowser(Browser* browser,
+                               std::unique_ptr<ui::DialogModel> dialog_model);
+
   // Methods that are bound by the DialogModel to call the callbacks.
   void OnDialogOk();
   void OnDialogCancel();
 
-  // The browser that owns this dialog/controller, there is only 1 group dialog
-  // per browser window.
-  raw_ptr<Browser> browser_;
+  // The profile this controller is created for. Provides prefs and sync
+  // settings.
+  raw_ptr<Profile> profile_;
 
-  // the state needed for showing the dialog. Only exists if the dialog is
+  // The state needed for showing the dialog. Only exists if the dialog is
   // currently showing.
   std::unique_ptr<DialogState> state_;
+
+  // The function used to show the dialog when requested. This is injected so
+  // that tests can instrument showing the dialog model.
+  ShowDialogModelCallback show_dialog_model_fn_;
 };
 
 }  // namespace tab_groups

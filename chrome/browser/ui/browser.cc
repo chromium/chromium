@@ -671,6 +671,10 @@ Browser::~Browser() {
   features_.reset();
   ClearAllUserData();
 
+  // Destroy the deletion dialog before profile resets.
+  // (see https://crbug.com/357391254)
+  tab_group_deletion_dialog_controller_.reset();
+
   // Stop observing notifications and destroy the tab monitor before continuing
   // with destruction. Profile destruction will unload extensions and reentrant
   // calls to Browser:: should be avoided while it is being torn down.
