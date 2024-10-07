@@ -2193,10 +2193,6 @@ extern const char kTopLevelTpcdTrialSettingsDescription[];
 extern const char kTrackingProtection3pcdName[];
 extern const char kTrackingProtection3pcdDescription[];
 
-extern const char kTrustedVaultFrequentDegradedRecoverabilityPollingName[];
-extern const char
-    kTrustedVaultFrequentDegradedRecoverabilityPollingDescription[];
-
 extern const char kUnifiedPasswordManagerAndroidReenrollmentName[];
 extern const char kUnifiedPasswordManagerAndroidReenrollmentDescription[];
 

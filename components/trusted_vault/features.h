@@ -25,10 +25,6 @@ inline constexpr base::FeatureParam<base::TimeDelta>
         "kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling",
         base::Hours(1)};
 
-// If enabled, degraded recoverability is polled once per minute. This overrides
-// polling period params above. Useful for manual testing.
-BASE_DECLARE_FEATURE(kTrustedVaultFrequentDegradedRecoverabilityPolling);
-
 #if !BUILDFLAG(IS_ANDROID)
 // Enables the chrome.setClientEncryptionKeys() JS API.
 BASE_DECLARE_FEATURE(kSetClientEncryptionKeysJsApi);

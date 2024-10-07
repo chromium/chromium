@@ -10738,16 +10738,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kCrosSwitcher)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"trusted-vault-frequent-degraded-recoverability-polling",
-     flag_descriptions::kTrustedVaultFrequentDegradedRecoverabilityPollingName,
-     flag_descriptions::
-         kTrustedVaultFrequentDegradedRecoverabilityPollingDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         trusted_vault::kTrustedVaultFrequentDegradedRecoverabilityPolling)},
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
     {"platform-keys-aes-encryption",
      flag_descriptions::kPlatformKeysAesEncryptionName,

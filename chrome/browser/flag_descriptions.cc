@@ -3728,11 +3728,6 @@ const char kTreatInsecureOriginAsSecureDescription[] =
     "specified e.g. \"http://example.com\". For the definition of secure "
     "contexts, see https://w3c.github.io/webappsec-secure-contexts/";
 
-const char kTrustedVaultFrequentDegradedRecoverabilityPollingName[] =
-    "Enable frequent polling of trusted vault degraded recoverability state";
-const char kTrustedVaultFrequentDegradedRecoverabilityPollingDescription[] =
-    "Sets degraded recoverability polling interval to 1 minute.";
-
 const char kUnifiedPasswordManagerAndroidReenrollmentName[] =
     "Automatic reenrollement of users who were evicted from using Google "
     "Mobile Services after experiencing errors.";
