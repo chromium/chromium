@@ -54,6 +54,13 @@ class TestUserAnnotationsService : public UserAnnotationsService {
   void RemoveAllEntries(base::OnceClosure callback) override;
   void RemoveAnnotationsInRange(const base::Time& delete_begin,
                                 const base::Time& delete_end) override;
+
+  // Returns the number of entries set via `ReplaceAllEntries()` ignoring
+  // the `begin` and `end` arguments.
+  void GetCountOfValuesContainedBetween(
+      base::Time begin,
+      base::Time end,
+      base::OnceCallback<void(int)> callback) override;
   size_t count_entries_retrieved() const { return count_entries_retrieved_; }
 
   std::pair<base::Time, base::Time> last_received_remove_annotations_in_range()

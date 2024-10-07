@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/user_annotations/user_annotations_service.h"
 #include "device/fido/platform_credential_store.h"
 
 class PrefService;
@@ -46,6 +47,7 @@ class ProfileStatisticsAggregator {
       scoped_refptr<password_manager::PasswordStoreInterface>
           profile_password_store,
       PrefService* pref_service,
+      user_annotations::UserAnnotationsService* user_annotations_service,
       std::unique_ptr<device::fido::PlatformCredentialStore>
           platform_credential_store,
       base::OnceClosure done_callback);
@@ -81,6 +83,8 @@ class ProfileStatisticsAggregator {
   const scoped_refptr<password_manager::PasswordStoreInterface>
       profile_password_store_;
   const raw_ptr<PrefService> pref_service_;
+  const raw_ptr<user_annotations::UserAnnotationsService>
+      user_annotations_service_;
 
   std::unique_ptr<device::fido::PlatformCredentialStore>
       platform_credential_store_;

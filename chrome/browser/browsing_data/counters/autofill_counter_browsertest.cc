@@ -24,6 +24,7 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/address_data_manager.h"
@@ -39,6 +40,9 @@
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_annotations/test_user_annotations_service.h"
+#include "components/user_annotations/user_annotations_service.h"
+#include "components/user_annotations/user_annotations_types.h"
 #include "content/public/test/browser_test.h"
 
 namespace {
@@ -58,6 +62,8 @@ class AutofillCounterTest : public InProcessBrowserTest {
             browser()->profile());
     web_data_service_ = WebDataServiceFactory::GetAutofillWebDataForProfile(
         browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS);
+    user_annotations_service_ =
+        std::make_unique<user_annotations::TestUserAnnotationsService>();
 
     SetAutofillDeletionPref(true);
     SetDeletionPeriodPref(browsing_data::TimePeriod::ALL_TIME);
@@ -141,6 +147,12 @@ class AutofillCounterTest : public InProcessBrowserTest {
     address_ids_.pop_back();
   }
 
+  // User annotations ----------------------------------------------------------
+
+  void SetUserAnnotations(user_annotations::UserAnnotationsEntries entries) {
+    user_annotations_service_->ReplaceAllEntries(std::move(entries));
+  }
+
   // Other autofill utils ------------------------------------------------------
 
   void ClearCreditCardsAndAddresses() {
@@ -172,6 +184,11 @@ class AutofillCounterTest : public InProcessBrowserTest {
     return web_data_service_;
   }
 
+  raw_ptr<user_annotations::TestUserAnnotationsService>
+  GetUserAnnotationsService() {
+    return user_annotations_service_.get();
+  }
+
   // Callback and result retrieval ---------------------------------------------
 
   void WaitForCounting() {
@@ -194,6 +211,11 @@ class AutofillCounterTest : public InProcessBrowserTest {
     return num_addresses_;
   }
 
+  browsing_data::BrowsingDataCounter::ResultInt GetNumUserAnnotations() {
+    DCHECK(finished_);
+    return num_user_annotations_;
+  }
+
   void Callback(
       std::unique_ptr<browsing_data::BrowsingDataCounter::Result> result) {
     finished_ = result->Finished();
@@ -206,6 +228,7 @@ class AutofillCounterTest : public InProcessBrowserTest {
       num_suggestions_ = autofill_result->Value();
       num_credit_cards_ = autofill_result->num_credit_cards();
       num_addresses_ = autofill_result->num_addresses();
+      num_user_annotations_ = autofill_result->num_user_annotation_entries();
 
       if (run_loop_)
         run_loop_->Quit();
@@ -221,18 +244,22 @@ class AutofillCounterTest : public InProcessBrowserTest {
 
   raw_ptr<autofill::PersonalDataManager> personal_data_manager_;
   scoped_refptr<autofill::AutofillWebDataService> web_data_service_;
+  std::unique_ptr<user_annotations::TestUserAnnotationsService>
+      user_annotations_service_;
 
   bool finished_;
   browsing_data::BrowsingDataCounter::ResultInt num_suggestions_;
   browsing_data::BrowsingDataCounter::ResultInt num_credit_cards_;
   browsing_data::BrowsingDataCounter::ResultInt num_addresses_;
+  browsing_data::BrowsingDataCounter::ResultInt num_user_annotations_;
 };
 
 // Tests that we count the correct number of autocomplete suggestions.
 IN_PROC_BROWSER_TEST_F(AutofillCounterTest, AutocompleteSuggestions) {
   Profile* profile = browser()->profile();
-  browsing_data::AutofillCounter counter(GetPersonalDataManager(),
-                                         GetWebDataService(), nullptr);
+  browsing_data::AutofillCounter counter(
+      GetPersonalDataManager(), GetWebDataService(),
+      /*user_annotations_service=*/nullptr, /*sync_service=*/nullptr);
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&AutofillCounterTest::Callback,
@@ -270,8 +297,9 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, AutocompleteSuggestions) {
 // Tests that we count the correct number of credit cards.
 IN_PROC_BROWSER_TEST_F(AutofillCounterTest, CreditCards) {
   Profile* profile = browser()->profile();
-  browsing_data::AutofillCounter counter(GetPersonalDataManager(),
-                                         GetWebDataService(), nullptr);
+  browsing_data::AutofillCounter counter(
+      GetPersonalDataManager(), GetWebDataService(),
+      /*user_annotations_service=*/nullptr, /*sync_service=*/nullptr);
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&AutofillCounterTest::Callback,
@@ -309,8 +337,9 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, CreditCards) {
 // Tests that we count the correct number of addresses.
 IN_PROC_BROWSER_TEST_F(AutofillCounterTest, Addresses) {
   Profile* profile = browser()->profile();
-  browsing_data::AutofillCounter counter(GetPersonalDataManager(),
-                                         GetWebDataService(), nullptr);
+  browsing_data::AutofillCounter counter(
+      GetPersonalDataManager(), GetWebDataService(),
+      /*user_annotations_service=*/nullptr, /*sync_service=*/nullptr);
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&AutofillCounterTest::Callback,
@@ -345,6 +374,27 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, Addresses) {
   EXPECT_EQ(0, GetNumAddresses());
 }
 
+// Tests that we count the correct number of user annotations.
+IN_PROC_BROWSER_TEST_F(AutofillCounterTest, UserAnnotations) {
+  Profile* profile = browser()->profile();
+  browsing_data::AutofillCounter counter(
+      GetPersonalDataManager(), GetWebDataService(),
+      GetUserAnnotationsService(), /*sync_service=*/nullptr);
+  counter.Init(profile->GetPrefs(),
+               browsing_data::ClearBrowsingDataTab::ADVANCED,
+               base::BindRepeating(&AutofillCounterTest::Callback,
+                                   base::Unretained(this)));
+  counter.Restart();
+  WaitForCounting();
+  EXPECT_EQ(0, GetNumUserAnnotations());
+
+  SetUserAnnotations(
+      std::vector(10, optimization_guide::proto::UserAnnotationsEntry{}));
+  counter.Restart();
+  WaitForCounting();
+  EXPECT_EQ(10, GetNumUserAnnotations());
+}
+
 // Tests that we return the correct complex result when counting more than
 // one type of items.
 IN_PROC_BROWSER_TEST_F(AutofillCounterTest, ComplexResult) {
@@ -362,8 +412,9 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, ComplexResult) {
   AddAddress("John", "Smith", "Side Street 47");
 
   Profile* profile = browser()->profile();
-  browsing_data::AutofillCounter counter(GetPersonalDataManager(),
-                                         GetWebDataService(), nullptr);
+  browsing_data::AutofillCounter counter(
+      GetPersonalDataManager(), GetWebDataService(),
+      /*user_annotations_service=*/nullptr, /*sync_service=*/nullptr);
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&AutofillCounterTest::Callback,
@@ -406,14 +457,17 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, TimeRanges) {
     const browsing_data::BrowsingDataCounter::ResultInt
         expected_num_credit_cards;
     const browsing_data::BrowsingDataCounter::ResultInt expected_num_addresses;
-  } test_cases[] = {{base::Time(), 2, 3, 3},
-                    {kTime1, 2, 3, 3},
-                    {kTime2, 1, 2, 2},
-                    {kTime3, 1, 1, 0}};
+    const browsing_data::BrowsingDataCounter::ResultInt
+        expected_num_user_annotations;
+  } test_cases[] = {{base::Time(), 2, 3, 3, 0},
+                    {kTime1, 2, 3, 3, 0},
+                    {kTime2, 1, 2, 2, 0},
+                    {kTime3, 1, 1, 0, 0}};
 
   Profile* profile = browser()->profile();
-  browsing_data::AutofillCounter counter(GetPersonalDataManager(),
-                                         GetWebDataService(), nullptr);
+  browsing_data::AutofillCounter counter(
+      GetPersonalDataManager(), GetWebDataService(),
+      /*user_annotations_service=*/nullptr, /*sync_service=*/nullptr);
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&AutofillCounterTest::Callback,
@@ -428,6 +482,7 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, TimeRanges) {
     EXPECT_EQ(test_case.expected_num_suggestions, GetNumSuggestions());
     EXPECT_EQ(test_case.expected_num_credit_cards, GetNumCreditCards());
     EXPECT_EQ(test_case.expected_num_addresses, GetNumAddresses());
+    EXPECT_EQ(test_case.expected_num_user_annotations, GetNumUserAnnotations());
   }
 
   // Test the results for different ending points and base::Time as start.
@@ -438,6 +493,7 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, TimeRanges) {
   EXPECT_EQ(1, GetNumSuggestions());
   EXPECT_EQ(1, GetNumCreditCards());
   EXPECT_EQ(1, GetNumAddresses());
+  EXPECT_EQ(0, GetNumUserAnnotations());
 
   counter.SetPeriodEndForTesting(kTime3);
   counter.Restart();
@@ -445,6 +501,7 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, TimeRanges) {
   EXPECT_EQ(1, GetNumSuggestions());
   EXPECT_EQ(2, GetNumCreditCards());
   EXPECT_EQ(3, GetNumAddresses());
+  EXPECT_EQ(0, GetNumUserAnnotations());
 }
 
 }  // namespace

@@ -283,27 +283,51 @@ std::u16string GetCounterTextFromResult(
 
     bool synced = autofill_result->is_sync_enabled();
 
-    // Construct the resulting string from the sections in |displayed_strings|.
+    // TODO(crbug.com/371539581): Exclude credit cards from this part, because
+    // it can be attributed as "synced", while credit cards are always local.
+    std::u16string credit_cards_addresses_autocomplete_entries_part;
     switch (displayed_strings.size()) {
       case 0:
-        return l10n_util::GetStringUTF16(IDS_DEL_AUTOFILL_COUNTER_EMPTY);
+        credit_cards_addresses_autocomplete_entries_part =
+            l10n_util::GetStringUTF16(IDS_DEL_AUTOFILL_COUNTER_EMPTY);
+        break;
       case 1:
-        return synced ? l10n_util::GetStringFUTF16(
-                            IDS_DEL_AUTOFILL_COUNTER_ONE_TYPE_SYNCED,
-                            displayed_strings[0])
-                      : displayed_strings[0];
+        credit_cards_addresses_autocomplete_entries_part =
+            synced ? l10n_util::GetStringFUTF16(
+                         IDS_DEL_AUTOFILL_COUNTER_ONE_TYPE_SYNCED,
+                         displayed_strings[0])
+                   : displayed_strings[0];
+        break;
       case 2:
-        return l10n_util::GetStringFUTF16(
-            synced ? IDS_DEL_AUTOFILL_COUNTER_TWO_TYPES_SYNCED
-                   : IDS_DEL_AUTOFILL_COUNTER_TWO_TYPES,
-            displayed_strings[0], displayed_strings[1]);
+        credit_cards_addresses_autocomplete_entries_part =
+            l10n_util::GetStringFUTF16(
+                synced ? IDS_DEL_AUTOFILL_COUNTER_TWO_TYPES_SYNCED
+                       : IDS_DEL_AUTOFILL_COUNTER_TWO_TYPES,
+                displayed_strings[0], displayed_strings[1]);
+        break;
       case 3:
-        return l10n_util::GetStringFUTF16(
-            synced ? IDS_DEL_AUTOFILL_COUNTER_THREE_TYPES_SYNCED
-                   : IDS_DEL_AUTOFILL_COUNTER_THREE_TYPES,
-            displayed_strings[0], displayed_strings[1], displayed_strings[2]);
+        credit_cards_addresses_autocomplete_entries_part =
+            l10n_util::GetStringFUTF16(
+                synced ? IDS_DEL_AUTOFILL_COUNTER_THREE_TYPES_SYNCED
+                       : IDS_DEL_AUTOFILL_COUNTER_THREE_TYPES,
+                displayed_strings[0], displayed_strings[1],
+                displayed_strings[2]);
+        break;
       default:
         NOTREACHED_IN_MIGRATION();
+    }
+
+    AutofillCounter::ResultInt num_user_annotations =
+        autofill_result->num_user_annotation_entries();
+    if (num_user_annotations) {
+      return l10n_util::GetStringFUTF16(
+          IDS_DEL_AUTOFILL_SYNCABLE_NON_SYNCABLE_COMBINATION,
+          credit_cards_addresses_autocomplete_entries_part,
+          l10n_util::GetPluralStringFUTF16(
+              IDS_DEL_AUTOFILL_COUNTER_USER_ANNOTATION_ENTRIES,
+              num_user_annotations));
+    } else {
+      return credit_cards_addresses_autocomplete_entries_part;
     }
   }
 

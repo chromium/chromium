@@ -106,9 +106,11 @@ class UserAnnotationsService : public KeyedService {
 
   // Returns the number of unique user annotations that were last modified
   // between [`begin`, `end`).
-  void GetCountOfValuesContainedBetween(base::Time begin,
-                                        base::Time end,
-                                        base::OnceCallback<void(int)> callback);
+  // Virtual for testing.
+  virtual void GetCountOfValuesContainedBetween(
+      base::Time begin,
+      base::Time end,
+      base::OnceCallback<void(int)> callback);
 
   // KeyedService:
   void Shutdown() override;

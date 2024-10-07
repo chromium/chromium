@@ -64,7 +64,8 @@ class BrowsingDataUtilsTest : public testing::Test {
 TEST_F(BrowsingDataUtilsTest, AutofillCounterResult) {
   autofill::TestPersonalDataManager test_personal_data_manager;
   AutofillCounter counter(&test_personal_data_manager,
-                          base::MakeRefCounted<FakeWebDataService>(), nullptr);
+                          base::MakeRefCounted<FakeWebDataService>(), nullptr,
+                          nullptr);
 
   // Test all configurations of zero and nonzero partial results for datatypes.
   // Test singular and plural for each datatype.
@@ -72,29 +73,34 @@ TEST_F(BrowsingDataUtilsTest, AutofillCounterResult) {
     int num_credit_cards;
     int num_addresses;
     int num_suggestions;
+    int num_user_annotation_entries;
     bool sync_enabled;
     std::string expected_output;
   } kTestCases[] = {
-      {0, 0, 0, false, "None"},
-      {0, 0, 0, true, "None"},
-      {1, 0, 0, false, "1 credit card"},
-      {0, 5, 0, false, "5 addresses"},
-      {0, 0, 1, false, "1 suggestion"},
-      {0, 0, 2, false, "2 suggestions"},
-      {0, 0, 2, true, "2 suggestions (synced)"},
-      {4, 7, 0, false, "4 credit cards, 7 addresses"},
-      {4, 7, 0, true, "4 credit cards, 7 addresses (synced)"},
-      {3, 0, 9, false, "3 credit cards, 9 other suggestions"},
-      {0, 1, 1, false, "1 address, 1 other suggestion"},
-      {9, 6, 3, false, "9 credit cards, 6 addresses, 3 others"},
-      {4, 2, 1, false, "4 credit cards, 2 addresses, 1 other"},
-      {4, 2, 1, true, "4 credit cards, 2 addresses, 1 other (synced)"},
+      {0, 0, 0, 0, false, "None"},
+      {0, 0, 0, 0, true, "None"},
+      {1, 0, 0, 0, false, "1 credit card"},
+      {0, 5, 0, 0, false, "5 addresses"},
+      {0, 0, 1, 0, false, "1 suggestion"},
+      {0, 0, 2, 0, false, "2 suggestions"},
+      {0, 0, 2, 0, true, "2 suggestions (synced)"},
+      {4, 7, 0, 0, false, "4 credit cards, 7 addresses"},
+      {4, 7, 0, 0, true, "4 credit cards, 7 addresses (synced)"},
+      {3, 0, 9, 0, false, "3 credit cards, 9 other suggestions"},
+      {0, 1, 1, 0, false, "1 address, 1 other suggestion"},
+      {9, 6, 3, 0, false, "9 credit cards, 6 addresses, 3 others"},
+      {4, 2, 1, 0, false, "4 credit cards, 2 addresses, 1 other"},
+      {4, 2, 1, 0, true, "4 credit cards, 2 addresses, 1 other (synced)"},
+      {1, 0, 0, 1, false, "1 credit card; 1 suggestion (device only)"},
+      {1, 1, 0, 2, true,
+       "1 credit card, 1 address (synced); 2 suggestions (device only)"},
   };
 
   for (const TestCase& test_case : kTestCases) {
     AutofillCounter::AutofillResult result(
         &counter, test_case.num_suggestions, test_case.num_credit_cards,
-        test_case.num_addresses, test_case.sync_enabled);
+        test_case.num_addresses, test_case.num_user_annotation_entries,
+        test_case.sync_enabled);
 
     SCOPED_TRACE(
         base::StringPrintf("Test params: %d credit card(s), "

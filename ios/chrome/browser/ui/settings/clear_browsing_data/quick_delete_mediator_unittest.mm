@@ -190,9 +190,10 @@ class QuickDeleteMediatorTest : public PlatformTest {
   void triggerUpdateUICallbackForAutofillResults(int num_suggestions,
                                                  int num_cards,
                                                  int num_addresses) {
-    browsing_data::AutofillCounter autofillCounter(nullptr, nullptr, nullptr);
+    browsing_data::AutofillCounter autofillCounter(nullptr, nullptr, nullptr,
+                                                   nullptr);
     const browsing_data::AutofillCounter::AutofillResult autofillResult(
-        &autofillCounter, num_suggestions, num_cards, num_addresses, false);
+        &autofillCounter, num_suggestions, num_cards, num_addresses, 0, false);
     OCMExpect([consumer_
         setAutofillSummary:quick_delete_util::GetCounterTextFromResult(
                                autofillResult, timeRange())]);
@@ -425,18 +426,18 @@ TEST_F(QuickDeleteMediatorTest, TestAddressesSummary) {
     };
   // clang-format on
 
-  browsing_data::AutofillCounter counter(nullptr, nullptr, nullptr);
+    browsing_data::AutofillCounter counter(nullptr, nullptr, nullptr, nullptr);
 
-  for (const TestCase& test_case : kTestCases) {
-    const browsing_data::AutofillCounter::AutofillResult result(
-        &counter, 0, 0, test_case.num_addresses, test_case.sync_enabled);
-    OCMExpect([consumer_ setBrowsingDataSummary:test_case.expected_output]);
-    OCMExpect([consumer_
-        setAutofillSummary:quick_delete_util::GetCounterTextFromResult(
-                               result, timeRange())]);
-    [fake_browsing_data_counter_wrapper_producer_
-        triggerUpdateUICallbackForResult:result];
-    EXPECT_OCMOCK_VERIFY(consumer_);
+    for (const TestCase& test_case : kTestCases) {
+      const browsing_data::AutofillCounter::AutofillResult result(
+          &counter, 0, 0, test_case.num_addresses, 0, test_case.sync_enabled);
+      OCMExpect([consumer_ setBrowsingDataSummary:test_case.expected_output]);
+      OCMExpect([consumer_
+          setAutofillSummary:quick_delete_util::GetCounterTextFromResult(
+                                 result, timeRange())]);
+      [fake_browsing_data_counter_wrapper_producer_
+          triggerUpdateUICallbackForResult:result];
+      EXPECT_OCMOCK_VERIFY(consumer_);
   }
 }
 
@@ -477,20 +478,20 @@ TEST_F(QuickDeleteMediatorTest, TestCardsSummary) {
     };
   // clang-format on
 
-  browsing_data::AutofillCounter counter(nullptr, nullptr, nullptr);
+    browsing_data::AutofillCounter counter(nullptr, nullptr, nullptr, nullptr);
 
-  for (const TestCase& test_case : kTestCases) {
-    const browsing_data::AutofillCounter::AutofillResult result(
-        &counter, 0, test_case.num_cards, 0, test_case.sync_enabled);
+    for (const TestCase& test_case : kTestCases) {
+      const browsing_data::AutofillCounter::AutofillResult result(
+          &counter, 0, test_case.num_cards, 0, 0, test_case.sync_enabled);
 
-    OCMExpect([consumer_ setBrowsingDataSummary:test_case.expected_output]);
-    OCMExpect([consumer_
-        setAutofillSummary:quick_delete_util::GetCounterTextFromResult(
-                               result, timeRange())]);
+      OCMExpect([consumer_ setBrowsingDataSummary:test_case.expected_output]);
+      OCMExpect([consumer_
+          setAutofillSummary:quick_delete_util::GetCounterTextFromResult(
+                                 result, timeRange())]);
 
-    [fake_browsing_data_counter_wrapper_producer_
-        triggerUpdateUICallbackForResult:result];
-    EXPECT_OCMOCK_VERIFY(consumer_);
+      [fake_browsing_data_counter_wrapper_producer_
+          triggerUpdateUICallbackForResult:result];
+      EXPECT_OCMOCK_VERIFY(consumer_);
   }
 }
 
@@ -533,19 +534,19 @@ TEST_F(QuickDeleteMediatorTest, TestSuggestionsSummary) {
     };
   // clang-format on
 
-  browsing_data::AutofillCounter counter(nullptr, nullptr, nullptr);
+    browsing_data::AutofillCounter counter(nullptr, nullptr, nullptr, nullptr);
 
-  for (const TestCase& test_case : kTestCases) {
-    const browsing_data::AutofillCounter::AutofillResult result(
-        &counter, test_case.num_suggestions, 0, 0, test_case.sync_enabled);
-    OCMExpect([consumer_ setBrowsingDataSummary:test_case.expected_output]);
-    OCMExpect([consumer_
-        setAutofillSummary:quick_delete_util::GetCounterTextFromResult(
-                               result, timeRange())]);
+    for (const TestCase& test_case : kTestCases) {
+      const browsing_data::AutofillCounter::AutofillResult result(
+          &counter, test_case.num_suggestions, 0, 0, 0, test_case.sync_enabled);
+      OCMExpect([consumer_ setBrowsingDataSummary:test_case.expected_output]);
+      OCMExpect([consumer_
+          setAutofillSummary:quick_delete_util::GetCounterTextFromResult(
+                                 result, timeRange())]);
 
-    [fake_browsing_data_counter_wrapper_producer_
-        triggerUpdateUICallbackForResult:result];
-    EXPECT_OCMOCK_VERIFY(consumer_);
+      [fake_browsing_data_counter_wrapper_producer_
+          triggerUpdateUICallbackForResult:result];
+      EXPECT_OCMOCK_VERIFY(consumer_);
   }
 }
 

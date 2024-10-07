@@ -108,6 +108,11 @@
      =1 {1 suggestion}
      other {# suggestions}}
   </message>
+  <message name="IDS_DEL_AUTOFILL_COUNTER_USER_ANNOTATION_ENTRIES" desc="A counter showing how many annotation entries the user has." translateable="false">
+    {COUNT, plural,
+     =1 {1 suggestion (device only)}
+     other {# suggestions (device only)}}
+  </message>
   <message name="IDS_DEL_AUTOFILL_COUNTER_SUGGESTIONS_LONG" desc="A counter showing how many other form autocompletion suggestions the user has. Note that this message is shown at the end of an enumeration of form data types, such as '2 addresses, 5 others suggestions'.">
     {COUNT, plural,
      =1 {1 other suggestion}
@@ -132,6 +137,9 @@
   </message>
   <message name="IDS_DEL_AUTOFILL_COUNTER_THREE_TYPES_SYNCED" desc="A counter showing that the user has three types of form data and that they are synced. The types and their counts will be substituted, this message only provides the comma separators.">
     <ph name="TYPE_1">$1<ex>2 credit cards</ex></ph>, <ph name="TYPE_2">$2<ex>1 address</ex></ph>, <ph name="TYPE_3">$3<ex>5 others</ex></ph> (synced)
+  </message>
+  <message name="IDS_DEL_AUTOFILL_SYNCABLE_NON_SYNCABLE_COMBINATION" desc="A string for binding syncable and non-syncable autofill data." translateable="false">
+    <ph name="SYNCABLE_PART">$1<ex>2 credit cards</ex></ph>; <ph name="NON_SYNCABLE_PART">$2<ex>1 suggestion (device only)</ex></ph>
   </message>
   <message name="IDS_DEL_COOKIES_COUNTER" desc="A static message shown in the Clear Browsing Data dialog explaining to the user that deleting cookies and site data will result in the user being signed out of most websites.">
     This will sign you out of most websites.

@@ -67,6 +67,7 @@ CreateCounterForBrowserStateAndPref(ChromeBrowserState* browser_state,
         autofill::PersonalDataManagerFactory::GetForBrowserState(browser_state),
         ios::WebDataServiceFactory::GetAutofillWebDataForProfile(
             browser_state, ServiceAccessType::EXPLICIT_ACCESS),
+        /*user_annotations_service=*/nullptr,
         SyncServiceFactory::GetForBrowserState(browser_state));
   }
 

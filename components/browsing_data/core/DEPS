@@ -12,6 +12,7 @@ include_rules = [
   "+components/sync/service",
   "+components/sync/test",
   "+components/sync_preferences",
+  "+components/user_annotations",
   "+components/version_info",
   "+components/webdata/common",
   "+net",

@@ -242,6 +242,7 @@ source_set("profile_statistics") {
   deps = [
     "//components/autofill/core/browser",
     "//components/password_manager/core/browser/password_store:password_store_interface",
+    "//components/user_annotations:user_annotations",
     "//device/fido:fido",
   ]
 }
@@ -263,6 +264,10 @@ source_set("profile_statistics_impl") {
     "//components/browsing_data/core",
     "//content/public/browser",
   ]
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/user_annotations:user_annotations" ]
+  }
 }
 
 source_set("profiles_extra_parts") {

@@ -90,4 +90,10 @@ void TestUserAnnotationsService::RemoveAnnotationsInRange(
       std::make_pair(delete_begin, delete_end);
 }
 
+void TestUserAnnotationsService::GetCountOfValuesContainedBetween(
+    base::Time,
+    base::Time,
+    base::OnceCallback<void(int)> callback) {
+  std::move(callback).Run(entries_.size());
+}
 }  // namespace user_annotations
