@@ -150,7 +150,7 @@ void SensitiveContentManager::OnAutofillManagerStateChanged(
     // If needed, the time complexity can be further improved here by exploiting
     // that fields from the same frame are next to each other in the set.
     std::erase_if(sensitive_fields_,
-                  [local_frame_token](autofill::FieldGlobalId field_id) {
+                  [local_frame_token](const autofill::FieldGlobalId& field_id) {
                     return field_id.frame_token == local_frame_token;
                   });
     std::erase_if(latency_until_sensitive_timer_,
