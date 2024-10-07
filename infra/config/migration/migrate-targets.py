@@ -161,6 +161,7 @@ def _update_starlark(
     builder_group: str,
     star_file: pathlib.Path,
     targets_builder_defaults: dict[str, str],
+    targets_settings_defaults: dict[str, str],
     edits_by_builder: dict[str, dict[str, str]],
 ):
 
@@ -176,24 +177,30 @@ def _update_starlark(
 
   buildozer.run('new_load //lib/targets.star targets', file_target)
 
-  defaults_rule_kind = 'targets.builder_defaults.set'
-  # %{kind} as the pattern tells it to operate on all rules of that kind. There
-  # shouldn't be more than one targets.builder_defaults.set "rule".
-  defaults_target = f'{star_file}:%{defaults_rule_kind}'
-  # Check if a targets.builder_defaults.set declaration already exists, any
-  # print operation will result in output if there is already a rule
-  if not buildozer.run('print kind', defaults_target):
-    # It's not possible to add an arbitrary function call, only new rules, which
-    # require a name, so create a rule with a temporary name and then remove the
-    # name attribute, then we can just use the kind filter for modifying it
-    temp_name = 'NO_DECLARATION_SHOULD_EXIST_WITH_THIS_NAME'
-    buildozer.run(
-        f'new {defaults_rule_kind} {temp_name} before {builder_group}',
-        file_target)
-    buildozer.run('remove name', f'{star_file}:{temp_name}')
+  def create_defaults(kind):
+    # %{kind} as the pattern tells it to operate on all rules of that kind.
+    # There shouldn't be more than one targets.builder_defaults.set "rule".
+    defaults_target = f'{star_file}:%{kind}'
+    # Check if a declaration of the kind already exists, any print operation
+    # will result in output if there is already a rule
+    if not buildozer.run('print kind', defaults_target):
+      # It's not possible to add an arbitrary function call, only new rules,
+      # which require a name, so create a rule with a temporary name and then
+      # remove the name attribute, then we can just use the kind filter for
+      # modifying it
+      temp_name = 'NO_DECLARATION_SHOULD_EXIST_WITH_THIS_NAME'
+      buildozer.run(f'new {kind} {temp_name} before {builder_group}',
+                    file_target)
+      buildozer.run('remove name', f'{star_file}:{temp_name}')
+    return defaults_target
 
-  for attr, value in targets_builder_defaults.items():
-    buildozer.run(f'set {attr} {_escape_spaces(value)}', defaults_target)
+  for kind, defaults in (
+      ('targets.builder_defaults.set', targets_builder_defaults),
+      ('targets.settings_defaults.set', targets_settings_defaults),
+  ):
+    defaults_target = create_defaults(kind)
+    for attr, value in defaults.items():
+      buildozer.run(f'set {attr} {_escape_spaces(value)}', defaults_target)
 
   for builder, edits in edits_by_builder.items():
     for attr, value in edits.items():
@@ -225,6 +232,7 @@ def main(argv: list[str]):
     test_suite_exceptions = ast.literal_eval(f.read())
 
   targets_builder_defaults = {}
+  targets_settings_defaults = {}
   edits_by_builder = {}
   for key, value in waterfall.items():
     match key:
@@ -253,9 +261,9 @@ def main(argv: list[str]):
               break
 
       case 'forbid_script_tests':
-        # TODO: crbug.com/40258588: Implement support for forbid_script_test in
-        # starlark and handle this
-        pass
+        if value:
+          targets_settings_defaults['allow_script_tests'] = (
+              values.convert_direct(False))
 
       case _:
         raise Exception(f'unhandled key in waterfall: "{key}"')
@@ -275,6 +283,7 @@ def main(argv: list[str]):
       args.builder_group,
       star_file,
       targets_builder_defaults,
+      targets_settings_defaults,
       edits_by_builder,
   )
 
