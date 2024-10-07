@@ -26,6 +26,13 @@ BASE_FEATURE(kOverlayScrollbar,
              "OverlayScrollbar",
              kOverlayScrollbarFeatureState);
 
+// Enables the os settings of overlay scrollbars for ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+BASE_FEATURE(kOverlayScrollbarsOSSetting,
+             "OverlayScrollbarsOSSetting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // Fluent scrollbars aim to modernize the Chromium scrollbars (both overlay and
 // non-overlay) to fit the Fluent design language. For now, the feature will
 // only support the Windows and Linux platforms. The feature is currently in

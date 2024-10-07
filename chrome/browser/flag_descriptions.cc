@@ -8413,6 +8413,12 @@ const char kEnableCertManagementV2UIDescription[] =
     "chrome://settings/certificates";
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kOverlayScrollbarsOSSettingsName[] = "Overlay Scrollbar OS Settings";
+const char kOverlayScrollbarsOSSettingsDescription[] =
+    "Enable the os settings for overlay scrollbars on ChromeOS.";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 const char kSupervisedProfileHideGuestName[] = "Supervised Profile Hide Guest";
 const char kSupervisedProfileHideGuestDescription[] =

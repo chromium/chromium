@@ -4909,6 +4909,11 @@ extern const char kEnableCertManagementV2UIName[];
 extern const char kEnableCertManagementV2UIDescription[];
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+extern const char kOverlayScrollbarsOSSettingsName[];
+extern const char kOverlayScrollbarsOSSettingsDescription[];
+#endif
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 extern const char kSupervisedProfileHideGuestName[];
 extern const char kSupervisedProfileHideGuestDescription[];

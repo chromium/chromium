@@ -6818,11 +6818,23 @@
   },
   {
     "name": "overlay-scrollbars",
-    "owners": [ "chaopeng@chromium.org", "bokan@chromium.org", "input-dev@chromium.org" ],
+    "owners": [
+      "zhzhliu@chromium.org",
+      "cros-ui-foundations@google.com"
+    ],
     // This flag is used by users to improve the accessibility of scroll bars
     // and should not be allowed to expire until https://crbug.com/801671 is
     // resolved.
     "expiry_milestone": -1
+  },
+  {
+    "name": "overlay-scrollbars-os-settings",
+    "owners": [
+      "zhzhliu@chromium.org",
+      "cros-ui-foundations@google.com"
+    ],
+    // This flag is used for os settings for overlay scrollbars.
+    "expiry_milestone": 150
   },
   {
     "name": "overlay-strategies",

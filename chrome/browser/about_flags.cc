@@ -11856,6 +11856,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"cros-mall-url", flag_descriptions::kCrosMallUrlName,
      flag_descriptions::kCrosMallUrlDescription, kOsCrOS,
      STRING_VALUE_TYPE(ash::switches::kMallUrl, "")},
+
+    {"overlay-scrollbars-os-settings",
+     flag_descriptions::kOverlayScrollbarsOSSettingsName,
+     flag_descriptions::kOverlayScrollbarsOSSettingsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kOverlayScrollbarsOSSetting)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"autofill-enable-card-benefits-iph",
