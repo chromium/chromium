@@ -188,14 +188,6 @@ function getNewColorIndex(
   return currentIndex + delta;
 }
 
-export interface ViewerSidePanelElement {
-  $: {
-    eraser: HTMLElement,
-    highlighter: HTMLElement,
-    pen: HTMLElement,
-  };
-}
-
 export class ViewerSidePanelElement extends CrLitElement {
   static get is() {
     return 'viewer-side-panel';
@@ -268,14 +260,8 @@ export class ViewerSidePanelElement extends CrLitElement {
     }
   }
 
-  protected onBrushClick_(e: Event) {
-    const targetElement = e.currentTarget as HTMLElement;
-    const newType = targetElement.dataset['brush'] as AnnotationBrushType;
-    if (this.currentType_ === newType) {
-      return;
-    }
-
-    this.currentType_ = newType;
+  protected onBrushChange_(e: CustomEvent<{type: AnnotationBrushType}>) {
+    this.currentType_ = e.detail.type;
     this.brushDirty_ = true;
   }
 
@@ -338,23 +324,6 @@ export class ViewerSidePanelElement extends CrLitElement {
     assert(newColorButton);
     this.setBrushColor_(newColorButton);
     newColorButton.focus();
-  }
-
-  protected getIcon_(type: AnnotationBrushType): string {
-    const isCurrentType = this.isCurrentType_(type);
-    switch (type) {
-      case AnnotationBrushType.ERASER:
-        return isCurrentType ? 'pdf:ink-eraser-fill' : 'pdf:ink-eraser';
-      case AnnotationBrushType.HIGHLIGHTER:
-        return isCurrentType ? 'pdf:ink-highlighter-fill' :
-                               'pdf:ink-highlighter';
-      case AnnotationBrushType.PEN:
-        return isCurrentType ? 'pdf:ink-pen-fill' : 'pdf:ink-pen';
-    }
-  }
-
-  protected isCurrentType_(type: AnnotationBrushType): boolean {
-    return this.currentType_ === type;
   }
 
   protected isCurrentSize_(size: number): boolean {

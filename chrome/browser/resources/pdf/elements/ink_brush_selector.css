@@ -1,0 +1,24 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #css_wrapper_metadata_end */
+
+:host,
+div {
+  display: flex;
+  justify-content: center;
+}
+
+cr-icon-button {
+  --cr-icon-button-fill-color: var(--viewer-icon-ink-fill-color);
+  --cr-icon-button-size: 48px;
+  margin: 4px 8px;
+}
+
+cr-icon-button[data-selected="true"] {
+  --cr-icon-button-fill-color: var(--viewer-icon-ink-selected-fill-color);
+  background-color: var(--viewer-icon-ink-selected-background-color);
+}

@@ -17,7 +17,7 @@
   width: 288px;
 }
 
-:host > div {
+:host > * {
   padding-inline: 16px;
 }
 
@@ -41,16 +41,10 @@ cr-icon-button[data-selected="true"] {
   padding-top: 27px;
 }
 
-#brush-selector {
-  border-bottom: 1px solid var(--viewer-border-color);
-  display: flex;
-  justify-content: center;
-  padding-bottom: 8px;
-}
 
-#brush-selector cr-icon-button {
-  --cr-icon-button-size: 48px;
-  margin: 4px 8px;
+ink-brush-selector {
+  border-bottom: 1px solid var(--viewer-border-color);
+  padding-bottom: 8px;
 }
 
 #colors,

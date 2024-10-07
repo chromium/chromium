@@ -19,6 +19,7 @@ export {Attachment, FittingType, FormFieldFocusType, Point, Rect, SaveRequestTyp
 export {PluginController} from './controller.js';
 // <if expr="enable_pdf_ink2">
 export {PluginControllerEventType} from './controller.js';
+export {InkBrushSelectorElement} from './elements/ink_brush_selector.js';
 // </if>
 export {ViewerAttachmentElement} from './elements/viewer_attachment.js';
 export {ViewerAttachmentBarElement} from './elements/viewer_attachment_bar.js';

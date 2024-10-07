@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 import {AnnotationBrushType, PluginController} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import type {AnnotationBrush} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {AnnotationBrush, InkBrushSelectorElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createMockPdfPluginForTest} from './test_util.js';
+import {createMockPdfPluginForTest, getRequiredElement} from './test_util.js';
 
 const controller = PluginController.getInstance();
 const mockPlugin = createMockPdfPluginForTest();
@@ -56,14 +56,15 @@ function assertAnnotationBrush(expectedBrush: AnnotationBrush) {
  * have a filled icon.
  */
 function assertBrushIcons(selectedBrushType: AnnotationBrushType) {
-  const eraserIcon = sidePanel.$.eraser.getAttribute('iron-icon');
+  const eraserIcon = getBrushSelector().$.eraser.getAttribute('iron-icon');
   assert(eraserIcon);
   chrome.test.assertEq(
       selectedBrushType === AnnotationBrushType.ERASER ? 'pdf:ink-eraser-fill' :
                                                          'pdf:ink-eraser',
       eraserIcon);
 
-  const highlighterIcon = sidePanel.$.highlighter.getAttribute('iron-icon');
+  const highlighterIcon =
+      getBrushSelector().$.highlighter.getAttribute('iron-icon');
   assert(highlighterIcon);
   chrome.test.assertEq(
       selectedBrushType === AnnotationBrushType.HIGHLIGHTER ?
@@ -71,7 +72,7 @@ function assertBrushIcons(selectedBrushType: AnnotationBrushType) {
           'pdf:ink-highlighter',
       highlighterIcon);
 
-  const penIcon = sidePanel.$.pen.getAttribute('iron-icon');
+  const penIcon = getBrushSelector().$.pen.getAttribute('iron-icon');
   assert(penIcon);
   chrome.test.assertEq(
       selectedBrushType === AnnotationBrushType.PEN ? 'pdf:ink-pen-fill' :
@@ -85,19 +86,20 @@ function assertBrushIcons(selectedBrushType: AnnotationBrushType) {
  * @param selectedBrushType The expected selected brush type.
  */
 function assertSelectedBrush(selectedBrushType: AnnotationBrushType) {
-  const eraserSelected = sidePanel.$.eraser.dataset['selected'];
+  const eraserSelected = getBrushSelector().$.eraser.dataset['selected'];
   assert(eraserSelected);
   chrome.test.assertEq(
       selectedBrushType === AnnotationBrushType.ERASER ? 'true' : 'false',
       eraserSelected);
 
-  const highlighterSelected = sidePanel.$.highlighter.dataset['selected'];
+  const highlighterSelected =
+      getBrushSelector().$.highlighter.dataset['selected'];
   assert(highlighterSelected);
   chrome.test.assertEq(
       selectedBrushType === AnnotationBrushType.HIGHLIGHTER ? 'true' : 'false',
       highlighterSelected);
 
-  const penSelected = sidePanel.$.pen.dataset['selected'];
+  const penSelected = getBrushSelector().$.pen.dataset['selected'];
   assert(penSelected);
   chrome.test.assertEq(
       selectedBrushType === AnnotationBrushType.PEN ? 'true' : 'false',
@@ -128,6 +130,14 @@ function assertSelectedColor(buttonIndex: number) {
     chrome.test.assertEq(
         i === buttonIndex, colorButtons[i].hasAttribute('checked'));
   }
+}
+
+/**
+ * @returns The non-null brush type selector.
+ */
+function getBrushSelector(): InkBrushSelectorElement {
+  return getRequiredElement<InkBrushSelectorElement>(
+      sidePanel, 'ink-brush-selector');
 }
 
 /**
@@ -231,7 +241,7 @@ chrome.test.runTests([
   // Test that the eraser can be selected.
   async function testSelectEraser() {
     // Switch to eraser.
-    sidePanel.$.eraser.click();
+    getBrushSelector().$.eraser.click();
     await microtasksFinished();
 
     assertAnnotationBrush({
@@ -262,7 +272,7 @@ chrome.test.runTests([
   // Test that the highlighter can be selected.
   async function testSelectHighlighter() {
     // Switch to highlighter.
-    sidePanel.$.highlighter.click();
+    getBrushSelector().$.highlighter.click();
     await microtasksFinished();
 
     assertAnnotationBrush({
@@ -307,7 +317,7 @@ chrome.test.runTests([
   // the same settings as last set in previous tests.
   async function testGoBackToBrushWithPreviousSettings() {
     // Switch back to pen. It should have the previous color and size.
-    sidePanel.$.pen.click();
+    getBrushSelector().$.pen.click();
     await microtasksFinished();
 
     assertAnnotationBrush({
@@ -320,7 +330,7 @@ chrome.test.runTests([
     assertSelectedSize(/*buttonIndex=*/ 0);
 
     // Switch back to eraser. It should have the previous size.
-    sidePanel.$.eraser.click();
+    getBrushSelector().$.eraser.click();
     await microtasksFinished();
 
     assertAnnotationBrush({
@@ -332,7 +342,7 @@ chrome.test.runTests([
     assertSelectedSize(/*buttonIndex=*/ 1);
 
     // Switch back to highlighter. It should have the previous color and size.
-    sidePanel.$.highlighter.click();
+    getBrushSelector().$.highlighter.click();
     await microtasksFinished();
 
     assertAnnotationBrush({
@@ -488,7 +498,7 @@ chrome.test.runTests([
   // same column.
   async function testArrowKeysChangeColorFirstLastRow() {
     // Switch to pen, which has multiple rows of colors.
-    sidePanel.$.pen.click();
+    getBrushSelector().$.pen.click();
     await microtasksFinished();
 
     const colorButtons = getColorButtons();
