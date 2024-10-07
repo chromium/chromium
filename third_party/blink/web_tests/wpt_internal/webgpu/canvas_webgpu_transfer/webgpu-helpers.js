@@ -8,18 +8,12 @@ function with_webgpu(callback) {
       assert_unreached('Failed to request WebGPU adapter.');
       return;
     }
-    return adapter.requestAdapterInfo().then((adapterInfo) => {
-      if (!(adapterInfo instanceof GPUAdapterInfo)) {
-        assert_unreached('Failed to request WebGPU adapter info.');
+    return adapter.requestDevice().then((device) => {
+      if (!(device instanceof GPUDevice)) {
+        assert_unreached('Failed to request WebGPU device.');
         return;
       }
-      return adapter.requestDevice().then((device) => {
-        if (!(device instanceof GPUDevice)) {
-          assert_unreached('Failed to request WebGPU device.');
-          return;
-        }
-        return callback(adapter, adapterInfo, device);
-      });
+      return callback(adapter, adapter.info, device);
     });
   });
 }

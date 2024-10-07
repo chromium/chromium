@@ -1330,10 +1330,10 @@
       origin_trial_type: "deprecation",
     },
     {
-      // This will allow us to remove the GPUAdapter requestAdapterInfo method
-      // after the deprecation period. See https://crbug.com/335383516
+      // Remove this feature when the removal of the GPUAdapter
+      // requestAdapterInfo method has been stable long enough.
+      // See https://crbug.com/335383516
       name: "DeprecatedRequestAdapterInfo",
-      status: "stable",
     },
 
     // This allows pages to opt out of the unload deprecation. Enabling this

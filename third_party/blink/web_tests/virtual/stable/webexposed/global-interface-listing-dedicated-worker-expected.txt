@@ -611,7 +611,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter isFallbackAdapter
 [Worker]     getter limits
 [Worker]     method constructor
-[Worker]     method requestAdapterInfo
 [Worker]     method requestDevice
 [Worker] interface GPUAdapterInfo
 [Worker]     attribute @@toStringTag
