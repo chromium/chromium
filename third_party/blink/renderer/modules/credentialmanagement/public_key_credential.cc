@@ -84,7 +84,7 @@ void OnGetClientCapabilitiesComplete(
       [](const std::pair<String, bool>& a, const std::pair<String, bool>& b) {
         return CodeUnitCompare(a.first, b.first) < 0;
       });
-  resolver->Resolve(results);
+  resolver->Resolve(std::move(results));
 }
 
 void OnSignalReportComplete(
