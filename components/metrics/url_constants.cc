@@ -15,6 +15,5 @@ const char kOldMetricsServerUrl[] = "";
 const char kDefaultMetricsMimeType[] = "";
 const char kDefaultUkmServerUrl[] = "";
 const char kUkmMimeType[] = "";
-const char kDefaultDwaServerUrl[] = "";
 
 } // namespace metrics
