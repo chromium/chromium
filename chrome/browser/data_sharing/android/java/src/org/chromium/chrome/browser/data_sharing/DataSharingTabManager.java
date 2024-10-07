@@ -443,17 +443,7 @@ public class DataSharingTabManager {
         BottomSheetContent bottomSheetContent =
                 showBottomSheet(activity, /* onClosedCallback= */ null);
 
-        Profile profile = mProfileSupplier.get().getOriginalProfile();
-        DataSharingService dataSharingService = DataSharingServiceFactory.getForProfile(profile);
-        DataSharingUIDelegate uiDelegate = dataSharingService.getUIDelegate();
-
-        // This API is likely to change in the future.
-        uiDelegate.createGroupMemberListView(
-                activity,
-                (ViewGroup) bottomSheetContent.getContentView(),
-                collaborationId,
-                /* tokenSecret= */ null,
-                /* config= */ null);
+        // Callback Manage screen API for here.
     }
 
     /**

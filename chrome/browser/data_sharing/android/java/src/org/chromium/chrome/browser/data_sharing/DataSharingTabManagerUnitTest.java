@@ -284,13 +284,6 @@ public class DataSharingTabManagerUnitTest {
 
         verify(mBottomSheetController).requestShowContent(any(), eq(true));
         verify(mBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
-        verify(mDataSharingUIDelegate)
-                .createGroupMemberListView(
-                        eq(mActivity),
-                        /* view= */ any(),
-                        eq(GROUP_ID),
-                        /* tokenSecret= */ any(),
-                        /* config= */ any());
         mBottomSheetObserverCaptor.getValue().onSheetClosed(StateChangeReason.SWIPE);
     }
 
