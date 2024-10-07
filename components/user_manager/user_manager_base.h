@@ -345,10 +345,11 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // Getters/setters for private members.
 
   const EphemeralModeConfig& GetEphemeralModeConfig() const;
-  void SetEphemeralModeConfig(EphemeralModeConfig ephemeral_mode_config);
+  void SetEphemeralModeConfig(
+      EphemeralModeConfig ephemeral_mode_config) override;
 
   virtual void ResetOwnerId();
-  virtual void SetOwnerId(const AccountId& owner_account_id);
+  void SetOwnerId(const AccountId& owner_account_id) override;
 
   // If there's pending user switch, processes it.
   void ProcessPendingUserSwitchId();

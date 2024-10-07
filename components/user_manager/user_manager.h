@@ -224,6 +224,9 @@ class USER_MANAGER_EXPORT UserManager {
   // no owner for the device.
   virtual const AccountId& GetOwnerAccountId() const = 0;
 
+  // Sets the account Id as an owner.
+  virtual void SetOwnerId(const AccountId& owner_account_id) = 0;
+
   // Provides the caller with account Id of the Owner user once it is loaded.
   // Would provide empty account id if there is no owner on the device (e.g.
   // if device is enterprise-owned).
@@ -493,6 +496,9 @@ class USER_MANAGER_EXPORT UserManager {
   // In all other cases the ephemeral status of account depends on set of
   // policies.
   virtual bool IsEphemeralAccountId(const AccountId& account_id) const = 0;
+
+  virtual void SetEphemeralModeConfig(
+      EphemeralModeConfig ephemeral_mode_config) = 0;
 
   // Returns "Local State" PrefService instance.
   virtual PrefService* GetLocalState() const = 0;

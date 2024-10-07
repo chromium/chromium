@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
+#include "chrome/browser/ash/login/users/policy_user_manager_controller.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -208,11 +209,16 @@ class UserManagerTest : public testing::Test {
     // Initialize the UserManager singleton to a fresh ChromeUserManagerImpl
     // instance.
     user_image_manager_registry_.reset();
+    policy_user_manager_controller_.reset();
     if (user_manager_) {
       user_manager_->Destroy();
       user_manager_.reset();
     }
     user_manager_ = ChromeUserManagerImpl::CreateChromeUserManager();
+    policy_user_manager_controller_ =
+        std::make_unique<PolicyUserManagerController>(
+            user_manager_.get(), ash::CrosSettings::Get(),
+            DeviceSettingsService::Get(), nullptr);
     user_image_manager_registry_ =
         std::make_unique<ash::UserImageManagerRegistry>(user_manager_.get());
     // Initialize `UserManager` after `UserImageManagerRegistry` creation to
@@ -289,7 +295,7 @@ class UserManagerTest : public testing::Test {
   }
 
   void RetrieveTrustedDevicePolicies() {
-    user_manager_->RetrieveTrustedDevicePolicies();
+    policy_user_manager_controller_->RetrieveTrustedDevicePolicies();
   }
 
  protected:
@@ -314,6 +320,7 @@ class UserManagerTest : public testing::Test {
   std::unique_ptr<ScopedTestingLocalState> local_state_;
 
   std::unique_ptr<ChromeUserManagerImpl> user_manager_;
+  std::unique_ptr<PolicyUserManagerController> policy_user_manager_controller_;
   std::unique_ptr<ash::UserImageManagerRegistry> user_image_manager_registry_;
   base::ScopedTempDir temp_dir_;
 };
