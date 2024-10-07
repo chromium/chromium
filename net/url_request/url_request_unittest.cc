@@ -5938,10 +5938,10 @@ TEST_F(URLRequestTestHTTP, PostFileTest) {
 
     d.RunUntilComplete();
 
-    int64_t size64 = 0;
-    ASSERT_EQ(true, base::GetFileSize(path, &size64));
-    ASSERT_LE(size64, std::numeric_limits<int>::max());
-    int size = static_cast<int>(size64);
+    std::optional<int64_t> size64 = base::GetFileSize(path);
+    ASSERT_TRUE(size64.has_value());
+    ASSERT_LE(size64.value(), std::numeric_limits<int>::max());
+    int size = static_cast<int>(size64.value());
     auto buf = std::make_unique<char[]>(size);
 
     ASSERT_EQ(size, base::ReadFile(path, buf.get(), size));

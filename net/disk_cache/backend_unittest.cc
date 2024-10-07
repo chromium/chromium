@@ -770,9 +770,9 @@ TEST_F(DiskCacheBackendTest, CreateBackendPostCleanup) {
   // back in the async Close()
   base::FilePath entry_path = cache_path_.AppendASCII(
       disk_cache::simple_util::GetFilenameFromKeyAndFileIndex("key", 0));
-  int64_t size = 0;
-  EXPECT_TRUE(base::GetFileSize(entry_path, &size));
-  EXPECT_GT(size, kBufSize);
+  std::optional<int64_t> size = base::GetFileSize(entry_path);
+  ASSERT_TRUE(size.has_value());
+  EXPECT_GT(size.value(), kBufSize);
 }
 
 TEST_F(DiskCacheBackendTest, SimpleCreateBackendRecoveryAppCache) {
