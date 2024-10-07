@@ -1276,7 +1276,7 @@ void SourceBuffer::RemoveMediaTracks() {
   // above, along with conditional enqueueing of change event.
   if (!audio_track_removal_ids.empty()) {
     attachment->RemoveAudioTracksFromMediaElement(
-        tracer, audio_track_removal_ids,
+        tracer, std::move(audio_track_removal_ids),
         removed_enabled_audio_track /* enqueue_change_event */);
   }
 
@@ -1321,7 +1321,7 @@ void SourceBuffer::RemoveMediaTracks() {
   // above, along with conditional enqueueing of change event.
   if (!video_track_removal_ids.empty()) {
     attachment->RemoveVideoTracksFromMediaElement(
-        tracer, video_track_removal_ids,
+        tracer, std::move(video_track_removal_ids),
         removed_selected_video_track /* enqueue_change_event */);
   }
 
