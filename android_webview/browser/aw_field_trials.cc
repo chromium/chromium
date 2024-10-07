@@ -285,4 +285,9 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.EnableFeature(blink::features::kThreadedBodyLoader);
   aw_feature_overrides.EnableFeature(blink::features::kThreadedPreloadScanner);
   aw_feature_overrides.EnableFeature(blink::features::kPrecompileInlineScripts);
+
+  // This feature has not been experimented with yet on WebView.
+  // TODO(crbug.com/336852432): Enable this feature for WebView.
+  aw_feature_overrides.DisableFeature(
+      blink::features::kNavigationPredictorNewViewportFeatures);
 }

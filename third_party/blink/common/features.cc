@@ -1724,7 +1724,12 @@ const base::FeatureParam<int> kPredictorTrafficClientEnabledPercent{
 // is disabled.
 BASE_FEATURE(kNavigationPredictorNewViewportFeatures,
              "NavigationPredictorNewViewportFeatures",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE(kNoForcedFrameUpdatesForWebTests,
              "NoForcedFrameUpdatesForWebTests",

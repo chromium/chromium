@@ -1529,6 +1529,9 @@ TEST_F(NavigationPredictorTest, RemoveAnchorElement) {
 
 TEST_F(NavigationPredictorUserInteractionsTest,
        ReportAnchorElementsPositionUpdate_BadMessage) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      blink::features::kNavigationPredictorNewViewportFeatures);
   mojo::test::BadMessageObserver bad_message_observer;
   mojo::Remote<blink::mojom::AnchorElementMetricsHost> predictor_service;
   MockNavigationPredictorForTesting::Create(

@@ -14368,21 +14368,6 @@
             ]
         }
     ],
-    "NavigationPredictorNewViewportFeatures": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NavigationPredictorNewViewportFeatures"
-                    ]
-                }
-            ]
-        }
-    ],
     "NearbyBleV2": [
         {
             "platforms": [
