@@ -33,6 +33,9 @@ class CORE_EXPORT InlineChildLayoutContext {
   ~InlineChildLayoutContext();
 
   FragmentItemsBuilder* ItemsBuilder() { return &items_builder_; }
+  const BoxFragmentBuilder* ContainerBuilder() const {
+    return container_builder_;
+  }
 
   ScoreLineBreakContext* GetScoreLineBreakContext() const {
     return score_line_break_context_;

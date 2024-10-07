@@ -72,6 +72,9 @@ class CORE_EXPORT InlineLayoutAlgorithm final
  private:
   friend class LineWidthsTest;
 
+  bool HasContainerBorderPaddingAtBlockStart() const;
+  bool HasContainerBorderPaddingAtBlockEnd() const;
+
   void PositionLeadingFloats(ExclusionSpace&, LeadingFloats&);
   PositionedFloat PositionFloat(LayoutUnit origin_block_bfc_offset,
                                 LayoutObject* floating_object,

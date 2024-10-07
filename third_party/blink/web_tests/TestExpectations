@@ -1210,8 +1210,6 @@ crbug.com/1098801 external/wpt/css/css-text/overflow-wrap/overflow-wrap-normal-k
 
 # CSS Inline `text-box-trim` and `text-box-edge` properties.
 crbug.com/367766472 external/wpt/css/css-inline/text-box-trim/text-box-trim-half-leading-block-box-001.html [ Failure ]
-crbug.com/359926563 external/wpt/css/css-inline/text-box-trim/text-box-trim-half-leading-block-box-004.html [ Failure ]
-crbug.com/359926563 external/wpt/css/css-inline/text-box-trim/text-box-trim-half-leading-block-box-005.html [ Failure ]
 
 # CSS Inline `initial-letter` property.
 crbug.com/370423031 external/wpt/css/css-inline/initial-letter/initial-letter-float-001-vlr.html [ Failure ]
