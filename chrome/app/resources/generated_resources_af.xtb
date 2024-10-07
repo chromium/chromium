@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1049795001945932310">Taalinstellings …</translation>
 <translation id="1050693411695664090">Swak</translation>
+<translation id="1053898984916097744">Begin iets nuuts of kry hulp in die vloei van dinge.</translation>
 <translation id="1054048317165655285">Voltooi die opstelling op jou foon</translation>
 <translation id="1054153489933238809">Maak oorspronklike prent in nuwe oortjie oop</translation>
 <translation id="1054187194995068149">Hallo. Hierdie is 'n voorskou</translation>
@@ -1233,6 +1234,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1854049213067042715">Gaan voort waar jy opgehou het. In Instellings kan jy programme stel om altyd terug te stel wanneer hulle begin of jy kan terugstelling afskakel.</translation>
 <translation id="1854180393107901205">Hou op uitsaai</translation>
 <translation id="1856715684130786728">Voeg ligging by …</translation>
+<translation id="185766080319917408">Lanseerdersleutel is links van die linker alt-sleutel geleë</translation>
 <translation id="1858585891038687145">Vertrou hierdie sertifikaat om sagtewaremakers te identifiseer</translation>
 <translation id="1859294693760125695">Stel nie meer belang nie</translation>
 <translation id="1859339856433307593">Daar is reeds ’n wagwoord vir hierdie rekening in jou <ph name="BRAND" /> (<ph name="USER_EMAIL" />) gestoor</translation>
@@ -7393,6 +7395,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6341850831632289108">Bespeur jou fisieke ligging</translation>
 <translation id="6342069812937806050">Nou net</translation>
 <translation id="6343003829431264373">Net ewe bladsye</translation>
+<translation id="6343262564968371601">Vind waarna jy soek deur Google, lêers, apps en meer te deursoek</translation>
 <translation id="6343981313228733146">Venster het op en na regs beweeg</translation>
 <translation id="6344170822609224263">Gaan by lys netwerkverbindings in</translation>
 <translation id="6344576354370880196">Gestoorde drukkers</translation>
@@ -7565,6 +7568,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6476482583633999078">Spraakspoed</translation>
 <translation id="6476671549211161535">Druk ’n knoppie wat nie die linker- of regtermuisknoppie op jou <ph name="DEVICE_NAME" /> is nie.</translation>
 <translation id="6477822444490674459">Kennisgewingsinkronisering word nie vir fone in 'n werkprofiel gesteun nie. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">Kitsinvoegsleutel is onder die tab-sleutel geleë</translation>
 <translation id="6479881432656947268">Besoek Chrome Webwinkel</translation>
 <translation id="6480327114083866287">Bestuur deur <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Deel lêers en meer met toestelle in die omtrek. <ph name="LINK_BEGIN" />Meer inligting<ph name="LINK_END" /></translation>
@@ -7928,6 +7932,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6749473226660745022">Foto's</translation>
 <translation id="6750757184909117990">Deaktiveer sellulêre netwerk</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Incognito)</translation>
+<translation id="6754918760968695779">Kitsinvoeg</translation>
 <translation id="6756157672127672536">Die Lêers-program bied vinnige toegang tot lêers wat jy op Google Drive, eksterne berging of jou Chrome-bedryfstelseltoestel gestoor het.</translation>
 <translation id="6756643207511618722">Spraakenjins</translation>
 <translation id="6757431299485455321">Help ander toestelle om hierdie warmkol te kry.</translation>
@@ -8122,6 +8127,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="686609795364435700">Stil</translation>
 <translation id="686664946474413495">Kleurtemperatuur</translation>
 <translation id="6867086642466184030">Ander programme is gestel om dieselfde skakels oop te maak as <ph name="APP_NAME" />. Dit sal <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> en <ph name="NUMBER_OF_OTHER_APPS" /> ander programme deaktiveer sodat hulle nie gesteunde skakels kan oopmaak nie.</translation>
+<translation id="6867671714894555998">Kry dinge vinnig gedoen met die nuwe sleutelbord</translation>
 <translation id="6868206169573555318">Herbegin om op te dateer</translation>
 <translation id="686831807558000905">Moenie aanmeld nie</translation>
 <translation id="686839242150793617">Word toegelaat om prent-in-prent outomaties in te gaan</translation>
@@ -10401,6 +10407,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8524841856047224176">Personaliseer jou kamera-agtergronde vir video-oproepe en meer</translation>
 <translation id="8525306231823319788">Volskerm</translation>
 <translation id="8525461909394569609">Hierdie app bevat webinhoud van</translation>
+<translation id="8526313996927074827">Voeg skakels, emosiekone en meer in. Jy kan ook met Google AI hulp kry met skryf.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Luidsprekers</translation>
 <translation id="8527257351549797148">Jou organisasie vereis dalk inskrywing sodat jy toegang tot apps, uitbreidings en meer kan kry. Dit laat jou organisasie ook toe om dinge soos sekuriteit en toestelinstellings te bestuur.</translation>

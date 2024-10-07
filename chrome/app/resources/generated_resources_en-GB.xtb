@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1049795001945932310">&amp;Language settings</translation>
 <translation id="1050693411695664090">Poor</translation>
+<translation id="1053898984916097744">Start something new or get help in the flow.</translation>
 <translation id="1054048317165655285">Complete setup on your phone</translation>
 <translation id="1054153489933238809">Open Original &amp;Image in New Tab</translation>
 <translation id="1054187194995068149">Hi. This is a preview</translation>
@@ -1233,6 +1234,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1854049213067042715">Continue from where you left off. You can set apps to always restore on startup or turn off restore in Settings.</translation>
 <translation id="1854180393107901205">Stop casting</translation>
 <translation id="1856715684130786728">Add location...</translation>
+<translation id="185766080319917408">Launcher key is located left of the left alt key</translation>
 <translation id="1858585891038687145">Trust this certificate for identifying software makers</translation>
 <translation id="1859294693760125695">No longer interested</translation>
 <translation id="1859339856433307593">A password for this account is already saved to your <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
@@ -7392,6 +7394,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6341850831632289108">Detect your physical location</translation>
 <translation id="6342069812937806050">Just now</translation>
 <translation id="6343003829431264373">Even pages only</translation>
+<translation id="6343262564968371601">Find what you're looking for by searching Google, files, apps and more</translation>
 <translation id="6343981313228733146">Window moved upwards and to the right</translation>
 <translation id="6344170822609224263">Access list of network connections</translation>
 <translation id="6344576354370880196">Saved printers</translation>
@@ -7564,6 +7567,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6476482583633999078">Speech speed</translation>
 <translation id="6476671549211161535">Press a button that's not the left or right mouse button on your <ph name="DEVICE_NAME" />.</translation>
 <translation id="6477822444490674459">Notification syncing is not supported for phones in a work profile. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">Quick Insert key is located beneath the Tab key</translation>
 <translation id="6479881432656947268">Visit Chrome Web Store</translation>
 <translation id="6480327114083866287">Managed by <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Share files and more with Nearby devices. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
@@ -7927,6 +7931,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6749473226660745022">Photos</translation>
 <translation id="6750757184909117990">Disable mobile</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Incognito)</translation>
+<translation id="6754918760968695779">Quick Insert</translation>
 <translation id="6756157672127672536">The Files app provides Quick access to files that you've saved on Google Drive, external storage or your Chrome OS device.</translation>
 <translation id="6756643207511618722">Speech engines</translation>
 <translation id="6757431299485455321">Help other devices find this hotspot.</translation>
@@ -8121,6 +8126,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="686609795364435700">Quiet</translation>
 <translation id="686664946474413495">Colour temperature</translation>
 <translation id="6867086642466184030">Other apps are set to open the same links as <ph name="APP_NAME" />. This will disable <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> and <ph name="NUMBER_OF_OTHER_APPS" /> other apps from opening supported links.</translation>
+<translation id="6867671714894555998">Get things done quickly with the new keyboard</translation>
 <translation id="6868206169573555318">Relaunch to update</translation>
 <translation id="686831807558000905">Don't sign in</translation>
 <translation id="686839242150793617">Allowed to enter picture-in-picture automatically</translation>
@@ -10402,6 +10408,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8524841856047224176">Personalise your camera backgrounds for video calls and more</translation>
 <translation id="8525306231823319788">Full screen</translation>
 <translation id="8525461909394569609">This app contains web content from</translation>
+<translation id="8526313996927074827">Insert links, emojis and more. You can also get help writing with Google AI.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Speakers</translation>
 <translation id="8527257351549797148">Your organisation may require enrolment so you can access apps, extensions, and more. This also allows your organisation to manage things like security and device settings.</translation>

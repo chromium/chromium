@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">છૂપી</translation>
 <translation id="1049795001945932310">&amp;ભાષા સેટિંગ</translation>
 <translation id="1050693411695664090">ખરાબ</translation>
+<translation id="1053898984916097744">કંઈક નવું શરૂ કરો અથવા જે ચાલુ હોય તેમાં સહાય મેળવો.</translation>
 <translation id="1054048317165655285">તમારા ફોન પર સેટઅપ પૂર્ણ કરો</translation>
 <translation id="1054153489933238809">નવા ટેબમાં મૂળ &amp;છબી ખોલો</translation>
 <translation id="1054187194995068149">નમસ્તે. આ પ્રીવ્યૂ છે</translation>
@@ -349,7 +350,7 @@
 <translation id="1239841552505950173">ઍપ્લિકેશન લૉન્ચ કરો</translation>
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" /> માટે પ્રયોગની સ્થિતિ પસંદ કરો</translation>
 <translation id="124116460088058876">વધુ ભાષાઓ</translation>
-<translation id="1241381048229838873">બધા બુકમાર્ક્સ બતાવો</translation>
+<translation id="1241381048229838873">બધા બુકમાર્ક બતાવો</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" />, તમારા સેટિંગને રીસેટ કરવા માગે છે.</translation>
 <translation id="1243002225871118300">ડિસ્પ્લે અને ટેક્સ્ટ કદ બદલાવો</translation>
 <translation id="1243314992276662751">અપલોડ કરો</translation>
@@ -993,7 +994,7 @@
 <translation id="1697150536837697295">કળા</translation>
 <translation id="1697532407822776718">તમારું બધું સેટ છે!</translation>
 <translation id="1697686431566694143">ફાઇલમાં ફેરફાર કરો</translation>
-<translation id="1698796500103229697">અને ચુકવણી પદ્ધતિઓ</translation>
+<translation id="1698796500103229697">ચુકવણી પદ્ધતિઓ</translation>
 <translation id="1698899521169711967">કૅરેટ બ્રાઉઝિંગ</translation>
 <translation id="1699807488537653303">પાસવર્ડ સંબંધિત ભૂલ સુધારો</translation>
 <translation id="1700201317341192482">તમારું વર્ચ્યુઅલ કાર્ડ કાઢી નાખો</translation>
@@ -1221,6 +1222,7 @@
 <translation id="1854049213067042715">તમે જ્યાંથી છોડ્યું હોય, ત્યાંથી ફરી શરૂ કરો. તમે ઍપને સ્ટાર્ટઅપ વખતે 'હંમેશા રિસ્ટોર કરો' પર સેટ કરી શકો છો અથવા સેટિંગમાંથી રિસ્ટોર કરવાની સુવિધા બંધ કરી શકો છો.</translation>
 <translation id="1854180393107901205">કાસ્ટ કરવાનું રોકો</translation>
 <translation id="1856715684130786728">સ્થાન ઉમેરો...</translation>
+<translation id="185766080319917408">લૉન્ચર કી ડાબી Alt કીની ડાબી બાજુએ સ્થિત છે</translation>
 <translation id="1858585891038687145">સૉફ્ટવેર માર્કર્સને ઓળખવા માટે આ પ્રમાણપત્ર પર વિશ્વાસ કરો</translation>
 <translation id="1859294693760125695">હવે રુચિ ધરાવતા નથી</translation>
 <translation id="1859339856433307593">આ એકાઉન્ટ માટેનો પાસવર્ડ પહેલેથી તમારા <ph name="BRAND" /> (<ph name="USER_EMAIL" />) પર સાચવેલો છે</translation>
@@ -3542,7 +3544,7 @@
 <translation id="3526034519184079374">સાઇટના ડેટાને વાંચી કે બદલી શકતા નથી</translation>
 <translation id="3527085408025491307">ફોલ્ડર</translation>
 <translation id="3528498924003805721">શૉર્ટકટ લક્ષ્યો</translation>
-<translation id="3529851166527095708">અને સરનામા તથા વધુ</translation>
+<translation id="3529851166527095708">સરનામા અને વધુ</translation>
 <translation id="3531070080754387701">Microsoft 365 દ્વારા આ ફોલ્ડરમાંથી <ph name="FILE_NAMES" /> ખોલી શકાતી નથી</translation>
 <translation id="3531883061432162622">તમારી વાંચન સૂચિ અને બુકમાર્ક 'બુકમાર્ક અને સૂચિઓ'માં જુઓ</translation>
 <translation id="3532273508346491126">સિંક મેનેજમેન્ટ</translation>
@@ -7171,7 +7173,7 @@ USB ડિવાઇસ</translation>
 <translation id="6190953336330058278">ફોન હબની ઍપ</translation>
 <translation id="6192333916571137726">ફાઇલ ડાઉનલોડ કરો</translation>
 <translation id="6192413564913825901">બધા બુકમાર્ક પર ખસેડો</translation>
-<translation id="6194333736420234626">અને ચુકવણી પદ્ધતિઓ</translation>
+<translation id="6194333736420234626">ચુકવણી પદ્ધતિઓ</translation>
 <translation id="6195005504600220730">તમારા બ્રાઉઝર OS અને ડિવાઇસ વિશે માહિતી વાંચો</translation>
 <translation id="6195155925303302899">મધ્યમાં સંરેખિત કરો</translation>
 <translation id="6195163219142236913">ત્રીજા પક્ષની કુકી મર્યાદિત છે</translation>
@@ -7379,6 +7381,7 @@ USB ડિવાઇસ</translation>
 <translation id="6341850831632289108">તમારા ભૌતિક સ્થાનને શોધો</translation>
 <translation id="6342069812937806050">હમણાં જ</translation>
 <translation id="6343003829431264373">માત્ર સમ સંખ્યાવાળા પેજ</translation>
+<translation id="6343262564968371601">Google, ફાઇલો, ઍપ અને વધુમાં શોધીને તમે જે શોધી રહ્યાં છો, તે મેળવો</translation>
 <translation id="6343981313228733146">વિન્ડોને ઉપરની તરફ અને જમણી બાજુ ખસેડવામાં આવી</translation>
 <translation id="6344170822609224263">નેટવર્ક કનેક્શન્સની ઍક્સેસ સૂચિ</translation>
 <translation id="6344576354370880196">સાચવેલા પ્રિન્ટર</translation>
@@ -7412,7 +7415,7 @@ USB ડિવાઇસ</translation>
 <translation id="6365411474437319296">કુટુંબીજનો અને મિત્રોને ઉમેરો</translation>
 <translation id="6367097275976877956">ChromeOSમાં બિલ્ટ-ઇન સ્ક્રીન રીડર એવા ChromeVoxને શું તમે સક્રિય કરવા માગો છો? જો હા હોય, તો સ્પેસ બાર દબાવો.</translation>
 <translation id="6367985768157257101">શું 'નજીકના શેર' સાથે મેળવવા માગો છો?</translation>
-<translation id="6368157733310917710">અને સરનામા તથા વધુ</translation>
+<translation id="6368157733310917710">સરનામા અને વધુ</translation>
 <translation id="6368276408895187373">ચાલુ કરેલું – <ph name="VARIATION_NAME" /></translation>
 <translation id="636850387210749493">સંગઠન નોંધણી</translation>
 <translation id="6370021412472292592">મેનિફેસ્ટ લોડ કરી શકાયું નથી.</translation>
@@ -7551,6 +7554,7 @@ USB ડિવાઇસ</translation>
 <translation id="6476482583633999078">સ્પીચની સ્પીડ</translation>
 <translation id="6476671549211161535">તમારા <ph name="DEVICE_NAME" /> પર એ બટન દબાવો જે માઉસનું ડાબું કે જમણું બટન નથી.</translation>
 <translation id="6477822444490674459">ઑફિસની પ્રોફાઇલમાંના ફોન માટે નોટિફિકેશન સિંક કરવાની સુવિધાને સપોર્ટ કરવામાં આવતો નથી. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">ક્વિક ઇન્સર્ટ કી Tab કીની નીચે સ્થિત છે</translation>
 <translation id="6479881432656947268">Chrome વેબ સ્ટોરની મુલાકાત લો</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="6481749622989211463">નજીકના ડિવાઇસ વડે ફાઇલો અને તેના જેવું બીજું ઘણું શેર કરો <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
@@ -7916,6 +7920,7 @@ USB ડિવાઇસ</translation>
 <translation id="6749473226660745022">ફોટા</translation>
 <translation id="6750757184909117990">સેલ્યુલરને નેટવર્ક બંધ કરો</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (છૂપી)</translation>
+<translation id="6754918760968695779">ક્વિક ઇન્સર્ટ</translation>
 <translation id="6756157672127672536">Files ઍપ તમે Google Drive, બાહ્ય સ્ટોરેજ અથવા તમારા ChromeOS ડિવાઇસ પર સાચવેલી ફાઇલોનો ઝડપી ઍક્સેસ આપે છે.</translation>
 <translation id="6756643207511618722">સ્પીચ એન્જિન</translation>
 <translation id="6757431299485455321">આ હૉટસ્પૉટ શોધવામાં અન્ય ડિવાઇસની સહાય કરો.</translation>
@@ -8110,6 +8115,7 @@ USB ડિવાઇસ</translation>
 <translation id="686609795364435700">શાંત</translation>
 <translation id="686664946474413495">રંગ તાપમાન</translation>
 <translation id="6867086642466184030"><ph name="APP_NAME" />ની જેમજ અન્ય ઍપ પણ આ બધી લિંક ખોલવા માટે સેટ કરવામાં આવી છે. આમ કરવાથી <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> અને <ph name="NUMBER_OF_OTHER_APPS" /> અન્ય ઍપ સપોર્ટેડ લિંક ખોલી શકશે નહીં.</translation>
+<translation id="6867671714894555998">નવા કીબોર્ડ વડે વસ્તુઓ ઝડપથી પૂર્ણ કરો</translation>
 <translation id="6868206169573555318">અપડેટ કરવા માટે લૉન્ચ કરો</translation>
 <translation id="686831807558000905">સાઇન ઇન કરશો નહીં</translation>
 <translation id="686839242150793617">ચિત્ર-માં-ચિત્ર મોડમાં ઑટોમૅટિક રીતે દાખલ થવાની મંજૂરી છે</translation>
@@ -10385,6 +10391,7 @@ USB ડિવાઇસ</translation>
 <translation id="8524841856047224176">વીડિયો કૉલ અને વધુ માટે તમારા કૅમેરાના બૅકગ્રાઉન્ડને મનગમતા બનાવો</translation>
 <translation id="8525306231823319788">પૂર્ણ સ્ક્રીન</translation>
 <translation id="8525461909394569609">આ ઍપમાં આના પરનું વેબ કન્ટેન્ટ શામેલ છે</translation>
+<translation id="8526313996927074827">લિંક, ઇમોજી અને બીજું ઘણું દાખલ કરો. Google AI વડે લખવા માટે તમે સહાય પણ મેળવી શકો છો.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">સ્પીકર</translation>
 <translation id="8527257351549797148">તમારી સંસ્થાએ નોંધણી કરવાની જરૂર પડી શકે છે, જેથી તમે ઍપ, એક્સ્ટેન્શન અને બીજું ઘણું ઍક્સેસ કરી શકો. આમ કરવાથી તમારી સંસ્થાને સુરક્ષા અને ડિવાઇસના સેટિંગ જેવી બાબતો મેનેજ કરવાની પણ મંજૂરી મળે છે.</translation>

@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">無痕模式</translation>
 <translation id="1049795001945932310">語言設定(&amp;L)</translation>
 <translation id="1050693411695664090">不佳</translation>
+<translation id="1053898984916097744">在工作過程中，開始新任務或取得協助。</translation>
 <translation id="1054048317165655285">在手機上完成設定</translation>
 <translation id="1054153489933238809">在新分頁中開啟原始圖片(&amp;I)</translation>
 <translation id="1054187194995068149">你好，這是預覽畫面</translation>
@@ -1224,6 +1225,7 @@
 <translation id="1854049213067042715">繼續進行還原程序。你可以將應用程式設為一律在啟動時還原，或前往「設定」頁面關閉還原功能。</translation>
 <translation id="1854180393107901205">停止投放</translation>
 <translation id="1856715684130786728">新增位置...</translation>
+<translation id="185766080319917408">啟動鍵位於左 Alt 鍵的左側</translation>
 <translation id="1858585891038687145">信任這個用於識別軟體製造商的憑證</translation>
 <translation id="1859294693760125695">已不感興趣</translation>
 <translation id="1859339856433307593">這個帳戶的密碼已儲存到「<ph name="BRAND" />」(<ph name="USER_EMAIL" />)</translation>
@@ -7369,6 +7371,7 @@
 <translation id="6341850831632289108">偵測你的實際位置</translation>
 <translation id="6342069812937806050">剛剛</translation>
 <translation id="6343003829431264373">僅限偶數頁</translation>
+<translation id="6343262564968371601">搜尋 Google、檔案、應用程式等內容，尋找所需資訊</translation>
 <translation id="6343981313228733146">視窗已向右上方移動</translation>
 <translation id="6344170822609224263">存取網路連線清單</translation>
 <translation id="6344576354370880196">已儲存的印表機</translation>
@@ -7541,6 +7544,7 @@
 <translation id="6476482583633999078">語音速度</translation>
 <translation id="6476671549211161535">按下「<ph name="DEVICE_NAME" />」上的按鈕 (請勿按下滑鼠左鍵或右鍵)。</translation>
 <translation id="6477822444490674459">設有工作資料夾的手機不支援通知同步功能。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">快速插入鍵位於 Tab 鍵下方</translation>
 <translation id="6479881432656947268">前往 Chrome 線上應用程式商店</translation>
 <translation id="6480327114083866287">由 <ph name="MANAGER" /> 管理</translation>
 <translation id="6481749622989211463">與鄰近裝置分享檔案和其他內容。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -7904,6 +7908,7 @@
 <translation id="6749473226660745022">相片</translation>
 <translation id="6750757184909117990">停用行動數據</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (無痕模式)</translation>
+<translation id="6754918760968695779">快速插入</translation>
 <translation id="6756157672127672536">「檔案」應用程式可讓你快速存取儲存在 Google 雲端硬碟、外部儲存空間或 Chrome OS 裝置中的檔案。</translation>
 <translation id="6756643207511618722">語音引擎</translation>
 <translation id="6757431299485455321">協助其他裝置找到這個無線基地台。</translation>
@@ -8098,6 +8103,7 @@
 <translation id="686609795364435700">靜音</translation>
 <translation id="686664946474413495">色溫</translation>
 <translation id="6867086642466184030">其他應用程式所設定會開啟的連結與「<ph name="APP_NAME" />」的設定相同，這會導致「<ph name="APP_NAME_2" />」、「<ph name="APP_NAME_3" />」、「<ph name="APP_NAME_4" />」和另外 <ph name="NUMBER_OF_OTHER_APPS" /> 個應用程式無法開啟支援的連結。</translation>
+<translation id="6867671714894555998">使用新鍵盤，效率更提升</translation>
 <translation id="6868206169573555318">重新啟動即可更新</translation>
 <translation id="686831807558000905">不登入</translation>
 <translation id="686839242150793617">允許自動進入子母畫面</translation>
@@ -10379,6 +10385,7 @@
 <translation id="8524841856047224176">打造符合個人需求的相機拍攝背景，以便用於視訊通話等情境</translation>
 <translation id="8525306231823319788">全螢幕</translation>
 <translation id="8525461909394569609">這個應用程式含有以下來源的網路內容：</translation>
+<translation id="8526313996927074827">插入連結、表情符號等內容。按這個鍵也可以讓 Google AI 幫忙寫作。</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">揚聲器</translation>
 <translation id="8527257351549797148">貴機構可能會要求你註冊，才能存取應用程式、擴充功能和其他內容。這樣一來，貴機構也能管理安全性和裝置設定等項目。</translation>

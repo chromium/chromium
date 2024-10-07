@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">التصفح المتخفي</translation>
 <translation id="1049795001945932310">إ&amp;عدادات اللغة</translation>
 <translation id="1050693411695664090">ضعيفة</translation>
+<translation id="1053898984916097744">ابدأ مَهمَة جديدة أو احصل على مساعدة أثناء إنجاز المهام.</translation>
 <translation id="1054048317165655285">إكمال الإعداد على هاتفك</translation>
 <translation id="1054153489933238809">فتح الصورة الأصلية في علامة تبويب جديدة</translation>
 <translation id="1054187194995068149">مرحبًا، هذه معاينة</translation>
@@ -1228,6 +1229,7 @@
 <translation id="1854049213067042715">يمكنك المتابعة من حيث توقفت، ويمكنك ضبط التطبيقات لاستعادتها دائمًا عند بدء التشغيل أو إيقاف الاستعادة في "الإعدادات".</translation>
 <translation id="1854180393107901205">إيقاف البث</translation>
 <translation id="1856715684130786728">إضافة موقع...</translation>
+<translation id="185766080319917408">‏يقع مفتاح مشغّل التطبيقات على يسار مفتاح alt الأيسر</translation>
 <translation id="1858585891038687145">الوثوق بهذه الشهادة لتحديد هوية مصممي البرامج</translation>
 <translation id="1859294693760125695">لم أعد مهتمًّا</translation>
 <translation id="1859339856433307593">هناك كلمة مرور لهذا الحساب (<ph name="USER_EMAIL" />) محفوظة حاليًا في "<ph name="BRAND" />".</translation>
@@ -7382,6 +7384,7 @@
 <translation id="6341850831632289108">اكتشاف موقعك الفعلي</translation>
 <translation id="6342069812937806050">الآن</translation>
 <translation id="6343003829431264373">الصفحات الزوجية فقط</translation>
+<translation id="6343262564968371601">‏ابحث عمّا تريد في Google والملفات والتطبيقات والمزيد</translation>
 <translation id="6343981313228733146">تم نقل النافذة إلى الأعلى وإلى اليمين</translation>
 <translation id="6344170822609224263">قائمة الدخول لاتصالات الشبكة</translation>
 <translation id="6344576354370880196">الطابعات المحفوظة</translation>
@@ -7554,6 +7557,7 @@
 <translation id="6476482583633999078">سرعة الكلام</translation>
 <translation id="6476671549211161535">اضغط على زر غير زرّي الماوس الأيسر والأيمن على "<ph name="DEVICE_NAME" />".</translation>
 <translation id="6477822444490674459">ميزة "مزامنة الإشعارات" غير متاحة للهواتف التي تحتوي على ملف للعمل. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">‏يقع مفتاح "الإدراج السريع" أسفل مفتاح tab</translation>
 <translation id="6479881432656947268">‏الانتقال إلى "سوق Chrome الإلكتروني"</translation>
 <translation id="6480327114083866287">تتم الإدارة من خلال <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">يمكنك مشاركة الملفات وغيرها مع الأجهزة المجاورة. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
@@ -7925,6 +7929,7 @@
 <translation id="6749473226660745022">الصور</translation>
 <translation id="6750757184909117990">إيقاف شبكة الجوّال</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (التصفح المتخفي)</translation>
+<translation id="6754918760968695779">الإدراج السريع</translation>
 <translation id="6756157672127672536">‏يتيح تطبيق "الملفات" الوصول سريعًا إلى الملفات التي حفظتها على Google Drive، أو وحدة تخزين خارجية، أو جهازك الذي يعمل بنظام التشغيل Chrome.</translation>
 <translation id="6756643207511618722">محركات تحويل النص إلى كلام</translation>
 <translation id="6757431299485455321">مساعدة الأجهزة الأخرى في العثور على نقطة الاتصال هذه</translation>
@@ -8119,6 +8124,7 @@
 <translation id="686609795364435700">صوت هادئ</translation>
 <translation id="686664946474413495">درجة حرارة الألوان</translation>
 <translation id="6867086642466184030">تم ضبط تطبيقات أخرى لفتح الروابط نفسها مثل <ph name="APP_NAME" />. وسيؤدي هذا الإجراء إلى منع <ph name="APP_NAME_2" /> و<ph name="APP_NAME_3" /> و<ph name="APP_NAME_4" /> و<ph name="NUMBER_OF_OTHER_APPS" /> تطبيق آخر من فتح الروابط المتوافقة.</translation>
+<translation id="6867671714894555998">إنجاز المهام بسرعة باستخدام لوحة المفاتيح الجديدة</translation>
 <translation id="6868206169573555318">إعادة التشغيل للتحديث</translation>
 <translation id="686831807558000905">عدم تسجيل الدخول</translation>
 <translation id="686839242150793617">المواقع الإلكترونية التي يُسمح لها بفتح النوافذ في وضع "نافذة ضمن النافذة" تلقائيًا</translation>
@@ -10401,6 +10407,7 @@
 <translation id="8524841856047224176">يمكنك تخصيص خلفيات الكاميرا لمكالمات الفيديو وغير ذلك</translation>
 <translation id="8525306231823319788">ملء الشاشة</translation>
 <translation id="8525461909394569609">يحتوي هذا التطبيق على محتوى من الموقع الالكتروني</translation>
+<translation id="8526313996927074827">‏يُدرج الروابط ورموز الإيموجي وغيرها، ويساعد في الكتابة أيضًا باستخدام الذكاء الاصطناعي من Google.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">مكبّرات الصوت</translation>
 <translation id="8527257351549797148">قد تطلب منك مؤسستك التسجيل لتتمكن من الوصول إلى التطبيقات والإضافات وغير ذلك. ويتيح ذلك للمؤسسة إدارة بعض الإعدادات مثل إعدادات الأمان والأجهزة.</translation>

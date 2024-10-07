@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">ছদ্মবেশী</translation>
 <translation id="1049795001945932310">&amp;ভাষা সেটিংস</translation>
 <translation id="1050693411695664090">দুর্বল</translation>
+<translation id="1053898984916097744">নতুন কিছু শুরু করুন বা আগে থাকা কাজের ক্ষেত্রে সহায়তা পান।</translation>
 <translation id="1054048317165655285">আপনার ফোন সেট আপ করা সম্পূর্ণ করুন</translation>
 <translation id="1054153489933238809">নতুন ট্যাবে আসল ছবিটি খুলুন</translation>
 <translation id="1054187194995068149">হ্যালো। এটি হল একটি প্রিভিউ</translation>
@@ -1234,6 +1235,7 @@
 <translation id="1854049213067042715">আপনি যেখানে শেষ করেছিলেন সেখান থেকে চালু করুন। আপনি অ্যাপ স্টার্টআপের সময় যেকোনও সময়ে রিস্টোর করুন বা সেটিংস থেকে 'রিস্টোর করুন' বিকল্প বন্ধ করতে পারবেন।</translation>
 <translation id="1854180393107901205">কাস্ট করা বন্ধ করুন</translation>
 <translation id="1856715684130786728">লোকেশন যোগ করুন...</translation>
+<translation id="185766080319917408">লঞ্চার 'কী' রয়েছে বাঁদিকের alt 'কী'-এর বাঁদিকে</translation>
 <translation id="1858585891038687145">সফ্টওয়্যার প্রস্তুতকারকদের শনাক্তকরণের জন্য এই সার্টিফিকেটটিকে বিশ্বাস করুন</translation>
 <translation id="1859294693760125695">আর আগ্রহী নই</translation>
 <translation id="1859339856433307593">এই অ্যাকাউন্টের জন্য পাসওয়ার্ড আপনার <ph name="BRAND" />-এ (<ph name="USER_EMAIL" />) আগে থেকেই সেভ করা আছে</translation>
@@ -7394,6 +7396,7 @@
 <translation id="6341850831632289108">আপনার শারীরিক লোকেশন শনাক্ত করুন</translation>
 <translation id="6342069812937806050">এখনই</translation>
 <translation id="6343003829431264373">শুধুমাত্র জোড় সংখ্যার পৃষ্ঠা</translation>
+<translation id="6343262564968371601">যা খুঁজছেন তা Google-এ, ফাইল, অ্যাপ ও আরও অনেক কিছুতে সার্চ করে দেখুন</translation>
 <translation id="6343981313228733146">উইন্ডো উপরে ডানদিকে সরানো হয়েছে</translation>
 <translation id="6344170822609224263">নেটওয়ার্ক সংযোগের তালিকা অ্যাক্সেস করে</translation>
 <translation id="6344576354370880196">সেভ করা প্রিন্টার</translation>
@@ -7566,6 +7569,7 @@
 <translation id="6476482583633999078">স্পিচ স্পিড</translation>
 <translation id="6476671549211161535">সেই বোতাম প্রেস করুন যা আপনার <ph name="DEVICE_NAME" /> ডিভাইসে বাঁদিক বা ডানদিকের মাউসের বোতাম নয়।</translation>
 <translation id="6477822444490674459">ফোনের অফিস প্রোফাইলে বিজ্ঞপ্তি সিঙ্ক করা যাবে না। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">ট্যাব 'কী'-এর নিচে রয়েছে কুইক ইনসার্ট 'কী'</translation>
 <translation id="6479881432656947268">Chrome ওয়েব স্টোরে যান</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" />-এর মাধ্যমে ম্যানেজ করা হয়</translation>
 <translation id="6481749622989211463">আশেপাশের ডিভাইসের সাহায্যে ফাইল শেয়ার ও আরও অনেক কিছু করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
@@ -7931,6 +7935,7 @@
 <translation id="6749473226660745022">ফটো</translation>
 <translation id="6750757184909117990">মোবাইল নেটওয়ার্ক বন্ধ করুন</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" />(ছদ্মবেশী)</translation>
+<translation id="6754918760968695779">কুইক ইনসার্ট</translation>
 <translation id="6756157672127672536">Google Drive, এক্সটার্নাল স্টোরেজ অথবা আপনার ChromeOS ডিভাইসে আপনি যে ফাইলগুলি সেভ করেছেন ফাইল অ্যাপ সেগুলিতে দ্রুত অ্যাক্সেস প্রদান করে।</translation>
 <translation id="6756643207511618722">স্পিচ ইঞ্জিন</translation>
 <translation id="6757431299485455321">এই হটস্পট খুঁজতে অন্যান্য ডিভাইসকে সহায়তা করে।</translation>
@@ -8125,6 +8130,7 @@
 <translation id="686609795364435700">নীরব</translation>
 <translation id="686664946474413495">রঙের তাপমাত্রা</translation>
 <translation id="6867086642466184030">অন্যান্য অ্যাপ, <ph name="APP_NAME" />-এর মতো একই লিঙ্ক খোলার জন্য সেট করা আছে। এটি <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> এবং <ph name="NUMBER_OF_OTHER_APPS" />টি অন্য অ্যাপের সহায়ক লিঙ্ক খুলতে দেবে না।</translation>
+<translation id="6867671714894555998">নতুন কীবোর্ডের মাধ্যমে দ্রুত কাজ সম্পূর্ণ করুন</translation>
 <translation id="6868206169573555318">আপডেট করার জন্য আবার লঞ্চ করুন</translation>
 <translation id="686831807558000905">সাইন-ইন করবেন না</translation>
 <translation id="686839242150793617">'ছবির-মধ্যে-ছবি' মোডে অটোমেটিক প্রবেশ করার জন্য অনুমতি দেওয়া হয়েছে</translation>
@@ -10405,6 +10411,7 @@
 <translation id="8524841856047224176">ভিডিও কল ও আরও অনেক কিছুর জন্য আপনার ক্যামেরা ব্যাকগ্রাউন্ড পছন্দমতো করুন</translation>
 <translation id="8525306231823319788">পূর্ণ স্ক্রীণ</translation>
 <translation id="8525461909394569609">এই অ্যাপে এখান থেকে পাওয়া ওয়েব কন্টেন্ট আছে</translation>
+<translation id="8526313996927074827">লিঙ্ক, ইমোজি ও আরও অনেক কিছু যোগ করুন। এছাড়া, Google AI-এর সাহায্যে কন্টেন্ট লিখুন।</translation>
 <translation id="8526813720153458066">SSH ট্যাব</translation>
 <translation id="8527228059738193856">স্পিকার</translation>
 <translation id="8527257351549797148">আপনি যাতে অ্যাপ, এক্সটেনশন ও আরও অনেক সুবিধা অ্যাক্সেস করতে পারেন তার জন্য আপনার সংস্থা হয়ত এনরোল করানোর জন্য বলতে পারে। এর ফলে আপনার সংস্থা সুরক্ষা ও ডিভাইস সেটিংসের মতো বিষয়গুলি ম্যানেজ করার অনুমতি পাবে।</translation>

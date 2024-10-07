@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">ບໍ່​ເຜີຍ​ຕົວຕົນ</translation>
 <translation id="1049795001945932310">ການຕັ້ງຄ່າ&amp;ພາສາ</translation>
 <translation id="1050693411695664090">ອ່ອນ​ຫຼາຍ</translation>
+<translation id="1053898984916097744">ເຮັດສິ່ງໃໝ່ໆ ຫຼື ຮັບຄວາມຊ່ວຍເຫຼືອໃນລະຫວ່າງຂັ້ນຕອນການເຮັດວຽກ.</translation>
 <translation id="1054048317165655285">ເຮັດສຳເລັດການຕັ້ງຄ່າໃນໂທລະສັບຂອງທ່ານ</translation>
 <translation id="1054153489933238809">ເປີດຮູບ&amp;ເດີມຢູ່ໃນແຖບໃໝ່</translation>
 <translation id="1054187194995068149">ສະບາຍດີ. ນີ້ແມ່ນຕົວຢ່າງ</translation>
@@ -1231,6 +1232,7 @@
 <translation id="1854049213067042715">ສືບຕໍ່ຈາກບ່ອນທີ່ທ່ານເຮັດຄ້າງໄວ້. ທ່ານສາມາດຕັ້ງໃຫ້ແອັບກູ້ຄືນມາທຸກເທື່ອໃນຕອນສະຕາດອັບ ຫຼື ປິດການກູ້ຄືນໄດ້ໃນການຕັ້ງຄ່າ.</translation>
 <translation id="1854180393107901205">ຢຸດ​ການ​ຄາສທ໌</translation>
 <translation id="1856715684130786728">ເພີ່ມ​ທີ່ຕັ້ງ...</translation>
+<translation id="185766080319917408">ກະແຈເປີດໃຊ້ຈະຢູ່ທາງຊ້າຍຂອງປຸ່ມ Alt ຝັ່ງຊ້າຍ</translation>
 <translation id="1858585891038687145">ເຊື່ອໝັ້ນໃບຢັ້ງຢືນນີ້ສຳລັບການລະບຸຕົວຕົນຜູ້ສ້າງຊອບແວ</translation>
 <translation id="1859294693760125695">ບໍ່ສົນໃຈແລ້ວ</translation>
 <translation id="1859339856433307593">ລະຫັດຜ່ານສຳລັບບັນຊີນີ້ຖືກບັນທຶກໃສ່ <ph name="BRAND" /> (<ph name="USER_EMAIL" />) ຂອງທ່ານແລ້ວ</translation>
@@ -7390,6 +7392,7 @@
 <translation id="6341850831632289108">ກວດພົບຕຳແໜ່ງທີ່ທ່ານຢູ່</translation>
 <translation id="6342069812937806050">ເມື່ອກີ້ນີ້</translation>
 <translation id="6343003829431264373">ໜ້າຄູ່ເທົ່ານັ້ນ</translation>
+<translation id="6343262564968371601">ຊອກຫາສິ່ງທີ່ທ່ານຕ້ອງການໂດຍການຊອກຫາໃນ Google, ໄຟລ໌, ແອັບ ແລະ ອື່ນໆ</translation>
 <translation id="6343981313228733146">ໜ້າຈໍເລື່ອນຂຶ້ນ ແລະ ໄປທາງຂວາ</translation>
 <translation id="6344170822609224263">ເຂົ້າໃຊ້ລາຍຊື່ການເຊື່ອມຕໍ່​ເຄືອ​ຂ່າຍ</translation>
 <translation id="6344576354370880196">ເຄື່ອງພິມທີ່ບັນທຶກໄວ້</translation>
@@ -7562,6 +7565,7 @@
 <translation id="6476482583633999078">ຄວາມໄວການເວົ້າ</translation>
 <translation id="6476671549211161535">ກົດປຸ່ມທີ່ບໍ່ແມ່ນປຸ່ມເມົ້າຊ້າຍ ຫຼື ຂວາຢູ່ <ph name="DEVICE_NAME" /> ຂອງທ່ານ.</translation>
 <translation id="6477822444490674459">ບໍ່ຮອງຮັບການຊິ້ງຂໍ້ມູນການແຈ້ງເຕືອນສຳລັບໂທລະສັບໃນໂປຣໄຟລ໌ບ່ອນເຮັດວຽກ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">ປຸ່ມແຊກດ່ວນຈະຢູ່ລຸ່ມປຸ່ມ Tab</translation>
 <translation id="6479881432656947268">ເຂົ້າເບິ່ງ Chrome Web Store</translation>
 <translation id="6480327114083866287">ຈັດການໂດຍ <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">ແບ່ງປັນໄຟລ໌ ແລະ ອື່ນໆກັບອຸປະກອນທີ່ຢູ່ໃກ້ຄຽງ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
@@ -7925,6 +7929,7 @@
 <translation id="6749473226660745022">ຮູບພາບ</translation>
 <translation id="6750757184909117990">ປິດການນຳໃຊ້ເຄືອຂ່າຍມືຖື</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (ບໍ່ເປີດເຜີຍຕົນຕົວ)</translation>
+<translation id="6754918760968695779">ແຊກດ່ວນ</translation>
 <translation id="6756157672127672536">ແອັບໄຟລ໌ຈະມອບການເຂົ້າເຖິງດ່ວນໄປຫາໄຟລ໌ທີ່ທ່ານບັນທຶກໄວ້ຢູ່ Google Drive, ບ່ອນຈັດເກັບຂໍ້ມູນພາຍນອກ ຫຼື ອຸປະກອນ ChromeOS ຂອງທ່ານ.</translation>
 <translation id="6756643207511618722">ໂປຣແກຣມສຽງເວົ້າ</translation>
 <translation id="6757431299485455321">ຊ່ວຍອຸປະກອນອື່ນຊອກຫາຮັອດສະປອດນີ້.</translation>
@@ -8119,6 +8124,7 @@
 <translation id="686609795364435700">ມິດງຽບ</translation>
 <translation id="686664946474413495">ອຸນຫະພູມສີ</translation>
 <translation id="6867086642466184030">ແອັບອື່ນໆຖືກຕັ້ງໃຫ້ເປີດລິ້ງດຽວກັນເປັນ <ph name="APP_NAME" />. ນີ້ຈະປິດການນຳໃຊ້ <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> ແລະ ອີກ <ph name="NUMBER_OF_OTHER_APPS" /> ແອັບບໍ່ໃຫ້ເປີດລິ້ງທີ່ຮອງຮັບ.</translation>
+<translation id="6867671714894555998">ເຮັດສິ່ງຕ່າງໆໃຫ້ສຳເລັດໄດ້ຢ່າງວ່ອງໄວດ້ວຍແປ້ນພິມໃໝ່</translation>
 <translation id="6868206169573555318">ປິດແລ້ວເປີດຄືນໃໝ່ເພື່ອອັບເດດ</translation>
 <translation id="686831807558000905">ບໍ່ເຂົ້າສູ່ລະບົບ</translation>
 <translation id="686839242150793617">ອະນຸຍາດໃຫ້ເຂົ້າໄປການສະແດງຜົນຊ້ອນກັນໂດຍອັດຕະໂນມັດ</translation>
@@ -10396,6 +10402,7 @@
 <translation id="8524841856047224176">ປັບແຕ່ງພາບພື້ນຫຼັງກ້ອງຖ່າຍຮູບຂອງທ່ານໃຫ້ເປັນແບບສ່ວນຕົວສຳລັບການໂທວິດີໂອ ແລະ ອື່ນໆ</translation>
 <translation id="8525306231823319788">ເຕັມຫນ້າ​ຈໍ​</translation>
 <translation id="8525461909394569609">ແອັບນີ້ມີເນື້ອຫາເວັບຈາກ</translation>
+<translation id="8526313996927074827">ແຊກລິ້ງ, ອີໂມຈິ ແລະ ອື່ນໆ. ທ່ານຍັງສາມາດຂໍຄວາມຊ່ວຍເຫຼືອໃນການຂຽນດ້ວຍ Google AI ໄດ້ນຳ.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">ລຳໂພງ</translation>
 <translation id="8527257351549797148">ອົງການຂອງທ່ານອາດຕ້ອງໃຊ້ການລົງທະບຽນເພື່ອໃຫ້ທ່ານສາມາດເຂົ້າເຖິງແອັບ, ສ່ວນຂະຫຍາຍ ແລະ ອື່ນໆໄດ້. ນີ້ຈະເຮັດໃຫ້ອົງການຂອງທ່ານສາມາດຈັດການສິ່ງຕ່າງໆໄດ້ ເຊັ່ນ: ການຕັ້ງຄ່າຄວາມປອດໄພ ແລະ ອຸປະກອນ.</translation>

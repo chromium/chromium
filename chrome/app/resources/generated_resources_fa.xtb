@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">ناشناس</translation>
 <translation id="1049795001945932310">&amp;تنظیمات زبان</translation>
 <translation id="1050693411695664090">ضعیف</translation>
+<translation id="1053898984916097744">کار جدیدی را آغاز کنید یا در جریان کار کمک بگیرید.</translation>
 <translation id="1054048317165655285">تکمیل راه‌اندازی در تلفن</translation>
 <translation id="1054153489933238809">باز کردن &amp;تصویر اصلی در برگه جدید</translation>
 <translation id="1054187194995068149">سلام. این پیش‌نمایش است</translation>
@@ -829,7 +830,7 @@
 <translation id="1592126057537046434">ترجمه «پاسخ‌های سریع»</translation>
 <translation id="1593327942193951498">{NUM_SITES,plural, =1{اجازه‌ها از <ph name="BEGIN_BOLD" />یک سایت<ph name="END_BOLD" /> که مدتی است بازدید نکرده‌اید برداشته شد}one{اجازه‌ها از <ph name="BEGIN_BOLD" />{NUM_SITES} سایت<ph name="END_BOLD" /> که مدتی است بازدید نکرده‌اید برداشته شد}other{اجازه‌ها از <ph name="BEGIN_BOLD" />{NUM_SITES} سایت<ph name="END_BOLD" /> که مدتی است بازدید نکرده‌اید برداشته شد}}</translation>
 <translation id="1593594475886691512">در حال قالب‌بندی...</translation>
-<translation id="159359590073980872">حافظهٔ پنهان تصویر</translation>
+<translation id="159359590073980872">حافظه نهان تصویر</translation>
 <translation id="1593926297800505364">ذخیره روش پرداخت</translation>
 <translation id="1594703455918849716">رفتن به صفحه «بازبینی»</translation>
 <translation id="1594781465361405478">روشن/ خاموش کردن صدا</translation>
@@ -1231,6 +1232,7 @@
 <translation id="1854049213067042715">کارتان را از جایی که متوقف کرده‌اید ادامه دهید. در «تنظیمات» می‌توانید برنامه‌ها را طوری تنظیم کنید که همیشه هنگام راه‌اندازی بازیابی شوند یا بازیابی را خاموش کنید.</translation>
 <translation id="1854180393107901205">توقف فرستادن</translation>
 <translation id="1856715684130786728">افزودن موقعیت مکانی...</translation>
+<translation id="185766080319917408">‏کلید «راه‌انداز» در سمت چپ کلید Alt چپ قرار دارد</translation>
 <translation id="1858585891038687145">برای شناسایی سازندگان نرم‌افزار، به این گواهی اطمینان شود</translation>
 <translation id="1859294693760125695">دیگر علاقه‌ای ندارم</translation>
 <translation id="1859339856433307593">درحال‌حاضر گذرواژه‌ای برای این حساب (<ph name="USER_EMAIL" />) در <ph name="BRAND" /> ذخیره شده است</translation>
@@ -2859,7 +2861,7 @@
 <translation id="3001835006423291524">حسگر اثر انگشت را در پایین گوشه سمت راست صفحه‌کلید لمس کنید. داده‌های اثر انگشتتان به‌صورت ایمن ذخیره می‌شود و هرگز از <ph name="DEVICE_TYPE" /> شما خارج نمی‌شود.</translation>
 <translation id="3003144360685731741">شبکه‌های برگزیده</translation>
 <translation id="3003253259757197230">‏نشانی‌های وبی که بازدید می‌کنید به Google ارسال می‌شود تا پیش‌بینی شود ممکن است بعداً از چه سایت‌هایی بازدید کنید و همچنین اطلاعات بیشتری درباره صفحه‌ای که بازدید می‌کنید به شما نشان داده می‌شود</translation>
-<translation id="3003623123441819449">‏حافظهٔ پنهان CSS</translation>
+<translation id="3003623123441819449">‏حافظه نهان CSS</translation>
 <translation id="3003967365858406397">‏<ph name="PHONE_NAME" /> شما اتصال Wi-Fi خصوصی ایجاد خواهد کرد.</translation>
 <translation id="3004385386820284928">سفارشی‌سازی کلیدهای صفحه‌کلید</translation>
 <translation id="3006881078666935414">هیچ داده مصرفی وجود ندارد</translation>
@@ -3010,7 +3012,7 @@
 <translation id="3112292765614504292">اندازه برنامه: <ph name="APP_SIZE" /></translation>
 <translation id="311394601889664316">به سایت‌ها اجازه داده نشود فایل‌ها یا پوشه‌های درون دستگاه را ویرایش کنند</translation>
 <translation id="3113970906450647715">سنجاق دکمه برداشته شد</translation>
-<translation id="3115147772012638511">منتظر حافظهٔ پنهان...</translation>
+<translation id="3115147772012638511">منتظر حافظه نهان...</translation>
 <translation id="3115580024857770654">کوچک کردن همه موارد</translation>
 <translation id="3115743155098198207">‏مدیریت زبان «حساب Google»</translation>
 <translation id="3117362587799608430">پایه اتصال کاملاً سازگار نیست</translation>
@@ -6034,7 +6036,7 @@
 <translation id="5331975486040154427">‏دستگاه USB-C (درگاه عقب سمت چپ)</translation>
 <translation id="5333896723098573627">‏برای حذف برنامه‌ها به «تنظیمات &gt; برنامه‌ها &gt; فروشگاه Google Play &gt; مدیریت اولویت‌های Android &gt; برنامه‌ها یا مدیر برنامه» بروید. سپس روی برنامه‌ای که می‌خواهید حذف نصب شود تک‌ضرب بزنید (ممکن است برای پیدا کردن برنامه لازم باشد صفحه را تند به راست یا چپ بکشید). سپس روی «حذف نصب» یا «غیرفعال کردن» تک‌ضرب بزنید.</translation>
 <translation id="5334113802138581043">دسترسی به میکروفون</translation>
-<translation id="5334142896108694079">حافظهٔ پنهان اسکریپت</translation>
+<translation id="5334142896108694079">حافظه نهان اسکریپت</translation>
 <translation id="5336688142483283574">این صفحه از سابقه و فعالیت <ph name="SEARCH_ENGINE" /> شما هم حذف خواهد شد.</translation>
 <translation id="5336689872433667741">مکان‌نما و صفحه لمسی</translation>
 <translation id="5337207153202941678">خاموش کردن برجسته‌سازی</translation>
@@ -7139,7 +7141,7 @@
 <translation id="6155885807222400044">اِی‌ای‌اس-۱۲۸</translation>
 <translation id="6155997322654401708">ایجاد گذرکلید</translation>
 <translation id="6156323911414505561">نمایش نوار نشانک‌ها</translation>
-<translation id="6156863943908443225">حافظهٔ پنهان اسکریپت</translation>
+<translation id="6156863943908443225">حافظه نهان اسکریپت</translation>
 <translation id="6156944117133588106">نمایش دکمه‌های پیمایش در حالت رایانه لوحی</translation>
 <translation id="615930144153753547">سایت‌ها می‌توانند تصویر نمایش دهند</translation>
 <translation id="6160290816917599257">‏کد نامعتبر است. ورودی باید در قالب <ph name="LPA_0" />$<ph name="LPA_1" />SM-‏DP+ نشانی<ph name="LPA_2" />$<ph name="LPA_3" />شناسه انطباق اختیاری<ph name="LPA_4" /> باشد</translation>
@@ -7389,6 +7391,7 @@
 <translation id="6341850831632289108">شناسایی موقعیت مکانی فیزیکی شما</translation>
 <translation id="6342069812937806050">همین حالا</translation>
 <translation id="6343003829431264373">فقط صفحه‌های زوج</translation>
+<translation id="6343262564968371601">‏آنچه را که به‌دنبال آن هستید با جستجوی Google، فایل‌ها، برنامه‌ها، و موارد دیگر پیدا کنید</translation>
 <translation id="6343981313228733146">پنجره به بالا سمت راست منتقل شد</translation>
 <translation id="6344170822609224263">فهرست دسترسی از اتصالات شبکه</translation>
 <translation id="6344576354370880196">چاپگرهای ذخیره‌شده</translation>
@@ -7561,6 +7564,7 @@
 <translation id="6476482583633999078">سرعت گفتار</translation>
 <translation id="6476671549211161535">دکمه‌ای به‌غیراز دکمه سمت راست یا چپ موشواره را روی <ph name="DEVICE_NAME" /> فشار دهید.</translation>
 <translation id="6477822444490674459">همگام‌سازی اعلان در تلفن‌هایی که در نمایه کاری هستند پشتیبانی نمی‌شود. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">‏کلید «درج سریع» در زیر کلید جهش Tab قرار دارد</translation>
 <translation id="6479881432656947268">‏رفتن به «نت‌بازار Chrome»</translation>
 <translation id="6480327114083866287">تحت مدیریت <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">هم‌رسانی فایل‌ها و محتوای دیگر با دستگاه‌های اطراف. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
@@ -7926,6 +7930,7 @@
 <translation id="6749473226660745022">Photos</translation>
 <translation id="6750757184909117990">غیرفعال کردن شبکه تلفن همراه</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (ناشناس)</translation>
+<translation id="6754918760968695779">درج سریع</translation>
 <translation id="6756157672127672536">‏برنامه Files دسترسی سریع به فایل‌هایی را فراهم می‌کند که در Google Drive، فضای ذخیره‌سازی خارجی، یا دستگاه ChromeOS خودتان ذخیره کرده‌اید.</translation>
 <translation id="6756643207511618722">موتورهای گفتار</translation>
 <translation id="6757431299485455321">کمک می‌کند دستگاه‌های دیگر این نقطه اتصال را پیدا کنند.</translation>
@@ -8120,6 +8125,7 @@
 <translation id="686609795364435700">بی‌صدا</translation>
 <translation id="686664946474413495">دمای رنگ</translation>
 <translation id="6867086642466184030">برنامه‌های دیگری تنظیم شده‌اند تا همان پیوندها را مثل <ph name="APP_NAME" /> باز کنند. با این کار <ph name="APP_NAME_2" />، <ph name="APP_NAME_3" />، <ph name="APP_NAME_4" />، و <ph name="NUMBER_OF_OTHER_APPS" /> برنامه دیگر غیرفعال خواهند شد تا پیوندهای پشتیبانی‌شده را باز نکنند.</translation>
+<translation id="6867671714894555998">با صفحه‌کلید جدید، کارها را سریع انجام دهید</translation>
 <translation id="6868206169573555318">برای به‌روزرسانی، دوباره راه‌اندازی کنید</translation>
 <translation id="686831807558000905">به سیستم وارد نمی‌شوم</translation>
 <translation id="686839242150793617">مجاز برای ورود خودکار به حالت تصویر در تصویر</translation>
@@ -10400,6 +10406,7 @@
 <translation id="8524841856047224176">پس‌زمینه‌های دوربینتان را برای تماس‌های تصویری و موارد دیگر شخصی‌سازی کنید</translation>
 <translation id="8525306231823319788">تمام صفحه</translation>
 <translation id="8525461909394569609">این برنامه حاوی محتوای وب از این منبع است:</translation>
+<translation id="8526313996927074827">‏پیوند، اموجی، و چیزهای دیگری درج کنید. همچنین می‌توانید از هوش مصنوعی Google برای نوشتن کمک بگیرید.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">بلندگوها</translation>
 <translation id="8527257351549797148">سازمانتان ممکن است شما را ملزم کند برای دسترسی به برنامه‌ها، افزونه‌ها، و موارد دیگر ثبت‌نام کنید. این کار همچنین به سازمان اجازه می‌دهد تا مواردی مثل امنیت و تنظیمات دستگاه را مدیریت کنید.</translation>
@@ -10425,7 +10432,7 @@
 <translation id="8541462173655894684">هیچ چاپگری از این سرور چاپ پیدا نشد</translation>
 <translation id="8541838361296720865">کلیدی خارجی یا کلیدی از صفحه‌کلید را فشار دهید تا به کنش «<ph name="ACTION" />» اختصاص داده شود</translation>
 <translation id="8546186510985480118">فضای دستگاه خیلی کم است</translation>
-<translation id="8546306075665861288">حافظهٔ پنهان تصویر</translation>
+<translation id="8546306075665861288">حافظه نهان تصویر</translation>
 <translation id="8546817377311213339">غیرفعال کردن تصاویر</translation>
 <translation id="8546930481464505581">سفارشی کردن «نوار لمسی»</translation>
 <translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> توسط <ph name="MANAGER" /> مدیریت می‌شود. نمی‌توانید این ایمیل را به‌عنوان حساب اضافی اضافه کنید.<ph name="END_PARAGRAPH1" />
@@ -10524,7 +10531,7 @@
 <translation id="8625663000550647058">اجازه ندارد از میکروفون استفاده کند</translation>
 <translation id="8625916342247441948">‏به سایت‌ها اجازه داده نشود به دستگاه‌های HID متصل شوند</translation>
 <translation id="862727964348362408">معلق شد</translation>
-<translation id="862750493060684461">‏حافظهٔ پنهان CSS</translation>
+<translation id="862750493060684461">‏حافظه نهان CSS</translation>
 <translation id="8627795981664801467">فقط اتصالات ایمن</translation>
 <translation id="8627804903623428808">بررسی این شرایط و کنترل داده‌های فرزندتان</translation>
 <translation id="8630338733867813168">حالت خواب هنگام شارژ شدن</translation>

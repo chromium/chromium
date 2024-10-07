@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">Ezkutuko modua</translation>
 <translation id="1049795001945932310">&amp;Hizkuntza-ezarpenak</translation>
 <translation id="1050693411695664090">txarra</translation>
+<translation id="1053898984916097744">Hasi zerbait berria edo jaso laguntza prozesuan.</translation>
 <translation id="1054048317165655285">Amaitu konfigurazioa telefonoan</translation>
 <translation id="1054153489933238809">Ireki jatorrizko &amp;irudia beste fitxa batean</translation>
 <translation id="1054187194995068149">Kaixo: hau ahotsaren aurrebista da</translation>
@@ -1224,6 +1225,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1854049213067042715">Jarraitu utzi zenuen tokitik. Aplikazioak abiaraztean beti leheneratzeko edo leheneratzea desaktibatzeko, joan ezarpenetara.</translation>
 <translation id="1854180393107901205">Utzi igortzeari</translation>
 <translation id="1856715684130786728">Gehitu kokapena…</translation>
+<translation id="185766080319917408">Exekutatzeko tresnaren tekla ezkerreko Alt teklaren ezkerraldean dago</translation>
 <translation id="1858585891038687145">Jo fidagarritzat software-egileak identifikatzeko ziurtagiri hau</translation>
 <translation id="1859294693760125695">Ez zait interesatzen jada</translation>
 <translation id="1859339856433307593">Dagoeneko gordeta dago <ph name="BRAND" /> zerbitzuan kontu honetarako pasahitz bat (<ph name="USER_EMAIL" />)</translation>
@@ -7372,6 +7374,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6341850831632289108">Hauteman zure kokapen fisikoa</translation>
 <translation id="6342069812937806050">Oraintxe</translation>
 <translation id="6343003829431264373">Orri bikoitiak bakarrik</translation>
+<translation id="6343262564968371601">Aurkitu bilatzen ari zarena Google-n, fitxategietan, aplikazioetan eta beste toki batzuetan bilatuz</translation>
 <translation id="6343981313228733146">Leihoa gorantz eta eskuinerantz eraman da</translation>
 <translation id="6344170822609224263">Atzitu sareko konexioen zerrenda</translation>
 <translation id="6344576354370880196">Gordetako inprimagailuak</translation>
@@ -7544,6 +7547,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6476482583633999078">Hizketaren abiadura</translation>
 <translation id="6476671549211161535">Sakatu saguaren ezkerreko edo eskuineko botoia ez den botoi bat <ph name="DEVICE_NAME" /> gailuan.</translation>
 <translation id="6477822444490674459">Laneko profileko telefonoetan ezin dira sinkronizatu jakinarazpenak. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">Txertatze bizkorra tekla tabuladorearen azpian dago</translation>
 <translation id="6479881432656947268">Bisitatu Chrome Web Store</translation>
 <translation id="6480327114083866287">Kudeatzailea: <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Partekatu fitxategiak eta bestelako edukia inguruko gailuekin. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
@@ -7907,6 +7911,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="6749473226660745022">Argazkiak</translation>
 <translation id="6750757184909117990">Desgaitu sare mugikorra</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (ezkutuko moduan)</translation>
+<translation id="6754918760968695779">Txertatze bizkorra</translation>
 <translation id="6756157672127672536">Fitxategiak aplikazioarekin, azkar atzituko dituzu Google Drive-n, kanpoko memorian edo Chrome OS-ko gailuan gordeta dauzkazun fitxategiak.</translation>
 <translation id="6756643207511618722">Hizketa-motorrak</translation>
 <translation id="6757431299485455321">Lagundu beste gailuei wifi-gune hau aurkitzen.</translation>
@@ -8101,6 +8106,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="686609795364435700">Isila</translation>
 <translation id="686664946474413495">Koloreen tenperatura</translation>
 <translation id="6867086642466184030">Esteka berak <ph name="APP_NAME" /> aplikazioarekin irekitzeko konfiguratuta daude beste aplikazio batzuk. <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> eta beste <ph name="NUMBER_OF_OTHER_APPS" /> aplikaziok ezingo dute ireki onartzen den estekarik.</translation>
+<translation id="6867671714894555998">Egin gauzak bizkor teklatu berriarekin</translation>
 <translation id="6868206169573555318">Eguneratzeko, abiarazi berriro</translation>
 <translation id="686831807558000905">Ez hasi saioa</translation>
 <translation id="686839242150793617">Pantaila txiki gainjarria automatikoki irekitzeko baimena dutenak</translation>
@@ -10379,6 +10385,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8524841856047224176">Pertsonalizatu kameraren atzeko planoak bideodeietarako eta beste</translation>
 <translation id="8525306231823319788">Pantaila osoa</translation>
 <translation id="8525461909394569609">Aplikazio honek hauetako sareko edukia dauka:</translation>
+<translation id="8526313996927074827">Txertatu estekak, emojiak eta beste. Idazteko laguntza ere lor dezakezu Google-ren AA bidez.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Bozgorailuak</translation>
 <translation id="8527257351549797148">Aplikazioak, luzapenak eta bestelakoak erabiltzeko, agian erregistratzeko eskatuko dizu erakundeak. Segurtasuna eta gailuaren ezarpenak kudeatzeko aukera ematen dio horrek erakundeari.</translation>

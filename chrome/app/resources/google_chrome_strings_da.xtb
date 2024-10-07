@@ -149,7 +149,7 @@
 <translation id="29082080693925013">Du kan holde styr på tingene ved at fastgøre ofte besøgte websites og organisere faner i grupper</translation>
 <translation id="2915996080311180594">Genstart senere</translation>
 <translation id="2926676257163822632">Svage adgangskoder er nemme at gætte. Få Chrome <ph name="BEGIN_LINK" />til at oprette og huske stærke adgangskoder for dig<ph name="END_LINK" />.</translation>
-<translation id="2926952073016206995">Chrome skal have adgangstilladelse til kamera for at bruge dette website</translation>
+<translation id="2926952073016206995">Chrome skal have kameratilladelse for at bruge dette website</translation>
 <translation id="2928420929544864228">Installationen er fuldført.</translation>
 <translation id="2929907241665500097">Chrome blev ikke opdateret, da der opstod en fejl. <ph name="BEGIN_LINK" />Løs problemer med opdatering af Chrome og mislykkede opdateringer.<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">Installationsfejl: Installationsprocessen kunne ikke startes.</translation>
@@ -400,7 +400,7 @@
 <translation id="6489302989675808168">Til • Chrome kan ikke verificere, hvor denne udvidelse kommer fra</translation>
 <translation id="6493527311031785448">Google Chrome forsøger at <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome blev automatisk lukket</translation>
-<translation id="6506909944137591434">Chrome skal have adgangstilladelse til kamera for at oprette et 3D-kort over dine omgivelser</translation>
+<translation id="6506909944137591434">Chrome skal have kameratilladelse for at oprette et 3D-kort over dine omgivelser</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome for udviklere</translation>
 <translation id="6520670145826811516">Giv Chrome adgang i <ph name="BEGIN_LINK" />systemindstillingerne<ph name="END_LINK" /> for at bruge din lokation</translation>
 <translation id="659498884637196217">I Google Adgangs­kode­admin­istrator på denne enhed</translation>

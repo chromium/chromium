@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">गुप्त</translation>
 <translation id="1049795001945932310">&amp;भाषा सेटिंग्ज</translation>
 <translation id="1050693411695664090">खराब</translation>
+<translation id="1053898984916097744">नवीन काहीतरी सुरू करा किंवा फ्लोमध्ये मदत मिळवा.</translation>
 <translation id="1054048317165655285">तुमच्या फोनवर सेटअप पूर्ण करा</translation>
 <translation id="1054153489933238809">नवीन टॅबमध्‍ये मूळ &amp;प्रतिमा उघडा</translation>
 <translation id="1054187194995068149">हॅलो. हे पूर्वावलोकन आहे</translation>
@@ -1232,6 +1233,7 @@
 <translation id="1854049213067042715">तुम्ही जेथे सोडले होते तेथून पुढे सुरू ठेवा. तुम्ही अ‍ॅप्स सुरू केल्यावर नेहमी रिस्टोअर करा वर सेट करू शकता किंवा सेटिंग्ज मध्ये रिस्टोअर करा बंद करू शकता.</translation>
 <translation id="1854180393107901205">कास्ट करणे थांबवा</translation>
 <translation id="1856715684130786728">स्थान जोडा...</translation>
+<translation id="185766080319917408">लाँचर की ही डावीकडील ऑल्ट कीच्या डाव्या बाजूला आहे</translation>
 <translation id="1858585891038687145">सॉफ्टवेअर निर्मात्यांना ओळखण्याकरिता या सर्टिफिकेटवर विश्वास ठेवा</translation>
 <translation id="1859294693760125695">आता स्वारस्य नाही</translation>
 <translation id="1859339856433307593">या खात्याचा पासवर्ड आधीपासून तुमच्या <ph name="BRAND" /> वर सेव्ह केला आहे (<ph name="USER_EMAIL" />)</translation>
@@ -7392,6 +7394,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6341850831632289108">तुमचे प्रत्यक्ष स्थान तपासा</translation>
 <translation id="6342069812937806050">आत्ताच</translation>
 <translation id="6343003829431264373">फक्त सम संख्या असलेली पेज</translation>
+<translation id="6343262564968371601">Google, फाइल, अ‍ॅप्स आणि आणखी बऱ्याच ठिकाणी शोधून तुम्ही शोधत असलेली गोष्ट मिळवा</translation>
 <translation id="6343981313228733146">विंडो वरच्या बाजूला आणि उजवीकडे हलवली</translation>
 <translation id="6344170822609224263">नेटवर्क कनेक्शनच्या सूची ॲक्सेस करा</translation>
 <translation id="6344576354370880196">सेव्ह केलेले प्रिंटर</translation>
@@ -7564,6 +7567,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6476482583633999078">स्पीचची गती</translation>
 <translation id="6476671549211161535">तुमच्या <ph name="DEVICE_NAME" /> वरील माउसच्या डाव्या किंवा उजव्या बटणाच्या व्यतिरिक्त कोणतेही बटण प्रेस करा.</translation>
 <translation id="6477822444490674459">कार्य प्रोफाइलमध्ये फोनसाठी सूचना सिंक करणे सपोर्ट करत नाही. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">क्विक इन्सर्ट की ही टॅब कीच्या खाली आहे</translation>
 <translation id="6479881432656947268">Chrome वेब स्टोअरला भेट द्या</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> द्वारे व्यवस्थापित</translation>
 <translation id="6481749622989211463">जवळपासच्या डिव्हाइससह फाइल आणि आणखी बऱ्याच गोष्टी शेअर करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
@@ -7927,6 +7931,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6749473226660745022">फोटो</translation>
 <translation id="6750757184909117990">मोबाइल नेटवर्क बंद करा</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (गुप्त)</translation>
+<translation id="6754918760968695779">क्विक इन्सर्ट</translation>
 <translation id="6756157672127672536">Files अ‍ॅप हे तुम्ही Google Drive, बाह्य स्टोरेज किंवा तुमच्या ChromeOS डिव्हाइसवर सेव्ह केलेल्या फाइलचा जलद ॲक्सेस देते.</translation>
 <translation id="6756643207511618722">स्पीच इंजीन</translation>
 <translation id="6757431299485455321">इतर डिव्हाइसना हा हॉटस्पॉट शोधण्यात मदत करा.</translation>
@@ -8121,6 +8126,7 @@ I feel - विटांची इमारत</translation>
 <translation id="686609795364435700">सायलंट</translation>
 <translation id="686664946474413495">रंगाचे तापमान</translation>
 <translation id="6867086642466184030">इतर ॲप्स ही <ph name="APP_NAME" /> सारख्याच लिंक उघडण्यासाठी सेट केली आहेत. हे <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> आणि आणखी <ph name="NUMBER_OF_OTHER_APPS" /> ॲप्सना सपोर्ट असलेल्या लिंक उघडण्यापासून बंद करेल.</translation>
+<translation id="6867671714894555998">नवीन कीबोर्डच्या मदतीने झटपट कामे पूर्ण करा</translation>
 <translation id="6868206169573555318">अपडेट करण्यासाठी पुन्हा लाँच करा</translation>
 <translation id="686831807558000905">साइन इन करू नका</translation>
 <translation id="686839242150793617">चित्रात-चित्र यामध्ये आपोआप प्रवेश करण्याची अनुमती आहे</translation>
@@ -10400,6 +10406,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8524841856047224176">व्हिडिओ कॉल आणि आणखी बऱ्याच गोष्टींसाठी तुमच्या कॅमेराच्या बॅकग्राउंड पर्सनलाइझ करा</translation>
 <translation id="8525306231823319788">फुल स्क्रीन</translation>
 <translation id="8525461909394569609">या अ‍ॅपमध्ये यावरील वेब आशय आहे</translation>
+<translation id="8526313996927074827">लिंक, इमोजी आणि आणखी बरेच काही घाला. तुम्ही Google AI वापरून लिहिण्यातदेखील मदत मिळवू शकता.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">स्पीकर</translation>
 <translation id="8527257351549797148">तुमच्या संस्थेला नोंदणी आवश्यक असू शकते, जेणेकरून तुम्ही ॲप्स, एक्स्टेंशन आणि आणखी बरेच काही ॲक्सेस करू शकता. हे तुमच्या संस्थेला सुरक्षा आणि डिव्हाइस सेटिंग्ज यांसारख्या गोष्टी व्यवस्थापित करण्याची अनुमती देते.</translation>

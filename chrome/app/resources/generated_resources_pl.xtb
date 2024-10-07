@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1049795001945932310">&amp;Ustawienia języka</translation>
 <translation id="1050693411695664090">Słaba</translation>
+<translation id="1053898984916097744">Zacznij coś nowego lub uzyskaj pomoc.</translation>
 <translation id="1054048317165655285">Zakończ konfigurację na telefonie</translation>
 <translation id="1054153489933238809">Otwórz oryginalny &amp;obraz w nowej karcie</translation>
 <translation id="1054187194995068149">Cześć, tak brzmi mój głos</translation>
@@ -1222,6 +1223,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1854049213067042715">Wracaj do ostatniego miejsca. Możesz tak skonfigurować aplikacje, aby zawsze były przywracane podczas uruchamiania, lub wyłączyć przywracanie w Ustawieniach.</translation>
 <translation id="1854180393107901205">Zatrzymaj przesyłanie</translation>
 <translation id="1856715684130786728">Dodaj lokalizację...</translation>
+<translation id="185766080319917408">Klawisz Menu z aplikacjami znajduje się po lewej stronie lewego klawisza Alt</translation>
 <translation id="1858585891038687145">Ufaj temu certyfikatowi przy identyfikowaniu producentów oprogramowania</translation>
 <translation id="1859294693760125695">Już mnie to nie interesuje</translation>
 <translation id="1859339856433307593">Hasło do tego konta jest już zapisane w usłudze <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
@@ -7356,6 +7358,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6341850831632289108">Wykrywanie Twojej lokalizacji</translation>
 <translation id="6342069812937806050">Przed momentem</translation>
 <translation id="6343003829431264373">Tylko strony parzyste</translation>
+<translation id="6343262564968371601">Znajdź to, czego szukasz, wyszukując w Google, plikach, aplikacjach i innych miejscach</translation>
 <translation id="6343981313228733146">Okno zostało przeniesione w górę i w prawo</translation>
 <translation id="6344170822609224263">Dostęp do listy połączeń sieciowych</translation>
 <translation id="6344576354370880196">Zapisane drukarki</translation>
@@ -7528,6 +7531,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6476482583633999078">Szybkość mowy</translation>
 <translation id="6476671549211161535">Naciśnij na urządzeniu <ph name="DEVICE_NAME" /> przycisk inny niż lewy lub prawy przycisk myszy.</translation>
 <translation id="6477822444490674459">Telefony używające profilu służbowego nie obsługują synchronizacji powiadomień. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">Klawisz szybkiego wstawiania znajduje się pod klawiszem Tab</translation>
 <translation id="6479881432656947268">Zajrzyj do Chrome Web Store</translation>
 <translation id="6480327114083866287">Zarządzane przez <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Udostępniaj pliki i inne dane urządzeniom w pobliżu. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
@@ -7895,6 +7899,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6749473226660745022">Zdjęcia</translation>
 <translation id="6750757184909117990">Wyłącz sieć komórkową</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Incognito)</translation>
+<translation id="6754918760968695779">Szybkie wstawianie</translation>
 <translation id="6756157672127672536">Aplikacja Pliki daje szybki dostęp do plików zapisanych na Dysku Google, urządzeniu z Chrome OS lub w pamięci zewnętrznej.</translation>
 <translation id="6756643207511618722">Mechanizmy syntezy mowy</translation>
 <translation id="6757431299485455321">Pomóż innym urządzeniom znaleźć ten hotspot.</translation>
@@ -8087,6 +8092,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="686609795364435700">Cicho</translation>
 <translation id="686664946474413495">Temperatura kolorów</translation>
 <translation id="6867086642466184030">Inne aplikacje zostały ustawione na otwieranie tych samych linków co <ph name="APP_NAME" />. Ta czynność spowoduje, że aplikacje <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> i jeszcze <ph name="NUMBER_OF_OTHER_APPS" /> przestaną otwierać obsługiwane linki.</translation>
+<translation id="6867671714894555998">Szybko załatwiaj sprawy dzięki nowej klawiaturze</translation>
 <translation id="6868206169573555318">Uruchom ponownie, by zaktualizować</translation>
 <translation id="686831807558000905">Nie loguj się</translation>
 <translation id="686839242150793617">Z zezwoleniem na automatyczne włączanie obrazu w obrazie</translation>
@@ -10367,6 +10373,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8524841856047224176">Spersonalizuj tło kamery, m.in. aby prowadzić rozmowy wideo</translation>
 <translation id="8525306231823319788">Pełny ekran</translation>
 <translation id="8525461909394569609">Ta aplikacja zawiera treści z internetu z:</translation>
+<translation id="8526313996927074827">Wstawiaj linki, emotikony i inne elementy Możesz też korzystać z pomocy AI od Google podczas pisania.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Głośniki</translation>
 <translation id="8527257351549797148">Twoja organizacja może wymagać zarejestrowania się, aby udostępniać Ci aplikacje, rozszerzenia i inne funkcje. Dzięki temu będzie też mogła zarządzać m.in. ustawieniami zabezpieczeń i urządzeń.</translation>

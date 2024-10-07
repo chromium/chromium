@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">I fshehtë</translation>
 <translation id="1049795001945932310">&amp;Cilësimet e gjuhës</translation>
 <translation id="1050693411695664090">E dobët</translation>
+<translation id="1053898984916097744">Nis diçka të re ose merr ndihmë gjatë rrjedhës.</translation>
 <translation id="1054048317165655285">Përfundo konfigurimin në telefon</translation>
 <translation id="1054153489933238809">Hap imazhin &amp;origjinal në skedë të re</translation>
 <translation id="1054187194995068149">Përshëndetje. Kjo është një pamje paraprake</translation>
@@ -1221,6 +1222,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1854049213067042715">Vazhdo nga ku e le. Mund të caktosh aplikacione për t'u rivendosur automatikisht në nisje ose ta çaktivizosh rivendosjen te "Cilësimet".</translation>
 <translation id="1854180393107901205">Ndalo transmetimin</translation>
 <translation id="1856715684130786728">Shto një vendndodhje...</translation>
+<translation id="185766080319917408">Tasti i "Nisësit" ndodhet në të majtë të tastit të majtë Alt</translation>
 <translation id="1858585891038687145">Besoji kësaj certifikate për identifikimin e prodhuesve të softuerëve</translation>
 <translation id="1859294693760125695">Nuk të intereson më?</translation>
 <translation id="1859339856433307593">Një fjalëkalim për këtë llogari është ruajtur tashmë te "<ph name="BRAND" />" (<ph name="USER_EMAIL" />)</translation>
@@ -7373,6 +7375,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6341850831632289108">Zbulo vendndodhjen tënde fizike</translation>
 <translation id="6342069812937806050">Pikërisht tani</translation>
 <translation id="6343003829431264373">Vetëm faqet me numra çift</translation>
+<translation id="6343262564968371601">Gjej atë për të cilën po shikon duke kërkuar në Google, te skedarët, aplikacionet etj.</translation>
 <translation id="6343981313228733146">Dritarja u zhvendos lart dhe në të djathtë</translation>
 <translation id="6344170822609224263">Qasu te lista e lidhjeve të rrjetit</translation>
 <translation id="6344576354370880196">Printerët e ruajtur</translation>
@@ -7545,6 +7548,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6476482583633999078">Shpejtësia e të folurës</translation>
 <translation id="6476671549211161535">Shtyp një buton që nuk është butoni i majtë ose i djathtë i miut te <ph name="DEVICE_NAME" />.</translation>
 <translation id="6477822444490674459">Sinkronizimi i njoftimeve nuk mbështetet për telefonat në një profil pune. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">Tasti i futjes së shpejtë ndodhet poshtë tastit Tab</translation>
 <translation id="6479881432656947268">Vizito "Dyqanin e uebit të Chrome"</translation>
 <translation id="6480327114083866287">Menaxhuar nga <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Ndaj skedarë dhe më shumë me pajisjet në afërsi. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
@@ -7908,6 +7912,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6749473226660745022">Fotografitë</translation>
 <translation id="6750757184909117990">Çaktivizo "Rrjetin celular"</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (e fshehtë)</translation>
+<translation id="6754918760968695779">Fut shpejt</translation>
 <translation id="6756157672127672536">Aplikacioni "Skedarët" siguron qasje të shpejtë te skedarët që ke ruajtur në "Diskun e Google", në hapësirën ruajtëse të jashtme ose në pajisjen tënde me ChromeOS.</translation>
 <translation id="6756643207511618722">Motorët e ligjërimit</translation>
 <translation id="6757431299485455321">Ndihmoji pajisjet e tjera të gjejnë këtë zonë të qasjes për internet.</translation>
@@ -8102,6 +8107,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="686609795364435700">I ulët</translation>
 <translation id="686664946474413495">Temperatura e ngjyrës</translation>
 <translation id="6867086642466184030">Aplikacione të tjera janë caktuar për të hapur të njëjtat lidhje si <ph name="APP_NAME" />. Kjo do të çaktivizojë hapjen e lidhjeve të mbështetura nga <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> dhe <ph name="NUMBER_OF_OTHER_APPS" /> aplikacione të tjera.</translation>
+<translation id="6867671714894555998">Realizoji gjërat me shpejtësi me tastierën e re</translation>
 <translation id="6868206169573555318">Hape përsëri për ta përditësuar</translation>
 <translation id="686831807558000905">Mos u identifiko</translation>
 <translation id="686839242150793617">Lejohen të kalojnë automatikisht në modalitetin "figurë brenda figurës"</translation>
@@ -10380,6 +10386,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8524841856047224176">Personalizo sfondet e kamerës për videotelefonatat dhe më shumë</translation>
 <translation id="8525306231823319788">Ekrani i plotë</translation>
 <translation id="8525461909394569609">Ky aplikacion përfshin përmbajtje uebi nga</translation>
+<translation id="8526313996927074827">Fut lidhje, emoji etj. Mund të marrësh gjithashtu ndihmë për të shkruar me IA-në e Google.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Altoparlantët</translation>
 <translation id="8527257351549797148">Organizata jote mund të kërkojë regjistrimin që të mund të qasesh te aplikacionet, shtesat etj. Kjo e lejon po ashtu organizatën tënde që të menaxhojë gjëra të tilla si cilësimet e sigurisë dhe të pajisjes.</translation>

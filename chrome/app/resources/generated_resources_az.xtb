@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">Gizli Rejim</translation>
 <translation id="1049795001945932310">&amp;Dil ayarları</translation>
 <translation id="1050693411695664090">Keyfiyyətsiz</translation>
+<translation id="1053898984916097744">Yeni bir şey başladın və ya proses ərzində kömək alın.</translation>
 <translation id="1054048317165655285">Telefonunuzda ayarlamanı tamamlayın</translation>
 <translation id="1054153489933238809">Orijinal Təsviri Yeni Paneldə Açın</translation>
 <translation id="1054187194995068149">Salam. Bu, önizləmədir</translation>
@@ -1220,6 +1221,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1854049213067042715">Qaldığınız yerdən davam edin. Ayarlarda tətbiqlərin başlanğıcda avtomatik bərpa olmasını ayarlaya və ya bərpanı söndürə bilərsiniz.</translation>
 <translation id="1854180393107901205">Yayımı dayandırın</translation>
 <translation id="1856715684130786728">Məkan əlavə edin...</translation>
+<translation id="185766080319917408">Başladıcı açar sol alt açarın solunda yerləşir</translation>
 <translation id="1858585891038687145">Proqram yaradıcılarının aşkarlanması üçün bu sertifikata güvənin.</translation>
 <translation id="1859294693760125695">Artıq maraqlanmıram</translation>
 <translation id="1859339856433307593">Bu hesab üçün parol <ph name="BRAND" /> bölməsində (<ph name="USER_EMAIL" />) saxlanıb</translation>
@@ -7374,6 +7376,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6341850831632289108">Fiziki yerinizi aşkar edin</translation>
 <translation id="6342069812937806050">İndicə</translation>
 <translation id="6343003829431264373">Yalnız cüt səhifələr</translation>
+<translation id="6343262564968371601">Google, fayllar, tətbiqlər və daha çoxunda axtarış edərək axtardığınızı tapın</translation>
 <translation id="6343981313228733146">Pəncərə yuxarıda sağa köçürüldü</translation>
 <translation id="6344170822609224263">Şəbəkə bağlantılarının giriş siyahısı</translation>
 <translation id="6344576354370880196">Yadda saxlanmış printerlər</translation>
@@ -7546,6 +7549,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6476482583633999078">Nitq sürəti</translation>
 <translation id="6476671549211161535"><ph name="DEVICE_NAME" /> cihazında sol və ya sağ maus düyməsi olmayan düyməni basın.</translation>
 <translation id="6477822444490674459">İş profili olan telefonlar üçün bildirişin sinxronlaşdırılması dəstəklənmir. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">Cəld giriş açarı tab açarının altında yerləşir</translation>
 <translation id="6479881432656947268">Chrome Veb Dükanına daxil olun</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> tərəfindən idarə edilir</translation>
 <translation id="6481749622989211463">Yaxınlıqdakı cihazlar ilə fayl və s. paylaşın. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
@@ -7909,6 +7913,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6749473226660745022">Foto</translation>
 <translation id="6750757184909117990">Mobil şəbəkəni deaktiv edin</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Inkoqnito)</translation>
+<translation id="6754918760968695779">Cəld giriş</translation>
 <translation id="6756157672127672536">Fayllar tətbiqi Google Disk, xarici yaddaş və ya ChromeOS cihazınızda saxladığınız fayllara sürətli giriş təmin edir.</translation>
 <translation id="6756643207511618722">Nitq sistemləri</translation>
 <translation id="6757431299485455321">Digər cihazlara bu hotspotu tapmağa kömək edin.</translation>
@@ -8103,6 +8108,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="686609795364435700">Sakit</translation>
 <translation id="686664946474413495">Rəng temperaturu</translation>
 <translation id="6867086642466184030">Digər tətbiqlər <ph name="APP_NAME" /> ilə eyni keçidləri açmaq üçün ayarlanıb. Bununla <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> və digər <ph name="NUMBER_OF_OTHER_APPS" /> tətbiqin dəstəklənən keçidləri açması deaktiv ediləcək.</translation>
+<translation id="6867671714894555998">Yeni klaviatura ilə işlərinizi sürətlə həll edin</translation>
 <translation id="6868206169573555318">Güncəlləmə üçün yenidən başladın</translation>
 <translation id="686831807558000905">Daxil olmayın</translation>
 <translation id="686839242150793617">Şəkildə şəkil rejiminə avtomatik daxil olmaq icazəsi verilib</translation>
@@ -10382,6 +10388,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8524841856047224176">Video zəng və s. üçün kamera arxa fonlarını fərdiləşdirin</translation>
 <translation id="8525306231823319788">Tam ekran</translation>
 <translation id="8525461909394569609">Bu tətbiqdə veb-kontent var</translation>
+<translation id="8526313996927074827">Link, emoji və s. daxil edin. Google Sİ ilə yazmaq üçün kömək ala bilərsiniz.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Dinamiklər</translation>
 <translation id="8527257351549797148">Tətbiq, artırma və s. dataya giriş üçün təşkilat qeydiyyat tələb edə bilər. Bununla təşkilata güvənlik və cihaz ayarları kimi parametrləri idarə etmək imkanı da verilir.</translation>

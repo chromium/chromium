@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1049795001945932310">&amp;Sprogindstillinger</translation>
 <translation id="1050693411695664090">Dårlig</translation>
+<translation id="1053898984916097744">Start et nyt projekt, eller få hjælp undervejs.</translation>
 <translation id="1054048317165655285">Gennemfør konfigurationen på din telefon</translation>
 <translation id="1054153489933238809">Åbn originalbillede på ny fane</translation>
 <translation id="1054187194995068149">Hej! Dette er et preview</translation>
@@ -1234,6 +1235,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1854049213067042715">Fortsæt, hvor du slap. Du kan indstille apps til altid at blive gendannet ved opstart i Indstillinger.</translation>
 <translation id="1854180393107901205">Stop cast</translation>
 <translation id="1856715684130786728">Tilføj placering...</translation>
+<translation id="185766080319917408">Applistetasten er placeret til venstre for tasten Alt</translation>
 <translation id="1858585891038687145">Hav tillid til dette certifikat i forbindelse med identifikation af softwareproducenter</translation>
 <translation id="1859294693760125695">Ikke længere interesseret</translation>
 <translation id="1859339856433307593">Der er allerede gemt en adgangskode til denne konto i <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
@@ -7393,6 +7395,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6341850831632289108">Find din fysiske placering</translation>
 <translation id="6342069812937806050">Lige nu</translation>
 <translation id="6343003829431264373">Kun lige sider</translation>
+<translation id="6343262564968371601">Find det, du leder efter, ved at søge på Google, i filer, i apps m.m.</translation>
 <translation id="6343981313228733146">Vinduet blev flyttet opad og til højre</translation>
 <translation id="6344170822609224263">Få adgang til listen over netværksforbindelser</translation>
 <translation id="6344576354370880196">Gemte printere</translation>
@@ -7565,6 +7568,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6476482583633999078">Talehastighed</translation>
 <translation id="6476671549211161535">Tryk på en knap, der ikke er venstre eller højre museknap på din <ph name="DEVICE_NAME" />.</translation>
 <translation id="6477822444490674459">Synkronisering af notifikationer understøttes ikke for telefoner med en arbejdsprofil. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">Tasten til hurtigindsættelse er placeret under tasten Tab</translation>
 <translation id="6479881432656947268">Gå til Chrome Webshop</translation>
 <translation id="6480327114083866287">Administreres af <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Del filer og meget mere med enheder i nærheden. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
@@ -7930,6 +7934,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6749473226660745022">Billeder</translation>
 <translation id="6750757184909117990">Deaktiver mobilnetværk</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Inkognito)</translation>
+<translation id="6754918760968695779">Hurtigindsættelse</translation>
 <translation id="6756157672127672536">Appen Filer giver hurtig adgang til filer, som du har gemt i Google Drev, på et eksternt lager eller på din ChromeOS-enhed.</translation>
 <translation id="6756643207511618722">Oplæsningsmaskiner</translation>
 <translation id="6757431299485455321">Hjælp andre enheder med at finde dette hotspot.</translation>
@@ -8124,6 +8129,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="686609795364435700">Stille</translation>
 <translation id="686664946474413495">Farvetemperatur</translation>
 <translation id="6867086642466184030">Andre apps er konfigureret til at åbne de samme links som <ph name="APP_NAME" />. Dette gør, at <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> og <ph name="NUMBER_OF_OTHER_APPS" /> andre apps ikke kan åbne understøttede links.</translation>
+<translation id="6867671714894555998">Få tingene klaret hurtigt med det nye tastatur</translation>
 <translation id="6868206169573555318">Genstart for at opdatere</translation>
 <translation id="686831807558000905">Log ikke ind</translation>
 <translation id="686839242150793617">Har tilladelse til automatisk at åbne integreret billede</translation>
@@ -10404,6 +10410,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8524841856047224176">Tilpas dine kamerabaggrunde til videoopkald m.m. til dig personligt</translation>
 <translation id="8525306231823319788">Fuld skærm</translation>
 <translation id="8525461909394569609">Denne app indeholder webindhold fra</translation>
+<translation id="8526313996927074827">Indsæt links, emojis m.m. Du kan også få hjælp til at skrive med Google AI.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Højttalere</translation>
 <translation id="8527257351549797148">Din organisation kræver muligvis tilmelding, før du kan få adgang til apps, udvidelser m.m. Dette giver også din organisation mulighed for at administrere ting såsom sikkerheds- og enhedsindstillinger.</translation>

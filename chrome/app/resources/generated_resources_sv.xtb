@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1049795001945932310">&amp;Språkinställningar</translation>
 <translation id="1050693411695664090">Dålig</translation>
+<translation id="1053898984916097744">Börja med något nytt eller få hjälp under vägen.</translation>
 <translation id="1054048317165655285">Slutför konfigurationen på telefonen</translation>
 <translation id="1054153489933238809">Öppna originalbilden i en ny flik</translation>
 <translation id="1054187194995068149">Hej! Det här är en förhandsgranskning</translation>
@@ -1233,6 +1234,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1854049213067042715">Fortsätt där du slutade. Du kan ställa in att appar alltid ska återställas vid start eller inaktivera återställning i inställningarna.</translation>
 <translation id="1854180393107901205">Sluta casta</translation>
 <translation id="1856715684130786728">Lägg till plats ...</translation>
+<translation id="185766080319917408">Appstartartangenten finns till vänster om den vänstra Alt-tangenten</translation>
 <translation id="1858585891038687145">Lita på det här certifikatet för identifiering av programskapare</translation>
 <translation id="1859294693760125695">Inte intresserad längre</translation>
 <translation id="1859339856433307593">Ett lösenord för det här kontot har redan sparats i <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
@@ -7392,6 +7394,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6341850831632289108">Identifiera din fysiska plats</translation>
 <translation id="6342069812937806050">Alldeles nyss</translation>
 <translation id="6343003829431264373">Endast jämna sidor</translation>
+<translation id="6343262564968371601">Hitta det du letar efter genom att söka på Google, i filer, appar med mera</translation>
 <translation id="6343981313228733146">Fönstret har flyttats uppåt och till höger</translation>
 <translation id="6344170822609224263">Få åtkomst till en lista med nätverksanslutningar</translation>
 <translation id="6344576354370880196">Sparade skrivare</translation>
@@ -7564,6 +7567,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6476482583633999078">Talhastighet</translation>
 <translation id="6476671549211161535">Tryck på en knapp som inte är vänster eller höger musknapp på din <ph name="DEVICE_NAME" />.</translation>
 <translation id="6477822444490674459">Synkronisering av aviseringar stöds inte på telefoner med en jobbprofil. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">Snabbinfogningstangenten finns under tabbtangenten</translation>
 <translation id="6479881432656947268">Besök Chrome Web Store</translation>
 <translation id="6480327114083866287">Hanteras av <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Dela filer och annat med enheter i närheten. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
@@ -7927,6 +7931,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6749473226660745022">Foton</translation>
 <translation id="6750757184909117990">Inaktivera mobilnätverk</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Inkognito)</translation>
+<translation id="6754918760968695779">Snabbinfogning</translation>
 <translation id="6756157672127672536">Med appen Filer kommer du snabbt åt filer som du har sparat på Google Drive, externa lagringsenheter eller din ChromeOS-enhet.</translation>
 <translation id="6756643207511618722">Talmotorer</translation>
 <translation id="6757431299485455321">Hjälp andra enheter att hitta surfzonen.</translation>
@@ -8121,6 +8126,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="686609795364435700">Tyst</translation>
 <translation id="686664946474413495">Färgtemperatur</translation>
 <translation id="6867086642466184030">Andra appar är inställda på att öppna samma länkar som <ph name="APP_NAME" />. Detta inaktiverar att <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> och <ph name="NUMBER_OF_OTHER_APPS" /> appar till öppnar länkar som stöds.</translation>
+<translation id="6867671714894555998">Få saker gjorda snabbt med det nya tangentbordet</translation>
 <translation id="6868206169573555318">Starta om för att uppdatera</translation>
 <translation id="686831807558000905">Logga inte in</translation>
 <translation id="686839242150793617">Har tillåtelse att öppna bild-i-bild automatiskt</translation>
@@ -10402,6 +10408,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8524841856047224176">Anpassa kamerabakgrunden för videosamtal med mera</translation>
 <translation id="8525306231823319788">Helskärm</translation>
 <translation id="8525461909394569609">Den här appen innehåller webbinnehåll från</translation>
+<translation id="8526313996927074827">Infoga länkar, emojis och mycket annat. Du kan även få hjälp att skriva med Google AI.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Högtalare</translation>
 <translation id="8527257351549797148">Organisationen kan kräva att du registrerar dig för att få åtkomst till appar, tillägg med mera. Detta gör det även möjligt för organisationen att hantera säkerhets- och enhetsinställningar.</translation>

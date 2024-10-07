@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">Anonymní režim</translation>
 <translation id="1049795001945932310">&amp;Jazyková nastavení</translation>
 <translation id="1050693411695664090">Nízká</translation>
+<translation id="1053898984916097744">Začněte něco nového nebo si s něčím nechte pomoct.</translation>
 <translation id="1054048317165655285">Dokončete nastavení na telefonu</translation>
 <translation id="1054153489933238809">Otevřít původní &amp;obrázek na nové kartě</translation>
 <translation id="1054187194995068149">Dobrý den, tohle je ukázka</translation>
@@ -1226,6 +1227,7 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="1854049213067042715">Pokračujte tam, kde jste přestali. V Nastavení můžete zapnout nebo vypnout automatické obnovování aplikací při spuštění.</translation>
 <translation id="1854180393107901205">Zastavit odesílání</translation>
 <translation id="1856715684130786728">Přidat polohu...</translation>
+<translation id="185766080319917408">Tlačítko Spouštěče se nachází vlevo od levé klávesy Alt</translation>
 <translation id="1858585891038687145">Důvěřovat tomuto certifikátu při ověřování identity výrobců softwaru</translation>
 <translation id="1859294693760125695">Už nemám zájem</translation>
 <translation id="1859339856433307593">Heslo pro tento účet už je do <ph name="BRAND" /> pro účet <ph name="USER_EMAIL" /> uloženo</translation>
@@ -7373,6 +7375,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6341850831632289108">Určit vaše fyzické umístění</translation>
 <translation id="6342069812937806050">Právě teď</translation>
 <translation id="6343003829431264373">Pouze sudé stránky</translation>
+<translation id="6343262564968371601">Najděte požadovanou věc na Googlu, v souborech, aplikacích a jinde</translation>
 <translation id="6343981313228733146">Okno se posunulo nahoru a doprava</translation>
 <translation id="6344170822609224263">Zobrazení seznamu síťových připojení</translation>
 <translation id="6344576354370880196">Uložené tiskárny</translation>
@@ -7545,6 +7548,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6476482583633999078">Rychlost řeči</translation>
 <translation id="6476671549211161535">Stiskněte na zařízení <ph name="DEVICE_NAME" /> jiné tlačítko, než jsou levé a pravé tlačítko myši.</translation>
 <translation id="6477822444490674459">U telefonů s pracovním profilem není synchronizace oznámení podporována. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">Klávesa pro rychlé vložení se nachází pod klávesou tabulátoru</translation>
 <translation id="6479881432656947268">Navštívit Internetový obchod Chrome</translation>
 <translation id="6480327114083866287">Spravováno doménou <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Sdílejte soubory a další obsah se zařízeními v okolí. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
@@ -7912,6 +7916,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6749473226660745022">Fotky</translation>
 <translation id="6750757184909117990">Deaktivovat mobilní síť</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Anonymní režim)</translation>
+<translation id="6754918760968695779">Rychle vložit</translation>
 <translation id="6756157672127672536">Aplikace Soubory umožňuje rychlý přístup k souborům, které jste uložili na Disk Google, externí úložiště nebo zařízení se systémem ChromeOS.</translation>
 <translation id="6756643207511618722">Řečové moduly</translation>
 <translation id="6757431299485455321">Pomoci ostatním zařízením najít tento hotspot.</translation>
@@ -8106,6 +8111,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="686609795364435700">Tiché</translation>
 <translation id="686664946474413495">Teplota barev</translation>
 <translation id="6867086642466184030">Ostatní aplikace jsou nastaveny, aby otevíraly stejné odkazy jako aplikace <ph name="APP_NAME" />. Aplikace <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> a další (<ph name="NUMBER_OF_OTHER_APPS" />) tak nebudou moci otevírat podporované odkazy.</translation>
+<translation id="6867671714894555998">Dělejte věci rychle s novou klávesnicí</translation>
 <translation id="6868206169573555318">Spustit znovu a aktualizovat</translation>
 <translation id="686831807558000905">Nepřihlašovat se</translation>
 <translation id="686839242150793617">Povolení automaticky aktivovat režim obrazu v obraze</translation>
@@ -10386,6 +10392,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8524841856047224176">Přizpůsobte si pozadí kamery pro videohovory a nejen to</translation>
 <translation id="8525306231823319788">Celá obrazovka</translation>
 <translation id="8525461909394569609">Tato aplikace zahrnuje webový obsah z:</translation>
+<translation id="8526313996927074827">Vkládejte odkazy, emodži a mnohem víc. Google AI vám taky může pomoct s psaním.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Reproduktory</translation>
 <translation id="8527257351549797148">Vaše organizace může vyžadovat registraci, abyste měli přístup k aplikacím, rozšířením a dalším položkám. To vaší organizaci také umožňuje spravovat věci, jako je zabezpečení a nastavení zařízení.</translation>

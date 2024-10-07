@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1049795001945932310">&amp;Kieliasetukset</translation>
 <translation id="1050693411695664090">Huono</translation>
+<translation id="1053898984916097744">Aloita jotain uutta tai pyydä apua.</translation>
 <translation id="1054048317165655285">Viimeistele käyttöönotto puhelimella</translation>
 <translation id="1054153489933238809">Avaa alkuperäinen &amp;kuva uudessa välilehdessä</translation>
 <translation id="1054187194995068149">Hei! Tämä on ennakkoversio</translation>
@@ -1232,6 +1233,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1854049213067042715">Jatka siitä, mihin jäit. Voit valita, että sovellukset palautetaan aina käynnistyksen yhteydessä, tai laittaa palautuksen pois päältä asetuksista.</translation>
 <translation id="1854180393107901205">Lopeta suoratoisto</translation>
 <translation id="1856715684130786728">Lisää sijainti…</translation>
+<translation id="185766080319917408">Hakunäppäin on vasemman alt-näppäimen vasemmalla puolella</translation>
 <translation id="1858585891038687145">Luota tähän varmenteeseen ohjelmiston tekijöitä tunnistettaessa.</translation>
 <translation id="1859294693760125695">En ole enää kiinnostunut</translation>
 <translation id="1859339856433307593">Tämän tilin salasana on jo tallennettu tänne: <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
@@ -7389,6 +7391,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6341850831632289108">Tunnistaa sijaintisi</translation>
 <translation id="6342069812937806050">Valmistui juuri</translation>
 <translation id="6343003829431264373">Vain parilliset sivut</translation>
+<translation id="6343262564968371601">Löydä etsimäsi Googlesta, tiedostoista, sovelluksista ja muualta</translation>
 <translation id="6343981313228733146">Ikkuna siirretty ylös oikealle</translation>
 <translation id="6344170822609224263">Pääsy verkkoyhteysluetteloon</translation>
 <translation id="6344576354370880196">Tallennetut tulostimet</translation>
@@ -7561,6 +7564,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6476482583633999078">Puheen nopeus</translation>
 <translation id="6476671549211161535">Paina painiketta, joka ei ole laitteen (<ph name="DEVICE_NAME" />) vasen tai oikea painike.</translation>
 <translation id="6477822444490674459">Puhelimet, joissa on työprofiili, eivät tue ilmoitusten synkronointia. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">Pikalisäysnäppäin on sarkainnäppäimen alla</translation>
 <translation id="6479881432656947268">Käy Chrome Web Storessa</translation>
 <translation id="6480327114083866287">Ylläpitäjä: <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Jaa esimerkiksi tiedostoja lähellä olevien laitteiden kanssa. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
@@ -7924,6 +7928,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6749473226660745022">Kuvat</translation>
 <translation id="6750757184909117990">Poista mobiiliyhteys käytöstä</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Incognito)</translation>
+<translation id="6754918760968695779">Pikalisäys</translation>
 <translation id="6756157672127672536">Tiedostot-sovelluksen kautta voit pikakäyttää Google Driveen, ulkoiseen tallennustilaan tai Chrome-käyttöjärjestelmää käyttävälle laitteelle tallennettuja tiedostoja.</translation>
 <translation id="6756643207511618722">Puhemoottorit</translation>
 <translation id="6757431299485455321">Auta muita laitteita löytämään tämä hotspot.</translation>
@@ -8118,6 +8123,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="686609795364435700">Hiljainen</translation>
 <translation id="686664946474413495">Värilämpötila</translation>
 <translation id="6867086642466184030">Muut sovellukset on asetettu avaamaan samat linkit kuin <ph name="APP_NAME" />. Muutoksen jälkeen <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> ja <ph name="NUMBER_OF_OTHER_APPS" /> muuta sovellusta eivät enää voi avata tuettuja linkkejä.</translation>
+<translation id="6867671714894555998">Hoida asiat nopeasti uudella näppäimistöllä</translation>
 <translation id="6868206169573555318">Käynnistä uudelleen ja päivitä</translation>
 <translation id="686831807558000905">Älä kirjaudu sisään</translation>
 <translation id="686839242150793617">Pikkuruututilaan siirtyminen automaattisesti sallittu</translation>
@@ -10398,6 +10404,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8524841856047224176">Personoi kameran taustoja esimerkiksi videopuheluja varten</translation>
 <translation id="8525306231823319788">Koko näyttö</translation>
 <translation id="8525461909394569609">Tässä sovelluksessa on verkkosisältöä täältä:</translation>
+<translation id="8526313996927074827">Lisää esimerkiksi linkkejä ja emojeita. Voit myös saada Googlen tekoälyltä apua kirjoittamiseen.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Kaiuttimet</translation>
 <translation id="8527257351549797148">Organisaatiosi voi edellyttää rekisteröitymistä, jotta voit käyttää esimerkiksi sovelluksia ja laajennuksia. Näin organisaatiosi voi myös hallinnoida esimerkiksi suojaus- ja laiteasetuksia.</translation>

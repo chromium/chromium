@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">Anonimni način</translation>
 <translation id="1049795001945932310">&amp;Jezikovne nastavitve</translation>
 <translation id="1050693411695664090">Slaba</translation>
+<translation id="1053898984916097744">Začnite nekaj novega ali med postopkom poiščite pomoč.</translation>
 <translation id="1054048317165655285">Dokončajte nastavitev v telefonu</translation>
 <translation id="1054153489933238809">Odpri izvirno &amp;sliko na novem zavihku</translation>
 <translation id="1054187194995068149">Pozdravljeni. To je predogled.</translation>
@@ -1236,6 +1237,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1854049213067042715">Nadaljujte, kjer ste končali. V nastavitvah lahko nastavite, da se aplikacije ob zagonu vedno obnovijo, ali pa izklopite obnovitev.</translation>
 <translation id="1854180393107901205">Ustavi predvajanje</translation>
 <translation id="1856715684130786728">Dodaj lokacijo ...</translation>
+<translation id="185766080319917408">Tipka za zaganjalnik je levo od leve tipke Alt</translation>
 <translation id="1858585891038687145">Zaupaj temu potrdilu za prepoznavanje proizvajalcev programske opreme</translation>
 <translation id="1859294693760125695">Ne zanima me več</translation>
 <translation id="1859339856433307593">Geslo za ta račun je že shranjeno v storitvi <ph name="BRAND" /> (<ph name="USER_EMAIL" />).</translation>
@@ -7397,6 +7399,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6341850831632289108">Odkrijte svojo fizično lokacijo</translation>
 <translation id="6342069812937806050">Pravkar</translation>
 <translation id="6343003829431264373">Samo sode strani</translation>
+<translation id="6343262564968371601">Z iskanjem v Googlu, datotekah, aplikacijah in drugem poiščite tisto, kar iščete</translation>
 <translation id="6343981313228733146">Okno je premaknjeno navzgor in desno</translation>
 <translation id="6344170822609224263">Dostop do seznama omrežnih povezav</translation>
 <translation id="6344576354370880196">Shranjeni tiskalniki</translation>
@@ -7569,6 +7572,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6476482583633999078">Hitrost govora</translation>
 <translation id="6476671549211161535">Pritisnite gumb, ki ni leva ali desna tipka miške na napravi <ph name="DEVICE_NAME" />.</translation>
 <translation id="6477822444490674459">Sinhroniziranje obvestil ni podprto za telefone v delovnem profilu. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">Tipka za hitro vstavljanje je pod tabulatorko</translation>
 <translation id="6479881432656947268">Obiščite Spletno trgovino Chrome</translation>
 <translation id="6480327114083866287">Upravlja domena <ph name="MANAGER" />.</translation>
 <translation id="6481749622989211463">Deljenje datotek in drugih vsebin z napravami v bližini. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
@@ -7938,6 +7942,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6749473226660745022">Fotografije</translation>
 <translation id="6750757184909117990">Onemogočanje mobilnega omrežja</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (anonimni način)</translation>
+<translation id="6754918760968695779">Hitro vstavljanje</translation>
 <translation id="6756157672127672536">Aplikacija Datoteke omogoča hiter dostop do datotek, ki ste jih shranili v Googlu Drive, v zunanji shrambi ali v napravi s sistemom Chrome OS.</translation>
 <translation id="6756643207511618722">Mehanizmi za govor</translation>
 <translation id="6757431299485455321">Drugim napravam pomagajte najti to dostopno točko.</translation>
@@ -8132,6 +8137,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="686609795364435700">Tiho</translation>
 <translation id="686664946474413495">Barvna temperatura</translation>
 <translation id="6867086642466184030">Druge aplikacije so nastavljene tako, da odpirajo iste povezave kot aplikacija <ph name="APP_NAME" />. S tem bo aplikacijam <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> in drugim (<ph name="NUMBER_OF_OTHER_APPS" />) onemogočeno odpiranje podprtih povezav.</translation>
+<translation id="6867671714894555998">Hitro opravite naloge z novo tipkovnico</translation>
 <translation id="6868206169573555318">Znova zaženite za posodobitev</translation>
 <translation id="686831807558000905">Brez prijave</translation>
 <translation id="686839242150793617">Samodejni preklop v način slike v sliki je dovoljen</translation>
@@ -10413,6 +10419,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8524841856047224176">Osebno prilagodite ozadja kamere za videoklice in drugo</translation>
 <translation id="8525306231823319788">Celozaslonsko</translation>
 <translation id="8525461909394569609">Ta aplikacija vsebuje spletno vsebino od tod:</translation>
+<translation id="8526313996927074827">Vstavite povezave, emodžije in drugo. Prav tako lahko pri pisanju prejmete pomoč Googlove umetne inteligence.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Zvočniki</translation>
 <translation id="8527257351549797148">Vaša organizacija morda zahteva včlanitev, da boste lahko dostopali do aplikacij, razširitev in drugega. To organizaciji tudi omogoča upravljanje stvari, kot so nastavitve varnosti in naprave.</translation>

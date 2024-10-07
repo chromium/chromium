@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1049795001945932310">&amp;Kalbos nustatymai</translation>
 <translation id="1050693411695664090">Prastas</translation>
+<translation id="1053898984916097744">Pradėkite ką nors naujo arba gaukite pagalbos atlikdami veiksmus.</translation>
 <translation id="1054048317165655285">Nustatymo proceso užbaigimas telefonu</translation>
 <translation id="1054153489933238809">Atidaryti originalų &amp;vaizdą naujame skirtuke</translation>
 <translation id="1054187194995068149">Sveiki. Tai yra peržiūra</translation>
@@ -1236,6 +1237,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1854049213067042715">Tęskite nuo ten, kur baigėte. Galite nustatyti, kad programos visada būtų atkuriamos paleidžiant, arba išjunkite atkūrimą skiltyje „Nustatymai“.</translation>
 <translation id="1854180393107901205">Sustabdyti perdavimą</translation>
 <translation id="1856715684130786728">Pridėti vietą...</translation>
+<translation id="185766080319917408">Paleidimo priemonės raktas yra kairėje nuo kairiojo klavišo „Alt“</translation>
 <translation id="1858585891038687145">Pasitikėti šiuo sertifikatu nustatant programinės įrangos kūrėjus</translation>
 <translation id="1859294693760125695">Nebedomina</translation>
 <translation id="1859339856433307593">Šios paskyros slaptažodis jau išsaugotas „<ph name="BRAND" />“ (<ph name="USER_EMAIL" />)</translation>
@@ -7396,6 +7398,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6341850831632289108">Aptikti buvimo vietą</translation>
 <translation id="6342069812937806050">Ką tik</translation>
 <translation id="6343003829431264373">Tik lyginiai puslapiai</translation>
+<translation id="6343262564968371601">Raskite tai, ko ieškote, ieškodami „Google“, failų, programų ir kt.</translation>
 <translation id="6343981313228733146">Langas perkeltas aukštyn ir į dešinę</translation>
 <translation id="6344170822609224263">Pasiekti tinklo ryšių sąrašą</translation>
 <translation id="6344576354370880196">Išsaugoti spausdintuvai</translation>
@@ -7568,6 +7571,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6476482583633999078">Kalbos sparta</translation>
 <translation id="6476671549211161535">Paspauskite mygtuką, kuris nėra kairysis arba dešinysis „<ph name="DEVICE_NAME" />“ pelės mygtukas.</translation>
 <translation id="6477822444490674459">Pranešimų sinchronizavimas nepalaikomas telefonuose, kuriuose įjungtas darbo profilis. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">Sparčiojo įterpimo klavišas yra po tabuliavimo klavišu</translation>
 <translation id="6479881432656947268">Apsilankykite „Chrome“ internetinėje parduotuvėje</translation>
 <translation id="6480327114083866287">Tvarko <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Bendrinkite failus ir kt. su įrenginiais netoliese. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
@@ -7937,6 +7941,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6749473226660745022">Nuotraukos</translation>
 <translation id="6750757184909117990">Išjungti mobilųjį ryšį</translation>
 <translation id="6751344591405861699">„<ph name="WINDOW_TITLE" />“ (Inkognito)</translation>
+<translation id="6754918760968695779">Spartusis įterpimas</translation>
 <translation id="6756157672127672536">Naudodami programą „Failai“ greitai pasieksite „Google“ diske, išorinėje saugykloje ar „Chrome“ OS įrenginyje išsaugotus failus.</translation>
 <translation id="6756643207511618722">Kalbų varikliai</translation>
 <translation id="6757431299485455321">Padėkite kitiems įrenginiams rasti šį viešosios interneto prieigos tašką.</translation>
@@ -8131,6 +8136,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="686609795364435700">Tyliai</translation>
 <translation id="686664946474413495">Spalvų temperatūra</translation>
 <translation id="6867086642466184030">Kitos programos nustatytos atidaryti tas pačias nuorodas kaip ir „<ph name="APP_NAME" />“. Tai atlikus „<ph name="APP_NAME_2" />“, „<ph name="APP_NAME_3" />“, „<ph name="APP_NAME_4" />“ ir dar <ph name="NUMBER_OF_OTHER_APPS" /> progr. negalės atidaryti palaikomų nuorodų.</translation>
+<translation id="6867671714894555998">Greitai atlikite užduotis naudodami naują klaviatūrą</translation>
 <translation id="6868206169573555318">Paleisti iš naujo, kad būtų atnaujinta</translation>
 <translation id="686831807558000905">Neprisijungti</translation>
 <translation id="686839242150793617">Leidžiama automatiškai įjungti vaizdo vaizde režimą</translation>
@@ -10412,6 +10418,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8524841856047224176">Suasmeninkite fotoaparato fonus, kad galėtumėte atlikti vaizdo skambučius ir kitus veiksmus</translation>
 <translation id="8525306231823319788">Viso ekrano režimas</translation>
 <translation id="8525461909394569609">Šioje programoje yra žiniatinklio turinio iš</translation>
+<translation id="8526313996927074827">Įterpkite nuorodų, jaustukų ir kt. Be to, galite gauti pagalbos rašydami naudodami „Google“ DI.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Garsiakalbiai</translation>
 <translation id="8527257351549797148">Jūsų organizacija gali reikalauti užsiregistruoti, kad galėtumėte pasiekti programas, plėtinius ir kt. Tai taip pat suteikia organizacijai galimybę tvarkyti saugos ir įrenginio nustatymus ir kt.</translation>

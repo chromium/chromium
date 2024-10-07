@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1049795001945932310">Til sozlamalari</translation>
 <translation id="1050693411695664090">Yomon</translation>
+<translation id="1053898984916097744">Yangi ishni boshlang yoki joriysini davom ettiring</translation>
 <translation id="1054048317165655285">Sozlashni telefonda yakunlang</translation>
 <translation id="1054153489933238809">Asl &amp;tasvirni yangi tabda ochish</translation>
 <translation id="1054187194995068149">Salom. Bu — eskiz.</translation>
@@ -1222,6 +1223,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1854049213067042715">Ishni qolgan joydan davom ettiring. Sozlamalar orqali ilovalarni har doim ishga tushirilayotganda tiklanadigan yoki tiklanmaydigan qilib sozlash mumkin.</translation>
 <translation id="1854180393107901205">Translatsiyani to‘xtatish</translation>
 <translation id="1856715684130786728">Jild qo‘shish...</translation>
+<translation id="185766080319917408">Launcher tugmasi chap Alt tugmasidan chapda joylashgan</translation>
 <translation id="1858585891038687145">Dasturiy ta’minot ishlab chiquvchilarni identifikatsiya qilishda ushbu sertifikat ishonchli deb hisoblansin.</translation>
 <translation id="1859294693760125695">Endi qiziq emas</translation>
 <translation id="1859339856433307593">Makzur hisob paroli <ph name="BRAND" /> xizmatiga (<ph name="USER_EMAIL" />) allaqachon saqlangan</translation>
@@ -7378,6 +7380,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6341850831632289108">Joylashuvingizni aniqlash</translation>
 <translation id="6342069812937806050">Hozirgina</translation>
 <translation id="6343003829431264373">Faqat juft sonli sahifalar</translation>
+<translation id="6343262564968371601">Google, fayllar, ilovalar va boshqalarda qidirgan narsangizni toping</translation>
 <translation id="6343981313228733146">Oyna yuqoriga va oʻngga olindi</translation>
 <translation id="6344170822609224263">Tarmoq ulanishlari ro‘yxatiga ruxsat</translation>
 <translation id="6344576354370880196">Saqlangan printerlar</translation>
@@ -7550,6 +7553,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6476482583633999078">Nutq tezligi</translation>
 <translation id="6476671549211161535"><ph name="DEVICE_NAME" /> qurilmasida chap va oʻng sichqoncha tugmalaridan boshqa tugmani bosing.</translation>
 <translation id="6477822444490674459">Ish profilidagi telefonlarda bildirishnomalar sinxronlanmaydi. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">Tezkor joylash tugmasi tab tugmasining ostida joylashgan</translation>
 <translation id="6479881432656947268">Chrome Web Store doʻkonini ochish</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> tomonidan boshqariladi</translation>
 <translation id="6481749622989211463">Atrofdagi qurilmalarga fayl va boshqalarni ulashish <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
@@ -7913,6 +7917,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6749473226660745022">Suratlar</translation>
 <translation id="6750757184909117990">Mobil tarmoqni faolsizlantirish</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Inkognito)</translation>
+<translation id="6754918760968695779">Tezkor joylash</translation>
 <translation id="6756157672127672536">Fayllar ilovasi yordamida Google Drive, ChromeOS qurilmalari yoki tashqi xotira qurilmasidagi hujjatlarni tezkor ochish mumkin.</translation>
 <translation id="6756643207511618722">Nutq sintezatorlari</translation>
 <translation id="6757431299485455321">Boshqa qurilmalarga ushbu hotspotni topishga yordam bering</translation>
@@ -8107,6 +8112,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="686609795364435700">Sokin</translation>
 <translation id="686664946474413495">Rang harorati</translation>
 <translation id="6867086642466184030"><ph name="APP_NAME" /> ilovasini standart ilova sifatida oʻrnatishni istaysizmi? Bu havola oʻzgartirilgandan keyin <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> va yana <ph name="NUMBER_OF_OTHER_APPS" /> ta ilova ochilmay qoladi.</translation>
+<translation id="6867671714894555998">Yangi klaviatura bilan ishlarni tezroq bajaring</translation>
 <translation id="6868206169573555318">Yangilash uchun qayta ishga tushiring</translation>
 <translation id="686831807558000905">Kirilmasin</translation>
 <translation id="686839242150793617">Tasvir ustida tasvir rejimiga avtomatik kirishga ruxsat berilgan</translation>
@@ -10385,6 +10391,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8524841856047224176">Video chaqiruv kabi amallar uchun kamera fon rasmini moslang</translation>
 <translation id="8525306231823319788">To‘liq ekran rejimi</translation>
 <translation id="8525461909394569609">Bu ilovada veb-kontent bor:</translation>
+<translation id="8526313996927074827">Havola, emoji va boshqalarni joylang. Shuningdek, Google AI bilan yozishda yordam olish mumkin.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Karnaylar</translation>
 <translation id="8527257351549797148">Ilovalar va kengaytmalarga kirishingiz uchun tashkilotingiz roʻyxatdan oʻtishni talab qilishi mumkin. Bu, shuningdek, tashkilotingizga xavfsizlik va qurilma sozlamalari kabilarni boshqarish imkonini beradi.</translation>

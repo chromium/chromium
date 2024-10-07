@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">גלישה פרטית</translation>
 <translation id="1049795001945932310">הגד&amp;רות שפה</translation>
 <translation id="1050693411695664090">איכות גרועה</translation>
+<translation id="1053898984916097744">אפשר להתחיל משהו חדש או לקבל עזרה במהלך העבודה.</translation>
 <translation id="1054048317165655285">יש להשלים את ההגדרה בטלפון</translation>
 <translation id="1054153489933238809">פתיחת ה&amp;תמונה המקורית בכרטיסייה חדשה</translation>
 <translation id="1054187194995068149">שלום. זו תצוגה מקדימה</translation>
@@ -1232,6 +1233,7 @@
 <translation id="1854049213067042715">רוצה להמשיך מאיפה שהפסקת? יש לך אפשרות להגדיר שחזור לאפליקציות בתהליך ההפעלה או להשבית את השחזור ב'הגדרות'.</translation>
 <translation id="1854180393107901205">הפסקת ההעברה</translation>
 <translation id="1856715684130786728">הוספת מיקום...</translation>
+<translation id="185766080319917408">‏מקש מרכז האפליקציות נמצא משמאל למקש Alt השמאלי</translation>
 <translation id="1858585891038687145">יש לתת אמון באישור זה לזיהוי מפתחי תוכנה</translation>
 <translation id="1859294693760125695">איבדתי עניין</translation>
 <translation id="1859339856433307593">סיסמה לחשבון הזה כבר שמורה במסגרת <ph name="BRAND" />‏ (<ph name="USER_EMAIL" />)</translation>
@@ -7392,6 +7394,7 @@
 <translation id="6341850831632289108">לזהות את המיקום הפיזי שלך</translation>
 <translation id="6342069812937806050">זה עתה</translation>
 <translation id="6343003829431264373">רק דפים עם מספרים זוגיים</translation>
+<translation id="6343262564968371601">‏מוצאים את מה שמחפשים באמצעות חיפוש ב-Google, בקבצים, באפליקציות ועוד</translation>
 <translation id="6343981313228733146">החלון הועבר למעלה וימינה</translation>
 <translation id="6344170822609224263">גישה לרשימת החיבורים לרשת</translation>
 <translation id="6344576354370880196">מדפסות שמורות</translation>
@@ -7564,6 +7567,7 @@
 <translation id="6476482583633999078">מהירות הדיבור</translation>
 <translation id="6476671549211161535">צריך ללחוץ על לחצן שונה מהלחצן השמאלי או הימני בעכבר במכשיר <ph name="DEVICE_NAME" />.</translation>
 <translation id="6477822444490674459">אין תמיכה בסנכרון התראות בטלפונים שמחוברים לפרופיל עבודה. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">‏מקש ההוספה המהירה נמצא מתחת למקש Tab</translation>
 <translation id="6479881432656947268">‏לחנות האינטרנט של Chrome</translation>
 <translation id="6480327114083866287">מנוהל על ידי <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">שיתוף של קבצים ופריטים אחרים עם מכשירים בקרבת מקום. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
@@ -7931,6 +7935,7 @@
 <translation id="6749473226660745022">תמונות</translation>
 <translation id="6750757184909117990">ביטול הרשת הסלולרית</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (גלישה בסתר)</translation>
+<translation id="6754918760968695779">הוספה מהירה</translation>
 <translation id="6756157672127672536">‏האפליקציה 'קבצים' מעניקה גישה מהירה לקבצים ששמרת ב-Google Drive, בהתקן אחסון חיצוני או במכשיר שלך עם ChromeOS.</translation>
 <translation id="6756643207511618722">מנועי דיבור</translation>
 <translation id="6757431299485455321">עזרה למכשירים אחרים באיתור הנקודה הזו לשיתוף אינטרנט.</translation>
@@ -8125,6 +8130,7 @@
 <translation id="686609795364435700">נמוכה</translation>
 <translation id="686664946474413495">טמפרטורת צבע</translation>
 <translation id="6867086642466184030">אפליקציות אחרות מוגדרות לפתוח את אותם קישורים כמו <ph name="APP_NAME" />. כתוצאה מכך, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> וגם <ph name="NUMBER_OF_OTHER_APPS" /> אפליקציות אחרות לא יפתחו קישורים נתמכים.</translation>
+<translation id="6867671714894555998">מקלדת חדשה שעוזרת לבצע דברים במהירות</translation>
 <translation id="6868206169573555318">הפעלה מחדש לעדכון</translation>
 <translation id="686831807558000905">אני לא רוצה להיכנס</translation>
 <translation id="686839242150793617">יש הרשאה להפעלה אוטומטית של מצב תמונה בתוך תמונה</translation>
@@ -10407,6 +10413,7 @@
 <translation id="8524841856047224176">התאמה אישית של הרקעים במצלמה לשיחות וידאו ועוד</translation>
 <translation id="8525306231823319788">מסך מלא</translation>
 <translation id="8525461909394569609">האפליקציה הזו מכילה תוכן מהאינטרנט מתוך</translation>
+<translation id="8526313996927074827">‏מוסיפים קישורים, סמלי אמוג'י ועוד. אפשר גם לקבל עזרה בכתיבה עם AI מבית Google.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">רמקולים</translation>
 <translation id="8527257351549797148">הארגון שלך עשוי לדרוש הרשמה כדי לגשת לאפליקציות, לתוספים ועוד. ההרשמה הזו גם מאפשרת לארגון שלך לנהל דברים כמו אבטחה והגדרות מכשיר.</translation>

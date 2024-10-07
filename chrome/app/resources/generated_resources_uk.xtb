@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">Анонімний перегляд</translation>
 <translation id="1049795001945932310">&amp;Налаштування мови</translation>
 <translation id="1050693411695664090">Слабкий сигнал</translation>
+<translation id="1053898984916097744">Почніть щось нове або отримайте допомогу.</translation>
 <translation id="1054048317165655285">Завершіть налаштування на телефоні</translation>
 <translation id="1054153489933238809">Відкрити оригінальне зображення в новій вкладці</translation>
 <translation id="1054187194995068149">Вітаю, так звучить мій голос</translation>
@@ -725,7 +726,7 @@
 <translation id="151501797353681931">Імпортовано з Safari</translation>
 <translation id="1515163294334130951">Запустити</translation>
 <translation id="1517467582299994451">Щоб транслювати контент за допомогою коду, увімкніть синхронізацію в налаштуваннях веб-переглядача Chrome</translation>
-<translation id="1521442365706402292">Керування сертифікатами</translation>
+<translation id="1521442365706402292">Керувати сертифікатами</translation>
 <translation id="1521655867290435174">Google Таблиці</translation>
 <translation id="1521774566618522728">У мережі сьогодні</translation>
 <translation id="1521933835545997395">Підключено до телефона Android</translation>
@@ -1236,6 +1237,7 @@
 <translation id="1854049213067042715">Продовжуйте роботу з місця зупинки. Ви можете вибрати автоматичне відновлення додатків під час запуску або вимкнути цю функцію в налаштуваннях.</translation>
 <translation id="1854180393107901205">Зупинити трансляцію</translation>
 <translation id="1856715684130786728">Додати розташування…</translation>
+<translation id="185766080319917408">Клавішу запуску розташовано ліворуч від лівої клавіші Alt</translation>
 <translation id="1858585891038687145">Довіряти цьому сертифікату для ідентифікації виробників програмного забезпечення</translation>
 <translation id="1859294693760125695">Більше не цікаво</translation>
 <translation id="1859339856433307593">Пароль для цього облікового запису вже збережено в <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
@@ -6450,7 +6452,7 @@
 <translation id="563821631542362636">Дозволити сайту зберігати дані</translation>
 <translation id="5638309510554459422">Шукайте розширення й теми у <ph name="BEGIN_LINK" />Веб-магазині Chrome <ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Перезавантажити цю сторінку. Утримуйте, щоб побачити інші варіанти</translation>
-<translation id="5640133431808313291">Керуйте ключами безпеки</translation>
+<translation id="5640133431808313291">Керувати ключами безпеки</translation>
 <translation id="5640159004008030285">Цей пароль зберігається лише на поточному пристрої. Щоб використовувати його на інших пристроях, <ph name="BEGIN_LINK" />збережіть пароль у своєму обліковому записі Google<ph name="END_LINK" />.</translation>
 <translation id="5641608986289282154">Почніть використовувати <ph name="DEVICE_OS" /></translation>
 <translation id="5641648607875312660">Редактор знімків екрана</translation>
@@ -7390,6 +7392,7 @@
 <translation id="6341850831632289108">Визначати ваше фізичне місцезнаходження</translation>
 <translation id="6342069812937806050">Щойно</translation>
 <translation id="6343003829431264373">Лише парні сторінки</translation>
+<translation id="6343262564968371601">Знаходьте потрібну інформацію в Пошуку Google, файлах, додатках тощо</translation>
 <translation id="6343981313228733146">Вікно переміщено вгору й праворуч</translation>
 <translation id="6344170822609224263">Отримувати доступ до списку мережевих з’єднань</translation>
 <translation id="6344576354370880196">Збережені принтери</translation>
@@ -7562,6 +7565,7 @@
 <translation id="6476482583633999078">Швидкість мовлення</translation>
 <translation id="6476671549211161535">Натисніть кнопку, яка не є лівою чи правою кнопкою миші на пристрої <ph name="DEVICE_NAME" />.</translation>
 <translation id="6477822444490674459">Синхронізація сповіщень не підтримується для телефонів у робочих профілях. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">Клавішу швидкого вставлення розташовано під клавішею Tab</translation>
 <translation id="6479881432656947268">Відвідати Веб-магазин Chrome</translation>
 <translation id="6480327114083866287">Керує <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Діліться файлами й іншими об’єктами з пристроями поблизу. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
@@ -7931,6 +7935,7 @@
 <translation id="6749473226660745022">Фото</translation>
 <translation id="6750757184909117990">Вимкнути мобільну мережу</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Анонімний перегляд)</translation>
+<translation id="6754918760968695779">Швидке вставлення</translation>
 <translation id="6756157672127672536">Додаток Файли надає швидкий доступ до файлів, збережених на Google Диску, у зовнішньому сховищі або на пристрої з ОС Chrome.</translation>
 <translation id="6756643207511618722">Системи синтезу мовлення</translation>
 <translation id="6757431299485455321">Допомагати іншим пристроям знайти цю точку доступу.</translation>
@@ -8125,6 +8130,7 @@
 <translation id="686609795364435700">Тихо</translation>
 <translation id="686664946474413495">Температура кольорів</translation>
 <translation id="6867086642466184030">Зараз їх можна відкривати не лише в додатку <ph name="APP_NAME" />. Після зміни додатки <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> та ще <ph name="NUMBER_OF_OTHER_APPS" /> більше не зможуть відкривати підтримувані посилання.</translation>
+<translation id="6867671714894555998">Швидко виконуйте завдання за допомогою нової клавіатури</translation>
 <translation id="6868206169573555318">Перезапустити, щоб оновити</translation>
 <translation id="686831807558000905">Не входити</translation>
 <translation id="686839242150793617">Дозволено автоматично вмикати режим "Картинка в картинці"</translation>
@@ -10405,6 +10411,7 @@
 <translation id="8524841856047224176">Персоналізуйте фони для відеодзвінків тощо</translation>
 <translation id="8525306231823319788">На весь екран</translation>
 <translation id="8525461909394569609">Цей додаток містить веб-контент з інших джерел</translation>
+<translation id="8526313996927074827">Вставляйте посилання, смайли тощо. Ви також можете писати тексти за допомогою ШІ від Google.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Колонки</translation>
 <translation id="8527257351549797148">Можливо, ваша організація вимагатиме від вас зареєструватися, щоб ви могли отримати доступ до додатків, розширень тощо. Це також дасть змогу вашій організації керувати налаштуваннями безпеки й пристрою.</translation>

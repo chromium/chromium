@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1049795001945932310">&amp;Taalinstellingen</translation>
 <translation id="1050693411695664090">Slecht</translation>
+<translation id="1053898984916097744">Begin met iets nieuws of krijg hulp bij het proces.</translation>
 <translation id="1054048317165655285">Voltooi het instellen op je telefoon</translation>
 <translation id="1054153489933238809">Oorspronkelijke &amp;afbeelding openen op nieuw tabblad</translation>
 <translation id="1054187194995068149">Hallo. Dit is een voorbeeld.</translation>
@@ -1224,6 +1225,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1854049213067042715">Ga door waar je gebleven was. Je kunt in Instellingen instellen dat apps altijd worden hersteld bij het starten of herstellen uitzetten.</translation>
 <translation id="1854180393107901205">Casten stoppen</translation>
 <translation id="1856715684130786728">Locatie toevoegen...</translation>
+<translation id="185766080319917408">De Launcher-toets bevindt zich links van de linker Alt-toets</translation>
 <translation id="1858585891038687145">Dit certificaat vertrouwen voor het identificeren van softwareontwikkelaars</translation>
 <translation id="1859294693760125695">Geen interesse meer</translation>
 <translation id="1859339856433307593">Er is al een wachtwoord voor dit account opgeslagen in je <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
@@ -7371,6 +7373,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="6341850831632289108">Je fysieke locatie detecteren</translation>
 <translation id="6342069812937806050">Zojuist</translation>
 <translation id="6343003829431264373">Alleen even pagina's</translation>
+<translation id="6343262564968371601">Vind wat je zoekt door te zoeken op Google, in bestanden, apps en meer</translation>
 <translation id="6343981313228733146">Venster omhoog en naar rechts verplaatst</translation>
 <translation id="6344170822609224263">Toegang tot lijst met netwerkverbindingen</translation>
 <translation id="6344576354370880196">Opgeslagen printers</translation>
@@ -7543,6 +7546,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="6476482583633999078">Spraaksnelheid</translation>
 <translation id="6476671549211161535">Druk op een andere knop dan de linker- of rechtermuisknop op je <ph name="DEVICE_NAME" />.</translation>
 <translation id="6477822444490674459">Synchronisatie van meldingen wordt niet ondersteund voor telefoons in een werkprofiel. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">De toets Snel invoegen bevindt zich onder de Tab-toets</translation>
 <translation id="6479881432656947268">Chrome Web Store bezoeken</translation>
 <translation id="6480327114083866287">Beheerd door <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Deel onder meer bestanden met apparaten in de buurt. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
@@ -7906,6 +7910,7 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
 <translation id="6749473226660745022">Foto's</translation>
 <translation id="6750757184909117990">Mobiel netwerk uitzetten</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Incognito)</translation>
+<translation id="6754918760968695779">Snel invoegen</translation>
 <translation id="6756157672127672536">De app Bestanden biedt snelle toegang tot bestanden die je op Google Drive, externe opslag of je Chrome OS-apparaat hebt opgeslagen.</translation>
 <translation id="6756643207511618722">Spraakengines</translation>
 <translation id="6757431299485455321">Help andere apparaten deze hotspot te vinden.</translation>
@@ -8100,6 +8105,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="686609795364435700">Stil</translation>
 <translation id="686664946474413495">Kleurtemperatuur</translation>
 <translation id="6867086642466184030">Andere apps zijn ingesteld om dezelfde links te openen als <ph name="APP_NAME" />. Hiermee zet je uit dat <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> en <ph name="NUMBER_OF_OTHER_APPS" /> andere apps ondersteunde links openen.</translation>
+<translation id="6867671714894555998">Snel taken uitvoeren met het nieuwe toetsenbord</translation>
 <translation id="6868206169573555318">Opnieuw starten om te updaten</translation>
 <translation id="686831807558000905">Niet inloggen</translation>
 <translation id="686839242150793617">Toestemming om automatisch scherm-in-scherm te openen</translation>
@@ -10379,6 +10385,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8524841856047224176">Personaliseer de achtergrond van je camera voor onder meer videogesprekken</translation>
 <translation id="8525306231823319788">Volledig scherm</translation>
 <translation id="8525461909394569609">Deze app heeft webcontent van</translation>
+<translation id="8526313996927074827">Voeg onder andere links en emoji's in. Je kunt ook hulp krijgen bij het schrijven met AI van Google.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Speakers</translation>
 <translation id="8527257351549797148">Voor je organisatie is misschien inschrijving vereist zodat je onder andere apps en extensies kunt openen. Zo kan je organisatie ook functies zoals de beveiliging en apparaatinstellingen beheren.</translation>

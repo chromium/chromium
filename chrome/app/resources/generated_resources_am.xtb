@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">ማንነት የማያሳውቅ</translation>
 <translation id="1049795001945932310">የ&amp;ቋንቋ ቅንብሮች...</translation>
 <translation id="1050693411695664090">ደካማ</translation>
+<translation id="1053898984916097744">የሆነ አዲስ ነገር ይጀምሩ ወይም ፍሰት ውስጥ እገዛ ያግኙ።</translation>
 <translation id="1054048317165655285">በእርስዎ ስልክ ላይ ማዋቀርን ያጠናቅቁ</translation>
 <translation id="1054153489933238809">የመጀመሪያውን ምስል በአዲስ ትር ክፈት</translation>
 <translation id="1054187194995068149">ሰላም። ይህ ቅድመ እይታ ነው</translation>
@@ -1232,6 +1233,7 @@
 <translation id="1854049213067042715">ካቆሙበት ይቀጥሉ። መተግበሪያዎች ጅምር ላይ ሁልጊዜ ወደነበሩበት እንዲመለሱ ማቀናበር ወይም በቅንብሮች ውስጥ ወደነበረበት መመለስን ማጥፋት ይችላሉ።</translation>
 <translation id="1854180393107901205">መውሰድ አቁም</translation>
 <translation id="1856715684130786728">አካባቢ አክል...</translation>
+<translation id="185766080319917408">የማስጀመሪያ ቁልፍ ከግራ alt ቁልፍ በግራ በኩል ይገኛል</translation>
 <translation id="1858585891038687145">የሶፍትዌር ሠሪዎችን ለመለየት ይህን የዕውቅና ማረጋገጫ እመን</translation>
 <translation id="1859294693760125695">ከአሁን በኋላ ዝንባሌ የለኝም</translation>
 <translation id="1859339856433307593">ለዚህ መለያ አንድ የይለፍ ቃል በእርስዎ <ph name="BRAND" /> (<ph name="USER_EMAIL" />) ላይ አስቀድሞ ተቀምጧል</translation>
@@ -7386,6 +7388,7 @@
 <translation id="6341850831632289108">አካላዊ አካባቢዎን ያገኛል</translation>
 <translation id="6342069812937806050">ልክ አሁን</translation>
 <translation id="6343003829431264373">ባለሙሉ ቁጥር ገጾችን ብቻ</translation>
+<translation id="6343262564968371601">Google፣ ፋይሎች፣ መተግበሪያዎች እና ሌሎችም ውስጥ በመፈለግ የሚፈልጉትን ያግኙ</translation>
 <translation id="6343981313228733146">መስኮት ወደ ላይ እና ወደ ቀኝ ተንቀሳቅሷል</translation>
 <translation id="6344170822609224263">የአውታረ መረብ ግንኙነቶች ዝርዝር ይደርሳል</translation>
 <translation id="6344576354370880196">የተቀመጡ አታሚዎች</translation>
@@ -7558,6 +7561,7 @@
 <translation id="6476482583633999078">የንግግር ፍጥነት</translation>
 <translation id="6476671549211161535">በእርስዎ <ph name="DEVICE_NAME" /> ላይ የግራ ወይም የቀኝ መዳፊት አዝራር ያልሆነ አዝራርን ይጫኑ።</translation>
 <translation id="6477822444490674459">የማሳወቂያ ስምረት በሥራ መገለጫ ውስጥ ላሉ ስልኮች አይደገፍም። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">ፈጣን ማስገቢያ ቁልፍ ከtab ቁልፍ ስር ይገኛል</translation>
 <translation id="6479881432656947268">Chrome የድር መደብርን ይጎብኙ</translation>
 <translation id="6480327114083866287">በ<ph name="MANAGER" /> የሚተዳደር</translation>
 <translation id="6481749622989211463">ፋይሎችን እና ሌሎችን በአቅራቢያ ካሉ መሣሪያዎች ጋር ያጋሩ። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
@@ -7923,6 +7927,7 @@
 <translation id="6749473226660745022">ፎቶዎች</translation>
 <translation id="6750757184909117990">ተንቀሳቃሽ ስልክን አሰናክል</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (ማንነትን የማያሳውቅ)</translation>
+<translation id="6754918760968695779">ፈጣን ማስገቢያ</translation>
 <translation id="6756157672127672536">የፋይሎች መተግበሪያው በGoogle Drive፣ ውጫዊ ማከማቻ ወይም በእርስዎ የChromeOS መሣሪያ ላይ ያስቀመጧቸውን ፋይሎች ፈጣን መዳረሻ ይሰጠዎታል።</translation>
 <translation id="6756643207511618722">የንግግር ፍርግሞች</translation>
 <translation id="6757431299485455321">ሌሎች መሣሪያዎች ይህን መገናኛ ነጥብ እንዲያገኙ ያግዟቸው</translation>
@@ -8117,6 +8122,7 @@
 <translation id="686609795364435700">ፀጥታ</translation>
 <translation id="686664946474413495">የቀለም ሙቀት መጠን</translation>
 <translation id="6867086642466184030">ሌሎች መተግበሪያዎች ከ<ph name="APP_NAME" /> ጋር ተመሳሳይ የሆኑ አገናኞችን ለመክፈት ተቀናብረዋል። ይህ <ph name="APP_NAME_2" />፣ <ph name="APP_NAME_3" />፣ <ph name="APP_NAME_4" /> እና <ph name="NUMBER_OF_OTHER_APPS" /> ሌሎች መተግበሪያዎች የሚደገፉ አገናኞችን እንዳይከፍቱ ያሰናክላቸዋል።</translation>
+<translation id="6867671714894555998">በአዲሱ የቁልፍ ሰሌዳ ነገሮችን በፍጥነት ያከናውኑ</translation>
 <translation id="6868206169573555318">ለማዘመን ዳግም ያስነሱት</translation>
 <translation id="686831807558000905">በመለያ አትግባ</translation>
 <translation id="686839242150793617">በስዕል-ላይ-ስዕል ውስጥ በራስ-ሰር እንዲገባ ተፈቅዶለታል</translation>
@@ -10403,6 +10409,7 @@ nil</translation>
 <translation id="8524841856047224176">የቪዲዮ ጥሪዎችን እና ተጨማሪ የእርስዎን ካሜራ ዳራዎች ግላዊ ያድርጉ</translation>
 <translation id="8525306231823319788">ሙሉ ማያ ገፅ</translation>
 <translation id="8525461909394569609">ይህ መተግበሪያ ከሚከተለው ላይ የድር ይዘት ይዟል</translation>
+<translation id="8526313996927074827">አገናኞችን፣ ስሜት ገላጭ ምስሎችን እና ሌሎችንም ያስገቡ። እንዲሁም በGoogle ሰው ሠራሽ አስተውሎት ለመጻፍ እገዛን ማግኘት ይችላሉ።</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">ድምፅ ማውጫዎች</translation>
 <translation id="8527257351549797148">መተግበሪያዎች፣ ቅጥያዎች እና ሌሎችም መዳረስ እንዲችሉ ድርጅትዎ ምዝገባን ሊጠይቅ ይችላል። እንዲሁም ይህ ድርጅትዎ እንደ ደህንነት እና የመሣሪያ ቅንብሮች ያሉ ነገሮችን እንዲያስተዳድር ያስችለዋል።</translation>

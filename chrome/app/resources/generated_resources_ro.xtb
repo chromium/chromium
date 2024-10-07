@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1049795001945932310">&amp;Setări de limbă</translation>
 <translation id="1050693411695664090">Slabă</translation>
+<translation id="1053898984916097744">Începe ceva nou sau primește ajutor în flux.</translation>
 <translation id="1054048317165655285">Finalizează configurarea pe telefon</translation>
 <translation id="1054153489933238809">Deschide &amp;imaginea originală într-o filă nouă</translation>
 <translation id="1054187194995068149">Bună! Aceasta este o previzualizare</translation>
@@ -1225,6 +1226,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1854049213067042715">Continuă de unde ai rămas. Poți seta aplicațiile să se restabilească întotdeauna la pornire sau să dezactivezi restabilirea din Setări.</translation>
 <translation id="1854180393107901205">Nu mai trimite</translation>
 <translation id="1856715684130786728">Adăugați o locație...</translation>
+<translation id="185766080319917408">Tasta Lansator se află în stânga tastei Alt din stânga</translation>
 <translation id="1858585891038687145">Ai încredere în acest certificat pentru a identifica furnizorii de software</translation>
 <translation id="1859294693760125695">Nu mă mai interesează</translation>
 <translation id="1859339856433307593">S-a salvat deja o parolă pentru acest cont pe <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
@@ -7377,6 +7379,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6341850831632289108">Detectează locația dvs. fizică</translation>
 <translation id="6342069812937806050">Adineauri</translation>
 <translation id="6343003829431264373">Numai paginile cu număr par</translation>
+<translation id="6343262564968371601">Găsește ceea ce cauți căutând pe Google, în fișiere, aplicații și altele</translation>
 <translation id="6343981313228733146">Fereastra a fost mutată în sus și spre dreapta</translation>
 <translation id="6344170822609224263">Accesează lista conexiunilor de rețea</translation>
 <translation id="6344576354370880196">Imprimante salvate</translation>
@@ -7549,6 +7552,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6476482583633999078">Viteza vorbirii</translation>
 <translation id="6476671549211161535">Apasă pe un buton care nu este butonul stâng sau drept al mouse-ului de pe <ph name="DEVICE_NAME" />.</translation>
 <translation id="6477822444490674459">Sincronizarea notificărilor nu este acceptată pentru telefoanele asociate unui profil de serviciu. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">Tasta de inserare rapidă se află sub tasta Tab</translation>
 <translation id="6479881432656947268">Accesează Magazinul web Chrome</translation>
 <translation id="6480327114083866287">Gestionat de <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Permite accesul dispozitivelor din apropiere la fișiere și alt conținut. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
@@ -7914,6 +7918,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6749473226660745022">Fotografii</translation>
 <translation id="6750757184909117990">Dezactivează rețeaua mobilă</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Incognito)</translation>
+<translation id="6754918760968695779">Inserare rapidă</translation>
 <translation id="6756157672127672536">Aplicația Fișiere oferă acces rapid la fișierele pe care le-ai salvat în Google Drive, în spațiul de stocare extern sau pe dispozitivul cu sistemul de operare Chrome.</translation>
 <translation id="6756643207511618722">Motoare de vorbire</translation>
 <translation id="6757431299485455321">Ajută alte dispozitive să găsească acest hotspot.</translation>
@@ -8108,6 +8113,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="686609795364435700">Încet</translation>
 <translation id="686664946474413495">Temperatura culorii</translation>
 <translation id="6867086642466184030">Alte aplicații sunt setate să deschidă aceleași linkuri ca <ph name="APP_NAME" />. Astfel, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> și încă <ph name="NUMBER_OF_OTHER_APPS" /> aplicații vor fi setate să nu mai deschidă linkurile acceptate.</translation>
+<translation id="6867671714894555998">Lucrează rapid cu noua tastatură</translation>
 <translation id="6868206169573555318">Repornește pentru a actualiza</translation>
 <translation id="686831807558000905">Nu mă conectez</translation>
 <translation id="686839242150793617">Au permisiunea de a intra automat în modul picture-in-picture</translation>
@@ -10389,6 +10395,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8524841856047224176">Personalizează fundalurile camerei pentru apeluri video și altele</translation>
 <translation id="8525306231823319788">Ecran complet</translation>
 <translation id="8525461909394569609">Această aplicație include conținut web de la</translation>
+<translation id="8526313996927074827">Inserează linkuri, emojiuri și multe altele. Poți și să primești ajutor pentru a scrie de la Google AI.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Difuzoare</translation>
 <translation id="8527257351549797148">Organizația ta poate necesita înregistrarea ca să poți accesa aplicații, extensii și altele. Astfel, organizația poate să gestioneze securitatea și setările dispozitivului.</translation>

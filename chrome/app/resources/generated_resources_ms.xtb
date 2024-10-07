@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1049795001945932310">&amp;Tetapan bahasa</translation>
 <translation id="1050693411695664090">Lemah</translation>
+<translation id="1053898984916097744">Mulakan sesuatu yang baharu atau dapatkan bantuan dalam aliran.</translation>
 <translation id="1054048317165655285">Selesaikan persediaan pada telefon anda</translation>
 <translation id="1054153489933238809">Buka &amp;Imej Asal dalam Tab Baharu</translation>
 <translation id="1054187194995068149">Hai. Yang berikut ialah pratonton</translation>
@@ -1233,6 +1234,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1854049213067042715">Sambung semula dari tempat anda berhenti. Anda boleh menetapkan agar apl sentiasa dipulihkan semasa permulaan atau mematikan pemulihan dalam Tetapan.</translation>
 <translation id="1854180393107901205">Berhenti menghantar</translation>
 <translation id="1856715684130786728">Tambah lokasi...</translation>
+<translation id="185766080319917408">Kekunci pelancar terletak pada sebelah kiri kekunci alt kiri</translation>
 <translation id="1858585891038687145">Percayakan sijil ini untuk mengenal pasti pembuat perisian</translation>
 <translation id="1859294693760125695">Tidak berminat lagi</translation>
 <translation id="1859339856433307593">Kata laluan untuk akaun ini telah disimpan pada <ph name="BRAND" /> (<ph name="USER_EMAIL" />) anda</translation>
@@ -7392,6 +7394,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6341850831632289108">Kesan lokasi fizikal anda</translation>
 <translation id="6342069812937806050">Sebentar tadi</translation>
 <translation id="6343003829431264373">Halaman nombor genap sahaja</translation>
+<translation id="6343262564968371601">Temukan perkara yang mahu anda cari dengan membuat carian pada Google, fail, apl dan pelbagai lagi</translation>
 <translation id="6343981313228733146">Tetingkap dialihkan ke atas dan ke kanan</translation>
 <translation id="6344170822609224263">Akses senarai sambungan rangkaian</translation>
 <translation id="6344576354370880196">Pencetak yang disimpan</translation>
@@ -7564,6 +7567,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6476482583633999078">Kelajuan pertuturan</translation>
 <translation id="6476671549211161535">Tekan butang yang bukan butang tetikus kiri atau kanan pada <ph name="DEVICE_NAME" /> anda.</translation>
 <translation id="6477822444490674459">Penyegerakan pemberitahuan tidak disokong untuk telefon dalam profil kerja. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">Kekunci sisipan pantas terletak di bawah kekunci tab</translation>
 <translation id="6479881432656947268">Lawati Gedung Web Chrome</translation>
 <translation id="6480327114083866287">Diurus oleh <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Kongsi fail dan pelbagai lagi dengan peranti berdekatan. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
@@ -7927,6 +7931,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6749473226660745022">Foto</translation>
 <translation id="6750757184909117990">Lumpuhkan Selular</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Inkognito)</translation>
+<translation id="6754918760968695779">Sisipan Pantas</translation>
 <translation id="6756157672127672536">Apl Fail memberikan akses pantas kepada fail yang telah anda simpan di Google Drive, storan luaran atau peranti Chrome OS anda.</translation>
 <translation id="6756643207511618722">Enjin pertuturan</translation>
 <translation id="6757431299485455321">Membantu peranti lain menemukan tempat liputan ini.</translation>
@@ -8121,6 +8126,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="686609795364435700">Senyap</translation>
 <translation id="686664946474413495">Suhu warna</translation>
 <translation id="6867086642466184030">Apl lain ditetapkan untuk membuka pautan yang sama sebagai <ph name="APP_NAME" />. Tindakan ini akan melumpuhkan <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> dan <ph name="NUMBER_OF_OTHER_APPS" /> apl yang lain daripada membuka pautan yang disokong.</translation>
+<translation id="6867671714894555998">Selesaikan kerja dengan pantas menggunakan papan kekunci baharu</translation>
 <translation id="6868206169573555318">Lancarkan Semula untuk Mengemas Kini</translation>
 <translation id="686831807558000905">Jangan log masuk</translation>
 <translation id="686839242150793617">Dibenarkan untuk memasukkan gambar dalam gambar secara automatik</translation>
@@ -10403,6 +10409,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8524841856047224176">Peribadikan latar kamera anda untuk panggilan video dan pelbagai lagi</translation>
 <translation id="8525306231823319788">Skrin penuh</translation>
 <translation id="8525461909394569609">Apl ini mengandungi kandungan web daripada</translation>
+<translation id="8526313996927074827">Sisipkan pautan, emoji dan pelbagai lagi. Anda juga boleh mendapatkan bantuan menulis menggunakan Google AI.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Pembesar suara</translation>
 <translation id="8527257351549797148">Organisasi anda mungkin memerlukan pendaftaran supaya anda boleh mengakses apl, sambungan dan pelbagai lagi. Hal ini juga membolehkan organisasi anda mengurus perkara seperti tetapan keselamatan dan peranti.</translation>

@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">Incògnit</translation>
 <translation id="1049795001945932310">&amp;Configuració d'idioma</translation>
 <translation id="1050693411695664090">Deficient</translation>
+<translation id="1053898984916097744">Comença alguna cosa nova o obtén ajuda durant el procés.</translation>
 <translation id="1054048317165655285">Completa la configuració al telèfon</translation>
 <translation id="1054153489933238809">Obre la &amp;imatge original en una pestanya nova</translation>
 <translation id="1054187194995068149">Hola, això és una mostra</translation>
@@ -1224,6 +1225,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1854049213067042715">Continua des d'on ho vas deixar. Pots definir que les aplicacions es restaurin sempre a l'inici o desactivar la restauració a Configuració.</translation>
 <translation id="1854180393107901205">Atura l'emissió</translation>
 <translation id="1856715684130786728">Afegeix una ubicació...</translation>
+<translation id="185766080319917408">La tecla del menú d'aplicacions es troba a l'esquerra de la tecla Alt de l'esquerra</translation>
 <translation id="1858585891038687145">Confia en aquest certificat per identificar generadors de programari</translation>
 <translation id="1859294693760125695">Ja no m'interessa</translation>
 <translation id="1859339856433307593">Ja hi ha una contrasenya d'aquest compte desada a <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
@@ -7373,6 +7375,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6341850831632289108">Detecteu la vostra ubicació física</translation>
 <translation id="6342069812937806050">Ara mateix</translation>
 <translation id="6343003829431264373">Només pàgines parells</translation>
+<translation id="6343262564968371601">Troba allò que cerques a Google, en fitxers, aplicacions i més</translation>
 <translation id="6343981313228733146">La finestra s'ha mogut cap amunt i cap a la dreta</translation>
 <translation id="6344170822609224263">Accedir a la llista de connexions de xarxa</translation>
 <translation id="6344576354370880196">Impressores desades</translation>
@@ -7545,6 +7548,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6476482583633999078">Velocitat de parla</translation>
 <translation id="6476671549211161535">Prem un botó que no sigui el botó esquerre ni el dret del ratolí a <ph name="DEVICE_NAME" />.</translation>
 <translation id="6477822444490674459">La sincronització de notificacions no és compatible amb els telèfons que tenen un perfil de treball. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">La tecla d'inserció ràpida es troba a sota de la tecla Tab</translation>
 <translation id="6479881432656947268">Visita Chrome Web Store</translation>
 <translation id="6480327114083866287">Gestionat per <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Comparteix fitxers i més amb els dispositius propers. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
@@ -7908,6 +7912,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6749473226660745022">Fotos</translation>
 <translation id="6750757184909117990">Desactiva les funcions per a mòbils</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Incògnit)</translation>
+<translation id="6754918760968695779">Inserció ràpida</translation>
 <translation id="6756157672127672536">L'aplicació Fitxers permet accedir ràpidament als fitxers desats a Google Drive, a l'emmagatzematge extern o al dispositiu Chrome OS.</translation>
 <translation id="6756643207511618722">Motors de parla</translation>
 <translation id="6757431299485455321">Ajuda altres dispositius a trobar aquest punt d'accés Wi‐Fi.</translation>
@@ -8102,6 +8107,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="686609795364435700">Baix</translation>
 <translation id="686664946474413495">Temperatura de color</translation>
 <translation id="6867086642466184030">S'han configurat altres aplicacions per obrir els mateixos enllaços que <ph name="APP_NAME" />. Es desactivarà l'obertura d'enllaços compatibles des de les aplicacions <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> i <ph name="NUMBER_OF_OTHER_APPS" /> aplicacions més.</translation>
+<translation id="6867671714894555998">Fes coses ràpidament amb el teclat nou</translation>
 <translation id="6868206169573555318">Torna a iniciar per actualitzar</translation>
 <translation id="686831807558000905">No iniciïs la sessió</translation>
 <translation id="686839242150793617">Amb permís per entrar automàticament al mode d'imatge sobre imatge</translation>
@@ -10384,6 +10390,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8524841856047224176">Personalitza els fons de la càmera per a videotrucades i més</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
 <translation id="8525461909394569609">Aquesta aplicació inclou contingut web de</translation>
+<translation id="8526313996927074827">Insereix enllaços, emojis i més. També pots obtenir ajuda per escriure amb la IA de Google.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Altaveus</translation>
 <translation id="8527257351549797148">És possible que la teva organització requereixi que t'inscriguis per poder accedir a aplicacions, extensions i més. Això també permet a la teva organització gestionar aspectes com la configuració del dispositiu i la seguretat.</translation>

@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">โหมดไม่ระบุตัวตน</translation>
 <translation id="1049795001945932310">&amp;การตั้งค่าภาษา</translation>
 <translation id="1050693411695664090">แย่</translation>
+<translation id="1053898984916097744">เริ่มทำสิ่งใหม่ๆ หรือรับความช่วยเหลือในระหว่างขั้นตอนการทำงาน</translation>
 <translation id="1054048317165655285">ตั้งค่าในโทรศัพท์ให้เสร็จสมบูรณ์</translation>
 <translation id="1054153489933238809">เ&amp;ปิดภาพต้นฉบับในแท็บใหม่</translation>
 <translation id="1054187194995068149">สวัสดี นี่คือตัวอย่าง</translation>
@@ -1224,6 +1225,7 @@
 <translation id="1854049213067042715">ดำเนินการต่อจากที่ค้างอยู่ คุณสามารถตั้งให้แอปคืนค่าเสมอเมื่อเริ่มต้นระบบ หรือปิดการคืนค่าได้ใน "การตั้งค่า"</translation>
 <translation id="1854180393107901205">หยุดการแคสต์</translation>
 <translation id="1856715684130786728">เพิ่มตำแหน่ง...</translation>
+<translation id="185766080319917408">แป้น Launcher อยู่ที่ด้านซ้ายของแป้น Alt ฝั่งซ้าย</translation>
 <translation id="1858585891038687145">เชื่อถือใบรับรองนี้ในการระบุตัวตนผู้ผลิตซอฟต์แวร์</translation>
 <translation id="1859294693760125695">ไม่สนใจแล้ว</translation>
 <translation id="1859339856433307593">ระบบบันทึกรหัสผ่านสำหรับบัญชีนี้ไว้ใน<ph name="BRAND" /> (<ph name="USER_EMAIL" />) อยู่แล้ว</translation>
@@ -7372,6 +7374,7 @@
 <translation id="6341850831632289108">ตรวจหาตำแหน่งทางกายภาพของคุณ</translation>
 <translation id="6342069812937806050">เมื่อสักครู่</translation>
 <translation id="6343003829431264373">หน้าเลขคู่เท่านั้น</translation>
+<translation id="6343262564968371601">ค้นหาสิ่งที่คุณต้องการโดยการค้นหาใน Google, ไฟล์, แอป และอื่นๆ</translation>
 <translation id="6343981313228733146">หน้าต่างเลื่อนขึ้นและไปทางขวา</translation>
 <translation id="6344170822609224263">เข้าถึงรายการเชื่อมต่อเครือข่าย</translation>
 <translation id="6344576354370880196">เครื่องพิมพ์ที่บันทึกไว้</translation>
@@ -7544,6 +7547,7 @@
 <translation id="6476482583633999078">ความเร็วในการพูด</translation>
 <translation id="6476671549211161535">กดปุ่มที่ไม่ใช่ปุ่มซ้ายหรือขวาของเมาส์บน <ph name="DEVICE_NAME" /></translation>
 <translation id="6477822444490674459">การซิงค์การแจ้งเตือนใช้ไม่ได้กับโทรศัพท์ที่ใช้โปรไฟล์งาน <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">แป้น Quick Insert อยู่ใต้แป้น Tab</translation>
 <translation id="6479881432656947268">ไปที่ Chrome เว็บสโตร์</translation>
 <translation id="6480327114083866287">จัดการโดย <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">แชร์ไฟล์และอื่นๆ กับอุปกรณ์ที่อยู่ใกล้เคียง <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
@@ -7907,6 +7911,7 @@
 <translation id="6749473226660745022">รูปภาพ</translation>
 <translation id="6750757184909117990">ปิดใช้เครือข่ายมือถือ</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (โหมดไม่ระบุตัวตน)</translation>
+<translation id="6754918760968695779">Quick Insert</translation>
 <translation id="6756157672127672536">แอป Files ให้การเข้าถึงไฟล์ที่คุณบันทึกไว้ใน Google ไดรฟ์ ที่จัดเก็บข้อมูลภายนอก หรืออุปกรณ์ Chrome OS ของคุณอย่างรวดเร็ว</translation>
 <translation id="6756643207511618722">เครื่องมืออ่านออกเสียง</translation>
 <translation id="6757431299485455321">ช่วยให้อุปกรณ์อื่นค้นพบฮอตสปอตนี้</translation>
@@ -8101,6 +8106,7 @@
 <translation id="686609795364435700">เงียบ</translation>
 <translation id="686664946474413495">อุณหภูมิสี</translation>
 <translation id="6867086642466184030">แอปอื่นๆ ได้รับการตั้งค่าให้เปิดลิงก์เดียวกับ <ph name="APP_NAME" /> การดำเนินการนี้จะทำให้ <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> และอีก <ph name="NUMBER_OF_OTHER_APPS" /> แอปไม่สามารถเปิดลิงก์ที่รองรับ</translation>
+<translation id="6867671714894555998">จัดการงานต่างๆ ให้เสร็จสิ้นได้อย่างรวดเร็วด้วยแป้นพิมพ์ใหม่</translation>
 <translation id="6868206169573555318">เปิดอีกครั้งเพื่ออัปเดต</translation>
 <translation id="686831807558000905">ไม่ต้องลงชื่อเข้าใช้</translation>
 <translation id="686839242150793617">อนุญาตให้เข้าสู่การแสดงภาพซ้อนภาพโดยอัตโนมัติ</translation>
@@ -10381,6 +10387,7 @@
 <translation id="8524841856047224176">ปรับเปลี่ยนพื้นหลังของกล้องในแบบของคุณสำหรับวิดีโอคอลและอื่นๆ</translation>
 <translation id="8525306231823319788">เต็มหน้าจอ</translation>
 <translation id="8525461909394569609">แอปนี้มีเนื้อหาเว็บจาก</translation>
+<translation id="8526313996927074827">แทรกลิงก์ อีโมจิ และอื่นๆ คุณยังใช้ AI ของ Google เพื่อช่วยเขียนได้ด้วย</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">ลำโพง</translation>
 <translation id="8527257351549797148">องค์กรของคุณอาจกำหนดให้ต้องลงทะเบียนเพื่อให้คุณเข้าถึงแอป ส่วนขยาย และอื่นๆ ได้ ซึ่งจะช่วยให้องค์กรจัดการสิ่งต่างๆ เช่น ความปลอดภัยและการตั้งค่าอุปกรณ์ได้ด้วย</translation>

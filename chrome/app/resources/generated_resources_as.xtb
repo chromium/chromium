@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">ইনক’গনিট’</translation>
 <translation id="1049795001945932310">&amp;ভাষাৰ ছেটিং</translation>
 <translation id="1050693411695664090">বেয়া</translation>
+<translation id="1053898984916097744">নতুন কিবা আৰম্ভ কৰক বা চলিত কামটোত সহায় লাভ কৰক।</translation>
 <translation id="1054048317165655285">আপোনাৰ ফ’নত ছেটআপ সম্পূৰ্ণ কৰক</translation>
 <translation id="1054153489933238809">নতুন টেবত প্ৰকৃত &amp;প্ৰতিচ্ছবি খোলক</translation>
 <translation id="1054187194995068149">নমস্কাৰ, এইটো এটা পূৰ্বদৰ্শন</translation>
@@ -1231,6 +1232,7 @@
 <translation id="1854049213067042715">আপুনি য’ত এৰিছিল তাৰ পৰাই অব্যাহত ৰাখক। আপুনি ছেটিঙত ষ্টাৰ্টআপৰ সময়ত সদায় পুনঃস্থাপন কৰিবলৈ এপ্‌ ছেট কৰিব অথবা পুনঃস্থাপন কৰাটো অফ কৰিব পাৰে।</translation>
 <translation id="1854180393107901205">কাষ্ট কৰা বন্ধ কৰক</translation>
 <translation id="1856715684130786728">অৱস্থান যোগ কৰক...</translation>
+<translation id="185766080319917408">লঞ্চাৰ কী বাওঁফালৰ alt কীৰ বাওঁফালে আছে</translation>
 <translation id="1858585891038687145">ছফ্‌টৱেৰ মেকাৰসকলক চিনাক্ত কৰিবলৈ এই প্ৰমাণপত্ৰখনক বিশ্বাস কৰক</translation>
 <translation id="1859294693760125695">এতিয়া আৰু আগ্ৰহী নহয়</translation>
 <translation id="1859339856433307593">এই একাউণ্টটোৰ বাবে এটা পাছৱৰ্ড ইতিমধ্যে আপোনাৰ <ph name="BRAND" /> (<ph name="USER_EMAIL" />)ত ছেভ কৰা হৈছে</translation>
@@ -7389,6 +7391,7 @@
 <translation id="6341850831632289108">আপোনাৰ অৱস্থান চিনাক্ত কৰক</translation>
 <translation id="6342069812937806050">খন্তেক পূর্বে</translation>
 <translation id="6343003829431264373">কেৱল যুগ্ম সংখ্যাৰ পৃষ্ঠা</translation>
+<translation id="6343262564968371601">Googleত, ফাইলত, এপত আৰু অধিকত সন্ধান কৰি আপুনি যি বিচাৰি আছে সেয়া বিচাৰি পাওক</translation>
 <translation id="6343981313228733146">ৱিণ্ড’খন ওপৰ আৰু সোঁফাললৈ স্থানান্তৰ কৰা হৈছে</translation>
 <translation id="6344170822609224263">নেটৱর্ক সংযোগৰ এক্সেছ সূচী</translation>
 <translation id="6344576354370880196">ছেভ কৰি ৰখা প্ৰিণ্টাৰসমূহ</translation>
@@ -7561,6 +7564,7 @@
 <translation id="6476482583633999078">কথনৰ গতিবেগ</translation>
 <translation id="6476671549211161535">আপোনাৰ <ph name="DEVICE_NAME" />ত এনে এটা বুটাম টিপক যিটো মাউছৰ সোঁ অথবা বাওঁ বুটাম নহয়।</translation>
 <translation id="6477822444490674459">জাননী ছিংক কৰাৰ সুবিধাটো কৰ্মস্থানৰ প্ৰ’ফাইলত থকা ফ’নৰ ক্ষেত্ৰত সমৰ্থিত নহয়। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">দ্ৰুত অন্তৰ্ভুক্তি কীটো টেব কীৰ তলত আছে</translation>
 <translation id="6479881432656947268">Chrome Web Storeলৈ যাওক</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" />এ পৰিচালনা কৰে</translation>
 <translation id="6481749622989211463">নিকটৱৰ্তী ডিভাইচসমূহৰ সৈতে ফাইল আৰু আন বহুতো শ্বেয়াৰ কৰক। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
@@ -7926,6 +7930,7 @@
 <translation id="6749473226660745022">ফট’</translation>
 <translation id="6750757184909117990">চেলুলাৰ অক্ষম কৰক</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (ইনক’গনিট’)</translation>
+<translation id="6754918760968695779">দ্ৰুত অন্তৰ্ভুক্তি</translation>
 <translation id="6756157672127672536">Files এপ্‌টোৱে আপুনি Google Drive, বাহ্যিক ষ্ট’ৰেজ অথবা আপোনাৰ ChromeOS ডিভাইচত ছেভ কৰি থোৱা ফাইল দ্ৰুতভাৱে এক্সেছ কৰিবলৈ দিয়ে।</translation>
 <translation id="6756643207511618722">কথন ইঞ্জিন</translation>
 <translation id="6757431299485455321">অন্য ডিভাইচক এই হটস্পটটো বিচৰাত সহায় কৰক।</translation>
@@ -8120,6 +8125,7 @@
 <translation id="686609795364435700">নীৰৱ</translation>
 <translation id="686664946474413495">ৰঙৰ উষ্ণতা</translation>
 <translation id="6867086642466184030">অন্য এপ্‌সমূহ <ph name="APP_NAME" />ৰ দৰে একেই লিংকসমূহ খুলিবলৈ সাজু আছে। এইটোৱে <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> আৰু <ph name="NUMBER_OF_OTHER_APPS" /> টা অন্য এপক সমৰ্থিত লিংকসমূহ খুলিবলৈ নিদিয়ে।</translation>
+<translation id="6867671714894555998">নতুন কীব’ৰ্ড ব্যৱহাৰ কৰি কাম দ্ৰুতভাৱে সম্পাদন কৰক</translation>
 <translation id="6868206169573555318">আপডে’ট কৰিবলৈ পুনৰ লঞ্চ কৰক</translation>
 <translation id="686831807558000905">ছাইন ইন নকৰিব</translation>
 <translation id="686839242150793617">স্বয়ংক্ৰিয়ভাৱে picture-in-picture ম’ডলৈ যোৱাৰ অনুমতি দিয়া হৈছে</translation>
@@ -10399,6 +10405,7 @@
 <translation id="8524841856047224176">ভিডিঅ’ কল আৰু আন বহুতো সুবিধাৰ বাবে আপোনাৰ কেমেৰাৰ পটভূমি ব্যক্তিগতকৰণ কৰক</translation>
 <translation id="8525306231823319788">সম্পূর্ণ স্ক্ৰীন</translation>
 <translation id="8525461909394569609">এই এপ্‌টোত ইয়াৰ ৱেব সমল আছে</translation>
+<translation id="8526313996927074827">লিংক, ইম’জি আৰু অধিক অন্তৰ্ভুক্ত কৰক। আপুনি Google AIৰ জৰিয়তে লিখাৰ ক্ষেত্ৰতো সহায় পাব পাৰে।</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">স্পীকাৰ</translation>
 <translation id="8527257351549797148">আপোনাৰ প্ৰতিষ্ঠানক পঞ্জীয়নৰ প্ৰয়োজন হ’ব পাৰে যাতে আপুনি এপ্‌, এক্সটেনশ্বন আৰু অধিক এক্সেছ কৰিব পাৰে। লগতে এইটোৱে আপোনাৰ প্ৰতিষ্ঠানক সুৰক্ষা আৰু ডিভাইচৰ ছেটিঙৰ দৰে বিষয়সমূহ পৰিচালনা কৰাৰ অনুমতি দিয়ে।</translation>

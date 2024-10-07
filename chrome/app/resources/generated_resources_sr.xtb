@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">Без архивирања</translation>
 <translation id="1049795001945932310">&amp;Подешавања језика</translation>
 <translation id="1050693411695664090">Лоша</translation>
+<translation id="1053898984916097744">Започните нови задатак или затражите помоћ у току.</translation>
 <translation id="1054048317165655285">Довршите подешавање на телефону</translation>
 <translation id="1054153489933238809">Отвори оригиналну сл&amp;ику на новој картици</translation>
 <translation id="1054187194995068149">Здраво. Ово је преглед</translation>
@@ -1223,6 +1224,7 @@
 <translation id="1854049213067042715">Наставите тамо где сте стали. Можете да подесите апликације тако да се увек враћају при покретању или да искључите враћање у Подешавањима.</translation>
 <translation id="1854180393107901205">Заустави пребацивање</translation>
 <translation id="1856715684130786728">Додај локацију...</translation>
+<translation id="185766080319917408">Тастер покретача се налази са леве стране левог тастера Alt</translation>
 <translation id="1858585891038687145">Овај сертификат је поуздан за идентификацију произвођача софтвера</translation>
 <translation id="1859294693760125695">Ово ме више не занима</translation>
 <translation id="1859339856433307593">Лозинка за овај налог је већ сачувана у апликацији <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
@@ -7376,6 +7378,7 @@
 <translation id="6341850831632289108">Откривање ваше физичке локације</translation>
 <translation id="6342069812937806050">Малопре</translation>
 <translation id="6343003829431264373">Само странице са парним бројевима</translation>
+<translation id="6343262564968371601">Пронађите оно што тражите претрагом Google-а, фајлова, апликација и другог садржаја</translation>
 <translation id="6343981313228733146">Прозор је померен нагоре и надесно</translation>
 <translation id="6344170822609224263">Приступ листи мрежних веза</translation>
 <translation id="6344576354370880196">Сачувани штампачи</translation>
@@ -7548,6 +7551,7 @@
 <translation id="6476482583633999078">Брзина говора</translation>
 <translation id="6476671549211161535">Притисните дугме које није леви или десни тастер миша на уређају <ph name="DEVICE_NAME" />.</translation>
 <translation id="6477822444490674459">Синхронизовање обавештења није подржано за телефоне са пословним профилом. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">Тастер за брзо уметање се налази испод тастера Tab</translation>
 <translation id="6479881432656947268">Посетите Chrome веб-продавницу</translation>
 <translation id="6480327114083866287">Управља <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Делите фајлове и друго са уређајима у близини. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
@@ -7915,6 +7919,7 @@
 <translation id="6749473226660745022">Слике</translation>
 <translation id="6750757184909117990">Онемогући мобилну мрежу</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (без архивирања)</translation>
+<translation id="6754918760968695779">Брзо уметање</translation>
 <translation id="6756157672127672536">Апликација Фајлови пружа брз приступ фајловима које сте сачували на Google диску, у спољној меморији или на Chrome ОС уређају.</translation>
 <translation id="6756643207511618722">Механизми говора</translation>
 <translation id="6757431299485455321">Помаже другим уређајима да пронађу овај хотспот.</translation>
@@ -8109,6 +8114,7 @@
 <translation id="686609795364435700">Тихо</translation>
 <translation id="686664946474413495">Температура боја</translation>
 <translation id="6867086642466184030">Друге апликације су подешене да отварају исте линкове као апликација <ph name="APP_NAME" />. Овим се онемогућава да <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> и још <ph name="NUMBER_OF_OTHER_APPS" /> апликације/а отварају подржане линкове.</translation>
+<translation id="6867671714894555998">Брзо обављајте задатке помоћу нове тастатуре</translation>
 <translation id="6868206169573555318">Поново покрените да би се ажурирало</translation>
 <translation id="686831807558000905">Не пријављуј ме</translation>
 <translation id="686839242150793617">Дозвољено им је да аутоматски улазе у слику у слици</translation>
@@ -10390,6 +10396,7 @@
 <translation id="8524841856047224176">Персонализујте позадине камере за видео позиве и друго</translation>
 <translation id="8525306231823319788">Цео екран</translation>
 <translation id="8525461909394569609">Ова апликација обухвата веб-садржај из</translation>
+<translation id="8526313996927074827">Умећите линкове, емоџије и друго. Можете да добијете и помоћ при писању уз Google вештачку интелигенцију.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Звучници</translation>
 <translation id="8527257351549797148">Организација можда захтева регистрацију да бисте могли да приступате апликацијама, додацима и другом. То омогућава организацији и да управља стварима попут безбедности и подешавања уређаја.</translation>

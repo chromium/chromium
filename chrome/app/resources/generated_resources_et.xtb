@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1049795001945932310">&amp;Keeleseaded</translation>
 <translation id="1050693411695664090">Halb</translation>
+<translation id="1053898984916097744">Alustage uut ülesannet või kasutage töö käigus abi.</translation>
 <translation id="1054048317165655285">Viige seadistamine telefonis lõpule</translation>
 <translation id="1054153489933238809">Ava &amp;algkujutis uuel vahelehel</translation>
 <translation id="1054187194995068149">Tere, see on eelvaade</translation>
@@ -1225,6 +1226,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1854049213067042715">Jätkake sealt, kus pooleli jäite. Seadetes saate seadistada rakenduste taastamise käivitamisel või taastamise välja lülitada.</translation>
 <translation id="1854180393107901205">Peata ülekandmine</translation>
 <translation id="1856715684130786728">Lisa asukoht ...</translation>
+<translation id="185766080319917408">Käivitajaklahv asub vasakpoolse klahvi Alt vasakul küljel</translation>
 <translation id="1858585891038687145">Usalda seda sertifikaati tarkvaraloojate tuvastamiseks</translation>
 <translation id="1859294693760125695">Kas te ei ole enam huvitatud?</translation>
 <translation id="1859339856433307593">Selle konto parool on teenusesse <ph name="BRAND" /> (<ph name="USER_EMAIL" />) juba salvestatud</translation>
@@ -7383,6 +7385,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6341850831632289108">Teie füüsilise asukoha tuvastamine</translation>
 <translation id="6342069812937806050">Äsja</translation>
 <translation id="6343003829431264373">Ainult paarisarvulised lehed</translation>
+<translation id="6343262564968371601">Saate korraga otsida Google’ist, failidest, rakendustest ja mujalt</translation>
 <translation id="6343981313228733146">Aken teisaldati ülespoole ja paremale</translation>
 <translation id="6344170822609224263">Juurdepääs võrguühenduste loendile</translation>
 <translation id="6344576354370880196">Salvestatud printerid</translation>
@@ -7555,6 +7558,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6476482583633999078">Kõne kiirus</translation>
 <translation id="6476671549211161535">Puudutage oma seadmes <ph name="DEVICE_NAME" /> nuppu, mis ei ole vasak ega parem hiirenupp.</translation>
 <translation id="6477822444490674459">Tööprofiili kasutavate telefonide puhul märguannete sünkroonimist ei toetata. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">Kiirsisestuse klahv asub tabulaatori all</translation>
 <translation id="6479881432656947268">Külastage Chrome'i veebipoodi</translation>
 <translation id="6480327114083866287">Haldab <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Saate jagada faile ja muud läheduses olevate seadmetega. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
@@ -7918,6 +7922,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6749473226660745022">Fotod</translation>
 <translation id="6750757184909117990">Mobiilsidevõrgu keelamine</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Inkognito)</translation>
+<translation id="6754918760968695779">Kiirsisestus</translation>
 <translation id="6756157672127672536">Rakendusega Failid saate kiiresti juurdepääsu Google Drive'i, välisesse talletusseadmesse või Chrome OS-i seadmesse salvestatud failidele.</translation>
 <translation id="6756643207511618722">Kõnesünteesimootorid</translation>
 <translation id="6757431299485455321">Aidake teistel seadmetel see kuumkoht leida.</translation>
@@ -8112,6 +8117,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="686609795364435700">Vaikne</translation>
 <translation id="686664946474413495">Värvitemperatuur</translation>
 <translation id="6867086642466184030">Muud rakendused avavad samad lingid, mille avab rakendus <ph name="APP_NAME" />. See keelab rakenduste <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> ja veel <ph name="NUMBER_OF_OTHER_APPS" /> rakenduse jaoks toetatud linkide avamise.</translation>
+<translation id="6867671714894555998">Uue klaviatuuri abil saate asjad kiiremini tehtud</translation>
 <translation id="6868206169573555318">Taaskäivita värskendamiseks</translation>
 <translation id="686831807558000905">Ära logi sisse</translation>
 <translation id="686839242150793617">Lubatakse automaatselt pilt pildis režiimi siseneda</translation>
@@ -10393,6 +10399,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8524841856047224176">Isikupärastage oma kaamerataustad videokõnede ja muu jaoks</translation>
 <translation id="8525306231823319788">Täisekraan</translation>
 <translation id="8525461909394569609">See rakendus sisaldab veebisisu saidilt</translation>
+<translation id="8526313996927074827">Sisestage linke, emotikone ja muud. Samuti võite kirjutamisel Google'i AI abi kasutada.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Kõlarid</translation>
 <translation id="8527257351549797148">Teie organisatsioon võib nõuda registreerumist, et saaksite pääseda juurde rakendustele, laiendustele ja muule. Samuti võimaldab see teie organisatsioonil hallata selliseid asju nagu turvalisus ja seadme seaded.</translation>

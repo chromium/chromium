@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">시크릿 모드</translation>
 <translation id="1049795001945932310">언어 설정(&amp;L)</translation>
 <translation id="1050693411695664090">나쁨</translation>
+<translation id="1053898984916097744">새로운 활동을 시작하거나 작업에서 도움을 받으세요</translation>
 <translation id="1054048317165655285">휴대전화에서 설정 완료</translation>
 <translation id="1054153489933238809">새 탭에서 원본 이미지 열기</translation>
 <translation id="1054187194995068149">안녕하세요. 미리보기입니다</translation>
@@ -1233,6 +1234,7 @@
 <translation id="1854049213067042715">이전에 사용하던 부분에서 앱을 다시 시작하세요. 설정에서 앱이 시작될 때 항상 이전 상태를 복원되도록 설정하거나 복원 기능을 끌 수 있습니다.</translation>
 <translation id="1854180393107901205">전송 중지</translation>
 <translation id="1856715684130786728">위치 추가...</translation>
+<translation id="185766080319917408">런처 키가 왼쪽 Alt 키 왼쪽에 있음</translation>
 <translation id="1858585891038687145">소프트웨어 제작자를 식별하기 위해 이 인증서 신뢰</translation>
 <translation id="1859294693760125695">더 이상 관심 없음</translation>
 <translation id="1859339856433307593">이 계정의 비밀번호가 <ph name="BRAND" />(<ph name="USER_EMAIL" />)에 이미 저장되어 있습니다.</translation>
@@ -7393,6 +7395,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6341850831632289108">실제 위치 감지</translation>
 <translation id="6342069812937806050">방금</translation>
 <translation id="6343003829431264373">짝수 페이지만</translation>
+<translation id="6343262564968371601">Google, 파일, 앱 등을 검색하여 원하는 항목을 찾으세요.</translation>
 <translation id="6343981313228733146">창이 오른쪽 위로 이동함</translation>
 <translation id="6344170822609224263">네트워크 연결 목록에 액세스</translation>
 <translation id="6344576354370880196">저장한 프린터</translation>
@@ -7565,6 +7568,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6476482583633999078">음성 속도</translation>
 <translation id="6476671549211161535"><ph name="DEVICE_NAME" />에서 왼쪽 또는 오른쪽 마우스 버튼이 아닌 버튼을 누르세요.</translation>
 <translation id="6477822444490674459">직장 프로필을 사용하는 경우 휴대전화에서 알림 동기화가 지원되지 않습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">빠른 삽입 키는 Tab 키 아래에 있습니다</translation>
 <translation id="6479881432656947268">Chrome 웹 스토어 방문하기</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" />에서 관리함</translation>
 <translation id="6481749622989211463">근처 기기와 파일 등 여러 가지 항목을 공유하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
@@ -7928,6 +7932,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6749473226660745022">사진</translation>
 <translation id="6750757184909117990">셀룰러 사용 중지</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (시크릿 모드)</translation>
+<translation id="6754918760968695779">빠른 삽입</translation>
 <translation id="6756157672127672536">파일 앱을 사용하면 Google Drive, 외부 저장소, ChromeOS 기기에 저장한 파일에 신속하게 액세스할 수 있습니다.</translation>
 <translation id="6756643207511618722">음성 엔진</translation>
 <translation id="6757431299485455321">다른 기기가 이 핫스팟을 찾도록 돕습니다.</translation>
@@ -8122,6 +8127,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="686609795364435700">작게</translation>
 <translation id="686664946474413495">색상 온도</translation>
 <translation id="6867086642466184030">다른 앱이 <ph name="APP_NAME" /> 앱과 같은 링크를 열도록 설정되었습니다. <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> 외 앱<ph name="NUMBER_OF_OTHER_APPS" />개는 지원되는 링크를 열지 못하게 됩니다.</translation>
+<translation id="6867671714894555998">새 키보드로 빠르게 작업하세요</translation>
 <translation id="6868206169573555318">업데이트를 위해 다시 시작</translation>
 <translation id="686831807558000905">로그인 안함</translation>
 <translation id="686839242150793617">PIP 모드 자동 입력이 허용됨</translation>
@@ -10403,6 +10409,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8524841856047224176">영상 통화 등을 위한 카메라 배경을 맞춤설정하세요.</translation>
 <translation id="8525306231823319788">전체화면</translation>
 <translation id="8525461909394569609">이 앱에는 출처가 다음과 같은 웹 콘텐츠가 포함되어 있습니다</translation>
+<translation id="8526313996927074827">링크 및 이모티콘 등 다양한 콘텐츠를 삽입하세요. Google AI의 도움을 받아 글을 작성할 수도 있습니다.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">스피커</translation>
 <translation id="8527257351549797148">앱, 확장 프로그램 등에 액세스하려면 조직에서 등록을 요구할 수도 있습니다. 이를 통해 조직에서 보안 및 기기 설정 등을 관리할 수 있습니다.</translation>

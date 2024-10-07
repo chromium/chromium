@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1049795001945932310">&amp;Valodas iestatījumi</translation>
 <translation id="1050693411695664090">vājš</translation>
+<translation id="1053898984916097744">Iesāciet ko jaunu vai saņemiet palīdzību, kamēr esat plūsmas stāvoklī.</translation>
 <translation id="1054048317165655285">Pabeidziet iestatīšanu tālrunī</translation>
 <translation id="1054153489933238809">Atvērt sākotnējo &amp;attēlu jaunā cilnē</translation>
 <translation id="1054187194995068149">Labdien! Šis ir priekšskatījums</translation>
@@ -1226,6 +1227,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1854049213067042715">Turpiniet darbu no vietas, kur to pārtraucāt. Iestatījumos varat noteikt, lai lietotnes tiktu vienmēr atjaunotas palaišanas brīdī, vai izslēgt atjaunošanu.</translation>
 <translation id="1854180393107901205">Apturēt apraidi</translation>
 <translation id="1856715684130786728">Pievienot atrašanās vietu...</translation>
+<translation id="185766080319917408">Palaidēja taustiņš atrodas pa kreisi no kreisā taustiņa Alt</translation>
 <translation id="1858585891038687145">Uzticēties šim sertifikātam, lai identificētu programmatūras izstrādātājus</translation>
 <translation id="1859294693760125695">Vairs neinteresē</translation>
 <translation id="1859339856433307593">Šī konta parole jau ir saglabāta pakalpojumā <ph name="BRAND" /> jūsu kontam (<ph name="USER_EMAIL" />).</translation>
@@ -7375,6 +7377,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6341850831632289108">Noteikt jūsu fizisko atrašanās vietu</translation>
 <translation id="6342069812937806050">Tikko</translation>
 <translation id="6343003829431264373">Tikai pāra skaitļu lapas</translation>
+<translation id="6343262564968371601">Atrodiet vajadzīgo, meklējot pakalpojumā Google, failos, lietotnēs un citur.</translation>
 <translation id="6343981313228733146">Logs ir pārvietots uz augšu un pa labi</translation>
 <translation id="6344170822609224263">Piekļūt tīkla savienojumu sarakstam</translation>
 <translation id="6344576354370880196">Saglabātie printeri</translation>
@@ -7547,6 +7550,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6476482583633999078">Runas ātrums</translation>
 <translation id="6476671549211161535">Nospiediet savas ierīces (<ph name="DEVICE_NAME" />) pogu, kas nav peles kreisā vai labā poga.</translation>
 <translation id="6477822444490674459">Paziņojumu sinhronizēšana netiek atbalstīta tālruņiem darba profilā. <ph name="LINK_BEGIN" />Uzzināt vairāk<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">Ātrās ievietošanas taustiņš atrodas zem tabulēšanas taustiņa</translation>
 <translation id="6479881432656947268">Apmeklēt Chrome interneta veikalu</translation>
 <translation id="6480327114083866287">Pārvalda <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Kopīgojiet failus un citu saturu ar tuvumā esošām ierīcēm. <ph name="LINK_BEGIN" />Uzzināt vairāk<ph name="LINK_END" /></translation>
@@ -7914,6 +7918,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6749473226660745022">Fotoattēli</translation>
 <translation id="6750757184909117990">Mobilā tīkla atspējošana</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Inkognito režīms)</translation>
+<translation id="6754918760968695779">Ātrā ievietošana</translation>
 <translation id="6756157672127672536">Izmantojot lietotni Faili, varat ērti piekļūt failiem, kas saglabāti Google diskā, ārējā krātuvē vai Chrome OS ierīcē.</translation>
 <translation id="6756643207511618722">Runas programmas</translation>
 <translation id="6757431299485455321">Varat palīdzēt citām ierīcēm atrast šo tīklāju.</translation>
@@ -8108,6 +8113,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="686609795364435700">Klusi</translation>
 <translation id="686664946474413495">Krāsu temperatūra</translation>
 <translation id="6867086642466184030">Citas lietotnes ir iestatītas to pašu saišu atvēršanai, ko var atvērt, izmantojot lietotni <ph name="APP_NAME" />. Atbalstītās saites vairs nevarēs atvērt, izmantojot lietotnes <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> un vēl <ph name="NUMBER_OF_OTHER_APPS" /> lietotnes.</translation>
+<translation id="6867671714894555998">Ātri paveiciet darbus, izmantojot jauno tastatūru</translation>
 <translation id="6868206169573555318">Palaist atkārtoti, lai atjauninātu</translation>
 <translation id="686831807558000905">Nepierakstīties</translation>
 <translation id="686839242150793617">Drīkst automātiski aktivizēt režīmu “Attēls attēlā”</translation>
@@ -10388,6 +10394,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8524841856047224176">Personalizējiet kameras fonus videozvaniem un citiem nolūkiem.</translation>
 <translation id="8525306231823319788">Pilnekrāna režīms</translation>
 <translation id="8525461909394569609">Šajā lietotnē ir ietverts tīmekļa saturs no tālāk minētajiem avotiem.</translation>
+<translation id="8526313996927074827">Ievietojiet saites, emocijzīmes un citu saturu. Varat arī saņemt palīdzību rakstīšanā, izmantojot Google MI.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Skaļruņi</translation>
 <translation id="8527257351549797148">Jūsu organizācija var pieprasīt reģistrāciju, lai jūs varētu piekļūt lietotnēm, paplašinājumiem un citām iespējām. Tādējādi jūsu organizācija varēs arī pārvaldīt tādu informāciju kā drošības un ierīces iestatījumi.</translation>

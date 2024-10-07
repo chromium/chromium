@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">In incognito</translation>
 <translation id="1049795001945932310">&amp;Impostazioni lingua</translation>
 <translation id="1050693411695664090">Scadente</translation>
+<translation id="1053898984916097744">Inizia qualcosa di nuovo o ricevi assistenza nel flusso.</translation>
 <translation id="1054048317165655285">Completa la configurazione sul telefono</translation>
 <translation id="1054153489933238809">Apri &amp;originale in nuova scheda</translation>
 <translation id="1054187194995068149">Ciao. Questa è un'anteprima</translation>
@@ -1224,6 +1225,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1854049213067042715">Continua da dove avevi interrotto. Puoi impostare il ripristino delle app sempre all'avvio o disattivare il ripristino nelle Impostazioni.</translation>
 <translation id="1854180393107901205">Interrompi trasmissione</translation>
 <translation id="1856715684130786728">Aggiungi posizione...</translation>
+<translation id="185766080319917408">Il tasto Avvio app si trova a sinistra del tasto Alt sinistro</translation>
 <translation id="1858585891038687145">Considera attendibile questo certificato per l'identificazione dei creatori di software</translation>
 <translation id="1859294693760125695">Non mi interessa più</translation>
 <translation id="1859339856433307593">Una password per questo account è già salvata nel tuo <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
@@ -7375,6 +7377,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6341850831632289108">Rilevamento della posizione fisica dell'utente</translation>
 <translation id="6342069812937806050">In questo momento</translation>
 <translation id="6343003829431264373">Solo pagine pari</translation>
+<translation id="6343262564968371601">Trova quello che ti serve eseguendo ricerche su Google, nei file, nelle app e altro ancora</translation>
 <translation id="6343981313228733146">Finestra spostata verso l'alto e a destra</translation>
 <translation id="6344170822609224263">Accesso all'elenco di connessioni di rete</translation>
 <translation id="6344576354370880196">Stampanti salvate</translation>
@@ -7547,6 +7550,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6476482583633999078">Velocità della voce</translation>
 <translation id="6476671549211161535">Premi un pulsante diverso dal pulsante destro o sinistro del <ph name="DEVICE_NAME" />.</translation>
 <translation id="6477822444490674459">La sincronizzazione delle notifiche non è supportata per i telefoni in un profilo di lavoro. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">Il tasto Inserimento rapido si trova sotto il tasto Tab</translation>
 <translation id="6479881432656947268">Visita il Chrome Web Store</translation>
 <translation id="6480327114083866287">Gestito da <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Condividi file e altri contenuti con i dispositivi nelle vicinanze. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
@@ -7910,6 +7914,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6749473226660745022">Foto</translation>
 <translation id="6750757184909117990">Disabilita rete mobile</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (In incognito)</translation>
+<translation id="6754918760968695779">Inserimento rapido</translation>
 <translation id="6756157672127672536">L'app File consente di accedere rapidamente ai file salvati su Google Drive, nell'unità di archiviazione esterna o sul tuo dispositivo ChromeOS.</translation>
 <translation id="6756643207511618722">Motori di riconoscimento vocale</translation>
 <translation id="6757431299485455321">Aiuta altri dispositivi a trovare questo hotspot.</translation>
@@ -8104,6 +8109,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="686609795364435700">Basso</translation>
 <translation id="686664946474413495">Temperatura del colore</translation>
 <translation id="6867086642466184030">Ci sono altre app impostate per aprire gli stessi link che è possibile aprire con <ph name="APP_NAME" />. Non sarà più possibile aprire i link supportati con <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> e altre <ph name="NUMBER_OF_OTHER_APPS" /> app.</translation>
+<translation id="6867671714894555998">Fai tutto più velocemente con la nuova tastiera</translation>
 <translation id="6868206169573555318">Riavvia per aggiornare</translation>
 <translation id="686831807558000905">Non accedere</translation>
 <translation id="686839242150793617">Siti autorizzati ad attivare automaticamente la modalità Picture in picture</translation>
@@ -10385,6 +10391,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8524841856047224176">Personalizza gli sfondi della fotocamera per le videochiamate e molto altro</translation>
 <translation id="8525306231823319788">Schermo intero</translation>
 <translation id="8525461909394569609">Questa app include contenuti web di</translation>
+<translation id="8526313996927074827">Inserisci link, emoji e altro ancora. Puoi anche ricevere aiuto con la scrittura con Google AI.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Altoparlanti</translation>
 <translation id="8527257351549797148">La tua organizzazione potrebbe richiedere la registrazione per poter accedere ad app, estensioni e altro ancora. Inoltre ciò consente alla tua organizzazione di gestire elementi come la sicurezza e le impostazioni del dispositivo.</translation>

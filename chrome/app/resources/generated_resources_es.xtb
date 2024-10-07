@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">Incógnito</translation>
 <translation id="1049795001945932310">&amp;Configuración de idioma</translation>
 <translation id="1050693411695664090">Mala</translation>
+<translation id="1053898984916097744">Empieza una tarea nueva o recibe ayuda con otras.</translation>
 <translation id="1054048317165655285">Completa la configuración en tu teléfono</translation>
 <translation id="1054153489933238809">Abrir &amp;imagen original en una pestaña nueva</translation>
 <translation id="1054187194995068149">Hola. Esto es una muestra.</translation>
@@ -1224,6 +1225,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1854049213067042715">Continúa donde lo dejaste. Para hacer que las aplicaciones se restauren siempre al iniciar el dispositivo o para desactivar la restauración, ve a Configuración.</translation>
 <translation id="1854180393107901205">Detener el envío</translation>
 <translation id="1856715684130786728">Añadir ubicación...</translation>
+<translation id="185766080319917408">La tecla del menú de aplicaciones está situada a la izquierda de la tecla Alt izquierda</translation>
 <translation id="1858585891038687145">Confiar en este certificado para identificar a los fabricantes de software</translation>
 <translation id="1859294693760125695">Ya no me interesa</translation>
 <translation id="1859339856433307593">Ya se ha guardado una contraseña para esta cuenta en el <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
@@ -7377,6 +7379,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6341850831632289108">Detectar tu ubicación física</translation>
 <translation id="6342069812937806050">Justo ahora</translation>
 <translation id="6343003829431264373">Solo páginas pares</translation>
+<translation id="6343262564968371601">Encuentra lo que quieres buscando en Google, archivos y aplicaciones, entre otros.</translation>
 <translation id="6343981313228733146">Ventana movida hacia arriba y hacia la derecha</translation>
 <translation id="6344170822609224263">Accede a la lista de conexiones de red</translation>
 <translation id="6344576354370880196">Impresoras guardadas</translation>
@@ -7549,6 +7552,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6476482583633999078">Velocidad de la voz</translation>
 <translation id="6476671549211161535">Pulsa un botón que no sea el izquierdo o el derecho del ratón en tu <ph name="DEVICE_NAME" />.</translation>
 <translation id="6477822444490674459">La sincronización de notificaciones no está disponible en teléfonos con un perfil de trabajo. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">La tecla Insertar rápido está debajo de la tecla Tabulador</translation>
 <translation id="6479881432656947268">Visitar Chrome Web Store</translation>
 <translation id="6480327114083866287">Gestionado por <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Comparte archivos y más con dispositivos cercanos. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
@@ -7912,6 +7916,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6749473226660745022">Fotos</translation>
 <translation id="6750757184909117990">Inhabilitar red móvil</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (incógnito)</translation>
+<translation id="6754918760968695779">Insertar rápido</translation>
 <translation id="6756157672127672536">La aplicación Archivos permite acceder rápidamente a los archivos que has guardado en Google Drive, en un almacenamiento interno o en tu dispositivo ChromeOS.</translation>
 <translation id="6756643207511618722">Motores de voz</translation>
 <translation id="6757431299485455321">Ayuda a otros dispositivos a encontrar este punto de acceso.</translation>
@@ -8106,6 +8111,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="686609795364435700">Silencio</translation>
 <translation id="686664946474413495">Temperatura del color</translation>
 <translation id="6867086642466184030">Se han configurado otras aplicaciones para abrir los mismos enlaces que <ph name="APP_NAME" />. Se inhabilitará la apertura de enlaces compatibles desde <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> y <ph name="NUMBER_OF_OTHER_APPS" /> aplicaciones más.</translation>
+<translation id="6867671714894555998">Haz las cosas rápidamente con el nuevo teclado</translation>
 <translation id="6868206169573555318">Reinicia para actualizar</translation>
 <translation id="686831807558000905">No iniciar sesión</translation>
 <translation id="686839242150793617">Pueden acceder a la función de imagen en imagen automáticamente</translation>
@@ -10387,6 +10393,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8524841856047224176">Personaliza el fondo de tu cámara para videollamadas y más</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
 <translation id="8525461909394569609">Esta aplicación incluye contenido web de</translation>
+<translation id="8526313996927074827">Inserta enlaces, emojis y más. También puedes obtener ayuda al escribir con la IA de Google.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Altavoces</translation>
 <translation id="8527257351549797148">Es posible que tu organización requiera que te registres para que puedas acceder a aplicaciones, extensiones y otros elementos. Esto también permite a tu organización gestionar la seguridad y los ajustes de los dispositivos, entre otras cosas.</translation>

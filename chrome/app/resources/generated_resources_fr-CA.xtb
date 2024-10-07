@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">Navigation privée</translation>
 <translation id="1049795001945932310">Paramètres &amp;linguistiques</translation>
 <translation id="1050693411695664090">Médiocre</translation>
+<translation id="1053898984916097744">Commencez quelque chose de nouveau ou obtenez de l'aide tout en restant concentré.</translation>
 <translation id="1054048317165655285">Terminer la configuration sur votre téléphone</translation>
 <translation id="1054153489933238809">Ouvrir l'&amp;image d'origine dans un nouvel onglet</translation>
 <translation id="1054187194995068149">Bonjour. Ceci est un aperçu</translation>
@@ -1225,6 +1226,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1854049213067042715">Reprenez là où vous vous étiez arrêté. Dans Paramètres, vous pouvez choisir de toujours restaurer vos applications au démarrage ou de désactiver cette option.</translation>
 <translation id="1854180393107901205">Arrêter l'envoi de contenu</translation>
 <translation id="1856715684130786728">Ajouter un dossier...</translation>
+<translation id="185766080319917408">La touche du Lanceur d'applis est située à gauche de la touche Alt gauche</translation>
 <translation id="1858585891038687145">Considérer ce certificat comme fiable pour identifier les concepteurs de logiciels</translation>
 <translation id="1859294693760125695">Fin de l'intérêt</translation>
 <translation id="1859339856433307593">Un mot de passe pour ce compte est déjà enregistré dans votre <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
@@ -7380,6 +7382,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6341850831632289108">Détecter votre position géographique</translation>
 <translation id="6342069812937806050">À l'instant</translation>
 <translation id="6343003829431264373">Pages paires uniquement</translation>
+<translation id="6343262564968371601">Trouvez ce dont vous avez besoin en effectuant une recherche sur Google, sur des fichiers, sur des applis et plus encore</translation>
 <translation id="6343981313228733146">Fenêtre déplacée vers le haut et vers la droite</translation>
 <translation id="6344170822609224263">Accéder à la liste de connexions réseau</translation>
 <translation id="6344576354370880196">Imprimantes enregistrées</translation>
@@ -7552,6 +7555,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6476482583633999078">Débit de parole</translation>
 <translation id="6476671549211161535">Appuyez sur un bouton autre que le bouton gauche ou droit de la souris sur votre <ph name="DEVICE_NAME" />.</translation>
 <translation id="6477822444490674459">La synchronisation des notifications n'est pas prise en charge sur les téléphones avec un profil professionnel. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">La touche d'Insertion rapide est située sous la touche de Tabulation</translation>
 <translation id="6479881432656947268">Visiter la boutique en ligne Chrome Web Store</translation>
 <translation id="6480327114083866287">Géré par <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Partagez des fichiers et plus encore avec des appareils à proximité. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
@@ -7917,6 +7921,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6749473226660745022">Photos</translation>
 <translation id="6750757184909117990">Désactiver la connexion cellulaire</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Navigation privée)</translation>
+<translation id="6754918760968695779">Insertion rapide</translation>
 <translation id="6756157672127672536">L'application Fichiers permet d'accéder rapidement aux fichiers que vous avez enregistrés sur Google Disque, sur vos appareils de stockage externe ou sur votre appareil Chrome OS.</translation>
 <translation id="6756643207511618722">Moteurs de reconnaissance vocale</translation>
 <translation id="6757431299485455321">Aider les autres appareils à détecter ce point d’accès.</translation>
@@ -8111,6 +8116,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="686609795364435700">Calme</translation>
 <translation id="686664946474413495">Température des couleurs</translation>
 <translation id="6867086642466184030">D'autres applications sont configurées pour ouvrir les mêmes liens que ceux de l'application <ph name="APP_NAME" />. Cette option désactivera l'ouverture des liens compatibles par les applications <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> ainsi que <ph name="NUMBER_OF_OTHER_APPS" /> autres applications.</translation>
+<translation id="6867671714894555998">Accomplir des tâches rapidement avec le nouveau clavier</translation>
 <translation id="6868206169573555318">Relancer pour mettre à jour</translation>
 <translation id="686831807558000905">Ne pas se connecter</translation>
 <translation id="686839242150793617">Autorisés à entrer automatiquement l'Incrustation d'image</translation>
@@ -10390,6 +10396,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8524841856047224176">Personnalisez les arrière-plans de votre caméra pour les appels vidéo et bien plus encore</translation>
 <translation id="8525306231823319788">Plein écran</translation>
 <translation id="8525461909394569609">Cette application comporte du contenu Web provenant de</translation>
+<translation id="8526313996927074827">Insérez des liens, des émojis et plus. Vous pouvez également obtenir de l'aide à la rédaction avec l'IA de Google.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Haut-parleurs</translation>
 <translation id="8527257351549797148">Votre organisation peut exiger une inscription afin que vous puissiez accéder aux applications, aux extensions et plus. Cela permet également à votre organisation de gérer des éléments, tels que la sécurité et les paramètres de l'appareil.</translation>

@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">无痕</translation>
 <translation id="1049795001945932310">语言设置(&amp;L)</translation>
 <translation id="1050693411695664090">较差</translation>
+<translation id="1053898984916097744">开始新任务或在流程中获取帮助。</translation>
 <translation id="1054048317165655285">在您的手机上完成设置</translation>
 <translation id="1054153489933238809">在新标签页中打开原始图片(&amp;I)</translation>
 <translation id="1054187194995068149">您好，这是预览版</translation>
@@ -1217,6 +1218,7 @@
 <translation id="1854049213067042715">从先前中断之处继续操作。您可将应用设为始终在系统启动时恢复，也可在“设置”中关闭恢复功能。</translation>
 <translation id="1854180393107901205">停止投放</translation>
 <translation id="1856715684130786728">添加位置…</translation>
+<translation id="185766080319917408">启动器键位于左侧 alt 键的左侧</translation>
 <translation id="1858585891038687145">信任该证书，以便标识软件编写者的身份</translation>
 <translation id="1859294693760125695">不再感兴趣了</translation>
 <translation id="1859339856433307593">此账号的密码已保存到您的 <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
@@ -1419,7 +1421,7 @@
 <translation id="1997433994358798851">Chrome 需要获得使用蓝牙的权限，才能连接到您的设备</translation>
 <translation id="1997616988432401742">您的证书</translation>
 <translation id="1998715278591719161">允许跟踪您的双手</translation>
-<translation id="1999115740519098545">启动时</translation>
+<translation id="1999115740519098545">起始页面</translation>
 <translation id="2002109485265116295">实时</translation>
 <translation id="2002160221914907025">实验性 AI</translation>
 <translation id="2003130567827682533">若想激活“<ph name="NAME" />”的数据流量服务，请先连接到 Wi-Fi 网络</translation>
@@ -7363,6 +7365,7 @@
 <translation id="6341850831632289108">检测您所在的地理位置</translation>
 <translation id="6342069812937806050">刚刚</translation>
 <translation id="6343003829431264373">仅限页码为偶数的页面</translation>
+<translation id="6343262564968371601">通过在 Google、文件、应用等中搜索，找到您要找的内容</translation>
 <translation id="6343981313228733146">窗口已向上右移</translation>
 <translation id="6344170822609224263">网络连接的访问权限列表</translation>
 <translation id="6344576354370880196">已保存的打印机</translation>
@@ -7535,6 +7538,7 @@
 <translation id="6476482583633999078">语速</translation>
 <translation id="6476671549211161535">按 <ph name="DEVICE_NAME" /> 上的鼠标左键或右键之外的按钮。</translation>
 <translation id="6477822444490674459">设有工作资料的手机无法同步通知。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">快捷插入键位于 Tab 键下方</translation>
 <translation id="6479881432656947268">访问 Chrome 应用商店</translation>
 <translation id="6480327114083866287">由 <ph name="MANAGER" /> 管理</translation>
 <translation id="6481749622989211463">与附近的设备分享文件及其他内容。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -7898,6 +7902,7 @@
 <translation id="6749473226660745022">照片</translation>
 <translation id="6750757184909117990">停用移动网络</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" />（无痕）</translation>
+<translation id="6754918760968695779">快捷插入</translation>
 <translation id="6756157672127672536">通过“文件”应用，您可以快速访问自己保存在 Google 云端硬盘、外部存储空间或 Chrome 操作系统设备上的文件。</translation>
 <translation id="6756643207511618722">语音引擎</translation>
 <translation id="6757431299485455321">有助于其他设备发现此热点。</translation>
@@ -8092,6 +8097,7 @@
 <translation id="686609795364435700">小</translation>
 <translation id="686664946474413495">色温</translation>
 <translation id="6867086642466184030">其他应用已设为与<ph name="APP_NAME" />打开同样的链接。此操作会阻止<ph name="APP_NAME_2" />、<ph name="APP_NAME_3" />、<ph name="APP_NAME_4" />和另外 <ph name="NUMBER_OF_OTHER_APPS" /> 款应用打开受支持的链接。</translation>
+<translation id="6867671714894555998">使用新键盘快速处理各种任务</translation>
 <translation id="6868206169573555318">重新启动以进行更新</translation>
 <translation id="686831807558000905">不登录</translation>
 <translation id="686839242150793617">已获准自动进入画中画模式</translation>
@@ -10373,6 +10379,7 @@
 <translation id="8524841856047224176">对视频通话等场景的背景进行个性化设置</translation>
 <translation id="8525306231823319788">全屏</translation>
 <translation id="8525461909394569609">此应用包含以下来源的 Web 内容：</translation>
+<translation id="8526313996927074827">插入链接、表情符号等内容。您还可以借助 Google AI 进行写作。</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">扬声器</translation>
 <translation id="8527257351549797148">贵组织可能要求注册，以便您使用应用、扩展程序等。这样一来，贵组织还可以管理安全和设备设置等事项。</translation>

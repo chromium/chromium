@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">අප්‍රකට</translation>
 <translation id="1049795001945932310">භාශා සැකසුම්</translation>
 <translation id="1050693411695664090">දුර්වල</translation>
+<translation id="1053898984916097744">අලුත් දෙයක් අරඹන්න හෝ ප්‍රවාහයේ දී උදවු ලබා ගන්න.</translation>
 <translation id="1054048317165655285">ඔබගේ දුරකථනයෙහි පිහිටුවීම අවසන් කරන්න</translation>
 <translation id="1054153489933238809">මුල් පින්තූරය නව පටිත්තක විවෘත කරන්න</translation>
 <translation id="1054187194995068149">ආයුබෝවන්. මෙය පෙරදසුනකි</translation>
@@ -1222,6 +1223,7 @@
 <translation id="1854049213067042715">ඔබ නතර කළ තැන සිට ඉදිරියට යයන්න. ආරම්භයේදී සැම විටම ප්‍රතිසාධනය කිරීමට හෝ සැකසීම් තුළ ප්‍රතිසාධන ක්‍රියාවලිය ක්‍රියාවිරහිත කිරීමට ඔබට යෙදුම් සැකසිය හැකිය.</translation>
 <translation id="1854180393107901205">Cast කිරීම නවත්වන්න</translation>
 <translation id="1856715684130786728">ස්ථානය එක් කරන්න...</translation>
+<translation id="185766080319917408">දියත්කරණය යතුර වම් alt යතුරට වම්පසින් පිහිටා ඇත</translation>
 <translation id="1858585891038687145">මෘදුකාංග සාදන්නන් හඳුනා ගැනීම සඳහා මෙම සහතිකය මත විශ්වාසය තබන්න</translation>
 <translation id="1859294693760125695">තවදුරටත් උනන්දු නැත</translation>
 <translation id="1859339856433307593">මෙම ගිණුම සඳහා මුරපදයක් දැනටමත් ඔබේ <ph name="BRAND" />(<ph name="USER_EMAIL" />) වෙත සුරැකී ඇත</translation>
@@ -7380,6 +7382,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6341850831632289108">ඔබේ භෞතික පිහිටීම සොයා ගන්න</translation>
 <translation id="6342069812937806050">මේ දැන්</translation>
 <translation id="6343003829431264373">ඉරට්ටේ පිටු පමණි</translation>
+<translation id="6343262564968371601">Google, ගොනු, යෙදුම් සහ තවත් දේ සෙවීමෙන් ඔබට අවශ්‍ය දේ සොයා ගන්න</translation>
 <translation id="6343981313228733146">කවුළුව ඉහළට සහ දකුණට ගෙන ගියා</translation>
 <translation id="6344170822609224263">ජාල සබැඳුම් ලැයිස්තුව ප්‍රවේශ වන්න</translation>
 <translation id="6344576354370880196">සුරැකි මුද්‍රක</translation>
@@ -7552,6 +7555,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6476482583633999078">කථන වේගය</translation>
 <translation id="6476671549211161535">ඔබේ <ph name="DEVICE_NAME" /> මත වම් හෝ දකුණු මූසික බොත්තම නොවන බොත්තමක් ඔබන්න.</translation>
 <translation id="6477822444490674459">කාර්යාල පැතිකඩක ඇති දුරකථන සඳහා දැනුම්දීම් සමමුහුර්තකරණය සහාය නොදක්වයි. <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">ඉක්මන් ඇතුළු කිරීමේ යතුර ටැබ් යතුරට යටින් පිහිටා ඇත</translation>
 <translation id="6479881432656947268">Chrome Web Store වෙත පිවිසෙන්න</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> විසින් කළමනාකරණය කෙරේ</translation>
 <translation id="6481749622989211463">අවට උපාංග සමග ගොනු සහ තවත් දේ බෙදා ගන්න. <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
@@ -7915,6 +7919,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6749473226660745022">ඡායාරූප</translation>
 <translation id="6750757184909117990">සෙලියුලර් අබල කරන්න</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Incognito)</translation>
+<translation id="6754918760968695779">ඉක්මන් ඇතුළත් කිරීම</translation>
 <translation id="6756157672127672536">ගොනු යෙදුම, Google Drive, බාහිර ගබඩාව හෝ ඔබගේ ChromeOS උපාංගයෙහි ඔබ සුරැක ඇති ගොනු වෙත ඉක්මන් ප්‍රවේශය සපයයි.</translation>
 <translation id="6756643207511618722">කථන එන්ජින්</translation>
 <translation id="6757431299485455321">මෙම හොට්ස්පොට් සොයා ගැනීමට වෙනත් උපාංගවලට උදවු කරන්න.</translation>
@@ -8109,6 +8114,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="686609795364435700">නිහඬ</translation>
 <translation id="686664946474413495">වර්ණ උෂ්ණත්වය</translation>
 <translation id="6867086642466184030">අනෙකුත් යෙදුම් <ph name="APP_NAME" /> ලෙස එකම සබැඳි විවෘත කිරීමට සකසා ඇත. මෙය සහාය දක්වන සබැඳි විවෘත කිරීමෙන් <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> සහ තවත් යෙදුම් <ph name="NUMBER_OF_OTHER_APPS" />ක් අබල කරනු ඇත.</translation>
+<translation id="6867671714894555998">නව යතුරු පුවරුව සමග ඉක්මනින් දේවල් කරන්න</translation>
 <translation id="6868206169573555318">යාවත්කාලීන කිරීමට යළි දියත් කරන්න</translation>
 <translation id="686831807558000905">පුරනය වන්න එපා</translation>
 <translation id="686839242150793617">පින්තූරය තුළ පින්තූරයට ස්වයංක්‍රීයව ඇතුළු වීමට ඉඩ දී ඇත</translation>
@@ -10387,6 +10393,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8524841856047224176">වීඩියෝ ඇමතුම් සහ තවත් දේ සඳහා ඔබේ කැමරා පසුබිම් පුද්ගලායනය කරන්න</translation>
 <translation id="8525306231823319788">සම්පුර්ණ තිරය</translation>
 <translation id="8525461909394569609">මෙම යෙදුමේ මේවායින් වෙබ් අන්තර්ගතයන් අඩංගු වේ</translation>
+<translation id="8526313996927074827">සබැඳි, ඉමොජි, සහ තවත් දේ ඇතුළත් කරන්න. ඔබට Google AI සමග ලිවීමට උදවු ලබා ගත හැක.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">ස්පීකර්</translation>
 <translation id="8527257351549797148">ඔබට යෙදුම්, දිගු, සහ තවත් දේ වෙත ප්‍රවේශ විය හැකි වන පරිදි ඔබේ සංවිධානයට ලියාපදිංචි වීම අවශ්‍ය විය හැක. මෙය ඔබේ සංවිධානයට ආරක්ෂාව සහ උපාංග සැකසීම් වැනි දේවල් කළමනාකරණය කිරීමට ද ඉඩ දෙයි.</translation>

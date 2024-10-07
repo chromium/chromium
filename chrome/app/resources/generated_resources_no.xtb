@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1049795001945932310">&amp;Språkinnstillinger</translation>
 <translation id="1050693411695664090">Dårlig</translation>
+<translation id="1053898984916097744">Start noe nytt, eller få hjelp på veien.</translation>
 <translation id="1054048317165655285">Fullfør konfigureringen på telefonen din</translation>
 <translation id="1054153489933238809">Åpne det opprinnelige &amp;bildet i en ny fane</translation>
 <translation id="1054187194995068149">Hei. Dette er en forhåndsvisning</translation>
@@ -1228,6 +1229,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1854049213067042715">Fortsett der du slapp. Du kan angi at apper alltid skal gjenopprettes ved oppstart, eller slå av gjenoppretting, i innstillingene.</translation>
 <translation id="1854180393107901205">Stopp castingen</translation>
 <translation id="1856715684130786728">Legg til plassering</translation>
+<translation id="185766080319917408">Appoversikt-tasten er til venstre for venstre Alt-tast</translation>
 <translation id="1858585891038687145">Stol på dette sertifikatet for identifisering av programvareprodusenter.</translation>
 <translation id="1859294693760125695">Ikke interessert lenger</translation>
 <translation id="1859339856433307593">Et passord for denne kontoen er allerede lagret i <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
@@ -7381,6 +7383,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6341850831632289108">Oppdaging av den fysiske plasseringen din</translation>
 <translation id="6342069812937806050">Akkurat nå</translation>
 <translation id="6343003829431264373">Bare partallssider</translation>
+<translation id="6343262564968371601">Finn det du leter etter, ved å søke på Google, i filer, apper med mer</translation>
 <translation id="6343981313228733146">Vinduet ble flyttet opp og til høyre</translation>
 <translation id="6344170822609224263">få tilgang til liste over nettverkstilkoblinger</translation>
 <translation id="6344576354370880196">Lagrede skrivere</translation>
@@ -7553,6 +7556,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6476482583633999078">Talehastighet</translation>
 <translation id="6476671549211161535">Trykk på en knapp som ikke er venstre eller høyre museknapp, på <ph name="DEVICE_NAME" />.</translation>
 <translation id="6477822444490674459">Synkronisering av varsler støttes ikke for telefoner i jobbprofiler. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">Hurtiginnsetting-tasten er under Tab-tasten</translation>
 <translation id="6479881432656947268">Gå til Chrome Nettmarked</translation>
 <translation id="6480327114083866287">Administreres av <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Del blant annet filer med enheter i nærheten <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
@@ -7916,6 +7920,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6749473226660745022">Bilder</translation>
 <translation id="6750757184909117990">Slå av mobildata</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Inkognito)</translation>
+<translation id="6754918760968695779">Hurtiginnsetting</translation>
 <translation id="6756157672127672536">Med Filer-appen får du rask tilgang til filer du har lagret på Google Disk, eksterne lagringsenheter eller ChromeOS-enheten din.</translation>
 <translation id="6756643207511618722">Talemotorer</translation>
 <translation id="6757431299485455321">Hjelp andre enheter med å finne denne wifi-sonen.</translation>
@@ -8110,6 +8115,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="686609795364435700">Stille</translation>
 <translation id="686664946474413495">Fargetemperatur</translation>
 <translation id="6867086642466184030">Andre apper er stilt inn på å åpne de samme linkene som <ph name="APP_NAME" />. Dette medfører at <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> og <ph name="NUMBER_OF_OTHER_APPS" /> andre apper ikke kan åpne støttede linker.</translation>
+<translation id="6867671714894555998">Få ting gjort raskt med det nye tastaturet</translation>
 <translation id="6868206169573555318">Start på nytt for å oppdatere</translation>
 <translation id="686831807558000905">Ikke logg på</translation>
 <translation id="686839242150793617">Nettsteder som har lov til å bruke bilde-i-bilde automatisk</translation>
@@ -10391,6 +10397,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8524841856047224176">Tilpass kamerabakgrunnene dine for videosamtaler med mer</translation>
 <translation id="8525306231823319788">Full skjerm</translation>
 <translation id="8525461909394569609">Denne appen har nettinnhold fra</translation>
+<translation id="8526313996927074827">Sett inn linker, emojier og mer. Du kan også få hjelp til å skrive med AI-løsninger fra Google.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Høyttalere</translation>
 <translation id="8527257351549797148">Det kan hende at organisasjonen din krever registrering, for at du skal få tilgang til apper, utvidelser med mer. Da kan organisasjonen din også administrere ting som sikkerhet og enhetsinnstillinger.</translation>

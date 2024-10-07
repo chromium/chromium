@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">Navegação anónima</translation>
 <translation id="1049795001945932310">&amp;Definições de idioma</translation>
 <translation id="1050693411695664090">Má</translation>
+<translation id="1053898984916097744">Comece algo novo ou obtenha ajuda no processo.</translation>
 <translation id="1054048317165655285">Conclua a configuração no telemóvel</translation>
 <translation id="1054153489933238809">Abrir &amp;imagem original num Novo separador</translation>
 <translation id="1054187194995068149">Olá. Isto é uma pré-visualização</translation>
@@ -1224,6 +1225,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1854049213067042715">Continue a partir de onde parou. Pode definir as apps para serem sempre restauradas no arranque ou desativar o restauro nas Definições.</translation>
 <translation id="1854180393107901205">Parar de transmitir</translation>
 <translation id="1856715684130786728">Adicionar localização...</translation>
+<translation id="185766080319917408">A tecla do Launcher está localizada à esquerda da tecla Alt do lado esquerdo</translation>
 <translation id="1858585891038687145">Confiar neste certificado para identificar fabricantes de software</translation>
 <translation id="1859294693760125695">Já não tenho interesse</translation>
 <translation id="1859339856433307593">Já foi guardada uma palavra-passe para esta conta no seu <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
@@ -7381,6 +7383,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6341850831632289108">Detetar a sua localização física</translation>
 <translation id="6342069812937806050">Mesmo agora</translation>
 <translation id="6343003829431264373">Apenas páginas pares</translation>
+<translation id="6343262564968371601">Encontre o que procura pesquisando no Google, em ficheiros, em apps e muito mais</translation>
 <translation id="6343981313228733146">Janela movida para cima e para a direita</translation>
 <translation id="6344170822609224263">Lista de acesso de ligações de rede</translation>
 <translation id="6344576354370880196">Impressoras guardadas</translation>
@@ -7553,6 +7556,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6476482583633999078">Velocidade da voz</translation>
 <translation id="6476671549211161535">Prima um botão que não seja o botão esquerdo ou direito do rato no dispositivo <ph name="DEVICE_NAME" />.</translation>
 <translation id="6477822444490674459">A sincronização das notificações não é suportada para telemóveis num perfil de trabalho. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">A tecla de Inserção rápida encontra-se por baixo da tecla Tab</translation>
 <translation id="6479881432656947268">Visite a Web Store do Chrome</translation>
 <translation id="6480327114083866287">Gerido por <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Partilhe ficheiros e muito mais com dispositivos próximos. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
@@ -7916,6 +7920,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6749473226660745022">Fotos</translation>
 <translation id="6750757184909117990">Desativar rede móvel</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Navegação anónima)</translation>
+<translation id="6754918760968695779">Inserção rápida</translation>
 <translation id="6756157672127672536">A app Files proporciona um acesso rápido aos ficheiros que guardou no Google Drive, armazenamento externo ou dispositivo com ChromeOS.</translation>
 <translation id="6756643207511618722">Motores de voz</translation>
 <translation id="6757431299485455321">Ajude outros dispositivos a encontrar esta zona Wi-Fi.</translation>
@@ -8110,6 +8115,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="686609795364435700">Baixo</translation>
 <translation id="686664946474413495">Temperatura da cor</translation>
 <translation id="6867086642466184030">Outras apps estão definidas para abrir os mesmos links que a app <ph name="APP_NAME" />. Isto irá impedir que as apps <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> e mais <ph name="NUMBER_OF_OTHER_APPS" /> apps abram links suportados.</translation>
+<translation id="6867671714894555998">Realize tarefas rapidamente com o novo teclado</translation>
 <translation id="6868206169573555318">Reiniciar para atualizar</translation>
 <translation id="686831807558000905">Não iniciar sessão</translation>
 <translation id="686839242150793617">Com permissão para entrar automaticamente no modo ecrã no ecrã</translation>
@@ -10391,6 +10397,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8524841856047224176">Personalize os fundos da câmara para videochamadas e muito mais</translation>
 <translation id="8525306231823319788">Ecrã inteiro</translation>
 <translation id="8525461909394569609">Esta app inclui conteúdo da Web de</translation>
+<translation id="8526313996927074827">Insira links, emojis e muito mais. Também pode obter ajuda para escrever com a IA da Google.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Altifalantes</translation>
 <translation id="8527257351549797148">A sua organização pode exigir a inscrição para que possa aceder a apps, extensões e muito mais. Isto também permite à sua organização gerir aspetos como definições de segurança e do dispositivo.</translation>

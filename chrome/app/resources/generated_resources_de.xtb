@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1049795001945932310">&amp;Spracheinstellungen</translation>
 <translation id="1050693411695664090">Schlecht</translation>
+<translation id="1053898984916097744">Du kannst dich von Anfang an unterstützen lassen oder dir später Hilfe dazuholen.</translation>
 <translation id="1054048317165655285">Einrichtung auf dem Smartphone abschließen</translation>
 <translation id="1054153489933238809">&amp;Original in neuem Tab öffnen</translation>
 <translation id="1054187194995068149">Hallo. Dies ist eine Vorschau.</translation>
@@ -1221,6 +1222,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1854049213067042715">Fahre dort fort, wo du aufgehört hast. In den Einstellungen kannst du festlegen, dass Apps beim Start immer wiederhergestellt werden, oder die Wiederherstellung deaktivieren.</translation>
 <translation id="1854180393107901205">Übertragung beenden</translation>
 <translation id="1856715684130786728">Speicherort hinzufügen...</translation>
+<translation id="185766080319917408">Die Launcher-Taste befindet sich links neben der linken Alt‑Taste</translation>
 <translation id="1858585891038687145">Diesem Zertifikat zur Identifizierung von Softwareherstellern vertrauen</translation>
 <translation id="1859294693760125695">Kein Interesse mehr</translation>
 <translation id="1859339856433307593">Ein Passwort für dieses Konto ist bereits in <ph name="BRAND" /> (<ph name="USER_EMAIL" />) gespeichert</translation>
@@ -7369,6 +7371,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6341850831632289108">Deinen physischen Standort ermitteln</translation>
 <translation id="6342069812937806050">Gerade eben</translation>
 <translation id="6343003829431264373">Nur gerade Seitenzahlen</translation>
+<translation id="6343262564968371601">Finde, was du suchst, indem du unter anderem bei Google, in Dateien und Apps suchst</translation>
 <translation id="6343981313228733146">Fenster nach oben rechts verschoben</translation>
 <translation id="6344170822609224263">Auf Liste der Netzwerkverbindungen zugreifen</translation>
 <translation id="6344576354370880196">Gespeicherte Drucker</translation>
@@ -7541,6 +7544,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6476482583633999078">Sprechgeschwindigkeit</translation>
 <translation id="6476671549211161535">Drücke auf deinem Gerät (<ph name="DEVICE_NAME" />) eine Taste, die nicht die linke oder rechte Maustaste ist.</translation>
 <translation id="6477822444490674459">Benachrichtigungssynchronisierung wird nicht unterstützt, wenn auf einem Smartphone aktuell ein Arbeitsprofil verwendet wird. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">Die Taste „Schnelles Einfügen“ befindet sich unter der Tabulatortaste</translation>
 <translation id="6479881432656947268">Chrome Web Store besuchen</translation>
 <translation id="6480327114083866287">Verwaltet von <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Dateien und mehr mit Geräten in der Nähe teilen. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
@@ -7904,6 +7908,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6749473226660745022">Fotos</translation>
 <translation id="6750757184909117990">Mobilfunknetz deaktivieren</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (anonym)</translation>
+<translation id="6754918760968695779">Schnelles Einfügen</translation>
 <translation id="6756157672127672536">Mit der App „Dateien“ erhältst du schnellen Zugriff auf Dateien, die du in Google Drive, auf externen Speichermedien oder auf deinem Chrome OS-Gerät gespeichert hast.</translation>
 <translation id="6756643207511618722">Sprach-Engines</translation>
 <translation id="6757431299485455321">Hilf anderen Geräten, diesen Hotspot zu finden.</translation>
@@ -8098,6 +8103,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="686609795364435700">Leise</translation>
 <translation id="686664946474413495">Farbtemperatur</translation>
 <translation id="6867086642466184030">Für andere Apps ist festgelegt, dass bei ihnen die gleichen Links wie bei <ph name="APP_NAME" /> geöffnet werden. Dadurch wird deaktiviert, dass bei <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> und <ph name="NUMBER_OF_OTHER_APPS" /> weiteren Apps unterstützte Links geöffnet werden.</translation>
+<translation id="6867671714894555998">Mit der neuen Tastatur schnell Aufgaben erledigen</translation>
 <translation id="6868206169573555318">Zum Aktualisieren neu starten</translation>
 <translation id="686831807558000905">Nicht anmelden</translation>
 <translation id="686839242150793617">Dürfen den Bild-im-Bild-Modus automatisch aktivieren</translation>
@@ -10379,6 +10385,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8524841856047224176">Personalisiere deine Kamerahintergründe für Videoanrufe und mehr</translation>
 <translation id="8525306231823319788">Vollbildmodus</translation>
 <translation id="8525461909394569609">Diese App enthält Webinhalte von</translation>
+<translation id="8526313996927074827">Füge Links, Emojis und weitere Elemente ein. Du kannst beim Schreiben auch Unterstützung von Google AI erhalten.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Lautsprecher</translation>
 <translation id="8527257351549797148">Möglicherweise ist seitens deiner Organisation eine Registrierung erforderlich, damit du auf Apps, Erweiterungen und mehr zugreifen kannst. Außerdem können Organisationen beispielsweise die Sicherheits- und Geräteeinstellungen verwalten.</translation>

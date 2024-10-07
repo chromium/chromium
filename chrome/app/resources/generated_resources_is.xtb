@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">Fara huldu höfðu</translation>
 <translation id="1049795001945932310">Tungumá&amp;lastillingar</translation>
 <translation id="1050693411695664090">Léleg</translation>
+<translation id="1053898984916097744">Byrjaðu á nýju verkefni eða fáðu aðstoð við að komast í gírinn.</translation>
 <translation id="1054048317165655285">Ljúka uppsetningu í símanum</translation>
 <translation id="1054153489933238809">Opna upprunalega &amp;mynd á nýjum flipa</translation>
 <translation id="1054187194995068149">Hæ. Þetta er forskoðun</translation>
@@ -1234,6 +1235,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1854049213067042715">Haltu áfram þar sem þú hættir síðast. Þú getur stillt forrit á að endurheimta alltaf við ræsingu eða slökkt á endurheimt í stillingunum.</translation>
 <translation id="1854180393107901205">Hætta útsendingu</translation>
 <translation id="1856715684130786728">Bæta staðsetningu við...</translation>
+<translation id="185766080319917408">Leitarlykillinn er staðsetur vinstra megin við vinstri Alt-lykilinn</translation>
 <translation id="1858585891038687145">Treysta þessu vottorði til að bera kennsl á hugbúnaðarframleiðendur</translation>
 <translation id="1859294693760125695">Hef ekki lengur áhuga</translation>
 <translation id="1859339856433307593">Aðgangsorð fyrir þennan reikning er þegar vistað í <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
@@ -7393,6 +7395,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6341850831632289108">Greina raunstaðsetningu þína</translation>
 <translation id="6342069812937806050">Rétt í þessu</translation>
 <translation id="6343003829431264373">Aðeins síður með sléttum tölum</translation>
+<translation id="6343262564968371601">Finndu það sem þú leitar að með því að leita á Google, í skrám, forritum og víðar</translation>
 <translation id="6343981313228733146">Gluggi færðist upp og til hægri</translation>
 <translation id="6344170822609224263">Fá aðgang að lista yfir nettengingar</translation>
 <translation id="6344576354370880196">Vistaðir prentarar</translation>
@@ -7565,6 +7568,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6476482583633999078">Talhraði</translation>
 <translation id="6476671549211161535">Ýttu á hnapp á <ph name="DEVICE_NAME" /> sem er hvorki vinstri né hægri músarhnappurinn.</translation>
 <translation id="6477822444490674459">Samstilling tilkynninga er ekki studd í símum sem nota vinnusnið. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">Flýtiinnsláttarlykilinn er staðsettur fyrir neðan dálkalykilinn</translation>
 <translation id="6479881432656947268">Opna Vefverslun Chrome</translation>
 <translation id="6480327114083866287">Stýrt af <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Deildu skrám og fleiru með nálægum tækjum. <ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /></translation>
@@ -7930,6 +7934,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6749473226660745022">Myndir</translation>
 <translation id="6750757184909117990">Óvirkja farsímakerfi</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (huliðsgluggi)</translation>
+<translation id="6754918760968695779">Flýtiinnsláttur</translation>
 <translation id="6756157672127672536">Forritið Skrár býður upp á skjótan aðgang að skrám sem þú hefur vistað á Google Drive, í ytri geymslu eða á ChromeOS tæki.</translation>
 <translation id="6756643207511618722">Talgervlar</translation>
 <translation id="6757431299485455321">Hjálpaðu öðrum tækjum að finna þennan heita reit.</translation>
@@ -8124,6 +8129,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="686609795364435700">Þögult</translation>
 <translation id="686664946474413495">Lithiti</translation>
 <translation id="6867086642466184030">Önnur forrit eru stillt á að opna sömu tengla og <ph name="APP_NAME" />. Þetta slekkur á að <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> og <ph name="NUMBER_OF_OTHER_APPS" /> forrit í viðbót opni studda tengla.</translation>
+<translation id="6867671714894555998">Hespaðu hlutunum af með nýja lyklaborðinu</translation>
 <translation id="6868206169573555318">Endurræstu til að uppfæra</translation>
 <translation id="686831807558000905">Ekki skrá inn</translation>
 <translation id="686839242150793617">Mega fara sjálfkrafa í mynd í mynd</translation>
@@ -10403,6 +10409,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8524841856047224176">Sérsníddu myndavélarbakgrunninn fyrir myndsímtöl og fleira</translation>
 <translation id="8525306231823319788">Allur skjárinn</translation>
 <translation id="8525461909394569609">Þetta forrit inniheldur vefefni frá</translation>
+<translation id="8526313996927074827">Settu inn tengla, emoji og fleira. Þar að auki geturðu fengið aðstoð gervigreindar Google við skrif.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Hátalarar</translation>
 <translation id="8527257351549797148">Fyrirtækið þitt kann að krefjast skráningar svo þú getir fengið aðgang að forritum, viðbótum og fleiru. Þetta gerir fyrirtækinu einnig kleift að stjórna þáttum á borð við öryggi og tækjastillingar.</translation>

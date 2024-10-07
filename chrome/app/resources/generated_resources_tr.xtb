@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">Gizli mod</translation>
 <translation id="1049795001945932310">&amp;Dil ayarları</translation>
 <translation id="1050693411695664090">Kötü</translation>
+<translation id="1053898984916097744">Yeni bir şey başlatın veya akışla ilgili yardım alın.</translation>
 <translation id="1054048317165655285">Kurulumu telefonunuzda tamamlayın</translation>
 <translation id="1054153489933238809">Orijinal &amp;Resmi Yeni Sekmede Aç</translation>
 <translation id="1054187194995068149">Merhaba. Bu bir önizlemedir</translation>
@@ -1224,6 +1225,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1854049213067042715">Kaldığınız yerden devam edin. Ayarlar'dan uygulamaları başlangıçta her zaman geri yüklenecek veya geri yüklemeyi kapatacak şekilde ayarlayabilirsiniz.</translation>
 <translation id="1854180393107901205">Yayını durdur</translation>
 <translation id="1856715684130786728">Konum ekle...</translation>
+<translation id="185766080319917408">Başlatıcı tuşu, soldaki alt tuşunun solunda yer alır</translation>
 <translation id="1858585891038687145">Yazılım üreticilerini tanımlamak için bu sertifikaya güvenin</translation>
 <translation id="1859294693760125695">Artık ilgilenmiyorum</translation>
 <translation id="1859339856433307593">Bu hesaba ait bir şifre, <ph name="BRAND" /> (<ph name="USER_EMAIL" />) hizmetinde zaten kayıtlı</translation>
@@ -7375,6 +7377,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6341850831632289108">Fiziksel konumunuzu belirleme</translation>
 <translation id="6342069812937806050">Az önce</translation>
 <translation id="6343003829431264373">Yalnızca çift numaralı sayfalar</translation>
+<translation id="6343262564968371601">Google, dosyalar, uygulamalar ve daha fazlasında arama yaparak aradığınızı bulun.</translation>
 <translation id="6343981313228733146">Pencere sağ üst tarafa taşındı</translation>
 <translation id="6344170822609224263">Ağ bağlantıları listesine erişme</translation>
 <translation id="6344576354370880196">Kayıtlı yazıcılar</translation>
@@ -7547,6 +7550,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6476482583633999078">Konuşma hızı</translation>
 <translation id="6476671549211161535"><ph name="DEVICE_NAME" /> cihazınızda sol veya sağ fare düğmesi olmayan bir düğmeye basın.</translation>
 <translation id="6477822444490674459">İş profiline sahip telefonlarda bildirim senkronizasyonu desteklenmiyor. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">Hızlı Yapıştır tuşu, sekme tuşunun altında yer alır</translation>
 <translation id="6479881432656947268">Chrome Web Mağazası'nı ziyaret edin</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> tarafından yönetiliyor</translation>
 <translation id="6481749622989211463">Yakındaki cihazlarla dosyaları ve diğer öğeleri paylaşın. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
@@ -7910,6 +7914,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="6749473226660745022">Fotoğraflar</translation>
 <translation id="6750757184909117990">Hücresel bağlantıyı devre dışı bırak</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Gizli mod)</translation>
+<translation id="6754918760968695779">Hızlı Yapıştır</translation>
 <translation id="6756157672127672536">Dosyalar uygulaması; Google Drive'a, harici depolama birimine veya ChromeOS cihazınıza kaydettiğiniz dosyalara hızlı bir şekilde erişebilmenizi sağlar.</translation>
 <translation id="6756643207511618722">Konuşma motorları</translation>
 <translation id="6757431299485455321">Diğer cihazların bu hotspot'u bulmasına yardımcı olun.</translation>
@@ -8104,6 +8109,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="686609795364435700">Sessiz</translation>
 <translation id="686664946474413495">Renk sıcaklığı</translation>
 <translation id="6867086642466184030">Diğer uygulamalar <ph name="APP_NAME" /> ile aynı bağlantıları açacak şekilde ayarlandı. Bu işlemden sonra <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> ve <ph name="NUMBER_OF_OTHER_APPS" /> uygulama daha desteklenen bağlantıları açamayacak.</translation>
+<translation id="6867671714894555998">Yeni klavye ile işlerinizi hızlıca halledin</translation>
 <translation id="6868206169573555318">Güncellemek için Yeniden Başlat</translation>
 <translation id="686831807558000905">Oturum açma</translation>
 <translation id="686839242150793617">Otomatik olarak pencere içinde pencere moduna girmesine izin verilenler</translation>
@@ -10384,6 +10390,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8524841856047224176">Görüntülü görüşmeler ve diğer etkinlikler için kameranızın arka planlarını kişiselleştirin</translation>
 <translation id="8525306231823319788">Tam ekran</translation>
 <translation id="8525461909394569609">Bu uygulama, şuradan alınmış web içeriği barındırıyor:</translation>
+<translation id="8526313996927074827">Bağlantılar, emojiler ve diğer öğeleri ekleyin. Ayrıca, Google Yapay Zeka'dan yazma konusunda yardım alabilirsiniz.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Hoparlörler</translation>
 <translation id="8527257351549797148">Uygulamalara, uzantılara ve diğer öğelere erişebilmeniz için kuruluşunuz kaydolma işlemini zorunlu kılabilir. Bu şekilde kuruluşunuz güvenlik ve cihaz ayarları gibi konuları da yönetebilir.</translation>

@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">Navigation privée</translation>
 <translation id="1049795001945932310">&amp;Paramètres linguistiques</translation>
 <translation id="1050693411695664090">Médiocre</translation>
+<translation id="1053898984916097744">Commencez une nouvelle activité ou obtenez de l'aide pour votre travail en cours.</translation>
 <translation id="1054048317165655285">Terminez la configuration sur votre téléphone</translation>
 <translation id="1054153489933238809">Ouvrir l'&amp;image originale dans un nouvel onglet</translation>
 <translation id="1054187194995068149">Bonjour. Ceci est un aperçu.</translation>
@@ -1225,6 +1226,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1854049213067042715">Reprenez là où vous en étiez. Dans les paramètres, vous pouvez choisir de restaurer vos applis au démarrage ou de désactiver cette fonctionnalité.</translation>
 <translation id="1854180393107901205">Arrêter la diffusion</translation>
 <translation id="1856715684130786728">Ajouter un emplacement…</translation>
+<translation id="185766080319917408">La touche du Lanceur d'applications se trouve à gauche de la touche Alt gauche</translation>
 <translation id="1858585891038687145">Considérer ce certificat comme fiable pour identifier les développeurs de logiciels</translation>
 <translation id="1859294693760125695">Cela ne m'intéresse plus</translation>
 <translation id="1859339856433307593">Un mot de passe pour ce compte est déjà enregistré dans votre <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
@@ -7377,6 +7379,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6341850831632289108">Détecter votre position géographique</translation>
 <translation id="6342069812937806050">À l'instant</translation>
 <translation id="6343003829431264373">Pages paires uniquement</translation>
+<translation id="6343262564968371601">Trouvez ce que vous cherchez en effectuant des recherches sur Google, dans des fichiers ou applis, et bien plus</translation>
 <translation id="6343981313228733146">Fenêtre déplacée vers le haut et la droite</translation>
 <translation id="6344170822609224263">Accéder à la liste des connexions réseau</translation>
 <translation id="6344576354370880196">Imprimantes enregistrées</translation>
@@ -7549,6 +7552,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6476482583633999078">Vitesse d'élocution</translation>
 <translation id="6476671549211161535">Appuyez sur un bouton autre que le bouton gauche ou droit de la souris de votre <ph name="DEVICE_NAME" />.</translation>
 <translation id="6477822444490674459">La synchronisation des notifications n'est pas possible sur les téléphones avec un profil professionnel. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">La touche Insertion Rapide se trouve sous la touche Tabulation</translation>
 <translation id="6479881432656947268">Accéder au Chrome Web Store</translation>
 <translation id="6480327114083866287">Géré par <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Partagez des fichiers et bien plus avec des appareils à proximité. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
@@ -7914,6 +7918,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6749473226660745022">Photos</translation>
 <translation id="6750757184909117990">Désactiver le réseau mobile</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Navigation privée)</translation>
+<translation id="6754918760968695779">Insertion Rapide</translation>
 <translation id="6756157672127672536">L'appli Fichiers vous permet d'accéder rapidement aux fichiers que vous avez enregistrés dans Google Drive, sur un périphérique de stockage externe ou sur votre appareil Chrome OS.</translation>
 <translation id="6756643207511618722">Moteurs de synthèse vocale</translation>
 <translation id="6757431299485455321">Aidez d'autres appareils à détecter ce point d'accès.</translation>
@@ -8108,6 +8113,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="686609795364435700">Grave</translation>
 <translation id="686664946474413495">Température des couleurs</translation>
 <translation id="6867086642466184030">D'autres applis sont définies pour ouvrir les mêmes liens que <ph name="APP_NAME" />. Cela empêchera <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> et <ph name="NUMBER_OF_OTHER_APPS" /> autres applis d'ouvrir les liens compatibles.</translation>
+<translation id="6867671714894555998">Effectuez des tâches rapidement avec le nouveau clavier</translation>
 <translation id="6868206169573555318">Redémarrer pour mettre à jour</translation>
 <translation id="686831807558000905">Ne pas se connecter</translation>
 <translation id="686839242150793617">Autorisés à passer en Picture-in-picture automatiquement</translation>
@@ -9507,7 +9513,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Vous recherchez des composants du navigateur ? Accédez à la page</translation>
 <translation id="7903429136755645827">Cliquer pour personnaliser les commandes de jeu</translation>
-<translation id="7903481341948453971">Utiliser le verrouillage de l'écran lors de la saisie des mots de passe</translation>
+<translation id="7903481341948453971">Utiliser le verrouillage de l'écran pour saisir les mots de passe</translation>
 <translation id="7903742244674067440">Certains de vos certificats enregistrés identifient ces autorités de certification.</translation>
 <translation id="7903925330883316394">Utilitaire : <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">Katakana</translation>
@@ -10389,6 +10395,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8524841856047224176">Personnalisez l'arrière-plan de votre caméra pour les appels vidéo et plus</translation>
 <translation id="8525306231823319788">Plein écran</translation>
 <translation id="8525461909394569609">Cette appli inclut du contenu Web provenant de</translation>
+<translation id="8526313996927074827">Insérez des liens, des emoji et plus. Vous pouvez aussi obtenir de l'aide de l'IA de Google pour rédiger des contenus.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Enceintes</translation>
 <translation id="8527257351549797148">Votre organisation peut exiger un enregistrement afin que vous puissiez accéder aux applis, extensions, etc. Cela lui permet aussi de gérer certains éléments, comme la sécurité et les paramètres de l'appareil.</translation>

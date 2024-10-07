@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">Samaran</translation>
 <translation id="1049795001945932310">&amp;Setelan bahasa</translation>
 <translation id="1050693411695664090">Buruk</translation>
+<translation id="1053898984916097744">Mulai hal baru atau dapatkan bantuan melakukan pekerjaan.</translation>
 <translation id="1054048317165655285">Selesaikan penyiapan di ponsel</translation>
 <translation id="1054153489933238809">Buka &amp;Gambar Asli di Tab Baru</translation>
 <translation id="1054187194995068149">Halo. Ini adalah pratinjau</translation>
@@ -1233,6 +1234,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1854049213067042715">Lanjutkan proses pemulihan sebelumnya. Anda dapat menyetel aplikasi agar selalu dipulihkan saat browser dimulai atau menonaktifkan pemulihan di Setelan.</translation>
 <translation id="1854180393107901205">Hentikan transmisi</translation>
 <translation id="1856715684130786728">+ lokasi...</translation>
+<translation id="185766080319917408">Tombol Peluncur terletak di sebelah kiri tombol alt kiri</translation>
 <translation id="1858585891038687145">Mempercayai sertifikat ini untuk mengidentifikasi pembuat software</translation>
 <translation id="1859294693760125695">Tidak tertarik lagi</translation>
 <translation id="1859339856433307593">Sandi untuk akun ini sudah disimpan ke <ph name="BRAND" /> (<ph name="USER_EMAIL" />) Anda</translation>
@@ -7392,6 +7394,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6341850831632289108">Mendeteksi lokasi fisik Anda</translation>
 <translation id="6342069812937806050">Baru saja</translation>
 <translation id="6343003829431264373">Hanya halaman genap</translation>
+<translation id="6343262564968371601">Temukan yang Anda cari dengan menelusuri Google, file, aplikasi, dan lainnya</translation>
 <translation id="6343981313228733146">Jendela dipindahkan ke atas dan ke kanan</translation>
 <translation id="6344170822609224263">Mengakses daftar koneksi jaringan</translation>
 <translation id="6344576354370880196">Printer tersimpan</translation>
@@ -7564,6 +7567,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6476482583633999078">Kecepatan ucapan</translation>
 <translation id="6476671549211161535">Tekan tombol yang bukan tombol mouse kiri atau kanan di <ph name="DEVICE_NAME" />.</translation>
 <translation id="6477822444490674459">Sinkronisasi notifikasi tidak didukung untuk ponsel dalam profil kerja. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">Tombol penyisipan cepat terletak di bawah tombol tab</translation>
 <translation id="6479881432656947268">Buka Chrome Web Store</translation>
 <translation id="6480327114083866287">Dikelola oleh <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Berbagi file dan lainnya dengan perangkat di sekitar. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
@@ -7927,6 +7931,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6749473226660745022">Foto</translation>
 <translation id="6750757184909117990">Nonaktifkan Jaringan Seluler</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Samaran)</translation>
+<translation id="6754918760968695779">Penyisipan Cepat</translation>
 <translation id="6756157672127672536">Aplikasi File memberikan akses cepat ke file yang telah Anda simpan di Google Drive, penyimpanan eksternal, atau perangkat ChromeOS.</translation>
 <translation id="6756643207511618722">Mesin ucapan</translation>
 <translation id="6757431299485455321">Bantu perangkat lain menemukan hotspot ini.</translation>
@@ -8121,6 +8126,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="686609795364435700">Senyap</translation>
 <translation id="686664946474413495">Suhu warna</translation>
 <translation id="6867086642466184030">Aplikasi lain disetel untuk membuka link yang sama dengan <ph name="APP_NAME" />. Penyetelan ini akan membuat <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" />, dan <ph name="NUMBER_OF_OTHER_APPS" /> aplikasi lainnya tidak dapat membuka link yang didukung.</translation>
+<translation id="6867671714894555998">Selesaikan berbagai hal dengan cepat menggunakan keyboard baru</translation>
 <translation id="6868206169573555318">Luncurkan Kembali untuk Mengupdate</translation>
 <translation id="686831807558000905">Jangan login</translation>
 <translation id="686839242150793617">Diizinkan masuk ke mode picture-in-picture secara otomatis</translation>
@@ -10401,6 +10407,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8524841856047224176">Personalisasi latar belakang kamera untuk panggilan video dan lainnya</translation>
 <translation id="8525306231823319788">Layar penuh</translation>
 <translation id="8525461909394569609">Aplikasi ini berisi konten web dari</translation>
+<translation id="8526313996927074827">Sisipkan link, emoji, dan lainnya. Anda juga bisa mendapatkan bantuan menulis dengan AI Google.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Speaker</translation>
 <translation id="8527257351549797148">Organisasi Anda mungkin memerlukan pendaftaran agar Anda dapat mengakses aplikasi, ekstensi, dan lainnya. Hal ini juga memungkinkan organisasi Anda mengelola hal-hal seperti setelan keamanan dan perangkat.</translation>
