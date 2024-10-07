@@ -9,10 +9,12 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/search_engines/reconciling_template_url_data_holder.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 
 namespace search_engines {
 class SearchEngineChoiceService;
@@ -28,7 +30,8 @@ struct TemplateURLData;
 
 // DefaultSearchManager handles the loading and writing of the user's default
 // search engine selection to and from prefs.
-class DefaultSearchManager {
+class DefaultSearchManager
+    : public search_engines::SearchEngineChoiceService::Observer {
  public:
   // A dictionary to hold all data related to the Default Search Engine.
   // Eventually, this should replace all the data stored in the
@@ -114,7 +117,7 @@ class DefaultSearchManager {
   DefaultSearchManager(const DefaultSearchManager&) = delete;
   DefaultSearchManager& operator=(const DefaultSearchManager&) = delete;
 
-  ~DefaultSearchManager();
+  ~DefaultSearchManager() override;
 
   // Register prefs needed for tracking the default search provider.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -169,6 +172,10 @@ class DefaultSearchManager {
   // Invokes MergePrefsDataWithPrepopulated().
   void LoadDefaultSearchEngineFromPrefs();
 
+  // Reads guest search provider, which was previously saved for future guest
+  // session. Updates |saved_guest_search_|.
+  void LoadSavedGuestSearch();
+
   // Reads pre-populated search providers, which will be built-in or overridden
   // by kSearchProviderOverrides. Updates |fallback_default_search_|. Invoke
   // MergePrefsDataWithPrepopulated().
@@ -177,12 +184,18 @@ class DefaultSearchManager {
   // Invokes |change_observer_| if it is not NULL.
   void NotifyObserver();
 
+  // search_engines::SearchEngineChoiceService::Observer
+  void OnSavedGuestSearchChanged() override;
+
   const raw_ptr<PrefService> pref_service_;
   const raw_ptr<search_engines::SearchEngineChoiceService>
       search_engine_choice_service_ = nullptr;
 
   const ObserverCallback change_observer_;
   PrefChangeRegistrar pref_change_registrar_;
+  base::ScopedObservation<search_engines::SearchEngineChoiceService,
+                          search_engines::SearchEngineChoiceService::Observer>
+      search_engine_choice_service_observation_{this};
 
   // Default search engine provided by pre-populated data or by the
   // |kSearchProviderOverrides| pref. This will be used when no other default
@@ -197,6 +210,10 @@ class DefaultSearchManager {
   // Default search engine provided by prefs (either user prefs or policy
   // prefs). This will be null if no value was set in the pref store.
   ReconcilingTemplateURLDataHolder prefs_default_search_;
+
+  // Default search engine provided by previous SearchEngineChoice in guest
+  // mode.
+  std::unique_ptr<TemplateURLData> saved_guest_search_;
 
   // True if the default search is currently enforced by policy.
   bool default_search_mandatory_by_policy_ = false;

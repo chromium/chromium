@@ -521,7 +521,9 @@ void ApplyActionsFromCurrentData(
     auto j = FindTemplateURL(template_urls, removed_engine);
     CHECK(j != template_urls->end(), base::NotFatalUntil::M130);
     DCHECK(!default_search_provider ||
-           (*j)->prepopulate_id() != default_search_provider->prepopulate_id());
+           (*j)->prepopulate_id() !=
+               default_search_provider->prepopulate_id() ||
+           (*j)->keyword() != default_search_provider->keyword());
     std::unique_ptr<TemplateURL> template_url = std::move(*j);
     template_urls->erase(j);
     if (service) {

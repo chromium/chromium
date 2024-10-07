@@ -198,7 +198,7 @@ void SearchEngineChoiceDialogService::NotifyChoiceMade(
     if (search_engine_choice_service_
             ->IsProfileEligibleForDseGuestPropagation() &&
         save_guest_mode_selection) {
-      search_engine_choice_service_->PropagateSearchEngineBetweenGuestSessions(
+      search_engine_choice_service_->SetSavedSearchEngineBetweenGuestSessions(
           prepopulate_id);
     }
     template_url_service_->SetUserSelectedDefaultSearchProvider(
@@ -336,9 +336,8 @@ SearchEngineChoiceDialogService::ComputeDialogConditions(
         kAlreadyCompleted;
   }
 
-  if (search_engine_choice_service_
-          ->IsProfileEligibleForDseGuestPropagation() &&
-      search_engine_choice_service_->ShouldPropagateDseBetweenGuestSessions()) {
+  if (search_engine_choice_service_->GetSavedSearchEngineBetweenGuestSessions()
+          .has_value()) {
     return search_engines::SearchEngineChoiceScreenConditions::
         kUsingPersistedGuestSessionChoice;
   }

@@ -24,8 +24,9 @@ std::unique_ptr<KeyedService> BuildSearchEngineChoiceService(
     content::BrowserContext* context) {
   Profile& profile = CHECK_DEREF(Profile::FromBrowserContext(context));
 
+  bool is_profile_elibile_for_dse_guest_propagation = false;
 #if !BUILDFLAG(IS_ANDROID)
-  const bool is_profile_elibile_for_dse_guest_propagation =
+  is_profile_elibile_for_dse_guest_propagation =
       base::FeatureList::IsEnabled(
           switches::kSearchEngineChoiceGuestExperience) &&
 #if BUILDFLAG(IS_CHROMEOS)
@@ -36,9 +37,7 @@ std::unique_ptr<KeyedService> BuildSearchEngineChoiceService(
 
   return std::make_unique<SearchEngineChoiceService>(
       CHECK_DEREF(profile.GetPrefs()), g_browser_process->local_state(),
-#if !BUILDFLAG(IS_ANDROID)
       is_profile_elibile_for_dse_guest_propagation,
-#endif
       g_browser_process->variations_service());
 }
 }  // namespace

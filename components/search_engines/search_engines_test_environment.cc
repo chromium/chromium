@@ -39,10 +39,8 @@ SearchEnginesTestEnvironment::SearchEnginesTestEnvironment(const Deps& deps) {
 
   search_engine_choice_service_ = std::make_unique<SearchEngineChoiceService>(
       *pref_service_, local_state_
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
       ,
       /*is_profile_eligible_for_dse_guest_propagation=*/false
-#endif
   );
 
   template_url_service_ = std::make_unique<TemplateURLService>(

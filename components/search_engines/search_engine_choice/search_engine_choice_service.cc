@@ -172,17 +172,21 @@ using NativeCallbackType = base::OnceCallback<void(int)>;
 SearchEngineChoiceService::SearchEngineChoiceService(
     PrefService& profile_prefs,
     PrefService* local_state,
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
     bool is_profile_eligbile_for_dse_guest_propagation,
-#endif
     int variations_country_id)
     : profile_prefs_(profile_prefs),
       local_state_(local_state),
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-      is_profile_eligible_for_dse_guest_propagation_(
-          is_profile_eligbile_for_dse_guest_propagation),
-#endif
       variations_country_id_(variations_country_id) {
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+  // No guest mode on IOS or Android.
+  CHECK(!is_profile_eligible_for_dse_guest_propagation_);
+#endif
+  is_profile_eligible_for_dse_guest_propagation_ =
+      is_profile_eligbile_for_dse_guest_propagation &&
+      base::FeatureList::IsEnabled(
+          switches::kSearchEngineChoiceGuestExperience) &&
+      IsEeaChoiceCountry(GetCountryId());
+
   ProcessPendingChoiceScreenDisplayState();
   PreprocessPrefsForReprompt();
 }
@@ -190,15 +194,11 @@ SearchEngineChoiceService::SearchEngineChoiceService(
 SearchEngineChoiceService::SearchEngineChoiceService(
     PrefService& profile_prefs,
     PrefService* local_state,
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
     bool is_profile_eligible_for_dse_guest_propagation,
-#endif
     variations::VariationsService* variations_service)
     : SearchEngineChoiceService(profile_prefs,
                                 local_state,
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
                                 is_profile_eligible_for_dse_guest_propagation,
-#endif
 #if BUILDFLAG(IS_FUCHSIA)
                                 // We can't add a dependency from Fuchsia to
                                 // `//components/variations/service`.
@@ -663,34 +663,46 @@ void SearchEngineChoiceService::ClearCountryIdCacheForTesting() {
   country_id_cache_.reset();
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 bool SearchEngineChoiceService::IsProfileEligibleForDseGuestPropagation()
     const {
-  return base::FeatureList::IsEnabled(
-             switches::kSearchEngineChoiceGuestExperience) &&
-         is_profile_eligible_for_dse_guest_propagation_;
+  return is_profile_eligible_for_dse_guest_propagation_;
 }
 
-bool SearchEngineChoiceService::ShouldPropagateDseBetweenGuestSessions() const {
-  return base::FeatureList::IsEnabled(
-             switches::kSearchEngineChoiceGuestExperience) &&
-         local_state_->HasPrefPath(
-             prefs::kDefaultSearchProviderGuestModePrepopulatedId);
+std::optional<int>
+SearchEngineChoiceService::GetSavedSearchEngineBetweenGuestSessions() const {
+  if (!IsProfileEligibleForDseGuestPropagation()) {
+    return std::nullopt;
+  }
+  if (local_state_->HasPrefPath(
+          prefs::kDefaultSearchProviderGuestModePrepopulatedId)) {
+    return local_state_->GetInt64(
+        prefs::kDefaultSearchProviderGuestModePrepopulatedId);
+  } else {
+    return std::nullopt;
+  }
 }
 
-void SearchEngineChoiceService::PropagateSearchEngineBetweenGuestSessions(
-    int prepopulated_id) {
-  CHECK(prepopulated_id > 0 &&
-        prepopulated_id <=
-            TemplateURLPrepopulateData::kMaxPrepopulatedEngineID);
-  if (!base::FeatureList::IsEnabled(
-          switches::kSearchEngineChoiceGuestExperience)) {
+void SearchEngineChoiceService::SetSavedSearchEngineBetweenGuestSessions(
+    std::optional<int> prepopulated_id) {
+  CHECK(!prepopulated_id.has_value() ||
+        (prepopulated_id > 0 &&
+         prepopulated_id <=
+             TemplateURLPrepopulateData::kMaxPrepopulatedEngineID));
+  CHECK(IsProfileEligibleForDseGuestPropagation());
+
+  if (prepopulated_id == GetSavedSearchEngineBetweenGuestSessions()) {
     return;
   }
-  local_state_->SetInt64(prefs::kDefaultSearchProviderGuestModePrepopulatedId,
-                         prepopulated_id);
+
+  if (prepopulated_id.has_value()) {
+    local_state_->SetInt64(prefs::kDefaultSearchProviderGuestModePrepopulatedId,
+                           *prepopulated_id);
+  } else {
+    local_state_->ClearPref(
+        prefs::kDefaultSearchProviderGuestModePrepopulatedId);
+  }
+  observers_.Notify(&Observer::OnSavedGuestSearchChanged);
 }
-#endif
 
 #if BUILDFLAG(IS_ANDROID)
 void SearchEngineChoiceService::ProcessGetCountryResponseFromPlayApi(

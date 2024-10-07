@@ -45,6 +45,7 @@ SearchEngineChoiceServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<search_engines::SearchEngineChoiceService>(
       CHECK_DEREF(profile->GetPrefs()),
       GetApplicationContext()->GetLocalState(),
+      /*is_profile_elibile_for_dse_guest_propagation=*/false,
       GetApplicationContext()->GetVariationsService());
 }
 

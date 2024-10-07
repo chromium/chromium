@@ -97,6 +97,7 @@ DefaultSearchManager::DefaultSearchManager(
     : pref_service_(pref_service),
       search_engine_choice_service_(search_engine_choice_service),
       change_observer_(change_observer),
+      search_engine_choice_service_observation_(this),
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
       for_lacros_main_profile_(for_lacros_main_profile),
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -113,6 +114,15 @@ DefaultSearchManager::DefaultSearchManager(
                             base::Unretained(this)));
   }
   LoadPrepopulatedFallbackSearch();
+  if (search_engine_choice_service->IsProfileEligibleForDseGuestPropagation()) {
+    // Observe the SearchEngineChoiceService because the saved DSE can change
+    // during a Guest session and we need to restore it for the next session.
+    // TODO(crbug.com: 369959287): This is not needed if we destroy the guest
+    // profile.
+    search_engine_choice_service_observation_.Observe(
+        search_engine_choice_service);
+    LoadSavedGuestSearch();
+  }
   LoadDefaultSearchEngineFromPrefs();
 }
 
@@ -203,8 +213,13 @@ DefaultSearchManager::GetDefaultSearchEngineSource() const {
 }
 
 const TemplateURLData* DefaultSearchManager::GetFallbackSearchEngine() const {
-  return g_fallback_search_engines_disabled ? nullptr
-                                            : fallback_default_search_.get();
+  if (g_fallback_search_engines_disabled) {
+    return nullptr;
+  }
+  if (saved_guest_search_) {
+    return saved_guest_search_.get();
+  }
+  return fallback_default_search_.get();
 }
 
 void DefaultSearchManager::SetUserSelectedDefaultSearchEngine(
@@ -274,6 +289,17 @@ void DefaultSearchManager::OnOverridesPrefChanged() {
   }
 }
 
+void DefaultSearchManager::OnSavedGuestSearchChanged() {
+  LoadSavedGuestSearch();
+
+  const TemplateURLData* effective_data = GetDefaultSearchEngine(nullptr);
+  if (effective_data && effective_data->prepopulate_id) {
+    // A user-selected, policy-selected or fallback pre-populated engine is
+    // active and may have changed with this event.
+    NotifyObserver();
+  }
+}
+
 void DefaultSearchManager::LoadDefaultSearchEngineFromPrefs() {
   if (!pref_service_)
     return;
@@ -306,6 +332,18 @@ void DefaultSearchManager::LoadDefaultSearchEngineFromPrefs() {
     extension_default_search_ = std::move(turl_data);
   } else {
     prefs_default_search_.SetAndReconcile(std::move(turl_data));
+  }
+}
+
+void DefaultSearchManager::LoadSavedGuestSearch() {
+  std::optional<int> prepopulate_id =
+      search_engine_choice_service_->GetSavedSearchEngineBetweenGuestSessions();
+  if (prepopulate_id.has_value()) {
+    saved_guest_search_ =
+        TemplateURLPrepopulateData::GetPrepopulatedEngineFromFullList(
+            &*pref_service_, &*search_engine_choice_service_, *prepopulate_id);
+  } else {
+    saved_guest_search_.reset();
   }
 }
 

@@ -715,6 +715,56 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
+                       SearchEngineIsSavedBetweenGuestSessionsWithoutRestart) {
+  // Initial browser
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+
+  Browser* first_guest_session = CreateGuestBrowserAndLoadNTP();
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
+
+  auto* first_service = static_cast<MockSearchEngineChoiceDialogService*>(
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(
+          first_guest_session->profile()));
+
+  EXPECT_TRUE(first_service->IsShowingDialog(*first_guest_session));
+
+  // Complete the choice for the first guest profile.
+  first_service->NotifyChoiceMade(
+      TemplateURLPrepopulateData::bing.id, /*save_guest_mode_selection=*/true,
+      SearchEngineChoiceDialogService::EntryPoint::kDialog);
+  EXPECT_FALSE(first_service->IsShowingDialog(*first_guest_session));
+  EXPECT_EQ(
+      TemplateURLServiceFactory::GetForProfile(first_guest_session->profile())
+          ->GetDefaultSearchProvider()
+          ->data()
+          .prepopulate_id,
+      TemplateURLPrepopulateData::bing.id);
+
+  CloseBrowserSynchronously(first_guest_session);
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+
+  Browser* second_guest_session = CreateGuestBrowserAndLoadNTP();
+  auto* second_service = static_cast<MockSearchEngineChoiceDialogService*>(
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(
+          second_guest_session->profile()));
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
+
+  // The second guest profile still needs to choose again
+  EXPECT_FALSE(second_service->IsShowingDialog(*second_guest_session));
+  EXPECT_EQ(
+      TemplateURLServiceFactory::GetForProfile(second_guest_session->profile())
+          ->GetDefaultSearchProvider()
+          ->data()
+          .prepopulate_id,
+      TemplateURLPrepopulateData::bing.id);
+
+  CheckNavigationConditionRecorded(
+      search_engines::SearchEngineChoiceScreenConditions::
+          kUsingPersistedGuestSessionChoice,
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
                        PRE_SearchEngineIsSavedBetweenGuestSessionsIfNeeded) {
   // Initial browser
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
@@ -731,6 +781,11 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
       TemplateURLPrepopulateData::bing.id, /*save_guest_mode_selection=*/true,
       SearchEngineChoiceDialogService::EntryPoint::kDialog);
   EXPECT_FALSE(first_service->IsShowingDialog(*guest_session));
+  EXPECT_EQ(TemplateURLServiceFactory::GetForProfile(guest_session->profile())
+                ->GetDefaultSearchProvider()
+                ->data()
+                .prepopulate_id,
+            TemplateURLPrepopulateData::bing.id);
 
   CloseBrowserSynchronously(guest_session);
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
@@ -757,6 +812,11 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
   EXPECT_FALSE(second_service->IsShowingDialog(*guest_session));
   EXPECT_EQ(g_browser_process->local_state()->GetInt64(
                 prefs::kDefaultSearchProviderGuestModePrepopulatedId),
+            TemplateURLPrepopulateData::bing.id);
+  EXPECT_EQ(TemplateURLServiceFactory::GetForProfile(guest_session->profile())
+                ->GetDefaultSearchProvider()
+                ->data()
+                .prepopulate_id,
             TemplateURLPrepopulateData::bing.id);
   CheckNavigationConditionRecorded(
       search_engines::SearchEngineChoiceScreenConditions::
