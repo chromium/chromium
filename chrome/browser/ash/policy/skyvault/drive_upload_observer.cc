@@ -7,6 +7,7 @@
 #include "chrome/browser/ash/file_manager/delete_io_task.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/policy/skyvault/histogram_helper.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -121,6 +122,7 @@ void DriveUploadObserver::OnEndUpload(bool success) {
     no_sync_update_timeout_.Reset();
   }
 
+  // TODO(b/343879839): Error UMA.
   // If the file sync to to Drive was unsuccessful, delete the file from the
   // Local cache.
   if (!success) {
@@ -213,6 +215,16 @@ void DriveUploadObserver::OnIOTaskStatus(
     const ::file_manager::io_task::ProgressStatus& status) {
   if (status.task_id != observed_delete_task_id_) {
     return;
+  }
+
+  // Only log in case of final state.
+  if (status.state == file_manager::io_task::State::kError) {
+    policy::local_user_files::SkyVaultDeleteErrorHistogram(
+        trigger_, policy::local_user_files::CloudProvider::kGoogleDrive, true);
+  }
+  if (status.state == file_manager::io_task::State::kSuccess) {
+    policy::local_user_files::SkyVaultDeleteErrorHistogram(
+        trigger_, policy::local_user_files::CloudProvider::kGoogleDrive, false);
   }
 
   switch (status.state) {

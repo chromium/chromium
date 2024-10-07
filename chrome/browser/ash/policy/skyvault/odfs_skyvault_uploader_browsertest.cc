@@ -6,6 +6,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
@@ -45,6 +46,7 @@ class OdfsSkyvaultUploaderTest : public SkyvaultOneDriveTest {
 
  protected:
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
+  base::HistogramTester histogram_tester_;
 
   // Used to observe skyvault notifications during tests.
   base::RepeatingCallback<void(const message_center::Notification&)>
@@ -192,6 +194,11 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest,
 
   // Check that the source file has been moved to OneDrive.
   CheckPathExistsOnODFS(base::FilePath("/").AppendASCII(test_file_name));
+
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Download.OneDrive.SignInError", false, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Download.OneDrive.SignInError", true, 0);
 }
 
 // Test that when the OneDrive file system isn't mounted, the sign-in required
@@ -229,6 +236,11 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest,
   EXPECT_EQ(upload_callback.Get<bool>(), false);
   ASSERT_FALSE(
       display_service_tester_->GetNotification(notification_id).has_value());
+
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Download.OneDrive.SignInError", false, 0);
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Download.OneDrive.SignInError", true, 1);
 }
 
 }  // namespace ash::cloud_upload

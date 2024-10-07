@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/policy/skyvault/histogram_helper.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/common/chrome_features.h"
@@ -217,6 +218,10 @@ void DriveSkyvaultUploader::OnEndCopy(
 
 void DriveSkyvaultUploader::OnEndUpload() {
   observed_relative_drive_path_.clear();
+  // TODO(b/343879839): Error UMA.
+  SkyVaultDeleteErrorHistogram(UploadTrigger::kMigration,
+                               CloudProvider::kGoogleDrive,
+                               error_ == MigrationUploadError::kDeleteFailed);
   std::move(callback_).Run(error_);
 }
 

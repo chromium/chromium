@@ -14,6 +14,8 @@ static_library("skyvault") {
     "drive_upload_observer.h",
     "file_location_utils.cc",
     "file_location_utils.h",
+    "histogram_helper.cc",
+    "histogram_helper.h",
     "local_files_cleanup.cc",
     "local_files_cleanup.h",
     "local_files_migration_constants.h",

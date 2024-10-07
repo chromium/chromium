@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -65,6 +66,7 @@ class DriveSkyvaultUploaderTest : public SkyvaultGoogleDriveTest {
   }
 
  protected:
+  base::HistogramTester histogram_tester_;
   bool add_metadata_ = true;
   bool fail_sync_ = false;
   // Overrides `fail_sync_`
@@ -144,8 +146,6 @@ class DriveSkyvaultUploaderTest : public SkyvaultGoogleDriveTest {
     drivefs_delegate()->OnSyncingStatusUpdate(fail_status->Clone());
     drivefs_delegate().FlushForTesting();
   }
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, SuccessfulUpload) {
@@ -176,6 +176,11 @@ IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, SuccessfulUpload) {
     CheckPathExistsOnDrive(
         observed_relative_drive_path(source_files_.find(source_file)->second));
   }
+
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Migration.GoogleDrive.DeleteError", false, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Migration.GoogleDrive.DeleteError", true, 0);
 }
 
 // Test that when the sync to Drive fails, the file is not moved to Drive.
@@ -206,6 +211,11 @@ IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, FailedUpload) {
     CheckPathNotFoundOnDrive(
         observed_relative_drive_path(source_files_.find(source_file)->second));
   }
+
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Migration.GoogleDrive.DeleteError", false, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Migration.GoogleDrive.DeleteError", true, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, FailedDelete) {
@@ -235,6 +245,11 @@ IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, FailedDelete) {
     CheckPathExistsOnDrive(
         observed_relative_drive_path(source_files_.find(source_file)->second));
   }
+
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Migration.GoogleDrive.DeleteError", false, 0);
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Migration.GoogleDrive.DeleteError", true, 1);
 }
 
 // Test that when connection to Drive isn't available, the upload fails

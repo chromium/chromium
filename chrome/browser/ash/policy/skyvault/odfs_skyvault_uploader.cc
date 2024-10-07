@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/policy/skyvault/histogram_helper.h"
 #include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
 #include "chrome/browser/ash/policy/skyvault/signin_notification_helper.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
@@ -194,6 +195,7 @@ void OdfsSkyvaultUploader::Run(UploadDoneCallback upload_callback) {
 void OdfsSkyvaultUploader::OnEndUpload(
     storage::FileSystemURL url,
     std::optional<MigrationUploadError> error) {
+  // TODO(b/343879839): Error UMA.
   if (upload_callback_) {
     std::move(upload_callback_).Run(std::move(url), error);
   }
@@ -271,7 +273,11 @@ void OdfsSkyvaultUploader::OnMountResponse(base::File::Error result) {
     return;
   }
 
-  if (result != base::File::Error::FILE_OK) {
+  const bool sign_in_error = result != base::File::Error::FILE_OK;
+  policy::local_user_files::SkyVaultOneDriveSignInErrorHistogram(trigger_,
+                                                                 sign_in_error);
+
+  if (sign_in_error) {
     LOG(ERROR) << "Failed to mount ODFS: " << result;
     OnEndUpload(/*url=*/{}, MigrationUploadError::kServiceUnavailable);
     return;

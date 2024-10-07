@@ -124,6 +124,17 @@ chromium-metrics-reviews@google.com.
   <variant name=".UserArcCommand" summary="ARC command"/>
 </variants>
 
+<variants name="Enterprise_SkyVaultAction">
+  <variant name="Download" summary="download"/>
+  <variant name="Migration" summary="migration"/>
+  <variant name="ScreenCapture" summary="screen capture"/>
+</variants>
+
+<variants name="Enterprise_SkyVaultCloudProvider">
+  <variant name="GoogleDrive" summary="Google Drive"/>
+  <variant name="OneDrive" summary="Microsoft OneDrive"/>
+</variants>
+
 <variants name="Enterprise_UserSessionType">
   <variant name="AffiliatedUserSession"
       summary="The local user is affiliated to the organization."/>
@@ -2997,6 +3008,29 @@ chromium-metrics-reviews@google.com.
     This is recorded when a user account is added as a secondary account
     (in-session).
   </summary>
+</histogram>
+
+<histogram name="Enterprise.SkyVault.{Action}.DeleteError" enum="Boolean"
+    expires_after="2025-10-01">
+  <owner>aidazolic@google.com</owner>
+  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
+  <summary>
+    Recorded when deleting the local file fails following a successful copy to
+    the cloud storage.
+  </summary>
+  <token key="Action" variants="Enterprise_SkyVaultAction"/>
+</histogram>
+
+<histogram name="Enterprise.SkyVault.{Action}.OneDrive.SignInError"
+    enum="Boolean" expires_after="2025-10-01">
+  <owner>aidazolic@google.com</owner>
+  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
+  <summary>
+    Recorded when sign in to OneDrive, required to complete file upload
+    initiated by {Action}, fails. Note that this also captures sign-in requests
+    cancelled by the user.
+  </summary>
+  <token key="Action" variants="Enterprise_SkyVaultAction"/>
 </histogram>
 
 <histogram name="Enterprise.StateDetermination.DeviceIdentifierStatus"
