@@ -1001,7 +1001,8 @@ bool PictureInPictureBrowserFrameView::ShowPageInfoDialog() {
           location_icon_view_, gfx::Rect(), GetWidget()->GetNativeWindow(),
           contents, contents->GetLastCommittedURL(),
           /*initialized_callback=*/base::DoNothing(),
-          /*closing_callback=*/base::DoNothing());
+          /*closing_callback=*/base::DoNothing(),
+          /*allow_about_this_site=*/false);
   bubble->SetHighlightedButton(location_icon_view_);
   bubble->GetWidget()->Show();
 

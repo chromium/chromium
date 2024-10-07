@@ -118,17 +118,19 @@ PageInfoViewFactory::PageInfoViewFactory(
     PageInfo* presenter,
     ChromePageInfoUiDelegate* ui_delegate,
     PageInfoNavigationHandler* navigation_handler,
-    PageInfoHistoryController* history_controller)
+    PageInfoHistoryController* history_controller,
+    bool allow_about_this_site)
     : presenter_(presenter),
       ui_delegate_(ui_delegate),
       navigation_handler_(navigation_handler),
-      history_controller_(history_controller) {}
+      history_controller_(history_controller),
+      allow_about_this_site_(allow_about_this_site) {}
 
 std::unique_ptr<views::View> PageInfoViewFactory::CreateMainPageView(
     base::OnceClosure initialized_callback) {
   return std::make_unique<PageInfoMainView>(
       presenter_, ui_delegate_, navigation_handler_, history_controller_,
-      std::move(initialized_callback));
+      std::move(initialized_callback), allow_about_this_site_);
 }
 
 std::unique_ptr<views::View> PageInfoViewFactory::CreateSecurityPageView() {
