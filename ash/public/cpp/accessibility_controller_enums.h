@@ -260,6 +260,7 @@ enum class FaceGazeNotificationType {
 enum class AccessibilityToastType {
   kDictationMicMuted,
   kDictationNoFocusedTextField,
+  kTrackpadDisabled,
 };
 
 // Dominant hand for mouse keys.  This determines which keys to use for the

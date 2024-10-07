@@ -27548,6 +27548,7 @@ Called by update_net_error_codes.py.-->
   <int value="185" label="Face Gaze Assets Failed"/>
   <int value="186" label="Device Restriction Schedule Upcoming Logout"/>
   <int value="187" label="Device Restriction Schedule Post Logout"/>
+  <int value="188" label="Disable Internal Trackpad"/>
 </enum>
 
 <enum name="NQEObservationSource">

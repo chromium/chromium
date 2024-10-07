@@ -204,7 +204,8 @@ enum class NotificationCatalogName {
   kFaceGazeAssetsFailed = 185,
   kDeviceRestrictionScheduleUpcomingLogout = 186,
   kDeviceRestrictionSchedulePostLogout = 187,
-  kMaxValue = kDeviceRestrictionSchedulePostLogout
+  kTrackpadDisabled = 188,
+  kMaxValue = kTrackpadDisabled
 };
 
 // A living catalog that registers system nudges.
@@ -314,7 +315,8 @@ enum class ToastCatalogName {
   kAppNotClosable = 49,
   kGameDashboardEnterTablet = 50,
   kInformedRestoreOnboarding = 51,
-  kMaxValue = kInformedRestoreOnboarding
+  kTrackpadDisabled = 52,
+  kMaxValue = kTrackpadDisabled
 };
 
 }  // namespace ash

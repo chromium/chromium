@@ -430,6 +430,7 @@ void CopySigninPrefsIfNeeded(PrefService* previous_pref_service,
 const gfx::VectorIcon& GetNotificationIcon(A11yNotificationType type) {
   switch (type) {
     case A11yNotificationType::kSpokenFeedbackBrailleEnabled:
+    case A11yNotificationType::kTrackpadDisabled:
       return kNotificationAccessibilityIcon;
     case A11yNotificationType::kBrailleDisplayConnected:
       return kNotificationAccessibilityBrailleIcon;
@@ -464,6 +465,15 @@ void ShowAccessibilityNotification(
   bool pinned = true;
   message_center::SystemNotificationWarningLevel warning =
       message_center::SystemNotificationWarningLevel::NORMAL;
+
+  message_center::RichNotificationData options;
+  scoped_refptr<message_center::NotificationDelegate> delegate;
+
+  if (wrapper.callback.has_value()) {
+    delegate =
+        base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+            wrapper.callback.value());
+  }
 
   if (type == A11yNotificationType::kBrailleDisplayConnected) {
     title = l10n_util::GetStringUTF16(
@@ -537,6 +547,16 @@ void ShowAccessibilityNotification(
         IDS_ASH_STATUS_TRAY_SWITCH_ACCESS_ENABLED_TITLE);
     text = l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SWITCH_ACCESS_ENABLED);
     catalog_name = NotificationCatalogName::kSwitchAccessEnabled;
+  } else if (type == A11yNotificationType::kTrackpadDisabled) {
+    title =
+        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_TRACKPAD_DISABLED_TITLE);
+    text = l10n_util::GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_TRACKPAD_DISABLED_DESCRIPTION);
+    catalog_name = NotificationCatalogName::kTrackpadDisabled;
+    options.pinned = true;
+    options.buttons.emplace_back(l10n_util::GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_TRACKPAD_DISABLED_TURN_ON));
+
   } else {
     bool is_tablet = display::Screen::GetScreen()->InTabletMode();
 
@@ -552,7 +572,6 @@ void ShowAccessibilityNotification(
                        : NotificationCatalogName::kSpokenFeedbackEnabled;
   }
 
-  message_center::RichNotificationData options;
   options.should_make_spoken_feedback_for_popup_updates = false;
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotificationPtr(
@@ -561,7 +580,7 @@ void ShowAccessibilityNotification(
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kNotifierAccessibility, catalog_name),
-          options, nullptr, GetNotificationIcon(type), warning);
+          options, delegate, GetNotificationIcon(type), warning);
   notification->set_pinned(pinned);
   message_center->AddNotification(std::move(notification));
 }
@@ -1860,6 +1879,15 @@ void AccessibilityController::RequestSelectToSpeakStateChange() {
   client_->RequestSelectToSpeakStateChange();
 }
 
+void AccessibilityController::OnTrackpadNotificationClicked(
+    std::optional<int> button_index) {
+  if (!button_index) {
+    return;
+  }
+
+  EnableInternalTrackpad();
+}
+
 void AccessibilityController::RecordSelectToSpeakSpeechDuration(
     SelectToSpeakState old_state,
     SelectToSpeakState new_state) {
@@ -2926,6 +2954,7 @@ void AccessibilityController::DisableTrackpadWithDialog() {
       break;
 
     case DisableTrackpadMode::kNever:
+      ShowToast(AccessibilityToastType::kTrackpadDisabled);
       disable_trackpad_event_rewriter_->SetEnabled(false);
       break;
   }
@@ -2984,6 +3013,11 @@ void AccessibilityController::ShowDisableTrackpadDialog() {
 
 void AccessibilityController::OnDisableTrackpadDialogAccepted() {
   confirmation_dialog_.reset();
+  ShowAccessibilityNotification(A11yNotificationWrapper(
+      A11yNotificationType::kTrackpadDisabled, std::vector<std::u16string>(),
+      base::BindRepeating(
+          &AccessibilityController::OnTrackpadNotificationClicked,
+          GetWeakPtr())));
 }
 
 void AccessibilityController::OnDisableTrackpadDialogDismissed() {
@@ -3497,6 +3531,14 @@ AccessibilityController::A11yNotificationWrapper::A11yNotificationWrapper(
     A11yNotificationType type_in,
     std::vector<std::u16string> replacements_in)
     : type(type_in), replacements(replacements_in) {}
+AccessibilityController::A11yNotificationWrapper::A11yNotificationWrapper(
+    A11yNotificationType type_in,
+    std::vector<std::u16string> replacements_in,
+    std::optional<base::RepeatingCallback<void(std::optional<int>)>>
+        callback_in)
+    : type(type_in),
+      replacements(replacements_in),
+      callback(std::move(callback_in)) {}
 AccessibilityController::A11yNotificationWrapper::~A11yNotificationWrapper() =
     default;
 AccessibilityController::A11yNotificationWrapper::A11yNotificationWrapper(

@@ -29,6 +29,7 @@
 #include "ash/session/test_pref_service_provider.h"
 #include "ash/shell.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
+#include "ash/system/toast/toast_manager_impl.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
@@ -2482,6 +2483,73 @@ TEST_F(AccessibilityControllerDisableTrackpadTest,
 
   ASSERT_EQ(nullptr, controller()->GetConfirmationDialogForTest());
   ASSERT_FALSE(disable_trackpad_event_rewriter()->IsEnabled());
+}
+
+TEST_F(AccessibilityControllerDisableTrackpadTest,
+       ShowNotificationWhenDialogAccepted) {
+  message_center::NotificationList::Notifications notifications =
+      MessageCenter::Get()->GetVisibleNotifications();
+
+  ASSERT_EQ(0u, notifications.size());
+
+  SimulateOnlyInternalTrackpadConnected();
+  prefs()->SetInteger(prefs::kAccessibilityDisableTrackpadMode,
+                      static_cast<int>(DisableTrackpadMode::kAlways));
+
+  ASSERT_NE(nullptr, controller()->GetConfirmationDialogForTest());
+  ASSERT_TRUE(disable_trackpad_event_rewriter()->IsEnabled());
+
+  controller()->AcceptDisableTrackpadDialogForTesting();
+  ASSERT_TRUE(disable_trackpad_event_rewriter()->IsEnabled());
+
+  const std::u16string kTouchpadDisabled = u"Built-in touchpad is disabled";
+  const std::u16string kPressEscape = u"Esc 5 times";
+
+  notifications = MessageCenter::Get()->GetVisibleNotifications();
+
+  ASSERT_EQ(1u, notifications.size());
+  EXPECT_EQ(kTouchpadDisabled, (*notifications.begin())->title());
+  EXPECT_EQ(kPressEscape, (*notifications.begin())->message());
+}
+
+TEST_F(AccessibilityControllerDisableTrackpadTest,
+       NoNotificationWhenDialogRejected) {
+  prefs()->SetInteger(prefs::kAccessibilityDisableTrackpadMode,
+                      static_cast<int>(DisableTrackpadMode::kAlways));
+
+  ASSERT_NE(nullptr, controller()->GetConfirmationDialogForTest());
+  ASSERT_TRUE(disable_trackpad_event_rewriter()->IsEnabled());
+
+  controller()->DismissDisableTrackpadDialogForTesting();
+  ASSERT_FALSE(disable_trackpad_event_rewriter()->IsEnabled());
+
+  message_center::NotificationList::Notifications notifications =
+      MessageCenter::Get()->GetVisibleNotifications();
+  ASSERT_EQ(0u, notifications.size());
+}
+
+TEST_F(AccessibilityControllerDisableTrackpadTest,
+       ToastShowsWhenPrefIsSwitchedToNeverMode) {
+  // Default kNever mode should not show a toast.
+  ASSERT_EQ(static_cast<int>(DisableTrackpadMode::kNever),
+            prefs()->GetInteger(prefs::kAccessibilityDisableTrackpadMode));
+
+  auto* toast_manager = Shell::Get()->toast_manager();
+  ASSERT_FALSE(toast_manager->IsToastShown("AccessibilityToast"));
+
+  // Switch the mode to kAlways, then back to kNever.
+  prefs()->SetInteger(prefs::kAccessibilityDisableTrackpadMode,
+                      static_cast<int>(DisableTrackpadMode::kAlways));
+
+  ASSERT_NE(nullptr, controller()->GetConfirmationDialogForTest());
+  ASSERT_TRUE(disable_trackpad_event_rewriter()->IsEnabled());
+  ASSERT_FALSE(toast_manager->IsToastShown("AccessibilityToast"));
+
+  controller()->DismissDisableTrackpadDialogForTesting();
+  ASSERT_FALSE(disable_trackpad_event_rewriter()->IsEnabled());
+
+  ASSERT_EQ(nullptr, controller()->GetConfirmationDialogForTest());
+  ASSERT_TRUE(toast_manager->IsToastShown("AccessibilityToast"));
 }
 
 TEST_F(AccessibilityControllerDisableTrackpadTest,

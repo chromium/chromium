@@ -109,6 +109,8 @@ enum class A11yNotificationType {
   kSpokenFeedbackBrailleEnabled,
   // Shown when Switch Access is enabled.
   kSwitchAccessEnabled,
+  // Shown when the internal trackpad is disabled.
+  kTrackpadDisabled,
 };
 
 // The controller for accessibility features in ash. Features can be enabled
@@ -212,11 +214,17 @@ class ASH_EXPORT AccessibilityController
     A11yNotificationWrapper();
     A11yNotificationWrapper(A11yNotificationType type_in,
                             std::vector<std::u16string> replacements_in);
+    A11yNotificationWrapper(
+        A11yNotificationType type_in,
+        std::vector<std::u16string> replacements_in,
+        std::optional<base::RepeatingCallback<void(std::optional<int>)>>
+            callback_in);
     ~A11yNotificationWrapper();
     A11yNotificationWrapper(const A11yNotificationWrapper&);
 
     A11yNotificationType type = A11yNotificationType::kNone;
     std::vector<std::u16string> replacements;
+    std::optional<base::RepeatingCallback<void(std::optional<int>)>> callback;
   };
 
   static AccessibilityController* Get();
@@ -352,6 +360,8 @@ class ASH_EXPORT AccessibilityController
 
   bool IsReducedAnimationsSettingVisibleInTray();
   bool IsEnterpriseIconVisibleForReducedAnimations();
+
+  void OnTrackpadNotificationClicked(std::optional<int> button_index);
 
   // Switch access may be disabled in prefs but still running when the disable
   // dialog is displaying.
