@@ -381,6 +381,14 @@ suite('ThemesTest', () => {
 
         assertTrue(isVisible(theme));
       });
+    });
+
+    suite('ImageErrorDetectionMetric', () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({
+          imageErrorDetectionEnabled: true,
+        });
+      });
 
       test('error detection metrics fire correctly', async () => {
         const numImages = 1;
@@ -388,24 +396,22 @@ suite('ThemesTest', () => {
         const img = $$(themesElement, '.theme img');
         assertTrue(!!img);
 
-        await microtasksFinished();
-
-        if (!errorDetectionEnabled) {
-          assertEquals(
-              0,
-              metrics.count(
-                  'NewTabPage.BackgroundService.Images.Headers.ErrorDetected'));
-        } else {
-          assertEquals(
-              numImages,
-              metrics.count(
-                  'NewTabPage.BackgroundService.Images.Headers.ErrorDetected'));
-          assertEquals(
-              numImages,
-              metrics.count(
-                  'NewTabPage.BackgroundService.Images.Headers.ErrorDetected',
-                  NtpImageType.BACKGROUND_IMAGE));
+        const metricCount = metrics.count(
+            'NewTabPage.BackgroundService.Images.Headers.ErrorDetected');
+        if (metricCount !== numImages) {
+          await eventToPromise('error', img);
+          await microtasksFinished();
         }
+
+        assertEquals(
+            numImages,
+            metrics.count(
+                'NewTabPage.BackgroundService.Images.Headers.ErrorDetected'));
+        assertEquals(
+            numImages,
+            metrics.count(
+                'NewTabPage.BackgroundService.Images.Headers.ErrorDetected',
+                NtpImageType.BACKGROUND_IMAGE));
       });
     });
   });
