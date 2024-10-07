@@ -101,6 +101,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
 
   // Takes ownership over the |delegate|.
   void SetDelegate(Delegate* delegate);
+  void TransferDelegate(DevToolsUIBindings& other);
   void CallClientMethod(
       const std::string& object_name,
       const std::string& method_name,

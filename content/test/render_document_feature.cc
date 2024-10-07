@@ -19,6 +19,15 @@ void InitAndEnableRenderDocumentFeature(
                                                    parameters);
 }
 
+void InitAndEnableRenderDocumentForAllFrames(
+    base::test::ScopedFeatureList* feature_list) {
+  std::map<std::string, std::string> parameters;
+  parameters[kRenderDocumentLevelParameterName] =
+      GetRenderDocumentLevelName(RenderDocumentLevel::kAllFrames);
+  feature_list->InitAndEnableFeatureWithParameters(features::kRenderDocument,
+                                                   parameters);
+}
+
 std::vector<std::string> RenderDocumentFeatureLevelValues() {
   // Note: We don't return kSubframe nor kNonLocalRootSubframe here as
   // kAllFrames also covers subframe navigations and will affect tests that only
