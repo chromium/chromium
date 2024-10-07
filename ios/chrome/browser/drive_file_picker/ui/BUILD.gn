@@ -46,5 +46,10 @@ source_set("alert_utils") {
     "drive_file_picker_alert_utils.h",
     "drive_file_picker_alert_utils.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/strings:components_strings",
+    "//ios/chrome/app/strings",
+    "//ui/base",
+  ]
 }

@@ -78,6 +78,10 @@
 - (void)setShouldFetchIcon:(BOOL)shouldFetchIcon
                    forItem:(NSString*)itemIdentifier;
 
+// Shows an alert to indicate that the selected file could not be downloaded,
+// asking whether to try again or not.
+- (void)showDownloadFailureAlertWithRetryBlock:(ProceduralBlock)retryBlock;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_UI_DRIVE_FILE_PICKER_CONSUMER_H_

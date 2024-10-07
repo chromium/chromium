@@ -34,6 +34,11 @@ namespace {
 
 // Delay after which items are fetched if the request is delayed.
 constexpr base::TimeDelta kFetchItemsDelay = base::Seconds(0.5);
+// Initial delay after fetching items failed for the first time. The delay
+// should double for each new attempt.
+constexpr base::TimeDelta kFetchItemsDelayToRetryMin = base::Seconds(0.5);
+// Maximum delay to retry after fetching items failed.
+constexpr base::TimeDelta kFetchItemsDelayToRetryMax = base::Seconds(10.0);
 // folder_identifier parameter for the My Drive view.
 NSString* kMyDriveFolderIdentifier = @"root";
 // Size to which shared drive images should be resized before going to consumer.
@@ -65,13 +70,14 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
   std::unique_ptr<image_fetcher::ImageDataFetcher> _imageFetcher;
   // File URL to which the selected file is being downloaded.
   NSURL* _selectedFileDestinationURL;
-  // The selected drive item identifier.
-  NSString* _selectedIdentifier;
+  // The selected drive item. This comes from `_fetchedDriveItems` but is not
+  // necessarily contained in `_fetchedDriveItems` at all times.
+  std::optional<DriveItem> _selectedFile;
   // Identifier of the download for the current selected item.
-  NSString* _selectedIdentifierDownloadID;
-  // If `_selectedIdentifier` is not nil, then this indicates whether it was
+  NSString* _selectedFileDownloadID;
+  // If `_selectedFile` is not nullopt, then this indicates whether it was
   // selected from search items or not.
-  BOOL _selectedIdentifierIsSearchItem;
+  BOOL _selectedFileIsSearchItem;
   // If this is true, all downloadable files can be selected regardless of type.
   BOOL _ignoreAcceptedTypes;
   // Filter used to only show items matching a certain type.
@@ -89,7 +95,7 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
   // If this is `YES`, then items fetched subsequently will be search items.
   BOOL _shouldShowSearchItems;
   // Timer to delay fetching to avoid fetching too frequently if the query
-  // parameters are modified frequently.
+  // parameters are modified frequently or if queries fail several times.
   base::OneShotTimer _fetchTimer;
   // The page token to use to continue the current list/search.
   NSString* _pageToken;
@@ -175,7 +181,7 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
   }
   _identity = selectedIdentity;
   [_consumer setSelectedUserIdentityEmail:_identity.userEmail];
-  [self setSelectedItem:std::nullopt];
+  [self setSelectedFile:std::nullopt];
   [self configureConsumerIdentitiesMenu];
   _driveList = _driveService->CreateList(_identity);
   _driveDownloader = _driveService->CreateFileDownloader(_identity);
@@ -191,13 +197,13 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
     // Unfocusing the search bar so the confirmation button can become visible.
     _searchBarFocused = NO;
     [self.consumer setSearchBarFocused:NO searchText:_searchText];
-    [self setSelectedItem:driveItem];
+    [self setSelectedFile:driveItem];
     return;
   }
 
   // If the user tries to browse into a folder or other type of collection while
   // an item is already selected, clear the selection.
-  [self setSelectedItem:std::nullopt];
+  [self setSelectedFile:std::nullopt];
 
   if (driveItem && (driveItem->is_folder || driveItem->is_shared_drive)) {
     // If this is a real folder or shared drive, then open it.
@@ -358,9 +364,9 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
   [self.consumer setEnabledItems:enabledItemsIdentifiers];
   [self.consumer setAllFilesEnabled:_ignoreAcceptedTypes];
   // If the currently selected item is not part of enabled items, unselect it.
-  if (_selectedIdentifier &&
-      ![enabledItemsIdentifiers containsObject:_selectedIdentifier]) {
-    [self setSelectedItem:std::nullopt];
+  if (_selectedFile &&
+      ![enabledItemsIdentifiers containsObject:_selectedFile->identifier]) {
+    [self setSelectedFile:std::nullopt];
   }
 }
 
@@ -478,11 +484,10 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
   // When this line is reached, the mediator is switching between two modes:
   // showing search items and showing non-search items.
   _shouldShowSearchItems = shouldShowSearchItems;
-  if (_selectedIdentifier != nil && _selectedIdentifierIsSearchItem &&
-      !_shouldShowSearchItems) {
+  if (_selectedFile && _selectedFileIsSearchItem && !_shouldShowSearchItems) {
     // If the selected item was a search item and search items are hidden, clear
     // the selection.
-    [self setSelectedItem:std::nullopt];
+    [self setSelectedFile:std::nullopt];
   }
   if (!_shouldShowSearchItems) {
     // If search items are hidden, then ensure the search bar is defocused and
@@ -501,29 +506,28 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
 
 // Sets the selected item (can be none), cancels any previously started download
 // and potentially starts a new download. Updates the consumer accordingly.
-- (void)setSelectedItem:(std::optional<DriveItem>)item {
+- (void)setSelectedFile:(std::optional<DriveItem>)item {
   NSString* itemIdentifier = item ? item->identifier : nil;
-  if (_selectedIdentifier == itemIdentifier ||
-      [_selectedIdentifier isEqualToString:itemIdentifier]) {
+  NSString* selectedItemIdentifier =
+      _selectedFile ? _selectedFile->identifier : nil;
+  if (selectedItemIdentifier == itemIdentifier ||
+      [selectedItemIdentifier isEqualToString:itemIdentifier]) {
     // If the item is already selected, do nothing.
     return;
   }
 
   // Clean-up any already existing download.
-  if (_selectedIdentifier) {
-    CHECK(_selectedIdentifierDownloadID);
-    _driveDownloader->CancelDownload(_selectedIdentifierDownloadID);
-    _selectedIdentifierDownloadID = nil;
+  if (_selectedFile && _selectedFileDownloadID) {
+    _driveDownloader->CancelDownload(_selectedFileDownloadID);
+    _selectedFileDownloadID = nil;
   }
 
   // Update selected item and status in the consumer.
-  _selectedIdentifier = itemIdentifier;
-  _selectedIdentifierIsSearchItem =
-      _selectedIdentifier ? _shouldShowSearchItems : NO;
-  [self.consumer setSelectedItemIdentifier:_selectedIdentifier];
-  [self.consumer setDownloadStatus:_selectedIdentifier
-                                       ? DriveFileDownloadStatus::kInProgress
-                                       : DriveFileDownloadStatus::kNotStarted];
+  _selectedFile = item;
+  _selectedFileIsSearchItem = _selectedFile ? _shouldShowSearchItems : NO;
+  [self.consumer setSelectedItemIdentifier:itemIdentifier];
+  [self.consumer setDownloadStatus:item ? DriveFileDownloadStatus::kInProgress
+                                        : DriveFileDownloadStatus::kNotStarted];
 
   // If there is a new selected item, start to download it.
   if (!item) {
@@ -532,7 +536,7 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
   NSURL* fileURL = DriveFilePickerGenerateDownloadFileURL(item->name);
   CHECK(fileURL);
   __weak __typeof(self) weakSelf = self;
-  _selectedIdentifierDownloadID = _driveDownloader->DownloadFile(
+  _selectedFileDownloadID = _driveDownloader->DownloadFile(
       *item, fileURL,
       base::BindRepeating(^(DriveFileDownloadID driveFileDownloadID,
                             const DriveFileDownloadProgress& progress){
@@ -551,8 +555,25 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
 - (void)handleDownloadResponse:(DriveFileDownloadID)driveFileDownloadID
                          error:(NSError*)error
                        fileURL:(NSURL*)fileURL {
+  CHECK(_selectedFile);
+  // Reset the download ID to indicate that there is no ongoing download
+  // anymore.
+  _selectedFileDownloadID = nil;
   if (error) {
-    // TODO(crbug.com/344815565): Display error message.
+    // If there is a download error, prepare a callback to optionally try again.
+    __weak __typeof(self) weakSelf = self;
+    auto retrySelectCallback = base::BindOnce(
+        [](DriveFilePickerMediator* mediator, std::optional<DriveItem> file) {
+          [mediator setSelectedFile:std::move(file)];
+        },
+        weakSelf, _selectedFile);
+    // Then clear the selection.
+    [self setSelectedFile:std::nullopt];
+    // Then present an alert to ask the user whether to try again.
+    [self.consumer
+        showDownloadFailureAlertWithRetryBlock:base::CallbackToBlock(std::move(
+                                                   retrySelectCallback))];
+    return;
   }
   [self.consumer setDownloadStatus:DriveFileDownloadStatus::kSuccess];
   _selectedFileDestinationURL = fileURL;
@@ -572,7 +593,12 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
 
   if (_collectionType != DriveFilePickerCollectionType::kRoot ||
       _shouldShowSearchItems) {
-    [self fetchItemsAppending:append delayed:delayed animated:animated];
+    const base::TimeDelta delay =
+        delayed ? kFetchItemsDelay : base::TimeDelta();
+    [self fetchItemsAppending:append
+                        delay:delay
+                 delayToRetry:kFetchItemsDelayToRetryMin
+                     animated:animated];
     return;
   }
 
@@ -599,14 +625,16 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
 // is triggered before the end of the delay. If `animated` is YES then the items
 // in the response to that query will be animated into the consumer.
 - (void)fetchItemsAppending:(BOOL)append
-                    delayed:(BOOL)delayed
+                      delay:(base::TimeDelta)delay
+               delayToRetry:(base::TimeDelta)delayToRetry
                    animated:(BOOL)animated {
   // If the fetching needs to be delayed, post it for later and return early.
-  if (delayed) {
+  if (delay != base::TimeDelta()) {
     __weak __typeof(self) weakSelf = self;
-    _fetchTimer.Start(FROM_HERE, kFetchItemsDelay, base::BindOnce(^{
+    _fetchTimer.Start(FROM_HERE, delay, base::BindOnce(^{
                         [weakSelf fetchItemsAppending:append
-                                              delayed:NO
+                                                delay:base::TimeDelta()
+                                         delayToRetry:delayToRetry
                                              animated:animated];
                       }));
     return;
@@ -622,17 +650,19 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
       _sortingDirection, _shouldShowSearchItems, _searchText, _pageToken);
 
   __weak __typeof(self) weakSelf = self;
+  auto completion = base::BindOnce(
+      [](DriveFilePickerMediator* mediator, const base::TimeDelta& delayToRetry,
+         BOOL animated, const DriveListResult& result) {
+        [mediator handleListItemsResponse:result
+                             delayToRetry:delayToRetry
+                                 animated:animated];
+      },
+      weakSelf, delayToRetry, animated);
   if (_shouldShowSearchItems ||
       _collectionType != DriveFilePickerCollectionType::kSharedDrives) {
-    _driveList->ListFiles(
-        query, base::BindOnce(^(const DriveListResult& result) {
-          [weakSelf handleListItemsResponse:result animated:animated];
-        }));
+    _driveList->ListFiles(query, std::move(completion));
   } else {
-    _driveList->ListSharedDrives(
-        query, base::BindOnce(^(const DriveListResult& result) {
-          [weakSelf handleListItemsResponse:result animated:animated];
-        }));
+    _driveList->ListSharedDrives(query, std::move(completion));
   }
 }
 
@@ -641,7 +671,20 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
 // existing ones (`append` is YES). If `animated` is YES then new items are
 // animated into the consumer.
 - (void)handleListItemsResponse:(const DriveListResult&)result
+                   delayToRetry:(base::TimeDelta)delayToRetry
                        animated:(BOOL)animated {
+  const BOOL append = _pageToken != nil;
+  if (result.error) {
+    // If there is an error, try again with twice the delay at the next attempt.
+    [self fetchItemsAppending:append
+                        delay:delayToRetry
+                 delayToRetry:std::clamp(2 * delayToRetry,
+                                         kFetchItemsDelayToRetryMin,
+                                         kFetchItemsDelayToRetryMax)
+                     animated:animated];
+    return;
+  }
+
   // Remember old item identifiers so they can be reconfigured if they also show
   // up in `result.items`.
   NSMutableSet<NSString*>* previousIdentifiers = [NSMutableSet set];
@@ -649,7 +692,6 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
     [previousIdentifiers addObject:item.identifier];
   }
 
-  BOOL append = _pageToken != nil;
   if (append) {
     // If `append`, then this is the next page to insert at the end.
     _fetchedDriveItems.reserve(_fetchedDriveItems.size() + result.items.size());
@@ -726,7 +768,6 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
     [self.consumer setBackground:DriveFilePickerBackground::kEmptyFolder];
   }
 }
-
 
 - (void)configureConsumerIdentitiesMenu {
   ActionFactory* actionFactory = [[ActionFactory alloc]

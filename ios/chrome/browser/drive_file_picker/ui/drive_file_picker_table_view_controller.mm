@@ -894,6 +894,11 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   item.shouldFetchIcon = shouldFetchIcon;
 }
 
+- (void)showDownloadFailureAlertWithRetryBlock:(ProceduralBlock)retryBlock {
+  UIAlertController* failureAlert = FailAlertController(retryBlock, nil);
+  [self presentViewController:failureAlert animated:YES completion:nil];
+}
+
 #pragma mark - UI element creation helpers
 
 // Helper to create the menu presented by `_filterButton`.

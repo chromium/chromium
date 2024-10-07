@@ -168,6 +168,9 @@
                    forItem:(NSString*)itemIdentifier {
 }
 
+- (void)showDownloadFailureAlertWithRetryBlock:(ProceduralBlock)retryBlock {
+}
+
 @end
 
 // Test fixture for testing DriveFilePickerMediator class.

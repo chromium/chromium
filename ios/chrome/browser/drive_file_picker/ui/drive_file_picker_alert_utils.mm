@@ -4,11 +4,17 @@
 
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_alert_utils.h"
 
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+
 UIAlertController* FailAlertController(ProceduralBlock retry_block,
                                        ProceduralBlock cancel_block) {
   // TODO(crbug.com/344812548): Add a11y title.
   UIAlertController* alert = [UIAlertController
-      alertControllerWithTitle:@"TODO This File Couldn't Be Opened"
+      alertControllerWithTitle:
+          l10n_util::GetNSString(
+              IDS_IOS_DRIVE_FILE_PICKER_ALERT_THIS_FILE_COUND_NOT_BE_OPENED)
                        message:nil
                 preferredStyle:UIAlertControllerStyleAlert];
 
@@ -24,20 +30,21 @@ UIAlertController* FailAlertController(ProceduralBlock retry_block,
     }
   };
 
-  // TODO(crbug.com/344812548): Add a11y title.
-  UIAlertAction* retryAction =
-      [UIAlertAction actionWithTitle:@"TODO Try Again"
-                               style:UIAlertActionStyleDefault
-                             handler:retryHandler];
+  UIAlertAction* retryAction = [UIAlertAction
+      actionWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_DRIVE_FILE_PICKER_ALERT_TRY_AGAIN)
+                style:UIAlertActionStyleDefault
+              handler:retryHandler];
 
-  // TODO(crbug.com/344812548): Add a11y title.
   UIAlertAction* cancelAction =
-      [UIAlertAction actionWithTitle:@"TODO Cancel"
+      [UIAlertAction actionWithTitle:l10n_util::GetNSString(IDS_CANCEL)
                                style:UIAlertActionStyleCancel
                              handler:cancelHandler];
 
   [alert addAction:retryAction];
   [alert addAction:cancelAction];
+
+  alert.preferredAction = retryAction;
 
   return alert;
 }

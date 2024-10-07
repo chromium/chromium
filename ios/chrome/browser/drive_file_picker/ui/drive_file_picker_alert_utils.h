@@ -9,7 +9,7 @@
 
 #import "base/ios/block_types.h"
 
-// Returns an alert informing the user of a failed upload.
+// Returns an alert informing the user of a failed download.
 UIAlertController* FailAlertController(ProceduralBlock retry_block,
                                        ProceduralBlock cancel_block);
 
