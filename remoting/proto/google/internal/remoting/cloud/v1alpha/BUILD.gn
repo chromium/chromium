@@ -9,6 +9,7 @@ proto_library("messages") {
     "duration.proto",
     "empty.proto",
     "field_mask.proto",
+    "network_traversal_service.proto",
     "operating_system_info.proto",
     "remote_access_host.proto",
     "remote_access_service.proto",

@@ -14,6 +14,7 @@
 #include "remoting/base/service_urls.h"
 #include "remoting/base/version.h"
 #include "remoting/proto/google/internal/remoting/cloud/v1alpha/empty.pb.h"
+#include "remoting/proto/google/internal/remoting/cloud/v1alpha/network_traversal_service.pb.h"
 #include "remoting/proto/google/internal/remoting/cloud/v1alpha/remote_access_host.pb.h"
 #include "remoting/proto/google/internal/remoting/cloud/v1alpha/remote_access_service.pb.h"
 #include "remoting/proto/google/internal/remoting/cloud/v1alpha/session_authz_service.pb.h"
@@ -235,6 +236,8 @@ using LegacyProvisionGceInstanceRequest =
 using Empty = google::internal::remoting::cloud::v1alpha::Empty;
 using GenerateHostTokenRequest =
     google::internal::remoting::cloud::v1alpha::GenerateHostTokenRequest;
+using GenerateIceConfigRequest =
+    google::internal::remoting::cloud::v1alpha::GenerateIceConfigRequest;
 using ProvisionGceInstanceRequest =
     google::internal::remoting::cloud::v1alpha::ProvisionGceInstanceRequest;
 using ReauthorizeHostRequest =
@@ -375,6 +378,16 @@ void CloudServiceClient::GenerateHostToken(GenerateHostTokenCallback callback) {
   ExecuteRequest(kGenerateHostTokenTrafficAnnotation, path, /*api_key=*/"",
                  net::HttpRequestHeaders::kPostMethod,
                  std::make_unique<GenerateHostTokenRequest>(),
+                 std::move(callback));
+}
+
+void CloudServiceClient::GenerateIceConfig(GenerateIceConfigCallback callback) {
+  constexpr char path[] = "/v1alpha/networktraversal:generateIceConfig";
+
+  // TODO: joedow - Add specific traffic annotation for generateIceConfig.
+  ExecuteRequest(kGenerateHostTokenTrafficAnnotation, path, /*api_key=*/"",
+                 net::HttpRequestHeaders::kPostMethod,
+                 std::make_unique<GenerateIceConfigRequest>(),
                  std::move(callback));
 }
 

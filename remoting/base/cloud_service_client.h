@@ -14,6 +14,7 @@
 namespace google::internal::remoting::cloud::v1alpha {
 class Empty;
 class GenerateHostTokenResponse;
+class GenerateIceConfigResponse;
 class ProvisionGceInstanceResponse;
 class ReauthorizeHostResponse;
 class RemoteAccessHost;
@@ -43,6 +44,10 @@ class CloudServiceClient {
       const ProtobufHttpStatus&,
       std::unique_ptr<::google::internal::remoting::cloud::v1alpha::
                           GenerateHostTokenResponse>)>;
+  using GenerateIceConfigCallback = base::OnceCallback<void(
+      const ProtobufHttpStatus&,
+      std::unique_ptr<::google::internal::remoting::cloud::v1alpha::
+                          GenerateIceConfigResponse>)>;
   using LegacyProvisionGceInstanceCallback = base::OnceCallback<void(
       const ProtobufHttpStatus&,
       std::unique_ptr<apis::v1::ProvisionGceInstanceResponse>)>;
@@ -105,6 +110,8 @@ class CloudServiceClient {
                               std::optional<std::string> os_name,
                               std::optional<std::string> os_version,
                               UpdateRemoteAccessHostCallback callback);
+
+  void GenerateIceConfig(GenerateIceConfigCallback callback);
 
   void GenerateHostToken(GenerateHostTokenCallback callback);
 

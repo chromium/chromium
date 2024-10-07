@@ -1,0 +1,51 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package google.internal.remoting.cloud.v1alpha;
+
+import "duration.proto";
+
+// Represents a STUN server which can be used to determine the callers internet
+// addressable IP.
+message StunServer {
+  // STUN URI(s) as defined in [rfc7064].
+  repeated string urls = 1;
+}
+
+// Represents a TURN server which can be used to relay network traffic to
+// another machine.
+message TurnServer {
+  // TURN URI(s) as defined in [rfc7065].
+  repeated string urls = 1;
+
+  // Specifies the username to use with this TURN server.
+  string username = 2;
+
+  // Specifies the credential to use with this TURN server.
+  string credential = 3;
+
+  // Maximum rate in kilobits per second (kilo = 1000). If set, this limit
+  // should be set on the outgoing stream to prevent overloading the relay/TURN
+  // server.
+  optional int64 max_rate_kbps = 4;
+}
+
+// Requests an ICE config to use for establishing a P2P connection.
+message GenerateIceConfigRequest {}
+
+// The response for a GenerateIceConfigRequest.
+message GenerateIceConfigResponse {
+  // The length of time the ICE server configuration info will remain valid.
+  Duration lifetime_duration = 1;
+
+  // The set of STUN Servers available.
+  repeated StunServer stun_servers = 2;
+
+  // The set of TURN Servers available.
+  repeated TurnServer turn_servers = 3;
+}
