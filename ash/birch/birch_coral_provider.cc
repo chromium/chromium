@@ -202,16 +202,12 @@ void BirchCoralProvider::OnTabItemRemoved(TabClusterUIItem* tab_item) {}
 void BirchCoralProvider::RequestBirchDataFetch() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceBirchFakeCoral)) {
-    // TODO(owenzhang): Remove placeholder page_urls.
-    std::vector<GURL> page_urls;
-    page_urls.emplace_back(("https://www.reddit.com/"));
-    page_urls.emplace_back(("https://www.figma.com/"));
-    page_urls.emplace_back(("https://www.notion.so/"));
-    page_urls.emplace_back(("https://www.nhl.com/"));
+    std::vector<GURL> page_urls{
+        GURL("https://www.ikea.com/"), GURL("https://www.figma.com/"),
+        GURL("https://www.notion.so/"), GURL("https://www.nhl.com/")};
 
-    std::vector<std::string> app_ids;
-    app_ids.emplace_back("lgnggepjiihbfdbedefdhcffnmhcahbm");
-    app_ids.emplace_back("odknhmnlageboeamepcngndbggdpaobj");
+    std::vector<std::string> app_ids = {"odknhmnlageboeamepcngndbggdpaobj",
+                                        "fkiggjmkendpmbegkagpmagjepfkpmeb"};
 
     Shell::Get()->birch_model()->SetCoralItems({BirchCoralItem(
         u"CoralTitle", u"CoralText", page_urls, app_ids, /*cluster_id=*/0)});

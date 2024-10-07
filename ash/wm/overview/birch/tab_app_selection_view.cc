@@ -147,9 +147,11 @@ class TabAppSelectionView::TabAppSelectionItemView
     auto* delegate = Shell::Get()->saved_desk_delegate();
     auto set_icon_image_callback = base::BindOnce(
         [](const base::WeakPtr<TabAppSelectionItemView>& item_view,
-           const gfx::ImageSkia& favicon) {
+           const gfx::ImageSkia& icon) {
           if (item_view) {
-            item_view->image_->SetImage(favicon);
+            item_view->image_->SetImage(
+                icon.isNull() ? ui::ImageModel::FromVectorIcon(kDefaultAppIcon)
+                              : ui::ImageModel::FromImageSkia(icon));
           }
         },
         weak_ptr_factory_.GetWeakPtr());
@@ -215,6 +217,11 @@ class TabAppSelectionView::TabAppSelectionItemView
   }
   void OnMouseExited(const ui::MouseEvent& event) override {
     SetSelected(false);
+  }
+  void OnGestureEvent(ui::GestureEvent* event) override {
+    if (event->type() == ui::EventType::kGestureTap) {
+      owner_->OnItemTapped(this);
+    }
   }
   void OnFocus() override { SetSelected(true); }
   void OnBlur() override { SetSelected(false); }
@@ -409,6 +416,16 @@ void TabAppSelectionView::OnCloseButtonPressed(
   // be called again.
   for (TabAppSelectionItemView* item : item_views_) {
     item->RemoveCloseButton();
+  }
+}
+
+void TabAppSelectionView::OnItemTapped(TabAppSelectionItemView* sender) {
+  for (TabAppSelectionItemView* item : item_views_) {
+    if (item != sender) {
+      item->SetSelected(false);
+    } else {
+      item->SetSelected(!item->selected());
+    }
   }
 }
 

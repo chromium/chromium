@@ -119,19 +119,14 @@ std::string BirchCoralItem::ToString() const {
 }
 
 void BirchCoralItem::PerformAction(bool is_post_login) {
-  // TODO(sammiequon): Remove hardcoded group.
   coral::mojom::GroupPtr temp_group = coral::mojom::Group::New();
   temp_group->title = "Coral desk";
-  temp_group->entities.push_back(
-      coral::mojom::EntityKey::NewTabUrl(GURL("https://www.ikea.com/")));
-  temp_group->entities.push_back(
-      coral::mojom::EntityKey::NewTabUrl(GURL("https://www.nhl.com/")));
-  // OS settings.
-  temp_group->entities.push_back(
-      coral::mojom::EntityKey::NewAppId("odknhmnlageboeamepcngndbggdpaobj"));
-  // Files.
-  temp_group->entities.push_back(
-      coral::mojom::EntityKey::NewAppId("fkiggjmkendpmbegkagpmagjepfkpmeb"));
+  for (const GURL& gurl : page_urls_) {
+    temp_group->entities.push_back(coral::mojom::EntityKey::NewTabUrl(gurl));
+  }
+  for (const std::string& app_id : app_ids_) {
+    temp_group->entities.push_back(coral::mojom::EntityKey::NewAppId(app_id));
+  }
 
   // Pick first half of the tabs from request for testing.
   const auto& request_items =
@@ -147,8 +142,6 @@ void BirchCoralItem::PerformAction(bool is_post_login) {
     temp_group->entities.push_back(
         coral::mojom::EntityKey::NewTabUrl(tabs[i]->url));
   }
-
-  // TODO(http://b/365839564): Handle save for later case.
 
   // TODO(http://b/365839465): Handle post-login case.
   if (is_post_login) {

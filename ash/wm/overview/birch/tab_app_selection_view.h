@@ -45,7 +45,12 @@ class ASH_EXPORT TabAppSelectionView : public views::BoxLayoutView {
 
   void AdvanceSelection(bool reverse);
 
+  // Destroys `sender` and destroys subtitles if necessary (`sender` was the
+  // last tab or app).
   void OnCloseButtonPressed(TabAppSelectionItemView* sender);
+
+  // Deselects all items except `sender`.
+  void OnItemTapped(TabAppSelectionItemView* sender);
 
   raw_ptr<views::ScrollView> scroll_view_;
 
