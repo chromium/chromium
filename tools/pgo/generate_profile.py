@@ -39,7 +39,6 @@ from telemetry.internal.backends import android_browser_backend_settings
 _ANDROID_SETTINGS = android_browser_backend_settings.ANDROID_BACKEND_SETTINGS
 
 _EXE_EXT = '.exe' if sys.platform == 'win32' else ''
-
 _THIS_DIR = os.path.dirname(__file__)
 _ROOT_DIR = f'{_THIS_DIR}/../..'
 _UPDATE_PY = f'{_THIS_DIR}/../clang/scripts/update.py'

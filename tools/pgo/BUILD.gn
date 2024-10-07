@@ -4,28 +4,34 @@
 
 import("//testing/test.gni")
 
-# See this import and define other suffixes as needed:
+# Use the following import to find other suffixes as needed. The suffixes start
+# with _android. Since there are only two targets here, prefer to duplicate for
+# now instead of using a variable for better searchability.
 # import("//tools/perf/chrome_telemetry_build/android_browser_types.gni")
+
+_script_name = "//tools/pgo/generate_profile.py"
+
+_common_args = [
+  # Assume that we are running this script from the output directory.
+  "--builddir",
+  ".",
+  "--android-browser",
+]
+
+_common_data_deps = [
+  # Needed to import `android_browser_backend_settings`.
+  "//third_party/catapult/telemetry",
+]
 
 isolated_script_test(
     "generate_profile_android_clank_trichrome_chrome_google_64_32_bundle") {
-  script = "//tools/pgo/generate_profile.py"
-  args = [
-    # Assume that we are running this script from the output directory.
-    "--builddir",
-    ".",
-    "--android-browser",
-    "android-trichrome-chrome-google-64-32-bundle",
-  ]
+  script = _script_name
+  args = _common_args + [ "android-trichrome-chrome-google-64-32-bundle" ]
+  data_deps = _common_data_deps
 }
 
 isolated_script_test("generate_profile_android_clank_trichrome_bundle") {
-  script = "//tools/pgo/generate_profile.py"
-  args = [
-    # Assume that we are running this script from the output directory.
-    "--builddir",
-    ".",
-    "--android-browser",
-    "android-trichrome-bundle",
-  ]
+  script = _script_name
+  args = _common_args + [ "android-trichrome-bundle" ]
+  data_deps = _common_data_deps
 }
