@@ -7,10 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
-#include <vector>
+#import <vector>
 
-#include "base/functional/callback_forward.h"
+#import "base/functional/callback_forward.h"
 
+@class GCRSSOFolsomService;
 @class UIViewController;
 
 // Class to manage passkey vault keys.
@@ -64,6 +65,10 @@ class PasskeyKeychainProvider {
   // - "gaia" is used to identify the account.
   // - "callback" is called once the keys are marked as stale.
   void MarkKeysAsStale(NSString* gaia, KeysMarkedAsAsStaleCallback callback);
+
+ private:
+  // Folsom service.
+  GCRSSOFolsomService* gcr_sso_folsom_service_;
 };
 
 #endif  // IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_PASSKEY_KEYCHAIN_PROVIDER_H_
