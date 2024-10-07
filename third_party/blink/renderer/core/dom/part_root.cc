@@ -222,9 +222,8 @@ void BuildPartsList(PartRoot& part_root,
             if (!nested_child_node_part_count) [[likely]] {
               // Found the end of the child node part.
               if (part_list) {
-                Vector<String> metadata;
                 part_list->push_back(MakeGarbageCollected<ChildNodePart>(
-                    part_root, *start_comment, end_comment, metadata));
+                    part_root, *start_comment, end_comment, Vector<String>()));
               }
               if (child_node_part_nodes) {
                 child_node_part_nodes->push_back(start_comment);
@@ -240,9 +239,8 @@ void BuildPartsList(PartRoot& part_root,
       } else {
         // This is just a NodePart.
         if (part_list) {
-          Vector<String> metadata;
-          part_list->push_back(
-              MakeGarbageCollected<NodePart>(part_root, *node, metadata));
+          part_list->push_back(MakeGarbageCollected<NodePart>(
+              part_root, *node, Vector<String>()));
         }
         if (node_part_nodes) {
           node_part_nodes->push_back(node);

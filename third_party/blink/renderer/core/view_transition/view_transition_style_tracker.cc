@@ -834,7 +834,7 @@ bool ViewTransitionStyleTracker::FlattenAndVerifyElements(
         }
       }
 
-      AddConsoleError(message.ReleaseString(), nodes);
+      AddConsoleError(message.ReleaseString(), std::move(nodes));
       return false;
     }
 

@@ -1675,7 +1675,8 @@ bool StyleCascade::ResolveEnvInto(CSSParserTokenStream& stream,
 
   DCHECK(stream.AtEnd() || (stream.Peek().GetType() == kCommaToken));
 
-  CSSVariableData* data = GetEnvironmentVariable(variable_name, indices);
+  CSSVariableData* data =
+      GetEnvironmentVariable(variable_name, std::move(indices));
 
   if (!data) {
     if (ConsumeComma(stream)) {

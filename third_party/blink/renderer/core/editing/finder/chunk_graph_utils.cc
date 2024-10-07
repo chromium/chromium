@@ -216,7 +216,7 @@ class ChunkGraphBuilder {
   const HeapVector<Member<CorpusChunk>>& ChunkList() const {
     return corpus_chunk_list_;
   }
-  const Vector<String>& LevelList() const { return level_list_; }
+  Vector<String> TakeLevelList() { return std::move(level_list_); }
 
  private:
   CorpusChunk* PushChunk(const String& level) {
@@ -403,7 +403,7 @@ BuildChunkGraph(const Node& first_visible_text_node,
   ChunkGraphBuilder builder;
   const Node* next_node = builder.Build(first_visible_text_node, end_node,
                                         block_ancestor, just_after_block);
-  return {builder.ChunkList(), builder.LevelList(), next_node};
+  return {builder.ChunkList(), builder.TakeLevelList(), next_node};
 }
 
 }  // namespace blink

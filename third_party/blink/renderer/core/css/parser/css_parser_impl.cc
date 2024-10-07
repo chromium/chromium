@@ -1679,7 +1679,7 @@ StyleRuleFontFeature* CSSParserImpl::ConsumeFontFeatureRule(
     }
     stream.ConsumeWhitespace();
 
-    font_feature_rule->UpdateAlias(alias, parsed_numbers);
+    font_feature_rule->UpdateAlias(alias, std::move(parsed_numbers));
   }
 
   return font_feature_rule;
@@ -1777,8 +1777,8 @@ StyleRuleFontFeatureValues* CSSParserImpl::ConsumeFontFeatureValuesRule(
   }
 
   auto* feature_values_rule = MakeGarbageCollected<StyleRuleFontFeatureValues>(
-      families, stylistic, styleset, character_variant, swash, ornaments,
-      annotation);
+      std::move(families), stylistic, styleset, character_variant, swash,
+      ornaments, annotation);
 
   if (observer_) {
     observer_->EndRuleBody(stream.Offset());

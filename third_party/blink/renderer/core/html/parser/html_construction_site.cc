@@ -1439,9 +1439,11 @@ void HTMLConstructionSite::PendingDOMParts::AddChildNodePartStart(
   // then update its `next_sibling` later when we find it, rendering it (and
   // any dependant Parts) valid.
   ChildNodePart* new_part = MakeGarbageCollected<ChildNodePart>(
-      *CurrentPartRoot(), previous_sibling, previous_sibling, metadata);
+      *CurrentPartRoot(), previous_sibling, previous_sibling,
+      std::move(metadata));
   part_root_stack_.push_back(new_part);
 }
+
 void HTMLConstructionSite::PendingDOMParts::AddChildNodePartEnd(
     Node& next_sibling) {
   DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());

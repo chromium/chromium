@@ -1155,7 +1155,7 @@ std::unique_ptr<HTMLPreloadScanner> HTMLPreloadScanner::Create(
       std::make_unique<CachedDocumentParameters>(&document),
       std::make_unique<MediaValuesCached::MediaValuesCachedData>(document),
       scanner_type, /* script_token_scanner=*/nullptr, TakePreloadFn(),
-      locators, skip_preload_scan);
+      std::move(locators), skip_preload_scan);
 }
 
 // static
@@ -1195,7 +1195,7 @@ HTMLPreloadScanner::BackgroundPtr HTMLPreloadScanner::CreateBackground(
           std::make_unique<MediaValuesCached::MediaValuesCachedData>(*document),
           TokenPreloadScanner::ScannerType::kMainDocument,
           BackgroundHTMLScanner::ScriptTokenScanner::Create(parser),
-          std::move(take_preload), locators, skip_preload_scan),
+          std::move(take_preload), std::move(locators), skip_preload_scan),
       Deleter{task_runner});
 }
 

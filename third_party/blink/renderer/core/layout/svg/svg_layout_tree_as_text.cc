@@ -105,7 +105,7 @@ WTF::TextStream& operator<<(WTF::TextStream& ts, TextStreamSeparator& sep) {
 template <typename ValueType>
 static void WriteNameValuePair(WTF::TextStream& ts,
                                const char* name,
-                               ValueType value) {
+                               const ValueType& value) {
   ts << " [" << name << "=" << value << "]";
 }
 

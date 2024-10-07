@@ -146,7 +146,8 @@ bool StructTraits<blink::mojom::blink::TransferableMessage::DataView,
       return false;
     }
   }
-  out->message->SetImageBitmapContentsArray(image_bitmap_contents_array);
+  out->message->SetImageBitmapContentsArray(
+      std::move(image_bitmap_contents_array));
   return true;
 }
 

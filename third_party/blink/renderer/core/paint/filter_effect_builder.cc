@@ -433,7 +433,7 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
       case FilterOperation::OperationType::kColorMatrix: {
         Vector<float> matrix_values =
             To<ColorMatrixFilterOperation>(*op).Values();
-        filters.AppendColorMatrixFilter(matrix_values);
+        filters.AppendColorMatrixFilter(std::move(matrix_values));
         break;
       }
       case FilterOperation::OperationType::kInvert:

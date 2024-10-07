@@ -532,7 +532,7 @@ PermissionsPolicyParser::Node ParsingContext::ParsePermissionsPolicyToIR(
     }
 
     ir_root.declarations.push_back(PermissionsPolicyParser::Declaration{
-        feature_name, allowlist, endpoint});
+        feature_name, std::move(allowlist), endpoint});
   }
 
   return ir_root;

@@ -67,7 +67,7 @@ FragmentItemsInVisualOrder(const LayoutObject& query_root) {
       }
     }
   }
-  return std::tie(item_list, items);
+  return {std::move(item_list), items};
 }
 
 std::tuple<Vector<const FragmentItem*>, const FragmentItems*>

@@ -552,16 +552,14 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
 OriginTrialFeaturesEnabled OriginTrialContext::EnableTrialFromName(
     const String& trial_name,
     base::Time expiry_time) {
-  Vector<mojom::blink::OriginTrialFeature> origin_trial_features =
-      Vector<mojom::blink::OriginTrialFeature>();
   if (!CanEnableTrialFromName(trial_name)) {
     DVLOG(1) << "EnableTrialFromName: cannot enable trial " << trial_name;
-    OriginTrialFeaturesEnabled result = {OriginTrialStatus::kTrialNotAllowed,
-                                         origin_trial_features};
-    return result;
+    return {OriginTrialStatus::kTrialNotAllowed,
+            Vector<mojom::blink::OriginTrialFeature>()};
   }
 
   bool did_enable_feature = false;
+  Vector<mojom::blink::OriginTrialFeature> origin_trial_features;
   for (mojom::blink::OriginTrialFeature feature :
        origin_trials::FeaturesForTrial(trial_name.Utf8())) {
     if (!origin_trials::FeatureEnabledForOS(feature)) {
@@ -589,11 +587,10 @@ OriginTrialFeaturesEnabled OriginTrialContext::EnableTrialFromName(
         feature_expiry_times_.Set(implied_feature, expiry_time);
     }
   }
-  OriginTrialFeaturesEnabled result = {
-      (did_enable_feature ? OriginTrialStatus::kEnabled
-                          : OriginTrialStatus::kOSNotSupported),
-      origin_trial_features};
-  return result;
+  OriginTrialStatus status = did_enable_feature
+                                 ? OriginTrialStatus::kEnabled
+                                 : OriginTrialStatus::kOSNotSupported;
+  return {status, std::move(origin_trial_features)};
 }
 
 bool OriginTrialContext::EnableTrialFromToken(const String& token,

@@ -32,8 +32,7 @@ class CORE_EXPORT StyleRuleFontFeature : public StyleRuleBase {
   StyleRuleFontFeature(const StyleRuleFontFeature&);
   ~StyleRuleFontFeature();
 
-  void UpdateAlias(AtomicString alias, const Vector<uint32_t>& features);
-
+  void UpdateAlias(AtomicString alias, Vector<uint32_t> features);
   void OverrideAliasesIn(FontFeatureAliases& destination);
 
   FeatureType GetFeatureType() { return type_; }
