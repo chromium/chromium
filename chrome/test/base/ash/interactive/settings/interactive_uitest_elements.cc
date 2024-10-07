@@ -188,6 +188,10 @@ WebContentsInteractionTestUtil::DeepQuery ApnSubpageCreateApnButton() {
   return InternetPage() + "button#createCustomApnButton";
 }
 
+WebContentsInteractionTestUtil::DeepQuery ApnSubpagePolicyIcon() {
+  return InternetPage() + "cr-tooltip-icon#apnManagedIcon";
+}
+
 WebContentsInteractionTestUtil::DeepQuery ApnSubpageShowKnownApnsButton() {
   return InternetPage() + "button#discoverMoreApnsButton";
 }
@@ -276,6 +280,11 @@ WebContentsInteractionTestUtil::DeepQuery CellularNetworkListItemPolicyIcon() {
 
 WebContentsInteractionTestUtil::DeepQuery CellularSubpagePsimListTitle() {
   return CellularNetworksList() + "div#pSimLabel";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
+CellularDetailsSubpageApnPolicyIcon() {
+  return InternetDetailsSubpage() + "cr-policy-indicator#apnManagedIcon";
 }
 
 WebContentsInteractionTestUtil::DeepQuery

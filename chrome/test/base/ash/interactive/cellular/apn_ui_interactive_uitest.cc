@@ -11,6 +11,7 @@
 #include "chrome/test/base/ash/interactive/settings/interactive_uitest_elements.h"
 #include "chromeos/ash/components/dbus/hermes/fake_hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_service_client.h"
+#include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "dbus/object_path.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -27,7 +28,8 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOSSettingsId);
 class ApnUiInteractiveUiTest : public EsimInteractiveUiTestBase {
  protected:
   ApnUiInteractiveUiTest() {
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kApnRevamp);
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kAllowApnModificationPolicy);
   }
 
   // InteractiveAshTest:
@@ -192,6 +194,59 @@ class ApnUiInteractiveUiTest : public EsimInteractiveUiTestBase {
             kOSSettingsId, settings::cellular::ApnListItemAutoDetectedDiv(),
             /*text=*/
             l10n_util::GetStringUTF8(IDS_SETTINGS_APN_AUTO_DETECTED).c_str()));
+  }
+
+  ui::test::internal::InteractiveTestPrivate::MultiStep WaitForApnPolicyApplied(
+      bool allow_apn_modification) {
+    return Steps(Do([allow_apn_modification]() {
+      base::Value::Dict global_config;
+      global_config.Set(::onc::global_network_config::kAllowAPNModification,
+                        allow_apn_modification);
+      NetworkHandler::Get()->managed_network_configuration_handler()->SetPolicy(
+          ::onc::ONC_SOURCE_DEVICE_POLICY, /*userhash=*/std::string(),
+          base::Value::List(), global_config);
+    }));
+  }
+
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  VerifyApnModificationIsRestricted() {
+    return Steps(
+        Log("Wait for policy icon in cellular detail subpage"),
+
+        WaitForElementExists(
+            kOSSettingsId,
+            settings::cellular::CellularDetailsSubpageApnPolicyIcon()),
+
+        Log("Navigate to the APN revamp details page"),
+
+        NavigateToApnRevampDetailsPage(kOSSettingsId),
+
+        Log("Wait for APN action button is disabled"),
+
+        WaitForElementExists(kOSSettingsId,
+                             settings::cellular::ApnSubpagePolicyIcon()));
+  }
+
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  DisableAndEnableMobileData() {
+    return Steps(
+        Log("Re-enabling mobile data"),
+
+        NavigateSettingsToInternetPage(kOSSettingsId),
+        WaitForToggleState(kOSSettingsId,
+                           settings::cellular::MobileDataToggle(), true),
+
+        Log("Disabling mobile data"),
+
+        ClickElement(kOSSettingsId, settings::cellular::MobileDataToggle()),
+        WaitForToggleState(kOSSettingsId,
+                           settings::cellular::MobileDataToggle(), false),
+
+        Log("Enabling mobile data"),
+
+        ClickElement(kOSSettingsId, settings::cellular::MobileDataToggle()),
+        WaitForToggleState(kOSSettingsId,
+                           settings::cellular::MobileDataToggle(), true));
   }
 
  private:
@@ -751,6 +806,45 @@ IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest, EnableDisableRemoveApns) {
       Log("Checking for both custom APNs removed in Shill"),
 
       Do([&]() { VerifyNoCustomApnsInShill(); }),
+
+      Log("Test complete"));
+}
+
+IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest, ApnPolicy) {
+  ui::ElementContext context =
+      LaunchSystemWebApp(SystemWebAppType::SETTINGS, kOSSettingsId);
+
+  // Run the following steps with the OS Settings context set as the default.
+  RunTestSequenceInContext(
+      context,
+
+      Log("Verify no custom APNs before start testing"),
+
+      Do([&]() { VerifyNoCustomApnsInShill(); }),
+
+      Log("Navigating to the cellular detail subpage"),
+
+      NavigateToInternetDetailsPage(kOSSettingsId,
+                                    NetworkTypePattern::Cellular(),
+                                    esim_info().nickname()),
+      WaitForElementDoesNotExist(
+          kOSSettingsId,
+          settings::cellular::CellularDetailsSubpageApnPolicyIcon()),
+
+      Log("Prohibiting APN modification with policy"),
+
+      WaitForApnPolicyApplied(/*allow_apn_modification=*/false),
+      VerifyApnModificationIsRestricted(),
+
+      DisableAndEnableMobileData(),
+
+      Log("Navigating to the cellular detail subpage"),
+
+      NavigateToInternetDetailsPage(kOSSettingsId,
+                                    NetworkTypePattern::Cellular(),
+                                    esim_info().nickname()),
+
+      VerifyApnModificationIsRestricted(),
 
       Log("Test complete"));
 }

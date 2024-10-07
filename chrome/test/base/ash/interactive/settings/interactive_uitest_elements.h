@@ -148,6 +148,9 @@ WebContentsInteractionTestUtil::DeepQuery ApnSubpageActionMenuButton();
 // The "Create new APN" button in the action menu in APN subpage.
 WebContentsInteractionTestUtil::DeepQuery ApnSubpageCreateApnButton();
 
+// The policy icon on the top of the APN subpage.
+WebContentsInteractionTestUtil::DeepQuery ApnSubpagePolicyIcon();
+
 // The "Show known APNs" button in the action menu in APN subpage.
 WebContentsInteractionTestUtil::DeepQuery ApnSubpageShowKnownApnsButton();
 
@@ -207,6 +210,9 @@ WebContentsInteractionTestUtil::DeepQuery CellularNetworkListItemPolicyIcon();
 
 // The cellular networks subpage pSIM networks list title.
 WebContentsInteractionTestUtil::DeepQuery CellularSubpagePsimListTitle();
+
+// The APN policy icon in cellular network details subpage.
+WebContentsInteractionTestUtil::DeepQuery CellularDetailsSubpageApnPolicyIcon();
 
 // The auto connect toggle in cellular network details subpage.
 WebContentsInteractionTestUtil::DeepQuery
