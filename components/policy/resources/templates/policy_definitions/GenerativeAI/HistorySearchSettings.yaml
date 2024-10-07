@@ -1,7 +1,7 @@
 caption: Settings for AI-powered History Search
 
 desc: |-
-  AI History Search is a feature that allows users to search their browsing history based on page contents and not just the page title and URL.
+  AI History Search is a feature that allows users to search their browsing history and receive generated answers based on page contents and not just the page title and URL.
 
   0 = Enable the feature for users, and send relevant data to Google to help train or improve AI models. Relevant data may include prompts, inputs, outputs, and source materials, depending on the feature. It may be reviewed by humans for the sole purpose of improving AI models. 0 is the default value, except when noted below.
 
