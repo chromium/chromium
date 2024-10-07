@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_mutator.h"
 
 namespace tab_groups {
@@ -16,6 +15,7 @@ class TabGroupSyncService;
 
 @protocol TabGroupIndicatorConsumer;
 @protocol TabGroupIndicatorMediatorDelegate;
+class UrlLoadingBrowserAgent;
 class WebStateList;
 
 // Mediator used to propagate tab group updates to the TabGroupIndicatorView.
@@ -25,11 +25,13 @@ class WebStateList;
 @property(nonatomic, weak) id<TabGroupIndicatorMediatorDelegate> delegate;
 
 // Creates an instance of the mediator.
-- (instancetype)initWithProfile:(ProfileIOS*)profile
-            tabGroupSyncService:
-                (tab_groups::TabGroupSyncService*)tabGroupSyncService
-                       consumer:(id<TabGroupIndicatorConsumer>)consumer
-                   webStateList:(WebStateList*)webStateList;
+- (instancetype)initWithTabGroupSyncService:
+                    (tab_groups::TabGroupSyncService*)tabGroupSyncService
+                                   consumer:
+                                       (id<TabGroupIndicatorConsumer>)consumer
+                               webStateList:(WebStateList*)webStateList
+                                  URLLoader:(UrlLoadingBrowserAgent*)URLLoader
+                                  incognito:(BOOL)incognito;
 
 - (instancetype)init NS_UNAVAILABLE;
 

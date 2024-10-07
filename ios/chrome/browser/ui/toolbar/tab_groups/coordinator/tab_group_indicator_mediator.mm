@@ -7,9 +7,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
-#import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -18,34 +16,39 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_action_type.h"
 #import "ios/chrome/browser/ui/toolbar/tab_groups/coordinator/tab_group_indicator_mediator_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_consumer.h"
-#import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/web/public/web_state.h"
 
 @interface TabGroupIndicatorMediator () <WebStateListObserving>
 @end
 
 @implementation TabGroupIndicatorMediator {
-  raw_ptr<ProfileIOS> _profile;
   raw_ptr<tab_groups::TabGroupSyncService> _tabGroupSyncService;
+  // URL loader to open tabs when needed.
+  raw_ptr<UrlLoadingBrowserAgent> _URLLoader;
   __weak id<TabGroupIndicatorConsumer> _consumer;
   base::WeakPtr<WebStateList> _webStateList;
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
+  BOOL _incognito;
 }
 
-- (instancetype)initWithProfile:(ProfileIOS*)profile
-            tabGroupSyncService:
-                (tab_groups::TabGroupSyncService*)tabGroupSyncService
-                       consumer:(id<TabGroupIndicatorConsumer>)consumer
-                   webStateList:(WebStateList*)webStateList {
+- (instancetype)initWithTabGroupSyncService:
+                    (tab_groups::TabGroupSyncService*)tabGroupSyncService
+                                   consumer:
+                                       (id<TabGroupIndicatorConsumer>)consumer
+                               webStateList:(WebStateList*)webStateList
+                                  URLLoader:(UrlLoadingBrowserAgent*)URLLoader
+                                  incognito:(BOOL)incognito {
   self = [super init];
   if (self) {
-    CHECK(profile);
     CHECK(consumer);
     CHECK(webStateList);
     CHECK(IsTabGroupIndicatorEnabled());
-    _profile = profile;
+    _URLLoader = URLLoader;
     _tabGroupSyncService = tabGroupSyncService;
     _consumer = consumer;
+    _incognito = incognito;
     _webStateList = webStateList->AsWeakPtr();
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
     _webStateList->AddObserver(_webStateListObserver.get());
@@ -104,9 +107,12 @@
     return;
   }
 
-  const auto insertionParams =
-      WebStateList::InsertionParams::Automatic().InGroup(tabGroup);
-  [self insertAndActivateNewWebStateWithInsertionParams:insertionParams];
+  GURL URL(kChromeUINewTabURL);
+  UrlLoadParams params = UrlLoadParams::InNewTab(URL);
+  params.in_incognito = _incognito;
+  params.load_in_group = true;
+  params.tab_group = tabGroup->GetWeakPtr();
+  _URLLoader->Load(params);
 }
 
 - (void)closeGroup {
@@ -167,30 +173,6 @@
     return nil;
   }
   return _webStateList->GetGroupOfWebStateAt(_webStateList->active_index());
-}
-
-// Inserts and activate a new WebState opened at `kChromeUINewTabURL` using
-// `insertionParams`.
-- (void)insertAndActivateNewWebStateWithInsertionParams:
-    (WebStateList::InsertionParams)insertionParams {
-  CHECK(_webStateList);
-  CHECK(_profile);
-
-  if (!IsAddNewTabAllowedByPolicy(_profile->GetPrefs(),
-                                  _profile->IsOffTheRecord())) {
-    return;
-  }
-
-  web::WebState::CreateParams params(_profile);
-  std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
-
-  GURL url(kChromeUINewTabURL);
-  web::NavigationManager::WebLoadParams loadParams(url);
-  loadParams.transition_type = ui::PAGE_TRANSITION_TYPED;
-  webState->GetNavigationManager()->LoadURLWithParams(loadParams);
-
-  _webStateList->InsertWebState(std::move(webState),
-                                insertionParams.Activate());
 }
 
 @end

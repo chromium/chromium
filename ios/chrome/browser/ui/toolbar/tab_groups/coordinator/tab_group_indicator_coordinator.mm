@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/ui/toolbar/tab_groups/coordinator/tab_group_indicator_mediator.h"
 #import "ios/chrome/browser/ui/toolbar/tab_groups/coordinator/tab_group_indicator_mediator_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_view.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -45,18 +46,21 @@
 
 - (void)start {
   CHECK(IsTabGroupIndicatorEnabled());
+  BOOL incognito = self.browser->GetProfile()->IsOffTheRecord();
   _view = [[TabGroupIndicatorView alloc] init];
   _view.displayedOnNTP = _displayedOnNTP;
-  _view.incognito = self.browser->GetProfile()->IsOffTheRecord();
+  _view.incognito = incognito;
   _view.toolbarHeightDelegate = self.toolbarHeightDelegate;
   tab_groups::TabGroupSyncService* tabGroupSyncService =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           self.browser->GetProfile());
   _mediator = [[TabGroupIndicatorMediator alloc]
-          initWithProfile:self.browser->GetProfile()
-      tabGroupSyncService:tabGroupSyncService
-                 consumer:_view
-             webStateList:self.browser->GetWebStateList()];
+      initWithTabGroupSyncService:tabGroupSyncService
+                         consumer:_view
+                     webStateList:self.browser->GetWebStateList()
+                        URLLoader:UrlLoadingBrowserAgent::FromBrowser(
+                                      self.browser)
+                        incognito:incognito];
   _mediator.delegate = self;
   _view.mutator = _mediator;
 }
