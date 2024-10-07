@@ -79,7 +79,7 @@ bool AudioWorkletMessagingProxy::IsProcessorRegistered(
   return processor_info_map_.Contains(name);
 }
 
-const Vector<CrossThreadAudioParamInfo>
+Vector<CrossThreadAudioParamInfo>
 AudioWorkletMessagingProxy::GetParamInfoListForProcessor(
     const String& name) const {
   DCHECK(IsProcessorRegistered(name));
