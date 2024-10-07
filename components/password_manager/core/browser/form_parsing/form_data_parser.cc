@@ -1161,7 +1161,7 @@ FormParsingResult FormDataParser::ParseAndReturnParsingResult(
       suggestion_banned_fields.push_back(field.field->renderer_id());
     }
   }
-  std::erase_if(processed_fields, [](ProcessedField field) {
+  std::erase_if(processed_fields, [](const ProcessedField& field) {
     return field.server_hints_non_credential_field;
   });
   // Server classified all fields as not related to credentials, early return.
