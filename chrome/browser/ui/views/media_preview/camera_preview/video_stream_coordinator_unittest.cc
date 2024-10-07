@@ -36,7 +36,7 @@ constexpr char kRenderedPercent[] =
     "MediaPreviews.UI.Preview.Permissions.Video.RenderedPercent";
 constexpr char kTotalVisibleDuration[] =
     "MediaPreviews.UI.Preview.Permissions.Video.TotalVisibleDuration";
-constexpr char TimeToActionWithoutPreview[] =
+constexpr char kTimeToActionWithoutPreview[] =
     "MediaPreviews.UI.Preview.Permissions.Video.TimeToActionWithoutPreview";
 
 }  // namespace
@@ -143,7 +143,7 @@ TEST_F(VideoStreamCoordinatorTest, ConnectToFrameHandlerAndReceiveFrames) {
   coordinator_.reset();
   histogram_tester_.ExpectUniqueSample(kTotalVisibleDuration,
                                        /*bucket_min_value=*/750, 1);
-  histogram_tester_.ExpectTotalCount(TimeToActionWithoutPreview, 0);
+  histogram_tester_.ExpectTotalCount(kTimeToActionWithoutPreview, 0);
 }
 
 TEST_F(VideoStreamCoordinatorTest, ConnectToFrameHandlerAndReceiveNoFrames) {
@@ -178,7 +178,7 @@ TEST_F(VideoStreamCoordinatorTest, ConnectToFrameHandlerAndReceiveNoFrames) {
   coordinator_.reset();
   histogram_tester_.ExpectUniqueSample(kTotalVisibleDuration,
                                        /*bucket_min_value=*/0, 1);
-  histogram_tester_.ExpectUniqueSample(TimeToActionWithoutPreview,
+  histogram_tester_.ExpectUniqueSample(kTimeToActionWithoutPreview,
                                        /*bucket_min_value=*/125, 1);
 }
 
@@ -203,5 +203,5 @@ TEST_F(VideoStreamCoordinatorTest,
 
   coordinator_.reset();
   histogram_tester_.ExpectTotalCount(kTotalVisibleDuration, 0);
-  histogram_tester_.ExpectTotalCount(TimeToActionWithoutPreview, 0);
+  histogram_tester_.ExpectTotalCount(kTimeToActionWithoutPreview, 0);
 }
