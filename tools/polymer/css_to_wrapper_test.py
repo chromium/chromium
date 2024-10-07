@@ -67,16 +67,16 @@ class CssToWrapperTest(unittest.TestCase):
                    'css_to_wrapper/foo_style_lit_only.css.ts',
                    'css_to_wrapper/expected/foo_style_lit_only.css.ts')
 
-  # Test case where a Lit style file is generated from the equivalent Polymer
+  # Test case where a Polymer style file is generated from the equivalent Lit
   # file.
-  def testCssToWrapperStyleLitCopy(self):
+  def testCssToWrapperStyleCopy(self):
     self._run_test(
-        'css_to_wrapper/foo_style_lit.css',
-        'css_to_wrapper/foo_style_lit.css.ts',
-        'css_to_wrapper/expected/foo_style_lit.css.ts',
-        # Need to pass the Polymer file as well, to satisfy an
+        'css_to_wrapper/foo_style_copy.css',
+        'css_to_wrapper/foo_style_copy.css.ts',
+        'css_to_wrapper/expected/foo_style_copy.css.ts',
+        # Need to pass the Lit file as well, to satisfy an
         # assertion in css_to_wrapper.py.
-        extra_css_files=['css_to_wrapper/foo_style.css'])
+        extra_css_files=['css_to_wrapper/foo_style_copy_lit.css'])
 
   def testCssToWrapperStyleNoIncludes(self):
     self._run_test('css_to_wrapper/foo_no_includes_style.css',
@@ -99,17 +99,17 @@ class CssToWrapperTest(unittest.TestCase):
                    'css_to_wrapper/expected/foo_style.min.css.ts',
                    minify=True)
 
-  # Test case where a Lit style file is generated from the equivalent Polymer
+  # Test case where a Polymer style file is generated from the equivalent Lit
   # file and minification is turned on.
-  def testCssToWrapperStyleLitCopyMinify(self):
+  def testCssToWrapperStyleCopyMinify(self):
     self._run_test(
-        'css_to_wrapper/foo_style_lit.css',
-        'css_to_wrapper/foo_style_lit.css.ts',
-        'css_to_wrapper/expected/foo_style_lit.min.css.ts',
+        'css_to_wrapper/foo_style_copy.css',
+        'css_to_wrapper/foo_style_copy.css.ts',
+        'css_to_wrapper/expected/foo_style_copy.min.css.ts',
         minify=True,
-        # Need to pass the Polymer file as well, to satisfy an
+        # Need to pass the Lit file as well, to satisfy an
         # assertion in css_to_wrapper.py.
-        extra_css_files=['css_to_wrapper/foo_style.css'])
+        extra_css_files=['css_to_wrapper/foo_style_copy_lit.css'])
 
   def testCssToWrapperUseJs(self):
     self._run_test('css_to_wrapper/foo_style.css',

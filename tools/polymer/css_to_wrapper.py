@@ -68,7 +68,7 @@ _TEMPLATE_MAP = {
 }
 
 # A suffix used for style files that are copies of Polymer styles ported into
-# Lit. It is treated specially below so that the Polymer file acts as a source
+# Lit. It is treated specially below so that the Lit file acts as a source
 # of truth, to avoid duplication while both files styles need to be available.
 # TODO(crbug.com/40943652): Remove special handling when having the same styles
 # available in both Polymer and Lit is no longer needed.
@@ -256,15 +256,14 @@ def main(argv):
 
     content = ''
 
-    if in_file.endswith(_LIT_SUFFIX):
-      # Treat the _LIT_SUFFIX in a special way, so that the CSS content is
-      # actually extracted from the equivalent Polymer file instead.
-      polymer_in_file = in_file.replace(_LIT_SUFFIX, '.css')
-      assert polymer_in_file in args.in_files
-      polymer_metadata = _extract_metadata(path.join(in_folder,
-                                                     polymer_in_file))
-      content = _extract_content(path.join(wrapper_in_folder, polymer_in_file),
-                                 polymer_metadata, args.minify)
+    lit_in_file = in_file.replace('.css', _LIT_SUFFIX)
+    if metadata['type'] == 'style' and lit_in_file in args.in_files:
+      # When a Polymer file has an equivalent "_lit.css" file, use the latter to
+      # extract the CSS content from, to facilitate migration without having to
+      # duplicate styles, such that the Lit file acts as the canonical source.
+      lit_metadata = _extract_metadata(path.join(in_folder, lit_in_file))
+      content = _extract_content(path.join(wrapper_in_folder, lit_in_file),
+                                 lit_metadata, args.minify)
     else:
       # Extract the CSS content from either the original or the minified files.
       content = _extract_content(path.join(wrapper_in_folder, in_file),

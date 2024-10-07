@@ -9,5 +9,9 @@
  * #include=other1 other2
  * #css_wrapper_metadata_end */
 
-/* Purposefully empty since this style is generated at build time from the
- * equivalent Polymer version. */
+div {
+  font-size: 2rem;
+  --foo-bar: calc(var(--foo-bar1)
+      - var(--foo-bar2)
+      - 3 * var(--foo-bar3));
+}
