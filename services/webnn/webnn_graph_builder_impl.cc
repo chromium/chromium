@@ -2507,6 +2507,11 @@ WebNNGraphBuilderImpl::ValidateGraph(
           // Input names must be unique.
           return std::nullopt;
         }
+        if (!context_properties.data_type_limits.input.Has(
+                operand->descriptor.data_type())) {
+          // Input data type not supported.
+          return std::nullopt;
+        }
         graph_inputs.push_back(id);
         processed_operands.insert(id);
         break;
@@ -2521,6 +2526,11 @@ WebNNGraphBuilderImpl::ValidateGraph(
           }
           if (!outputs.try_emplace(*name, operand->descriptor).second) {
             // Output names must be unique.
+            return std::nullopt;
+          }
+          if (!context_properties.data_type_limits.input.Has(
+                  operand->descriptor.data_type())) {
+            // Output data type not supported.
             return std::nullopt;
           }
           graph_outputs.push_back(id);
