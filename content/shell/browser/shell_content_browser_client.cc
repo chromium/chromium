@@ -214,6 +214,11 @@ class ShellVariationsServiceClient
   bool OverridesRestrictParameter(std::string* parameter) override {
     return false;
   }
+  base::FilePath GetVariationsSeedFileDir() override {
+    base::FilePath seed_file_dir;
+    base::PathService::Get(SHELL_DIR_USER_DATA, &seed_file_dir);
+    return seed_file_dir;
+  }
   bool IsEnterprise() override { return false; }
   // Profiles aren't supported, so nothing to do here.
   void RemoveGoogleGroupsFromPrefsForDeletedProfiles(

@@ -45,6 +45,7 @@ namespace variations::cros_early_boot::evaluate_seed {
 namespace {
 
 constexpr char kDefaultLocalStatePath[] = "/home/chronos/Local State";
+constexpr char kDefaultUserDataDir[] = "/home/chronos/";
 
 bool DetermineTrialState(std::unique_ptr<PrefService> local_state,
                          SafeSeed&& safe_seed,
@@ -206,6 +207,15 @@ bool CrosVariationsServiceClient::OverridesRestrictParameter(
   return false;
 }
 
+base::FilePath CrosVariationsServiceClient::GetVariationsSeedFileDir() {
+  return base::FilePath(kDefaultUserDataDir);
+}
+
+bool CrosVariationsServiceClient::IsEnterprise() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kEnterpriseEnrolledSwitch);
+}
+
 // Get the active channel, if applicable.
 version_info::Channel CrosVariationsServiceClient::GetChannel() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -216,11 +226,6 @@ version_info::Channel CrosVariationsServiceClient::GetChannel() {
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return version_info::Channel::UNKNOWN;
-}
-
-bool CrosVariationsServiceClient::IsEnterprise() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      kEnterpriseEnrolledSwitch);
 }
 
 std::optional<SafeSeed> GetSafeSeedData(FILE* stream) {

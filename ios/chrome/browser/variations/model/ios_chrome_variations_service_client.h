@@ -37,13 +37,14 @@ class IOSChromeVariationsServiceClient
   base::Version GetVersionForSimulation() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   network_time::NetworkTimeTracker* GetNetworkTimeTracker() override;
-  version_info::Channel GetChannel() override;
   bool OverridesRestrictParameter(std::string* parameter) override;
+  base::FilePath GetVariationsSeedFileDir() override;
+  std::unique_ptr<variations::SeedResponse>
+  TakeSeedFromNativeVariationsSeedStore() override;
   bool IsEnterprise() override;
   void RemoveGoogleGroupsFromPrefsForDeletedProfiles(
       PrefService* local_state) override;
-  std::unique_ptr<variations::SeedResponse>
-  TakeSeedFromNativeVariationsSeedStore() override;
+  version_info::Channel GetChannel() override;
 };
 
 #endif  // IOS_CHROME_BROWSER_VARIATIONS_MODEL_IOS_CHROME_VARIATIONS_SERVICE_CLIENT_H_

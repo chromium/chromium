@@ -5,6 +5,7 @@
 #include "components/variations/service/variations_service_client.h"
 
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/system/sys_info.h"
@@ -78,6 +79,10 @@ Study::FormFactor VariationsServiceClient::GetCurrentFormFactor() {
   NOTREACHED_IN_MIGRATION();
   return Study::DESKTOP;
 #endif  // BUILDFLAG(PLATFORM_CFM)
+}
+
+base::FilePath VariationsServiceClient::GetVariationsSeedFileDir() {
+  return base::FilePath();
 }
 
 std::unique_ptr<SeedResponse>

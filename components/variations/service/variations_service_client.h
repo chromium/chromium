@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/version.h"
 #include "components/variations/proto/study.pb.h"
@@ -51,6 +52,9 @@ class VariationsServiceClient {
 
   // Returns the current form factor of the device.
   virtual Study::FormFactor GetCurrentFormFactor();
+
+  // Returns the directory in which to store variations seed files.
+  virtual base::FilePath GetVariationsSeedFileDir();
 
   // If a native variations service that directly fetches the seed from the
   // server is implemented, returns the SeedResponse from the native variations
