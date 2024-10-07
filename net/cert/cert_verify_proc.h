@@ -151,6 +151,14 @@ class NET_EXPORT CertVerifyProc
     std::vector<CertificateWithConstraints>
         additional_trust_anchors_with_constraints;
 
+    // Additional trust leafs to consider during path validation, possibly with
+    // name constraints specified outside of the certificate.
+    std::vector<CertificateWithConstraints> additional_trust_leafs;
+
+    // Additional trust anchors/leafs to consider during path validation,
+    // possibly with name constraints specified outside of the certificate.
+    std::vector<CertificateWithConstraints> additional_trust_anchors_and_leafs;
+
     // Additional temporary certs to consider as intermediates during path
     // validation. Ordinarily, implementations of CertVerifier use intermediate
     // certs from the configured system store. This is implementation-specific

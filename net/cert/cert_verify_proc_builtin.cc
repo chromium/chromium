@@ -732,6 +732,22 @@ CertVerifyProcBuiltin::CertVerifyProcBuiltin(
       NetLogWithSource::Make(net::NetLogSourceType::CERT_VERIFY_PROC_CREATED);
   net_log.BeginEvent(NetLogEventType::CERT_VERIFY_PROC_CREATED);
 
+  // When adding additional certs from instance params, there needs to be a
+  // priority order if a cert is added with multiple different trust types.
+  //
+  // The priority is as follows:
+  //
+  //  (a) Distrusted SPKIs (though we don't check for SPKI collisions in added
+  //      certs; we rely on that to happen in path building).
+  //  (b) Trusted certs with enforced constraints both in the cert and
+  //      specified externally outside of the cert.
+  //  (c) Trusted certs with enforced constraints only within the cert.
+  //  (d) Trusted certs w/o enforced constraints.
+  //  (e) Unspecified certs.
+  //
+  //  No effort was made to categorize what applies if a cert is specified
+  //  within the same category multiple times.
+
   for (const auto& spki : instance_params.additional_distrusted_spkis) {
     additional_trust_store_.AddDistrustedCertificateBySPKI(
         std::string(base::as_string_view(spki)));
@@ -753,7 +769,6 @@ CertVerifyProcBuiltin::CertVerifyProcBuiltin(
        instance_params.additional_trust_anchors_with_constraints) {
     const std::shared_ptr<const bssl::ParsedCertificate>& cert =
         cert_with_constraints.certificate;
-
     additional_trust_store_.AddCertificate(cert, anchor_trust_enforcement);
     additional_constraints_.push_back(cert_with_constraints);
     bssl::CertErrors parsing_errors;
@@ -762,6 +777,51 @@ CertVerifyProcBuiltin::CertVerifyProcBuiltin(
                                   bssl::CertificateTrust::ForTrustAnchor(),
                                   parsing_errors);
     });
+  }
+
+  bssl::CertificateTrust leaf_trust = bssl::CertificateTrust::ForTrustedLeaf();
+
+  for (const auto& cert_with_possible_constraints :
+       instance_params.additional_trust_leafs) {
+    const std::shared_ptr<const bssl::ParsedCertificate>& cert =
+        cert_with_possible_constraints.certificate;
+    if (!additional_trust_store_.Contains(cert.get())) {
+      if (!cert_with_possible_constraints.permitted_dns_names.empty() ||
+          !cert_with_possible_constraints.permitted_cidrs.empty()) {
+        additional_constraints_.push_back(cert_with_possible_constraints);
+      }
+
+      bssl::CertErrors parsing_errors;
+      additional_trust_store_.AddCertificate(cert, leaf_trust);
+      net_log.AddEvent(NetLogEventType::CERT_VERIFY_PROC_ADDITIONAL_CERT, [&] {
+        return NetLogAdditionalCert(cert->cert_buffer(), leaf_trust,
+                                    parsing_errors);
+      });
+    }
+  }
+
+  bssl::CertificateTrust anchor_leaf_trust =
+      bssl::CertificateTrust::ForTrustAnchorOrLeaf()
+          .WithEnforceAnchorConstraints()
+          .WithEnforceAnchorExpiry();
+
+  for (const auto& cert_with_possible_constraints :
+       instance_params.additional_trust_anchors_and_leafs) {
+    const std::shared_ptr<const bssl::ParsedCertificate>& cert =
+        cert_with_possible_constraints.certificate;
+    if (!additional_trust_store_.Contains(cert.get())) {
+      if (!cert_with_possible_constraints.permitted_dns_names.empty() ||
+          !cert_with_possible_constraints.permitted_cidrs.empty()) {
+        additional_constraints_.push_back(cert_with_possible_constraints);
+      }
+
+      bssl::CertErrors parsing_errors;
+      additional_trust_store_.AddCertificate(cert, anchor_leaf_trust);
+      net_log.AddEvent(NetLogEventType::CERT_VERIFY_PROC_ADDITIONAL_CERT, [&] {
+        return NetLogAdditionalCert(cert->cert_buffer(), anchor_leaf_trust,
+                                    parsing_errors);
+      });
+    }
   }
 
   for (const auto& cert :

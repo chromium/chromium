@@ -45,6 +45,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "crypto/sha2.h"
+#include "third_party/boringssl/src/pki/trust_store.h"
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
@@ -279,6 +280,104 @@ IN_PROC_BROWSER_TEST_F(CertVerifierUserSettingsTest, TestUserSettingsUsed) {
 }
 
 IN_PROC_BROWSER_TEST_F(CertVerifierUserSettingsTest,
+                       TestUserSettingsUsedAnchorConstraints) {
+  net::EmbeddedTestServer https_test_server{
+      net::EmbeddedTestServer::TYPE_HTTPS};
+  // Use a certificate valid for the dns name localhost rather than an IP.
+  https_test_server.SetSSLConfig(
+      net::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
+
+  https_test_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_test_server.Start());
+
+  ProfileNetworkContextService* profile_network_context_service =
+      ProfileNetworkContextServiceFactory::GetForContext(browser()->profile());
+  net::ServerCertificateDatabaseService* server_certificate_database_service =
+      net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
+          browser()->profile());
+
+  {
+    scoped_refptr<net::X509Certificate> root_cert =
+        net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
+    ASSERT_TRUE(root_cert);
+    net::ServerCertificateDatabase::CertInformation user_root_info;
+    user_root_info.sha256hash_hex =
+        base::HexEncode(crypto::SHA256Hash(root_cert->cert_span()));
+    user_root_info.cert_metadata.mutable_trust()->set_trust_type(
+        chrome_browser_server_certificate_database::CertificateTrust::
+            CERTIFICATE_TRUST_TYPE_TRUSTED);
+    user_root_info.cert_metadata.mutable_constraints()->add_dns_names(
+        "localhost");
+    user_root_info.der_cert = base::ToVector(root_cert->cert_span());
+
+    base::test::TestFuture<bool> future;
+    server_certificate_database_service->AddOrUpdateUserCertificate(
+        std::move(user_root_info), future.GetCallback());
+    ASSERT_TRUE(future.Get());
+  }
+
+  // TODO(crbug.com/40928765): remove once a notification method auto-runs
+  // this.
+  profile_network_context_service->UpdateAdditionalCertificates();
+  // Clear test roots so that cert validation only happens with
+  // what's in the relevant root store + user settings.
+  net::TestRootCerts::GetInstance()->Clear();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server.GetURL("/simple.html")));
+  EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(
+      chrome_test_utils::GetActiveWebContents(this)));
+}
+
+IN_PROC_BROWSER_TEST_F(CertVerifierUserSettingsTest,
+                       TestUserSettingsUsedAnchorConstraintsWrongConstraint) {
+  net::EmbeddedTestServer https_test_server{
+      net::EmbeddedTestServer::TYPE_HTTPS};
+  // Use a certificate valid for the dns name localhost rather than an IP.
+  https_test_server.SetSSLConfig(
+      net::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
+
+  https_test_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_test_server.Start());
+
+  ProfileNetworkContextService* profile_network_context_service =
+      ProfileNetworkContextServiceFactory::GetForContext(browser()->profile());
+  net::ServerCertificateDatabaseService* server_certificate_database_service =
+      net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
+          browser()->profile());
+
+  {
+    scoped_refptr<net::X509Certificate> root_cert =
+        net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
+    ASSERT_TRUE(root_cert);
+    net::ServerCertificateDatabase::CertInformation user_root_info;
+    user_root_info.sha256hash_hex =
+        base::HexEncode(crypto::SHA256Hash(root_cert->cert_span()));
+    user_root_info.cert_metadata.mutable_trust()->set_trust_type(
+        chrome_browser_server_certificate_database::CertificateTrust::
+            CERTIFICATE_TRUST_TYPE_TRUSTED);
+    user_root_info.cert_metadata.mutable_constraints()->add_dns_names(
+        "cruddyhost");
+    user_root_info.der_cert = base::ToVector(root_cert->cert_span());
+
+    base::test::TestFuture<bool> future;
+    server_certificate_database_service->AddOrUpdateUserCertificate(
+        std::move(user_root_info), future.GetCallback());
+    ASSERT_TRUE(future.Get());
+  }
+
+  // TODO(crbug.com/40928765): remove once a notification method auto-runs
+  // this.
+  profile_network_context_service->UpdateAdditionalCertificates();
+  // Clear test roots so that cert validation only happens with
+  // what's in the relevant root store + user settings.
+  net::TestRootCerts::GetInstance()->Clear();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server.GetURL("/simple.html")));
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
+      chrome_test_utils::GetActiveWebContents(this)));
+}
+
+IN_PROC_BROWSER_TEST_F(CertVerifierUserSettingsTest,
                        TestUserSettingsUsedDistrusted) {
   net::EmbeddedTestServer https_test_server(
       net::EmbeddedTestServer::TYPE_HTTPS);
@@ -365,4 +464,57 @@ IN_PROC_BROWSER_TEST_F(CertVerifierUserSettingsTest,
   EXPECT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
       incognito_browser->tab_strip_model()->GetActiveWebContents()));
 }
+
+IN_PROC_BROWSER_TEST_F(CertVerifierUserSettingsTest,
+                       TestUserSettingsTrustedLeaf) {
+  net::EmbeddedTestServer https_test_server(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_test_server.SetSSLConfig(
+      net::test_server::EmbeddedTestServer::CERT_AUTO);
+  https_test_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_test_server.Start());
+  ProfileNetworkContextService* profile_network_context_service =
+      ProfileNetworkContextServiceFactory::GetForContext(browser()->profile());
+  net::ServerCertificateDatabaseService* server_certificate_database_service =
+      net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
+          browser()->profile());
+
+  scoped_refptr<net::X509Certificate> leaf_cert =
+      https_test_server.GetCertificate();
+  ASSERT_TRUE(leaf_cert);
+
+  net::ServerCertificateDatabase::CertInformation cert_info;
+  cert_info.sha256hash_hex =
+      base::HexEncode(crypto::SHA256Hash(leaf_cert->cert_span()));
+  cert_info.cert_metadata.mutable_trust()->set_trust_type(
+      chrome_browser_server_certificate_database::CertificateTrust::
+          CERTIFICATE_TRUST_TYPE_TRUSTED);
+  cert_info.der_cert = base::ToVector(leaf_cert->cert_span());
+
+  // Sanity check.
+  ASSERT_EQ(net::ServerCertificateDatabase::GetUserCertificateTrust(cert_info),
+            bssl::CertificateTrustType::TRUSTED_LEAF);
+
+  base::test::TestFuture<bool> future;
+  server_certificate_database_service->AddOrUpdateUserCertificate(
+      std::move(cert_info), future.GetCallback());
+  ASSERT_TRUE(future.Get());
+
+  // TODO(crbug.com/40928765): remove once a notification method auto-runs
+  // this.
+  profile_network_context_service->UpdateAdditionalCertificates();
+
+  // Clear test roots so that cert validation only happens with
+  // what's in the relevant root store + user settings.
+  net::TestRootCerts::GetInstance()->Clear();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server.GetURL("/simple.html")));
+  EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(
+      chrome_test_utils::GetActiveWebContents(this)));
+}
+
+// TODO(crbug.com/40928765): add browser test for TRUSTED_ANCHOR_AND_LEAF cert
+// getting returned from ServerCertificateDatabase; doing this with
+// EmbeddedTestServer will require modifications to EmbeddedTestServer.
+
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)

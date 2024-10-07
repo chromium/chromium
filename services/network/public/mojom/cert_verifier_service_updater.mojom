@@ -18,6 +18,10 @@ struct CertWithConstraints {
   array<CIDR> permitted_cidrs;
 };
 
+// TODO(crbug.com/40928765): change this struct to not have 7 different lists
+// of certs that imply different trusts, instead have only 1 or 2 lists of
+// certs where the trust level is passed with the certificate. Might not be 1
+// list (since distrust is by spki and is different enough).
 struct AdditionalCertificates {
   // List of untrusted certificates, which will be used during path building.
   array<array<uint8>> all_certificates;
@@ -31,6 +35,14 @@ struct AdditionalCertificates {
   // List of additional trust anchors with constraints specified separate from
   // the certificate.
   array<CertWithConstraints> trust_anchors_with_additional_constraints;
+
+  // List of additional certs that are both trust anchors and trusted leafs.
+  // They may also have additional constraints.
+  array<CertWithConstraints> trust_anchors_and_leafs;
+
+  // List of additional trusted leafs.
+  // They may also have additional constraints.
+  array<CertWithConstraints> trust_leafs;
 
   // List of SPKIs that are explicitly distrusted.
   array<array<uint8>> distrusted_spkis;

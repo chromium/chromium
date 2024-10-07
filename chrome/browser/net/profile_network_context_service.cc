@@ -289,6 +289,81 @@ std::unique_ptr<net::ClientCertStore> GetWrappedCertStore(
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+bool IsValidDNSConstraint(std::string_view possible_dns_constraint) {
+  return base::IsStringASCII(possible_dns_constraint) &&
+         possible_dns_constraint.length() <= 255;
+}
+
+// Parses the |possible_cidr_constraint|, populating |parsed_cidr| and |mask|,
+// and then return true.
+//
+// If |possible_cidr_constraint| did not properly parse, returns false. The
+// state of |parsed_cidr| and |mask| in this case is not guaranteed.
+bool ParseCIDRConstraint(std::string_view possible_cidr_constraint,
+                         net::IPAddress* parsed_cidr,
+                         net::IPAddress* mask) {
+  size_t prefix_length;
+  if (!net::ParseCIDRBlock(possible_cidr_constraint, parsed_cidr,
+                           &prefix_length)) {
+    return false;
+  }
+  if (parsed_cidr->IsIPv4()) {
+    if (!net::IPAddress::CreateIPv4Mask(mask, prefix_length)) {
+      return false;
+    }
+  } else if (parsed_cidr->IsIPv6()) {
+    if (!net::IPAddress::CreateIPv6Mask(mask, prefix_length)) {
+      return false;
+    }
+  } else {
+    // Somehow got an IP address that isn't ipv4 or ipv6?
+    return false;
+  }
+  return true;
+}
+
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+// Add a cert with constraints to the provided list.
+// This will add a certificate from |cert_info| to the |cert_list| with
+// any added constraints that are in |cert_info.cert_metadata|. It is okay for
+// there to be no constraints in |cert_info.cert_metadata|.
+//
+// If any constraints in |cert_info.cert_metadata| are not valid, then the
+// certificate will not be added to |cert_list| and this function will return
+// false. Otherwise, the certificate will be added to |cert_list| and this
+// function will return true.
+bool MaybeAddCertWithConstraints(
+    const net::ServerCertificateDatabase::CertInformation& cert_info,
+    std::vector<cert_verifier::mojom::CertWithConstraintsPtr>* cert_list) {
+  auto cert_with_constraints_mojo =
+      cert_verifier::mojom::CertWithConstraints::New();
+  cert_with_constraints_mojo->certificate = cert_info.der_cert;
+  for (const auto& dns_constraint :
+       cert_info.cert_metadata.constraints().dns_names()) {
+    if (IsValidDNSConstraint(dns_constraint)) {
+      cert_with_constraints_mojo->permitted_dns_names.push_back(dns_constraint);
+    } else {
+      return false;
+    }
+  }
+  for (const auto& cidr_constraint :
+       cert_info.cert_metadata.constraints().cidrs()) {
+    net::IPAddress parsed_cidr;
+    net::IPAddress mask;
+    if (ParseCIDRConstraint(cidr_constraint, &parsed_cidr, &mask)) {
+      cert_with_constraints_mojo->permitted_cidrs.push_back(
+          cert_verifier::mojom::CIDR::New(/*ip=*/parsed_cidr,
+                                          /*mask=*/mask));
+    } else {
+      return false;
+    }
+  }
+
+  cert_list->push_back(std::move(cert_with_constraints_mojo));
+  return true;
+}
+#endif
+
 }  // namespace
 
 ProfileNetworkContextService::ProfileNetworkContextService(Profile* profile)
@@ -628,8 +703,8 @@ ProfileNetworkContextService::GetCertificatePolicy(
     cert_with_constraints_mojo->certificate = std::move(*decoded_cert_opt);
     if (permitted_dns_names) {
       for (const base::Value& dns_name : *permitted_dns_names) {
-        if (dns_name.is_string() && base::IsStringASCII(dns_name.GetString()) &&
-            dns_name.GetString().length() <= 255) {
+        if (dns_name.is_string() &&
+            IsValidDNSConstraint(dns_name.GetString())) {
           cert_with_constraints_mojo->permitted_dns_names.push_back(
               dns_name.GetString());
         } else {
@@ -650,32 +725,15 @@ ProfileNetworkContextService::GetCertificatePolicy(
         }
         net::IPAddress parsed_cidr;
         net::IPAddress mask;
-        size_t prefix_length;
-        if (!net::ParseCIDRBlock(cidr.GetString(), &parsed_cidr,
-                                 &prefix_length)) {
-          // Don't add trust for cert if CIDR block doesn't parse.
-          invalid_constraint = true;
-          break;
-        }
-        if (parsed_cidr.IsIPv4()) {
-          if (!net::IPAddress::CreateIPv4Mask(&mask, prefix_length)) {
-            // Error in mask creation.
-            invalid_constraint = true;
-            break;
-          }
-        } else if (parsed_cidr.IsIPv6()) {
-          if (!net::IPAddress::CreateIPv6Mask(&mask, prefix_length)) {
-            // Error in mask creation.
-            invalid_constraint = true;
-            break;
-          }
+        if (ParseCIDRConstraint(cidr.GetString(), &parsed_cidr, &mask)) {
+          cert_with_constraints_mojo->permitted_cidrs.push_back(
+              cert_verifier::mojom::CIDR::New(/*ip=*/parsed_cidr,
+                                              /*mask=*/mask));
+
         } else {
-          // Somehow got an IP address that isn't ipv4 or ipv6?
           invalid_constraint = true;
           break;
         }
-        cert_with_constraints_mojo->permitted_cidrs.push_back(
-            cert_verifier::mojom::CIDR::New(/*ip=*/parsed_cidr, /*mask=*/mask));
       }
     }
     if (invalid_constraint) {
@@ -771,17 +829,28 @@ void ProfileNetworkContextService::
             }
 
             case bssl::CertificateTrustType::TRUSTED_ANCHOR:
-              // TODO(crbug.com/40928765): add additional constraints.
-              additional_certs->trust_anchors_with_enforced_constraints
-                  .push_back(cert_info.der_cert);
+              if (!cert_info.cert_metadata.has_constraints() ||
+                  (cert_info.cert_metadata.constraints().dns_names_size() ==
+                       0 &&
+                   cert_info.cert_metadata.constraints().cidrs_size() == 0)) {
+                additional_certs->trust_anchors_with_enforced_constraints
+                    .push_back(cert_info.der_cert);
+              } else {
+                MaybeAddCertWithConstraints(
+                    cert_info,
+                    &additional_certs
+                         ->trust_anchors_with_additional_constraints);
+              }
               break;
 
             case bssl::CertificateTrustType::TRUSTED_ANCHOR_OR_LEAF:
+              MaybeAddCertWithConstraints(
+                  cert_info, &additional_certs->trust_anchors_and_leafs);
+              break;
             case bssl::CertificateTrustType::TRUSTED_LEAF:
-              // TODO(crbug.com/40928765): There's currently no place to pass
-              // this through mojo to the cert verifier; add this to the mojo
-              // message after this becomes possible.
-              continue;
+              MaybeAddCertWithConstraints(cert_info,
+                                          &additional_certs->trust_leafs);
+              break;
           }
         }
         storage_partition->GetCertVerifierServiceUpdater()
