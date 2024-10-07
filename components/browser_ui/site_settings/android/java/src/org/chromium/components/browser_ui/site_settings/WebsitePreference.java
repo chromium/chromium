@@ -260,12 +260,10 @@ class WebsitePreference extends ChromeImageViewPreference {
         super.onBindViewHolder(holder);
         TextView usageText = (TextView) holder.findViewById(R.id.usage_text);
         usageText.setVisibility(View.GONE);
-        var resources = getContext().getResources();
         if (mCategory.getType() == SiteSettingsCategory.Type.USE_STORAGE) {
             long totalUsage = mSite.getTotalUsage();
             if (totalUsage > 0) {
                 usageText.setText(Formatter.formatShortFileSize(getContext(), totalUsage));
-                usageText.setTextSize(resources.getDimensionPixelSize(R.dimen.usage_text_size));
                 usageText.setVisibility(View.VISIBLE);
             }
         }
