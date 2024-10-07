@@ -6831,10 +6831,6 @@ crbug.com/1464614 [ Win11-arm64 ] http/tests/media/video-play-stall-before-meta-
 # Gardener 2023-07-26
 crbug.com/1364187 http/tests/misc/scroll-cross-origin-iframes.html [ Failure Pass ]
 
-crbug.com/1430516 virtual/prefetch/external/wpt/speculation-rules/prefetch/out-of-document-rule-set.https.html?include=* [ Failure Pass Timeout ]
-crbug.com/1430516 virtual/prefetch-reusable/external/wpt/speculation-rules/prefetch/out-of-document-rule-set.https.html?include=* [ Failure Pass Timeout ]
-crbug.com/1430516 virtual/prefetch-new-wait-loop/external/wpt/speculation-rules/prefetch/out-of-document-rule-set.https.html?include=* [ Failure Pass Timeout ]
-
 # Gardener 2023-07-27
 crbug.com/1468169 external/wpt/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.disconnected-font-size-math.html [ Failure Pass ]
 
