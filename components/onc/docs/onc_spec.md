@@ -1538,7 +1538,11 @@ type exists to configure the authentication.
 * **SubjectAlternativeNameMatch**
     * (optional) - [array of AlternativeSubjectName](#AlternativeSubjectName-type)
     * A list of alternative subject names to be matched against the alternative
-      subject name of an authentication server certificate.
+      subject names of an authentication server certificate.
+      If set, the server certificate is only accepted when any of the list items
+      matches an entry in the alternative subject name extension of the server
+      certificate.
+
 
 * **DomainSuffixMatch**
     * (optional) - **array of string**
