@@ -112,6 +112,9 @@ enum ChromeDistanceMetric {
   DISTANCE_TOAST_BUBBLE_HEIGHT_CONTENT,
   // Width and height of the leading vector icon shown in the toast bubble.
   DISTANCE_TOAST_BUBBLE_LEADING_ICON_SIZE,
+  // Left and right margins of the leading vector icon shown in the toast
+  // bubble.
+  DISTANCE_TOAST_BUBBLE_LEADING_ICON_SIDE_MARGINS,
   // Distance between left border of the toast and the icon.
   DISTANCE_TOAST_BUBBLE_MARGIN_LEFT,
   // Distance between the right border of the toast and the action button, if
