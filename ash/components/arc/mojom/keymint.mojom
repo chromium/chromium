@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 3
+// Next MinVersion: 4
 
 // This file defines the mojo interface between Android and Chrome OS for the
 // keymint implementation used in ARC.
@@ -33,7 +33,7 @@ interface KeyMintInstance {
 // refer to Android's KeyMint AIDL files for a more detailed description on how
 // the methods and structs below should function.
 // https://cs.android.com/android/_/android/platform/hardware/interfaces/+/466f3c55a90631f5dd9a6fa949278a2a0a435b71:security/keymint/aidl/android/hardware/security/keymint/;bpv=1
-// Next Method ID: 26
+// Next Method ID: 27
 interface KeyMintServer {
   // Sets the Android version information used.
   SetSystemVersion@0(uint32 android_version, uint32 android_patchlevel);
@@ -177,6 +177,10 @@ interface KeyMintServer {
   [MinVersion=2]
   GenerateCertificateRequest@25(CertificateRequest request)
       => (GenerateCertificateRequestResultOrError response);
+
+  // Sets the Android vendor patch level to be used.
+  [MinVersion=3]
+  SetVendorPatchLevel@26(uint32 android_vendor_patchlevel);
 };
 
 struct AttestationKey {
