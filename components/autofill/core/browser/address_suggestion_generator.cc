@@ -11,6 +11,7 @@
 
 #include "base/check_deref.h"
 #include "base/containers/contains.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
@@ -610,8 +611,7 @@ int GetNumberOfMinimalFieldsToShow(FieldType trigger_field_type,
 // used as a secondary text in the corresponding suggestion bubble.
 // `field_types` the types of the fields that will be filled by the suggestion.
 std::vector<std::u16string> GetProfileSuggestionLabels(
-    const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
-        profiles,
+    const std::vector<AutofillProfile>& profiles,
     const FieldTypeSet& field_types,
     FieldType trigger_field_type,
     SuggestionType suggestion_type,
@@ -620,11 +620,17 @@ std::vector<std::u16string> GetProfileSuggestionLabels(
   std::vector<std::u16string> differentiating_labels;
   const bool is_in_full_form_filling_mode =
       suggestion_type == SuggestionType::kAddressEntry;
+  auto profile_ptrs =
+      base::ToVector(profiles,
+                     [](const AutofillProfile& profile)
+                         -> raw_ptr<const AutofillProfile, VectorExperimental> {
+                       return &profile;
+                     });
   if (!IsAddressType(trigger_field_type) &&
       base::FeatureList::IsEnabled(
           features::kAutofillForUnclassifiedFieldsAvailable)) {
     differentiating_labels =
-        GetProfileSuggestionLabelForNonAddressField(profiles, app_locale);
+        GetProfileSuggestionLabelForNonAddressField(profile_ptrs, app_locale);
   } else if ((!is_in_full_form_filling_mode ||
               features::kAutofillGranularFillingAvailableWithImprovedLabelsParam
                   .Get()) &&
@@ -635,14 +641,14 @@ std::vector<std::u16string> GetProfileSuggestionLabels(
     // the feature is enabled.
     // All other granular filling modes should always use this flow.
     AutofillProfile::CreateInferredLabels(
-        profiles, /*suggested_fields=*/std::nullopt, trigger_field_type,
+        profile_ptrs, /*suggested_fields=*/std::nullopt, trigger_field_type,
         {trigger_field_type},
         GetNumberOfMinimalFieldsToShow(trigger_field_type, suggestion_type),
         app_locale, &differentiating_labels,
         /*use_improved_labels_order=*/true);
   } else {
     AutofillProfile::CreateInferredLabels(
-        profiles, field_types, /*triggering_field_type=*/std::nullopt,
+        profile_ptrs, field_types, /*triggering_field_type=*/std::nullopt,
         {trigger_field_type},
         /*minimal_fields_shown=*/1, app_locale, &differentiating_labels);
   }
@@ -656,8 +662,7 @@ std::vector<std::u16string> GetProfileSuggestionLabels(
 // is not unique.
 std::vector<std::vector<Suggestion::Text>>
 CreateSuggestionLabelsWithGranularFillingDetails(
-    const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
-        profiles,
+    const std::vector<AutofillProfile>& profiles,
     const FieldTypeSet& field_types,
     SuggestionType suggestion_type,
     FieldType trigger_field_type,
@@ -1047,13 +1052,13 @@ ProfilesToSuggestOptions GetProfilesToSuggestOptions(
 // `field_types`, which are the relevant types for the current suggestion.
 // `options` defines what strategies to follow by the function in order to
 // filter the list or returned profiles.
-std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
-GetProfilesToSuggest(const AddressDataManager& address_data,
-                     FieldType trigger_field_type,
-                     const std::u16string& field_contents,
-                     bool field_is_autofilled,
-                     const FieldTypeSet& field_types,
-                     ProfilesToSuggestOptions options) {
+std::vector<AutofillProfile> GetProfilesToSuggest(
+    const AddressDataManager& address_data,
+    FieldType trigger_field_type,
+    const std::u16string& field_contents,
+    bool field_is_autofilled,
+    const FieldTypeSet& field_types,
+    ProfilesToSuggestOptions options) {
   // Get the profiles to suggest, which are already sorted.
   std::vector<const AutofillProfile*> sorted_profiles =
       address_data.GetProfilesToSuggest();
@@ -1088,7 +1093,9 @@ GetProfilesToSuggest(const AddressDataManager& address_data,
   if (profiles_to_suggest.size() > kMaxDisplayedAddressSuggestions) {
     profiles_to_suggest.resize(kMaxDisplayedAddressSuggestions);
   }
-  return profiles_to_suggest;
+  return base::ToVector(
+      profiles_to_suggest,
+      [](const AutofillProfile* profile) { return *profile; });
 }
 
 // Returns a list of Suggestion objects, each representing an element in
@@ -1097,8 +1104,7 @@ GetProfilesToSuggest(const AddressDataManager& address_data,
 // The profiles passed to this function should already have been matched on
 // `trigger_field_contents_canon` and deduplicated.
 std::vector<Suggestion> CreateSuggestionsFromProfiles(
-    const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
-        profiles,
+    std::vector<AutofillProfile> profiles,
     const std::string& gaia_email,
     const FieldTypeSet& field_types,
     SuggestionType suggestion_type,
@@ -1112,6 +1118,21 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
   if (profiles.empty()) {
     return {};
   }
+
+  for (AutofillProfile& profile : profiles) {
+    // If the following conditions are met:
+    // - A plus address override is available
+    // - The profile's email address is the same as the user's Google Account
+    // email.
+    // Then the profile's email address will be replaced with the plus
+    // address in order to show the updated email on the suggestion label.
+    if (plus_address_email_override && profile.HasInfo(EMAIL_ADDRESS) &&
+        base::UTF16ToUTF8(profile.GetRawInfo(EMAIL_ADDRESS)) == gaia_email) {
+      profile.SetRawInfo(EMAIL_ADDRESS,
+                         base::UTF8ToUTF16(*plus_address_email_override));
+    }
+  }
+
   std::vector<Suggestion> suggestions;
   std::vector<std::vector<Suggestion::Text>> labels =
       CreateSuggestionLabelsWithGranularFillingDetails(
@@ -1146,21 +1167,7 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
           : trigger_field_type;
   const bool is_filling_address_form = IsAddressType(trigger_field_type);
   for (size_t i = 0; i < profiles.size(); ++i) {
-    AutofillProfile profile = *profiles[i];
-    // If the following conditions are met:
-    // - The trigger field is an email field
-    // - A plus address override is available
-    // - The profile's email address is the same as the user's Google Account
-    // email. Then the profile's email address will be replaced with the plus
-    // address in order to show the updated email on the suggestion label.
-    if (trigger_field_type == EMAIL_ADDRESS && plus_address_email_override) {
-      if (profile.HasInfo(EMAIL_ADDRESS) &&
-          base::UTF16ToUTF8(profile.GetRawInfo(EMAIL_ADDRESS)) == gaia_email) {
-        profile.SetRawInfo(EMAIL_ADDRESS,
-                           base::UTF8ToUTF16(*plus_address_email_override));
-      }
-    }
-
+    const AutofillProfile& profile = profiles[i];
     // Compute the main text to be displayed in the suggestion bubble.
     std::u16string main_text =
         GetProfileSuggestionMainText(profile, app_locale, main_text_field_type);
@@ -1239,14 +1246,13 @@ std::vector<Suggestion> GetSuggestionsForProfiles(
     SuggestionType suggestion_type,
     AutofillSuggestionTriggerSource trigger_source,
     std::optional<std::string> plus_address_email_override) {
-  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
-      profiles_to_suggest = GetProfilesToSuggest(
-          client.GetPersonalDataManager()->address_data_manager(),
-          trigger_field_type, trigger_field.value(),
-          trigger_field.is_autofilled(), field_types,
-          GetProfilesToSuggestOptions(trigger_field_type, trigger_field.value(),
-                                      trigger_field.is_autofilled(),
-                                      trigger_source));
+  std::vector<AutofillProfile> profiles_to_suggest = GetProfilesToSuggest(
+      client.GetPersonalDataManager()->address_data_manager(),
+      trigger_field_type, trigger_field.value(), trigger_field.is_autofilled(),
+      field_types,
+      GetProfilesToSuggestOptions(trigger_field_type, trigger_field.value(),
+                                  trigger_field.is_autofilled(),
+                                  trigger_source));
   // If autofill for addresses is triggered from the context menu on an address
   // field and no suggestions can be shown (i.e. if a user has only addresses
   // without emails and then triggers autofill from the context menu on an email
@@ -1273,7 +1279,7 @@ std::vector<Suggestion> GetSuggestionsForProfiles(
           .email;
 
   std::vector<Suggestion> suggestions = CreateSuggestionsFromProfiles(
-      profiles_to_suggest, gaia_email, field_types, suggestion_type,
+      std::move(profiles_to_suggest), gaia_email, field_types, suggestion_type,
       trigger_field_type, trigger_field.max_length(),
       std::move(plus_address_email_override), client.IsOffTheRecord(),
       client.GetPersonalDataManager()->address_data_manager().app_locale());
@@ -1305,13 +1311,13 @@ Suggestion CreateManageAddressesSuggestion() {
   return suggestion;
 }
 
-std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
-GetProfilesToSuggestForTest(const AddressDataManager& address_data,
-                            FieldType trigger_field_type,
-                            const std::u16string& field_contents,
-                            bool field_is_autofilled,
-                            const FieldTypeSet& field_types,
-                            AutofillSuggestionTriggerSource trigger_source) {
+std::vector<AutofillProfile> GetProfilesToSuggestForTest(
+    const AddressDataManager& address_data,
+    FieldType trigger_field_type,
+    const std::u16string& field_contents,
+    bool field_is_autofilled,
+    const FieldTypeSet& field_types,
+    AutofillSuggestionTriggerSource trigger_source) {
   return GetProfilesToSuggest(
       address_data, trigger_field_type, field_contents, field_is_autofilled,
       field_types,
@@ -1320,8 +1326,7 @@ GetProfilesToSuggestForTest(const AddressDataManager& address_data,
 }
 
 std::vector<Suggestion> CreateSuggestionsFromProfilesForTest(
-    const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
-        profiles,
+    std::vector<AutofillProfile> profiles,
     const FieldTypeSet& field_types,
     SuggestionType suggestion_type,
     FieldType trigger_field_type,
@@ -1331,9 +1336,9 @@ std::vector<Suggestion> CreateSuggestionsFromProfilesForTest(
     std::optional<std::string> plus_address_email_override,
     const std::string& gaia_email) {
   return CreateSuggestionsFromProfiles(
-      profiles, gaia_email, field_types, suggestion_type, trigger_field_type,
-      trigger_field_max_length, plus_address_email_override, is_off_the_record,
-      app_locale);
+      std::move(profiles), gaia_email, field_types, suggestion_type,
+      trigger_field_type, trigger_field_max_length, plus_address_email_override,
+      is_off_the_record, app_locale);
 }
 
 }  // namespace autofill

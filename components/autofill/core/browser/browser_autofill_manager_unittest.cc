@@ -8086,8 +8086,12 @@ class BrowserAutofillManagerPlusAddressTest
 
 // Ensure that plus address options aren't queried for non-email fields.
 TEST_F(BrowserAutofillManagerPlusAddressTest, NoPlusAddressesWithNameFields) {
-  EXPECT_CALL(plus_address_delegate(), GetAffiliatedPlusAddresses).Times(0);
-
+  const std::vector<std::string> plus_addresses = {kPlusAddress};
+  EXPECT_CALL(plus_address_delegate(), GetAffiliatedPlusAddresses)
+      .WillOnce(RunOnceCallback<1>(plus_addresses));
+  EXPECT_CALL(plus_address_delegate(),
+              GetSuggestionsFromPlusAddresses(plus_addresses, _, _, _, _, _))
+      .Times(0);
   // Set up our form data.
   FormData form = test::GetFormData(
       {.fields = {{.role = NAME_FIRST, .autocomplete_attribute = "given-name"},

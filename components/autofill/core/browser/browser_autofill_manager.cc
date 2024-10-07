@@ -1505,7 +1505,6 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
        context.is_autofill_available &&
        !context.do_not_generate_autofill_suggestions &&
        context.filling_product == FillingProduct::kAddress && autofill_field &&
-       autofill_field->Type().group() == FieldTypeGroup::kEmail &&
        client().GetPlusAddressDelegate() &&
        client().GetPlusAddressDelegate()->IsPlusAddressFillingEnabled(
            client().GetLastCommittedPrimaryMainFrameOrigin()));
@@ -1607,13 +1606,15 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
                             std::nullopt);
     return;
   }
-
   // Only offer plus address suggestions together with address suggestions if
   // these exist. Otherwise, plus address suggestions will be generated and
   // shown alongside single field form fill suggestions.
+  // TODO(crbug.com/324557053): Do not generate plus address suggestions if the
+  // plus address email override was applied on at least one address suggestion.
   const bool should_offer_plus_addresses_with_profiles =
-      context.field_is_relevant_for_plus_addresses && !suggestions.empty();
-
+      context.field_is_relevant_for_plus_addresses &&
+      autofill_field->Type().group() == FieldTypeGroup::kEmail &&
+      !suggestions.empty();
   // Try to show plus address suggestions. If the user specifically requested
   // plus addresses, disregard any other requirements (like having profile
   // suggestions) and show only plus address suggestions. Otherwise plus address
@@ -1686,9 +1687,14 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
       ShouldOfferSingleFieldFormFill(field, autofill_field, trigger_source,
                                      context.suppress_reason);
 
+  // Whether or not to show plus address suggestions.
+  const bool should_offer_plus_addresses =
+      context.field_is_relevant_for_plus_addresses &&
+      autofill_field->Type().group() == FieldTypeGroup::kEmail;
+
   const size_t barrier_calls =
       static_cast<size_t>(should_offer_single_field_form_fill) +
-      static_cast<size_t>(context.field_is_relevant_for_plus_addresses);
+      static_cast<size_t>(should_offer_plus_addresses);
   if (barrier_calls == 0) {
     std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions),
                             std::nullopt);
@@ -1711,7 +1717,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
           AutofillPlusAddressDelegate::SuggestionContext::kAutocomplete,
           password_form_classification.type, form, field, std::move(callback)));
 
-  if (context.field_is_relevant_for_plus_addresses) {
+  if (should_offer_plus_addresses) {
     std::vector<Suggestion> plus_address_suggestions =
         client().GetPlusAddressDelegate()->GetSuggestionsFromPlusAddresses(
             plus_addresses, client().GetLastCommittedPrimaryMainFrameOrigin(),
