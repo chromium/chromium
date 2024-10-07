@@ -205,6 +205,20 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
       assertFalse(isVisible(loadingAnswersEl));
     });
 
+    test('SwitchesDateFormat', async () => {
+      element.showRelativeTimes = false;
+      await flushTasks();
+      const times = getResultElements().map(
+          result => result.querySelector<HTMLElement>('.time'));
+      assertEquals(mockResults[0]!.shortDateTime, times[0]!.innerText);
+      assertEquals(mockResults[1]!.shortDateTime, times[1]!.innerText);
+
+      element.showRelativeTimes = true;
+      await flushTasks();
+      assertEquals(mockResults[0]!.relativeTime, times[0]!.innerText);
+      assertEquals(mockResults[1]!.relativeTime, times[1]!.innerText);
+    });
+
     test('FiresClick', async () => {
       const resultsElements = getResultElements();
       const resultClickEventPromise = eventToPromise('result-click', element);

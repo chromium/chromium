@@ -23,7 +23,8 @@ ${this.enableHistoryEmbeddings_ ? html`
 ` : ''}
 ${this.shouldShowHistoryEmbeddingsResults_() ? html`
 <cr-history-embeddings
-    .searchQuery="${this.query}">
+    .searchQuery="${this.query}"
+    .showRelativeTimes="${true}">
 </cr-history_embeddings>
 ` : ''}
 <history-clusters id="historyClusters"

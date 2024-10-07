@@ -236,7 +236,9 @@ cr-url-list-item:hover + hr {
               description="[[item.urlForDisplay]]"
               on-click="onResultClick_" on-auxclick="onResultClick_"
               as-anchor as-anchor-target="_blank" always-show-suffix>
-            <span class="time" slot="suffix">[[item.relativeTime]]</span>
+            <span class="time" slot="suffix">
+              [[getDateTime_(item, showRelativeTimes)]]
+            </span>
             <cr-icon-button slot="suffix" iron-icon="cr:more-vert"
                 on-click="onMoreActionsClick_"
                 aria-label="[[i18n('actionMenuDescription')]]"
@@ -289,7 +291,8 @@ cr-url-list-item:hover + hr {
         <div class="favicon"
             style$="background-image: [[getFavicon_(answerSource_)]]"></div>
         <div class="result-url">
-          [[answerSource_.urlForDisplay]] &bull; [[answerSource_.shortDateTime]]
+          [[answerSource_.urlForDisplay]] &bull;
+          [[getDateTime_(answerSource_, showRelativeTimes)]]
         </div>
       </a>
     </div>
@@ -325,7 +328,7 @@ cr-url-list-item:hover + hr {
                 <div class="result-url">[[item.urlForDisplay]]</div>
               </div>
             </div>
-            <span class="time">[[item.relativeTime]]</span>
+            <span class="time">[[getDateTime_(item, showRelativeTimes)]]</span>
             <cr-icon-button class="more-actions" iron-icon="cr:more-vert"
                 on-click="onMoreActionsClick_"
                 aria-label="[[i18n('actionMenuDescription')]]"
@@ -338,7 +341,9 @@ cr-url-list-item:hover + hr {
               description="[[item.urlForDisplay]]"
               on-click="onResultClick_" on-auxclick="onResultClick_"
               as-anchor as-anchor-target="_blank" always-show-suffix>
-            <span class="time" slot="suffix">[[item.relativeTime]]</span>
+            <span class="time" slot="suffix">
+              [[getDateTime_(item, showRelativeTimes)]]
+            </span>
             <cr-icon-button slot="suffix" iron-icon="cr:more-vert"
                 on-click="onMoreActionsClick_"
                 aria-label="[[i18n('actionMenuDescription')]]"

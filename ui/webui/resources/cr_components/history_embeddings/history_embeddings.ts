@@ -106,6 +106,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
         computed: 'computeAnswerSource_(loadingAnswer_, searchResult_.items)',
         value: null,
       },
+      showRelativeTimes: {type: Boolean, value: false},
     };
   }
 
@@ -149,6 +150,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
    * search result for the same query is queued after it.
    */
   private searchResultPromise_: Promise<void>|null = null;
+  showRelativeTimes: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -235,6 +237,17 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
       return this.i18n('historyEmbeddingsHeadingLoading', this.searchQuery);
     }
     return this.i18n('historyEmbeddingsHeading', this.searchQuery);
+  }
+
+  private getDateTime_(item: SearchResultItem|undefined): string {
+    if (!item) {
+      return '';
+    }
+
+    if (this.showRelativeTimes) {
+      return item.relativeTime;
+    }
+    return item.shortDateTime;
   }
 
   private hasAnswer_(): boolean {
