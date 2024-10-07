@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_POINTER_LOCK_CONTROLLER_H_
 #define CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_POINTER_LOCK_CONTROLLER_H_
 
+#include <set>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_hide_callback.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_controller_base.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "content/public/browser/global_routing_id.h"
 
 // This class implements the mouse pointer lock behavior.
 class PointerLockController : public ExclusiveAccessControllerBase {
@@ -38,6 +40,10 @@ class PointerLockController : public ExclusiveAccessControllerBase {
   void RequestToLockPointer(content::WebContents* web_contents,
                             bool user_gesture,
                             bool last_unlocked_by_target);
+
+  // Returns true if we are waiting for the user to make a selection on the
+  // pointer lock permission request dialog.
+  bool IsWaitingForPointerLockPrompt(content::WebContents* web_contents);
 
   // Override from ExclusiveAccessControllerBase
   bool HandleUserPressedEscape() override;
@@ -69,9 +75,11 @@ class PointerLockController : public ExclusiveAccessControllerBase {
   };
 
   void LockPointer(base::WeakPtr<content::WebContents> web_contents,
+                   content::GlobalRenderFrameHostId rfh_id,
                    bool last_unlocked_by_target);
   void RejectRequestToLockPointer(
-      base::WeakPtr<content::WebContents> web_contents);
+      base::WeakPtr<content::WebContents> web_contents,
+      content::GlobalRenderFrameHostId rfh_id);
 
   void ExitExclusiveAccessIfNecessary() override;
   void NotifyTabExclusiveAccessLost() override;
@@ -79,6 +87,11 @@ class PointerLockController : public ExclusiveAccessControllerBase {
   void OnBubbleHidden(content::WebContents*, ExclusiveAccessBubbleHideReason);
 
   bool ShouldSuppressBubbleReshowForStateChange();
+
+  // Returns true if the RenderFrameHost identified by `rfh_id` is waiting
+  // for the user to make a selection on the pointer lock prompt.
+  bool IsWaitingForPointerLockPromptHelper(
+      content::GlobalRenderFrameHostId rfh_id);
 
   PointerLockState pointer_lock_state_;
 
@@ -104,6 +117,11 @@ class PointerLockController : public ExclusiveAccessControllerBase {
 
   // Timestamp when the user last successfully escaped from a lock request.
   base::TimeTicks last_user_escape_time_;
+
+  // Set of RenderFrameHost IDs waiting for pointer lock permission prompt
+  // selection by the user.
+  std::set<content::GlobalRenderFrameHostId>
+      hosts_waiting_for_pointer_lock_permission_prompt_;
 
   base::WeakPtrFactory<PointerLockController> weak_ptr_factory_{this};
 };

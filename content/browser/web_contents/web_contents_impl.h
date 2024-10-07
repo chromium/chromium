@@ -1101,6 +1101,8 @@ class CONTENT_EXPORT WebContentsImpl
                             bool user_gesture,
                             bool last_unlocked_by_target,
                             bool privileged) override;
+  bool IsWaitingForPointerLockPrompt(
+      RenderWidgetHostImpl* render_widget_host) override;
   bool RequestKeyboardLock(RenderWidgetHostImpl* render_widget_host,
                            bool esc_key_locked) override;
   void CancelKeyboardLock(RenderWidgetHostImpl* render_widget_host) override;

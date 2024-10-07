@@ -574,6 +574,10 @@ class CONTENT_EXPORT WebContentsDelegate {
   // Notification that the page has lost the pointer lock.
   virtual void LostPointerLock() {}
 
+  // Returns true if we are waiting for the user to make a selection on the
+  // pointer lock permission request dialog.
+  virtual bool IsWaitingForPointerLockPrompt(WebContents* web_contents);
+
   // Requests keyboard lock. Once the request is approved or rejected,
   // GotResponseToKeyboardLockRequest() will be called on |web_contents|.
   virtual void RequestKeyboardLock(WebContents* web_contents,
