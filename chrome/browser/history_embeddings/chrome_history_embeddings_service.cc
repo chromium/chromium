@@ -10,6 +10,7 @@
 #include "chrome/browser/optimization_guide/chrome_model_quality_logs_uploader_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/proto/features/history_query.pb.h"
@@ -35,6 +36,15 @@ ChromeHistoryEmbeddingsService::ChromeHistoryEmbeddingsService(
       optimization_guide_service_(optimization_guide_service) {}
 
 ChromeHistoryEmbeddingsService::~ChromeHistoryEmbeddingsService() = default;
+
+bool ChromeHistoryEmbeddingsService::IsAnswererUseAllowed() const {
+  if (!optimization_guide_service_) {
+    return false;
+  }
+  return optimization_guide_service_
+      ->ShouldFeatureAllowModelExecutionForSignedInUser(
+          optimization_guide::UserVisibleFeatureKey::kHistorySearch);
+}
 
 QualityLogEntry ChromeHistoryEmbeddingsService::PrepareQualityLogEntry() {
   if (!optimization_guide_service_) {

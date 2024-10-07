@@ -45,8 +45,7 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    optimization_guide::EnableSigninAndModelExecutionCapability(
-        browser()->profile());
+    InitSignin();
     browser()->profile()->GetPrefs()->SetInteger(
         optimization_guide::prefs::GetSettingEnabledPrefName(
             optimization_guide::UserVisibleFeatureKey::kHistorySearch),
@@ -67,6 +66,16 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
+  virtual void InitSignin() {
+    OptimizationGuideKeyedService* optimization_guide_keyed_service =
+        OptimizationGuideKeyedServiceFactory::GetForProfile(
+            browser()->profile());
+    optimization_guide_keyed_service->AllowUnsignedUserForTesting(
+        optimization_guide::UserVisibleFeatureKey::kHistorySearch);
+    optimization_guide::EnableSigninAndModelExecutionCapability(
+        browser()->profile());
+  }
+
   HistoryEmbeddingsService* service() {
     return HistoryEmbeddingsServiceFactory::GetForProfile(browser()->profile());
   }
@@ -124,6 +133,20 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
 
  private:
   page_content_annotations::TestPageContentAnnotator page_content_annotator_;
+};
+
+class HistoryEmbeddingsRestrictedSigninBrowserTest
+    : public HistoryEmbeddingsBrowserTest {
+ protected:
+  void InitSignin() override {
+    OptimizationGuideKeyedService* optimization_guide_keyed_service =
+        OptimizationGuideKeyedServiceFactory::GetForProfile(
+            browser()->profile());
+    optimization_guide_keyed_service->AllowUnsignedUserForTesting(
+        optimization_guide::UserVisibleFeatureKey::kHistorySearch);
+    optimization_guide::EnableSigninWithoutModelExecutionCapability(
+        browser()->profile());
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest, ServiceFactoryWorks) {
@@ -556,6 +579,42 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest,
     histogram_tester.ExpectUniqueSample("History.Embeddings.QueryAnswerable",
                                         false, 1);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsRestrictedSigninBrowserTest,
+                       SearchDoesNotReceiveAnswerForRestrictedSignin) {
+  OverrideVisibilityScoresForTesting({
+      {"A a B C b a 2 D", 0.99},
+  });
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  base::test::TestFuture<UrlPassages> store_future;
+  callback_for_tests() = store_future.GetRepeatingCallback();
+
+  const GURL url = embedded_test_server()->GetURL("/inner_text/test1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_TRUE(store_future.Wait());
+
+  base::HistogramTester histogram_tester;
+
+  // Search with a query that signals question intent, but is not answerable
+  // due to account restriction.
+  base::test::TestFuture<SearchResult> search_future;
+  service()->Search(nullptr, "A B C D?", {}, 1,
+                    search_future.GetRepeatingCallback());
+  SearchResult first_result = search_future.Take();
+  EXPECT_EQ(first_result.scored_url_rows.size(), 1u);
+  EXPECT_TRUE(first_result.AnswerText().empty());
+
+  // Second search result with answer will never be published, and the
+  // histogram being logged indicates the service finished without consulting
+  // the answerer.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount("History.Embeddings.QueryAnswerable",
+                                           false) > 0;
+  }));
+  histogram_tester.ExpectUniqueSample("History.Embeddings.QueryAnswerable",
+                                      false, 1);
 }
 
 }  // namespace history_embeddings

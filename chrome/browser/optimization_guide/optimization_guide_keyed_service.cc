@@ -729,6 +729,11 @@ void OptimizationGuideKeyedService::
   model_quality_logs_uploader_service_ = std::move(uploader);
 }
 
+void OptimizationGuideKeyedService::AllowUnsignedUserForTesting(
+    optimization_guide::UserVisibleFeatureKey feature) {
+  model_execution_features_controller_->AllowUnsignedUserForTesting(feature);  // IN-TEST
+}
+
 bool OptimizationGuideKeyedService::ShouldFeatureBeCurrentlyEnabledForUser(
     optimization_guide::UserVisibleFeatureKey feature) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -737,6 +742,13 @@ bool OptimizationGuideKeyedService::ShouldFeatureBeCurrentlyEnabledForUser(
   }
   return model_execution_features_controller_
       ->ShouldFeatureBeCurrentlyEnabledForUser(feature);
+}
+
+bool OptimizationGuideKeyedService::
+    ShouldFeatureAllowModelExecutionForSignedInUser(
+        optimization_guide::UserVisibleFeatureKey feature) const {
+  return model_execution_features_controller_
+      ->ShouldFeatureAllowModelExecutionForSignedInUser(feature);
 }
 
 bool OptimizationGuideKeyedService::ShouldFeatureBeCurrentlyAllowedForFeedback(

@@ -83,6 +83,11 @@ class ModelExecutionFeaturesController
   bool ShouldFeatureBeCurrentlyEnabledForUser(
       UserVisibleFeatureKey feature) const;
 
+  // Returns true if signed-in user is allowed to execute models, disregarding
+  // the `allow_unsigned_user` switch.
+  bool ShouldFeatureAllowModelExecutionForSignedInUser(
+      optimization_guide::UserVisibleFeatureKey feature) const;
+
   // Returns whether the `feature` should be currently allowed for logging model
   // quality logs.
   bool ShouldFeatureBeCurrentlyAllowedForLogging(
@@ -97,6 +102,8 @@ class ModelExecutionFeaturesController
   base::WeakPtr<ModelExecutionFeaturesController> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
+
+  void AllowUnsignedUserForTesting(UserVisibleFeatureKey feature);
 
  private:
   // Enumerates the reasons an user is invalid.
@@ -131,6 +138,10 @@ class ModelExecutionFeaturesController
   // settings for `feature`.
   UserValidityResult GetCurrentUserValidityResult(
       UserVisibleFeatureKey feature) const;
+
+  // Returns a validity result for accounts requiring signin: kValid when signin
+  // checks pass, or invalid result indicating the reason if checks fail.
+  UserValidityResult PerformSigninChecks() const;
 
   // Performs settings visibility checks specific to History Search. If passed,
   // `kUnknown` is returned. Otherwise, the corresponding enum for the failed
@@ -170,8 +181,7 @@ class ModelExecutionFeaturesController
   raw_ptr<PrefService> local_state_;
 
   // Set of features that are visible to unsigned users.
-  const base::flat_set<UserVisibleFeatureKey>
-      features_allowed_for_unsigned_user_;
+  base::flat_set<UserVisibleFeatureKey> features_allowed_for_unsigned_user_;
 
   // Whether this client is a (likely) dogfood client.
   const DogfoodStatus dogfood_status_;

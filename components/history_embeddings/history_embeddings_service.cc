@@ -741,6 +741,10 @@ HistoryEmbeddingsService::Storage::GetUrlData(history::URLID url_id) {
   return sql_database.GetUrlData(url_id);
 }
 
+bool HistoryEmbeddingsService::IsAnswererUseAllowed() const {
+  return true;
+}
+
 QualityLogEntry HistoryEmbeddingsService::PrepareQualityLogEntry() {
   // This requires some Chrome machinery to upload the log entry, so it's
   // implemented in ChromeHistoryEmbeddingsService.
@@ -984,7 +988,7 @@ void HistoryEmbeddingsService::OnPrimarySearchResultReady(
   //  initial query embedding computation and search. This doesn't make
   //  much difference when the mock is used but could save time when the
   //  real ML intent classifier is working.
-  if (answerer_ && intent_classifier_) {
+  if (answerer_ && intent_classifier_ && IsAnswererUseAllowed()) {
     std::string query = result.query;
     VLOG(3) << "ComputeQueryIntent for '" << query << "'";
     intent_classifier_->ComputeQueryIntent(
@@ -1007,7 +1011,8 @@ void HistoryEmbeddingsService::OnQueryIntentComputed(
     bool query_is_answerable) {
   VLOG(3) << "OnQueryIntentComputed for '" << result.query << "'";
   const bool answerable = status == ComputeIntentStatus::SUCCESS &&
-                          query_is_answerable && answerer_;
+                          query_is_answerable && answerer_ &&
+                          IsAnswererUseAllowed();
   base::UmaHistogramBoolean("History.Embeddings.QueryAnswerable", answerable);
   if (!answerable) {
     return;

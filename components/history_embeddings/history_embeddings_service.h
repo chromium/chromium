@@ -274,6 +274,9 @@ class HistoryEmbeddingsService : public KeyedService,
                            os_crypt_async::Encryptor encryptor,
                            bool success);
 
+  // This can be overridden to gate answer generation for some accounts.
+  virtual bool IsAnswererUseAllowed() const;
+
   // This can be overridden to prepare a log entry that will then be filled
   // with data and sent on destruction. Default implementation returns null.
   virtual QualityLogEntry PrepareQualityLogEntry();

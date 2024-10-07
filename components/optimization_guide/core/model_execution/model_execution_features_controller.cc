@@ -209,6 +209,20 @@ bool ModelExecutionFeaturesController::ShouldFeatureBeCurrentlyEnabledForUser(
 }
 
 bool ModelExecutionFeaturesController::
+    ShouldFeatureAllowModelExecutionForSignedInUser(
+        optimization_guide::UserVisibleFeatureKey feature) const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // Check common things like enterprise policy, etc. first. The basic feature
+  // with `allow_unsigned_user` true is more permissive. This check adds the
+  // additional requirement that user is signed in and allowed execution.
+  // This is needed by kHistorySearch feature to gate answer generation
+  // on account details while allowing all users (including unsigned users)
+  // access to basic embeddings search functionality.
+  return ShouldFeatureBeCurrentlyEnabledForUser(feature) &&
+         PerformSigninChecks() == UserValidityResult::kValid;
+}
+
+bool ModelExecutionFeaturesController::
     ShouldFeatureBeCurrentlyAllowedForLogging(
         const MqlsFeatureMetadata* metadata) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -248,16 +262,9 @@ ModelExecutionFeaturesController::GetCurrentUserValidityResult(
       !base::Contains(features_allowed_for_unsigned_user_, feature);
 
   if (require_account) {
-    // Sign-in check.
-    if (!is_signed_in_) {
-      return ModelExecutionFeaturesController::UserValidityResult::
-          kInvalidUnsignedUser;
-    }
-
-    // Check user account is allowed to use model execution, when signed-in.
-    if (!account_allows_model_execution_features_) {
-      return ModelExecutionFeaturesController::UserValidityResult::
-          kInvalidModelExecutionCapability;
+    UserValidityResult signin_checks_result = PerformSigninChecks();
+    if (signin_checks_result != UserValidityResult::kValid) {
+      return signin_checks_result;
     }
   }
 
@@ -272,6 +279,21 @@ ModelExecutionFeaturesController::GetCurrentUserValidityResult(
   }
 
   return ModelExecutionFeaturesController::UserValidityResult::kValid;
+}
+
+ModelExecutionFeaturesController::UserValidityResult
+ModelExecutionFeaturesController::PerformSigninChecks() const {
+  // Sign-in check.
+  if (!is_signed_in_) {
+    return UserValidityResult::kInvalidUnsignedUser;
+  }
+
+  // Check user account is allowed to use model execution, when signed-in.
+  if (!account_allows_model_execution_features_) {
+    return UserValidityResult::kInvalidModelExecutionCapability;
+  }
+
+  return UserValidityResult::kValid;
 }
 
 ModelExecutionFeaturesController::SettingsVisibilityResult
@@ -507,6 +529,11 @@ void ModelExecutionFeaturesController::ResetInvalidFeaturePrefs() {
           static_cast<int>(prefs::FeatureOptInState::kNotInitialized));
     }
   }
+}
+
+void ModelExecutionFeaturesController::AllowUnsignedUserForTesting(
+    UserVisibleFeatureKey feature) {
+  features_allowed_for_unsigned_user_.insert(feature);
 }
 
 void ModelExecutionFeaturesController::OnMainToggleSettingStatePrefChanged() {

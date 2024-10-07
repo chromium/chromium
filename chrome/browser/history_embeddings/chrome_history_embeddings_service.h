@@ -33,6 +33,7 @@ class ChromeHistoryEmbeddingsService : public HistoryEmbeddingsService {
 
  private:
   // HistoryEmbeddingsService:
+  bool IsAnswererUseAllowed() const override;
   QualityLogEntry PrepareQualityLogEntry() override;
 
   // Outlives this because of service factory dependency.
