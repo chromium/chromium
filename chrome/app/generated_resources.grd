@@ -8807,7 +8807,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Get Chrome on your mobile device
       </message>
       <message name="IDS_NTP_MOBILE_PROMO_DESCRIPTION" desc="Description for a promo that shows on the Desktop NTP prompting user to scan a QR code with their mobile device">
-        Scan the QR code to download Chrome for your iPhone and iPad to pick up where you left off.
+        Download Chrome for iOS to access your tabs, bookmarks and passwords on your phone.
       </message>
 
       <!-- Extensions NTP Middle Slot Promo -->
