@@ -1950,7 +1950,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     case overflow_menu::ActionType::EditActions:
       return self.editActionsAction;
     case overflow_menu::ActionType::LensOverlay:
-      return (self.isIncognito) ? nil : self.lensOverlayAction;
+      return self.lensOverlayAction;
   }
 }
 
