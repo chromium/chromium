@@ -4358,22 +4358,33 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
     authenticatorId = self._driver.AddVirtualAuthenticator(
         protocol = 'ctap2',
         transport = 'usb',
-        hasResidentKey = False,
+        hasResidentKey = True,
         hasUserVerification = False,
     )
 
-    # Register a credential and try authenticating with it.
+    # Register a credential.
     self._driver.AddCredential(
+      userHandle = self.URLSafeBase64Encode("marisa"),
       authenticatorId = authenticatorId,
       credentialId = self.URLSafeBase64Encode("cred-1"),
-      isResidentCredential=False,
+      isResidentCredential=True,
       rpId="chromedriver.test",
       privateKey=self.privateKey,
       signCount=1,
+      userName="marisa",
+      userDisplayName="Marisa Kirisame",
     )
 
+    # Try authenticating with the credential.
     result = self._driver.ExecuteAsyncScript(script)
     self.assertEqual('OK', result['status'])
+
+    # Verify the name and display name.
+    credentials = self._driver.GetCredentials(authenticatorId)
+    print(credentials)
+    self.assertEqual(1, len(credentials))
+    self.assertEqual("marisa", credentials[0]["userName"])
+    self.assertEqual("Marisa Kirisame", credentials[0]["userDisplayName"])
 
   def testAddCredentialLargeBlob(self):
     script = """
@@ -4552,6 +4563,8 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
     self.assertTrue(credentials[0]['privateKey'])
     self.assertEqual('large blob contents',
             self.UrlSafeBase64Decode(credentials[0]['largeBlob']))
+    self.assertEqual('name', credentials[0]['userName'])
+    self.assertEqual('displayName', credentials[0]['userDisplayName'])
 
   def testRemoveCredential(self):
     script = """

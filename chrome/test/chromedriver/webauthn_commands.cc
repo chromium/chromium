@@ -197,6 +197,8 @@ Status ExecuteAddCredential(WebView* web_view,
           {"credential.largeBlob", "largeBlob"},
           {"credential.backupEligibility", "backupEligibility"},
           {"credential.backupState", "backupState"},
+          {"credential.userName", "userName"},
+          {"credential.userDisplayName", "userDisplayName"},
       },
       params);
   base::Value::Dict* credential = mapped_params.FindDict("credential");

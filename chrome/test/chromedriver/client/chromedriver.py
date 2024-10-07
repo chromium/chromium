@@ -714,7 +714,8 @@ class ChromeDriver(object):
   def AddCredential(self, authenticatorId=None, credentialId=None,
                     isResidentCredential=None, rpId=None, privateKey=None,
                     userHandle=None, signCount=None, largeBlob=None,
-                    backupState=None, backupEligibility=None):
+                    backupState=None, backupEligibility=None,userName=None,
+                    userDisplayName=None):
     options = {}
     if authenticatorId is not None:
       options['authenticatorId'] = authenticatorId
@@ -736,6 +737,10 @@ class ChromeDriver(object):
       options['backupState'] = backupState
     if backupEligibility is not None:
       options['backupEligibility'] = backupEligibility
+    if userName is not None:
+      options['userName'] = userName
+    if userDisplayName is not None:
+      options['userDisplayName'] = userDisplayName
     return self.ExecuteCommand(Command.ADD_CREDENTIAL, options)
 
   def GetCredentials(self, authenticatorId):
