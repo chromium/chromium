@@ -17,6 +17,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
@@ -31,6 +32,10 @@ import org.chromium.ui.text.SpanApplier;
 public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
         implements PersonalDataManager.PersonalDataManagerObserver,
                 Preference.OnPreferenceChangeListener {
+    public static final String CARD_BENEFITS_LEARN_MORE_CLICKED_USER_ACTION =
+            "CardBenefits_LearnMoreLinkClicked";
+    public static final String CARD_BENEFITS_TOGGLED_OFF_USER_ACTION = "CardBenefits_ToggledOff";
+    public static final String CARD_BENEFITS_TOGGLED_ON_USER_ACTION = "CardBenefits_ToggledOn";
     public static final String LEARN_MORE_URL =
             "https://support.google.com/googlepay?p=card_benefits_chrome";
 
@@ -110,6 +115,8 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
                                     @Override
                                     public void onClick(View view) {
                                         openUrlInCct(LEARN_MORE_URL);
+                                        RecordUserAction.record(
+                                                CARD_BENEFITS_LEARN_MORE_CLICKED_USER_ACTION);
                                     }
                                 })));
         learnAboutLinkPreference.setDividerAllowedAbove(false);
@@ -131,7 +138,12 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
-        mPersonalDataManager.setCardBenefit((boolean) newValue);
+        boolean prefEnabled = (boolean) newValue;
+        mPersonalDataManager.setCardBenefit(prefEnabled);
+        RecordUserAction.record(
+                prefEnabled
+                        ? CARD_BENEFITS_TOGGLED_ON_USER_ACTION
+                        : CARD_BENEFITS_TOGGLED_OFF_USER_ACTION);
         return true;
     }
 

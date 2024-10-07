@@ -6332,6 +6332,15 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="CardBenefits_LearnMoreLinkClicked">
+  <owner>viplavkadam@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <description>
+    Recorded when the user clicks on the card benefits learn more hyperlink on
+    the card benefits settings page.
+  </description>
+</action>
+
 <action name="CardBenefits_TermsLinkClicked">
   <owner>viplavkadam@google.com</owner>
   <owner>yishuil@google.com</owner>
@@ -6339,6 +6348,24 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the user clicks on the card benefits terms hyperlink on the
     payment methods settings page.
+  </description>
+</action>
+
+<action name="CardBenefits_ToggledOff">
+  <owner>viplavkadam@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <description>
+    Recorded when the user clicks on the card benefits toggle on the card
+    benefits settings page, switching it from the on state to the off state.
+  </description>
+</action>
+
+<action name="CardBenefits_ToggledOn">
+  <owner>viplavkadam@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <description>
+    Recorded when the user clicks on the card benefits toggle on the card
+    benefits settings page, switching it from the off state to the on state.
   </description>
 </action>
 

@@ -4,7 +4,16 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static org.hamcrest.Matchers.containsString;
+
+import static org.chromium.chrome.browser.autofill.settings.AutofillCardBenefitsFragment.CARD_BENEFITS_LEARN_MORE_CLICKED_USER_ACTION;
+import static org.chromium.chrome.browser.autofill.settings.AutofillCardBenefitsFragment.CARD_BENEFITS_TOGGLED_OFF_USER_ACTION;
+import static org.chromium.chrome.browser.autofill.settings.AutofillCardBenefitsFragment.CARD_BENEFITS_TOGGLED_ON_USER_ACTION;
 import static org.chromium.chrome.browser.autofill.settings.AutofillCardBenefitsFragment.PREF_KEY_ENABLE_CARD_BENEFIT;
+import static org.chromium.ui.test.util.ViewUtils.clickOnClickableSpan;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
@@ -20,6 +29,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -49,15 +59,18 @@ public class AutofillCardBenefitsFragmentTest {
             new SettingsActivityTestRule<>(AutofillCardBenefitsFragment.class);
 
     private AutofillTestHelper mAutofillTestHelper;
+    private UserActionTester mActionTester;
 
     @Before
     public void setUp() {
         mAutofillTestHelper = new AutofillTestHelper();
+        mActionTester = new UserActionTester();
     }
 
     @After
     public void tearDown() throws TimeoutException {
         mAutofillTestHelper.clearAllDataForTesting();
+        mActionTester.tearDown();
     }
 
     // Test to verify that the Preference screen is displayed and its title is visible as expected.
@@ -148,11 +161,21 @@ public class AutofillCardBenefitsFragmentTest {
                     Assert.assertFalse(
                             getPrefService().getBoolean(Pref.AUTOFILL_PAYMENT_CARD_BENEFITS));
                     Assert.assertFalse(benefitTogglePreference.isChecked());
+                    Assert.assertTrue(
+                            "User action should be logged when the user toggles card benefits off.",
+                            mActionTester
+                                    .getActions()
+                                    .contains(CARD_BENEFITS_TOGGLED_OFF_USER_ACTION));
 
                     benefitTogglePreference.performClick();
                     Assert.assertTrue(
                             getPrefService().getBoolean(Pref.AUTOFILL_PAYMENT_CARD_BENEFITS));
                     Assert.assertTrue(benefitTogglePreference.isChecked());
+                    Assert.assertTrue(
+                            "User action should be logged when the user toggles card benefits on.",
+                            mActionTester
+                                    .getActions()
+                                    .contains(CARD_BENEFITS_TOGGLED_ON_USER_ACTION));
                 });
     }
 
@@ -172,6 +195,10 @@ public class AutofillCardBenefitsFragmentTest {
                 activity.getString(
                                 R.string.autofill_settings_page_card_benefits_learn_about_link_text)
                         .replaceAll("<.?link>", ""));
+        onView(withText(containsString("Learn more"))).perform(clickOnClickableSpan(0));
+        Assert.assertTrue(
+                "User action should be logged when the user clicks on learn more link.",
+                mActionTester.getActions().contains(CARD_BENEFITS_LEARN_MORE_CLICKED_USER_ACTION));
     }
 
     private static PreferenceScreen getPreferenceScreen(SettingsActivity activity) {
