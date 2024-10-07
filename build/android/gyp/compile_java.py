@@ -600,7 +600,9 @@ def _RunCompiler(changes,
 
     logging.info('Completed all steps in _RunCompiler')
   finally:
-    shutil.rmtree(temp_dir)
+    # preserve temp_dir for rsp fie when --print-javac-command-line
+    if not options.print_javac_command_line:
+      shutil.rmtree(temp_dir)
 
 
 def _ParseOptions(argv):
