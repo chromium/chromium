@@ -63,15 +63,7 @@ wgpu::Texture CreateDawnSharedTexture(
   wgpu_texture_desc.viewFormats = view_formats.data();
 
   wgpu::DawnTextureInternalUsageDescriptor wgpu_internal_usage_desc;
-  if (base::FeatureList::IsEnabled(
-          features::kDawnSIRepsUseClientProvidedInternalUsages)) {
-    wgpu_internal_usage_desc.internalUsage = internal_usage;
-  } else {
-    // We need to have internal usages of CopySrc for copies,
-    // RenderAttachment for clears, and TextureBinding for copyTextureForBrowser
-    // if texture format allows these usages.
-    wgpu_internal_usage_desc.internalUsage = properties.usage;
-  }
+  wgpu_internal_usage_desc.internalUsage = internal_usage;
   wgpu_texture_desc.nextInChain = &wgpu_internal_usage_desc;
 
   return shared_texture_memory.CreateTexture(&wgpu_texture_desc);

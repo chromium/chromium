@@ -45,10 +45,7 @@ wgpu::Texture DawnGLTextureRepresentation::BeginAccess(
     wgpu::TextureUsage usage,
     wgpu::TextureUsage internal_usage) {
   auto usage_to_check = usage;
-  if (base::FeatureList::IsEnabled(
-          features::kDawnSIRepsUseClientProvidedInternalUsages)) {
-    usage_to_check |= internal_usage;
-  }
+  usage_to_check |= internal_usage;
   gl_representation_->BeginAccess(ToSharedImageAccessGLMode(usage_to_check));
   wgpu::TextureDescriptor texture_descriptor = {};
   texture_descriptor.nextInChain = nullptr;
@@ -57,14 +54,7 @@ wgpu::Texture DawnGLTextureRepresentation::BeginAccess(
   texture_descriptor.format = ToDawnFormat(format());
 
   wgpu::DawnTextureInternalUsageDescriptor internalDesc;
-  if (base::FeatureList::IsEnabled(
-          features::kDawnSIRepsUseClientProvidedInternalUsages)) {
-    internalDesc.internalUsage = internal_usage;
-  } else {
-    // Add internal TextureBinding usage for copyTextureForBrowser().
-    internalDesc.internalUsage = wgpu::TextureUsage::TextureBinding |
-                                 wgpu::TextureUsage::RenderAttachment;
-  }
+  internalDesc.internalUsage = internal_usage;
 
   texture_descriptor.nextInChain = &internalDesc;
 

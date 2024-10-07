@@ -740,9 +740,7 @@ wgpu::Texture D3DImageBacking::BeginAccessDawn(
                            wgpu::TextureUsage::StorageBinding |
                            wgpu::TextureUsage::RenderAttachment;
   bool write_access = wgpu_usage & kWriteUsage;
-  if (base::FeatureList::IsEnabled(
-          features::kDawnSIRepsUseClientProvidedInternalUsages) &&
-      (wgpu_internal_usage & kWriteUsage)) {
+  if (wgpu_internal_usage & kWriteUsage) {
     write_access = true;
   }
 

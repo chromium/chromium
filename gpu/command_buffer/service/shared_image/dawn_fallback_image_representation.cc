@@ -310,21 +310,8 @@ wgpu::Texture DawnFallbackImageRepresentation::BeginAccess(
   // texture as the dest and source of copies for readback from and upload to
   // the backing respectively.
   wgpu::DawnTextureInternalUsageDescriptor internalDesc;
-  if (base::FeatureList::IsEnabled(
-          features::kDawnSIRepsUseClientProvidedInternalUsages)) {
-    internalDesc.internalUsage = internal_usage | wgpu::TextureUsage::CopySrc |
-                                 wgpu::TextureUsage::CopyDst;
-  } else {
-    // If texture is not for video frame import, we need RenderAttachment usage
-    // for clears, and TextureBinding for copyTextureForBrowser.
-    internalDesc.internalUsage = wgpu::TextureUsage::CopySrc |
-                                 wgpu::TextureUsage::CopyDst |
-                                 wgpu::TextureUsage::TextureBinding;
-
-    if (wgpu_format_ != wgpu::TextureFormat::R8BG8Biplanar420Unorm) {
-      internalDesc.internalUsage |= wgpu::TextureUsage::RenderAttachment;
-    }
-  }
+  internalDesc.internalUsage = internal_usage | wgpu::TextureUsage::CopySrc |
+                               wgpu::TextureUsage::CopyDst;
 
   texture_descriptor.nextInChain = &internalDesc;
 

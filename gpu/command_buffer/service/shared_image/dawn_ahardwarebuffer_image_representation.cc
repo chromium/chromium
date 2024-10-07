@@ -49,27 +49,15 @@ wgpu::Texture DawnAHardwareBufferImageRepresentation::BeginAccess(
 
   AccessMode access_mode;
   wgpu::DawnTextureInternalUsageDescriptor internalDesc;
-  if (base::FeatureList::IsEnabled(
-          features::kDawnSIRepsUseClientProvidedInternalUsages)) {
-    internalDesc.internalUsage = internal_usage;
-    access_mode = usage & kWriteUsage || internal_usage & kWriteUsage
-                      ? AccessMode::kWrite
-                      : AccessMode::kRead;
-    if (access_mode == AccessMode::kRead && !IsCleared()) {
-      // Read-only access of an uncleared texture is not allowed: clients
-      // relying on Dawn's lazy clearing of uninitialized textures must make
-      // this reliance explicit by passing a write usage.
-      return nullptr;
-    }
-  } else {
-    // We need to have internal usages of CopySrc for copies,
-    // RenderAttachment for clears, and TextureBinding for
-    // copyTextureForBrowser.
-    internalDesc.internalUsage = wgpu::TextureUsage::CopySrc |
-                                 wgpu::TextureUsage::RenderAttachment |
-                                 wgpu::TextureUsage::TextureBinding;
-
-    access_mode = AccessMode::kWrite;
+  internalDesc.internalUsage = internal_usage;
+  access_mode = usage & kWriteUsage || internal_usage & kWriteUsage
+                    ? AccessMode::kWrite
+                    : AccessMode::kRead;
+  if (access_mode == AccessMode::kRead && !IsCleared()) {
+    // Read-only access of an uncleared texture is not allowed: clients
+    // relying on Dawn's lazy clearing of uninitialized textures must make
+    // this reliance explicit by passing a write usage.
+    return nullptr;
   }
 
   texture_descriptor.nextInChain = &internalDesc;
