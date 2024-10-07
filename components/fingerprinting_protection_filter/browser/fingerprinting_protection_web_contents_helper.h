@@ -109,7 +109,8 @@ class FingerprintingProtectionWebContentsHelper
       content::WebContents* web_contents,
       PrefService* pref_service,
       privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
-      subresource_filter::VerifiedRulesetDealer::Handle* dealer_handle);
+      subresource_filter::VerifiedRulesetDealer::Handle* dealer_handle,
+      bool is_incognito);
 
   void Detach();
 
@@ -141,6 +142,9 @@ class FingerprintingProtectionWebContentsHelper
 
   raw_ptr<subresource_filter::VerifiedRulesetDealer::Handle, DanglingUntriaged>
       dealer_handle_;
+
+  // Whether the  profile is in Incognito mode.
+  bool is_incognito_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

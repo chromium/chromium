@@ -87,7 +87,8 @@ class ThrottleManager : public base::SupportsUserData::Data,
   static std::unique_ptr<ThrottleManager> CreateForNewPage(
       subresource_filter::VerifiedRulesetDealer::Handle* dealer_handle,
       FingerprintingProtectionWebContentsHelper& web_contents_helper,
-      content::NavigationHandle& initiating_navigation_handle);
+      content::NavigationHandle& initiating_navigation_handle,
+      bool is_incognito);
 
   // Since the throttle manager is created for a page-creating navigation, then
   // transferred onto the page once created, it is accessible in both
@@ -115,7 +116,8 @@ class ThrottleManager : public base::SupportsUserData::Data,
   ThrottleManager(
       subresource_filter::VerifiedRulesetDealer::Handle* dealer_handle,
       FingerprintingProtectionWebContentsHelper& web_contents_helper,
-      content::NavigationHandle& initiating_navigation_handle);
+      content::NavigationHandle& initiating_navigation_handle,
+      bool is_incognito);
   ~ThrottleManager() override;
 
   // Disallow copy and assign.
@@ -328,6 +330,9 @@ class ThrottleManager : public base::SupportsUserData::Data,
   // Page-level `ActivationState`, stored to be queried by throttles on the
   // renderer.
   subresource_filter::mojom::ActivationState page_activation_state_;
+
+  // Whether the  profile is in Incognito mode.
+  bool is_incognito_;
 
   base::WeakPtrFactory<ThrottleManager> weak_ptr_factory_{this};
 };

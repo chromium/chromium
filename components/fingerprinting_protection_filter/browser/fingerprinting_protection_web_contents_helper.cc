@@ -101,7 +101,8 @@ void FingerprintingProtectionWebContentsHelper::CreateForWebContents(
 
   content::WebContentsUserData<FingerprintingProtectionWebContentsHelper>::
       CreateForWebContents(web_contents, pref_service,
-                           tracking_protection_settings, dealer_handle);
+                           tracking_protection_settings, dealer_handle,
+                           is_incognito);
 }
 
 // private
@@ -111,13 +112,15 @@ FingerprintingProtectionWebContentsHelper::
         PrefService* pref_service,
         privacy_sandbox::TrackingProtectionSettings*
             tracking_protection_settings,
-        VerifiedRulesetDealer::Handle* dealer_handle)
+        VerifiedRulesetDealer::Handle* dealer_handle,
+        bool is_incognito)
     : content::WebContentsUserData<FingerprintingProtectionWebContentsHelper>(
           *web_contents),
       content::WebContentsObserver(web_contents),
       pref_service_(pref_service),
       tracking_protection_settings_(tracking_protection_settings),
-      dealer_handle_(dealer_handle) {}
+      dealer_handle_(dealer_handle),
+      is_incognito_(is_incognito) {}
 
 FingerprintingProtectionWebContentsHelper::
     ~FingerprintingProtectionWebContentsHelper() = default;
@@ -218,7 +221,7 @@ void FingerprintingProtectionWebContentsHelper::DidStartNavigation(
 
   std::unique_ptr<ThrottleManager> new_manager =
       ThrottleManager::CreateForNewPage(dealer_handle_.get(), *this,
-                                        *navigation_handle);
+                                        *navigation_handle, is_incognito_);
 
   throttle_managers_.insert(new_manager.get());
 

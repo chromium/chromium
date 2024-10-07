@@ -30,11 +30,13 @@ FingerprintingProtectionPageActivationThrottle::
         content::NavigationHandle* handle,
         privacy_sandbox::TrackingProtectionSettings*
             tracking_protection_settings,
-        PrefService* prefs)
+        PrefService* prefs,
+        bool is_incognito)
     : NavigationThrottle(handle),
       profile_interaction_manager_(std::make_unique<ProfileInteractionManager>(
           tracking_protection_settings,
-          prefs)) {}
+          prefs)),
+      is_incognito_(is_incognito) {}
 
 FingerprintingProtectionPageActivationThrottle::
     ~FingerprintingProtectionPageActivationThrottle() = default;
@@ -81,10 +83,8 @@ void FingerprintingProtectionPageActivationThrottle::NotifyResult(
   }
   subresource_filter::mojom::ActivationState activation_state;
   activation_state.activation_level = activation_level;
-  // TODO(https://crbug.com/364688841): Set measure_performance bit according
-  // to performance_measurement_rate using GetEnablePerformanceMeasurements to
-  // enable collecting time-based histograms when incognito bit is piped
-  // through.
+  activation_state.measure_performance =
+      GetEnablePerformanceMeasurements(is_incognito_);
   auto* web_contents_helper =
       FingerprintingProtectionWebContentsHelper::FromWebContents(
           navigation_handle()->GetWebContents());

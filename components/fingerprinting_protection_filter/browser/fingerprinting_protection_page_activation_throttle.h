@@ -41,7 +41,8 @@ class FingerprintingProtectionPageActivationThrottle
   FingerprintingProtectionPageActivationThrottle(
       content::NavigationHandle* handle,
       privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
-      PrefService* prefs);
+      PrefService* prefs,
+      bool is_incognito = false);
 
   FingerprintingProtectionPageActivationThrottle(
       const FingerprintingProtectionPageActivationThrottle&) = delete;
@@ -81,6 +82,9 @@ class FingerprintingProtectionPageActivationThrottle
   // Whether this throttle is deferring the navigation. Only set to true in
   // WillProcessResponse if there are ongoing fingerprinting blocking checks.
   bool deferring_ = false;
+
+  // Whether the profile is in Incognito mode.
+  bool is_incognito_;
 
   base::WeakPtrFactory<FingerprintingProtectionPageActivationThrottle>
       weak_ptr_factory_{this};

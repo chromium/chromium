@@ -16,7 +16,8 @@ FingerprintingProtectionFilterBrowserTest::
   scoped_feature_list_.InitWithFeaturesAndParameters(
       /*enabled_features=*/
       {{features::kEnableFingerprintingProtectionFilter,
-        {{"activation_level", "enabled"}}}},
+        {{"activation_level", "enabled"},
+         {"performance_measurement_rate", "0.0"}}}},
       /*disabled_features=*/{});
 }
 
@@ -65,7 +66,8 @@ FingerprintingProtectionFilterDryRunBrowserTest::
   scoped_feature_list_.InitWithFeaturesAndParameters(
       /*enabled_features=*/
       {{features::kEnableFingerprintingProtectionFilter,
-        {{"activation_level", "dry_run"}}}},
+        {{"activation_level", "dry_run"},
+         {"performance_measurement_rate", "0.0"}}}},
       /*disabled_features=*/{});
 }
 
@@ -79,7 +81,8 @@ FingerprintingProtectionFilterEnabledInIncognitoBrowserTest::
   scoped_feature_list_.InitWithFeaturesAndParameters(
       /*enabled_features=*/
       {{features::kEnableFingerprintingProtectionFilterInIncognito,
-        {{"activation_level", "enabled"}}}},
+        {{"activation_level", "enabled"},
+         {"performance_measurement_rate", "0.0"}}}},
       /*disabled_features=*/{});
 }
 

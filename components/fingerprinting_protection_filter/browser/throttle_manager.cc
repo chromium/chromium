@@ -110,12 +110,14 @@ void ThrottleManager::BindReceiver(
 ThrottleManager::ThrottleManager(
     VerifiedRulesetDealer::Handle* dealer_handle,
     FingerprintingProtectionWebContentsHelper& web_contents_helper,
-    content::NavigationHandle& initiating_navigation_handle)
+    content::NavigationHandle& initiating_navigation_handle,
+    bool is_incognito)
     : receivers_(initiating_navigation_handle.GetWebContents(), this),
       ruleset_handle_(dealer_handle ? std::make_unique<VerifiedRuleset::Handle>(
                                           dealer_handle)
                                     : nullptr),
-      web_contents_helper_(web_contents_helper) {}
+      web_contents_helper_(web_contents_helper),
+      is_incognito_(is_incognito) {}
 
 ThrottleManager::~ThrottleManager() {
   // All mojo callbacks must be run or their binding closed before they are
@@ -127,14 +129,16 @@ ThrottleManager::~ThrottleManager() {
 std::unique_ptr<ThrottleManager> ThrottleManager::CreateForNewPage(
     VerifiedRulesetDealer::Handle* dealer_handle,
     FingerprintingProtectionWebContentsHelper& web_contents_helper,
-    content::NavigationHandle& initiating_navigation_handle) {
+    content::NavigationHandle& initiating_navigation_handle,
+    bool is_incognito) {
   CHECK(IsInSubresourceFilterRoot(&initiating_navigation_handle));
   if (!features::IsFingerprintingProtectionFeatureEnabled()) {
     return nullptr;
   }
 
   return std::make_unique<ThrottleManager>(dealer_handle, web_contents_helper,
-                                           initiating_navigation_handle);
+                                           initiating_navigation_handle,
+                                           is_incognito);
 }
 
 // static
@@ -161,7 +165,7 @@ void ThrottleManager::MaybeAppendNavigationThrottles(
         std::make_unique<FingerprintingProtectionPageActivationThrottle>(
             navigation_handle,
             web_contents_helper_->tracking_protection_settings(),
-            web_contents_helper_->pref_service()));
+            web_contents_helper_->pref_service(), is_incognito_));
     auto activation_throttle =
         ActivationStateComputingNavigationThrottle::CreateForRoot(
             navigation_handle);
