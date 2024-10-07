@@ -222,6 +222,11 @@ ManagementEnvironment GetManagementEnvironment(
                                      : ManagementEnvironment::kWork;
 }
 
+bool IsEnterpriseBadgingEnabledForToolbar(Profile* profile) {
+  return profile->GetPrefs()->GetInteger(
+             prefs::kEnterpriseProfileBadgeToolbarSettings) == 0;
+}
+
 bool CanShowEnterpriseBadging(Profile* profile) {
   if (!UserAcceptedAccountManagement(profile)) {
     return false;

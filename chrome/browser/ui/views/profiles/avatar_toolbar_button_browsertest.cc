@@ -1175,6 +1175,34 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
+                       DefaultBadgeDisabledbyPolicy) {
+  std::u16string work_label = u"Work";
+  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kEnterpriseProfileBadgeToolbarSettings, 1);
+
+  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
+
+  // There should be no text because the policy fully disables badging.
+  EXPECT_EQ(avatar_button->GetText(), std::u16string());
+}
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
+                       CustomBadgeDisabledbyPolicy) {
+  browser()->profile()->GetPrefs()->SetString(
+      prefs::kEnterpriseCustomLabelForProfile, "Custom Label");
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kEnterpriseProfileBadgeToolbarSettings, 1);
+
+  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
+
+  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
+
+  // There should be no text because the policy fully disables badging.
+  EXPECT_EQ(avatar_button->GetText(), std::u16string());
+}
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
                        WorkBadgeOnTransientModeTimesOutToNonTransient) {
   std::u16string work_label = u"Work";
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());

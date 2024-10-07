@@ -4339,6 +4339,10 @@ inline constexpr char kEnterpriseCustomLabel[] =
 inline constexpr char kEnterpriseCustomLabelForProfile[] =
     "enterprise_label.custom_value.for_profile";
 
+// IntegerValue of the custom label preset of a managed profile.
+inline constexpr char kEnterpriseProfileBadgeToolbarSettings[] =
+    "enterprise.profile_badging.toolbar_settings";
+
 #if BUILDFLAG(IS_ANDROID)
 // An integer count of how many account-level breached credentials were detected
 // by GMSCore.

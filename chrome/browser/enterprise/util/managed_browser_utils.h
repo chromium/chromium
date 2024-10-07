@@ -80,6 +80,9 @@ bool ProfileCanBeManaged(Profile* profile);
 ManagementEnvironment GetManagementEnvironment(Profile* profile,
                                                const AccountInfo& account_info);
 
+// Returns false if the toolbar enterprise badging is disabled by policy.
+bool IsEnterpriseBadgingEnabledForToolbar(Profile* profile);
+
 bool CanShowEnterpriseBadging(Profile* profile);
 
 // Checks `email_domain` against the list of pre-defined known consumer domains.

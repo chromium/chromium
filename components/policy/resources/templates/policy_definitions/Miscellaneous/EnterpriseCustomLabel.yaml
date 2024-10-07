@@ -12,6 +12,8 @@ desc: |-
   Unlike other policies, this policy set at the profile level takes precedence over a policy set at the browser level.
 
   The custom label will not be translated.
+
+  Note that this policy has no effect if the <ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR_SETTINGS">EnterpriseProfileBadgeToolbarSettings</ph> policy is set to <ph name="HIDE_EXPANDED_ENTERPRISE_TOOLBAR_BADGE">hide_expanded_enterprise_toolbar_badge</ph> (value 1).
 example_value: Chromium
 features:
   dynamic_refresh: true

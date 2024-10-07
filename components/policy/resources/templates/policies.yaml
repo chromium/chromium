@@ -1300,6 +1300,7 @@ policies:
   1299: AllowExcludeDisplayInMirrorMode
   1300: AutofillPredictionSettings
   1301: ArcOpenLinksInBrowserByDefault
+  1302: EnterpriseProfileBadgeToolbarSettings
 
 atomic_groups:
   1: Homepage

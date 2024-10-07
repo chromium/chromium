@@ -108,12 +108,13 @@ gfx::Image GetGaiaAccountImage(Profile* profile) {
   return gfx::Image();
 }
 
-// Expected to be called when Management is set.
-// Returns:
+// Expected to be called when Management is set and enterprise badging is
+// enabled. Returns:
 // - true for Work.
 // - false for School.
 bool IsManagementWork(Profile* profile) {
-  CHECK(enterprise_util::CanShowEnterpriseBadging(profile));
+  CHECK(enterprise_util::CanShowEnterpriseBadging(profile) &&
+        enterprise_util::IsEnterpriseBadgingEnabledForToolbar(profile));
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   auto management_environment = enterprise_util::GetManagementEnvironment(
       profile, identity_manager->FindExtendedAccountInfoByAccountId(
@@ -750,6 +751,10 @@ class ManagementStateProvider : public StateProvider,
         prefs::kEnterpriseCustomLabelForProfile,
         base::BindRepeating(&ManagementStateProvider::RequestUpdate,
                             weak_ptr_factory_.GetWeakPtr()));
+    local_state_pref_change_registrar_.Add(
+        prefs::kEnterpriseProfileBadgeToolbarSettings,
+        base::BindRepeating(&ManagementStateProvider::RequestUpdate,
+                            weak_ptr_factory_.GetWeakPtr()));
   }
 
   ~ManagementStateProvider() override { BrowserList::RemoveObserver(this); }
@@ -757,6 +762,8 @@ class ManagementStateProvider : public StateProvider,
   // StateProvider:
   bool IsActive() const override {
     return enterprise_util::CanShowEnterpriseBadging(&profile_.get()) &&
+           enterprise_util::IsEnterpriseBadgingEnabledForToolbar(
+               &profile_.get()) &&
            (!IsTransient() || temporarily_showing_);
   }
 
@@ -779,7 +786,9 @@ class ManagementStateProvider : public StateProvider,
   // ProfileAttributesStorage::Observer:
   void OnProfileUserManagementAcceptanceChanged(
       const base::FilePath& profile_path) override {
-    if (!enterprise_util::CanShowEnterpriseBadging(&profile_.get())) {
+    if (!enterprise_util::CanShowEnterpriseBadging(&profile_.get()) ||
+        !enterprise_util::IsEnterpriseBadgingEnabledForToolbar(
+            &profile_.get())) {
       RequestUpdate();
       return;
     }
