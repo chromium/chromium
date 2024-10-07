@@ -539,8 +539,17 @@ class WebAppLinkCapturingParameterizedBrowserTest
     if (GetRedirectType() == RedirectType::kNone) {
       return nullptr;  // This test is not using redirects.
     }
-    if (request.GetURL().spec().find("/destination.html") ==
-        std::string::npos) {
+
+    // Strip out queries and fragments from the request url, since the id and
+    // click type is appended by the test file to the url on click events for
+    // debugging, which interferes with the redirection logic.
+    GURL::Replacements request_replacements;
+    request_replacements.ClearRef();
+    request_replacements.ClearQuery();
+    const GURL& final_request_url =
+        request.GetURL().ReplaceComponents(request_replacements);
+
+    if (!base::Contains(final_request_url.spec(), "/destination.html")) {
       return nullptr;  // Only redirect for destination pages.
     }
 
@@ -549,7 +558,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
 
     // We don't redirect requests for start.html, manifest files, etc. Only the
     // destination page the test wants to run.
-    if (request.GetURL() != redirect_from) {
+    if (final_request_url != redirect_from) {
       return nullptr;
     }
 
@@ -1194,6 +1203,63 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(OpenerMode::kNoOpener),
         testing::Values(NavigationTarget::kBlank)),
     LinkCaptureTestParamToString);
+
+// Use-case where redirection goes through intermediary installed apps before
+// ending up as a new tab in an existing browser for user modified clicks.
+INSTANTIATE_TEST_SUITE_P(
+    Redirection_OpenInChrome,
+    WebAppLinkCapturingParameterizedBrowserTest,
+    testing::Combine(
+        testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
+        testing::Values(LinkCapturing::kEnabled),
+        testing::Values(StartingPoint::kAppWindow),
+        testing::Values(Destination::kScopeA2X),
+        testing::Values(RedirectType::kServerSideViaA,
+                        RedirectType::kServerSideViaB),
+        testing::Values(NavigationElement::kElementLink),
+        testing::Values(test::ClickMethod::kShiftClick,
+                        test::ClickMethod::kMiddleClick),
+        testing::Values(OpenerMode::kOpener),
+        testing::Values(NavigationTarget::kBlank)),
+    LinkCaptureTestParamToString);
+
+// Use-case where redirection goes into a browser tab as an intermediate step
+// and ends up in an app window, triggered by a shift click.
+INSTANTIATE_TEST_SUITE_P(
+    Redirection_OpenInApp_NewWindowDisposition,
+    WebAppLinkCapturingParameterizedBrowserTest,
+    testing::Combine(
+        testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
+        testing::Values(LinkCapturing::kEnabled),
+        testing::Values(StartingPoint::kAppWindow),
+        testing::Values(Destination::kScopeA2A, Destination::kScopeA2B),
+        testing::Values(RedirectType::kServerSideViaX),
+        testing::Values(NavigationElement::kElementLink),
+        testing::Values(test::ClickMethod::kShiftClick),
+        testing::Values(OpenerMode::kOpener),
+        testing::Values(NavigationTarget::kBlank)),
+    LinkCaptureTestParamToString);
+
+// Use-case where redirection goes into a browser tab as an intermediate step,
+// and ends up in an app window, triggered via a middle click.
+INSTANTIATE_TEST_SUITE_P(
+    Redirection_BackgroundDisposition,
+    WebAppLinkCapturingParameterizedBrowserTest,
+    testing::Combine(
+        testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
+        testing::Values(LinkCapturing::kEnabled),
+        testing::Values(StartingPoint::kAppWindow),
+        testing::Values(Destination::kScopeA2A),
+        testing::Values(RedirectType::kServerSideViaB,
+                        RedirectType::kServerSideViaX),
+        testing::Values(NavigationElement::kElementLink),
+        testing::Values(test::ClickMethod::kMiddleClick),
+        testing::Values(OpenerMode::kOpener),
+        testing::Values(NavigationTarget::kBlank)),
+    LinkCaptureTestParamToString);
+
+// TODO(crbug.com/372059334): Fix test infrastructure message handling to
+// support redirection that navigates existing windows without hanging.
 
 // This test verifies that there are no left-over expectations for tests that
 // no longer exist in code but still exist in the expectations json file.

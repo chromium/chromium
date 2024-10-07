@@ -136,7 +136,7 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
     chrome::NewTab(source_browser);
   }
 
-  ReparentWebContentsIntoBrowser(
+  ReparentWebContentsIntoBrowserImpl(
       source_browser, contents, target_browser,
       /*insert_as_pinned_first_tab=*/insert_as_pinned_home_tab);
   if (insert_as_pinned_home_tab) {
@@ -364,10 +364,10 @@ void MaybePopulateNavigationHandlingInfoForRedirects(
 
 }  // namespace
 
-void ReparentWebContentsIntoBrowser(Browser* source_browser,
-                                    content::WebContents* web_contents,
-                                    Browser* target_browser,
-                                    bool insert_as_first_tab) {
+void ReparentWebContentsIntoBrowserImpl(Browser* source_browser,
+                                        content::WebContents* web_contents,
+                                        Browser* target_browser,
+                                        bool insert_as_first_tab) {
   CHECK(source_browser);
   CHECK(web_contents);
   CHECK(target_browser);

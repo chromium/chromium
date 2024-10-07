@@ -12,8 +12,9 @@
 
 namespace web_app {
 
-// Navigation throttle used to handle navigation capturing at the end of a
-// redirect chain.
+// This handler is executed after a redirection chain, and attempts to 'correct'
+// PWA navigation capturing behavior to ensure that the final state resembles
+// as if the final url was the initial url considered.
 class NavigationCapturingRedirectionThrottle
     : public content::NavigationThrottle {
  public:

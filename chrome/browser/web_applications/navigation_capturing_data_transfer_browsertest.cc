@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/navigation_capturing_information_forwarder.h"
@@ -161,6 +162,9 @@ class NavigationCapturingDataTransferBrowserTest
 
   NavigationCapturingInformationForwarder* GetForwarderForWebContents(
       content::WebContents* contents) {
+    if (!contents) {
+      return nullptr;
+    }
     return NavigationCapturingInformationForwarder::FromWebContents(contents);
   }
 
@@ -183,7 +187,8 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingDataTransferBrowserTest,
   ASSERT_TRUE(nav_awaiter.GetRedirectionInfoForNavigation().has_value());
 
   NavigationCapturingRedirectionInfo redirection_info =
-      std::move(*nav_awaiter.GetRedirectionInfoForNavigation());
+      *nav_awaiter.GetRedirectionInfoForNavigation();
+
   // Triggered from a tab and not an app window.
   EXPECT_FALSE(redirection_info.app_id_initial_browser.has_value());
   EXPECT_EQ(NavigationHandlingInitialResult::kAppWindowNavigationCaptured,
@@ -210,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingDataTransferBrowserTest,
   ASSERT_TRUE(nav_awaiter.GetRedirectionInfoForNavigation().has_value());
 
   NavigationCapturingRedirectionInfo redirection_info =
-      std::move(*nav_awaiter.GetRedirectionInfoForNavigation());
+      *nav_awaiter.GetRedirectionInfoForNavigation();
 
   // Triggered from a tab and not an app window.
   EXPECT_FALSE(redirection_info.app_id_initial_browser.has_value());
@@ -232,19 +237,19 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingDataTransferBrowserTest,
   ASSERT_NE(nullptr, contents);
 
   NavigationCompletionAwaiter nav_awaiter(contents);
-
   Browser* app_browser = TriggerNavigationCapturingNewAppWindow(
       contents, test::ClickMethod::kShiftClick, kToSiteBTargetBlankWithOpener);
   nav_awaiter.AwaitNavigationCompletion();
   ASSERT_NE(nullptr, app_browser);
+
   ASSERT_TRUE(nav_awaiter.GetRedirectionInfoForNavigation().has_value());
 
   NavigationCapturingRedirectionInfo redirection_info =
-      std::move(*nav_awaiter.GetRedirectionInfoForNavigation());
+      *nav_awaiter.GetRedirectionInfoForNavigation();
 
   // Triggered from an app window for app_id_a.
   ASSERT_TRUE(redirection_info.app_id_initial_browser.has_value());
-  EXPECT_EQ(app_id_a, redirection_info.app_id_initial_browser.value());
+  EXPECT_EQ(app_id_a, *redirection_info.app_id_initial_browser);
   // Navigation capturing only extends to left clicks creating a capturable
   // experience, and does not extend to user modified clicks like shift and
   // middle clicks.
@@ -274,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingDataTransferBrowserTest,
   ASSERT_TRUE(nav_awaiter.GetRedirectionInfoForNavigation().has_value());
 
   NavigationCapturingRedirectionInfo redirection_info =
-      std::move(*nav_awaiter.GetRedirectionInfoForNavigation());
+      *nav_awaiter.GetRedirectionInfoForNavigation();
 
   // Triggered from an app window for app_id.
   ASSERT_TRUE(redirection_info.app_id_initial_browser.has_value());

@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_P(ReparentWebContentsTest, ReparentToAppAndBack) {
     CHECK(app_browser->app_controller());
     app_browser->app_controller()->MaybeSetInitialUrlOnReparentTab();
   }
-  ReparentWebContentsIntoBrowser(browser(), to_reparent, app_browser);
+  ReparentWebContentsIntoBrowserImpl(browser(), to_reparent, app_browser);
 
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   EXPECT_EQ(1, app_browser->tab_strip_model()->count());
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_P(ReparentWebContentsTest, ReparentToAppAndBack) {
   // close.
   ui_test_utils::BrowserChangeObserver closed_observer(
       app_browser, ui_test_utils::BrowserChangeObserver::ChangeType::kRemoved);
-  ReparentWebContentsIntoBrowser(app_browser, to_reparent, browser());
+  ReparentWebContentsIntoBrowserImpl(app_browser, to_reparent, browser());
   closed_observer.Wait();
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(), to_reparent);

@@ -2175,7 +2175,7 @@ Browser* OpenInChrome(Browser* hosted_app_browser) {
         Browser::CreateParams(hosted_app_browser->profile(), true));
   }
 
-  web_app::ReparentWebContentsIntoBrowser(
+  web_app::ReparentWebContentsIntoBrowserImpl(
       hosted_app_browser,
       hosted_app_browser->tab_strip_model()->GetActiveWebContents(),
       target_browser);
