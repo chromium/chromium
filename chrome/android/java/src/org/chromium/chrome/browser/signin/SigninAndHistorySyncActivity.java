@@ -17,6 +17,7 @@ import android.view.Window;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -30,6 +31,8 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImp
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
 import org.chromium.chrome.browser.ui.signin.DialogWhenLargeContentLayout;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator.HistoryOptInMode;
@@ -45,7 +48,6 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
@@ -80,6 +82,8 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
     private static final String ARGUMENT_IS_UPGRADE_PROMO =
             "SigninAndHistorySyncActivity.IsUpgradePromo";
 
+    private static final int ADD_ACCOUNT_REQUEST_CODE = 1;
+
     private final OneshotSupplierImpl<Profile> mProfileSupplier = new OneshotSupplierImpl<>();
     // TODO(b/41493788): Move this to FirstRunActivityBase
     private final Promise<Void> mNativeInitializationPromise = new Promise<>();
@@ -89,6 +93,12 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
     // redundancy.
     private SigninAndHistorySyncCoordinator mCoordinator;
     private UpgradePromoCoordinator mUpgradePromoCoordinator;
+
+    // Set to true when the add account activity is started, and is not persisted in saved instance
+    // state. Therefore when onActivityResultWithNavitve is called with the add account activity's
+    // result, if this boolean is false, it means that the activity is killed when the add account
+    // activity was in the foreground.
+    private boolean mIsWaitingForAddAccountResult;
 
     @Override
     protected void onPreCreate() {
@@ -242,6 +252,30 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
     }
 
     @Override
+    public boolean onActivityResultWithNative(int requestCode, int resultCode, Intent data) {
+        if (super.onActivityResultWithNative(requestCode, resultCode, data)) {
+            return true;
+        }
+
+        if (requestCode != ADD_ACCOUNT_REQUEST_CODE) {
+            return false;
+        }
+
+        // If mIsWaitingForAddAccountResult is false, it means that the add account activity was not
+        // started in this instance of Activity, and that the sign-in activity was killed during the
+        // add account flow.
+        if (!mIsWaitingForAddAccountResult) {
+            SigninMetricsUtils.logAddAccountStateHistogram(State.ACTIVITY_DESTROYED);
+        } else {
+            SigninMetricsUtils.logAddAccountStateHistogram(State.ACTIVITY_SURVIVED);
+        }
+
+        mIsWaitingForAddAccountResult = false;
+        onAddAccountResult(resultCode, data);
+        return true;
+    }
+
+    @Override
     protected void onDestroy() {
         if (mCoordinator != null) {
             mCoordinator.destroy();
@@ -319,28 +353,6 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
      */
     @Override
     public void addAccount() {
-        // TODO(crbug.com/41493767): Handle result in onActivityResult rather than using
-        // IntentCallback to resume the flow when Chrome is killed.
-        final WindowAndroid.IntentCallback onAddAccountCompleted =
-                (int resultCode, Intent data) -> {
-                    if (data == null
-                            || resultCode != Activity.RESULT_OK
-                            || data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME) == null) {
-                        if (mCoordinator != null) {
-                            mCoordinator.onAddAccountCanceled();
-                        }
-                        return;
-                    }
-
-                    final String accountEmail =
-                            data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-                    if (mUpgradePromoCoordinator != null) {
-                        mUpgradePromoCoordinator.onAccountSelected(accountEmail);
-                    } else {
-                        assert mCoordinator != null;
-                        mCoordinator.onAccountAdded(accountEmail);
-                    }
-                };
         AccountManagerFacadeProvider.getInstance()
                 .createAddAccountIntent(
                         intent -> {
@@ -355,7 +367,8 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
                                 SigninUtils.openSettingsForAllAccounts(this);
                                 return;
                             }
-                            windowAndroid.showIntent(intent, onAddAccountCompleted, null);
+                            mIsWaitingForAddAccountResult = true;
+                            startActivityForResult(intent, ADD_ACCOUNT_REQUEST_CODE);
                         });
     }
 
@@ -393,6 +406,27 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
         } else {
             // Set the status bar color to the upgrade promo background color.
             setStatusBarColor(SemanticColorUtils.getDefaultBgColor(this));
+        }
+    }
+
+    private void onAddAccountResult(int resultCode, Intent data) {
+        final String accountEmail =
+                data == null
+                        ? null
+                        : IntentUtils.safeGetStringExtra(data, AccountManager.KEY_ACCOUNT_NAME);
+
+        if (resultCode != Activity.RESULT_OK || accountEmail == null) {
+            if (mCoordinator != null) {
+                mCoordinator.onAddAccountCanceled();
+            }
+            return;
+        }
+
+        if (mUpgradePromoCoordinator != null) {
+            mUpgradePromoCoordinator.onAccountSelected(accountEmail);
+        } else {
+            assert mCoordinator != null;
+            mCoordinator.onAccountAdded(accountEmail);
         }
     }
 }

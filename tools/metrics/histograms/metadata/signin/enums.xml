@@ -609,6 +609,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Failed"/>
   <int value="4" label="Cancelled"/>
   <int value="5" label="Returned null account name"/>
+  <int value="6" label="Returned after sign-in activity destroyed"/>
+  <int value="7" label="Returned and sign-in activity was not destroyed"/>
 </enum>
 
 <enum name="SigninDiceResponseHeader">
