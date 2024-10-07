@@ -38,7 +38,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/managed_ui.h"
-#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -1185,9 +1184,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"autofillPredictionImprovementsDeleteAllEntriesDialogText",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ALL_ENTRIES_DIALOG_TEXT},
   };
-
-  GURL google_password_manager_url = GetGooglePasswordManagerURL(
-      password_manager::ManagePasswordsReferrer::kChromeSettings);
 
   html_source->AddString("manageAddressesUrl",
                          autofill::payments::GetManageAddressesUrl().spec());
