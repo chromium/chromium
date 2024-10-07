@@ -31,13 +31,6 @@ namespace enterprise_data_protection {
 
 namespace {
 
-// TODO(crbug.com/360052665): Flaky on Mac
-#if BUILDFLAG(IS_MAC)
-#define MAYBE(x) DISABLED_##x
-#else
-#define MAYBE(x) x
-#endif
-
 // Browser tests that test data protection integration with Chrome's clipboard
 // logic. If a browser test you're adding is specific to a single
 // function/class, consider using a browsertest.cc file specific to that code.
@@ -117,7 +110,7 @@ class DataProtectionClipboardBrowserTest : public InProcessBrowserTest {
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
-                       MAYBE(CopyBlockedByDataControls)) {
+                       CopyBlockedByDataControls) {
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                     "sources": { "urls": ["*"] },
                     "restrictions": [
@@ -154,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
-                       MAYBE(CopyWarnedByDataControls_Cancel)) {
+                       CopyWarnedByDataControls_Cancel) {
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                     "sources": { "urls": ["*"] },
                     "restrictions": [
@@ -191,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
-                       MAYBE(CopyWarnedByDataControls_Bypass)) {
+                       CopyWarnedByDataControls_Bypass) {
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                     "sources": { "urls": ["*"] },
                     "restrictions": [
@@ -229,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
-                       MAYBE(CopyAllowedByDataControls)) {
+                       CopyAllowedByDataControls) {
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                     "sources": { "urls": ["google.com"] },
                     "restrictions": [
@@ -254,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
-                       MAYBE(PasteBlockedByDataControls)) {
+                       PasteBlockedByDataControls) {
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                     "destinations": { "urls": ["*"] },
                     "restrictions": [
@@ -283,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
-                       MAYBE(PasteWarnedByDataControls_Cancel)) {
+                       PasteWarnedByDataControls_Cancel) {
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                     "destinations": { "urls": ["*"] },
                     "restrictions": [
@@ -312,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
-                       MAYBE(PasteWarnedByDataControls_Bypass)) {
+                       PasteWarnedByDataControls_Bypass) {
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                     "destinations": { "urls": ["*"] },
                     "restrictions": [
@@ -341,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
-                       MAYBE(PasteAllowedByDataControls)) {
+                       PasteAllowedByDataControls) {
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                     "destinations": { "urls": ["google.com"] },
                     "restrictions": [
