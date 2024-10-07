@@ -41,7 +41,9 @@ const char* kNotLaunchedBoards[] = {
     "EVE", "FIZZ", "KALISTA", "NAMI", "NAUTILUS", "NOCTURNE", "RAMMUS",
     "SORAKA", "CORAL", "PYRO", "REEF", "SAND", "SNAPPY",
     // Wave MVL8897
-    "ELM", "HANA"};
+    "ELM", "HANA",
+    // ChromeOS Flex
+    "REVEN"};
 }  // namespace
 
 static bool IsDeviceLaunchedFloss() {
