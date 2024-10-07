@@ -29,6 +29,14 @@ export class ScrollModeController {
     this.active_ ? this.stop_() : this.start_(mouseLocation, screenBounds);
   }
 
+  updateScrollLocation(mouseLocation: ScreenPoint|undefined): void {
+    if (!mouseLocation) {
+      return;
+    }
+
+    this.scrollLocation_ = mouseLocation;
+  }
+
   private async start_(mouseLocation: ScreenPoint, screenBounds: ScreenRect):
       Promise<void> {
     this.active_ = true;

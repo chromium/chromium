@@ -34,7 +34,7 @@ FaceGazeScrollModeControllerTest = class extends FaceGazeTestBase {
   }
 };
 
-AX_TEST_F('FaceGazeScrollModeControllerTest', 'Active', async function() {
+AX_TEST_F('FaceGazeScrollModeControllerTest', 'Active', function() {
   const controller = this.getScrollModeController();
   assertNotNullNorUndefined(controller);
   assertNullOrUndefined(controller.scrollLocation_);
@@ -52,7 +52,7 @@ AX_TEST_F('FaceGazeScrollModeControllerTest', 'Active', async function() {
   assertNullOrUndefined(controller.screenBounds_);
 });
 
-AX_TEST_F('FaceGazeScrollModeControllerTest', 'ScreenBounds', async function() {
+AX_TEST_F('FaceGazeScrollModeControllerTest', 'ScreenBounds', function() {
   const controller = this.getScrollModeController();
   this.toggleScrollMode();
   const bounds = this.mockAccessibilityPrivate.displayBounds_[0];
@@ -64,8 +64,7 @@ AX_TEST_F('FaceGazeScrollModeControllerTest', 'ScreenBounds', async function() {
 });
 
 AX_TEST_F(
-    'FaceGazeScrollModeControllerTest', 'CallsApiOnValidPoint',
-    async function() {
+    'FaceGazeScrollModeControllerTest', 'CallsApiOnValidPoint', function() {
       const controller = this.getScrollModeController();
       this.toggleScrollMode();
 
@@ -118,8 +117,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'FaceGazeScrollModeControllerTest', 'SkipsApiOnInvalidPoint',
-    async function() {
+    'FaceGazeScrollModeControllerTest', 'SkipsApiOnInvalidPoint', function() {
       const controller = this.getScrollModeController();
       this.toggleScrollMode();
       controller.scroll({x: 600, y: 400});
@@ -128,4 +126,32 @@ AX_TEST_F(
       assertEquals(0, mockApi.getScrollAtPointCount());
       assertNullOrUndefined(mockApi.getScrollAtPointTarget());
       assertNullOrUndefined(mockApi.getScrollAtPointDirection());
+    });
+
+AX_TEST_F(
+    'FaceGazeScrollModeControllerTest', 'RespectsPhysicalMouseEvents',
+    function() {
+      const controller = this.getScrollModeController();
+      const mockApi = this.mockAccessibilityPrivate;
+      const bounds = mockApi.displayBounds_[0];
+      const topEdge = {x: 400, y: bounds.top};
+      ScrollModeController.RATE_LIMIT = 0;
+
+      this.toggleScrollMode();
+      controller.scroll(topEdge);
+      assertEquals(1, mockApi.getScrollAtPointCount());
+      // The scroll target is wherever the mouse is when scroll mode is toggled.
+      assertEquals(600, mockApi.getScrollAtPointTarget().x);
+      assertEquals(400, mockApi.getScrollAtPointTarget().y);
+
+      // Simulate a mouse moved event, which happens if the user moves the mouse
+      // using the touchpad or an external mouse.
+      this.sendAutomationMouseEvent(
+          {mouseX: 350, mouseY: 250, eventFrom: 'user'});
+
+      // Ensure the scroll target is updated to respect the new mouse location.
+      controller.scroll(topEdge);
+      assertEquals(2, mockApi.getScrollAtPointCount());
+      assertEquals(350, mockApi.getScrollAtPointTarget().x);
+      assertEquals(250, mockApi.getScrollAtPointTarget().y);
     });

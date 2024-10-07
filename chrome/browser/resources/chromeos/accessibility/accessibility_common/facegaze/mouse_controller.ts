@@ -546,6 +546,11 @@ export class MouseController {
       // Assume all synthesized mouse movements come from within FaceGaze.
       this.mouseLocation_ = {x: event.mouseX, y: event.mouseY};
       this.lastMouseMovedTime_ = new Date().getTime();
+
+      if (this.scrollModeController_.active()) {
+        // Scroll mode honors physical mouse movements.
+        this.scrollModeController_.updateScrollLocation(this.mouseLocation_);
+      }
     }
   }
 
