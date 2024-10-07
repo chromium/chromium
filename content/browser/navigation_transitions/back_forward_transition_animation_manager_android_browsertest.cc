@@ -4510,4 +4510,67 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kApp));
 }
 
+// For subframe navigations, we resume the dialogs as soon as the subframe
+// navigation starts.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardTransitionAnimationManagerBrowserTestSuspendDialog,
+    JavascriptDialogNotSuppressedForSubframeNavs) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  FrameTreeNode* iframe = nullptr;
+  {
+    ASSERT_TRUE(NavigateToURL(web_contents(), RedURL()));
+    web_contents()->GetController().PruneAllButLastCommitted();
+    static constexpr char kAddIframeScript[] = R"({
+      (()=>{
+          return new Promise((resolve) => {
+            const frame = document.createElement('iframe');
+            frame.addEventListener('load', () => {resolve();});
+            frame.src = $1;
+            document.body.appendChild(frame);
+          });
+      })();
+    })";
+    ASSERT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                       JsReplace(kAddIframeScript, BlueURL())));
+    ASSERT_EQ(
+        web_contents()->GetPrimaryMainFrame()->frame_tree_node()->child_count(),
+        1u);
+    iframe =
+        web_contents()->GetPrimaryMainFrame()->frame_tree_node()->child_at(0);
+    ASSERT_TRUE(
+        NavigateToURLFromRenderer(iframe->current_frame_host(), GreenURL()));
+  }
+
+  // [red(blue), red(green)*] -> [red(blue)*, red(green)]
+  TestNavigationManager iframe_back_to_blue(web_contents(), BlueURL());
+
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          SwipeEdge::LEFT, NavType::kBackward);
+  EXPECT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
+  EXPECT_TRUE(fake_dialog_manager()->IsSuspend(ModalDialogType::kTab));
+  EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kApp));
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6f));
+  EXPECT_TRUE(fake_dialog_manager()->IsSuspend(ModalDialogType::kTab));
+  EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kApp));
+
+  TestFuture<AnimatorForTesting::State> on_destroyed;
+  GetAnimator()->set_on_impl_destroyed(on_destroyed.GetCallback());
+  GetAnimationManager()->OnGestureInvoked();
+  ASSERT_TRUE(iframe_back_to_blue.WaitForRequestStart());
+  // As soon as `OnGestureInvoked()` is called the dialogs are resumed.
+  EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kTab));
+  EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kApp));
+
+  GetAnimationManager()->OnDetachCompositor();
+  ASSERT_TRUE(on_destroyed.Wait());
+  EXPECT_EQ(on_destroyed.Get(), kAnimationAborted);
+  // Dialogs are resumed when the transition is aborted.
+  EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kTab));
+  EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kApp));
+}
+
 }  // namespace content

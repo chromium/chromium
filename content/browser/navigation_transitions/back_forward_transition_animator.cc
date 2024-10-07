@@ -489,6 +489,15 @@ void BackForwardTransitionAnimator::OnGestureInvoked() {
     return;
   }
 
+  CHECK(tracked_request_);
+  if (!tracked_request_->is_primary_main_frame) {
+    // We have suppressed the dialogs when the user has started swiping because
+    // we don't want any dialogs to disrupt the gesture. For subframe
+    // navigations, resume the dialogs as soon as the navigation starts as we
+    // don't want to suppress any dialogs from the main frame.
+    ResumeDialogs();
+  }
+
   // `StartNavigationAndTrackRequest()` sets `navigation_state_`.
   if (navigation_state_ == NavigationState::kBeforeUnloadDispatched) {
     AdvanceAndProcessState(State::kDisplayingCancelAnimation);
