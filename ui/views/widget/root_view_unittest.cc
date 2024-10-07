@@ -252,10 +252,12 @@ TEST_F(RootViewTest, EventHandlersResetWhenDeleted) {
   View* event_handler = state.AddChildView(std::make_unique<View>());
   root_view->SetMouseAndGestureHandler(event_handler);
   ASSERT_EQ(event_handler, root_view->gesture_handler_for_testing());
+  ASSERT_EQ(event_handler, root_view->mouse_pressed_handler_for_testing());
 
   // Delete the child and expect that there is no longer a mouse handler.
   root_view->GetContentsView()->RemoveChildViewT(event_handler);
   EXPECT_EQ(nullptr, root_view->gesture_handler_for_testing());
+  EXPECT_EQ(nullptr, root_view->mouse_pressed_handler_for_testing());
 }
 
 TEST_F(RootViewTest, EventHandlersNotResetWhenReparented) {

@@ -135,6 +135,9 @@ class VIEWS_EXPORT RootView : public View,
   const views::View* gesture_handler_for_testing() const {
     return gesture_handler_;
   }
+  const views::View* mouse_pressed_handler_for_testing() const {
+    return mouse_pressed_handler_.get();
+  }
 
  protected:
   // View:
@@ -209,7 +212,7 @@ class VIEWS_EXPORT RootView : public View,
   //                   ViewTargeter / RootViewTargeter.
 
   // The view currently handing down - drag - up
-  raw_ptr<View, AcrossTasksDanglingUntriaged> mouse_pressed_handler_ = nullptr;
+  raw_ptr<View> mouse_pressed_handler_ = nullptr;
 
   // The view currently handling enter / exit
   raw_ptr<View, AcrossTasksDanglingUntriaged> mouse_move_handler_ = nullptr;

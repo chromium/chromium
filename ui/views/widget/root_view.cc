@@ -62,36 +62,6 @@ class MouseEnterExitEvent : public ui::MouseEvent {
   }
 };
 
-// TODO(crbug.com/40821061): This class is for debug purpose only.
-// Remove it after resolving the issue.
-class DanglingMouseMoveHandlerOnViewDestroyingChecker
-    : public views::ViewObserver {
- public:
-  explicit DanglingMouseMoveHandlerOnViewDestroyingChecker(
-      const raw_ptr<views::View, AcrossTasksDanglingUntriaged>&
-          mouse_move_handler)
-      : mouse_move_handler_(mouse_move_handler) {
-    scoped_observation.Observe(mouse_move_handler_);
-  }
-
-  // views::ViewObserver:
-  void OnViewIsDeleting(views::View* view) override {
-    // `mouse_move_handler_` should be nulled before `view` dies. Otherwise
-    // `mouse_move_handler_` will become a dangling pointer.
-    CHECK(!mouse_move_handler_);
-    scoped_observation.Reset();
-  }
-
- private:
-  base::ScopedObservation<views::View, views::ViewObserver> scoped_observation{
-      this};
-  // RAW_PTR_EXCLUSION: Avoid turning this into a `raw_ref<raw_ptr<>>`. The
-  // current `raw_ptr&` setup is intentional and used to observe the pointer
-  // without counting as a live reference to the underlying memory.
-  RAW_PTR_EXCLUSION const raw_ptr<views::View, AcrossTasksDanglingUntriaged>&
-      mouse_move_handler_;
-};
-
 }  // namespace
 
 // Used by RootView to create a hidden child that can be used to make screen
@@ -735,16 +705,21 @@ void RootView::ViewHierarchyChanged(
   widget_->ViewHierarchyChanged(details);
 
   if (!details.is_add && !details.move_view) {
-    if (!explicit_mouse_handler_ && mouse_pressed_handler_ == details.child)
-      mouse_pressed_handler_ = nullptr;
-    if (mouse_move_handler_ == details.child)
+    if (mouse_pressed_handler_ == details.child) {
+      SetMouseHandler(nullptr);
+    }
+    if (mouse_move_handler_ == details.child) {
       mouse_move_handler_ = nullptr;
-    if (gesture_handler_ == details.child)
+    }
+    if (gesture_handler_ == details.child) {
       gesture_handler_ = nullptr;
-    if (event_dispatch_target_ == details.child)
+    }
+    if (event_dispatch_target_ == details.child) {
       event_dispatch_target_ = nullptr;
-    if (old_dispatch_target_ == details.child)
+    }
+    if (old_dispatch_target_ == details.child) {
       old_dispatch_target_ = nullptr;
+    }
   }
 }
 
@@ -847,8 +822,6 @@ void RootView::HandleMouseEnteredOrMoved(const ui::MouseEvent& event) {
       mouse_move_handler_ = v;
       // TODO(crbug.com/40821061): This is for debug purpose only.
       // Remove it after resolving the issue.
-      DanglingMouseMoveHandlerOnViewDestroyingChecker
-          mouse_move_handler_dangling_checker(mouse_move_handler_);
       if (!mouse_move_handler_->GetNotifyEnterExitOnChild() ||
           !mouse_move_handler_->Contains(old_handler)) {
         MouseEnterExitEvent entered(event, ui::EventType::kMouseEntered);
