@@ -40,6 +40,7 @@
 #import "components/optimization_guide/core/model_execution/model_execution_manager.h"
 #import "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #import "ios/chrome/browser/optimization_guide/model/on_device_model_service_controller_ios.h"
+#import "ios/web/public/thread/web_thread.h"
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
 namespace {
@@ -352,3 +353,84 @@ void OptimizationGuideService::RemoveObserverForOptimizationTargetModel(
         optimization_target, observer);
   }
 }
+
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+#pragma mark - optimization_guide::OptimizationGuideModelExecutor implementation
+
+bool OptimizationGuideService::CanCreateOnDeviceSession(
+    optimization_guide::ModelBasedCapabilityKey feature,
+    optimization_guide::OnDeviceModelEligibilityReason*
+        on_device_model_eligibility_reason) {
+  if (!model_execution_manager_) {
+    if (on_device_model_eligibility_reason) {
+      *on_device_model_eligibility_reason = optimization_guide::
+          OnDeviceModelEligibilityReason::kFeatureNotEnabled;
+    }
+    return false;
+  }
+  return model_execution_manager_->CanCreateOnDeviceSession(
+      feature, on_device_model_eligibility_reason);
+}
+
+std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
+OptimizationGuideService::StartSession(
+    optimization_guide::ModelBasedCapabilityKey feature,
+    const std::optional<optimization_guide::SessionConfigParams>&
+        config_params) {
+  if (!model_execution_manager_) {
+    return nullptr;
+  }
+  return model_execution_manager_->StartSession(feature, config_params);
+}
+
+void OptimizationGuideService::ExecuteModel(
+    optimization_guide::ModelBasedCapabilityKey feature,
+    const google::protobuf::MessageLite& request_metadata,
+    optimization_guide::OptimizationGuideModelExecutionResultCallback
+        callback) {
+  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  if (!model_execution_manager_) {
+    std::move(callback).Run(
+        base::unexpected(
+            optimization_guide::OptimizationGuideModelExecutionError::
+                FromModelExecutionError(
+                    optimization_guide::OptimizationGuideModelExecutionError::
+                        ModelExecutionError::kGenericFailure)),
+        nullptr);
+    return;
+  }
+  model_execution_manager_->ExecuteModel(feature, request_metadata,
+                                         /*log_ai_data_request=*/nullptr,
+                                         std::move(callback));
+}
+
+void OptimizationGuideService::AddOnDeviceModelAvailabilityChangeObserver(
+    optimization_guide::ModelBasedCapabilityKey feature,
+    optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
+  if (!on_device_model_state_manager_) {
+    return;
+  }
+  optimization_guide::OnDeviceModelServiceController* service_controller =
+      GetApplicationContext()->GetOnDeviceModelServiceController(
+          on_device_model_state_manager_->GetWeakPtr());
+  if (service_controller) {
+    service_controller->AddOnDeviceModelAvailabilityChangeObserver(feature,
+                                                                   observer);
+  }
+}
+
+void OptimizationGuideService::RemoveOnDeviceModelAvailabilityChangeObserver(
+    optimization_guide::ModelBasedCapabilityKey feature,
+    optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
+  if (!on_device_model_state_manager_) {
+    return;
+  }
+  optimization_guide::OnDeviceModelServiceController* service_controller =
+      GetApplicationContext()->GetOnDeviceModelServiceController(
+          on_device_model_state_manager_->GetWeakPtr());
+  if (service_controller) {
+    service_controller->RemoveOnDeviceModelAvailabilityChangeObserver(feature,
+                                                                      observer);
+  }
+}
+#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
