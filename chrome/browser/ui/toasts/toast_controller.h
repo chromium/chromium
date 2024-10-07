@@ -104,6 +104,8 @@ class ToastController : public views::WidgetObserver,
 
   views::Widget* GetToastWidgetForTesting() { return toast_widget_; }
 
+  toasts::ToastView* GetToastViewForTesting() { return toast_view_; }
+
   base::OneShotTimer* GetToastCloseTimerForTesting();
 
  private:
@@ -116,6 +118,7 @@ class ToastController : public views::WidgetObserver,
                               std::vector<std::u16string> replacement);
   void ClearTabScopedToasts();
   void UpdateToastWidgetVisibility(bool show_toast_widget);
+  bool ShouldRenderToastOverWebContents();
 
   // FullscreenObserver:
   void OnFullscreenStateChanged() override;
