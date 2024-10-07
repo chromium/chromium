@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/address_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/address_field_parser_ng.h"
+#include "components/autofill/core/browser/form_parsing/alternative_name_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/browser/form_parsing/credit_card_field_parser.h"
@@ -39,6 +40,7 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -192,6 +194,13 @@ void FormFieldParser::ParseFormFields(
   // Name pass.
   ParseFormFieldsPass(NameFieldParser::Parse, context, processed_fields,
                       field_candidates);
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillSupportPhoneticNameForJP)) {
+    // Alternative name (e.g. phonetic name) pass.
+    ParseFormFieldsPass(AlternativeNameFieldParser::Parse, context,
+                        processed_fields, field_candidates);
+  }
 
   // Search pass.
   ParseFormFieldsPass(SearchFieldParser::Parse, context, processed_fields,

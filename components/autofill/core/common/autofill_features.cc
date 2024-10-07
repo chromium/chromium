@@ -397,6 +397,11 @@ BASE_FEATURE(kAutofillUseITAddressModel,
              "AutofillUseITAddressModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables using a custom address model for Japan, overriding the legacy one.
+BASE_FEATURE(kAutofillSupportPhoneticNameForJP,
+             "AutofillSupportPhoneticNameForJP",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables using a custom address model for Poland, overriding the legacy one.
 BASE_FEATURE(kAutofillUsePLAddressModel,
              "AutofillUsePLAddressModel",
