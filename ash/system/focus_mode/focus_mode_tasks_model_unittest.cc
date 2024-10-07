@@ -505,6 +505,19 @@ TEST(FocusModeTasksModelTest, SetSelectedTask_ReorderList) {
                            SameId("task2"), SameId("task4")));
 }
 
+TEST(FocusModeTasksModelTest, SetSelectedTask_EmptyId) {
+  FocusModeTasksModel model;
+
+  FakeDelegate delegate;
+  model.SetDelegate(delegate.AsWeakPtr());
+
+  // If selected task has an empty `TaskId` the delegate should not be called.
+  EXPECT_CALL(delegate, FetchTask).Times(0);
+
+  TaskId empty_id;
+  model.SetSelectedTaskFromPrefs(empty_id);
+}
+
 TEST(FocusModeTasksModelTest, UpdateTask_NewTask) {
   FakeDelegate delegate;
   FocusModeTasksModel model;
@@ -597,6 +610,27 @@ TEST(FocusModeTasksModelTest, UpdateTask_EditTitle) {
               Pointee(Field(&FocusModeTask::title, "Updated task title")));
   // Task list size should remain the same for an edit of an existing task.
   EXPECT_THAT(model.tasks(), SizeIs(3));
+}
+
+// Verify that we don't try to fetch non-existent tasks if an update is
+// requested while the new task is still pending (b/371634351).
+TEST(FocusModeTasksModelTest, NewTaskThenRequest) {
+  FocusModeTasksModel model;
+
+  FakeDelegate delegate;
+  model.SetDelegate(delegate.AsWeakPtr());
+
+  // The pending task will still be pending when `RequestUpdate()` so we
+  // shouldn't attempt to fetch it (it doesn't have a valid id).
+  EXPECT_CALL(delegate, FetchTask).Times(0);
+
+  EXPECT_CALL(delegate, AddTask);
+  model.UpdateTask(
+      FocusModeTasksModel::TaskUpdate::NewTask("This is a new task"));
+
+  // All tasks are requested.
+  EXPECT_CALL(delegate, FetchTasks);
+  model.RequestUpdate();
 }
 
 }  // namespace
