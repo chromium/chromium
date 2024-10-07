@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -19,6 +20,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
@@ -27,6 +29,7 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
+#include "chrome/browser/web_applications/proto/web_app_database_metadata.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
@@ -45,6 +48,7 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
@@ -75,8 +79,13 @@ using ::testing::Optional;
 using ::testing::Property;
 using ::testing::VariantWith;
 
-class WebAppDatabaseTest : public WebAppTest {
+class WebAppDatabaseTest : public base::test::WithFeatureOverride,
+                           public WebAppTest {
  public:
+  WebAppDatabaseTest()
+      : base::test::WithFeatureOverride(
+            features::kWebAppDontAddExistingAppsToSync) {}
+
   void SetUp() override {
     WebAppTest::SetUp();
     provider_ = FakeWebAppProvider::Get(profile());
@@ -130,6 +139,17 @@ class WebAppDatabaseTest : public WebAppTest {
       std::unique_ptr<WebApp> app = test::CreateRandomWebApp({.seed = i});
       if (ensure_no_migration_needed) {
         EnsureHasUserDisplayModeForCurrentPlatform(*app);
+        if (base::FeatureList::IsEnabled(
+                features::kWebAppDontAddExistingAppsToSync)) {
+          if (app->GetSources().Has(WebAppManagement::kSync)) {
+            app->AddSource(WebAppManagement::kUserInstalled);
+          }
+        }
+        proto::DatabaseMetadata metadata;
+        metadata.set_version(WebAppDatabase::GetCurrentDatabaseVersion());
+        write_batch->WriteData(
+            std::string(WebAppDatabase::kDatabaseMetadataKey),
+            metadata.SerializeAsString());
       }
       std::unique_ptr<WebAppProto> proto =
           WebAppDatabase::CreateWebAppProto(*app);
@@ -207,7 +227,7 @@ class WebAppDatabaseTest : public WebAppTest {
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
 };
 
-TEST_F(WebAppDatabaseTest, WriteAndReadRegistry) {
+TEST_P(WebAppDatabaseTest, WriteAndReadRegistry) {
   InitSyncBridge();
   EXPECT_TRUE(registrar().is_empty());
 
@@ -231,7 +251,7 @@ TEST_F(WebAppDatabaseTest, WriteAndReadRegistry) {
   EXPECT_TRUE(IsDatabaseRegistryEqualToRegistrar());
 }
 
-TEST_F(WebAppDatabaseTest, WriteAndDeleteAppsWithCallbacks) {
+TEST_P(WebAppDatabaseTest, WriteAndDeleteAppsWithCallbacks) {
   InitSyncBridge();
   EXPECT_TRUE(registrar().is_empty());
 
@@ -291,18 +311,24 @@ TEST_F(WebAppDatabaseTest, WriteAndDeleteAppsWithCallbacks) {
 
 // Read a database where all apps are already in a valid state, so there should
 // be no difference between the apps written and read.
-TEST_F(WebAppDatabaseTest, OpenDatabaseAndReadRegistry) {
+TEST_P(WebAppDatabaseTest, OpenDatabaseAndReadRegistry) {
   Registry registry = WriteWebApps(100, /*ensure_no_migration_needed=*/true);
 
   InitSyncBridge();
   EXPECT_TRUE(IsRegistryEqual(mutable_registrar().registry(), registry));
+  EXPECT_TRUE(IsRegistryEqual(database_factory().ReadRegistry(), registry));
+  EXPECT_EQ(database_factory().ReadMetadata().version(),
+            WebAppDatabase::GetCurrentDatabaseVersion());
 }
 
 // Read a database where some apps will be migrated at read time.
-TEST_F(WebAppDatabaseTest, OpenDatabaseAndReadRegistryWithMigration) {
+TEST_P(WebAppDatabaseTest, OpenDatabaseAndReadRegistryWithMigration) {
   Registry registry = WriteWebApps(100, /*ensure_no_migration_needed=*/false);
 
   InitSyncBridge();
+
+  EXPECT_EQ(database_factory().ReadMetadata().version(),
+            WebAppDatabase::GetCurrentDatabaseVersion());
 
   // Some apps should have been migrated from an invalid state (missing
   // UserDisplayMode setting for the current platform) at read time.
@@ -317,12 +343,132 @@ TEST_F(WebAppDatabaseTest, OpenDatabaseAndReadRegistryWithMigration) {
     }
 #endif
     EnsureHasUserDisplayModeForCurrentPlatform(*app);
+
+    if (base::FeatureList::IsEnabled(
+            features::kWebAppDontAddExistingAppsToSync)) {
+      if (app->GetSources().Has(WebAppManagement::kSync)) {
+        app->AddSource(WebAppManagement::kUserInstalled);
+      }
+    }
   }
 
   EXPECT_TRUE(IsRegistryEqual(mutable_registrar().registry(), registry));
+  EXPECT_TRUE(IsRegistryEqual(database_factory().ReadRegistry(), registry));
 }
 
-TEST_F(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
+// Read a database where some apps will be migrated from not having a
+// kUserInstalled source to having one.
+TEST_P(WebAppDatabaseTest,
+       OpenDatabaseAndReadRegistryWithSourceUpgradeMigration) {
+  Registry registry = WriteWebApps(100, /*ensure_no_migration_needed=*/false);
+  auto write_batch = database_factory().GetStore()->CreateWriteBatch();
+  proto::DatabaseMetadata metadata;
+  metadata.set_version(0);
+  write_batch->WriteData(std::string(WebAppDatabase::kDatabaseMetadataKey),
+                         metadata.SerializeAsString());
+  WriteBatch(std::move(write_batch));
+
+  InitSyncBridge();
+
+  EXPECT_EQ(database_factory().ReadMetadata().version(),
+            WebAppDatabase::GetCurrentDatabaseVersion());
+
+  bool found_migrated_apps = false;
+  // Some apps should not have a kUserInstalled source before migration but will
+  // have one after.
+  for (auto& [app_id, app] : registry) {
+    if (app->GetSources().Has(WebAppManagement::kSync)) {
+      found_migrated_apps |=
+          !app->GetSources().Has(WebAppManagement::kUserInstalled);
+      if (base::FeatureList::IsEnabled(
+              features::kWebAppDontAddExistingAppsToSync)) {
+        EXPECT_TRUE(registrar().GetAppById(app_id)->GetSources().Has(
+            WebAppManagement::kUserInstalled));
+        EXPECT_TRUE(registrar().GetAppById(app_id)->GetSources().Has(
+            WebAppManagement::kSync));
+      }
+    }
+  }
+  EXPECT_TRUE(found_migrated_apps)
+      << "Generated apps did not include any that needed migrating.";
+}
+
+// Read a database where some apps will be migrated from not having a
+// kUserInstalled source to having one. Additionally with sync disabled, the
+// sync source should be removed.
+TEST_P(WebAppDatabaseTest,
+       OpenDatabaseAndReadRegistryWithSourceUpgradeMigrationNoSync) {
+  Registry registry = WriteWebApps(100, /*ensure_no_migration_needed=*/false);
+  auto write_batch = database_factory().GetStore()->CreateWriteBatch();
+  proto::DatabaseMetadata metadata;
+  metadata.set_version(0);
+  write_batch->WriteData(std::string(WebAppDatabase::kDatabaseMetadataKey),
+                         metadata.SerializeAsString());
+  WriteBatch(std::move(write_batch));
+
+  database_factory().set_is_syncing_apps(false);
+  InitSyncBridge();
+
+  bool found_migrated_apps = false;
+  // Some apps should not have a kUserInstalled source before migration but will
+  // have one after.
+  for (auto& [app_id, app] : registry) {
+    if (app->GetSources().Has(WebAppManagement::kSync)) {
+      found_migrated_apps |=
+          !app->GetSources().Has(WebAppManagement::kUserInstalled);
+      if (base::FeatureList::IsEnabled(
+              features::kWebAppDontAddExistingAppsToSync)) {
+        EXPECT_TRUE(registrar().GetAppById(app_id)->GetSources().Has(
+            WebAppManagement::kUserInstalled));
+        EXPECT_FALSE(registrar().GetAppById(app_id)->GetSources().Has(
+            WebAppManagement::kSync));
+      }
+    }
+  }
+  EXPECT_TRUE(found_migrated_apps)
+      << "Generated apps did not include any that needed migrating.";
+}
+
+// Read a database where some apps will be migrated from having a kUserInstalled
+// source to not having one.
+TEST_P(WebAppDatabaseTest,
+       OpenDatabaseAndReadRegistryWithSourceDowngradeMigration) {
+  Registry registry = WriteWebApps(100, /*ensure_no_migration_needed=*/false);
+  auto write_batch = database_factory().GetStore()->CreateWriteBatch();
+  proto::DatabaseMetadata metadata;
+  metadata.set_version(1);
+  write_batch->WriteData(std::string(WebAppDatabase::kDatabaseMetadataKey),
+                         metadata.SerializeAsString());
+  WriteBatch(std::move(write_batch));
+
+  InitSyncBridge();
+
+  EXPECT_EQ(database_factory().ReadMetadata().version(),
+            WebAppDatabase::GetCurrentDatabaseVersion());
+
+  bool found_migrated_apps = false;
+  // Some apps should have a kUserInstalled source before migration but not
+  // after.
+  for (auto& [app_id, app] : registry) {
+    if (app->GetSources().Has(WebAppManagement::kUserInstalled)) {
+      found_migrated_apps = true;
+      if (base::FeatureList::IsEnabled(
+              features::kWebAppDontAddExistingAppsToSync)) {
+        EXPECT_EQ(registrar().GetAppById(app_id)->GetSources(),
+                  app->GetSources());
+      } else {
+        EXPECT_FALSE(registrar().GetAppById(app_id)->GetSources().Has(
+            WebAppManagement::kUserInstalled));
+        EXPECT_TRUE(registrar().GetAppById(app_id)->GetSources().Has(
+            WebAppManagement::kSync));
+      }
+    }
+  }
+  EXPECT_TRUE(found_migrated_apps)
+      << "Generated apps did not include any that needed migrating.";
+}
+
+TEST_P(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
   const GURL start_url{"https://example.com/"};
   const webapps::AppId app_id =
       GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
@@ -371,6 +517,10 @@ TEST_F(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
   EXPECT_EQ(mojom::UserDisplayMode::kBrowser, app->user_display_mode());
   EXPECT_EQ(proto::INSTALLED_WITHOUT_OS_INTEGRATION, app->install_state());
   EXPECT_TRUE(app->IsSynced());
+  if (base::FeatureList::IsEnabled(
+          features::kWebAppDontAddExistingAppsToSync)) {
+    EXPECT_TRUE(app->GetSources().Has(WebAppManagement::kUserInstalled));
+  }
   EXPECT_FALSE(app->IsPreinstalledApp());
 
   if (IsChromeOsDataMandatory()) {
@@ -383,7 +533,7 @@ TEST_F(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
   }
 }
 
-TEST_F(WebAppDatabaseTest, UserDisplayModeCrosOnly_MigratesToCurrentPlatform) {
+TEST_P(WebAppDatabaseTest, UserDisplayModeCrosOnly_MigratesToCurrentPlatform) {
   std::unique_ptr<WebApp> base_app = test::CreateRandomWebApp({});
   std::unique_ptr<WebAppProto> base_proto =
       WebAppDatabase::CreateWebAppProto(*base_app);
@@ -420,7 +570,7 @@ TEST_F(WebAppDatabaseTest, UserDisplayModeCrosOnly_MigratesToCurrentPlatform) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-TEST_F(WebAppDatabaseTest,
+TEST_P(WebAppDatabaseTest,
        UserDisplayModeDefaultOnly_MigratesToCurrentPlatform) {
   std::unique_ptr<WebApp> base_app = test::CreateRandomWebApp({});
   std::unique_ptr<WebAppProto> base_proto =
@@ -459,7 +609,7 @@ TEST_F(WebAppDatabaseTest,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
+TEST_P(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   InitSyncBridge();
 
   const auto start_url = GURL("https://example.com/");
@@ -594,7 +744,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_TRUE(app_copy->latest_install_time().is_null());
 }
 
-TEST_F(WebAppDatabaseTest, WebAppWithManyIcons) {
+TEST_P(WebAppDatabaseTest, WebAppWithManyIcons) {
   InitSyncBridge();
 
   const GURL base_url("https://example.com/path");
@@ -642,7 +792,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithManyIcons) {
   EXPECT_FALSE(app_copy->is_generated_icon());
 }
 
-TEST_F(WebAppDatabaseTest, MigrateOldLaunchHandlerSyntax) {
+TEST_P(WebAppDatabaseTest, MigrateOldLaunchHandlerSyntax) {
   std::unique_ptr<WebApp> base_app = test::CreateRandomWebApp({});
   std::unique_ptr<WebAppProto> base_proto =
       WebAppDatabase::CreateWebAppProto(*base_app);
@@ -712,7 +862,7 @@ TEST_F(WebAppDatabaseTest, MigrateOldLaunchHandlerSyntax) {
 }
 
 // Tests handling crashes fixed in crbug.com/1417955.
-TEST_F(WebAppDatabaseTest, MigrateFromMissingShortcutsSizes) {
+TEST_P(WebAppDatabaseTest, MigrateFromMissingShortcutsSizes) {
   std::unique_ptr<WebApp> base_app = test::CreateRandomWebApp({});
   WebAppShortcutsMenuItemInfo shortcut_item_info{};
   shortcut_item_info.name = u"shortcut";
@@ -751,7 +901,7 @@ TEST_F(WebAppDatabaseTest, MigrateFromMissingShortcutsSizes) {
 // containing a fragment part in the URL. It should be stripped out, because the
 // spec requires that ManifestIds with different fragments are considered
 // equivalent.
-TEST_F(WebAppDatabaseTest, RemovesFragmentFromSyncProtoManifestIdPath) {
+TEST_P(WebAppDatabaseTest, RemovesFragmentFromSyncProtoManifestIdPath) {
   base::HistogramTester histogram_tester;
 
   std::unique_ptr<WebApp> app = test::CreateRandomWebApp({});
@@ -780,7 +930,7 @@ TEST_F(WebAppDatabaseTest, RemovesFragmentFromSyncProtoManifestIdPath) {
                                       false, 1);
 }
 
-TEST_F(WebAppDatabaseTest, RemovesFragmentAndQueriesFromScopeDuringParsing) {
+TEST_P(WebAppDatabaseTest, RemovesFragmentAndQueriesFromScopeDuringParsing) {
   std::unique_ptr<WebApp> app = test::CreateRandomWebApp({});
   EXPECT_TRUE(app->scope().is_valid());
   EXPECT_FALSE(app->scope().has_ref());
@@ -802,6 +952,8 @@ TEST_F(WebAppDatabaseTest, RemovesFragmentAndQueriesFromScopeDuringParsing) {
   EXPECT_FALSE(reparsed_app->scope().has_ref());
   EXPECT_FALSE(reparsed_app->scope().has_query());
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(WebAppDatabaseTest);
 
 class WebAppDatabaseProtoDataTest : public ::testing::Test {
  public:
@@ -1172,4 +1324,5 @@ TEST_F(WebAppDatabaseProtoDataTest, PermissionsPolicyProto) {
   EXPECT_EQ(proto->permissions_policy().at(2).matches_all_origins(), false);
   EXPECT_EQ(proto->permissions_policy().at(2).matches_opaque_src(), false);
 }
+
 }  // namespace web_app

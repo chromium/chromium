@@ -8,6 +8,7 @@ proto_library("proto") {
   proto_in_dir = "//"
   sources = [
     "web_app.proto",
+    "web_app_database_metadata.proto",
     "web_app_install_state.proto",
     "web_app_isolation_data.proto",
     "web_app_launch_handler.proto",

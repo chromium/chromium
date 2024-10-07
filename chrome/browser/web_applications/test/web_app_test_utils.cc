@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -56,6 +55,7 @@
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_isolation_data.pb.h"
@@ -75,6 +75,7 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/base32/base32.h"
 #include "components/prefs/pref_service.h"
@@ -662,6 +663,10 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
     management_types.push_back(WebAppManagement::kSync);
   }
   if (random.next_bool()) {
+    app->AddSource(WebAppManagement::kUserInstalled);
+    management_types.push_back(WebAppManagement::kUserInstalled);
+  }
+  if (random.next_bool()) {
     app->AddSource(WebAppManagement::kDefault);
     management_types.push_back(WebAppManagement::kDefault);
   }
@@ -700,8 +705,14 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
 
   // Must always be at least one source.
   if (!app->HasAnySources()) {
-    app->AddSource(WebAppManagement::kSync);
-    management_types.push_back(WebAppManagement::kSync);
+    if (base::FeatureList::IsEnabled(
+            features::kWebAppDontAddExistingAppsToSync)) {
+      app->AddSource(WebAppManagement::kUserInstalled);
+      management_types.push_back(WebAppManagement::kUserInstalled);
+    } else {
+      app->AddSource(WebAppManagement::kSync);
+      management_types.push_back(WebAppManagement::kSync);
+    }
   }
 
   if (random.next_bool()) {
@@ -940,7 +951,9 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
 
   WebApp::ExternalConfigMap management_to_external_config;
   for (WebAppManagement::Type type : management_types) {
-    if (type == WebAppManagement::kSync || WebAppManagement::IsIwaType(type)) {
+    if (type == WebAppManagement::kSync ||
+        type == WebAppManagement::kUserInstalled ||
+        WebAppManagement::IsIwaType(type)) {
       continue;
     }
     base::flat_set<GURL> install_urls;

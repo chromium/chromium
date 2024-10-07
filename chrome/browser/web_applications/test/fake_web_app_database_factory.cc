@@ -6,7 +6,9 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
+#include "chrome/browser/web_applications/proto/web_app_database_metadata.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_database.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -33,6 +35,28 @@ syncer::OnceDataTypeStoreFactory FakeWebAppDatabaseFactory::GetStoreFactory() {
   return syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(GetStore());
 }
 
+bool FakeWebAppDatabaseFactory::IsSyncingApps() {
+  return is_syncing_apps_;
+}
+
+proto::DatabaseMetadata FakeWebAppDatabaseFactory::ReadMetadata() {
+  base::test::TestFuture<proto::DatabaseMetadata> loaded_metadata;
+  GetStore()->ReadData(
+      {std::string(WebAppDatabase::kDatabaseMetadataKey)},
+      base::BindLambdaForTesting(
+          [&](const std::optional<syncer::ModelError>& error,
+              std::unique_ptr<syncer::DataTypeStore::RecordList> data_records,
+              std::unique_ptr<syncer::DataTypeStore::IdList> missing_id_list) {
+            proto::DatabaseMetadata proto;
+            EXPECT_EQ(error, std::nullopt);
+            if (data_records && data_records->size() > 0) {
+              proto.ParseFromString((*data_records)[0].value);
+            }
+            loaded_metadata.SetValue(std::move(proto));
+          }));
+  return loaded_metadata.Take();
+}
+
 Registry FakeWebAppDatabaseFactory::ReadRegistry() {
   Registry registry;
   base::RunLoop run_loop;
@@ -43,6 +67,10 @@ Registry FakeWebAppDatabaseFactory::ReadRegistry() {
         DCHECK(!error);
 
         for (const syncer::DataTypeStore::Record& record : *data_records) {
+          if (record.id == WebAppDatabase::kDatabaseMetadataKey) {
+            continue;
+          }
+
           auto app = WebAppDatabase::ParseWebApp(record.id, record.value);
           DCHECK(app);
 

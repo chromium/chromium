@@ -39,6 +39,7 @@
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/shortcuts/shortcut_icon_generator.h"
 #include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/policy/pre_redirection_url_observer.h"
@@ -59,6 +60,8 @@
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "components/webapps/browser/installable/installable_evaluator.h"
 #include "components/webapps/browser/installable/installable_manager.h"
@@ -1292,6 +1295,21 @@ bool HomeTabIconsExistInTabStrip(const WebAppInstallInfo& web_app_info) {
   }
 
   return true;
+}
+
+bool IsSyncEnabledForApps(Profile* profile) {
+  if (!SyncServiceFactory::HasSyncService(profile)) {
+    return false;
+  }
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return sync_service->GetUserSettings()->GetSelectedOsTypes().Has(
+      syncer::UserSelectableOsType::kOsApps);
+#else
+  return sync_service->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kApps);
+#endif
 }
 
 }  // namespace web_app
