@@ -90,7 +90,6 @@
 #include "chrome/browser/ui/webui/inspect_ui.h"
 #include "chrome/browser/ui/webui/management/management_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
-#include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
@@ -269,33 +268,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (url.host_piece() == chrome::kChromeUINewTabHost) {
-    // The URL chrome://newtab/ can be either a virtual or a real URL,
-    // depending on the context. In this case, it is always a real URL that
-    // points to the New Tab page for the incognito profile only. For other
-    // profile types, this URL must already be redirected to a different URL
-    // that matches the profile type.
-    //
-    // Returning NewWebUI<NewTabUI> for the wrong profile type will lead to
-    // crash in NTPResourceCache::GetNewTabHTML (Check: false), so here we add
-    // a sanity check to prevent further crashes.
-    //
-    // The switch statement below must be consistent with the code in
-    // NTPResourceCache::GetNewTabHTML!
-    switch (NTPResourceCache::GetWindowType(profile)) {
-      case NTPResourceCache::NORMAL:
-        LOG(ERROR) << "Requested load of chrome://newtab/ for incorrect "
-                      "profile type.";
-        // TODO(crbug.com/40244589): Add DumpWithoutCrashing() here.
-        return nullptr;
-      case NTPResourceCache::INCOGNITO:
-        [[fallthrough]];
-      case NTPResourceCache::GUEST:
-        [[fallthrough]];
-      case NTPResourceCache::NON_PRIMARY_OTR:
-        return &NewWebUI<NewTabUI>;
-    }
-  }
   // Settings are implemented with native UI elements on Android.
   if (url.host_piece() == chrome::kChromeUISettingsHost)
     return &NewWebUI<settings::SettingsUI>;

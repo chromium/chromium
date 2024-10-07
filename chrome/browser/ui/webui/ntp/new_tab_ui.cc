@@ -36,6 +36,35 @@
 #include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
 
+bool NewTabUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  // The URL chrome://newtab/ can be either a virtual or a real URL,
+  // depending on the context. In this case, it is always a real URL that
+  // points to the New Tab page for the incognito profile only. For other
+  // profile types, this URL must already be redirected to a different URL
+  // that matches the profile type.
+  //
+  // Returning NewWebUI<NewTabUI> for the wrong profile type will lead to
+  // crash in NTPResourceCache::GetNewTabHTML (Check: false), so here we add
+  // a sanity check to prevent further crashes.
+  //
+  // The switch statement below must be consistent with the code in
+  // NTPResourceCache::GetNewTabHTML!
+  switch (NTPResourceCache::GetWindowType(profile)) {
+    case NTPResourceCache::NORMAL:
+      LOG(ERROR) << "Requested load of chrome://newtab/ for incorrect "
+                    "profile type.";
+      // TODO(crbug.com/40244589): Add DumpWithoutCrashing() here.
+      return false;
+    case NTPResourceCache::INCOGNITO:
+      [[fallthrough]];
+    case NTPResourceCache::GUEST:
+      [[fallthrough]];
+    case NTPResourceCache::NON_PRIMARY_OTR:
+      return true;
+  }
+}
+
 namespace {
 
 // Strings sent to the page via jstemplates used to set the direction of the
