@@ -22,13 +22,13 @@ class SecurityChecker {
   SecurityChecker();
   SecurityChecker(const SecurityChecker&) = delete;
   SecurityChecker& operator=(const SecurityChecker&) = delete;
-  ~SecurityChecker();
+  virtual ~SecurityChecker();
 
   // Checks if the given RenderFrameHost is secure enough for payment link
   // handling. This includes verifying if the URL is potentially trustworthy,
   // uses HTTPS, has the payment Permissions Policy enabled, and has a valid SSL
   // certificate.
-  bool IsSecureForPaymentLinkHandling(content::RenderFrameHost& rfh);
+  virtual bool IsSecureForPaymentLinkHandling(content::RenderFrameHost& rfh);
 
  private:
   // Check whether SSL is valid according to its certificate state. Only SECURE

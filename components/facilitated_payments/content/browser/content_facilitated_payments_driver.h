@@ -35,7 +35,8 @@ class ContentFacilitatedPaymentsDriver : public FacilitatedPaymentsDriver,
   ContentFacilitatedPaymentsDriver(
       FacilitatedPaymentsClient* client,
       optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
-      content::RenderFrameHost* render_frame_host);
+      content::RenderFrameHost* render_frame_host,
+      std::unique_ptr<SecurityChecker> security_checker);
   ContentFacilitatedPaymentsDriver(const ContentFacilitatedPaymentsDriver&) =
       delete;
   ContentFacilitatedPaymentsDriver& operator=(

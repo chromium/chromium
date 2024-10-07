@@ -36,6 +36,8 @@ class FacilitatedPaymentsDriver;
 // A cross-platform interface that manages the flow of payments for non-form
 // based form-of-payments between the browser and the Payments platform. It is
 // owned by `FacilitatedPaymentsDriver`.
+// TODO(crbug.com/369898977): Rename `FacilitatedPaymentsManager` to be PIX
+// specific and update the class level comment.
 class FacilitatedPaymentsManager {
  public:
   FacilitatedPaymentsManager(

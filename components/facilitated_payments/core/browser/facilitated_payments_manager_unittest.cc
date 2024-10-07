@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/test_payments_data_manager.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/facilitated_payments/core/browser/ewallet_manager.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_driver.h"
@@ -62,8 +63,10 @@ CoreAccountInfo CreateLoggedInAccountInfo() {
 class MockFacilitatedPaymentsDriver : public FacilitatedPaymentsDriver {
  public:
   explicit MockFacilitatedPaymentsDriver(
-      std::unique_ptr<FacilitatedPaymentsManager> manager)
-      : FacilitatedPaymentsDriver(std::move(manager)) {}
+      std::unique_ptr<FacilitatedPaymentsManager> manager,
+      std::unique_ptr<EwalletManager> ewallet_manager)
+      : FacilitatedPaymentsDriver(std::move(manager),
+                                  std::move(ewallet_manager)) {}
   ~MockFacilitatedPaymentsDriver() override = default;
 
   MOCK_METHOD(void,
@@ -186,7 +189,7 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
   void SetUp() override {
     optimization_guide_decider_ =
         std::make_unique<MockOptimizationGuideDecider>();
-    driver_ = std::make_unique<MockFacilitatedPaymentsDriver>(nullptr);
+    driver_ = std::make_unique<MockFacilitatedPaymentsDriver>(nullptr, nullptr);
     client_ = std::make_unique<MockFacilitatedPaymentsClient>();
 
     manager_ = std::make_unique<FacilitatedPaymentsManager>(
