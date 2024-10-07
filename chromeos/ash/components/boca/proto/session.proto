@@ -33,7 +33,7 @@ message Session {
 
   Roster roster = 3;
 
-  AccessCode access_code = 4;
+  JoinCode join_code = 4;
 
   map<string, SessionConfig> student_group_configs = 5;
 
@@ -60,7 +60,7 @@ message Session {
   SessionState session_state = 10;
 }
 
-message AccessCode {
+message JoinCode {
   bool enabled = 1;
 
   string code = 2;
