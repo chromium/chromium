@@ -130,10 +130,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Blocked.ContentType.Automotive"
-    enum="DownloadContentType" expires_after="2024-10-28">
+    enum="DownloadContentType" expires_after="2025-07-01">
   <owner>twellington@chromium.org</owner>
   <owner>clhager@google.com</owner>
-  <owner>geoffhuang@google.com</owner>
   <summary>
     Records the content type of downloads that have been blocked on automotive,
     as Chrome on automotive blocks any downloads that cannot be viewed natively

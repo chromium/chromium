@@ -515,10 +515,9 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AndroidAccountReauth.Event"
-    enum="AccountReauthenticationEvent" expires_after="2024-10-28">
+    enum="AccountReauthenticationEvent" expires_after="2025-07-01">
   <owner>twellington@chromium.org</owner>
   <owner>clhager@google.com</owner>
-  <owner>geoffhuang@google.com</owner>
   <summary>
     Records an event when the user starts account reauthentication and the
     result of such reauthentication.

@@ -451,9 +451,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Automotive.DeviceLockDialogAction.{Source}"
-    enum="DeviceLockDialogAction" expires_after="2024-10-28">
+    enum="DeviceLockDialogAction" expires_after="2025-07-01">
   <owner>clhager@google.com</owner>
-  <owner>geoffhuang@google.com</owner>
+  <owner>twellington@chromium.org</owner>
   <summary>
     Records action user took when presented with the device lock explainer
     dialog (ex: button clicked) during a {Source} flow. Other actions such as
@@ -470,10 +470,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Automotive.DeviceLockOutcome" enum="Boolean"
-    expires_after="2024-10-28">
+    expires_after="2025-07-01">
   <owner>twellington@chromium.org</owner>
   <owner>clhager@google.com</owner>
-  <owner>geoffhuang@google.com</owner>
   <summary>
     Records whether the user successfully passed the device lock challenge after
     having seen the automotive device lock explainer dialog.
@@ -481,10 +480,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Automotive.DeviceLockRemovalDialogEvent"
-    enum="MissingDeviceLockDialogEvent" expires_after="2024-10-28">
+    enum="MissingDeviceLockDialogEvent" expires_after="2025-07-01">
   <owner>twellington@chromium.org</owner>
   <owner>clhager@google.com</owner>
-  <owner>geoffhuang@google.com</owner>
   <summary>
     Records an event whenever the missing device lock dialog is shown to the
     user or the user takes an action on the dialog.
@@ -492,10 +490,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Automotive.DeviceLockSet" enum="Boolean"
-    expires_after="2024-10-28">
+    expires_after="2025-07-01">
   <owner>twellington@chromium.org</owner>
   <owner>clhager@google.com</owner>
-  <owner>geoffhuang@google.com</owner>
   <summary>
     Records whether the automotive device has a device lock set when Chrome is
     resumed.
