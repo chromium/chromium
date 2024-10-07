@@ -468,12 +468,12 @@ scoped_refptr<VideoFrame> VideoFrame::WrapOOPVDMailbox(
     return nullptr;
   }
 
-  frame->mailbox_ = mailbox;
+  frame->oopvd_mailbox_ = mailbox;
   frame->mailbox_holder_and_gmb_release_cb_ =
       WrapReleaseMailboxCB(std::move(mailbox_holder_release_cb));
 
   // Wrapping native textures should... have textures. https://crbug.com/864145.
-  DCHECK(frame->HasTextures());
+  DCHECK(frame->HasOOPVDMailbox());
 
   return frame;
 }
@@ -1261,10 +1261,12 @@ bool VideoFrame::IsMappable() const {
   return IsStorageTypeMappable(storage_type_);
 }
 
-bool VideoFrame::HasTextures() const {
-  return wrapped_frame_ ? wrapped_frame_->HasTextures()
-                        : (!mailbox_.IsZero() || shared_image_);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+bool VideoFrame::HasOOPVDMailbox() const {
+  return wrapped_frame_ ? wrapped_frame_->HasOOPVDMailbox()
+                        : !oopvd_mailbox_.IsZero();
 }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 bool VideoFrame::HasSharedImage() const {
   return wrapped_frame_ ? wrapped_frame_->HasSharedImage()
@@ -1303,7 +1305,7 @@ std::unique_ptr<VideoFrame::ScopedMapping> VideoFrame::MapGMBOrSharedImage()
   }
   if (is_mappable_si_enabled_) {
     // If MappableSI is used, there must be a shared image.
-    CHECK(HasTextures());
+    CHECK(HasSharedImage());
     if (auto mapping = shared_image_->Map()) {
       return base::WrapUnique(
           new VideoFrame::ScopedMapping(nullptr, std::move(mapping)));
@@ -1324,7 +1326,7 @@ void VideoFrame::MapGMBOrSharedImageAsync(
     return;
   }
   if (is_mappable_si_enabled_) {
-    CHECK(HasTextures());
+    CHECK(HasSharedImage());
     // `base::Unretained()` is safe because of the requirement for callers to
     // keep the VideoFrame alive until the callback executes.
     shared_image_->MapAsync(
@@ -1361,7 +1363,7 @@ gfx::GpuMemoryBufferHandle VideoFrame::GetGpuMemoryBufferHandle() const {
   }
   if (is_mappable_si_enabled_) {
     // If MappableSI is used, there must be a shared image.
-    CHECK(HasTextures());
+    CHECK(HasSharedImage());
     return shared_image_->CloneGpuMemoryBufferHandle();
   }
   if (gpu_memory_buffer_) {
@@ -1488,19 +1490,17 @@ uint8_t* VideoFrame::GetWritableVisibleData(size_t plane) {
 // TODO(crbug.com/332564976): Update method to not take in param.
 const gpu::MailboxHolder VideoFrame::mailbox_holder(
     size_t texture_index) const {
-  DCHECK(HasTextures());
+  CHECK_EQ(texture_index, 0u);
+  CHECK(HasSharedImage());
   if (wrapped_frame_) {
     return wrapped_frame_->mailbox_holder(texture_index);
   }
-  if (shared_image_) {
-    return gpu::MailboxHolder(shared_image_->mailbox(), texture_sync_token_,
-                              shared_image_->GetTextureTarget());
-  }
-  return gpu::MailboxHolder(mailbox_, gpu::SyncToken(), 0);
+  return gpu::MailboxHolder(shared_image_->mailbox(), texture_sync_token_,
+                            shared_image_->GetTextureTarget());
 }
 
 scoped_refptr<gpu::ClientSharedImage> VideoFrame::shared_image() const {
-  DCHECK(HasSharedImage());
+  CHECK(HasSharedImage());
   return wrapped_frame_ ? wrapped_frame_->shared_image() : shared_image_;
 }
 
@@ -1564,7 +1564,7 @@ void VideoFrame::AddDestructionObserver(base::OnceClosure callback) {
 }
 
 gpu::SyncToken VideoFrame::UpdateReleaseSyncToken(SyncTokenClient* client) {
-  DCHECK(HasTextures());
+  DCHECK(HasSharedImage());
   if (wrapped_frame_) {
     return wrapped_frame_->UpdateReleaseSyncToken(client);
   }
@@ -1581,7 +1581,7 @@ gpu::SyncToken VideoFrame::UpdateReleaseSyncToken(SyncTokenClient* client) {
 gpu::SyncToken VideoFrame::UpdateMailboxHolderSyncToken(
     SyncTokenClient* client) {
   DCHECK(HasOneRef());
-  DCHECK(HasTextures());
+  DCHECK(HasSharedImage());
   DCHECK(!wrapped_frame_);
 
   // No lock is required due to the HasOneRef() check.
@@ -1600,8 +1600,9 @@ std::string VideoFrame::AsHumanReadableString() const {
   s << ConfigToString(format(), storage_type_, coded_size(), visible_rect_,
                       natural_size_)
     << " timestamp:" << timestamp_.InMicroseconds();
-  if (HasTextures())
-    s << " texture: true";
+  if (HasSharedImage()) {
+    s << " shared_image: true";
+  }
   return s.str();
 }
 

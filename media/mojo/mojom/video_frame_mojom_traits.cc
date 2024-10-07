@@ -125,22 +125,16 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
             std::move(region), std::move(strides), std::move(offsets)));
   }
 
-  // STORAGE_GPU_MEMORY_BUFFER may carry meaningful or dummy mailbox,
-  // we should only access it when there are textures.
-  gpu::MailboxHolder mailbox_holder;
-  if (input->HasTextures()) {
-    mailbox_holder = input->mailbox_holder(/*texture_index=*/0);
-  }
-
   if (input->HasMappableGpuBuffer()) {
     auto gpu_memory_buffer_handle = input->GetGpuMemoryBufferHandle();
 
+    // STORAGE_GPU_MEMORY_BUFFER may carry meaningful or dummy mailbox,
+    // we should only access it when there is shared_image.
+    gpu::MailboxHolder mailbox_holder;
     std::optional<gpu::ExportedSharedImage> shared_image;
     if (input->HasSharedImage()) {
-      // `input` is either empty or of size 1 with
-      // GpuMemoryBufferSharedImageVideoFrameData.
-      CHECK(input->HasTextures());
       shared_image = input->shared_image()->Export();
+      mailbox_holder = input->mailbox_holder(/*texture_index=*/0);
     }
 
     CHECK(input->HasSharedImage() || mailbox_holder.mailbox.IsZero());
@@ -149,21 +143,20 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
             std::move(gpu_memory_buffer_handle), std::move(shared_image),
             std::move(mailbox_holder.sync_token),
             mailbox_holder.texture_target));
-  } else if (input->HasTextures()) {
-    if (input->HasSharedImage()) {
-      gpu::ExportedSharedImage shared_image = input->shared_image()->Export();
-      return media::mojom::VideoFrameData::NewSharedImageData(
-          media::mojom::SharedImageVideoFrameData::New(
-              std::move(shared_image), std::move(mailbox_holder.sync_token),
-              std::move(mailbox_holder.texture_target),
-              std::move(input->ycbcr_info())));
+  } else if (input->HasSharedImage()) {
+    gpu::ExportedSharedImage shared_image = input->shared_image()->Export();
+    gpu::MailboxHolder mailbox_holder =
+        input->mailbox_holder(/*texture_index=*/0);
+    return media::mojom::VideoFrameData::NewSharedImageData(
+        media::mojom::SharedImageVideoFrameData::New(
+            std::move(shared_image), std::move(mailbox_holder.sync_token),
+            std::move(mailbox_holder.texture_target),
+            std::move(input->ycbcr_info())));
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-    } else {
-      return media::mojom::VideoFrameData::NewMailboxData(
-          media::mojom::MailboxVideoFrameData::New(
-              std::move(mailbox_holder.mailbox)));
+  } else if (input->HasOOPVDMailbox()) {
+    return media::mojom::VideoFrameData::NewMailboxData(
+        media::mojom::MailboxVideoFrameData::New(input->oopvd_mailbox()));
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-    }
   }
 
   NOTREACHED_IN_MIGRATION() << "Unsupported VideoFrame conversion";

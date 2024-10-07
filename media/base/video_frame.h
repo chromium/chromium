@@ -551,9 +551,10 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // visible_data() etc.
   bool IsMappable() const;
 
-  // Returns true if |frame| has textures with any StorageType and should not be
-  // accessed via data(), visible_data() etc.
-  bool HasTextures() const;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // Returns true if `frame` has `oopvd_mailbox`.
+  bool HasOOPVDMailbox() const;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   // Returns true if the video frame uses ClientSharedImage.
   bool HasSharedImage() const;
@@ -724,6 +725,14 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   scoped_refptr<gpu::ClientSharedImage> shared_image() const;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // Returns the OOPVD mailbox set by `WrapOOPVDMailbox`.
+  // Only valid to call if this is a NATIVE_TEXTURE frame. Before using the
+  // mailbox, the caller must wait for the included sync point.
+  const gpu::Mailbox oopvd_mailbox() const {
+    CHECK(!oopvd_mailbox_.IsZero());
+    return wrapped_frame_ ? wrapped_frame_->oopvd_mailbox() : oopvd_mailbox_;
+  }
+
   // The number of DmaBufs will be equal or less than the number of planes of
   // the frame. If there are less, this means that the last FD contains the
   // remaining planes. Should be > 0 for STORAGE_DMABUFS.
@@ -736,7 +745,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // caller shall not close them, or use them after the VideoFrame is destroyed.
   // For such use cases, use dup() to obtain your own copy of the FDs.
   int GetDmabufFd(size_t i) const;
-#endif
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_APPLE)
   // Returns the backing CVPixelBuffer, if present.
@@ -964,8 +973,11 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // VideoFrame.
   const uint8_t* data_[kMaxPlanes];
 
-  // Native texture mailbox, if this frame HasTextures().
-  gpu::Mailbox mailbox_;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // Native texture mailbox, if this frame HasOOPVDMailbox().
+  gpu::Mailbox oopvd_mailbox_;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
   gpu::SyncToken texture_sync_token_;
   ReleaseMailboxAndGpuMemoryBufferCB mailbox_holder_and_gmb_release_cb_;
 

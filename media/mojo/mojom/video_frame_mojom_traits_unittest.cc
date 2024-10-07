@@ -233,8 +233,8 @@ TEST_F(VideoFrameStructTraitsTest, OOPVDMailboxVideoFrame) {
   EXPECT_EQ(frame->visible_rect(), gfx::Rect(10, 10, 80, 80));
   EXPECT_EQ(frame->natural_size(), gfx::Size(200, 100));
   EXPECT_EQ(frame->timestamp(), base::Seconds(100));
-  ASSERT_TRUE(frame->HasTextures());
-  ASSERT_EQ(frame->mailbox_holder(0).mailbox, mailbox);
+  ASSERT_TRUE(frame->HasOOPVDMailbox());
+  ASSERT_EQ(frame->oopvd_mailbox(), mailbox);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 

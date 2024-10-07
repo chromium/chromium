@@ -932,7 +932,7 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
   EXPECT_EQ(received_decoded_video_frame_1->natural_size(),
             kDecodedFrame1NaturalSize);
   EXPECT_EQ(received_decoded_video_frame_1->ColorSpace(), gfx::ColorSpace());
-  ASSERT_TRUE(received_decoded_video_frame_1->HasTextures());
+  ASSERT_TRUE(received_decoded_video_frame_1->HasSharedImage());
   EXPECT_EQ(received_decoded_video_frame_1->mailbox_holder(0).mailbox,
             kDecodedFrame1Mailbox);
   EXPECT_EQ(received_decoded_video_frame_1->mailbox_holder(0).sync_token,
@@ -1002,7 +1002,7 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
   EXPECT_EQ(received_decoded_video_frame_2->natural_size(),
             kDecodedFrame2NaturalSize);
   EXPECT_EQ(received_decoded_video_frame_2->ColorSpace(), gfx::ColorSpace());
-  ASSERT_TRUE(received_decoded_video_frame_2->HasTextures());
+  ASSERT_TRUE(received_decoded_video_frame_2->HasSharedImage());
   EXPECT_EQ(received_decoded_video_frame_2->mailbox_holder(0).mailbox,
             kDecodedFrame1Mailbox);
   EXPECT_EQ(received_decoded_video_frame_2->mailbox_holder(0).sync_token,
@@ -1084,7 +1084,7 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
             kDecodedFrame2NaturalSize);
   EXPECT_EQ(received_decoded_video_frame_3->ColorSpace(),
             kDecodedFrame3ColorSpace);
-  ASSERT_TRUE(received_decoded_video_frame_3->HasTextures());
+  ASSERT_TRUE(received_decoded_video_frame_3->HasSharedImage());
   EXPECT_EQ(received_decoded_video_frame_3->mailbox_holder(0).mailbox,
             kDecodedFrame3Mailbox);
   EXPECT_EQ(received_decoded_video_frame_3->mailbox_holder(0).sync_token,
@@ -1168,7 +1168,7 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
   EXPECT_EQ(received_decoded_video_frame_4->natural_size(),
             kDecodedFrame4NaturalSize);
   EXPECT_EQ(received_decoded_video_frame_4->ColorSpace(), gfx::ColorSpace());
-  ASSERT_TRUE(received_decoded_video_frame_4->HasTextures());
+  ASSERT_TRUE(received_decoded_video_frame_4->HasSharedImage());
   EXPECT_EQ(received_decoded_video_frame_4->mailbox_holder(0).mailbox,
             kDecodedFrame4Mailbox);
   EXPECT_EQ(received_decoded_video_frame_4->mailbox_holder(0).sync_token,

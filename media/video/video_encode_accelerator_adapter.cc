@@ -503,7 +503,7 @@ void VideoEncodeAcceleratorAdapter::InitializeInternalOnAcceleratorThread() {
   const bool supported_format =
       format == PIXEL_FORMAT_NV12 || format == PIXEL_FORMAT_I420 || is_rgb;
   const bool is_gpu_frame =
-      first_frame->HasTextures() || first_frame->HasNativeGpuMemoryBuffer();
+      first_frame->HasSharedImage() || first_frame->HasNativeGpuMemoryBuffer();
   const bool is_gpu_supported_format =
       is_gpu_frame &&
       base::ranges::find(gpu_supported_pixel_formats_, format) !=

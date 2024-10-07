@@ -568,7 +568,7 @@ TEST(VideoFrame, WrapExternalGpuMemoryBuffer) {
   EXPECT_EQ(frame->coded_size(), coded_size);
   EXPECT_EQ(frame->visible_rect(), visible_rect);
   EXPECT_EQ(frame->timestamp(), timestamp);
-  EXPECT_EQ(frame->HasTextures(), true);
+  EXPECT_EQ(frame->HasSharedImage(), true);
   EXPECT_EQ(frame->HasReleaseMailboxCB(), true);
   EXPECT_EQ(frame->mailbox_holder(0).mailbox, shared_image->mailbox());
 }
