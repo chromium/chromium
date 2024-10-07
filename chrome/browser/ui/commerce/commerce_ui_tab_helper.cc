@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/commerce/commerce_page_action_controller.h"
 #include "chrome/browser/ui/commerce/discounts_page_action_controller.h"
 #include "chrome/browser/ui/commerce/price_tracking_page_action_controller.h"
+#include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 #include "chrome/browser/ui/commerce/product_specifications_page_action_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
@@ -202,6 +203,17 @@ void CommerceUiTabHelper::DidFinishNavigation(
         web_contents()->GetLastCommittedURL(),
         base::BindOnce(&CommerceUiTabHelper::HandleProductInfoResponse,
                        weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  auto* browser = chrome::FindBrowserWithTab(web_contents());
+  if (browser) {
+    auto* product_specifications_entry_point_controller =
+        browser->browser_window_features()
+            ->product_specifications_entry_point_controller();
+    if (product_specifications_entry_point_controller) {
+      product_specifications_entry_point_controller->DidFinishNavigation(
+          web_contents());
+    }
   }
 }
 

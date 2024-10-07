@@ -131,18 +131,6 @@ void ProductSpecificationsEntryPointController::OnTabStripModelChanged(
                      weak_ptr_factory_.GetWeakPtr(), old_url, new_url));
 }
 
-void ProductSpecificationsEntryPointController::TabChangedAt(
-    content::WebContents* contents,
-    int index,
-    TabChangeType change_type) {
-  if (change_type == TabChangeType::kAll) {
-    // TODO(b/343109556): Instead of hiding, sometimes we'll need to update
-    // the showing entry point.
-    MaybeHideEntryPoint();
-    ProductSpecificationsDisclosureDialog::CloseDialog();
-  }
-}
-
 void ProductSpecificationsEntryPointController::AddObserver(
     Observer* observer) {
   observers_.AddObserver(observer);
@@ -256,6 +244,16 @@ void ProductSpecificationsEntryPointController::OnClusterFinishedForNavigation(
       url, base::BindOnce(&ProductSpecificationsEntryPointController::
                               CheckEntryPointInfoForNavigation,
                           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ProductSpecificationsEntryPointController::DidFinishNavigation(
+    content::WebContents* contents) {
+  // TODO(b/343109556): Instead of hiding, sometimes we'll need to update
+  // the showing entry point.
+  MaybeHideEntryPoint();
+  if (contents == browser_->GetTabStripModel()->GetActiveWebContents()) {
+    ProductSpecificationsDisclosureDialog::CloseDialog();
+  }
 }
 
 void ProductSpecificationsEntryPointController::CheckEntryPointInfoForSelection(
