@@ -36,10 +36,6 @@
 #include "components/user_manager/scoped_user_manager.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_test_helper.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 class Profile;
 class TestingProfile;
 
@@ -257,10 +253,6 @@ class ExtensionServiceTestBase : public testing::Test {
   user_manager::ScopedUserManager test_user_manager_{
       ash::ChromeUserManagerImpl::CreateChromeUserManager()};
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::ScopedLacrosServiceTestHelper lacros_service_test_helper_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // An override that ignores CRX3 publisher signatures.
   SandboxedUnpacker::ScopedVerifierFormatOverrideForTest
