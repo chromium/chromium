@@ -32,14 +32,29 @@ Commands assume the working directory is //infra/config.
     related via parent-child triggering or try-builder mirroring must be migrated
     in one CL.
 
-1. Regenerate the config files from starlark.
+    After updating starlark, the script will put the working copy into the state
+    where git index contains the updated starlark and the new json files with
+    the specs for each builder set to the same content that the testing/buildbot
+    json files have for the builder. The unindexed new json files will have the
+    content generated from the starlark, so `git diff` will show what is
+    different between what generate_buildbot_json.py and what starlark generate.
 
-    ```sh
-    ./main.star
-    ```
+1. Make any necessary manual changes to resolve the output of `git diff`.
 
-    This should run without error and produce .json files for the migrated
-    builders.
+    Differences could be due to:
+    * Some manual changes are required that can't be handled by the migration
+      script
+      * The builder sets the isolated_scripts suite type with a suite containing
+        gtests: a mixin needs to be added that sets `expand_as_isolated_script =
+        True` (see
+        [example](https://chromium-review.googlesource.com/c/chromium/src/+/5900539/6/infra/config/subprojects/chromium/ci/chromium.mac.star))
+    * Some feature is not supported by starlark and/or the migration script
+    * The difference doesn't actually have an effect (the
+      targets-config-verifier try builder will pass in this case)
+
+    If there are no differences, it's still possible that the migration will be
+    rejected by the targets-config-verifier builder if the change is missing
+    migrating some related builders.
 
 1. Remove the entries for all migrated builders from
   //testing/buildbot/waterfalls.pyl and

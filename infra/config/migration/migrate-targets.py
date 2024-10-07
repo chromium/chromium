@@ -6,6 +6,8 @@
 
 import argparse
 import ast
+import glob
+import json
 import pathlib
 import subprocess
 import sys
@@ -288,6 +290,47 @@ def main(argv: list[str]):
   )
 
   subprocess.check_call(['lucicfg', 'fmt'], cwd=_INFRA_CONFIG_DIR)
+
+  # Regenerate the configs
+  subprocess.check_call([_INFRA_CONFIG_DIR / 'main.star'])
+  subprocess.check_call([_INFRA_CONFIG_DIR / 'dev.star'])
+
+  # Copy the relevant portions of the testing/buildbot json files to the
+  # newly-generated json files to make it easy to compare what's different
+  unmigrated_jsons = {
+      name: None
+      for name in glob.glob('*.json', root_dir=_TESTING_BUILDBOT_DIR)
+  }
+  not_present = object()
+  for json_file in glob.glob('generated/*/*/*/targets/*.json',
+                             root_dir=_INFRA_CONFIG_DIR):
+    json_file = _INFRA_CONFIG_DIR / json_file
+
+    unmigrated_json = unmigrated_jsons.get(json_file.name, not_present)
+    if unmigrated_json is not_present:
+      continue
+    if unmigrated_json is None:
+      with open(_TESTING_BUILDBOT_DIR / json_file.name) as f:
+        unmigrated_json = unmigrated_jsons[json_file.name] = json.load(f)
+
+    with open(json_file) as f:
+      migrated_json = json.load(f)
+
+    for builder in migrated_json:
+      if builder in unmigrated_json:
+        migrated_json[builder] = unmigrated_json[builder]
+
+    with open(json_file, 'w') as f:
+      json.dump(migrated_json, f, indent=2, sort_keys=True)
+
+  # Add the files to the git index, then regenerate the configs, this will make
+  # it easy to check what is different between the test definitions between
+  # starlark and generate_buildbot_json.py
+  subprocess.check_call(['git', 'add', '.'], cwd=_INFRA_CONFIG_DIR)
+
+  # Regenerate the configs
+  subprocess.check_call([_INFRA_CONFIG_DIR / 'main.star'])
+  subprocess.check_call([_INFRA_CONFIG_DIR / 'dev.star'])
 
 
 if __name__ == '__main__':
