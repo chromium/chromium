@@ -35,7 +35,6 @@ struct DefaultApiKeys {
   const char* google_api_key_sharing;
   const char* google_api_key_read_aloud;
   const char* google_api_key_fresnel;
-  const char* google_api_key_boca;
 #endif
 
   const char* google_client_id_main;

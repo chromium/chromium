@@ -111,9 +111,6 @@ COMPONENT_EXPORT(GOOGLE_APIS) const std::string& GetReadAloudAPIKey();
 
 // Retrieves the Fresnel API Key.
 COMPONENT_EXPORT(GOOGLE_APIS) const std::string& GetFresnelAPIKey();
-
-// Retrieves the Boca API Key.
-COMPONENT_EXPORT(GOOGLE_APIS) const std::string& GetBocaAPIKey();
 #endif
 
 #if BUILDFLAG(SUPPORT_EXTERNAL_GOOGLE_API_KEY)
