@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FIRST_CCT_PAGE_LOAD_PASSWORDS_UKM_RECORDER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FIRST_CCT_PAGE_LOAD_PASSWORDS_UKM_RECORDER_H_
 
+#include <memory>
+
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace ukm {
