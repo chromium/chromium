@@ -55,7 +55,7 @@ BASE_FEATURE(kFeedLoadingPlaceholder,
 BASE_FEATURE(kFeedImageMemoryCacheSizePercentage,
              "FeedImageMemoryCacheSizePercentage",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kFeedBottomSyncStringRemoval,
              "FeedBottomSyncStringRemoval",
              base::FEATURE_ENABLED_BY_DEFAULT);
