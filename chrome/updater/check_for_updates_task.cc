@@ -34,7 +34,8 @@ bool ShouldSkipCheck(scoped_refptr<Configurator> config,
   const base::TimeDelta check_delay =
       config->NextCheckDelay() * (base::RandDouble() < 0.1 ? 1.2 : 1);
 
-  // Skip if periodic updates are disabled altogether.
+  // Skip if periodic updates are disabled altogether, for instance, by an admin
+  // setting `AutoUpdateCheckPeriodMinutes` to zero.
   if (check_delay.is_zero()) {
     VLOG(0) << "Skipping " << task_name << ": NextCheckDelay is 0.";
     return true;
@@ -60,11 +61,9 @@ bool ShouldSkipCheck(scoped_refptr<Configurator> config,
 CheckForUpdatesTask::CheckForUpdatesTask(scoped_refptr<Configurator> config,
                                          UpdaterScope scope,
                                          const std::string& task_name,
-                                         base::TimeDelta task_delay,
                                          UpdateChecker update_checker)
     : config_(config),
       task_name_(task_name),
-      task_delay_(task_delay),
       update_checker_(std::move(update_checker)),
       update_client_(update_client::UpdateClientFactory(config_)) {}
 

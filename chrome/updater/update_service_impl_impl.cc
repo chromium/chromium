@@ -741,13 +741,13 @@ void UpdateServiceImplImpl::RunPeriodicTasks(base::OnceClosure callback) {
             std::move(callback)));
       },
       base::WrapRefCounted(this)));
-  new_tasks.push_back(base::BindOnce(
-      &CheckForUpdatesTask::Run,
-      base::MakeRefCounted<CheckForUpdatesTask>(
-          config_, GetUpdaterScope(),
-          /*task_name=*/"UpdateAll", /*task_delay=*/config_->InitialDelay(),
-          base::BindOnce(&UpdateServiceImplImpl::UpdateAll, this,
-                         base::DoNothing()))));
+  new_tasks.push_back(
+      base::BindOnce(&CheckForUpdatesTask::Run,
+                     base::MakeRefCounted<CheckForUpdatesTask>(
+                         config_, GetUpdaterScope(),
+                         /*task_name=*/"UpdateAll",
+                         base::BindOnce(&UpdateServiceImplImpl::UpdateAll, this,
+                                        base::DoNothing()))));
   new_tasks.push_back(base::BindOnce(
       [](scoped_refptr<UpdateServiceImplImpl> self,
          base::OnceClosure callback) {

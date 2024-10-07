@@ -124,7 +124,6 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
     base::MakeRefCounted<CheckForUpdatesTask>(
         config_, GetUpdaterScope(),
         /*task_name=*/"Update(kQualificationAppId)",
-        /*task_delay=*/config_->InitialDelay(),
         base::BindOnce(
             &UpdateServiceImpl::Update,
             base::MakeRefCounted<UpdateServiceImpl>(GetUpdaterScope(), config_),
