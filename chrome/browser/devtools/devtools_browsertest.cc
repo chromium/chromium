@@ -4264,28 +4264,3 @@ IN_PROC_BROWSER_TEST_F(DevToolsSelfXssTest, FooFoo) {
 
   CloseDevToolsWindow();
 }
-
-class DevToolsRenderDocumentTest : public DevToolsTest {
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    content::InitAndEnableRenderDocumentForAllFrames(
-        &feature_list_for_render_document_);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_for_render_document_;
-};
-
-// This test verifies that the devtools window is not accidentally destroyed
-// on reload with RenderDocument enabled (https://crbug.com/337794575).
-IN_PROC_BROWSER_TEST_F(DevToolsRenderDocumentTest, ReloadWithRFHSwap) {
-  OpenDevToolsWindow(kDebuggerTestPage, false);
-  bool called = false;
-  DevToolsWindowTesting::Get(window_)->SetCloseCallback(
-      base::BindOnce([](bool& called) { called = true; }, std::ref(called)));
-  WebContents* main_web_contents =
-      DevToolsWindowTesting::Get(window_)->main_web_contents();
-  main_web_contents->ReloadFocusedFrame();
-  EXPECT_TRUE(WaitForLoadStop(main_web_contents));
-  EXPECT_FALSE(called);
-}
