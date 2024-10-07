@@ -13,6 +13,7 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -909,5 +910,24 @@ TEST_F(IOSPromoOnDesktopTest,
                                   DesktopIOSPromoImpression::kThirdImpression,
                                   1);
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// Tests getting the correct password promo Feature Engagement Tracker
+// feature.
+TEST_F(IOSPromoOnDesktopTest, GetIOSDesktopPromoFeatureEngagementPasswords) {
+  const base::Feature& feature =
+      GetIOSDesktopPromoFeatureEngagement(IOSPromoType::kPassword);
+
+  ASSERT_EQ(&feature, &feature_engagement::kIPHiOSPasswordPromoDesktopFeature);
+}
+
+// Tests getting the correct address promo Feature Engagement Tracker feature.
+TEST_F(IOSPromoOnDesktopTest, GetIOSDesktopPromoFeatureEngagementAddress) {
+  const base::Feature& feature =
+      GetIOSDesktopPromoFeatureEngagement(IOSPromoType::kAddress);
+
+  ASSERT_EQ(&feature, &feature_engagement::kIPHiOSAddressPromoDesktopFeature);
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace promos_utils

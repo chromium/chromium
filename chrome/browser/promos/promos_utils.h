@@ -15,6 +15,7 @@
 class Profile;
 
 enum class IOSPromoType;
+
 namespace promos_utils {
 
 // IOSPromoPrefsConfig is the structure to configure the promo prefs,
@@ -89,6 +90,11 @@ constexpr int kiOSPasswordPromoLookbackWindow = 60;
 inline constexpr base::TimeDelta kiOSDesktopPromoLookbackWindow =
     base::Days(60);
 
+// GetIOSDesktopPromoFeatureEngagement gets the correct "Feature Engagement
+// Tracker" feature for the given promo type.
+const base::Feature& GetIOSDesktopPromoFeatureEngagement(
+    IOSPromoType promo_type);
+
 // RegisterProfilePrefs is a helper to register the synced profile prefs.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
@@ -140,4 +146,5 @@ void iOSPasswordPromoShown(Profile* profile);
 void IOSDesktopPromoShown(Profile* profile, IOSPromoType promo_type);
 
 }  // namespace promos_utils
+
 #endif  // CHROME_BROWSER_PROMOS_PROMOS_UTILS_H_

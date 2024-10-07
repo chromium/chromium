@@ -4560,6 +4560,15 @@ static_library("browser") {
         "component_updater/hyphenation_component_installer.h",
       ]
     }
+
+    if (is_chrome_branded) {
+      allow_circular_includes_from += [ "//chrome/browser/ui/promos:impl" ]
+
+      deps += [
+        "//chrome/browser/ui/promos:impl",
+        "//chrome/browser/ui/promos:utils",
+      ]
+    }
   }
 
   if (is_chromeos_ash) {

@@ -9,14 +9,15 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/promos/promos_pref_names.h"
 #include "chrome/browser/promos/promos_types.h"
 #include "chrome/browser/promos/promos_utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/promos/ios_promo_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -44,9 +45,8 @@ views::BubbleDialogDelegate* ios_promo_delegate_ = nullptr;
 
 class IOSPromoBubbleDelegate : public ui::DialogModelDelegate {
  public:
-  IOSPromoBubbleDelegate(Browser* browser, IOSPromoType promo_type)
-      : browser_(browser),
-        impression_histogram_already_recorded_(false),
+  IOSPromoBubbleDelegate(Profile* profile, IOSPromoType promo_type)
+      : profile_(profile),
         promo_type_(promo_type),
         ios_promo_prefs_config_(promos_utils::IOSPromoPrefsConfig(promo_type)) {
   }
@@ -57,8 +57,7 @@ class IOSPromoBubbleDelegate : public ui::DialogModelDelegate {
   // Callback for when the bubble is dismissed.
   void OnDismissal() {
     feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForBrowserContext(
-            browser_->profile());
+        feature_engagement::TrackerFactory::GetForBrowserContext(profile_);
     if (tracker && ios_promo_prefs_config_.promo_feature) {
       tracker->Dismissed(*ios_promo_prefs_config_.promo_feature);
     }
@@ -67,7 +66,7 @@ class IOSPromoBubbleDelegate : public ui::DialogModelDelegate {
     if (!impression_histogram_already_recorded_) {
       RecordIOSDesktopPromoUserInteractionHistogram(
           promo_type_,
-          browser_->profile()->GetPrefs()->GetInteger(
+          profile_->GetPrefs()->GetInteger(
               ios_promo_prefs_config_.promo_impressions_counter_pref_name),
           promos_utils::DesktopIOSPromoAction::kDismissed);
     }
@@ -77,12 +76,12 @@ class IOSPromoBubbleDelegate : public ui::DialogModelDelegate {
   void OnNoThanksButtonClicked() {
     impression_histogram_already_recorded_ = true;
 
-    browser_->profile()->GetPrefs()->SetBoolean(
+    profile_->GetPrefs()->SetBoolean(
         ios_promo_prefs_config_.promo_opt_out_pref_name, true);
 
     promos_utils::RecordIOSDesktopPromoUserInteractionHistogram(
         promo_type_,
-        browser_->profile()->GetPrefs()->GetInteger(
+        profile_->GetPrefs()->GetInteger(
             ios_promo_prefs_config_.promo_impressions_counter_pref_name),
         promos_utils::DesktopIOSPromoAction::kNoThanksClicked);
 
@@ -90,12 +89,12 @@ class IOSPromoBubbleDelegate : public ui::DialogModelDelegate {
   }
 
  private:
-  // Pointer to the current Browser.
-  const raw_ptr<Browser> browser_;
+  // Pointer to the current Profile.
+  const raw_ptr<Profile> profile_;
 
   // Flag tracking whether the impression histogram has already been
   // recorded.
-  bool impression_histogram_already_recorded_;
+  bool impression_histogram_already_recorded_ = false;
 
   // Promo type for the current promo bubble.
   const IOSPromoType promo_type_;
@@ -279,7 +278,7 @@ IOSPromoConstants::IOSPromoTypeConfigs IOSPromoBubble::SetUpBubble(
 // static
 void IOSPromoBubble::ShowPromoBubble(views::View* anchor_view,
                                      PageActionIconView* highlighted_button,
-                                     Browser* browser,
+                                     Profile* profile,
                                      IOSPromoType promo_type) {
   IOSPromoConstants::IOSPromoTypeConfigs ios_promo_config =
       SetUpBubble(promo_type);
@@ -289,7 +288,7 @@ void IOSPromoBubble::ShowPromoBubble(views::View* anchor_view,
   }
 
   auto bubble_delegate_unique =
-      std::make_unique<IOSPromoBubbleDelegate>(browser, promo_type);
+      std::make_unique<IOSPromoBubbleDelegate>(profile, promo_type);
   IOSPromoBubbleDelegate* bubble_delegate = bubble_delegate_unique.get();
 
   auto dialog_model_builder =

@@ -319,7 +319,6 @@
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/promos/promos_types.h"
 #include "chrome/browser/promos/promos_utils.h"
-#include "chrome/browser/ui/views/promos/ios_promo_bubble.h"
 #include "chrome/browser/ui/views/promos/ios_promo_password_bubble.h"
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
@@ -2969,6 +2968,9 @@ void BrowserView::ShowBookmarkBubble(const GURL& url, bool already_bookmarked) {
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+// TODO(crbug.com/339262105): Clean up the old password promo methods after the
+// generic promo launch.
 void BrowserView::VerifyUserEligibilityIOSPasswordPromoBubble() {
   if (!browser_) {
     return;
@@ -3004,6 +3006,8 @@ void BrowserView::VerifyUserEligibilityIOSPasswordPromoBubble() {
   }
 }
 
+// TODO(crbug.com/339262105): Clean up the old password promo methods after the
+// generic promo launch.
 void BrowserView::MaybeShowIOSPasswordPromoBubble(
     const segmentation_platform::ClassificationResult& result) {
   if (!browser_) {
@@ -3022,29 +3026,17 @@ void BrowserView::MaybeShowIOSPasswordPromoBubble(
   }
 }
 
+// TODO(crbug.com/339262105): Clean up the old password promo methods after the
+// generic promo launch.
 void BrowserView::ShowIOSPasswordPromoBubble() {
-  if (!browser_) {
-    return;
-  }
-
-  ToolbarButtonProvider* button_provider =
-      BrowserView::GetBrowserViewForBrowser(browser_.get())
-          ->toolbar_button_provider();
-  if (base::FeatureList::IsEnabled(
-          features::kIOSPromoRefreshedPasswordBubble)) {
-    IOSPromoBubble::ShowPromoBubble(
-        button_provider->GetAnchorView(PageActionIconType::kManagePasswords),
-        button_provider->GetPageActionIconView(
-            PageActionIconType::kManagePasswords),
-        browser_.get(), IOSPromoType::kPassword);
-  } else {
-    IOSPromoPasswordBubble::ShowBubble(
-        button_provider->GetAnchorView(PageActionIconType::kManagePasswords),
-        button_provider->GetPageActionIconView(
-            PageActionIconType::kManagePasswords),
-        browser_.get());
-  }
+  IOSPromoPasswordBubble::ShowBubble(
+      toolbar_button_provider_->GetAnchorView(
+          PageActionIconType::kManagePasswords),
+      toolbar_button_provider_->GetPageActionIconView(
+          PageActionIconType::kManagePasswords),
+      browser_.get());
 }
+
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 qrcode_generator::QRCodeGeneratorBubbleView*

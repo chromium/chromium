@@ -5143,7 +5143,10 @@ static_library("ui") {
         "views/user_education/low_usage_promo.h",
       ]
 
-      deps += [ "//components/prefs:prefs" ]
+      deps += [
+        "//chrome/browser/ui/promos:utils",
+        "//components/prefs",
+      ]
     }
 
     if (is_linux || is_chromeos_lacros) {

@@ -3277,12 +3277,16 @@ if (!is_android) {
 
     if (is_chrome_branded && !is_android) {
       sources += [
+        "../browser/ui/promos/ios_promos_utils_browsertest.cc",
         "../browser/ui/views/promos/ios_promo_bubble_browsertest.cc",
         "../browser/ui/views/promos/ios_promo_password_bubble_browsertest.cc",
         "../browser/ui/views/user_education/low_usage_promo_browsertest.cc",
       ]
 
-      deps += [ "//chrome/browser/promos:utils" ]
+      deps += [
+        "//chrome/browser/promos:utils",
+        "//chrome/browser/ui/promos:utils",
+      ]
     }
 
     if (build_with_tflite_lib) {

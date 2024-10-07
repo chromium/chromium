@@ -550,6 +550,8 @@ class BrowserView : public BrowserWindow,
       content::WebContents* contents,
       const gfx::Image& image) override;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // TODO(crbug.com/339262105): Clean up the old password promo methods after
+  // the generic promo launch.
   void VerifyUserEligibilityIOSPasswordPromoBubble() override;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   qrcode_generator::QRCodeGeneratorBubbleView* ShowQRCodeGeneratorBubble(
@@ -913,11 +915,15 @@ class BrowserView : public BrowserWindow,
   bool MaybeShowInfoBar(content::WebContents* contents);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // TODO(crbug.com/339262105): Clean up the old password promo methods after
+  // the generic promo launch.
   // Decides whether to show the iOS Password Promo Bubble based on segmentation
   // platform classification results (is passed as a callback to the
   // segmentation API).
   void MaybeShowIOSPasswordPromoBubble(
       const segmentation_platform::ClassificationResult& result);
+  // TODO(crbug.com/339262105): Clean up the old password promo methods after
+  // the generic promo launch.
   // Shows the iOS Password Promo Bubble.
   void ShowIOSPasswordPromoBubble();
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

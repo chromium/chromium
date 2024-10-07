@@ -234,6 +234,12 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
+const base::Feature& GetIOSDesktopPromoFeatureEngagement(
+    IOSPromoType promo_type) {
+  IOSPromoPrefsConfig promo_prefs(promo_type);
+  return *promo_prefs.promo_feature;
+}
+
 // TODO(crbug.com/339262105): Clean up the old password promo methods after
 // the generic promo launch.
 void RecordIOSPasswordPromoUserInteractionHistogram(
@@ -365,4 +371,5 @@ void IOSDesktopPromoShown(Profile* profile, IOSPromoType promo_type) {
 
   RecordIOSDesktopPromoShownHistogram(promo_type, new_impression_count);
 }
+
 }  // namespace promos_utils

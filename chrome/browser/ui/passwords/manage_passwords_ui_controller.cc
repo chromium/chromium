@@ -26,6 +26,7 @@
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
+#include "chrome/browser/promos/promos_types.h"
 #include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -42,8 +43,11 @@
 #include "chrome/browser/ui/passwords/manage_passwords_icon_view.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
+#include "chrome/browser/ui/promos/ios_promos_utils.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/tab_dialogs.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -1092,7 +1096,18 @@ void ManagePasswordsUIController::MaybeShowIOSPasswordPromo() {
   if (!browser) {
     return;
   }
-  browser->window()->VerifyUserEligibilityIOSPasswordPromoBubble();
+
+  if (base::FeatureList::IsEnabled(
+          features::kIOSPromoRefreshedPasswordBubble)) {
+    ios_promos_utils::VerifyIOSPromoEligibility(
+        IOSPromoType::kPassword, browser->profile(),
+        BrowserView::GetBrowserViewForBrowser(browser)
+            ->toolbar_button_provider());
+  } else {
+    // TODO(crbug.com/339262105): Clean up the old password promo methods after
+    // the generic promo launch.
+    browser->window()->VerifyUserEligibilityIOSPasswordPromoBubble();
+  }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
