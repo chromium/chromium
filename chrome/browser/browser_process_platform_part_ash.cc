@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/login/session/chrome_session_manager.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
+#include "chrome/browser/ash/login/users/policy_user_manager_controller.h"
 #include "chrome/browser/ash/login/users/profile_user_manager_controller.h"
 #include "chrome/browser/ash/net/ash_proxy_monitor.h"
 #include "chrome/browser/ash/net/secure_dns_manager.h"
@@ -115,6 +116,10 @@ void BrowserProcessPlatformPart::InitializeUserManager() {
   profile_user_manager_controller_ =
       std::make_unique<ash::ProfileUserManagerController>(
           g_browser_process->profile_manager(), user_manager_.get());
+  policy_user_manager_controller_ =
+      std::make_unique<ash::PolicyUserManagerController>(
+          user_manager_.get(),
+          browser_policy_connector_ash()->GetMinimumVersionPolicyHandler());
   user_image_manager_registry_ =
       std::make_unique<ash::UserImageManagerRegistry>(user_manager_.get());
   session_manager_->OnUserManagerCreated(user_manager_.get());
@@ -128,6 +133,16 @@ void BrowserProcessPlatformPart::InitializeUserManager() {
   }
   browser_policy_connector_ash()->OnUserManagerCreated(user_manager_.get());
   user_manager_->Initialize();
+}
+
+void BrowserProcessPlatformPart::ShutdownUserManager() {
+  if (!user_manager_) {
+    return;
+  }
+  user_image_manager_registry_->Shutdown();
+  browser_policy_connector_ash()->OnUserManagerShutdown();
+  policy_user_manager_controller_.reset();
+  user_manager_->Shutdown();
 }
 
 void BrowserProcessPlatformPart::DestroyUserManager() {

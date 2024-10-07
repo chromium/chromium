@@ -27,6 +27,7 @@ class BrowserContextFlusher;
 class ChromeSessionManager;
 class CrosSettingsHolder;
 class InSessionPasswordChangeManager;
+class PolicyUserManagerController;
 class ProfileHelper;
 class ProfileUserManagerController;
 class SchedulerConfigurationManager;
@@ -66,6 +67,7 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
   void ShutdownAutomaticRebootManager();
 
   void InitializeUserManager();
+  void ShutdownUserManager();
   void DestroyUserManager();
 
   void InitializeDeviceRestrictionScheduleController();
@@ -190,6 +192,9 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
 
   std::unique_ptr<ash::ProfileUserManagerController>
       profile_user_manager_controller_;
+
+  std::unique_ptr<ash::PolicyUserManagerController>
+      policy_user_manager_controller_;
 
   std::unique_ptr<ash::UserImageManagerRegistry> user_image_manager_registry_;
 

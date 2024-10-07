@@ -102,12 +102,6 @@ namespace {
 
 using ::content::BrowserThread;
 
-policy::MinimumVersionPolicyHandler* GetMinimumVersionPolicyHandler() {
-  return g_browser_process->platform_part()
-      ->browser_policy_connector_ash()
-      ->GetMinimumVersionPolicyHandler();
-}
-
 user_manager::UserManager::EphemeralModeConfig CreateEphemeralModeConfig(
     ash::CrosSettings* cros_settings) {
   DCHECK(cros_settings);
@@ -209,10 +203,6 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
   owner_subscription_ = cros_settings()->AddSettingsObserver(
       kDeviceOwner, base::BindRepeating(&ChromeUserManagerImpl::UpdateOwnerId,
                                         weak_factory_.GetWeakPtr()));
-
-  if (GetMinimumVersionPolicyHandler()) {
-    GetMinimumVersionPolicyHandler()->AddObserver(this);
-  }
 }
 
 void ChromeUserManagerImpl::UpdateOwnerId() {
@@ -235,10 +225,6 @@ void ChromeUserManagerImpl::Shutdown() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   UserManagerBase::Shutdown();
-
-  if (GetMinimumVersionPolicyHandler()) {
-    GetMinimumVersionPolicyHandler()->RemoveObserver(this);
-  }
 
   ephemeral_users_enabled_subscription_ = {};
   local_accounts_subscription_ = {};
@@ -336,10 +322,6 @@ std::optional<std::u16string> ChromeUserManagerImpl::GetDisplayName(
   }
 
   return base::UTF8ToUTF16(broker->GetDisplayName());
-}
-
-void ChromeUserManagerImpl::OnMinimumVersionStateChanged() {
-  NotifyUsersSignInConstraintsChanged();
 }
 
 }  // namespace ash

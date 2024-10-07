@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/login/users/affiliation.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
-#include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chromeos/ash/components/login/auth/mount_performer.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
@@ -33,8 +32,7 @@ namespace ash {
 class ChromeUserManagerImpl
     : public user_manager::UserManagerBase,
       public DeviceSettingsService::Observer,
-      public policy::DeviceLocalAccountPolicyService::Observer,
-      public policy::MinimumVersionPolicyHandler::Observer {
+      public policy::DeviceLocalAccountPolicyService::Observer {
  public:
   ChromeUserManagerImpl(const ChromeUserManagerImpl&) = delete;
   ChromeUserManagerImpl& operator=(const ChromeUserManagerImpl&) = delete;
@@ -53,9 +51,6 @@ class ChromeUserManagerImpl
   // policy::DeviceLocalAccountPolicyService::Observer:
   void OnPolicyUpdated(const std::string& user_id) override;
   void OnDeviceLocalAccountsChanged() override;
-
-  // policy::MinimumVersionPolicyHandler::Observer:
-  void OnMinimumVersionStateChanged() override;
 
  private:
   friend class UserManagerTest;

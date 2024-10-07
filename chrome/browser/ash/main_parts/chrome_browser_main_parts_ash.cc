@@ -1626,16 +1626,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // Let the UserManager unregister itself as an observer of the CrosSettings
   // singleton before it is destroyed. This also ensures that the UserManager
   // has no URLRequest pending (see http://crbug.com/276659).
-  if (auto* user_image_manager_registry =
-          ash::UserImageManagerRegistry::Get()) {
-    user_image_manager_registry->Shutdown();
-  }
-  if (g_browser_process->platform_part()->user_manager()) {
-    g_browser_process->platform_part()
-        ->browser_policy_connector_ash()
-        ->OnUserManagerShutdown();
-    g_browser_process->platform_part()->user_manager()->Shutdown();
-  }
+  g_browser_process->platform_part()->ShutdownUserManager();
 
   // Let the DeviceDisablingManager unregister itself as an observer of the
   // CrosSettings singleton before it is destroyed.
