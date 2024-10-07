@@ -62,18 +62,18 @@ constexpr char kFromAutofillParamValue[] = "true";
 constexpr char kAutofillMetadataQueryParam[] = "autofill_metadata";
 
 // Concat query parameter with escaped value.
-std::string StrCatQueryParam(const std::string query_param,
-                             const std::string value) {
+std::string StrCatQueryParam(std::string_view query_param,
+                             std::string_view value) {
   return base::StrCat({query_param, kQueryParamKeyValueSeparator,
                        base::EscapeQueryParamValue(value, /*use_plus=*/false)});
 }
 
 // Returns URL for OS Feedback with additional data passed as query parameters.
-GURL BuildFeedbackUrl(const std::string extra_diagnostics,
-                      const std::string description_template,
-                      const std::string description_placeholder_text,
-                      const std::string category_tag,
-                      const GURL page_url,
+GURL BuildFeedbackUrl(const std::string& extra_diagnostics,
+                      const std::string& description_template,
+                      const std::string& description_placeholder_text,
+                      const std::string& category_tag,
+                      const GURL& page_url,
                       feedback::FeedbackSource source,
                       base::Value::Dict autofill_metadata) {
   std::vector<std::string> query_params;
