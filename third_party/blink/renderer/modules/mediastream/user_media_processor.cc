@@ -811,7 +811,7 @@ void UserMediaProcessor::SelectAudioSettings(
     }
     current_request_info_->stream_controls()->audio.device_ids = eligible_ids;
     current_request_info_->SetEligibleAudioCaptureSettings(
-        eligible_settings.value());
+        std::move(eligible_settings.value()));
   } else {
     auto settings = SelectSettingsAudioCapture(
         capabilities, user_media_request->AudioConstraints(),
@@ -1073,7 +1073,7 @@ void UserMediaProcessor::SelectVideoDeviceSettings(
     }
     current_request_info_->stream_controls()->video.device_ids = eligible_ids;
     current_request_info_->SetEligibleVideoCaptureSettings(
-        eligible_settings.value());
+        std::move(eligible_settings.value()));
   } else {
     blink::VideoCaptureSettings settings = SelectSettingsVideoDeviceCapture(
         std::move(capabilities), user_media_request->VideoConstraints(),

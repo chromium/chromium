@@ -419,7 +419,8 @@ class EchoCancellationContainer {
                             media::AudioParameters device_parameters,
                             AudioProcessingProperties properties,
                             bool is_reconfiguration_allowed)
-      : ec_mode_allowed_values_(EchoCancellationTypeSet({allowed_values})),
+      : ec_mode_allowed_values_(
+            EchoCancellationTypeSet(std::move(allowed_values))),
         device_parameters_(device_parameters),
         is_device_capture_(is_device_capture) {
     if (!has_active_source)
@@ -544,7 +545,7 @@ class EchoCancellationContainer {
       types.push_back(EchoCancellationType::kEchoCancellationSystem);
     }
 
-    return EchoCancellationTypeSet(types);
+    return EchoCancellationTypeSet(std::move(types));
   }
 
   static bool ShouldUseExperimentalSystemEchoCanceller(
@@ -1063,7 +1064,7 @@ class ProcessingBasedContainer {
                            bool is_reconfiguration_allowed)
       : processing_type_(processing_type),
         sample_size_container_(sample_size_range),
-        channels_container_(channels_set),
+        channels_container_(std::move(channels_set)),
         sample_rate_container_(sample_rate_range),
         latency_container_(
             GetAllowedLatency(processing_type, device_parameters)) {
@@ -1076,7 +1077,7 @@ class ProcessingBasedContainer {
           EchoCancellationType::kEchoCancellationSystem);
     }
     echo_cancellation_container_ = EchoCancellationContainer(
-        echo_cancellation_types, source_info.HasActiveSource(),
+        std::move(echo_cancellation_types), source_info.HasActiveSource(),
         is_device_capture, device_parameters, source_info.properties(),
         is_reconfiguration_allowed);
 

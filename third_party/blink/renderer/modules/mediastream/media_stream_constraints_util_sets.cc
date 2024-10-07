@@ -100,7 +100,7 @@ bool IsPositiveFiniteAspectRatio(double aspect_ratio) {
 // |vertices| must have 1 or 2 elements. Otherwise, behavior is undefined.
 // This function is called when |point| has already been determined to be
 // outside a polygon and |vertices| is the vertex or side closest to |point|.
-Point GetClosestPointToVertexOrSide(const Vector<Point> vertices,
+Point GetClosestPointToVertexOrSide(const Vector<Point>& vertices,
                                     const Point& point) {
   DCHECK(!vertices.empty());
   // If only a single vertex closest to |point|, return that vertex.
