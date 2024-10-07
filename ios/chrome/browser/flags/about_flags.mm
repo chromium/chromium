@@ -1408,18 +1408,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableSignedOutViewDemotionName,
      flag_descriptions::kEnableSignedOutViewDemotionDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableSignedOutViewDemotion)},
-    {"autofill-disable-profile-updates",
-     flag_descriptions::kAutofillDisableProfileUpdatesName,
-     flag_descriptions::kAutofillDisableProfileUpdatesDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         autofill::features::test::kAutofillDisableProfileUpdates)},
-    {"autofill-disable-silent-profile-updates",
-     flag_descriptions::kAutofillDisableSilentProfileUpdatesName,
-     flag_descriptions::kAutofillDisableSilentProfileUpdatesDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         autofill::features::test::kAutofillDisableSilentProfileUpdates)},
     {"spotlight-never-retain-index",
      flag_descriptions::kSpotlightNeverRetainIndexName,
      flag_descriptions::kSpotlightNeverRetainIndexDescription, flags_ui::kOsIos,

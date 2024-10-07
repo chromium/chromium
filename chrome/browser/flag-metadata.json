@@ -627,21 +627,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "autofill-disable-profile-updates",
-    "owners": ["sebsg@chromium.org"],
-    "expiry_milestone": 125
-  },
-  {
-    "name": "autofill-disable-silent-profile-updates",
-    "owners": ["sebsg@chromium.org"],
-    "expiry_milestone": 125
-  },
-  {
-    "name": "autofill-enable-admin-level-2",
-    "owners": ["sebsg@chromium.org"],
-    "expiry_milestone": 126
-  },
-  {
     "name": "autofill-enable-amount-extraction-desktop",
     "owners": [ "jamessun@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 135
@@ -650,11 +635,6 @@
     "name": "autofill-enable-android-n-key-for-fido-authentication",
     "owners": ["longsheng@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 130
-  },
-  {
-    "name": "autofill-enable-between-streets",
-    "owners": ["sebsg@chromium.org"],
-    "expiry_milestone": 126
   },
   {
     "name": "autofill-enable-buy-now-pay-later-for-affirm",
@@ -733,11 +713,6 @@
     "name": "autofill-enable-fpan-risk-based-authentication",
     "owners": [ "junhuihe@google.com" ],
     "expiry_milestone": 130
-  },
-  {
-    "name": "autofill-enable-landmark",
-    "owners": [ "sebsg@chromium.org" ],
-    "expiry_milestone": 126
   },
   {
     "name": "autofill-enable-local-iban",
@@ -1749,7 +1724,7 @@
   {
     "name": "cpe-performance-improvements",
     "owners": ["sebsg@chromium.org", "bling-transactions-eng@google.com"],
-    "expiry_milestone": 130
+    "expiry_milestone": 135
   },
   {
     "name": "crabbyavif",
