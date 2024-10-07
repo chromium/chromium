@@ -521,7 +521,6 @@ chromium-metrics-reviews@google.com.
     name="PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted2"
     enum="PasswordManager.MoveToAccountStoreTrigger" expires_after="2025-03-09">
   <owner>treib@chromium.org</owner>
-  <owner>victorvianna@google.com</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
     When the user accepts to move a password from the profile store to the
@@ -535,7 +534,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.AccountStorage.MoveToAccountStoreFlowOffered"
     enum="PasswordManager.MoveToAccountStoreTrigger" expires_after="2025-03-09">
   <owner>treib@chromium.org</owner>
-  <owner>victorvianna@google.com</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
     When the user is offered to move a password from the profile store to the
@@ -548,7 +546,6 @@ chromium-metrics-reviews@google.com.
     name="PasswordManager.AccountStorage.UnsyncedPasswordsFoundDuringSignOut"
     units="passwords" expires_after="2025-03-09">
   <owner>treib@chromium.org</owner>
-  <owner>victorvianna@google.com</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
     Records how many passwords in the account store were unsynced when the user
@@ -803,7 +800,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.AndroidAccountStorageNotice.CloseReason"
     enum="AndroidAccountStorageNoticeCloseReason" expires_after="2025-02-10">
-  <owner>victorvianna@google.com</owner>
+  <owner>treib@chromium.org</owner>
   <owner>src/components/password_manager/OWNERS</owner>
   <summary>
     Android only. The &quot;account storage notice&quot; is a one-off UI shown
@@ -1948,7 +1945,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.LocalUpmActivated" enum="Boolean"
     expires_after="2025-02-02">
-  <owner>victorvianna@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
   <owner>src/components/password_manager/OWNERS</owner>
   <summary>
     Records on startup whether the user was activated for local UPM. Records
@@ -1961,7 +1958,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.LocalUpmActivationError{UserType}"
     enum="LocalUpmActivationError" expires_after="2025-02-15">
-  <owner>victorvianna@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
   <owner>src/components/password_manager/OWNERS</owner>
   <summary>
     Recorded for {UserType}. Records the reason why the local UPM activation

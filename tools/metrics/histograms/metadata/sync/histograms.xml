@@ -141,7 +141,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Sync.AndroidExplicitPassphrasePlatformApiResponse"
     enum="AndroidExplicitPassphrasePlatformApiResponse"
     expires_after="2025-03-30">
-  <owner>victorvianna@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>
     The response returned by the API internally called by
@@ -172,7 +172,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sync.BackedOffDataType" enum="SyncDataTypes"
     expires_after="2025-02-16">
-  <owner>victorvianna@google.com</owner>
+  <owner>treib@chromium.org</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>
     Logged when a data type is backed off.
@@ -404,7 +404,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sync.ConfigureTime_{ConfigurationType}.{Result}" units="ms"
     expires_after="2025-02-16">
-  <owner>victorvianna@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
   <summary>
     Time spent configuring data types for {ConfigurationType}. Recorded when
     DataTypeManagerImpl finishes.
@@ -602,8 +603,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sync.DataTypeBlockedDueToUndecryptableUpdate"
     enum="SyncDataTypes" expires_after="2024-12-08">
-  <owner>victorvianna@google.com</owner>
   <owner>mastiz@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
   <summary>
     Recorded on every GetUpdatesResponse if the data type is blocked because due
     to the existence of undecryptable updates sent by the server. This is *not*
@@ -842,8 +843,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sync.DataTypeUndecryptablePendingUpdatesDropped{SyncDataType}"
     units="SyncEntity" expires_after="2025-03-30">
-  <owner>victorvianna@google.com</owner>
   <owner>mastiz@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
   <summary>
     Records the number of entities dropped when the data type decided that a
     certain encryption key was lost and dropped all pending updates encrypted
@@ -1319,7 +1320,7 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: important for UMA filtering. -->
 
-  <owner>victorvianna@google.com</owner>
+  <owner>treib@chromium.org</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>
     Sync passphrase type collected at each metrics upload. The implementation
@@ -1560,7 +1561,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-05-10">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
-  <owner>victorvianna@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
   <summary>
     Recorded on browser startup if the SyncEngine initialization is deferred by
     a fixed (configurable) delay due to performance reasons. In some cases, a
@@ -1608,7 +1609,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sync.SyncedHistoryFaviconAvailability.{RequestOrigin}"
     enum="FaviconAvailabilityStatus" expires_after="2025-01-26">
-  <owner>victorvianna@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>
     Records the availability status (local, sync or non-available) for favicons
@@ -1717,7 +1718,7 @@ chromium-metrics-reviews@google.com.
     enum="SyncToSigninMigrationReadingListStep" expires_after="2025-01-31">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
-  <owner>victorvianna@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
   <summary>
     Within the wider Sync-to-Signin migration, this records various steps in the
     ReadingList-specific migration. The migration is requested by the central
@@ -1732,7 +1733,7 @@ chromium-metrics-reviews@google.com.
     enum="SyncToSigninMigrationDecisionOverall" expires_after="2025-01-31">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
-  <owner>victorvianna@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
   <summary>
     The outcome of the decision whether the Sync-to-Signin migration should run
     or not (and why). Recorded on profile creation/startup, only on iOS. Note
@@ -1747,7 +1748,7 @@ chromium-metrics-reviews@google.com.
     enum="SyncToSigninMigrationDataTypeDecision" expires_after="2025-01-31">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
-  <owner>victorvianna@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
   <summary>
     The outcome of the decision whether the Sync-to-Signin migration should run
     or not (and why) for {SyncDataTypeForSyncToSigninMigration}. Recorded on
@@ -1763,7 +1764,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-01-31">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
-  <owner>victorvianna@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
   <summary>
     The outcome of the overall Sync-to-Signin migration, recorded when the
     migration finishes. Note that the total count of this histogram can be
@@ -1777,7 +1778,7 @@ chromium-metrics-reviews@google.com.
     enum="PlatformFileError" expires_after="2025-01-31">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
-  <owner>victorvianna@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
   <summary>
     The outcome of moving the bookmarks JSON file from the local to the account
     location, during the Sync-to-Signin migration. Recorded only if the overall
@@ -1790,7 +1791,7 @@ chromium-metrics-reviews@google.com.
     enum="PlatformFileError" expires_after="2025-01-31">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
-  <owner>victorvianna@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
   <summary>
     The outcome of moving the passwords DB file from the local to the account
     location, during the Sync-to-Signin migration. Recorded only if the overall
@@ -1803,7 +1804,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-01-31">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
-  <owner>victorvianna@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
   <summary>
     The time taken for the Sync-to-Signin migration. Recorded on profile
     creation/startup, only if the migration actually ran. Note that the total
@@ -1815,7 +1816,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sync.ThrottledAllDataTypes" enum="Boolean"
     expires_after="2025-02-12">
-  <owner>victorvianna@google.com</owner>
+  <owner>treib@chromium.org</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>
     Logged when the server instructs the client to throttle all its data types.
@@ -1828,7 +1829,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sync.ThrottledSomeDataTypes" enum="SyncDataTypes"
     expires_after="2025-04-28">
-  <owner>victorvianna@google.com</owner>
+  <owner>treib@chromium.org</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>
     Logged when the sync server instructs this client to throttle a special list

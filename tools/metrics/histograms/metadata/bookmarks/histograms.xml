@@ -475,7 +475,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Bookmarks.ReorderDropTarget{ParentNode}"
     enum="BookmarkReorderDropTarget" expires_after="2025-01-05">
   <owner>msalama@chromium.org</owner>
-  <owner>victorvianna@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records where a bookmark is dropped: on bookmark bar, bookmark menu or a UI
