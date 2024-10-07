@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/views/web_apps/web_app_link_capturing_test_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
@@ -192,6 +193,7 @@ enum class NavigationElement {
   kElementLink,
   kElementButton,
   kElementServiceWorkerButton,
+  kElementIntentPicker,
 };
 
 std::string ToIdString(NavigationElement element) {
@@ -202,6 +204,10 @@ std::string ToIdString(NavigationElement element) {
       return kValueButton;
     case NavigationElement::kElementServiceWorkerButton:
       return kValueServiceWorkerButton;
+    case NavigationElement::kElementIntentPicker:
+      // The IntentPicker is within the Chrome UI, not the web page. Therefore,
+      // this should not be used to construct an ID to click on within the page.
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -213,6 +219,8 @@ std::string_view ToParamString(NavigationElement element) {
       return "ViaButton";
     case NavigationElement::kElementServiceWorkerButton:
       return "ViaServiceWorkerButton";
+    case NavigationElement::kElementIntentPicker:
+      return "ViaIntentPicker";
   }
 }
 
@@ -371,16 +379,24 @@ base::Value::Dict WebContentsToJson(content::WebContents& web_contents) {
     dict.Set("has_opener", true);
   }
 
-  base::Value::List frames;
-  web_contents.GetPrimaryMainFrame()->ForEachRenderFrameHost(
-      [&](content::RenderFrameHost* frame) {
-        if (frame->IsInPrimaryMainFrame()) {
-          return;
-        }
-        frames.Append(RenderFrameHostToJson(*frame));
-      });
-  if (!frames.empty()) {
-    dict.Set("frames", std::move(frames));
+  GURL last_committed_url =
+      web_contents.GetPrimaryMainFrame()->GetLastCommittedURL();
+
+  // The new tab page has inconsistent frames, so skip frame analysis there.
+  if (last_committed_url != GURL("chrome://newtab") &&
+      last_committed_url != GURL("chrome://new-tab-page")) {
+    base::Value::List frames;
+    web_contents.GetPrimaryMainFrame()->ForEachRenderFrameHost(
+        [&](content::RenderFrameHost* frame) {
+          if (frame->IsInPrimaryMainFrame()) {
+            return;
+          }
+
+          frames.Append(RenderFrameHostToJson(*frame));
+        });
+    if (!frames.empty()) {
+      dict.Set("frames", std::move(frames));
+    }
   }
 
   base::Value::List history;
@@ -548,6 +564,26 @@ class WebAppLinkCapturingParameterizedBrowserTest
   }
 
  protected:
+  // Prevent the creation of obviously invalid test expectation during
+  // re-baselining.
+  virtual void AssertValidTestConfiguration() {
+    // For the Intent Picker, only one combination makes sense:
+    if (GetNavigationElement() == NavigationElement::kElementIntentPicker) {
+      ASSERT_EQ(LinkCapturing::kEnabled, GetLinkCapturing());
+      ASSERT_EQ(StartingPoint::kTab, GetStartingPoint());
+      ASSERT_EQ(Destination::kScopeA2A, GetDestination());
+      ASSERT_EQ(RedirectType::kNone, GetRedirectType());
+      ASSERT_EQ(test::ClickMethod::kLeftClick, ClickMethod());
+      ASSERT_EQ(OpenerMode::kNoOpener, GetOpenerMode());
+      ASSERT_EQ(NavigationTarget::kNoFrame, GetNavigationTarget());
+      // At the moment, only kAuto is tested, but it is conceivable we'd add
+      // others. For kNavigateExisting, see the comment regarding
+      // `expect_navigation` below before enabling.
+      ASSERT_EQ(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto,
+                GetClientMode());
+    }
+  }
+
   // Trigger a right click on an HTML element, wait for the context menu to
   // show up and mimic an `Open link in <Installed App>` flow.
   void SimulateRightClickOnElementAndLaunchApp(content::WebContents* contents,
@@ -904,6 +940,8 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
            "Add the switch '--run-all-tests' to run disabled tests too.";
   }
 
+  AssertValidTestConfiguration();
+
   DLOG(INFO) << "Installing apps.";
 
   // Install apps for scope A and B (note: scope X is deliberately excluded).
@@ -920,8 +958,6 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
   }
 
   DLOG(INFO) << "Setting up.";
-
-  std::string element_id = GetElementId();
 
   // Setup the initial page.
   Browser* browser_a;
@@ -967,19 +1003,40 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
     content::DOMMessageQueue message_queue;
     // Perform action (launch destination page).
     WebContentsCreationMonitor monitor;
-    if (ClickMethod() != test::ClickMethod::kRightClickLaunchApp) {
+    // True if a navigation is expected, which will trigger a dom reply.
+    bool expect_navigation = true;
+
+    if (GetNavigationElement() == NavigationElement::kElementIntentPicker) {
+      ui_test_utils::BrowserChangeObserver app_browser_observer(
+          nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+      // Clicking the Intent Picker will trigger a re-parenting (not a new
+      // navigation, so the DomMessage has already been sent).
+      ASSERT_TRUE(web_app::ClickIntentPickerChip(browser_a));
+      app_browser_observer.Wait();
+
+      // After re-parenting, the old browser gets a new tab contents and we need
+      // to wait for that to finish loading before capturing the end state.
+      WaitForLoadStop(browser_a->tab_strip_model()->GetActiveWebContents());
+
+      // TODO(https://crbug.com/371513459): Not sure if this assumption holds if
+      // we add kNavigateExisting to the test params (for the Intent Picker).
+      expect_navigation = false;
+    } else if (ClickMethod() != test::ClickMethod::kRightClickLaunchApp) {
       test::SimulateClickOnElement(contents_a, GetElementId(), ClickMethod());
     } else {
       SimulateRightClickOnElementAndLaunchApp(contents_a, GetElementId());
     }
 
-    std::string message;
-    EXPECT_TRUE(message_queue.WaitForMessage(&message));
-    DLOG(INFO) << message;
-    std::string unquoted_message;
-    ASSERT_TRUE(base::RemoveChars(message, "\"", &unquoted_message)) << message;
-    EXPECT_TRUE(base::StartsWith(unquoted_message, "FinishedNavigating"))
-        << unquoted_message;
+    if (expect_navigation) {
+      std::string message;
+      EXPECT_TRUE(message_queue.WaitForMessage(&message));
+      DLOG(INFO) << message;
+      std::string unquoted_message;
+      ASSERT_TRUE(base::RemoveChars(message, "\"", &unquoted_message))
+          << message;
+      EXPECT_TRUE(base::StartsWith(unquoted_message, "FinishedNavigating"))
+          << unquoted_message;
+    }
 
     content::WebContents* handled_contents =
         monitor.GetLastSeenWebContentsAndStopMonitoring();
@@ -1071,6 +1128,27 @@ INSTANTIATE_TEST_SUITE_P(
             NavigationTarget::kBlank,   // User Target is _blank.
             NavigationTarget::kNoFrame  // Target is non-existing frame.
             )),
+    LinkCaptureTestParamToString);
+
+INSTANTIATE_TEST_SUITE_P(
+    IntentPicker,
+    WebAppLinkCapturingParameterizedBrowserTest,
+    testing::Combine(
+        // TODO(https://crbug.com/371513459): Test more client modes.
+        testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
+        // There is really only one combination that makes sense for the rest of
+        // the values, since the IntentPicker is not affected by LinkCapturing,
+        // it only shows in a Tab (not an App), it always stays within the same
+        // scope, and the user only left-clicks it. Additionally, since it is
+        // not an HTML element, there's no `opener` or `target` involved.
+        testing::Values(LinkCapturing::kEnabled),
+        testing::Values(StartingPoint::kTab),
+        testing::Values(Destination::kScopeA2A),  // Navigate in-scope A.
+        testing::Values(RedirectType::kNone),
+        testing::Values(NavigationElement::kElementIntentPicker),
+        testing::Values(test::ClickMethod::kLeftClick),
+        testing::Values(OpenerMode::kNoOpener),
+        testing::Values(NavigationTarget::kNoFrame)),
     LinkCaptureTestParamToString);
 
 INSTANTIATE_TEST_SUITE_P(
