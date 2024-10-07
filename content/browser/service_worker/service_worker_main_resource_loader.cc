@@ -982,7 +982,11 @@ void ServiceWorkerMainResourceLoader::StartResponse(
   DCHECK(version->GetMainScriptResponse());
   response_head_->ssl_info = version->GetMainScriptResponse()->ssl_info;
 
-  CHECK(version->policy_container_host(), base::NotFatalUntil::M129);
+#ifndef NDEBUG
+  // This check is failing against real users. If you found out why, please add
+  // a regression test.
+  CHECK(version->policy_container_host());
+#endif
   // TODO(https://crbug.com/339200481): Find out why some ServiceWorker versions
   // have null policy container host.
   if (version->policy_container_host()) {
