@@ -1121,7 +1121,8 @@
                     "name": "VirtualSwapEnabled_25PercentVmSize_10SecondSwapInterval",
                     "params": {
                         "guest_reclaim_enabled": "true",
-                        "ram_percentage": "75",
+                        "ram_percentage": "80",
+                        "shift_mib": "0",
                         "size_percentage": "25",
                         "virtual_swap_enabled": "true",
                         "virtual_swap_interval_ms": "10000"
