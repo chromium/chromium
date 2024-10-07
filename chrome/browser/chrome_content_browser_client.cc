@@ -7895,8 +7895,12 @@ void ChromeContentBrowserClient::IsClipboardCopyAllowedByPolicy(
   ClipboardRestrictionService* service =
       ClipboardRestrictionServiceFactory::GetInstance()->GetForBrowserContext(
           source.browser_context());
-  if (service->IsUrlAllowedToCopy(*source.data_transfer_endpoint()->GetURL(),
-                                  metadata.size.value_or(0),
+  GURL url = source.data_transfer_endpoint() &&
+                     source.data_transfer_endpoint()->IsUrlType() &&
+                     source.data_transfer_endpoint()->GetURL()
+                 ? *source.data_transfer_endpoint()->GetURL()
+                 : GURL();
+  if (service->IsUrlAllowedToCopy(std::move(url), metadata.size.value_or(0),
                                   &replacement_data)) {
     std::move(callback).Run(metadata.format_type, data, std::nullopt);
   } else {

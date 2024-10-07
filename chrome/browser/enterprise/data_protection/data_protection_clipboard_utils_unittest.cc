@@ -226,6 +226,21 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, Default) {
   EXPECT_FALSE(replacement);
 }
 
+TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, NoEndpoint) {
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      future;
+  IsClipboardCopyAllowedByPolicy(
+      content::ClipboardEndpoint(std::nullopt), CopyMetadata(),
+      MakeClipboardPasteData("foo", "", {}), future.GetCallback());
+  auto data = future.Get<content::ClipboardPasteData>();
+  EXPECT_EQ(data.text, u"foo");
+
+  auto replacement = future.Get<std::optional<std::u16string>>();
+  EXPECT_FALSE(replacement);
+}
+
 TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, StringReplacement) {
   data_controls::SetDataControls(profile_->GetPrefs(), {
                                                            R"({

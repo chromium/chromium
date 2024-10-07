@@ -87,7 +87,8 @@ ActionSourceOrDestination ChromeRulesService::ExtractPasteActionContext(
     const content::ClipboardEndpoint& endpoint) const {
   ActionSourceOrDestination action;
   if (endpoint.data_transfer_endpoint() &&
-      endpoint.data_transfer_endpoint()->IsUrlType()) {
+      endpoint.data_transfer_endpoint()->IsUrlType() &&
+      endpoint.data_transfer_endpoint()->GetURL()) {
     action.url = *endpoint.data_transfer_endpoint()->GetURL();
   }
   if (endpoint.browser_context()) {
