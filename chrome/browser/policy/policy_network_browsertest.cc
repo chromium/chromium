@@ -115,7 +115,7 @@ class PostQuantumPolicyTest : public SSLPolicyTest {
 
 IN_PROC_BROWSER_TEST_F(PostQuantumPolicyTest, PostQuantumEnabledPolicy) {
   net::SSLServerConfig ssl_config;
-  ssl_config.curves_for_testing = {NID_X25519Kyber768Draft00};
+  ssl_config.curves_for_testing = {NID_X25519MLKEM768};
   ASSERT_TRUE(StartTestServer(ssl_config));
 
   // Should be able to load a page from the test server because policy is in
@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(PostQuantumPolicyTest, PostQuantumEnabledPolicy) {
 #if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(PostQuantumPolicyTest, DevicePostQuantumEnabledPolicy) {
   net::SSLServerConfig ssl_config;
-  ssl_config.curves_for_testing = {NID_X25519Kyber768Draft00};
+  ssl_config.curves_for_testing = {NID_X25519MLKEM768};
   ASSERT_TRUE(StartTestServer(ssl_config));
 
   // Should be able to load a page from the test server because policy is in
