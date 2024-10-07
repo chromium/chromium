@@ -73224,6 +73224,32 @@
        {}
       ]
      ],
+     "position-anchor-004.html": [
+      "d1a1ce962c4d956de3853339456eb4cc867b44db",
+      [
+       null,
+       [
+        [
+         "/css/css-anchor-position/position-anchor-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "position-anchor-target-with-children.html": [
+      "d6e5164936af90987f43802f84e62478e931dbc6",
+      [
+       null,
+       [
+        [
+         "/css/css-anchor-position/position-anchor-target-with-children-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "position-area-abs-inline-container.html": [
       "deaf60647d4ecf6e2039bacbe41e6eb3e8593d8b",
       [
@@ -304368,7 +304394,7 @@
      []
     ],
     "clipboard-item.https-expected.txt": [
-     "224c1438a5cba15548ebda12f91ec063998aa176",
+     "bd46bcc7e16f5c842ef8b96ea5e30aad03fe5e75",
      []
     ],
     "detached-iframe": {
@@ -314826,6 +314852,10 @@
      },
      "position-anchor-ref.html": [
       "4d7de12447c8297b8f0fc04338d80a028a3e9798",
+      []
+     ],
+     "position-anchor-target-with-children-ref.html": [
+      "dd922b0bb218311665711ca9d14d60bdfb72ba98",
       []
      ],
      "position-area-inline-container-ref.html": [
@@ -540710,7 +540740,7 @@
       ]
      ],
      "auction-config.https.window.js": [
-      "fc1441a87430011f4326207eb692b55009f72a6c",
+      "1b2eba36169271d84a9238631fea1d3511930cdf",
       [
        "fledge/tentative/auction-config.https.window.html?1-5",
        {
@@ -590501,7 +590531,7 @@
         ]
        ],
        "coop-noopener-allow-popups.https.html": [
-        "550d5ac48b59dfc1a1953643553ee48ef0519720",
+        "e8a1ea0009288a7a5bc7adafa25f444c336cce2c",
         [
          null,
          {
@@ -692269,7 +692299,7 @@
      ]
     ],
     "signal-current-user-details.https.html": [
-     "b4027377272e4921693eeb71af7eda3f9f7acb96",
+     "9dc50e398af4ade47ace17ef7e4faf20c19245a8",
      [
       null,
       {
