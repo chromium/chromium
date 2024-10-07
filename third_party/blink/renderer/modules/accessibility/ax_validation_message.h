@@ -40,7 +40,6 @@ class AXValidationMessage final : public AXObject {
                          bool* clips_children) const override;
   const AtomicString& LiveRegionStatus() const override;
   const AtomicString& LiveRegionRelevant() const override;
-  bool IsOffScreen() const override;
   bool IsValidationMessage() const override { return true; }
   bool IsVisible() const override;
   String TextAlternative(bool recursive,

@@ -3199,10 +3199,6 @@ bool AXObject::IsMultiSelectable() const {
   return false;
 }
 
-bool AXObject::IsOffScreen() const {
-  return false;
-}
-
 bool AXObject::IsRequired() const {
   return false;
 }

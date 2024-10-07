@@ -2639,29 +2639,6 @@ bool AXNodeObject::IsVisible() const {
   return AXObject::IsVisible();
 }
 
-bool AXNodeObject::IsOffScreen() const {
-  if (RoleValue() == ax::mojom::blink::Role::kMenuListPopup) {
-    if (!IsVisible()) {
-      return true;
-    }
-  }
-
-  if (GetLayoutObject()) {
-    gfx::Rect content_rect =
-        ToPixelSnappedRect(GetLayoutObject()->VisualRectInDocument());
-    LocalFrameView* view = GetLayoutObject()->GetFrame()->View();
-    gfx::Rect view_rect(gfx::Point(), view->Size());
-    view_rect.Intersect(content_rect);
-    return view_rect.IsEmpty();
-  }
-
-  // Without a layout object, there is no bounding box.
-  // However, we know that if it is display-locked that is an indicator that it
-  // is currently offscreen, and will likely be onscreen once scrolled to.
-  return GetNode() &&
-         DisplayLockUtilities::IsDisplayLockedPreventingPaint(GetNode());
-}
-
 bool AXNodeObject::IsLinked() const {
   if (!IsLinkable(*this)) {
     return false;

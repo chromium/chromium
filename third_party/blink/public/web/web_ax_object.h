@@ -120,7 +120,6 @@ class BLINK_EXPORT WebAXObject {
   bool IsFocused() const;
   bool IsModal() const;
 
-  bool IsOffScreen() const;
   bool IsVisited() const;
 
   bool CanSetValueAttribute() const;

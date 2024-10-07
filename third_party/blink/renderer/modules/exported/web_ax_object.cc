@@ -288,13 +288,6 @@ bool WebAXObject::IsModal() const {
   return private_->IsModal();
 }
 
-bool WebAXObject::IsOffScreen() const {
-  if (IsDetached())
-    return false;
-
-  return private_->IsOffScreen();
-}
-
 bool WebAXObject::IsVisited() const {
   if (IsDetached())
     return false;

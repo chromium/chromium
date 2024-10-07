@@ -130,7 +130,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   bool IsLoaded() const override;
   bool IsMultiSelectable() const override;
   bool IsNativeImage() const final;
-  bool IsOffScreen() const override;
   bool IsProgressIndicator() const override;
   bool IsSlider() const override;
   bool IsSpinButton() const override;
