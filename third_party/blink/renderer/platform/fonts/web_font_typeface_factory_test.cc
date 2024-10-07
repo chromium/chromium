@@ -180,6 +180,7 @@ TEST(WebFontTypefaceFactoryTest, FontationsSelectedAlwaysCbdtCblc) {
 TEST(WebFontTypefaceFactoryTest, ColrV0FallbackApple) {
   ScopedFontationsForSelectedFormatsForTest scoped_fontations_selected_formats(
       false);
+  ScopedFontationsFontBackendForTest scoped_fontations(false);
   sk_sp<SkData> data = SkData::MakeEmpty();
   MockFontFormatCheck mock_font_format_check(data);
   EXPECT_CALL(mock_font_format_check, IsColrCpalColorFontV0())
@@ -199,6 +200,7 @@ TEST(WebFontTypefaceFactoryTest, ColrV0FallbackApple) {
 TEST(WebFontTypefaceFactoryTest, VariableColrV0FallbackWindowsApple) {
   ScopedFontationsForSelectedFormatsForTest scoped_fontations_selected_formats(
       false);
+  ScopedFontationsFontBackendForTest scoped_fontations(false);
   sk_sp<SkData> data = SkData::MakeEmpty();
   MockFontFormatCheck mock_font_format_check(data);
   EXPECT_CALL(mock_font_format_check, IsColrCpalColorFontV0())

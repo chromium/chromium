@@ -180,6 +180,10 @@ class HarfBuzzShaperTest : public FontTestBase {
     return run_font_data[0].font_data_->PlatformData().FontFamilyName();
   }
 
+  bool MatchesFontName(String fontA, String fontB) {
+    return fontA == fontB || String(fontB + " (Fontations)") == fontA;
+  }
+
   const ShapeResult* SplitRun(ShapeResult* shape_result, unsigned offset) {
     unsigned length = shape_result->NumCharacters();
     const ShapeResult* run2 = shape_result->SubRange(offset, length);
@@ -816,10 +820,12 @@ TEST_F(HarfBuzzShaperTest, SystemEmojiVS15) {
       u"\u2614"
       u"\ufe0e");
   for (String text : {text_default, emoji_default}) {
-    EXPECT_EQ(GetShapedFontFamilyNameForEmojiVS(mono_font, text),
-              kNotoEmojiFontName);
-    EXPECT_EQ(GetShapedFontFamilyNameForEmojiVS(color_font, text),
-              kSystemMonoEmojiFont);
+    EXPECT_TRUE(
+        MatchesFontName(GetShapedFontFamilyNameForEmojiVS(mono_font, text),
+                        kNotoEmojiFontName));
+    EXPECT_TRUE(
+        MatchesFontName(GetShapedFontFamilyNameForEmojiVS(color_font, text),
+                        kSystemMonoEmojiFont));
   }
 }
 
@@ -883,10 +889,12 @@ TEST_P(FontVariantEmojiTest, FontVariantEmojiSystemFallback) {
     const char* expected_name_for_color_requested_font =
         is_emoji_presentation ? kNotoColorEmojiFontName : kSystemMonoEmojiFont;
 
-    EXPECT_EQ(GetShapedFontFamilyNameForEmojiVS(mono_font, text),
-              expected_name_for_mono_requested_font);
-    EXPECT_EQ(GetShapedFontFamilyNameForEmojiVS(color_font, text),
-              expected_name_for_color_requested_font);
+    EXPECT_TRUE(
+        MatchesFontName(GetShapedFontFamilyNameForEmojiVS(mono_font, text),
+                        expected_name_for_mono_requested_font));
+    EXPECT_TRUE(
+        MatchesFontName(GetShapedFontFamilyNameForEmojiVS(color_font, text),
+                        expected_name_for_color_requested_font));
   }
 }
 
