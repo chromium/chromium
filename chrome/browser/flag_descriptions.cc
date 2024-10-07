@@ -6942,6 +6942,10 @@ const char kFuseBoxDebugDescription[] =
 const char kGameDashboard[] = "Game Dashboard";
 const char kGameDashboardDescription[] = "Enables the Game Dashboard.";
 
+const char kGameDashboardGamepadSupport[] = "Game Dashboard gamepad support.";
+const char kGameDashboardGamepadSupportDescription[] =
+    "Enables gamepad support in game controls.";
+
 const char kGameDashboardGamePWAs[] = "Game Dashboard Game PWAs";
 const char kGameDashboardGamePWAsDescription[] =
     "Enables Game Dashboard for an additional set of game PWAs.";

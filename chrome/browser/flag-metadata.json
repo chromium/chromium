@@ -4944,6 +4944,17 @@
     "expiry_milestone": 135
   },
   {
+    "name": "game-dashboard-gamepad-support",
+    "owners": [
+      "khayak@google.com",
+      "gdomergue@google.com",
+      "phshah@chromium.org",
+      "cuicuiruan@google.com",
+      "arc-gaming@google.com"
+    ],
+    "expiry_milestone": 137
+  },
+  {
     "name": "game-dashboard-games-in-test",
     "owners": [
       "gdomergue@google.com",

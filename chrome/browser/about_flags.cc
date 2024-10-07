@@ -8084,6 +8084,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGameDashboardGamePWAsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kGameDashboardGamePWAs)},
 
+    {"game-dashboard-gamepad-support",
+     flag_descriptions::kGameDashboardGamepadSupport,
+     flag_descriptions::kGameDashboardGamepadSupport, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kGameDashboardGamepadSupport)},
+
     {"game-dashboard-games-in-test",
      flag_descriptions::kGameDashboardGamesInTest,
      flag_descriptions::kGameDashboardGamesInTestDescription, kOsCrOS,

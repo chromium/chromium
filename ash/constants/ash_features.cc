@@ -1264,6 +1264,11 @@ BASE_FEATURE(kGaiaRecordAccountCreation,
 // Enables the Game Dashboard.
 BASE_FEATURE(kGameDashboard, "GameDashboard", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables Gamepad Support.
+BASE_FEATURE(kGameDashboardGamepadSupport,
+             "GameDashboardGamepadSupport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the Game Dashboard for additional PWA games.
 BASE_FEATURE(kGameDashboardGamePWAs,
              "GameDashboardGamePWAs",
@@ -4209,6 +4214,10 @@ bool IsLockScreenHideSensitiveNotificationsSupported() {
 
 bool IsGameDashboardEnabled() {
   return base::FeatureList::IsEnabled(kGameDashboard);
+}
+
+bool IsGameDashboardGamepadSupportEnabled() {
+  return base::FeatureList::IsEnabled(kGameDashboardGamepadSupport);
 }
 
 bool IsGameDashboardGamePWAsEnabled() {

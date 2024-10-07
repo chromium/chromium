@@ -3998,6 +3998,9 @@ extern const char kFuseBoxDebugDescription[];
 extern const char kGameDashboard[];
 extern const char kGameDashboardDescription[];
 
+extern const char kGameDashboardGamepadSupport[];
+extern const char kGameDashboardGamepadSupportDescription[];
+
 extern const char kGameDashboardGamePWAs[];
 extern const char kGameDashboardGamePWAsDescription[];
 

@@ -15557,6 +15557,7 @@ from previous Chrome versions.
   <int value="-1963995131" label="DesktopPWAsKeepAlive:disabled"/>
   <int value="-1963838301"
       label="ShowSyncPausedReasonCookiesClearedOnExit:enabled"/>
+  <int value="-1963782609" label="GameDashboardGamepadSupport:enabled"/>
   <int value="-1963427770" label="EmojiHandwritingVoiceInput:disabled"/>
   <int value="-1963402827" label="enable-topchrome-md"/>
   <int value="-1963199363" label="TabGroupSyncAndroid:enabled"/>
@@ -16488,6 +16489,7 @@ from previous Chrome versions.
   <int value="-1578781240" label="QuickAnswersV2:enabled"/>
   <int value="-1578677451" label="EnableAppGridGhost:disabled"/>
   <int value="-1578620046" label="ContextualTriggersSelectionHandles:enabled"/>
+  <int value="-1578603271" label="GameDashboardGamepadSupport:disabled"/>
   <int value="-1578503491" label="EnableContinueReading:disabled"/>
   <int value="-1578295753" label="UserMediaScreenCapturing:disabled"/>
   <int value="-1576943648" label="JourneysPersistCachesToPrefs:enabled"/>
