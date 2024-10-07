@@ -155,3 +155,4 @@ virtual/document-isolation-policy/* [ Skip ]
 # All tests in isolated-context require SiteIsolation to establish an
 # IsolatedContext, so skip them here.
 virtual/isolated-context/* [ Skip ]
+virtual/isolated-context-stable/* [ Skip ]

@@ -663,6 +663,23 @@
     "expires": "never"
   },
   {
+    "prefix": "isolated-context-stable",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["wpt_internal/isolated-permissions-policy-stable"],
+    "exclusive_tests": "ALL",
+    "args": ["--isolated-context-origins=https://web-platform.test",
+             "--stable-release-mode",
+             "--disable-auto-wpt-origin-isolation",
+             "--disable-field-trial-config"],
+    "owners": [
+      "cmp@chromium.org",
+      "reillyg@chromium.org",
+      "rmcelrath@chromium.org",
+      "zelin@chromium.org"
+    ],
+    "expires": "never"
+  },
+  {
     "prefix": "direct-sockets",
     "owners": ["greengrape@google.com"],
     "platforms": ["Linux", "Mac", "Win"],
