@@ -13,6 +13,9 @@
 // Sets the `groupTitle` and the `groupColor` to be displayed in the view.
 - (void)setTabGroupTitle:(NSString*)groupTitle groupColor:(UIColor*)groupColor;
 
+// Sets whether the group can be shared or not.
+- (void)setShareAvailable:(BOOL)shareAvailable;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_TAB_GROUPS_UI_TAB_GROUP_INDICATOR_CONSUMER_H_

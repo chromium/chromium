@@ -198,6 +198,7 @@ source_set("keyed_service_factories") {
     "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
     "//ios/chrome/browser/sessions/model:session_state",
     "//ios/chrome/browser/share_extension/model",
+    "//ios/chrome/browser/share_kit/model:factory",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/sharing_message/model",
     "//ios/chrome/browser/sharing_message/model:sharing_message_bridge_factory",

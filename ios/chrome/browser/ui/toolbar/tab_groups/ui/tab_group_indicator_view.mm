@@ -37,6 +37,8 @@
   UIView* _separatorView;
   // Button used to display the menu.
   UIButton* _menuButton;
+  // Whether the share option is available.
+  BOOL _shareAvailable;
 }
 
 - (instancetype)init {
@@ -74,6 +76,11 @@
   [self setGroupTitle:groupTitle];
   [self setGroupColor:groupColor];
   [self updateVisibility];
+}
+
+- (void)setShareAvailable:(BOOL)shareAvailable {
+  _shareAvailable = shareAvailable;
+  [self configureMenuButton];
 }
 
 #pragma mark - Private
@@ -160,6 +167,11 @@
       [[ActionFactory alloc] initWithScenario:scenario];
 
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
+  if (_shareAvailable) {
+    [menuElements addObject:[actionFactory actionToShareWithBlock:^{
+                    [weakSelf.mutator showShareKitUI];
+                  }]];
+  }
   [menuElements addObject:[actionFactory actionToRenameTabGroupWithBlock:^{
                   [weakSelf.mutator showTabGroupEdition];
                 }]];

@@ -9,6 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -51,17 +52,19 @@
   _view.displayedOnNTP = _displayedOnNTP;
   _view.incognito = incognito;
   _view.toolbarHeightDelegate = self.toolbarHeightDelegate;
+  ProfileIOS* profile = self.browser->GetProfile();
   tab_groups::TabGroupSyncService* tabGroupSyncService =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          self.browser->GetProfile());
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
   _mediator = [[TabGroupIndicatorMediator alloc]
       initWithTabGroupSyncService:tabGroupSyncService
+                  shareKitService:ShareKitServiceFactory::GetForProfile(profile)
                          consumer:_view
                      webStateList:self.browser->GetWebStateList()
                         URLLoader:UrlLoadingBrowserAgent::FromBrowser(
                                       self.browser)
                         incognito:incognito];
   _mediator.delegate = self;
+  _mediator.baseViewController = self.baseViewController;
   _view.mutator = _mediator;
 }
 

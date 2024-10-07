@@ -8,6 +8,7 @@
 #import "base/memory/weak_ptr.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -24,6 +25,7 @@
 @end
 
 @implementation TabGroupIndicatorMediator {
+  raw_ptr<ShareKitService> _shareKitService;
   raw_ptr<tab_groups::TabGroupSyncService> _tabGroupSyncService;
   // URL loader to open tabs when needed.
   raw_ptr<UrlLoadingBrowserAgent> _URLLoader;
@@ -35,6 +37,7 @@
 
 - (instancetype)initWithTabGroupSyncService:
                     (tab_groups::TabGroupSyncService*)tabGroupSyncService
+                            shareKitService:(ShareKitService*)shareKitService
                                    consumer:
                                        (id<TabGroupIndicatorConsumer>)consumer
                                webStateList:(WebStateList*)webStateList
@@ -46,12 +49,15 @@
     CHECK(webStateList);
     CHECK(IsTabGroupIndicatorEnabled());
     _URLLoader = URLLoader;
+    _shareKitService = shareKitService;
     _tabGroupSyncService = tabGroupSyncService;
     _consumer = consumer;
     _incognito = incognito;
     _webStateList = webStateList->AsWeakPtr();
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
     _webStateList->AddObserver(_webStateListObserver.get());
+    BOOL shareAvailable = shareKitService && shareKitService->IsSupported();
+    [_consumer setShareAvailable:shareAvailable];
   }
   return self;
 }
@@ -92,6 +98,15 @@
 }
 
 #pragma mark - TabGroupIndicatorMutator
+
+- (void)showShareKitUI {
+  const TabGroup* tabGroup = [self currentTabGroup];
+  if (!tabGroup || !_shareKitService) {
+    return;
+  }
+
+  _shareKitService->ShareGroup(tabGroup, self.baseViewController);
+}
 
 - (void)showTabGroupEdition {
   const TabGroup* tabGroup = [self currentTabGroup];

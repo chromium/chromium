@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/data_sharing/public",
+  "+ios/chrome/browser/data_sharing/model",
+  "+ios/chrome/browser/signin/model",
+]
