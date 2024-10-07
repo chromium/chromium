@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/webui/commerce/product_specifications_disclosure_dialog.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/mock_account_checker.h"
@@ -352,6 +353,43 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
              TabStripUserGestureDetails::GestureType::kMouse));
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(controller_->entry_point_info_for_testing().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
+                       DISABLED_TriggerEntryPointWithNavigation_BackgroundTab) {
+  // Mock EntryPointInfo returned by ClusterManager.
+  std::map<GURL, uint64_t> similar_products = {{GURL(kTestUrl2), kProductId2},
+                                               {GURL(kTestUrl3), kProductId3},
+                                               {GURL(kTestUrl4), kProductId4}};
+  auto info =
+      std::make_optional<commerce::EntryPointInfo>(kTitle, similar_products);
+  mock_cluster_manager_->SetResponseForGetEntryPointInfoForNavigation(info);
+
+  // Set up observer.
+  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(l10n_util::GetStringFUTF16(
+                              IDS_COMPARE_ENTRY_POINT, kTitleUnicode)))
+      .Times(1);
+
+  // Open candidate URLs in background.
+  std::vector<std::string> urls_to_open = {kTestUrl2, kTestUrl3, kTestUrl4};
+  for (auto& url : urls_to_open) {
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GURL(url), WindowOpenDisposition::NEW_BACKGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+    controller_->OnClusterFinishedForNavigation(GURL(url));
+    base::RunLoop().RunUntilIdle();
+  }
+
+  ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
+  ASSERT_EQ(4, browser()->tab_strip_model()->count());
+  ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
+  histogram_tester_.ExpectBucketCount(
+      "Commerce.Compare.CandidateClusterIdentified",
+      commerce::ProductSpecificationsEntryPointController::
+          CompareEntryPointTrigger::FROM_NAVIGATION,
+      1);
+  histogram_tester_.ExpectBucketCount(
+      "Commerce.Compare.CandidateClusterSizeWhenShown", 3, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
