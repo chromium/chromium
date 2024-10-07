@@ -116,6 +116,11 @@ BASE_FEATURE(kWinSboxNoFakeGdiInit,
 BASE_FEATURE(kWinSboxRestrictCoreSharingOnRenderer,
              "WinSboxRestrictCoreSharingOnRenderer",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables parallel process launching using the thread pool.
+BASE_FEATURE(kWinSboxParallelProcessLaunch,
+             "WinSboxParallelProcessLaunch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -219,4 +224,9 @@ bool IsNetworkSandboxEnabled() {
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
 }
 
+#if BUILDFLAG(IS_WIN)
+bool IsParallelLaunchEnabled() {
+  return base::FeatureList::IsEnabled(kWinSboxParallelProcessLaunch);
+}
+#endif  // BUILDFLAG(IS_WIN)
 }  // namespace sandbox::policy::features

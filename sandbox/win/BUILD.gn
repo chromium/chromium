@@ -192,6 +192,7 @@ test("sbox_integration_tests") {
     "src/ipc_leak_test.cc",
     "src/ipc_ping_test.cc",
     "src/lpc_policy_test.cc",
+    "src/parallel_launch_test.cc",
     "src/policy_target_test.cc",
     "src/process_delegate_data_test.cc",
     "src/process_mitigations_deathtest.cc",
