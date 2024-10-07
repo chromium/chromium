@@ -210,6 +210,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "ProductSpecifications";
       case AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE:
         return "AddressBubble";
+      case AccessPoint::ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
+        return "CctAccountMismatchNotification";
       case AccessPoint::ACCESS_POINT_MAX:
         NOTREACHED_IN_MIGRATION();
         return "";

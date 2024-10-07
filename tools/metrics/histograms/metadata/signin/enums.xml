@@ -576,6 +576,7 @@ chromium-metrics-reviews@google.com.
   <int value="68" label="Product Specifications"/>
   <int value="69" label="Account menu failed switch"/>
   <int value="70" label="Address bubble"/>
+  <int value="71" label="CCT account mismatch notification"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

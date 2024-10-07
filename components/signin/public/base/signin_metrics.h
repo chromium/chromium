@@ -244,6 +244,9 @@ enum class AccessPoint : int {
   ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH = 69,
   // The user signs in from a sign in promo after an address save.
   ACCESS_POINT_ADDRESS_BUBBLE = 70,
+  // A message notification displayed on CCTs embedded in 1P apps when there is
+  // an account mismatch between Chrome and the 1P app. Android only.
+  ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION = 71,
 
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
