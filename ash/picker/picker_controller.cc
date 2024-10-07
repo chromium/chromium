@@ -158,6 +158,10 @@ InsertionContent GetInsertionContentForResult(
           [](const PickerBrowsingHistoryResult& data) -> ReturnType {
             return PickerLinkMedia(data.url, base::UTF16ToUTF8(data.title));
           },
+          [](const PickerGifResult& data) -> ReturnType {
+            return PickerImageMedia(data.full_url, data.full_dimensions,
+                                    data.content_description);
+          },
           [](const PickerLocalFileResult& data) -> ReturnType {
             return PickerLocalFileMedia(data.file_path);
           },
@@ -388,6 +392,7 @@ void PickerController::OpenResult(const PickerSearchResult& result) {
       base::Overloaded{
           [](const PickerTextResult& data) { NOTREACHED(); },
           [](const PickerEmojiResult& data) { NOTREACHED(); },
+          [](const PickerGifResult& data) { NOTREACHED(); },
           [](const PickerClipboardResult& data) { NOTREACHED(); },
           [&](const PickerBrowsingHistoryResult& data) {
             session_->session_metrics.SetOutcome(
@@ -491,6 +496,11 @@ PickerActionType PickerController::GetActionForResult(
             return PickerActionType::kInsert;
           },
           [mode](const PickerEmojiResult& data) {
+            CHECK(mode == PickerModeType::kNoSelection ||
+                  mode == PickerModeType::kHasSelection);
+            return PickerActionType::kInsert;
+          },
+          [mode](const PickerGifResult& data) {
             CHECK(mode == PickerModeType::kNoSelection ||
                   mode == PickerModeType::kHasSelection);
             return PickerActionType::kInsert;

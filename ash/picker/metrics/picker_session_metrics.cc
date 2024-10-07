@@ -157,6 +157,9 @@ cros_events::PickerResultSource GetResultSource(
           [](const PickerClipboardResult& data) {
             return cros_events::PickerResultSource::CLIPBOARD;
           },
+          [](const PickerGifResult& data) {
+            return cros_events::PickerResultSource::TENOR;
+          },
           [](const PickerBrowsingHistoryResult& data) {
             return cros_events::PickerResultSource::OMNIBOX;
           },
@@ -217,6 +220,9 @@ cros_events::PickerResultType GetResultType(
               case PickerClipboardResult::DisplayFormat::kHtml:
                 return cros_events::PickerResultType::CLIPBOARD_HTML;
             }
+          },
+          [](const PickerGifResult& data) {
+            return cros_events::PickerResultType::GIF;
           },
           [](const PickerBrowsingHistoryResult& data) {
             return cros_events::PickerResultType::LINK;

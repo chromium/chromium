@@ -23,7 +23,6 @@ namespace image_util {
 struct AnimationFrame;
 }  // namespace image_util
 
-// TODO: b/349891147 - This is unused and should be removed.
 class ASH_EXPORT PickerGifView : public views::ImageView {
   METADATA_HEADER(PickerGifView, views::ImageView)
 

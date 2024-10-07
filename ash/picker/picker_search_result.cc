@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "ui/base/models/image_model.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -78,6 +79,27 @@ PickerEmojiResult& PickerEmojiResult::operator=(const PickerEmojiResult&) =
 PickerEmojiResult::~PickerEmojiResult() = default;
 
 bool PickerEmojiResult::operator==(const PickerEmojiResult&) const = default;
+
+PickerGifResult::PickerGifResult(const GURL& preview_url,
+                                 const GURL& preview_image_url,
+                                 const gfx::Size& preview_dimensions,
+                                 const GURL& full_url,
+                                 const gfx::Size& full_dimensions,
+                                 std::u16string content_description)
+    : preview_url(preview_url),
+      preview_image_url(preview_image_url),
+      preview_dimensions(preview_dimensions),
+      full_url(full_url),
+      full_dimensions(full_dimensions),
+      content_description(std::move(content_description)) {}
+
+PickerGifResult::PickerGifResult(const PickerGifResult&) = default;
+
+PickerGifResult& PickerGifResult::operator=(const PickerGifResult&) = default;
+
+PickerGifResult::~PickerGifResult() = default;
+
+bool PickerGifResult::operator==(const PickerGifResult&) const = default;
 
 PickerClipboardResult::PickerClipboardResult(
     base::UnguessableToken item_id,

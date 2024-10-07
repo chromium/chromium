@@ -248,6 +248,21 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
                 kIconSize));
             return item_view;
           },
+          [&](const PickerGifResult& data) -> ReturnType {
+            // `base::Unretained` is safe because `asset_fetcher` outlives the
+            // return value.
+            auto gif_view = std::make_unique<PickerGifView>(
+                base::BindRepeating(&PickerAssetFetcher::FetchGifFromUrl,
+                                    base::Unretained(asset_fetcher),
+                                    data.preview_url),
+                base::BindRepeating(
+                    &PickerAssetFetcher::FetchGifPreviewImageFromUrl,
+                    base::Unretained(asset_fetcher), data.preview_image_url),
+                data.preview_dimensions);
+            return std::make_unique<PickerImageItemView>(
+                std::move(gif_view), data.content_description,
+                std::move(select_result_callback));
+          },
           [&](const PickerBrowsingHistoryResult& data) -> ReturnType {
             auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));

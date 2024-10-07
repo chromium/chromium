@@ -92,6 +92,39 @@ struct ASH_EXPORT PickerEmojiResult {
   bool operator==(const PickerEmojiResult&) const;
 };
 
+struct ASH_EXPORT PickerGifResult {
+  PickerGifResult(const GURL& preview_url,
+                  const GURL& preview_image_url,
+                  const gfx::Size& preview_dimensions,
+                  const GURL& full_url,
+                  const gfx::Size& full_dimensions,
+                  std::u16string content_description);
+  PickerGifResult(const PickerGifResult&);
+  PickerGifResult& operator=(const PickerGifResult&);
+  ~PickerGifResult();
+
+  // A url to an animated preview gif media source.
+  GURL preview_url;
+
+  // A url to an unanimated preview image of the gif media source.
+  GURL preview_image_url;
+
+  // Width and height of the GIF at `preview_url`.
+  gfx::Size preview_dimensions;
+
+  // A url to a full-sized gif media source.
+  GURL full_url;
+
+  // Width and height of the GIF at `full_url`.
+  gfx::Size full_dimensions;
+
+  // A textual description of the content, primarily used for accessibility
+  // features.
+  std::u16string content_description;
+
+  bool operator==(const PickerGifResult&) const;
+};
+
 struct ASH_EXPORT PickerClipboardResult {
   enum class DisplayFormat {
     kFile,
@@ -271,6 +304,7 @@ struct ASH_EXPORT PickerCaseTransformResult {
 using PickerSearchResult = std::variant<PickerTextResult,
                                         PickerSearchRequestResult,
                                         PickerEmojiResult,
+                                        PickerGifResult,
                                         PickerClipboardResult,
                                         PickerBrowsingHistoryResult,
                                         PickerLocalFileResult,

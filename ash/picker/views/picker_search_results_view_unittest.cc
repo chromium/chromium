@@ -37,6 +37,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/accessibility/ax_event_manager.h"
 #include "ui/views/controls/label.h"
@@ -158,6 +159,27 @@ TEST_F(PickerSearchResultsViewTest, EmptySearchResultsShowsThrobber) {
   view.ClearSearchResults();
 
   EXPECT_TRUE(view.throbber_container_for_testing().GetVisible());
+}
+
+TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithGif) {
+  MockPickerSearchResultsViewDelegate mock_delegate;
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSubmenuController submenu_controller;
+  PickerPreviewBubbleController preview_controller;
+  PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
+                               &submenu_controller, &preview_controller);
+
+  view.AppendSearchResults(PickerSearchResultsSection(
+      PickerSectionType::kNone,
+      {{PickerGifResult(
+          /*preview_url=*/GURL(), /*preview_image_url=*/GURL(), gfx::Size(),
+          /*full_url=*/GURL(), gfx::Size(),
+          /*content_description=*/u"")}},
+      /*has_more_results=*/false));
+
+  EXPECT_THAT(view.section_list_view_for_testing()->children(), SizeIs(1));
+  EXPECT_THAT(view.section_views_for_testing(),
+              ElementsAre(Pointee(MatchesTitlelessSection(1))));
 }
 
 TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithCategories) {
@@ -767,6 +789,13 @@ INSTANTIATE_TEST_SUITE_P(
     PickerSearchResultsViewResultSelectionTest,
     testing::ValuesIn<PickerSearchResultTestCase>({
         {"Text", PickerTextResult(u"result")},
+        {"Gif", PickerGifResult(
+                    /*preview_url=*/GURL(),
+                    /*preview_image_url=*/GURL(),
+                    gfx::Size(10, 10),
+                    /*full_url=*/GURL(),
+                    gfx::Size(20, 20),
+                    u"cat gif")},
         {"Category", PickerCategoryResult(PickerCategory::kEmojisGifs)},
         {"LocalFile", PickerLocalFileResult(u"local", base::FilePath())},
         {"DriveFile", PickerDriveFileResult(std::nullopt,
