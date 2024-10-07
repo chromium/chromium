@@ -10,6 +10,12 @@ import {AnnotationBrushType} from '../constants.js';
 import {getCss} from './ink_brush_selector.css.js';
 import {getHtml} from './ink_brush_selector.html.js';
 
+export const BRUSH_TYPES: AnnotationBrushType[] = [
+  AnnotationBrushType.PEN,
+  AnnotationBrushType.HIGHLIGHTER,
+  AnnotationBrushType.ERASER,
+];
+
 export interface InkBrushSelectorElement {
   $: {
     eraser: HTMLElement,
