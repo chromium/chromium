@@ -13,7 +13,7 @@ namespace assist_ranker {
 
 RankerModel::RankerModel() : proto_(std::make_unique<RankerModelProto>()) {}
 
-RankerModel::~RankerModel() {}
+RankerModel::~RankerModel() = default;
 
 // static
 std::unique_ptr<RankerModel> RankerModel::FromString(const std::string& data) {

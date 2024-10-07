@@ -25,7 +25,7 @@ const int kMaxRetry = 16;
 RankerURLFetcher::RankerURLFetcher()
     : state_(IDLE), retry_count_(0), max_retry_on_5xx_(0) {}
 
-RankerURLFetcher::~RankerURLFetcher() {}
+RankerURLFetcher::~RankerURLFetcher() = default;
 
 bool RankerURLFetcher::Request(
     const GURL& url,
