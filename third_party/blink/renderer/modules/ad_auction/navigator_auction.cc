@@ -3592,8 +3592,8 @@ ScriptPromise<IDLUndefined> NavigatorAuction::leaveAdInterestGroup(
 
 ScriptPromise<IDLUndefined> NavigatorAuction::clearOriginJoinedAdInterestGroups(
     ScriptState* script_state,
-    const String owner_string,
-    const Vector<String> interest_groups_to_keep,
+    const String& owner_string,
+    Vector<String> interest_groups_to_keep,
     ExceptionState& exception_state) {
   scoped_refptr<const SecurityOrigin> owner = ParseOrigin(owner_string);
   if (!owner) {
@@ -3621,7 +3621,7 @@ ScriptPromise<IDLUndefined> NavigatorAuction::clearOriginJoinedAdInterestGroups(
           WTF::BindOnce(&NavigatorAuction::ClearComplete,
                         WrapWeakPersistent(this), is_cross_origin));
 
-  PendingClear pending_clear{owner, interest_groups_to_keep,
+  PendingClear pending_clear{owner, std::move(interest_groups_to_keep),
                              std::move(callback)};
   if (is_cross_origin) {
     queued_cross_site_clears_.Enqueue(std::move(pending_clear));
@@ -3647,7 +3647,7 @@ ScriptPromise<IDLUndefined> NavigatorAuction::clearOriginJoinedAdInterestGroups(
     ScriptState* script_state,
     Navigator& navigator,
     const String owner,
-    const Vector<String> interest_groups_to_keep,
+    Vector<String> interest_groups_to_keep,
     ExceptionState& exception_state) {
   if (!navigator.DomWindow()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
@@ -3665,8 +3665,9 @@ ScriptPromise<IDLUndefined> NavigatorAuction::clearOriginJoinedAdInterestGroups(
   }
 
   return From(context, navigator)
-      .clearOriginJoinedAdInterestGroups(
-          script_state, owner, interest_groups_to_keep, exception_state);
+      .clearOriginJoinedAdInterestGroups(script_state, owner,
+                                         std::move(interest_groups_to_keep),
+                                         exception_state);
 }
 
 void NavigatorAuction::updateAdInterestGroups() {
