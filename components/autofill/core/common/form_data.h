@@ -152,7 +152,6 @@ class FormData {
   // - FormData::submission_event,
   // - FormData::username_predictions,
   // - FormData::is_gaia_with_skip_save_password_form,
-  // - FormData::frame_id,
   // - some fields of FormFieldData (see FormFieldData::Equal()).
   static bool DeepEqual(const FormData& a, const FormData& b);
 
@@ -362,11 +361,6 @@ class FormData {
     likely_contains_captcha_ = likely_contains_captcha;
   }
 
-#if BUILDFLAG(IS_IOS)
-  const std::string& frame_id() const { return frame_id_; }
-  void set_frame_id(std::string frame_id) { frame_id_ = std::move(frame_id); }
-#endif
-
  private:
   friend class FormDataTestApi;
 
@@ -389,9 +383,6 @@ class FormData {
   std::vector<FieldRendererId> username_predictions_;
   bool is_gaia_with_skip_save_password_form_ = false;
   bool likely_contains_captcha_ = false;
-#if BUILDFLAG(IS_IOS)
-  std::string frame_id_;
-#endif
 };
 
 // Whether any of the fields in |form| is a non-empty password field.

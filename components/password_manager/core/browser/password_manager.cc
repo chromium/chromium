@@ -36,6 +36,7 @@
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -1142,7 +1143,10 @@ void PasswordManager::OnIframeDetach(
     // Find a form with corresponding frame id. Stop iterating in case the
     // target form manager was found to avoid crbug.com/1129758 and since only
     // one password form is being submitted at a time.
-    if (manager->observed_form()->frame_id() == frame_id &&
+
+    if (const std::string host_frame_id =
+            manager->observed_form()->host_frame().ToString();
+        base::EqualsCaseInsensitiveASCII(host_frame_id, frame_id) &&
         DetectPotentialSubmission(manager.get(), field_data_manager, driver)) {
       return;
     }

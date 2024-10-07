@@ -187,23 +187,23 @@ bool ExtractFormData(const base::Value::Dict& form,
       include_frame_metadata ? url::Origin::Create(form_frame_origin)
                              : url::Origin();
 
-  // Frame ID of the frame containing this form is mandatory when
-  // kAutofillAcrossIframesIos is enabled.
-  std::optional<base::UnguessableToken> host_frame;
-  if (const std::string* frame_id_param = form.FindString("frame_id")) {
-    form_data->set_frame_id(*frame_id_param);
-    host_frame = DeserializeJavaScriptFrameId(*frame_id_param);
-    if (!host_frame) {
-      return false;
-    }
-    if (include_frame_metadata) {
-      form_data->set_host_frame(LocalFrameToken(*host_frame));
-    }
+  // Frame ID of the frame containing this form is mandatory.
+  const std::string* host_frame_param = form.FindString("host_frame");
+  if (!host_frame_param) {
+    return false;
   }
+
+  std::optional<base::UnguessableToken> host_frame =
+      DeserializeJavaScriptFrameId(*host_frame_param);
+  if (!host_frame) {
+    return false;
+  }
+
+  form_data->set_host_frame(LocalFrameToken(*host_frame));
 
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillAcrossIframesIos) &&
-      form_data->frame_id() != frame_id) {
+      *host_frame_param != frame_id) {
     // Invalidate parsing when the the frame for which extraction was done
     // doesn't correspond to the frame where extraction actually happened.
     // This is to prevent associating the form data with the wrong frame.
@@ -268,10 +268,11 @@ bool ExtractFormData(const base::Value::Dict& form,
       // Some data is extracted at the form level, but also appears at the
       // field level. Reuse the extracted values.
       field_data.set_host_form_id(form_data->renderer_id());
+      field_data.set_host_frame(form_data->host_frame());
       if (include_frame_metadata) {
-        field_data.set_host_frame(form_data->host_frame());
         field_data.set_origin(frame_origin_object);
       }
+
       fields.push_back(std::move(field_data));
     } else {
       return false;

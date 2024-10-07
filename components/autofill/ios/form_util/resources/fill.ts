@@ -353,7 +353,7 @@ function formOrFieldsetsToFormData(
   // Protect against custom implementation of Array.toJSON in host pages.
   (form.fields as any).toJSON = null;
 
-  form.frame_id = gCrWeb.message.getFrameId();
+  form.host_frame = gCrWeb.message.getFrameId();
 
   if (childFrames.length > 0) {
     form.child_frames = childFrames;
@@ -411,7 +411,7 @@ gCrWeb.fill.webFormElementToFormData = function(
 
   form.renderer_id = gCrWeb.fill.getUniqueID(formElement);
 
-  form.frame_id = frame.__gCrWeb.message.getFrameId();
+  form.host_frame = frame.__gCrWeb.message.getFrameId();
 
   // Note different from form_autofill_util.cc version of this method, which
   // computes |form.action| using document.completeURL(form_element.action())

@@ -48,7 +48,7 @@ using password_manager::JsonStringToFormData;
 namespace password_manager {
 
 // The frame id associated with the frame which sent to form message.
-const char kFrameIdKey[] = "frame_id";
+const char kHostFrameKey[] = "host_frame";
 
 }  // namespace password_manager
 
@@ -395,11 +395,13 @@ const char kFrameIdKey[] = "frame_id";
   }
 
   const auto& dict = body->GetDict();
-  const std::string* frame_id = dict.FindString(password_manager::kFrameIdKey);
-  if (frame_id) {
+  const std::string* host_frame =
+      dict.FindString(password_manager::kHostFrameKey);
+  if (host_frame) {
     password_manager::PasswordManagerJavaScriptFeature* feature =
         password_manager::PasswordManagerJavaScriptFeature::GetInstance();
-    frame = feature->GetWebFramesManager(_webState)->GetFrameWithId(*frame_id);
+    frame =
+        feature->GetWebFramesManager(_webState)->GetFrameWithId(*host_frame);
   }
   if (!frame) {
     return HandleSubmittedFormStatus::kRejectedNoFrameMatchingId;
@@ -411,7 +413,7 @@ const char kFrameIdKey[] = "frame_id";
   FormData form;
   if (!autofill::ExtractFormData(dict, false, std::u16string(), *pageURL,
                                  pageURL->DeprecatedGetOriginAsURL(),
-                                 *fieldDataManager, *frame_id, &form)) {
+                                 *fieldDataManager, *host_frame, &form)) {
     return HandleSubmittedFormStatus::kRejectedCantExtractFormData;
   }
 

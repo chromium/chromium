@@ -45,7 +45,7 @@ declare interface AutofillFormData {
   origin: string;
   action: string;
   fields: AutofillFormFieldData[];
-  frame_id: string;
+  host_frame: string;
   child_frames?: FrameTokenWithPredecessor[];
   name_attribute?: string;
   id_attribute?: string;
