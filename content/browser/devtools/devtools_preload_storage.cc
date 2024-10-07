@@ -75,10 +75,10 @@ void DevToolsPreloadStorage::SpeculationCandidatesUpdated(
     };
   }
 
-  std::erase_if(prefetch_data_map_, [&](auto pair) {
+  std::erase_if(prefetch_data_map_, [&](const auto& pair) {
     return !prefetch_keys_from_candidates.contains(pair.first);
   });
-  std::erase_if(prerender_data_map_, [&](auto pair) {
+  std::erase_if(prerender_data_map_, [&](const auto& pair) {
     return !prerender_keys_from_candidates.contains(pair.first);
   });
 }
