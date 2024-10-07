@@ -89,7 +89,7 @@ class CORE_EXPORT ScriptPromiseResolverBase
     if (!PrepareToResolveOrReject<kRejecting>()) {
       return;
     }
-    ResolveOrReject<IDLType, BlinkType>(value);
+    ResolveOrReject<IDLType, BlinkType>(std::move(value));
   }
 
   // These are shorthand helpers for rejecting the promise with a common type.
@@ -187,7 +187,8 @@ class CORE_EXPORT ScriptPromiseResolverBase
       v8::MicrotasksScope microtasks_scope(
           isolate, ToMicrotaskQueue(script_state_.Get()),
           v8::MicrotasksScope::kDoNotRunMicrotasks);
-      value_.Reset(isolate, ToV8Traits<IDLType>::ToV8(script_state_, value));
+      value_.Reset(isolate,
+                   ToV8Traits<IDLType>::ToV8(script_state_, std::move(value)));
     }
     NotifyResolveOrReject();
   }
@@ -251,7 +252,7 @@ class ScriptPromiseResolver final : public ScriptPromiseResolverBase {
     if (!PrepareToResolveOrReject<kResolving>()) {
       return;
     }
-    ResolveOrReject<IDLResolvedType, BlinkType>(value);
+    ResolveOrReject<IDLResolvedType, BlinkType>(std::move(value));
   }
 
   // This Resolve() variant completely ignores the ScriptState given in the
@@ -263,7 +264,7 @@ class ScriptPromiseResolver final : public ScriptPromiseResolverBase {
     if (!PrepareToResolveOrReject<kResolving>()) {
       return;
     }
-    ResolveOrReject<IDLResolvedType, BlinkType>(value);
+    ResolveOrReject<IDLResolvedType, BlinkType>(std::move(value));
   }
 
   // This Resolve() method allows a Promise expecting to be resolved with a
