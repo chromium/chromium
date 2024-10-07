@@ -12,19 +12,25 @@ namespace autofill_prediction_improvements {
 
 BASE_DECLARE_FEATURE(kAutofillPredictionImprovements);
 
-constexpr base::FeatureParam<bool> kSkipAllowlist{
+inline constexpr base::FeatureParam<bool> kSkipAllowlist{
     &kAutofillPredictionImprovements, /*name=*/"skip_allowlist",
     /*default_value=*/false};
 
-constexpr base::FeatureParam<int> kMinimumNumberOfEligibleFieldsForFilling{
-    &kAutofillPredictionImprovements,
-    /*name=*/"minimum_number_of_eligible_fields_for_filling",
-    /*default_value=*/1};
+inline constexpr base::FeatureParam<int>
+    kMinimumNumberOfEligibleFieldsForFilling{
+        &kAutofillPredictionImprovements,
+        /*name=*/"minimum_number_of_eligible_fields_for_filling",
+        /*default_value=*/1};
 
-constexpr base::FeatureParam<int> kMinimumNumberOfEligibleFieldsForImport{
-    &kAutofillPredictionImprovements,
-    /*name=*/"minimum_number_of_eligible_fields_for_import",
-    /*default_value=*/1};
+inline constexpr base::FeatureParam<int>
+    kMinimumNumberOfEligibleFieldsForImport{
+        &kAutofillPredictionImprovements,
+        /*name=*/"minimum_number_of_eligible_fields_for_import",
+        /*default_value=*/1};
+
+inline constexpr base::FeatureParam<bool> kTriggerAutomatically{
+    &kAutofillPredictionImprovements, /*name=*/"trigger_automatically",
+    /*default_value=*/false};
 
 bool IsAutofillPredictionImprovementsEnabled();
 

@@ -77,6 +77,13 @@ class AutofillPredictionImprovementsManager
   bool ShouldDisplayIph(const autofill::FormStructure& form,
                         const autofill::AutofillField& field) const override;
   void GoToSettings() const override;
+  // Event handler called when the loading suggestion is shown. Used for the
+  // automatic triggering path.
+  // TODO(crbug.com/370695706): Add to the delegate interface.
+  void OnLoadingSuggestionShown(
+      const autofill::FormData& form,
+      const autofill::FormFieldData& trigger_field,
+      UpdateSuggestionsCallback update_suggestions_callback);
 
   // Methods for strike counting of rejected forms.
   bool IsFormBlockedForImport(const autofill::FormStructure& form) const;

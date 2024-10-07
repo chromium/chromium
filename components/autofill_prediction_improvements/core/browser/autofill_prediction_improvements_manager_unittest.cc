@@ -758,6 +758,55 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
   manager_->UserClickedLearnMore();
 }
 
+// Tests that calling `OnLoadingSuggestionShown()` is a no-op if the
+// `kTriggerAutomatically` parameter is disabled.
+TEST_F(AutofillPredictionImprovementsManagerTest,
+       OnLoadingSuggestionShownDoesNothingIfParamNotEnabled) {
+  autofill::test::FormDescription form_description = {
+      .fields = {{.role = autofill::NAME_FIRST,
+                  .heuristic_type = autofill::NAME_FIRST,
+                  .label = u"First Name",
+                  .value = u"Jane"}}};
+  autofill::FormData form = autofill::test::GetFormData(form_description);
+  base::MockCallback<autofill::AutofillPredictionImprovementsDelegate::
+                         UpdateSuggestionsCallback>
+      update_suggestions_callback;
+  EXPECT_CALL(update_suggestions_callback, Run).Times(0);
+  EXPECT_CALL(client_, GetAXTree).Times(0);
+  manager_->OnLoadingSuggestionShown(form, form.fields().front(),
+                                     update_suggestions_callback.Get());
+}
+
+class AutofillPredictionImprovementsManagerTriggerAutomaticallyTest
+    : public BaseAutofillPredictionImprovementsManagerTest {
+ public:
+  AutofillPredictionImprovementsManagerTriggerAutomaticallyTest() {
+    feature_.InitAndEnableFeatureWithParameters(
+        kAutofillPredictionImprovements,
+        {{"skip_allowlist", "true"}, {"trigger_automatically", "true"}});
+    ON_CALL(client_, GetLastCommittedURL).WillByDefault(ReturnRef(url_));
+    manager_ = std::make_unique<AutofillPredictionImprovementsManager>(
+        &client_, &decider_, &strike_database_);
+  }
+};
+
+// Tests that calling `OnLoadingSuggestionShown()` results in retrieving the AX
+// tree (implying predictions will be attempted to be retrieved) if the
+// `kTriggerAutomatically` parameter is enabled.
+TEST_F(AutofillPredictionImprovementsManagerTriggerAutomaticallyTest,
+       OnLoadingSuggestionShownGetsAXTreeIfParamEnabled) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  autofill::test::FormDescription form_description = {
+      .fields = {{.role = autofill::NAME_FIRST}}};
+  autofill::FormData form = autofill::test::GetFormData(form_description);
+  base::MockCallback<autofill::AutofillPredictionImprovementsDelegate::
+                         UpdateSuggestionsCallback>
+      update_suggestions_callback;
+  EXPECT_CALL(client_, GetAXTree);
+  manager_->OnLoadingSuggestionShown(form, form.fields().front(),
+                                     update_suggestions_callback.Get());
+}
+
 class IsFormAndFieldEligibleAutofillPredictionImprovementsTest
     : public BaseAutofillPredictionImprovementsManagerTest {
  public:

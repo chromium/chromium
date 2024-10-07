@@ -319,6 +319,11 @@ AutofillPredictionImprovementsManager::GetSuggestions(
   // Store `autofill_suggestions` to show them with prediction improvements
   // later if the trigger was accepted.
   autofill_suggestions_ = autofill_suggestions;
+  // Show the loading suggestion (instead of the trigger suggestion) if
+  // `kTriggerAutomatically` is enabled.
+  if (kTriggerAutomatically.Get()) {
+    return {CreateLoadingSuggestion()};
+  }
   // Return the trigger suggestion.
   return CreateTriggerSuggestion();
 }
@@ -329,7 +334,9 @@ void AutofillPredictionImprovementsManager::RetrievePredictions(
     UpdateSuggestionsCallback update_suggestions_callback) {
   Reset();
   update_suggestions_callback_ = std::move(update_suggestions_callback);
-  UpdateSuggestions({CreateLoadingSuggestion()});
+  if (!kTriggerAutomatically.Get()) {
+    UpdateSuggestions({CreateLoadingSuggestion()});
+  }
   client_->GetAXTree(
       base::BindOnce(&AutofillPredictionImprovementsManager::OnReceivedAXTree,
                      weak_ptr_factory_.GetWeakPtr(), form, trigger_field));
@@ -445,6 +452,16 @@ void AutofillPredictionImprovementsManager::OnClickedTriggerSuggestion(
     UpdateSuggestionsCallback update_suggestions_callback) {
   RetrievePredictions(form, trigger_field,
                       std::move(update_suggestions_callback));
+}
+
+void AutofillPredictionImprovementsManager::OnLoadingSuggestionShown(
+    const autofill::FormData& form,
+    const autofill::FormFieldData& trigger_field,
+    UpdateSuggestionsCallback update_suggestions_callback) {
+  if (kTriggerAutomatically.Get()) {
+    RetrievePredictions(form, trigger_field,
+                        std::move(update_suggestions_callback));
+  }
 }
 
 void AutofillPredictionImprovementsManager::Reset() {
