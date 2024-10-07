@@ -25,7 +25,7 @@ class Size;
 // supports lossy encoding.
 class CODEC_EXPORT WebpCodec {
  public:
-  struct Frame {
+  struct CODEC_EXPORT Frame {
     // Bitmap of the frame.
     SkBitmap bitmap;
     // Duration of the frame in milliseconds.
@@ -35,26 +35,17 @@ class CODEC_EXPORT WebpCodec {
   WebpCodec(const WebpCodec&) = delete;
   WebpCodec& operator=(const WebpCodec&) = delete;
 
-  // Encodes (lossy) the given raw 'input' pixmap, which includes a pointer to
-  // pixels as well as information describing the pixel format. The encoded WebP
-  // data will be written into the supplied vector and true will be returned on
-  // success. On failure (false), the contents of the output buffer are
-  // undefined.
+  // Encodes (lossy) the `input` bitmap.
+  //
+  // Returns the encoded data on success, or std::nullopt on failure.
   //
   // quality: an integer in the range 0-100, where 100 is the highest quality.
   //          Since this currently only supports lossy encoding, a higher
   //          quality means a higher visual quality.
-  static bool Encode(const SkPixmap& input,
-                     int quality,
-                     std::vector<unsigned char>* output);
+  static std::optional<std::vector<uint8_t>> Encode(const SkBitmap& input,
+                                                    int quality);
 
-  // Encodes (lossy) the 'input' bitmap. The encoded WebP data will be written
-  // into the supplied vector and true will be returned on success. On failure
-  // (false), the contents of the output buffer are undefined.
-  //
-  // quality: an integer in the range 0-100, where 100 is the highest quality.
-  //          Since this currently only supports lossy encoding, a higher
-  //          quality means a higher visual quality.
+  // DEPRECATED version of above.
   static bool Encode(const SkBitmap& input,
                      int quality,
                      std::vector<unsigned char>* output);

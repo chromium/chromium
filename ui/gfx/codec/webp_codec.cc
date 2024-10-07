@@ -17,11 +17,12 @@ namespace gfx {
 
 // Encoder ---------------------------------------------------------------------
 
-bool WebpCodec::Encode(const SkPixmap& input,
-                       int quality,
-                       std::vector<unsigned char>* output) {
-  output->clear();
-  VectorWStream dst(output);
+namespace {
+
+std::optional<std::vector<uint8_t>> PixmapEncode(const SkPixmap& input,
+                                                 int quality) {
+  std::vector<uint8_t> output;
+  VectorWStream dst(&output);
 
   SkWebpEncoder::Options options;
   options.fQuality = quality;
@@ -30,9 +31,27 @@ bool WebpCodec::Encode(const SkPixmap& input,
   options.fCompression = use_lossless_webp
                              ? SkWebpEncoder::Compression::kLossless
                              : SkWebpEncoder::Compression::kLossy;
-  return SkWebpEncoder::Encode(&dst, input, options);
+
+  if (!SkWebpEncoder::Encode(&dst, input, options)) {
+    return std::nullopt;
+  }
+
+  return output;
 }
 
+}  // namespace
+
+std::optional<std::vector<uint8_t>> WebpCodec::Encode(const SkBitmap& src,
+                                                      int quality) {
+  SkPixmap pixmap;
+  if (!src.peekPixels(&pixmap)) {
+    return std::nullopt;
+  }
+
+  return PixmapEncode(pixmap, quality);
+}
+
+// DEPRECATED
 bool WebpCodec::Encode(const SkBitmap& src,
                        int quality,
                        std::vector<unsigned char>* output) {
@@ -41,7 +60,14 @@ bool WebpCodec::Encode(const SkBitmap& src,
     return false;
   }
 
-  return WebpCodec::Encode(pixmap, quality, output);
+  std::optional<std::vector<uint8_t>> result = PixmapEncode(pixmap, quality);
+  if (!result) {
+    output->clear();
+    return false;
+  }
+
+  *output = std::move(*result);
+  return true;
 }
 
 std::optional<std::vector<uint8_t>> WebpCodec::EncodeAnimated(
