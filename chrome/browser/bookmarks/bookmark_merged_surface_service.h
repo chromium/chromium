@@ -9,22 +9,25 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "base/scoped_observation.h"
-#include "components/bookmarks/browser/base_bookmark_model_observer.h"
-#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace bookmarks {
 class BookmarkModel;
 class BookmarkNode;
+class ManagedBookmarkService;
 }  // namespace bookmarks
 
 // Holds a `PermanentFolderType` or a non-permanent node folder `BookmarkNode`.
 // `PermanentFolderType/ const BookmarkNode*` should be passed by value.
 struct BookmarkParentFolder {
   // Represents a combined view of account and local bookmark permanent nodes.
-  // Note: Managed node is not handled as part of this class.
-  enum class PermanentFolderType { kBookmarkBarNode, kOtherNode, kMobileNode };
+  // Note: Managed node is an exception as it has only local data.
+  enum class PermanentFolderType {
+    kBookmarkBarNode,
+    kOtherNode,
+    kMobileNode,
+    kManagedNode
+  };
 
   static BookmarkParentFolder FromNonPermanentNode(
       const bookmarks::BookmarkNode* parent_node);
@@ -32,13 +35,17 @@ struct BookmarkParentFolder {
   static BookmarkParentFolder BookmarkBarFolder();
   static BookmarkParentFolder OtherFolder();
   static BookmarkParentFolder MobileFolder();
+  static BookmarkParentFolder ManagedFolder();
 
   ~BookmarkParentFolder();
 
   BookmarkParentFolder(const BookmarkParentFolder& other);
   BookmarkParentFolder& operator=(const BookmarkParentFolder& other);
 
-  // Returns null if `this` is not permanent folder.
+  // Returns `true` if `this` hols a non-permanent folder.
+  bool HoldsNonPermanentFolder() const;
+
+  // Returns null if `this` is not a permanent folder.
   std::optional<PermanentFolderType> as_permanent_folder() const;
 
   // Returns null if `this` is a permanent folder.
@@ -48,8 +55,6 @@ struct BookmarkParentFolder {
   explicit BookmarkParentFolder(
       std::variant<PermanentFolderType, raw_ptr<const bookmarks::BookmarkNode>>
           parent);
-
-  bool HoldsNonPermanentFolder() const;
 
   std::variant<PermanentFolderType, raw_ptr<const bookmarks::BookmarkNode>>
       bookmark_;
@@ -64,7 +69,11 @@ struct BookmarkParentFolder {
 // handles `NodeTypeForUuidLookup::kLocalOrSyncableNodes`.
 class BookmarkMergedSurfaceService : public KeyedService {
  public:
-  explicit BookmarkMergedSurfaceService(bookmarks::BookmarkModel* model);
+  // `model` must not be null and must outlive this object.
+  // `managed_bookmark_service` may be null.
+  BookmarkMergedSurfaceService(
+      bookmarks::BookmarkModel* model,
+      bookmarks::ManagedBookmarkService* managed_bookmark_service);
   ~BookmarkMergedSurfaceService() override;
 
   BookmarkMergedSurfaceService(const BookmarkMergedSurfaceService&) = delete;
@@ -97,7 +106,10 @@ class BookmarkMergedSurfaceService : public KeyedService {
   const bookmarks::BookmarkNode* PermanentFolderToNode(
       BookmarkParentFolder::PermanentFolderType folder) const;
 
+  const bookmarks::BookmarkNode* managed_permanent_node() const;
+
   const raw_ptr<bookmarks::BookmarkModel> model_;
+  const raw_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service_;
 };
 
 #endif  // CHROME_BROWSER_BOOKMARKS_BOOKMARK_MERGED_SURFACE_SERVICE_H_

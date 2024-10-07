@@ -53,7 +53,7 @@ class ManagedBookmarkService : public KeyedService,
 
   // Top-level managed bookmarks folder, defined by an enterprise policy; may be
   // null.
-  const BookmarkNode* managed_node() { return managed_node_; }
+  const BookmarkNode* managed_node() const { return managed_node_; }
 
  private:
   // KeyedService implementation.

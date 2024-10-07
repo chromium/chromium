@@ -8,6 +8,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 
@@ -15,7 +16,9 @@ namespace {
 std::unique_ptr<KeyedService> BuildBookmarkMergedSurfaceService(
     content::BrowserContext* context) {
   return std::make_unique<BookmarkMergedSurfaceService>(
-      BookmarkModelFactory::GetInstance()->GetForBrowserContext(context));
+      BookmarkModelFactory::GetInstance()->GetForBrowserContext(context),
+      ManagedBookmarkServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(context)));
 }
 }  // namespace
 
@@ -52,6 +55,7 @@ BookmarkMergedSurfaceServiceFactory::BookmarkMergedSurfaceServiceFactory()
               .WithAshInternals(ProfileSelection::kNone)
               .Build()) {
   DependsOn(BookmarkModelFactory::GetInstance());
+  DependsOn(ManagedBookmarkServiceFactory::GetInstance());
 }
 
 BookmarkMergedSurfaceServiceFactory::~BookmarkMergedSurfaceServiceFactory() =
