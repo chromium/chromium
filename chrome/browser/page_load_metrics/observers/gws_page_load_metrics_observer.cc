@@ -103,7 +103,10 @@ bool IsNavigationFromNewTabPage(
     case GWSPageLoadMetricsObserver::kFromNewTabPage:
     case GWSPageLoadMetricsObserver::kStartedInBackgroundFromNewTabPage:
       return true;
-    default:
+    case GWSPageLoadMetricsObserver::kFromGWSPage:
+    case GWSPageLoadMetricsObserver::kUnknown:
+    case GWSPageLoadMetricsObserver::kStartedInBackgroundFromGWSPage:
+    case GWSPageLoadMetricsObserver::kStartedInBackground:
       return false;
   }
 }
