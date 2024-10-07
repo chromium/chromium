@@ -124,6 +124,28 @@ message StudentDevice {
   StudentDeviceState state = 2;
 
   StudentDeviceActivity activity = 3;
+
+  ViewScreenConfig view_screen_config = 4;
+}
+
+message ViewScreenConfig {
+  enum ViewScreenState {
+    UNKNOWN = 0;
+
+    REQUESTED = 1;
+
+    AVAILABLE = 2;
+
+    ACTIVE = 3;
+  }
+
+  ViewScreenState view_screen_state = 1;
+
+  ConnectionParameter connection_param = 2;
+}
+
+message ConnectionParameter {
+  string connection_code = 1;
 }
 
 message DeviceInfo {
