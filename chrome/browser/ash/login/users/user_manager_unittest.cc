@@ -48,7 +48,7 @@
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
-#include "components/user_manager/user_manager_base.h"
+#include "components/user_manager/user_manager_impl.h"
 #include "components/user_manager/user_manager_pref_names.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/common/content_switches.h"
@@ -301,7 +301,7 @@ class UserManagerTest : public testing::Test {
  protected:
   // The call chain
   // - `ProfileRequiresPolicyUnknown`
-  // - `UserManagerBase::UserLoggedIn()`
+  // - `UserManagerImpl::UserLoggedIn()`
   // - `ChromeUserManagerImpl::NotifyOnLogin()`
   // - `UserSessionManager::InitNonKioskExtensionFeaturesSessionType()`
   // calls
@@ -641,7 +641,7 @@ TEST_F(UserManagerTest, ScreenLockAvailability) {
       false /* browser_restart */, false /* is_child */);
 
   TestingPrefServiceSimple prefs;
-  user_manager::UserManagerBase::RegisterProfilePrefs(prefs.registry());
+  user_manager::UserManagerImpl::RegisterProfilePrefs(prefs.registry());
   // To simplify the dependency, register the pref directly.
   // In production, this is registered in ash::PowerPrefs.
   prefs.registry()->RegisterBooleanPref(prefs::kAllowScreenLock, true);
@@ -698,10 +698,10 @@ TEST_F(UserManagerTest, RemoveDeprecatedArcKioskAccountOnStartUpByDefault) {
   EXPECT_EQ(0U, GetArcKioskAccountsWithSavedDataCount());
   EXPECT_EQ(0U, GetKnownUsersCount());
   histogram_tester.ExpectTotalCount(
-      user_manager::UserManagerBase::kDeprecatedArcKioskUsersHistogramName, 1);
+      user_manager::UserManagerImpl::kDeprecatedArcKioskUsersHistogramName, 1);
   histogram_tester.ExpectBucketCount(
-      user_manager::UserManagerBase::kDeprecatedArcKioskUsersHistogramName,
-      user_manager::UserManagerBase::DeprecatedArcKioskUserStatus::kDeleted,
+      user_manager::UserManagerImpl::kDeprecatedArcKioskUsersHistogramName,
+      user_manager::UserManagerImpl::DeprecatedArcKioskUserStatus::kDeleted,
       /* expected_count= */ 1);
 }
 
@@ -720,10 +720,10 @@ TEST_F(UserManagerTest,
   // The ARC kiosk user has not been removed, just hidden.
   EXPECT_EQ(1U, GetKnownUsersCount());
   histogram_tester.ExpectTotalCount(
-      user_manager::UserManagerBase::kDeprecatedArcKioskUsersHistogramName, 1);
+      user_manager::UserManagerImpl::kDeprecatedArcKioskUsersHistogramName, 1);
   histogram_tester.ExpectBucketCount(
-      user_manager::UserManagerBase::kDeprecatedArcKioskUsersHistogramName,
-      user_manager::UserManagerBase::DeprecatedArcKioskUserStatus::kHidden,
+      user_manager::UserManagerImpl::kDeprecatedArcKioskUsersHistogramName,
+      user_manager::UserManagerImpl::DeprecatedArcKioskUserStatus::kHidden,
       /* expected_count= */ 1);
 }
 

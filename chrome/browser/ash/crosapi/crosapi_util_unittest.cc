@@ -70,7 +70,7 @@ class CrosapiUtilTest : public testing::Test {
 
   void SetUp() override {
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
-    user_manager::UserManagerBase::RegisterProfilePrefs(
+    user_manager::UserManagerImpl::RegisterProfilePrefs(
         pref_service_.registry());
     ash::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
 

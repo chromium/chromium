@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_USER_MANAGER_USER_MANAGER_BASE_H_
-#define COMPONENTS_USER_MANAGER_USER_MANAGER_BASE_H_
+#ifndef COMPONENTS_USER_MANAGER_USER_MANAGER_IMPL_H_
+#define COMPONENTS_USER_MANAGER_USER_MANAGER_IMPL_H_
 
 #include <map>
 #include <memory>
@@ -49,7 +49,7 @@ USER_MANAGER_EXPORT
 BASE_DECLARE_FEATURE(kRemoveDeprecatedArcKioskUsersOnStartup);
 
 // Base implementation of the UserManager interface.
-class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
+class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
  public:
   // These enum values represent a legacy supervised user's (LSU) status on the
   // sign in screen.
@@ -126,17 +126,17 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
     virtual void RemoveCryptohomeAsync(const AccountId& account_id) = 0;
   };
 
-  // Creates UserManagerBase with |task_runner| for UI thread, and given
+  // Creates UserManagerImpl with |task_runner| for UI thread, and given
   // |local_state|. |local_state| must outlive this UserManager.
-  UserManagerBase(std::unique_ptr<Delegate> delegate,
+  UserManagerImpl(std::unique_ptr<Delegate> delegate,
                   scoped_refptr<base::SingleThreadTaskRunner> task_runner,
                   PrefService* local_state,
                   ash::CrosSettings* cros_settings);
 
-  UserManagerBase(const UserManagerBase&) = delete;
-  UserManagerBase& operator=(const UserManagerBase&) = delete;
+  UserManagerImpl(const UserManagerImpl&) = delete;
+  UserManagerImpl& operator=(const UserManagerImpl&) = delete;
 
-  ~UserManagerBase() override;
+  ~UserManagerImpl() override;
 
   // Histogram for tracking the number of deprecated legacy supervised user
   // cryptohomes remaining in the wild.
@@ -147,7 +147,7 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // TODO(b/355590943): clean up once there is no ARC kiosk records.
   static const char kDeprecatedArcKioskUsersHistogramName[];
 
-  // Registers UserManagerBase preferences.
+  // Registers UserManagerImpl preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
@@ -512,9 +512,9 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   AccountId last_session_active_account_id_ = EmptyAccountId();
   bool last_session_active_account_id_initialized_ = false;
 
-  base::WeakPtrFactory<UserManagerBase> weak_factory_{this};
+  base::WeakPtrFactory<UserManagerImpl> weak_factory_{this};
 };
 
 }  // namespace user_manager
 
-#endif  // COMPONENTS_USER_MANAGER_USER_MANAGER_BASE_H_
+#endif  // COMPONENTS_USER_MANAGER_USER_MANAGER_IMPL_H_

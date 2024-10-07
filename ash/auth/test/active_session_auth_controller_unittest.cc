@@ -86,7 +86,7 @@ class ActiveSessionAuthControllerTest
   }
 
   void InitializeUserManager() {
-    user_manager::UserManagerBase::RegisterPrefs(local_state_.registry());
+    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
     user_manager_ =
         std::make_unique<user_manager::FakeUserManager>(&local_state_);
     user_manager_->Initialize();

@@ -105,7 +105,7 @@ ChromeUserManagerImpl::CreateChromeUserManager() {
 }
 
 ChromeUserManagerImpl::ChromeUserManagerImpl()
-    : UserManagerBase(
+    : UserManagerImpl(
           std::make_unique<UserManagerDelegateImpl>(),
           base::SingleThreadTaskRunner::HasCurrentDefault()
               ? base::SingleThreadTaskRunner::GetCurrentDefault()

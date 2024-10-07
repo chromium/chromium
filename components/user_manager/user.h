@@ -41,7 +41,7 @@ class ProfilePolicyConnectorTest;
 
 namespace user_manager {
 
-class UserManagerBase;
+class UserManagerImpl;
 class FakeUserManager;
 
 // A class representing information about a previously logged in user.
@@ -199,7 +199,7 @@ class USER_MANAGER_EXPORT User {
   void AddProfileCreatedObserver(base::OnceClosure on_profile_created);
 
  protected:
-  friend class UserManagerBase;
+  friend class UserManagerImpl;
   friend class ash::ChromeUserManagerImpl;
   friend class chromeos::SupervisedUserManagerImpl;
   friend class ash::UserImageManagerImpl;

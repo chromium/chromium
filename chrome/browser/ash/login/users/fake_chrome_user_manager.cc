@@ -67,7 +67,7 @@ class FakeTaskRunner : public base::SingleThreadTaskRunner {
 namespace ash {
 
 FakeChromeUserManager::FakeChromeUserManager()
-    : UserManagerBase(
+    : UserManagerImpl(
           std::make_unique<user_manager::FakeUserManagerDelegate>(),
           new FakeTaskRunner(),
           g_browser_process ? g_browser_process->local_state() : nullptr,
@@ -411,7 +411,7 @@ void FakeChromeUserManager::SaveUserType(const user_manager::User* user) {
 }
 
 std::optional<std::string> FakeChromeUserManager::GetOwnerEmail() {
-  return GetLocalState() ? UserManagerBase::GetOwnerEmail() : std::nullopt;
+  return GetLocalState() ? UserManagerImpl::GetOwnerEmail() : std::nullopt;
 }
 
 bool FakeChromeUserManager::IsCurrentUserNonCryptohomeDataEphemeral() const {

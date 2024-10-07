@@ -43,7 +43,7 @@ class FakeTaskRunner : public base::SingleThreadTaskRunner {
 namespace user_manager {
 
 FakeUserManager::FakeUserManager(PrefService* local_state)
-    : UserManagerBase(std::make_unique<FakeUserManagerDelegate>(),
+    : UserManagerImpl(std::make_unique<FakeUserManagerDelegate>(),
                       new FakeTaskRunner(),
                       local_state,
                       ash::CrosSettings::IsInitialized()
@@ -270,7 +270,7 @@ User* FakeUserManager::FindUserAndModify(const AccountId& account_id) {
 }
 
 std::optional<std::string> FakeUserManager::GetOwnerEmail() {
-  return GetLocalState() ? UserManagerBase::GetOwnerEmail() : std::nullopt;
+  return GetLocalState() ? UserManagerImpl::GetOwnerEmail() : std::nullopt;
 }
 
 bool FakeUserManager::IsCurrentUserNonCryptohomeDataEphemeral() const {
@@ -327,7 +327,7 @@ bool FakeUserManager::IsUserCryptohomeDataEphemeral(
 
   if (!is_ephemeral_overriden) {
     // Otherwise fall back to default behavior.
-    return UserManagerBase::IsUserCryptohomeDataEphemeral(account_id);
+    return UserManagerImpl::IsUserCryptohomeDataEphemeral(account_id);
   }
 
   return accounts_with_ephemeral_cryptohome_data_.at(account_id);

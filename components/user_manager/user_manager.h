@@ -37,7 +37,7 @@ enum class UserRemovalReason : int32_t {
   DEVICE_LOCAL_ACCOUNT_UPDATED = 7,
 };
 
-// Interface for UserManagerBase - that provides base implementation for
+// Interface for UserManagerImpl - that provides base implementation for
 // Chrome OS user management. Typical features:
 // * Get list of all know users (who have logged into this Chrome OS device)
 // * Keep track for logged in/LRU users, active user in multi-user session.

@@ -114,7 +114,7 @@ UserDirectoryIntegrityManager::GetMisconfiguredUserAccountIdLegacy() {
   if (misconfigured_user_it == std::end(users)) {
     // If the user was not found in the list, then it's a regular user and not a
     // Kiosk user, since regular misconfigured users are skipped during the
-    // loading process in `UserManagerBase::EnsureUsersLoaded`, to prevent
+    // loading process in `UserManagerImpl::EnsureUsersLoaded`, to prevent
     // showing them on the login screen
     user_manager::KnownUser known_user(local_state_);
     user_manager::CryptohomeId cryptohome_id(misconfigured_user_email.value());

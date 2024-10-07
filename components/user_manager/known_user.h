@@ -25,7 +25,7 @@ class PrefService;
 
 namespace user_manager {
 
-class UserManagerBase;
+class UserManagerImpl;
 
 // Enum describing whether a user's profile requires policy. If kPolicyRequired,
 // the profile initialization code will ensure that valid policy is loaded
@@ -292,7 +292,7 @@ class USER_MANAGER_EXPORT KnownUser final {
 
  private:
   friend class KnownUserTest;
-  friend class UserManagerBase;
+  friend class UserManagerImpl;
 
   FRIEND_TEST_ALL_PREFIXES(KnownUserTest,
                            CleanEphemeralUsersRemovesEphemeralAdOnly);

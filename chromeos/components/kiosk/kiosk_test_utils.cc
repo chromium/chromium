@@ -13,7 +13,7 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#include "components/user_manager/user_manager_base.h"
+#include "components/user_manager/user_manager_impl.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/startup/browser_init_params.h"  // nogncheck
 #endif
@@ -24,7 +24,7 @@ void SetUpFakeKioskSession(const std::string& email) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   CHECK(user_manager::UserManager::Get());
 
-  auto* user_manager = static_cast<user_manager::UserManagerBase*>(
+  auto* user_manager = static_cast<user_manager::UserManagerImpl*>(
       user_manager::UserManager::Get());
   auto account_id = AccountId::FromUserEmail(email);
   auto* user = user_manager->AddKioskAppUserForTesting(

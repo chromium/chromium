@@ -5,21 +5,21 @@
 #ifndef COMPONENTS_USER_MANAGER_FAKE_USER_MANAGER_DELEGATE_H_
 #define COMPONENTS_USER_MANAGER_FAKE_USER_MANAGER_DELEGATE_H_
 
-#include "components/user_manager/user_manager_base.h"
 #include "components/user_manager/user_manager_export.h"
+#include "components/user_manager/user_manager_impl.h"
 
 namespace user_manager {
 
-// Fake implementation of UserManagerBase::Delegate.
+// Fake implementation of UserManagerImpl::Delegate.
 class USER_MANAGER_EXPORT FakeUserManagerDelegate
-    : public UserManagerBase::Delegate {
+    : public UserManagerImpl::Delegate {
  public:
   FakeUserManagerDelegate();
   FakeUserManagerDelegate(const FakeUserManagerDelegate&) = delete;
   FakeUserManagerDelegate& operator=(const FakeUserManagerDelegate&) = delete;
   ~FakeUserManagerDelegate() override;
 
-  // UserManagerBase::Delegate:
+  // UserManagerImpl::Delegate:
   const std::string& GetApplicationLocale() override;
   void OverrideDirHome(const User& primary_user) override;
   bool IsUserSessionRestoreInProgress() override;

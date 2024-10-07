@@ -12,13 +12,13 @@
 #include "base/memory/raw_ptr.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
-#include "components/user_manager/user_manager_base.h"
+#include "components/user_manager/user_manager_impl.h"
 
 namespace user_manager {
 
 // Fake user manager with a barebones implementation. Users can be added
 // and set as logged in, and those users can be returned.
-class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
+class USER_MANAGER_EXPORT FakeUserManager : public UserManagerImpl {
  public:
   explicit FakeUserManager(PrefService* local_state = nullptr);
 
@@ -114,16 +114,16 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   bool IsDeprecatedSupervisedAccountId(
       const AccountId& account_id) const override;
 
-  // UserManagerBase overrides:
+  // UserManagerImpl overrides:
   bool IsDeviceLocalAccountMarkedForRemoval(
       const AccountId& account_id) const override;
   void SetUserAffiliated(const AccountId& account_id,
                          bool is_affiliated) override {}
 
   // Just make it public for tests.
-  using UserManagerBase::ResetOwnerId;
-  using UserManagerBase::SetEphemeralModeConfig;
-  using UserManagerBase::SetOwnerId;
+  using UserManagerImpl::ResetOwnerId;
+  using UserManagerImpl::SetEphemeralModeConfig;
+  using UserManagerImpl::SetOwnerId;
 
  protected:
   // If set this is the active user. If empty, the first created user is the

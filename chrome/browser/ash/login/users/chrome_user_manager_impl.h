@@ -24,12 +24,12 @@
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
-#include "components/user_manager/user_manager_base.h"
+#include "components/user_manager/user_manager_impl.h"
 
 namespace ash {
 
 // Chrome specific implementation of the UserManager.
-class ChromeUserManagerImpl : public user_manager::UserManagerBase {
+class ChromeUserManagerImpl : public user_manager::UserManagerImpl {
  public:
   ChromeUserManagerImpl(const ChromeUserManagerImpl&) = delete;
   ChromeUserManagerImpl& operator=(const ChromeUserManagerImpl&) = delete;
