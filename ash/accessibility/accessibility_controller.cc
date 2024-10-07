@@ -116,7 +116,7 @@ namespace ash {
 namespace {
 
 // How much distance to travel with each generated scroll event.
-const int kScrollDelta = 15;
+const int kScrollDelta = 40;
 
 AccessibilityController* g_instance = nullptr;
 

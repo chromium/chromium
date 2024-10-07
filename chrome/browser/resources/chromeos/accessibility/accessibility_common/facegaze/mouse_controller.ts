@@ -269,11 +269,13 @@ export class MouseController {
       scaledVel.y *= this.applySigmoidAcceleration_(scaledVel.y);
     }
 
-    if (!this.exceedsVelocityThreshold_(scaledVel.x) &&
+    if (!this.scrollModeController_.active() &&
+        !this.exceedsVelocityThreshold_(scaledVel.x) &&
         !this.exceedsVelocityThreshold_(scaledVel.y)) {
       // The velocity threshold wasn't exceeded, so we shouldn't update the
       // mouse location. We do this to avoid unintended jitteriness of the
-      // mouse.
+      // mouse. When we're in scroll mode, we don't want to apply the velocity
+      // threshold because we're not visibly moving the mouse.
       return;
     }
 
