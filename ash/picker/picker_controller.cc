@@ -565,6 +565,11 @@ void PickerController::OnViewIsDeleting(views::View* view) {
   session_.reset();
 }
 
+scoped_refptr<network::SharedURLLoaderFactory>
+PickerController::GetSharedURLLoaderFactory() {
+  return client_->GetSharedURLLoaderFactory();
+}
+
 void PickerController::FetchFileThumbnail(const base::FilePath& path,
                                           const gfx::Size& size,
                                           FetchFileThumbnailCallback callback) {
