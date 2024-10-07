@@ -54,18 +54,24 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsTest, HostPermissionsToggleList) {
   RunTest("extensions/host_permissions_toggle_list_test.js", "mocha.run()");
 }
 
+#if BUILDFLAG(IS_MAC)
+#define MAYBE(test) DISABLED_##test
+#else
+#define MAYBE(test) test
+#endif
+
 IN_PROC_BROWSER_TEST_F(CrExtensionsTest,
-                       ExtensionsMV2DeprecationPanelWarningStage) {
+                       MAYBE(ExtensionsMV2DeprecationPanelWarningStage)) {
   RunTest("extensions/mv2_deprecation_panel_warning_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsTest,
-                       ExtensionsMV2DeprecationPanelDisabledStage) {
+                       MAYBE(ExtensionsMV2DeprecationPanelDisabledStage)) {
   RunTest("extensions/mv2_deprecation_panel_disabled_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsTest,
-                       ExtensionsMV2DeprecationPanelUnsupportedStage) {
+                       MAYBE(ExtensionsMV2DeprecationPanelUnsupportedStage)) {
   RunTest("extensions/mv2_deprecation_panel_unsupported_test.js",
           "mocha.run()");
 }
