@@ -31,3 +31,6 @@
 -org.chromium.chrome.browser.site_settings.SiteSettingsTest.testCameraNotBlocked
 -org.chromium.chrome.browser.site_settings.SiteSettingsTest.testMicBlocked
 -org.chromium.chrome.browser.site_settings.SiteSettingsTest.testCameraBlocked
+
+# crbug.com/372085373
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.*
