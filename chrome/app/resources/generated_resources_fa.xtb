@@ -830,7 +830,7 @@
 <translation id="1592126057537046434">ترجمه «پاسخ‌های سریع»</translation>
 <translation id="1593327942193951498">{NUM_SITES,plural, =1{اجازه‌ها از <ph name="BEGIN_BOLD" />یک سایت<ph name="END_BOLD" /> که مدتی است بازدید نکرده‌اید برداشته شد}one{اجازه‌ها از <ph name="BEGIN_BOLD" />{NUM_SITES} سایت<ph name="END_BOLD" /> که مدتی است بازدید نکرده‌اید برداشته شد}other{اجازه‌ها از <ph name="BEGIN_BOLD" />{NUM_SITES} سایت<ph name="END_BOLD" /> که مدتی است بازدید نکرده‌اید برداشته شد}}</translation>
 <translation id="1593594475886691512">در حال قالب‌بندی...</translation>
-<translation id="159359590073980872">حافظهٔ پنهان تصویر</translation>
+<translation id="159359590073980872">حافظه نهان تصویر</translation>
 <translation id="1593926297800505364">ذخیره روش پرداخت</translation>
 <translation id="1594703455918849716">رفتن به صفحه «بازبینی»</translation>
 <translation id="1594781465361405478">روشن/ خاموش کردن صدا</translation>
@@ -2860,7 +2860,7 @@
 <translation id="3001835006423291524">حسگر اثر انگشت را در پایین گوشه سمت راست صفحه‌کلید لمس کنید. داده‌های اثر انگشتتان به‌صورت ایمن ذخیره می‌شود و هرگز از <ph name="DEVICE_TYPE" /> شما خارج نمی‌شود.</translation>
 <translation id="3003144360685731741">شبکه‌های برگزیده</translation>
 <translation id="3003253259757197230">‏نشانی‌های وبی که بازدید می‌کنید به Google ارسال می‌شود تا پیش‌بینی شود ممکن است بعداً از چه سایت‌هایی بازدید کنید و همچنین اطلاعات بیشتری درباره صفحه‌ای که بازدید می‌کنید به شما نشان داده می‌شود</translation>
-<translation id="3003623123441819449">‏حافظهٔ پنهان CSS</translation>
+<translation id="3003623123441819449">‏حافظه نهان CSS</translation>
 <translation id="3003967365858406397">‏<ph name="PHONE_NAME" /> شما اتصال Wi-Fi خصوصی ایجاد خواهد کرد.</translation>
 <translation id="3004385386820284928">سفارشی‌سازی کلیدهای صفحه‌کلید</translation>
 <translation id="3006881078666935414">هیچ داده مصرفی وجود ندارد</translation>
@@ -3011,7 +3011,7 @@
 <translation id="3112292765614504292">اندازه برنامه: <ph name="APP_SIZE" /></translation>
 <translation id="311394601889664316">به سایت‌ها اجازه داده نشود فایل‌ها یا پوشه‌های درون دستگاه را ویرایش کنند</translation>
 <translation id="3113970906450647715">سنجاق دکمه برداشته شد</translation>
-<translation id="3115147772012638511">منتظر حافظهٔ پنهان...</translation>
+<translation id="3115147772012638511">منتظر حافظه نهان...</translation>
 <translation id="3115580024857770654">کوچک کردن همه موارد</translation>
 <translation id="3115728370128632723">‏بهبود عملکرد وب برای ابزارهای شما:
       &lt;ul&gt;
@@ -6031,7 +6031,7 @@
 <translation id="5331975486040154427">‏دستگاه USB-C (درگاه عقب سمت چپ)</translation>
 <translation id="5333896723098573627">‏برای حذف برنامه‌ها به «تنظیمات &gt; برنامه‌ها &gt; فروشگاه Google Play &gt; مدیریت اولویت‌های Android &gt; برنامه‌ها یا مدیر برنامه» بروید. سپس روی برنامه‌ای که می‌خواهید حذف نصب شود تک‌ضرب بزنید (ممکن است برای پیدا کردن برنامه لازم باشد صفحه را تند به راست یا چپ بکشید). سپس روی «حذف نصب» یا «غیرفعال کردن» تک‌ضرب بزنید.</translation>
 <translation id="5334113802138581043">دسترسی به میکروفون</translation>
-<translation id="5334142896108694079">حافظهٔ پنهان اسکریپت</translation>
+<translation id="5334142896108694079">حافظه نهان اسکریپت</translation>
 <translation id="5336688142483283574">این صفحه از سابقه و فعالیت <ph name="SEARCH_ENGINE" /> شما هم حذف خواهد شد.</translation>
 <translation id="5336689872433667741">مکان‌نما و صفحه لمسی</translation>
 <translation id="5337207153202941678">خاموش کردن برجسته‌سازی</translation>
@@ -7154,7 +7154,7 @@
 <translation id="6155885807222400044">اِی‌ای‌اس-۱۲۸</translation>
 <translation id="6155997322654401708">ایجاد گذرکلید</translation>
 <translation id="6156323911414505561">نمایش نوار نشانک‌ها</translation>
-<translation id="6156863943908443225">حافظهٔ پنهان اسکریپت</translation>
+<translation id="6156863943908443225">حافظه نهان اسکریپت</translation>
 <translation id="6156944117133588106">نمایش دکمه‌های پیمایش در حالت رایانه لوحی</translation>
 <translation id="615930144153753547">سایت‌ها می‌توانند تصویر نمایش دهند</translation>
 <translation id="6160290816917599257">‏کد نامعتبر است. ورودی باید در قالب <ph name="LPA_0" />$<ph name="LPA_1" />SM-‏DP+ نشانی<ph name="LPA_2" />$<ph name="LPA_3" />شناسه انطباق اختیاری<ph name="LPA_4" /> باشد</translation>
@@ -10441,7 +10441,7 @@
 <translation id="8541462173655894684">هیچ چاپگری از این سرور چاپ پیدا نشد</translation>
 <translation id="8541838361296720865">کلیدی خارجی یا کلیدی از صفحه‌کلید را فشار دهید تا به کنش «<ph name="ACTION" />» اختصاص داده شود</translation>
 <translation id="8546186510985480118">فضای دستگاه خیلی کم است</translation>
-<translation id="8546306075665861288">حافظهٔ پنهان تصویر</translation>
+<translation id="8546306075665861288">حافظه نهان تصویر</translation>
 <translation id="8546817377311213339">غیرفعال کردن تصاویر</translation>
 <translation id="8546930481464505581">سفارشی کردن «نوار لمسی»</translation>
 <translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> توسط <ph name="MANAGER" /> مدیریت می‌شود. نمی‌توانید این ایمیل را به‌عنوان حساب اضافی اضافه کنید.<ph name="END_PARAGRAPH1" />
@@ -10539,7 +10539,7 @@
 <translation id="8625663000550647058">اجازه ندارد از میکروفون استفاده کند</translation>
 <translation id="8625916342247441948">‏به سایت‌ها اجازه داده نشود به دستگاه‌های HID متصل شوند</translation>
 <translation id="862727964348362408">معلق شد</translation>
-<translation id="862750493060684461">‏حافظهٔ پنهان CSS</translation>
+<translation id="862750493060684461">‏حافظه نهان CSS</translation>
 <translation id="8627795981664801467">فقط اتصالات ایمن</translation>
 <translation id="8627804903623428808">بررسی این شرایط و کنترل داده‌های فرزندتان</translation>
 <translation id="8630338733867813168">حالت خواب هنگام شارژ شدن</translation>

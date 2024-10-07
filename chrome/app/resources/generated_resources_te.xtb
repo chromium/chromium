@@ -276,7 +276,7 @@
 <translation id="1187692277738768150">మీరు ఈ పాస్‌వర్డ్‌ను ఉపయోగించి, సేవ్ చేసినప్పుడు:</translation>
 <translation id="1187722533808055681">ఇన్‌యాక్టివ్‌ మేల్కొలుపులు</translation>
 <translation id="1188807932851744811">లాగ్ అప్‌లోడ్ కాలేదు.</translation>
-<translation id="1190086046506744802">లైన్‌ల మధ్య చాలా దూరం ఉంది</translation>
+<translation id="1190086046506744802">లైన్‌ల మధ్య చాలా ఎక్కువ దూరం</translation>
 <translation id="11901918071949011">{NUM_FILES,plural, =1{మీ కంప్యూటర్‌లో స్టోరేజ్‌ చేసిన ఫైల్‌ను యాక్సెస్ చేయండి}other{ మీ కంప్యూటర్‌లో స్టోరేజ్‌ చేసిన # ఫైళ్లను యాక్సెస్ చేయండి}}</translation>
 <translation id="1190706173655543975">Microsoft అప్లికేషన్ పాలసీలు</translation>
 <translation id="1191353342579061195">మీ అవసరాలకు తగిన రూపాన్ని ఎంచుకోండి. మీ రూపాన్ని, వాల్‌పేపర్‌ను, స్క్రీన్ సేవర్‌ను, మరిన్నింటిని మార్చడానికి, డెస్క్‌టాప్‌పై కేవలం కుడి క్లిక్ చేయండి.</translation>
@@ -1271,7 +1271,7 @@
 <translation id="1878885068166344708">మీరు ఐటెమ్‌పై ఫోకస్ చేసినప్పుడు, ఐటెమ్ హైలైట్ అవుతుంది. ఫోకస్‌ను మార్చడానికి ట్యాబ్‌ను నొక్కండి లేదా ఐటెమ్‌ను ఎంచుకోండి.</translation>
 <translation id="1879000426787380528">ఇలా సైన్ ఇన్ చేయండి</translation>
 <translation id="18802377548000045">ట్యాబ్‌లు అధిక వెడల్పునకు కుదించబడతాయి</translation>
-<translation id="1880677175115548835">వచనాన్ని ఎంచుకోండి</translation>
+<translation id="1880677175115548835">టెక్స్ట్‌ను ఎంచుకోండి</translation>
 <translation id="1880905663253319515">ప్రమాణపత్రం "<ph name="CERTIFICATE_NAME" />"ను తొలగించాలా?</translation>
 <translation id="1881445033931614352">కీబోర్డ్ లేఅవుట్</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{ఐటెమ్}other{# ఐటెమ్‌లు}}</translation>
@@ -1969,7 +1969,7 @@
 <translation id="2364498172489649528">ఆమోదించినవి</translation>
 <translation id="2365507699358342471">క్లిప్‌బోర్డ్‌కు కాపీ చేసిన వచనం మరియు చిత్రాలను ఈ సైట్ చూడగలదు.</translation>
 <translation id="2367972762794486313">యాప్‌లను చూపు</translation>
-<translation id="2369058545741334020">రీడింగ్ మోడ్‌లో తెరవబడుతుంది</translation>
+<translation id="2369058545741334020">రీడింగ్ మోడ్‌లో తెరవండి</translation>
 <translation id="236939127352773362">సమీపంలోని పరికరాలు షేర్ చేస్తున్నప్పుడు</translation>
 <translation id="2371076942591664043">&amp;పూర్తవగానే తెరువు</translation>
 <translation id="237336063998926520">స్థానాన్ని గుర్తించడానికి మీ IP అడ్రస్‌ను ఉపయోగించండి</translation>
@@ -3336,7 +3336,7 @@
 <translation id="3371351218553893534">లైన్ మరీ పొడవుగా ఉంది: <ph name="ERROR_LINE" /></translation>
 <translation id="3372602033006349389">ఇతర పరికరాల్లో</translation>
 <translation id="337286756654493126">మీరు అప్లికేషన్‌లో తెరిచే ఫోల్డర్‌లను చదవండి</translation>
-<translation id="3373059063088819384">రీడింగ్ మోడ్‌లో తెరవబడుతుంది</translation>
+<translation id="3373059063088819384">రీడింగ్ మోడ్‌లో తెరవండి</translation>
 <translation id="3373196968211632036">పిల్లల Google ఖాతాలకు 'Steam for Chromebook' (బీటా) అందుబాటులో లేదు</translation>
 <translation id="3373701465337594448">ఈ సెట్టింగ్ ఆన్‌లో ఉన్నప్పుడు, మీ ఆసక్తులను అంచనా వేసే మీరు చూసే సైట్‌ల యొక్క లిస్ట్ ఇక్కడ కనిపిస్తుంది</translation>
 <translation id="3374294321938930390">'<ph name="BOOKMARK_TITLE" />' '<ph name="NEW_FOLDER_TITLE" />'కు తరలించబడింది.</translation>
@@ -6828,7 +6828,7 @@
   <ph name="EXPONENT_HEX_DUMP" /></translation>
 <translation id="5915207966717429886">డేటాను సేవ్ చేయడానికి సైట్‌ను అనుమతించండి</translation>
 <translation id="5916655001090539219">ఆటోమేటిక్ రీడింగ్</translation>
-<translation id="5916664084637901428">ఆన్ చేయి</translation>
+<translation id="5916664084637901428">ఆన్‌లో ఉంది</translation>
 <translation id="59174027418879706">ప్రారంభించబడింది</translation>
 <translation id="5920543303088087579">ఈ నెట్‌వర్క్‌కు కనెక్ట్ చేయడాన్ని మీ నిర్వాహకులు నిలిపివేశారు</translation>
 <translation id="5922963926582976524">ఇన్‌స్టంట్ హాట్‌స్పాట్ నెట్‌వర్క్ డిస్‌కనెక్ట్ చేయండి</translation>
@@ -7443,7 +7443,7 @@
 <translation id="636850387210749493">ఎంటర్‌ప్రైజ్ నమోదు</translation>
 <translation id="6370021412472292592">మానిఫెస్ట్‌ను లోడ్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="6370551072524410110">సెర్చ్ + shift + బ్యాక్‌స్పేస్</translation>
-<translation id="637135143619858508">లైన్‌ల మధ్య దూరం ఉంది</translation>
+<translation id="637135143619858508">లైన్‌ల మధ్య ఎక్కువ దూరం</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">మళ్లీ ప్రయత్నించు</translation>
 <translation id="637642201764944055">పాత వెర్షన్‌లతో కూడిన Chrome యాప్‌లు, డిసెంబర్ 2022 తర్వాత Linux పరికరాలలో తెరవబడవు. మీ అడ్మినిస్ట్రేటర్‌ను సంప్రదించి, కొత్త వెర్షన్‌కు అప్‌డేట్ చేసుకోండి లేదా ఈ యాప్‌ను తీసివేయండి.</translation>

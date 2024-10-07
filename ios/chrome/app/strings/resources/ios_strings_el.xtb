@@ -731,7 +731,7 @@
 <translation id="4606247758155004938">Η διαχείριση του προγράμματος περιήγησής σας πραγματοποιείται από τον οργανισμό σας.</translation>
 <translation id="4607887340472970274">Παρακολούθηση τιμής</translation>
 <translation id="4611811151908969241">Απόκρυψη της επιλογής Κατάργηση παρακολούθησης <ph name="DOMAIN_NAME" /></translation>
-<translation id="461440297010471931">Αναζήτηση με το Google</translation>
+<translation id="461440297010471931">Αναζήτηση με την Google</translation>
 <translation id="4616391354457235490">Αναίρεση</translation>
 <translation id="4619564267100705184">Επαλήθευση ταυτότητας</translation>
 <translation id="4619615317237390068">Καρτέλες από άλλες συσκευές</translation>
@@ -1176,7 +1176,7 @@
 <translation id="6579867704846662339">Μπορείτε να επιλέξετε να ανοίγετε τα εισερχόμενα URL από άλλες εφαρμογές σε κατάσταση ανώνυμης περιήγησης.</translation>
 <translation id="6583087784430677195">Για απενεργοποίηση, ανοίξτε τις <ph name="BEGIN_LINK" />Ρυθμίσεις<ph name="END_LINK" /> και μεταβείτε στην επιλογή Αυτόματη συμπλήρωση κωδικών πρόσβασης.</translation>
 <translation id="6585618849026997638">Μπορείτε να επιστρέψετε σε μια σελίδα που είναι σημαντική για εσάς προσθέτοντας έναν σελιδοδείκτη.</translation>
-<translation id="6596481460663245319">Αναζήτηση εικόνας με το Google</translation>
+<translation id="6596481460663245319">Αναζήτηση εικόνας με την Google</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 κωδικός πρόσβασης}other{# κωδικοί πρόσβασης}}</translation>
 <translation id="6598875554591387303">Ταξινόμηση με βάση τον εκδότη</translation>
 <translation id="6601302169302852717">Η εικόνα αποθηκεύτηκε στις Φωτογραφίες Google για τον λογαριασμό <ph name="USER_EMAIL" /></translation>

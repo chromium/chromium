@@ -1188,7 +1188,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1826657447823925402">Deslocamento inverso desativado</translation>
 <translation id="1827504459960247692">Nome da zona Wi-Fi</translation>
 <translation id="1828240307117314415">gerido por <ph name="VALUE" /></translation>
-<translation id="1828378091493947763">Este plug-in não é compatível com este dispositivo</translation>
+<translation id="1828378091493947763">Este plugin não é compatível com este dispositivo</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Abrir todos}=1{&amp;Abrir marcador}other{&amp;Abrir todos ({COUNT})}}</translation>
 <translation id="1828901632669367785">Imprimir Utilizando a Caixa de Diálogo do Sistema...</translation>
 <translation id="1829129547161959350">Pinguim</translation>
@@ -1524,7 +1524,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2075088158103027942">Aceder à subscrição</translation>
 <translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
 <translation id="2076228988744845354">Mais ações para a extensão <ph name="EXTENSION_NAME" /></translation>
-<translation id="2076269580855484719">Ocultar este plug-in</translation>
+<translation id="2076269580855484719">Ocultar este plugin</translation>
 <translation id="2076672359661571384">Médio (recomendado)</translation>
 <translation id="2078019350989722914">Avisar antes de sair (<ph name="KEY_EQUIVALENT" />)</translation>
 <translation id="2079053412993822885">Se eliminar um dos seus próprios certificados, deixará de poder utilizá-lo para se identificar.</translation>
@@ -2004,7 +2004,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2410079346590497630">Detalhes da compilação</translation>
 <translation id="2410298923485357543">Usar a voz natural quando o dispositivo estiver online</translation>
 <translation id="2410754283952462441">Selecione uma conta</translation>
-<translation id="241082044617551207">Plug-in desconhecido</translation>
+<translation id="241082044617551207">Plugin desconhecido</translation>
 <translation id="2410940059315936967">Um site que visita pode incorporar conteúdo de outros sites, por exemplo, imagens, anúncios e texto. Os cookies definidos por estes sites são denominados cookies de terceiros.</translation>
 <translation id="2411666601450687801">Não são permitidas máquinas virtuais neste dispositivo</translation>
 <translation id="2412015533711271895">Um dos teus pais ou o teu tutor tem de autorizar a utilização desta extensão</translation>
@@ -2233,7 +2233,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2552966063069741410">Fuso Horário</translation>
 <translation id="2553290675914258594">Acesso validado</translation>
 <translation id="2553340429761841190">O <ph name="PRODUCT_NAME" /> não conseguiu estabelecer ligação a <ph name="NETWORK_ID" />. Selecione outra rede ou tente novamente.</translation>
-<translation id="2553440850688409052">Ocultar este plug-in</translation>
+<translation id="2553440850688409052">Ocultar este plugin</translation>
 <translation id="2554553592469060349">O ficheiro selecionado é demasiado grande (tamanho máx.: 3 MB).</translation>
 <translation id="2555802059188792472"><ph name="NUM_ALLOWED_APPS" /> de <ph name="TOTAL_NUM_APPS" /> apps podem enviar notificações</translation>
 <translation id="25568951186001797">Frame bloqueado: <ph name="FENCEDFRAME_SITE" /></translation>
@@ -2794,7 +2794,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (extensão fornecida)</translation>
 <translation id="2961695502793809356">Clique para avançar, mantenha pressionado para ver o histórico</translation>
 <translation id="29618148602069201">Tema</translation>
-<translation id="2963151496262057773">O seguinte plug-in está sem resposta: <ph name="PLUGIN_NAME" />
+<translation id="2963151496262057773">O seguinte plugin está sem resposta: <ph name="PLUGIN_NAME" />
 Quer pará-lo?</translation>
 <translation id="2964193600955408481">Desativar Wi-Fi</translation>
 <translation id="2964245677645334031">Visibilidade da funcionalidade Partilhar na proximidade</translation>
@@ -2946,7 +2946,7 @@ Quer pará-lo?</translation>
 <translation id="3065041951436100775">Comentários acerca de separador desativado.</translation>
 <translation id="3065522099314259755">Latência de repetição do teclado</translation>
 <translation id="3067198179881736288">Instalar a aplicação?</translation>
-<translation id="3067198360141518313">Executar este plug-in</translation>
+<translation id="3067198360141518313">Executar este plugin</translation>
 <translation id="3071624960923923138">Pode clicar aqui para abrir um novo separador</translation>
 <translation id="3072775339180057696">Permitir que o site veja o ficheiro <ph name="FILE_NAME" />?</translation>
 <translation id="3074499504015191586">Traduzir página inteira</translation>
@@ -4888,7 +4888,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4495002167047709180">Permitir esta extensão em <ph name="SITE" />?</translation>
 <translation id="4495419450179050807">Não mostrar nesta página</translation>
 <translation id="4497360513077910151">Ocultar grupo</translation>
-<translation id="4500114933761911433">O plug-in <ph name="PLUGIN_NAME" /> falhou.</translation>
+<translation id="4500114933761911433">O plugin <ph name="PLUGIN_NAME" /> falhou.</translation>
 <translation id="4500647907053779331">&amp;Traduzir seleção para <ph name="LANGUAGE" /></translation>
 <translation id="450099669180426158">Ícone de ponto de exclamação</translation>
 <translation id="4501530680793980440">Confirmar Remoção</translation>
@@ -5043,7 +5043,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4606551464649945562">Não permitir que os sites criem um mapa 3D do ambiente à sua volta nem monitorizem a posição da câmara</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Eliminar o grupo de separadores?}other{Eliminar os grupos de separadores?}}</translation>
 <translation id="4608500690299898628">&amp;Localizar...</translation>
-<translation id="4610162781778310380">O plug-in <ph name="PLUGIN_NAME" /> encontrou um erro.</translation>
+<translation id="4610162781778310380">O plugin <ph name="PLUGIN_NAME" /> encontrou um erro.</translation>
 <translation id="4610637590575890427">Pretendia aceder a <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Ligação de dados disponível</translation>
 <translation id="4611759022973144129">Pode usar esta palavra-passe para iniciar sessão no <ph name="DEVICE_TYPE" />.</translation>
@@ -8001,7 +8001,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="679845623837196966">Mostrar Lista de leitura</translation>
 <translation id="6798578729981748444">Para concluir a importação, feche todas as janelas do Firefox.</translation>
 <translation id="6798780071646309401">caps lock ativado</translation>
-<translation id="6798954102094737107">Plug-in: <ph name="PLUGIN_NAME" /></translation>
+<translation id="6798954102094737107">Plugin: <ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">Botões da barra de ferramentas ocultos</translation>
 <translation id="6800893479155997609">Principais apps para o seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Escolha se esta extensão pode ler ou alterar este site}other{Escolha se estas extensões podem ler ou alterar este site}}</translation>
@@ -9807,7 +9807,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8090579562279016251">Reduz o desempenho, mas torna o V8 mais resistente a ataques</translation>
 <translation id="8090686009202681725">Crie um tema com IA</translation>
 <translation id="8091655032047076676">Experimental</translation>
-<translation id="8093359998839330381">O plug-in <ph name="PLUGIN_NAME" /> não está a responder.</translation>
+<translation id="8093359998839330381">O plugin <ph name="PLUGIN_NAME" /> não está a responder.</translation>
 <translation id="8094536695728193970">Alperce</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Faça uma cópia de segurança no Google Drive. Restaure os dados ou mude de dispositivo facilmente em qualquer altura. A cópia de segurança inclui dados de apps.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />As cópias de segurança são carregadas para a Google e encriptadas com a palavra-passe da sua Conta Google.<ph name="END_PARAGRAPH2" />
@@ -10234,7 +10234,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8391218455464584335">Vinil</translation>
 <translation id="8391918125842702622">Alerta de problema de desempenho</translation>
 <translation id="8392726714909453725">Definições de Selecionar para falar</translation>
-<translation id="8393511274964623038">Parar plug-in</translation>
+<translation id="8393511274964623038">Parar plugin</translation>
 <translation id="839363317075970734">Detalhes do dispositivo Bluetooth</translation>
 <translation id="8393700583063109961">Enviar mensagem</translation>
 <translation id="8394212467245680403">Alfanumérico</translation>
@@ -10369,7 +10369,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8493829789253948546">Instalados pelo seu administrador</translation>
 <translation id="8494147475618188843">Definições do Android</translation>
 <translation id="849488240089599592">Voltar às transferências recentes</translation>
-<translation id="8496717697661868878">Executar este plug-in</translation>
+<translation id="8496717697661868878">Executar este plugin</translation>
 <translation id="8497136774043290050">O que são cookies de terceiros? Um site que visita pode incorporar conteúdo de outros sites ou serviços, por exemplo, imagens, anúncios, conteúdo de redes sociais e texto. Quando qualquer um destes outros sites usa cookies para guardar informações sobre si, chamamos-lhe cookie de terceiros. Se visitar vários sites que incorporem conteúdo da mesma fonte, como uma rede de publicidade, os cookies de terceiros podem ser usados para fins de publicidade e para monitorizar o seu perfil enquanto navega.</translation>
 <translation id="8497219075884839166">Utilitários do Windows</translation>
 <translation id="8498214519255567734">Torna mais fácil olhar para o ecrã ou ler com pouca luz</translation>

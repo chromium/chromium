@@ -220,7 +220,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1150565364351027703">Sunčane naočale</translation>
 <translation id="1151917987301063366">Hostu <ph name="HOST" /> uvijek dopusti pristup senzorima</translation>
 <translation id="1152346050262092795">Ponovo unesite zaporku da biste potvrdili račun.</translation>
-<translation id="1153636665119721804">Googleov Program napredne zaštite</translation>
+<translation id="1153636665119721804">Googleov program napredne zaštite</translation>
 <translation id="1155545602507378023">Ne, samo na ovom uređaju</translation>
 <translation id="1155816283571436363">Povezivanje s vašim telefonom</translation>
 <translation id="1157952955648710254">Zatvorite bočnu ploču Google pretraživanja</translation>
@@ -724,7 +724,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="151501797353681931">Uvezeno iz preglednika Safari</translation>
 <translation id="1515163294334130951">Pokreni</translation>
 <translation id="1517467582299994451">Da biste emitirali pomoću koda, uključite postavke sinkronizacije preglednika Chrome</translation>
-<translation id="1521442365706402292">Upravljanje potvrdama</translation>
+<translation id="1521442365706402292">Upravljanje certifikatima</translation>
 <translation id="1521655867290435174">Google tablice</translation>
 <translation id="1521774566618522728">Aktivan danas</translation>
 <translation id="1521933835545997395">Povezano s Android telefonom</translation>
@@ -7262,7 +7262,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6241530762627360640">pristupiti informacijama o Bluetooth uređajima uparenim s vašim sustavom i otkrivati Bluetooth uređaje u blizini</translation>
 <translation id="6241844896329831164">Pristup nije potreban</translation>
 <translation id="6242574558232861452">Provjeravamo je li preuzimanje u skladu sa sigurnosnim pravilima vaše organizacije.</translation>
-<translation id="6242589501614145408">Vratite sigurnosni ključ na zadano</translation>
+<translation id="6242589501614145408">Poništavanje sigurnosnog ključa</translation>
 <translation id="6242605626259978229">Vašim preglednikom i profilom se upravlja</translation>
 <translation id="6242852299490624841">Fokusiraj tu karticu</translation>
 <translation id="6243774244933267674">Poslužitelj nije dostupan</translation>
@@ -9854,7 +9854,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8124313775439841391">Upravljani ONC</translation>
 <translation id="8125651784723647184">Dijeljenjem zaporki upravlja vaš administrator</translation>
 <translation id="8129265306888404830">Da biste upotrebljavali e-adresu svoje organizacije (<ph name="EMAIL_DOMAIN" />), trebate upotrijebiti prijavu organizacije. Ako je ovaj uređaj za vašu osobnu upotrebu, prijavite se osobnim Google računom.</translation>
-<translation id="8130476996317833777">Nemoj dopustiti web-lokacijama korištenje alata za optimizaciju V8</translation>
+<translation id="8130476996317833777">Nemoj dopustiti web-lokacijama upotrebu alata za optimizaciju V8</translation>
 <translation id="813082847718468539">Prikaz informacija o web-lokaciji</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
 <translation id="8133297578569873332">Prihvatljiva – FM</translation>

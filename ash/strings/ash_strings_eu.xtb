@@ -84,7 +84,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> gailutik kargatzen</translation>
 <translation id="1255033239764210633">Zer eguraldi dago?</translation>
 <translation id="1256734167083229794">Pantaila osoko luparen lasterbidea sakatu duzu. Handitzeko, erabili <ph name="ZOOM_IN_ACCELERATOR" />; txikitzeko, berriz, <ph name="ZOOM_OUT_ACCELERATOR" />. Erabili Ktrl + Alt + gezi-teklak ikuspegi handituan zehar mugitzeko.</translation>
-<translation id="1269405891096105529">Gailu periferikoa ez da onartzen gonbidatu moduan</translation>
+<translation id="1269405891096105529">Gailu periferikoa ez da bateragarria gonbidatu moduarekin</translation>
 <translation id="1270290102613614947">Pantailako teklatua desgaitu egin da</translation>
 <translation id="1272079795634619415">Gelditu</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> gailuari energia ematen</translation>
@@ -570,7 +570,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3045488863354895414">Arratsalde on:</translation>
 <translation id="3047761520276763270">Saiatu hau esaten:</translation>
 <translation id="3055162170959710888">Gailua erabiltzen emandako denbora, gaur: <ph name="USED_TIME" /></translation>
-<translation id="3062298103034426069">Ez da onartzen</translation>
+<translation id="3062298103034426069">Ez da bateragarria</translation>
 <translation id="3068622547379332530">Bertsioa: <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Apala ezkerraldean dago</translation>
 <translation id="3077734595579995578">maius</translation>
@@ -631,7 +631,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3273040715184276344">Maiuskulen blokeoa desaktibatuta dago</translation>
 <translation id="3274634049061007184">Ikusi telefonoko aplikazioak</translation>
 <translation id="3289364673986435196">Itzaltzeko menua</translation>
-<translation id="3289544412142055976">Une honetan ez dira onartzen Linux-eko aplikazioak</translation>
+<translation id="3289544412142055976">Une honetan Linux-eko aplikazioak ez dira bateragarriak</translation>
 <translation id="3289674678944039601">Egokigailu bidez kargatzen</translation>
 <translation id="3290356915286466215">Babestu gabe</translation>
 <translation id="3291862315280588024">Joan aurreko hitzaren hasierara</translation>
@@ -1106,7 +1106,7 @@ Gailu bat dago konektatuta.</translation>
 <translation id="4849058404725798627">Nabarmendu teklatuaren fokua duen objektua</translation>
 <translation id="485592688953820832">Ekintzarik ez (pausatuta)</translation>
 <translation id="485634149294284819">Sartu teklatuaren menuan</translation>
-<translation id="485806788160414322">Erreproduzitu edo pausatu multimedia-edukia</translation>
+<translation id="485806788160414322">Multimedia-edukia erreproduzitzea edo pausatzea</translation>
 <translation id="4858764087721901597"><ph name="MODIFIER_ONE" />; ondoren, <ph name="KEY_ONE" />, <ph name="KEY_TWO" />, <ph name="KEY_THREE" /> edo <ph name="KEY_FOUR" /></translation>
 <translation id="4860284199500934869"><ph name="FILENAME" /> deskargatzeko, egiaztatu sarera konektatuta zaudela</translation>
 <translation id="4864369630010738180">Saioa hasten…</translation>
@@ -1511,7 +1511,7 @@ Ez dago gailurik konektatuta.</translation>
 <translation id="6143578372829139382">Partekatu YouTube-n</translation>
 <translation id="6147182561428020853">Orain, <ph name="DEVICE_TYPE" /> honetan instalatutako aplikazioak blokea ditzakezu</translation>
 <translation id="6153745728877356366">Bilatu irekitzeko</translation>
-<translation id="6154006699632741460">Ez da onartzen gailu periferikoa</translation>
+<translation id="6154006699632741460">Gailu periferikoa ez da bateragarria</translation>
 <translation id="6156960295318603523">Hizkuntza-ezarpenak</translation>
 <translation id="6158923546703693047">Edukiaren iturburuari buruzko informazioa</translation>
 <translation id="615957422585914272">Erakutsi pantailako teklatua</translation>
