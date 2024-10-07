@@ -135,7 +135,8 @@ class LensOverlayQueryController {
       EndpointFetcherCallback fetched_response_callback);
 
   // Sends a latency Gen204 ping if enabled.
-  virtual void SendLatencyGen204IfEnabled(int64_t latency_ms);
+  virtual void SendLatencyGen204IfEnabled(int64_t latency_ms,
+                                          bool is_translate_query);
 
   // The callback for full image requests, including upon query flow start
   // and interaction retries.

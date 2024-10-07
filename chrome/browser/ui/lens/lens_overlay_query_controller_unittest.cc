@@ -131,7 +131,8 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
   lens::LensOverlayRequestId sent_request_id_;
   lens::LensOverlayObjectsRequest sent_objects_request_;
   lens::LensOverlayInteractionRequest sent_interaction_request_;
-  int num_gen204_pings_sent_ = 0;
+  int num_full_page_objects_gen204_pings_sent_ = 0;
+  int num_full_page_translate_gen204_pings_sent_ = 0;
 
  protected:
   void CreateAndFetchEndpointFetcher(
@@ -170,8 +171,13 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
     fetcher->PerformRequest(std::move(endpoint_fetcher_callback), kTestApiKey);
   }
 
-  void SendLatencyGen204IfEnabled(int64_t latency_ms) override {
-    num_gen204_pings_sent_++;
+  void SendLatencyGen204IfEnabled(int64_t latency_ms,
+                                  bool is_translate_query) override {
+    if (is_translate_query) {
+      num_full_page_translate_gen204_pings_sent_++;
+    } else {
+      num_full_page_objects_gen204_pings_sent_++;
+    }
   }
 };
 
@@ -306,7 +312,7 @@ TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
                 .locale_context()
                 .time_zone(),
             kTimeZone);
-  ASSERT_EQ(query_controller.num_gen204_pings_sent_, 0);
+  ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent_, 0);
   ASSERT_EQ(query_controller.sent_client_logs_.lens_overlay_entry_point(),
             lens::LensOverlayClientLogs::APP_MENU);
   ASSERT_TRUE(query_controller.sent_client_logs_.has_paella_id());
@@ -400,7 +406,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_FALSE(sent_interaction_request.interaction_request_metadata()
                    .has_query_metadata());
   ASSERT_TRUE(has_start_time);
-  ASSERT_EQ(query_controller.num_gen204_pings_sent_, 1);
+  ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent_, 1);
   CheckGen204IdsMatch(query_controller.sent_client_logs_,
                       url_response_future.Get());
 }
@@ -503,7 +509,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_FALSE(sent_interaction_request.interaction_request_metadata()
                    .has_query_metadata());
   ASSERT_TRUE(has_start_time);
-  ASSERT_EQ(query_controller.num_gen204_pings_sent_, 1);
+  ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent_, 1);
   CheckGen204IdsMatch(query_controller.sent_client_logs_,
                       url_response_future.Get());
 }
@@ -599,7 +605,7 @@ TEST_F(LensOverlayQueryControllerTest,
                 .query(),
             kTestQueryText);
   ASSERT_TRUE(has_start_time);
-  ASSERT_EQ(query_controller.num_gen204_pings_sent_, 1);
+  ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent_, 1);
   CheckGen204IdsMatch(query_controller.sent_client_logs_,
                       url_response_future.Get());
 }
@@ -657,7 +663,7 @@ TEST_F(LensOverlayQueryControllerTest,
             lens::SELECT_TEXT_HIGHLIGHT);
   ASSERT_EQ(actual_encoded_search_context, kTestEncodedSearchContext);
   ASSERT_TRUE(has_start_time);
-  ASSERT_EQ(query_controller.num_gen204_pings_sent_, 0);
+  ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent_, 0);
 }
 
 TEST_F(LensOverlayQueryControllerTest,
@@ -737,7 +743,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_TRUE(has_start_time);
   ASSERT_TRUE(has_visual_input_type);
   ASSERT_EQ(visual_input_type, "video");
-  ASSERT_EQ(query_controller.num_gen204_pings_sent_, 1);
+  ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent_, 1);
   ASSERT_TRUE(url_response_future.Get().has_url());
 }
 
@@ -794,7 +800,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_TRUE(full_image_response_future.IsReady());
   ASSERT_TRUE(url_response_future.IsReady());
   ASSERT_TRUE(interaction_data_response_future.IsReady());
-  ASSERT_EQ(query_controller.num_gen204_pings_sent_, 2);
+  ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent_, 2);
   CheckGen204IdsMatch(query_controller.sent_client_logs_,
                       url_response_future.Get());
 }
@@ -897,6 +903,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(
       initial_sent_object_request.request_context().request_id().sequence_id(),
       1);
+  ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent_, 1);
 
   auto region = lens::mojom::CenterRotatedBox::New();
   region->box = gfx::RectF(30, 40, 50, 60);
@@ -942,6 +949,8 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(
       second_sent_object_request.request_context().request_id().sequence_id(),
       4);
+  ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent_, 1);
+  ASSERT_EQ(query_controller.num_full_page_translate_gen204_pings_sent_, 1);
 
   // Now change the languages.
   full_image_response_future.Clear();
@@ -962,6 +971,8 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(
       third_sent_object_request.request_context().request_id().sequence_id(),
       5);
+  ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent_, 1);
+  ASSERT_EQ(query_controller.num_full_page_translate_gen204_pings_sent_, 2);
 
   // Now disable translate mode.
   full_image_response_future.Clear();
@@ -982,6 +993,8 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_NE(
       fourth_sent_object_request.request_context().request_id().analytics_id(),
       third_sent_object_request.request_context().request_id().analytics_id());
+  ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent_, 2);
+  ASSERT_EQ(query_controller.num_full_page_translate_gen204_pings_sent_, 2);
 
   query_controller.EndQuery();
 }
