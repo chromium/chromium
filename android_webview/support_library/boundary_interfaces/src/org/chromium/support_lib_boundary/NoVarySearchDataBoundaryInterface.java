@@ -4,7 +4,7 @@
 
 package org.chromium.support_lib_boundary;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 
 import java.util.List;
 
@@ -15,9 +15,9 @@ public interface NoVarySearchDataBoundaryInterface {
 
     boolean getIgnoreDifferencesInParameters();
 
-    @Nullable
+    @NonNull
     List<String> getIgnoredQueryParameters();
 
-    @Nullable
+    @NonNull
     List<String> getConsideredQueryParameters();
 }
