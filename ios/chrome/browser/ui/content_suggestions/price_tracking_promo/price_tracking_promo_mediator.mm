@@ -12,6 +12,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/commerce/core/pref_names.h"
@@ -22,9 +23,12 @@
 #import "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
+#import "ios/chrome/browser/push_notification/model/provisional_push_notification_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
@@ -34,6 +38,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_prefs.h"
+#import "ios/chrome/browser/ui/settings/notifications/notifications_settings_observer.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
@@ -60,6 +65,9 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
 
 }  // namespace
 
+@interface PriceTrackingPromoMediator () <NotificationsSettingsObserverDelegate>
+@end
+
 @implementation PriceTrackingPromoMediator {
   raw_ptr<commerce::ShoppingService> _shoppingService;
   raw_ptr<bookmarks::BookmarkModel> _bookmarkModel;
@@ -68,6 +76,7 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
   raw_ptr<PushNotificationService> _pushNotificationService;
   raw_ptr<AuthenticationService> _authenticationService;
   std::unique_ptr<image_fetcher::ImageDataFetcher> _imageFetcher;
+  NotificationsSettingsObserver* _notificationsObserver;
 }
 
 - (instancetype)
@@ -76,6 +85,7 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
                imageFetcher:
                    (std::unique_ptr<image_fetcher::ImageDataFetcher>)fetcher
                 prefService:(PrefService*)prefService
+                 localState:(PrefService*)localState
     pushNotificationService:(PushNotificationService*)pushNotificationService
       authenticationService:(AuthenticationService*)authenticationService {
   self = [super init];
@@ -86,6 +96,11 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
     _prefService = prefService;
     _pushNotificationService = pushNotificationService;
     _authenticationService = authenticationService;
+    _notificationsObserver =
+        [[NotificationsSettingsObserver alloc] initWithPrefService:_prefService
+                                                        localState:localState];
+
+    _notificationsObserver.delegate = self;
   }
   return self;
 }
@@ -97,6 +112,9 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
   _pushNotificationService = nil;
   _authenticationService = nil;
   _imageFetcher = nil;
+  _notificationsObserver.delegate = nil;
+  [_notificationsObserver disconnect];
+  _notificationsObserver = nil;
 }
 
 - (void)reset {
@@ -167,6 +185,22 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
                        },
                        weakSelf, granted, promptShown, error));
   }];
+}
+
+#pragma mark - NotificationsSettingsObserverDelegate
+
+- (void)notificationsSettingsDidChangeForClient:
+    (PushNotificationClientId)clientID {
+  if (clientID == PushNotificationClientId::kCommerce) {
+    id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity(
+        signin::ConsentLevel::kSignin);
+    if (push_notification_settings::
+            GetMobileNotificationPermissionStatusForClient(
+                PushNotificationClientId::kCommerce,
+                base::SysNSStringToUTF8(identity.gaiaID))) {
+      [self.delegate removePriceTrackingPromo];
+    }
+  }
 }
 
 #pragma mark - Private
@@ -334,6 +368,10 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
 
 - (MDCSnackbarMessage*)snackbarMessageForTesting {
   return [self snackbarMessage];
+}
+
+- (NotificationsSettingsObserver*)notificationsSettingsObserverForTesting {
+  return self->_notificationsObserver;
 }
 
 - (void)enablePriceTrackingNotificationsSettingsForTesting {

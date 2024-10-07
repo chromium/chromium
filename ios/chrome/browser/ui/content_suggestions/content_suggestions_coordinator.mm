@@ -372,6 +372,7 @@ using segmentation_platform::TipIdentifier;
                                     image_fetcher::ImageDataFetcher>(
                                     profile->GetSharedURLLoaderFactory())
                     prefService:prefs
+                     localState:GetApplicationContext()->GetLocalState()
         pushNotificationService:GetApplicationContext()
                                     ->GetPushNotificationService()
           authenticationService:self.authService];
