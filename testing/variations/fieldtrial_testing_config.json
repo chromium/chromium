@@ -19832,28 +19832,6 @@
             ]
         }
     ],
-    "RustyJSONParser": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230929",
-                    "enable_features": [
-                        "UseRustJsonParser"
-                    ]
-                }
-            ]
-        }
-    ],
     "SafeBrowsingAsyncRealTimeCheck": [
         {
             "platforms": [

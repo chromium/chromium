@@ -44,6 +44,18 @@ BASE_FEATURE(kFeatureParamWithCache,
              "FeatureParamWithCache",
              FEATURE_ENABLED_BY_DEFAULT);
 
+// Use the Rust JSON parser. Enabled everywhere except Android, where the switch
+// from using the C++ parser in-thread to using the Rust parser in a thread-pool
+// introduces too much latency.
+BASE_FEATURE(kUseRustJsonParser,
+             "UseRustJsonParser",
+#if BUILDFLAG(IS_ANDROID)
+             FEATURE_DISABLED_BY_DEFAULT
+#else
+             FEATURE_ENABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_ANDROID)
+);
+
 // Use non default low memory device threshold.
 // Value should be given via |LowMemoryDeviceThresholdMB|.
 #if BUILDFLAG(IS_IOS)
@@ -59,10 +71,6 @@ BASE_FEATURE(kLowEndMemoryExperiment,
 const base::FeatureParam<int> kLowMemoryDeviceThresholdMB{
     &kLowEndMemoryExperiment, "LowMemoryDeviceThresholdMB",
     LOW_MEMORY_DEVICE_THRESHOLD_MB};
-
-BASE_FEATURE(kUseRustJsonParser,
-             "UseRustJsonParser",
-             FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 // Force to enable LowEndDeviceMode partially on Android 3Gb devices.
