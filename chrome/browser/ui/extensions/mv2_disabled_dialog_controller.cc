@@ -221,7 +221,7 @@ void Mv2DisabledDialogController::MaybeShowDisabledDialog() {
 
   // Sort extensions alphabetically.
   std::sort(affected_extensions_info_.begin(), affected_extensions_info_.end(),
-            [](ExtensionInfo a, ExtensionInfo b) {
+            [](const ExtensionInfo& a, const ExtensionInfo& b) {
               return base::ToLowerASCII(a.name) < base::ToLowerASCII(b.name);
             });
 

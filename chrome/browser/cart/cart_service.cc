@@ -72,8 +72,8 @@ std::string GetKeyForURL(const GURL& url) {
                                        : domain;
 }
 
-bool CompareTimeStampForProtoPair(const CartDB::KeyAndValue pair1,
-                                  CartDB::KeyAndValue pair2) {
+bool CompareTimeStampForProtoPair(const CartDB::KeyAndValue& pair1,
+                                  const CartDB::KeyAndValue& pair2) {
   return pair1.second.timestamp() > pair2.second.timestamp();
 }
 
