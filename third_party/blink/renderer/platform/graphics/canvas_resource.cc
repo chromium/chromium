@@ -656,9 +656,8 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
       LOG(ERROR) << "MapSharedImage Failed.";
       return nullptr;
     }
-    SkPixmap pixmap(CreateSkImageInfo(), mapping->GetMemoryForPlane(0).data(),
-                    mapping->Stride(0));
-    auto sk_image = SkImages::RasterFromPixmapCopy(pixmap);
+    auto sk_image = SkImages::RasterFromPixmapCopy(
+        mapping->GetSkPixmapForPlane(0, CreateSkImageInfo()));
 
     // Unmap the underlying buffer.
     mapping.reset();
@@ -729,9 +728,8 @@ void CanvasResourceSharedImage::CopyRenderingResultsToGpuMemoryBuffer(
     return;
   }
 
-  auto surface = SkSurfaces::WrapPixels(CreateSkImageInfo(),
-                                        mapping->GetMemoryForPlane(0).data(),
-                                        mapping->Stride(0));
+  auto surface = SkSurfaces::WrapPixels(
+      mapping->GetSkPixmapForPlane(0, CreateSkImageInfo()));
   SkPixmap pixmap;
   image->peekPixels(&pixmap);
   surface->writePixels(pixmap, 0, 0);

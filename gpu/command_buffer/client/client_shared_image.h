@@ -19,6 +19,8 @@
 #include "gpu/gpu_export.h"
 #include "gpu/ipc/common/exported_shared_image.mojom-shared.h"
 #include "gpu/ipc/common/gpu_memory_buffer_handle_info.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
@@ -54,6 +56,9 @@ class GPU_EXPORT ClientSharedImage
     void* Memory(const uint32_t plane_index);
 
     base::span<uint8_t> GetMemoryForPlane(const uint32_t plane_index);
+
+    SkPixmap GetSkPixmapForPlane(const uint32_t plane_index,
+                                 SkImageInfo sk_image_info);
 
     // Returns plane stride.
     size_t Stride(const uint32_t plane_index);

@@ -179,6 +179,13 @@ base::span<uint8_t> ClientSharedImage::ScopedMapping::GetMemoryForPlane(
       reinterpret_cast<uint8_t*>(Memory(plane_index)), span_length));
 }
 
+SkPixmap ClientSharedImage::ScopedMapping::GetSkPixmapForPlane(
+    const uint32_t plane_index,
+    SkImageInfo sk_image_info) {
+  return SkPixmap(sk_image_info, GetMemoryForPlane(plane_index).data(),
+                  Stride(plane_index));
+}
+
 size_t ClientSharedImage::ScopedMapping::Stride(const uint32_t plane_index) {
   CHECK(buffer_);
   return buffer_->stride(plane_index);
