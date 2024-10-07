@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_controller_impl.h"
-#include "chrome/browser/ui/passwords/password_generation_popup_view_tester.h"
 #include "chrome/browser/ui/views/passwords/password_generation_popup_view_views.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -29,6 +28,10 @@
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/child_iterator_base.h"
+#include "ui/events/event.h"
+#include "ui/events/event_utils.h"
+#include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -115,8 +118,11 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
   ASSERT_TRUE(controller);
   ASSERT_TRUE(controller->IsVisible());
 
-  PasswordGenerationPopupViewTester::For(controller->view())
-      ->SimulateMouseMovementAt(gfx::Point(1, 1));
+  static_cast<PasswordGenerationPopupViewViews*>(controller->view())
+      ->OnMouseMoved(ui::MouseEvent(
+          ui::EventType::kMouseMoved,
+          /*location=*/gfx::Point(1, 1), /*root_location=*/gfx::Point(0, 0),
+          ui::EventTimeForNow(), /*flags=*/0, /*changed_button_flags=*/0));
 }
 
 // Verify that destroying web contents with visible popup does not crash.
