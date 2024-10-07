@@ -761,6 +761,17 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       assertWithMatcher:matcher];
 }
 
+// Tests that the incognito buttons are correctly displayed (regression for
+// crbug.com/359698935).
+- (void)testIncognitoButtons {
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
+      assertWithMatcher:grey_interactable()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      performAction:grey_tap()];
+}
+
 #pragma mark - Recent Tabs
 
 // Tests reopening a closed tab from an incognito tab.
