@@ -56,6 +56,10 @@
 #include "components/search/ntp_features.h"
 #include "components/search_provider_logos/logo_common.h"
 #include "components/search_provider_logos/logo_service.h"
+#include "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
+#include "components/segmentation_platform/public/constants.h"
+#include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
@@ -325,7 +329,8 @@ class NewTabPageHandlerTest : public testing::Test {
         mojo::PendingReceiver<new_tab_page::mojom::PageHandler>(),
         mock_page_.BindAndGetRemote(), profile_.get(),
         &mock_ntp_custom_background_service_, &mock_theme_service_,
-        &mock_logo_service_, web_contents_,
+        &mock_logo_service_, &test_sync_service_,
+        &mock_segmentation_platform_service_, web_contents_,
         std::move(mock_feature_promo_helper_ptr_), base::Time::Now(),
         &module_id_names, mock_customize_chrome_tab_helper_.get());
     mock_page_.FlushForTesting();
@@ -375,6 +380,9 @@ class NewTabPageHandlerTest : public testing::Test {
       mock_ntp_custom_background_service_;
   testing::NiceMock<MockThemeService> mock_theme_service_;
   MockLogoService mock_logo_service_;
+  syncer::TestSyncService test_sync_service_;
+  segmentation_platform::MockSegmentationPlatformService
+      mock_segmentation_platform_service_;
   MockColorProviderSource mock_color_provider_source_;
   MockHatsService* mock_hats_service() { return mock_hats_service_; }
   testing::NiceMock<MockThemeProvider> mock_theme_provider_;
@@ -1171,6 +1179,19 @@ TEST_F(NewTabPageHandlerTest, GetMobilePromoQrCode) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(ntp_features::kNtpMobilePromo);
 
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_segmentation_platform_service_,
+              GetClassificationResult(segmentation_platform::kDeviceSwitcherKey,
+                                      _, _, _))
+      .Times(1)
+      .WillOnce(testing::WithArg<3>(testing::Invoke(
+          [](segmentation_platform::ClassificationResultCallback callback) {
+            auto result = segmentation_platform::ClassificationResult(
+                segmentation_platform::PredictionStatus::kSucceeded);
+            base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE, base::BindOnce(std::move(callback), result));
+          })));
+
   std::string encodedQrCode;
   base::MockCallback<NewTabPageHandler::GetMobilePromoQrCodeCallback> callback;
   EXPECT_CALL(callback, Run(_))
@@ -1179,9 +1200,79 @@ TEST_F(NewTabPageHandlerTest, GetMobilePromoQrCode) {
           [&encodedQrCode](const std::basic_string<char>& code) {
             encodedQrCode = std::move(code);
           }));
-  handler_->GetMobilePromoQrCode(callback.Get());
+  handler_->GetMobilePromoQrCode(callback.Get().Then(run_loop.QuitClosure()));
+
+  run_loop.Run();
 
   EXPECT_NE("", encodedQrCode);
+}
+
+TEST_F(NewTabPageHandlerTest,
+       GetMobilePromoQrCode_EmptyWhenSegmentationDataNotSet) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(ntp_features::kNtpMobilePromo);
+
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(mock_segmentation_platform_service_,
+              GetClassificationResult(segmentation_platform::kDeviceSwitcherKey,
+                                      _, _, _))
+      .Times(1)
+      .WillOnce(testing::WithArg<3>(testing::Invoke(
+          [](segmentation_platform::ClassificationResultCallback callback) {
+            auto result = segmentation_platform::ClassificationResult(
+                segmentation_platform::PredictionStatus::kSucceeded);
+            // If the data contains mobile devices, the promo should not be
+            // shown.
+            result.ordered_labels = {
+                segmentation_platform::DeviceSwitcherModel::
+                    kIosPhoneChromeLabel};
+            base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE, base::BindOnce(std::move(callback), result));
+          })));
+
+  std::string encodedQrCode;
+  base::MockCallback<NewTabPageHandler::GetMobilePromoQrCodeCallback> callback;
+  EXPECT_CALL(callback, Run(_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&encodedQrCode](const std::basic_string<char>& code) {
+            encodedQrCode = std::move(code);
+          }));
+  handler_->GetMobilePromoQrCode(callback.Get().Then(run_loop.QuitClosure()));
+
+  run_loop.Run();
+
+  EXPECT_EQ("", encodedQrCode);
+}
+
+TEST_F(NewTabPageHandlerTest, GetMobilePromoQrCode_EmptyWhenNoSync) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(ntp_features::kNtpMobilePromo);
+
+  // If sync is not active, then no promo should be shown.
+  test_sync_service_.SetSignedOut();
+
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(mock_segmentation_platform_service_,
+              GetClassificationResult(segmentation_platform::kDeviceSwitcherKey,
+                                      _, _, _))
+      .Times(0);
+
+  std::string encodedQrCode;
+  base::MockCallback<NewTabPageHandler::GetMobilePromoQrCodeCallback> callback;
+  EXPECT_CALL(callback, Run(_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&encodedQrCode](const std::basic_string<char>& code) {
+            encodedQrCode = std::move(code);
+          }));
+  handler_->GetMobilePromoQrCode(callback.Get().Then(run_loop.QuitClosure()));
+
+  run_loop.Run();
+
+  EXPECT_EQ("", encodedQrCode);
 }
 
 class NewTabPageHandlerHaTSTest : public NewTabPageHandlerTest {

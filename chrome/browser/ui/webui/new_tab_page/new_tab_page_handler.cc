@@ -37,6 +37,7 @@
 #include "chrome/browser/new_tab_page/promos/promo_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/promos/promos_utils.h"
 #include "chrome/browser/search/background/ntp_background_service.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
@@ -71,6 +72,11 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/search_provider_logos/logo_service.h"
 #include "components/search_provider_logos/switches.h"
+#include "components/segmentation_platform/public/constants.h"
+#include "components/segmentation_platform/public/input_context.h"
+#include "components/segmentation_platform/public/prediction_options.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
+#include "components/sync/service/sync_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -462,6 +468,9 @@ NewTabPageHandler::NewTabPageHandler(
     NtpCustomBackgroundService* ntp_custom_background_service,
     ThemeService* theme_service,
     search_provider_logos::LogoService* logo_service,
+    syncer::SyncService* sync_service,
+    segmentation_platform::SegmentationPlatformService*
+        segmentation_platform_service,
     content::WebContents* web_contents,
     std::unique_ptr<NewTabPageFeaturePromoHelper>
         customize_chrome_feature_promo_helper,
@@ -477,6 +486,8 @@ NewTabPageHandler::NewTabPageHandler(
       logo_service_(logo_service),
       theme_provider_(webui::GetThemeProviderDeprecated(web_contents)),
       theme_service_(theme_service),
+      sync_service_(sync_service),
+      segmentation_platform_service_(segmentation_platform_service),
       profile_(profile),
       web_contents_(web_contents),
       feature_promo_helper_(std::move(customize_chrome_feature_promo_helper)),
@@ -1494,7 +1505,48 @@ const std::string& NewTabPageHandler::GetSurveyTriggerIdForModuleAndInteraction(
 
 void NewTabPageHandler::GetMobilePromoQrCode(
     GetMobilePromoQrCodeCallback callback) {
-  // TODO(crbug.com/369871205): Check other conditions before returning the
-  // generated QR code.
-  std::move(callback).Run(MakeMobilePromoQRCode());
+  CheckIfUserEligibleForMobilePromo(std::move(callback));
+}
+
+void NewTabPageHandler::CheckIfUserEligibleForMobilePromo(
+    GetMobilePromoQrCodeCallback callback) {
+  // Verify that the user is currently syncing their preferences before
+  // bothering to query segmentation.
+  // TODO(crbug.com/369871205): Also check other restrictions (e.g. user hasn't
+  // seen other mobile promos recently, user hasn't seen this module too many
+  // times, user hasn't dismissed this promo).
+  if (sync_service_ && sync_service_->IsSyncFeatureActive() &&
+      sync_service_->GetActiveDataTypes().Has(syncer::PREFERENCES)) {
+    auto input_context =
+        base::MakeRefCounted<segmentation_platform::InputContext>();
+    input_context->metadata_args.emplace(
+        "active_days_limit", promos_utils::kiOSPasswordPromoLookbackWindow);
+    input_context->metadata_args.emplace(
+        "wait_for_device_info_in_seconds",
+        segmentation_platform::processing::ProcessedValue(0));
+
+    segmentation_platform::PredictionOptions options;
+    options.on_demand_execution = true;
+
+    // Query segmentation platform for detailed data.
+    segmentation_platform_service_->GetClassificationResult(
+        segmentation_platform::kDeviceSwitcherKey, options, input_context,
+        base::BindOnce(
+            &NewTabPageHandler::HandleMobilePromoSegmentationResponse,
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+
+  std::move(callback).Run("");
+}
+
+void NewTabPageHandler::HandleMobilePromoSegmentationResponse(
+    GetMobilePromoQrCodeCallback callback,
+    const segmentation_platform::ClassificationResult& result) {
+  if (promos_utils::UserNotClassifiedAsMobileDeviceSwitcher(result)) {
+    std::move(callback).Run(MakeMobilePromoQRCode());
+    return;
+  }
+
+  std::move(callback).Run("");
 }

@@ -36,6 +36,7 @@
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_provider_logos/logo_service_factory.h"
+#include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -728,9 +729,12 @@ void NewTabPageUI::CreatePageHandler(
   page_handler_ = std::make_unique<NewTabPageHandler>(
       std::move(pending_page_handler), std::move(pending_page), profile_,
       ntp_custom_background_service_, theme_service_,
-      LogoServiceFactory::GetForProfile(profile_), web_contents(),
-      std::make_unique<NewTabPageFeaturePromoHelper>(), navigation_start_time_,
-      &module_id_names_, side_panel_controller);
+      LogoServiceFactory::GetForProfile(profile_),
+      SyncServiceFactory::GetForProfile(profile_),
+      segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
+          profile_),
+      web_contents(), std::make_unique<NewTabPageFeaturePromoHelper>(),
+      navigation_start_time_, &module_id_names_, side_panel_controller);
 }
 
 void NewTabPageUI::CreateBrowserCommandHandler(
