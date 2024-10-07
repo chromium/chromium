@@ -2130,7 +2130,8 @@ public class TabGridDialogTest {
             assertEquals(
                     navigationBarColorWithScrimOverlay, cta.getWindow().getNavigationBarColor());
             assertNotEquals(navigationBarColor, navigationBarColorWithScrimOverlay);
-        } else if (cta.getEdgeToEdgeSupplier().get().isDrawingToEdge()) {
+        } else if (cta.getEdgeToEdgeSupplier().get() != null
+                && cta.getEdgeToEdgeSupplier().get().isDrawingToEdge()) {
             assertEquals(Color.TRANSPARENT, cta.getWindow().getNavigationBarColor());
         }
     }
