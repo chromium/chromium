@@ -174,6 +174,8 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   void SwitchActiveUser(const AccountId& account_id) override;
   void SwitchToLastActiveUser() override;
   void OnSessionStarted() override;
+  bool UpdateDeviceLocalAccountUser(
+      const base::span<DeviceLocalAccountInfo>& device_local_accounts) override;
   void RemoveUser(const AccountId& account_id,
                   UserRemovalReason reason) override;
   void RemoveUserFromList(const AccountId& account_id) override;
@@ -296,6 +298,10 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // Loads device local accounts from the Local state and fills in
   // |device_local_accounts_set|.
   void LoadDeviceLocalAccounts(std::set<AccountId>* device_local_accounts_set);
+
+  // If data for a device local account is marked as pending removal and the
+  // user is no longer logged into that account, removes the data.
+  void RemovePendingDeviceLocalAccount();
 
   // Notifies observers that active user has changed.
   void NotifyActiveUserChanged(User* active_user);

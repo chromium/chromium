@@ -70,21 +70,6 @@ class ChromeUserManagerImpl
   // trusted device policies are not yet available.
   void RetrieveTrustedDevicePolicies();
 
-  // If data for a device local account is marked as pending removal and the
-  // user is no longer logged into that account, removes the data.
-  void RemovePendingDeviceLocalAccount();
-
-  // Replaces the list of device local accounts with those found in
-  // `device_local_accounts`. Ensures that data belonging to accounts no longer
-  // on the list is removed. Returns `true` if the list has changed.
-  // Device local accounts are defined by policy. This method is called whenever
-  // an updated list of device local accounts is received from policy.
-  bool UpdateAndCleanUpDeviceLocalAccounts(
-      const std::vector<DeviceLocalAccountInfo>& device_local_accounts);
-
-  // Update the number of users.
-  void UpdateNumberOfUsers();
-
   void UpdateOwnerId();
 
   // Returns the display name taken from policy, expected to be used for
@@ -103,8 +88,6 @@ class ChromeUserManagerImpl
 
   base::CallbackListSubscription ephemeral_users_enabled_subscription_;
   base::CallbackListSubscription local_accounts_subscription_;
-
-  base::RepeatingClosure remove_non_cryptohome_data_barrier_;
 
   base::WeakPtrFactory<ChromeUserManagerImpl> weak_factory_{this};
 };

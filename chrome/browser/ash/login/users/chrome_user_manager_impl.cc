@@ -98,13 +98,6 @@
 
 namespace ash {
 
-// TODO(b/278643115) Remove the using when moved.
-namespace prefs {
-using user_manager::prefs::kDeviceLocalAccountPendingDataRemoval;
-using user_manager::prefs::kDeviceLocalAccountsWithSavedData;
-using user_manager::prefs::kRegularUsersPref;
-}  // namespace prefs
-
 namespace {
 
 using ::content::BrowserThread;
@@ -324,8 +317,7 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
     }
     device_local_account_info_list.push_back(std::move(info));
   }
-  bool changed =
-      UpdateAndCleanUpDeviceLocalAccounts(device_local_account_info_list);
+  bool changed = UpdateDeviceLocalAccountUser(device_local_account_info_list);
 
   // Remove ephemeral regular users (except the owner) when on the login screen.
   if (!IsUserLoggedIn()) {
@@ -348,130 +340,6 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
   if (changed) {
     NotifyLocalStateChanged();
   }
-}
-
-void ChromeUserManagerImpl::RemovePendingDeviceLocalAccount() {
-  PrefService* local_state = GetLocalState();
-  const std::string device_local_account_pending_data_removal =
-      local_state->GetString(prefs::kDeviceLocalAccountPendingDataRemoval);
-  if (device_local_account_pending_data_removal.empty() ||
-      (IsUserLoggedIn() &&
-       device_local_account_pending_data_removal ==
-           GetActiveUser()->GetAccountId().GetUserEmail())) {
-    return;
-  }
-
-  RemoveUserFromListImpl(
-      AccountId::FromUserEmail(device_local_account_pending_data_removal),
-      user_manager::UserRemovalReason::DEVICE_LOCAL_ACCOUNT_UPDATED,
-      /*trigger_cryptohome_removal=*/false);
-  local_state->ClearPref(prefs::kDeviceLocalAccountPendingDataRemoval);
-}
-
-bool ChromeUserManagerImpl::UpdateAndCleanUpDeviceLocalAccounts(
-    const std::vector<DeviceLocalAccountInfo>& device_local_accounts) {
-  // Try to remove any device local account data marked as pending removal.
-  RemovePendingDeviceLocalAccount();
-
-  // Persist the new list of device local accounts in a pref. These accounts
-  // will be loaded in LoadDeviceLocalAccounts() on the next reboot regardless
-  // of whether they still exist in kAccountsPrefDeviceLocalAccounts, allowing
-  // us to clean up associated data if they disappear from policy.
-  ScopedListPrefUpdate prefs_device_local_accounts_update(
-      GetLocalState(), prefs::kDeviceLocalAccountsWithSavedData);
-  prefs_device_local_accounts_update->clear();
-  for (const auto& account : device_local_accounts) {
-    prefs_device_local_accounts_update->Append(account.user_id);
-  }
-
-  // If the list of device local accounts has not changed, return.
-  {
-    bool changed = false;
-    size_t i = 0;
-    for (const user_manager::User* user : users_) {
-      if (!user->IsDeviceLocalAccount()) {
-        continue;
-      }
-      if (i >= device_local_accounts.size()) {
-        changed = true;
-        break;
-      }
-      if (user->GetAccountId().GetUserEmail() !=
-              device_local_accounts[i].user_id ||
-          user->GetType() != device_local_accounts[i].type) {
-        changed = true;
-        break;
-      }
-      ++i;
-    }
-    if (i == device_local_accounts.size() && !changed) {
-      return false;
-    }
-  }
-
-  // Remove the old device local accounts from the user list.
-  // Take snapshot because RemoveUserFromListImpl will update |user_|.
-  std::vector<user_manager::User*> users(users_.begin(), users_.end());
-  for (user_manager::User* user : users) {
-    if (!user->IsDeviceLocalAccount()) {
-      // Non device local account is not a target to be removed.
-      continue;
-    }
-    if (base::ranges::any_of(
-            device_local_accounts, [user](const DeviceLocalAccountInfo& info) {
-              return info.user_id == user->GetAccountId().GetUserEmail() &&
-                     info.type == user->GetType();
-            })) {
-      // The account exists in new device local accounts. Do not remove.
-      continue;
-    }
-    if (user == GetActiveUser()) {
-      // This user is active, so keep the instance. Instead, mark it as
-      // pending removal, so it will be removed in the next turn.
-      GetLocalState()->SetString(prefs::kDeviceLocalAccountPendingDataRemoval,
-                                 user->GetAccountId().GetUserEmail());
-      std::erase(users_, user);
-      continue;
-    }
-
-    // Remove the instance.
-    RemoveUserFromListImpl(
-        user->GetAccountId(),
-        user_manager::UserRemovalReason::DEVICE_LOCAL_ACCOUNT_UPDATED,
-        /*trigger_cryptohome_removal=*/false);
-  }
-
-  // Add the new device local accounts to the front of the user list.
-  for (size_t i = 0; i < device_local_accounts.size(); ++i) {
-    const DeviceLocalAccountInfo& account = device_local_accounts[i];
-    auto iter = std::find_if(users_.begin() + i, users_.end(),
-                             [&account](const user_manager::User* user) {
-                               return user->GetAccountId().GetUserEmail() ==
-                                          account.user_id &&
-                                      user->GetType() == account.type;
-                             });
-    if (iter != users_.end()) {
-      // Found the instance. Rotate the `users_` to place the found user at
-      // the i-th position.
-      std::rotate(users_.begin() + i, iter, iter + 1);
-    } else {
-      // Not found so create an instance.
-      // Using `new` to access a non-public constructor.
-      user_storage_.push_back(base::WrapUnique(new user_manager::User(
-          AccountId::FromUserEmail(account.user_id), account.type)));
-      users_.insert(users_.begin() + i, user_storage_.back().get());
-    }
-    if (account.display_name) {
-      SaveUserDisplayName(AccountId::FromUserEmail(account.user_id),
-                          *account.display_name);
-    }
-  }
-
-  for (auto& observer : observer_list_) {
-    observer.OnDeviceLocalUserListUpdated();
-  }
-
-  return true;
 }
 
 std::optional<std::u16string> ChromeUserManagerImpl::GetDisplayName(
