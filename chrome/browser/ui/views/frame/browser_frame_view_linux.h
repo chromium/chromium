@@ -53,6 +53,9 @@ class BrowserFrameViewLinux : public OpaqueBrowserFrameView,
   // ui::WindowButtonOrderObserver:
   void OnWindowButtonOrderingChange() override;
 
+  // views::NonClientFrameView:
+  int NonClientHitTest(const gfx::Point& point) override;
+
   // Gets the radius of the top corners when the window is restored.  The
   // returned value is in DIPs.  The result will be 0 if rounded corners are
   // disabled (eg. if the compositor doesn't support translucency.)
