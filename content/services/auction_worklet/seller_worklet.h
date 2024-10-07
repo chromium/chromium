@@ -492,7 +492,6 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     const GURL decision_logic_url_;
     const std::optional<GURL> trusted_scoring_signals_url_;
     const std::optional<url::Origin> trusted_scoring_signals_origin_;
-    mojom::TrustedSignalsPublicKeyPtr public_key_;
     SignalsOriginRelation trusted_signals_relation_ =
         SignalsOriginRelation::kNoTrustedSignals;
     const url::Origin top_window_origin_;

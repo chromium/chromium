@@ -436,7 +436,6 @@ SellerWorklet::SellerWorklet(
     GetNextThreadIndexCallback get_next_thread_index_callback)
     : url_loader_factory_(std::move(pending_url_loader_factory)),
       script_source_url_(decision_logic_url),
-      public_key_(std::move(public_key)),
       trusted_scoring_signals_origin_(
           trusted_scoring_signals_url ? std::make_optional(url::Origin::Create(
                                             *trusted_scoring_signals_url))
@@ -477,7 +476,7 @@ SellerWorklet::SellerWorklet(
                  *trusted_scoring_signals_url,
                  /*experiment_group_id=*/experiment_group_id,
                  /*trusted_bidding_signals_slot_size_param=*/std::string(),
-                 public_key_.is_null() ? nullptr : public_key_->Clone(),
+                 std::move(public_key),
                  v8_helpers_[get_next_thread_index_callback_.Run()].get())
            : nullptr);
   trusted_signals_relation_ = ClassifyTrustedSignals(

@@ -776,7 +776,6 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
   // for.
   const GURL script_source_url_;
   std::optional<GURL> wasm_helper_url_;
-  mojom::TrustedSignalsPublicKeyPtr public_key_;
 
   // Populated only if `this` was created with a non-null
   // `trusted_scoring_signals_url`.
