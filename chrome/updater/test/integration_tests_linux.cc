@@ -98,10 +98,10 @@ void Uninstall(UpdaterScope scope) {
 
 void ExpectCandidateUninstalled(UpdaterScope scope) {
   std::optional<base::FilePath> path = GetVersionedInstallDirectory(scope);
-  EXPECT_TRUE(path);
-  if (path) {
-    EXPECT_FALSE(base::PathExists(*path));
-  }
+  ASSERT_TRUE(path);
+  ASSERT_TRUE(WaitFor(
+      [&] { return !base::PathExists(*path); },
+      [] { VLOG(0) << "Waiting for the candidate to be uninstalled."; }));
 }
 
 void ExpectInstalled(UpdaterScope scope) {
