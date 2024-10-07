@@ -369,3 +369,8 @@
 # https://crrev.com/c/5873728.
 -RemoteFrameTokenRegistrationTest.ChildFrameRegistersItself
 -RemoteFrameTokenRegistrationTest.MainFrameRegistersItself
+
+# TODO(crbug.com/371838042): These tests have been failing since
+# https://crrev.com/c/5888544.
+-SharedPasswordControllerTest.PresavesGeneratedPassword_Empty
+-SharedPasswordControllerTest.TriggerPasswordGeneration_Proactively
