@@ -34,7 +34,7 @@ public class ArchivedTabsIphMessageCardViewModel {
         String dismissButtonContextDescription =
                 context.getString(R.string.accessibility_tab_suggestion_dismiss_button);
 
-        return new PropertyModel.Builder(MessageCardViewProperties.ALL_KEYS)
+        return new PropertyModel.Builder(ResizableMessageCardViewProperties.ALL_KEYS)
                 .with(
                         MessageCardViewProperties.MESSAGE_TYPE,
                         MessageService.MessageType.ARCHIVED_TABS_IPH_MESSAGE)

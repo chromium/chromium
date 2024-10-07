@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
+import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
+
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -45,10 +48,12 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator.Observer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -67,6 +72,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
+import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
@@ -79,6 +85,13 @@ import org.chromium.url.GURL;
 public class ArchivedTabsDialogCoordinatorTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+
+    @Rule
+    public ChromeRenderTestRule mRenderTestRule =
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(1)
+                    .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_HUB)
+                    .build();
 
     private final TabListEditorTestingRobot mRobot = new TabListEditorTestingRobot();
 
@@ -692,6 +705,47 @@ public class ArchivedTabsDialogCoordinatorTest {
                 .perform(scrollToPosition(10));
         onView(withId(R.id.close_all_tabs_button_container_shadow))
                 .check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({DeviceFormFactor.TABLET})
+    @Feature({"RenderTest"})
+    public void testMessageResizedOnTablet() throws Exception {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        ActivityTestUtils.rotateActivityToOrientation(cta, ORIENTATION_PORTRAIT);
+        addArchivedTab(new GURL("https://www.google.com/"), "test 2");
+        TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
+        mRenderTestRule.render(
+                cta.findViewById(R.id.pane_frame), "archived_tabs_message_tablet_portrait");
+        ActivityTestUtils.rotateActivityToOrientation(cta, ORIENTATION_LANDSCAPE);
+        mRenderTestRule.render(
+                cta.findViewById(R.id.pane_frame), "archived_tabs_message_tablet_landscape");
+        ActivityTestUtils.clearActivityOrientation(cta);
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({DeviceFormFactor.TABLET})
+    @Feature({"RenderTest"})
+    public void testIphMessageResizedOnTablet() throws Exception {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        ActivityTestUtils.rotateActivityToOrientation(cta, ORIENTATION_PORTRAIT);
+        addArchivedTab(new GURL("https://www.google1.com/"), "test 1");
+        addArchivedTab(new GURL("https://www.google2.com/"), "test 2");
+        addArchivedTab(new GURL("https://www.google3.com/"), "test 3");
+        addArchivedTab(new GURL("https://www.google4.com/"), "test 4");
+        mTabArchiveSettings.setShouldShowDialogIphForTesting(true);
+        enterTabSwitcherAndShowDialog(4);
+
+        mRenderTestRule.render(
+                cta.findViewById(R.id.archived_tabs_dialog),
+                "archived_tabs_iph_message_tablet_portrait");
+        ActivityTestUtils.rotateActivityToOrientation(cta, ORIENTATION_LANDSCAPE);
+        mRenderTestRule.render(
+                cta.findViewById(R.id.archived_tabs_dialog),
+                "archived_tabs_iph_message_tablet_landscape");
+        ActivityTestUtils.clearActivityOrientation(cta);
     }
 
     private void enterTabSwitcherAndShowDialog(int numOfArchivedTabs) {

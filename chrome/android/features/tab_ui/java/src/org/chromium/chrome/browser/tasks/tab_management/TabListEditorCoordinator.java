@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManagerThumbnailProvider;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListItemSizeChangedObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
@@ -510,6 +511,16 @@ class TabListEditorCoordinator {
         mTabListEditorLayoutChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         mModel, mTabListEditorLayout, TabListEditorLayoutBinder::bind);
+    }
+
+    public void addTabListItemSizeChangedObserver(TabListItemSizeChangedObserver observer) {
+        assert mTabListCoordinator != null;
+        mTabListCoordinator.addTabListItemSizeChangedObserver(observer);
+    }
+
+    public void removeTabListItemSizeChangedObserver(TabListItemSizeChangedObserver observer) {
+        assert mTabListCoordinator != null;
+        mTabListCoordinator.removeTabListItemSizeChangedObserver(observer);
     }
 
     private ThumbnailProvider initMultiThumbnailCardProvider(

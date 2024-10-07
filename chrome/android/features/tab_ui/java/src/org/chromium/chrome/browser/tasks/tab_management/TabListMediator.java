@@ -384,6 +384,7 @@ class TabListMediator implements TabListNotificationHandler {
     private ListObserver<Void> mListObserver;
     private TabGroupTitleEditor mTabGroupTitleEditor;
     private View.AccessibilityDelegate mAccessibilityDelegate;
+    private int mCurrentSpanCount;
 
     private final TabActionListener mTabSelectedListener =
             new TabActionListener() {
@@ -1720,12 +1721,18 @@ class TabListMediator implements TabListNotificationHandler {
                         return 1;
                     }
                 });
+        mCurrentSpanCount = newSpanCount;
         return oldSpanCount != newSpanCount;
+    }
+
+    int getCurrentSpanCount() {
+        return mCurrentSpanCount;
     }
 
     /**
      * Adds an on scroll listener to {@link TabListRecyclerView} that determines whether a tab
      * thumbnail is within view after a scroll is completed.
+     *
      * @param recyclerView the {@link TabListRecyclerView} to add the listener too.
      */
     void registerOnScrolledListener(RecyclerView recyclerView) {

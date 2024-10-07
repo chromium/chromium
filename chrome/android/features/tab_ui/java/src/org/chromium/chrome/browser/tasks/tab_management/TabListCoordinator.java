@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -68,6 +69,17 @@ public class TabListCoordinator
         implements PriceMessageService.PriceWelcomeMessageProvider, DestroyObserver {
     private static final String TAG = "TabListCoordinator";
 
+    /** Observer interface for the size of tab list items. */
+    public interface TabListItemSizeChangedObserver {
+        /**
+         * Called when the size of the tab list items changes.
+         *
+         * @param spanCount The number of items which span one row.
+         * @param cardSize The size of the tab list item.
+         */
+        void onSizeChanged(int spanCount, @NonNull Size cardSize);
+    }
+
     /**
      * Modes of showing the list of tabs.
      *
@@ -90,6 +102,8 @@ public class TabListCoordinator
     static final int MAX_SCREEN_WIDTH_MEDIUM_DP = 800;
     static final float PERCENTAGE_AREA_OVERLAP_MERGE_THRESHOLD = 0.5f;
 
+    private final ObserverList<TabListItemSizeChangedObserver> mTabListItemSizeChangedObserverList =
+            new ObserverList<>();
     private final TabListMediator mMediator;
     private final TabListRecyclerView mRecyclerView;
     private final SimpleRecyclerViewAdapter mAdapter;
@@ -407,6 +421,17 @@ public class TabListCoordinator
         mMediator.setTabActionState(tabActionState);
     }
 
+    /** Adds an observer of the tab list item size. Also triggers an observer method. */
+    public void addTabListItemSizeChangedObserver(TabListItemSizeChangedObserver observer) {
+        mTabListItemSizeChangedObserverList.addObserver(observer);
+        observer.onSizeChanged(mMediator.getCurrentSpanCount(), mMediator.getDefaultGridCardSize());
+    }
+
+    /** Remove an observer of the tab list item size. */
+    public void removeTabListItemSizeChangedObserver(TabListItemSizeChangedObserver observer) {
+        mTabListItemSizeChangedObserverList.removeObserver(observer);
+    }
+
     @NonNull
     Rect getThumbnailLocationOfCurrentTab() {
         // TODO(crbug.com/40627995): calculate the location before the real one is ready.
@@ -599,6 +624,10 @@ public class TabListCoordinator
                 tabPropertyModel.set(
                         TabProperties.GRID_CARD_SIZE, new Size(cardWidthPx, cardHeightPx));
             }
+        }
+
+        for (TabListItemSizeChangedObserver observer : mTabListItemSizeChangedObserverList) {
+            observer.onSizeChanged(mMediator.getCurrentSpanCount(), newDefaultSize);
         }
     }
 

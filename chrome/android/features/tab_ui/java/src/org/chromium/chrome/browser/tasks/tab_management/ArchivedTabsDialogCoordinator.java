@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
@@ -11,6 +13,7 @@ import android.content.res.Resources;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
+import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +45,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.StrictButtonPressController.ButtonClickResult;
+import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListItemSizeChangedObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.NavigationProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
@@ -232,6 +236,17 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                 }
             };
 
+    private final TabListItemSizeChangedObserver mTabListItemSizeChangedObserver =
+            new TabListItemSizeChangedObserver() {
+                @Override
+                public void onSizeChanged(int spanCount, Size cardSize) {
+                    if (mIphMessagePropertyModel == null) return;
+                    mIphMessagePropertyModel.set(
+                            ResizableMessageCardViewProperties.WIDTH,
+                            spanCount == 4 ? cardSize.getWidth() * 2 : MATCH_PARENT);
+                }
+            };
+
     private final @NonNull Context mContext;
     private final @NonNull ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
     private final @NonNull TabModel mArchivedTabModel;
@@ -389,8 +404,8 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
             if (tabListFirstShown) {
                 mTabListEditorCoordinator.registerItemType(
                         TabProperties.UiType.MESSAGE,
-                        new LayoutViewBuilder(R.layout.tab_grid_message_card_item),
-                        MessageCardViewBinder::bind);
+                        new LayoutViewBuilder(R.layout.resizable_tab_grid_message_card_item),
+                        ResizableMessageCardViewBinder::bind);
             }
             mIphMessagePropertyModel =
                     ArchivedTabsIphMessageCardViewModel.create(
@@ -398,6 +413,8 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
             updateIphPropertyModel();
             mTabListEditorCoordinator.addSpecialListItem(
                     0, UiType.MESSAGE, mIphMessagePropertyModel);
+            mTabListEditorCoordinator.addTabListItemSizeChangedObserver(
+                    mTabListItemSizeChangedObserver);
             RecordUserAction.record("Tabs.ArchivedTabsDialogIphShown");
         }
         mTabArchiveSettings.addObserver(mTabArchiveSettingsObserver);
@@ -461,6 +478,8 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         animateOut(
                 animationDuration,
                 () -> {
+                    mTabListEditorCoordinator.removeTabListItemSizeChangedObserver(
+                            mTabListItemSizeChangedObserver);
                     TabListEditorController controller = mTabListEditorCoordinator.getController();
                     controller.hide();
                     animationFinishCallback.run();
