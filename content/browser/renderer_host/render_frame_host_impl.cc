@@ -1447,13 +1447,30 @@ WindowProxyUserActivationState GetWindowProxyUserActivationState(
 }
 
 // Responsible for cleaning up render processes for discard operations.
-class DiscardedRFHProcessHelper : public base::SupportsUserData::Data {
+class DiscardedRFHProcessHelper : public base::SupportsUserData::Data,
+                                  public ServiceWorkerContextObserver {
  public:
-  explicit DiscardedRFHProcessHelper(RenderProcessHost* host) : host_(host) {}
+  explicit DiscardedRFHProcessHelper(RenderProcessHost* host) : host_(host) {
+    if (host_->IsInitializedAndNotDead() && !host_->IsDeletingSoon()) {
+      service_worker_context_observation_.Observe(
+          host_->GetStoragePartition()->GetServiceWorkerContext());
+    }
+  }
   DiscardedRFHProcessHelper(const DiscardedRFHProcessHelper&) = delete;
   DiscardedRFHProcessHelper& operator=(const DiscardedRFHProcessHelper&) =
       delete;
   ~DiscardedRFHProcessHelper() override = default;
+
+  // ServiceWorkerContextObserver:
+  void OnVersionStoppedRunning(int64_t version_id) override {
+    // Service workers may outlive the documents of their discarded rfh if
+    // executing pre-existing tasks. Attempt a shutdown if any associated worker
+    // has stopped to clear away the process if possible.
+    ShutdownForDiscardIfPossible();
+  }
+  void OnDestruct(ServiceWorkerContext* context) override {
+    service_worker_context_observation_.Reset();
+  }
 
   static DiscardedRFHProcessHelper* GetForRenderProcessHost(
       RenderProcessHost* host) {
@@ -1532,6 +1549,9 @@ class DiscardedRFHProcessHelper : public base::SupportsUserData::Data {
 
   // Owns this.
   const raw_ptr<RenderProcessHost> host_;
+
+  base::ScopedObservation<ServiceWorkerContext, ServiceWorkerContextObserver>
+      service_worker_context_observation_{this};
 };
 
 }  // namespace
