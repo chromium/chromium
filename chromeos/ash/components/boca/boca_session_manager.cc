@@ -135,6 +135,10 @@ void BocaSessionManager::UpdateCurrentSession(
   return current_session_.get();
 }
 
+boca::SessionClientImpl* BocaSessionManager::GetSessionClientImpl() {
+  return session_client_impl_;
+}
+
 void BocaSessionManager::NotifyLocalCaptionEvents(
     ::boca::CaptionsConfig caption_config) {
   for (auto& observer : observers_) {

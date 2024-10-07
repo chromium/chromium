@@ -20,14 +20,17 @@ static_library("boca") {
   deps = [
     "//ash",
     "//ash/constants",
+    "//chromeos/ash/components/boca:activity",
     "//chromeos/ash/components/boca/proto",
     "//chromeos/ash/components/boca/session_api",
     "//chromeos/ash/components/network",
     "//components/signin/public/identity_manager",
   ]
 
-  allow_circular_includes_from =
-      [ "//chromeos/ash/components/boca/session_api" ]
+  allow_circular_includes_from = [
+    "//chromeos/ash/components/boca/session_api",
+    "//chromeos/ash/components/boca:activity",
+  ]
 }
 
 static_library("invalidations") {
@@ -45,6 +48,17 @@ static_library("invalidations") {
     "//components/gcm_driver",
     "//components/keyed_service/core",
     "//google_apis/common:common",
+  ]
+}
+
+static_library("activity") {
+  sources = [
+    "activity/active_tab_tracker.cc",
+    "activity/active_tab_tracker.h",
+  ]
+  deps = [
+    "//base",
+    "//chromeos/ash/components/boca/session_api",
   ]
 }
 

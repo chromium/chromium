@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chromeos/ash/components/boca/activity/active_tab_tracker.h"
 #include "content/public/browser/browser_thread.h"
 
 // static
@@ -115,6 +116,11 @@ void LockedSessionWindowTracker::set_can_start_navigation_throttle(
   can_start_navigation_throttle_ = is_ready;
 }
 
+void LockedSessionWindowTracker::SetActiveTabTracker(
+    ash::boca::ActiveTabTracker* active_tab_tracker) {
+  active_tab_tracker_ = active_tab_tracker;
+}
+
 OnTaskBlocklist* LockedSessionWindowTracker::on_task_blocklist() {
   return on_task_blocklist_.get();
 }
@@ -138,6 +144,7 @@ void LockedSessionWindowTracker::CleanupWindowTracker() {
   browser_ = nullptr;
   can_open_new_popup_ = true;
   oauth_in_progress_ = false;
+  active_tab_tracker_ = nullptr;
   if (ash::Shell::HasInstance()) {
     ash::Shell::Get()
         ->screen_pinning_controller()
@@ -160,6 +167,10 @@ void LockedSessionWindowTracker::OnTabStripModelChanged(
     const TabStripSelectionChange& selection) {
   if (selection.active_tab_changed()) {
     RefreshUrlBlocklist();
+    if (active_tab_tracker_ && selection.new_contents) {
+      active_tab_tracker_->OnActiveTabChanged(
+          selection.new_contents->GetTitle());
+    }
   }
 }
 

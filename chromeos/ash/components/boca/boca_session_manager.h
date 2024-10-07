@@ -117,6 +117,7 @@ class BocaSessionManager
   virtual void UpdateCurrentSession(std::unique_ptr<::boca::Session> session,
                                     bool dispatch_event);
   virtual ::boca::Session* GetCurrentSession();
+  virtual SessionClientImpl* GetSessionClientImpl();
 
   // Local events.
   virtual void NotifyLocalCaptionEvents(::boca::CaptionsConfig caption_config);

@@ -48,7 +48,7 @@ class OnTaskSystemWebAppManagerMock : public OnTaskSystemWebAppManager {
               (override));
   MOCK_METHOD(void,
               SetWindowTrackerForSystemWebAppWindow,
-              (SessionID window_id),
+              (SessionID window_id, ActiveTabTracker* active_tab_tracker),
               (override));
   MOCK_METHOD(SessionID,
               CreateBackgroundTabWithUrl,
@@ -96,7 +96,8 @@ TEST_F(OnTaskSessionManagerTest, ShouldPrepareBocaSWAOnLaunch) {
           Return(SessionID::InvalidValue()))  // Initial check before launch.
       .WillOnce(Return(kWindowId));
   EXPECT_CALL(*system_web_app_manager_ptr_,
-              SetWindowTrackerForSystemWebAppWindow(kWindowId))
+              SetWindowTrackerForSystemWebAppWindow(
+                  kWindowId, session_manager_->active_tab_tracker()))
       .Times(1);
   EXPECT_CALL(*system_web_app_manager_ptr_,
               SetPinStateForSystemWebAppWindow(true, kWindowId))
@@ -189,7 +190,8 @@ TEST_F(OnTaskSessionManagerTest,
         std::move(callback).Run(true);
       });
   EXPECT_CALL(*system_web_app_manager_ptr_,
-              SetWindowTrackerForSystemWebAppWindow(kWindowId))
+              SetWindowTrackerForSystemWebAppWindow(
+                  kWindowId, session_manager_->active_tab_tracker()))
       .Times(1)
       .InSequence(s);
   EXPECT_CALL(*system_web_app_manager_ptr_,
@@ -209,7 +211,8 @@ TEST_F(OnTaskSessionManagerTest,
       .InSequence(s)
       .WillOnce(Return(kTabId_2));
   EXPECT_CALL(*system_web_app_manager_ptr_,
-              SetWindowTrackerForSystemWebAppWindow(kWindowId))
+              SetWindowTrackerForSystemWebAppWindow(
+                  kWindowId, session_manager_->active_tab_tracker()))
       .Times(1)
       .InSequence(s);
   EXPECT_CALL(*system_web_app_manager_ptr_,
@@ -296,7 +299,8 @@ TEST_F(OnTaskSessionManagerTest, ShouldPinBocaSWAWhenLockedOnBundleUpdated) {
               CreateBackgroundTabWithUrl(kWindowId, GURL(kTestUrl1), _))
       .WillOnce(Return(kTabId));
   EXPECT_CALL(*system_web_app_manager_ptr_,
-              SetWindowTrackerForSystemWebAppWindow(kWindowId))
+              SetWindowTrackerForSystemWebAppWindow(
+                  kWindowId, session_manager_->active_tab_tracker()))
       .Times(1);
   EXPECT_CALL(*system_web_app_manager_ptr_,
               SetPinStateForSystemWebAppWindow(true, kWindowId))

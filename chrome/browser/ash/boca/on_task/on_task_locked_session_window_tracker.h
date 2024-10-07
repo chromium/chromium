@@ -21,6 +21,10 @@
 class Browser;
 class BrowserList;
 
+namespace ash::boca {
+class ActiveTabTracker;
+}
+
 // This class is used to track the windows and tabs that are opened in the
 // user's OnTask locked session. Only one browser window is allowed at a time to
 // be tracked. Attempting to track another browser while there is one already
@@ -69,6 +73,10 @@ class LockedSessionWindowTracker : public KeyedService,
   }
   virtual void set_can_start_navigation_throttle(bool is_ready);
 
+  // Set active tab tracker that handles the event when active tab changes
+  // within boca.
+  void SetActiveTabTracker(ash::boca::ActiveTabTracker* active_tab_tracker);
+
   bool oauth_in_progress() { return oauth_in_progress_; }
   void set_oauth_in_progress(bool in_progress) {
     oauth_in_progress_ = in_progress;
@@ -109,6 +117,10 @@ class LockedSessionWindowTracker : public KeyedService,
 
   base::ScopedObservation<BrowserList, BrowserListObserver>
       browser_list_observation_{this};
+
+  // Will be reset when browser window closed. Will not have dangling pointer
+  // issue.
+  raw_ptr<ash::boca::ActiveTabTracker> active_tab_tracker_;
   base::WeakPtrFactory<LockedSessionWindowTracker> weak_pointer_factory_{this};
 };
 

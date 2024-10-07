@@ -14,6 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chromeos/ash/components/boca/activity/active_tab_tracker.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
 #include "components/sessions/core/session_id.h"
@@ -52,7 +53,8 @@ OnTaskSessionManager::OnTaskSessionManager(
     : system_web_app_manager_(std::move(system_web_app_manager)),
       system_web_app_launch_helper_(
           std::make_unique<OnTaskSessionManager::SystemWebAppLaunchHelper>(
-              system_web_app_manager_.get())) {}
+              system_web_app_manager_.get(),
+              &active_tab_tracker_)) {}
 
 OnTaskSessionManager::~OnTaskSessionManager() = default;
 
@@ -126,7 +128,8 @@ void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
       window_id.is_valid()) {
     // TODO (b/370871395): Move `SetWindowTrackerForSystemWebAppWindow` to
     // `OnTaskSystemWebAppManager`.
-    system_web_app_manager_->SetWindowTrackerForSystemWebAppWindow(window_id);
+    system_web_app_manager_->SetWindowTrackerForSystemWebAppWindow(
+        window_id, &active_tab_tracker_);
     bool is_lock_mode = bundle.locked();
     system_web_app_manager_->SetPinStateForSystemWebAppWindow(
         /*pinned=*/is_lock_mode, window_id);
@@ -134,8 +137,10 @@ void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
 }
 
 OnTaskSessionManager::SystemWebAppLaunchHelper::SystemWebAppLaunchHelper(
-    OnTaskSystemWebAppManager* system_web_app_manager)
-    : system_web_app_manager_(system_web_app_manager) {}
+    OnTaskSystemWebAppManager* system_web_app_manager,
+    ActiveTabTracker* active_tab_tracker)
+    : system_web_app_manager_(system_web_app_manager),
+      active_tab_tracker_(active_tab_tracker) {}
 
 OnTaskSessionManager::SystemWebAppLaunchHelper::~SystemWebAppLaunchHelper() =
     default;
@@ -209,7 +214,8 @@ void OnTaskSessionManager::SystemWebAppLaunchHelper::OnBocaSWALaunched(
       window_id.is_valid()) {
     // TODO (b/370871395): Move `SetWindowTrackerForSystemWebAppWindow` to
     // `OnTaskSystemWebAppManager`.
-    system_web_app_manager_->SetWindowTrackerForSystemWebAppWindow(window_id);
+    system_web_app_manager_->SetWindowTrackerForSystemWebAppWindow(
+        window_id, active_tab_tracker_);
     system_web_app_manager_->SetPinStateForSystemWebAppWindow(
         /*pinned=*/true, window_id);
     system_web_app_manager_->SetPinStateForSystemWebAppWindow(

@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
+#include "chromeos/ash/components/boca/activity/active_tab_tracker.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "components/sessions/core/session_id.h"
 #include "url/gurl.h"
@@ -41,7 +42,9 @@ class OnTaskSystemWebAppManager {
 
   // Set the window tracker to track the browser browser window with specified
   // id.
-  virtual void SetWindowTrackerForSystemWebAppWindow(SessionID window_id) = 0;
+  virtual void SetWindowTrackerForSystemWebAppWindow(
+      SessionID window_id,
+      ActiveTabTracker* observer) = 0;
 
   // Creates a background tab with the given URL and restriction_level in the
   // specified Boca SWA window.

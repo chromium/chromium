@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "chromeos/ash/components/boca/activity/active_tab_tracker.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -24,6 +25,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
+
+using ::testing::_;
+using ::testing::StrictMock;
 
 namespace {
 constexpr char kTabUrl1[] = "http://example.com";
@@ -45,7 +49,18 @@ constexpr char kTabGooglePath[] = "http://google.com/blah-blah";
 
 }  // namespace
 
-// TODO: b/367417612 - Migrate to browser test.
+class MockActiveTabTracker : public ash::boca::ActiveTabTracker {
+ public:
+  MOCK_METHOD(void,
+              OnActiveTabChanged,
+              (const std::u16string& title),
+              (override));
+};
+
+// TODO(b/36741761): Migrate to browser test.
+// TODO(b/36741761): Refactor existing browser init timing after migrate to
+// browser test, right now it's very hard to tell when does tab strip update
+// happens.
 class OnTaskLockedSessionWindowTrackerTest : public BrowserWithTestWindowTest {
  public:
   std::unique_ptr<Browser> CreateTestBrowser(bool popup) {
@@ -77,6 +92,8 @@ class OnTaskLockedSessionWindowTrackerTest : public BrowserWithTestWindowTest {
       return (LockedSessionWindowTrackerFactory::GetForBrowserContext(
                   profile()) != nullptr);
     }));
+    LockedSessionWindowTrackerFactory::GetForBrowserContext(profile())
+        ->SetActiveTabTracker(&active_tab_tracker_);
   }
 
   void TearDown() override {
@@ -91,6 +108,9 @@ class OnTaskLockedSessionWindowTrackerTest : public BrowserWithTestWindowTest {
     }
     BrowserWithTestWindowTest::TearDown();
   }
+
+ protected:
+  StrictMock<MockActiveTabTracker> active_tab_tracker_;
 };
 
 TEST_F(OnTaskLockedSessionWindowTrackerTest, RegisterUrlsAndRestrictionLevels) {
@@ -284,6 +304,7 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest, NavigateNonParentTab) {
 
   EXPECT_EQ(on_task_blocklist->current_page_restriction_level(),
             OnTaskBlocklist::RestrictionLevel::kNoRestrictions);
+  EXPECT_CALL(active_tab_tracker_, OnActiveTabChanged(_)).Times(1);
   browser()->tab_strip_model()->ActivateTabAt(1);
   task_environment()->RunUntilIdle();
 
@@ -357,6 +378,8 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest,
   window_tracker->RefreshUrlBlocklist();
   EXPECT_EQ(on_task_blocklist->current_page_restriction_level(),
             OnTaskBlocklist::RestrictionLevel::kOneLevelDeepNavigation);
+
+  EXPECT_CALL(active_tab_tracker_, OnActiveTabChanged(_)).Times(1);
   AddTab(browser(), url_subdomain);
   const GURL url_redirect(kTabUrl1DomainRedirect);
 
@@ -417,6 +440,7 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest,
   EXPECT_EQ(
       on_task_blocklist->current_page_restriction_level(),
       OnTaskBlocklist::RestrictionLevel::kDomainAndOneLevelDeepNavigation);
+  EXPECT_CALL(active_tab_tracker_, OnActiveTabChanged(_)).Times(1);
   // Redirect happens in a new tab.
   AddTab(browser(), url_redirect);
   browser()->tab_strip_model()->UpdateWebContentsStateAt(0,
@@ -452,6 +476,7 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest, SwitchTabWithNewRestrictedLevel) {
   window_tracker->RefreshUrlBlocklist();
   EXPECT_EQ(on_task_blocklist->current_page_restriction_level(),
             OnTaskBlocklist::RestrictionLevel::kLimitedNavigation);
+  EXPECT_CALL(active_tab_tracker_, OnActiveTabChanged(_)).Times(1);
   browser()->tab_strip_model()->ActivateTabAt(1);
   EXPECT_EQ(on_task_blocklist->current_page_restriction_level(),
             OnTaskBlocklist::RestrictionLevel::kNoRestrictions);
@@ -957,6 +982,8 @@ TEST_F(OnTaskNavigationThrottleTest,
   // Add a new tab to the browser to simulate opening a link in a new tab
   ASSERT_TRUE(on_task_blocklist->CanPerformOneLevelNavigation(
       tab_strip_model->GetWebContentsAt(0)));
+  EXPECT_CALL(active_tab_tracker_, OnActiveTabChanged(_)).Times(2);
+
   AddTab(browser(), url_a);
 
   // The new tab can perform one level deep navigation because it is the same
@@ -1077,6 +1104,8 @@ TEST_F(OnTaskNavigationThrottleTest,
   // Add a new tab to the browser to simulate opening a link in a new tab
   ASSERT_TRUE(on_task_blocklist->CanPerformOneLevelNavigation(
       tab_strip_model->GetWebContentsAt(0)));
+  EXPECT_CALL(active_tab_tracker_, OnActiveTabChanged(_)).Times(1);
+
   AddTab(browser(), url_a);
   EXPECT_TRUE(on_task_blocklist->CanPerformOneLevelNavigation(
       tab_strip_model->GetWebContentsAt(0)));
@@ -1262,6 +1291,8 @@ TEST_F(OnTaskNavigationThrottleTest, BlockUrlInNewTabShouldClose) {
       OnTaskBlocklist::RestrictionLevel::kLimitedNavigation);
   window_tracker->RefreshUrlBlocklist();
   task_environment()->RunUntilIdle();
+  EXPECT_CALL(active_tab_tracker_, OnActiveTabChanged(_)).Times(2);
+
   content::WebContents* new_tab = browser()->OpenURL(
       content::OpenURLParams(url_b, content::Referrer(),
                              WindowOpenDisposition::NEW_FOREGROUND_TAB,

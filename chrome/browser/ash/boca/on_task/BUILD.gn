@@ -39,6 +39,7 @@ static_library("on_task") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chromeos/ash/components/boca",
+    "//chromeos/ash/components/boca:activity",
     "//chromeos/ash/components/boca/on_task",
     "//chromeos/ash/components/browser_context_helper",
     "//components/keyed_service/content",
@@ -71,6 +72,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/ash",
     "//chrome/browser/ui/ash:test_support",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/boca:activity",
     "//content/test:test_support",
   ]
 }

@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chromeos/ash/components/boca/activity/active_tab_tracker.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_thread.h"
@@ -132,8 +133,10 @@ void OnTaskSystemWebAppManagerImpl::SetPinStateForSystemWebAppWindow(
   }
 }
 
+// TODO(b/367417612): Add unit test for this function.
 void OnTaskSystemWebAppManagerImpl::SetWindowTrackerForSystemWebAppWindow(
-    SessionID window_id) {
+    SessionID window_id,
+    ActiveTabTracker* active_tab_tracker) {
   Browser* const browser = GetBrowserWindowWithID(window_id);
   if (!browser) {
     return;
@@ -143,6 +146,7 @@ void OnTaskSystemWebAppManagerImpl::SetWindowTrackerForSystemWebAppWindow(
     return;
   }
   window_tracker->InitializeBrowserInfoForTracking(browser);
+  window_tracker->SetActiveTabTracker(active_tab_tracker);
 }
 
 SessionID OnTaskSystemWebAppManagerImpl::CreateBackgroundTabWithUrl(

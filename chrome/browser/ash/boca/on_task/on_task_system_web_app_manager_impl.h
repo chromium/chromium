@@ -19,6 +19,7 @@ class Profile;
 class SessionID;
 
 namespace ash::boca {
+class ActiveTabTracker;
 
 // `OnTaskSystemWebAppManager` implementation that is essentially a thin wrapper
 // around SWA window management APIs, specifically launch, close, and window
@@ -35,7 +36,9 @@ class OnTaskSystemWebAppManagerImpl : public OnTaskSystemWebAppManager {
   SessionID GetActiveSystemWebAppWindowID() override;
   void SetPinStateForSystemWebAppWindow(bool pinned,
                                         SessionID window_id) override;
-  void SetWindowTrackerForSystemWebAppWindow(SessionID window_id) override;
+  void SetWindowTrackerForSystemWebAppWindow(
+      SessionID window_id,
+      ActiveTabTracker* observer) override;
   SessionID CreateBackgroundTabWithUrl(
       SessionID window_id,
       GURL url,

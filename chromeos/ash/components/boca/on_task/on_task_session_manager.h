@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "chromeos/ash/components/boca/activity/active_tab_tracker.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
@@ -36,6 +37,7 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer {
                         const ::boca::UserIdentity& producer) override;
   void OnSessionEnded(const std::string& session_id) override;
   void OnBundleUpdated(const ::boca::Bundle& bundle) override;
+  ActiveTabTracker* active_tab_tracker() { return &active_tab_tracker_; }
 
  private:
   // Helper class that is used to launch the Boca system web app as well as
@@ -43,7 +45,8 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer {
   // spawned.
   class SystemWebAppLaunchHelper {
    public:
-    SystemWebAppLaunchHelper(OnTaskSystemWebAppManager* system_web_app_manager);
+    SystemWebAppLaunchHelper(OnTaskSystemWebAppManager* system_web_app_manager,
+                             ActiveTabTracker* tracker);
     SystemWebAppLaunchHelper(const SystemWebAppLaunchHelper&) = delete;
     SystemWebAppLaunchHelper& operator=(const SystemWebAppLaunchHelper&) =
         delete;
@@ -64,6 +67,7 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer {
     // Owned by the parent class `OnTaskSessionManager` that owns an instance of
     // the class `SystemWebAppLaunchHelper`, so there won't be UAF errors.
     raw_ptr<OnTaskSystemWebAppManager> system_web_app_manager_;
+    raw_ptr<ActiveTabTracker> active_tab_tracker_;
 
     SEQUENCE_CHECKER(sequence_checker_);
 
@@ -77,6 +81,7 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer {
 
   // Callback triggered when a tab is removed.
   void OnTabRemoved(GURL url);
+  ActiveTabTracker active_tab_tracker_;
 
   const std::unique_ptr<OnTaskSystemWebAppManager> system_web_app_manager_;
 
