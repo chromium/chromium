@@ -37,9 +37,6 @@ namespace ash {
 
 namespace {
 
-constexpr char kTemporaryServiceConfiguredButNotUsable[] =
-    "Temporary service configured but not usable";
-
 // Strip surrounding "" from keys (if present).
 std::string StripQuotations(const std::string& in_str) {
   size_t len = in_str.length();

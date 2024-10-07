@@ -392,7 +392,12 @@ void FakeShillServiceClient::GetWiFiPassphrase(
 
   const std::string* passphrase =
       service_properties->FindString(shill::kPassphraseProperty);
-  std::move(callback).Run(passphrase ? *passphrase : std::string());
+  if (!passphrase) {
+    std::move(error_callback)
+        .Run("Error.PassphraseNotFound", "Passphrase not found");
+    return;
+  }
+  std::move(callback).Run(*passphrase);
 }
 
 void FakeShillServiceClient::GetEapPassphrase(

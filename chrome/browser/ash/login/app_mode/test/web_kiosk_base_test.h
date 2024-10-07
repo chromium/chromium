@@ -53,9 +53,11 @@ class WebKioskBaseTest : public OobeBaseTest {
   bool LaunchApp();
 
   // Initializes a regular online web kiosk.
+  // If `simulate_online` is false, the caller should set up the network by
+  // itself before calling this function.
   // This function should be sufficient for testing non-kiosk specific features
   // in web kiosk.
-  void InitializeRegularOnlineKiosk();
+  void InitializeRegularOnlineKiosk(bool simulate_online = true);
 
   void SetAppInstallUrl(const GURL& app_install_url);
 

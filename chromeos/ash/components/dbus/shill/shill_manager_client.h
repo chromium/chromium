@@ -181,6 +181,12 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
     virtual void SetSimulateConfigurationResult(
         FakeShillSimulatedResult configuration_result) = 0;
 
+    // Defines the error message which will be returned if configuration result
+    // is set to failure with `SetSimulateConfigurationResult`.
+    virtual void SetSimulateConfigurationError(
+        std::string_view error_name,
+        std::string_view error_message) = 0;
+
     // Makes SetTetheringEnabled succeed, fail, or timeout and the enable
     // tethering error string when it failed.
     virtual void SetSimulateTetheringEnableResult(

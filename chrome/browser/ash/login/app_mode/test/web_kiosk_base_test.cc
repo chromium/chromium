@@ -90,8 +90,10 @@ bool WebKioskBaseTest::LaunchApp() {
   return LoginScreenTestApi::LaunchApp(account_id());
 }
 
-void WebKioskBaseTest::InitializeRegularOnlineKiosk() {
-  SetOnline(true);
+void WebKioskBaseTest::InitializeRegularOnlineKiosk(bool simulate_online) {
+  if (simulate_online) {
+    SetOnline(true);
+  }
   PrepareAppLaunch();
   LaunchApp();
   KioskSessionInitializedWaiter().Wait();

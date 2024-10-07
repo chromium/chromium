@@ -374,8 +374,9 @@ void FakeShillManagerClient::ConfigureService(
       break;
     case FakeShillSimulatedResult::kFailure:
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(error_callback), "Error",
-                                    "Simulated failure"));
+          FROM_HERE, base::BindOnce(std::move(error_callback),
+                                    simulate_configuration_error_.name,
+                                    simulate_configuration_error_.message));
       return;
     case FakeShillSimulatedResult::kTimeout:
       // No callbacks get executed and the caller should eventually timeout.
@@ -1107,6 +1108,13 @@ bool FakeShillManagerClient::GetFastTransitionStatus() {
 void FakeShillManagerClient::SetSimulateConfigurationResult(
     FakeShillSimulatedResult configuration_result) {
   simulate_configuration_result_ = configuration_result;
+}
+
+void FakeShillManagerClient::SetSimulateConfigurationError(
+    std::string_view error_name,
+    std::string_view error_message) {
+  simulate_configuration_error_.name = error_name;
+  simulate_configuration_error_.message = error_message;
 }
 
 void FakeShillManagerClient::SetSimulateTetheringEnableResult(
