@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/inspector/inspector_performance_agent.h"
 
 #include <utility>
@@ -32,16 +27,15 @@ namespace blink {
 namespace TimeDomain = protocol::Performance::SetTimeDomain::TimeDomainEnum;
 
 namespace {
-constexpr bool isPlural(const char* str, int len) {
-  return len > 1 && str[len - 2] == 's';
+constexpr bool IsPlural(std::string_view str) {
+  return !str.empty() && str.back() == 's';
 }
 
-static constexpr const char* kInstanceCounterNames[] = {
-#define INSTANCE_COUNTER_NAME(name) \
-  (isPlural(#name, sizeof(#name)) ? #name : #name "s"),
+static constexpr auto kInstanceCounterNames = std::to_array<const char*>({
+#define INSTANCE_COUNTER_NAME(name) (IsPlural(#name) ? #name : #name "s"),
     INSTANCE_COUNTERS_LIST(INSTANCE_COUNTER_NAME)
 #undef INSTANCE_COUNTER_NAME
-};
+});
 
 std::unique_ptr<base::ProcessMetrics> GetCurrentProcessMetrics() {
   base::ProcessHandle handle = base::Process::Current().Handle();
