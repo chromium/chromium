@@ -175,7 +175,13 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTest, CubicBezier) {
   RunOverlayTest("lens/overlay/cubic_bezier_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayTest, TranslateButton) {
+#if defined(UNDEFINED_SANITIZER)
+#define MAYBE_TranslateButton DISABLED_TranslateButton
+#else
+#define MAYBE_TranslateButton TranslateButton
+#endif
+// TODO(crbug.com/370882134): flaky on ubsan.
+IN_PROC_BROWSER_TEST_F(LensOverlayTest, MAYBE_TranslateButton) {
   RunOverlayTest("lens/overlay/translate_button_test.js", "mocha.run()");
 }
 
