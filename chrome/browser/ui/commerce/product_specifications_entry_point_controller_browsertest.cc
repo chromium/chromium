@@ -356,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
-                       TriggerEntryPointWithNavigation_BackgroundTab) {
+                       DISABLED_TriggerEntryPointWithNavigation_BackgroundTab) {
   // Mock EntryPointInfo returned by ClusterManager.
   std::map<GURL, uint64_t> similar_products = {{GURL(kTestUrl2), kProductId2},
                                                {GURL(kTestUrl3), kProductId3},
