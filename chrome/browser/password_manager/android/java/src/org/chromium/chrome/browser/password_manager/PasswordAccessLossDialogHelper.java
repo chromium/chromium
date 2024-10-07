@@ -68,7 +68,7 @@ public class PasswordAccessLossDialogHelper {
         }
         if (shouldShowAccessLossWarningWhenNoGmsNoPasswords(prefService, buildInfo)) {
             new PasswordAccessLossPostExportDialogController(
-                            context, modalDialogManagerSupplier.get())
+                            context, modalDialogManagerSupplier.get(), customTabIntentHelper)
                     .showPostExportDialog();
             return true;
         }

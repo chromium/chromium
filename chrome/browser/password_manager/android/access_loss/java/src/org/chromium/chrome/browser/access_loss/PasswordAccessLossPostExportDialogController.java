@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.access_loss.PasswordAccessLossDialogSe
 import static org.chromium.chrome.browser.access_loss.PasswordAccessLossDialogSettingsProperties.HELP_BUTTON_VISIBILITY;
 import static org.chromium.chrome.browser.access_loss.PasswordAccessLossDialogSettingsProperties.TITLE;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
@@ -16,6 +17,8 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.chrome.browser.password_manager.CustomTabIntentHelper;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -31,13 +34,17 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  */
 public class PasswordAccessLossPostExportDialogController
         implements ModalDialogProperties.Controller {
-    private Context mContext;
-    private ModalDialogManager mModalDialogManager;
+    private final Context mContext;
+    private final ModalDialogManager mModalDialogManager;
+    private final HelpUrlLauncher mHelpUrLauncher;
 
     public PasswordAccessLossPostExportDialogController(
-            Context context, @NonNull ModalDialogManager modalDialogManager) {
+            Context context,
+            @NonNull ModalDialogManager modalDialogManager,
+            CustomTabIntentHelper customTabIntentHelper) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
+        mHelpUrLauncher = new HelpUrlLauncher(customTabIntentHelper);
     }
 
     public void showPostExportDialog() {
@@ -63,7 +70,12 @@ public class PasswordAccessLossPostExportDialogController
                         .with(
                                 HELP_BUTTON_CALLBACK,
                                 () -> {
-                                    /*TODO (crbug.com/370730099): Implement*/
+                                    Activity activity = ContextUtils.activityFromContext(mContext);
+                                    if (activity == null) return;
+                                    mHelpUrLauncher.showHelpArticle(
+                                            activity,
+                                            HelpUrlLauncher
+                                                    .GOOGLE_PLAY_SUPPORTED_DEVICES_SUPPORT_URL);
                                 })
                         .build();
         PropertyModelChangeProcessor.create(
