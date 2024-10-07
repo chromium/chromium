@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/debug/alias.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "components/sync/engine/commit_contribution.h"
@@ -104,6 +105,10 @@ size_t CommitProcessor::GatherCommitContributionsForType(
     DataType type,
     size_t max_entries,
     Commit::ContributionMap* contributions) {
+  // Use base::debug::Alias() to ensure that crash dumps in reports include
+  // DataType.
+  base::debug::Alias(&type);
+
   if (max_entries == 0) {
     return 0;
   }
