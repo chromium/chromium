@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/location.h"
-#include "components/sync/base/data_type.h"
 
 namespace syncer {
 
@@ -28,27 +27,25 @@ class SyncError {
     // A cryptographer error was detected (i.e. the datatype is encrypted and
     // encryption keys are missing).
     CRYPTO_ERROR,
-    // A datatype is not ready to start yet, so should be neither purged nor
-    // enabled until it is ready.
-    UNREADY_ERROR,
-    // A datatype should be disabled and purged due to configuration
-    // constraints.
-    DATATYPE_POLICY_ERROR,
+    // A datatype cannot start because its controller determined that it doesn't
+    // meet all preconditions via `DataTypeController::GetPreconditionState()`.
+    // Specifically, it returned `kMustStopAndKeepData`.
+    PRECONDITION_ERROR_WITH_KEEP_DATA,
+    // Same as above, but the controller returned `kMustStopAndClearData`.
+    PRECONDITION_ERROR_WITH_CLEAR_DATA,
   };
 
-  // Create a new Sync error of type `error_type` triggered by `data_type`
-  // from the specified location.
+  // Create a new Sync error of type `error_type` triggered from the specified
+  // location.
   SyncError(const base::Location& location,
             ErrorType error_type,
-            const std::string& message,
-            DataType data_type);
+            const std::string& message);
   SyncError(const SyncError& other) = default;
   SyncError& operator=(const SyncError& other) = default;
   ~SyncError();
 
   const base::Location& location() const;
   const std::string& message() const;
-  DataType data_type() const;
   ErrorType error_type() const;
 
   // Type specific message prefix for logging and UI purposes.
@@ -57,7 +54,6 @@ class SyncError {
  private:
   base::Location location_;
   std::string message_;
-  DataType data_type_;
   ErrorType error_type_;
 };
 

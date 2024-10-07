@@ -15,24 +15,20 @@ namespace {
 TEST(SyncErrorTest, ModelError) {
   base::Location location = FROM_HERE;
   std::string msg = "test";
-  DataType type = PREFERENCES;
-  SyncError error(location, SyncError::MODEL_ERROR, msg, type);
+  SyncError error(location, SyncError::MODEL_ERROR, msg);
   EXPECT_EQ(location.line_number(), error.location().line_number());
   EXPECT_EQ("model error was encountered: ", error.GetMessagePrefix());
   EXPECT_EQ(msg, error.message());
-  EXPECT_EQ(type, error.data_type());
 }
 
-TEST(SyncErrorTest, PolicyError) {
+TEST(SyncErrorTest, PreconditionError) {
   base::Location location = FROM_HERE;
   std::string msg = "test";
-  DataType type = PREFERENCES;
-  SyncError error(location, SyncError::DATATYPE_POLICY_ERROR, msg, type);
+  SyncError error(location, SyncError::PRECONDITION_ERROR_WITH_CLEAR_DATA, msg);
   EXPECT_EQ(location.line_number(), error.location().line_number());
-  EXPECT_EQ("disabled due to configuration constraints: ",
+  EXPECT_EQ("failed precondition was encountered with clear data: ",
             error.GetMessagePrefix());
   EXPECT_EQ(msg, error.message());
-  EXPECT_EQ(type, error.data_type());
 }
 
 }  // namespace

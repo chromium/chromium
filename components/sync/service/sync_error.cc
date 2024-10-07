@@ -11,12 +11,8 @@ namespace syncer {
 
 SyncError::SyncError(const base::Location& location,
                      ErrorType error_type,
-                     const std::string& message,
-                     DataType data_type)
-    : location_(location),
-      message_(message),
-      data_type_(data_type),
-      error_type_(error_type) {}
+                     const std::string& message)
+    : location_(location), message_(message), error_type_(error_type) {}
 
 SyncError::~SyncError() = default;
 
@@ -26,10 +22,6 @@ const base::Location& SyncError::location() const {
 
 const std::string& SyncError::message() const {
   return message_;
-}
-
-DataType SyncError::data_type() const {
-  return data_type_;
 }
 
 SyncError::ErrorType SyncError::error_type() const {
@@ -44,10 +36,10 @@ std::string SyncError::GetMessagePrefix() const {
       return "configuration error was encountered: ";
     case CRYPTO_ERROR:
       return "cryptographer error was encountered: ";
-    case UNREADY_ERROR:
-      return "unready error was encountered: ";
-    case DATATYPE_POLICY_ERROR:
-      return "disabled due to configuration constraints: ";
+    case PRECONDITION_ERROR_WITH_KEEP_DATA:
+      return "failed precondition was encountered with keep data: ";
+    case PRECONDITION_ERROR_WITH_CLEAR_DATA:
+      return "failed precondition was encountered with clear data: ";
   }
   NOTREACHED();
 }

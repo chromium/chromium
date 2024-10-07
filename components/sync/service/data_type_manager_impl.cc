@@ -145,9 +145,8 @@ DataTypeManagerImpl::DataTypeManagerImpl(
 
     if (state == DataTypeController::FAILED) {
       data_type_status_table_.UpdateFailedDataType(
-          type,
-          SyncError(FROM_HERE, SyncError::MODEL_ERROR,
-                    "Preexisting controller error on Sync startup", type));
+          type, SyncError(FROM_HERE, SyncError::MODEL_ERROR,
+                          "Preexisting controller error on Sync startup"));
     }
 
     // TODO(crbug.com/40901755): query the initial state of preconditions.
@@ -234,15 +233,15 @@ void DataTypeManagerImpl::DataTypePreconditionChanged(DataType type) {
     case DataTypeController::PreconditionState::kMustStopAndClearData:
       model_load_manager_.StopDatatype(
           type, SyncStopMetadataFate::CLEAR_METADATA,
-          SyncError(FROM_HERE, syncer::SyncError::DATATYPE_POLICY_ERROR,
-                    "Datatype preconditions not met.", type));
+          SyncError(FROM_HERE, SyncError::PRECONDITION_ERROR_WITH_CLEAR_DATA,
+                    ""));
       break;
 
     case DataTypeController::PreconditionState::kMustStopAndKeepData:
       model_load_manager_.StopDatatype(
           type, SyncStopMetadataFate::KEEP_METADATA,
-          SyncError(FROM_HERE, syncer::SyncError::UNREADY_ERROR,
-                    "Data type is unready.", type));
+          SyncError(FROM_HERE, SyncError::PRECONDITION_ERROR_WITH_KEEP_DATA,
+                    ""));
       break;
   }
 }
@@ -377,8 +376,8 @@ TypeStatusMapForDebugging DataTypeManagerImpl::GetTypeStatusMapForDebugging(
               base::StrCat({"Error: ", error.location().ToString(), ", ",
                             error.GetMessagePrefix(), error.message()});
           break;
-        case SyncError::UNREADY_ERROR:
-        case SyncError::DATATYPE_POLICY_ERROR:
+        case SyncError::PRECONDITION_ERROR_WITH_KEEP_DATA:
+        case SyncError::PRECONDITION_ERROR_WITH_CLEAR_DATA:
           type_status.severity = TypeStatusForDebugging::Severity::kInfo;
           type_status.message = error.message();
           break;
@@ -494,9 +493,8 @@ void DataTypeManagerImpl::Restart() {
   for (const auto& [type, controller] : controllers_) {
     if (controller->state() == DataTypeController::FAILED) {
       data_type_status_table_.UpdateFailedDataType(
-          type,
-          SyncError(FROM_HERE, SyncError::MODEL_ERROR,
-                    "Preexisting controller error on configuration", type));
+          type, SyncError(FROM_HERE, SyncError::MODEL_ERROR,
+                          "Preexisting controller error on configuration"));
     }
   }
 
@@ -508,7 +506,7 @@ void DataTypeManagerImpl::Restart() {
     encrypted_types.RemoveAll(data_type_status_table_.GetCryptoErrorTypes());
     for (DataType type : encrypted_types) {
       data_type_status_table_.UpdateFailedDataType(
-          type, SyncError(FROM_HERE, SyncError::CRYPTO_ERROR, "", type));
+          type, SyncError(FROM_HERE, SyncError::CRYPTO_ERROR, ""));
     }
   } else {
     data_type_status_table_.ResetCryptoErrors();
@@ -586,31 +584,28 @@ bool DataTypeManagerImpl::UpdatePreconditionError(DataType type) {
 
   switch (iter->second->GetPreconditionState()) {
     case DataTypeController::PreconditionState::kPreconditionsMet: {
-      const bool data_type_policy_error_changed =
-          data_type_status_table_.ResetDataTypePolicyErrorFor(type);
-      const bool unready_status_changed =
-          data_type_status_table_.ResetUnreadyErrorFor(type);
-      if (!data_type_policy_error_changed && !unready_status_changed) {
+      if (!data_type_status_table_.ResetPreconditionErrorFor(type)) {
         // Nothing changed.
         return false;
       }
       // If preconditions are newly met, the datatype should be immediately
       // redownloaded as part of the datatype configuration (most relevant for
-      // the UNREADY_ERROR case which usually won't clear sync metadata).
+      // the PRECONDITION_ERROR_WITH_KEEP_DATA case which usually won't clear
+      // sync metadata).
       force_redownload_types_.Put(type);
       return true;
     }
 
     case DataTypeController::PreconditionState::kMustStopAndClearData: {
       return data_type_status_table_.UpdateFailedDataType(
-          type, SyncError(FROM_HERE, SyncError::DATATYPE_POLICY_ERROR,
-                          "Datatype preconditions not met.", type));
+          type, SyncError(FROM_HERE,
+                          SyncError::PRECONDITION_ERROR_WITH_CLEAR_DATA, ""));
     }
 
     case DataTypeController::PreconditionState::kMustStopAndKeepData: {
       return data_type_status_table_.UpdateFailedDataType(
-          type, SyncError(FROM_HERE, SyncError::UNREADY_ERROR,
-                          "Datatype not ready at config time.", type));
+          type, SyncError(FROM_HERE,
+                          SyncError::PRECONDITION_ERROR_WITH_KEEP_DATA, ""));
     }
   }
 
@@ -659,9 +654,8 @@ void DataTypeManagerImpl::ConfigurationCompleted(
   if (!failed_configuration_types.empty()) {
     for (DataType type : failed_configuration_types) {
       data_type_status_table_.UpdateFailedDataType(
-          type,
-          SyncError(FROM_HERE, SyncError::CONFIGURATION_ERROR,
-                    "Backend failed to download and configure type.", type));
+          type, SyncError(FROM_HERE, SyncError::CONFIGURATION_ERROR,
+                          "Backend failed to download and configure type."));
     }
     needs_reconfigure_ = true;
   }

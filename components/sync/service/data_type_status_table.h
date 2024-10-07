@@ -34,15 +34,10 @@ class DataTypeStatusTable {
   // Resets the set of types with cryptographer errors.
   void ResetCryptoErrors();
 
-  // Removes |type| from the data_type_errors_ set. Returns true if the type
-  // was removed from the error set, false if the type did not have a data type
-  // error to begin with.
-  bool ResetDataTypePolicyErrorFor(DataType type);
-
-  // Removes |type| from the unread_errors_ set. Returns true if the type
-  // was removed from the error set, false if the type did not have an unready
-  // error to begin with.
-  bool ResetUnreadyErrorFor(DataType type);
+  // Resets the set of types with precondition errors (regardless of clear vs
+  // keep data). Returns true if the type was removed from the error set, false
+  // if the type did not have a precondition error to begin with.
+  bool ResetPreconditionErrorFor(DataType type);
 
   // Returns a list of all the errors this class has recorded.
   TypeErrorMap GetAllErrors() const;
@@ -60,16 +55,15 @@ class DataTypeStatusTable {
 
  private:
   // List of data types that failed due to runtime errors and should be
-  // disabled. ResetDataTypeError can remove them from this list.
+  // disabled.
   TypeErrorMap data_type_errors_;
-  TypeErrorMap data_type_policy_errors_;
+  TypeErrorMap precondition_errors_with_clear_data_;
 
   // List of data types that failed due to the cryptographer not being ready.
   TypeErrorMap crypto_errors_;
 
-  // List of data types that could not start due to not being ready. These can
-  // be marked as ready by calling ResetUnreadyErrorFor(..).
-  TypeErrorMap unready_errors_;
+  // List of data types that could not start due to not being ready.
+  TypeErrorMap precondition_errors_with_keep_data_;
 };
 
 }  // namespace syncer
