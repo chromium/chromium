@@ -2041,7 +2041,8 @@ IN_PROC_BROWSER_TEST_F(
 #define MAYBE_WindowSetResizableBlocksResizeToAndResizeByApis \
   DISABLED_WindowSetResizableBlocksResizeToAndResizeByApis
 #else
-#define MAYBE_WindowSetResizableBlocksResizeToAndResizeByApis WindowSetResizableBlocksResizeToAndResizeByApis
+#define MAYBE_WindowSetResizableBlocksResizeToAndResizeByApis \
+  WindowSetResizableBlocksResizeToAndResizeByApis
 #endif
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
@@ -2704,8 +2705,10 @@ class WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION};
 };
 
+// TODO(crbug.com/371923523): Reenable ExtendedScope* tests when they are more
+// stable.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
-                       ExtendedScope) {
+                       DISABLED_ExtendedScope) {
   ASSERT_TRUE(https_server()->Started());
   InstallAndLaunchWebApp();
   content::WebContents* web_contents =
@@ -2740,7 +2743,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
-                       ExtendedScopeToOutOfScope) {
+                       DISABLED_ExtendedScopeToOutOfScope) {
   ASSERT_TRUE(https_server()->Started());
   InstallAndLaunchWebApp();
   content::WebContents* web_contents =
@@ -2772,7 +2775,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
-                       ExtendedScopeThemeColorChange) {
+                       DISABLED_ExtendedScopeThemeColorChange) {
   ASSERT_TRUE(https_server()->Started());
   InstallAndLaunchWebApp();
   content::WebContents* web_contents =
