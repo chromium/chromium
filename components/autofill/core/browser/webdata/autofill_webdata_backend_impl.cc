@@ -846,6 +846,16 @@ AutofillWebDataBackendImpl::GetMaskedBankAccounts(WebDatabase* db) {
       MASKED_BANK_ACCOUNTS_RESULT, std::move(masked_bank_accounts));
 }
 
+std::unique_ptr<WDTypedResult>
+AutofillWebDataBackendImpl::GetPaymentInstruments(WebDatabase* db) {
+  CHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  std::vector<sync_pb::PaymentInstrument> payment_instruments;
+  PaymentsAutofillTable::FromWebDatabase(db)->GetPaymentInstruments(
+      payment_instruments);
+  return std::make_unique<WDResult<std::vector<sync_pb::PaymentInstrument>>>(
+      PAYMENT_INSTRUMENT_RESULT, std::move(payment_instruments));
+}
+
 WebDatabase::State AutofillWebDataBackendImpl::ClearAllServerData(
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());

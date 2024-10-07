@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/credit_card_art_image.h"
 #include "components/autofill/core/browser/data_model/credit_card_benefit_test_api.h"
+#include "components/autofill/core/browser/data_model/ewallet.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -56,6 +57,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/user_selectable_type.h"
+#include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/version_info/version_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -2044,6 +2046,227 @@ TEST_F(PaymentsDataManagerTest,
   // We need to call `Refresh()` to ensure that the BankAccounts are loaded
   // again from the WebDatabase which triggers the call to fetch icons from
   // image fetcher.
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+}
+
+TEST_F(PaymentsDataManagerTest, HasEwalletAccounts_ExpOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillSyncEwalletAccounts);
+  sync_pb::PaymentInstrument payment_instrument_1 =
+      test::CreatePaymentInstrumentWithEwalletAccount(1234L);
+  sync_pb::PaymentInstrument payment_instrument_2 =
+      test::CreatePaymentInstrumentWithEwalletAccount(2345L);
+  ASSERT_TRUE(GetServerDataTable()->SetPaymentInstruments(
+      {payment_instrument_1, payment_instrument_2}));
+
+  // Refresh the PaymentsDataManager. Under normal circumstances with the flag
+  // on, this step would load the eWallet payment instruments from the
+  // WebDatabase.
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  // Verify that no eWallet accounts are loaded into PaymentsDataManager because
+  // the experiment is turned off.
+  EXPECT_FALSE(payments_data_manager().HasEwalletAccounts());
+}
+
+TEST_F(PaymentsDataManagerTest, HasEwalletAccounts_PaymentMethodsDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillSyncEwalletAccounts);
+  sync_pb::PaymentInstrument payment_instrument_1 =
+      test::CreatePaymentInstrumentWithEwalletAccount(1234L);
+  sync_pb::PaymentInstrument payment_instrument_2 =
+      test::CreatePaymentInstrumentWithEwalletAccount(2345L);
+  ASSERT_TRUE(GetServerDataTable()->SetPaymentInstruments(
+      {payment_instrument_1, payment_instrument_2}));
+
+  // Refresh the PaymentsDataManager. Under normal circumstances with the flag
+  // on, this step would load the bank accounts from the WebDatabase.
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  // Disable payment methods prefs.
+  prefs::SetAutofillPaymentMethodsEnabled(prefs_.get(), false);
+
+  // Verify that no eWallet accounts are loaded into PaymentsDataManager because
+  // the AutofillPaymentMethodsEnabled pref is set to false.
+  EXPECT_FALSE(payments_data_manager().HasEwalletAccounts());
+}
+
+TEST_F(PaymentsDataManagerTest, HasEwalletAccounts_NoEwalletAccounts) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillSyncEwalletAccounts);
+
+  // If the user doesn't have any eWallet accounts, or if the eWallet accounts
+  // are not synced to PaymentsDatamanager, HasEwalletAccounts should return
+  // false.
+  EXPECT_FALSE(payments_data_manager().HasEwalletAccounts());
+}
+
+TEST_F(PaymentsDataManagerTest, HasEwalletAccounts_EwalletAccountsExist) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillSyncEwalletAccounts);
+  sync_pb::PaymentInstrument payment_instrument_1 =
+      test::CreatePaymentInstrumentWithEwalletAccount(1234L);
+  sync_pb::PaymentInstrument payment_instrument_2 =
+      test::CreatePaymentInstrumentWithEwalletAccount(2345L);
+  ASSERT_TRUE(GetServerDataTable()->SetPaymentInstruments(
+      {payment_instrument_1, payment_instrument_2}));
+
+  // Refresh the PaymentsDataManager. Under normal circumstances with the flag
+  // on, this step would load the bank accounts from the WebDatabase.
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  EXPECT_TRUE(payments_data_manager().HasEwalletAccounts());
+}
+
+TEST_F(PaymentsDataManagerTest, GetEwalletAccounts_ExpOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillSyncEwalletAccounts);
+  sync_pb::PaymentInstrument payment_instrument_1 =
+      test::CreatePaymentInstrumentWithEwalletAccount(1234L);
+  sync_pb::PaymentInstrument payment_instrument_2 =
+      test::CreatePaymentInstrumentWithEwalletAccount(2345L);
+  ASSERT_TRUE(GetServerDataTable()->SetPaymentInstruments(
+      {payment_instrument_1, payment_instrument_2}));
+
+  base::span<const Ewallet> ewallet_accounts =
+      payments_data_manager().GetEwalletAccounts();
+  // Since the PaymentsDataManager was initialized before adding the eWallet
+  // payment instruments to the WebDatabase, we expect GetEwalletAccounts to
+  // return an empty list.
+  EXPECT_EQ(0u, ewallet_accounts.size());
+
+  // Refresh the PaymentsDataManager. Under normal circumstances with the flag
+  // on, this step would load the bank accounts from the WebDatabase.
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  // Verify that no eWallet accounts are loaded into PaymentsDataManager because
+  // the experiment is turned off.
+  ewallet_accounts = payments_data_manager().GetEwalletAccounts();
+  EXPECT_EQ(0u, ewallet_accounts.size());
+}
+
+TEST_F(PaymentsDataManagerTest, GetEwalletAccounts_PaymentMethodsDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillSyncEwalletAccounts);
+  sync_pb::PaymentInstrument payment_instrument_1 =
+      test::CreatePaymentInstrumentWithEwalletAccount(1234L);
+  sync_pb::PaymentInstrument payment_instrument_2 =
+      test::CreatePaymentInstrumentWithEwalletAccount(2345L);
+  ASSERT_TRUE(GetServerDataTable()->SetPaymentInstruments(
+      {payment_instrument_1, payment_instrument_2}));
+
+  // We need to call `Refresh()` to ensure that the eWallet payment instruments
+  // are loaded again from the WebDatabase.
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  // Disable payment methods prefs.
+  prefs::SetAutofillPaymentMethodsEnabled(prefs_.get(), false);
+
+  // Verify that no eWallet accounts are loaded into PaymentsDataManager because
+  // the AutofillPaymentMethodsEnabled pref is set to false.
+  EXPECT_THAT(payments_data_manager().GetEwalletAccounts(), testing::IsEmpty());
+}
+
+TEST_F(PaymentsDataManagerTest, GetEwalletAccounts_DatabaseUpdated) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillSyncEwalletAccounts);
+  sync_pb::PaymentInstrument payment_instrument_1 =
+      test::CreatePaymentInstrumentWithEwalletAccount(1234L);
+  sync_pb::PaymentInstrument payment_instrument_2 =
+      test::CreatePaymentInstrumentWithEwalletAccount(2345L);
+  ASSERT_TRUE(GetServerDataTable()->SetPaymentInstruments(
+      {payment_instrument_1, payment_instrument_2}));
+
+  // Since the PaymentsDataManager was initialized before adding the eWallet
+  // payment instruments to the WebDatabase, we expect GetEwalletAccounts to
+  // return an empty list.
+  base::span<const Ewallet> ewallet_accounts =
+      payments_data_manager().GetEwalletAccounts();
+  EXPECT_EQ(0u, ewallet_accounts.size());
+
+  // We need to call `Refresh()` to ensure that the eWallet payment instruments
+  // are loaded again from the WebDatabase.
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  ewallet_accounts = payments_data_manager().GetEwalletAccounts();
+  EXPECT_EQ(2u, ewallet_accounts.size());
+}
+
+TEST_F(PaymentsDataManagerTest, GetEwalletAccounts_VerifyFields) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillSyncEwalletAccounts);
+  sync_pb::PaymentInstrument payment_instrument =
+      test::CreatePaymentInstrumentWithEwalletAccount(1234L);
+  payment_instrument.mutable_ewallet_details()->add_supported_payment_link_uris(
+      "supported_payment_link_uri_2");
+  ASSERT_TRUE(
+      GetServerDataTable()->SetPaymentInstruments({payment_instrument}));
+
+  // Since the PaymentsDataManager was initialized before adding the eWallet
+  // payment instruments to the WebDatabase, we expect GetEwalletAccounts to
+  // return an empty list.
+  base::span<const Ewallet> ewallet_accounts =
+      payments_data_manager().GetEwalletAccounts();
+  EXPECT_EQ(0u, ewallet_accounts.size());
+
+  // We need to call `Refresh()` to ensure that the eWallet payment instruments
+  // are loaded again from the WebDatabase.
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  ewallet_accounts = payments_data_manager().GetEwalletAccounts();
+  EXPECT_EQ(1u, ewallet_accounts.size());
+
+  const Ewallet ewallet_account = ewallet_accounts.front();
+  EXPECT_EQ(ewallet_account.payment_instrument().instrument_id(),
+            payment_instrument.instrument_id());
+  EXPECT_EQ(ewallet_account.payment_instrument().instrument_id(),
+            payment_instrument.instrument_id());
+  EXPECT_EQ(ewallet_account.payment_instrument().nickname(),
+            base::UTF8ToUTF16(payment_instrument.nickname()));
+  EXPECT_EQ(ewallet_account.payment_instrument().display_icon_url().spec(),
+            payment_instrument.display_icon_url());
+  EXPECT_EQ(ewallet_account.payment_instrument().is_fido_enrolled(),
+            payment_instrument.device_details().is_fido_enrolled());
+  EXPECT_EQ(
+      ewallet_account.ewallet_name(),
+      base::UTF8ToUTF16(payment_instrument.ewallet_details().ewallet_name()));
+  EXPECT_EQ(ewallet_account.account_display_name(),
+            base::UTF8ToUTF16(
+                payment_instrument.ewallet_details().account_display_name()));
+  EXPECT_EQ(ewallet_account.supported_payment_link_uris().size(),
+            static_cast<size_t>(payment_instrument.ewallet_details()
+                                    .supported_payment_link_uris()
+                                    .size()));
+}
+
+TEST_F(PaymentsDataManagerTest, EwalletAccountsIconsFetched_DatabaseUpdated) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillSyncEwalletAccounts);
+  MockAutofillImageFetcher mock_image_fetcher;
+  test_api(payments_data_manager()).SetImageFetcher(&mock_image_fetcher);
+
+  sync_pb::PaymentInstrument payment_instrument;
+  payment_instrument.set_instrument_id(1234L);
+  payment_instrument.set_display_icon_url("http://www.example1.com");
+  payment_instrument.mutable_ewallet_details();
+  ASSERT_TRUE(
+      GetServerDataTable()->SetPaymentInstruments({payment_instrument}));
+
+  EXPECT_CALL(mock_image_fetcher, FetchImagesForURLs);
+
+  // We need to call `Refresh()` to ensure that the eWallet payment instruments
+  // are loaded again from the WebDatabase which triggers the call to fetch
+  // icons from image fetcher.
   payments_data_manager().Refresh();
   WaitForOnPaymentsDataChanged();
 }

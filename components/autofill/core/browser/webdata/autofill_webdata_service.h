@@ -194,6 +194,13 @@ class AutofillWebDataService : public WebDataServiceBase {
   WebDataServiceBase::Handle GetMaskedBankAccounts(
       WebDataServiceConsumer* consumer);
 
+  // Initiates the request for payment instruments. The method
+  // OnWebDataServiceRequestDone() of `consumer` gets called when the request is
+  // finished, with the payment instruments included in the argument `result`.
+  // The consumer owns the data.
+  WebDataServiceBase::Handle GetPaymentInstruments(
+      WebDataServiceConsumer* consumer);
+
   // Clears all the credit card benefits from the database.
   void ClearAllCreditCardBenefits();
 
