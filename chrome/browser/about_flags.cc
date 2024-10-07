@@ -1170,12 +1170,32 @@ const FeatureEntry::Choice kMemlogSamplingRateChoices[] = {
 const FeatureEntry::FeatureParam
     kOptimizationGuideOnDeviceModelBypassPerfParams[] = {
         {"compatible_on_device_performance_classes", "*"},
+        {"on_device_retract_unsafe_content", "true"},
+};
+const FeatureEntry::FeatureParam
+    kOptimizationGuideOnDeviceModelBypassTextSafetyParams[] = {
+        {"on_device_retract_unsafe_content", "false"},
+};
+const FeatureEntry::FeatureParam
+    kOptimizationGuideOnDeviceModelBypassPerfAndTextSafetyParams[] = {
+        {"compatible_on_device_performance_classes", "*"},
+        {"on_device_retract_unsafe_content", "false"},
 };
 const FeatureEntry::FeatureVariation
     kOptimizationGuideOnDeviceModelVariations[] = {
         {"BypassPerfRequirement",
          kOptimizationGuideOnDeviceModelBypassPerfParams,
-         std::size(kOptimizationGuideOnDeviceModelBypassPerfParams), nullptr}};
+         std::size(kOptimizationGuideOnDeviceModelBypassPerfParams), nullptr},
+        {"BypassTextSafety",
+         kOptimizationGuideOnDeviceModelBypassTextSafetyParams,
+         std::size(kOptimizationGuideOnDeviceModelBypassTextSafetyParams),
+         nullptr},
+        {"BypassPerfAndTextSafety",
+         kOptimizationGuideOnDeviceModelBypassPerfAndTextSafetyParams,
+         std::size(
+             kOptimizationGuideOnDeviceModelBypassPerfAndTextSafetyParams),
+         nullptr},
+};
 
 const FeatureEntry::FeatureParam kPageContentAnnotationsContentParams[] = {
     {"annotate_title_instead_of_page_content", "false"},

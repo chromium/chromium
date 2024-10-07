@@ -752,7 +752,7 @@ bool IsFreeDiskSpaceTooLowForOnDeviceModelInstall(
 bool GetOnDeviceModelRetractUnsafeContent() {
   static const base::FeatureParam<bool>
       kOnDeviceModelShouldRetractUnsafeContent{
-          &kTextSafetyClassifier, "on_device_retract_unsafe_content", false};
+          &kTextSafetyClassifier, "on_device_retract_unsafe_content", true};
   return kOnDeviceModelShouldRetractUnsafeContent.Get();
 }
 
