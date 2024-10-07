@@ -1006,6 +1006,12 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_ACCESS_LOSS_PREF_DESC" desc="The subtitle of the Google Password Manager item in Chrome main settings. Displayed only if the UPM is not functioning properly.">
         Some passwords will stop working soon
       </message>
+      <message name="IDS_ACCESS_LOSS_NO_GMS_NO_PASSWORDS_TITLE" desc="The title of the password access loss warning shown in Settings when the user tries to navigate to the Password Manager settings if no Google Play Services is installed on the phone and there are no passwords saved in the profile store.">
+        Google Password Manager will stop working soon on this device
+      </message>
+      <message name="IDS_ACCESS_LOSS_NO_GMS_NO_PASSWORDS_DESC" desc="The message in the password access loss warning shown in Settings when the user tries to navigate to the Password Manager settings if no Google Play Services is installed on the phone and there are no passwords saved in the profile store.">
+        Passwords will stop working soon because Google Play services isn’t available. To use passwords saved in Google Password Manager, sign in using another device, or go to passwords.google.com.
+      </message>
 
       <!-- Lock Screen Fragment -->
       <message name="IDS_LOCKSCREEN_DESCRIPTION_COPY" desc="When a user attempts to copy a password for a particular website into clipboard in Chrome's settings, Chrome launches a lock screen to verify the user's identity and displays the following explanation.">

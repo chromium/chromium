@@ -12,6 +12,7 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossDialogSettingsCoordinator;
+import org.chromium.chrome.browser.access_loss.PasswordAccessLossPostExportDialogController;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessLossExportFlowCoordinator;
@@ -66,7 +67,9 @@ public class PasswordAccessLossDialogHelper {
             return true;
         }
         if (shouldShowAccessLossWarningWhenNoGmsNoPasswords(prefService, buildInfo)) {
-            // TODO (crbug.com/370730099) : Show dialog here.
+            new PasswordAccessLossPostExportDialogController(
+                            context, modalDialogManagerSupplier.get())
+                    .showPostExportDialog();
             return true;
         }
         return false;
