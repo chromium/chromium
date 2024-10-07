@@ -347,23 +347,24 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                             ctx.createPackageContext(
                                     packageInfo.packageName,
                                     Context.CONTEXT_INCLUDE_CODE | Context.CONTEXT_IGNORE_SECURITY);
-                    // Don't enable for standalone WebView. Check package id of the theme resource
-                    // to determine.
-                    // TODO(crbug.com/343756896): Make this work for standalone too.
-                    if ((override.getResources()
-                                            .getIdentifier(
-                                                    "WebViewBaseTheme",
-                                                    "style",
-                                                    packageInfo.packageName)
-                                    & 0xff000000)
-                            == 0x7f000000) {
-                        ClassLoaderContextWrapperFactory.setOverrideInfo(
-                                packageInfo.packageName,
-                                R.style.WebViewBaseTheme,
-                                Context.CONTEXT_INCLUDE_CODE | Context.CONTEXT_IGNORE_SECURITY);
-                        // Use this to report the actual state of the feature at runtime.
-                        AwBrowserMainParts.setUseWebViewContext(true);
-                    }
+                    // Use standard Android theme for standalone WebView, use custom theme for
+                    // everything else. Check package id of the theme resource to determine.
+                    boolean isStandaloneWebView =
+                            (override.getResources()
+                                                    .getIdentifier(
+                                                            "WebViewBaseTheme",
+                                                            "style",
+                                                            packageInfo.packageName)
+                                            & 0xff000000)
+                                    != 0x7f000000;
+                    ClassLoaderContextWrapperFactory.setOverrideInfo(
+                            packageInfo.packageName,
+                            isStandaloneWebView
+                                    ? android.R.style.Theme_DeviceDefault_DayNight
+                                    : R.style.WebViewBaseTheme,
+                            Context.CONTEXT_INCLUDE_CODE | Context.CONTEXT_IGNORE_SECURITY);
+                    // Use this to report the actual state of the feature at runtime.
+                    AwBrowserMainParts.setUseWebViewContext(true);
                 } catch (PackageManager.NameNotFoundException e) {
                     Log.e(TAG, "Could not get resource override context.");
                 }
