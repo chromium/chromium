@@ -88,6 +88,10 @@
 #if !defined(GOOGLE_API_KEY_FRESNEL)
 #define GOOGLE_API_KEY_FRESNEL google_apis::DefaultApiKeys::kUnsetApiToken
 #endif
+
+#if !defined(GOOGLE_API_KEY_BOCA)
+#define GOOGLE_API_KEY_BOCA google_apis::DefaultApiKeys::kUnsetApiToken
+#endif
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // These are used as shortcuts for developers and users providing
@@ -122,6 +126,7 @@ constexpr ::google_apis::DefaultApiKeys GetDefaultApiKeysFromDefinedValues() {
       .google_api_key_sharing = GOOGLE_API_KEY_SHARING,
       .google_api_key_read_aloud = GOOGLE_API_KEY_READ_ALOUD,
       .google_api_key_fresnel = GOOGLE_API_KEY_FRESNEL,
+      .google_api_key_boca = GOOGLE_API_KEY_BOCA,
 #endif
       .google_client_id_main = GOOGLE_CLIENT_ID_MAIN,
       .google_client_secret_main = GOOGLE_CLIENT_SECRET_MAIN,

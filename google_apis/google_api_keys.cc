@@ -99,6 +99,10 @@ const std::string& GetReadAloudAPIKey() {
 const std::string& GetFresnelAPIKey() {
   return GetApiKeyCacheInstance().api_key_fresnel();
 }
+
+const std::string& GetBocaAPIKey() {
+  return GetApiKeyCacheInstance().api_key_boca();
+}
 #endif
 
 #if BUILDFLAG(SUPPORT_EXTERNAL_GOOGLE_API_KEY)

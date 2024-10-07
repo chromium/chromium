@@ -43,6 +43,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) ApiKeyCache {
   const std::string& api_key_sharing() const { return api_key_sharing_; }
   const std::string& api_key_read_aloud() const { return api_key_read_aloud_; }
   const std::string& api_key_fresnel() const { return api_key_fresnel_; }
+  const std::string& api_key_boca() const { return api_key_boca_; }
 #endif
 
   const std::string& metrics_key() const { return metrics_key_; }
@@ -72,6 +73,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) ApiKeyCache {
   std::string api_key_sharing_;
   std::string api_key_read_aloud_;
   std::string api_key_fresnel_;
+  std::string api_key_boca_;
 #endif
 
   std::string metrics_key_;
