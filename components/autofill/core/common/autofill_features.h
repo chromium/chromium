@@ -93,8 +93,6 @@ BASE_DECLARE_FEATURE(kAutofillFixInitialValueOfSelect);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillFixCurrentValueInImport);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillDontUpdateSelectionRangeOnPreviewClearing);
-COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillDecoupleAutofillCountFromCache);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillGivePrecedenceToEmailOverUsername);

@@ -266,12 +266,6 @@ BASE_FEATURE(kAutofillFixCurrentValueInImport,
              "AutofillFixCurrentValueInImport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Killswitch for not running logic in `form_util::ClearPreviewedElements` that
-// force-sets the selectionrange of the focused element.
-BASE_FEATURE(kAutofillDontUpdateSelectionRangeOnPreviewClearing,
-             "AutofillDontUpdateSelectionRangeOnPreviewClearing",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, AutofillManager::GetCachedFormAndField will return the cached
 // form if found, even if it doesn't satisfy
 // `cached_form->autofill_count() != 0`.

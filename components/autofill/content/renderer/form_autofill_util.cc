@@ -2610,21 +2610,8 @@ void ClearPreviewedElements(
   for (auto& [control_element, prior_autofill_state] : previewed_elements) {
     // We do not add null elements to `previewed_elements_` in AutofillAgent.
     DCHECK(control_element);
-
-    // Clear the suggested value.
     control_element.SetSuggestedValue(WebString());
     control_element.SetAutofillState(prior_autofill_state);
-
-    // Clearing the suggested value in the focused node can cause the selection
-    // to be lost. We force-set selection range in order to restore the text
-    // cursor.
-    if (control_element.Focused() &&
-        !base::FeatureList::IsEnabled(
-            features::kAutofillDontUpdateSelectionRangeOnPreviewClearing)) {
-      auto length =
-          base::checked_cast<unsigned>(control_element.Value().length());
-      control_element.SetSelectionRange(length, length);
-    }
   }
 }
 
