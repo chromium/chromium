@@ -366,6 +366,15 @@ public class PrivacyGuideFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
+    public void testRenderAdTopicsCard() throws IOException {
+        launchPrivacyGuide();
+        goToCard(FragmentType.AD_TOPICS);
+        mRenderTestRule.render(getRootView(), "privacy_guide_ad_topics");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
     public void testRenderCompletionCard() throws IOException {
         launchPrivacyGuide();
         goToCard(FragmentType.DONE);

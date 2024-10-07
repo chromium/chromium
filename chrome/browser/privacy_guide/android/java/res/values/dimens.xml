@@ -18,5 +18,6 @@ found in the LICENSE file.
   <dimen name="done_step_link_button_size">48dp</dimen>
   <dimen name="illustration_maxHeight">150dp</dimen>
   <dimen name="standard_illustration_marginHorizontal">32dp</dimen>
+  <dimen name="steps_tab_paddingHorizontal">6dp</dimen>
   <dimen name="welcome_done_step_illustration_marginVertical">32dp</dimen>
 </resources>
