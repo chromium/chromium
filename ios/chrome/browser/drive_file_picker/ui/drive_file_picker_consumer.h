@@ -74,6 +74,10 @@
 // Sets whether the leading "Cancel" button should be visible.
 - (void)setCancelButtonVisible:(BOOL)visible;
 
+// Sets whether the consumer should request icon fetching of `itemIdentifier`.
+- (void)setShouldFetchIcon:(BOOL)shouldFetchIcon
+                   forItem:(NSString*)itemIdentifier;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_UI_DRIVE_FILE_PICKER_CONSUMER_H_

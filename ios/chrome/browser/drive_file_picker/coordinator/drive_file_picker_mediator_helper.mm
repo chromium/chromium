@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/drive/model/drive_list.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_item.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -21,6 +22,8 @@ namespace {
 constexpr NSInteger kFirstPageSize = 20;
 // Number of items to fetch for the next pages.
 constexpr NSInteger kNextPageSize = 50;
+// The size of the drive file picker item icon.
+constexpr CGFloat kDriveFilePickerItemIconSize = 18;
 
 // extra_term parameter for the Starred view.
 NSString* kStarredExtraTerm = @"starred=true";
@@ -380,12 +383,17 @@ DriveFilePickerItem* DriveItemToDriveFilePickerItem(
     BOOL should_show_search_items,
     NSString* search_text) {
   DriveItemType type;
+  UIImage* icon;
   if (item.is_folder) {
     type = DriveItemType::kFolder;
+    icon = [DriveFilePickerItem sharedDrivesItem].icon;
   } else if (item.is_shared_drive) {
     type = DriveItemType::kSharedDrive;
+    icon =
+        DefaultSymbolWithPointSize(kFolderSymbol, kDriveFilePickerItemIconSize);
   } else {
     type = DriveItemType::kFile;
+    icon = DefaultSymbolWithPointSize(kDocSymbol, kDriveFilePickerItemIconSize);
   }
   DriveFilePickerItem* drive_file_picker_item = [[DriveFilePickerItem alloc]
       initWithIdentifier:item.identifier
@@ -393,8 +401,9 @@ DriveFilePickerItem* DriveItemToDriveFilePickerItem(
                 subtitle:DriveFilePickerItemSubtitle(
                              item, collection_type, sorting_criteria,
                              should_show_search_items, search_text)
-                    icon:nil
+                    icon:icon
                     type:type];
+  drive_file_picker_item.shouldFetchIcon = YES;
   return drive_file_picker_item;
 }
 

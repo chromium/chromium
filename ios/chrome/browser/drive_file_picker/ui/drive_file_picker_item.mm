@@ -31,6 +31,7 @@ const CGFloat kIconPointSize = 18;
     _icon = icon;
     _type = type;
     _enabled = YES;
+    _shouldFetchIcon = NO;
     _titleRangeToEmphasize.location = NSNotFound;
   }
   return self;

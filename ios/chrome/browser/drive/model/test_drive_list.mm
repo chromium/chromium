@@ -28,7 +28,6 @@ DriveListResult TestDriveList::GetDriveListResult() const {
     DriveItem item;
     item.identifier = [[NSUUID UUID] UUIDString];
     item.name = [NSString stringWithFormat:@"Fake Item %d", i];
-    item.icon_link = @"/fake/icon/link";
     result.items.push_back(item);
   }
   return result;

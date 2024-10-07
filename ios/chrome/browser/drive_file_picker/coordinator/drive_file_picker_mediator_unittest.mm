@@ -164,6 +164,10 @@
 - (void)setCancelButtonVisible:(BOOL)visible {
 }
 
+- (void)setShouldFetchIcon:(BOOL)shouldFetchIcon
+                   forItem:(NSString*)itemIdentifier {
+}
+
 @end
 
 // Test fixture for testing DriveFilePickerMediator class.

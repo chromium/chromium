@@ -304,10 +304,14 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
                                                      withString:@"64"];
   }
 
-  CHECK(imageLink);
-  if (![imageLink hasPrefix:kDriveIconRepositoryPrefix] &&
-      ![imageLink hasPrefix:kSharedDriveBackgroundImageGalleryPrefix]) {
-    // If the image link is not a known source, it should not be fetched.
+  if (!imageLink ||
+      (![imageLink hasPrefix:kDriveIconRepositoryPrefix] &&
+       ![imageLink hasPrefix:kSharedDriveBackgroundImageGalleryPrefix])) {
+    // If the image link is not a known source, it should not be fetched and the
+    // placeholder image should become the default icon.
+    // If no image link was found the placeholder image should become the
+    // default icon.
+    [self.consumer setShouldFetchIcon:NO forItem:itemIdentifier];
     return;
   }
   GURL imageURL = GURL(base::SysNSStringToUTF16(imageLink));

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_table_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/notreached.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_alert_utils.h"
@@ -516,9 +517,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
                     : [UIListContentConfiguration cellConfiguration];
 
   // Set up cell image.
-  if (!item.icon) {
-    [self.mutator fetchIconForDriveItem:itemIdentifier];
-  } else {
+  if (item.icon) {
     UIListContentImageProperties* imageProperties =
         contentConfiguration.imageProperties;
     contentConfiguration.image = item.icon;
@@ -727,12 +726,14 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   for (size_t i = 0; i < _primaryItems.count; ++i) {
     if ([_primaryItems[i].identifier isEqual:itemIdentifier]) {
       _primaryItems[i].icon = iconImage;
+      _primaryItems[i].shouldFetchIcon = NO;
       break;
     }
   }
   for (size_t i = 0; i < _secondaryItems.count; ++i) {
     if ([_secondaryItems[i].identifier isEqual:itemIdentifier]) {
       _secondaryItems[i].icon = iconImage;
+      _secondaryItems[i].shouldFetchIcon = NO;
       break;
     }
   }
@@ -885,6 +886,14 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
       }];
 }
 
+- (void)setShouldFetchIcon:(BOOL)shouldFetchIcon
+                   forItem:(NSString*)itemIdentifier {
+  DriveFilePickerItem* item =
+      FindDriveFilePickerItem(itemIdentifier, _primaryItems, _secondaryItems);
+  CHECK(item);
+  item.shouldFetchIcon = shouldFetchIcon;
+}
+
 #pragma mark - UI element creation helpers
 
 // Helper to create the menu presented by `_filterButton`.
@@ -942,6 +951,15 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 - (void)tableView:(UITableView*)tableView
       willDisplayCell:(UITableViewCell*)cell
     forRowAtIndexPath:(NSIndexPath*)indexPath {
+  NSString* itemIdentifier =
+      [_diffableDataSource itemIdentifierForIndexPath:indexPath];
+  DriveFilePickerItem* item =
+      FindDriveFilePickerItem(itemIdentifier, _primaryItems, _secondaryItems);
+  CHECK(item);
+  if (item.shouldFetchIcon) {
+    [self.mutator fetchIconForDriveItem:itemIdentifier];
+  }
+
   // If this is the last item and the next page is available, load it.
   NSDiffableDataSourceSnapshot* snapshot = _diffableDataSource.snapshot;
   if (indexPath.row == snapshot.numberOfItems - 1 && _nextPageAvailable) {
