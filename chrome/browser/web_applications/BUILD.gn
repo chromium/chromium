@@ -380,18 +380,13 @@ source_set("web_applications") {
       "web_app_id_constants.h",
       "web_app_run_on_os_login_manager.cc",
       "web_app_run_on_os_login_manager.h",
+      "web_app_system_web_app_delegate_map_utils.cc",
+      "web_app_system_web_app_delegate_map_utils.h",
     ]
   } else {
     sources += [
       "jobs/link_capturing.cc",
       "jobs/link_capturing.h",
-    ]
-  }
-
-  if (is_chromeos_ash) {
-    sources += [
-      "web_app_system_web_app_delegate_map_utils.cc",
-      "web_app_system_web_app_delegate_map_utils.h",
     ]
   }
 
@@ -586,7 +581,7 @@ source_set("web_applications") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//ash",
       "//ash/components/arc:arc_base",
@@ -597,29 +592,17 @@ source_set("web_applications") {
       "//chrome/browser/ash/drive",
       "//chrome/browser/ash/profiles",
       "//chrome/browser/ash/system_web_apps/types",
+      "//chrome/browser/chromeos/echo",
       "//chrome/browser/web_applications/ash/migrations",
       "//chrome/common/chromeos/extensions",
       "//chromeos/ash/components/browser_context_helper",
+      "//chromeos/components/mgs",
+      "//chromeos/constants:constants",
     ]
 
     # TODO(b/332804822): Resolve circular includes.
     allow_circular_includes_from =
         [ "//chrome/browser/web_applications/ash/migrations" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/lacros",
-      "//chromeos/startup",
-    ]
-  }
-
-  if (is_chromeos) {
-    deps += [
-      "//chrome/browser/chromeos/echo",
-      "//chromeos/components/mgs",
-      "//chromeos/constants:constants",
-    ]
   }
 
   public_deps = [
@@ -697,6 +680,7 @@ source_set("web_applications_test_support") {
     "test/web_app_test_utils.cc",
     "test/web_app_test_utils.h",
   ]
+
   if (is_chromeos) {
     sources += [
       "isolated_web_apps/test/mock_isolated_web_app_install_command_wrapper.cc",
@@ -707,10 +691,12 @@ source_set("web_applications_test_support") {
       "isolated_web_apps/test/test_iwa_installer_factory.h",
     ]
   }
+
   public_deps = [
     "//chrome/browser/web_applications/isolated_web_apps/key_distribution/proto",
     "//components/webapps/common:mojo_bindings",
   ]
+
   deps = [
     ":web_applications",
     "//base/test:test_support",
@@ -736,7 +722,8 @@ source_set("web_applications_test_support") {
     "//ui/gfx:test_support",
     "//ui/webui",
   ]
-  if (is_chromeos_ash) {
+
+  if (is_chromeos) {
     deps += [
       "//ash/constants",
       "//chrome/browser/ash/crosapi:browser_util",
@@ -969,7 +956,7 @@ source_set("web_applications_unit_tests") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//ash/components/arc:arc",
       "//ash/components/arc:arc_test_support",
@@ -984,14 +971,6 @@ source_set("web_applications_unit_tests") {
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/system",
       "//components/arc:arc_test_support",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/lacros",
-      "//chromeos/lacros:test_support",
-      "//chromeos/startup:startup",
     ]
   }
 
@@ -1057,6 +1036,7 @@ source_set("web_applications_browser_tests") {
     "web_app_audio_focus_browsertest.cc",
     "web_app_icon_manager_browsertest.cc",
     "web_app_internals_browsertest.cc",
+    "web_app_link_capturing_parameterized_browsertest.cc",
     "web_app_origin_association_manager_browsertest.cc",
     "web_app_scope_extensions_browsertest.cc",
     "web_app_ui_state_manager_browsertest.cc",
@@ -1065,6 +1045,7 @@ source_set("web_applications_browser_tests") {
   if (is_chromeos) {
     sources += [
       "commands/install_app_from_verified_manifest_command_browsertest.cc",
+      "isolated_web_apps/policy/isolated_web_app_policy_manager_ash_browsertest.cc",
       "web_app_run_on_os_login_manager_browsertest.cc",
 
       # TODO(crbug.com/40274058): Support automatic IWA updates on other
@@ -1073,18 +1054,10 @@ source_set("web_applications_browser_tests") {
     ]
   }
 
-  if (!is_chromeos_lacros) {
-    sources += [ "web_app_link_capturing_parameterized_browsertest.cc" ]
-  }
-
   if (is_linux) {
     sources += [
       "os_integration/web_app_file_handler_registration_linux_browsertest.cc",
     ]
-  }
-
-  if (is_chromeos_ash) {
-    sources += [ "isolated_web_apps/policy/isolated_web_app_policy_manager_ash_browsertest.cc" ]
   }
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -1126,7 +1099,7 @@ source_set("web_applications_browser_tests") {
     "//url",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/login:test_support",
@@ -1138,15 +1111,6 @@ source_set("web_applications_browser_tests") {
       "//chrome/browser/ui/ash/login",
     ]
   }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chrome/browser/web_applications/app_service:test_support",
-      "//chromeos/constants",
-      "//chromeos/lacros",
-      "//chromeos/startup",
-    ]
-  }
 }
 
 group("browser_tests") {
@@ -1155,19 +1119,16 @@ group("browser_tests") {
   deps = [ ":web_applications_browser_tests" ]
 }
 
-# On Lacros, these browser tests require Ash to be running.
 source_set("app_service_browser_tests") {
   testonly = true
 
-  sources = [ "preinstalled_web_app_migration_browsertest.cc" ]
+  sources = [
+    "externally_managed_app_manager_browsertest.cc",
+    "preinstalled_web_app_migration_browsertest.cc",
+  ]
 
   if (is_chromeos) {
     sources += [ "chromeos_web_app_experiments_browsertest.cc" ]
-  }
-
-  # On Lacros, this test is added to the lacros_chrome_browsertests target.
-  if (!is_chromeos_lacros) {
-    sources += [ "externally_managed_app_manager_browsertest.cc" ]
   }
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -1185,20 +1146,10 @@ source_set("app_service_browser_tests") {
   ]
 
   if (is_chromeos) {
-    deps += [ "//chromeos/constants:constants" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/lacros:lacros",
-      "//chromeos/startup",
-    ]
-  }
-
-  if (is_chromeos_ash) {
     deps += [
       "//chrome/browser/ash/app_list",
       "//chrome/browser/ui/ash/shelf",
+      "//chromeos/constants:constants",
     ]
   }
 }

@@ -419,37 +419,13 @@ source_set("test_support_unit") {
   }
 }
 
-if (is_chromeos_lacros) {
-  source_set("lacros_chrome_browsertests") {
-    testonly = true
-
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-    sources = [ "autofill_context_menu_manager_lacros_browsertest.cc" ]
-
-    deps = [
-      ":autofill",
-      "//base/test:test_support",
-      "//chrome/app:command_ids",
-      "//chrome/browser/ui",
-      "//chrome/common:constants",
-      "//chrome/test:test_support",
-      "//chrome/test:test_support_ui",
-      "//components/autofill/core/browser:test_support",
-      "//components/autofill/core/common:features",
-      "//components/prefs:test_support",
-      "//content/test:test_support",
-    ]
-  }
-}
-
 if (!is_android) {
   source_set("browser_tests") {
     testonly = true
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources = []
+    sources = [ "autofill_context_menu_manager_browsertest.cc" ]
 
     deps = [
       ":autofill",
@@ -494,10 +470,6 @@ if (!is_android) {
       "//ui/base",
       "//url",
     ]
-
-    if (!is_chromeos_lacros) {
-      sources += [ "autofill_context_menu_manager_browsertest.cc" ]
-    }
 
     if (enable_dice_support) {
       sources += [ "autofill_signin_promo_tab_helper_browsertest.cc" ]
