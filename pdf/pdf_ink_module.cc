@@ -600,7 +600,7 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
   CHECK(data);
 
   float size = base::checked_cast<float>(data->FindDouble("size").value());
-  PdfInkBrush::CheckToolSizeIsInRange(size);
+  CHECK(PdfInkBrush::IsToolSizeInRange(size));
 
   const std::string& brush_type_string = *data->FindString("type");
   if (brush_type_string == "eraser") {

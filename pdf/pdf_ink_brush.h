@@ -52,8 +52,8 @@ class PdfInkBrush {
   // does not correspond to any `Type`.
   static std::optional<Type> StringToType(const std::string& brush_type);
 
-  // Validates `size` is in range.
-  static void CheckToolSizeIsInRange(float size);
+  // Returns whether `size` is in range or not.
+  static bool IsToolSizeInRange(float size);
 
   // Returns the `ink::Brush` that `this` represents.
   const ink::Brush& GetInkBrush() const;

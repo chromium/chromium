@@ -14,8 +14,8 @@ static_assert(BUILDFLAG(ENABLE_PDF_INK2), "ENABLE_PDF_INK2 not set to true");
 namespace chrome_pdf {
 
 // Converts brush size into cursor diameter, for use with GenerateToolCursor().
-// `brush_size` must be in the range that passes the validation performed by
-// PdfInkBrush::CheckToolSizeIsInRange().
+// `brush_size` must be in the range that passes the validation performed with
+// PdfInkBrush::IsToolSizeInRange().
 int CursorDiameterFromBrushSizeAndZoom(float brush_size, float zoom);
 
 // Draws a custom circular cursor to represent the brush/highlighter/eraser

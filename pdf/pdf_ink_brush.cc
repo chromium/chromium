@@ -114,9 +114,8 @@ std::optional<PdfInkBrush::Type> PdfInkBrush::StringToType(
 }
 
 // static
-void PdfInkBrush::CheckToolSizeIsInRange(float size) {
-  CHECK_GE(size, 1);
-  CHECK_LE(size, 16);
+bool PdfInkBrush::IsToolSizeInRange(float size) {
+  return size >= 1 && size <= 16;
 }
 
 PdfInkBrush::PdfInkBrush(Type brush_type, Params brush_params)
