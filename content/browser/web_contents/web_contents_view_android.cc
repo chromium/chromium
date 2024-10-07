@@ -148,6 +148,13 @@ WebContentsViewAndroid::WebContentsViewAndroid(
 }
 
 WebContentsViewAndroid::~WebContentsViewAndroid() {
+  // The animation manager holds a reference to `parent_for_web_page_widgets_`.
+  // Explicitly destroy the animation manager before resetting
+  // `parent_for_web_page_widgets_`.
+  if (back_forward_animation_manager_) {
+    back_forward_animation_manager_.reset();
+  }
+
   // Opposite to the construction order - disconnect the child first.
   parent_for_web_page_widgets_->RemoveFromParent();
   parent_for_web_page_widgets_.reset();
