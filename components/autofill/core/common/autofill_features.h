@@ -99,10 +99,6 @@ BASE_DECLARE_FEATURE(kAutofillGivePrecedenceToEmailOverUsername);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillImportFromAutocompleteUnrecognized);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillSuggestionNStrikeModel);
-COMPONENT_EXPORT(AUTOFILL)
-extern const base::FeatureParam<int> kSuggestionStrikeLimit;
-COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillChangeDisusedAddressSuggestionTreatment);
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<int> kNumberOfIgnoredSuggestions;

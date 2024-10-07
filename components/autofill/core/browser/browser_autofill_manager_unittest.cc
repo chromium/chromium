@@ -1568,12 +1568,6 @@ TEST_F(BrowserAutofillManagerTest,
 // AddressSuggestionStrikeDatabase logic.
 TEST_F(BrowserAutofillManagerTest,
        GetProfileSuggestions_BlockSuggestionsAfterStrikeLimit) {
-  // Initialize the feature, setting the effective "strike limit" to 3.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kAutofillSuggestionNStrikeModel,
-      base::FieldTrialParams{{features::kSuggestionStrikeLimit.name, "3"}});
-
   auto simulate_user_ignored_suggestions = [&](const FormData& form,
                                                const FormFieldData& field) {
     test_api(*browser_autofill_manager_).Reset();

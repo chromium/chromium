@@ -300,16 +300,6 @@ BASE_FEATURE(kAutofillImportFromAutocompleteUnrecognized,
              "AutofillImportFromAutocompleteUnrecognized",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Implements a model that suppresses suggestions after N times the user ignores
-// the popup (i.e. doesn't select a suggestion from the popup).
-// N depends on the parametrization of the feature.
-BASE_FEATURE(kAutofillSuggestionNStrikeModel,
-             "AutofillSuggestionNStrikeModel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<int> kSuggestionStrikeLimit{
-    &kAutofillSuggestionNStrikeModel, "strike-limit", 3};
-
 // Makes disused suggestion suppression logic ignore the first
 // `kNumberOfIgnoredSuggestions` suggestions (in frecency order), so that the
 // logic never returns an empty list after being passed a non-empty one.

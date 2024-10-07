@@ -22,8 +22,4 @@ std::string AddressSuggestionStrikeDatabase::GetId(
          base::NumberToString(field_signature.value()) + "-" + url.host();
 }
 
-int AddressSuggestionStrikeDatabase::GetMaxStrikesLimit() const {
-  return features::kSuggestionStrikeLimit.Get();
-}
-
 }  // namespace autofill

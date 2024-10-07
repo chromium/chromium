@@ -664,9 +664,7 @@ void MaybeAddAddressSuggestionStrikes(AutofillClient& client,
   for (const auto& field : form) {
     if (field->autocomplete_attribute() == "off" &&
         field->did_trigger_suggestions() && !field->is_autofilled() &&
-        !field->previously_autofilled() &&
-        base::FeatureList::IsEnabled(
-            features::kAutofillSuggestionNStrikeModel)) {
+        !field->previously_autofilled()) {
       // This means that the user triggered suggestions and ignored them. In
       // that case we record a strike for this specific field. Multiple strikes
       // will lead to automatic address suggestions to be suppressed.
