@@ -164,6 +164,7 @@ void ThemeServiceFactory::RegisterProfilePrefs(
                                 false);
   registry->RegisterBooleanPref(prefs::kShouldReadIncomingSyncingThemePrefs,
                                 true);
+  registry->RegisterStringPref(prefs::kSavedLocalTheme, "");
 }
 
 bool ThemeServiceFactory::ServiceIsCreatedWithBrowserContext() const {

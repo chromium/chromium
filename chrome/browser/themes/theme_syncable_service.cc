@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/containers/adapters.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
@@ -330,15 +331,22 @@ ThemeSyncableService::MergeDataAndStartSyncing(
                            static_cast<int>(initial_sync_data.size())));
   }
 
+  sync_pb::ThemeSpecifics current_specifics =
+      GetThemeSpecificsFromCurrentTheme();
+  if (base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes)) {
+    // Save current theme specifics to pref. This is used to restore the local
+    // theme upon signout.
+    profile_->GetPrefs()->SetString(
+        prefs::kSavedLocalTheme,
+        base::Base64Encode(current_specifics.SerializeAsString()));
+  }
+
   if (!IsCurrentThemeSyncable()) {
     // Current theme is unsyncable - don't overwrite from sync data, and don't
     // save the unsyncable theme to sync data.
     NotifyOnSyncStarted(ThemeSyncState::kFailed);
     return std::nullopt;
   }
-
-  sync_pb::ThemeSpecifics current_specifics =
-      GetThemeSpecificsFromCurrentTheme();
 
   // Find the last SyncData that has theme data and set the current theme from
   // it. If SyncData doesn't have a theme, but there is a current theme, it will
