@@ -160,7 +160,7 @@ TEST(VideoFrameImageUtilTest, CreateImageFromVideoFrameZeroCopy) {
   auto image = CreateImageFromVideoFrame(shared_image_frame);
   ASSERT_TRUE(image->IsTextureBacked());
   EXPECT_EQ(memcmp(image->GetMailboxHolder().mailbox.name,
-                   shared_image_frame->mailbox_holder(0).mailbox.name,
+                   shared_image_frame->shared_image()->mailbox().name,
                    sizeof(gpu::Mailbox::Name)),
             0);
 }

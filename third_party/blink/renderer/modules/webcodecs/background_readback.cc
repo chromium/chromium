@@ -215,12 +215,12 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToMemory(
                     : kBottomLeft_GrSurfaceOrigin;
 
   gfx::Point src_point;
-  gpu::MailboxHolder mailbox_holder = txt_frame->mailbox_holder(0);
-  ri->WaitSyncTokenCHROMIUM(mailbox_holder.sync_token.GetConstData());
+  auto shared_image = txt_frame->shared_image();
+  ri->WaitSyncTokenCHROMIUM(txt_frame->acquire_sync_token().GetConstData());
 
   gfx::Size texture_size = txt_frame->coded_size();
   ri->ReadbackARGBPixelsAsync(
-      mailbox_holder.mailbox, mailbox_holder.texture_target, origin,
+      shared_image->mailbox(), shared_image->GetTextureTarget(), origin,
       texture_size, src_point, info, base::saturated_cast<GLuint>(rgba_stide),
       dst_pixels,
       WTF::BindOnce(&BackgroundReadback::OnARGBPixelsFrameReadCompleted,
@@ -296,12 +296,12 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToBuffer(
                     ? kTopLeft_GrSurfaceOrigin
                     : kBottomLeft_GrSurfaceOrigin;
 
-  gpu::MailboxHolder mailbox_holder = txt_frame->mailbox_holder(0);
-  ri->WaitSyncTokenCHROMIUM(mailbox_holder.sync_token.GetConstData());
+  auto shared_image = txt_frame->shared_image();
+  ri->WaitSyncTokenCHROMIUM(txt_frame->acquire_sync_token().GetConstData());
 
   gfx::Size texture_size = txt_frame->coded_size();
   ri->ReadbackARGBPixelsAsync(
-      mailbox_holder.mailbox, mailbox_holder.texture_target, origin,
+      shared_image->mailbox(), shared_image->GetTextureTarget(), origin,
       texture_size, src_point, info, base::saturated_cast<GLuint>(stride),
       dst_pixels,
       WTF::BindOnce(&BackgroundReadback::OnARGBPixelsBufferReadCompleted,

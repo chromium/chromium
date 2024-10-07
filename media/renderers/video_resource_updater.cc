@@ -985,7 +985,7 @@ void VideoResourceUpdater::CopyHardwarePlane(
     VideoFrame* video_frame,
     VideoFrameExternalResource* external_resource) {
   const gfx::Size output_plane_resource_size = video_frame->coded_size();
-  auto mailbox_holder = video_frame->mailbox_holder(0);
+  auto shared_image = video_frame->shared_image();
   // The copy needs to be a direct transfer of pixel data, so we use an RGBA8
   // target to avoid loss of precision or dropping any alpha component.
   constexpr viz::SharedImageFormat copy_si_format =
@@ -1005,10 +1005,10 @@ void VideoResourceUpdater::CopyHardwarePlane(
             static_cast<GLenum>(GL_TEXTURE_2D));
 
   auto* ri = RasterInterface();
-  ri->WaitSyncTokenCHROMIUM(mailbox_holder.sync_token.GetConstData());
+  ri->WaitSyncTokenCHROMIUM(video_frame->acquire_sync_token().GetConstData());
 
   ri->CopySharedImage(
-      mailbox_holder.mailbox, hardware_resource->mailbox(), GL_TEXTURE_2D,
+      shared_image->mailbox(), hardware_resource->mailbox(), GL_TEXTURE_2D,
       /*xoffset=*/0, /*yoffset=*/0, /*x=*/0, /*y=*/0,
       output_plane_resource_size.width(), output_plane_resource_size.height(),
       /*unpack_flip_y=*/false, /*unpack_premultiply_alpha=*/false);
@@ -1047,7 +1047,8 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForHardwarePlanes(
 
   VideoFrameExternalResource external_resource;
   const bool copy_required = video_frame->metadata().copy_required;
-  GLuint target = video_frame->mailbox_holder(0).texture_target;
+  auto shared_image = video_frame->shared_image();
+  GLuint target = shared_image->GetTextureTarget();
   // If |copy_required| then we will copy into a GL_TEXTURE_2D target.
   if (copy_required) {
     target = GL_TEXTURE_2D;
@@ -1068,11 +1069,6 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForHardwarePlanes(
   CopyingSyncTokenClient client;
   auto original_release_token = video_frame->UpdateReleaseSyncToken(&client);
 
-  const gpu::MailboxHolder mailbox_holder =
-      video_frame->mailbox_holder(/*texture_index=*/0);
-  if (mailbox_holder.mailbox.IsZero()) {
-    return external_resource;
-  }
   if (copy_required) {
     CopyHardwarePlane(video_frame.get(), &external_resource);
     return external_resource;
@@ -1082,8 +1078,8 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForHardwarePlanes(
   const size_t height = video_frame->rows(/*plane=*/0);
   const gfx::Size size(width, height);
   auto transfer_resource = viz::TransferableResource::MakeGpu(
-      mailbox_holder.mailbox, mailbox_holder.texture_target,
-      mailbox_holder.sync_token, size, si_format,
+      shared_image->mailbox(), shared_image->GetTextureTarget(),
+      video_frame->acquire_sync_token(), size, si_format,
       video_frame->metadata().allow_overlay,
       viz::TransferableResource::ResourceSource::kVideo);
   transfer_resource.color_space = video_frame->ColorSpace();

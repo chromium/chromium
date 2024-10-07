@@ -570,7 +570,7 @@ TEST(VideoFrame, WrapExternalGpuMemoryBuffer) {
   EXPECT_EQ(frame->timestamp(), timestamp);
   EXPECT_EQ(frame->HasSharedImage(), true);
   EXPECT_EQ(frame->HasReleaseMailboxCB(), true);
-  EXPECT_EQ(frame->mailbox_holder(0).mailbox, shared_image->mailbox());
+  EXPECT_EQ(frame->shared_image()->mailbox(), shared_image->mailbox());
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -706,15 +706,14 @@ TEST(VideoFrame,
     EXPECT_EQ(PIXEL_FORMAT_I420, frame->format());
     EXPECT_EQ(3u, VideoFrame::NumPlanes(frame->format()));
     EXPECT_TRUE(frame->HasSharedImage());
-    const gpu::MailboxHolder& mailbox_holder = frame->mailbox_holder(0);
-    EXPECT_EQ(shared_image->mailbox().name[0], mailbox_holder.mailbox.name[0]);
-    EXPECT_EQ(target, mailbox_holder.texture_target);
-    EXPECT_EQ(sync_token, mailbox_holder.sync_token);
+    EXPECT_EQ(shared_image->mailbox().name[0],
+              frame->shared_image()->mailbox().name[0]);
+    EXPECT_EQ(target, frame->shared_image()->GetTextureTarget());
+    EXPECT_EQ(sync_token, frame->acquire_sync_token());
 
     SimpleSyncTokenClient client(release_sync_token);
     frame->UpdateReleaseSyncToken(&client);
-    EXPECT_EQ(sync_token,
-              frame->mailbox_holder(VideoFrame::Plane::kY).sync_token);
+    EXPECT_EQ(sync_token, frame->acquire_sync_token());
   }
   EXPECT_EQ(release_sync_token, called_sync_token);
 }

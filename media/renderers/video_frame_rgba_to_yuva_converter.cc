@@ -55,9 +55,9 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
 
   ri->WaitSyncTokenCHROMIUM(src_mailbox_holder.sync_token.GetConstData());
 
-  const auto dst_mailbox_holder =
-      dst_video_frame->mailbox_holder(/*texture_index=*/0);
-  ri->WaitSyncTokenCHROMIUM(dst_mailbox_holder.sync_token.GetConstData());
+  auto dst_sync_token = dst_video_frame->acquire_sync_token();
+  auto dst_mailbox = dst_video_frame->shared_image()->mailbox();
+  ri->WaitSyncTokenCHROMIUM(dst_sync_token.GetConstData());
 
   // `unpack_flip_y` should be set if the surface origin of the source
   // doesn't match that of the destination, which is created with
@@ -77,9 +77,9 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
   // details).
   // TODO(crbug.com/40270413): Update this comment when we resolve that bug
   // and change CopySharedImage() to crop rather than stretch.
-  ri->CopySharedImage(src_mailbox_holder.mailbox, dst_mailbox_holder.mailbox,
-                      GL_TEXTURE_2D, 0, 0, 0, 0, src_size.width(),
-                      src_size.height(), unpack_flip_y,
+  ri->CopySharedImage(src_mailbox_holder.mailbox, dst_mailbox, GL_TEXTURE_2D, 0,
+                      0, 0, 0, src_size.width(), src_size.height(),
+                      unpack_flip_y,
                       /*unpack_premultiply_alpha=*/false);
   ri->Flush();
 

@@ -477,8 +477,8 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, ReuseFirstResource) {
   RunUntilIdle();
 
   EXPECT_NE(software_frame.get(), frame.get());
-  gpu::Mailbox mailbox = frame->mailbox_holder(0).mailbox;
-  const gpu::SyncToken sync_token = frame->mailbox_holder(0).sync_token;
+  gpu::Mailbox mailbox = frame->shared_image()->mailbox();
+  const gpu::SyncToken sync_token = frame->acquire_sync_token();
   EXPECT_EQ(1u, sii_->shared_image_count());
 
   scoped_refptr<VideoFrame> frame2;
@@ -488,7 +488,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, ReuseFirstResource) {
   RunUntilIdle();
 
   EXPECT_NE(software_frame.get(), frame2.get());
-  EXPECT_NE(mailbox, frame2->mailbox_holder(0).mailbox);
+  EXPECT_NE(mailbox, frame2->shared_image()->mailbox());
   EXPECT_EQ(2u, sii_->shared_image_count());
 
   frame = nullptr;
@@ -501,8 +501,8 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, ReuseFirstResource) {
 
   EXPECT_NE(software_frame.get(), frame.get());
   EXPECT_EQ(2u, sii_->shared_image_count());
-  EXPECT_EQ(frame->mailbox_holder(0).mailbox, mailbox);
-  EXPECT_NE(frame->mailbox_holder(0).sync_token, sync_token);
+  EXPECT_EQ(frame->shared_image()->mailbox(), mailbox);
+  EXPECT_NE(frame->acquire_sync_token(), sync_token);
 }
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest, DropResourceWhenSizeIsDifferent) {
@@ -514,7 +514,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, DropResourceWhenSizeIsDifferent) {
 
   EXPECT_EQ(1u, sii_->shared_image_count());
   // Check that the mailbox in VideoFrame is properly created.
-  gpu::Mailbox old_mailbox = frame->mailbox_holder(0).mailbox;
+  gpu::Mailbox old_mailbox = frame->shared_image()->mailbox();
   EXPECT_TRUE(sii_->CheckSharedImageExists(old_mailbox));
 
   frame = nullptr;
@@ -527,7 +527,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, DropResourceWhenSizeIsDifferent) {
   EXPECT_FALSE(sii_->CheckSharedImageExists(old_mailbox));
   EXPECT_EQ(1u, sii_->shared_image_count());
   // Check that the mailbox in new VideoFrame is properly created.
-  EXPECT_TRUE(sii_->CheckSharedImageExists(frame->mailbox_holder(0).mailbox));
+  EXPECT_TRUE(sii_->CheckSharedImageExists(frame->shared_image()->mailbox()));
 }
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareNV12Frame) {

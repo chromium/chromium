@@ -496,7 +496,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapSharedImage(
   }
 
   if (shared_image) {
-    frame->texture_sync_token_ = sync_token;
+    frame->acquire_sync_token_ = sync_token;
     frame->shared_image_ = shared_image->MakeUnowned();
   }
   frame->mailbox_holder_and_gmb_release_cb_ =
@@ -524,7 +524,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapMappableSharedImage(
   if (!frame) {
     return nullptr;
   }
-  frame->texture_sync_token_ = sync_token;
+  frame->acquire_sync_token_ = sync_token;
 
   // Note that we can not use |shared_image|->MakeUnOwned() here since that
   // will not work for MappableSI due to it owning a GMB internally and we can
@@ -763,7 +763,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
   }
 
   if (shared_image) {
-    frame->texture_sync_token_ = sync_token;
+    frame->acquire_sync_token_ = sync_token;
     frame->shared_image_ = shared_image->MakeUnowned();
   }
   return frame;
@@ -1495,8 +1495,14 @@ const gpu::MailboxHolder VideoFrame::mailbox_holder(
   if (wrapped_frame_) {
     return wrapped_frame_->mailbox_holder(texture_index);
   }
-  return gpu::MailboxHolder(shared_image_->mailbox(), texture_sync_token_,
+  return gpu::MailboxHolder(shared_image_->mailbox(), acquire_sync_token_,
                             shared_image_->GetTextureTarget());
+}
+
+gpu::SyncToken VideoFrame::acquire_sync_token() const {
+  CHECK(HasSharedImage());
+  return wrapped_frame_ ? wrapped_frame_->acquire_sync_token()
+                        : acquire_sync_token_;
 }
 
 scoped_refptr<gpu::ClientSharedImage> VideoFrame::shared_image() const {
@@ -1585,7 +1591,7 @@ gpu::SyncToken VideoFrame::UpdateMailboxHolderSyncToken(
   DCHECK(!wrapped_frame_);
 
   // No lock is required due to the HasOneRef() check.
-  auto& token = texture_sync_token_;
+  auto& token = acquire_sync_token_;
   if (token.HasData())
     client->WaitSyncToken(token);
   client->GenerateSyncToken(&token);

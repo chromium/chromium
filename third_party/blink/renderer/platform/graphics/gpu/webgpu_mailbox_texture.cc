@@ -175,8 +175,7 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromVideoFrame(
   };
   return base::AdoptRef(new WebGPUMailboxTexture(
       std::move(dawn_control_client), device, desc,
-      video_frame->mailbox_holder(0).mailbox,
-      video_frame->mailbox_holder(0).sync_token,
+      video_frame->shared_image()->mailbox(), video_frame->acquire_sync_token(),
       gpu::webgpu::WEBGPU_MAILBOX_NONE, wgpu::TextureUsage::None,
       std::move(finished_access_callback), nullptr));
 }

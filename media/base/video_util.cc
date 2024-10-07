@@ -119,13 +119,12 @@ bool ReadbackTexturePlaneToMemorySyncOOP(const VideoFrame& src_frame,
   auto info = SkImageInfo::Make(src_rect.width(), src_rect.height(),
                                 sk_color_type, sk_alpha_type);
 
-  // With multiplanar shared images, there's one shared image mailbox so perform
-  // readback passing the appropriate `src_plane` for the single mailbox.
-  const gpu::MailboxHolder holder = src_frame.mailbox_holder(0);
-  DCHECK(!holder.mailbox.IsZero());
-  ri->WaitSyncTokenCHROMIUM(holder.sync_token.GetConstData());
+  // Perform readback passing the appropriate `src_plane` for the mailbox.
+  auto mailbox = src_frame.shared_image()->mailbox();
+  auto sync_token = src_frame.acquire_sync_token();
+  ri->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
   bool result =
-      ri->ReadbackImagePixels(holder.mailbox, info, dest_stride, src_rect.x(),
+      ri->ReadbackImagePixels(mailbox, info, dest_stride, src_rect.x(),
                               src_rect.y(), src_plane, dest_pixels);
 
   return result && ri->GetGraphicsResetStatusKHR() == GL_NO_ERROR &&

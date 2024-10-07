@@ -718,6 +718,9 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // mailbox, the caller must wait for the included sync point.
   const gpu::MailboxHolder mailbox_holder(size_t texture_index) const;
 
+  // Returns the `acquire_sync_token_`
+  gpu::SyncToken acquire_sync_token() const;
+
   // Returns the ClientSharedImage.
   // Only valid to call if this is a NATIVE_TEXTURE frame and contains valid
   // ClientSharedImage pointer. Before using the shared_image, the caller must
@@ -978,7 +981,8 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   gpu::Mailbox oopvd_mailbox_;
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-  gpu::SyncToken texture_sync_token_;
+  // Sync token associated with the `shared_image_`.
+  gpu::SyncToken acquire_sync_token_;
   ReleaseMailboxAndGpuMemoryBufferCB mailbox_holder_and_gmb_release_cb_;
 
   // Native texture shared image that is only set when the VideoFrame is
