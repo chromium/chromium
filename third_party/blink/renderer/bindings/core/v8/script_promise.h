@@ -131,10 +131,23 @@ class ScriptPromise : public ScriptPromiseUntyped {
  public:
   ScriptPromise() = default;
 
-  template <typename T = IDLResolvedType>
-  static ScriptPromise<T> FromV8Promise(v8::Isolate* isolate,
-                                        v8::Local<v8::Promise> promise) {
-    return ScriptPromise<T>(isolate, promise);
+  static ScriptPromise<IDLResolvedType> FromV8Promise(
+      v8::Isolate* isolate,
+      v8::Local<v8::Promise> promise) {
+    return ScriptPromise<IDLResolvedType>(isolate, promise);
+  }
+
+  static ScriptPromise<IDLResolvedType> FromV8Value(
+      v8::Isolate* isolate,
+      v8::Local<v8::Value> value) {
+    if (value.IsEmpty()) {
+      return ScriptPromise<IDLResolvedType>();
+    }
+    v8::Local<v8::Promise> promise =
+        value->IsPromise()
+            ? value.As<v8::Promise>()
+            : ResolveRaw(ScriptState::ForCurrentRealm(isolate), value);
+    return ScriptPromise<IDLResolvedType>(isolate, promise);
   }
 
   static ScriptPromise<IDLResolvedType> RejectWithDOMException(

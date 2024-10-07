@@ -923,20 +923,7 @@ struct NativeValueTraits<IDLPromise<T>>
   static ScriptPromise<T> NativeValue(v8::Isolate* isolate,
                                       v8::Local<v8::Value> value,
                                       ExceptionState&) {
-    if (value.IsEmpty()) {
-      return ScriptPromise<T>();
-    }
-    if (value->IsPromise()) {
-      return ScriptPromise<T>::FromV8Promise(isolate, value.As<v8::Promise>());
-    }
-    ScriptState* script_state = ScriptState::ForCurrentRealm(isolate);
-    v8::TryCatch try_catch(isolate);
-    auto&& blink_value = NativeValueTraits<T>::NativeValue(
-        isolate, value, PassThroughException(isolate));
-    if (try_catch.HasCaught()) {
-      return ScriptPromise<T>::Reject(script_state, try_catch.Exception());
-    }
-    return ToResolvedPromise<T>(script_state, std::move(blink_value));
+    return ScriptPromise<T>::FromV8Value(isolate, value);
   }
 };
 
