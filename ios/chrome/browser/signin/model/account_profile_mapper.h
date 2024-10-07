@@ -20,10 +20,12 @@
 class SystemIdentityManager;
 
 // Class to map the identities from SystemIdentityManager to profiles.
-// TODO(crbug.com/331783685): Need to save and load the mapping to the disk.
-// Since the identities are always in the same order, after restart, if the
-// identities are the same, the mapping should stay the same.
-// TODO(crbug.com/331783685): Need to be create and remove profiles when needed.
+// TODO(crbug.com/331783685): If `kSeparateProfilesForManagedAccounts` is
+// enabled, use the data from `ProfileAttributesIOS::GetAttachedGaiaIds()` to
+// map identities into profiles.
+// TODO(crbug.com/331783685): Hook up `AccountProfileMapper` between
+// `SystemIdentityManager` and `ChromeAccountManagerService` (i.e. revert parts
+// of crrev.com/c/5849614).
 class AccountProfileMapper : public SystemIdentityManagerObserver {
  public:
   class Observer : public base::CheckedObserver {

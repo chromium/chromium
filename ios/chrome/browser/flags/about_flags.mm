@@ -1891,7 +1891,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(data_sharing::features::kDataSharingJoinOnly)},
     {"ios-soft-lock", flag_descriptions::kIOSSoftLockName,
      flag_descriptions::kIOSSoftLockDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kIOSSoftLock)}};
+     FEATURE_VALUE_TYPE(kIOSSoftLock)},
+    {"separate-profiles-for-managed-accounts",
+     flag_descriptions::kSeparateProfilesForManagedAccountsName,
+     flag_descriptions::kSeparateProfilesForManagedAccountsDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kSeparateProfilesForManagedAccounts)}};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;

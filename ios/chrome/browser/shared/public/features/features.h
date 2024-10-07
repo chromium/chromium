@@ -870,4 +870,7 @@ BASE_DECLARE_FEATURE(kBlueDotOnToolsMenuButton);
 // Returns whether `kBlueDotOnToolsMenuButton` is enabled.
 bool IsBlueDotOnToolsMenuButtoneEnabled();
 
+// Feature flag to assign each managed account to its own separate profile.
+BASE_DECLARE_FEATURE(kSeparateProfilesForManagedAccounts);
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

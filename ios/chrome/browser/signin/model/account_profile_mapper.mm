@@ -4,12 +4,14 @@
 
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 
+#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/profile/model/constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
@@ -154,9 +156,9 @@ AccountProfileMapper::ProcessIdentitiesForProfile(
     // CheckIdentityProfile did update the profile.
     CHECK(existing_mapping_it != profile_name_per_gaia_id_.end());
   }
-  // If the experimental flag is enabled, filter out identities that belong to
+  // If the feature flag is enabled, filter out identities that belong to
   // another profile.
-  if (experimental_flags::DisplaySwitchProfile().has_value() &&
+  if (base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts) &&
       profile_name != existing_mapping_it->second) {
     // Not the interesting profile, skip this identity.
     return SystemIdentityManager::IteratorResult::kContinueIteration;
@@ -177,9 +179,9 @@ bool AccountProfileMapper::CheckIdentityProfile(
   // TODO(crbug.com/331783685): Need to filter out identities that are filtered
   // by enterprise policy, and remove that filter done by
   // ChromeAccountManagerService.
-  if (!experimental_flags::DisplaySwitchProfile().has_value()) {
-    // If the multiple profile is not enabled, there is no need to async fetch
-    // the hosted domain. All identities are set to the personal profile.
+  if (!base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts)) {
+    // If the multi-profile feature is not enabled, there is no need to async
+    // fetch the hosted domain. All identities are set to every profile.
     CheckIdentityProfileWithHostedDomain(identity, @"",
                                          profile_names_to_notify);
     return true;
@@ -261,19 +263,20 @@ void AccountProfileMapper::AddIdentityToProfile(
   // TODO(crbug.com/331783685): Remove assumption that "Default" is the
   // personal profile.
   std::string new_profile_name = std::string(kIOSChromeInitialProfile);
-  // TODO(crbug.com/331783685): Instead of using the pre-created test profiles,
-  // dynamically create profiles as necessary here.
-  std::optional<int> num_test_profiles =
-      experimental_flags::DisplaySwitchProfile();
-  if (num_test_profiles.has_value()) {
-    // TODO(crbug.com/331783685): Need to make sure no cached hosted domain is
-    // nil, and no hosted domain is @"".
-    if (hosted_domain.length != 0) {
-      // This is a managed identity, so search for the next available profile.
-      std::set<std::string_view> used_profile_names;
-      for (const auto& [_, profile_name] : profile_name_per_gaia_id_) {
-        used_profile_names.insert(profile_name);
-      }
+  // TODO(crbug.com/331783685): Need to make sure no cached hosted domain is
+  // nil, and no hosted domain is @"".
+  if (base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts) &&
+      hosted_domain.length != 0) {
+    // This is a managed identity, so search for the next available profile.
+    std::set<std::string_view> used_profile_names;
+    for (const auto& [_, profile_name] : profile_name_per_gaia_id_) {
+      used_profile_names.insert(profile_name);
+    }
+    // TODO(crbug.com/331783685): Instead of using the pre-created test
+    // profiles, read from `ProfileAttributesIOS::GetAttachedGaiaIds` here.
+    std::optional<int> num_test_profiles =
+        experimental_flags::DisplaySwitchProfile();
+    if (num_test_profiles.has_value()) {
       for (int index = 0; index < num_test_profiles.value(); index++) {
         // See ProfileManagerIOSImpl::LoadProfiles().
         std::string name_candidate =
@@ -283,9 +286,9 @@ void AccountProfileMapper::AddIdentityToProfile(
           break;
         }
       }
-      // Note: It's possible that there was no available profile. In that case,
-      // fall back to adding the managed identity to the default profile.
     }
+    // Note: It's possible that there was no available profile. In that case,
+    // fall back to adding the managed identity to the default profile.
   }
   profile_name_per_gaia_id_[gaia_id] = new_profile_name;
   // Make sure observers for this profile will be notified for this new
@@ -312,7 +315,7 @@ void AccountProfileMapper::NotifyIdentityListChanged(
   if (profile_names_to_notify.empty()) {
     return;
   }
-  if (experimental_flags::DisplaySwitchProfile().has_value()) {
+  if (base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts)) {
     for (const std::string& profile_name : profile_names_to_notify) {
       auto it = observer_lists_per_profile_name_.find(profile_name);
       if (it == observer_lists_per_profile_name_.end()) {
@@ -336,7 +339,7 @@ void AccountProfileMapper::NotifyIdentityUpdated(
     id<SystemIdentity> identity,
     std::string_view profile_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (experimental_flags::DisplaySwitchProfile().has_value()) {
+  if (base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts)) {
     auto it = observer_lists_per_profile_name_.find(profile_name);
     if (it == observer_lists_per_profile_name_.end()) {
       return;
@@ -359,7 +362,7 @@ void AccountProfileMapper::NotifyAccessTokenRefreshFailed(
     id<RefreshAccessTokenError> error,
     std::string_view profile_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (experimental_flags::DisplaySwitchProfile().has_value()) {
+  if (base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts)) {
     auto it = observer_lists_per_profile_name_.find(profile_name);
     if (it == observer_lists_per_profile_name_.end()) {
       return;

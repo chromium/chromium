@@ -1049,3 +1049,7 @@ BASE_FEATURE(kBlueDotOnToolsMenuButton,
 bool IsBlueDotOnToolsMenuButtoneEnabled() {
   return base::FeatureList::IsEnabled(kBlueDotOnToolsMenuButton);
 }
+
+BASE_FEATURE(kSeparateProfilesForManagedAccounts,
+             "SeparateProfilesForManagedAccounts",
+             base::FEATURE_DISABLED_BY_DEFAULT);

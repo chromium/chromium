@@ -1011,6 +1011,12 @@ const char kSendUmaOverAnyNetwork[] =
 const char kSendUmaOverAnyNetworkDescription[] =
     "When enabled, will send UMA data over either WiFi or cellular by default.";
 
+const char kSeparateProfilesForManagedAccountsName[] =
+    "Put each managed account into its own profile";
+const char kSeparateProfilesForManagedAccountsDescription[] =
+    "If enabled, each managed account will be assigned to its own separate "
+    "profile.";
+
 const char kSharedHighlightingIOSName[] = "Enable Shared Highlighting features";
 const char kSharedHighlightingIOSDescription[] =
     "Adds a Link to Text option in the Edit Menu which generates URLs with a "

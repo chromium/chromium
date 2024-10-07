@@ -903,6 +903,11 @@ extern const char kSendTabToSelfIOSPushNotificationsDescription[];
 extern const char kSendUmaOverAnyNetwork[];
 extern const char kSendUmaOverAnyNetworkDescription[];
 
+// Title and description for the flag to assign each managed account to its own
+// separate profile.
+extern const char kSeparateProfilesForManagedAccountsName[];
+extern const char kSeparateProfilesForManagedAccountsDescription[];
+
 // Title and description for the flag to enable Shared Highlighting (Link to
 // Text Edit Menu option).
 extern const char kSharedHighlightingIOSName[];

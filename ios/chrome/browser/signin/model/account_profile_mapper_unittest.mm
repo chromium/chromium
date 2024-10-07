@@ -5,11 +5,13 @@
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "ios/chrome/browser/profile/model/constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
@@ -126,8 +128,9 @@ TEST_F(AccountProfileMapperTest, TestWithThreeIdentitiesOneProfile) {
 // Tests that when the experimental flag is disabled, all identities are visible
 // in all profiles.
 TEST_F(AccountProfileMapperTest, TestWithFlagDisabled) {
-  [[NSUserDefaults standardUserDefaults]
-      removeObjectForKey:experimental_flags::kDisplaySwitchProfile];
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(kSeparateProfilesForManagedAccounts);
+
   account_profile_mapper_ =
       std::make_unique<AccountProfileMapper>(system_identity_manager_);
   testing::StrictMock<MockObserver> mock_observer0;
@@ -157,6 +160,7 @@ TEST_F(AccountProfileMapperTest, TestWithFlagDisabled) {
 
 // Tests that 2 non managed identities are added to the personal profile.
 TEST_F(AccountProfileMapperTest, TestWithTwoIdentitiesTwoProfiles) {
+  base::test::ScopedFeatureList features{kSeparateProfilesForManagedAccounts};
   [[NSUserDefaults standardUserDefaults]
       setInteger:1
           forKey:experimental_flags::kDisplaySwitchProfile];
@@ -186,6 +190,7 @@ TEST_F(AccountProfileMapperTest, TestWithTwoIdentitiesTwoProfiles) {
 // Tests that the 2 non managed identity are added in the personal profile,
 // and the managed identity is added to the other profile.
 TEST_F(AccountProfileMapperTest, TestWithTwoIdentitiesOneManagedTwoProfiles) {
+  base::test::ScopedFeatureList features{kSeparateProfilesForManagedAccounts};
   [[NSUserDefaults standardUserDefaults]
       setInteger:1
           forKey:experimental_flags::kDisplaySwitchProfile];
@@ -228,6 +233,7 @@ TEST_F(AccountProfileMapperTest, TestWithTwoIdentitiesOneManagedTwoProfiles) {
 // TODO(crbug.com/331783685): This test needs to be updated when
 // AccountProfileMapper is abled to create profiles.
 TEST_F(AccountProfileMapperTest, TestWithTwoIdentitiesTwoManagedTwoProfiles) {
+  base::test::ScopedFeatureList features{kSeparateProfilesForManagedAccounts};
   [[NSUserDefaults standardUserDefaults]
       setInteger:1
           forKey:experimental_flags::kDisplaySwitchProfile];
@@ -263,6 +269,7 @@ TEST_F(AccountProfileMapperTest, TestWithTwoIdentitiesTwoManagedTwoProfiles) {
 // Tests that an identity is removed correctly from the personal profile.
 // And tests that an managed identity is removed correctly from its profile.
 TEST_F(AccountProfileMapperTest, TestRemoveIdentity) {
+  base::test::ScopedFeatureList features{kSeparateProfilesForManagedAccounts};
   [[NSUserDefaults standardUserDefaults]
       setInteger:1
           forKey:experimental_flags::kDisplaySwitchProfile];
