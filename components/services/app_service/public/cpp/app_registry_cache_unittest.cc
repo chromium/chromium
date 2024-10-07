@@ -5,6 +5,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 
 #include <map>
+#include <optional>
 #include <set>
 #include <utility>
 #include <vector>
@@ -13,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -21,6 +23,10 @@
 namespace apps {
 
 namespace {
+
+using ::testing::Eq;
+using ::testing::Optional;
+using ::testing::Property;
 
 apps::AppPtr MakeApp(const char* app_id,
                      const char* name,
@@ -474,6 +480,11 @@ TEST_F(AppRegistryCacheTest, OnApps) {
     EXPECT_EQ("e", update.AppId());
   }));
   EXPECT_FALSE(found_e);
+
+  // Test that GetAppUpdate matches the behaviour of ForOneApp.
+  EXPECT_THAT(cache.GetAppUpdate("c"),
+              Optional(Property("AppId", &apps::AppUpdate::AppId, "c")));
+  EXPECT_THAT(cache.GetAppUpdate("e"), Eq(std::nullopt));
 }
 
 TEST_F(AppRegistryCacheTest, Removed) {

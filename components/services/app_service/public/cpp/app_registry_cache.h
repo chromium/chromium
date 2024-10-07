@@ -139,6 +139,13 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
     }
   }
 
+  // Returns an `apps::AppUpdate` corresponding to the app in the cache with the
+  // given `app_id`, or `nullopt` if there is not such an app.
+  //
+  // The `apps::AppUpdate` view may dangle when the state of the cache changes,
+  // and should not be accessed after this happens.
+  std::optional<AppUpdate> GetAppUpdate(std::string_view app_id) const;
+
   // Calls f, a void-returning function whose arguments are (const
   // apps::AppUpdate&), on the app in the cache with the given app_id. It will
   // return true (and call f) if there is such an app, otherwise it will return
@@ -149,18 +156,9 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
   // it's not guaranteed to see a consistent state.
   template <typename FunctionType>
   bool ForOneApp(const std::string& app_id, FunctionType f) const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
-
-    auto s_iter = states_.find(app_id);
-    const App* state =
-        (s_iter != states_.end()) ? s_iter->second.get() : nullptr;
-
-    auto d_iter = deltas_in_progress_.find(app_id);
-    const App* delta =
-        (d_iter != deltas_in_progress_.end()) ? d_iter->second : nullptr;
-
-    if (state || delta) {
-      f(AppUpdate(state, delta, account_id_));
+    std::optional<AppUpdate> app_update = GetAppUpdate(app_id);
+    if (app_update.has_value()) {
+      f(*app_update);
       return true;
     }
     return false;
