@@ -2112,7 +2112,7 @@ TEST_F(WebContentsImplTest, HandleWheelEvent) {
   event = blink::SyntheticWebMouseWheelEventBuilder::Build(
       0, 0, 0, 1, modifiers, ui::ScrollGranularity::kScrollByPixel);
   bool handled = contents()->HandleWheelEvent(event);
-#if defined(USE_AURA)
+#if defined(USE_AURA) || BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(handled);
   EXPECT_EQ(1, delegate->GetAndResetContentsZoomChangedCallCount());
   EXPECT_TRUE(delegate->last_zoom_in());
@@ -2126,7 +2126,7 @@ TEST_F(WebContentsImplTest, HandleWheelEvent) {
   event = blink::SyntheticWebMouseWheelEventBuilder::Build(
       0, 0, 2, -5, modifiers, ui::ScrollGranularity::kScrollByPixel);
   handled = contents()->HandleWheelEvent(event);
-#if defined(USE_AURA)
+#if defined(USE_AURA) || BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(handled);
   EXPECT_EQ(1, delegate->GetAndResetContentsZoomChangedCallCount());
   EXPECT_FALSE(delegate->last_zoom_in());

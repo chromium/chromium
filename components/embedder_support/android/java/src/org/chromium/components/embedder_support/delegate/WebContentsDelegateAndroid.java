@@ -238,6 +238,14 @@ public class WebContentsDelegateAndroid {
     }
 
     /**
+     * Request the delegate to change the zoom level of the current tab.
+     *
+     * @param zoomIn Whether to zoom in or out.
+     */
+    @CalledByNative
+    public void contentsZoomChange(boolean zoomIn) {}
+
+    /**
      * Capture current visible native view as a bitmap.
      *
      * @param callback Executed asynchronously with the captured screenshot if this returns true.

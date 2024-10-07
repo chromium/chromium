@@ -524,6 +524,12 @@ WebContentsDelegateAndroid::GetBackForwardTransitionFallbackUXConfig() {
   };
 }
 
+void WebContentsDelegateAndroid::ContentsZoomChange(bool zoom_in) {
+  JNIEnv* env = AttachCurrentThread();
+  Java_WebContentsDelegateAndroid_contentsZoomChange(env, GetJavaDelegate(env),
+                                                     zoom_in);
+}
+
 void JNI_WebContentsDelegateAndroid_MaybeCopyContentAreaAsBitmapOutcome(
     JNIEnv* env,
     jlong callback_ptr,

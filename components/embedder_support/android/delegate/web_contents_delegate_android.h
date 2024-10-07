@@ -133,6 +133,7 @@ class WebContentsDelegateAndroid : public content::WebContentsDelegate {
   void DidBackForwardTransitionAnimationChange() override;
   content::BackForwardTransitionAnimationManager::FallbackUXConfig
   GetBackForwardTransitionFallbackUXConfig() override;
+  void ContentsZoomChange(bool zoom_in) override;
 
  protected:
   base::android::ScopedJavaLocalRef<jobject> GetJavaDelegate(JNIEnv* env) const;

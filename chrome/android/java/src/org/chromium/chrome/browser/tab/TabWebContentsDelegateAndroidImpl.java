@@ -18,6 +18,7 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList.RewindableIterator;
+import org.chromium.chrome.browser.ZoomController;
 import org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService;
 import org.chromium.chrome.browser.app.usb.UsbNotificationService;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -450,6 +451,16 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     @Override
     public int getBackForwardTransitionFallbackUXPageBackgroundColor() {
         return ChromeColors.getSurfaceColor(mTab.getContext(), R.dimen.default_elevation_3);
+    }
+
+    @Override
+    public void contentsZoomChange(boolean zoomIn) {
+        WebContents wc = mTab.getWebContents();
+        if (zoomIn) {
+            ZoomController.zoomIn(wc);
+        } else {
+            ZoomController.zoomOut(wc);
+        }
     }
 
     void showFramebustBlockInfobarForTesting(String url) {
