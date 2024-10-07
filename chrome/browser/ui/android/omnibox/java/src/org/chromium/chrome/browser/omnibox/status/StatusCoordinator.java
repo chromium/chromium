@@ -392,4 +392,12 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
             animators.add(animator);
         }
     }
+
+    /**
+     * Set whether the status view should be shown. If the view is not shown, the status view will
+     * be permanently gone until it is updated through this method during the current lifecycle.
+     */
+    public void setShowStatusView(boolean show) {
+        mMediator.setShowStatusView(show);
+    }
 }

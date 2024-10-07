@@ -427,6 +427,7 @@ public class SearchActivity extends AsyncInitializationActivity
                         .setLensEntrypointAllowed(false)
                         .setVoiceEntrypointAllowed(false);
                 mSearchBoxDataProvider.setPageClassification(PageClassification.ANDROID_HUB_VALUE);
+                setHubSearchBoxVisualElements();
                 break;
 
             case IntentOrigin.SEARCH_WIDGET:
@@ -692,6 +693,10 @@ public class SearchActivity extends AsyncInitializationActivity
         RecordUserAction.record("SearchWidget.SearchMade");
         LocaleManager.getInstance()
                 .recordLocaleBasedSearchMetrics(true, params.url, params.transitionType);
+    }
+
+    private void setHubSearchBoxVisualElements() {
+        mLocationBarCoordinator.getStatusCoordinator().setShowStatusView(false);
     }
 
     @VisibleForTesting

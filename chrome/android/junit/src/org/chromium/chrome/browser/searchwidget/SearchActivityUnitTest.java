@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.metrics.UmaActivityObserver;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
+import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -390,6 +391,26 @@ public class SearchActivityUnitTest {
             }
         }
         verify(mUtils, never()).resolveOmniboxRequestForResult(any(), any());
+    }
+
+    @Test
+    public void handleNewIntent_forHubSearch() {
+        LocationBarCoordinator locationBarCoordinator = mock(LocationBarCoordinator.class);
+        StatusCoordinator statusCoordinator = mock(StatusCoordinator.class);
+        doReturn(statusCoordinator).when(locationBarCoordinator).getStatusCoordinator();
+        mActivity.setLocationBarCoordinatorForTesting(locationBarCoordinator);
+
+        doReturn(IntentOrigin.HUB).when(mUtils).getIntentOrigin(any());
+        mActivity.handleNewIntent(new Intent(), false);
+
+        assertEquals(
+                PageClassification.ANDROID_HUB_VALUE, mDataProvider.getPageClassification(true));
+        assertEquals(
+                PageClassification.ANDROID_HUB_VALUE, mDataProvider.getPageClassification(false));
+        assertFalse(mActivity.getEmbedderUiOverridesForTesting().isLensEntrypointAllowed());
+        assertFalse(mActivity.getEmbedderUiOverridesForTesting().isVoiceEntrypointAllowed());
+
+        verify(statusCoordinator).setShowStatusView(false);
     }
 
     @Test

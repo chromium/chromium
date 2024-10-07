@@ -757,6 +757,15 @@ public final class StatusMediatorUnitTest {
         Assert.assertNotEquals(mMediator.getCookieControlsBridge(), null);
     }
 
+    @Test
+    @SmallTest
+    public void showStatusView_toggleVisibility() {
+        mMediator.setShowStatusView(false);
+        Assert.assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
+        mMediator.setShowStatusView(true);
+        Assert.assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
+    }
+
     private String getIconIdentifierForTesting() {
         return mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconIdentifierForTesting();
     }

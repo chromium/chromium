@@ -855,4 +855,8 @@ public class StatusMediator
     public void onTabCrashed() {
         mCurrentTabCrashed = true;
     }
+
+    void setShowStatusView(boolean show) {
+        mModel.set(StatusProperties.SHOW_STATUS_VIEW, show);
+    }
 }

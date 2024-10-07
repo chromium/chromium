@@ -345,4 +345,32 @@ public class StatusViewTest extends BlankUiTestActivityTestCase {
                     assertTrue(nextTransitionDrawable.getAnimatorForTesting().isStarted());
                 });
     }
+
+    @Test
+    @MediumTest
+    @Feature({"Omnibox"})
+    public void testShowStatusViewToggleVisibility()
+            throws ExecutionException, InterruptedException {
+        runOnUiThreadBlocking(
+                () -> {
+                    mStatusModel.set(StatusProperties.SHOW_STATUS_VIEW, true);
+                    assertEquals(View.VISIBLE, mStatusView.getVisibility());
+                    mStatusModel.set(StatusProperties.SHOW_STATUS_VIEW, false);
+                    assertEquals(View.GONE, mStatusView.getVisibility());
+                });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Omnibox"})
+    public void testShowStatusViewNotAffectedByShowIconView()
+            throws ExecutionException, InterruptedException {
+        runOnUiThreadBlocking(
+                () -> {
+                    mStatusModel.set(StatusProperties.SHOW_STATUS_VIEW, false);
+                    assertEquals(View.GONE, mStatusView.getVisibility());
+                    mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
+                    assertEquals(View.GONE, mStatusView.getVisibility());
+                });
+    }
 }

@@ -291,6 +291,12 @@ public class StatusProperties {
     /** Specifies width of the verbose status text field. */
     static final WritableIntPropertyKey VERBOSE_STATUS_TEXT_WIDTH = new WritableIntPropertyKey();
 
+    /**
+     * Whether the status view is shown. This is different from SHOW_STATUS_ICON, which is
+     * responsible for whether the icon sub-view is shown or not and is managed independently.
+     */
+    static final WritableBooleanPropertyKey SHOW_STATUS_VIEW = new WritableBooleanPropertyKey();
+
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -300,6 +306,7 @@ public class StatusProperties {
                 SEPARATOR_COLOR,
                 SHOW_STATUS_ICON,
                 SHOW_STATUS_ICON_BACKGROUND,
+                SHOW_STATUS_VIEW,
                 STATUS_CLICK_LISTENER,
                 STATUS_ACCESSIBILITY_TOAST_RES,
                 STATUS_ACCESSIBILITY_DOUBLE_TAP_DESCRIPTION_RES,
