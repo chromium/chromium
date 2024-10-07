@@ -88,12 +88,13 @@ found in the LICENSE file.
             <!-- New layout for labels including activity updates and price cards. -->
             <ViewStub
                 android:id="@+id/tab_card_label_stub"
-                android:inflatedId="@+id/tab_card_label"
-                android:layout="@layout/tab_card_label_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/tab_card_label_height"
-                android:layout_gravity="bottom|center_horizontal"
-                android:layout_marginBottom="11dp"/>
+                android:layout_marginBottom="11dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:inflatedId="@+id/tab_card_label"
+                android:layout="@layout/tab_card_label_layout" />
         </RelativeLayout>
 
         <!--
