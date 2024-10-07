@@ -8,6 +8,7 @@
 
 #import "base/functional/bind.h"
 #import "base/memory/ptr_util.h"
+#import "base/types/cxx23_to_underlying.h"
 #import "components/infobars/core/infobar.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
@@ -211,7 +212,8 @@ TEST_F(ReSignInInfoBarDelegateTest, TestInfoBarDismissed) {
 // Tests that no delegate is returned when the app state is not
 // AppInitStage::kFinal.
 TEST_F(ReSignInInfoBarDelegateTest, TestAppStateBeforeStageFinal) {
-  set_init_stage(AppInitStage::kChoiceScreen);
+  set_init_stage(
+      static_cast<AppInitStage>(base::to_underlying(AppInitStage::kFinal) - 1));
   std::unique_ptr<ReSignInInfoBarDelegate> infobar_delegate =
       ReSignInInfoBarDelegate::Create(authentication_service(),
                                       identity_manager(), mock_app_state(),

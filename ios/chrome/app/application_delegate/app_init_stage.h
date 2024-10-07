@@ -64,10 +64,9 @@ enum class AppInitStage {
   // when presenting the FRE.
   kFirstRun,
 
-  // The app may present the Search Engine Choice Screen to the user if
-  // required by local regulation. Will transition to the following stage
-  // when the user has gone through the workflow (possibly in a previous
-  // run of the application).
+  // TODO(crbug.com/333863468): code should no longer check this enum value,
+  // instead it should use ProfileInitStage::kChoiceScreen. The enum will be
+  // removed once the AppInitStage and ProfileInitStage are fully decoupled.
   kChoiceScreen,
 
   // The final stage before being done with initialization. The label and
