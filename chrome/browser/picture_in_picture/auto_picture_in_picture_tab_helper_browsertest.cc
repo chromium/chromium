@@ -1037,8 +1037,14 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   EXPECT_TRUE(original_web_contents->HasPictureInPictureDocument());
 }
 
+// TODO(https://crbug.com/371850487): failing on Windows ASAN.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_ShowsMostRecentlyHiddenTab DISABLED_ShowsMostRecentlyHiddenTab
+#else
+#define MAYBE_ShowsMostRecentlyHiddenTab ShowsMostRecentlyHiddenTab
+#endif
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
-                       ShowsMostRecentlyHiddenTab) {
+                       MAYBE_ShowsMostRecentlyHiddenTab) {
   // Load a page that registers for autopip.
   LoadCameraMicrophonePage(browser());
   auto* original_web_contents =
