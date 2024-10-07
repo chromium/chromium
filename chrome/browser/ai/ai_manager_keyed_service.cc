@@ -546,10 +546,9 @@ void AIManagerKeyedService::CreateAssistantForCloning(
     return;
   }
 
-  blink::mojom::AIAssistantInfoPtr session_info = session->GetAssistantInfo();
-  context_bound_object_set->AddContextBoundObject(std::move(session));
   client_remote->OnResult(session->TakePendingRemote(),
-                          std::move(session_info));
+                          session->GetAssistantInfo());
+  context_bound_object_set->AddContextBoundObject(std::move(session));
 }
 
 void AIManagerKeyedService::OnModelPathValidationComplete(
