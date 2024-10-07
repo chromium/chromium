@@ -19,9 +19,11 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.isNotNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -47,6 +49,7 @@ import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -60,6 +63,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.GarbageCollectionTestUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -67,6 +71,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
@@ -91,6 +96,8 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.Icon
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ShowMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderCoordinator;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -151,6 +158,7 @@ public class SelectableTabListEditorTest {
     @Mock private Callback<RecyclerViewPosition> mSetRecyclerViewPosition;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private ActionConfirmationManager mActionConfirmationManager;
+    @Mock private EdgeToEdgeController mEdgeToEdgeController;
 
     private TabListEditorTestingRobot mRobot = new TabListEditorTestingRobot();
 
@@ -164,6 +172,7 @@ public class SelectableTabListEditorTest {
     private BookmarkModel mBookmarkModel;
     private TabGroupCreationDialogManager mCreationDialogManager;
     private AppHeaderCoordinator mAppHeaderStateProvider;
+    private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier;
 
     @Before
     public void setUp() throws Exception {
@@ -206,6 +215,7 @@ public class SelectableTabListEditorTest {
                                             .getActivity()
                                             .getRootUiCoordinatorForTesting()
                                             .getDesktopWindowStateProvider();
+                    mEdgeToEdgeSupplier = new ObservableSupplierImpl<>();
                     mTabListEditorCoordinator =
                             new TabListEditorCoordinator(
                                     cta,
@@ -222,7 +232,8 @@ public class SelectableTabListEditorTest {
                                     TabProperties.TabActionState.SELECTABLE,
                                     /* gridCardOnClickListenerProvider= */ null,
                                     mModalDialogManager,
-                                    mAppHeaderStateProvider);
+                                    mAppHeaderStateProvider,
+                                    mEdgeToEdgeSupplier);
 
                     mTabListEditorController = mTabListEditorCoordinator.getController();
                     mTabListEditorLayout =
@@ -1581,6 +1592,56 @@ public class SelectableTabListEditorTest {
         // Test selected tab
         mRobot.actionRobot.clickItemAtAdapterPosition(0);
         assertTrue(tabView.createAccessibilityNodeInfo().isChecked());
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({
+        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
+        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE
+    })
+    public void testEdgeToEdgePadAdjuster() {
+        prepareBlankTab(2, false);
+        List<Tab> tabs = getTabsInCurrentTabModel();
+        showSelectionEditor(tabs, null);
+
+        TabListRecyclerView tabListRecyclerView =
+                mTabListEditorCoordinator.getTabListRecyclerViewForTesting();
+        int originalPaddingBottom = tabListRecyclerView.getPaddingBottom();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
+                });
+
+        EdgeToEdgePadAdjuster padAdjuster =
+                mTabListEditorCoordinator.getEdgeToEdgePadAdjusterForTesting();
+        assertNotNull("Pad adjuster should be created when feature enabled.", padAdjuster);
+        verify(mEdgeToEdgeController).registerAdjuster(eq(padAdjuster));
+
+        int bottomEdgeToEdgePadding = 60;
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    padAdjuster.overrideBottomInset(bottomEdgeToEdgePadding);
+                });
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                "The tab list recycler view was not padded to account for"
+                                        + " edge-to-edge.",
+                                tabListRecyclerView.getPaddingBottom(),
+                                Matchers.equalTo(originalPaddingBottom + bottomEdgeToEdgePadding)));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    padAdjuster.overrideBottomInset(0);
+                });
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                "The additional edge-to-edge padding to the tab list recycler view"
+                                        + " was not properly cleared.",
+                                tabListRecyclerView.getPaddingBottom(),
+                                Matchers.equalTo(originalPaddingBottom)));
     }
 
     @Test

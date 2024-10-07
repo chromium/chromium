@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.Show
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorOpenMetricGroups;
 import org.chromium.chrome.browser.tinker_tank.TinkerTankDelegate;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
@@ -51,6 +52,7 @@ public class TabListEditorManager {
             new ObservableSupplierImpl<>();
     private final TabGroupCreationDialogManager mTabGroupCreationDialogManager;
     private final @Nullable DesktopWindowStateProvider mDesktopWindowStateProvider;
+    private final @NonNull ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
 
     private @Nullable TabListEditorCoordinator mTabListEditorCoordinator;
     private @Nullable List<TabListEditorAction> mTabListEditorActions;
@@ -66,6 +68,7 @@ public class TabListEditorManager {
      * @param tabListCoordinator The parent {@link TabListCoordinator}.
      * @param mode The {@link TabListMode} of the tab list (grid, list, etc.).
      * @param onTabGroupCreation Should be run when the UI is used to create a tab group.
+     * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
      */
     public TabListEditorManager(
             @NonNull Activity activity,
@@ -79,7 +82,8 @@ public class TabListEditorManager {
             BottomSheetController bottomSheetController,
             @TabListMode int mode,
             @Nullable Runnable onTabGroupCreation,
-            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
+            @Nullable DesktopWindowStateProvider desktopWindowStateProvider,
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         mActivity = activity;
         mModalDialogManager = modalDialogManager;
         mCoordinatorView = coordinatorView;
@@ -102,6 +106,7 @@ public class TabListEditorManager {
         } else {
             mSnackbarManager = null;
         }
+        mEdgeToEdgeSupplier = edgeToEdgeSupplier;
     }
 
     /** Destroys the tab list editor. */
@@ -135,7 +140,8 @@ public class TabListEditorManager {
                             TabProperties.TabActionState.SELECTABLE,
                             /* gridCardOnClickListenerProvider= */ null,
                             mModalDialogManager,
-                            mDesktopWindowStateProvider);
+                            mDesktopWindowStateProvider,
+                            mEdgeToEdgeSupplier);
             mControllerSupplier.set(mTabListEditorCoordinator.getController());
         }
     }

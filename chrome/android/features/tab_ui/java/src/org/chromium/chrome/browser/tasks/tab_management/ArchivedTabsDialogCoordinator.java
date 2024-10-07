@@ -555,7 +555,8 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                         TabProperties.TabActionState.CLOSABLE,
                         mGridCardOnCLickListenerProvider,
                         mModalDialogManager,
-                        mDesktopWindowStateProvider);
+                        mDesktopWindowStateProvider,
+                        /* edgeToEdgeSupplier= */ null);
     }
 
     @VisibleForTesting

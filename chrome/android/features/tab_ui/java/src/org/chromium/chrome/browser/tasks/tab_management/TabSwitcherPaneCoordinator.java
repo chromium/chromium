@@ -368,7 +368,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             bottomSheetController,
                             mode,
                             onTabGroupCreation,
-                            desktopWindowStateProvider);
+                            desktopWindowStateProvider,
+                            mEdgeToEdgeSupplier);
             mTabListEditorManager = tabListEditorManager;
             mMediator.setTabListEditorControllerSupplier(
                     mTabListEditorManager.getControllerSupplier());

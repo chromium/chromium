@@ -308,7 +308,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             /* gridCardOnClickListenerProvider= */ null,
                             mModalDialogManager,
                             // Parent container handles desktop window state.
-                            /* desktopWindowStateProvider= */ null);
+                            /* desktopWindowStateProvider= */ null,
+                            /* edgeToEdgeSupplier= */ null);
         }
 
         return mTabListEditorCoordinator.getController();

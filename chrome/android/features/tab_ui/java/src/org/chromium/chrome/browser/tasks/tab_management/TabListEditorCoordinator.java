@@ -33,6 +33,10 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCard
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorExitMetricGroups;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgePadAdjuster;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -236,11 +240,13 @@ class TabListEditorCoordinator {
     private final TabContentManager mTabContentManager;
     private final @Nullable GridCardOnClickListenerProvider mGridCardOnClickListenerProvider;
     private final @NonNull ModalDialogManager mModalDialogManager;
+    private final @Nullable ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
 
     private MultiThumbnailCardProvider mMultiThumbnailCardProvider;
     private TabListCoordinator mTabListCoordinator;
     private PropertyModelChangeProcessor mTabListEditorLayoutChangeProcessor;
     private @TabActionState int mTabActionState;
+    private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
 
     /**
      * @param context The Android context to use.
@@ -260,6 +266,7 @@ class TabListEditorCoordinator {
      * @param initialTabActionState The initial TabActionState to use.
      * @param modalDialogManager Used for managing the modal dialogs.
      * @param desktopWindowStateProvider Provider to get desktop window and app header state.
+     * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
      */
     public TabListEditorCoordinator(
             Context context,
@@ -276,7 +283,8 @@ class TabListEditorCoordinator {
             @TabActionState int initialTabActionState,
             @Nullable GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
             @NonNull ModalDialogManager modalDialogManager,
-            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
+            @Nullable DesktopWindowStateProvider desktopWindowStateProvider,
+            @Nullable ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         try (TraceEvent e = TraceEvent.scoped("TabListEditorCoordinator.constructor")) {
             mContext = context;
             mRootView = rootView;
@@ -292,6 +300,7 @@ class TabListEditorCoordinator {
                     || mode == TabListCoordinator.TabListMode.LIST;
             mGridCardOnClickListenerProvider = gridCardOnClickListenerProvider;
             mModalDialogManager = modalDialogManager;
+            mEdgeToEdgeSupplier = edgeToEdgeSupplier;
 
             // The change processor isn't created until TabListCoordinator is created (lazily).
             mTabListEditorLayout =
@@ -358,6 +367,11 @@ class TabListEditorCoordinator {
         mTabListEditorMediator.destroy();
         if (mMultiThumbnailCardProvider != null) {
             mMultiThumbnailCardProvider.destroy();
+        }
+
+        if (mEdgeToEdgePadAdjuster != null) {
+            mEdgeToEdgePadAdjuster.destroy();
+            mEdgeToEdgePadAdjuster = null;
         }
     }
 
@@ -511,6 +525,16 @@ class TabListEditorCoordinator {
         mTabListEditorLayoutChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         mModel, mTabListEditorLayout, TabListEditorLayoutBinder::bind);
+
+        if (EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled()
+                && mEdgeToEdgeSupplier != null
+                && mDisplayGroups) {
+            assert mTabListMode != TabListMode.STRIP
+                    : "STRIP tab lists should not be padded for edge-to-edge.";
+            mEdgeToEdgePadAdjuster =
+                    EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
+                            mTabListCoordinator.getContainerView(), mEdgeToEdgeSupplier);
+        }
     }
 
     public void addTabListItemSizeChangedObserver(TabListItemSizeChangedObserver observer) {
@@ -539,17 +563,18 @@ class TabListEditorCoordinator {
 
     // Testing-specific methods
 
-    /**
-     * @return The {@link TabListEditorLayout} for testing.
-     */
+    /** Returns the {@link TabListEditorLayout} for testing. */
     TabListEditorLayout getTabListEditorLayoutForTesting() {
         return mTabListEditorLayout;
     }
 
-    /**
-     * @return The {@link TabListRecyclerView} for testing.
-     */
+    /** Returns the {@link TabListRecyclerView} for testing. */
     TabListRecyclerView getTabListRecyclerViewForTesting() {
         return mTabListCoordinator.getContainerView();
+    }
+
+    /** Returns the {@link EdgeToEdgePadAdjuster} for testing. */
+    EdgeToEdgePadAdjuster getEdgeToEdgePadAdjusterForTesting() {
+        return mEdgeToEdgePadAdjuster;
     }
 }
