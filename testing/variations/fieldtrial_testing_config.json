@@ -23993,6 +23993,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "geolocation_request_timeout_minutes": "30"
+                    },
                     "enable_features": [
                         "UseDMSAAForTilesAndroidGL"
                     ]
