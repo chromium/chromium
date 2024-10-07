@@ -21,7 +21,7 @@ namespace syncer {
 // clients that are not chromium-based.
 class DeviceInfoTracker {
  public:
-  virtual ~DeviceInfoTracker() {}
+  virtual ~DeviceInfoTracker() = default;
 
   // Observer class for listening to device info changes.
   class Observer {

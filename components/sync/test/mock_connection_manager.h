@@ -45,7 +45,7 @@ class MockConnectionManager : public ServerConnectionManager {
     virtual void Observe() = 0;
 
    protected:
-    virtual ~MidCommitObserver() {}
+    virtual ~MidCommitObserver() = default;
   };
 
   MockConnectionManager();

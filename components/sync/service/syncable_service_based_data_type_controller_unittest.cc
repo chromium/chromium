@@ -20,7 +20,7 @@ class SyncableServiceBasedDataTypeControllerTest : public testing::Test {
  public:
   SyncableServiceBasedDataTypeControllerTest()
       : store_(DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
-  ~SyncableServiceBasedDataTypeControllerTest() override {}
+  ~SyncableServiceBasedDataTypeControllerTest() override = default;
 
  private:
   base::test::TaskEnvironment task_environment_;

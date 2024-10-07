@@ -46,7 +46,7 @@ ConsentAuditorImpl::ConsentAuditorImpl(
   DCHECK(consent_sync_bridge_);
 }
 
-ConsentAuditorImpl::~ConsentAuditorImpl() {}
+ConsentAuditorImpl::~ConsentAuditorImpl() = default;
 
 void ConsentAuditorImpl::Shutdown() {}
 

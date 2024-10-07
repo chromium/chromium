@@ -38,7 +38,7 @@ class RecoveryKeyStoreConnectionImplTest : public testing::Test {
   static constexpr char kUpdateVaultUrl[] =
       "https://cryptauthvault.googleapis.com/v1/vaults/0?alt=proto";
 
-  RecoveryKeyStoreConnectionImplTest() {}
+  RecoveryKeyStoreConnectionImplTest() = default;
   ~RecoveryKeyStoreConnectionImplTest() override = default;
 
   RecoveryKeyStoreConnection* connection() { return connection_.get(); }
