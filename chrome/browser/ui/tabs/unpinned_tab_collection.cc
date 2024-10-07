@@ -213,21 +213,6 @@ size_t UnpinnedTabCollection::ChildCount() const {
   return impl_->GetChildrenCount();
 }
 
-size_t UnpinnedTabCollection::TabCountRecursive() const {
-  size_t count = 0;
-  for (const auto& child : impl_->GetChildren()) {
-    if (std::holds_alternative<std::unique_ptr<tabs::TabModel>>(child)) {
-      count++;
-    } else if (std::holds_alternative<std::unique_ptr<tabs::TabCollection>>(
-                   child)) {
-      const TabCollection* const group_collection =
-          std::get<std::unique_ptr<tabs::TabCollection>>(child).get();
-      count += group_collection->ChildCount();
-    }
-  }
-  return count;
-}
-
 std::unique_ptr<TabCollection> UnpinnedTabCollection::MaybeRemoveCollection(
     TabCollection* collection) {
   CHECK(collection);

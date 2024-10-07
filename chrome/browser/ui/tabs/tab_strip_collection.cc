@@ -224,9 +224,8 @@ size_t TabStripCollection::ChildCount() const {
   return impl_->GetChildrenCount();
 }
 
-size_t TabStripCollection::TabCountRecursive() const {
-  return pinned_collection_->TabCountRecursive() +
-         unpinned_collection_->TabCountRecursive();
+size_t TabStripCollection::TotalTabCount() const {
+  return TabCountRecursive();
 }
 
 TabGroupTabCollection* TabStripCollection::MaybeCreateNewGroupCollectionForTab(

@@ -51,7 +51,12 @@ class TabCollection {
   virtual size_t ChildCount() const = 0;
 
   // Total number of tabs the collection contains.
-  virtual size_t TabCountRecursive() const = 0;
+  size_t TabCountRecursive() const { return recursive_tab_count_; }
+
+  void OnCollectionAddedToTree(TabCollection* collection);
+  void OnCollectionRemovedFromTree(TabCollection* collection);
+  void OnTabAddedToTree();
+  void OnTabRemovedFromTree();
 
   // Removes the tab if it is a direct child of this collection. This is then
   // returned to the caller as an unique_ptr. If the tab is not present it will
@@ -78,6 +83,9 @@ class TabCollection {
   base::PassKey<TabCollection> GetPassKey() const {
     return base::PassKey<TabCollection>();
   }
+
+  // Total number of tabs in the collection.
+  size_t recursive_tab_count_ = 0;
 
  private:
   raw_ptr<TabCollection> parent_ = nullptr;

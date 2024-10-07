@@ -254,11 +254,11 @@ void TabStripModel::RemoveObserver(TabStripModelObserver* observer) {
 }
 
 int TabStripModel::count() const {
-  return contents_data_->TabCountRecursive();
+  return contents_data_->TotalTabCount();
 }
 
 bool TabStripModel::empty() const {
-  return contents_data_->TabCountRecursive() == 0;
+  return contents_data_->TotalTabCount() == 0;
 }
 
 int TabStripModel::GetIndexOfTab(tabs::TabHandle tab_handle) const {
@@ -1284,7 +1284,7 @@ std::u16string TabStripModel::GetTitleAt(int index) const {
 }
 
 int TabStripModel::GetTabCount() const {
-  return contents_data_->TabCountRecursive();
+  return contents_data_->TotalTabCount();
 }
 
 // Context menu functions.

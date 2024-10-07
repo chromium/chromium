@@ -239,6 +239,7 @@ if (!is_android) {
       "pinned_tab_service.h",
       "pinned_tab_service_factory.h",
       "supports_handles.h",
+      "tab_collection.cc",
       "tab_collection.h",
       "tab_collection_storage.h",
       "tab_contents_data.h",

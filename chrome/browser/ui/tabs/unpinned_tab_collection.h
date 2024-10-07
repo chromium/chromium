@@ -106,8 +106,6 @@ class UnpinnedTabCollection : public TabCollection {
 
   size_t ChildCount() const override;
 
-  size_t TabCountRecursive() const override;
-
   void MoveGroupToRecursive(int index, TabGroupTabCollection* collection);
 
   void ValidateCollections() const;

@@ -90,11 +90,6 @@ size_t TabGroupTabCollection::ChildCount() const {
   return impl_->GetChildrenCount();
 }
 
-size_t TabGroupTabCollection::TabCountRecursive() const {
-  // Same as total number of children since there are no child collections.
-  return ChildCount();
-}
-
 std::unique_ptr<TabCollection> TabGroupTabCollection::MaybeRemoveCollection(
     TabCollection* collection) {
   return nullptr;

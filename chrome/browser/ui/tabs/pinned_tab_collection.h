@@ -64,10 +64,6 @@ class PinnedTabCollection : public TabCollection {
   // collection does not contain another collection.
   size_t ChildCount() const override;
 
-  // This is non-recursive for pinned tab collection as it does not contain
-  // another collection.
-  size_t TabCountRecursive() const override;
-
   // TabCollection interface methods that are currently not supported by the
   // collection.
   std::unique_ptr<TabCollection> MaybeRemoveCollection(

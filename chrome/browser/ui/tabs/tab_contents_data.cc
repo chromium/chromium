@@ -24,7 +24,7 @@ class TabContentsDataImpl : public TabContentsData {
   TabContentsDataImpl(const TabContentsDataImpl&) = delete;
   TabContentsDataImpl& operator=(const TabContentsDataImpl&) = delete;
 
-  size_t TabCountRecursive() const override;
+  size_t TotalTabCount() const override;
   size_t IndexOfFirstNonPinnedTab() const override;
 
   tabs::TabModel* GetTabAtIndexRecursive(size_t index) const override;
@@ -68,7 +68,7 @@ std::unique_ptr<TabContentsData> CreateTabContentsDataImpl() {
   }
 }
 
-size_t TabContentsDataImpl::TabCountRecursive() const {
+size_t TabContentsDataImpl::TotalTabCount() const {
   return contents_data_.size();
 }
 

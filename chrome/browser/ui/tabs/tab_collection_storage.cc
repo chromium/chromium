@@ -42,6 +42,7 @@ TabModel* TabCollectionStorage::AddTab(std::unique_ptr<TabModel> tab_model,
 
   TabModel* tab_model_ptr = tab_model.get();
   children_.insert(children_.begin() + index, std::move(tab_model));
+  owning_collection_->OnTabAddedToTree();
   return tab_model_ptr;
 }
 
@@ -62,6 +63,7 @@ std::unique_ptr<TabModel> TabCollectionStorage::RemoveTab(TabModel* tab_model) {
       if (stored_tab_model.get() == tab_model) {
         auto removed_tab_model = std::move(stored_tab_model);
         children_.erase(children_.begin() + i);
+        owning_collection_->OnTabRemovedFromTree();
         return removed_tab_model;
       }
     }
@@ -83,6 +85,7 @@ TabCollection* TabCollectionStorage::AddCollection(
 
   TabCollection* collection_ptr = collection.get();
   children_.insert(children_.begin() + index, std::move(collection));
+  owning_collection_->OnCollectionAddedToTree(collection_ptr);
   return collection_ptr;
 }
 
@@ -106,6 +109,8 @@ std::unique_ptr<TabCollection> TabCollectionStorage::RemoveCollection(
       if (stored_tab_collection.get() == collection) {
         auto removed_tab_collection = std::move(stored_tab_collection);
         children_.erase(children_.begin() + i);
+        owning_collection_->OnCollectionRemovedFromTree(
+            removed_tab_collection.get());
         return removed_tab_collection;
       }
     }

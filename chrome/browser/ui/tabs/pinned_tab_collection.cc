@@ -89,11 +89,6 @@ size_t PinnedTabCollection::ChildCount() const {
   return impl_->GetChildrenCount();
 }
 
-size_t PinnedTabCollection::TabCountRecursive() const {
-  // Same as total number of children since there are no child collections.
-  return ChildCount();
-}
-
 std::unique_ptr<TabCollection> PinnedTabCollection::MaybeRemoveCollection(
     TabCollection* collection) {
   CHECK(collection);
