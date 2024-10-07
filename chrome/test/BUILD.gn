@@ -7807,6 +7807,7 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/top_chrome:test_support",
       "//chrome/browser/ui/zoom",
       "//chrome/browser/ui/zoom:unit_tests",
+      "//chrome/browser/upgrade_detector:build_state_observer",
       "//chrome/browser/user_annotations",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/browser/webauthn:test_support",
