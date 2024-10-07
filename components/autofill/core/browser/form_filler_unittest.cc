@@ -384,11 +384,14 @@ TEST_F(FormFillerTest, SkipFillIfFieldIsMeaningfullyPreFilled) {
 
   const FieldType kSkippedType = ADDRESS_HOME_LINE1;
   FormData form = test::GetFormData(
-      {.fields = {{.role = NAME_FIRST, .value = u"Triggering field (filled)"},
-                  {.role = NAME_LAST, .value = u"Placeholder (filled)"},
-                  {.role = EMAIL_ADDRESS, .value = u"No data (filled)"},
-                  {.role = kSkippedType,
-                   .value = u"Meaningfully pre-filled (skipped)"}}});
+      {.fields = {
+           {.role = NAME_FIRST, .value = u"Triggering field (filled)"},
+           {.role = NAME_LAST, .value = u"Placeholder (filled)"},
+           {.role = EMAIL_ADDRESS, .value = u"No data (filled)"},
+           {.role = kSkippedType,
+            .value = u"Meaningfully pre-filled (skipped)"},
+           // Value initialized with whitespace-only, expect field to be filled.
+           {.role = ADDRESS_HOME_COUNTRY, .value = u" "}}});
   FormsSeen({form});
 
   FormStructure* form_structure = GetFormStructure(form);
@@ -432,6 +435,8 @@ TEST_F(FormFillerTest, SkipFillIfFieldIsMeaningfullyPreFilled) {
   expect_hash(filled_fields[3],
               base::FastHash(base::UTF16ToUTF8(
                   profile.GetInfo(kSkippedType, kAppLocale))));
+  EXPECT_THAT(filled_fields[4], AutofilledWith(profile.GetInfo(
+                                    ADDRESS_HOME_COUNTRY, kAppLocale)));
 }
 
 TEST_F(FormFillerTest, SkipAllPreFilledFieldsExceptIfFieldIsAPlaceholder) {
@@ -454,10 +459,12 @@ TEST_F(FormFillerTest, SkipAllPreFilledFieldsExceptIfFieldIsAPlaceholder) {
            {.role = ADDRESS_HOME_STATE,
             .value = kSelectedState,
             .form_control_type = FormControlType::kSelectOne,
-            .select_options = {
-                SelectOption{.value = kSelectedState, .text = kSelectedState},
-                SelectOption{.value = kToBeFilledState,
-                             .text = kToBeFilledState}}}}});
+            .select_options = {SelectOption{.value = kSelectedState,
+                                            .text = kSelectedState},
+                               SelectOption{.value = kToBeFilledState,
+                                            .text = kToBeFilledState}}},
+           // Value initialized with whitespace-only, expect field to be filled.
+           {.role = ADDRESS_HOME_COUNTRY, .value = u" "}}});
   FormsSeen({form});
 
   FormStructure* form_structure = GetFormStructure(form);
@@ -478,6 +485,8 @@ TEST_F(FormFillerTest, SkipAllPreFilledFieldsExceptIfFieldIsAPlaceholder) {
   EXPECT_FALSE(filled_fields[3].is_autofilled());
   EXPECT_EQ(filled_fields[3].value(), form.fields()[3].value());
   EXPECT_THAT(filled_fields[4], AutofilledWith(kToBeFilledState));
+  EXPECT_THAT(filled_fields[5], AutofilledWith(profile.GetInfo(
+                                    ADDRESS_HOME_COUNTRY, kAppLocale)));
 }
 
 TEST_F(FormFillerTest, UndoSavesFormFillingData) {

@@ -124,8 +124,11 @@ bool ShouldSkipFieldBecauseOfMeaningfulInitialValue(
   if (field.IsSelectElement()) {
     return false;
   }
-  // By default, empty initial values are not considered to be meaningful.
-  if (field.value(ValueSemantics::kInitial).empty()) {
+  // By default, empty initial values are not considered to be meaningful. A
+  // value only consisting of whitespace is considered empty.
+  if (base::TrimWhitespace(field.value(ValueSemantics::kInitial),
+                           base::TrimPositions::TRIM_ALL)
+          .empty()) {
     return false;
   }
   // If the field's initial value coincides with the value of its placeholder
