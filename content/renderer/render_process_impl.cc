@@ -50,12 +50,6 @@
 
 namespace {
 
-void SetV8FlagIfFeature(const base::Feature& feature, const char* v8_flag) {
-  if (base::FeatureList::IsEnabled(feature)) {
-    v8::V8::SetFlagsFromString(v8_flag, strlen(v8_flag));
-  }
-}
-
 void SetV8FlagIfOverridden(const base::Feature& feature,
                            const char* enabling_flag,
                            const char* disabling_flag) {
@@ -147,9 +141,6 @@ RenderProcessImpl::RenderProcessImpl()
   SetV8FlagIfHasSwitch(switches::kJavaScriptHarmony, "--harmony");
   SetV8FlagIfHasSwitch(switches::kEnableExperimentalWebAssemblyFeatures,
                        "--wasm-staging");
-
-  SetV8FlagIfFeature(features::kJavaScriptExperimentalSharedMemory,
-                     "--shared-string-table --harmony-struct");
 
   SetV8FlagIfOverridden(features::kV8VmFuture, "--future", "--no-future");
 

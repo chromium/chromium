@@ -2419,13 +2419,6 @@ const char kJavascriptHarmonyShippingDescription[] =
     "conflict with the latest JavaScript features. This flag allows disabling "
     "support of those features for compatibility with such pages.";
 
-const char kJavascriptExperimentalSharedMemoryName[] =
-    "Experimental JavaScript shared memory features";
-const char kJavascriptExperimentalSharedMemoryDescription[] =
-    "Enable web pages to use non-standard, experimental JavaScript shared "
-    "memory features. Their use requires the same HTTP headers required by "
-    "cross-thread usage of SharedArrayBuffers (i.e. COOP and COEP).";
-
 const char kJourneysName[] = "History Journeys";
 const char kJourneysDescription[] = "Enables the History Journeys UI.";
 

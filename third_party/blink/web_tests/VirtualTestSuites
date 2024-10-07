@@ -2006,7 +2006,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/js/shared_memory"],
     "exclusive_tests": "ALL",
-    "args": ["--enable-features=JavaScriptExperimentalSharedMemory"],
+    "args": ["--js-flags=--harmony-struct"],
     "owners": ["syg@chromium.org"],
     "expires": "Jul 1, 2025"
   },

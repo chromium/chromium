@@ -557,11 +557,6 @@ BASE_FEATURE(kIsolateOrigins,
              base::FEATURE_DISABLED_BY_DEFAULT);
 const char kIsolateOriginsFieldTrialParamName[] = "OriginsList";
 
-// Enables experimental JavaScript shared memory features.
-BASE_FEATURE(kJavaScriptExperimentalSharedMemory,
-             "JavaScriptExperimentalSharedMemory",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable lazy initialization of the media controls.
 BASE_FEATURE(kLazyInitializeMediaControls,
              "LazyInitializeMediaControls",

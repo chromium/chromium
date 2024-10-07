@@ -1367,9 +1367,6 @@ extern const char kJavascriptHarmonyDescription[];
 extern const char kJavascriptHarmonyShippingName[];
 extern const char kJavascriptHarmonyShippingDescription[];
 
-extern const char kJavascriptExperimentalSharedMemoryName[];
-extern const char kJavascriptExperimentalSharedMemoryDescription[];
-
 extern const char kJourneysName[];
 extern const char kJourneysDescription[];
 
