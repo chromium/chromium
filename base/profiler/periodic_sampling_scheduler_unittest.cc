@@ -2,24 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sampling_profiler/thread_profiler.h"
+#include "base/profiler/periodic_sampling_scheduler.h"
 
 #include "base/test/bind.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace sampling_profiler {
+namespace base {
 namespace {
 
 class TestScheduler : public PeriodicSamplingScheduler {
  public:
-  TestScheduler(base::TimeDelta sampling_duration,
+  TestScheduler(TimeDelta sampling_duration,
                 double fraction_of_execution_time_to_sample)
       : PeriodicSamplingScheduler(sampling_duration,
                                   fraction_of_execution_time_to_sample,
-                                  kStartTime),
-        rand_double_value_(0.0) {
+                                  kStartTime) {
     tick_clock_.SetNowTicks(kStartTime);
   }
 
@@ -27,24 +26,24 @@ class TestScheduler : public PeriodicSamplingScheduler {
   TestScheduler& operator=(const TestScheduler&) = delete;
 
   double RandDouble() const override { return rand_double_value_; }
-  base::TimeTicks Now() const override { return tick_clock_.NowTicks(); }
+  TimeTicks Now() const override { return tick_clock_.NowTicks(); }
 
   void SetRandDouble(double value) { rand_double_value_ = value; }
-  base::SimpleTestTickClock& tick_clock() { return tick_clock_; }
+  SimpleTestTickClock& tick_clock() { return tick_clock_; }
 
  private:
-  static constexpr base::TimeTicks kStartTime = base::TimeTicks();
-  base::SimpleTestTickClock tick_clock_;
-  double rand_double_value_;
+  static constexpr TimeTicks kStartTime = TimeTicks();
+  SimpleTestTickClock tick_clock_;
+  double rand_double_value_ = 0.0;
 };
 
-constexpr base::TimeTicks TestScheduler::kStartTime;
+constexpr TimeTicks TestScheduler::kStartTime;
 
-TEST(ThreadProfilerTest, PeriodicSamplingScheduler) {
-  const base::TimeDelta sampling_duration = base::Seconds(30);
+TEST(PeriodicSamplingSchedulerTest, ScheduleCollections) {
+  const TimeDelta sampling_duration = Seconds(30);
   const double fraction_of_execution_time_to_sample = 0.01;
 
-  const base::TimeDelta expected_period =
+  const TimeDelta expected_period =
       sampling_duration / fraction_of_execution_time_to_sample;
 
   TestScheduler scheduler(sampling_duration,
@@ -53,7 +52,7 @@ TEST(ThreadProfilerTest, PeriodicSamplingScheduler) {
   // The first collection should be exactly at the start time, since the random
   // value is 0.0.
   scheduler.SetRandDouble(0.0);
-  EXPECT_EQ(base::Seconds(0), scheduler.GetTimeToNextCollection());
+  EXPECT_EQ(Seconds(0), scheduler.GetTimeToNextCollection());
 
   // With a random value of 1.0 the second collection should be at the end of
   // the second period.
@@ -68,11 +67,11 @@ TEST(ThreadProfilerTest, PeriodicSamplingScheduler) {
             scheduler.GetTimeToNextCollection());
 }
 
-TEST(ThreadProfilerTest, PeriodicSamplingSchedulerWithJumpInTimeTicks) {
-  const base::TimeDelta sampling_duration = base::Seconds(30);
+TEST(PeriodicSamplingSchedulerTest, ScheduleWithJumpInTimeTicks) {
+  const TimeDelta sampling_duration = Seconds(30);
   const double fraction_of_execution_time_to_sample = 0.01;
 
-  const base::TimeDelta expected_period =
+  const TimeDelta expected_period =
       sampling_duration / fraction_of_execution_time_to_sample;
 
   TestScheduler scheduler(sampling_duration,
@@ -81,17 +80,17 @@ TEST(ThreadProfilerTest, PeriodicSamplingSchedulerWithJumpInTimeTicks) {
   // The first collection should be exactly at the start time, since the random
   // value is 0.0.
   scheduler.SetRandDouble(0.0);
-  EXPECT_EQ(base::Seconds(0), scheduler.GetTimeToNextCollection());
+  EXPECT_EQ(Seconds(0), scheduler.GetTimeToNextCollection());
 
   // Simulate a non-continuous jump in the current TimeTicks such that the next
   // period would start before the current time. In this case the
   // period start should be reset to the current time, and the next collection
   // chosen within that period.
-  scheduler.tick_clock().Advance(expected_period + base::Seconds(1));
+  scheduler.tick_clock().Advance(expected_period + Seconds(1));
   scheduler.SetRandDouble(0.5);
   EXPECT_EQ(0.5 * (expected_period - sampling_duration),
             scheduler.GetTimeToNextCollection());
 }
 
 }  // namespace
-}  // namespace sampling_profiler
+}  // namespace base

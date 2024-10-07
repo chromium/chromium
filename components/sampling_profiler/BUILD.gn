@@ -30,14 +30,3 @@ source_set("profile_params") {
 
   deps = [ "//base" ]
 }
-
-source_set("unit_tests") {
-  testonly = true
-
-  sources = [ "thread_profiler_unittest.cc" ]
-
-  deps = [
-    ":sampling_profiler",
-    "//base/test:test_support",
-  ]
-}

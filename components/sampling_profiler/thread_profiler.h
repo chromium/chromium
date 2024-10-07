@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/profiler/periodic_sampling_scheduler.h"
 #include "base/profiler/stack_sampling_profiler.h"
 #include "base/profiler/unwinder.h"
 #include "base/task/single_thread_task_runner.h"
@@ -21,35 +22,6 @@
 namespace sampling_profiler {
 
 class ThreadProfilerClient;
-
-// PeriodicSamplingScheduler repeatedly schedules periodic sampling of the
-// thread through calls to GetTimeToNextCollection(). This class is exposed
-// to allow testing.
-class PeriodicSamplingScheduler {
- public:
-  PeriodicSamplingScheduler(base::TimeDelta sampling_duration,
-                            double fraction_of_execution_time_to_sample,
-                            base::TimeTicks start_time);
-
-  PeriodicSamplingScheduler(const PeriodicSamplingScheduler&) = delete;
-  PeriodicSamplingScheduler& operator=(const PeriodicSamplingScheduler&) =
-      delete;
-
-  virtual ~PeriodicSamplingScheduler();
-
-  // Returns the amount of time between now and the next collection.
-  base::TimeDelta GetTimeToNextCollection();
-
- protected:
-  // Virtual to provide seams for test use.
-  virtual double RandDouble() const;
-  virtual base::TimeTicks Now() const;
-
- private:
-  const base::TimeDelta period_duration_;
-  const base::TimeDelta sampling_duration_;
-  base::TimeTicks period_start_time_;
-};
 
 // ThreadProfiler performs startup and periodic profiling of Chrome
 // threads.
@@ -148,7 +120,7 @@ class ThreadProfiler {
   std::unique_ptr<base::StackSamplingProfiler> startup_profiler_;
 
   std::unique_ptr<base::StackSamplingProfiler> periodic_profiler_;
-  std::unique_ptr<PeriodicSamplingScheduler> periodic_sampling_scheduler_;
+  std::unique_ptr<base::PeriodicSamplingScheduler> periodic_sampling_scheduler_;
 
   THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<ThreadProfiler> weak_factory_{this};

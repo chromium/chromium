@@ -45,6 +45,12 @@ ThreadProfiler* g_main_thread_instance = nullptr;
 // |g_thread_profiler_client| is intentionally leaked on shutdown.
 ThreadProfilerClient* g_thread_profiler_client = nullptr;
 
+// The kFractionOfExecutionTimeToSample and SamplingParams settings in
+// ThreadProfilerConfiguration::GetSamplingParams() specify fraction = 0.02 and
+// sampling period = 1 sample / .1s sampling interval * 300 samples = 30s. The
+// period length works out to 30s/0.02 = 1500s = 25m. So every 25 minutes a
+// random 30 second continuous interval will be picked to sample.
+
 // Run continuous profiling 2% of the time.
 constexpr double kFractionOfExecutionTimeToSample = 0.02;
 
@@ -74,53 +80,6 @@ const base::RepeatingClosure GetApplyPerSampleMetadataCallback(
 }
 
 }  // namespace
-
-// The scheduler works by splitting execution time into repeated periods such
-// that the time to take one collection represents
-// |fraction_of_execution_time_to_sample| of the period, and the time not spent
-// sampling represents 1 - |fraction_of_execution_time_to_sample| of the period.
-// The collection start time is chosen randomly within each period such that the
-// entire collection is contained within the period.
-//
-// The kFractionOfExecutionTimeToSample and SamplingParams settings at the top
-// of the file specify fraction = 0.02 and sampling period = 1 sample / .1s
-// sampling interval * 300 samples = 30s. The period length works out to
-// 30s/0.02 = 1500s = 25m. So every 25 minutes a random 30 second continuous
-// interval will be picked to sample.
-PeriodicSamplingScheduler::PeriodicSamplingScheduler(
-    base::TimeDelta sampling_duration,
-    double fraction_of_execution_time_to_sample,
-    base::TimeTicks start_time)
-    : period_duration_(sampling_duration /
-                       fraction_of_execution_time_to_sample),
-      sampling_duration_(sampling_duration),
-      period_start_time_(start_time) {
-  DCHECK(sampling_duration_ <= period_duration_);
-}
-
-PeriodicSamplingScheduler::~PeriodicSamplingScheduler() = default;
-
-base::TimeDelta PeriodicSamplingScheduler::GetTimeToNextCollection() {
-  const base::TimeTicks now = Now();
-  // Avoid scheduling in the past in the presence of discontinuous jumps in
-  // the current TimeTicks.
-  period_start_time_ = std::max(period_start_time_, now);
-
-  const base::TimeDelta sampling_offset =
-      (period_duration_ - sampling_duration_) * RandDouble();
-  const base::TimeTicks next_collection_time =
-      period_start_time_ + sampling_offset;
-  period_start_time_ += period_duration_;
-  return next_collection_time - now;
-}
-
-double PeriodicSamplingScheduler::RandDouble() const {
-  return base::RandDouble();
-}
-
-base::TimeTicks PeriodicSamplingScheduler::Now() const {
-  return base::TimeTicks::Now();
-}
 
 // Records the current unique id for the work item being executed in the target
 // thread's message loop.
@@ -260,9 +219,11 @@ ThreadProfiler::ThreadProfiler(
       base::TimeTicks::Now() +
       sampling_params.samples_per_profile * sampling_params.sampling_interval;
 
-  periodic_sampling_scheduler_ = std::make_unique<PeriodicSamplingScheduler>(
-      sampling_params.samples_per_profile * sampling_params.sampling_interval,
-      kFractionOfExecutionTimeToSample, startup_profiling_completion_time);
+  periodic_sampling_scheduler_ =
+      std::make_unique<base::PeriodicSamplingScheduler>(
+          sampling_params.samples_per_profile *
+              sampling_params.sampling_interval,
+          kFractionOfExecutionTimeToSample, startup_profiling_completion_time);
 
   if (owning_thread_task_runner_) {
     ScheduleNextPeriodicCollection();
