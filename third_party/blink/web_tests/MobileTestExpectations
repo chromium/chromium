@@ -145,15 +145,14 @@ external/wpt/web-animations/idlharness.window.html [ Failure ]
 external/wpt/webrtc/idlharness.https.window.html [ Skip Timeout ]
 
 # Flaky tests
-[ Android ] external/wpt/visual-viewport/page-and-offset-in-iframe.html [ Failure Pass ]
 [ Android ] external/wpt/visual-viewport/viewport-scrollbars-cause-resize.html [ Failure Pass ]
 [ Android ] external/wpt/visual-viewport/viewport-unscaled-size.html [ Failure Pass ]
 [ Webview ] external/wpt/idle-detection/idlharness.https.window.html [ Pass Timeout ]
 [ Webview ] external/wpt/largest-contentful-paint/idlharness.html [ Pass Timeout ]
 [ Webview ] external/wpt/storage/idlharness.https.any.worker.html [ Failure Pass ]
 [ Webview ] external/wpt/streams/idlharness.any.worker.html [ Failure Pass Timeout ]
+[ Webview ] external/wpt/visual-viewport/scroll-event-order.html [ Failure Pass ]  # Flaky output
 [ Webview ] external/wpt/visual-viewport/viewport-scrollbars-cause-resize-in-iframe.html [ Failure Pass ]
 [ Webview ] external/wpt/webauthn/idlharness.https.window.html [ Failure Pass ]
 [ Webview ] external/wpt/webrtc-encoded-transform/idlharness.https.window.html [ Failure Pass ]
-[ Webview ] external/wpt/visual-viewport/page-and-offset-in-iframe.html [ Failure ]  # Flaky output
-[ Webview ] external/wpt/visual-viewport/scroll-event-order.html [ Failure ]  # Flaky output
+external/wpt/visual-viewport/page-and-offset-in-iframe.html [ Failure Pass ]
