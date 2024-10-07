@@ -17,6 +17,8 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/features.h"
 #include "base/logging.h"
 #include "base/mac/code_signature.h"
@@ -112,12 +114,12 @@ base::expected<std::string, int> TeamIdentifierOfCurrentProcess() {
   int result = CSOpsProvider()->csops(getpid(), CS_OPS_TEAMID, &result_data,
                                       sizeof(result_data));
   if (result < 0) {
-    if (errno == ENOENT) {
-      // Process has no team identifier (ad-hoc signed, unsigned, etc).
-      return "";
+    if (errno != ENOENT) {
+      // Don't log an error for `ENOENT` as it is expected in unsigned or ad-hoc
+      // signed builds, such as during local development.
+      PLOG(ERROR) << "csops(CS_OPS_TEAMID) failed";
     }
 
-    PLOG(ERROR) << "csops(CS_OPS_TEAMID) failed";
     return base::unexpected(errno);
   }
 
@@ -256,9 +258,14 @@ ProcessRequirement::Builder::HasSameTeamIdentifier() && {
 
   has_same_team_identifier_called_ = true;
 
-  if (auto team_identifier = TeamIdentifierOfCurrentProcess();
-      team_identifier.has_value()) {
+  auto team_identifier = TeamIdentifierOfCurrentProcess();
+  if (team_identifier.has_value()) {
     team_identifier_ = std::move(*team_identifier);
+    return std::move(*this);
+  } else if (team_identifier.error() == ENOENT) {
+    // ENOENT is returned when the process has no team identifier,
+    // such as if it is unsigned or signed with an ad-hoc identity.
+    team_identifier_ = "";
     return std::move(*this);
   }
 
@@ -546,24 +553,62 @@ void ProcessRequirement::MaybeGatherMetrics() {
 }
 
 namespace {
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// This separate helper ensures that each of the calls to DumpWithoutCrashing
+// see the same caller location so at most one dump will occur.
+void RecordHasExpectedValue(const std::string& histogram_prefix,
+                            bool has_expected_value) {
+  base::UmaHistogramBoolean(histogram_prefix + ".HasExpectedValue",
+                            has_expected_value);
+  if (!has_expected_value) {
+    debug::DumpWithoutCrashing();
+  }
+}
+#endif
+
 template <typename T>
-void RecordOperationHistogram(std::string histogram_prefix,
-                              base::expected<T, int> value,
+void RecordOperationHistogram(const std::string& histogram_prefix,
+                              const base::expected<T, int>& value,
                               T expected_value_if_chrome) {
   base::UmaHistogramSparse(histogram_prefix + ".Result", value.error_or(0));
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (value.has_value()) {
-    base::UmaHistogramBoolean(histogram_prefix + ".HasExpectedValue",
-                              *value == expected_value_if_chrome);
+    RecordHasExpectedValue(histogram_prefix,
+                           *value == expected_value_if_chrome);
   }
 #endif
 }
+
+template <typename T>
+std::string StringForCrashKey(const base::expected<T, int>& value) {
+  if (value.has_value()) {
+    if constexpr (std::is_same_v<T, std::string>) {
+      return value.value();
+    } else {
+      return NumberToString(static_cast<uint64_t>(value.value()));
+    }
+  }
+  return "error: " + NumberToString(value.error());
+}
+
 }  // namespace
 
 // static
 void ProcessRequirement::GatherMetrics() {
-  RecordOperationHistogram("Mac.ProcessRequirement.TeamIdentifier",
-                           TeamIdentifierOfCurrentProcess(),
+  auto team_id = TeamIdentifierOfCurrentProcess();
+  auto validation_category = ValidationCategoryOfCurrentProcess();
+  auto fallback_validation_category =
+      FallbackValidationCategoryOfCurrentProcess();
+
+  SCOPED_CRASH_KEY_STRING32("ProcessRequirement", "TeamIdentifier",
+                            StringForCrashKey(team_id));
+  SCOPED_CRASH_KEY_STRING32("ProcessRequirement", "Category",
+                            StringForCrashKey(validation_category));
+  SCOPED_CRASH_KEY_STRING32("ProcessRequirement", "FallbackCategory",
+                            StringForCrashKey(fallback_validation_category));
+
+  RecordOperationHistogram("Mac.ProcessRequirement.TeamIdentifier", team_id,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
                            std::string("EQHXZ8M8AV")
 #else
@@ -572,11 +617,11 @@ void ProcessRequirement::GatherMetrics() {
   );
 
   RecordOperationHistogram("Mac.ProcessRequirement.ValidationCategory",
-                           ValidationCategoryOfCurrentProcess(),
+                           validation_category,
                            ValidationCategory::DeveloperId);
 
   RecordOperationHistogram("Mac.ProcessRequirement.FallbackValidationCategory",
-                           FallbackValidationCategoryOfCurrentProcess(),
+                           fallback_validation_category,
                            ValidationCategory::DeveloperId);
 
   std::optional<ProcessRequirement> requirement;
