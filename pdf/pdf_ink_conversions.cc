@@ -14,7 +14,7 @@ ink::StrokeInput CreateInkStrokeInput(ink::StrokeInput::ToolType tool_type,
                                       const gfx::PointF& position,
                                       base::TimeDelta elapsed_time) {
   return {
-      .tool_type = ink::StrokeInput::ToolType::kMouse,
+      .tool_type = tool_type,
       .position = {position.x(), position.y()},
       .elapsed_time = ink::Duration32::Seconds(
           static_cast<float>(elapsed_time.InSecondsF())),
