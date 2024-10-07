@@ -229,6 +229,18 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     _useNewBadgeForLensButton = useNewBadgeForLensButton;
     _lastAnimationPercent = 0;
     _currentHintLabelScale = 1;
+
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+        UITraitPreferredContentSizeCategory.self, UITraitUserInterfaceStyle.self
+      ]);
+      __weak __typeof(self) weakSelf = self;
+      UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                       UITraitCollection* previousCollection) {
+        [weakSelf updateUIOnTraitChange:previousCollection];
+      };
+      [self registerForTraitChanges:traits withHandler:handler];
+    }
   }
   return self;
 }
@@ -735,27 +747,17 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
 #pragma mark - UITraitEnvironment
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  if (previousTraitCollection.preferredContentSizeCategory !=
-      self.traitCollection.preferredContentSizeCategory) {
-    [self updateHintLabelFonts];
+  if (@available(iOS 17, *)) {
+    return;
   }
 
-  if (previousTraitCollection.userInterfaceStyle !=
-      self.traitCollection.userInterfaceStyle) {
-    // The fakebox background can be a blended color, which will not
-    // automatically update when dark/light mode is changed. It needs to be
-    // manually updated here.
-    [self setFakeboxBackgroundWithProgress:_lastAnimationPercent];
-
-    if (_accountDiscParticleBadgeImageView) {
-      _accountDiscParticleBadgeImageView.backgroundColor =
-          AccountParticleDiscBadgeBackgroundColor(
-              self.traitCollection.userInterfaceStyle);
-    }
-  }
+  [self updateUIOnTraitChange:previousTraitCollection];
 }
+
+#endif
 
 #pragma mark - Property accessors
 
@@ -937,6 +939,28 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   }
   // Common trailing space.
   return kEndButtonFakeboxTrailingSpace;
+}
+
+// Updates facets of the UI to reflect the change in the collection of UITraits.
+- (void)updateUIOnTraitChange:(UITraitCollection*)previousTraitCollection {
+  if (previousTraitCollection.preferredContentSizeCategory !=
+      self.traitCollection.preferredContentSizeCategory) {
+    [self updateHintLabelFonts];
+  }
+
+  if (previousTraitCollection.userInterfaceStyle !=
+      self.traitCollection.userInterfaceStyle) {
+    // The fakebox background can be a blended color, which will not
+    // automatically update when dark/light mode is changed. It needs to be
+    // manually updated here.
+    [self setFakeboxBackgroundWithProgress:_lastAnimationPercent];
+
+    if (_accountDiscParticleBadgeImageView) {
+      _accountDiscParticleBadgeImageView.backgroundColor =
+          AccountParticleDiscBadgeBackgroundColor(
+              self.traitCollection.userInterfaceStyle);
+    }
+  }
 }
 
 @end
