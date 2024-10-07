@@ -224,7 +224,7 @@ public class CustomTabToolbarCoordinator {
         mToolbarManager.initializeWithNative(
                 layoutDriver,
                 /* stripLayoutHelperManager= */ null,
-                /* newTabClickHandler= */ null,
+                /* openGridTabSwitcherHandler= */ null,
                 /* bookmarkClickHandler= */ null,
                 /* customTabsBackClickHandler= */ v -> onCloseButtonClick(),
                 /* archivedTabCountSupplier= */ null);

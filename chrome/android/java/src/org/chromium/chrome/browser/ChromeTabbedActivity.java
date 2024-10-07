@@ -1029,7 +1029,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     .initializeWithNative(
                             mLayoutManager,
                             mLayoutManager.getStripLayoutHelperManager(),
-                            v -> onTabSwitcherClicked(),
+                            this::onTabSwitcherClicked,
                             bookmarkClickHandler,
                             /* customTabsBackClickHandler= */ null,
                             archivedTabCountSupplier);

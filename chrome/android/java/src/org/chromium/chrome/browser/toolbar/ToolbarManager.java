@@ -92,6 +92,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarEmbedderUiOverrides;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
+import org.chromium.chrome.browser.omnibox.OverrideUrlLoadingDelegateImpl;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
@@ -278,6 +279,7 @@ public class ToolbarManager
     private final BackPressManager mBackPressManager;
     private final UserEducationHelper mUserEducationHelper;
     private final ToolbarLongPressMenuHandler mToolbarLongPressMenuHandler;
+    private final OverrideUrlLoadingDelegateImpl mOverrideUrlLoadingDelegate;
 
     private HomeButtonCoordinator mHomeButtonCoordinator;
     private ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;
@@ -624,6 +626,7 @@ public class ToolbarManager
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mUserEducationHelper = new UserEducationHelper(mActivity, profileSupplier, mHandler);
         mDesktopWindowStateProvider = desktopWindowStateProvider;
+        mOverrideUrlLoadingDelegate = new OverrideUrlLoadingDelegateImpl();
 
         ToolbarLayout toolbarLayout = mActivity.findViewById(R.id.toolbar);
         NewTabPageDelegate ntpDelegate = createNewTabPageDelegate(toolbarLayout);
@@ -852,7 +855,7 @@ public class ToolbarManager
                             shareDelegateSupplier,
                             mIncognitoStateProvider,
                             activityLifecycleDispatcher,
-                            (omniboxParams, isIncognito) -> false,
+                            mOverrideUrlLoadingDelegate,
                             new BackKeyBehaviorDelegate() {},
                             toolbarPageInfo::show,
                             IntentHandler::bringTabToFront,
@@ -1637,7 +1640,7 @@ public class ToolbarManager
      * @param layoutManager A {@link LayoutManagerImpl} instance used to watch for scene changes.
      * @param stripLayoutHelperManager {@link StripLayoutHelperManager} instance used to manage the
      *     tab strip.
-     * @param newTabClickHandler The {@link OnClickListener} for the new tab button.
+     * @param openGridTabSwitcherHandler The {@link Runnable} for the grid tab switcher.
      * @param bookmarkClickHandler The {@link OnClickListener} for the bookmark button.
      * @param customTabsBackClickHandler The {@link OnClickListener} for the custom tabs back
      *     button.
@@ -1645,7 +1648,7 @@ public class ToolbarManager
     public void initializeWithNative(
             @NonNull LayoutManagerImpl layoutManager,
             @Nullable StripLayoutHelperManager stripLayoutHelperManager,
-            OnClickListener newTabClickHandler,
+            Runnable openGridTabSwitcherHandler,
             OnClickListener bookmarkClickHandler,
             OnClickListener customTabsBackClickHandler,
             @Nullable ObservableSupplier<Integer> archivedTabCountSupplier) {
@@ -1657,6 +1660,8 @@ public class ToolbarManager
         Profile profile = mTabModelSelector.getModel(false).getProfile();
         assert profile != null;
 
+        mOverrideUrlLoadingDelegate.setOpenGridTabSwitcherCallback(openGridTabSwitcherHandler);
+
         // Must be initialized before Toolbar attempts to use it.
         mLocationBarModel.initializeWithNative();
         if (mTabSwitcherButtonCoordinator != null) {
@@ -1666,7 +1671,7 @@ public class ToolbarManager
                             profile,
                             mTabModelSelectorSupplier);
             mTabSwitcherButtonCoordinator.initializeWithNative(
-                    newTabClickHandler,
+                    v -> openGridTabSwitcherHandler.run(),
                     tabSwitcherLongClickListener,
                     mTabModelSelectorSupplier.get().getCurrentModelTabCountSupplier(),
                     archivedTabCountSupplier,

@@ -11,6 +11,12 @@ import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
  * LocationBar.
  */
 public interface OverrideUrlLoadingDelegate {
-    /** Returns true if the delegate will handle loading for the given parameters. */
+    /**
+     * Evaluate whether supplied LoadUrlParams need special handling.
+     *
+     * @param params the parameters specifying what URL to load - and how
+     * @param incognito whether URL is being opened from an incognito mode
+     * @return true if the delegate will handle loading for the given parameters
+     */
     boolean willHandleLoadUrlWithPostData(OmniboxLoadUrlParams params, boolean incognito);
 }
