@@ -36,14 +36,13 @@ import type {NewColumnSelectorElement} from './new_column_selector.js';
 import {SectionType} from './product_selection_menu.js';
 import type {ProductSelectorElement} from './product_selector.js';
 import {Router} from './router.js';
-import type {PriceInsightsInfo, ProductInfo, ProductSpecifications, ProductSpecificationsProduct} from './shopping_service.mojom-webui.js';
+import type {ProductInfo, ProductSpecifications, ProductSpecificationsProduct} from './shopping_service.mojom-webui.js';
 import {UserFeedback} from './shopping_service.mojom-webui.js';
 import type {TableElement} from './table.js';
 import type {UrlListEntry} from './utils.js';
 import {WindowProxy} from './window_proxy.js';
 
 interface AggregatedProductData {
-  priceInsightsInfo: PriceInsightsInfo|null;
   productInfo: ProductInfo|null;
   spec: ProductSpecificationsProduct|null;
 }
@@ -109,8 +108,8 @@ enum AppState {
 
 function getProductDetails(
     product: ProductSpecificationsProduct|null,
-    productSpecs: ProductSpecifications, productInfo: ProductInfo|null,
-    priceInsightsInfo: PriceInsightsInfo|null): ProductDetail[] {
+    productSpecs: ProductSpecifications,
+    productInfo: ProductInfo|null): ProductDetail[] {
   const productDetails: ProductDetail[] = [];
 
   // First add rows that don't come directly from the product
@@ -159,7 +158,9 @@ function getProductDetails(
   // The last row is buying options.
   productDetails.push({
     title: null,
-    content: {jackpotUrl: priceInsightsInfo?.jackpot.url ?? ''},
+    content: {
+      jackpotUrl: product?.buyingOptionsUrl.url || '',
+    },
   });
 
   return productDetails;
@@ -457,9 +458,8 @@ export class ProductSpecificationsElement extends PolymerElement {
             url,
             imageUrl: info?.imageUrl?.url || product?.imageUrl?.url || '',
           },
-          productDetails: getProductDetails(
-              product || null, productSpecs, info || null,
-              aggregatedDataByUrl.get(url)?.priceInsightsInfo || null),
+          productDetails:
+              getProductDetails(product || null, productSpecs, info || null),
         });
       }));
 
@@ -487,19 +487,6 @@ export class ProductSpecificationsElement extends PolymerElement {
     return !WindowProxy.getInstance().onLine;
   }
 
-  private async getPriceInsightsInfoForUrls_(urls: string[]):
-      Promise<Map<string, PriceInsightsInfo>> {
-    const infoMap: Map<string, PriceInsightsInfo> = new Map();
-    for (const url of urls) {
-      const {priceInsightsInfo} =
-          await this.shoppingApi_.getPriceInsightsInfoForUrl({url});
-      if (priceInsightsInfo && priceInsightsInfo.clusterId) {
-        infoMap.set(url, priceInsightsInfo);
-      }
-    }
-    return infoMap;
-  }
-
   private async getProductInfoForUrls_(urls: string[]):
       Promise<Map<string, ProductInfo>> {
     const infoMap: Map<string, ProductInfo> = new Map();
@@ -515,8 +502,6 @@ export class ProductSpecificationsElement extends PolymerElement {
   private async aggregateProductDataByUrl_(
       urls: string[], specs: ProductSpecifications):
       Promise<Map<string, AggregatedProductData>> {
-    const urlToPriceInsightsInfoMap: Map<string, PriceInsightsInfo> =
-        await this.getPriceInsightsInfoForUrls_(urls);
     const urlToProductInfoMap: Map<string, ProductInfo> =
         await this.getProductInfoForUrls_(urls);
     const specProductMap: Map<string, ProductSpecificationsProduct> = new Map();
@@ -529,11 +514,9 @@ export class ProductSpecificationsElement extends PolymerElement {
 
     const aggregatedDatas: Map<string, AggregatedProductData> = new Map();
     urls.forEach((url) => {
-      const priceInsightsInfo = urlToPriceInsightsInfoMap.get(url);
       const productInfo = urlToProductInfoMap.get(url);
       const productSpecs = specProductMap.get(url);
       aggregatedDatas.set(url, {
-        priceInsightsInfo: priceInsightsInfo ?? null,
         productInfo: productInfo ?? null,
         spec: productSpecs ?? null,
       });

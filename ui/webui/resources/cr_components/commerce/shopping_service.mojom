@@ -165,6 +165,9 @@ struct ProductSpecificationsProduct {
 
   // A list of summaries about the product.
   array<ProductSpecificationsDescriptionText> summary;
+
+  // The URL for buying options for the product (jackpot URL).
+  url.mojom.Url buying_options_url;
 };
 
 // Describes whether different parts of the Compare feature are enabled.
