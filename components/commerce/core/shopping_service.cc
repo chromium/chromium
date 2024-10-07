@@ -62,6 +62,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/search/ntp_features.h"
 #include "components/session_proto_db/session_proto_storage.h"
+#include "components/sessions/core/tab_restore_service.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
@@ -184,7 +185,8 @@ ShoppingService::ShoppingService(
     SessionProtoStorage<parcel_tracking_db::ParcelTrackingContent>*
         parcel_tracking_proto_db,
     history::HistoryService* history_service,
-    std::unique_ptr<commerce::WebExtractor> web_extractor)
+    std::unique_ptr<commerce::WebExtractor> web_extractor,
+    sessions::TabRestoreService* tab_restore_service)
     : country_on_startup_(country_on_startup),
       locale_on_startup_(locale_on_startup),
       opt_guide_(opt_guide),
@@ -201,6 +203,7 @@ ShoppingService::ShoppingService(
                       IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos))),
       web_extractor_(std::move(web_extractor)),
       history_service_(history_service),
+      tab_restore_service_(tab_restore_service),
       weak_ptr_factory_(this) {
   // Register for the types of information we're allowed to receive from
   // optimization guide.
@@ -312,6 +315,11 @@ ShoppingService::ShoppingService(
 
   if (history_service_) {
     history_service_observation_.Observe(history_service_);
+  }
+
+  if (product_specifications_service_) {
+    product_specifications_observation_.Observe(
+        product_specifications_service_);
   }
 }
 
@@ -1881,6 +1889,20 @@ void ShoppingService::OnHistoryDeletions(
   // reliable way to clear entries from the revently viewed list. If a user is
   // deleting items from history, clear the whole list.
   recently_visited_tabs_.clear();
+}
+
+void ShoppingService::OnProductSpecificationsSetRemoved(
+    const ProductSpecificationsSet& set) {
+  if (!tab_restore_service_) {
+    return;
+  }
+
+  tab_restore_service_->DeleteNavigationEntries(base::BindRepeating(
+      [](const std::string& base_url,
+         const sessions::SerializedNavigationEntry& entry) {
+        return entry.virtual_url().spec().starts_with(base_url);
+      },
+      GetProductSpecsTabUrlForID(set.uuid()).spec()));
 }
 
 void ShoppingService::QueryHistoryForUrl(

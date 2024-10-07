@@ -5,6 +5,7 @@ include_rules = [
   "+components/commerce/ios/browser",
   "+ios/chrome/browser/history/model",
   "+ios/chrome/browser/power_bookmarks/model",
+  "+ios/chrome/browser/sessions/model",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/optimization_guide/model",

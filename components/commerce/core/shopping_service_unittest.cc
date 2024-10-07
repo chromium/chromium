@@ -19,9 +19,11 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/mock_discounts_storage.h"
+#include "components/commerce/core/mock_tab_restore_service.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/proto/shopping_page_types.pb.h"
 #include "components/commerce/core/shopping_service_test_base.h"
@@ -37,6 +39,8 @@
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/search/ntp_features.h"
+#include "components/sessions/core/serialized_navigation_entry.h"
+#include "components/sessions/core/tab_restore_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/features.h"
@@ -747,6 +751,39 @@ TEST_P(ShoppingServiceTest, TestProductSpecificationsSetUrlsRetained) {
   // There should no longer be any references in the cache.
   ASSERT_EQ(0u, GetCache().GetUrlRefCount(url1));
   ASSERT_EQ(0u, GetCache().GetUrlRefCount(url2));
+}
+
+TEST_P(ShoppingServiceTest, TestRecentTabsCleanedUpOnDeletion) {
+  const GURL url("http://example.com/");
+  base::Uuid id = base::Uuid::GenerateRandomV4();
+
+  ProductSpecificationsSet spec_set(id.AsLowercaseString(), 0, 0, {url},
+                                    "specs");
+
+  EXPECT_CALL(*GetMockTabRestoreService(), DeleteNavigationEntries).Times(1);
+  ON_CALL(*GetMockTabRestoreService(), DeleteNavigationEntries)
+      .WillByDefault(
+          [spec_set = spec_set](
+              const sessions::TabRestoreService::DeletionPredicate& predicate) {
+            // A totally unrelated URL should be ignored.
+            sessions::SerializedNavigationEntry entry1;
+            entry1.set_virtual_url(GURL("http://example.com"));
+            ASSERT_FALSE(predicate.Run(entry1));
+
+            // An exact match should be removed.
+            sessions::SerializedNavigationEntry entry2;
+            entry2.set_virtual_url(GetProductSpecsTabUrlForID(spec_set.uuid()));
+            ASSERT_TRUE(predicate.Run(entry2));
+
+            // A matching URL with extra params should be removed as well.
+            sessions::SerializedNavigationEntry entry3;
+            entry3.set_virtual_url(
+                GURL(GetProductSpecsTabUrlForID(spec_set.uuid()).spec() +
+                     "?param=1"));
+            ASSERT_TRUE(predicate.Run(entry3));
+          });
+
+  shopping_service_->OnProductSpecificationsSetRemoved(spec_set);
 }
 
 TEST_P(ShoppingServiceTest, TestProductSpecificationsUrlCountMetrics) {
