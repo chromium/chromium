@@ -499,6 +499,14 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     @Override
     public void updateWebContentsVisibility(@Visibility int visibility) {
         checkNotDestroyed();
+        if (visibility == Visibility.VISIBLE) {
+            SelectionPopupControllerImpl controller = getSelectionPopupController();
+            if (controller != null) controller.restoreSelectionPopupsIfNecessary();
+        }
+        if (visibility == Visibility.HIDDEN) {
+            SelectionPopupControllerImpl controller = getSelectionPopupController();
+            if (controller != null) controller.hidePopupsAndPreserveSelection();
+        }
         WebContentsImplJni.get().updateWebContentsVisibility(mNativeWebContentsAndroid, visibility);
     }
 
@@ -601,22 +609,6 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         // safely guard against this case.
         if (isDestroyed()) return;
         WebContentsImplJni.get().collapseSelection(mNativeWebContentsAndroid);
-    }
-
-    @Override
-    public void onHide() {
-        checkNotDestroyed();
-        SelectionPopupControllerImpl controller = getSelectionPopupController();
-        if (controller != null) controller.hidePopupsAndPreserveSelection();
-        WebContentsImplJni.get().onHide(mNativeWebContentsAndroid);
-    }
-
-    @Override
-    public void onShow() {
-        checkNotDestroyed();
-        SelectionPopupControllerImpl controller = getSelectionPopupController();
-        if (controller != null) controller.restoreSelectionPopupsIfNecessary();
-        WebContentsImplJni.get().onShow(mNativeWebContentsAndroid);
     }
 
     private SelectionPopupControllerImpl getSelectionPopupController() {
@@ -1328,10 +1320,6 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         void selectAll(long nativeWebContentsAndroid);
 
         void collapseSelection(long nativeWebContentsAndroid);
-
-        void onHide(long nativeWebContentsAndroid);
-
-        void onShow(long nativeWebContentsAndroid);
 
         void setImportance(long nativeWebContentsAndroid, int importance);
 

@@ -18,6 +18,7 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.DeviceUtils;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_shell.Shell;
 import org.chromium.content_shell.ShellManager;
@@ -170,7 +171,7 @@ public class ContentShellActivity extends Activity {
         super.onStart();
 
         WebContents webContents = getActiveWebContents();
-        if (webContents != null) webContents.onShow();
+        if (webContents != null) webContents.updateWebContentsVisibility(Visibility.VISIBLE);
     }
 
     @Override

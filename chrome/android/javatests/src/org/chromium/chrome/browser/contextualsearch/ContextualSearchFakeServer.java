@@ -115,6 +115,7 @@ class ContextualSearchFakeServer
 
         private ContentsObserver(WebContents webContents) {
             super(webContents);
+            onVisibilityChanged(webContents.getVisibility());
         }
 
         private boolean isVisible() {
@@ -123,12 +124,8 @@ class ContextualSearchFakeServer
 
         @Override
         public void onVisibilityChanged(@Visibility int visibility) {
-            if (visibility == Visibility.VISIBLE) {
-                mIsVisible = true;
-                mDidEverShowWebContents = true;
-            } else {
-                mIsVisible = false;
-            }
+            mIsVisible = visibility == Visibility.VISIBLE;
+            mDidEverShowWebContents |= mIsVisible;
         }
     }
 

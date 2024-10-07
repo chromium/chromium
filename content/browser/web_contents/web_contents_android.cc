@@ -464,9 +464,9 @@ jint WebContentsAndroid::GetVisibility(JNIEnv* env) {
 }
 
 void WebContentsAndroid::UpdateWebContentsVisibility(JNIEnv* env,
-                                                     jint visibiity) {
+                                                     jint visibility) {
   web_contents_->UpdateWebContentsVisibility(
-      static_cast<Visibility>(visibiity));
+      static_cast<Visibility>(visibility));
 }
 
 RenderWidgetHostViewAndroid*
@@ -492,14 +492,6 @@ jboolean WebContentsAndroid::IsIncognito(JNIEnv* env) {
 
 void WebContentsAndroid::ResumeLoadingCreatedWebContents(JNIEnv* env) {
   web_contents_->ResumeLoadingCreatedWebContents();
-}
-
-void WebContentsAndroid::OnHide(JNIEnv* env) {
-  web_contents_->WasHidden();
-}
-
-void WebContentsAndroid::OnShow(JNIEnv* env) {
-  web_contents_->WasShown();
 }
 
 void WebContentsAndroid::SetImportance(JNIEnv* env,

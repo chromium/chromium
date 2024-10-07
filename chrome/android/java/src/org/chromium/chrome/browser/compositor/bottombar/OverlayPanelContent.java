@@ -34,6 +34,7 @@ import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.RenderCoordinates;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.PageTransition;
@@ -540,15 +541,16 @@ public class OverlayPanelContent {
             // one in order to display an empty panel.
             if (mWebContents == null) createNewWebContents();
 
-            // NOTE(pedrosimonetti): Calling onShow() on the WebContents will cause the page
-            // to be rendered. This has a side effect of causing the page to be included in
-            // your Web History (if enabled). For this reason, onShow() should only be called
-            // when we know for sure the page will be seen by the user.
-            if (mWebContents != null) mWebContents.onShow();
+            // NOTE(pedrosimonetti): Calling updateWebContentsVisibility() on the WebContents will
+            // cause the page to be rendered. This has a side effect of causing the page to be
+            // included in your Web History (if enabled). For this reason,
+            // updateWebContentsVisibility() should only be called when we know for sure the page
+            // will be seen by the user.
+            if (mWebContents != null) mWebContents.updateWebContentsVisibility(Visibility.VISIBLE);
 
             mContentDelegate.onContentViewSeen();
         } else {
-            if (mWebContents != null) mWebContents.onHide();
+            if (mWebContents != null) mWebContents.updateWebContentsVisibility(Visibility.HIDDEN);
         }
 
         mContentDelegate.onVisibilityChanged(isVisible);

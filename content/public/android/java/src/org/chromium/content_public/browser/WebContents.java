@@ -244,16 +244,11 @@ public interface WebContents extends Parcelable {
     /** Stop any pending navigation. */
     void stop();
 
-    /** To be called when the ContentView is hidden. */
-    void onHide();
-
-    /** To be called when the ContentView is shown. */
-    void onShow();
-
     /**
      * ChildProcessImportance on Android allows controls of the renderer process bindings
-     * independent of visibility. Note this does not affect importance of subframe processes
-     * or main frames processeses for non-primary pages.
+     * independent of visibility. Note this does not affect importance of subframe processes or main
+     * frames processeses for non-primary pages.
+     *
      * @param primaryMainFrameImportance importance of the primary page's main frame process.
      */
     void setImportance(@ChildProcessImportance int primaryMainFrameImportance);

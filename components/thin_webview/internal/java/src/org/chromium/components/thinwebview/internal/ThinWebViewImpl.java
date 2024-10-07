@@ -20,6 +20,7 @@ import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndr
 import org.chromium.components.thinwebview.CompositorView;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
@@ -85,7 +86,7 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
         ThinWebViewImplJni.get()
                 .setWebContents(
                         mNativeThinWebViewImpl, ThinWebViewImpl.this, webContents, delegate);
-        webContents.onShow();
+        webContents.updateWebContentsVisibility(Visibility.VISIBLE);
     }
 
     @Override

@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.net.NetId;
@@ -718,7 +719,7 @@ public class WarmupManager {
             mSpareWebContents = null;
             result.removeObserver(mObserver);
             mObserver = null;
-            if (!initiallyHidden) result.onShow();
+            if (!initiallyHidden) result.updateWebContentsVisibility(Visibility.VISIBLE);
             return result;
         }
     }

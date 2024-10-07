@@ -78,6 +78,7 @@ import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.SelectionPopupController;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.back_forward_transition.AnimationStage;
@@ -935,7 +936,9 @@ class TabImpl implements Tab {
             // call.
             TabImplJni.get().onShow(mNativeTabAndroid);
 
-            if (getWebContents() != null) getWebContents().onShow();
+            if (getWebContents() != null) {
+                getWebContents().updateWebContentsVisibility(Visibility.VISIBLE);
+            }
 
             // If the NativePage was frozen while in the background (see NativePageAssassin),
             // recreate the NativePage now.
@@ -971,7 +974,9 @@ class TabImpl implements Tab {
             mIsHidden = true;
             updateInteractableState();
 
-            if (getWebContents() != null) getWebContents().onHide();
+            if (getWebContents() != null) {
+                getWebContents().updateWebContentsVisibility(Visibility.HIDDEN);
+            }
 
             // Allow this tab's NativePage to be frozen if it stays hidden for a while.
             NativePageAssassin.getInstance().tabHidden(this);
@@ -1666,7 +1671,7 @@ class TabImpl implements Tab {
                         ? new Rect(0, 0, mContentView.getWidth(), mContentView.getHeight())
                         : new Rect();
         for (TabObserver observer : mObservers) observer.webContentsWillSwap(this);
-        if (hasWebContents) mWebContents.onHide();
+        if (hasWebContents) mWebContents.updateWebContentsVisibility(Visibility.HIDDEN);
         Context appContext = ContextUtils.getApplicationContext();
         Rect bounds = original.isEmpty() ? TabUtils.estimateContentSize(appContext) : null;
         if (bounds != null) original.set(bounds);
@@ -1692,7 +1697,7 @@ class TabImpl implements Tab {
                                         bounds.bottom);
                     }
                     initWebContents(webContents);
-                    webContents.onShow();
+                    webContents.updateWebContentsVisibility(Visibility.VISIBLE);
                 });
 
         if (didStartLoad) {
