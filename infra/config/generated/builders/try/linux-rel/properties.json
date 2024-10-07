@@ -178,8 +178,7 @@
   "$build/siso": {
     "configs": [
       "builder",
-      "remote-library-link",
-      "remote-exec-link"
+      "remote-link"
     ],
     "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,

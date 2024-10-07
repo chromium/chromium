@@ -909,7 +909,7 @@ def builder(
             siso["remote_jobs"] = remote_jobs
         siso_configs = defaults.get_value("siso_configs", siso_configs)
         if use_siso_remote_linking:
-            siso_configs = siso_configs + ["remote-library-link", "remote-exec-link"]
+            siso_configs = siso_configs + ["remote-link"]
         siso["configs"] = siso_configs
         if siso_fail_if_reapi_used:
             siso["fail_if_reapi_used"] = siso_fail_if_reapi_used

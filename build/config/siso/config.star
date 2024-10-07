@@ -20,9 +20,12 @@ __KNOWN_CONFIG_OPTIONS = [
     # TODO: b/308405411 - Enable this config for all builders.
     "remote-devtools-frontend-typescript",
 
-    # TODO: b/316267242 - Enable remote links after confirming performance.
-    "remote-library-link",
-    "remote-exec-link",
+    # TODO: b/370860664 - Enable remote link by default after supporting
+    # all platforms and target OSes.
+    # For developers, we can't simply enable remote link without bytes
+    # because developers need objects and tests locally for debugging
+    # and testing.
+    "remote-link",
 ]
 
 def __check(ctx):
@@ -50,7 +53,7 @@ def __get(ctx, key):
         # disable race strategy as "builder".
         # enable "remote-*" on cog
         # TODO: b/308405411 - enable "remote-devtools-frontend-typescript"
-        if key in ("builder", "cog", "remote-library-link", "remote-exec-link"):
+        if key in ("builder", "cog", "remote-link"):
             return True
     return False
 

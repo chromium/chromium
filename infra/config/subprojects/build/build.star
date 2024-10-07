@@ -107,7 +107,7 @@ consoles.console_view(
 def cq_build_perf_builder(description_html, **kwargs):
     # Use CQ RBE instance and high remote_jobs/cores to simulate CQ builds.
     if not kwargs.get("siso_configs"):
-        kwargs["siso_configs"] = ["builder", "remote-library-link", "remote-exec-link"]
+        kwargs["siso_configs"] = ["builder", "remote-link"]
     return ci.builder(
         description_html = description_html + "<br>Build stats is show in http://shortn/_gaAdI3x6o6.",
         reclient_jobs = 500,
@@ -514,7 +514,7 @@ def developer_build_perf_builder(description_html, **kwargs):
         description_html = description_html + "<br>Build stats is show in http://shortn/_gaAdI3x6o6.",
         executable = "recipe:chrome_build/build_perf_developer",
         siso_project = siso.project.DEFAULT_UNTRUSTED,
-        siso_configs = ["remote-library-link", "remote-exec-link"],
+        siso_configs = ["remote-link"],
         shadow_siso_project = None,
         **kwargs
     )
