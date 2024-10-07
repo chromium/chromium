@@ -271,6 +271,15 @@ async function test_transferToGPUTexture_unbalanced_access(
 function test_transferToGPUTexture_balanced_access(device, canvas) {
   const ctx = canvas.getContext('2d');
 
+  // Draw to the canvas via the canvas2D API to ensure that the SharedImage
+  // backing the canvas is created before doing any transfers to WebGPU. This
+  // ensures that this SharedImage will be created without WebGPU usage, which
+  // the first test below assumes as a precondition.
+  const w = ctx.canvas.width;
+  const h = ctx.canvas.height;
+  ctx.fillStyle = "#00FF00";
+  ctx.fillRect(0, 0, w, h / 2);
+
   // An initial transfer incurs a copy as the canvas resource's SharedImage
   // doesn't have WebGPU usage by default. Validate that `requireZeroCopy` is
   // getting forwarded properly by verifying that passing `true` causes an
