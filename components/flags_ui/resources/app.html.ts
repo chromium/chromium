@@ -21,10 +21,10 @@ export function getHtml(this: AppElement) {
           @click="${this.onClearSearchClick_}">
     </div>
     <div class="flex">
-      <button id="experiment-reset-all" @click="${this.onResetAllClick_}"
+      <cr-button id="experiment-reset-all" @click="${this.onResetAllClick_}"
           @keydown="${this.onResetAllKeydown_}" @blur="${this.onResetAllBlur_}">
         $i18n{reset}
-      </button>
+      </cr-button>
     </div>
   </div>
   <div class="screen-reader-only" id="screen-reader-status-message"
@@ -133,12 +133,12 @@ export function getHtml(this: AppElement) {
         <div class="flex restart-notice">$i18n{flagsRestartNotice}</div>
         <div class="flex">
 <if expr="not is_ios">
-          <button id="experiment-restart-button" class="primary"
+          <cr-button id="experiment-restart-button" class="action-button"
               @click="${this.onRestartButtonClick_}"
               @keydown="${this.onRestartButtonKeydown_}"
               @blur="${this.onRestartButtonBlur_}">
             $i18n{relaunch}
-          </button>
+          </cr-button>
 </if>
         </div>
       </div>

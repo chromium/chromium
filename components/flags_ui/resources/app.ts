@@ -6,6 +6,7 @@
 import 'chrome://resources/js/ios/web_ui.js';
 // </if>
 
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './strings.m.js';
 import './experiment.js';
 

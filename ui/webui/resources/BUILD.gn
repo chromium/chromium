@@ -4,7 +4,6 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//crypto/features.gni")
-import("//ui/webui/resources/include_polymer.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 if (use_blink) {
@@ -52,7 +51,7 @@ generate_grd("build_grd") {
     "$target_gen_dir/mojo/resources.grdp",
   ]
 
-  if (include_polymer) {
+  if (!is_android && !is_ios) {
     public_deps += [
       "cr_components/app_management:build_grdp",
       "cr_components/customize_color_scheme_mode:build_grdp",
