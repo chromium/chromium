@@ -494,4 +494,5 @@ Refer to README.md for content description and update process.
  <item id="chromeos_emoji_picker_categories_fetcher" added_in_milestone="131" content_hash_code="02ee9118" os_list="chromeos" file_path="chromeos/ash/components/emoji/gif_tenor_api_fetcher.cc" />
  <item id="chromeos_emoji_picker_featured_fetcher" added_in_milestone="131" content_hash_code="00482dd6" os_list="chromeos" file_path="chromeos/ash/components/emoji/gif_tenor_api_fetcher.cc" />
  <item id="chromeos_emoji_picker_posts_fetcher" added_in_milestone="131" content_hash_code="069ed9b2" os_list="chromeos" file_path="chromeos/ash/components/emoji/gif_tenor_api_fetcher.cc" />
+ <item id="chromeos_picker_gif_media_fetcher" added_in_milestone="131" content_hash_code="0674a2dd" os_list="chromeos" file_path="ash/picker/picker_asset_fetcher_impl.cc" />
 </annotations>
