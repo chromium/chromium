@@ -233,15 +233,11 @@ class ChoiceDialogMediator {
         }
     }
 
-    /**
-     * Method to call when the primary action button of the dialog is tapped.
-     *
-     * @param dialogType type of the dialog at the moment the button was wired up.
-     */
-    void onActionButtonClick(@DialogType int dialogType) {
+    /** Method to call when the primary action button of the dialog is tapped. */
+    void onActionButtonClick() {
         assert mDelegate != null;
 
-        switch (dialogType) {
+        switch (mDialogType) {
             case DialogType.CHOICE_LAUNCH -> mSearchEngineChoiceService.launchDeviceChoiceScreens();
             case DialogType.CHOICE_CONFIRM -> mDelegate.dismissDialog();
             case DialogType.LOADING, DialogType.UNKNOWN -> throw new IllegalStateException();

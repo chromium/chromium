@@ -37,14 +37,4 @@ found in the LICENSE file.
         android:layout_marginHorizontal="32dp"
         android:layout_marginBottom="16dp"
         android:layout_gravity="center"/>
-
-    <org.chromium.ui.widget.ButtonCompat
-        android:id="@+id/choice_dialog_button"
-        style="@style/FilledButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginBottom="16dp"
-        android:layout_gravity="end"
-        android:gravity="center"/>
 </LinearLayout>

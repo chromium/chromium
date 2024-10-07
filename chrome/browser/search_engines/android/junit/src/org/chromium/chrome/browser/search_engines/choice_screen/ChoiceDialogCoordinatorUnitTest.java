@@ -17,6 +17,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.robolectric.Shadows.shadowOf;
 
+import android.content.Context;
 import android.os.Looper;
 
 import org.junit.Before;
@@ -30,7 +31,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
-import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -45,6 +45,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogPriority;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.time.Duration;
@@ -55,11 +56,12 @@ import java.util.Map;
 public class ChoiceDialogCoordinatorUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
+    private @Mock Context mContext;
     private @Mock ChoiceDialogCoordinator.ViewHolder mViewHolder;
     private @Mock ModalDialogManager mModalDialogManager;
     private @Mock ActivityLifecycleDispatcher mLifecycleDispatcher;
     private @Mock SearchEngineChoiceService mSearchEngineChoiceService;
-    private @Captor ArgumentCaptor<Callback<Integer>> mActionButtonCallbackCaptor;
+    private @Captor ArgumentCaptor<PropertyModel> mModelCaptor;
 
     @Before
     public void setUp() {
@@ -80,19 +82,22 @@ public class ChoiceDialogCoordinatorUnitTest {
 
         shadowOf(Looper.getMainLooper()).idle();
         verify(mModalDialogManager)
-                .showDialog(any(), eq(ModalDialogType.APP), eq(ModalDialogPriority.VERY_HIGH));
+                .showDialog(
+                        mModelCaptor.capture(),
+                        eq(ModalDialogType.APP),
+                        eq(ModalDialogPriority.VERY_HIGH));
         verify(mSearchEngineChoiceService).notifyDeviceChoiceBlockShown();
-        verify(mViewHolder).updateViewForType(eq(DialogType.CHOICE_LAUNCH), any());
+        verify(mViewHolder).updateViewForType(eq(DialogType.CHOICE_LAUNCH));
 
         shouldShowSupplier.set(false);
 
         shadowOf(Looper.getMainLooper()).idle();
         verify(mSearchEngineChoiceService).notifyDeviceChoiceBlockCleared();
-        verify(mViewHolder)
-                .updateViewForType(
-                        eq(DialogType.CHOICE_CONFIRM), mActionButtonCallbackCaptor.capture());
+        verify(mViewHolder).updateViewForType(eq(DialogType.CHOICE_CONFIRM));
 
-        mActionButtonCallbackCaptor.getValue().onResult(DialogType.CHOICE_CONFIRM);
+        PropertyModel model = mModelCaptor.getValue();
+        ModalDialogProperties.Controller controller = model.get(ModalDialogProperties.CONTROLLER);
+        controller.onClick(model, ModalDialogProperties.ButtonType.POSITIVE);
 
         verify(mModalDialogManager).dismissDialog(any(), eq(DialogDismissalCause.UNKNOWN));
         assertFalse(shouldShowSupplier.hasObservers()); // The dialog stopped observing.
@@ -150,12 +155,12 @@ public class ChoiceDialogCoordinatorUnitTest {
         verify(mModalDialogManager)
                 .showDialog(any(), eq(ModalDialogType.APP), eq(ModalDialogPriority.VERY_HIGH));
         verify(mSearchEngineChoiceService).notifyDeviceChoiceBlockShown();
-        verify(mViewHolder).updateViewForType(eq(DialogType.LOADING), any());
+        verify(mViewHolder).updateViewForType(eq(DialogType.LOADING));
 
         pendingSupplier.set(true);
         shadowOf(Looper.getMainLooper()).runToEndOfTasks();
 
-        verify(mViewHolder).updateViewForType(eq(DialogType.CHOICE_LAUNCH), any());
+        verify(mViewHolder).updateViewForType(eq(DialogType.CHOICE_LAUNCH));
         verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockCleared();
     }
 
@@ -174,14 +179,14 @@ public class ChoiceDialogCoordinatorUnitTest {
         shadowOf(Looper.getMainLooper()).runToEndOfTasks();
         verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyInt());
         verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockShown();
-        verify(mViewHolder, never()).updateViewForType(anyInt(), any());
+        verify(mViewHolder, never()).updateViewForType(anyInt());
 
         pendingSupplier.set(true);
         shadowOf(Looper.getMainLooper()).runToEndOfTasks();
 
         verify(mModalDialogManager)
                 .showDialog(any(), eq(ModalDialogType.APP), eq(ModalDialogPriority.VERY_HIGH));
-        verify(mViewHolder).updateViewForType(eq(DialogType.CHOICE_LAUNCH), any());
+        verify(mViewHolder).updateViewForType(eq(DialogType.CHOICE_LAUNCH));
         verify(mSearchEngineChoiceService).notifyDeviceChoiceBlockShown();
         verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockCleared();
     }
@@ -205,13 +210,13 @@ public class ChoiceDialogCoordinatorUnitTest {
         verify(mModalDialogManager)
                 .showDialog(any(), eq(ModalDialogType.APP), eq(ModalDialogPriority.VERY_HIGH));
         verify(mSearchEngineChoiceService).notifyDeviceChoiceBlockShown();
-        verify(mViewHolder).updateViewForType(eq(DialogType.LOADING), any());
+        verify(mViewHolder).updateViewForType(eq(DialogType.LOADING));
 
         pendingSupplier.set(false);
         shadowOf(Looper.getMainLooper()).runToEndOfTasks();
 
         verify(mSearchEngineChoiceService).notifyDeviceChoiceBlockCleared();
-        verify(mViewHolder).updateViewForType(eq(DialogType.CHOICE_CONFIRM), any());
+        verify(mViewHolder).updateViewForType(eq(DialogType.CHOICE_CONFIRM));
     }
 
     @Test
@@ -229,7 +234,7 @@ public class ChoiceDialogCoordinatorUnitTest {
         shadowOf(Looper.getMainLooper()).runToEndOfTasks();
         verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyInt());
         verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockShown();
-        verify(mViewHolder, never()).updateViewForType(eq(DialogType.LOADING), any());
+        verify(mViewHolder, never()).updateViewForType(eq(DialogType.LOADING));
 
         pendingSupplier.set(false);
         shadowOf(Looper.getMainLooper()).runToEndOfTasks();
@@ -237,7 +242,7 @@ public class ChoiceDialogCoordinatorUnitTest {
         verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyInt());
         verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockShown();
         verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockCleared();
-        verify(mViewHolder, never()).updateViewForType(anyInt(), any());
+        verify(mViewHolder, never()).updateViewForType(anyInt());
         assertFalse(pendingSupplier.hasObservers());
     }
 
@@ -275,7 +280,7 @@ public class ChoiceDialogCoordinatorUnitTest {
         verify(mModalDialogManager)
                 .showDialog(any(), eq(ModalDialogType.APP), eq(ModalDialogPriority.VERY_HIGH));
         verify(mSearchEngineChoiceService).notifyDeviceChoiceBlockShown();
-        verify(mViewHolder).updateViewForType(eq(DialogType.CHOICE_LAUNCH), any());
+        verify(mViewHolder).updateViewForType(eq(DialogType.CHOICE_LAUNCH));
 
         shouldShowSupplier.set(null);
 
@@ -319,7 +324,7 @@ public class ChoiceDialogCoordinatorUnitTest {
         verify(mModalDialogManager)
                 .showDialog(any(), eq(ModalDialogType.APP), eq(ModalDialogPriority.VERY_HIGH));
         verify(mSearchEngineChoiceService).notifyDeviceChoiceBlockShown();
-        verify(mViewHolder).updateViewForType(eq(DialogType.LOADING), any());
+        verify(mViewHolder).updateViewForType(eq(DialogType.LOADING));
 
         // Verify that we don't get misc updates before the timeout duration is reached
         reset(mModalDialogManager, mViewHolder);
@@ -335,7 +340,11 @@ public class ChoiceDialogCoordinatorUnitTest {
     private ChoiceDialogCoordinator createCoordinatorWithMocks(
             SearchEngineChoiceService searchEngineChoiceService) {
         return new ChoiceDialogCoordinator(
-                mViewHolder, mModalDialogManager, mLifecycleDispatcher, searchEngineChoiceService);
+                mContext,
+                mViewHolder,
+                mModalDialogManager,
+                mLifecycleDispatcher,
+                searchEngineChoiceService);
     }
 
     /**

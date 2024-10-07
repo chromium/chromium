@@ -253,7 +253,7 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
         return mDialog.getWindow();
     }
 
-    ModalDialogView getDialogViewForTesting() {
+    public ModalDialogView getDialogViewForTesting() {
         return mDialogView;
     }
 

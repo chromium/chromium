@@ -12,10 +12,8 @@ import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -29,7 +27,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.widget.ButtonCompat;
 
 import java.util.function.Function;
 
@@ -45,10 +42,10 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
     interface ViewHolder {
         View getView();
 
-        void updateViewForType(
-                @DialogType int dialogType, @Nullable Callback<Integer> actionButtonClickCallback);
+        void updateViewForType(@DialogType int dialogType);
     }
 
+    private final Context mContext;
     private final ViewHolder mViewHolder;
     private final ChoiceDialogMediator mMediator;
     private final PropertyModel mModel;
@@ -88,6 +85,7 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
         return maybeShowInternal(
                 searchEngineChoiceService ->
                         new ChoiceDialogCoordinator(
+                                context,
                                 new ViewHolderImpl(context),
                                 modalDialogManager,
                                 lifecycleDispatcher,
@@ -120,19 +118,26 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
 
     @VisibleForTesting
     ChoiceDialogCoordinator(
+            Context context,
             ViewHolder viewHolder,
             ModalDialogManager modalDialogManager,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             @NonNull SearchEngineChoiceService searchEngineChoiceService) {
+        mContext = context;
         mViewHolder = viewHolder;
         mModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CUSTOM_VIEW, mViewHolder.getView())
                         .with(
+                                ModalDialogProperties.BUTTON_STYLES,
+                                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NO_NEGATIVE)
+                        .with(
                                 ModalDialogProperties.CONTROLLER,
                                 new ModalDialogProperties.Controller() {
                                     @Override
-                                    public void onClick(PropertyModel model, int buttonType) {}
+                                    public void onClick(PropertyModel model, int buttonType) {
+                                        mMediator.onActionButtonClick();
+                                    }
 
                                     @Override
                                     public void onDismiss(
@@ -152,9 +157,7 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
             Log.i(TAG, "updateDialogType(%d)", dialogType);
         }
 
-        mViewHolder.updateViewForType(
-                dialogType,
-                dialogType == DialogType.LOADING ? null : mMediator::onActionButtonClick);
+        mViewHolder.updateViewForType(dialogType);
 
         switch (dialogType) {
             case DialogType.LOADING, DialogType.CHOICE_LAUNCH -> {
@@ -164,9 +167,19 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
                         // Capture back navigation and suppress it. The user must complete the
                         // screen by interacting with the options presented.
                         mEmptyBackPressedCallback);
+                mModel.set(
+                        ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                        mContext.getString(R.string.next));
+                mModel.set(
+                        ModalDialogProperties.POSITIVE_BUTTON_DISABLED,
+                        dialogType == DialogType.LOADING);
             }
             case DialogType.CHOICE_CONFIRM -> {
                 mModel.set(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true);
+                mModel.set(
+                        ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                        mContext.getString(R.string.done));
+                mModel.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, false);
                 mEmptyBackPressedCallback.remove();
                 RecordUserAction.record("OsDefaultsChoiceDialogUnblocked");
             }
@@ -216,12 +229,10 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
         }
 
         @Override
-        public void updateViewForType(
-                @DialogType int dialogType, @Nullable Callback<Integer> actionButtonClickCallback) {
+        public void updateViewForType(@DialogType int dialogType) {
             View illustration = mView.findViewById(R.id.illustration);
             TextView title = mView.findViewById(R.id.choice_dialog_title);
             TextView message = mView.findViewById(R.id.choice_dialog_message);
-            ButtonCompat button = mView.findViewById(R.id.choice_dialog_button);
 
             switch (dialogType) {
                 case DialogType.LOADING, DialogType.CHOICE_LAUNCH -> {
@@ -229,23 +240,15 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
                             R.drawable.blocking_choice_dialog_illustration);
                     title.setText(R.string.blocking_choice_dialog_first_title);
                     message.setText(R.string.blocking_choice_dialog_first_message);
-                    button.setText(mView.getContext().getString(R.string.next));
                 }
                 case DialogType.CHOICE_CONFIRM -> {
                     illustration.setBackgroundResource(
                             R.drawable.blocking_choice_confirmation_illustration);
                     title.setText(R.string.blocking_choice_dialog_second_title);
                     message.setText(R.string.blocking_choice_dialog_second_message);
-                    button.setText(mView.getContext().getString(R.string.done));
                 }
                 case DialogType.UNKNOWN -> throw new IllegalStateException();
             }
-
-            button.setOnClickListener(
-                    actionButtonClickCallback == null
-                            ? null
-                            : ignored -> actionButtonClickCallback.onResult(dialogType));
-            button.setEnabled(actionButtonClickCallback != null);
         }
     }
 }

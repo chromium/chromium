@@ -13,8 +13,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isNotEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.junit.Assert.assertNotNull;
-
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.view.View;
@@ -43,12 +41,11 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.search_engines.FakeSearchEngineCountryDelegate;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
 import org.chromium.components.search_engines.test.util.SearchEnginesFeaturesTestUtil;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.modaldialog.ModalDialogProperties;
-import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.NightModeTestUtils.NightModeParams;
@@ -114,12 +111,11 @@ public class ChoiceScreenRenderTest {
         // Make the delegate not emit a value, putting the UI in the "loading" state.
         ThreadUtils.runOnUiThreadBlocking(() -> mFakeDelegate.setIsDeviceChoiceRequired(null));
 
-        ThreadUtils.runOnUiThreadBlocking(this::showDialog);
+        showDialog();
 
-        onViewWaiting(withId(R.id.choice_dialog_button), true)
+        onViewWaiting(withText(R.string.next), true)
                 .inRoot(isDialog())
                 .check(matches(isNotEnabled()));
-
         mRenderTestRule.render(getDialogView(), "loading_choice_screen_blocking_dialog");
     }
 
@@ -127,7 +123,7 @@ public class ChoiceScreenRenderTest {
     @LargeTest
     @Feature("RenderTest")
     public void testFirstChoiceScreenBlockingDialog() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(this::showDialog);
+        showDialog();
 
         mRenderTestRule.render(getDialogView(), "first_choice_screen_blocking_dialog");
     }
@@ -136,28 +132,32 @@ public class ChoiceScreenRenderTest {
     @LargeTest
     @Feature("RenderTest")
     public void testSecondChoiceScreenBlockingDialog() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(this::showDialog);
+        showDialog();
 
-        onView(withId(R.id.choice_dialog_button)).inRoot(isDialog()).perform(click());
+        onView(withText(R.string.next)).inRoot(isDialog()).perform(click());
 
         onViewWaiting(withText(R.string.blocking_choice_dialog_second_title))
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
-
         mRenderTestRule.render(getDialogView(), "second_choice_screen_dialog");
     }
 
     private View getDialogView() {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PropertyModel dialogModel = mDialogManager.getCurrentDialogForTest();
-                    assertNotNull(dialogModel);
-                    return dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
+                    AppModalPresenter presenter =
+                            (AppModalPresenter) mDialogManager.getCurrentPresenterForTest();
+                    return presenter.getDialogViewForTesting();
                 });
     }
 
     private void showDialog() {
-        ChoiceDialogCoordinator.maybeShow(
-                mActivityTestRule.getActivity(), mDialogManager, mLifecycleDispatcher);
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        ChoiceDialogCoordinator.maybeShow(
+                                mActivityTestRule.getActivity(),
+                                mDialogManager,
+                                mLifecycleDispatcher));
+        onView(withId(R.id.choice_dialog_title)).inRoot(isDialog()).check(matches(isDisplayed()));
     }
 }
