@@ -12,6 +12,7 @@
 #import "components/segmentation_platform/public/features.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_utils.h"
@@ -39,6 +40,7 @@ bool IsPriceTrackingPromoCardEnabled(commerce::ShoppingService* service,
   id<SystemIdentity> identity =
       auth_service->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   return base::FeatureList::IsEnabled(commerce::kPriceTrackingPromo) &&
+         GetApplicationContext()->GetApplicationLocale() == "en-US" &&
          !push_notification_settings::
              GetMobileNotificationPermissionStatusForClient(
                  PushNotificationClientId::kCommerce,
