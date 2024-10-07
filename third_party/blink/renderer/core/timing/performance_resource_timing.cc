@@ -128,8 +128,8 @@ bool PerformanceResourceTiming::IsResponseFromCacheStorage() const {
 }
 
 AtomicString PerformanceResourceTiming::GetDeliveryType() const {
-  if (base::FeatureList::IsEnabled(
-          features::kServiceWorkerStaticRouterTimingInfo) &&
+  if (RuntimeEnabledFeatures::ServiceWorkerStaticRouterTimingInfoEnabled(
+          DynamicTo<LocalDOMWindow>(source())) &&
       IsResponseFromCacheStorage()) {
     return delivery_type_names::kCacheStorage;
   }
@@ -281,8 +281,8 @@ DOMHighResTimeStamp PerformanceResourceTiming::fetchStart() const {
   // we set this to responseStart (as written in explainer
   // https://github.com/WICG/service-worker-static-routing-api/blob/main/resource-timing-api.md
   // ).
-  if (base::FeatureList::IsEnabled(
-          features::kServiceWorkerStaticRouterTimingInfo) &&
+  if (RuntimeEnabledFeatures::ServiceWorkerStaticRouterTimingInfoEnabled(
+          DynamicTo<LocalDOMWindow>(source())) &&
       info_->service_worker_router_info &&
       info_->service_worker_router_info->actual_source_type ==
           network::mojom::ServiceWorkerRouterSourceType::kCache) {
@@ -492,7 +492,8 @@ void PerformanceResourceTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
     builder.AddString("contentType", contentType());
   }
   builder.AddNumber("workerStart", workerStart());
-  if (RuntimeEnabledFeatures::ServiceWorkerStaticRouterTimingInfoEnabled()) {
+  if (RuntimeEnabledFeatures::ServiceWorkerStaticRouterTimingInfoEnabled(
+          ExecutionContext::From(builder.GetScriptState()))) {
     builder.AddNumber("workerRouterEvaluationStart",
                       workerRouterEvaluationStart());
     builder.AddNumber("workerCacheLookupStart", workerCacheLookupStart());

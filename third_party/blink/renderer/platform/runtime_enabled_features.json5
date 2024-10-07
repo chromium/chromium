@@ -3846,6 +3846,7 @@
     },
     {
       name: "ServiceWorkerStaticRouterTimingInfo",
+      origin_trial_feature_name: "ServiceWorkerStaticRouterTimingInfo",
     },
     {
       name: "SetSequentialFocusStartingPoint",
