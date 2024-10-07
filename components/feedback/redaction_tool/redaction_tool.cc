@@ -354,6 +354,14 @@ CustomPatternWithAlias kCustomPatternsWithContext[] = {
      R"xxx((\[\s*[0-9]+\.[0-9]+\]\s+)(0x[0-9a-zA-Z-]{8}:\s+[0-9a-zA-Z-]{8})xxx"
      R"xxx(\s+[0-9a-zA-Z-]{8}\s+[0-9a-zA-Z-]{8}\s+[0-9a-zA-Z-]{8})(.*?))xxx",
      PIIType::kMemory},
+
+    // IPv4 addresses should not be prefixed or postfixed by a '.' or a '-'
+    // which indicates a version number or other identifier.
+    {"IPv4",
+     "([^-\\.0-9]|^)"
+     "(" IPV4ADDRESS ")"
+     "([^-\\.0-9]|$)",
+     PIIType::kIPAddress},
 };
 
 bool MaybeUnmapAddress(IPAddress* addr) {
@@ -478,7 +486,12 @@ std::string MaybeScrubIPAddress(const std::string& addr) {
 // This function can be used to determine if this was the case by evaluating
 // the skipped piece. It returns true, if the matched address was erroneous
 // and should be skipped instead.
-bool ShouldSkipIPAddress(std::string_view skipped) {
+bool ShouldSkipIPv4Address(std::string_view skipped) {
+  // Only look for patterns on the same line as the IPv4 address.
+  const auto nlpos = skipped.rfind("\n");
+  if (nlpos != std::string_view::npos) {
+    skipped = skipped.substr(nlpos);
+  }
   // MomdemManager can dump out firmware revision fields that can also
   // confuse the IPv4 matcher e.g. "Revision: 81600.0000.00.29.19.16_DO"
   // so ignore the replacement if the skipped piece looks like
@@ -492,11 +505,14 @@ bool ShouldSkipIPAddress(std::string_view skipped) {
       skipped.find(space, pos + rev.length()) == std::string_view::npos) {
     return true;
   }
-
-  // USB paths can be confused with IPv4 Addresses because they can look
-  // similar: n-n.n.n.n . Ignore replacement if previous char is `-`
-  static const std::string_view dash("-");
-  return skipped.ends_with(dash);
+  // URLs with an IP Address should be handled by the "URL" entry in
+  // kCustomPatternsWithoutContext instead. If the skipped piece ends with an
+  // IRI, skip it.
+  re2::RE2 re_iri(".*" IRI);
+  if (re2::RE2::FullMatch(skipped, re_iri)) {
+    return true;
+  }
+  return false;
 }
 
 // TODO(battre): Use http://tools.ietf.org/html/rfc5322 to represent email
@@ -509,9 +525,7 @@ CustomPatternWithAlias kCustomPatternsWithoutContext[] = {
     // Email Addresses need to come after URLs because they can be part
     // of a query parameter.
     {"email", "(?i)([0-9a-z._%+-]+@[a-z0-9.-]+\\.[a-z]{2,6})", PIIType::kEmail},
-    // IP filter rules need to come after URLs so that they don't disturb the
-    // URL pattern in case the IP address is part of a URL.
-    {"IPv4", "(?i)(" IPV4ADDRESS ")", PIIType::kIPAddress},
+    // IPv4 uses context to avoid false positives in version numbers, etc.
     {"IPv6", "(?i)(" IPV6ADDRESS ")", PIIType::kIPAddress},
     // Universal Unique Identifiers (UUIDs).
     {"UUID",
@@ -1180,11 +1194,29 @@ std::string RedactionTool::RedactCustomPatternWithContext(
                                      &matched_id, &post_matched_id)) {
     std::string matched_id_as_string(matched_id);
     std::string replacement_id;
+
+    std::string scrubbed_match;
+    if (pattern.pii_type == PIIType::kIPAddress) {
+      std::string prematch(skipped);
+      prematch.append(pre_matched_id);
+      scrubbed_match = MaybeScrubIPAddress(matched_id_as_string);
+      if (scrubbed_match == matched_id_as_string ||
+          ((strcmp("IPv4", pattern.alias) == 0) &&
+           ShouldSkipIPv4Address(prematch))) {
+        result.append(skipped);
+        result.append(pre_matched_id);
+        result.append(matched_id);
+        result.append(post_matched_id);
+        continue;
+      }
+    }
+
     if (identifier_space->count(matched_id_as_string) == 0) {
       // The weird NumberToString trick is because Windows does not like
       // to deal with %zu and a size_t in printf, nor does it support %llu.
       replacement_id = base::StringPrintf(
-          "(%s: %s)", pattern.alias,
+          "(%s: %s)",
+          scrubbed_match.empty() ? pattern.alias : scrubbed_match.c_str(),
           base::NumberToString(identifier_space->size() + 1).c_str());
       (*identifier_space)[matched_id_as_string] = replacement_id;
     } else {
@@ -1297,10 +1329,7 @@ std::string RedactionTool::RedactCustomPatternWithoutContext(
 
     const std::string scrubbed_match =
         MaybeScrubIPAddress(matched_id_as_string);
-    if (scrubbed_match == matched_id_as_string ||
-        // Double-check overly opportunistic IPv4 address matching.
-        ((strcmp("IPv4", pattern.alias) == 0) &&
-         ShouldSkipIPAddress(skipped))) {
+    if (scrubbed_match == matched_id_as_string) {
       result.append(matched_id);
       continue;
     }
