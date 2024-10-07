@@ -25,6 +25,7 @@ source_set("price_tracking_promo") {
     "//components/image_fetcher/core:core",
     "//components/power_bookmarks/core:core",
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/ntp/ui_bundled:ui_bundled",
     "//ios/chrome/browser/push_notification/model:push_notification_client_id",
     "//ios/chrome/browser/push_notification/model:push_notification_service",
     "//ios/chrome/browser/push_notification/model:push_notification_service_header",

@@ -19,6 +19,7 @@ class ShoppingService;
 }
 
 @protocol ApplicationCommands;
+@protocol NewTabPageActionsDelegate;
 class PrefService;
 @class PriceTrackingPromoItem;
 @protocol PriceTrackingPromoActionDelegate;
@@ -85,6 +86,9 @@ class AuthenticationService;
 
 // Delegate to delegate actions to the owner of the PriceTrackingPromoMediator
 @property(nonatomic, weak) id<PriceTrackingPromoActionDelegate> actionDelegate;
+
+// Delegate for reporting content suggestions actions to the NTP.
+@property(nonatomic, weak) id<NewTabPageActionsDelegate> NTPActionsDelegate;
 
 @end
 
