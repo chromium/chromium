@@ -102,7 +102,7 @@ void BarcodeDetectorStatics::OnEnumerateSupportedFormats(
                        builder.GetToken())
         .Record(context->UkmRecorder());
   }
-  resolver->Resolve(results);
+  resolver->Resolve(std::move(results));
 }
 
 void BarcodeDetectorStatics::OnConnectionError() {
