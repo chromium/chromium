@@ -2317,6 +2317,21 @@ bool ChromeContentBrowserClient::HasCustomSchemeHandler(
   return false;
 }
 
+bool ChromeContentBrowserClient::HasWebRequestAPIProxy(
+    content::BrowserContext* browser_context) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  const auto* web_request_api =
+      extensions::BrowserContextKeyedAPIFactory<extensions::WebRequestAPI>::Get(
+          browser_context);
+  if (!web_request_api) {
+    return false;
+  }
+  return web_request_api && web_request_api->MayHaveProxies();
+#else
+  return false;
+#endif
+}
+
 bool ChromeContentBrowserClient::CanCommitURL(
     content::RenderProcessHost* process_host,
     const GURL& url) {

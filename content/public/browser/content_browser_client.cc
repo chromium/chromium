@@ -257,6 +257,11 @@ bool ContentBrowserClient::HasCustomSchemeHandler(
   return false;
 }
 
+bool ContentBrowserClient::HasWebRequestAPIProxy(
+    BrowserContext* browser_context) {
+  return false;
+}
+
 bool ContentBrowserClient::CanCommitURL(RenderProcessHost* process_host,
                                         const GURL& site_url) {
   return true;

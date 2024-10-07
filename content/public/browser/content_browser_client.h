@@ -593,6 +593,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool HasCustomSchemeHandler(content::BrowserContext* browser_context,
                                       const std::string& scheme);
 
+  // Returns whether a browser context involves WebRequest API.
+  virtual bool HasWebRequestAPIProxy(BrowserContext* browser_context);
+
   // Returns whether the given process is allowed to commit |url|.  This is a
   // more conservative check than IsSuitableHost, since it is used after a
   // navigation has committed to ensure that the process did not exceed its

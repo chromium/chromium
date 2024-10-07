@@ -458,6 +458,25 @@ bool ServiceWorkerMainResourceLoader::MaybeStartAutoPreload(
     return false;
   }
 
+  // If WebRequest API is used in this browser context, do not start AutoPreload
+  // because the auto preload request may not be actually consumed and canceled.
+  // WebRequest API itercepts it as a failed request, and calls
+  // `OnErrorOccurred()`, while that is not actually an error.
+  //
+  // TODO(crbug.com/362539771): `HasWebRequestAPIProxy()` returns true not only
+  // when there is an extension having WebRequest API permission but also when
+  // having other permissions i.e. DeclarativeNetRequest. We should figure out
+  // which permissions could call error handlers if SWAutoPreload is dispatched
+  // but not consumed, and find a way to make this limitation more relaxed to
+  // improve the coverage.
+  if (base::GetFieldTrialParamByFeatureAsBool(
+          features::kServiceWorkerAutoPreload, "has_web_request_api_proxy",
+          /*default_value=*/false) &&
+      (GetContentClient()->browser()->HasWebRequestAPIProxy(
+          context->browser_context()))) {
+    return false;
+  }
+
   bool use_allowlist = base::GetFieldTrialParamByFeatureAsBool(
       features::kServiceWorkerAutoPreload, "use_allowlist",
       /*default_value=*/false);
