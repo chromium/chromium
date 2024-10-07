@@ -14,6 +14,7 @@
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/profiles/profile.h"
@@ -98,8 +99,8 @@ std::ostream& operator<<(std::ostream& ostream, const GuestId& container_id) {
 }
 
 std::string GuestId::Serialize() const {
-  return std::format("{}:{}:{}", VmType_Name(this->vm_type), this->vm_name,
-                     this->container_name);
+  return base::StringPrintf("%s:%s:%s", VmType_Name(this->vm_type),
+                            this->vm_name, this->container_name);
 }
 
 std::optional<GuestId> Deserialize(std::string_view guest_id_string) {

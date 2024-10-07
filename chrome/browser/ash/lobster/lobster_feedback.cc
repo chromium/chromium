@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/feedback/feedback_uploader_chrome.h"
@@ -61,8 +62,9 @@ void RedactThenSendFeedback(
 std::string BuildFeedbackDescription(std::string_view query,
                                      std::string_view model_version,
                                      std::string_view user_description) {
-  return std::format("model_input: {}\nmodel_version: {}\nuser_description: {}",
-                     query, model_version, user_description);
+  return base::StringPrintf(
+      "model_input: %s\nmodel_version: %s\nuser_description: %s", query,
+      model_version, user_description);
 }
 
 }  // namespace
