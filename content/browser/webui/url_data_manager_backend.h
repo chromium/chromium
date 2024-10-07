@@ -30,7 +30,8 @@ class URLDataSourceImpl;
 // URLDataManagerBackend is used internally by ChromeURLDataManager on the UI
 // thread. In most cases you can use the API in ChromeURLDataManager and ignore
 // this class. URLDataManagerBackend is owned by BrowserContext.
-class URLDataManagerBackend : public base::SupportsUserData::Data {
+class CONTENT_EXPORT URLDataManagerBackend
+    : public base::SupportsUserData::Data {
  public:
   typedef int RequestID;
 
@@ -76,8 +77,7 @@ class URLDataManagerBackend : public base::SupportsUserData::Data {
   // When this is true, GetWebUISchemes() bypasses the caching of its result
   // and always recomputes the list of WebUI schemes.  This should be used in
   // tests that inject custom WebUI schemes, which may otherwise not be seen.
-  CONTENT_EXPORT static void SetDisallowWebUISchemeCachingForTesting(
-      bool disallow_caching);
+  static void SetDisallowWebUISchemeCachingForTesting(bool disallow_caching);
 
  private:
   typedef std::map<std::string, scoped_refptr<URLDataSourceImpl>> DataSourceMap;

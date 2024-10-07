@@ -66,6 +66,7 @@ class MockWebUIDataSource : public content::WebUIDataSource {
   void DisableDenyXFrameOptions() override {}
   void EnableReplaceI18nInJS() override {}
   std::string GetSource() override { return ""; }
+  std::string GetScheme() override { return ""; }
   void AddFrameAncestor(const GURL& frame_ancestor) override {}
   void SetSupportedScheme(std::string_view scheme) override {}
 };

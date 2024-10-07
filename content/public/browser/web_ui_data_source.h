@@ -153,6 +153,9 @@ class WebUIDataSource {
   // The |source_name| this WebUIDataSource was created with.
   virtual std::string GetSource() = 0;
 
+  // The scheme of URLs served by this data source.
+  virtual std::string GetScheme() = 0;
+
   // Set supported scheme if not one of the default supported schemes.
   virtual void SetSupportedScheme(std::string_view scheme) = 0;
 };

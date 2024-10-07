@@ -57,6 +57,7 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
   void DisableDenyXFrameOptions() override;
   void EnableReplaceI18nInJS() override;
   std::string GetSource() override;
+  std::string GetScheme() override;
   void SetSupportedScheme(std::string_view scheme) override;
 
   // Add the locale to the load time data defaults. May be called repeatedly.
@@ -83,6 +84,7 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
   class InternalDataSource;
   friend class InternalDataSource;
   friend class URLDataManagerBackend;
+  friend class URLDataManagerBackendTest;
   friend class WebUIDataSource;
   friend class WebUIDataSourceTest;
 
