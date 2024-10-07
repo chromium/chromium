@@ -203,7 +203,7 @@ void TouchEventAckQueue::ProcessAckedTouchEvents() {
 void TouchEventAckQueue::UpdateQueueAfterTargetDestroyed(
     RenderWidgetHostViewInput* target_view) {
   // If a queue entry's root view is being destroyed, just delete it.
-  std::erase_if(ack_queue_, [target_view](AckData data) {
+  std::erase_if(ack_queue_, [target_view](const AckData& data) {
     return data.root_view == target_view;
   });
 
