@@ -444,6 +444,9 @@ spaces. This should be deprecated in favor of FirstShowOrReshow.
 <variants name="AutofillFieldPredictionSource">
   <variant name=".Heuristic"
       summary="Field type predictions using local heuristics."/>
+  <variant name=".ML"
+      summary="Field types based on ML predictions (only recorded if ML
+               predictions are enabled but not the active heuristic source)."/>
   <variant name=".Overall"
       summary="Field type prediction as seen by the user after combining the
                heuristic and crowd sourced predictions."/>

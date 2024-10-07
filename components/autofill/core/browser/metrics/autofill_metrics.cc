@@ -517,7 +517,6 @@ namespace {
 const char* GetQualityMetricPredictionSource(
     AutofillMetrics::QualityMetricPredictionSource source) {
   switch (source) {
-    default:
     case AutofillMetrics::PREDICTION_SOURCE_UNKNOWN:
       NOTREACHED_IN_MIGRATION();
       return "Unknown";
@@ -528,6 +527,8 @@ const char* GetQualityMetricPredictionSource(
       return "Server";
     case AutofillMetrics::PREDICTION_SOURCE_OVERALL:
       return "Overall";
+    case AutofillMetrics::PREDICTION_SOURCE_ML_PREDICTIONS:
+      return "ML";
   }
 }
 
@@ -1278,7 +1279,20 @@ void AutofillMetrics::LogHeuristicPredictionQualityMetrics(
   LogPredictionQualityMetrics(
       PREDICTION_SOURCE_HEURISTIC, field.heuristic_type(),
       form_interactions_ukm_logger, form, field, metric_type,
-      false /*log_rationalization_metrics*/);
+      /*log_rationalization_metrics=*/false);
+}
+
+// static
+void AutofillMetrics::LogMlPredictionQualityMetrics(
+    FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    const FormStructure& form,
+    const AutofillField& field,
+    QualityMetricType metric_type) {
+  LogPredictionQualityMetrics(
+      PREDICTION_SOURCE_ML_PREDICTIONS,
+      field.heuristic_type(HeuristicSource::kMachineLearning),
+      form_interactions_ukm_logger, form, field, metric_type,
+      /*log_rationalization_metrics=*/false);
 }
 
 // static
@@ -1290,7 +1304,7 @@ void AutofillMetrics::LogServerPredictionQualityMetrics(
   LogPredictionQualityMetrics(PREDICTION_SOURCE_SERVER, field.server_type(),
                               form_interactions_ukm_logger, form, field,
                               metric_type,
-                              false /*log_rationalization_metrics*/);
+                              /*log_rationalization_metrics=*/false);
 }
 
 // static
@@ -1302,7 +1316,7 @@ void AutofillMetrics::LogOverallPredictionQualityMetrics(
   LogPredictionQualityMetrics(
       PREDICTION_SOURCE_OVERALL, field.Type().GetStorableType(),
       form_interactions_ukm_logger, form, field, metric_type,
-      true /*log_rationalization_metrics*/);
+      /*log_rationalization_metrics=*/true);
 }
 
 void AutofillMetrics::LogEmailFieldPredictionMetrics(

@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/metrics/shadow_prediction_metrics.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 
 namespace autofill::autofill_metrics {
 
@@ -210,6 +211,16 @@ void LogPredictionMetrics(
     AutofillMetrics::LogEmailFieldPredictionMetrics(*field);
     autofill_metrics::LogShadowPredictionComparison(*field,
                                                     GetActiveHeuristicSource());
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+    // If ML predictions are the active heuristic source, don't record samples
+    // as these would be redundant to the ".Heuristic" sub-metric of
+    // `LogHeuristicPredictionQualityMetrics()`.
+    if (base::FeatureList::IsEnabled(features::kAutofillModelPredictions) &&
+        GetActiveHeuristicSource() != HeuristicSource::kMachineLearning) {
+      AutofillMetrics::LogMlPredictionQualityMetrics(
+          form_interactions_ukm_logger, form, *field, metric_type);
+    }
+#endif
   }
 }
 

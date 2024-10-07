@@ -362,7 +362,9 @@ class AutofillMetrics {
     PREDICTION_SOURCE_SERVER = 2,
     // Overall field-type prediction seen by user.
     PREDICTION_SOURCE_OVERALL = 3,
-    NUM_QUALITY_METRIC_SOURCES
+    // ML based field-type predictions. Only reported separately if the ML model
+    // is evaluated in shadow mode (i.e. it is not the active heuristic).
+    PREDICTION_SOURCE_ML_PREDICTIONS = 4,
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -926,6 +928,11 @@ class AutofillMetrics {
   static void LogDeveloperEngagementMetric(DeveloperEngagementMetric metric);
 
   static void LogHeuristicPredictionQualityMetrics(
+      FormInteractionsUkmLogger* form_interactions_ukm_logger,
+      const FormStructure& form,
+      const AutofillField& field,
+      QualityMetricType metric_type);
+  static void LogMlPredictionQualityMetrics(
       FormInteractionsUkmLogger* form_interactions_ukm_logger,
       const FormStructure& form,
       const AutofillField& field,

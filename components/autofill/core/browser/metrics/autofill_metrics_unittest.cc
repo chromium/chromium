@@ -700,7 +700,9 @@ TEST_F(AutofillMetricsTest, SaneMetricsWithCacheMismatch) {
   scoped_feature_list.InitWithFeatures(
       {features::kAutofillFixValueSemantics,
        features::kAutofillFixInitialValueOfSelect,
-       features::kAutofillFixCurrentValueInImport},
+       features::kAutofillFixCurrentValueInImport,
+       // Enable model predictions but don't make it the active source.
+       features::kAutofillModelPredictions},
       {});
   FormData form = CreateForm(
       {CreateTestFormField("Both match", "match", "Elvis Aaron Presley",
@@ -717,27 +719,54 @@ TEST_F(AutofillMetricsTest, SaneMetricsWithCacheMismatch) {
                                             ADDRESS_HOME_CITY, UNKNOWN_TYPE};
   std::vector<FieldType> server_types = {NAME_FULL, PHONE_HOME_NUMBER,
                                          PHONE_HOME_NUMBER, UNKNOWN_TYPE};
+  std::vector<FieldType> ml_types = server_types;
 
-  autofill_manager().AddSeenForm(test::WithoutValues(form), heuristic_types,
+  std::vector<std::vector<std::pair<HeuristicSource, FieldType>>>
+      all_heuristic_types;
+  ASSERT_EQ(heuristic_types.size(), ml_types.size());
+  for (size_t i = 0; i < heuristic_types.size(); ++i) {
+    all_heuristic_types.push_back(
+        {{GetActiveHeuristicSource(), heuristic_types[i]},
+         {HeuristicSource::kMachineLearning, ml_types[i]}});
+  }
+
+  autofill_manager().AddSeenForm(test::WithoutValues(form), all_heuristic_types,
                                  server_types);
 
   // Add a field and re-arrange the remaining form fields before submitting. The
   // five submitted fields are filled with
-  // - ADDRESS_HOME_STATE (Tennessee)
+  // - EMPTY_TYPE (Tennessee) - While this is an ADDRESS_HOME_STATE in theory,
+  //     this field is added at runtime. As the value "Tennessee" is seen
+  //     for the first time when the form is submitted, the field's initial
+  //     value equates the current value. Therefore, the field is considered as
+  //     not-typed and therefore empty. Also no ML heuristics are executed on
+  //     the field because it just appears at form submission time.
   // - ADDRESS_HOME_CITY (Memphis)
   // - EMAIL_ADDRESS (buddy@gmail.com)
   // - garbage
-  // - NAME_FULL (buddy@gmail.com)
+  // - NAME_FULL (Elvis Aaron Presley)
   std::vector<FormFieldData> cached_fields = form.fields();
   form.set_fields({CreateTestFormField("New field", "new field", "Tennessee",
                                        FormControlType::kInputText),
                    cached_fields[2], cached_fields[1], cached_fields[3],
                    cached_fields[0]});
+  std::vector<FieldType> actual_types = {NAME_FULL, EMAIL_ADDRESS,
+                                         ADDRESS_HOME_CITY, UNKNOWN_TYPE};
 
   base::HistogramTester histogram_tester;
   SubmitForm(form);
 
-  for (const std::string source : {"Heuristic", "Server", "Overall"}) {
+  std::vector<std::string> sources = {"Heuristic", "Server", "Overall"};
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  // Quality metrics for ".ML" are only recorded if the ML predictions are
+  // computed but not the active heuristic source.
+  if (base::FeatureList::IsEnabled(features::kAutofillModelPredictions) &&
+      GetActiveHeuristicSource() != HeuristicSource::kMachineLearning) {
+    sources.push_back("ML");
+  }
+#endif
+
+  for (const std::string& source : sources) {
     SCOPED_TRACE(testing::Message() << source);
     using FieldTypeQualityMetric = AutofillMetrics::FieldTypeQualityMetric;
     using enum FieldTypeQualityMetric;
@@ -764,6 +793,31 @@ TEST_F(AutofillMetricsTest, SaneMetricsWithCacheMismatch) {
                              source != "Heuristic" ? 2 : 1),
                            b(EMAIL_ADDRESS, FALSE_NEGATIVE_MISMATCH),
                            b(NAME_FULL, TRUE_POSITIVE)));
+
+    std::vector<FieldType>& predicted_type = [&]() -> std::vector<FieldType>& {
+      if (source == "Heuristic") {
+        return heuristic_types;
+      } else if (source == "Server") {
+        return server_types;
+      } else if (source == "Overall") {
+        return server_types;
+      } else if (source == "ML") {
+        return ml_types;
+      }
+      NOTREACHED_NORETURN();
+    }();
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples("Autofill.FieldPrediction." + source),
+        // The first field has the ML prediction type NO_SERVER_DATA because the
+        // ML predictions were never executed and NO_SERVER_DATA is used to
+        // indicate that a specific heuristic type is unset.
+        BucketsAre(source == "Server" || source == "ML"
+                       ? Bucket((NO_SERVER_DATA << 16) | EMPTY_TYPE, 1)
+                       : Bucket((UNKNOWN_TYPE << 16) | EMPTY_TYPE, 1),
+                   Bucket((predicted_type[0] << 16) | actual_types[0], 1),
+                   Bucket((predicted_type[1] << 16) | actual_types[1], 1),
+                   Bucket((predicted_type[2] << 16) | actual_types[2], 1),
+                   Bucket((predicted_type[3] << 16) | actual_types[3], 1)));
   }
 }
 
