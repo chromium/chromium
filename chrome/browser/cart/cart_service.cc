@@ -903,7 +903,8 @@ void CartService::OnLoadCarts(CartDB::LoadCallback callback,
       merchants_to_erase.emplace(kv.second.key());
     }
   }
-  std::erase_if(proto_pairs, [merchants_to_erase](CartDB::KeyAndValue kv) {
+  std::erase_if(proto_pairs, [merchants_to_erase](
+                                 const CartDB::KeyAndValue& kv) {
     return kv.second.is_hidden() || kv.second.is_removed() ||
            merchants_to_erase.contains(kv.second.key());
   });

@@ -189,7 +189,7 @@ const std::vector<std::string> GetEquivalentInstalledExtensions(
   if (extension_ids.empty())
     return std::vector<std::string>();
 
-  std::erase_if(extension_ids, [registry](std::string extension_id) {
+  std::erase_if(extension_ids, [registry](const std::string& extension_id) {
     return !registry->GetInstalledExtension(extension_id);
   });
   return extension_ids;
