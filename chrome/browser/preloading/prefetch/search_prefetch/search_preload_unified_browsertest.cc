@@ -150,6 +150,11 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
             chrome_preloading_predictor::kDefaultSearchEngine);
     scoped_test_timer_ =
         std::make_unique<base::ScopedMockElapsedTimersForTest>();
+
+    // Reset pointer position to avoid the pointer hover on the back button
+    // that unintentionally triggers `kBackButtonHover` preloading, which may
+    // cause flaky tests due to UKM mismatch.
+    ResetPointerPosition();
   }
 
   std::unique_ptr<net::test_server::HttpResponse> HandleSearchRequest(
@@ -397,6 +402,22 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
   }
 
  private:
+  void ResetPointerPosition() {
+#if !BUILDFLAG(IS_ANDROID)
+    content::WebContents* contents = GetActiveWebContents();
+    content::InputEventAckWaiter waiter(
+        contents->GetPrimaryMainFrame()->GetRenderWidgetHost(),
+        blink::WebInputEvent::Type::kMouseMove);
+    SimulateMouseEvent(contents, blink::WebMouseEvent::Type::kMouseMove,
+                       blink::WebMouseEvent::Button::kNoButton,
+                       gfx::Point(0, 0));
+    waiter.Wait();
+#else
+    // TODO(crbug.com/339718083): Simulate |WebGestureEvent| to make this
+    // function work for Android.
+#endif  // !BUILDFLAG(IS_ANDROID)
+  }
+
   AutocompleteMatch CreateSearchSuggestionMatch(
       const std::string& original_query,
       const std::string& search_terms,
