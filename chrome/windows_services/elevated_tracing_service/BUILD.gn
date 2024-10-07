@@ -6,10 +6,10 @@ import("//build/config/chrome_build.gni")
 import("//chrome/process_version_rc_template.gni")
 import("//testing/test.gni")
 
-executable("tracing_service") {
+executable("elevated_tracing_service") {
   sources = [
-    "tracing_service.cc",
-    "tracing_service.rc",
+    "elevated_tracing_service.cc",
+    "elevated_tracing_service.rc",
   ]
 
   configs -= [
@@ -25,11 +25,11 @@ executable("tracing_service") {
 }
 
 process_version_rc_template("version_resources") {
-  sources = [ "tracing_service_exe.ver" ]
-  output = "$target_gen_dir/tracing_service_exe.rc"
+  sources = [ "elevated_tracing_service_exe.ver" ]
+  output = "$target_gen_dir/elevated_tracing_service_exe.rc"
 }
 
-test("tracing_service_unittests") {
+test("elevated_tracing_service_unittests") {
   sources = [ "run_all_unittests.cc" ]
 
   deps = [
@@ -39,5 +39,5 @@ test("tracing_service_unittests") {
     "//testing/gtest",
   ]
 
-  data_deps = [ ":tracing_service" ]
+  data_deps = [ ":elevated_tracing_service" ]
 }

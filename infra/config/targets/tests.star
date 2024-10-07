@@ -1176,6 +1176,10 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
+    name = "elevated_tracing_service_unittests",
+)
+
+targets.tests.gtest_test(
     name = "fuzzing_unittests",
 )
 
@@ -2261,10 +2265,6 @@ targets.tests.gpu_telemetry_test(
     mixins = [
         "has_native_resultdb_integration",
     ],
-)
-
-targets.tests.gtest_test(
-    name = "tracing_service_unittests",
 )
 
 targets.tests.gtest_test(

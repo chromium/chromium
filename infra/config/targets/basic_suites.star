@@ -4861,6 +4861,7 @@ targets.legacy_basic_suite(
     tests = {
         "chrome_elf_unittests": targets.legacy_test_config(),
         "delayloads_unittests": targets.legacy_test_config(),
+        "elevated_tracing_service_unittests": targets.legacy_test_config(),
         "elevation_service_unittests": targets.legacy_test_config(),
         "gcp_unittests": targets.legacy_test_config(),
         "install_static_unittests": targets.legacy_test_config(),
@@ -4888,7 +4889,6 @@ targets.legacy_basic_suite(
                 },
             ),
         ),
-        "tracing_service_unittests": targets.legacy_test_config(),
         "updater_tests": targets.legacy_test_config(),
         "updater_tests_system": targets.legacy_test_config(),
         "zucchini_unittests": targets.legacy_test_config(),

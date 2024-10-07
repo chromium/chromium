@@ -28,7 +28,8 @@ extern const wchar_t kMediaPlayerRegPath[];
 extern const wchar_t kOsUpdateHandlerExe[];
 #endif
 
-inline constexpr std::wstring_view kTracingServiceExe = L"tracing_service.exe";
+inline constexpr std::wstring_view kElevatedTracingServiceExe =
+    L"elevated_tracing_service.exe";
 
 namespace switches {
 

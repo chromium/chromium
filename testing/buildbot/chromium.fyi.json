@@ -2012,6 +2012,11 @@
         "test_id_prefix": "ninja://ui/display:display_unittests/"
       },
       {
+        "name": "elevated_tracing_service_unittests",
+        "test": "elevated_tracing_service_unittests",
+        "test_id_prefix": "ninja://chrome/windows_services/elevated_tracing_service:elevated_tracing_service_unittests/"
+      },
+      {
         "name": "elevation_service_unittests",
         "test": "elevation_service_unittests",
         "test_id_prefix": "ninja://chrome/elevation_service:elevation_service_unittests/"
@@ -2248,11 +2253,6 @@
         "name": "sync_integration_tests",
         "test": "sync_integration_tests",
         "test_id_prefix": "ninja://chrome/test:sync_integration_tests/"
-      },
-      {
-        "name": "tracing_service_unittests",
-        "test": "tracing_service_unittests",
-        "test_id_prefix": "ninja://chrome/windows_services/tracing_service:tracing_service_unittests/"
       },
       {
         "name": "ui_base_unittests",
@@ -45137,6 +45137,24 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "elevated_tracing_service_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10-19045",
+            "pool": "chromium.tests.no-external-ip"
+          },
+          "expiration": 43200,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "elevated_tracing_service_unittests",
+        "test_id_prefix": "ninja://chrome/windows_services/elevated_tracing_service:elevated_tracing_service_unittests/"
+      },
+      {
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
         "name": "elevation_service_unittests",
         "swarming": {
           "dimensions": {
@@ -46045,24 +46063,6 @@
         },
         "test": "sync_integration_tests",
         "test_id_prefix": "ninja://chrome/test:sync_integration_tests/"
-      },
-      {
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "tracing_service_unittests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Windows-10-19045",
-            "pool": "chromium.tests.no-external-ip"
-          },
-          "expiration": 43200,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "tracing_service_unittests",
-        "test_id_prefix": "ninja://chrome/windows_services/tracing_service:tracing_service_unittests/"
       },
       {
         "isolate_profile_data": true,

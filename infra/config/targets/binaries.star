@@ -795,6 +795,11 @@ targets.binaries.console_test_launcher(
 )
 
 targets.binaries.windowed_test_launcher(
+    name = "elevated_tracing_service_unittests",
+    label = "//chrome/windows_services/elevated_tracing_service:elevated_tracing_service_unittests",
+)
+
+targets.binaries.windowed_test_launcher(
     name = "elevation_service_unittests",
     label = "//chrome/elevation_service:elevation_service_unittests",
 )
@@ -1826,11 +1831,6 @@ targets.binaries.script(
         "--adb-path",
         "src/third_party/android_sdk/public/platform-tools/adb",
     ],
-)
-
-targets.binaries.windowed_test_launcher(
-    name = "tracing_service_unittests",
-    label = "//chrome/windows_services/tracing_service:tracing_service_unittests",
 )
 
 targets.binaries.console_test_launcher(

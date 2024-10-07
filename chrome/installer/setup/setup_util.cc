@@ -751,7 +751,7 @@ base::FilePath GetElevationServicePath(const base::FilePath& target_path,
 base::FilePath GetTracingServicePath(const base::FilePath& target_path,
                                      const base::Version& version) {
   return target_path.AppendASCII(version.GetString())
-      .Append(kTracingServiceExe);
+      .Append(kElevatedTracingServiceExe);
 }
 
 void AddUpdateDowngradeVersionItem(HKEY root,

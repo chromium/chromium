@@ -148,7 +148,8 @@ std::wstring GetWerHelperRegistryPath();
 base::FilePath GetElevationServicePath(const base::FilePath& target_path,
                                        const base::Version& version);
 
-// Returns the file path to tracing_service.exe (in |version| directory).
+// Returns the file path to elevated_tracing_service.exe (in `version`
+// directory).
 base::FilePath GetTracingServicePath(const base::FilePath& target_path,
                                      const base::Version& version);
 

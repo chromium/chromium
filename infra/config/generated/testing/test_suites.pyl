@@ -5855,6 +5855,7 @@
     'win_specific_chromium_gtests': {
       'chrome_elf_unittests': {},
       'delayloads_unittests': {},
+      'elevated_tracing_service_unittests': {},
       'elevation_service_unittests': {},
       'gcp_unittests': {},
       'install_static_unittests': {},
@@ -5882,7 +5883,6 @@
           },
         },
       },
-      'tracing_service_unittests': {},
       'updater_tests': {},
       'updater_tests_system': {},
       'zucchini_unittests': {},

@@ -859,18 +859,19 @@ int EnableSystemTracing(const installer::InstallerState& installer_state,
   base::FilePath tracing_service_exe(installer::GetTracingServicePath(
       installer_state.target_path(), current_version));
 
-  // If the command line includes "--developer", register tracing_service.exe in
-  // the current executable's directory. This is intended for use by developers
-  // who wish to run the browser in their development directory and have it use
-  // a tracing service from the same directory. Use with caution: this will
-  // likely break tracing for a normal installation of the same browser (e.g.,
-  // stable Google Chrome if running a branded build), and may be overwritten by
-  // an update of the same browser.
+  // If the command line includes "--developer", register
+  // elevated_tracing_service.exe in the current executable's directory. This is
+  // intended for use by developers who wish to run the browser in their
+  // development directory and have it use a tracing service from the same
+  // directory. Use with caution: this will likely break tracing for a normal
+  // installation of the same browser (e.g., stable Google Chrome if running a
+  // branded build), and may be overwritten by an update of the same browser.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           installer::switches::kDeveloper)) {
     base::FilePath dir_exe;
     if (base::PathService::Get(base::DIR_EXE, &dir_exe)) {
-      tracing_service_exe = dir_exe.Append(installer::kTracingServiceExe);
+      tracing_service_exe =
+          dir_exe.Append(installer::kElevatedTracingServiceExe);
     }
   }
 
