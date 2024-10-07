@@ -22970,24 +22970,6 @@
             ]
         }
     ],
-    "TabGroupSyncServiceDesktopMigration": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TabGroupSyncServiceDesktopMigration"
-                    ]
-                }
-            ]
-        }
-    ],
     "TabGroupsCollapseFreezing": [
         {
             "platforms": [
