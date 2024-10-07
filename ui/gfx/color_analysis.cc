@@ -612,18 +612,19 @@ SkColor CalculateKMeanColorOfPNG(base::span<const uint8_t> png,
                                  const HSL& lower_bound,
                                  const HSL& upper_bound,
                                  KMeanImageSampler* sampler) {
-  int img_width = 0;
-  int img_height = 0;
-  std::vector<uint8_t> decoded_data;
-  SkColor color = kDefaultBgColor;
-
-  if (!png.empty() &&
-      gfx::PNGCodec::Decode(png.data(), png.size(), gfx::PNGCodec::FORMAT_BGRA,
-                            &decoded_data, &img_width, &img_height)) {
-    return CalculateKMeanColorOfBuffer(decoded_data, img_width, img_height,
-                                       lower_bound, upper_bound, sampler, true);
+  if (png.empty()) {
+    return kDefaultBgColor;
   }
-  return color;
+
+  std::optional<gfx::PNGCodec::DecodeOutput> output =
+      gfx::PNGCodec::Decode(png, gfx::PNGCodec::FORMAT_BGRA);
+  if (!output) {
+    return kDefaultBgColor;
+  }
+
+  return CalculateKMeanColorOfBuffer(output->output, output->width,
+                                     output->height, lower_bound, upper_bound,
+                                     sampler, /*find_closest=*/true);
 }
 
 SkColor CalculateKMeanColorOfPNG(base::span<const uint8_t> png) {
