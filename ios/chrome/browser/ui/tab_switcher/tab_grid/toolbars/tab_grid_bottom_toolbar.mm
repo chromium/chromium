@@ -50,6 +50,11 @@
   if (self) {
     [self setupViews];
     [self updateLayout];
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+          @[ UITraitVerticalSizeClass.self, UITraitHorizontalSizeClass.self ]);
+      [self registerForTraitChanges:traits withAction:@selector(updateLayout)];
+    }
   }
   return self;
 }
@@ -65,8 +70,13 @@
   [super didMoveToSuperview];
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
   if ((self.traitCollection.verticalSizeClass !=
        previousTraitCollection.verticalSizeClass) ||
       (self.traitCollection.horizontalSizeClass !=
@@ -74,6 +84,7 @@
     [self updateLayout];
   }
 }
+#endif
 
 // `pointInside` is called as long as this view is on the screen (even if its
 // size is zero). It controls hit testing of the bottom toolbar. When the
