@@ -323,6 +323,13 @@ TEST_F(AutofillPredictionImprovementsManagerTest, EndToEnd) {
                                        update_suggestions_callback.Get());
   const autofill::FormFieldData& filled_field = filled_form.fields().front();
   std::move(axtree_received_callback).Run({});
+
+  const std::vector<autofill::Suggestion> suggestions_while_loading =
+      manager_->GetSuggestions({}, filled_form.fields().front());
+  ASSERT_FALSE(suggestions_while_loading.empty());
+  EXPECT_THAT(suggestions_while_loading[0],
+              HasType(SuggestionType::kPredictionImprovementsLoadingState));
+
   std::move(predictions_received_callback)
       .Run(
           PredictionsByGlobalId{{filled_field.global_id(),

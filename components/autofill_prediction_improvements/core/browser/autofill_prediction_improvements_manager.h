@@ -93,6 +93,18 @@ class AutofillPredictionImprovementsManager
  private:
   friend class AutofillPredictionImprovementsManagerTestApi;
 
+  // Enum specifying the states of retrieving prediction improvements.
+  enum class PredictionRetrievalState {
+    // This state means that currently no attempt is made to retrieve prediction
+    // improvements. This can either be because no attempt was made yet to
+    // retrieve prediction improvements. Or because retrieving prediction
+    // improvements has finished. Note that the latter includes both successful
+    // and unsuccessful retrieval attempts.
+    kIdle = 0,
+    // Prediction improvements are being retrieved right now.
+    kIsLoadingPredictions = 1
+  };
+
   // Receives prediction improvements for all fields in `form`, then calls
   // `update_suggestions_callback_`.
   void RetrievePredictions(
@@ -112,6 +124,11 @@ class AutofillPredictionImprovementsManager
       AutofillPredictionImprovementsFillingEngine::PredictionsOrError
           predictions_or_error,
       std::optional<std::string> feedback_id);
+
+  // Method for showing filling or error suggestions, depending on the outcome
+  // of the retrieval attempts.
+  void UpdateSuggestionsAfterReceivedPredictions(
+      const std::vector<autofill::Suggestion>& suggestions);
 
   // Resets the state of this class.
   void Reset();
@@ -142,6 +159,10 @@ class AutofillPredictionImprovementsManager
 
   // Returns values to fill based on the `cache_`.
   base::flat_map<autofill::FieldGlobalId, std::u16string> GetValuesToFill();
+
+  // Current state for retrieving predictions.
+  PredictionRetrievalState prediction_retrieval_state_ =
+      PredictionRetrievalState::kIdle;
 
   // A raw reference to the client, which owns `this` and therefore outlives
   // it.

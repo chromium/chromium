@@ -310,7 +310,12 @@ std::vector<autofill::Suggestion>
 AutofillPredictionImprovementsManager::GetSuggestions(
     const std::vector<autofill::Suggestion>& autofill_suggestions,
     const autofill::FormFieldData& field) {
-  loading_suggestion_timer_.Stop();
+  // Keep showing the loading suggesiton while prediction improvements are being
+  // retrieved.
+  if (prediction_retrieval_state_ ==
+      PredictionRetrievalState::kIsLoadingPredictions) {
+    return {CreateLoadingSuggestion()};
+  }
   // Show a cached prediction improvements filling suggestion for `field` if
   // it exists.
   if (HasImprovedPredictionsForField(field)) {
@@ -337,6 +342,7 @@ void AutofillPredictionImprovementsManager::RetrievePredictions(
   if (!kTriggerAutomatically.Get()) {
     UpdateSuggestions({CreateLoadingSuggestion()});
   }
+  prediction_retrieval_state_ = PredictionRetrievalState::kIsLoadingPredictions;
   client_->GetAXTree(
       base::BindOnce(&AutofillPredictionImprovementsManager::OnReceivedAXTree,
                      weak_ptr_factory_.GetWeakPtr(), form, trigger_field));
@@ -387,12 +393,21 @@ void AutofillPredictionImprovementsManager::OnReceivedPredictions(
       FROM_HERE, kMinTimeToShowLoading,
       predictions_or_error.has_value()
           ? base::BindRepeating(
-                &AutofillPredictionImprovementsManager::UpdateSuggestions,
+                &AutofillPredictionImprovementsManager::
+                    UpdateSuggestionsAfterReceivedPredictions,
                 weak_ptr_factory_.GetWeakPtr(),
                 CreateFillingSuggestions(trigger_field, autofill_suggestions_))
-          : base::BindRepeating(
-                &AutofillPredictionImprovementsManager::UpdateSuggestions,
-                weak_ptr_factory_.GetWeakPtr(), CreateErrorSuggestions()));
+          : base::BindRepeating(&AutofillPredictionImprovementsManager::
+                                    UpdateSuggestionsAfterReceivedPredictions,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                CreateErrorSuggestions()));
+}
+
+void AutofillPredictionImprovementsManager::
+    UpdateSuggestionsAfterReceivedPredictions(
+        const std::vector<autofill::Suggestion>& suggestions) {
+  prediction_retrieval_state_ = PredictionRetrievalState::kIdle;
+  UpdateSuggestions(suggestions);
 }
 
 void AutofillPredictionImprovementsManager::UserFeedbackReceived(
@@ -458,9 +473,23 @@ void AutofillPredictionImprovementsManager::OnLoadingSuggestionShown(
     const autofill::FormData& form,
     const autofill::FormFieldData& trigger_field,
     UpdateSuggestionsCallback update_suggestions_callback) {
-  if (kTriggerAutomatically.Get()) {
+  if (kTriggerAutomatically.Get() &&
+      prediction_retrieval_state_ !=
+          PredictionRetrievalState::kIsLoadingPredictions) {
     RetrievePredictions(form, trigger_field,
                         std::move(update_suggestions_callback));
+  } else if (prediction_retrieval_state_ ==
+             PredictionRetrievalState::kIsLoadingPredictions) {
+    // Update the `update_suggestions_callback_` to the current instance. This
+    // is necessary when the loading suggestion was closed (by defocusing the
+    // triggering field) and an eligible form field is focused again, while
+    // retrieving the predictions is still ongoing. In that case the loading
+    // suggestion will be shown again and potentially updated later to error or
+    // filling suggestions.
+    // Note that this might overwrite the original callback set in
+    // `OnClickedTriggerSuggestion()` to one with the same
+    // `AutofillClient::SuggestionUiSessionId`, which doesn't matter though.
+    update_suggestions_callback_ = std::move(update_suggestions_callback);
   }
 }
 
@@ -470,6 +499,7 @@ void AutofillPredictionImprovementsManager::Reset() {
   feedback_id_ = std::nullopt;
   loading_suggestion_timer_.Stop();
   suggestion_timeout_timer_.Stop();
+  prediction_retrieval_state_ = PredictionRetrievalState::kIdle;
 }
 
 void AutofillPredictionImprovementsManager::UpdateSuggestions(
