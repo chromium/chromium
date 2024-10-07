@@ -35,6 +35,12 @@ communicating the state of installed applications, and receiving update
 instructions. It applies updates the server instructs it to, and then reports
 the results of the operation back to Omaha servers.
 
+There is an [unofficial tutorial](https://omaha-consulting.com/chromium-updater-omaha-4-tutorial)
+that gives a quick working overview of the updater. (Please note that it was
+written by a third party, so its availability, accuracy and safety cannot be
+guaranteed.)
+
+
 ## Updater Design
 Once installed, the updater operates as a collection of processes that are
 launched on-demand and orchestrate their operations over IPC. The *server
