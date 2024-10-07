@@ -560,6 +560,15 @@ crbug.com/370792790 conformance2/wasm/readpixels-16gb-wasm-memory.html [ Failure
 crbug.com/370792790 conformance2/wasm/teximage2d-16gb-wasm-memory.html [ Failure ]
 crbug.com/370792790 conformance2/wasm/texsubimage2d-16gb-wasm-memory.html [ Failure ]
 
+# Platform-independent failures due to a WebGL roll.
+crbug.com/371971708 conformance/context/context-lost-restored.html [ Failure ]
+crbug.com/371971708 conformance/context/context-lost.html [ Failure ]
+crbug.com/371971708 conformance/offscreencanvas/context-lost-restored-worker.html [ Failure ]
+crbug.com/371971708 conformance/offscreencanvas/context-lost-restored.html [ Failure ]
+crbug.com/371971708 conformance/offscreencanvas/context-lost-worker.html [ Failure ]
+crbug.com/371971708 conformance/offscreencanvas/context-lost.html [ Failure ]
+crbug.com/371971708 conformance2/state/gl-enum-tests.html [ Failure ]
+
 # ========================
 # Conformance expectations
 # ========================
