@@ -88,9 +88,10 @@ class AutofillPredictionImprovementsManager
 
   // Receives prediction improvements for all fields in `form`, then calls
   // `update_suggestions_callback_`.
-  void ExtractPredictionImprovementsForFormFields(
+  void RetrievePredictions(
       const autofill::FormData& form,
-      const autofill::FormFieldData& trigger_field);
+      const autofill::FormFieldData& trigger_field,
+      UpdateSuggestionsCallback update_suggestions_callback);
 
   void OnReceivedAXTree(const autofill::FormData& form,
                         const autofill::FormFieldData& trigger_field,

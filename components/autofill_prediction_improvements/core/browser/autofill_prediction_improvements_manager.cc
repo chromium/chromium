@@ -323,17 +323,24 @@ AutofillPredictionImprovementsManager::GetSuggestions(
   return CreateTriggerSuggestion();
 }
 
-void AutofillPredictionImprovementsManager::
-    ExtractPredictionImprovementsForFormFields(
-        const autofill::FormData& form,
-        const autofill::FormFieldData& trigger_field) {
-  if (!ShouldProvidePredictionImprovements(client_->GetLastCommittedURL())) {
-    UpdateSuggestions(CreateErrorSuggestions());
-    return;
-  }
+void AutofillPredictionImprovementsManager::RetrievePredictions(
+    const autofill::FormData& form,
+    const autofill::FormFieldData& trigger_field,
+    UpdateSuggestionsCallback update_suggestions_callback) {
+  Reset();
+  update_suggestions_callback_ = std::move(update_suggestions_callback);
+  UpdateSuggestions({CreateLoadingSuggestion()});
   client_->GetAXTree(
       base::BindOnce(&AutofillPredictionImprovementsManager::OnReceivedAXTree,
                      weak_ptr_factory_.GetWeakPtr(), form, trigger_field));
+  // In order to not show the loading suggestion for too long, which would be a
+  // poor UX, we set a limit before timeout and show an error suggestion if
+  // fetching the suggestion takes more time than this limit.
+  suggestion_timeout_timer_.Start(
+      FROM_HERE, kMaxLoadingTimeBeforeTimeout,
+      base::BindRepeating(
+          &AutofillPredictionImprovementsManager::UpdateSuggestions,
+          weak_ptr_factory_.GetWeakPtr(), CreateErrorSuggestions()));
 }
 
 void AutofillPredictionImprovementsManager::OnReceivedAXTree(
@@ -436,19 +443,8 @@ void AutofillPredictionImprovementsManager::OnClickedTriggerSuggestion(
     const autofill::FormData& form,
     const autofill::FormFieldData& trigger_field,
     UpdateSuggestionsCallback update_suggestions_callback) {
-  Reset();
-  update_suggestions_callback_ = std::move(update_suggestions_callback);
-  UpdateSuggestions({CreateLoadingSuggestion()});
-  ExtractPredictionImprovementsForFormFields(form, trigger_field);
-
-  // In order to not show the loading suggestion for too long, which would be a
-  // poor UX, we set a limit before timeout and show an error suggestion if
-  // fetching the suggestion takes more time than this limit.
-  suggestion_timeout_timer_.Start(
-      FROM_HERE, kMaxLoadingTimeBeforeTimeout,
-      base::BindRepeating(
-          &AutofillPredictionImprovementsManager::UpdateSuggestions,
-          weak_ptr_factory_.GetWeakPtr(), CreateErrorSuggestions()));
+  RetrievePredictions(form, trigger_field,
+                      std::move(update_suggestions_callback));
 }
 
 void AutofillPredictionImprovementsManager::Reset() {

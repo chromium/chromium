@@ -758,10 +758,10 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
   manager_->UserClickedLearnMore();
 }
 
-class ShouldProvideAutofillPredictionImprovementsTest
+class IsFormAndFieldEligibleAutofillPredictionImprovementsTest
     : public BaseAutofillPredictionImprovementsManagerTest {
  public:
-  ShouldProvideAutofillPredictionImprovementsTest() {
+  IsFormAndFieldEligibleAutofillPredictionImprovementsTest() {
     ON_CALL(client_, GetLastCommittedURL).WillByDefault(ReturnRef(url_));
     autofill::test::FormDescription form_description = {
         .fields = {{.role = autofill::NAME_FIRST,
@@ -769,138 +769,89 @@ class ShouldProvideAutofillPredictionImprovementsTest
     form_ = autofill::test::GetFormData(form_description);
   }
 
+  std::unique_ptr<autofill::FormStructure> CreateEligibleForm() {
+    autofill::FormData form_data;
+    auto form = std::make_unique<autofill::FormStructure>(form_data);
+    autofill::AutofillField& prediction_improvement_field =
+        test_api(*form).PushField();
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+    prediction_improvement_field.set_heuristic_type(
+        autofill::HeuristicSource::kPredictionImprovementRegexes,
+        autofill::IMPROVED_PREDICTION);
+#else
+    prediction_improvement_field.set_heuristic_type(
+        autofill::HeuristicSource::kLegacyRegexes,
+        autofill::IMPROVED_PREDICTION);
+#endif
+    return form;
+  }
+
  protected:
   autofill::FormData form_;
 };
 
-TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
-       DoesNotExtractImprovedPredictionsIfFlagDisabled) {
+TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
+       IsNotEligibleIfFlagDisabled) {
   base::test::SingleThreadTaskEnvironment task_environment;
   feature_.InitAndDisableFeature(kAutofillPredictionImprovements);
   AutofillPredictionImprovementsManager manager{&client_, &decider_,
                                                 &strike_database_};
-  base::MockCallback<autofill::AutofillPredictionImprovementsDelegate::
-                         UpdateSuggestionsCallback>
-      update_suggestions_callback;
-  std::vector<Suggestion> loading_suggestion;
-  std::vector<Suggestion> error_suggestions;
-  EXPECT_CALL(client_, GetAXTree).Times(0);
-  {
-    InSequence s;
-    EXPECT_CALL(update_suggestions_callback, Run)
-        .WillOnce(SaveArg<0>(&loading_suggestion));
-    EXPECT_CALL(update_suggestions_callback, Run)
-        .WillOnce(SaveArg<0>(&error_suggestions));
-  }
+  std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
+  autofill::AutofillField* prediction_improvement_field = form->field(0);
 
-  manager.OnClickedTriggerSuggestion(form_, form_.fields().front(),
-                                     update_suggestions_callback.Get());
-
-  EXPECT_THAT(loading_suggestion,
-              ElementsAre(HasType(
-                  SuggestionType::kPredictionImprovementsLoadingState)));
-  EXPECT_THAT(
-      error_suggestions,
-      ElementsAre(HasType(SuggestionType::kPredictionImprovementsError),
-                  HasType(SuggestionType::kSeparator),
-                  HasType(SuggestionType::kPredictionImprovementsFeedback)));
+  EXPECT_FALSE(
+      manager.IsFormAndFieldEligible(*form, *prediction_improvement_field));
 }
 
-TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
-       DoesNotExtractImprovedPredictionsIfDeciderIsNull) {
+TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
+       IsNotEligibleIfDeciderIsNull) {
   base::test::SingleThreadTaskEnvironment task_environment;
   feature_.InitAndEnableFeatureWithParameters(kAutofillPredictionImprovements,
                                               {{"skip_allowlist", "true"}});
   AutofillPredictionImprovementsManager manager{&client_, nullptr,
                                                 &strike_database_};
-  base::MockCallback<autofill::AutofillPredictionImprovementsDelegate::
-                         UpdateSuggestionsCallback>
-      update_suggestions_callback;
-  std::vector<Suggestion> loading_suggestion;
-  std::vector<Suggestion> error_suggestions;
-  EXPECT_CALL(client_, GetAXTree).Times(0);
-  {
-    InSequence s;
-    EXPECT_CALL(update_suggestions_callback, Run)
-        .WillOnce(SaveArg<0>(&loading_suggestion));
-    EXPECT_CALL(update_suggestions_callback, Run)
-        .WillOnce(SaveArg<0>(&error_suggestions));
-  }
+  std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
+  autofill::AutofillField* prediction_improvement_field = form->field(0);
 
-  manager.OnClickedTriggerSuggestion(form_, form_.fields().front(),
-                                     update_suggestions_callback.Get());
-
-  EXPECT_THAT(loading_suggestion,
-              ElementsAre(HasType(
-                  SuggestionType::kPredictionImprovementsLoadingState)));
-  EXPECT_THAT(
-      error_suggestions,
-      ElementsAre(HasType(SuggestionType::kPredictionImprovementsError),
-                  HasType(SuggestionType::kSeparator),
-                  HasType(SuggestionType::kPredictionImprovementsFeedback)));
+  EXPECT_FALSE(
+      manager.IsFormAndFieldEligible(*form, *prediction_improvement_field));
 }
 
-TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
-       ExtractsImprovedPredictionsIfSkipAllowlistIsTrue) {
+TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
+       IsEligibleIfSkipAllowlistIsTrue) {
   base::test::SingleThreadTaskEnvironment task_environment;
   feature_.InitAndEnableFeatureWithParameters(kAutofillPredictionImprovements,
                                               {{"skip_allowlist", "true"}});
   AutofillPredictionImprovementsManager manager{&client_, &decider_,
                                                 &strike_database_};
-  base::MockCallback<autofill::AutofillPredictionImprovementsDelegate::
-                         UpdateSuggestionsCallback>
-      update_suggestions_callback;
-  std::vector<Suggestion> loading_suggestion;
-  EXPECT_CALL(client_, GetAXTree);
-  EXPECT_CALL(update_suggestions_callback, Run)
-      .WillOnce(SaveArg<0>(&loading_suggestion));
 
-  manager.OnClickedTriggerSuggestion(form_, form_.fields().front(),
-                                     update_suggestions_callback.Get());
+  std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
+  autofill::AutofillField* prediction_improvement_field = form->field(0);
 
-  EXPECT_THAT(loading_suggestion,
-              ElementsAre(HasType(
-                  SuggestionType::kPredictionImprovementsLoadingState)));
+  EXPECT_TRUE(
+      manager.IsFormAndFieldEligible(*form, *prediction_improvement_field));
 }
 
-TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
-       DoesNotExtractImprovedPredictionsIfPrefIsDisabled) {
+TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
+       IsNotEligibleIfPrefIsDisabled) {
   base::test::SingleThreadTaskEnvironment task_environment;
   feature_.InitAndEnableFeatureWithParameters(kAutofillPredictionImprovements,
                                               {{"skip_allowlist", "true"}});
   AutofillPredictionImprovementsManager manager{&client_, &decider_,
                                                 &strike_database_};
-  base::MockCallback<autofill::AutofillPredictionImprovementsDelegate::
-                         UpdateSuggestionsCallback>
-      update_suggestions_callback;
-  std::vector<Suggestion> loading_suggestion;
-  std::vector<Suggestion> error_suggestion;
-  EXPECT_CALL(client_, GetAXTree).Times(0);
-  {
-    InSequence s;
-    EXPECT_CALL(update_suggestions_callback, Run)
-        .WillOnce(SaveArg<0>(&loading_suggestion));
-    EXPECT_CALL(client_, IsAutofillPredictionImprovementsEnabledPref)
-        .WillOnce(Return(false));
-    EXPECT_CALL(update_suggestions_callback, Run)
-        .WillOnce(SaveArg<0>(&error_suggestion));
-  }
 
-  manager.OnClickedTriggerSuggestion(form_, form_.fields().front(),
-                                     update_suggestions_callback.Get());
+  EXPECT_CALL(client_, IsAutofillPredictionImprovementsEnabledPref)
+      .WillOnce(Return(false));
 
-  EXPECT_THAT(loading_suggestion,
-              ElementsAre(HasType(
-                  SuggestionType::kPredictionImprovementsLoadingState)));
-  EXPECT_THAT(
-      error_suggestion,
-      ElementsAre(HasType(SuggestionType::kPredictionImprovementsError),
-                  HasType(SuggestionType::kSeparator),
-                  HasType(SuggestionType::kPredictionImprovementsFeedback)));
+  std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
+  autofill::AutofillField* prediction_improvement_field = form->field(0);
+
+  EXPECT_FALSE(
+      manager.IsFormAndFieldEligible(*form, *prediction_improvement_field));
 }
 
-TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
-       DoesNotExtractImprovedPredictionsIfOptimizationGuideCannotBeApplied) {
+TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
+       IsNotEligibleIfOptimizationGuideCannotBeApplied) {
   base::test::SingleThreadTaskEnvironment task_environment;
   feature_.InitAndEnableFeatureWithParameters(kAutofillPredictionImprovements,
                                               {{"skip_allowlist", "false"}});
@@ -909,35 +860,16 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
   ON_CALL(decider_, CanApplyOptimization(_, _, nullptr))
       .WillByDefault(
           Return(optimization_guide::OptimizationGuideDecision::kFalse));
-  base::MockCallback<autofill::AutofillPredictionImprovementsDelegate::
-                         UpdateSuggestionsCallback>
-      update_suggestions_callback;
-  std::vector<Suggestion> loading_suggestion;
-  std::vector<Suggestion> error_suggestions;
-  EXPECT_CALL(client_, GetAXTree).Times(0);
-  {
-    InSequence s;
-    EXPECT_CALL(update_suggestions_callback, Run)
-        .WillOnce(SaveArg<0>(&loading_suggestion));
-    EXPECT_CALL(update_suggestions_callback, Run)
-        .WillOnce(SaveArg<0>(&error_suggestions));
-  }
 
-  manager.OnClickedTriggerSuggestion(form_, form_.fields().front(),
-                                     update_suggestions_callback.Get());
+  std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
+  autofill::AutofillField* prediction_improvement_field = form->field(0);
 
-  EXPECT_THAT(loading_suggestion,
-              ElementsAre(HasType(
-                  SuggestionType::kPredictionImprovementsLoadingState)));
-  EXPECT_THAT(
-      error_suggestions,
-      ElementsAre(HasType(SuggestionType::kPredictionImprovementsError),
-                  HasType(SuggestionType::kSeparator),
-                  HasType(SuggestionType::kPredictionImprovementsFeedback)));
+  EXPECT_FALSE(
+      manager.IsFormAndFieldEligible(*form, *prediction_improvement_field));
 }
 
-TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
-       ExtractsImprovedPredictionsIfOptimizationGuideCanBeApplied) {
+TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
+       IsEligibleIfOptimizationGuideCanBeApplied) {
   base::test::SingleThreadTaskEnvironment task_environment;
   feature_.InitAndEnableFeatureWithParameters(kAutofillPredictionImprovements,
                                               {{"skip_allowlist", "false"}});
@@ -946,24 +878,15 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
   ON_CALL(decider_, CanApplyOptimization(_, _, nullptr))
       .WillByDefault(
           Return(optimization_guide::OptimizationGuideDecision::kTrue));
-  base::MockCallback<autofill::AutofillPredictionImprovementsDelegate::
-                         UpdateSuggestionsCallback>
-      update_suggestions_callback;
-  std::vector<Suggestion> loading_suggestion;
-  EXPECT_CALL(client_, GetAXTree);
-  EXPECT_CALL(update_suggestions_callback, Run)
-      .WillOnce(SaveArg<0>(&loading_suggestion));
+  std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
+  autofill::AutofillField* prediction_improvement_field = form->field(0);
 
-  manager.OnClickedTriggerSuggestion(form_, form_.fields().front(),
-                                     update_suggestions_callback.Get());
-
-  EXPECT_THAT(loading_suggestion,
-              ElementsAre(HasType(
-                  SuggestionType::kPredictionImprovementsLoadingState)));
+  EXPECT_TRUE(
+      manager.IsFormAndFieldEligible(*form, *prediction_improvement_field));
 }
 
-TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
-       IsFormEligible_EmptyForm) {
+TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
+       IsNotEligibleOnEmptyForm) {
   feature_.InitAndEnableFeatureWithParameters(kAutofillPredictionImprovements,
                                               {{"skip_allowlist", "true"}});
 
@@ -977,41 +900,35 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
   EXPECT_FALSE(manager.IsFormAndFieldEligible(form, field));
 }
 
-TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
-       IsFormEligible_EligibleForm) {
+TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
+       IsEligibleOnEligibleForm) {
   feature_.InitAndEnableFeatureWithParameters(kAutofillPredictionImprovements,
                                               {{"skip_allowlist", "true"}});
 
-  autofill::FormData form_data;
-  autofill::FormStructure form(form_data);
-
-  autofill::AutofillField& prediction_improvement_field =
-      test_api(form).PushField();
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  prediction_improvement_field.set_heuristic_type(
-      autofill::HeuristicSource::kPredictionImprovementRegexes,
-      autofill::IMPROVED_PREDICTION);
-#else
-  prediction_improvement_field.set_heuristic_type(
-      autofill::HeuristicSource::kLegacyRegexes, autofill::IMPROVED_PREDICTION);
-#endif
+  std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
+  autofill::AutofillField* prediction_improvement_field = form->field(0);
 
   AutofillPredictionImprovementsManager manager{&client_, &decider_,
                                                 &strike_database_};
 
   EXPECT_TRUE(
-      manager.IsFormAndFieldEligible(form, prediction_improvement_field));
+      manager.IsFormAndFieldEligible(*form, *prediction_improvement_field));
 }
 
-TEST_F(ShouldProvideAutofillPredictionImprovementsTest, NotEligibleUser) {
+TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
+       IsNotEligibleForNonEligibleUser) {
   feature_.InitAndEnableFeatureWithParameters(kAutofillPredictionImprovements,
                                               {{"skip_allowlist", "true"}});
+
+  std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
+  autofill::AutofillField* prediction_improvement_field = form->field(0);
 
   AutofillPredictionImprovementsManager manager{&client_, &decider_,
                                                 &strike_database_};
 
   ON_CALL(client_, IsUserEligible).WillByDefault(Return(false));
-  EXPECT_FALSE(manager.ShouldProvidePredictionImprovements(url_));
+  EXPECT_FALSE(
+      manager.IsFormAndFieldEligible(*form, *prediction_improvement_field));
 }
 }  // namespace
 }  // namespace autofill_prediction_improvements
