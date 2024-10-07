@@ -58,7 +58,6 @@ import org.chromium.chrome.browser.sync.settings.SyncPromoPreference;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
-import org.chromium.chrome.browser.toolbar.ToolbarPositionController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -380,7 +379,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
             removePreferenceIfPresent(PREF_TABS);
         }
 
-        if (ToolbarPositionController.isToolbarPositionCustomizationEnabled(getContext(), false)) {
+        if (ChromeFeatureList.sAndroidBottomToolbar.isEnabled()) {
             addPreferenceIfAbsent(PREF_ADDRESS_BAR);
         } else {
             removePreferenceIfPresent(PREF_ADDRESS_BAR);

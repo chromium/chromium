@@ -14,12 +14,10 @@ import android.content.res.Resources;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -33,7 +31,6 @@ import org.chromium.ui.base.DeviceFormFactor;
 @Config(manifest = Config.NONE)
 @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
 public final class ToolbarLongPressMenuHandlerUnitTest {
-    public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
     @Mock private Context mContext;
     @Mock private Resources mResources;
 
@@ -41,10 +38,11 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
         doReturn(1).when(mResources).getInteger(org.chromium.ui.R.integer.min_screen_width_bucket);
         doReturn(mResources).when(mContext).getResources();
 
-        mToolbarLongPressMenuHandler = new ToolbarLongPressMenuHandler(mContext, false);
+        mToolbarLongPressMenuHandler = new ToolbarLongPressMenuHandler(mContext);
     }
 
     @Test
@@ -53,7 +51,7 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
         doReturn(DeviceFormFactor.SCREEN_BUCKET_TABLET)
                 .when(mResources)
                 .getInteger(org.chromium.ui.R.integer.min_screen_width_bucket);
-        mToolbarLongPressMenuHandler = new ToolbarLongPressMenuHandler(mContext, false);
+        mToolbarLongPressMenuHandler = new ToolbarLongPressMenuHandler(mContext);
 
         assertNull(mToolbarLongPressMenuHandler.getOnLongClickListener());
     }
