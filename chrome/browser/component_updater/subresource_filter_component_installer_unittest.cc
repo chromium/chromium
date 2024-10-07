@@ -142,7 +142,7 @@ class SubresourceFilterComponentInstallerTest : public PlatformTest {
 
   TestRulesetService* service() { return test_ruleset_service_; }
 
-  void WriteStringToFile(const std::string data, const base::FilePath& path) {
+  void WriteStringToFile(const std::string& data, const base::FilePath& path) {
     ASSERT_TRUE(base::WriteFile(path, data));
   }
 
