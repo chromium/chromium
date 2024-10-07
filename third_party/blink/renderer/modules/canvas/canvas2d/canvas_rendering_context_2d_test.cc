@@ -294,7 +294,12 @@ class CanvasRenderingContext2DTest : public ::testing::Test,
   }
 
   void TearDown() override;
-  void UnrefCanvas();
+
+  void TearDownHost() {
+    // To tear down the host it is both necessary and sufficient to tear down
+    // the document, as the document effectively owns the host.
+    web_view_helper_ = nullptr;
+  }
 
   Document& GetDocument() const {
     return *web_view_helper_->GetWebView()
@@ -2314,6 +2319,58 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
     EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
     EXPECT_FALSE(handler.IsHibernating());
     EXPECT_TRUE(CanvasElement().IsResourceValid());
+  }
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated, TeardownEndsHibernation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
+
+  CreateContext(kNonOpaque);
+  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
+
+  auto* bridge = CanvasElement().GetCanvas2DLayerBridge();
+  auto& handler = bridge->GetHibernationHandler();
+
+  // Install a minimal delay for testing to ensure that the test remains fast
+  // to execute.
+  handler.SetBeforeCompressionDelayForTesting(base::Microseconds(10));
+
+  EXPECT_FALSE(handler.IsHibernating());
+
+  // Verify that going to the background triggers hibernation asynchronously.
+  {
+    base::HistogramTester histogram_tester;
+    GetDocument().GetPage()->SetVisibilityState(
+        mojom::blink::PageVisibilityState::kHidden,
+        /*is_initial_state=*/false);
+
+    histogram_tester.ExpectUniqueSample(
+        "Blink.Canvas.HibernationEvents",
+        Canvas2DLayerBridge::HibernationEvent::kHibernationScheduled, 1);
+    EXPECT_FALSE(handler.IsHibernating());
+  }
+
+  // Run the task that initiates hibernation, which has been posted as an idle
+  // task.
+  ThreadScheduler::Current()
+      ->ToMainThreadScheduler()
+      ->StartIdlePeriodForTesting();
+  blink::test::RunPendingTasks();
+
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
+  EXPECT_TRUE(handler.IsHibernating());
+  EXPECT_TRUE(CanvasElement().IsResourceValid());
+
+  // Verify that tearing down the host ends hibernation synchronously.
+  {
+    base::HistogramTester histogram_tester;
+    TearDownHost();
+    histogram_tester.ExpectUniqueSample(
+        "Blink.Canvas.HibernationEvents",
+        Canvas2DLayerBridge::HibernationEvent::kHibernationEndedWithTeardown,
+        1);
   }
 }
 

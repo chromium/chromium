@@ -259,48 +259,6 @@ class MockLogger : public Canvas2DLayerBridge::Logger {
   ~MockLogger() override = default;
 };
 
-TEST_F(Canvas2DLayerBridgeTest, TeardownWhileHibernating) {
-  if (!features::IsCanvas2DHibernationEnabled()) {
-    GTEST_SKIP();
-  }
-
-  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(gfx::Size(300, 300), RasterModeHint::kPreferGPU, kNonOpaque);
-  DrawSomething(bridge.get());
-
-  // Register an alternate Logger for tracking hibernation events
-  std::unique_ptr<MockLogger> mock_logger = std::make_unique<MockLogger>();
-  MockLogger* mock_logger_ptr = mock_logger.get();
-  bridge->SetLoggerForTesting(std::move(mock_logger));
-
-  // Test entering hibernation
-  EXPECT_CALL(
-      *mock_logger_ptr,
-      ReportHibernationEvent(Canvas2DLayerBridge::kHibernationScheduled));
-  EXPECT_CALL(*mock_logger_ptr, DidStartHibernating()).Times(1);
-  Host()->SetPageVisible(false);
-
-  // TODO(crbug.com/1476964): Remove this when done refactoring.
-  bridge->PageVisibilityChanged();
-
-  ThreadScheduler::Current()
-      ->ToMainThreadScheduler()
-      ->StartIdlePeriodForTesting();
-  platform->RunUntilIdle();
-  testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
-  EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kCPU);
-  EXPECT_TRUE(bridge->GetHibernationHandler().IsHibernating());
-  EXPECT_TRUE(Host()->IsResourceValid());
-
-  // Tear down the bridge while hibernating
-  EXPECT_CALL(*mock_logger_ptr,
-              ReportHibernationEvent(
-                  Canvas2DLayerBridge::kHibernationEndedWithTeardown));
-  bridge.reset();
-  testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
-}
-
 TEST_F(Canvas2DLayerBridgeTest, TeardownWhileHibernationIsPending) {
   if (!features::IsCanvas2DHibernationEnabled()) {
     GTEST_SKIP();
