@@ -174,8 +174,8 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
             ResourceRequestBody postData,
             int disposition,
             boolean isRendererInitiated) {
-        // This is only called in chrome layers.
-        assert false;
+        // Not supported.  There are very few cases where this is called other than in //chrome
+        // and we don't expect them to matter for WebView.
     }
 
     @Override
