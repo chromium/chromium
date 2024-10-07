@@ -270,19 +270,23 @@ class CORE_EXPORT LocalFrameUkmAggregator
   class CORE_EXPORT ScopedForcedLayoutTimer {
    public:
     ScopedForcedLayoutTimer(LocalFrameUkmAggregator& aggregator,
-                            DocumentUpdateReason update_reason);
+                            DocumentUpdateReason update_reason,
+                            bool should_report_uma_this_frame,
+                            bool is_pre_fcp);
     ~ScopedForcedLayoutTimer();
 
     ScopedForcedLayoutTimer(const ScopedForcedLayoutTimer&) = delete;
     ScopedForcedLayoutTimer& operator=(const ScopedForcedLayoutTimer&) = delete;
 
-    ScopedForcedLayoutTimer(ScopedForcedLayoutTimer&&);
-    ScopedForcedLayoutTimer& operator=(ScopedForcedLayoutTimer&&);
+    ScopedForcedLayoutTimer(ScopedForcedLayoutTimer&& other);
+    ScopedForcedLayoutTimer& operator=(ScopedForcedLayoutTimer&& other);
 
    private:
     scoped_refptr<LocalFrameUkmAggregator> aggregator_;
     DocumentUpdateReason update_reason_;
     base::TimeTicks start_time_;
+    bool should_report_uma_this_frame_;
+    bool is_pre_fcp_;
   };
 
   LocalFrameUkmAggregator();
@@ -298,6 +302,10 @@ class CORE_EXPORT LocalFrameUkmAggregator
   // Create a scoped timer with the index of the metric. Note the index must
   // correspond to the matching index in metric_names.
   ScopedUkmHierarchicalTimer GetScopedTimer(size_t metric_index);
+
+  // Create a ScopedForcedLayoutTimer
+  ScopedForcedLayoutTimer GetScopedForcedLayoutTimer(
+      DocumentUpdateReason update_reason);
 
   // Record a main frame time metric, that also computes the ratios for the
   // sub-metrics and generates UMA samples. UKM is only reported when
@@ -397,8 +405,9 @@ class CORE_EXPORT LocalFrameUkmAggregator
   // additional metrics are reported in order to diagnose the cause of
   // ForcedLayout regressions.
   void EndForcedLayout(DocumentUpdateReason reason,
-                       base::TimeTicks start,
-                       base::TimeTicks end);
+                       base::TimeDelta duration,
+                       bool should_report_uma_this_frame,
+                       bool is_pre_fcp);
 
   // Reports the current sample to the UKM system. Called on the first main
   // frame update after First Contentful Paint and at destruction. Also resets
