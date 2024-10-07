@@ -3440,6 +3440,7 @@ if (enable_websockets && use_fuzzing_engine) {
     ]
     dict = "//net/data/fuzzer_dictionaries/net_http_server_fuzzer.dict"
     seed_corpus = "//net/data/fuzzer_data/http_server_requests/"
+    libfuzzer_options = [ "max_len=32768" ]
   }
 }
 
