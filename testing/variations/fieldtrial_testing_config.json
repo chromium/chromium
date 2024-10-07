@@ -5187,47 +5187,6 @@
             ]
         }
     ],
-    "ChromeWallpaperSearchEntrypoints": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "BothEntrypointsAndAnimation",
-                    "enable_features": [
-                        "CustomizeChromeWallpaperSearchButton",
-                        "NtpWallpaperSearchButton",
-                        "NtpWallpaperSearchButtonAnimation"
-                    ]
-                },
-                {
-                    "name": "BothEntrypointsNoAnimation",
-                    "enable_features": [
-                        "CustomizeChromeWallpaperSearchButton",
-                        "NtpWallpaperSearchButton"
-                    ],
-                    "disable_features": [
-                        "NtpWallpaperSearchButtonAnimation"
-                    ]
-                },
-                {
-                    "name": "PanoramaButtonOnlyNoAnimation",
-                    "enable_features": [
-                        "CustomizeChromeWallpaperSearchButton"
-                    ],
-                    "disable_features": [
-                        "NtpWallpaperSearchButton",
-                        "NtpWallpaperSearchButtonAnimation"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeWallpaperSearchGlobal": [
         {
             "platforms": [
@@ -5271,6 +5230,47 @@
                     },
                     "enable_features": [
                         "HappinessTrackingSurveysForWallpaperSearch"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeWallpaperSearchLaunch": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "DefaultOnLaunched",
+                    "params": {
+                        "NtpWallpaperSearchButtonHideConditionParam": "1"
+                    },
+                    "enable_features": [
+                        "CustomizeChromeWallpaperSearchButton",
+                        "NtpWallpaperSearchButton",
+                        "NtpWallpaperSearchButtonHideCondition"
+                    ],
+                    "disable_features": [
+                        "NtpWallpaperSearchButtonAnimation"
+                    ]
+                },
+                {
+                    "name": "DefaultOn",
+                    "params": {
+                        "NtpWallpaperSearchButtonHideConditionParam": "0"
+                    },
+                    "enable_features": [
+                        "CustomizeChromeWallpaperSearchButton",
+                        "NtpWallpaperSearchButton",
+                        "NtpWallpaperSearchButtonHideCondition"
+                    ],
+                    "disable_features": [
+                        "NtpWallpaperSearchButtonAnimation"
                     ]
                 }
             ]

@@ -1115,6 +1115,12 @@ suite('NewTabPageAppTest', () => {
                     imageSource} disables animation`,
                 async () => {
                   // Arrange.
+                  loadTimeData.overrideValues({
+                    // A non-zero "wallpaperSearchButtonHideCondition" hides the
+                    // button if we set the background image. To ensure that the
+                    // button shows in this test we set it to 0.
+                    wallpaperSearchButtonHideCondition: /*NONE*/ 0,
+                  });
                   const theme = createTheme();
                   theme.backgroundImage =
                       createBackgroundImage('https://foo.com');
