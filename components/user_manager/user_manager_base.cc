@@ -613,6 +613,27 @@ void UserManagerBase::RemoveUserFromListForRecreation(
                          /*trigger_cryptohome_removal=*/false);
 }
 
+bool UserManagerBase::RemoveStaleEphemeralUsers() {
+  CHECK(!IsUserLoggedIn());
+  bool changed = false;
+  const auto owner_id = GetOwnerAccountId();
+
+  // Take snapshot because DeleteUser called in the loop will update it.
+  std::vector<User*> users(users_.begin(), users_.end());
+  for (user_manager::User* user : users) {
+    const AccountId account_id = user->GetAccountId();
+    if (user->HasGaiaAccount() && account_id != owner_id &&
+        IsEphemeralAccountId(account_id)) {
+      RemoveUserFromListImpl(
+          account_id,
+          /*reason=*/UserRemovalReason::DEVICE_EPHEMERAL_USERS_ENABLED,
+          /*trigger_cryptohome_removal=*/false);
+      changed = true;
+    }
+  }
+  return changed;
+}
+
 void UserManagerBase::CleanStaleUserInformationFor(
     const AccountId& account_id) {
   KnownUser known_user(local_state_);

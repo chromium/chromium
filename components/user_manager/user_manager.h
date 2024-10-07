@@ -298,6 +298,11 @@ class USER_MANAGER_EXPORT UserManager {
   // better solution.
   virtual void RemoveUserFromListForRecreation(const AccountId& account_id) = 0;
 
+  // Removes stale ephemeral users from the list, except owner one if there is.
+  // Returns true if any user is removed.
+  // This can be called only when no user is logged in.
+  virtual bool RemoveStaleEphemeralUsers() = 0;
+
   // Removes the user from the device in case when user's cryptohome is lost
   // for some reason to ensure that user is correctly re-created.
   // Does not trigger user removal notification.

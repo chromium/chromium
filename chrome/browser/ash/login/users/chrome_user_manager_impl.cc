@@ -297,13 +297,7 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
   }
 
   SetEphemeralModeConfig(CreateEphemeralModeConfig(cros_settings()));
-
-  std::string owner_email;
-  cros_settings()->GetString(kDeviceOwner, &owner_email);
-  user_manager::KnownUser known_user(GetLocalState());
-  const AccountId owner_account_id = known_user.GetAccountId(
-      owner_email, std::string() /* id */, AccountType::UNKNOWN);
-  SetOwnerId(owner_account_id);
+  UpdateOwnerId();
 
   auto device_local_accounts = policy::GetDeviceLocalAccounts(cros_settings());
   std::vector<DeviceLocalAccountInfo> device_local_account_info_list;
@@ -321,20 +315,7 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
 
   // Remove ephemeral regular users (except the owner) when on the login screen.
   if (!IsUserLoggedIn()) {
-    // Take snapshot because DeleteUser called in the loop will update it.
-    std::vector<raw_ptr<user_manager::User, VectorExperimental>> users = users_;
-    for (user_manager::User* user : users) {
-      const AccountId account_id = user->GetAccountId();
-      if (user->HasGaiaAccount() && account_id != GetOwnerAccountId() &&
-          IsEphemeralAccountId(account_id)) {
-        RemoveUserFromListImpl(
-            account_id,
-            /*reason=*/
-            user_manager::UserRemovalReason::DEVICE_EPHEMERAL_USERS_ENABLED,
-            /*trigger_cryptohome_removal=*/false);
-        changed = true;
-      }
-    }
+    changed |= RemoveStaleEphemeralUsers();
   }
 
   if (changed) {

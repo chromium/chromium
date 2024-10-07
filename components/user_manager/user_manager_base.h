@@ -180,6 +180,7 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
                   UserRemovalReason reason) override;
   void RemoveUserFromList(const AccountId& account_id) override;
   void RemoveUserFromListForRecreation(const AccountId& account_id) override;
+  bool RemoveStaleEphemeralUsers() override;
   void CleanStaleUserInformationFor(const AccountId& account_id) override;
   bool IsKnownUser(const AccountId& account_id) const override;
   const User* FindUser(const AccountId& account_id) const override;
