@@ -26,16 +26,12 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
 
 #include <math.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <optional>
 #include <queue>
@@ -1692,7 +1688,7 @@ bool AXNodeObject::IsDataTable() const {
   unsigned cells_with_left_border = 0;
   unsigned cells_with_right_border = 0;
 
-  Color alternating_row_colors[5];
+  std::array<Color, 5> alternating_row_colors;
   int alternating_row_color_count = 0;
   for (int row = 0; row < num_rows; ++row) {
     HTMLTableRowElement* row_element = rows->Item(row);
