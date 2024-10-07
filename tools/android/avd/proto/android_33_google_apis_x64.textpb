@@ -25,3 +25,7 @@ avd_package {
   dest_path: "android_33_google_apis_x64"
 }
 avd_name: "android_33_google_apis_x64"
+
+avd_launch_settings {
+  gpu_mode: "swangle_indirect"
+}
