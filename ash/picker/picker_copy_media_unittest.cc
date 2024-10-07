@@ -10,6 +10,7 @@
 #include "ash/test/ash_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace ash {
 namespace {
@@ -21,6 +22,43 @@ TEST_F(PickerCopyMediaTest, CopiesText) {
 
   EXPECT_EQ(ReadTextFromClipboard(ui::Clipboard::GetForCurrentThread()),
             u"hello");
+}
+
+TEST_F(PickerCopyMediaTest, CopiesImageWithKnownDimensionsAsHtml) {
+  CopyMediaToClipboard(
+      PickerImageMedia(GURL("https://foo.com"), gfx::Size(30, 20)));
+
+  EXPECT_EQ(
+      ReadHtmlFromClipboard(ui::Clipboard::GetForCurrentThread()),
+      uR"html(<img src="https://foo.com/" referrerpolicy="no-referrer" width="30" height="20"/>)html");
+}
+
+TEST_F(PickerCopyMediaTest, CopiesImageWithUnknownDimensionsAsHtml) {
+  CopyMediaToClipboard(PickerImageMedia(GURL("https://foo.com")));
+
+  EXPECT_EQ(
+      ReadHtmlFromClipboard(ui::Clipboard::GetForCurrentThread()),
+      uR"html(<img src="https://foo.com/" referrerpolicy="no-referrer"/>)html");
+}
+
+TEST_F(PickerCopyMediaTest, CopiesImagesWithBothAltTextAndDimensionsAsHtml) {
+  CopyMediaToClipboard(PickerImageMedia(GURL("https://foo.com"),
+                                        gfx::Size(30, 20),
+                                        /*content_description=*/u"img"));
+
+  EXPECT_EQ(
+      ReadHtmlFromClipboard(ui::Clipboard::GetForCurrentThread()),
+      uR"html(<img src="https://foo.com/" referrerpolicy="no-referrer" alt="img" width="30" height="20"/>)html");
+}
+
+TEST_F(PickerCopyMediaTest, EscapesAltTextForImages) {
+  CopyMediaToClipboard(PickerImageMedia(GURL("https://foo.com"),
+                                        /*dimensions=*/std::nullopt,
+                                        /*content_description=*/u"\"img\""));
+
+  EXPECT_EQ(
+      ReadHtmlFromClipboard(ui::Clipboard::GetForCurrentThread()),
+      uR"html(<img src="https://foo.com/" referrerpolicy="no-referrer" alt="&quot;img&quot;"/>)html");
 }
 
 TEST_F(PickerCopyMediaTest, CopiesLinks) {
@@ -67,6 +105,8 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     PickerCopyMediaToastTest,
     ::testing::Values(PickerTextMedia(u"hello"),
+                      PickerImageMedia(GURL("https://foo.com"),
+                                       gfx::Size(30, 20)),
                       PickerLinkMedia(GURL("https://foo.com"), "Foo"),
                       PickerLocalFileMedia(base::FilePath("/foo.txt"))));
 

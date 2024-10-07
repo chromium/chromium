@@ -11,6 +11,7 @@
 
 #include "ash/ash_export.h"
 #include "base/files/file_path.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -20,6 +21,20 @@ struct ASH_EXPORT PickerTextMedia {
 
   explicit PickerTextMedia(std::u16string text);
   explicit PickerTextMedia(std::string_view text);
+};
+
+// TODO: b/349891147 - Remove GIFs.
+struct ASH_EXPORT PickerImageMedia {
+  GURL url;
+  // `dimensions` is std::nullopt if it's unknown.
+  std::optional<gfx::Size> dimensions;
+  std::u16string content_description;
+
+  explicit PickerImageMedia(base::span<const uint8_t> png);
+
+  explicit PickerImageMedia(GURL url,
+                            std::optional<gfx::Size> dimensions = std::nullopt,
+                            std::u16string content_description = u"");
 };
 
 struct ASH_EXPORT PickerLinkMedia {
@@ -36,8 +51,10 @@ struct ASH_EXPORT PickerLocalFileMedia {
 };
 
 // Rich media that can be inserted or copied, such as text and images.
-using PickerRichMedia =
-    std::variant<PickerTextMedia, PickerLinkMedia, PickerLocalFileMedia>;
+using PickerRichMedia = std::variant<PickerTextMedia,
+                                     PickerImageMedia,
+                                     PickerLinkMedia,
+                                     PickerLocalFileMedia>;
 
 }  // namespace ash
 
