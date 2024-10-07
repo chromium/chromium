@@ -441,7 +441,9 @@ void ActiveSessionAuthControllerImpl::StartClose() {
   CHECK(user_context_);
   CHECK(auth_request_);
   CHECK(auth_performer_);
-  uma_recorder_.RecordClose();
+  if (state_ != ActiveSessionAuthState::kWaitForInit) {
+    uma_recorder_.RecordClose();
+  }
   contents_view_observer_.Reset();
   CHECK(contents_view_);
   contents_view_->RemoveObserver(this);
