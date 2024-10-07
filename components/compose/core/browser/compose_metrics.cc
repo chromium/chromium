@@ -174,7 +174,7 @@ void PageUkmTracker::MaybeLogUkm() {
       .Record(ukm::UkmRecorder::Get());
 }
 
-ComposeSessionEvents::ComposeSessionEvents() {}
+ComposeSessionEvents::ComposeSessionEvents() = default;
 
 void LogComposeContextMenuCtr(ComposeContextMenuCtrEvent event) {
   base::UmaHistogramEnumeration(kComposeContextMenuCtr, event);
