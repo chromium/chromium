@@ -505,6 +505,15 @@ void AutofillExternalDelegate::OnSuggestionsShown(
     }
   }
 
+  if (shown_suggestion_types.contains(
+          SuggestionType::kPredictionImprovementsLoadingState)) {
+    if (auto* prediction_improvements_delegate =
+            manager_->client().GetAutofillPredictionImprovementsDelegate()) {
+      prediction_improvements_delegate->OnLoadingSuggestionShown(
+          query_form_, query_field_, CreateUpdateSuggestionsCallback());
+    }
+  }
+
   // If the popup was manually triggered on an unclassified field, the chances
   // are high that it has no regular suggestions, as it is the main usecase for
   // the manual fallback functionality. It is considered an acceptable

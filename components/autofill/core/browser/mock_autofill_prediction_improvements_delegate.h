@@ -57,6 +57,12 @@ class MockAutofillPredictionImprovementsDelegate
               (const autofill::FormStructure& form, const AutofillField& field),
               (const override));
   MOCK_METHOD(void, GoToSettings, (), (const override));
+  MOCK_METHOD(void,
+              OnLoadingSuggestionShown,
+              (const FormData& form,
+               const FormFieldData& trigger_field,
+               UpdateSuggestionsCallback update_suggestions_callback),
+              (override));
 };
 
 }  // namespace autofill

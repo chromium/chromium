@@ -2042,6 +2042,27 @@ TEST_F(AutofillExternalDelegateUnitTest,
   external_delegate().DidAcceptSuggestion(fill_suggestion, {});
 }
 
+// Tests that the `AutofillPredictionImprovementsDelegate` is notified when the
+// `kPredictionImprovementsLoadingState` suggestion is shown.
+TEST_F(AutofillExternalDelegateUnitTest,
+       OnPredictionImprovementsLoadingStateShownNotifiesDelegate) {
+  FormData form = CreateTestAddressFormData();
+  ASSERT_GT(form.fields().size(), 0UL);
+  const std::u16string value_to_fill = u"John";
+  FormFieldData* field_to_fill = form.FindFieldByNameForTest(u"firstname");
+  ASSERT_TRUE(field_to_fill);
+
+  manager().OnFormsSeen({form}, {});
+  external_delegate().OnQuery(
+      form, *field_to_fill,
+      /*caret_bounds=*/gfx::Rect(),
+      AutofillSuggestionTriggerSource::kPredictionImprovements);
+  EXPECT_CALL(*client().GetAutofillPredictionImprovementsDelegate(),
+              OnLoadingSuggestionShown);
+  external_delegate().OnSuggestionsShown(std::vector<Suggestion>{
+      Suggestion(SuggestionType::kPredictionImprovementsLoadingState)});
+}
+
 // Test parameter data for asserting that the expected set of field types
 // is stored in the delegate.
 struct GetLastFieldTypesToFillForSectionTestParams {

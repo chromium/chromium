@@ -99,6 +99,13 @@ class AutofillPredictionImprovementsDelegate {
   // Opens the subpage of chrome settings that deals with managing information
   // stored by the prediction improvements system.
   virtual void GoToSettings() const = 0;
+
+  // Event handler called when the loading suggestion is shown. Used for the
+  // automatic triggering path.
+  virtual void OnLoadingSuggestionShown(
+      const FormData& form,
+      const FormFieldData& trigger_field,
+      UpdateSuggestionsCallback update_suggestions_callback) = 0;
 };
 
 }  // namespace autofill
