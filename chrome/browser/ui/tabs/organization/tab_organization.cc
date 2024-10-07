@@ -38,10 +38,10 @@ TabOrganization::TabOrganization(
   kNextOrganizationID++;
 
   // TabDatas must not be duplicates, immediately destroy TabDatas that are.
-  std::vector<content::WebContents*> existing_contents;
+  std::vector<const tabs::TabModel*> existing_tabs;
   for (auto& tab_data : tab_datas) {
-    if (!base::Contains(existing_contents, tab_data->web_contents())) {
-      existing_contents.emplace_back(tab_data->web_contents());
+    if (!base::Contains(existing_tabs, tab_data->tab())) {
+      existing_tabs.emplace_back(tab_data->tab());
       tab_data->AddObserver(this);
       tab_datas_.emplace_back(std::move(tab_data));
     }
@@ -104,7 +104,7 @@ bool TabOrganization::IsValidForOrganizing() const {
 void TabOrganization::AddTabData(std::unique_ptr<TabData> new_tab_data) {
   // Guarantee uniqueness. early return and drop the new tab data if not unique.
   for (std::unique_ptr<TabData>& existing_tab_data : tab_datas_) {
-    if (existing_tab_data->web_contents() == new_tab_data->web_contents()) {
+    if (existing_tab_data->tab() == new_tab_data->tab()) {
       return;
     }
   }
@@ -150,14 +150,14 @@ void TabOrganization::Accept() {
   TabStripModel* tab_strip_model = tab_datas_[0]->original_tab_strip_model();
   CHECK(tab_strip_model);
   std::vector<int> valid_indices;
-  std::unordered_set<raw_ptr<const content::WebContents>> tab_data_web_contents;
+  std::unordered_set<raw_ptr<const tabs::TabModel>> tab_data_tabs;
   for (const std::unique_ptr<TabData>& tab_data : tab_datas_) {
     // Individual tabs may become invalid. in those cases, where the tab is
     // invalid but the organization is not, do not include the tab in the
     // organization, but still create the organization.
-    const content::WebContents* web_contents = tab_data->web_contents();
-    tab_data_web_contents.insert(web_contents);
-    const int index = tab_strip_model->GetIndexOfWebContents(web_contents);
+    const tabs::TabModel* tab = tab_data->tab();
+    tab_data_tabs.insert(tab);
+    const int index = tab_strip_model->GetIndexOfTab(tab);
     if (tab_data->IsValidForOrganizing() &&
         !base::Contains(valid_indices, index)) {
       valid_indices.emplace_back(index);
@@ -189,9 +189,8 @@ void TabOrganization::Accept() {
     std::vector<int> indices_to_remove;
     for (size_t grouped_tab_index = tab_indices.start();
          grouped_tab_index < tab_indices.end(); grouped_tab_index++) {
-      content::WebContents* web_contents =
-          tab_strip_model->GetWebContentsAt(grouped_tab_index);
-      if (!tab_data_web_contents.contains(web_contents)) {
+      tabs::TabModel* tab = tab_strip_model->GetTabAtIndex(grouped_tab_index);
+      if (!tab_data_tabs.contains(tab)) {
         indices_to_remove.emplace_back(grouped_tab_index);
       }
     }

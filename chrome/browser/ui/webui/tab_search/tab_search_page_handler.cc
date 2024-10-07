@@ -324,9 +324,9 @@ void TabSearchPageHandler::AcceptTabOrganization(
 
   std::vector<TabData::TabID> tab_ids_to_remove;
   for (const auto& tab_data : organization->tab_datas()) {
-    if (!tab_data->web_contents() ||
+    if (!tab_data->tab()->contents() ||
         !base::Contains(tabs_tab_ids, extensions::ExtensionTabUtil::GetTabId(
-                                          tab_data->web_contents()))) {
+                                          tab_data->tab()->contents()))) {
       tab_ids_to_remove.emplace_back(tab_data->tab_id());
     }
   }
@@ -565,7 +565,7 @@ void TabSearchPageHandler::RemoveTabFromOrganization(
   }
 
   for (const auto& tab_data : organization->tab_datas()) {
-    if (extensions::ExtensionTabUtil::GetTabId(tab_data->web_contents()) ==
+    if (extensions::ExtensionTabUtil::GetTabId(tab_data->tab()->contents()) ==
         tab->tab_id) {
       organization->RemoveTabData(tab_data->tab_id());
       break;
@@ -613,13 +613,12 @@ void TabSearchPageHandler::RestartSession() {
   restarting_ = true;
   TabOrganizationSession* current_session =
       organization_service_->GetSessionForBrowser(browser);
-  const auto* base_session_webcontents =
-      current_session ? current_session->base_session_webcontents() : nullptr;
+  const tabs::TabModel* base_session_tab =
+      current_session ? current_session->base_session_tab() : nullptr;
   // Don't notify observers to avoid a repaint
   TabOrganizationSession* session =
       organization_service_->ResetSessionForBrowser(
-          browser, TabOrganizationEntryPoint::kTabSearch,
-          base_session_webcontents);
+          browser, TabOrganizationEntryPoint::kTabSearch, base_session_tab);
   if (!base::Contains(listened_sessions_, session)) {
     session->AddObserver(this);
     listened_sessions_.emplace_back(session);
@@ -1287,9 +1286,9 @@ bool TabSearchPageHandler::IsWebContentsVisible() {
 tab_search::mojom::TabPtr TabSearchPageHandler::GetMojoForTabData(
     TabData* tab_data) const {
   return TabSearchPageHandler::GetTab(
-      tab_data->original_tab_strip_model(), tab_data->web_contents(),
+      tab_data->original_tab_strip_model(), tab_data->tab()->contents(),
       tab_data->original_tab_strip_model()->GetIndexOfWebContents(
-          tab_data->web_contents()));
+          tab_data->tab()->contents()));
 }
 
 tab_search::mojom::TabOrganizationPtr
@@ -1323,10 +1322,10 @@ TabSearchPageHandler::GetMojoForTabOrganizationSession(
 
   mojo_session->session_id = session->session_id();
   mojo_session->error = tab_search::mojom::TabOrganizationError::kNone;
-  mojo_session->active_tab_id = session->base_session_webcontents()
-                                    ? extensions::ExtensionTabUtil::GetTabId(
-                                          session->base_session_webcontents())
-                                    : -1;
+  mojo_session->active_tab_id =
+      session->base_session_tab() ? extensions::ExtensionTabUtil::GetTabId(
+                                        session->base_session_tab()->contents())
+                                  : -1;
   std::vector<tab_search::mojom::TabOrganizationPtr> organizations;
 
   TabOrganizationRequest::State state = session->request()->state();

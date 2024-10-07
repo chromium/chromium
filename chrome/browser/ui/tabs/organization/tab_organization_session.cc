@@ -28,11 +28,11 @@ TabOrganizationSession::TabOrganizationSession()
 TabOrganizationSession::TabOrganizationSession(
     std::unique_ptr<TabOrganizationRequest> request,
     TabOrganizationEntryPoint entrypoint,
-    const content::WebContents* base_session_webcontents)
+    const tabs::TabModel* base_session_tab)
     : request_(std::move(request)),
       session_id_(kNextSessionID),
       entrypoint_(entrypoint),
-      base_session_webcontents_(base_session_webcontents) {
+      base_session_tab_(base_session_tab) {
   kNextSessionID++;
 }
 
@@ -123,7 +123,7 @@ std::unique_ptr<TabOrganizationSession>
 TabOrganizationSession::CreateSessionForBrowser(
     const Browser* browser,
     const TabOrganizationEntryPoint entrypoint,
-    const content::WebContents* base_session_webcontents) {
+    const tabs::TabModel* base_session_tab) {
   std::unique_ptr<TabOrganizationRequest> request =
       TabOrganizationRequestFactory::GetForProfile(browser->profile())
           ->CreateRequest(browser->profile());
@@ -131,15 +131,13 @@ TabOrganizationSession::CreateSessionForBrowser(
   // iterate through the tabstripmodel building the tab data.
   TabStripModel* tab_strip_model = browser->tab_strip_model();
   for (int index = 0; index < tab_strip_model->count(); index++) {
-    content::WebContents* web_contents =
-        tab_strip_model->GetWebContentsAt(index);
-    std::unique_ptr<TabData> tab_data =
-        std::make_unique<TabData>(tab_strip_model, web_contents);
+    tabs::TabModel* tab = tab_strip_model->GetTabAtIndex(index);
+    std::unique_ptr<TabData> tab_data = std::make_unique<TabData>(tab);
     if (!tab_data->IsValidForOrganizing()) {
       continue;
     }
 
-    if (base_session_webcontents && web_contents == base_session_webcontents) {
+    if (base_session_tab && tab == base_session_tab) {
       request->SetBaseTabID(tab_data->tab_id());
     }
 
@@ -154,14 +152,14 @@ TabOrganizationSession::CreateSessionForBrowser(
     const gfx::Range tab_indices = group->ListTabs();
     for (size_t index = tab_indices.start(); index < tab_indices.end();
          index++) {
-      tabs.push_back(std::make_unique<TabData>(
-          tab_strip_model, tab_strip_model->GetWebContentsAt(index)));
+      tabs.push_back(
+          std::make_unique<TabData>(tab_strip_model->GetTabAtIndex(index)));
     }
     request->AddGroupData(group_id, title, std::move(tabs));
   }
 
-  return std::make_unique<TabOrganizationSession>(
-      std::move(request), entrypoint, base_session_webcontents);
+  return std::make_unique<TabOrganizationSession>(std::move(request),
+                                                  entrypoint, base_session_tab);
 }
 
 const TabOrganization* TabOrganizationSession::GetNextTabOrganization() const {
@@ -287,8 +285,8 @@ void TabOrganizationSession::PopulateOrganizations(
       const gfx::Range tab_indices = group->ListTabs();
       for (size_t index = tab_indices.start(); index < tab_indices.end();
            index++) {
-        tab_datas_for_org.emplace_back(std::make_unique<TabData>(
-            tab_strip_model, tab_strip_model->GetWebContentsAt(index)));
+        tab_datas_for_org.emplace_back(
+            std::make_unique<TabData>(tab_strip_model->GetTabAtIndex(index)));
       }
     }
     const int first_new_tab_index = tab_datas_for_org.size();
@@ -316,8 +314,7 @@ void TabOrganizationSession::PopulateOrganizations(
 
       // Reconstruct the tab data in for the organization.
       std::unique_ptr<TabData> tab_data_for_org =
-          std::make_unique<TabData>((*matching_tab)->original_tab_strip_model(),
-                                    (*matching_tab)->web_contents());
+          std::make_unique<TabData>((*matching_tab)->tab());
       tab_datas_for_org.emplace_back(std::move(tab_data_for_org));
     }
 

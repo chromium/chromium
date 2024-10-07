@@ -4,30 +4,32 @@
 
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
 
+#include "base/functional/bind.h"
 #include "chrome/browser/ui/tabs/organization/tab_sensitivity_cache.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
-namespace {
-// TODO(crbug.com/40070608) replace with opaque tab handle
-int kNextTabID = 1;
-}  // namespace
+TabData::TabData(tabs::TabModel* tab)
+    : WebContentsObserver(tab->contents()),
+      tab_(tab->GetHandle()),
+      original_url_(tab->contents()->GetLastCommittedURL()) {
+  CHECK(tab->owning_model());
+  CHECK(tab);
+  CHECK(tab->contents());
 
-TabData::TabData(TabStripModel* model, content::WebContents* web_contents)
-    : WebContentsObserver(web_contents),
-      tab_id_(kNextTabID),
-      web_contents_(web_contents),
-      original_url_(web_contents->GetLastCommittedURL()) {
-  CHECK(model);
-  CHECK(web_contents);
+  original_tab_strip_model_ = tab->owning_model();
+  original_tab_strip_model_->AddObserver(this);
 
-  kNextTabID++;
-
-  original_tab_strip_model_ = model;
-  model->AddObserver(this);
-  Observe(web_contents);
+  tab_subscriptions_.push_back(tab->RegisterWillDetach(
+      base::BindRepeating(&TabData::OnTabWillDetach, base::Unretained(this))));
+  tab_subscriptions_.push_back(
+      tab->RegisterWillDiscardContents(base::BindRepeating(
+          &TabData::OnTabWillDiscardContents, base::Unretained(this))));
+  Observe(tab->contents());
 }
 
 TabData::~TabData() {
@@ -36,7 +38,7 @@ TabData::~TabData() {
   }
 
   for (auto& observer : observers_) {
-    observer.OnTabDataDestroyed(tab_id_);
+    observer.OnTabDataDestroyed(tab_id());
   }
 }
 
@@ -50,13 +52,13 @@ void TabData::RemoveObserver(TabData::Observer* observer) {
 
 bool TabData::IsValidForOrganizing(
     std::optional<tab_groups::TabGroupId> allowed_group_id) const {
-  // if the model or the web_contents have been destroyed, then it's not valid.
-  if (!original_tab_strip_model_ || !web_contents_) {
+  // if the model or the tab have been destroyed, then it's not valid.
+  if (!original_tab_strip_model_ || !tab_.Get() || !tab_.Get()->contents()) {
     return false;
   }
 
   // If the web_contents is no longer the same URL, then it's not valid.
-  if (original_url_ != web_contents_->GetLastCommittedURL()) {
+  if (original_url_ != tab_.Get()->contents()->GetLastCommittedURL()) {
     return false;
   }
 
@@ -65,29 +67,26 @@ bool TabData::IsValidForOrganizing(
     return false;
   }
 
-  const int tab_index =
-      original_tab_strip_model_->GetIndexOfWebContents(web_contents_);
-
   // Tab is not valid if it does not exist in the TabStripModel any more.
   // NOTE: we will hear of this from the TabStripModel in OnTabStripModelChanged
   // below, but IsValidForOrganizing might be called from another
   // TabStripModelObserver first - most notably from a TabData's in another
   // TabOrganization - so we cannot assume our web_contents_ is already nullptr.
-  if (!original_tab_strip_model_->ContainsIndex(tab_index)) {
+  if (tab_.Get()->owning_model() != original_tab_strip_model_) {
     return false;
   }
 
   // Tab is not valid if it is grouped and does not belong to
   // |allowed_group_id|.
   const std::optional<tab_groups::TabGroupId> tab_group_id =
-      original_tab_strip_model_->GetTabGroupForTab(tab_index);
+      tab_.Get()->group();
   if (tab_group_id.has_value() &&
       (!allowed_group_id.has_value() ||
        tab_group_id.value() != allowed_group_id.value())) {
     return false;
   }
 
-  if (original_tab_strip_model_->IsTabPinned(tab_index)) {
+  if (tab_.Get()->pinned()) {
     return false;
   }
 
@@ -97,52 +96,41 @@ bool TabData::IsValidForOrganizing(
 void TabData::OnTabStripModelDestroyed(TabStripModel* tab_strip_model) {
   if (original_tab_strip_model_ == tab_strip_model) {
     original_tab_strip_model_ = nullptr;
-    web_contents_ = nullptr;
+    tab_ = tabs::TabHandle::Null();
     NotifyObserversOfUpdate();
-  }
-}
-
-void TabData::OnTabStripModelChanged(TabStripModel* tab_strip_model,
-                                     const TabStripModelChange& change,
-                                     const TabStripSelectionChange& selection) {
-  // If the webcontents has already been destroyed, then further updates dont
-  // matter.
-  if (web_contents_ == nullptr) {
-    return;
-  }
-
-  switch (change.type()) {
-    // For replaced webcontents, just replace the underlying webcontents.
-    case TabStripModelChange::Type::kReplaced: {
-      const TabStripModelChange::Replace* replace = change.GetReplace();
-      if (replace->old_contents == web_contents_) {
-        web_contents_ = replace->new_contents;
-        Observe(web_contents_);
-        NotifyObserversOfUpdate();
-      }
-      return;
-    }
-    // If the tab is removed, then delete the webcontents, and mark as invalid.
-    case TabStripModelChange::Type::kRemoved: {
-      const TabStripModelChange::Remove* remove = change.GetRemove();
-      for (const TabStripModelChange::RemovedTab& removed_tab :
-           remove->contents) {
-        if (removed_tab.contents == web_contents_) {
-          web_contents_ = nullptr;
-          Observe(nullptr);
-          NotifyObserversOfUpdate();
-        }
-      }
-      return;
-    }
-    default: {
-      return;
-    }
   }
 }
 
 void TabData::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  NotifyObserversOfUpdate();
+}
+
+void TabData::OnTabWillDetach(tabs::TabInterface* tab,
+                              tabs::TabInterface::DetachReason reason) {
+  if (tab_.Get() == nullptr) {
+    return;
+  }
+
+  CHECK_EQ(tab, tab_.Get());
+
+  // Drop this tab, whether the reason is deletion or moving to another window.
+  // Either way, this tab will no longer be valid for organizing.
+  tab_ = tabs::TabHandle::Null();
+  Observe(nullptr);
+  NotifyObserversOfUpdate();
+}
+
+void TabData::OnTabWillDiscardContents(tabs::TabInterface* tab,
+                                       content::WebContents* old_contents,
+                                       content::WebContents* new_contents) {
+  if (tab_.Get() == nullptr) {
+    return;
+  }
+
+  CHECK_EQ(tab, tab_.Get());
+
+  Observe(new_contents);
   NotifyObserversOfUpdate();
 }
 

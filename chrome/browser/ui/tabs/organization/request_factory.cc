@@ -131,7 +131,7 @@ void PerformTabOrganizationExecution(
 
     auto* tab = tab_organization_request.add_tabs();
     tab->set_tab_id(tab_data->tab_id());
-    tab->set_title(base::UTF16ToUTF8(tab_data->web_contents()->GetTitle()));
+    tab->set_title(base::UTF16ToUTF8(tab_data->tab()->contents()->GetTitle()));
     tab->set_url(tab_data->original_url().spec());
   }
 
@@ -161,7 +161,8 @@ void PerformTabOrganizationExecution(
     for (const std::unique_ptr<TabData>& tab_data : group_data->tabs) {
       auto* tab = group->add_tabs();
       tab->set_tab_id(tab_data->tab_id());
-      tab->set_title(base::UTF16ToUTF8(tab_data->web_contents()->GetTitle()));
+      tab->set_title(
+          base::UTF16ToUTF8(tab_data->tab()->contents()->GetTitle()));
       tab->set_url(tab_data->original_url().spec());
     }
   }

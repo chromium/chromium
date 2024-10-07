@@ -655,7 +655,8 @@ class TabStripModel : public TabGroupController {
   // Serialise this object into a trace.
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
-  // Returns the tab at `index` in the tabstrip.
+  // Convert between tabs and indices.
+  int GetIndexOfTab(const tabs::TabModel* tab) const;
   tabs::TabModel* GetTabAtIndex(int index) const;
 
   // TODO(349161508) remove this method once tabs dont need to be converted

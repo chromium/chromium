@@ -262,14 +262,7 @@ bool TabStripModel::empty() const {
 }
 
 int TabStripModel::GetIndexOfTab(tabs::TabHandle tab_handle) const {
-  const tabs::TabModel* tab_model = tab_handle.Get();
-  if (tab_model == nullptr) {
-    return kNoTab;
-  }
-
-  std::optional<size_t> index_of_tab =
-      contents_data_->GetIndexOfTabRecursive(tab_model);
-  return index_of_tab.value_or(kNoTab);
+  return GetIndexOfTab(tab_handle.Get());
 }
 
 tabs::TabHandle TabStripModel::GetTabHandleAt(int index) const {
@@ -1649,7 +1642,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
 
       service->RestartSessionAndShowUI(
           browser, TabOrganizationEntryPoint::kTabContextMenu,
-          GetWebContentsAt(context_index));
+          GetTabAtIndex(context_index));
       break;
     }
 
@@ -2068,6 +2061,16 @@ int TabStripModel::InsertTabAtImpl(
   return index;
 }
 
+int TabStripModel::GetIndexOfTab(const tabs::TabModel* tab) const {
+  if (tab == nullptr) {
+    return kNoTab;
+  }
+
+  std::optional<size_t> index_of_tab =
+      contents_data_->GetIndexOfTabRecursive(tab);
+  return index_of_tab.value_or(kNoTab);
+}
+
 tabs::TabModel* TabStripModel::GetTabAtIndex(int index) const {
   return contents_data_->GetTabAtIndexRecursive(index);
 }
@@ -2130,8 +2133,8 @@ bool TabStripModel::CloseWebContentses(
   if (items.empty())
     return true;
 
-  for (size_t i = 0; i < items.size(); ++i) {
-    int index = GetIndexOfWebContents(items[i]);
+  for (WebContents* contents : items) {
+    const int index = GetIndexOfWebContents(contents);
     if (index == active_index() && !closing_all_) {
       GetTabAtIndex(active_index())
           ->WillEnterBackground(base::PassKey<TabStripModel>());
@@ -2880,11 +2883,11 @@ std::vector<std::pair<int, int>> TabStripModel::CalculateIncrementalTabMoves(
   int tab_destination_index = destination_index;
   for (int source_index : tab_indices) {
     if (source_index < tab_destination_index) {
-      source_and_target_indices_to_move_right.push_back(
-          {source_index, tab_destination_index++});
+      source_and_target_indices_to_move_right.emplace_back(
+          source_index, tab_destination_index++);
     } else {
-      source_and_target_indices_to_move_left.push_back(
-          {source_index, tab_destination_index++});
+      source_and_target_indices_to_move_left.emplace_back(
+          source_index, tab_destination_index++);
     }
   }
 

@@ -861,12 +861,12 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedSectionExpandedUserPref) {
 TEST_F(TabSearchPageHandlerTest, TabDataToMojo) {
   AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
   std::unique_ptr<TabData> tab_data = std::make_unique<TabData>(
-      browser1()->tab_strip_model(),
-      browser1()->tab_strip_model()->GetWebContentsAt(0));
+      browser1()->tab_strip_model()->GetTabAtIndex(0));
   tab_search::mojom::TabPtr mojo_tab_ptr =
       handler()->GetMojoForTabData(tab_data.get());
 
-  EXPECT_EQ(mojo_tab_ptr->url, tab_data->web_contents()->GetLastCommittedURL());
+  EXPECT_EQ(mojo_tab_ptr->url,
+            tab_data->tab()->contents()->GetLastCommittedURL());
   int tab_id = extensions::ExtensionTabUtil::GetTabId(
       browser1()->tab_strip_model()->GetWebContentsAt(0));
   handler()->CloseTab(tab_id);
