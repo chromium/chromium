@@ -2337,6 +2337,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="1659755048" label="Illustrations"/>
   <int value="1668389814" label="Art"/>
   <int value="1804492839" label="Colors"/>
+  <int value="1894207420" label="Celebrate Teachers"/>
   <int value="1894705443" label="Leisure"/>
   <int value="1914850019" label="Heritage"/>
   <int value="2026958207" label="LGBTQ Artists"/>
@@ -2365,10 +2366,12 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="-2088281608" label="Heritage - 331011041221112"/>
   <int value="-2079643564" label="Heritage - 18441528924770609236"/>
   <int value="-2075846537" label="Composition - 18446099444287215735"/>
+  <int value="-2065021174" label="Celebrate Teachers - 18438794366352508682"/>
   <int value="-2052639994" label="Landscapes - 3406001502368518"/>
   <int value="-2036802440" label="Heritage - 18444825093169798264"/>
   <int value="-2034367398" label="Landscapes - 8363308608259162"/>
   <int value="-2028697222" label="Made by Canvas - 18438928296354023802"/>
+  <int value="-2016928969" label="Celebrate Teachers - 7198698178616119"/>
   <int value="-2010890067" label="Cityscapes - 18441361086107369645"/>
   <int value="-1990378534" label="Cityscapes - 18439845065751608282"/>
   <int value="-1986859411" label="Cityscapes - 18438879874934566509"/>
@@ -2429,6 +2432,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="-1379111552" label="Heritage - 6939063748423040"/>
   <int value="-1349646083" label="LGBTQ Artists - 18440020408432199933"/>
   <int value="-1346329828" label="Collage - 302823912809244"/>
+  <int value="-1337616588" label="Celebrate Teachers - 18438579107614005044"/>
   <int value="-1326684804" label="Native American Artists - 4449022151255420"/>
   <int value="-1315221908" label="Cityscapes - 18438039904557157996"/>
   <int value="-1308168417" label="Solid Colors - 737212648320799"/>
@@ -2436,6 +2440,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="-1279122115" label="Art - 18440001776934593853"/>
   <int value="-1277363172" label="Landscapes - 266677537012764"/>
   <int value="-1274675052" label="Art - 2851414628237460"/>
+  <int value="-1249118785" label="Celebrate Teachers - 18442775496909125055"/>
   <int value="-1215416857" label="Element - 18445289040653465063"/>
   <int value="-1206721847" label="Made by Canvas - 18440189784905409225"/>
   <int value="-1201999266" label="Heritage - 8821217378890334"/>
@@ -2526,6 +2531,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="-250481953" label="Heritage - 18442925297777111775"/>
   <int value="-242251369" label="Solid Colors - 2175301908924823"/>
   <int value="-217934385" label="Togetherness - 6948539607455183"/>
+  <int value="-215366558" label="Celebrate Teachers- 18442830069797340258"/>
   <int value="-213086089" label="Art - 18439421351825281143"/>
   <int value="-207369157" label="Art - 2140169111325755"/>
   <int value="-186691484" label="Leisure - 4590813046591588"/>
@@ -2584,6 +2590,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="238075985" label="Art - 402666306977873"/>
   <int value="268022519" label="Cityscapes - 18444150008220070647"/>
   <int value="284261456" label="Art - 18439588894701878352"/>
+  <int value="285942448" label="Celebrate Teachers - 18443487354913759920"/>
   <int value="306978074" label="Native American Artists - 8682195091463450"/>
   <int value="336158740" label="Togetherness - 734508463251476"/>
   <int value="337078580" label="Landscapes - 18439369005314042164"/>
@@ -2624,6 +2631,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="732594745" label="Collage - 6982402080145977"/>
   <int value="738877507" label="Leisure - 2226962756689987"/>
   <int value="741269277" label="LGBTQ Artists - 459480637562653"/>
+  <int value="756526586" label="Celebrate Teachers - 3483764694429178"/>
   <int value="766726480" label="Leisure - 18440296559765836112"/>
   <int value="791271562" label="Floral - 565819782846602"/>
   <int value="810052365" label="Landscapes - 1422584172800781"/>
@@ -2706,6 +2714,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="1567507477" label="Art - 2184344624841749"/>
   <int value="1573305199" label="Collage - 18445466155008572271"/>
   <int value="1581350106" label="Imaginary - 3113861460884698"/>
+  <int value="1587474939" label="Celebrate Teachers - 4585892788236795"/>
   <int value="1593019616" label="Heritage - 18440281880393911520"/>
   <int value="1596391393" label="Solid Colors - 7592202400628705"/>
   <int value="1602775350" label="Dessert Time - 18438498829025700150"/>
@@ -2713,6 +2722,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="1617144873" label="Imaginary - 3194353478773801"/>
   <int value="1622071983" label="Cityscapes - 18446448263754078895"/>
   <int value="1632606350" label="Cityscapes - 1743436232235150"/>
+  <int value="1638204057" label="Celebrate Teachers - 18443702319379186329"/>
   <int value="1639315119" label="Cityscapes - 18446053255629108911"/>
   <int value="1650555304" label="Cityscapes - 8018267505523112"/>
   <int value="1679563589" label="Colors - 3148839772756805"/>
