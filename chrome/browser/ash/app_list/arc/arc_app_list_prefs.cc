@@ -69,6 +69,8 @@
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/codec/png_codec.h"
 
+using arc::mojom::AppCategory;
+
 namespace {
 
 constexpr char kActivity[] = "activity";
@@ -146,6 +148,11 @@ constexpr const char kAppCountUmaPrefix[] = "Arc.AppCount.";
 constexpr int kAppCountUmaExclusiveMax = 101;
 // A smaller bucket size for apps with a lower count.
 constexpr int kAppCountUmaExclusiveMaxLower = 20;
+
+// Constants for "Arc.Data.AppCategory.{Target}.DataSize" UMA metric.
+constexpr int kUmaDataSizeNumBuckets = 50;
+constexpr int kUmaDataSizeInMBMin = 1;
+constexpr int kUmaDataSizeInMBMax = 1000000;  // 1 TB.
 
 // Accessor for deferred set notifications enabled requests in prefs.
 class NotificationsEnabledDeferred {
@@ -464,6 +471,16 @@ void OnArcAppListRefreshed(Profile* profile) {
         ->OnArcAppListReady();
   }
 }
+
+void RecordAppCategoryDataSizeUma(const std::string& category,
+                                  uint64_t data_size_in_bytes) {
+  const std::string metrics =
+      base::StringPrintf("Arc.Data.AppCategory.%s.DataSize", category);
+  base::UmaHistogramCustomCounts(metrics, data_size_in_bytes / 1000000,
+                                 kUmaDataSizeInMBMin, kUmaDataSizeInMBMax,
+                                 kUmaDataSizeNumBuckets);
+}
+
 }  // namespace
 
 // static
@@ -1381,6 +1398,40 @@ void ArcAppListPrefs::RecordAppIdsUma() {
       has_installed_apps);
 }
 
+void ArcAppListPrefs::RecordAppCategoryDataSizeListUma(
+    std::vector<arc::mojom::AppInfoPtr> apps) {
+  if (app_category_data_size_uma_recorded_) {
+    // "Arc.Data.AppCategory.{Target}.DataSize" should be recorded only once
+    // per session.
+    return;
+  }
+
+  // Calculate combined data bytes for each app category.
+  std::map<arc::mojom::AppCategory, uint64_t> data_bytes_map;
+  for (const auto& app : apps) {
+    if (app->app_storage.is_null()) {
+      continue;
+    }
+    data_bytes_map[app->app_category] += app->app_storage->data_size_in_bytes;
+  }
+
+  VLOG(1) << "Recording Arc.Data.AppCategory.{Target}.DataSize UMA";
+  RecordAppCategoryDataSizeUma("Game", data_bytes_map[AppCategory::kGame]);
+  RecordAppCategoryDataSizeUma("Audio", data_bytes_map[AppCategory::kAudio]);
+  RecordAppCategoryDataSizeUma("Video", data_bytes_map[AppCategory::kVideo]);
+  RecordAppCategoryDataSizeUma("Image", data_bytes_map[AppCategory::kImage]);
+  RecordAppCategoryDataSizeUma("Social", data_bytes_map[AppCategory::kSocial]);
+  RecordAppCategoryDataSizeUma("Productivity",
+                               data_bytes_map[AppCategory::kProductivity]);
+  const uint64_t data_bytes_for_other_category =
+      data_bytes_map[AppCategory::kUndefined] +
+      data_bytes_map[AppCategory::kNews] + data_bytes_map[AppCategory::kMaps] +
+      data_bytes_map[AppCategory::kAccessibility];
+  RecordAppCategoryDataSizeUma("Other", data_bytes_for_other_category);
+
+  app_category_data_size_uma_recorded_ = true;
+}
+
 void ArcAppListPrefs::OnPolicySent(const std::string& policy) {
   // Update set of packages installed by policy.
   packages_by_policy_ =
@@ -2072,6 +2123,9 @@ void ArcAppListPrefs::OnAppListRefreshed(
       MaybeSetDefaultAppLoadingTimeout();
     }
   }
+
+  RecordAppCategoryDataSizeListUma(std::move(apps));
+
   OnArcAppListRefreshed(profile_);
 }
 

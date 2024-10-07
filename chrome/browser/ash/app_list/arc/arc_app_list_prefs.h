@@ -691,6 +691,10 @@ class ArcAppListPrefs : public KeyedService,
   // Records UMA metrics on app counts on ARC start.
   void RecordAppIdsUma();
 
+  // Records "Arc.Data.AppCategory.{Target}.DataSize" UMA metric.
+  void RecordAppCategoryDataSizeListUma(
+      std::vector<arc::mojom::AppInfoPtr> apps);
+
   // Updates kArcPackagesIsUpToDate pref.
   void UpdateArcPackagesIsUpToDatePref();
 
@@ -735,6 +739,8 @@ class ArcAppListPrefs : public KeyedService,
   bool package_list_initial_refreshed_ = false;
   // Used to detect first ARC app launch request.
   bool first_launch_app_request_ = true;
+  // True if RecordAppCategoryDataSizeUma is already executed in this session.
+  bool app_category_data_size_uma_recorded_ = false;
   // Play Store does not have publicly available observers for default app
   // installations. This timeout is for validating default app availability.
   // Default apps should be either already installed or their installations
