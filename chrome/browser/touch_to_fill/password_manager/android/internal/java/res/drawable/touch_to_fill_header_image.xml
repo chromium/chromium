@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <!--VectorRaster is ignored because: The image should be shown rarely enough to prioritize binary size over inflation time.-->
-<vector xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" android:width="320dp" android:height="114dp" android:viewportWidth="320" android:viewportHeight="114" tools:targetApi="21" tools:ignore="VectorRaster">
+<vector xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" android:width="320dp" android:height="114dp" android:viewportWidth="320" android:viewportHeight="114" tools:targetApi="21" tools:ignore="VectorRaster,UnusedResources">
     <path android:pathData="M238.097 60.783a6.041 6.041 0 1 0 0 8.544 6.041 6.041 0 0 0 0-8.544z" android:fillColor="#123868"/>
     <path android:pathData="M242.89 84.787l-5.223-4.662 6.204-6.95-8.101-4.275 3.267-6.192 12.058 6.363a3.5 3.5 0 0 1 0.978 5.426zm25.051 22.507a13.593 13.593 0 1 1 13.593-13.593 13.609 13.609 0 0 1-13.593 13.593zm0-25.686a12.093 12.093 0 1 0 12.093 12.093 12.107 12.107 0 0 0-12.093-12.093z" android:fillColor="#0c2748"/>
     <path android:pathData="M238.722 85.462l0.01-4.397-0.412-0.352-1.986 2.321a13.674 13.674 0 1 0 2.388 2.428zm-10.786 20.332a12.093 12.093 0 1 1 12.093-12.093 12.106 12.106 0 0 1-12.093 12.093z" android:fillColor="#0c2748"/>

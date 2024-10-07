@@ -121,7 +121,6 @@ android_library("test_java") {
     "//chrome/browser/touch_to_fill/common/android:java_resources",
     "//chrome/browser/touch_to_fill/password_manager/android/internal:java",
     "//chrome/browser/touch_to_fill/password_manager/android/internal:java_resources",
-    "//chrome/browser/touch_to_fill/password_manager/android/internal:resource_provider_public_impl_java",
     "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
     "//chrome/browser/util:java",
     "//chrome/test/android:chrome_java_integration_test_support",
