@@ -63,6 +63,7 @@ suite('OverlayTranslateButton', function() {
     disableCssTransitions(overlayTranslateButtonElement);
     metrics = fakeMetricsPrivate();
     await flushTasks();
+    await waitAfterNextRender(overlayTranslateButtonElement);
   });
 
   test('TranslateButtonClick', async () => {
