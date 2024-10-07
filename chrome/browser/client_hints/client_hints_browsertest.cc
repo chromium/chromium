@@ -132,8 +132,8 @@ const net::HttpStatusCode kRedirectStatusCodes[] = {
 // requests to https://{foo|bar}.com/non-existing-{image.jpg|iframe.html}.
 class ThirdPartyURLLoaderInterceptor {
  public:
-  explicit ThirdPartyURLLoaderInterceptor(const std::set<GURL> intercepted_urls)
-      : intercepted_urls_(intercepted_urls),
+  explicit ThirdPartyURLLoaderInterceptor(std::set<GURL> intercepted_urls)
+      : intercepted_urls_(std::move(intercepted_urls)),
         interceptor_(base::BindRepeating(
             &ThirdPartyURLLoaderInterceptor::InterceptURLRequest,
             base::Unretained(this))) {}
