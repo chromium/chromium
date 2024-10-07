@@ -78,7 +78,8 @@
           "builder": "Mac11 Tests",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/mac_chromium_11.0_rel_ng/targets"
     }
   },
   "$build/reclient": {

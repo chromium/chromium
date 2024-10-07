@@ -50,7 +50,11 @@ consoles.console_view(
         branches.selector.DESKTOP_BRANCHES,
     ],
     ordering = {
-        None: ["Windows", "Mac", "Linux"],
+        None: [
+            "Windows",
+            "Mac",
+            "Linux",
+        ],
     },
 )
 
@@ -266,6 +270,7 @@ ci.gpu.mac_builder(
             "mac",
         ],
     ),
+    targets = targets.bundle(),
     console_view_entry = consoles.console_view_entry(
         category = "Mac",
     ),
@@ -503,6 +508,20 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-gpu-archive",
     ),
+    targets = targets.bundle(
+        targets = [
+            "gpu_desktop_passthrough_gtests",
+            "gpu_common_metal_passthrough_graphite_telemetry_tests",
+        ],
+        mixins = [
+            "mac_mini_intel_gpu_stable",
+            "puppet_production",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE,
+        os_type = targets.os_type.MAC,
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Mac",
     ),
@@ -553,6 +572,20 @@ ci.thin_tester(
             target_platform = builder_config.target_platform.MAC,
         ),
         build_gs_bucket = "chromium-gpu-archive",
+    ),
+    targets = targets.bundle(
+        targets = [
+            "gpu_desktop_passthrough_gtests",
+            "gpu_common_metal_passthrough_graphite_telemetry_tests",
+        ],
+        mixins = [
+            "mac_retina_amd_gpu_stable",
+            "puppet_production",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE,
+        os_type = targets.os_type.MAC,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Mac",

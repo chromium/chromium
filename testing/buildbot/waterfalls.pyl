@@ -17,6 +17,7 @@
   #   chromium.android.fyi
   #   chromium.fuchsia
   #   chromium.fuchsia.fyi
+  #   chromium.mac
   #   chromium.win
   {
     'name': 'chrome',
@@ -2345,6 +2346,10 @@
     }
   },
   {
+    # The following builders in this group have been migrated to set their
+    # targets in the builders' declarations in
+    # //infra/config/subprojects/ci/chromium.fyi.star
+    #   mac-fieldtrial-tester
     'name': 'chromium.fyi',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -2801,15 +2806,6 @@
           'isolated_scripts': 'headless_shell_wpt_tests_isolated_scripts',
         },
       },
-      'mac-fieldtrial-tester': {
-        'mixins': [
-          'finch-chromium-swarming-pool',
-          'mac_default_arm64',
-        ],
-        'test_suites': {
-          'gtest_tests': 'fieldtrial_browser_tests',
-        },
-      },
       'mac-osxbeta-rel': {
         'mixins': [
           'limited_capacity_bot',
@@ -2913,8 +2909,11 @@
     # //infra/config/subprojects/ci/chromium.gpu.star
     #   Android Release (Pixel 2)
     #   GPU Linux Builder
+    #   GPU Mac Builder
     #   GPU Win x64 Builder
     #   Linux Release (NVIDIA)
+    #   Mac Release (Intel)
+    #   Mac Retina Release (AMD)
     #   Win10 x64 Release (NVIDIA)
     'name': 'chromium.gpu',
     'forbid_script_tests': True,
@@ -2936,7 +2935,6 @@
         },
       },
       'GPU Linux Builder (dbg)': {},
-      'GPU Mac Builder': {},
       'GPU Mac Builder (dbg)': {},
       'Linux Debug (NVIDIA)': {
         'browser_config': 'debug',
@@ -2963,32 +2961,8 @@
           'gpu_telemetry_tests': 'gpu_common_metal_passthrough_graphite_telemetry_tests',
         },
       },
-      'Mac Release (Intel)': {
-        'browser_config': 'release',
-        'os_type': 'mac',
-        'mixins': [
-          'mac_mini_intel_gpu_stable',
-          'puppet_production',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_desktop_passthrough_gtests',
-          'gpu_telemetry_tests': 'gpu_common_metal_passthrough_graphite_telemetry_tests',
-        },
-      },
       'Mac Retina Debug (AMD)': {
         'browser_config': 'debug',
-        'os_type': 'mac',
-        'mixins': [
-          'mac_retina_amd_gpu_stable',
-          'puppet_production',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_desktop_passthrough_gtests',
-          'gpu_telemetry_tests': 'gpu_common_metal_passthrough_graphite_telemetry_tests',
-        },
-      },
-      'Mac Retina Release (AMD)': {
-        'browser_config': 'release',
         'os_type': 'mac',
         'mixins': [
           'mac_retina_amd_gpu_stable',
@@ -3726,195 +3700,6 @@
           'v4l2_stateless_decoder',
           'v4l2_unittest',
         ],
-      },
-    },
-  },
-  {
-    # The following builders in this group have been migrated to set their
-    # targets in the builders' declarations in
-    # //infra/config/subprojects/ci/chromium.mac.star
-    #   ios-simulator
-    'name': 'chromium.mac',
-    'mixins': ['chromium-tester-service-account'],
-    'machines': {
-      'Mac Builder': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'scripts': 'chromium_mac_scripts',
-        },
-      },
-      'Mac Builder (dbg)': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'Mac11 Tests': {
-        'mixins': [
-            'mac_11_x64',
-            'isolate_profile_data',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_mac_gtests_no_nacl',
-          'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
-        },
-      },
-      'Mac12 Tests': {
-        'mixins': [
-            'mac_12_x64',
-            'isolate_profile_data',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_mac_gtests_no_nacl',
-          'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
-        },
-      },
-      'Mac13 Tests': {
-        'mixins': [
-            'mac_13_x64',
-            'isolate_profile_data',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_mac_gtests_no_nacl',
-          'isolated_scripts': 'chromium_mac_rel_isolated_scripts_once',
-        },
-      },
-      'ios-catalyst': {
-        'additional_compile_targets': [
-          'ios/chrome/app:chrome',
-          'ios/chrome/test:all_fuzzer_tests',
-        ],
-      },
-      'ios-device': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'scripts': 'chromium_ios_scripts'
-        },
-      },
-      'ios-simulator-full-configs': {
-        'additional_compile_targets': [
-          'all'
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-          'isolate_profile_data',
-          'mac_default_x64',
-          'mac_toolchain',
-          'out_dir_arg',
-          'xcode_16_main',
-          'xctest',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'ios_simulator_full_configs_tests'
-        },
-      },
-      'ios-simulator-noncq': {
-        'additional_compile_targets': [
-          'all'
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-          'mac_default_arm64',
-          'mac_toolchain',
-          'out_dir_arg',
-          'xcode_16_main',
-          'xctest',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'ios_simulator_noncq_tests'
-        },
-      },
-      'mac-arm64-dbg': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'mac-arm64-on-arm64-rel': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'mac-arm64-rel': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'mac-intel-on-arm64-rel': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'mac-skia-alt-arm64-rel-tests': {
-        'mixins': [
-          'mac_default_arm64',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'chromium_web_tests_graphite_isolated_scripts',
-        },
-      },
-      'mac11-arm64-rel-tests': {
-        'mixins': [
-            'mac_11_arm64',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_mac_gtests_no_nacl',
-          'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
-        },
-      },
-      'mac12-arm64-rel-tests': {
-        'mixins': [
-            # Only run selected test suites on CQ. https://crbug.com/1234525.
-            'ci_only',
-            'mac_12_arm64',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_mac_gtests_no_nacl',
-          'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
-        },
-      },
-      'mac13-arm64-rel-tests': {
-        'mixins': [
-            # Only run selected test suites on CQ. https://crbug.com/1234525.
-            'ci_only',
-            'mac_13_arm64',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_mac_gtests_no_nacl',
-          'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
-        },
-      },
-      'mac14-arm64-rel-tests': {
-        'mixins': [
-            # Only run selected test suites on CQ. https://crbug.com/1234525.
-            'ci_only',
-            'mac_14_arm64',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_mac_gtests_no_nacl',
-          'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
-        },
-      },
-      'mac14-tests': {
-        'mixins': [
-            'mac_14_x64',
-            'isolate_profile_data',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_mac_gtests_no_nacl',
-          'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
-        },
-      },
-      'mac14-tests-dbg': {
-        'mixins': [
-            'mac_14_x64',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_mac_gtests',
-          'isolated_scripts': 'chromium_dbg_isolated_scripts',
-        },
       },
     },
   },

@@ -37,7 +37,8 @@
           "builder": "mac-intel-on-arm64-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/mac-intel-on-arm64-rel/targets"
     }
   },
   "$build/reclient": {

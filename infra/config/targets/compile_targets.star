@@ -264,11 +264,15 @@ targets.compile_target(
 targets.compile_target(
     name = "ios/chrome/app:chrome",
     label = "//ios/chrome/app:chrome",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
     name = "ios/chrome/test:all_fuzzer_tests",
     label = "//ios/chrome/test:all_fuzzer_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(

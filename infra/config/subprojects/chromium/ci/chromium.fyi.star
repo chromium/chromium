@@ -12,6 +12,7 @@ load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
 load("//lib/html.star", "linkify", "linkify_builder")
 load("//lib/structs.star", "structs")
+load("//lib/targets.star", "targets")
 load("//lib/xcode.star", "xcode")
 
 ci.defaults.set(
@@ -27,6 +28,12 @@ ci.defaults.set(
     siso_enabled = True,
     siso_project = siso.project.DEFAULT_TRUSTED,
     siso_remote_jobs = siso.remote_jobs.DEFAULT,
+)
+
+targets.builder_defaults.set(
+    mixins = [
+        "chromium-tester-service-account",
+    ],
 )
 
 consoles.console_view(
@@ -370,6 +377,15 @@ ci.thin_tester(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
+    ),
+    targets = targets.bundle(
+        targets = [
+            "fieldtrial_browser_tests",
+        ],
+        mixins = [
+            "finch-chromium-swarming-pool",
+            "mac_default_arm64",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "mac",
@@ -1531,7 +1547,10 @@ ci.builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["use_clang_coverage", "reclient_test"],
+            apply_configs = [
+                "use_clang_coverage",
+                "reclient_test",
+            ],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
@@ -1630,7 +1649,10 @@ fyi_ios_builder(
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
-            apply_configs = ["mb", "mac_toolchain"],
+            apply_configs = [
+                "mb",
+                "mac_toolchain",
+            ],
             build_config = builder_config.build_config.DEBUG,
             target_bits = 64,
             target_platform = builder_config.target_platform.IOS,

@@ -119,7 +119,8 @@
           "builder": "mac-rel",
           "group": "tryserver.chromium.mac"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/GPU Mac Builder/targets"
     }
   },
   "$build/reclient": {

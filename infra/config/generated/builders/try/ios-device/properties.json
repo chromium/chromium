@@ -39,7 +39,8 @@
           "builder": "ios-device",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/ios-device/targets"
     }
   },
   "$build/reclient": {

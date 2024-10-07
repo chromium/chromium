@@ -693,6 +693,22 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "chromium_dbg_isolated_scripts",
+    targets = [
+        "desktop_chromium_isolated_scripts",
+        "performance_smoke_test_isolated_scripts",
+        "telemetry_perf_unittests_isolated_scripts",
+    ],
+)
+
+targets.bundle(
+    name = "chromium_ios_scripts",
+    targets = [
+        "check_static_initializers",
+    ],
+)
+
+targets.bundle(
     name = "chromium_linux_cast_receiver",
     additional_compile_targets = [
         "cast_shell",
@@ -793,6 +809,32 @@ targets.bundle(
                 shards = 1,
             ),
             experiment_percentage = 100,
+        ),
+    },
+)
+
+targets.bundle(
+    name = "chromium_web_tests_graphite_isolated_scripts",
+    targets = [
+        "graphite_enabled_blink_web_tests",
+        "graphite_enabled_blink_wpt_tests",
+        "graphite_enabled_headless_shell_wpt_tests",
+    ],
+    per_test_modifications = {
+        "graphite_enabled_blink_web_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+        "graphite_enabled_blink_wpt_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 7,
+            ),
+        ),
+        "graphite_enabled_headless_shell_wpt_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 1,
+            ),
         ),
     },
 )
@@ -1028,6 +1070,113 @@ targets.bundle(
 
 # Please also change ios_code_coverage_tests for any change in this suite.
 targets.bundle(
+    name = "ios_simulator_full_configs_tests",
+    targets = [
+        targets.bundle(
+            targets = "ios_common_tests",
+            variants = [
+                "SIM_IPHONE_14_PLUS_17_5",
+                "SIM_IPHONE_14_PLUS_18_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_cq_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+            ],
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
+                "SIM_IPAD_PRO_6TH_GEN_17_5",
+                "SIM_IPAD_PRO_7TH_GEN_18_0",
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+            ],
+            variants = [
+                "SIM_IPAD_PRO_6TH_GEN_17_5",
+                "SIM_IPAD_PRO_7TH_GEN_18_0",
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_screen_size_dependent_tests",
+            variants = [
+                "SIM_IPAD_PRO_6TH_GEN_17_5",
+                "SIM_IPAD_PRO_7TH_GEN_18_0",
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_0",
+            ],
+        ),
+    ],
+)
+
+targets.bundle(
+    name = "ios_simulator_noncq_tests",
+    targets = [
+        targets.bundle(
+            targets = "ios_crash_xcuitests",
+            mixins = [
+                "xcodebuild_sim_runner",
+            ],
+            variants = [
+                "SIM_IPHONE_SE_3RD_GEN_16_4",
+                "SIM_IPHONE_SE_3RD_GEN_17_5",
+                "SIM_IPHONE_SE_3RD_GEN_18_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_cq_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+                "record_failed_tests",
+            ],
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_16_4",
+                "SIM_IPAD_AIR_5TH_GEN_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+                "record_failed_tests",
+            ],
+            variants = [
+                "SIM_IPAD_PRO_6TH_GEN_16_4",
+                "SIM_IPAD_PRO_6TH_GEN_17_5",
+                "SIM_IPAD_PRO_7TH_GEN_18_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_screen_size_dependent_tests",
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_16_4",
+                "SIM_IPAD_AIR_5TH_GEN_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
+                "SIM_IPAD_PRO_6TH_GEN_16_4",
+                "SIM_IPAD_PRO_6TH_GEN_17_5",
+                "SIM_IPAD_PRO_7TH_GEN_18_0",
+                "SIM_IPHONE_14_PLUS_16_4",
+                "SIM_IPHONE_14_PLUS_17_5",
+                "SIM_IPHONE_14_PLUS_18_0",
+                "SIM_IPHONE_SE_3RD_GEN_16_4",
+                "SIM_IPHONE_SE_3RD_GEN_17_5",
+                "SIM_IPHONE_SE_3RD_GEN_18_0",
+            ],
+        ),
+    ],
+)
+
+# Please also change ios_code_coverage_tests for any change in this suite.
+targets.bundle(
     name = "ios_simulator_tests",
     targets = [
         targets.bundle(
@@ -1092,6 +1241,28 @@ targets.bundle(
             ],
             swarming = targets.swarming(
                 shards = 6,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "performance_smoke_test_isolated_scripts",
+    targets = [
+        "performance_test_suite",
+    ],
+    per_test_modifications = {
+        "performance_test_suite": targets.mixin(
+            args = [
+                "--pageset-repeat=1",
+                "--test-shard-map-filename=smoke_test_benchmark_shard_map.json",
+            ],
+            swarming = targets.swarming(
+                shards = 2,
+                hard_timeout_sec = 960,
+            ),
+            resultdb = targets.resultdb(
+                enable = True,
             ),
         ),
     },

@@ -135,34 +135,6 @@
           'shards': 12,
         },
       },
-      'Mac11 Tests': {
-        'swarming': {
-          'dimensions': {
-            'gpu': None,
-          },
-          'shards': 12,
-        },
-      },
-      'Mac12 Tests': {
-        # TODO(crbug.com/40280753): Remove this once the bug is fixed.
-        'args': [
-          '--driver-logging',
-        ],
-        'swarming': {
-          'dimensions': {
-            'gpu': None,
-          },
-          'shards': 12,
-        },
-      },
-      'Mac13 Tests': {
-        'swarming': {
-          'dimensions': {
-            'gpu': None,
-          },
-          'shards': 12,
-        },
-      },
       'ToTFuchsia x64': {
         'args': [
           '--platform=fuchsia',
@@ -292,11 +264,6 @@
           'hard_timeout': 2400,
         },
       },
-      'mac12-arm64-rel-tests': {
-        'args': [
-          '--driver-logging',
-        ],
-      },
       'mac12.0-blink-rel': {
         'swarming': {
           'hard_timeout': 2400,
@@ -305,19 +272,6 @@
       'mac12.0.arm64-blink-rel': {
         'swarming': {
           'hard_timeout': 2400,
-        },
-      },
-      'mac14-tests': {
-        'swarming': {
-          'dimensions': {
-            'gpu': None,
-          },
-          'shards': 12,
-        },
-      },
-      'mac14-tests-dbg': {
-        'swarming': {
-          'shards': 16,
         },
       },
       'win-rel-cft': {
@@ -361,33 +315,6 @@
     ],
     'modifications': {
       'Mac Tests Siso FYI': {
-        'swarming': {
-          'dimensions': {
-            'gpu': None,
-          },
-          'shards': 18,
-        },
-      },
-      'Mac11 Tests': {
-        'swarming': {
-          'dimensions': {
-            'gpu': None,
-          },
-          'shards': 18,
-        },
-      },
-      'Mac12 Tests': {
-        'args': [
-          '--driver-logging',
-        ],
-        'swarming': {
-          'dimensions': {
-            'gpu': None,
-          },
-          'shards': 18,
-        },
-      },
-      'Mac13 Tests': {
         'swarming': {
           'dimensions': {
             'gpu': None,
@@ -503,11 +430,6 @@
           'hard_timeout': 2400,
         },
       },
-      'mac12-arm64-rel-tests': {
-        'args': [
-          '--driver-logging',
-        ],
-      },
       'mac12.0-blink-rel': {
         'swarming': {
           'hard_timeout': 2400,
@@ -516,22 +438,6 @@
       'mac12.0.arm64-blink-rel': {
         'swarming': {
           'hard_timeout': 2400,
-        },
-      },
-      'mac14-tests': {
-        'swarming': {
-          'dimensions': {
-            'gpu': None,
-          },
-          'shards': 18,
-        },
-      },
-      'mac14-tests-dbg': {
-        'args': [
-          '--debug',
-        ],
-        'swarming': {
-          'shards': 24,
         },
       },
       'win-rel-cft': {
@@ -567,13 +473,6 @@
       'CrWinAsan(dll)', # https://crbug.com/935598
       'ToTLinuxTSan',  # https://crbug.com/368525
       'mac-code-coverage', # https://crbug.com/1201386
-      'mac11-arm64-rel-tests', # https://crbug.com/1406364
-      'mac12-arm64-rel-tests', # https://crbug.com/1406364
-      'mac13-arm64-rel-tests', # https://crbug.com/1406364
-      'mac14-arm64-rel-tests', # https://crbug.com/1406364
-      # TODO(crbug.com/338402345): Enable if there is enough capacity after
-      # Mac 14 upgrades.
-      'mac14-tests-dbg',
       'Linux TSan Tests',  # https://crbug.com/368525
       'linux-chromeos-chrome-preuprev', # http://b/331706144
     ],
@@ -651,24 +550,6 @@
         },
       },
       'Mac Tests Siso FYI': {
-        'ci_only': True,
-        'swarming': {
-          'shards': 20,  # crbug.com/1361887
-        },
-      },
-      'Mac11 Tests': {
-        'ci_only': True,
-        'swarming': {
-          'shards': 20,  # crbug.com/1366016
-        },
-      },
-      'Mac12 Tests': {
-        'ci_only': True,
-        'swarming': {
-          'shards': 20,  # crbug.com/1361887
-        },
-      },
-      'Mac13 Tests': {
         'ci_only': True,
         'swarming': {
           'shards': 20,  # crbug.com/1361887
@@ -765,18 +646,6 @@
         'swarming': {
           'shards': 20,  # crbug.com/1361887
         },
-      },
-      'mac14-tests': {
-        'ci_only': True,
-        'swarming': {
-          'shards': 20,  # crbug.com/1361887
-        },
-      },
-      'mac14-tests-dbg': {
-        # crbug.com/1196416
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel.browser_tests.filter',
-        ],
       },
       'win-asan': {
          # Tests shows tests run faster with fewer retries by using fewer jobs crbug.com/1411912
@@ -945,10 +814,6 @@
   },
   'chromedriver_py_tests': {
     'modifications': {
-      'mac14-arm64-rel-tests': {
-        # TODO(crbug.com/347304858) : Remove once fixed.
-        'experiment_percentage': 100,
-      },
       'win-rel-cft': {
         # TODO(crbug.com/40868908): Fix & re-enable.
         'isolate_profile_data': False,
@@ -1062,25 +927,6 @@
           'shards': 12,
         },
       },
-      'Mac11 Tests': {
-        'swarming': {
-          'shards': 12,
-        },
-      },
-      'Mac12 Tests': {
-        'swarming': {
-          'shards': 12,
-        },
-      },
-      'Mac13 Tests': {
-        # Only retry the individual failed tests instead of rerunning entire
-        # shards.
-        # crbug.com/1475852
-        'retry_only_failed_tests': True,
-        'swarming': {
-          'shards': 12,
-        },
-      },
       'WebRTC Chromium FYI Android Tests (dbg)': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromium.webrtc.fyi.android.tests.dbg.content_browsertests.filter',
@@ -1180,20 +1026,6 @@
             # These test would time out when running on 4 cores instances.
             'cores': '8|12',
           },
-        },
-      },
-      'mac14-tests': {
-        # Only retry the individual failed tests instead of rerunning entire
-        # shards.
-        # crbug.com/1475852
-        'retry_only_failed_tests': True,
-        'swarming': {
-          'shards': 12,
-        },
-      },
-      'mac14-tests-dbg': { # https://crbug.com/1279504
-        'swarming': {
-          'shards': 18,
         },
       },
       'win-asan': {
@@ -1868,18 +1700,6 @@
       },
     },
   },
-  'grit_python_unittests': {
-    'remove_from': [
-      # TODO(crbug.com/40204342): Re-enable.
-      'mac11-arm64-rel-tests',
-      # TODO(crbug.com/40204342): Re-enable.
-      'mac12-arm64-rel-tests',
-      # TODO(crbug.com/40204342): Re-enable.
-      'mac13-arm64-rel-tests',
-      # TODO(crbug.com/40204342): Re-enable.
-      'mac14-arm64-rel-tests',
-    ],
-  },
   'hardware_accelerated_feature_tests': {
     'remove_from': [
       # TODO(crbug.com/40039565): Remove the Android FYI Release (Pixel 2)
@@ -2047,16 +1867,6 @@
           'shards': 6,
         },
       },
-      'Mac12 Tests': {
-        'swarming': {
-          'shards': 6,
-        },
-      },
-      'Mac13 Tests': {
-        'swarming': {
-          'shards': 6,
-        },
-      },
       'ToTLinuxTSan': {
         # These are slow on the TSan bots for some reason, crbug.com/1257927
         'swarming': {
@@ -2126,31 +1936,6 @@
         'swarming': {
           'shards': 6,
         },
-      },
-      'mac13-arm64-rel-tests': {
-        'ci_only': False,
-        'swarming': {
-          'shards': 6,
-        },
-      },
-      'mac14-arm64-rel-tests': {
-        'ci_only': False,
-        'swarming': {
-          'shards': 6,
-        },
-      },
-      'mac14-tests': {
-        'swarming': {
-          'shards': 6,
-        },
-      },
-      'mac14-tests-dbg': {
-        # TODO(crbug.com/338408669): Remove experimental when suite is ready to
-        # be sheriffed.
-        'experiment_percentage': 100,
-        'swarming': {
-          'shards': 12,
-        }
       },
       'win-asan': {
          # Tests shows tests run faster with fewer retries by using fewer jobs crbug.com/1411912
@@ -2434,15 +2219,6 @@
       'android-code-coverage-native',
       'ToTAndroid'
     ]
-  },
-  'performance_test_suite': {
-    'modifications': {
-      'mac14-tests-dbg': {
-        'args': [
-          '--browser=debug',
-        ],
-      },
-    },
   },
   'pixel_browser_tests': {
     # This target should be removed from any CI only builders. Developers can
@@ -2747,23 +2523,6 @@
           'shards': 4,
         },
       },
-      'Mac11 Tests': {
-        'swarming': {
-          'shards': 4,
-        },
-      },
-      'Mac12 Tests': {
-        'ci_only': True,
-        'swarming': {
-          'shards': 4,
-        },
-      },
-      'Mac13 Tests': {
-        'ci_only': True,
-        'swarming': {
-          'shards': 4,
-        },
-      },
       'ToTLinuxTSan': {
         'swarming': {
           'shards': 6,
@@ -2794,17 +2553,6 @@
         'swarming': {
           'shards': 4,
         },
-      },
-      'mac14-tests': {
-        'ci_only': True,
-        'swarming': {
-          'shards': 4,
-        },
-      },
-      'mac14-tests-dbg': {
-        'swarming': {
-          'shards': 3,
-        }
       },
       'win-asan': {
          # Tests shows tests run faster with fewer retries by using fewer jobs crbug.com/1411912
@@ -2867,15 +2615,6 @@
   },
   'telemetry_perf_unittests': {
     'modifications': {
-      'Mac11 Tests': {
-        'ci_only': True,
-      },
-      'Mac12 Tests': {
-        'ci_only': True,
-      },
-      'Mac13 Tests': {
-        'ci_only': True,
-      },
       'chromeos-eve-chrome': {
         'args': [
           # TODO(crbug.com/40756418): Re-enable.
@@ -2897,13 +2636,8 @@
       'mac-rel-cft': {
         'ci_only': True,
       },
-      'mac14-tests': {
-        'ci_only': True,
-      },
     },
     'remove_from': [
-      # TODO crbug.com/1277277
-      'mac14-tests-dbg',
       'Linux - Future (dbg)',  # client.v8.chromium
       'win10-rel-no-external-ip',
       'win-rel-cft',
@@ -2928,15 +2662,6 @@
       'chromeos-eve-chrome',
       'win10-rel-no-external-ip',
       'win-rel-cft',
-
-      # TODO(crbug.com/40204348): Re-enable when platform is supported.
-      'mac11-arm64-rel-tests',
-      # TODO(crbug.com/40204348): Re-enable when platform is supported.
-      'mac12-arm64-rel-tests',
-      # TODO(crbug.com/40204348): Re-enable when platform is supported.
-      'mac13-arm64-rel-tests',
-      # TODO(crbug.com/40204348): Re-enable when platform is supported.
-      'mac14-arm64-rel-tests',
     ],
   },
   'testing_pytype': {
@@ -3029,11 +2754,6 @@
           'shards': 2,
         },
       },
-      'Mac13 Tests': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
       'ToTLinuxASan': {
         'swarming': {
           'shards': 2,
@@ -3081,16 +2801,6 @@
         'swarming': {
           'shards': 2,
         }
-      },
-      'mac14-tests': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
-      'mac14-tests-dbg': {
-        'swarming': {
-          'shards': 2,
-        },
       },
       'win-asan': {
         'swarming': {

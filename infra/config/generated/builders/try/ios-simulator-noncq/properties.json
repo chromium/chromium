@@ -39,7 +39,8 @@
           "builder": "ios-simulator-noncq",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/ios-simulator-noncq/targets"
     }
   },
   "$build/flakiness": {

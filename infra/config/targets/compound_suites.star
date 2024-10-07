@@ -99,15 +99,6 @@ targets.legacy_compound_suite(
     ],
 )
 
-targets.legacy_compound_suite(
-    name = "chromium_dbg_isolated_scripts",
-    basic_suites = [
-        "desktop_chromium_isolated_scripts",
-        "performance_smoke_test_isolated_scripts",
-        "telemetry_perf_unittests_isolated_scripts",
-    ],
-)
-
 # This is meant to be a superset of 'chromium_linux_and_gl_gtests'. Any
 # changes there must be reflected here.
 targets.legacy_compound_suite(

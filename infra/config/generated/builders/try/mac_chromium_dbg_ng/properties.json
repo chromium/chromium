@@ -76,7 +76,8 @@
           "builder": "mac14-tests-dbg",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/mac_chromium_dbg_ng/targets"
     }
   },
   "$build/reclient": {

@@ -1002,13 +1002,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "chromium_ios_scripts",
-    tests = {
-        "check_static_initializers": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "chromium_junit_tests_scripts",
     tests = {
         "android_webview_junit_tests": targets.legacy_test_config(
@@ -1318,27 +1311,6 @@ targets.legacy_basic_suite(
         "check_static_initializers": targets.legacy_test_config(),
         "metrics_python_tests": targets.legacy_test_config(),
         "webkit_lint": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "chromium_web_tests_graphite_isolated_scripts",
-    tests = {
-        "graphite_enabled_blink_web_tests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 2,
-            ),
-        ),
-        "graphite_enabled_blink_wpt_tests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 7,
-            ),
-        ),
-        "graphite_enabled_headless_shell_wpt_tests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 1,
-            ),
-        ),
     },
 )
 
@@ -4244,25 +4216,6 @@ targets.legacy_basic_suite(
         ),
         "perfetto_unittests": targets.legacy_test_config(),
         "services_unittests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "performance_smoke_test_isolated_scripts",
-    tests = {
-        "performance_test_suite": targets.legacy_test_config(
-            args = [
-                "--pageset-repeat=1",
-                "--test-shard-map-filename=smoke_test_benchmark_shard_map.json",
-            ],
-            swarming = targets.swarming(
-                shards = 2,
-                hard_timeout_sec = 960,
-            ),
-            resultdb = targets.resultdb(
-                enable = True,
-            ),
-        ),
     },
 )
 

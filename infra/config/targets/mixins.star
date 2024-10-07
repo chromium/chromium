@@ -605,6 +605,7 @@ targets.mixin(
 # test_suite_exceptions.pyl to select tests that are allowed on CQ builders.
 targets.mixin(
     name = "ci_only",
+    generate_pyl_entry = False,
     ci_only = True,
 )
 
@@ -1708,6 +1709,7 @@ targets.mixin(
         },
     ),
 )
+
 targets.mixin(
     name = "pie-x86-emulator",
     generate_pyl_entry = False,

@@ -330,6 +330,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPHONE_14_PLUS_16_4",
     identifier = "iPhone 14 Plus 16.4",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_16_4",
     ],
@@ -344,6 +345,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPHONE_14_PLUS_17_5",
     identifier = "iPhone 14 Plus 17.5",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_17_5",
     ],
@@ -358,6 +360,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPHONE_14_PLUS_18_0",
     identifier = "iPhone 14 Plus 18.0",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_18_0",
     ],
@@ -400,6 +403,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPHONE_SE_3RD_GEN_16_4",
     identifier = "iPhone SE (3rd generation) 16.4",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_16_4",
     ],
@@ -414,6 +418,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPHONE_SE_3RD_GEN_17_5",
     identifier = "iPhone SE (3rd generation) 17.5",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_17_5",
     ],

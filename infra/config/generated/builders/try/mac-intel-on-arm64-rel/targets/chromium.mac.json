@@ -1,0 +1,7 @@
+{
+  "mac-intel-on-arm64-rel": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  }
+}

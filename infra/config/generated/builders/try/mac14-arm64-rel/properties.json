@@ -81,7 +81,8 @@
           "builder": "mac14-arm64-rel-tests",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/mac14-arm64-rel/targets"
     }
   },
   "$build/flakiness": {

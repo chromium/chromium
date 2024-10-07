@@ -987,10 +987,12 @@
   "ios/chrome/app:chrome": {
     "label": "//ios/chrome/app:chrome",
     "type": "additional_compile_target",
+    "skip_usage_check": True,
   },
   "ios/chrome/test:all_fuzzer_tests": {
     "label": "//ios/chrome/test:all_fuzzer_tests",
     "type": "additional_compile_target",
+    "skip_usage_check": True,
   },
   "ios_chrome_bookmarks_eg2tests_module": {
     "label": "//ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module",
