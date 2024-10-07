@@ -115,6 +115,7 @@ source_set("webrtc") {
 
   deps = [
     "//base:i18n",
+    "//build:android_buildflags",
     "//chrome/app:branded_strings",
     "//chrome/app:branded_strings_grit",
     "//chrome/app:command_ids",
@@ -176,16 +177,10 @@ source_set("webrtc") {
       "current_tab_desktop_media_list.h",
       "desktop_capture_access_handler.cc",
       "desktop_capture_access_handler.h",
-      "desktop_capture_devices_util.cc",
-      "desktop_capture_devices_util.h",
       "desktop_media_picker_controller.cc",
       "desktop_media_picker_controller.h",
-      "desktop_media_picker_factory_impl.cc",
-      "desktop_media_picker_factory_impl.h",
       "desktop_media_picker_utils.cc",
       "desktop_media_picker_utils.h",
-      "display_media_access_handler.cc",
-      "display_media_access_handler.h",
       "media_stream_focus_delegate.cc",
       "media_stream_focus_delegate.h",
       "tab_capture_access_handler.cc",
@@ -204,6 +199,17 @@ source_set("webrtc") {
       "//extensions/browser",
       "//extensions/browser/kiosk",
       "//extensions/common",
+    ]
+  }
+
+  if (is_desktop_android || !is_android) {
+    sources += [
+      "desktop_capture_devices_util.cc",
+      "desktop_capture_devices_util.h",
+      "desktop_media_picker_factory_impl.cc",
+      "desktop_media_picker_factory_impl.h",
+      "display_media_access_handler.cc",
+      "display_media_access_handler.h",
     ]
   }
 

@@ -575,6 +575,7 @@ static_library("constants") {
     ":buildflags",
     ":chrome_features",
     ":non_code_constants",
+    "//build:android_buildflags",
     "//components/compose:buildflags",
     "//components/signin/public/base:signin_buildflags",
     "//content/public/common:result_codes",

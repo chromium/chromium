@@ -3730,8 +3730,6 @@ static_library("browser") {
       "lifetime/application_lifetime_desktop.h",
       "lifetime/browser_close_manager.cc",
       "lifetime/browser_close_manager.h",
-      "media/capture_access_handler_base.cc",
-      "media/capture_access_handler_base.h",
       "media/cast_mirroring_service_host.cc",
       "media/cast_mirroring_service_host.h",
       "media/cast_mirroring_service_host_factory.cc",
@@ -4569,6 +4567,13 @@ static_library("browser") {
         "//chrome/browser/ui/promos:utils",
       ]
     }
+  }
+
+  if (is_desktop_android || !is_android) {
+    sources += [
+      "media/capture_access_handler_base.cc",
+      "media/capture_access_handler_base.h",
+    ]
   }
 
   if (is_chromeos_ash) {
