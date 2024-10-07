@@ -553,6 +553,7 @@ try_.orchestrator_builder(
         "chromium.use_per_builder_build_dir_name": 100,
     },
     main_list_view = "try",
+    siso_remote_linking = True,
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
