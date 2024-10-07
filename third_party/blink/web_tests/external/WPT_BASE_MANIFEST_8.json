@@ -147269,19 +147269,6 @@
         {}
        ]
       ],
-      "initial-letter-raise-initial-rtl.html": [
-       "10b90ac395c02c5f840f7877f73149022ca1186f",
-       [
-        null,
-        [
-         [
-          "/css/css-inline/initial-letter/initial-letter-raise-initial-rtl-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
       "initial-letter-raise-initial-vlr.html": [
        "6b1ebd50919fd1c2c0f34bfa0b4496cc746f16fa",
        [
@@ -147309,7 +147296,7 @@
        ]
       ],
       "initial-letter-raise-initial.html": [
-       "ec2ec6bdc07983435ffc4125fde58a296fb06ec3",
+       "076887b1de36932877cf771a274f220a30245f55",
        [
         "css/css-inline/initial-letter/initial-letter-raise-initial.html?class=",
         [
@@ -147335,6 +147322,16 @@
         [
          [
           "/css/css-inline/initial-letter/initial-letter-raise-initial-ref.html?class=no-descent",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-inline/initial-letter/initial-letter-raise-initial.html?class=rtl",
+        [
+         [
+          "/css/css-inline/initial-letter/initial-letter-raise-initial-ref.html?class=rtl",
           "=="
          ]
         ],
@@ -147393,19 +147390,6 @@
         {}
        ]
       ],
-      "initial-letter-sunk-initial-rtl.html": [
-       "214ee94c3ad51fe5025d44358c9b22d55ddf55bb",
-       [
-        null,
-        [
-         [
-          "/css/css-inline/initial-letter/initial-letter-sunk-initial-rtl-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
       "initial-letter-sunk-initial-vlr.html": [
        "a4901290a6b2c00398a769a39c87c84cc8da51cf",
        [
@@ -147433,7 +147417,7 @@
        ]
       ],
       "initial-letter-sunk-initial.html": [
-       "3c00662d73cba1830a7a67ce931ec936ae3253d9",
+       "764d79f294ce1a4bd7d8367bad87e5429feddbfa",
        [
         "css/css-inline/initial-letter/initial-letter-sunk-initial.html?class=",
         [
@@ -147459,6 +147443,16 @@
         [
          [
           "/css/css-inline/initial-letter/initial-letter-sunk-initial-ref.html?class=no-descent",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-inline/initial-letter/initial-letter-sunk-initial.html?class=rtl",
+        [
+         [
+          "/css/css-inline/initial-letter/initial-letter-sunk-initial-ref.html?class=rtl",
           "=="
          ]
         ],
@@ -147857,12 +147851,12 @@
        ]
       ],
       "text-box-trim-half-leading-block-box-004.html": [
-       "3e24919fd7f36d070d3430d0ff5f482785a0d30b",
+       "d0b4eac6d0b6b96ba63d950570789d13ebe43dd6",
        [
         null,
         [
          [
-          "/css/css-inline/text-box-trim/text-box-trim-half-leading-block-box-001-ref.html",
+          "/css/css-inline/text-box-trim/text-box-trim-half-leading-block-box-004-ref.html",
           "=="
          ]
         ],
@@ -147870,12 +147864,12 @@
        ]
       ],
       "text-box-trim-half-leading-block-box-005.html": [
-       "fd6b18d052b3c582044320bea022c4dc64a5d6a6",
+       "d4bf188a6514198e6bb81cd9f6b44d22eae7c613",
        [
         null,
         [
          [
-          "/css/css-inline/text-box-trim/text-box-trim-half-leading-block-box-001-ref.html",
+          "/css/css-inline/text-box-trim/text-box-trim-half-leading-block-box-004-ref.html",
           "=="
          ]
         ],
@@ -165505,6 +165499,19 @@
         [
          [
           "/css/css-overflow/line-clamp/reference/line-clamp-auto-037-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-038.tentative.html": [
+       "0d7ef4606d5b956bd15ceb749b92d586e503cd7c",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-auto-038-ref.html",
           "=="
          ]
         ],
@@ -292815,6 +292822,19 @@
        ],
        {}
       ]
+     ],
+     "editing-host-has-only-invisible-br.html": [
+      "594b78fb1a5b63c8d3e4fcf68341ff264bba6337",
+      [
+       null,
+       [
+        [
+         "/selection/caret/editing-host-has-only-invisible-br-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
      ]
     },
     "shadow-dom": {
@@ -335220,11 +335240,7 @@
        []
       ],
       "initial-letter-raise-initial-ref.html": [
-       "29594f45f9595d372bb8bb5726454430206f3d89",
-       []
-      ],
-      "initial-letter-raise-initial-rtl-ref.html": [
-       "e5dd8f96b5cf40157f2811074d526ac7c1b2dc09",
+       "8a409603029d9333623311345e22ed92ba45ba91",
        []
       ],
       "initial-letter-raise-initial-vlr-ref.html": [
@@ -335252,11 +335268,7 @@
        []
       ],
       "initial-letter-sunk-initial-ref.html": [
-       "0b569177a87642a7f3deca9d1aa3306e80256d8c",
-       []
-      ],
-      "initial-letter-sunk-initial-rtl-ref.html": [
-       "cb26ab05f1e01617a6896fde2a983ebc13582158",
+       "160751274af111b9097352ec61ae92ede136b676",
        []
       ],
       "initial-letter-sunk-initial-vlr-ref.html": [
@@ -335407,6 +335419,10 @@
       ],
       "text-box-trim-half-leading-block-box-003-ref.html": [
        "176526e55b2586beb80693a48cabba0f5448f24a",
+       []
+      ],
+      "text-box-trim-half-leading-block-box-004-ref.html": [
+       "eb8952b57e935a35ce370614ee9d22d750ed903f",
        []
       ],
       "text-box-trim-height-001-ref.html": [
@@ -338386,6 +338402,10 @@
        ],
        "line-clamp-auto-037-ref.html": [
         "eeb9543554d99659ed855e40d4f04be393858932",
+        []
+       ],
+       "line-clamp-auto-038-ref.html": [
+        "3c80bbe73fd87221b49fc1f88e25b354f16e9de2",
         []
        ],
        "line-clamp-auto-with-ruby-001-ref.html": [
@@ -400495,6 +400515,10 @@
      "collapse-pre-linestart-ref.html": [
       "2b25941ded7e51d4a62cfc536f42de0aea58a50c",
       []
+     ],
+     "editing-host-has-only-invisible-br-ref.html": [
+      "4fa73c7a895d3ff4532522ea61e2653a222a0249",
+      []
      ]
     },
     "collapse.js": [
@@ -433593,6 +433617,66 @@
        null,
        {
         "timeout": "long"
+       }
+      ]
+     ]
+    }
+   },
+   "ai": {
+    "language_detection": {
+     "canDetect.tentative.window.js": [
+      "a69d1787fb802d78fde4a693ab094e956682b195",
+      [
+       "ai/language_detection/canDetect.tentative.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "canDetect"
+         ]
+        ]
+       }
+      ]
+     ],
+     "capabilities.tentative.window.js": [
+      "09bae7de2503fc85b8f1bf23d34bb2d48c76887c",
+      [
+       "ai/language_detection/capabilities.tentative.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "capabilities test"
+         ]
+        ]
+       }
+      ]
+     ],
+     "detect-en.tentative.window.js": [
+      "b4494d460d951eabcab4603d171db302dc0ec92d",
+      [
+       "ai/language_detection/detect-en.tentative.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Detect english"
+         ]
+        ]
+       }
+      ]
+     ],
+     "detector.tentative.window.js": [
+      "4f962de8339de0a8eb1b0444dfcf668c05f76b88",
+      [
+       "ai/language_detection/detector.tentative.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Detect english"
+         ]
+        ]
        }
       ]
      ]
@@ -619123,36 +619207,6 @@
      [
       null,
       {}
-     ]
-    ]
-   },
-   "language_detection": {
-    "canDetect.tentative.window.js": [
-     "a69d1787fb802d78fde4a693ab094e956682b195",
-     [
-      "language_detection/canDetect.tentative.window.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "canDetect"
-        ]
-       ]
-      }
-     ]
-    ],
-    "detect-en.tentative.window.js": [
-     "b4494d460d951eabcab4603d171db302dc0ec92d",
-     [
-      "language_detection/detect-en.tentative.window.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Detect english"
-        ]
-       ]
-      }
      ]
     ]
    },
