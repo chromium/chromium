@@ -190,7 +190,8 @@ LensOverlayQueryController::LensOverlayQueryController(
     signin::IdentityManager* identity_manager,
     Profile* profile,
     lens::LensOverlayInvocationSource invocation_source,
-    bool use_dark_mode)
+    bool use_dark_mode,
+    lens::LensOverlayGen204Controller* gen204_controller)
     : full_image_callback_(std::move(full_image_callback)),
       interaction_data_callback_(std::move(interaction_data_callback)),
       thumbnail_created_callback_(std::move(thumbnail_created_callback)),
@@ -202,9 +203,7 @@ LensOverlayQueryController::LensOverlayQueryController(
       profile_(profile),
       invocation_source_(invocation_source),
       use_dark_mode_(use_dark_mode),
-      gen204_controller_(
-          std::make_unique<lens::LensOverlayGen204Controller>(invocation_source,
-                                                              profile)) {
+      gen204_controller_(gen204_controller) {
   encoding_task_runner_ = base::ThreadPool::CreateTaskRunner(
       {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
@@ -231,7 +230,8 @@ void LensOverlayQueryController::StartQueryFlow(
   underlying_content_type_ = underlying_content_type;
   ui_scale_factor_ = ui_scale_factor;
   gen204_id_ = base::RandUint64();
-  gen204_controller_->SetGen204Id(gen204_id_);
+  gen204_controller_->OnQueryFlowStart(invocation_source_, profile_,
+                                       gen204_id_);
 
   // Reset translation languages in case they were set in a previous request.
   translate_options_.reset();
@@ -265,9 +265,7 @@ void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
 void LensOverlayQueryController::OnImageDataReady(
     scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs,
     lens::ImageData image_data) {
-  if (lens::features::GetLensOverlaySendLatencyGen204()) {
-    ref_counted_logs->client_logs().set_paella_id(gen204_id_);
-  }
+  ref_counted_logs->client_logs().set_paella_id(gen204_id_);
 
   resized_bitmap_size_ = gfx::Size(image_data.image_metadata().width(),
                                    image_data.image_metadata().height());
@@ -601,9 +599,7 @@ void LensOverlayQueryController::SendInteraction(
       base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   ref_counted_logs->client_logs().set_lens_overlay_entry_point(
       LenOverlayEntryPointFromInvocationSource(invocation_source_));
-  if (lens::features::GetLensOverlaySendLatencyGen204()) {
-    ref_counted_logs->client_logs().set_paella_id(gen204_id_);
-  }
+  ref_counted_logs->client_logs().set_paella_id(gen204_id_);
 
   // Add the start time to the query params now, so that image downscaling
   // and other client processing time is included.
@@ -761,11 +757,9 @@ void LensOverlayQueryController::
     return;
   }
 
-  if (lens::features::GetLensOverlaySendLatencyGen204()) {
-    additional_search_query_params.insert(
-        {kGen204IdentifierQueryParameter,
-         base::NumberToString(gen204_id_).c_str()});
-  }
+  additional_search_query_params.insert(
+      {kGen204IdentifierQueryParameter,
+       base::NumberToString(gen204_id_).c_str()});
 
   // The visual search interaction log data should be added as late as possible,
   // so that is_parent_query can be accurately set if the user issues multiple
