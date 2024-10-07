@@ -3066,20 +3066,8 @@ PhysicalRect LayoutBox::LocalCaretRect(
   // before/after elements.
   LayoutUnit caret_width = GetFrameView()->CaretWidth();
   LogicalSize size(LogicalWidth(), LogicalHeight());
-  const bool is_horizontal = IsHorizontalWritingMode();
-  PhysicalOffset offset = PhysicalLocation();
-  PhysicalRect rect(offset, is_horizontal
-                                ? PhysicalSize(caret_width, size.block_size)
-                                : PhysicalSize(size.block_size, caret_width));
-  bool ltr = StyleRef().IsLeftToRightDirection();
 
-  if ((!caret_offset) ^ ltr) {
-    rect.Move(
-        is_horizontal
-            ? PhysicalOffset(size.inline_size - caret_width, LayoutUnit())
-            : PhysicalOffset(LayoutUnit(), size.inline_size - caret_width));
-  }
-
+  LayoutUnit caret_block_size = size.block_size;
   // If height of box is smaller than font height, use the latter one,
   // otherwise the caret might become invisible.
   //
@@ -3093,11 +3081,28 @@ PhysicalRect LayoutBox::LocalCaretRect(
   LayoutUnit font_height =
       LayoutUnit(font_data ? font_data->GetFontMetrics().Height() : 0);
   if (font_height > size.block_size || (!IsAtomicInlineLevel() && !IsTable())) {
-    if (is_horizontal) {
-      rect.SetHeight(font_height);
-    } else {
-      rect.SetWidth(font_height);
-    }
+    caret_block_size = font_height;
+  }
+
+  // FIXME: Border/padding should be added for all elements but this workaround
+  // is needed because we use offsets inside an "atomic" element to represent
+  // positions before and after the element in deprecated editing offsets.
+  bool apply_border_padding =
+      GetNode() &&
+      !(EditingIgnoresContent(*GetNode()) || IsDisplayInsideTable(GetNode()));
+
+  const bool is_horizontal = IsHorizontalWritingMode();
+  PhysicalOffset offset = PhysicalLocation();
+  PhysicalRect rect(offset, is_horizontal
+                                ? PhysicalSize(caret_width, caret_block_size)
+                                : PhysicalSize(caret_block_size, caret_width));
+  bool ltr = StyleRef().IsLeftToRightDirection();
+
+  if ((!caret_offset) ^ ltr) {
+    rect.Move(
+        is_horizontal
+            ? PhysicalOffset(size.inline_size - caret_width, LayoutUnit())
+            : PhysicalOffset(LayoutUnit(), size.inline_size - caret_width));
   }
 
   if (extra_width_to_end_of_line) {
@@ -3109,11 +3114,7 @@ PhysicalRect LayoutBox::LocalCaretRect(
   // Move to local coords
   rect.Move(-offset);
 
-  // FIXME: Border/padding should be added for all elements but this workaround
-  // is needed because we use offsets inside an "atomic" element to represent
-  // positions before and after the element in deprecated editing offsets.
-  if (GetNode() &&
-      !(EditingIgnoresContent(*GetNode()) || IsDisplayInsideTable(GetNode()))) {
+  if (apply_border_padding) {
     rect.SetX(rect.X() + BorderLeft() + PaddingLeft());
     rect.SetY(rect.Y() + PaddingTop() + BorderTop());
   }
