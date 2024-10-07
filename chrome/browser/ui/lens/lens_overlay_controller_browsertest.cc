@@ -644,12 +644,16 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
     return bitmap;
   }
 
+  LensOverlayController* GetLensOverlayController() {
+    return browser()
+        ->tab_strip_model()
+        ->GetActiveTab()
+        ->tab_features()
+        ->lens_overlay_controller();
+  }
+
   content::WebContents* GetOverlayWebContents() {
-    auto* controller = browser()
-                           ->tab_strip_model()
-                           ->GetActiveTab()
-                           ->tab_features()
-                           ->lens_overlay_controller();
+    auto* controller = GetLensOverlayController();
     return controller->GetOverlayWebViewForTesting()->GetWebContents();
   }
 
@@ -789,11 +793,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        PermissionBubble_Accept) {
   WaitForPaint();
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Disallow sharing the page screenshot.
@@ -849,11 +849,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        PermissionBubble_Reject) {
   WaitForPaint();
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Disallow sharing the page screenshot.
@@ -900,11 +896,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        PermissionBubble_PrefChange) {
   WaitForPaint();
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Disallow sharing the page screenshot.
@@ -957,11 +949,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        DoesNotOpenOnCrashedWebContents) {
   WaitForPaint();
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Force the live page renderer to terminate.
@@ -983,11 +971,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CaptureScreenshot) {
   WaitForPaint();
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
@@ -1011,11 +995,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CreateAndLoadWebUI) {
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
@@ -1034,11 +1014,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, ShowSidePanel) {
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
@@ -1071,11 +1047,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
@@ -1114,11 +1086,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CloseSidePanel) {
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
   // Tab contents web view should be enabled.
   ASSERT_TRUE(browser()->GetWebView()->GetEnabled());
@@ -1162,11 +1130,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
@@ -1212,11 +1176,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   std::string text_query = "Apples";
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
@@ -1303,11 +1263,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   std::string text_query = "Apples";
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
@@ -1352,11 +1308,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   std::string text_query = "Manzanas";
   std::string content_language = "es";
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
@@ -1393,11 +1345,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
@@ -1462,11 +1410,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
@@ -1516,11 +1460,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Before showing the UI, there should be no set objects or text as
@@ -1561,11 +1501,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Set the full image request to return an error.
@@ -1592,11 +1528,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Before showing the UI, there should be no suggest signals as no query flow
@@ -1636,11 +1568,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
   // Tab contents web view should be enabled.
   ASSERT_TRUE(browser()->GetWebView()->GetEnabled());
@@ -1699,11 +1627,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
@@ -1733,11 +1657,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Set the network connection type to being offline.
@@ -1806,11 +1726,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
   const GURL search_url("https://www.google.com/search");
   controller->LoadURLInResultsFrame(search_url);
@@ -1825,11 +1741,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   EXPECT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
@@ -1906,11 +1818,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   EXPECT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
@@ -1969,11 +1877,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   EXPECT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
@@ -2033,11 +1937,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   EXPECT_EQ(controller->state(), State::kOff);
 
   // Showing UI should eventually result in overlay state.
@@ -2096,11 +1996,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should eventually result in overlay state. When the overlay is
@@ -2140,11 +2036,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should eventually result in overlay state. When the overlay is
@@ -2186,11 +2078,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should eventually result in overlay state.
@@ -2221,11 +2109,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should eventually result in overlay state. When the overlay is
@@ -2263,11 +2147,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should eventually result in overlay state.
@@ -2362,11 +2242,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
@@ -2568,11 +2444,7 @@ IN_PROC_BROWSER_TEST_F(
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should eventually result in overlay state.
@@ -2743,11 +2615,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
@@ -2871,11 +2739,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
@@ -3033,11 +2897,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should eventually result in overlay state.
@@ -3092,11 +2952,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // No metrics should be emitted before anything happens.
@@ -3183,11 +3039,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // No metrics should be emitted before anything happens.
@@ -3254,11 +3106,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Attempting to invoke the overlay twice without closing it in between
@@ -3298,11 +3146,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // No metrics should be emitted before anything happens.
@@ -3346,11 +3190,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Open the Overlay
@@ -3371,11 +3211,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Open the Overlay
@@ -3396,11 +3232,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Open the Overlay
@@ -3421,11 +3253,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Open the Overlay
@@ -3459,11 +3287,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Open the side panel
@@ -3489,11 +3313,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should eventually result in overlay state. When the overlay is
@@ -3525,11 +3345,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should eventually result in overlay state. When the overlay is
@@ -3572,11 +3388,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // First, test the flow if the user has a side panel open, we request to close
@@ -3643,11 +3455,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, FindBarClosesOverlay) {
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
@@ -3697,11 +3505,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Open the Overlay and wait for the WebUI to be ready.
@@ -3748,11 +3552,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Open the Overlay
@@ -3781,11 +3581,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Get the underlying tab before we open a new tab.
@@ -3821,11 +3617,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Get the underlying tab before we open a new tab.
@@ -3883,11 +3675,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserFullscreenDisabled,
                        FullscreenClosesOverlay) {
   WaitForPaint();
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
@@ -3977,6 +3765,14 @@ class LensOverlayControllerBrowserPDFTest
     enabled.push_back({lens::features::kLensOverlay, {}});
     return enabled;
   }
+
+  LensOverlayController* GetLensOverlayController() {
+    return browser()
+        ->tab_strip_model()
+        ->GetActiveTab()
+        ->tab_features()
+        ->lens_overlay_controller();
+  }
 };
 
 IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
@@ -3987,11 +3783,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
   ASSERT_TRUE(extension_host);
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Open the overlay on the PDF using the context menu.
@@ -4021,11 +3813,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
   ASSERT_TRUE(extension_host);
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Open the overlay.
@@ -4052,11 +3840,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
   ASSERT_TRUE(extension_host);
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   bool run_observed = false;
@@ -4106,11 +3890,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   ASSERT_TRUE(extension_host);
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_TRUE(controller);
   ASSERT_EQ(controller->state(), State::kOff);
 
@@ -4150,11 +3930,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   ASSERT_TRUE(extension_host);
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_TRUE(controller);
   ASSERT_EQ(controller->state(), State::kOff);
 
@@ -4211,11 +3987,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserWithPixelsTest,
                        DynamicTheme_Fallback) {
   WaitForPaint();
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
@@ -4263,11 +4035,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserWithPixelsTest,
   WaitForPaint(kDocumentWithDynamicColor);
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
@@ -4307,11 +4075,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserWithPixelsTest,
   WaitForPaint(kDocumentWithImage);
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
@@ -4352,11 +4116,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
@@ -4417,11 +4177,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
@@ -4468,11 +4224,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   WaitForPaint(kDocumentWithNonAsciiCharacters);
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Open the overlay.
@@ -4515,11 +4267,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlEnabledTest,
   WaitForPaint(kDocumentWithNonAsciiCharacters);
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Open the overlay.
@@ -4569,11 +4317,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
@@ -4594,11 +4338,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
@@ -4638,11 +4378,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
@@ -4686,11 +4422,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Open the overlay.
@@ -4732,11 +4464,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerOverlaySearchbox,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
@@ -4766,11 +4494,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerOverlaySearchbox,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
+  auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
