@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/notifications/notification_data.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,7 +35,7 @@ const char kNotificationImage[] = "https://example.com/image.jpg";
 const char kNotificationIcon[] = "/icon.png";
 const char kNotificationIconInvalid[] = "https://invalid:icon:url";
 const char kNotificationBadge[] = "badge.png";
-const unsigned kNotificationVibration[] = {42, 10, 20, 30, 40};
+const std::array<unsigned, 5> kNotificationVibration = {42, 10, 20, 30, 40};
 const uint64_t kNotificationTimestamp = 621046800ull;
 const bool kNotificationRenotify = true;
 const bool kNotificationSilent = false;
@@ -54,17 +49,16 @@ const char kNotificationActionTitle[] = "My Action";
 const char kNotificationActionIcon[] = "https://example.com/action_icon.png";
 const char kNotificationActionPlaceholder[] = "Placeholder...";
 
-const unsigned kNotificationVibrationUnnormalized[] = {10, 1000000, 50, 42};
-const int kNotificationVibrationNormalized[] = {10, 10000, 50};
+const std::array<unsigned, 4> kNotificationVibrationUnnormalized = {10, 1000000,
+                                                                    50, 42};
+const std::array<int, 3> kNotificationVibrationNormalized = {10, 10000, 50};
 
 TEST(NotificationDataTest, ReflectProperties) {
   test::TaskEnvironment task_environment;
   const KURL base_url(kNotificationBaseUrl);
   V8TestingScope scope(base_url);
 
-  Vector<unsigned> vibration_pattern;
-  for (size_t i = 0; i < std::size(kNotificationVibration); ++i)
-    vibration_pattern.push_back(kNotificationVibration[i]);
+  Vector<unsigned> vibration_pattern(kNotificationVibration);
 
   auto* vibration_sequence =
       MakeGarbageCollected<V8UnionUnsignedLongOrUnsignedLongSequence>(
@@ -153,9 +147,7 @@ TEST(NotificationDataTest, SilentNotificationWithVibration) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
-  Vector<unsigned> vibration_pattern;
-  for (size_t i = 0; i < std::size(kNotificationVibration); ++i)
-    vibration_pattern.push_back(kNotificationVibration[i]);
+  Vector<unsigned> vibration_pattern(kNotificationVibration);
 
   auto* vibration_sequence =
       MakeGarbageCollected<V8UnionUnsignedLongOrUnsignedLongSequence>(
@@ -257,9 +249,7 @@ TEST(NotificationDataTest, VibrationNormalization) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
-  Vector<unsigned> unnormalized_pattern;
-  for (size_t i = 0; i < std::size(kNotificationVibrationUnnormalized); ++i)
-    unnormalized_pattern.push_back(kNotificationVibrationUnnormalized[i]);
+  Vector<unsigned> unnormalized_pattern(kNotificationVibrationUnnormalized);
 
   auto* vibration_sequence =
       MakeGarbageCollected<V8UnionUnsignedLongOrUnsignedLongSequence>(
@@ -275,9 +265,7 @@ TEST(NotificationDataTest, VibrationNormalization) {
                              options, exception_state);
   EXPECT_THAT(exception_state, HadNoException());
 
-  Vector<int> normalized_pattern;
-  for (size_t i = 0; i < std::size(kNotificationVibrationNormalized); ++i)
-    normalized_pattern.push_back(kNotificationVibrationNormalized[i]);
+  Vector<int> normalized_pattern(kNotificationVibrationNormalized);
 
   ASSERT_EQ(normalized_pattern.size(),
             notification_data->vibration_pattern->size());
