@@ -15,7 +15,8 @@
 #include "content/browser/font_service.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+    BUILDFLAG(IS_MAC)
 #include "components/viz/host/gpu_client.h"
 #include "content/public/browser/gpu_client.h"
 #endif
@@ -30,7 +31,8 @@ void UtilityProcessHost::BindHostReceiver(
     return;
   }
 #endif
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+    BUILDFLAG(IS_MAC)
   if (allowed_gpu_) {
     // TODO(crbug.com/328099369) Remove once all clients get this directly.
     if (auto gpu_receiver = receiver.As<viz::mojom::Gpu>()) {

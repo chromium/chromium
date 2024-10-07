@@ -75,7 +75,8 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+    BUILDFLAG(IS_MAC)
 #include "base/task/sequenced_task_runner.h"
 #include "components/viz/host/gpu_client.h"
 #include "media/capture/capture_switches.h"
@@ -151,7 +152,8 @@ UtilityProcessHost::UtilityProcessHost(std::unique_ptr<Client> client)
       started_(false),
       name_(u"utility process"),
       file_data_(std::make_unique<ChildProcessLauncherFileData>()),
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+    BUILDFLAG(IS_MAC)
       allowed_gpu_(false),
       gpu_client_(nullptr, base::OnTaskRunnerDeleter(nullptr)),
 #endif
@@ -210,7 +212,8 @@ void UtilityProcessHost::SetPreloadLibraries(
 #endif  // BUILDFLAG(IS_WIN)
 
 void UtilityProcessHost::SetAllowGpuClient() {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+    BUILDFLAG(IS_MAC)
   allowed_gpu_ = true;
 #endif
 }
@@ -416,9 +419,9 @@ bool UtilityProcessHost::StartProcess() {
       file_data_->files_to_preload[kNetworkContextParentDirsDescriptor] =
           PassNetworkContextParentDirs(std::move(network_context_parent_dirs));
     }
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
     // Pass `kVideoCaptureUseGpuMemoryBuffer` flag to video capture service only
     // when the video capture use GPU memory buffer enabled.
     if (metrics_name_ == video_capture::mojom::VideoCaptureService::Name_) {
@@ -434,7 +437,8 @@ bool UtilityProcessHost::StartProcess() {
         cmd_line->AppendSwitch(switches::kVideoCaptureUseGpuMemoryBuffer);
       }
     }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH) ||
+        // BUILDFLAG(IS_MAC)
 
     std::unique_ptr<UtilitySandboxedProcessLauncherDelegate> delegate =
         std::make_unique<UtilitySandboxedProcessLauncherDelegate>(
