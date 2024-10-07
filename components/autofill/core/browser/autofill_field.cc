@@ -302,11 +302,17 @@ void AutofillField::SetTypeTo(const AutofillType& type) {
 }
 
 AutofillType AutofillField::ComputedType() const {
+  // Some of these (in particular, heuristic_type()) are slow to compute, so
+  // cache them in local variables.
+  const HtmlFieldType html_type_local = html_type();
+  const FieldType server_type_local = server_type();
+  const FieldType heuristic_type_local = heuristic_type();
+
   // If autocomplete=tel/tel-* and server confirms it really is a phone field,
   // we always use the server prediction as html types are not very reliable.
-  if (GroupTypeOfHtmlFieldType(html_type_) == FieldTypeGroup::kPhone &&
-      GroupTypeOfFieldType(server_type()) == FieldTypeGroup::kPhone) {
-    return AutofillType(server_type());
+  if (GroupTypeOfHtmlFieldType(html_type_local) == FieldTypeGroup::kPhone &&
+      GroupTypeOfFieldType(server_type_local) == FieldTypeGroup::kPhone) {
+    return AutofillType(server_type_local);
   }
 
   // TODO(crbug.com/40266396) Delete this if-statement when
@@ -316,81 +322,82 @@ AutofillType AutofillField::ComputedType() const {
   //
   // If the explicit type is cc-exp and either the server or heuristics agree on
   // a 2 vs 4 digit specialization of cc-exp, use that specialization.
-  if (html_type_ == HtmlFieldType::kCreditCardExp &&
+  if (html_type_local == HtmlFieldType::kCreditCardExp &&
       !base::FeatureList::IsEnabled(
           features::kAutofillEnableExpirationDateImprovements)) {
-    if (server_type() == CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR ||
-        server_type() == CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR) {
-      return AutofillType(server_type());
+    if (server_type_local == CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR ||
+        server_type_local == CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR) {
+      return AutofillType(server_type_local);
     }
-    if (heuristic_type() == CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR ||
-        heuristic_type() == CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR) {
-      return AutofillType(heuristic_type());
+    if (heuristic_type_local == CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR ||
+        heuristic_type_local == CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR) {
+      return AutofillType(heuristic_type_local);
     }
   }
 
   // In general, the autocomplete attribute has precedence over the other types
   // of field detection. Except for specific cases in PreferHeuristicOverHtml
   // and also those detailed in `BelievedHtmlTypes()`.
-  if (PreferHeuristicOverHtml(heuristic_type(), html_type())) {
-    return AutofillType(heuristic_type());
+  if (PreferHeuristicOverHtml(heuristic_type_local, html_type_local)) {
+    return AutofillType(heuristic_type_local);
   }
 
-  if (BelievedHtmlTypes(heuristic_type(), server_type())
-          .contains(html_type())) {
-    return AutofillType(html_type_);
+  if (BelievedHtmlTypes(heuristic_type_local, server_type_local)
+          .contains(html_type_local)) {
+    return AutofillType(html_type_local);
   }
 
-  if (server_type() != NO_SERVER_DATA &&
-      !PreferHeuristicOverServer(heuristic_type(), server_type())) {
+  if (server_type_local != NO_SERVER_DATA &&
+      !PreferHeuristicOverServer(heuristic_type_local, server_type_local)) {
     // Sometimes the server and heuristics disagree on whether a name field
     // should be associated with an address or a credit card. There was a
     // decision to prefer the heuristics in these cases, but it looks like
     // it might be better to fix this server-side.
     // See http://crbug.com/429236 for background.
-    bool believe_server = !(server_type() == NAME_FULL &&
-                            heuristic_type() == CREDIT_CARD_NAME_FULL) &&
-                          !(server_type() == CREDIT_CARD_NAME_FULL &&
-                            heuristic_type() == NAME_FULL) &&
-                          !(server_type() == NAME_FIRST &&
-                            heuristic_type() == CREDIT_CARD_NAME_FIRST) &&
-                          !(server_type() == NAME_LAST &&
-                            heuristic_type() == CREDIT_CARD_NAME_LAST);
+    bool believe_server = !(server_type_local == NAME_FULL &&
+                            heuristic_type_local == CREDIT_CARD_NAME_FULL) &&
+                          !(server_type_local == CREDIT_CARD_NAME_FULL &&
+                            heuristic_type_local == NAME_FULL) &&
+                          !(server_type_local == NAME_FIRST &&
+                            heuristic_type_local == CREDIT_CARD_NAME_FIRST) &&
+                          !(server_type_local == NAME_LAST &&
+                            heuristic_type_local == CREDIT_CARD_NAME_LAST);
 
     // Either way, retain a preference for the CVC heuristic over the
     // server's password predictions (http://crbug.com/469007)
-    believe_server =
-        believe_server && !(GroupTypeOfFieldType(server_type()) ==
-                                FieldTypeGroup::kPasswordField &&
-                            heuristic_type() == CREDIT_CARD_VERIFICATION_CODE);
+    believe_server = believe_server &&
+                     !(GroupTypeOfFieldType(server_type_local) ==
+                           FieldTypeGroup::kPasswordField &&
+                       heuristic_type_local == CREDIT_CARD_VERIFICATION_CODE);
 
     // For structured last name tokens the heuristic predictions get precedence
     // over the server predictions.
-    believe_server = believe_server && heuristic_type() != NAME_LAST_SECOND &&
-                     heuristic_type() != NAME_LAST_FIRST;
+    believe_server = believe_server &&
+                     heuristic_type_local != NAME_LAST_SECOND &&
+                     heuristic_type_local != NAME_LAST_FIRST;
 
     // For structured address tokens the heuristic predictions get precedence
     // over the server predictions.
     believe_server = believe_server &&
-                     heuristic_type() != ADDRESS_HOME_STREET_NAME &&
-                     heuristic_type() != ADDRESS_HOME_HOUSE_NUMBER;
+                     heuristic_type_local != ADDRESS_HOME_STREET_NAME &&
+                     heuristic_type_local != ADDRESS_HOME_HOUSE_NUMBER;
 
     // For merchant promo code fields the heuristic predictions get precedence
     // over the server predictions.
     believe_server =
-        believe_server && (heuristic_type() != MERCHANT_PROMO_CODE);
+        believe_server && (heuristic_type_local != MERCHANT_PROMO_CODE);
 
     // For international bank account number (IBAN) fields the heuristic
     // predictions get precedence over the server predictions.
-    believe_server = believe_server && (heuristic_type() != IBAN_VALUE);
+    believe_server = believe_server && (heuristic_type_local != IBAN_VALUE);
 
     // The numeric quantity heuristic should get granted precedence over the
     // server prediction since it tries to catch false-positive server
     // predictions.
     believe_server =
         believe_server &&
-        !(heuristic_type() == NUMERIC_QUANTITY &&
-          server_type() != UNKNOWN_TYPE &&
+        !(heuristic_type_local == NUMERIC_QUANTITY &&
+          server_type_local != UNKNOWN_TYPE &&
           base::FeatureList::IsEnabled(
               features::kAutofillGivePrecedenceToNumericQuantities));
 
@@ -403,18 +410,19 @@ AutofillType AutofillField::ComputedType() const {
     // TODO: crbug.com/360791229 - Move into
     // `kAutofillHeuristicsVsServerOverrides` once the feature is cleaned up.
     const bool server_type_is_username_type =
-        server_type() == USERNAME || server_type() == SINGLE_USERNAME;
+        server_type_local == USERNAME || server_type_local == SINGLE_USERNAME;
     believe_server =
         believe_server &&
-        !(heuristic_type() == EMAIL_ADDRESS && server_type_is_username_type &&
+        !(heuristic_type_local == EMAIL_ADDRESS &&
+          server_type_is_username_type &&
           base::FeatureList::IsEnabled(
               features::kAutofillGivePrecedenceToEmailOverUsername));
 
     if (believe_server)
-      return AutofillType(server_type());
+      return AutofillType(server_type_local);
   }
 
-  return AutofillType(heuristic_type());
+  return AutofillType(heuristic_type_local);
 }
 
 AutofillType AutofillField::Type() const {
