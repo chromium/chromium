@@ -55,7 +55,8 @@ class ASH_EXPORT PickerClient {
       base::OnceCallback<void(const SkBitmap* bitmap, base::File::Error error)>;
 
   // Gets the SharedURLLoaderFactory to use for Picker network requests, e.g. to
-  // fetch assets.
+  // fetch assets. This is the loader factory for the active profile, not the
+  // global browser process one.
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   GetSharedURLLoaderFactory() = 0;
 
