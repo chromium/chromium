@@ -98,6 +98,9 @@ class SqlDatabase : public VectorDatabase {
   // Callback for database errors.
   void DatabaseErrorCallback(int extended_error, sql::Statement* statement);
 
+  // Deletes passages and embeddings for visits before `expiration_time`.
+  void DeleteExpiredData(base::Time expiration_time);
+
   // The directory storing the database.
   const base::FilePath storage_dir_;
 
