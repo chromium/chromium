@@ -10718,25 +10718,6 @@
             ]
         }
     ],
-    "HandleLocalNetworkPermission": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ShowCastPermissionRejectedError",
-                        "UseNetworkFrameworkForLocalDiscovery"
-                    ]
-                }
-            ]
-        }
-    ],
     "HangoutsExtensionV3": [
         {
             "platforms": [

@@ -57,7 +57,7 @@ BASE_FEATURE(kDelayMediaSinkDiscovery,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kShowCastPermissionRejectedError,
              "ShowCastPermissionRejectedError",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(crbug.com/1486680): Remove once stopping mirroring routes in the global
 // media controls is implemented on ChromeOS.
@@ -83,7 +83,7 @@ BASE_FEATURE(kCastSilentlyRemoveVcOnNavigation,
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kUseNetworkFrameworkForLocalDiscovery,
              "UseNetworkFrameworkForLocalDiscovery",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 namespace {
