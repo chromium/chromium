@@ -75,6 +75,12 @@ void VideoStreamCoordinator::ConnectToDevice(
     mojo::Remote<video_capture::mojom::VideoSource> video_source) {
   Stop();
 
+  if (!video_source) {
+    // This check is needed, because there is a chance for `video_source` to
+    // become unbound, while it is deferred at `connect_to_device_params_`.
+    return;
+  }
+
   if (video_stream_view_) {
     // Wait till the preview is actually shown.
     if (video_stream_view_->width() == 0) {
