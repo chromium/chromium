@@ -19,8 +19,10 @@ _common_args = [
 ]
 
 _common_data_deps = [
-  # Needed to import `android_browser_backend_settings`.
-  "//third_party/catapult/telemetry",
+  # Needed to import `android_browser_backend_settings`. Need to depend on the
+  # entire catapult lib since catapult/telemetry has internal deps to other
+  # catapult libs like catapult/common.
+  "//third_party/catapult:telemetry_chrome_test_support",
 ]
 
 isolated_script_test(
