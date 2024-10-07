@@ -15,6 +15,11 @@ using ::testing::SaveArg;
 MockSearchPickerClient::MockSearchPickerClient() {
   ON_CALL(*this, StartCrosSearch)
       .WillByDefault(SaveArg<2>(&cros_search_callback_));
+  ON_CALL(*this, GetSharedURLLoaderFactory).WillByDefault([]() {
+    ADD_FAILURE()
+        << "GetSharedURLLoaderFactory should not be called in this unittest";
+    return nullptr;
+  });
   ON_CALL(*this, CacheEditorContext).WillByDefault([]() {
     ADD_FAILURE() << "CacheEditorContext should not be called in this unittest";
     return ShowEditorCallback();

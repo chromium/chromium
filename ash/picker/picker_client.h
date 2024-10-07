@@ -18,6 +18,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/files/file.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "url/gurl.h"
 
 class SkBitmap;
@@ -26,6 +27,10 @@ class PrefService;
 namespace gfx {
 class Size;
 }
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace ash {
 
@@ -48,6 +53,11 @@ class ASH_EXPORT PickerClient {
       base::RepeatingCallback<void(std::vector<PickerSearchResult>)>;
   using FetchFileThumbnailCallback =
       base::OnceCallback<void(const SkBitmap* bitmap, base::File::Error error)>;
+
+  // Gets the SharedURLLoaderFactory to use for Picker network requests, e.g. to
+  // fetch assets.
+  virtual scoped_refptr<network::SharedURLLoaderFactory>
+  GetSharedURLLoaderFactory() = 0;
 
   // Starts a search using the CrOS Search API
   // (`app_list::SearchEngine::StartSearch`).

@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/input_method/editor_announcer.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ui/ash/picker/picker_link_suggester.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -58,6 +59,8 @@ class PickerClientImpl
   ~PickerClientImpl() override;
 
   // ash::PickerClient:
+  scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory()
+      override;
   void StartCrosSearch(const std::u16string& query,
                        std::optional<ash::PickerCategory> category,
                        CrosSearchResultsCallback callback) override;

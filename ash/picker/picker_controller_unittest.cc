@@ -162,6 +162,9 @@ class TestPickerClient : public MockPickerClient {
     controller_->SetClient(this);
     // Set default behaviours. These can be overridden with `WillOnce` and
     // `WillRepeatedly`.
+    ON_CALL(*this, GetSharedURLLoaderFactory)
+        .WillByDefault(
+            base::MakeRefCounted<network::TestSharedURLLoaderFactory>);
     ON_CALL(*this, GetPrefs).WillByDefault(Return(prefs_));
   }
   ~TestPickerClient() override { controller_->SetClient(nullptr); }

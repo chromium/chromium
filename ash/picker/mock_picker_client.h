@@ -11,6 +11,8 @@
 #include "ash/ash_export.h"
 #include "ash/picker/picker_category.h"
 #include "ash/picker/picker_client.h"
+#include "base/memory/scoped_refptr.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class PrefService;
@@ -24,6 +26,10 @@ class ASH_EXPORT MockPickerClient : public PickerClient {
   MockPickerClient();
   ~MockPickerClient() override;
 
+  MOCK_METHOD(scoped_refptr<network::SharedURLLoaderFactory>,
+              GetSharedURLLoaderFactory,
+              (),
+              (override));
   MOCK_METHOD(void,
               StartCrosSearch,
               (const std::u16string& query,

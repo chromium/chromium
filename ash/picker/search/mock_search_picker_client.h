@@ -14,7 +14,8 @@ namespace ash {
 // By default:
 // - `StartCrosSearch` will store the supplied callback which can be obtained
 //   using `cros_search_callback()`.
-// - `ShowEditor` will cause the current test to fail.
+// - `GetSharedURLLoaderFactory` and `ShowEditor` will cause the current test to
+//   fail.
 // These behaviours can be overridden with `WillOnce` and `WillRepeatedly` if
 // necessary.
 class ASH_EXPORT MockSearchPickerClient : public MockPickerClient {
