@@ -319,10 +319,6 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
         return nullptr;
       const WebBlobInfo& info = (*blob_info_array_)[index];
       auto blob_handle = info.GetBlobHandle();
-      if (!blob_handle) {
-        blob_handle =
-            GetOrCreateBlobDataHandle(info.Uuid(), info.GetType(), info.size());
-      }
       if (!blob_handle)
         return nullptr;
       return MakeGarbageCollected<Blob>(std::move(blob_handle));
