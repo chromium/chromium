@@ -27,6 +27,17 @@
 import z from 'zod';
 
 export namespace Bluetooth {
+  export const BluetoothServiceUuidSchema = z.lazy(() => z.string());
+}
+export namespace Bluetooth {
+  export const BluetoothManufacturerDataSchema = z.lazy(() =>
+    z.object({
+      key: z.number().int().nonnegative(),
+      data: z.string(),
+    })
+  );
+}
+export namespace Bluetooth {
   export const RequestDeviceSchema = z.lazy(() => z.string());
 }
 export namespace Bluetooth {
@@ -39,6 +50,18 @@ export namespace Bluetooth {
 }
 export namespace Bluetooth {
   export const RequestDevicePromptSchema = z.lazy(() => z.string());
+}
+export namespace Bluetooth {
+  export const ScanRecordSchema = z.lazy(() =>
+    z.object({
+      name: z.string().optional(),
+      uuids: z.array(Bluetooth.BluetoothServiceUuidSchema).optional(),
+      appearance: z.number().optional(),
+      manufacturerData: z
+        .array(Bluetooth.BluetoothManufacturerDataSchema)
+        .optional(),
+    })
+  );
 }
 export namespace Bluetooth {
   export const HandleRequestDevicePromptSchema = z.lazy(() =>
@@ -75,6 +98,66 @@ export namespace Bluetooth {
   export const HandleRequestDevicePromptCancelParametersSchema = z.lazy(() =>
     z.object({
       accept: z.literal(false),
+    })
+  );
+}
+export namespace Bluetooth {
+  export const SimulateAdapterSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('bluetooth.simulateAdapter'),
+      params: Bluetooth.SimulateAdapterParametersSchema,
+    })
+  );
+}
+export namespace Bluetooth {
+  export const SimulateAdapterParametersSchema = z.lazy(() =>
+    z.object({
+      context: z.string(),
+      state: z.enum(['absent', 'powered-off', 'powered-on']),
+    })
+  );
+}
+export namespace Bluetooth {
+  export const SimulatePreconnectedPeripheralSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('bluetooth.simulatePreconnectedPeripheral'),
+      params: Bluetooth.SimulatePreconnectedPeripheralParametersSchema,
+    })
+  );
+}
+export namespace Bluetooth {
+  export const SimulatePreconnectedPeripheralParametersSchema = z.lazy(() =>
+    z.object({
+      context: z.string(),
+      address: z.string(),
+      name: z.string(),
+      manufacturerData: z.array(Bluetooth.BluetoothManufacturerDataSchema),
+      knownServiceUuids: z.array(Bluetooth.BluetoothServiceUuidSchema),
+    })
+  );
+}
+export namespace Bluetooth {
+  export const SimulateAdvertisementSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('bluetooth.simulateAdvertisement'),
+      params: Bluetooth.SimulateAdvertisementParametersSchema,
+    })
+  );
+}
+export namespace Bluetooth {
+  export const SimulateAdvertisementParametersSchema = z.lazy(() =>
+    z.object({
+      context: z.string(),
+      scanEntry: Bluetooth.SimulateAdvertisementScanEntryParametersSchema,
+    })
+  );
+}
+export namespace Bluetooth {
+  export const SimulateAdvertisementScanEntryParametersSchema = z.lazy(() =>
+    z.object({
+      deviceAddress: z.string(),
+      rssi: z.number(),
+      scanRecord: Bluetooth.ScanRecordSchema,
     })
   );
 }

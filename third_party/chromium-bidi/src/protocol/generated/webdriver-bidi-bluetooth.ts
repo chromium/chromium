@@ -22,6 +22,15 @@
  */
 
 export namespace Bluetooth {
+  export type BluetoothServiceUuid = string;
+}
+export namespace Bluetooth {
+  export type BluetoothManufacturerData = {
+    key: number;
+    data: Uint8Array;
+  };
+}
+export namespace Bluetooth {
   export type RequestDevice = string;
 }
 export namespace Bluetooth {
@@ -32,6 +41,14 @@ export namespace Bluetooth {
 }
 export namespace Bluetooth {
   export type RequestDevicePrompt = string;
+}
+export namespace Bluetooth {
+  export type ScanRecord = {
+    name?: string;
+    uuids?: [...Bluetooth.BluetoothServiceUuid[]];
+    appearance?: number;
+    manufacturerData?: [...Bluetooth.BluetoothManufacturerData[]];
+  };
 }
 export namespace Bluetooth {
   export type HandleRequestDevicePrompt = {
@@ -57,6 +74,52 @@ export namespace Bluetooth {
 export namespace Bluetooth {
   export type HandleRequestDevicePromptCancelParameters = {
     accept: false;
+  };
+}
+export namespace Bluetooth {
+  export type SimulateAdapter = {
+    method: 'bluetooth.simulateAdapter';
+    params: Bluetooth.SimulateAdapterParameters;
+  };
+}
+export namespace Bluetooth {
+  export type SimulateAdapterParameters = {
+    context: string;
+    state: 'absent' | 'powered-off' | 'powered-on';
+  };
+}
+export namespace Bluetooth {
+  export type SimulatePreconnectedPeripheral = {
+    method: 'bluetooth.simulatePreconnectedPeripheral';
+    params: Bluetooth.SimulatePreconnectedPeripheralParameters;
+  };
+}
+export namespace Bluetooth {
+  export type SimulatePreconnectedPeripheralParameters = {
+    context: string;
+    address: string;
+    name: string;
+    manufacturerData: [...Bluetooth.BluetoothManufacturerData[]];
+    knownServiceUuids: [...Bluetooth.BluetoothServiceUuid[]];
+  };
+}
+export namespace Bluetooth {
+  export type SimulateAdvertisement = {
+    method: 'bluetooth.simulateAdvertisement';
+    params: Bluetooth.SimulateAdvertisementParameters;
+  };
+}
+export namespace Bluetooth {
+  export type SimulateAdvertisementParameters = {
+    context: string;
+    scanEntry: Bluetooth.SimulateAdvertisementScanEntryParameters;
+  };
+}
+export namespace Bluetooth {
+  export type SimulateAdvertisementScanEntryParameters = {
+    deviceAddress: string;
+    rssi: number;
+    scanRecord: Bluetooth.ScanRecord;
   };
 }
 export namespace Bluetooth {
