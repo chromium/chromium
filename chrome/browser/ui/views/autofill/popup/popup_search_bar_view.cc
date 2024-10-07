@@ -10,8 +10,10 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
@@ -44,9 +46,7 @@ PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder,
 
   input_ = AddChildView(
       views::Builder<views::Textfield>()
-          // TODO(crbug.com/325246516): Set default placeholder according to
-          // approved greenlines.
-          .SetPlaceholderText(placeholder.empty() ? u"Search" : placeholder)
+          .SetPlaceholderText(placeholder)
           .SetController(this)
           .SetBorder(nullptr)
           .SetProperty(views::kElementIdentifierKey, kInputField)
@@ -71,9 +71,8 @@ PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder,
           .SetImageModel(views::Button::STATE_NORMAL,
                          ui::ImageModel::FromVectorIcon(
                              vector_icons::kCloseChromeRefreshIcon))
-          // TODO(crbug.com/325246516): Set the name according to approved
-          // greenlines.
-          .SetAccessibleName(u"tmp non empty name")
+          .SetAccessibleName(l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_POPUP_SEARCH_BAR_CLEAR_SEARCH_BUTTON_A11Y_NAME))
           .Build());
 }
 

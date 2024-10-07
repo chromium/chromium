@@ -259,10 +259,10 @@ void AutofillPopupControllerImpl::Show(
         trigger_source_ ==
                 AutofillSuggestionTriggerSource::kManualFallbackPasswords
             ? std::optional<AutofillPopupView::SearchBarConfig>(
-                  // TODO(crbug.com/325246516): Set translated strings from the
-                  // greenlines when they get finalized.
-                  {.placeholder = u"Search",
-                   .no_results_message = u"No passwords found"})
+                  {.placeholder = l10n_util::GetStringUTF16(
+                       IDS_AUTOFILL_POPUP_SEARCH_BAR_PASSWORDS_INPUT_PLACEHOLDER),
+                   .no_results_message = l10n_util::GetStringUTF16(
+                       IDS_AUTOFILL_POPUP_SEARCH_BAR_PASSWORDS_NOT_FOUND)})
             : std::nullopt;
     view_ = has_parent
                 ? parent_controller_->get()->CreateSubPopupView(GetWeakPtr())

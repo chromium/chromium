@@ -588,6 +588,15 @@
     <message name="IDS_AUTOFILL_VERIFY_PROMO_SUBTITLE_PASSWORD" desc="This is the body text of a confirmation message and means that the password is in an account-pending storage. In other words, it's waiting to be uploaded to the user's Google Account. It appears when the user was signed in to Chrome but their sign-in credentials have expired; now, they need to sign back in to Chrome. The string is after the 'Password saved' string. If the user wants to save this data to their Google Account, they can click the 'Verify it's you' button at the bottom of this message. The tone should be motivating.">
     To get this password on all your devices, verify it's you
     </message>
+    <message name="IDS_AUTOFILL_POPUP_SEARCH_BAR_CLEAR_SEARCH_BUTTON_A11Y_NAME" desc="The a11y name for the clear button accompanying the autofill popup search bar input.">
+      Clear search
+    </message>
+    <message name="IDS_AUTOFILL_POPUP_SEARCH_BAR_PASSWORDS_INPUT_PLACEHOLDER" desc="The placeholder of the autofill popup search bar input for passwords.">
+      Search passwords
+    </message>
+    <message name="IDS_AUTOFILL_POPUP_SEARCH_BAR_PASSWORDS_NOT_FOUND" desc="On the autofill popup for paswords, the label to be used when no passwords matching user's request were found.">
+      No passwords found
+    </message>
   </if>
 
   <!-- Autofill Address Edit Dialog -->
