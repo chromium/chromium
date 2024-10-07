@@ -422,11 +422,19 @@ export class ProductSpecificationsElement extends PolymerElement {
   }
 
   private async populateTable_(urls: string[]) {
+    this.$.errorToast.hide();
+
+    // Transition directly to the empty state if there are no URLs.
+    if (urls.length === 0) {
+      this.tableColumns_ = [];
+      this.showEmptyState_ = true;
+      return;
+    }
+
     await this.enterLoadingState_(urls.length);
 
     const start = Date.now();
     this.showEmptyState_ = false;
-    this.$.errorToast.hide();
 
     const tableColumns: TableColumn[] = [];
     if (urls.length) {
