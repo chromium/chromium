@@ -10,7 +10,7 @@
 
 #include "third_party/jni_zero/jni_export.h"
 #include "third_party/jni_zero/jni_zero_helper.h"
-// Class Accessors.
+// Class Accessors
 #ifndef org_jni_1zero_SampleForAnnotationProcessor_clazz_defined
 #define org_jni_1zero_SampleForAnnotationProcessor_clazz_defined
 inline jclass org_jni_1zero_SampleForAnnotationProcessor_clazz(JNIEnv* env) {
@@ -19,6 +19,7 @@ inline jclass org_jni_1zero_SampleForAnnotationProcessor_clazz(JNIEnv* env) {
   return jni_zero::internal::LazyGetClass(env, kClassName, &cached_class);
 }
 #endif
+
 
 // Java to native functions
 // Forward declaration. To be implemented by the including .cc file.
@@ -407,6 +408,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1S
       jni_zero::JavaParamRef<jobject>(env, context),
       convertedObjects_converted);
 }
+
 
 
 #endif  // org_jni_1zero_SampleForAnnotationProcessor_JNI

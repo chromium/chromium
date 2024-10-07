@@ -7,22 +7,21 @@ import common
 import java_types
 
 
-def class_accessors(java_classes, module_name):
+def class_accessors(sb, java_classes, module_name):
   split_arg = f'"{module_name}", ' if module_name else ''
-  sb = ['// Class Accessors.\n']
   for java_class in java_classes:
     if java_class in (java_types.OBJECT_CLASS, java_types.STRING_CLASS):
       continue
     escaped_name = java_class.to_cpp()
     # #ifdef needed when multple .h files are #included that common classes.
-    sb.append(f"""\
+    sb(f"""\
 #ifndef {escaped_name}_clazz_defined
 #define {escaped_name}_clazz_defined
 """)
     # Uses std::atomic<> instead of "static jclass cached_class = ..." because
     # that moves the initialize-once logic into the helper method (smaller code
     # size).
-    sb.append(f"""\
+    sb(f"""\
 inline jclass {escaped_name}_clazz(JNIEnv* env) {{
   static const char kClassName[] = "{java_class.full_name_with_slashes}";
   static std::atomic<jclass> cached_class;
@@ -31,9 +30,6 @@ inline jclass {escaped_name}_clazz(JNIEnv* env) {{
 #endif
 
 """)
-  if len(sb) == 1:
-    return ''
-  return ''.join(sb)
 
 
 def class_accessor_expression(java_class):

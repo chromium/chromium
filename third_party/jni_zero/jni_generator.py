@@ -1,17 +1,12 @@
 # Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Entry point for "intermediates" command."""
+"""Entry point for "from-source" and "from-jar" commands."""
 
-import base64
 import collections
-import dataclasses
-import hashlib
 import os
 import pickle
-import re
 import shutil
-from string import Template
 import subprocess
 import sys
 import tempfile
@@ -114,6 +109,7 @@ class NativeMethod:
   @property
   def proxy_param_types(self):
     return self.proxy_signature.param_types
+
 
 class CalledByNative:
   """Describes a Java method that is called from C++"""
@@ -316,78 +312,38 @@ def _CollectReferencedClasses(jni_obj):
   return sorted(ret)
 
 
-class InlHeaderFileGenerator:
+def _generate_header(jni_obj, extra_includes):
+  preamble, epilogue = header_common.header_preamble(
+      GetScriptName(),
+      jni_obj.java_class,
+      system_includes=['jni.h'],
+      user_includes=['third_party/jni_zero/jni_export.h'] + extra_includes)
+  java_classes = _CollectReferencedClasses(jni_obj)
+  sb = common.StringBuilder()
+  sb(preamble)
 
-  def __init__(self, jni_obj):
-    self.jni_obj = jni_obj
-    self.namespace = jni_obj.jni_namespace
-    java_class = jni_obj.java_class
-    self.java_class = java_class
-    self.class_name = java_class.name
-    self.module_name = jni_obj.module_name
-    self.natives = jni_obj.natives
-    self.called_by_natives = jni_obj.called_by_natives
-    self.constant_fields = jni_obj.constant_fields
-    self.type_resolver = jni_obj.type_resolver
-    self.options = jni_obj.options
+  if java_classes:
+    with sb.section('Class Accessors'):
+      header_common.class_accessors(sb, java_classes, jni_obj.module_name)
 
-  def GetContent(self):
-    """Returns the content of the JNI binding file."""
-    template = Template("""\
-${PREAMBLE}\
-${CLASS_ACCESSORS}\
-${OPEN_NAMESPACE}\
-${CONSTANTS_ENUMS}\
-${NATIVES}\
-${CALLED_BY_NATIVES}\
-${CLOSE_NAMESPACE}\
-${EPILOGUE}\
-""")
-    java_classes = _CollectReferencedClasses(self.jni_obj)
-    preamble, epilogue = header_common.header_preamble(
-        GetScriptName(),
-        self.java_class,
-        system_includes=['jni.h'],
-        user_includes=['third_party/jni_zero/jni_export.h'] +
-        self.options.extra_includes)
-    class_accessors = header_common.class_accessors(java_classes,
-                                                    self.jni_obj.module_name)
-    constants_enums = called_by_native_header.constants_enums(
-        self.java_class, self.constant_fields)
+  with sb.namespace(jni_obj.jni_namespace):
+    if jni_obj.constant_fields:
+      with sb.section('Constants'):
+        called_by_native_header.constants_enums(sb, jni_obj.java_class,
+                                                jni_obj.constant_fields)
 
-    called_by_natives_code = called_by_native_header.methods(
-        self.called_by_natives)
-    natives_code = natives_header.methods(self.jni_obj)
+    if jni_obj.natives:
+      with sb.section('Java to native functions'):
+        for native in jni_obj.natives:
+          natives_header.entry_point_method(sb, jni_obj, native)
 
-    values = {
-        'PREAMBLE': preamble,
-        'EPILOGUE': epilogue,
-        'CLASS_ACCESSORS': class_accessors,
-        'CONSTANTS_ENUMS': constants_enums,
-        'CALLED_BY_NATIVES': called_by_natives_code,
-        'NATIVES': natives_code,
-        'OPEN_NAMESPACE': self.GetOpenNamespaceString(),
-        'CLOSE_NAMESPACE': self.GetCloseNamespaceString(),
-    }
+    if jni_obj.called_by_natives:
+      with sb.section('Native to Java functions'):
+        for called_by_native in jni_obj.called_by_natives:
+          called_by_native_header.method_definition(sb, called_by_native)
 
-    return template.substitute(values)
-
-  def GetOpenNamespaceString(self):
-    if self.namespace:
-      all_namespaces = [
-          'namespace %s {' % ns for ns in self.namespace.split('::')
-      ]
-      return '\n'.join(all_namespaces) + '\n'
-    return ''
-
-  def GetCloseNamespaceString(self):
-    if self.namespace:
-      all_namespaces = [
-          '}  // namespace %s' % ns for ns in self.namespace.split('::')
-      ]
-      all_namespaces.reverse()
-      return '\n' + '\n'.join(all_namespaces)
-    return ''
+  sb(epilogue)
+  return sb.to_string()
 
 
 def WrapOutput(output):
@@ -546,10 +502,10 @@ def _CreatePlaceholderSrcJar(srcjar_path, jni_objs, *, script_name):
           already_added.add(zip_path)
 
 
-def _WriteHeaders(jni_objs, output_names, output_dir):
+def _WriteHeaders(jni_objs, output_names, output_dir, extra_includes):
   for jni_obj, header_name in zip(jni_objs, output_names):
     output_file = os.path.join(output_dir, header_name)
-    content = InlHeaderFileGenerator(jni_obj).GetContent()
+    content = _generate_header(jni_obj, extra_includes)
 
     with common.atomic_output(output_file, 'w') as f:
       f.write(content)
@@ -575,7 +531,8 @@ def GenerateFromSource(parser, args):
     sys.stderr.write(f'{e}\n')
     sys.exit(1)
 
-  _WriteHeaders(jni_objs, args.output_names, args.output_dir)
+  _WriteHeaders(jni_objs, args.output_names, args.output_dir,
+                args.extra_includes)
 
   jni_objs_with_proxy_natives = [x for x in jni_objs if x.proxy_natives]
   # Write .srcjar
@@ -625,4 +582,5 @@ def GenerateFromJar(parser, args):
     sys.stderr.write(f'{e}\n')
     sys.exit(1)
 
-  _WriteHeaders(jni_objs, args.output_names, args.output_dir)
+  _WriteHeaders(jni_objs, args.output_names, args.output_dir,
+                args.extra_includes)

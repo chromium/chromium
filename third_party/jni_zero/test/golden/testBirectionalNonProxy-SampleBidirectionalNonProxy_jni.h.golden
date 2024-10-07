@@ -10,7 +10,7 @@
 
 #include "third_party/jni_zero/jni_export.h"
 #include "third_party/jni_zero/jni_zero_helper.h"
-// Class Accessors.
+// Class Accessors
 #ifndef org_jni_1zero_SampleBidirectionalNonProxy_clazz_defined
 #define org_jni_1zero_SampleBidirectionalNonProxy_clazz_defined
 inline jclass org_jni_1zero_SampleBidirectionalNonProxy_clazz(JNIEnv* env) {
@@ -19,6 +19,7 @@ inline jclass org_jni_1zero_SampleBidirectionalNonProxy_clazz(JNIEnv* env) {
   return jni_zero::internal::LazyGetClass(env, kClassName, &cached_class);
 }
 #endif
+
 
 // Java to native functions
 // Forward declaration. To be implemented by the including .cc file.
@@ -69,6 +70,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleBidirectionalNonProxy
   auto _ret = reinterpret_cast<Test*>(nativeTest)->StaticMethod(env, arg1);
   return _ret;
 }
+
 
 // Native to Java functions
 static void Java_SampleBidirectionalNonProxy_addStructB(
@@ -219,6 +221,7 @@ static jint Java_SampleBidirectionalNonProxy_testStaticMethodWithParam(
       as_jint(iParam));
   return _ret;
 }
+
 
 
 #endif  // org_jni_1zero_SampleBidirectionalNonProxy_JNI

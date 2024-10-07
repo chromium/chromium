@@ -441,7 +441,10 @@ extern const int64_t kJniZeroHash{module_name}Priority = {priority_hash}LL;
   ]
   non_proxy_natives_java_classes.sort()
 
-  sb(header_common.class_accessors(non_proxy_natives_java_classes, module_name))
+  if non_proxy_natives_java_classes:
+    sb('// Class Accessors.\n')
+    header_common.class_accessors(sb, non_proxy_natives_java_classes,
+                                  module_name)
 
   sb('\n// Forward declarations (methods).\n\n')
   for jni_obj in jni_objs:

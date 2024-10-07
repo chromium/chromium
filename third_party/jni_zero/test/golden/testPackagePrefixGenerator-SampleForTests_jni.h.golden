@@ -10,7 +10,7 @@
 
 #include "third_party/jni_zero/jni_export.h"
 #include "third_party/jni_zero/jni_zero_helper.h"
-// Class Accessors.
+// Class Accessors
 #ifndef this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz_defined
 #define this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz_defined
 inline jclass this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(JNIEnv* env) {
@@ -38,8 +38,9 @@ inline jclass this_is_a_package_prefix_org_jni_1zero_SampleForTests_00024InnerSt
 }
 #endif
 
-namespace jni_zero {
-namespace tests {
+
+namespace jni_zero::tests {
+
 // Java to native functions
 JNI_POSSIBLE_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForTests_1addStructB(
     JNIEnv* env,
@@ -341,6 +342,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_org_jni_1zero_GE
       jni_zero::JavaParamRef<jobject>(env, obj),
       jni_zero::JavaParamRef<jobject>(env, rect));
 }
+
 
 // Native to Java functions
 static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_Constructor(
@@ -834,6 +836,7 @@ static jni_zero::ScopedJavaLocalRef<jstring> Java_InnerStructB_getValue(
 }
 
 
-}  // namespace tests
-}  // namespace jni_zero
+
+}  // namespace jni_zero::tests
+
 #endif  // this_is_a_package_prefix_org_jni_1zero_SampleForTests_JNI

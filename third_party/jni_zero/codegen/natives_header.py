@@ -74,7 +74,7 @@ def _prep_param(sb, param, proxy_type):
   return f'jni_zero::JavaParamRef<{java_type.to_cpp()}>(env, {orig_name})'
 
 
-def _single_method(sb, jni_obj, native):
+def entry_point_method(sb, jni_obj, native):
   cpp_class = native.first_param_cpp_type
   if cpp_class:
     proxy_params = native.proxy_params[1:]
@@ -91,7 +91,7 @@ def _single_method(sb, jni_obj, native):
   proxy_declaration(sb, jni_obj, native)
   proxy_return_type = native.proxy_return_type
   return_type = native.return_type
-  with sb.block():
+  with sb.block(after='\n'):
     param_rvalues = [
         _prep_param(sb, param, proxy_param.java_type)
         for param, proxy_param in zip(params, proxy_params)
@@ -141,14 +141,3 @@ def _single_method(sb, jni_obj, native):
         sb(f'static_cast<{proxy_return_type.to_cpp()}>(converted_ret)')
       else:
         sb('converted_ret')
-
-
-def methods(jni_obj):
-  if not jni_obj.natives:
-    return ''
-  sb = common.StringBuilder()
-  sb('// Java to native functions\n')
-  for native in jni_obj.natives:
-    _single_method(sb, jni_obj, native)
-    sb('\n')
-  return sb.to_string()
