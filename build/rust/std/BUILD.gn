@@ -236,51 +236,6 @@ if (toolchain_has_rust) {
       visibility = [ ":*" ]
     }
 
-    # When given -Zsanitize=..., rustc insists on passing a sanitizer runtime to
-    # the linker it invokes. Unfortunately, our C++ ldflags already tell the
-    # linker to link against a C++ sanitizer runtime - which contains the same
-    # symbols. So, make a blank library.
-    # The list of relevant sanitizers here is taken from
-    # https://github.com/rust-lang/rust/blob/7e7483d26e3cec7a44ef00cf7ae6c9c8c918bec6/compiler/rustc_codegen_ssa/src/back/link.rs#L1148
-    template("rustc_sanitizer_runtime") {
-      rt_name = target_name
-      not_needed([ "invoker" ])
-      static_library("sanitizer_rt_$rt_name") {
-        sources = []
-        output_name = "librustc-${rust_channel}_rt.$rt_name"
-        output_dir = "$local_rustc_sysroot/$sysroot_lib_subdir"
-        if (is_win) {
-          arflags = [ "/llvmlibempty" ]
-        }
-      }
-    }
-    rustc_sanitizer_runtimes = []
-    if (is_asan) {
-      rustc_sanitizer_runtime("asan") {
-      }
-      rustc_sanitizer_runtimes += [ ":sanitizer_rt_asan" ]
-    }
-    if (is_lsan) {
-      rustc_sanitizer_runtime("lsan") {
-      }
-      rustc_sanitizer_runtimes += [ ":sanitizer_rt_lsan" ]
-    }
-    if (is_msan) {
-      rustc_sanitizer_runtime("msan") {
-      }
-      rustc_sanitizer_runtimes += [ ":sanitizer_rt_msan" ]
-    }
-    if (is_tsan) {
-      rustc_sanitizer_runtime("tsan") {
-      }
-      rustc_sanitizer_runtimes += [ ":sanitizer_rt_tsan" ]
-    }
-    if (is_hwasan) {
-      rustc_sanitizer_runtime("hwasan") {
-      }
-      rustc_sanitizer_runtimes += [ ":sanitizer_rt_hwasan" ]
-    }
-
     # Builds and links against the Rust stdlib. Both Rust and C++ targets should
     # depend on this, as it provides the path to the library and includes the
     # allocator hooks.
@@ -299,7 +254,6 @@ if (toolchain_has_rust) {
       foreach(libname, stdlib_files + skip_stdlib_files) {
         deps += [ "rules:$libname" ]
       }
-      deps += rustc_sanitizer_runtimes
 
       public_deps = [ ":remap_alloc" ]
     }
