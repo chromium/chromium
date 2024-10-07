@@ -84,9 +84,7 @@ class OmniboxViewViews
 
   // Exposes the RenderText for tests.
 #if defined(UNIT_TEST)
-  gfx::RenderText* GetRenderText() {
-    return views::Textfield::GetRenderText();
-  }
+  gfx::RenderText* GetRenderText() { return views::Textfield::GetRenderText(); }
 #endif
 
   // For use when switching tabs, this saves the current state onto the tab so
@@ -325,6 +323,10 @@ class OmniboxViewViews
 
   // Called when the popup view becomes visible.
   void OnPopupOpened();
+
+  // Helper for updating placeholder color depending on whether its a keyword or
+  // DSE placeholder.
+  void UpdatePlaceholderTextColor();
 
   // When true, the location bar view is read only and also is has a slightly
   // different presentation (smaller font size). This is used for popups.
