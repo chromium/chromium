@@ -76,11 +76,6 @@
 
 namespace {
 
-// Allow MappableSI to be used for RTCVideoEncoder.
-BASE_FEATURE(kUseMappableSIForRTCVideoEncoder,
-             "UseMappableSIForRTCVideoEncoder",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 media::SVCScalabilityMode ToSVCScalabilityMode(
     const std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>&
         spatial_layers,
@@ -785,9 +780,9 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   // input mode.  The input frame must be backed with GpuMemoryBuffer buffers.
   void EncodeOneFrameWithNativeInput(FrameChunk frame_chunk);
 
-  // Creates a GpuMemoryBuffer frame filled with black pixels. Returns true if
+  // Creates a MappableSI frame filled with black pixels. Returns true if
   // the frame is successfully created; false otherwise.
-  bool CreateBlackGpuMemoryBufferFrame(const gfx::Size& natural_size);
+  bool CreateBlackMappableSIFrame(const gfx::Size& natural_size);
 
   // Notify that an input frame is finished for encoding. |index| is the index
   // of the completed frame in |input_buffers_|.
@@ -890,8 +885,8 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   // VEA to pass the buffer to the encoder directly without further processing.
   bool use_native_input_{false};
 
-  // A black GpuMemoryBuffer frame used when the video track is disabled.
-  scoped_refptr<media::VideoFrame> black_gmb_frame_;
+  // A black frame used when the video track is disabled.
+  scoped_refptr<media::VideoFrame> black_frame_;
 
   // The video codec type, as reported to WebRTC.
   const webrtc::VideoCodecType video_codec_type_;
@@ -1816,12 +1811,11 @@ void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk) {
         storage == media::VideoFrame::STORAGE_UNOWNED_MEMORY ||
         storage == media::VideoFrame::STORAGE_OWNED_MEMORY ||
         storage == media::VideoFrame::STORAGE_SHMEM;
-    const bool is_gmb_frame =
-        storage == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER;
     const bool is_right_format = frame->format() == media::PIXEL_FORMAT_I420 ||
                                  frame->format() == media::PIXEL_FORMAT_NV12;
-    requires_copy_or_scale = !is_right_format || RequiresSizeChange(*frame) ||
-                             !(is_memory_based_frame || is_gmb_frame);
+    requires_copy_or_scale =
+        !is_right_format || RequiresSizeChange(*frame) ||
+        !(is_memory_based_frame || frame->HasMappableGpuBuffer());
   }
 
   if (requires_copy_or_scale) {
@@ -1971,17 +1965,17 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput(
   if (frame_buffer->type() != webrtc::VideoFrameBuffer::Type::kNative) {
     // If we get a non-native frame it's because the video track is disabled and
     // WebRTC VideoBroadcaster replaces the camera frame with a black YUV frame.
-    if (!black_gmb_frame_) {
+    if (!black_frame_) {
       gfx::Size natural_size(frame_buffer->width(), frame_buffer->height());
-      if (!CreateBlackGpuMemoryBufferFrame(natural_size)) {
+      if (!CreateBlackMappableSIFrame(natural_size)) {
         NotifyErrorStatus({media::EncoderStatus::Codes::kSystemAPICallError,
                            "Failed to allocate native buffer for black frame"});
         return;
       }
     }
     frame = media::VideoFrame::WrapVideoFrame(
-        black_gmb_frame_, black_gmb_frame_->format(),
-        black_gmb_frame_->visible_rect(), black_gmb_frame_->natural_size());
+        black_frame_, black_frame_->format(), black_frame_->visible_rect(),
+        black_frame_->natural_size());
   } else {
     frame = static_cast<WebRtcVideoFrameAdapter*>(frame_buffer.get())
                 ->getMediaVideoFrame();
@@ -1990,7 +1984,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput(
 
   if (frame->storage_type() != media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     NotifyErrorStatus({media::EncoderStatus::Codes::kInvalidInputFrame,
-                       "frame isn't GpuMemoryBuffer based VideoFrame"});
+                       "frame isn't mappable shared image based VideoFrame"});
     return;
   }
 
@@ -2014,7 +2008,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput(
   video_encoder_->Encode(frame, frame_chunk.force_keyframe);
 }
 
-bool RTCVideoEncoder::Impl::CreateBlackGpuMemoryBufferFrame(
+bool RTCVideoEncoder::Impl::CreateBlackMappableSIFrame(
     const gfx::Size& natural_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -2027,61 +2021,36 @@ bool RTCVideoEncoder::Impl::CreateBlackGpuMemoryBufferFrame(
   const auto si_usage =
       gpu::SHARED_IMAGE_USAGE_CPU_WRITE | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
-  // Keeping the redundant code between if/else separate since it makes it
-  // easier to remove code once this feature is launched. Also note that this
-  // method as well as some variables here will be renamed when feature is fully
-  // launched.
-  if (base::FeatureList::IsEnabled(kUseMappableSIForRTCVideoEncoder)) {
-    auto* sii = gpu_factories_->SharedImageInterface();
-    if (!sii) {
-      return false;
-    }
-
-    auto shared_image = sii->CreateSharedImage(
-        {si_format, natural_size, gfx::ColorSpace(),
-         gpu::SharedImageUsageSet(si_usage), "RTCVideoEncoder"},
-        gpu::kNullSurfaceHandle, buffer_usage);
-    if (!shared_image) {
-      LOG(ERROR) << "Unable to create a mappable shared image.";
-      return false;
-    }
-
-    // Map in order to write to it.
-    auto mapping = shared_image->Map();
-    if (!mapping) {
-      LOG(ERROR) << "Mapping shared image failed.";
-      sii->DestroySharedImage(gpu::SyncToken(), std::move(shared_image));
-      return false;
-    }
-
-    // Fills the NV12 frame with YUV black (0x00, 0x80, 0x80).
-    std::ranges::fill(mapping->GetMemoryForPlane(0), 0x0);
-    std::ranges::fill(mapping->GetMemoryForPlane(1), 0x80);
-
-    gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
-    black_gmb_frame_ = media::VideoFrame::WrapMappableSharedImage(
-        std::move(shared_image), sync_token, base::NullCallback(),
-        gfx::Rect(mapping->Size()), natural_size, base::TimeDelta());
-  } else {
-    auto gmb = gpu_factories_->CreateGpuMemoryBuffer(
-        natural_size, gfx::BufferFormat::YUV_420_BIPLANAR,
-        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
-
-    if (!gmb || !gmb->Map()) {
-      black_gmb_frame_ = nullptr;
-      return false;
-    }
-    // Fills the NV12 frame with YUV black (0x00, 0x80, 0x80).
-    const auto gmb_size = gmb->GetSize();
-    memset(static_cast<uint8_t*>(gmb->memory(0)), 0x0,
-           gmb->stride(0) * gmb_size.height());
-    memset(static_cast<uint8_t*>(gmb->memory(1)), 0x80,
-           gmb->stride(1) * gmb_size.height() / 2);
-    gmb->Unmap();
-
-    black_gmb_frame_ = media::VideoFrame::WrapExternalGpuMemoryBuffer(
-        gfx::Rect(gmb_size), natural_size, std::move(gmb), base::TimeDelta());
+  auto* sii = gpu_factories_->SharedImageInterface();
+  if (!sii) {
+    return false;
   }
+
+  auto shared_image = sii->CreateSharedImage(
+      {si_format, natural_size, gfx::ColorSpace(),
+       gpu::SharedImageUsageSet(si_usage), "RTCVideoEncoder"},
+      gpu::kNullSurfaceHandle, buffer_usage);
+  if (!shared_image) {
+    LOG(ERROR) << "Unable to create a mappable shared image.";
+    return false;
+  }
+
+  // Map in order to write to it.
+  auto mapping = shared_image->Map();
+  if (!mapping) {
+    LOG(ERROR) << "Mapping shared image failed.";
+    sii->DestroySharedImage(gpu::SyncToken(), std::move(shared_image));
+    return false;
+  }
+
+  // Fills the NV12 frame with YUV black (0x00, 0x80, 0x80).
+  std::ranges::fill(mapping->GetMemoryForPlane(0), 0x0);
+  std::ranges::fill(mapping->GetMemoryForPlane(1), 0x80);
+
+  gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
+  black_frame_ = media::VideoFrame::WrapMappableSharedImage(
+      std::move(shared_image), sync_token, base::NullCallback(),
+      gfx::Rect(mapping->Size()), natural_size, base::TimeDelta());
   return true;
 }
 
