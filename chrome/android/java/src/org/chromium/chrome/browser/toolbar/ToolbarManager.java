@@ -785,7 +785,8 @@ public class ToolbarManager
                             mTabModelSelectorSupplier);
         }
 
-        mToolbarLongPressMenuHandler = new ToolbarLongPressMenuHandler(/* context= */ mActivity);
+        mToolbarLongPressMenuHandler =
+                new ToolbarLongPressMenuHandler(/* context= */ mActivity, mIsCustomTab);
         OnLongClickListener onLongClickListener =
                 mToolbarLongPressMenuHandler.getOnLongClickListener();
 

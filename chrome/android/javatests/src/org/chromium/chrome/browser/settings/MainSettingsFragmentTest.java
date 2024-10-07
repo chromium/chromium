@@ -1217,15 +1217,25 @@ public class MainSettingsFragmentTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
-    public void testAndroidAdressBarFlagOn() {
+    public void testAndroidAddressBarFlagOn() {
         startSettings();
-        assertSettingsExists(MainSettings.PREF_ADDRESS_BAR, AddressBarSettingsFragment.class);
+        // Sadly some emulators erroneously report true for
+        // PackageManager#hasSystemFeature(PackageManager.FEATURE_SENSOR_HINGE_ANGLE). Since this is
+        // an instrumentation test there's not a good way to force this state, so we just fork the
+        // expected behavior based on the device.
+        if (BuildInfo.getInstance().isFoldable) {
+            Assert.assertNull(
+                    "Address Bar should not be shown for foldables",
+                    mMainSettings.findPreference(MainSettings.PREF_ADDRESS_BAR));
+        } else {
+            assertSettingsExists(MainSettings.PREF_ADDRESS_BAR, AddressBarSettingsFragment.class);
+        }
     }
 
     @Test
     @SmallTest
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
-    public void testAndroidAdressBarFlagOff() {
+    public void testAndroidAddressBarFlagOff() {
         startSettings();
         Assert.assertNull(
                 "Address Bar should not be shown when flag is off",
