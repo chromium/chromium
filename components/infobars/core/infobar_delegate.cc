@@ -101,10 +101,12 @@ ThemeInstalledInfoBarDelegate*
   return nullptr;
 }
 
+#if BUILDFLAG(IS_IOS)
 translate::TranslateInfoBarDelegate*
     InfoBarDelegate::AsTranslateInfoBarDelegate() {
   return nullptr;
 }
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 offline_pages::OfflinePageInfoBarDelegate*

@@ -40,7 +40,6 @@
 #include "components/translate/core/browser/page_translated_details.h"
 #include "components/translate/core/browser/translate_browser_metrics.h"
 #include "components/translate/core/browser/translate_download_manager.h"
-#include "components/translate/core/browser/translate_infobar_delegate.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
 #include "components/translate/core/browser/translate_prefs.h"
@@ -294,11 +293,6 @@ ChromeTranslateClient::GetAcceptLanguagesService() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-std::unique_ptr<infobars::InfoBar> ChromeTranslateClient::CreateInfoBar(
-    std::unique_ptr<translate::TranslateInfoBarDelegate> delegate) const {
-  return nullptr;
-}
-
 void ChromeTranslateClient::ManualTranslateWhenReady() {
   if (GetLanguageState().source_language().empty()) {
     manual_translate_on_ready_ = true;

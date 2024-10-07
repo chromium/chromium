@@ -178,7 +178,9 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   int GetIconId() const override;
   void InfoBarDismissed() override;
+#if BUILDFLAG(IS_IOS)
   TranslateInfoBarDelegate* AsTranslateInfoBarDelegate() override;
+#endif
 
  protected:
   TranslateInfoBarDelegate(

@@ -108,6 +108,7 @@ source_set("impl") {
     "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/page_action:icon_type",
     "//components/autofill/content/browser",
+    "//components/infobars/core",
     "//components/strings:components_strings_grit",
     "//components/user_prefs",
   ]
@@ -145,7 +146,6 @@ source_set("impl") {
       "//chrome/common",
       "//components/autofill/core/common:credit_card_number_validation",
       "//components/commerce/core:feature_list",
-      "//components/infobars/core",
       "//components/prefs",
       "//components/strings:components_strings_grit",
       "//components/sync/service",

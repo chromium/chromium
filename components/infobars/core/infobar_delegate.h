@@ -286,7 +286,9 @@ class InfoBarDelegate {
   virtual blocked_content::PopupBlockedInfoBarDelegate*
   AsPopupBlockedInfoBarDelegate();
   virtual ThemeInstalledInfoBarDelegate* AsThemePreviewInfobarDelegate();
+#if BUILDFLAG(IS_IOS)
   virtual translate::TranslateInfoBarDelegate* AsTranslateInfoBarDelegate();
+#endif
 #if BUILDFLAG(IS_ANDROID)
   virtual offline_pages::OfflinePageInfoBarDelegate*
   AsOfflinePageInfoBarDelegate();
