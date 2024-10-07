@@ -128,6 +128,12 @@ class BASE_EXPORT SysInfo {
   // https://deviceatlas.com/resources/clientside/ios-hardware-identification
   static std::string HardwareModelName();
 
+  // Returns the SOC manufacturer's name or an empty string if the manufacturer
+  // is unknown or an error occurred.
+  // e.g. "Google" on Pixel 8 Pro. Only implemented on Android, returns an
+  // empty string on other platforms.
+  static std::string SocManufacturer();
+
 #if BUILDFLAG(IS_MAC)
   struct HardwareModelNameSplit {
     std::string category;

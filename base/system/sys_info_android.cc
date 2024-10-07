@@ -76,6 +76,12 @@ std::string SysInfo::HardwareModelName() {
   return std::string(device_model_str);
 }
 
+std::string SysInfo::SocManufacturer() {
+  char soc_manufacturer_str[PROP_VALUE_MAX];
+  __system_property_get("ro.soc.manufacturer", soc_manufacturer_str);
+  return std::string(soc_manufacturer_str);
+}
+
 std::string SysInfo::OperatingSystemName() {
   return "Android";
 }

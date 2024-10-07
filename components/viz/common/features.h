@@ -97,6 +97,11 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kAllowForceMergeRenderPassWithRequireOverlayQuads);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kOnBeginFrameAcks);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kOnBeginFrameThrottleVideo);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAdpf);
+VIZ_COMMON_EXPORT extern const base::FeatureParam<std::string>
+    kADPFSocManufacturerAllowlist;
+VIZ_COMMON_EXPORT extern const base::FeatureParam<std::string>
+    kADPFSocManufacturerBlocklist;
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableADPFScrollBoost);
 VIZ_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kADPFBoostTimeout;

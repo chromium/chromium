@@ -4,10 +4,14 @@
 
 #include "components/viz/service/performance_hint/hint_session.h"
 
+#include <string>
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_split.h"
+#include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 
@@ -230,18 +234,47 @@ void HintSessionFactoryImpl::WakeUp() {
   (*hint_sessions_.begin())->WakeUp();
 }
 
+// Returns true if Chrome should use ADPF.
+bool IsAdpfEnabled() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableAdpf)) {
+    return false;
+  }
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SDK_VERSION_S) {
+    return false;
+  }
+  if (!AdpfMethods::Get().supported) {
+    return false;
+  }
+  if (!base::FeatureList::IsEnabled(features::kAdpf)) {
+    return false;
+  }
+
+  std::string allowlist_param = features::kADPFSocManufacturerAllowlist.Get();
+  std::vector<std::string_view> allowlist = base::SplitStringPiece(
+      allowlist_param, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  std::string blocklist_param = features::kADPFSocManufacturerBlocklist.Get();
+  std::vector<std::string_view> blocklist = base::SplitStringPiece(
+      blocklist_param, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  std::string soc = base::SysInfo::SocManufacturer();
+  // If there's no allowlist, soc must be absent from the blocklist.
+  if (allowlist.empty()) {
+    return !base::Contains(blocklist, soc);
+  }
+  // If there's an allowlist, soc must be in the allowlist.
+  // Blocklist is ignored in this case.
+  return base::Contains(allowlist, soc);
+}
+
 }  // namespace
 
 // static
 std::unique_ptr<HintSessionFactory> HintSessionFactory::Create(
     base::flat_set<base::PlatformThreadId> permanent_thread_ids) {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kDisableAdpf))
+  if (!IsAdpfEnabled()) {
     return nullptr;
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SDK_VERSION_S)
-    return nullptr;
-  if (!AdpfMethods::Get().supported)
-    return nullptr;
+  }
 
   APerformanceHintManager* manager =
       AdpfMethods::Get().APerformanceHint_getManagerFn();

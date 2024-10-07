@@ -302,6 +302,20 @@ BASE_FEATURE(kOnBeginFrameThrottleVideo,
 #endif
              );
 
+// If enabled, Chrome uses ADPF(Android Dynamic Performance Framework) if the
+// device's SOC manufacturer satisifes the allowlist and blocklist rules.
+// If disabled, Chrome never uses ADPF.
+// The allowlist takes precedence - i.e. if the allowlist is non-empty, the
+// soc must be in the allowlist for Chrome to use ADPF, and the blocklist is
+// ignored. If there's no allowlist, the soc must be absent from the blocklist.
+BASE_FEATURE(kAdpf, "Adpf", base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<std::string> kADPFSocManufacturerAllowlist{
+    &kAdpf, "soc_manufacturer_allowlist", "Google"};
+
+const base::FeatureParam<std::string> kADPFSocManufacturerBlocklist{
+    &kAdpf, "soc_manufacturer_blocklist", ""};
+
 // Used to enable the HintSession::Mode::BOOST mode. BOOST mode try to force
 // the ADPF(Android Dynamic Performance Framework) to give Chrome more CPU
 // resources during a scroll.
