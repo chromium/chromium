@@ -101,6 +101,24 @@ class ValueBuildersTest(unittest.TestCase):
         builder.output(),
     )
 
+  def test_call_builder_elide_param(self):
+    test_value_builder = TestValueBuilder()
+    test_value_builder.entries = ['x', 'y']
+    builder = values.CallValueBuilder(
+        'func',
+        {'foo': test_value_builder},
+        elide_param='foo',
+    )
+
+    self.assertEqual(
+        textwrap.dedent("""\
+            <
+              x,
+              y,
+            >"""),
+        builder.output(),
+    )
+
   def test_empty_dict_builder(self):
     builder = values.DictValueBuilder()
 

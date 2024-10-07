@@ -201,7 +201,6 @@ class _CompoundValueBuilder(ValueBuilder):
     """
     raise NotImplementedError()
 
-  @typing.final
   def _output_stream(self, indent: str) -> typing.Iterable[str] | None:
     """The text of the compound value.
 
@@ -261,6 +260,8 @@ class CallValueBuilder(_CompoundValueBuilder):
   def __init__(self,
                function: str,
                params: dict[str, Value] | None = None,
+               *,
+               elide_param: str | None = None,
                **kwargs):
     """Initialize the CallValueBuilder.
 
@@ -273,6 +274,7 @@ class CallValueBuilder(_CompoundValueBuilder):
     super().__init__(**kwargs)
     self._function: str = function
     self._params = params or {}
+    self._elide_param = elide_param
 
   def __setitem__(self, param_name: str, param_value: Value) -> None:
     """Add an additional parameter to the call."""
@@ -285,6 +287,21 @@ class CallValueBuilder(_CompoundValueBuilder):
   @property
   def _suffix(self) -> str:
     return ')'
+
+  def _output_stream(self, indent: str) -> typing.Iterable[str] | None:
+    param_output_streams = {}
+    for param_name, param_value in self._params.items():
+      output_stream = self._get_output_stream_for_contained_value(
+          param_value, indent)
+      if output_stream is not None:
+        param_output_streams[param_name] = output_stream
+
+    if (self._elide_param is not None
+        and self._elide_param in param_output_streams
+        and len(param_output_streams) == 1):
+      return param_output_streams[self._elide_param]
+
+    return super()._output_stream(indent)
 
   def _entries(self, indent: str) -> typing.Iterable[str] | None:
     param_output_streams = {}

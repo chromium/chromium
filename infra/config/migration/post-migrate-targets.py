@@ -42,7 +42,12 @@ def _convert_basic_suite(
     targets_builder.append(values.convert_direct(test_name))
 
     mixin_builder = values.CallValueBuilder('targets.mixin')
-    per_test_modifications_builder[test_name] = mixin_builder
+    modifications_builder = values.CallValueBuilder(
+        'targets.per_test_modification',
+        {'mixins': mixin_builder},
+        elide_param='mixins',
+    )
+    per_test_modifications_builder[test_name] = modifications_builder
 
     for key, value in test.items():
       match key:
@@ -59,6 +64,18 @@ def _convert_basic_suite(
 
         case 'swarming':
           mixin_builder['swarming'] = values.convert_swarming(value)
+
+        case 'remove_mixins':
+          # Remove_mixins in the starlark basic suite declaration won't be part
+          # of the generated test_suites.pyl if a pyl entry isn't generated for
+          # the mixin, so ensure the remove_mixins gets checked to include all
+          # of the elements
+          remove_mixins_builder = values.ListValueBuilder([
+              f'"DO{""} NOT SUBMIT ensure all remove mixins values are present"'
+          ])
+          modifications_builder['remove_mixins'] = remove_mixins_builder
+          for m in value:
+            remove_mixins_builder.append(values.convert_direct(m))
 
         case _:
           raise Exception(
@@ -162,6 +179,8 @@ _UNREFERENCED_ISOLATES_RE = re.compile(
 
 def main():
 
+  subprocess.check_call([_INFRA_CONFIG_DIR / 'main.star'])
+
   # Regenerate testing/buildbot .json files
   subprocess.check_call([_TESTING_BUILDBOT_DIR / 'generate_buildbot_json.py'])
 
@@ -173,114 +192,117 @@ def main():
 
   ret = check_testing_buildbot_generation()
 
-  match = _UNREFERENCED_SUITES_RE.search(ret.stderr)
-  if match:
-    unreferenced_suite_names = ast.literal_eval(match.group(1))
-    with open(_INFRA_CONFIG_DIR / 'generated/testing/test_suites.pyl',
-              encoding='utf-8') as f:
-      test_suites = ast.literal_eval(f.read())
+  try:
+    match = _UNREFERENCED_SUITES_RE.search(ret.stderr)
+    if match:
+      unreferenced_suite_names = ast.literal_eval(match.group(1))
+      with open(_INFRA_CONFIG_DIR / 'generated/testing/test_suites.pyl',
+                encoding='utf-8') as f:
+        test_suites = ast.literal_eval(f.read())
 
-    suites_to_migrate = {}
-    for suite_type, handler in _SUITE_TYPE_HANDLERS.items():
-      for suite_name, suite in test_suites.get(suite_type, {}).items():
-        if suite_name in unreferenced_suite_names:
-          suites_to_migrate[suite_name] = _SuiteToMigrate(suite_type=suite_type,
-                                                          attrs=handler(suite))
+      suites_to_migrate = {}
+      for suite_type, handler in _SUITE_TYPE_HANDLERS.items():
+        for suite_name, suite in test_suites.get(suite_type, {}).items():
+          if suite_name in unreferenced_suite_names:
+            suites_to_migrate[suite_name] = _SuiteToMigrate(
+                suite_type=suite_type, attrs=handler(suite))
 
-    _update_suites(suites_to_migrate)
+      _update_suites(suites_to_migrate)
 
-    # Regenerating the configs updates test_suites.pyl so that
-    # generate_buildbot_json.py --check should no longer complain about
-    # unreferenced suites and allow us to see if there's any other errors
-    subprocess.check_call([_INFRA_CONFIG_DIR / 'main.star'])
+      # Regenerating the configs updates test_suites.pyl so that
+      # generate_buildbot_json.py --check should no longer complain about
+      # unreferenced suites and allow us to see if there's any other errors
+      subprocess.check_call([_INFRA_CONFIG_DIR / 'main.star'])
 
-    ret = check_testing_buildbot_generation()
+      ret = check_testing_buildbot_generation()
 
-    if _UNREFERENCED_SUITES_RE.search(ret.stderr):
-      raise Exception('unreferenced suites still exist after update')
+      if _UNREFERENCED_SUITES_RE.search(ret.stderr):
+        raise Exception('unreferenced suites still exist after update')
 
-  match = _UNREFERENCED_MIXINS_RE.search(ret.stderr)
-  if match:
-    unreferenced_mixin_names = ast.literal_eval(match.group(1))
-    mixins_star = _TARGETS_DIR / 'mixins.star'
-    buildozer.run(
-        'set generate_pyl_entry False',
-        *(f'{mixins_star}:{mixin_name}'
-          for mixin_name in unreferenced_mixin_names))
+    match = _UNREFERENCED_MIXINS_RE.search(ret.stderr)
+    if match:
+      unreferenced_mixin_names = ast.literal_eval(match.group(1))
+      mixins_star = _TARGETS_DIR / 'mixins.star'
+      buildozer.run(
+          'set generate_pyl_entry False',
+          *(f'{mixins_star}:{mixin_name}'
+            for mixin_name in unreferenced_mixin_names))
 
-    # Regenerating the configs updates mixins.pyl so that
-    # generate_buildbot_json.py --check should no longer complain about
-    # unreferenced mixins and allow us to see if there's any other errors
-    subprocess.check_call([_INFRA_CONFIG_DIR / 'main.star'])
+      # Regenerating the configs updates mixins.pyl so that
+      # generate_buildbot_json.py --check should no longer complain about
+      # unreferenced mixins and allow us to see if there's any other errors
+      subprocess.check_call([_INFRA_CONFIG_DIR / 'main.star'])
 
-    ret = check_testing_buildbot_generation()
+      ret = check_testing_buildbot_generation()
 
-    if _UNREFERENCED_MIXINS_RE.search(ret.stderr):
-      raise Exception('unreferenced mixins still exist after update')
+      if _UNREFERENCED_MIXINS_RE.search(ret.stderr):
+        raise Exception('unreferenced mixins still exist after update')
 
-  match = _UNREFERENCED_VARIANTS_RE.search(ret.stderr)
-  if match:
-    unreferenced_variant_names = ast.literal_eval(match.group(1))
-    variants_star = _TARGETS_DIR / 'variants.star'
-    buildozer.run(
-        'set generate_pyl_entry False',
-        *(f'{variants_star}:{variant_name}'
-          for variant_name in unreferenced_variant_names))
+    match = _UNREFERENCED_VARIANTS_RE.search(ret.stderr)
+    if match:
+      unreferenced_variant_names = ast.literal_eval(match.group(1))
+      variants_star = _TARGETS_DIR / 'variants.star'
+      buildozer.run(
+          'set generate_pyl_entry False',
+          *(f'{variants_star}:{variant_name}'
+            for variant_name in unreferenced_variant_names))
 
-    # Regenerating the configs updates variants.pyl so that
-    # generate_buildbot_json.py --check should no longer complain about
-    # unreferenced variants and allow us to see if there's any other errors
-    subprocess.check_call([_INFRA_CONFIG_DIR / 'main.star'])
+      # Regenerating the configs updates variants.pyl so that
+      # generate_buildbot_json.py --check should no longer complain about
+      # unreferenced variants and allow us to see if there's any other errors
+      subprocess.check_call([_INFRA_CONFIG_DIR / 'main.star'])
 
-    ret = check_testing_buildbot_generation()
+      ret = check_testing_buildbot_generation()
 
-    if _UNREFERENCED_VARIANTS_RE.search(ret.stderr):
-      raise Exception('unreferenced variants still exist after update')
+      if _UNREFERENCED_VARIANTS_RE.search(ret.stderr):
+        raise Exception('unreferenced variants still exist after update')
 
-  def check_check():
-    return subprocess.run([_TESTING_BUILDBOT_DIR / 'check.py'],
-                          capture_output=True,
-                          encoding='utf-8')
-
-  ret = check_check()
-
-  match = _UNREFERENCED_ISOLATES_RE.match(ret.stderr)
-  if match:
-    unreferenced_isolate_names = sorted(match.group(1).split(', '))
-    # Isolate entries can be created by binary, compile target or junit test
-    # declarations and we don't know what declaration produced the entry just
-    # from the name, so try them until we find one. Do tests last since there
-    # are some tests that have the same name as binaries that wouldn't support
-    # the necessary argument.
-    files = [
-        _TARGETS_DIR / 'binaries.star',
-        _TARGETS_DIR / 'compile_targets.star',
-        _TARGETS_DIR / 'tests.star',
-    ]
-
-    comment = 'All references have been moved to starlark'.replace(' ', r'\ ')
-    for isolate_name in unreferenced_isolate_names:
-      for file in files:
-        success = buildozer.try_run('set skip_usage_check True',
-                                    f'comment skip_usage_check {comment}',
-                                    f'{file}:{isolate_name}')
-        if success:
-          break
-
-    # Regenerating the configs updates gn_usolate_map.pyl so that check.py
-    # should no longer complain about unreferenced isolates and allow us to see
-    # if there's any other errors
-    subprocess.check_call([_INFRA_CONFIG_DIR / 'main.star'])
+    def check_check():
+      return subprocess.run([_TESTING_BUILDBOT_DIR / 'check.py'],
+                            capture_output=True,
+                            encoding='utf-8')
 
     ret = check_check()
 
-    if _UNREFERENCED_ISOLATES_RE.match(ret.stderr):
-      raise Exception('unreferenced isolates still exist after update')
+    match = _UNREFERENCED_ISOLATES_RE.match(ret.stderr)
+    if match:
+      unreferenced_isolate_names = sorted(match.group(1).split(', '))
+      # Isolate entries can be created by binary, compile target or junit test
+      # declarations and we don't know what declaration produced the entry just
+      # from the name, so try them until we find one. Do tests last since there
+      # are some tests that have the same name as binaries that wouldn't support
+      # the necessary argument.
+      files = [
+          _TARGETS_DIR / 'binaries.star',
+          _TARGETS_DIR / 'compile_targets.star',
+          _TARGETS_DIR / 'tests.star',
+      ]
+
+      comment = 'All references have been moved to starlark'.replace(' ', r'\ ')
+      for isolate_name in unreferenced_isolate_names:
+        for file in files:
+          success = buildozer.try_run('set skip_usage_check True',
+                                      f'comment skip_usage_check {comment}',
+                                      f'{file}:{isolate_name}')
+          if success:
+            break
+
+      # Regenerating the configs updates gn_usolate_map.pyl so that check.py
+      # should no longer complain about unreferenced isolates and allow us to
+      # see if there's any other errors
+      subprocess.check_call([_INFRA_CONFIG_DIR / 'main.star'])
+
+      ret = check_check()
+
+      if _UNREFERENCED_ISOLATES_RE.match(ret.stderr):
+        raise Exception('unreferenced isolates still exist after update')
+
+  finally:
+    subprocess.check_call(['lucicfg', 'fmt'], cwd=_INFRA_CONFIG_DIR)
 
   subprocess.check_call([_INFRA_CONFIG_DIR / 'scripts/sync-pyl-files.py'])
-  subprocess.check_call(['lucicfg', 'fmt'], cwd=_INFRA_CONFIG_DIR)
 
-  print(ret.stderr, file=sys.stderr)
+  sys.stderr.write(ret.stderr, file=sys.stderr)
   sys.exit(ret.returncode)
 
 
