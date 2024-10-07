@@ -332,12 +332,14 @@ interface ShoppingServiceHandler {
   SetProductSpecificationAcceptedDisclosureVersion(
       ProductSpecificationsDisclosureVersion version);
 
-  // If eligible, show the product specifications disclosure. 'urls' are the
-  // member URLs of the current product specifications set, and `name` is the
-  // set name. `disclosure_shown` is returned to indicate whether this attempt
-  // succeeded (i.e. whether the disclosure is shown).
+  // If eligible, show the product specifications disclosure. If accepting the
+  // disclosure will lead to creating a new set, `urls` are the member URLs of
+  // the new product specifications set, and `name` is the name of the new set.
+  // If accepting the disclosure will load an existing set, `set_id` is the ID
+  // for the set. `disclosure_shown` is returned to indicate whether this
+  // attempt succeeded (i.e. whether the disclosure is shown).
   MaybeShowProductSpecificationDisclosure(array<url.mojom.Url> urls,
-      string name) => (bool disclosure_shown);
+      string name, string set_id) => (bool disclosure_shown);
 
   // Gets called when user has explicitly declined the product specification
   // disclosure.

@@ -1090,6 +1090,7 @@ void ShoppingServiceHandler::SetProductSpecificationAcceptedDisclosureVersion(
 void ShoppingServiceHandler::MaybeShowProductSpecificationDisclosure(
     const std::vector<GURL>& urls,
     const std::string& name,
+    const std::string& set_id,
     MaybeShowProductSpecificationDisclosureCallback callback) {
   bool show =
       (pref_service_->GetInteger(
@@ -1097,7 +1098,7 @@ void ShoppingServiceHandler::MaybeShowProductSpecificationDisclosure(
        static_cast<int>(shopping_service::mojom::
                             ProductSpecificationsDisclosureVersion::kUnknown));
   if (show) {
-    delegate_->ShowProductSpecificationsDisclosureDialog(urls, name);
+    delegate_->ShowProductSpecificationsDisclosureDialog(urls, name, set_id);
   }
   std::move(callback).Run(show);
 }

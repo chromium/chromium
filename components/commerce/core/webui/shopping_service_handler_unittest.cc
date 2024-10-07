@@ -117,7 +117,9 @@ class MockDelegate : public ShoppingServiceHandler::Delegate {
               (override));
   MOCK_METHOD(void,
               ShowProductSpecificationsDisclosureDialog,
-              (const std::vector<GURL>& urls, const std::string& name),
+              (const std::vector<GURL>& urls,
+               const std::string& name,
+               const std::string& set_id),
               (override));
   MOCK_METHOD(void,
               ShowProductSpecificationsSetForUuid,
@@ -1301,9 +1303,9 @@ TEST_F(ShoppingServiceHandlerTest,
 
   base::RunLoop run_loop;
   handler_->MaybeShowProductSpecificationDisclosure(
-      {}, "", base::BindOnce([](bool show) {
-                ASSERT_FALSE(show);
-              }).Then(run_loop.QuitClosure()));
+      {}, "", "", base::BindOnce([](bool show) {
+                    ASSERT_FALSE(show);
+                  }).Then(run_loop.QuitClosure()));
   run_loop.Run();
 }
 
@@ -1311,7 +1313,9 @@ TEST_F(ShoppingServiceHandlerTest,
        TestMaybeShowProductSpecificationDisclosure_Show) {
   std::vector<GURL> urls{GURL(kTestUrl1)};
   std::string name = "test_name";
-  EXPECT_CALL(*delegate_, ShowProductSpecificationsDisclosureDialog(urls, name))
+  std::string set_id = "test_id";
+  EXPECT_CALL(*delegate_,
+              ShowProductSpecificationsDisclosureDialog(urls, name, set_id))
       .Times(1);
 
   pref_service_->SetInteger(
@@ -1321,9 +1325,9 @@ TEST_F(ShoppingServiceHandlerTest,
 
   base::RunLoop run_loop;
   handler_->MaybeShowProductSpecificationDisclosure(
-      urls, name, base::BindOnce([](bool show) {
-                    ASSERT_TRUE(show);
-                  }).Then(run_loop.QuitClosure()));
+      urls, name, set_id, base::BindOnce([](bool show) {
+                            ASSERT_TRUE(show);
+                          }).Then(run_loop.QuitClosure()));
   run_loop.Run();
 }
 

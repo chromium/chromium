@@ -77,8 +77,16 @@ export class DisclosureAppElement extends DisclosureAppElementBase {
     this.shoppingApi_.setProductSpecificationDisclosureAcceptVersion(
         ProductSpecificationsDisclosureVersion.kV1);
 
-    // On accept, continue to create and show the product spec set.
+    // On accept, if `set_id` is available, open the existing set; otherwise
+    // create a new set with `urls` and `name`.
     const args = JSON.parse(chrome.getVariableValue('dialogArguments'));
+    const setId = args['set_id'];
+    if (setId.length !== 0) {
+      this.shoppingApi_.showProductSpecificationsSetForUuid(
+          {value: setId}, false);
+      chrome.send('dialogClose');
+      return;
+    }
     let name: string = args['name'];
     if (name.length === 0) {
       name = loadTimeData.getString('defaultTableTitle');

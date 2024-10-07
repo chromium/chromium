@@ -1139,6 +1139,60 @@ suite('AppTest', () => {
         0, shoppingServiceApi.getCallCount('addProductSpecificationsSet'));
   });
 
+  test('populate table triggers disclosure', async () => {
+    // Mock that disclosure dialog should be shown.
+    shoppingServiceApi.setResultFor(
+        'maybeShowProductSpecificationDisclosure',
+        Promise.resolve({disclosureShown: true}));
+    // Mock that we are opening the page with an existing set.
+    const dimensionValues = {
+      summary: [],
+      specificationDescriptions: [
+        {
+          label: '',
+          altText: '',
+          options: [],
+        },
+      ],
+    };
+    const dimensionValuesMap = new Map<bigint, ProductSpecificationsValue>(
+        [[BigInt(2), dimensionValues]]);
+    const specsProduct = createSpecsProduct({
+      productClusterId: BigInt(123),
+      title: 'Product',
+      productDimensionValues: dimensionValuesMap,
+    });
+    const info = createProductInfo({
+      clusterId: BigInt(123),
+      title: 'Product',
+      productUrl: {url: 'https://example.com/'},
+      imageUrl: {url: 'http://example.com/image.png'},
+    });
+    const testId = '00000000-0000-0000-0000-000000000001';
+    const promiseValues = createAppPromiseValues({
+      idParam: testId,
+      specs: createSpecs({
+        productDimensionMap: new Map<bigint, string>([[BigInt(2), 'Title']]),
+        products: [specsProduct],
+      }),
+      productInfos: [info],
+    });
+    const specsSet = createSpecsSet(
+        {urls: [{url: 'https://example.com/'}], uuid: {value: testId}});
+    shoppingServiceApi.setResultFor(
+        'getProductSpecificationsSetByUuid', Promise.resolve({set: specsSet}));
+
+    await createAppElementWithPromiseValues(promiseValues);
+    await shoppingServiceApi.whenCalled('getProductSpecificationsFeatureState');
+
+    assertTrue(isVisible(appElement.$.empty));
+    assertFalse(isVisible(appElement.$.specs));
+    assertEquals(
+        1,
+        shoppingServiceApi.getCallCount(
+            'maybeShowProductSpecificationDisclosure'));
+  });
+
   test('add url for existing set', async () => {
     const dimensionValues = {
       summary: [],
@@ -1186,6 +1240,11 @@ suite('AppTest', () => {
         'getUrlInfosForRecentlyViewedTabs', Promise.resolve({urlInfos: []}));
     await createAppElementWithPromiseValues(promiseValues);
     await shoppingServiceApi.whenCalled('getProductSpecificationsFeatureState');
+    // Check whether we should show disclosure when there is an existing set.
+    assertEquals(
+        1,
+        shoppingServiceApi.getCallCount(
+            'maybeShowProductSpecificationDisclosure'));
 
     // Click on the "add column" button and select the first (only) item.
     const newColSelector = appElement.$.newColumnSelector;
@@ -1206,9 +1265,10 @@ suite('AppTest', () => {
     assertArrayEquals(
         [{url: 'https://example.com/'}, {url: 'https://example.com/2'}],
         args[1]);
-    // We should not try to show the disclosure when there is an existing set.
+    // We should not try to show the disclosure when trying to add product to an
+    // existing set.
     assertEquals(
-        0,
+        1,
         shoppingServiceApi.getCallCount(
             'maybeShowProductSpecificationDisclosure'));
   });

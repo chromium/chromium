@@ -53,7 +53,8 @@ class ShoppingUiHandlerDelegate : public ShoppingServiceHandler::Delegate {
 
   void ShowProductSpecificationsDisclosureDialog(
       const std::vector<GURL>& urls,
-      const std::string& name) override;
+      const std::string& name,
+      const std::string& set_id) override;
 
   void ShowProductSpecificationsSetForUuid(const base::Uuid& uuid,
                                            bool in_new_tab) override;

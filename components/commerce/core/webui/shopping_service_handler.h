@@ -83,7 +83,8 @@ class ShoppingServiceHandler
 
     virtual void ShowProductSpecificationsDisclosureDialog(
         const std::vector<GURL>& urls,
-        const std::string& name) = 0;
+        const std::string& name,
+        const std::string& set_id) = 0;
 
     virtual void ShowProductSpecificationsSetForUuid(const base::Uuid& uuid,
                                                      bool in_new_tab) = 0;
@@ -169,6 +170,7 @@ class ShoppingServiceHandler
   void MaybeShowProductSpecificationDisclosure(
       const std::vector<GURL>& urls,
       const std::string& name,
+      const std::string& set_id,
       MaybeShowProductSpecificationDisclosureCallback callback) override;
   void DeclineProductSpecificationDisclosure() override;
   void GetProductSpecificationsFeatureState(

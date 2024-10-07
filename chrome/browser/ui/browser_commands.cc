@@ -2367,7 +2367,8 @@ void OpenCommerceProductSpecificationsTab(Browser* browser,
           commerce::kProductSpecificationsAcceptedDisclosureVersion) !=
           static_cast<int>(shopping_service::mojom::
                                ProductSpecificationsDisclosureVersion::kV1)) {
-    commerce::DialogArgs dialog_args(urls, std::string(), /*in_new_tab=*/true);
+    commerce::DialogArgs dialog_args(urls, std::string(), /*set_id=*/"",
+                                     /*in_new_tab=*/true);
     commerce::ProductSpecificationsDisclosureDialog::ShowDialog(
         browser->profile(), browser->tab_strip_model()->GetActiveWebContents(),
         std::move(dialog_args));
