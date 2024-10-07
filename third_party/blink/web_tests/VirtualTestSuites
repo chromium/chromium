@@ -1843,19 +1843,6 @@
     "args": ["--enable-features=CoopRestrictProperties"],
     "expires": "Jul 1, 2025"
   },
-  {
-    "prefix": "coop-noopener-allow-popups",
-    "owners": ["yoavweiss@chromium.org"],
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/html/cross-origin-opener-policy/tentative/noopener/",
-      "external/wpt/html/cross-origin-opener-policy/reporting/tentative/"
-    ],
-    "args": ["--enable-features=CoopNoopenerAllowPopups"],
-    "exclusive_tests": "ALL",
-    "expires": "Mar 1, 2025"
-  },
-
   "These tests require the experimental speculative prefetch feature, and",
   "requires extra switches to enable content implementation of speculation",
   "rules prefetch.",

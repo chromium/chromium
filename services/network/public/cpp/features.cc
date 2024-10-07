@@ -99,7 +99,7 @@ BASE_FEATURE(kCrossOriginOpenerPolicyByDefault,
 // https://github.com/whatwg/html/pull/10394
 BASE_FEATURE(kCoopNoopenerAllowPopups,
              "CoopNoopenerAllowPopups",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Introduce a new COOP value: restrict-properties. It restricts window
 // properties that can be accessed by other pages. This also grants
