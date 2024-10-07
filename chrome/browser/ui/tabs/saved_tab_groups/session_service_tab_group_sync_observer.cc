@@ -108,7 +108,7 @@ void SessionServiceTabGroupSyncObserver::OnTabGroupLocalIdChanged(
 
 void SessionServiceTabGroupSyncObserver::UpdateTabGroupSessionMetadata(
     const std::optional<LocalTabGroupID> local_id,
-    const std::optional<std::string> sync_id) {
+    std::optional<std::string> sync_id) {
   if (!local_id.has_value()) {
     return;
   }
@@ -130,7 +130,7 @@ void SessionServiceTabGroupSyncObserver::UpdateTabGroupSessionMetadata(
           ->visual_data();
 
   session_service->SetTabGroupMetadata(session_id_, local_id.value(),
-                                       visual_data, sync_id);
+                                       visual_data, std::move(sync_id));
 }
 
 }  // namespace tab_groups

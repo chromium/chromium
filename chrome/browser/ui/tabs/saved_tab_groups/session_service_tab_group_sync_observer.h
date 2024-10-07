@@ -61,7 +61,7 @@ class SessionServiceTabGroupSyncObserver
   // using the session service.
   void UpdateTabGroupSessionMetadata(
       const std::optional<LocalTabGroupID> local_id,
-      const std::optional<std::string> sync_id);
+      std::optional<std::string> sync_id);
 
   // Profile used to instantiate and listen to the TabGroupSyncService.
   raw_ptr<Profile> profile_ = nullptr;

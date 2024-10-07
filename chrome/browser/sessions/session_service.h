@@ -104,7 +104,7 @@ class SessionService : public SessionServiceBase {
       SessionID window_id,
       const tab_groups::TabGroupId& group_id,
       const tab_groups::TabGroupVisualData* visual_data,
-      const std::optional<std::string> saved_guid = std::nullopt);
+      std::optional<std::string> saved_guid = std::nullopt);
 
   void AddTabExtraData(SessionID window_id,
                        SessionID tab_id,

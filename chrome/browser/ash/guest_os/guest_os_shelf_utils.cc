@@ -153,7 +153,7 @@ std::string GetGuestTokenForWindowId(const std::string* window_app_id) {
   return token;
 }
 
-std::string GetUnregisteredAppIdPrefix(const std::optional<std::string> token) {
+std::string GetUnregisteredAppIdPrefix(const std::string& token) {
   if (token == kBorealisToken) {
     return borealis::kBorealisAnonymousPrefix;
   }

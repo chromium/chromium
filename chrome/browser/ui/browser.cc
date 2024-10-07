@@ -399,10 +399,9 @@ bool ShouldShowCookieMigrationNoticeForBrowser(const Browser& browser) {
   return last_window_for_profile;
 }
 
-void UpdateTabGroupSessionMetadata(
-    Browser* browser,
-    const tab_groups::TabGroupId& group_id,
-    const std::optional<std::string> saved_group_id) {
+void UpdateTabGroupSessionMetadata(Browser* browser,
+                                   const tab_groups::TabGroupId& group_id,
+                                   std::optional<std::string> saved_group_id) {
   SessionService* const session_service =
       SessionServiceFactory::GetForProfile(browser->profile());
   if (!session_service) {
@@ -416,7 +415,7 @@ void UpdateTabGroupSessionMetadata(
           ->visual_data();
 
   session_service->SetTabGroupMetadata(browser->session_id(), group_id,
-                                       visual_data, saved_group_id);
+                                       visual_data, std::move(saved_group_id));
 }
 
 }  // namespace

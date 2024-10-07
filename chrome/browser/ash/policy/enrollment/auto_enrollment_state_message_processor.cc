@@ -125,7 +125,7 @@ class InitialEnrollmentStateMessageProcessor
   InitialEnrollmentStateMessageProcessor(
       const std::string& device_serial_number,
       const std::string& device_brand_code,
-      const std::optional<std::string> flex_enrollment_token)
+      std::optional<std::string> flex_enrollment_token)
       : device_serial_number_(device_serial_number),
         device_brand_code_(device_brand_code),
         flex_enrollment_token_(std::move(flex_enrollment_token)) {}
