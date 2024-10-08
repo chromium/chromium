@@ -58,6 +58,7 @@ class ExceptionState;
 class MediaValues;
 class FontFaceDescriptors;
 class StyleRuleFontFace;
+class V8FontFaceLoadStatus;
 class V8UnionArrayBufferOrArrayBufferViewOrString;
 struct FontMetricsOverride;
 
@@ -115,7 +116,7 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   void setLineGapOverride(ExecutionContext*, const String&, ExceptionState&);
   void setSizeAdjust(ExecutionContext*, const String&, ExceptionState&);
 
-  String status() const;
+  V8FontFaceLoadStatus status() const;
   ScriptPromise<FontFace> loaded(ScriptState* script_state) {
     return FontStatusPromise(script_state);
   }

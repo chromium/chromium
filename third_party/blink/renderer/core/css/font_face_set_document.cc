@@ -72,12 +72,6 @@ FontSelector* FontFaceSetDocument::GetFontSelector() const {
   return GetDocument()->GetStyleEngine().GetFontSelector();
 }
 
-AtomicString FontFaceSetDocument::status() const {
-  DEFINE_STATIC_LOCAL(AtomicString, loading, ("loading"));
-  DEFINE_STATIC_LOCAL(AtomicString, loaded, ("loaded"));
-  return is_loading_ ? loading : loaded;
-}
-
 void FontFaceSetDocument::DidLayout() {
   if (!GetExecutionContext()) {
     return;

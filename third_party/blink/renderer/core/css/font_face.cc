@@ -33,6 +33,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_font_face_descriptors.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_font_face_load_status.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_string.h"
 #include "third_party/blink/renderer/core/css/binary_data_font_face_source.h"
 #include "third_party/blink/renderer/core/css/css_font_face.h"
@@ -482,20 +483,18 @@ void FontFace::SetFamilyValue(const CSSFontFamilyValue& family_value) {
   family_ = family_value.Value();
 }
 
-String FontFace::status() const {
+V8FontFaceLoadStatus FontFace::status() const {
   switch (status_) {
     case kUnloaded:
-      return "unloaded";
+      return V8FontFaceLoadStatus(V8FontFaceLoadStatus::Enum::kUnloaded);
     case kLoading:
-      return "loading";
+      return V8FontFaceLoadStatus(V8FontFaceLoadStatus::Enum::kLoading);
     case kLoaded:
-      return "loaded";
+      return V8FontFaceLoadStatus(V8FontFaceLoadStatus::Enum::kLoaded);
     case kError:
-      return "error";
-    default:
-      NOTREACHED_IN_MIGRATION();
+      return V8FontFaceLoadStatus(V8FontFaceLoadStatus::Enum::kError);
   }
-  return g_empty_string;
+  NOTREACHED();
 }
 
 void FontFace::SetLoadStatus(LoadStatusType status) {

@@ -33,8 +33,6 @@ class CORE_EXPORT FontFaceSetWorker final
 
   ScriptPromise<FontFaceSet> ready(ScriptState*) override;
 
-  AtomicString status() const override;
-
   WorkerGlobalScope* GetWorker() const;
 
   // FontFace::LoadFontCallback
