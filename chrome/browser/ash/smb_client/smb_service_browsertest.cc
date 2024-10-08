@@ -16,7 +16,7 @@ IN_PROC_BROWSER_TEST_F(SmbServiceTest, IsServiceCreated) {
       user_manager::UserManager::Get()->GetPrimaryUser();
   content::BrowserContext* browser_context =
       BrowserContextHelper::Get()->GetBrowserContextByUser(primary_user);
-  EXPECT_TRUE(smb_client::SmbServiceFactory::GetInstance()->IsSmbServiceCrated(
+  EXPECT_TRUE(smb_client::SmbServiceFactory::GetInstance()->IsSmbServiceCreated(
       browser_context));
 }
 
