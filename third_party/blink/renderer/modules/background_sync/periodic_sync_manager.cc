@@ -179,9 +179,10 @@ void PeriodicSyncManager::GetRegistrationsCallback(
   switch (error) {
     case mojom::blink::BackgroundSyncError::NONE: {
       Vector<String> tags;
-      for (const auto& registration : registrations)
+      for (const auto& registration : registrations) {
         tags.push_back(registration->tag);
-      resolver->Resolve(tags);
+      }
+      resolver->Resolve(std::move(tags));
       break;
     }
     case mojom::blink::BackgroundSyncError::NOT_FOUND:
