@@ -74,6 +74,7 @@ class MockObserver : public BocaSessionManager::Observer {
               (const std::string& group_name,
                const std::vector<::boca::UserIdentity>& consumers),
               (override));
+  MOCK_METHOD(void, OnAppReloaded, (), (override));
 };
 
 class MockBocaAppClient : public BocaAppClient {
@@ -648,6 +649,14 @@ TEST_F(BocaSessionManagerTest, NotifyLocalCaptionConfigWhenLocalChange) {
 
   ::boca::CaptionsConfig config;
   BocaAppClient::Get()->GetSessionManager()->NotifyLocalCaptionEvents(config);
+}
+
+TEST_F(BocaSessionManagerTest, NotifyAppReloadEvent) {
+  EXPECT_CALL(*boca_app_client(), GetIdentityManager())
+      .WillOnce(Return(identity_manager()));
+  EXPECT_CALL(*observer(), OnAppReloaded()).Times(1);
+
+  BocaAppClient::Get()->GetSessionManager()->NotifyAppReload();
 }
 
 }  // namespace

@@ -55,6 +55,8 @@ void BocaSessionManager::Observer::OnSessionRosterUpdated(
     const std::string& group_name,
     const std::vector<::boca::UserIdentity>& consumers) {}
 
+void BocaSessionManager::Observer::OnAppReloaded() {}
+
 void BocaSessionManager::OnNetworkStateChanged(
     chromeos::network_config::mojom::NetworkStatePropertiesPtr network_state) {
   // Check network types comment here:
@@ -143,6 +145,12 @@ void BocaSessionManager::NotifyLocalCaptionEvents(
     ::boca::CaptionsConfig caption_config) {
   for (auto& observer : observers_) {
     observer.OnLocalCaptionConfigUpdated(std::move(caption_config));
+  }
+}
+
+void BocaSessionManager::NotifyAppReload() {
+  for (auto& observer : observers_) {
+    observer.OnAppReloaded();
   }
 }
 

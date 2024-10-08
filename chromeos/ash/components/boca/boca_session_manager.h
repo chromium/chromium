@@ -98,6 +98,9 @@ class BocaSessionManager
     virtual void OnSessionRosterUpdated(
         const std::string& group_name,
         const std::vector<::boca::UserIdentity>& consumers);
+
+    // Notifies when boca app reloaded.
+    virtual void OnAppReloaded();
   };
   // CrosNetworkConfigObserver
   void OnNetworkStateChanged(
@@ -121,6 +124,9 @@ class BocaSessionManager
 
   // Local events.
   virtual void NotifyLocalCaptionEvents(::boca::CaptionsConfig caption_config);
+
+  // Triggered by SWA delegate to notify app reload events.
+  virtual void NotifyAppReload();
 
   base::ObserverList<Observer>& observers() { return observers_; }
 
