@@ -111,7 +111,15 @@ public class PasswordAccessLossDialogHelper {
         return PasswordManagerUtilBridge.getPasswordAccessLossWarningType(prefService);
     }
 
-    private static boolean shouldShowAccessLossWarningWhenNoGmsNoPasswords(
+    /**
+     * Check if the warning dialog in settings should be shown even when there are no local
+     * passwords that need to be exported.
+     *
+     * @param prefService used to check if the login database for profile is empty.
+     * @param buildInfo used to check the GMS Core version.
+     * @return whether the warning dialog in settings should be shown.
+     */
+    public static boolean shouldShowAccessLossWarningWhenNoGmsNoPasswords(
             PrefService prefService, BuildInfo buildInfo) {
         if (!ChromeFeatureList.isEnabled(
                 ChromeFeatureList
