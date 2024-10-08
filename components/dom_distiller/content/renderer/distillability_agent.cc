@@ -214,7 +214,7 @@ void DistillabilityAgent::DidMeaningfulLayout(
       is_distillable, is_last, is_long_article, is_mobile_friendly);
 }
 
-DistillabilityAgent::~DistillabilityAgent() {}
+DistillabilityAgent::~DistillabilityAgent() = default;
 
 void DistillabilityAgent::OnDestruct() {
   delete this;

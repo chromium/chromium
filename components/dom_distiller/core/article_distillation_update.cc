@@ -19,7 +19,7 @@ ArticleDistillationUpdate::ArticleDistillationUpdate(
 ArticleDistillationUpdate::ArticleDistillationUpdate(
     const ArticleDistillationUpdate& other) = default;
 
-ArticleDistillationUpdate::~ArticleDistillationUpdate() {}
+ArticleDistillationUpdate::~ArticleDistillationUpdate() = default;
 
 const DistilledPageProto& ArticleDistillationUpdate::GetDistilledPage(
     size_t index) const {

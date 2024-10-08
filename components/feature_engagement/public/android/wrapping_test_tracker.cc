@@ -20,7 +20,7 @@ namespace feature_engagement {
 WrappingTestTracker::WrappingTestTracker(
     const base::android::JavaRef<jobject>& jtracker)
     : java_tracker_(jtracker) {}
-WrappingTestTracker::~WrappingTestTracker() {}
+WrappingTestTracker::~WrappingTestTracker() = default;
 
 void WrappingTestTracker::NotifyEvent(const std::string& event) {
   JNIEnv* env = base::android::AttachCurrentThread();

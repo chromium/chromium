@@ -68,7 +68,7 @@ class TestDistillerFactoryImpl : public DistillerFactory {
         dom_distiller_options_(dom_distiller_options),
         file_to_url_map_(file_to_url_map) {}
 
-  ~TestDistillerFactoryImpl() override {}
+  ~TestDistillerFactoryImpl() override = default;
 
   std::unique_ptr<Distiller> CreateDistillerForUrl(const GURL& url) override {
     dom_distiller::proto::DomDistillerOptions options;

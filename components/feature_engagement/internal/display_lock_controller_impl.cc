@@ -11,7 +11,7 @@
 
 namespace feature_engagement {
 
-DisplayLockControllerImpl::DisplayLockControllerImpl() {}
+DisplayLockControllerImpl::DisplayLockControllerImpl() = default;
 
 DisplayLockControllerImpl::~DisplayLockControllerImpl() = default;
 

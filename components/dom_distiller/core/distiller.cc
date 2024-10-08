@@ -37,7 +37,7 @@ DistillerFactoryImpl::DistillerFactoryImpl(
     : distiller_url_fetcher_factory_(std::move(distiller_url_fetcher_factory)),
       dom_distiller_options_(dom_distiller_options) {}
 
-DistillerFactoryImpl::~DistillerFactoryImpl() {}
+DistillerFactoryImpl::~DistillerFactoryImpl() = default;
 
 std::unique_ptr<Distiller> DistillerFactoryImpl::CreateDistillerForUrl(
     const GURL& unused) {
