@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.compositor.layouts;
 import android.content.Context;
 import android.graphics.RectF;
 
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.ui.resources.ResourceManager;
@@ -27,7 +28,7 @@ class MockLayoutHost implements LayoutManagerHost, LayoutRenderHost {
     MockLayoutHost(Context context) {
         mContext = context;
         mBrowserControlsManager =
-                new BrowserControlsManager(null, BrowserControlsManager.ControlsPosition.TOP);
+                new BrowserControlsManager(null, BrowserControlsStateProvider.ControlsPosition.TOP);
     }
 
     public void setOrientation(boolean portrait) {

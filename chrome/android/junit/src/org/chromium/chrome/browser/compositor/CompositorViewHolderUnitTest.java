@@ -55,6 +55,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -194,7 +195,8 @@ public class CompositorViewHolderUnitTest {
         when(mTab.isUserInteractable()).thenReturn(true);
 
         BrowserControlsManager browserControlsManager =
-                new BrowserControlsManager(mActivity, BrowserControlsManager.ControlsPosition.TOP);
+                new BrowserControlsManager(
+                        mActivity, BrowserControlsStateProvider.ControlsPosition.TOP);
         mBrowserControlsManager = spy(browserControlsManager);
         mBrowserControlsManager.initialize(
                 mControlContainer,

@@ -11,7 +11,6 @@ import android.app.Activity;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -44,9 +43,6 @@ import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.util.TokenHolder;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /** A class that manages browser control visibility and positioning. */
 public class BrowserControlsManager implements ActivityStateListener, BrowserControlsSizer {
@@ -105,16 +101,6 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
     private boolean mOffsetOverridden;
 
     private boolean mContentViewScrolling;
-
-    @IntDef({ControlsPosition.TOP, ControlsPosition.NONE})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface ControlsPosition {
-        /** Controls are at the top, eg normal ChromeTabbedActivity. */
-        int TOP = 0;
-
-        /** Controls are not present, eg NoTouchActivity. */
-        int NONE = 1;
-    }
 
     private final Runnable mUpdateVisibilityRunnable =
             new Runnable() {
@@ -538,6 +524,11 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         return mControlContainer == null
                 ? View.INVISIBLE
                 : mControlContainer.getView().getVisibility();
+    }
+
+    @Override
+    public int getControlsPosition() {
+        return mControlsPosition;
     }
 
     @Override

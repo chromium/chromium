@@ -84,6 +84,7 @@ import org.chromium.chrome.browser.base.ColdStartTracker;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
@@ -561,7 +562,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         mBrowserControlsManagerSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
         // BrowserControlsManager is ready immediately.
         mBrowserControlsManagerSupplier.set(
-                new BrowserControlsManager(this, BrowserControlsManager.ControlsPosition.TOP));
+                new BrowserControlsManager(
+                        this, BrowserControlsStateProvider.ControlsPosition.TOP));
     }
 
     /** Subclasses must create a {@link RootUiCoordinator}. */

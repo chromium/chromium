@@ -124,7 +124,8 @@ public class BrowserControlsManagerUnitTest {
         when(mTabModel.getComprehensiveModel()).thenReturn(mTabModel);
 
         BrowserControlsManager browserControlsManager =
-                new BrowserControlsManager(mActivity, BrowserControlsManager.ControlsPosition.TOP);
+                new BrowserControlsManager(
+                        mActivity, BrowserControlsStateProvider.ControlsPosition.TOP);
         mBrowserControlsManager = spy(browserControlsManager);
         mBrowserControlsManager.initialize(
                 mControlContainer,
@@ -139,7 +140,8 @@ public class BrowserControlsManagerUnitTest {
     private void remakeWithoutSpy() {
         mBrowserControlsManager.destroy();
         mBrowserControlsManager =
-                new BrowserControlsManager(mActivity, BrowserControlsManager.ControlsPosition.TOP);
+                new BrowserControlsManager(
+                        mActivity, BrowserControlsStateProvider.ControlsPosition.TOP);
         mBrowserControlsManager.initialize(
                 mControlContainer,
                 mActivityTabProvider,
@@ -422,7 +424,8 @@ public class BrowserControlsManagerUnitTest {
     @Test
     public void testGetAndroidControlsVisibility() {
         BrowserControlsManager browserControlsManager =
-                new BrowserControlsManager(mActivity, BrowserControlsManager.ControlsPosition.TOP);
+                new BrowserControlsManager(
+                        mActivity, BrowserControlsStateProvider.ControlsPosition.TOP);
         assertEquals(View.INVISIBLE, browserControlsManager.getAndroidControlsVisibility());
 
         browserControlsManager.initialize(
