@@ -21,6 +21,10 @@ BASE_DECLARE_FEATURE(kAdSamplerTriggerFeature);
 // Enables adding warning shown timestamp to client safe browsing report.
 BASE_DECLARE_FEATURE(kAddWarningShownTSToClientSafeBrowsingReport);
 
+// Expand allowlist usage beyond CSPP allowlist by using the high confidence
+// allowlist as well.
+BASE_DECLARE_FEATURE(kClientSideDetectionAcceptHCAllowlist);
+
 // Killswitch for client side phishing detection. Since client side models are
 // run on a large fraction of navigations, crashes due to the model are very
 // impactful, even if only a small fraction of users have a bad version of the

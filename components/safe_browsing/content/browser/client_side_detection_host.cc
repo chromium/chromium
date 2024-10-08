@@ -80,6 +80,10 @@ const char kSkipCSDAllowlistOnPreclassification[] =
 // allowlist 1000 times more than the rate at which we send a ping due to local
 // model verdict. Therefore, we sample at 1 in 100,000 rate instead.
 const float kProbabilityForSendingSampleRequest = 0.00001;
+// Probability value used to accept the high confidence allowlist match for
+// trigger and force request types. More information on why this value was
+// chosen can be found at go/crca-cspp-expand-allowlist.
+const float kProbabilityForAcceptingHCAllowlistTrigger = 0.95;
 
 void WriteFeaturesToDisk(const ClientPhishingRequest& features,
                          const base::FilePath& base_path) {
@@ -186,12 +190,15 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
       base::WeakPtr<ClientSideDetectionService> csd_service,
       SafeBrowsingDatabaseManager* database_manager,
       ClientSideDetectionType phishing_detection_request_type,
+      float probability_for_accepting_hc_allowlist_trigger,
       base::WeakPtr<ClientSideDetectionHost> host)
       : url_(url),
         web_contents_(web_contents),
         csd_service_(csd_service),
         database_manager_(database_manager),
         phishing_detection_request_type_(phishing_detection_request_type),
+        probability_for_accepting_hc_allowlist_trigger_(
+            probability_for_accepting_hc_allowlist_trigger),
         host_(host),
         start_phishing_classification_cb_(
             std::move(start_phishing_classification)) {
@@ -384,13 +391,20 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
           PreClassificationCheckResult::NO_CLASSIFY_MATCH_CSD_ALLOWLIST;
     }
 
-    // This check is for logging purposes only. Once it completes,
-    // preclassification will continue.
-    database_manager_->CheckUrlForHighConfidenceAllowlist(
-        url, base::BindOnce(&ClientSideDetectionHost::ShouldClassifyUrlRequest::
-                                OnHighConfidenceAllowlistCheckDone,
-                            weak_factory_.GetWeakPtr(), phishing_reason,
-                            base::TimeTicks::Now()));
+    if (phishing_reason !=
+        PreClassificationCheckResult::NO_CLASSIFY_NO_DATABASE_MANAGER) {
+      // This check is also for logging purposes although the CSD allowlist
+      // could be matched. Once it completes, preclassification check will
+      // continue.
+      database_manager_->CheckUrlForHighConfidenceAllowlist(
+          url,
+          base::BindOnce(&ClientSideDetectionHost::ShouldClassifyUrlRequest::
+                             OnHighConfidenceAllowlistCheckDone,
+                         weak_factory_.GetWeakPtr(), phishing_reason,
+                         base::TimeTicks::Now()));
+    } else {
+      CheckCache(phishing_reason);
+    }
   }
 
   void OnHighConfidenceAllowlistCheckDone(
@@ -421,6 +435,11 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
         "SBClientPhishing.MatchHighConfidenceAllowlist." +
             GetRequestTypeName(phishing_detection_request_type_),
         match_result);
+
+    if (phishing_reason == NO_CLASSIFY_MAX && ShouldAcceptHCAllowlist()) {
+      phishing_reason =
+          PreClassificationCheckResult::NO_CLASSIFY_MATCH_HC_ALLOWLIST;
+    }
 
     CheckCache(phishing_reason);
   }
@@ -494,6 +513,25 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
            base::FeatureList::IsEnabled(kClientSideDetectionSamplePing);
   }
 
+  bool ShouldAcceptHCAllowlist() {
+    // It can be inferred that it has value because it was set right before, but
+    // check again for sanity.
+    if (!did_match_high_confidence_allowlist_.has_value() ||
+        !did_match_high_confidence_allowlist_.value()) {
+      return false;
+    }
+
+    switch (phishing_detection_request_type_) {
+      case ClientSideDetectionType::TRIGGER_MODELS:
+        return base::FeatureList::IsEnabled(
+                   kClientSideDetectionAcceptHCAllowlist) &&
+               base::RandDouble() <=
+                   probability_for_accepting_hc_allowlist_trigger_;
+      default:
+        return false;
+    }
+  }
+
   ClientSideAllowlistMatchResult GetClientSideAllowlistMatchResult(
       bool match_csd_allowlist,
       bool match_hc_allowlist) {
@@ -519,6 +557,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
   // database manager stays alive long enough.
   scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;
   ClientSideDetectionType phishing_detection_request_type_;
+  float probability_for_accepting_hc_allowlist_trigger_;
   base::WeakPtr<ClientSideDetectionHost> host_;
   ShouldClassifyUrlCallback start_phishing_classification_cb_;
 
@@ -554,7 +593,9 @@ ClientSideDetectionHost::ClientSideDetectionHost(
       pref_service_(pref_service),
       token_fetcher_(std::move(token_fetcher)),
       is_off_the_record_(is_off_the_record),
-      account_signed_in_callback_(account_signed_in_callback) {
+      account_signed_in_callback_(account_signed_in_callback),
+      probability_for_accepting_hc_allowlist_trigger_(
+          kProbabilityForAcceptingHCAllowlistTrigger) {
   DCHECK(tab);
   DCHECK(pref_service);
   // Note: csd_service_ and sb_service will be nullptr here in testing.
@@ -629,6 +670,7 @@ void ClientSideDetectionHost::MaybeStartPreClassification(
       base::BindOnce(&ClientSideDetectionHost::OnPhishingPreClassificationDone,
                      weak_factory_.GetWeakPtr(), request_type),
       web_contents(), csd_service_, database_manager_.get(), request_type,
+      probability_for_accepting_hc_allowlist_trigger_,
       weak_factory_.GetWeakPtr());
   classification_request_->Start();
 }
@@ -1158,6 +1200,12 @@ void ClientSideDetectionHost::SendRequest(
                      did_match_high_confidence_allowlist);
   csd_service_->SendClientReportPhishingRequest(
       std::move(verdict), std::move(callback), access_token);
+}
+
+void ClientSideDetectionHost::
+    set_high_confidence_allowlist_acceptance_rate_for_testing(
+        float acceptance_rate) {
+  probability_for_accepting_hc_allowlist_trigger_ = acceptance_rate;
 }
 
 }  // namespace safe_browsing

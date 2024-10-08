@@ -309,7 +309,8 @@ enum PreClassificationCheckResult {
   NO_CLASSIFY_LOCAL_RESOURCE = 15;
   NO_CLASSIFY_CHROME_UI_PAGE = 16;
   OBSOLETE_NO_CLASSIFY_NOT_ALLOWED_BY_POLICY = 17;
-  NO_CLASSIFY_MAX = 18;  // Always add before this, and update this value.
+  NO_CLASSIFY_MATCH_HC_ALLOWLIST = 18;
+  NO_CLASSIFY_MAX = 19;  // Always add before this, and update this value.
 }
 
 // This value must be kept in sync with those in
