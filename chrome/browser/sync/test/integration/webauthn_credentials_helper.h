@@ -177,6 +177,12 @@ MATCHER_P(EntityHasDisplayName, expected_display_name, "") {
          expected_display_name;
 }
 
+MATCHER_P(EntityHasLastUsedTime, expected_last_used_time, "") {
+  return arg.specifics()
+             .webauthn_credential()
+             .last_used_time_windows_epoch_micros() == expected_last_used_time;
+}
+
 // Matches a `sync_pb::WebauthnCredentialSpecifics` against another field by
 // field.
 MATCHER_P(PasskeySpecificsEq, expected, "") {

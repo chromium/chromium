@@ -442,6 +442,35 @@ bool PasskeySyncBridge::UpdatePasskey(const std::string& credential_id,
   return true;
 }
 
+bool PasskeySyncBridge::UpdatePasskeyTimestamp(const std::string& credential_id,
+                                               base::Time last_used_time) {
+  const auto passkey_it =
+      base::ranges::find_if(data_, [&credential_id](const auto& passkey) {
+        return passkey.second.credential_id() == credential_id;
+      });
+  if (passkey_it == data_.end()) {
+    DVLOG(1) << "Attempted to update non existent passkey";
+    return false;
+  }
+
+  passkey_it->second.set_last_used_time_windows_epoch_micros(
+      last_used_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
+      store_->CreateWriteBatch();
+  change_processor()->Put(passkey_it->second.sync_id(),
+                          CreateEntityData(passkey_it->second),
+                          write_batch->GetMetadataChangeList());
+  write_batch->WriteData(passkey_it->second.sync_id(),
+                         passkey_it->second.SerializeAsString());
+  store_->CommitWriteBatch(
+      std::move(write_batch),
+      base::BindOnce(&PasskeySyncBridge::OnStoreCommitWriteBatch,
+                     weak_ptr_factory_.GetWeakPtr()));
+  NotifyPasskeysChanged({PasskeyModelChange(
+      PasskeyModelChange::ChangeType::UPDATE, passkey_it->second)});
+  return true;
+}
+
 sync_pb::WebauthnCredentialSpecifics PasskeySyncBridge::CreatePasskey(
     std::string_view rp_id,
     const UserEntity& user_entity,

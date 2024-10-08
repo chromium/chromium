@@ -773,6 +773,10 @@ TEST_F(CredentialProviderServiceTest, UpdatePasskey) {
   // Add passkey with valid URL to store.
   sync_pb::WebauthnCredentialSpecifics passkey = CreatePasskey(
       "g.com", {1, 2, 3, 4}, "passkey_username", "passkey_display_name");
+  const base::Time timestamp =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(10));
+  passkey.set_last_used_time_windows_epoch_micros(
+      timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds() - 1);
   test_passkey_model_->AddNewPasskeyForTesting(passkey);
   task_environment_.RunUntilIdle();
 
@@ -785,6 +789,10 @@ TEST_F(CredentialProviderServiceTest, UpdatePasskey) {
           .user_display_name = "new_passkey_display_name",
       },
       /*updated_by_user=*/true);
+
+  test_passkey_model_->UpdatePasskeyTimestamp(passkey.credential_id(),
+                                              timestamp);
+
   task_environment_.RunUntilIdle();
 
   ASSERT_EQ(credential_store_.credentials.count, 1u);
@@ -792,6 +800,8 @@ TEST_F(CredentialProviderServiceTest, UpdatePasskey) {
               @"new_passkey_username");
   EXPECT_NSEQ(credential_store_.credentials[0].userDisplayName,
               @"new_passkey_display_name");
+  ASSERT_EQ(credential_store_.credentials[0].lastUsedTime,
+            timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
 }
 
 }  // namespace

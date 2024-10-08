@@ -168,6 +168,22 @@ bool TestPasskeyModel::UpdatePasskey(const std::string& credential_id,
   return true;
 }
 
+bool TestPasskeyModel::UpdatePasskeyTimestamp(const std::string& credential_id,
+                                              base::Time last_used_time) {
+  const auto credential_it =
+      base::ranges::find(credentials_, credential_id,
+                         &sync_pb::WebauthnCredentialSpecifics::credential_id);
+  if (credential_it == credentials_.end()) {
+    return false;
+  }
+
+  credential_it->set_last_used_time_windows_epoch_micros(
+      last_used_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  NotifyPasskeysChanged({PasskeyModelChange(
+      PasskeyModelChange::ChangeType::UPDATE, *credential_it)});
+  return true;
+}
+
 void TestPasskeyModel::NotifyPasskeysChanged(
     const std::vector<PasskeyModelChange>& changes) {
   for (auto& observer : observers_) {

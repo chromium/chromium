@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
+#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
 
@@ -131,6 +132,12 @@ class PasskeyModel : public KeyedService {
   virtual bool UpdatePasskey(const std::string& credential_id,
                              PasskeyUpdate change,
                              bool updated_by_user) = 0;
+
+  // Updates the `last_used_time` attribute of the passkey with the given
+  // `credential_id`. Returns true if the credential was found and updated,
+  // false otherwise.
+  virtual bool UpdatePasskeyTimestamp(const std::string& credential_id,
+                                      base::Time last_used_time) = 0;
 
   // Creates a passkey for the given RP and user and returns the new entity
   // specifics.

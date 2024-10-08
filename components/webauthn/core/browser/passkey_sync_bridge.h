@@ -73,6 +73,8 @@ class PasskeySyncBridge : public syncer::DataTypeSyncBridge,
   bool UpdatePasskey(const std::string& credential_id,
                      PasskeyUpdate change,
                      bool updated_by_user) override;
+  bool UpdatePasskeyTimestamp(const std::string& credential_id,
+                              base::Time last_used_time) override;
   sync_pb::WebauthnCredentialSpecifics CreatePasskey(
       std::string_view rp_id,
       const UserEntity& user_entity,

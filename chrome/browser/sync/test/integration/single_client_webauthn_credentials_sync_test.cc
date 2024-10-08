@@ -43,6 +43,7 @@ using testing::Optional;
 using testing::UnorderedElementsAre;
 
 using webauthn_credentials_helper::EntityHasDisplayName;
+using webauthn_credentials_helper::EntityHasLastUsedTime;
 using webauthn_credentials_helper::EntityHasSyncId;
 using webauthn_credentials_helper::EntityHasUsername;
 using webauthn_credentials_helper::kTestRpId;
@@ -65,6 +66,8 @@ constexpr char kUsername1[] = "anya";
 constexpr char kDisplayName1[] = "Anya Forger";
 constexpr char kUsername2[] = "yor";
 constexpr char kDisplayName2[] = "Yor Forger";
+constexpr int64_t kLastUsedTime1 = 10;
+constexpr int64_t kLastUsedTime2 = 20;
 
 static const webauthn::PasskeyModel::UserEntity kTestUser(
     std::vector<uint8_t>{1, 2, 3},
@@ -693,11 +696,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest, UpdatePasskey) {
   sync_pb::WebauthnCredentialSpecifics passkey = NewPasskey();
   passkey.set_user_name(kUsername1);
   passkey.set_user_display_name(kDisplayName1);
+  passkey.set_last_used_time_windows_epoch_micros(kLastUsedTime1);
   GetModel().AddNewPasskeyForTesting(passkey);
   EXPECT_TRUE(
       ServerPasskeysMatchChecker(UnorderedElementsAre(testing::AllOf(
                                      EntityHasUsername(kUsername1),
-                                     EntityHasDisplayName(kDisplayName1))))
+                                     EntityHasDisplayName(kDisplayName1),
+                                     EntityHasLastUsedTime(kLastUsedTime1))))
           .Wait());
 
   PasskeyChangeObservationChecker change_checker(
@@ -709,10 +714,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest, UpdatePasskey) {
                                            .user_display_name = kDisplayName2,
                                        },
                                        /*updated_by_user=*/false));
+  base::Time last_used_time2 = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(kLastUsedTime2));
+  EXPECT_TRUE(GetModel().UpdatePasskeyTimestamp(passkey.credential_id(),
+                                                last_used_time2));
   EXPECT_TRUE(
       ServerPasskeysMatchChecker(UnorderedElementsAre(testing::AllOf(
                                      EntityHasUsername(kUsername2),
-                                     EntityHasDisplayName(kDisplayName2))))
+                                     EntityHasDisplayName(kDisplayName2),
+                                     EntityHasLastUsedTime(kLastUsedTime2))))
           .Wait());
   EXPECT_TRUE(change_checker.Wait());
   EXPECT_FALSE(GetModel().GetAllPasskeys().at(0).edited_by_user());
