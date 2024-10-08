@@ -18,7 +18,8 @@ declare_args() {
   # Building the context snapshots on android requires building blink multiple
   # times. To avoid impacting developer productivity the context snapshot is
   # only built for official builds.
-  include_both_v8_snapshots = is_official_build && target_os == "android"
+  include_both_v8_snapshots =
+      is_official_build && target_os == "android" && v8_target_cpu == "arm64"
 }
 
 declare_args() {
