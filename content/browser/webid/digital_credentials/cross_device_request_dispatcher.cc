@@ -46,17 +46,21 @@ std::vector<uint8_t> RequestToJSONBytes(const url::Origin& origin,
 }  // namespace
 
 RequestDispatcher::RequestDispatcher(
-    std::unique_ptr<device::FidoDiscoveryBase> discovery,
+    std::unique_ptr<device::FidoDiscoveryBase> v1_discovery,
+    std::unique_ptr<device::FidoDiscoveryBase> v2_discovery,
     url::Origin origin,
     base::Value request,
     CompletionCallback callback)
-    : discovery_(std::move(discovery)),
+    : v1_discovery_(std::move(v1_discovery)),
+      v2_discovery_(std::move(v2_discovery)),
       origin_(std::move(origin)),
       request_(std::move(request)),
       callback_(std::move(callback)) {
   FIDO_LOG(EVENT) << "Starting digital identity flow";
-  discovery_->set_observer(this);
-  discovery_->Start();
+  v1_discovery_->set_observer(this);
+  v2_discovery_->set_observer(this);
+  v1_discovery_->Start();
+  v2_discovery_->Start();
 }
 
 RequestDispatcher::~RequestDispatcher() = default;

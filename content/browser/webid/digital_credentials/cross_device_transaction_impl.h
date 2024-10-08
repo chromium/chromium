@@ -24,7 +24,6 @@
 
 namespace device {
 class BluetoothAdapter;
-class FidoCableDiscovery;
 }  // namespace device
 
 namespace content::digital_credentials::cross_device {
@@ -79,7 +78,6 @@ class CONTENT_EXPORT TransactionImpl : public Transaction,
   const Transaction::EventCallback event_callback_;
   Transaction::CompletionCallback callback_;
 
-  std::unique_ptr<device::FidoCableDiscovery> v1_discovery_;
   std::unique_ptr<RequestDispatcher> dispatcher_;
   scoped_refptr<device::BluetoothAdapter> adapter_;
 
