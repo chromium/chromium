@@ -168,7 +168,9 @@ public class AutofillPaymentMethodsFragmentTest {
                     /* productDescription= */ "",
                     /* cardNameForAutofillDisplay= */ "",
                     /* obfuscatedLastFourDigits= */ "",
-                    /* cvc= */ "");
+                    /* cvc= */ "",
+                    /* issuerId= */ "",
+                    /* productTermsUrl= */ null);
     private static final CreditCard SAMPLE_VIRTUAL_CARD_ENROLLED =
             new CreditCard(
                     /* guid= */ "",
@@ -192,7 +194,9 @@ public class AutofillPaymentMethodsFragmentTest {
                     /* productDescription= */ "",
                     /* cardNameForAutofillDisplay= */ "",
                     /* obfuscatedLastFourDigits= */ "",
-                    /* cvc= */ "");
+                    /* cvc= */ "",
+                    /* issuerId= */ "",
+                    /* productTermsUrl= */ null);
     private static final CreditCard SAMPLE_CARD_WITH_CVC =
             new CreditCard(
                     /* guid= */ "",
@@ -217,7 +221,9 @@ public class AutofillPaymentMethodsFragmentTest {
                     /* productDescription= */ "",
                     /* cardNameForAutofillDisplay= */ "",
                     /* obfuscatedLastFourDigits= */ "",
-                    /* cvc= */ "123");
+                    /* cvc= */ "123",
+                    /* issuerId= */ "",
+                    /* productTermsUrl= */ null);
     private static final BankAccount PIX_BANK_ACCOUNT =
             new BankAccount.Builder()
                     .setPaymentInstrument(

@@ -421,7 +421,9 @@ public class AutofillTestHelper {
                 /* productDescription= */ "",
                 /* cardNameForAutofillDisplay= */ cardNameForAutofillDisplay,
                 /* obfuscatedLastFourDigits= */ obfuscatedLastFourDigits,
-                /* cvc= */ "");
+                /* cvc= */ "",
+                /* issuerId= */ "",
+                /* productTermsUrl= */ null);
     }
 
     public static CreditCard createCreditCard(
@@ -456,7 +458,9 @@ public class AutofillTestHelper {
                 /* productDescription= */ "",
                 /* cardNameForAutofillDisplay= */ nameForAutofillDisplay,
                 /* obfuscatedLastFourDigits= */ obfuscatedLastFourDigits,
-                /* cvc= */ "");
+                /* cvc= */ "",
+                /* issuerId= */ "",
+                /* productTermsUrl= */ null);
     }
 
     public static AutofillSuggestion createCreditCardSuggestion(

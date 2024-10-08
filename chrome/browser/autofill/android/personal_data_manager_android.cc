@@ -125,7 +125,9 @@ PersonalDataManagerAndroid::CreateJavaCreditCardFromNative(
       ConvertUTF16ToJavaString(env, card.CardNameForAutofillDisplay()),
       ConvertUTF16ToJavaString(
           env, card.ObfuscatedNumberWithVisibleLastFourDigits()),
-      ConvertUTF16ToJavaString(env, card.cvc()));
+      ConvertUTF16ToJavaString(env, card.cvc()),
+      ConvertUTF8ToJavaString(env, card.issuer_id()),
+      url::GURLAndroid::FromNativeGURL(env, card.product_terms_url()));
 }
 
 // static
@@ -154,7 +156,7 @@ void PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava(
   card->set_instrument_id(Java_CreditCard_getInstrumentId(env, jcard));
   card->SetNickname(
       ConvertJavaStringToUTF16(Java_CreditCard_getNickname(env, jcard)));
-  base::android::ScopedJavaLocalRef<jobject> java_card_art_url =
+  ScopedJavaLocalRef<jobject> java_card_art_url =
       Java_CreditCard_getCardArtUrl(env, jcard);
   if (!java_card_art_url.is_null()) {
     card->set_card_art_url(
@@ -185,6 +187,17 @@ void PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava(
       Java_CreditCard_getProductDescription(env, jcard)));
   card->set_cvc(ConvertJavaStringToUTF16(
         Java_CreditCard_getCvc(env, jcard)));
+  ScopedJavaLocalRef<jstring> issuer_id =
+      Java_CreditCard_getIssuerId(env, jcard);
+  if (issuer_id) {
+    card->set_issuer_id(ConvertJavaStringToUTF8(env, issuer_id));
+  }
+  ScopedJavaLocalRef<jobject> java_product_terms_url =
+      Java_CreditCard_getProductTermsUrl(env, jcard);
+  if (!java_product_terms_url.is_null()) {
+    card->set_product_terms_url(
+        url::GURLAndroid::ToNativeGURL(env, java_product_terms_url));
+  }
 }
 
 jboolean PersonalDataManagerAndroid::IsDataLoaded(JNIEnv* env) const {
@@ -223,7 +236,7 @@ jboolean PersonalDataManagerAndroid::IsEligibleForAddressAccountStorage(
       .IsEligibleForAddressAccountStorage();
 }
 
-base::android::ScopedJavaLocalRef<jstring>
+ScopedJavaLocalRef<jstring>
 PersonalDataManagerAndroid::GetDefaultCountryCodeForNewAddress(
     JNIEnv* env) const {
   return ConvertUTF8ToJavaString(env,
@@ -300,10 +313,10 @@ PersonalDataManagerAndroid::GetProfileLabelsToSuggest(
       personal_data_manager_->address_data_manager().GetProfilesToSuggest());
 }
 
-base::android::ScopedJavaLocalRef<jstring>
+ScopedJavaLocalRef<jstring>
 PersonalDataManagerAndroid::GetShippingAddressLabelForPaymentRequest(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jprofile,
+    const JavaParamRef<jobject>& jprofile,
     const JavaParamRef<jstring>& jguid,
     bool include_country_in_label) {
   // The full name is not included in the label for shipping address. It is
@@ -329,13 +342,13 @@ PersonalDataManagerAndroid::GetShippingAddressLabelForPaymentRequest(
                g_browser_process->GetApplicationLocale()));
 }
 
-base::android::ScopedJavaLocalRef<jobjectArray>
+ScopedJavaLocalRef<jobjectArray>
 PersonalDataManagerAndroid::GetCreditCardGUIDsForSettings(JNIEnv* env) {
   return GetCreditCardGUIDs(
       env, personal_data_manager_->payments_data_manager().GetCreditCards());
 }
 
-base::android::ScopedJavaLocalRef<jobjectArray>
+ScopedJavaLocalRef<jobjectArray>
 PersonalDataManagerAndroid::GetCreditCardGUIDsToSuggest(JNIEnv* env) {
   return GetCreditCardGUIDs(env, personal_data_manager_->payments_data_manager()
                                      .GetCreditCardsToSuggest());
@@ -452,7 +465,7 @@ jboolean PersonalDataManagerAndroid::IsFidoAuthenticationAvailable(
   return IsCreditCardFidoAuthenticationEnabled();
 }
 
-base::android::ScopedJavaLocalRef<jobject>
+ScopedJavaLocalRef<jobject>
 PersonalDataManagerAndroid::GetOrCreateJavaImageFetcher(JNIEnv* env) {
   return static_cast<AutofillImageFetcherImpl*>(
              personal_data_manager_->payments_data_manager().GetImageFetcher())
@@ -661,7 +674,7 @@ void PersonalDataManagerAndroid::PopulateNativeIbanFromJava(
 // TODO(crbug.com/369626137): Move test functions to a new test helper file.
 void PersonalDataManagerAndroid::AddServerIbanForTest(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jiban) {
+    const JavaParamRef<jobject>& jiban) {
   std::unique_ptr<Iban> iban = std::make_unique<Iban>();
   iban->set_nickname(
       ConvertJavaStringToUTF16(Java_Iban_getNickname(env, jiban)));
@@ -688,7 +701,7 @@ ScopedJavaLocalRef<jobject> PersonalDataManagerAndroid::GetIbanByGuid(
 
 ScopedJavaLocalRef<jobjectArray>
 PersonalDataManagerAndroid::GetIbansForSettings(JNIEnv* env) {
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> j_ibans_list;
+  std::vector<ScopedJavaLocalRef<jobject>> j_ibans_list;
   for (const Iban* iban :
        personal_data_manager_->payments_data_manager().GetIbans()) {
     j_ibans_list.push_back(CreateJavaIbanFromNative(env, *iban));
@@ -723,7 +736,7 @@ jboolean PersonalDataManagerAndroid::IsValidIban(
 
 ScopedJavaLocalRef<jobjectArray>
 PersonalDataManagerAndroid::GetMaskedBankAccounts(JNIEnv* env) {
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> j_bank_accounts_list;
+  std::vector<ScopedJavaLocalRef<jobject>> j_bank_accounts_list;
   std::ranges::transform(
       personal_data_manager_->payments_data_manager().GetMaskedBankAccounts(),
       std::back_inserter(j_bank_accounts_list),
@@ -774,7 +787,7 @@ static ScopedJavaLocalRef<jstring> JNI_PersonalDataManager_ToCountryCode(
     const JavaParamRef<jstring>& jcountry_name) {
   return ConvertUTF8ToJavaString(
       env, CountryNames::GetInstance()->GetCountryCode(
-               base::android::ConvertJavaStringToUTF16(env, jcountry_name)));
+               ConvertJavaStringToUTF16(env, jcountry_name)));
 }
 
 static jlong JNI_PersonalDataManager_Init(JNIEnv* env,

@@ -79,6 +79,8 @@ public class PersonalDataManager implements Destroyable {
         private String mNickname;
         private GURL mCardArtUrl;
         private String mCvc;
+        private String mIssuerId;
+        private GURL mProductTermsUrl;
         private final @VirtualCardEnrollmentState int mVirtualCardEnrollmentState;
         private final String mProductDescription;
         private final String mCardNameForAutofillDisplay;
@@ -107,7 +109,9 @@ public class PersonalDataManager implements Destroyable {
                 String productDescription,
                 String cardNameForAutofillDisplay,
                 String obfuscatedLastFourDigits,
-                String cvc) {
+                String cvc,
+                String issuerId,
+                GURL productTermsUrl) {
             return new CreditCard(
                     guid,
                     origin,
@@ -130,7 +134,9 @@ public class PersonalDataManager implements Destroyable {
                     productDescription,
                     cardNameForAutofillDisplay,
                     obfuscatedLastFourDigits,
-                    cvc);
+                    cvc,
+                    issuerId,
+                    productTermsUrl);
         }
 
         public CreditCard(
@@ -168,7 +174,9 @@ public class PersonalDataManager implements Destroyable {
                     /* productDescription= */ "",
                     /* cardNameForAutofillDisplay= */ "",
                     /* obfuscatedLastFourDigits= */ "",
-                    /* cvc= */ "");
+                    /* cvc= */ "",
+                    /* issuerId= */ "",
+                    /* productTermsUrl= */ null);
         }
 
         public CreditCard(
@@ -193,7 +201,9 @@ public class PersonalDataManager implements Destroyable {
                 String productDescription,
                 String cardNameForAutofillDisplay,
                 String obfuscatedLastFourDigits,
-                String cvc) {
+                String cvc,
+                String issuerId,
+                GURL productTermsUrl) {
             mGUID = guid;
             mOrigin = origin;
             mIsLocal = isLocal;
@@ -216,6 +226,8 @@ public class PersonalDataManager implements Destroyable {
             mCardNameForAutofillDisplay = cardNameForAutofillDisplay;
             mObfuscatedLastFourDigits = obfuscatedLastFourDigits;
             mCvc = cvc;
+            mIssuerId = issuerId;
+            mProductTermsUrl = productTermsUrl;
         }
 
         public CreditCard() {
@@ -345,6 +357,16 @@ public class PersonalDataManager implements Destroyable {
         @CalledByNative("CreditCard")
         public String getCvc() {
             return mCvc;
+        }
+
+        @CalledByNative("CreditCard")
+        public String getIssuerId() {
+            return mIssuerId;
+        }
+
+        @CalledByNative("CreditCard")
+        public GURL getProductTermsUrl() {
+            return mProductTermsUrl;
         }
 
         public String getCardNameForAutofillDisplay() {

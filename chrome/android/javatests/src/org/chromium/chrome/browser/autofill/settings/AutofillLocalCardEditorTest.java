@@ -99,7 +99,9 @@ public class AutofillLocalCardEditorTest {
                     /* productDescription= */ "",
                     /* cardNameForAutofillDisplay= */ "",
                     /* obfuscatedLastFourDigits= */ "",
-                    /* cvc= */ "123");
+                    /* cvc= */ "123",
+                    /* issuerId= */ "",
+                    /* productTermsUrl= */ null);
     private static final CreditCard SAMPLE_AMEX_CARD_WITH_CVC =
             new CreditCard(
                     /* guid= */ "",
@@ -124,7 +126,9 @@ public class AutofillLocalCardEditorTest {
                     /* productDescription= */ "",
                     /* cardNameForAutofillDisplay= */ "",
                     /* obfuscatedLastFourDigits= */ "",
-                    /* cvc= */ "1234");
+                    /* cvc= */ "1234",
+                    /* issuerId= */ "",
+                    /* productTermsUrl= */ null);
 
     private static final CreditCard SAMPLE_MASKED_SERVER_CARD =
             new CreditCard(
@@ -149,7 +153,9 @@ public class AutofillLocalCardEditorTest {
                     /* productDescription= */ "",
                     /* cardNameForAutofillDisplay= */ "",
                     /* obfuscatedLastFourDigits= */ "• • • • 1111",
-                    /* cvc= */ "");
+                    /* cvc= */ "",
+                    /* issuerId= */ "",
+                    /* productTermsUrl= */ null);
 
     private static final String AMEX_CARD_NUMBER = "378282246310005";
     private static final String AMEX_CARD_NUMBER_PREFIX = "37";
