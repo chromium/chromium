@@ -70,22 +70,6 @@ const CGFloat kIconPointSize = 18;
   return item;
 }
 
-+ (instancetype)computersItem {
-  static DriveFilePickerItem* item;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    item = [[DriveFilePickerItem alloc]
-        initWithIdentifier:kDriveFilePickerComputersItemIdentifier
-                     title:l10n_util::GetNSString(
-                               IDS_IOS_DRIVE_FILE_PICKER_COMPUTERS)
-                  subtitle:nil
-                      icon:DefaultSymbolWithPointSize(kLaptopAndIphoneSymbol,
-                                                      kIconPointSize)
-                      type:DriveItemType::kComputers];
-  });
-  return item;
-}
-
 + (instancetype)starredItem {
   static DriveFilePickerItem* item;
   static dispatch_once_t onceToken;

@@ -16,7 +16,6 @@ enum class DriveItemType : NSUInteger {
   // "Virtual" items which cannot be mapped to a corresponding `DriveItem`.
   kMyDrive,
   kSharedDrives,
-  kComputers,
   kStarred,
   kRecent,
   kSharedWithMe,
@@ -52,7 +51,6 @@ enum class DriveItemType : NSUInteger {
 // Convenience factory methods to create root drive items.
 + (instancetype)myDriveItem;
 + (instancetype)sharedDrivesItem;
-+ (instancetype)computersItem;
 + (instancetype)starredItem;
 + (instancetype)recentItem;
 + (instancetype)sharedWithMeItem;

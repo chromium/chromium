@@ -20,8 +20,6 @@ NSString* const kDriveFilePickerMyDriveItemIdentifier =
     @"kDriveFilePickerMyDriveItemIdentifier";
 NSString* const kDriveFilePickerSharedDrivesItemIdentifier =
     @"kDriveFilePickerSharedDrivesItemIdentifier";
-NSString* const kDriveFilePickerComputersItemIdentifier =
-    @"kDriveFilePickerComputersItemIdentifier";
 NSString* const kDriveFilePickerStarredItemIdentifier =
     @"kDriveFilePickerStarredItemIdentifier";
 NSString* const kDriveFilePickerRecentItemIdentifier =

@@ -22,7 +22,6 @@ extern NSString* const kDriveFilePickerRootTitleAccessibilityIdentifier;
 
 extern NSString* const kDriveFilePickerMyDriveItemIdentifier;
 extern NSString* const kDriveFilePickerSharedDrivesItemIdentifier;
-extern NSString* const kDriveFilePickerComputersItemIdentifier;
 extern NSString* const kDriveFilePickerStarredItemIdentifier;
 extern NSString* const kDriveFilePickerRecentItemIdentifier;
 extern NSString* const kDriveFilePickerSharedWithMeItemIdentifier;

@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
+#import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/timer/timer.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
@@ -252,8 +253,7 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
     collectionType = DriveFilePickerCollectionType::kSharedDrives;
     folderIdentifier = nil;
   } else {
-    // TODO(crbug.com/344813593): Add support for Computers.
-    return;
+    NOTREACHED();
   }
 
   // If the collection type is `kFolder`, then `folderIdentifier` should be set.
@@ -452,7 +452,7 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
   _pageToken = nil;
   NSArray<DriveFilePickerItem*>* primaryItems = @[
     [DriveFilePickerItem myDriveItem], [DriveFilePickerItem sharedDrivesItem],
-    [DriveFilePickerItem computersItem], [DriveFilePickerItem starredItem]
+    [DriveFilePickerItem starredItem]
   ];
   NSArray<DriveFilePickerItem*>* secondaryItems = @[
     [DriveFilePickerItem recentItem], [DriveFilePickerItem sharedWithMeItem]
