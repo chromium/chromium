@@ -362,7 +362,7 @@ void PrependAtkTextAttributeToSet(const AtkTextAttribute attribute,
                             attributes);
 }
 
-std::string ToAtkTextAttributeColor(const std::string color) {
+std::string ToAtkTextAttributeColor(const std::string& color) {
   // The platform-independent color string is in the form "rgb(r, g, b)",
   // but ATK expects a string like "r, g, b". We convert the string here
   // by stripping away the unnecessary characters.

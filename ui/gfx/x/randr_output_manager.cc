@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <type_traits>
+#include <utility>
 
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
@@ -288,9 +289,8 @@ RandRMonitorConfig& RandRMonitorConfig::operator=(
 
 RandRMonitorLayout::RandRMonitorLayout() = default;
 RandRMonitorLayout::RandRMonitorLayout(const RandRMonitorLayout&) = default;
-RandRMonitorLayout::RandRMonitorLayout(
-    const std::vector<RandRMonitorConfig> configs)
-    : configs(configs) {}
+RandRMonitorLayout::RandRMonitorLayout(std::vector<RandRMonitorConfig> configs)
+    : configs(std::move(configs)) {}
 RandRMonitorLayout& RandRMonitorLayout::operator=(const RandRMonitorLayout&) =
     default;
 RandRMonitorLayout::~RandRMonitorLayout() = default;

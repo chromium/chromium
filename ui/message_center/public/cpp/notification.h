@@ -367,7 +367,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
 
   // A display string for the source of the notification.
   const std::u16string& display_source() const { return display_source_; }
-  void set_display_source(const std::u16string display_source) {
+  void set_display_source(const std::u16string& display_source) {
     display_source_ = display_source;
   }
 

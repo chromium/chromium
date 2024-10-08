@@ -862,7 +862,7 @@ void ViewAccessibility::RemoveDefaultActionVerb() {
   data_.RemoveIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb);
 }
 
-void ViewAccessibility::SetAutoComplete(const std::string autocomplete) {
+void ViewAccessibility::SetAutoComplete(const std::string& autocomplete) {
   data_.AddStringAttribute(ax::mojom::StringAttribute::kAutoComplete,
                            autocomplete);
 }

@@ -709,7 +709,7 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
 
   std::unique_ptr<View> CreateViewForParagraphWithHeader(
       const ui::DialogModelLabel& dialog_label,
-      const std::u16string header) {
+      const std::u16string& header) {
     auto view = std::make_unique<BoxLayoutView>();
     view->SetOrientation(BoxLayout::Orientation::kVertical);
 

@@ -69,7 +69,7 @@ NSScreen* GetMatchingScreen(const gfx::Rect& match_rect) {
 }
 
 const std::vector<Display> DisplaysFromDisplaysMac(
-    const std::vector<DisplayMac> displays_mac) {
+    const std::vector<DisplayMac>& displays_mac) {
   std::vector<Display> displays;
 
   for (auto const& display_mac : displays_mac) {

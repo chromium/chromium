@@ -29,7 +29,7 @@ namespace {
 // Indicates the default maximum of displays that chrome device can support.
 constexpr size_t kDefaultMaxSupportDisplayTest = 10;
 
-DisplayInfoList CreateDisplayInfoListFromString(const std::string specs,
+DisplayInfoList CreateDisplayInfoListFromString(const std::string& specs,
                                                 DisplayManager* display_manager,
                                                 bool generate_new_ids) {
   Displays list = display_manager->IsInUnifiedMode()

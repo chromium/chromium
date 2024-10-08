@@ -371,7 +371,7 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
       const ax::mojom::DefaultActionVerb default_action_verb);
   void RemoveDefaultActionVerb();
 
-  void SetAutoComplete(const std::string autocomplete);
+  void SetAutoComplete(const std::string& autocomplete);
 
   void SetHierarchicalLevel(int hierarchical_level);
 

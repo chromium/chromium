@@ -22,7 +22,7 @@ inline std::string GetWindowName(const WaylandWindow* window) {
   return window ? "exits" : "nullptr";
 }
 
-inline std::string ListToString(const std::list<std::string> list) {
+inline std::string ListToString(const std::list<std::string>& list) {
   std::string out;
   for (const auto& i : list) {
     out += i + ",";
