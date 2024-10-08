@@ -2015,4 +2015,50 @@ TEST_F(MahiPanelViewTest, FeedbackButtonResetWhenRefresh) {
   EXPECT_FALSE(thumbs_down_button->toggled());
 }
 
+TEST_F(MahiPanelViewTest, FeedbackButtonsOnError) {
+  base::HistogramTester histogram_tester;
+
+  base::test::TestFuture<void> summary_waiter;
+  EXPECT_CALL(mock_mahi_manager(), GetSummary)
+      .WillOnce([&summary_waiter](
+                    chromeos::MahiManager::MahiSummaryCallback callback) {
+        ReturnDefaultSummaryAsyncly(summary_waiter,
+                                    MahiResponseStatus::kUnknownError,
+                                    std::move(callback));
+      });
+
+  CreatePanelWidget();
+
+  // Wait until the summary is loaded with an error.
+  ASSERT_TRUE(summary_waiter.Wait());
+
+  // Pressing thumbs up should toggle the button on and update the feedback
+  // histogram.
+  EXPECT_CALL(mock_mahi_manager(), OpenFeedbackDialog).Times(0);
+  IconButton* thumbs_up_button = views::AsViewClass<IconButton>(
+      panel_view()->GetViewByID(mahi_constants::ViewId::kThumbsUpButton));
+  LeftClickOn(thumbs_up_button);
+  Mock::VerifyAndClearExpectations(&mock_mahi_manager());
+
+  EXPECT_TRUE(thumbs_up_button->toggled());
+  histogram_tester.ExpectBucketCount(mahi_constants::kMahiFeedbackHistogramName,
+                                     true, 1);
+  histogram_tester.ExpectBucketCount(mahi_constants::kMahiFeedbackHistogramName,
+                                     false, 0);
+
+  // Pressing thumbs down the first time should open the feedback dialog, toggle
+  // the button off and update the feedback histogram.
+  EXPECT_CALL(mock_mahi_manager(), OpenFeedbackDialog).Times(1);
+  IconButton* thumbs_down_button = views::AsViewClass<IconButton>(
+      panel_view()->GetViewByID(mahi_constants::ViewId::kThumbsDownButton));
+  LeftClickOn(thumbs_down_button);
+  Mock::VerifyAndClearExpectations(&mock_mahi_manager());
+
+  EXPECT_TRUE(thumbs_down_button->toggled());
+  histogram_tester.ExpectBucketCount(mahi_constants::kMahiFeedbackHistogramName,
+                                     true, 1);
+  histogram_tester.ExpectBucketCount(mahi_constants::kMahiFeedbackHistogramName,
+                                     false, 1);
+}
+
 }  // namespace ash

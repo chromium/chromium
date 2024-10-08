@@ -12,14 +12,11 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/url_constants.h"
 #include "ash/controls/rounded_scroll_bar.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/session/session_controller_impl.h"
-#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/style_util.h"
@@ -30,8 +27,8 @@
 #include "ash/system/mahi/mahi_question_answer_view.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
 #include "ash/system/mahi/mahi_ui_update.h"
+#include "ash/system/mahi/mahi_utils.h"
 #include "ash/system/mahi/summary_outlines_section.h"
-#include "ash/utility/arc_curve_path_util.h"
 #include "ash/wm/system_panel_view.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
@@ -42,7 +39,6 @@
 #include "chromeos/components/magic_boost/public/cpp/views/experiment_badge.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
-#include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkScalar.h"
@@ -85,7 +81,6 @@ namespace ash {
 
 namespace {
 
-constexpr SkScalar kContentScrollViewCornerRadius = 16;
 constexpr int kPanelChildSpacing = 12;
 constexpr int kHeaderRowSpacing = 8;
 
@@ -102,33 +97,6 @@ constexpr gfx::Insets kInputTextfieldPadding = gfx::Insets::TLBR(0, 0, 0, 8);
 // http://screen/9K4tXBZXihWN9KA.
 constexpr int kInfoSparkIconSize = 18;
 constexpr gfx::Insets kInfoSparkIconPadding = gfx::Insets::VH(0, 2);
-constexpr int kFeedbackButtonIconSize = 20;
-constexpr int kFeedbackButtonIconPaddingAbove = 8;
-constexpr int kFeedbackButtonIconPaddingBetween = 16;
-constexpr int kFeedbackButtonIconPaddingLeft = 12;
-constexpr int kFeedbackButtonIconPaddingRight = 8;
-
-// Width of the cutout in the content section's bottom-right corner, not
-// including the rounded corner immediately to its left.
-constexpr int kCutoutWidth =
-    kFeedbackButtonIconPaddingLeft + kFeedbackButtonIconPaddingRight +
-    kFeedbackButtonIconSize * 2 + kFeedbackButtonIconPaddingBetween;
-// Height of the cutout in the content section's bottom-right corner, not
-// including the rounded corner immediately above it.
-constexpr int kCutoutHeight =
-    kFeedbackButtonIconSize + kFeedbackButtonIconPaddingAbove;
-
-// Radius of the cutout's first and third curves.
-constexpr SkScalar kCutoutConvexRadius = 10.f;
-// Radius of the cutout's second curve.
-constexpr SkScalar kCutoutConcaveRadius = 12.f;
-
-// A feedback button is a "small" `IconButton`, meaning it has a button (view)
-// size of 24px and an icon size of 20px. The feedback button's icon is aligned
-// to the rightmost edge of the view, creating 4px of padding to the left of the
-// icon. Subtract that padding from the expected space between the two icons.
-// NOTE: Changes to the feedback buttons' size will affect this constant.
-constexpr int kFeedbackButtonSpacing = kFeedbackButtonIconPaddingBetween - 4;
 
 // There's an 8px extra spacing between the scroll view and the input textfield
 // (on top of the default 8px spacing for the whole panel).
@@ -156,16 +124,6 @@ void InstallTextfieldFocusRing(views::View* question_textfield,
 }
 
 // FeedbackButton --------------------------------------------------------------
-
-// Check pref to see if we should show the feedback buttons in the panel.
-bool ShouldShowFeedbackButton() {
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetActivePrefService();
-
-  // PrefService might be null in tests. In that case the feedback buttons
-  // should be shown by default.
-  return prefs ? prefs->GetBoolean(prefs::kHmrFeedbackAllowed) : true;
-}
 
 // Types of feedback button.
 enum class FeedbackType {
@@ -418,12 +376,13 @@ class MahiScrollView : public views::ScrollView,
     auto scroll_bar = std::make_unique<RoundedScrollBar>(
         RoundedScrollBar::Orientation::kVertical);
 
-    if (ShouldShowFeedbackButton()) {
+    if (mahi_utils::ShouldShowFeedbackButton()) {
       // Prevent the scroll bar from overlapping with any rounded corners or
       // extending into the cutout region.
-      scroll_bar->SetInsets(
-          gfx::Insets::TLBR(kContentScrollViewCornerRadius, 0,
-                            kCutoutHeight + kCutoutConvexRadius, 0));
+      scroll_bar->SetInsets(gfx::Insets::TLBR(
+          mahi_constants::kContentScrollViewCornerRadius, 0,
+          mahi_constants::kCutoutHeight + mahi_constants::kCutoutConvexRadius,
+          0));
     }
 
     scroll_bar->SetSnapBackOnDragOutside(false);
@@ -433,20 +392,8 @@ class MahiScrollView : public views::ScrollView,
  private:
   // views::ScrollView:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override {
-    const auto content_size = GetContentsBounds().size();
-    SkPath clip_path =
-        ShouldShowFeedbackButton()
-            ? util::GetArcCurveRectPath(
-                  content_size,
-                  util::ArcCurveCorner(
-                      util::ArcCurveCorner::CornerLocation::kBottomRight,
-                      gfx::Size(kCutoutWidth + kCutoutConvexRadius,
-                                kCutoutHeight + kCutoutConvexRadius),
-                      kCutoutConcaveRadius, kCutoutConvexRadius),
-                  kContentScrollViewCornerRadius)
-            : util::GetArcCurveRectPath(content_size,
-                                        kContentScrollViewCornerRadius);
-    SetClipPath(clip_path);
+    SetClipPath(mahi_utils::GetCutoutClipPath(
+        /*contents_size=*/GetContentsBounds().size()));
   }
 
   // views::View
@@ -468,15 +415,12 @@ class MahiScrollView : public views::ScrollView,
   // views::ViewTargeterDelegate:
   bool DoesIntersectRect(const views::View* target,
                          const gfx::Rect& rect) const override {
-    if (!ShouldShowFeedbackButton()) {
+    if (!mahi_utils::ShouldShowFeedbackButton()) {
       return views::ViewTargeterDelegate::DoesIntersectRect(target, rect);
     }
 
-    const gfx::Rect contents_bounds = GetContentsBounds();
-    const gfx::Rect corner_cutout_region = gfx::Rect(
-        contents_bounds.width() - kCutoutWidth,
-        contents_bounds.height() - kCutoutHeight, kCutoutWidth, kCutoutHeight);
-    return !rect.Intersects(corner_cutout_region);
+    return !rect.Intersects(mahi_utils::GetCornerCutoutRegion(
+        /*contents_bounds=*/GetContentsBounds()));
   }
 
   // MahiController::Delegate:
@@ -618,12 +562,13 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
                   .SetID(mahi_constants::ViewId::kFeedbackButtonsContainer)
                   .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
                   .SetInsideBorderInsets(gfx::Insets::TLBR(
-                      0, 0, 0, kFeedbackButtonIconPaddingRight))
+                      0, 0, 0, mahi_constants::kFeedbackButtonIconPaddingRight))
                   .SetMainAxisAlignment(
                       views::BoxLayout::MainAxisAlignment::kEnd)
                   .SetCrossAxisAlignment(
                       views::BoxLayout::CrossAxisAlignment::kEnd)
-                  .SetBetweenChildSpacing(kFeedbackButtonSpacing)
+                  .SetBetweenChildSpacing(
+                      mahi_constants::kFeedbackButtonSpacing)
                   .AddChildren(
                       views::Builder<FeedbackButton>(
                           std::make_unique<FeedbackButton>(
@@ -678,7 +623,7 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
                   .CopyAddressTo(&error_status_view))
           .Build());
 
-  if (ShouldShowFeedbackButton()) {
+  if (mahi_utils::ShouldShowFeedbackButton()) {
     // Put feedback buttons container after the error status view in the focus
     // list since the order of traversal should be scroll view -> error status
     // view -> feedback buttons.
@@ -754,7 +699,7 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
   InstallTextfieldFocusRing(question_textfield_, send_button_);
 
   std::unique_ptr<views::View> footer_view;
-  if (ShouldShowFeedbackButton()) {
+  if (mahi_utils::ShouldShowFeedbackButton()) {
     footer_view =
         views::Builder<views::BoxLayoutView>()
             .SetOrientation(views::BoxLayout::Orientation::kHorizontal)

@@ -69,6 +69,39 @@ inline constexpr int kScrollContentsViewBottomPadding = 40;
 inline constexpr int kRefreshBannerStackDepth = 25;
 inline constexpr int kPanelCornerRadius = 16;
 
+inline constexpr SkScalar kContentScrollViewCornerRadius = 16;
+
+inline constexpr int kFeedbackButtonIconSize = 20;
+inline constexpr int kFeedbackButtonIconPaddingAbove = 8;
+inline constexpr int kFeedbackButtonIconPaddingBetween = 16;
+inline constexpr int kFeedbackButtonIconPaddingLeft = 12;
+inline constexpr int kFeedbackButtonIconPaddingRight = 8;
+
+// A feedback button is a "small" `IconButton`, meaning it has a button (view)
+// size of 24px and an icon size of 20px. The feedback button's icon is aligned
+// to the rightmost edge of the view, creating 4px of padding to the left of the
+// icon. Subtract that padding from the expected space between the two icons.
+// NOTE: Changes to the feedback buttons' size will affect this constant.
+inline constexpr int kFeedbackButtonSpacing =
+    kFeedbackButtonIconPaddingBetween - 4;
+
+// Height of the cutout in the content section's bottom-right corner, not
+// including the rounded corner immediately above it.
+inline constexpr int kCutoutHeight =
+    kFeedbackButtonIconSize + kFeedbackButtonIconPaddingAbove;
+
+// Width of the cutout in the content section's bottom-right corner, not
+// including the rounded corner immediately to its left.
+inline constexpr int kCutoutWidth =
+    kFeedbackButtonIconPaddingLeft + kFeedbackButtonIconPaddingRight +
+    kFeedbackButtonIconSize * 2 + kFeedbackButtonIconPaddingBetween;
+
+// Radius of the cutout's first and third curves of the cutout region in the
+// Mahi panel.
+inline constexpr SkScalar kCutoutConvexRadius = 10.f;
+// Radius of the cutout's second curve.
+inline constexpr SkScalar kCutoutConcaveRadius = 12.f;
+
 // Delays used in `FakeMahiManager` for testing.
 inline constexpr int kFakeMahiManagerLoadAnswerDelaySeconds = 3;
 inline constexpr int kFakeMahiManagerLoadSummaryDelaySeconds = 4;
