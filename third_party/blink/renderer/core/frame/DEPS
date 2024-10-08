@@ -1,5 +1,6 @@
 include_rules = {
   "+cc/input/browser_controls_offset_tags_info.h",
+  "+base/metrics/histogram_functions.h",
 }
 
 specific_include_rules = {
@@ -23,9 +24,6 @@ specific_include_rules = {
   "dom_timer_test\.cc": [
     "+base/test/scoped_command_line.h",
   ],
-  "frame\.cc": [
-    "+base/metrics/histogram_functions.h",
-  ],
   "frame_view\.cc": [
     "+ui/gfx/transform.h"
   ],
@@ -43,7 +41,6 @@ specific_include_rules = {
     "+ui/gfx/transform.h"
   ],
   "local_frame\.cc": [
-    "+base/metrics/histogram_functions.h",
     "+ui/gfx/transform.h"
   ],
   "local_frame_ukm_aggregator\.cc": [
