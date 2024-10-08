@@ -797,10 +797,10 @@ void PageInfo::OpenAllSitesViewFilteredToRws() {
 #if BUILDFLAG(IS_ANDROID)
   NOTREACHED_IN_MIGRATION();
 #else
-  auto fps_owner = delegate_->GetRwsOwner(site_url_);
+  auto rws_owner = delegate_->GetRwsOwner(site_url_);
   RecordPageInfoAction(page_info::PAGE_INFO_ALL_SITES_WITH_FPS_FILTER_OPENED);
-  if (fps_owner) {
-    delegate_->ShowAllSitesSettingsFilteredByRwsOwner(*fps_owner);
+  if (rws_owner) {
+    delegate_->ShowAllSitesSettingsFilteredByRwsOwner(*rws_owner);
   } else {
     delegate_->ShowAllSitesSettingsFilteredByRwsOwner(std::u16string());
   }
@@ -1485,9 +1485,9 @@ void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           privacy_sandbox::kPrivacySandboxFirstPartySetsUI)) {
-    auto fps_owner = delegate_->GetRwsOwner(site_url_);
-    if (fps_owner) {
-      cookies_info.rws_info = PageInfoUI::CookiesRwsInfo(*fps_owner);
+    auto rws_owner = delegate_->GetRwsOwner(site_url_);
+    if (rws_owner) {
+      cookies_info.rws_info = PageInfoUI::CookiesRwsInfo(*rws_owner);
       cookies_info.rws_info->is_managed = delegate_->IsRwsManaged();
     }
   }

@@ -55,8 +55,8 @@ constexpr char kDotDomain[] = ".example.com";
 constexpr char kSubDomain[] = "www.corp.example.com";
 constexpr char kOtherDomain[] = "not-example.com";
 constexpr char kDomainWildcardPattern[] = "[*.]example.com";
-constexpr char kFPSOwnerURL[] = "https://fps-owner.test";
-constexpr char kFPSMemberURL[] = "https://fps-member.test";
+constexpr char kRwsOwnerURL[] = "https://rws-owner.test";
+constexpr char kRwsMemberURL[] = "https://rws-member.test";
 constexpr char kUnrelatedURL[] = "http://unrelated.com";
 
 std::unique_ptr<net::CanonicalCookie> MakeCanonicalCookie(
@@ -1397,9 +1397,9 @@ TEST_P(CookieSettingsTestP, IsCookieAccessible_NoneExemptionReason) {
 TEST_P(CookieSettingsTestP, IsCookieAccessible_SitesInFirstPartySets) {
   CookieSettings settings;
   net::CookieInclusionStatus status;
-  url::Origin top_level_origin = url::Origin::Create(GURL(kFPSOwnerURL));
+  url::Origin top_level_origin = url::Origin::Create(GURL(kRwsOwnerURL));
 
-  net::SchemefulSite primary((GURL(kFPSOwnerURL)));
+  net::SchemefulSite primary((GURL(kRwsOwnerURL)));
   net::FirstPartySetEntry frame_entry(primary, net::SiteType::kAssociated, 1u);
   net::FirstPartySetEntry top_frame_entry(primary, net::SiteType::kPrimary,
                                           std::nullopt);
@@ -1410,10 +1410,10 @@ TEST_P(CookieSettingsTestP, IsCookieAccessible_SitesInFirstPartySets) {
   }
 
   std::unique_ptr<net::CanonicalCookie> cookie =
-      MakeCanonicalSameSiteNoneCookie("name", kFPSMemberURL);
+      MakeCanonicalSameSiteNoneCookie("name", kRwsMemberURL);
 
   EXPECT_FALSE(settings.IsCookieAccessible(
-      *cookie, GURL(kFPSMemberURL), net::SiteForCookies(), top_level_origin,
+      *cookie, GURL(kRwsMemberURL), net::SiteForCookies(), top_level_origin,
       net::FirstPartySetMetadata(), GetCookieSettingOverrides(), &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {IsTPCDEnabled()
@@ -1423,9 +1423,9 @@ TEST_P(CookieSettingsTestP, IsCookieAccessible_SitesInFirstPartySets) {
   status.ResetForTesting();
   // EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET should be added with the
   // FirstPartySetMetadata indicating the cookie url and the top-level url are
-  // in the same FPS.
+  // in the same RWS.
   EXPECT_FALSE(settings.IsCookieAccessible(
-      *cookie, GURL(kFPSMemberURL), net::SiteForCookies(), top_level_origin,
+      *cookie, GURL(kRwsMemberURL), net::SiteForCookies(), top_level_origin,
       net::FirstPartySetMetadata(&frame_entry, &top_frame_entry),
       GetCookieSettingOverrides(), &status));
   if (IsTPCDEnabled()) {
@@ -1907,19 +1907,19 @@ TEST_P(CookieSettingsTestP,
 
   net::CookieAccessResultList maybe_included_cookies = {
       {*MakeCanonicalSameSiteNoneCookie("third_party_but_member",
-                                        kFPSMemberURL),
+                                        kRwsMemberURL),
        {}}};
   net::CookieAccessResultList excluded_cookies = {};
 
-  url::Origin origin = url::Origin::Create(GURL(kFPSOwnerURL));
-  net::SchemefulSite primary((GURL(kFPSOwnerURL)));
+  url::Origin origin = url::Origin::Create(GURL(kRwsOwnerURL));
+  net::SchemefulSite primary((GURL(kRwsOwnerURL)));
 
   net::FirstPartySetEntry frame_entry(primary, net::SiteType::kAssociated, 1u);
   net::FirstPartySetEntry top_frame_entry(primary, net::SiteType::kPrimary,
                                           std::nullopt);
 
   EXPECT_FALSE(settings.AnnotateAndMoveUserBlockedCookies(
-      GURL(kFPSMemberURL), net::SiteForCookies(), &origin,
+      GURL(kRwsMemberURL), net::SiteForCookies(), &origin,
       net::FirstPartySetMetadata(&frame_entry, &top_frame_entry),
       GetCookieSettingOverrides(), maybe_included_cookies, excluded_cookies));
 
@@ -1955,21 +1955,21 @@ TEST_P(
   settings.set_block_third_party_cookies(false);
   settings.set_content_settings(
       ContentSettingsType::COOKIES,
-      {CreateSetting(kFPSOwnerURL, kFPSOwnerURL, CONTENT_SETTING_BLOCK)});
+      {CreateSetting(kRwsOwnerURL, kRwsOwnerURL, CONTENT_SETTING_BLOCK)});
 
   std::unique_ptr<net::CanonicalCookie> cookie =
-      MakeCanonicalSameSiteNoneCookie("third_party_but_member", kFPSMemberURL);
+      MakeCanonicalSameSiteNoneCookie("third_party_but_member", kRwsMemberURL);
 
-  url::Origin top_frame_origin = url::Origin::Create(GURL(kFPSOwnerURL));
+  url::Origin top_frame_origin = url::Origin::Create(GURL(kRwsOwnerURL));
 
-  net::SchemefulSite primary((GURL(kFPSOwnerURL)));
+  net::SchemefulSite primary((GURL(kRwsOwnerURL)));
   net::FirstPartySetEntry frame_entry(primary, net::SiteType::kAssociated, 1u);
   net::FirstPartySetEntry top_frame_entry(primary, net::SiteType::kPrimary,
                                           std::nullopt);
   // Without third-party-cookie-blocking enabled, the cookie is accessible, even
   // though cookies are blocked for the top-level URL.
   ASSERT_TRUE(settings.IsCookieAccessible(
-      *cookie, GURL(kFPSMemberURL), net::SiteForCookies(), top_frame_origin,
+      *cookie, GURL(kRwsMemberURL), net::SiteForCookies(), top_frame_origin,
       net::FirstPartySetMetadata(&frame_entry, &top_frame_entry),
       GetCookieSettingOverrides(), &status));
 
@@ -1987,7 +1987,7 @@ TEST_P(
   net::CookieAccessResultList excluded_cookies = {};
 
   EXPECT_FALSE(settings.AnnotateAndMoveUserBlockedCookies(
-      GURL(kFPSMemberURL), net::SiteForCookies(), &top_frame_origin,
+      GURL(kRwsMemberURL), net::SiteForCookies(), &top_frame_origin,
       net::FirstPartySetMetadata(&frame_entry, &top_frame_entry),
       GetCookieSettingOverrides(), maybe_included_cookies, excluded_cookies));
 

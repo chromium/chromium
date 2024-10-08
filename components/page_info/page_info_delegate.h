@@ -85,7 +85,7 @@ class PageInfoDelegate {
   virtual void ShowSiteSettings(const GURL& site_url) = 0;
   virtual void ShowCookiesSettings() = 0;
   virtual void ShowAllSitesSettingsFilteredByRwsOwner(
-      const std::u16string& fps_owner) = 0;
+      const std::u16string& rws_owner) = 0;
   virtual void OpenCookiesDialog() = 0;
   virtual void OpenCertificateDialog(net::X509Certificate* certificate) = 0;
   virtual void OpenConnectionHelpCenterPage(const ui::Event& event) = 0;
