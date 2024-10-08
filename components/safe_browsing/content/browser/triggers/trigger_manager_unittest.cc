@@ -159,6 +159,9 @@ class TriggerManagerTest : public ::testing::Test {
     return trigger_manager_.data_collectors_map_;
   }
 
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
  private:
   TriggerManager trigger_manager_;
   MockThreatDetailsFactory mock_threat_details_factory_;
@@ -497,5 +500,57 @@ TEST_F(TriggerManagerTest, AdSamplerTrigger_Incognito) {
   // all triggers have quota), but the incognito window prevents it from firing.
   EXPECT_FALSE(
       StartCollectingThreatDetails(TriggerType::AD_SAMPLE, web_contents));
+}
+
+TEST_F(TriggerManagerTest,
+       CollectionWhenExtendedReportingDeprecationEnabledAllowOptinEnabled) {
+  SetPref(prefs::kSafeBrowsingExtendedReportingOptInAllowed, true);
+  scoped_feature_list_.InitAndEnableFeature(
+      kExtendedReportingRemovePrefDependency);
+
+  content::WebContents* web_contents = CreateWebContents();
+  EXPECT_TRUE(StartCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
+                                           web_contents));
+  EXPECT_TRUE(FinishCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
+                                            web_contents, true));
+}
+
+TEST_F(TriggerManagerTest,
+       CollectionWhenExtendedReportingDeprecationEnabledAllowOptinDisabled) {
+  SetPref(prefs::kSafeBrowsingExtendedReportingOptInAllowed, false);
+  scoped_feature_list_.InitAndEnableFeature(
+      kExtendedReportingRemovePrefDependency);
+
+  content::WebContents* web_contents = CreateWebContents();
+  EXPECT_TRUE(StartCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
+                                           web_contents));
+  EXPECT_TRUE(FinishCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
+                                            web_contents, true));
+}
+
+TEST_F(TriggerManagerTest,
+       CollectionWhenExtendedReportingDeprecationDisabledAllowOptinEnabled) {
+  SetPref(prefs::kSafeBrowsingExtendedReportingOptInAllowed, true);
+  scoped_feature_list_.InitAndDisableFeature(
+      kExtendedReportingRemovePrefDependency);
+
+  content::WebContents* web_contents = CreateWebContents();
+  EXPECT_TRUE(StartCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
+                                           web_contents));
+  EXPECT_TRUE(FinishCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
+                                            web_contents, true));
+}
+
+TEST_F(TriggerManagerTest,
+       NoCollectionWhenExtendedReportingDeprecationDisabledAllowOptinDisabled) {
+  SetPref(prefs::kSafeBrowsingExtendedReportingOptInAllowed, false);
+  scoped_feature_list_.InitAndDisableFeature(
+      kExtendedReportingRemovePrefDependency);
+
+  content::WebContents* web_contents = CreateWebContents();
+  EXPECT_FALSE(StartCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
+                                            web_contents));
+  EXPECT_FALSE(FinishCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
+                                             web_contents, false));
 }
 }  // namespace safe_browsing
