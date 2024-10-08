@@ -199,7 +199,7 @@ constexpr base::FeatureParam<int> kAuxiliarySearchMaxBookmarksCountParam(
     "auxiliary_search_max_donation_bookmark",
     100);
 
-constexpr base::FeatureParam<int> kAuxiliarySearchMaxTabsCountParam(
+constexpr base::FeatureParam<size_t> kAuxiliarySearchMaxTabsCountParam(
     &kAuxiliarySearchDonation,
     "auxiliary_search_max_donation_tab",
     100);
