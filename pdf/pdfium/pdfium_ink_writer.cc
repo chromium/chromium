@@ -80,25 +80,25 @@ bool WriteStrokeToPage(FPDF_DOCUMENT document,
   CHECK(path);
 
   // Outline the edges of the first triangle.
-  bool line_to_result_p1 =
+  bool result =
       FPDFPath_LineTo(path.get(), triangle.value().p1.x, triangle.value().p1.y);
-  CHECK(line_to_result_p1);
-  bool line_to_result_p2 =
+  CHECK(result);
+  result =
       FPDFPath_LineTo(path.get(), triangle.value().p2.x, triangle.value().p2.y);
-  CHECK(line_to_result_p2);
+  CHECK(result);
 
   // Work through the remaining triangles, which are part of the same path.
   for (triangle = triangle_iter.GetAndAdvance(); triangle.has_value();
        triangle = triangle_iter.GetAndAdvance()) {
-    bool move_to_result = FPDFPath_MoveTo(path.get(), triangle.value().p0.x,
-                                          triangle.value().p0.y);
-    CHECK(move_to_result);
-    line_to_result_p1 = FPDFPath_LineTo(path.get(), triangle.value().p1.x,
-                                        triangle.value().p1.y);
-    CHECK(line_to_result_p1);
-    line_to_result_p2 = FPDFPath_LineTo(path.get(), triangle.value().p2.x,
-                                        triangle.value().p2.y);
-    CHECK(line_to_result_p2);
+    result = FPDFPath_MoveTo(path.get(), triangle.value().p0.x,
+                             triangle.value().p0.y);
+    CHECK(result);
+    result = FPDFPath_LineTo(path.get(), triangle.value().p1.x,
+                             triangle.value().p1.y);
+    CHECK(result);
+    result = FPDFPath_LineTo(path.get(), triangle.value().p2.x,
+                             triangle.value().p2.y);
+    CHECK(result);
   }
 
   // All triangles of the shape completed.  Initialize the path's transform,
@@ -112,20 +112,18 @@ bool WriteStrokeToPage(FPDF_DOCUMENT document,
                       -kScreenToPageScale, 0, FPDF_GetPageHeightF(page)};
   FPDFPageObj_TransformF(path.get(), &transform);
 
-  bool draw_mode_result =
-      FPDFPath_SetDrawMode(path.get(), FPDF_FILLMODE_WINDING,
-                           /*stroke=*/false);
-  CHECK(draw_mode_result);
+  result = FPDFPath_SetDrawMode(path.get(), FPDF_FILLMODE_WINDING,
+                                /*stroke=*/false);
+  CHECK(result);
 
   const auto rgba =
       stroke.GetBrush().GetColor().AsUint8(ink::Color::Format::kGammaEncoded);
-  bool fill_color_result =
-      FPDFPageObj_SetFillColor(path.get(), rgba.r, rgba.g, rgba.b, rgba.a);
-  CHECK(fill_color_result);
+  result = FPDFPageObj_SetFillColor(path.get(), rgba.r, rgba.g, rgba.b, rgba.a);
+  CHECK(result);
 
   // Path completed, close and mark it with an ID.
-  bool close_result = FPDFPath_Close(path.get());
-  CHECK(close_result);
+  result = FPDFPath_Close(path.get());
+  CHECK(result);
 
   FPDF_PAGEOBJECTMARK add_mark_result =
       FPDFPageObj_AddMark(path.get(), kInkAnnotationIdentifierKey);
