@@ -11,8 +11,10 @@
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
+#include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/lifetime/termination_notification.h"
+#include "chrome/browser/ui/webui/ash/login/device_disabled_screen_handler.h"
 #include "chromeos/ash/components/policy/weekly_time/test_support.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "content/public/test/browser_test.h"
@@ -69,6 +71,14 @@ IN_PROC_BROWSER_TEST_F(DeviceRestrictionScheduleControllerTest,
   auto subscription =
       browser_shutdown::AddAppTerminatingCallback(future.GetCallback());
   ASSERT_TRUE(future.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceRestrictionScheduleControllerTest,
+                       DeviceDisabledScreenShows) {
+  // Restriction schedule started 20 minutes ago and lasts for 2 hours.
+  SetRestrictionSchedule(-base::Minutes(20), base::Hours(2));
+
+  ash::OobeScreenWaiter(ash::DeviceDisabledScreenView::kScreenId).Wait();
 }
 
 }  // namespace policy

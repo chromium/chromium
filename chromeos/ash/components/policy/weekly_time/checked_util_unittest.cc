@@ -99,6 +99,44 @@ TEST(CheckedUtil, IntervalsContainTime_Empty) {
   EXPECT_FALSE(IntervalsContainTime(intervals, time));
 }
 
+TEST(CheckedUtil, GetNextEvent) {
+  const struct TestData {
+    Day day;
+    int millis;
+    WeeklyTimeChecked next_event;
+  } kTestData[] = {
+      // One day before the start of the first interval.
+      {Day::kTuesday, 43200000, WeeklyTimeChecked(Day::kWednesday, 43200000)},
+      // Start of the first interval.
+      {Day::kWednesday, 43200000, WeeklyTimeChecked(Day::kWednesday, 75600000)},
+      // Inside first interval.
+      {Day::kWednesday, 57600000, WeeklyTimeChecked(Day::kWednesday, 75600000)},
+      // End of first interval.
+      {Day::kWednesday, 75600000, WeeklyTimeChecked(Day::kFriday, 64800000)},
+      // One hour before the second interval.
+      {Day::kFriday, 61200000, WeeklyTimeChecked(Day::kFriday, 64800000)},
+  };
+
+  std::vector<WeeklyTimeIntervalChecked> intervals =
+      BuildIntervals(kIntervalsJson);
+
+  for (const auto& t : kTestData) {
+    WeeklyTimeChecked time(t.day, t.millis);
+    std::optional<WeeklyTimeChecked> next_event = GetNextEvent(intervals, time);
+    SCOPED_TRACE(testing::Message()
+                 << "day: " << DayToString(t.day) << ", millis: " << t.millis);
+    ASSERT_TRUE(next_event.has_value());
+    EXPECT_EQ(next_event.value(), t.next_event);
+  }
+}
+
+TEST(CheckedUtil, GetNextEvent_Empty) {
+  std::vector<WeeklyTimeIntervalChecked> intervals;
+  WeeklyTimeChecked time(Day::kMonday, 1234);
+  std::optional<WeeklyTimeChecked> next_event = GetNextEvent(intervals, time);
+  EXPECT_FALSE(next_event.has_value());
+}
+
 TEST(CheckedUtil, GetDurationToNextEvent) {
   std::vector<WeeklyTimeIntervalChecked> intervals =
       BuildIntervals(kIntervalsJson);

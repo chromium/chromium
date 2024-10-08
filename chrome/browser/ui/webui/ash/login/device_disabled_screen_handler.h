@@ -21,10 +21,24 @@ class DeviceDisabledScreenView {
   // Sets some properties of the `DeviceDisabledScreen`, then shows the screen,
   // by calling `ShowInWebUI()`. Receives the following data, respectively:
   // serial number of the device, domain that owns the device (can be empty),
-  // and a message from the admin.
-  virtual void Show(const std::string& serial,
-                    const std::string& domain,
-                    const std::string& message) = 0;
+  // message from the admin, flag indicating if the device was disabled
+  // because the device is in restriction schedule, device name, and the day and
+  // time at which the restriction schedule ends.
+  struct Params {
+    Params();
+    ~Params();
+    Params(const Params&) = delete;
+    Params& operator=(Params&) = delete;
+    std::string serial;
+    std::string domain;
+    std::string message;
+    bool device_restriction_schedule_enabled;
+    std::u16string device_name;
+    std::u16string restriction_schedule_end_day;
+    std::u16string restriction_schedule_end_time;
+  };
+  virtual void Show(const Params& params) = 0;
+
   virtual void UpdateMessage(const std::string& message) = 0;
 
   // Gets a WeakPtr to the instance.
@@ -46,9 +60,7 @@ class DeviceDisabledScreenHandler final : public DeviceDisabledScreenView,
   ~DeviceDisabledScreenHandler() override;
 
   // DeviceDisabledScreenView:
-  void Show(const std::string& serial,
-            const std::string& domain,
-            const std::string& message) override;
+  void Show(const Params& params) override;
   void UpdateMessage(const std::string& message) override;
   base::WeakPtr<DeviceDisabledScreenView> AsWeakPtr() override;
 

@@ -25,7 +25,9 @@ source_set("restriction_schedule") {
 
   public_deps = [
     "//base",
+    "//chromeos/strings",
     "//components/prefs",
+    "//ui/strings:ui_strings",
   ]
 
   deps = [
@@ -34,9 +36,9 @@ source_set("restriction_schedule") {
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/policy/weekly_time",
     "//chromeos/constants",
-    "//chromeos/strings",
     "//components/user_manager",
     "//components/vector_icons",
+    "//ui/base",
     "//ui/chromeos",
     "//ui/message_center",
     "//url",

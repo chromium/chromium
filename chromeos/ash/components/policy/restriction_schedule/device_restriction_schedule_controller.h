@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_POLICY_RESTRICTION_SCHEDULE_DEVICE_RESTRICTION_SCHEDULE_CONTROLLER_H_
 
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/component_export.h"
@@ -62,6 +63,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   bool RestrictionScheduleEnabled() const;
+  std::u16string RestrictionScheduleEndDay() const;
+  std::u16string RestrictionScheduleEndTime() const;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -86,6 +89,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
 
   std::vector<WeeklyTimeIntervalChecked> intervals_;
   State state_ = State::kRegular;
+  std::optional<base::Time> next_run_time_;
 
   base::WallClockTimer run_timer_;
   base::WallClockTimer notification_timer_;

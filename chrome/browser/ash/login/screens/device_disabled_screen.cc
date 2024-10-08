@@ -6,17 +6,27 @@
 
 #include <string>
 
+#include "base/check_deref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/ui/webui/ash/login/device_disabled_screen_handler.h"
+#include "chromeos/ash/components/policy/restriction_schedule/device_restriction_schedule_controller.h"
+#include "ui/chromeos/devicetype_utils.h"
 
 namespace ash {
 namespace {
 
 system::DeviceDisablingManager* DeviceDisablingManager() {
   return g_browser_process->platform_part()->device_disabling_manager();
+}
+
+policy::DeviceRestrictionScheduleController&
+DeviceRestrictionScheduleController() {
+  return CHECK_DEREF(g_browser_process->platform_part()
+                         ->device_restriction_schedule_controller());
 }
 
 }  // namespace
@@ -34,9 +44,18 @@ void DeviceDisabledScreen::ShowImpl() {
     return;
   }
 
-  view_->Show(DeviceDisablingManager()->serial_number(),
-              DeviceDisablingManager()->enrollment_domain(),
-              DeviceDisablingManager()->disabled_message());
+  DeviceDisabledScreenView::Params params;
+  params.serial = DeviceDisablingManager()->serial_number();
+  params.domain = DeviceDisablingManager()->enrollment_domain();
+  params.message = DeviceDisablingManager()->disabled_message();
+  params.device_restriction_schedule_enabled =
+      DeviceRestrictionScheduleController().RestrictionScheduleEnabled();
+  params.device_name = ui::GetChromeOSDeviceName();
+  params.restriction_schedule_end_day =
+      DeviceRestrictionScheduleController().RestrictionScheduleEndDay();
+  params.restriction_schedule_end_time =
+      DeviceRestrictionScheduleController().RestrictionScheduleEndTime();
+  view_->Show(params);
   DeviceDisablingManager()->AddObserver(this);
 }
 

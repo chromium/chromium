@@ -49,21 +49,33 @@ bool IntervalsContainTime(
   return false;
 }
 
+std::optional<WeeklyTimeChecked> GetNextEvent(
+    const std::vector<WeeklyTimeIntervalChecked>& intervals,
+    const WeeklyTimeChecked& time) {
+  std::optional<WeeklyTimeChecked> next_event = std::nullopt;
+  // Sentinel value set to max which is 1 week.
+  base::TimeDelta min_duration = base::Days(7);
+  for (const auto& interval : intervals) {
+    for (const WeeklyTimeChecked& event : {interval.start(), interval.end()}) {
+      const base::TimeDelta duration =
+          WeeklyTimeIntervalChecked(time, event).Duration();
+      if (duration < min_duration) {
+        min_duration = duration;
+        next_event = event;
+      }
+    }
+  }
+  return next_event;
+}
+
 std::optional<base::TimeDelta> GetDurationToNextEvent(
     const std::vector<WeeklyTimeIntervalChecked>& intervals,
     const WeeklyTimeChecked& time) {
-  if (intervals.empty()) {
+  std::optional<WeeklyTimeChecked> next_event = GetNextEvent(intervals, time);
+  if (!next_event.has_value()) {
     return std::nullopt;
   }
-  // Sentinel value set to max which is 1 week.
-  base::TimeDelta result = base::Days(7);
-  for (const auto& interval : intervals) {
-    result = std::min(
-        result, WeeklyTimeIntervalChecked(time, interval.start()).Duration());
-    result = std::min(
-        result, WeeklyTimeIntervalChecked(time, interval.end()).Duration());
-  }
-  return result;
+  return WeeklyTimeIntervalChecked(time, next_event.value()).Duration();
 }
 
 }  // namespace policy::weekly_time

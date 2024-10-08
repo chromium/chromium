@@ -393,6 +393,9 @@ need to be translated for each locale.-->
       <message name="IDS_PAST_TIME_YESTERDAY" desc="Relative day yesterday">
         Yesterday
       </message>
+      <message name="IDS_TIME_TOMORROW" desc="Relative day tomorrow">
+        Tomorrow
+      </message>
 
       <!-- Menus -->
       <message name="IDS_APP_MENU_EMPTY_SUBMENU" desc="Used when a submenu has no entries">

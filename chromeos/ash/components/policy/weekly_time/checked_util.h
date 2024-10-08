@@ -31,6 +31,16 @@ bool IntervalsContainTime(
     const std::vector<WeeklyTimeIntervalChecked>& intervals,
     const WeeklyTimeChecked& time);
 
+// Returns a `WeeklyTimeChecked` that corresponds to the first next interval
+// start or end time that comes after `time`, or std::nullopt in case intervals
+// is empty.
+// NB: If there's an event at the exact same time as `time`, it is ignored, and
+// the one after that is used for the calculation.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
+std::optional<WeeklyTimeChecked> GetNextEvent(
+    const std::vector<WeeklyTimeIntervalChecked>& intervals,
+    const WeeklyTimeChecked& time);
+
 // Returns a TimeDelta from `time` until the first next interval start or end
 // time, or std::nullopt in case intervals is empty.
 // NB: If there's an event at the exact same time as `time`, it is ignored, and

@@ -25,9 +25,33 @@ constexpr base::TimeDelta kDay = base::Days(1);
 
 using Day = WeeklyTimeChecked::Day;
 using weekly_time::BuildWeeklyTimeCheckedDict;
+using weekly_time::DayToString;
 using weekly_time::TimeFromString;
 
 }  // namespace
+
+TEST(WeeklyTimeCheckedTest, NextDay) {
+  // clang-format off
+  const struct TestData {
+    Day day;
+    Day expected_next_day;
+  } kTestData[] = {
+    {Day::kMonday, Day::kTuesday},
+    {Day::kTuesday, Day::kWednesday},
+    {Day::kWednesday, Day::kThursday},
+    {Day::kThursday, Day::kFriday},
+    {Day::kFriday, Day::kSaturday},
+    {Day::kSaturday, Day::kSunday},
+    {Day::kSunday, Day::kMonday},
+  };
+  // clang-format on
+
+  for (const auto& t : kTestData) {
+    Day next_day = WeeklyTimeChecked::NextDay(t.day);
+    SCOPED_TRACE(testing::Message() << "day: " << DayToString(t.day));
+    EXPECT_EQ(next_day, t.expected_next_day);
+  }
+}
 
 TEST(WeeklyTimeCheckedTest, Equality_True) {
   const int kMilliseconds = 111;

@@ -288,6 +288,7 @@ static_library("screens") {
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/network/portal_detector",
     "//chromeos/ash/components/osauth/public",
+    "//chromeos/ash/components/policy",
     "//chromeos/ash/components/quick_start",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/system",

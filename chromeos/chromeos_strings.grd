@@ -6812,6 +6812,34 @@
       <message name="IDS_DEVICE_RESTRICTION_SCHEDULE_POST_LOGOUT_NOTIFICATION_BODY" desc="Body of the notification telling the user that they were logged out.">
         The <ph name="MANAGER">$1<ex>google.com</ex></ph> administrator has set when this <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph> can be used
       </message>
+      <message name="IDS_DEVICE_DISABLED_HEADING_RESTRICTION_SCHEDULE" desc="Heading of the message shown to the user when the device has been disabled because it is inside restriction schedule.">
+        Device can't be used
+      </message>
+      <message name="IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE" desc="Explanation shown to the user when the device has been disabled because it is inside restriction schedule.">
+        <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>The <ph name="MANAGER">$1<ex>google.com</ex></ph> administrator has set when this <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph> can be used.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+        <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You'll be able to use this device again <ph name="DAY">$3<ex>tomorrow</ex></ph> at <ph name="TIME">$4<ex>8:00 AM</ex></ph>.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+      </message>
+      <message name="IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE_MONDAY" desc="Message part DAY for IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE.">
+        on Monday
+      </message>
+      <message name="IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE_TUESDAY" desc="Message part DAY for IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE.">
+        on Tuesday
+      </message>
+      <message name="IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE_WEDNESDAY" desc="Message part DAY for IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE.">
+        on Wednesday
+      </message>
+      <message name="IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE_THURSDAY" desc="Message part DAY for IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE.">
+        on Thursday
+      </message>
+      <message name="IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE_FRIDAY" desc="Message part DAY for IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE.">
+        on Friday
+      </message>
+      <message name="IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE_SATURDAY" desc="Message part DAY for IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE.">
+        on Saturday
+      </message>
+      <message name="IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE_SUNDAY" desc="Message part DAY for IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE.">
+        on Sunday
+      </message>
 
     </messages>
   </release>

@@ -18,6 +18,9 @@ class WeeklyTimeIntervalChecked;
 
 namespace policy::weekly_time {
 
+// Converts a `WeeklyTimeChecked::Day` to its string representation.
+const char* DayToString(WeeklyTimeChecked::Day day_of_week);
+
 // Represents an interval point from
 // `chromeos::prefs::kDeviceRestrictionSchedule`.
 base::Value::Dict BuildWeeklyTimeCheckedDict(WeeklyTimeChecked::Day day_of_week,

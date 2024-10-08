@@ -14,10 +14,14 @@ found in the LICENSE file.
 
 <oobe-adaptive-dialog title-key="deviceDisabledHeading" id="dialog"
     role="dialog"
-    aria-label$="[[i18nDynamic(locale, 'deviceDisabledHeading')]]">
+    aria-label$="[[disabledHeading(locale, deviceRestrictionScheduleEnabled)]]">
   <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
-  <h1 slot="title">[[i18nDynamic(locale, 'deviceDisabledHeading')]]</h1>
-  <div inner-h-t-m-l="[[disabledText(locale, serial, enrollmentDomain)]]"
+  <h1 slot="title">
+    [[disabledHeading(locale, deviceRestrictionScheduleEnabled)]]
+  </h1>
+  <div inner-h-t-m-l="[[disabledText(
+    locale, serial, enrollmentDomain, deviceRestrictionScheduleEnabled,
+    deviceName, restrictionScheduleEndDay, restrictionScheduleEndTime)]]"
       slot="subtitle">
   </div>
   <div slot="content" class="flex layout vertical center center-justified">

@@ -19,6 +19,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/ash/login:test_support",
+    "//chrome/browser/ui/webui/ash/login",
     "//chromeos/ash/components/policy",
     "//chromeos/ash/components/policy/weekly_time:test_support",
     "//components/policy/proto",

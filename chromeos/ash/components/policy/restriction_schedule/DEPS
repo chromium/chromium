@@ -6,4 +6,5 @@ include_rules = [
   "+ui/base/l10n",
   "+ui/chromeos",
   "+ui/message_center",
+  "+ui/strings",
 ]

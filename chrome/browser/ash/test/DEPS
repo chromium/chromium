@@ -12,4 +12,5 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/login",
   "+chrome/browser/lifetime/termination_notification.h",
+  "+chrome/browser/ui/webui/ash/login/device_disabled_screen_handler.h",
 ]

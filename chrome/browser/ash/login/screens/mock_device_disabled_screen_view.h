@@ -15,10 +15,7 @@ class MockDeviceDisabledScreenView : public DeviceDisabledScreenView {
   MockDeviceDisabledScreenView();
   ~MockDeviceDisabledScreenView() override;
 
-  MOCK_METHOD(void,
-              Show,
-              (const std::string&, const std::string&, const std::string&),
-              (override));
+  MOCK_METHOD(void, Show, (const Params& params), (override));
 
   MOCK_METHOD(void, UpdateMessage, (const std::string&), (override));
 

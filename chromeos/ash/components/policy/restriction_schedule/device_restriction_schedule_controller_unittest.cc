@@ -54,10 +54,12 @@ constexpr const char* kPolicyJson = R"([
 ])";
 
 using weekly_time::BuildList;
+using weekly_time::DayToString;
 using Day = WeeklyTimeChecked::Day;
 using testing::_;
 using testing::DoAll;
 using testing::InSequence;
+using ::testing::NiceMock;
 using testing::Return;
 
 // Used to verify time in EXPECT_CALLs. Macro in order to see correct line
@@ -127,8 +129,8 @@ class DeviceRestrictionScheduleControllerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingPrefServiceSimple local_state_;
-  MockDelegate delegate_;
-  MockObserver observer_;
+  NiceMock<MockDelegate> delegate_;
+  NiceMock<MockObserver> observer_;
   std::unique_ptr<DeviceRestrictionScheduleController> controller_;
 };
 
@@ -429,6 +431,41 @@ TEST(DeviceRestrictionScheduleController_ShowPostLogoutNotification,
   // Notification is not shown.
   EXPECT_CALL(delegate, ShowPostLogoutNotification()).Times(0);
   DeviceRestrictionScheduleController controller{delegate, local_state};
+}
+
+// Verify `RestrictionScheduleEndDay` & `RestrictionScheduleEndTime` functions.
+TEST_F(DeviceRestrictionScheduleControllerTest, RestrictionScheduleEndDayTime) {
+  // clang-format off
+  const struct TestData {
+    WeeklyTimeChecked::Day day;
+    int hours;
+    int minutes;
+    std::u16string expected_day;
+    std::u16string expected_time;
+  } kTestData[] = {
+    // Inside restriction schedule, verify end time.
+    {Day::kWednesday, 15, 0, u"Today",       u"9:00\u202fPM"},
+    {Day::kFriday,    19, 0, u"on Monday",   u"6:00\u202fAM"},
+    {Day::kSaturday,  19, 0, u"on Monday",   u"6:00\u202fAM"},
+    {Day::kSunday,    19, 0, u"Tomorrow",    u"6:00\u202fAM"},
+    {Day::kMonday,     1, 0, u"Today",       u"6:00\u202fAM"},
+    // Inside regular schedule, verify that empty strings are returned.
+    {Day::kWednesday, 10, 0, u"", u""},
+    {Day::kTuesday,   10, 0, u"", u""},
+    {Day::kMonday,    10, 0, u"", u""},
+    {Day::kWednesday, 22, 0, u"", u""},
+  };
+  // clang-format on
+
+  for (const auto& t : kTestData) {
+    SetTime(t.day, t.hours, t.minutes);
+    UpdatePolicyPref(kPolicyJson);
+    SCOPED_TRACE(testing::Message()
+                 << "day: " << DayToString(t.day) << ", hours: " << t.hours
+                 << ", minutes: " << t.minutes);
+    EXPECT_EQ(t.expected_day, controller_->RestrictionScheduleEndDay());
+    EXPECT_EQ(t.expected_time, controller_->RestrictionScheduleEndTime());
+  }
 }
 
 }  // namespace policy
