@@ -183,6 +183,7 @@ const CGFloat kSeparatorHeight = 0.5;
   _allowButton.titleLabel.font =
       [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   _allowButton.isAccessibilityElement = YES;
+  _allowButton.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
   _tapRecognizer = [[UITapGestureRecognizer alloc]
       initWithTarget:self
               action:@selector(allowPriceTrackingTapped:)];
@@ -215,10 +216,24 @@ const CGFloat kSeparatorHeight = 0.5;
   _contentStack.alignment = UIStackViewAlignmentTop;
   [self addSubview:_contentStack];
   AddSameConstraints(_contentStack, self);
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+        @[ UITraitPreferredContentSizeCategory.self ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(hideDescriptionOnTraitChange)];
+  }
 }
 
 - (void)allowPriceTrackingTapped:(UIGestureRecognizer*)sender {
   [self.commandHandler allowPriceTrackingNotifications];
+}
+
+- (void)hideDescriptionOnTraitChange {
+  _descriptionLabel.hidden = self.traitCollection.preferredContentSizeCategory >
+                             UIContentSizeCategoryExtraExtraLarge;
+  // Force a layout since the size of text components may have changed.
+  [self setNeedsLayout];
+  [self layoutIfNeeded];
 }
 
 #pragma mark - Testing category methods
