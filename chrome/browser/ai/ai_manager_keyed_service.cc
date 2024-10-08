@@ -8,6 +8,7 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/ai/ai_rewriter.h"
 #include "chrome/browser/ai/ai_summarizer.h"
 #include "chrome/browser/ai/ai_writer.h"
+#include "chrome/browser/ai/features.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -49,6 +51,18 @@ bool IsModelPathValid(const std::string& model_path_str) {
     return false;
   }
   return base::PathExists(*model_path);
+}
+
+// Return the max top k value for the Assistant API. Note that this value won't
+// exceed the max top k defined by the underlying on-device model.
+int GetAssistantModelMaxTopK() {
+  int max_top_k = optimization_guide::features::GetOnDeviceModelMaxTopK();
+  if (base::FeatureList::IsEnabled(
+          features::kAIAssistantOverrideConfiguration)) {
+    max_top_k = std::min(
+        max_top_k, features::kAIAssistantOverrideConfigurationMaxTopK.Get());
+  }
+  return max_top_k;
 }
 
 blink::mojom::ModelAvailabilityCheckResult
@@ -361,7 +375,8 @@ std::unique_ptr<AIAssistant> AIManagerKeyedService::CreateAssistantInternal(
               ExecutionMode::kOnDeviceOnly};
   if (sampling_params) {
     config_params.sampling_params = optimization_guide::SamplingParams{
-        .top_k = sampling_params->top_k,
+        .top_k = std::min(sampling_params->top_k,
+                          uint32_t(GetAssistantModelMaxTopK())),
         .temperature = sampling_params->temperature};
   }
 
@@ -446,7 +461,7 @@ void AIManagerKeyedService::CreateSummarizer(
 void AIManagerKeyedService::GetModelInfo(GetModelInfoCallback callback) {
   std::move(callback).Run(blink::mojom::AIModelInfo::New(
       optimization_guide::features::GetOnDeviceModelDefaultTopK(),
-      optimization_guide::features::GetOnDeviceModelMaxTopK(),
+      GetAssistantModelMaxTopK(),
       optimization_guide::features::GetOnDeviceModelDefaultTemperature()));
 }
 

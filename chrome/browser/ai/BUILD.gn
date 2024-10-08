@@ -17,6 +17,8 @@ source_set("ai") {
     "ai_summarizer.h",
     "ai_utils.h",
     "ai_writer.h",
+    "features.cc",
+    "features.h",
   ]
   public_deps = [
     "//base",

@@ -9,7 +9,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ai/ai_test_utils.h"
+#include "chrome/browser/ai/features.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
@@ -31,7 +33,8 @@ using optimization_guide::proto::PromptApiRole;
 
 const uint32_t kTestMaxContextToken = 10u;
 const uint32_t kTestInitialPromptsToken = 5u;
-const uint32_t kDefaultTopK = 1;
+const uint32_t kDefaultTopK = 1u;
+const uint32_t kOverrideMaxTopK = 5u;
 const float kDefaultTemperature = 0.0;
 
 const std::string kTestPrompt = "Test prompt";
@@ -152,6 +155,15 @@ class AIAssistantTest : public AITestUtils::AITestBase {
     bool use_prompt_api_proto = false;
   };
 
+  void SetUp() override {
+    AITestUtils::AITestBase::SetUp();
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {base::test::FeatureRefAndParams(
+            features::kAIAssistantOverrideConfiguration,
+            {{"max_top_k", base::NumberToString(kOverrideMaxTopK)}})},
+        {});
+  }
+
  protected:
   // The helper function that creates a `AIAssistant` and executes the prompt.
   void RunPromptTest(Options options) {
@@ -174,7 +186,7 @@ class AIAssistantTest : public AITestUtils::AITestBase {
               testing::NiceMock<optimization_guide::MockSession>>();
           if (sampling_params_copy) {
             EXPECT_EQ(config_params->sampling_params->top_k,
-                      sampling_params_copy->top_k);
+                      std::min(kOverrideMaxTopK, sampling_params_copy->top_k));
             EXPECT_EQ(config_params->sampling_params->temperature,
                       sampling_params_copy->temperature);
           }
@@ -351,6 +363,7 @@ class AIAssistantTest : public AITestUtils::AITestBase {
   }
 
   std::unique_ptr<AITestUtils::MockSupportsUserData> mock_host_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(AIAssistantTest, PromptDefaultSession) {
@@ -363,7 +376,16 @@ TEST_F(AIAssistantTest, PromptDefaultSession) {
 TEST_F(AIAssistantTest, PromptSessionWithSamplingParams) {
   RunPromptTest(AIAssistantTest::Options{
       .sampling_params = blink::mojom::AIAssistantSamplingParams::New(
-          /*top_k=*/10, /*temperature=*/0.6),
+          /*top_k=*/kOverrideMaxTopK - 1, /*temperature=*/0.6),
+      .prompt_input = kTestPrompt,
+      .expected_prompt = kExpectedFormattedTestPrompt,
+  });
+}
+
+TEST_F(AIAssistantTest, PromptSessionWithSamplingParams_ExceedMaxTopK) {
+  RunPromptTest(AIAssistantTest::Options{
+      .sampling_params = blink::mojom::AIAssistantSamplingParams::New(
+          /*top_k=*/kOverrideMaxTopK + 1, /*temperature=*/0.6),
       .prompt_input = kTestPrompt,
       .expected_prompt = kExpectedFormattedTestPrompt,
   });
