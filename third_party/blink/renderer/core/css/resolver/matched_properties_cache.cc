@@ -284,10 +284,22 @@ bool MatchedPropertiesCache::IsCacheable(const StyleResolverState& state) {
     return false;
   }
 
-  // The cache assumes static knowledge about which properties are inherited.
-  // Without a flat tree parent, StyleBuilder::ApplyProperty will not
-  // SetChildHasExplicitInheritance on the parent style.
-  if (!state.ParentElement() || parent_style.ChildHasExplicitInheritance()) {
+  // If we allowed styles with explicit inheritance in, we would have to mark
+  // them as partial hits (different parents could mean that _non-inherited_
+  // properties would need to be reapplied, similar to the situation with
+  // ForcedColors). We don't bother tracking this, and instead just never
+  // insert them.
+  //
+  // The “explicit inheritance” flag is stored on the parent, not the style
+  // itself, since that's where we need it 90%+ of the time. This means that
+  // if we do not know the flat-tree parent, StyleBuilder::ApplyProperty() will
+  // not SetChildHasExplicitInheritance() on the parent style, and we do not
+  // know whether this flag is true or false. However, the only two cases where
+  // this can happen (root element, and unused slots in shadow trees),
+  // it doesn't actually matter whether we have explicit inheritance or not,
+  // since the parent style is the initial style. So even if the test returns
+  // a false positive, that's fine.
+  if (parent_style.ChildHasExplicitInheritance()) {
     return false;
   }
 
