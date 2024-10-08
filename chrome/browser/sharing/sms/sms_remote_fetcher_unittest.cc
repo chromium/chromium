@@ -44,7 +44,7 @@ MockSharingService* CreateSharingService(content::BrowserContext* context) {
           })));
 }
 
-url::Origin GetOriginForURL(const std::string url) {
+url::Origin GetOriginForURL(const std::string& url) {
   return url::Origin::Create(GURL(url));
 }
 
