@@ -3659,6 +3659,7 @@ chromium-metrics-reviews@google.com.
     The accumulated duration in ms of doze mode power scheduler has sent
     {PowerStatus} to arcvm. Recorded daily.
   </summary>
+  <token key="PowerStatus" variants="PowerStatus"/>
 </histogram>
 
 <histogram name="Ash.DragWindowFromShelf.PresentationTime" units="ms"
