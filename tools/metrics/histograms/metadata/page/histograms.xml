@@ -2388,9 +2388,9 @@ chromium-metrics-reviews@google.com.
   <token key="RTTBucketSuffix" variants="RTTBucketSuffix"/>
   <token key="AbandonedTimeBucket">
     <variant name=""/>
+    <variant name=".AbandonedTime100To2000"/>
     <variant name=".AbandonedTimeAbove2000"/>
     <variant name=".AbandonedTimeBelow100"/>
-    <variant name=".AbandonedTimeBetween100To2000"/>
   </token>
 </histogram>
 
