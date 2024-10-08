@@ -5,11 +5,15 @@
 #ifndef COMPONENTS_SAVED_TAB_GROUPS_INTERNAL_TAB_GROUP_SYNC_METRICS_LOGGER_IMPL_H_
 #define COMPONENTS_SAVED_TAB_GROUPS_INTERNAL_TAB_GROUP_SYNC_METRICS_LOGGER_IMPL_H_
 
+#include <deque>
+#include <map>
 #include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/delayed_task_handle.h"
+#include "base/time/default_clock.h"
 #include "components/saved_tab_groups/public/tab_group_sync_metrics_logger.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/signin/public/base/consent_level.h"
@@ -61,6 +65,12 @@ class TabGroupSyncMetricsLoggerImpl : public TabGroupSyncMetricsLogger {
   void RecordTabGroupDeletionsOnStartup(size_t group_count) override;
   void RecordMetricsOnSignin(const std::vector<SavedTabGroup>& saved_tab_groups,
                              signin::ConsentLevel consent_level) override;
+  void RecordSavedTabGroupNavigation(const LocalTabID& id,
+                                     const GURL& url,
+                                     SavedTabGroupType type,
+                                     bool is_post,
+                                     bool was_redirected,
+                                     ukm::SourceId source_id) override;
 
   // Returns the DeviceType based on the sync cache guid which can resolve to a
   // local device or a remote device with a specific OS and form factor. The
@@ -73,9 +83,29 @@ class TabGroupSyncMetricsLoggerImpl : public TabGroupSyncMetricsLogger {
   DeviceType GetDeviceTypeFromDeviceInfo(
       const syncer::DeviceInfo& device_info) const;
 
+  void SetClockForTesting(base::Clock* clock);
+
  private:
   // For resolving device information.
   raw_ptr<syncer::DeviceInfoTracker> device_info_tracker_;
+
+  // Called to clean entries in `recent_navigations_` that are too old.
+  void PruneRecentNavigationsThatAreTooOld();
+
+  // Object representing recent main frame navigations.
+  struct RecentNavigation {
+    GURL url;
+    base::Time timestamp;
+
+    RecentNavigation(const GURL url, base::Time timestamp)
+        : url(url), timestamp(timestamp) {}
+  };
+
+  using RecentNavigationMap =
+      std::map<LocalTabID, std::unique_ptr<std::deque<RecentNavigation>>>;
+  RecentNavigationMap recent_navigations_;
+
+  raw_ptr<base::Clock> clock_ = base::DefaultClock::GetInstance();
 };
 
 }  // namespace tab_groups

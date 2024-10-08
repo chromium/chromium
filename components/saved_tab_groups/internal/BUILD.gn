@@ -35,6 +35,8 @@ source_set("internal") {
     "//components/sync",
     "//components/sync_device_info",
     "//components/tab_groups",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
     "//ui/gfx",
     "//url",
   ]
@@ -195,6 +197,8 @@ source_set("unit_tests") {
     "//components/sync_device_info",
     "//components/sync_device_info:test_support",
     "//components/tab_groups",
+    "//components/ukm:test_support",
+    "//services/metrics/public/cpp:ukm_builders",
     "//testing/gmock",
     "//testing/gtest",
     "//url",

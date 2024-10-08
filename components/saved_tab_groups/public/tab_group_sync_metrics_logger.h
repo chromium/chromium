@@ -10,6 +10,8 @@
 
 #include "components/saved_tab_groups/public/types.h"
 #include "components/signin/public/base/consent_level.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
+#include "url/gurl.h"
 
 namespace tab_groups {
 class SavedTabGroup;
@@ -43,6 +45,14 @@ class TabGroupSyncMetricsLogger {
   virtual void RecordMetricsOnSignin(
       const std::vector<SavedTabGroup>& saved_tab_groups,
       signin::ConsentLevel consent_level) = 0;
+
+  // Records UKM metrics about saved tab group navigations.
+  virtual void RecordSavedTabGroupNavigation(const LocalTabID& id,
+                                             const GURL& url,
+                                             SavedTabGroupType type,
+                                             bool is_post,
+                                             bool was_redirected,
+                                             ukm::SourceId source_id) = 0;
 };
 
 }  // namespace tab_groups

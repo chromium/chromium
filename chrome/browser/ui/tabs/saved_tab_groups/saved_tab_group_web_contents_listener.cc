@@ -120,6 +120,14 @@ content::WebContents* SavedTabGroupWebContentsListener::contents() const {
 void SavedTabGroupWebContentsListener::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   UpdateTabRedirectChain(navigation_handle);
+  std::optional<SavedTabGroup> group = saved_group();
+  if (group) {
+    TabGroupSyncUtils::RecordSavedTabGroupNavigationUkmMetrics(
+        saved_tab_group_tab_id_,
+        group->collaboration_id() ? SavedTabGroupType::SHARED
+                                  : SavedTabGroupType::SYNCED,
+        navigation_handle, service_);
+  }
 
   // If the navigation was the result of a sync update we don't want to update
   // the SavedTabGroupModel.
@@ -139,7 +147,6 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
     return;
   }
 
-  std::optional<SavedTabGroup> group = saved_group();
   SavedTabGroupTab* tab = group->GetTab(saved_tab_group_tab_id_);
   CHECK(tab);
 

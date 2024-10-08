@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/tab_group_sync/tab_group_sync_utils.h"
+
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "components/saved_tab_groups/public/android/tab_group_sync_conversions_bridge.h"
@@ -15,7 +17,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/tab_group_sync/jni_headers/TabGroupSyncUtils_jni.h"
 
-static void JNI_TabGroupSyncUtils_UpdateTabRedirectChain(
+static void JNI_TabGroupSyncUtils_OnDidFinishNavigation(
     JNIEnv* env,
     Profile* profile,
     const JavaParamRef<jobject>& j_group_id,
@@ -28,6 +30,10 @@ static void JNI_TabGroupSyncUtils_UpdateTabRedirectChain(
 
   auto group_id = tab_groups::TabGroupSyncConversionsBridge::FromJavaTabGroupId(
       env, j_group_id);
+  auto tab_group = service->GetGroup(group_id);
+  if (!tab_group) {
+    return;
+  }
   auto tab_id = tab_groups::FromJavaTabId(j_tab_id);
 
   auto* navigation_handle =
@@ -35,6 +41,12 @@ static void JNI_TabGroupSyncUtils_UpdateTabRedirectChain(
   tab_groups::SavedTabGroupTabBuilder tab_builder;
   tab_builder.SetRedirectURLChain(navigation_handle->GetRedirectChain());
   service->UpdateTab(group_id, tab_id, tab_builder);
+
+  tab_groups::TabGroupSyncUtils::RecordSavedTabGroupNavigationUkmMetrics(
+      tab_id,
+      tab_group->collaboration_id() ? tab_groups::SavedTabGroupType::SHARED
+                                    : tab_groups::SavedTabGroupType::SYNCED,
+      navigation_handle, service);
 }
 
 static jboolean JNI_TabGroupSyncUtils_IsUrlInTabRedirectChain(

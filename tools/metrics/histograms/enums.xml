@@ -30499,6 +30499,12 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="First frame of stack isn't mapped."/>
 </enum>
 
+<enum name="SavedTabGroupType">
+  <summary>Track the type of saved tab groups.</summary>
+  <int value="0" label="Synced tab group."/>
+  <int value="1" label="Shared tab group."/>
+</enum>
+
 <enum name="SB2DownloadChecks">
   <int value="0" label="URL_CHECKS_TOTAL"/>
   <int value="1" label="DEPRECATED_URL_CHECKS_CANCELED"/>

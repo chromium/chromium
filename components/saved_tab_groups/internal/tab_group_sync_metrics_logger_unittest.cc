@@ -5,11 +5,15 @@
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/simple_test_clock.h"
+#include "base/test/task_environment.h"
 #include "components/saved_tab_groups/internal/tab_group_sync_metrics_logger_impl.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
+#include "components/ukm/test_ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -17,6 +21,7 @@ using testing::_;
 using testing::Eq;
 using testing::Invoke;
 using testing::Return;
+using UkmSavedTabGroupNavigation = ukm::builders::SavedTabGroup_Navigation;
 
 namespace tab_groups {
 namespace {
@@ -28,6 +33,9 @@ const char kDeviceGuid2[] = "device2";
 // Local device guid.
 const char kDeviceGuid3[] = "device3";
 
+const char kTestURL1[] = "http://foo.com/test.html?x=1#123";
+const char kTestURL2[] = "http://foo.com/test.html#12";
+const char kTestURL3[] = "http://foo.com/test2.html#12";
 }  // namespace
 
 class TabGroupSyncMetricsLoggerTest : public testing::Test {
@@ -40,6 +48,8 @@ class TabGroupSyncMetricsLoggerTest : public testing::Test {
     device_info_tracker_ = std::make_unique<syncer::FakeDeviceInfoTracker>();
     metrics_logger_ = std::make_unique<TabGroupSyncMetricsLoggerImpl>(
         device_info_tracker_.get());
+    test_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+    metrics_logger_->SetClockForTesting(&test_clock_);
     SetUpDeviceInfo();
   }
 
@@ -65,12 +75,62 @@ class TabGroupSyncMetricsLoggerTest : public testing::Test {
     return metrics_logger_->GetDeviceTypeFromDeviceInfo(*device_info);
   }
 
+  struct ExpectedValue {
+    int expected_num_same_url_load;
+    int expected_num_same_url_without_ref_and_query_param_load;
+    bool is_post;
+    bool was_redirected;
+    SavedTabGroupType type;
+
+    ExpectedValue(int expected_num_same_url_load,
+                  int expected_num_same_url_without_ref_and_query_param_load,
+                  bool is_post,
+                  bool was_redirected,
+                  SavedTabGroupType type)
+        : expected_num_same_url_load(expected_num_same_url_load),
+          expected_num_same_url_without_ref_and_query_param_load(
+              expected_num_same_url_without_ref_and_query_param_load),
+          is_post(is_post),
+          was_redirected(was_redirected),
+          type(type) {}
+  };
+
+  void ExpectUkmMetrics(std::vector<ExpectedValue> expected_values) {
+    const auto& entries = test_recorder_->GetEntriesByName(
+        UkmSavedTabGroupNavigation::kEntryName);
+    EXPECT_EQ(expected_values.size(), entries.size());
+    for (size_t i = 0; i < entries.size(); ++i) {
+      const ukm::mojom::UkmEntry* entry = entries[i];
+      const ExpectedValue& value = expected_values[i];
+      test_recorder_->ExpectEntryMetric(
+          entry, UkmSavedTabGroupNavigation::kNumSameUrlLoadName,
+          value.expected_num_same_url_load);
+      test_recorder_->ExpectEntryMetric(
+          entry,
+          UkmSavedTabGroupNavigation::
+              kNumSameUrlWithoutRefAndQueryParamLoadName,
+          value.expected_num_same_url_without_ref_and_query_param_load);
+      test_recorder_->ExpectEntryMetric(entry,
+                                        UkmSavedTabGroupNavigation::kIsPostName,
+                                        static_cast<int64_t>(value.is_post));
+      test_recorder_->ExpectEntryMetric(
+          entry, UkmSavedTabGroupNavigation::kWasRedirectedName,
+          static_cast<int64_t>(value.was_redirected));
+      test_recorder_->ExpectEntryMetric(
+          entry, UkmSavedTabGroupNavigation::kTabGroupTypeName,
+          static_cast<int64_t>(value.type));
+    }
+  }
+
  protected:
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<syncer::FakeDeviceInfoTracker> device_info_tracker_;
   std::unique_ptr<TabGroupSyncMetricsLoggerImpl> metrics_logger_;
   std::unique_ptr<syncer::DeviceInfo> device_info1_;
   std::unique_ptr<syncer::DeviceInfo> device_info2_;
   std::unique_ptr<syncer::DeviceInfo> device_info3_;
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_recorder_;
+  base::SimpleTestClock test_clock_;
 };
 
 TEST_F(TabGroupSyncMetricsLoggerTest, HistogramsAreEmittedForLogEvents) {
@@ -444,6 +504,62 @@ TEST_F(TabGroupSyncMetricsLoggerTest, RecordMetricsOnStartup) {
   EXPECT_EQ(
       3u, histogram_tester.GetTotalSum("TabGroups.Sync.SavedTabGroupTabCount"));
   histogram_tester.ExpectUniqueSample("TabGroups.Sync.SavedTabGroupAge", 0, 2u);
+}
+
+TEST_F(TabGroupSyncMetricsLoggerTest, RecordSavedTabGroupNavigation) {
+  LocalTabID id_1 = test::GenerateRandomTabID();
+  ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
+  metrics_logger_->RecordSavedTabGroupNavigation(
+      id_1, GURL(kTestURL1), SavedTabGroupType::SYNCED,
+      /*is_post=*/true,
+      /*was_redirected=*/false, source_id);
+  std::vector<ExpectedValue> expected_values;
+  expected_values.emplace_back(1, 1, true, false, SavedTabGroupType::SYNCED);
+  ExpectUkmMetrics(expected_values);
+
+  // Navigate to a similar URL quickly.
+  test_clock_.Advance(base::Minutes(1));
+  metrics_logger_->RecordSavedTabGroupNavigation(
+      id_1, GURL(kTestURL2), SavedTabGroupType::SYNCED,
+      /*is_post=*/true,
+      /*was_redirected=*/true, source_id);
+  expected_values.emplace_back(1, 2, true, true, SavedTabGroupType::SYNCED);
+  ExpectUkmMetrics(expected_values);
+
+  // Navigate again, and the first URL will no longer be counted.
+  test_clock_.Advance(base::Minutes(2));
+  metrics_logger_->RecordSavedTabGroupNavigation(
+      id_1, GURL(kTestURL2), SavedTabGroupType::SYNCED,
+      /*is_post=*/true,
+      /*was_redirected=*/true, source_id);
+  expected_values.emplace_back(2, 2, true, true, SavedTabGroupType::SYNCED);
+  ExpectUkmMetrics(expected_values);
+
+  // Navigate in a different tab.
+  LocalTabID id_2 = test::GenerateRandomTabID();
+  metrics_logger_->RecordSavedTabGroupNavigation(
+      id_2, GURL(kTestURL2), SavedTabGroupType::SYNCED,
+      /*is_post=*/false,
+      /*was_redirected=*/true, source_id);
+  expected_values.emplace_back(1, 1, false, true, SavedTabGroupType::SYNCED);
+  ExpectUkmMetrics(expected_values);
+
+  // Navigate to a different page.
+  metrics_logger_->RecordSavedTabGroupNavigation(
+      id_2, GURL(kTestURL3), SavedTabGroupType::SYNCED,
+      /*is_post=*/false,
+      /*was_redirected=*/true, source_id);
+  expected_values.emplace_back(1, 1, false, true, SavedTabGroupType::SYNCED);
+  ExpectUkmMetrics(expected_values);
+
+  // Wait for all past navigations to expire.
+  test_clock_.Advance(base::Minutes(3));
+  metrics_logger_->RecordSavedTabGroupNavigation(
+      id_2, GURL(kTestURL3), SavedTabGroupType::SYNCED,
+      /*is_post=*/false,
+      /*was_redirected=*/true, source_id);
+  expected_values.emplace_back(1, 1, false, true, SavedTabGroupType::SYNCED);
+  ExpectUkmMetrics(expected_values);
 }
 
 }  // namespace tab_groups

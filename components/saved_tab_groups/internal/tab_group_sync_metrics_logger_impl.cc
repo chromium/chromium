@@ -11,6 +11,8 @@
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_tracker.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace tab_groups {
 namespace {
@@ -19,6 +21,7 @@ namespace {
 constexpr base::TimeDelta kOneDay = base::Days(1);
 constexpr base::TimeDelta kSevenDays = base::Days(7);
 constexpr base::TimeDelta kTwentyEightDays = base::Days(28);
+constexpr base::TimeDelta kTwoMinutes = base::Minutes(2);
 
 void LogGroupCreated(DeviceType group_create_origin) {
   base::UmaHistogramEnumeration(
@@ -131,6 +134,13 @@ void LogTabGroupUserInteracted(DeviceType group_create_origin,
       group_create_origin);
   base::UmaHistogramBoolean("TabGroups.Sync.TabGroup.UserInteracted.HasTitle",
                             !group->title().empty());
+}
+
+GURL RemoveQueryAndRef(const GURL& url) {
+  GURL::Replacements replacements;
+  replacements.ClearQuery();
+  replacements.ClearRef();
+  return url.ReplaceComponents(replacements);
 }
 
 }  // namespace
@@ -408,6 +418,69 @@ void TabGroupSyncMetricsLoggerImpl::RecordMetricsOnSignin(
   base::UmaHistogramCounts10000(base::StrCat({"TabGroups", consent_level_token,
                                               ".ClosedTabGroupTabsCount"}),
                                 closed_tabs_count);
+}
+
+void TabGroupSyncMetricsLoggerImpl::RecordSavedTabGroupNavigation(
+    const LocalTabID& id,
+    const GURL& url,
+    SavedTabGroupType group_type,
+    bool is_post,
+    bool was_redirected,
+    ukm::SourceId source_id) {
+  PruneRecentNavigationsThatAreTooOld();
+
+  base::Time now = clock_->Now();
+  auto iter = recent_navigations_.find(id);
+  if (iter == recent_navigations_.end()) {
+    recent_navigations_[id] = std::make_unique<std::deque<RecentNavigation>>();
+  }
+  recent_navigations_[id]->emplace_back(url, now);
+
+  int same_url_count = 0;
+  int same_url_without_query_and_ref_count = 0;
+  GURL base_url = RemoveQueryAndRef(url);
+  for (const auto& navigation : *recent_navigations_[id]) {
+    if (navigation.url == url) {
+      same_url_count++;
+    }
+    if (RemoveQueryAndRef(navigation.url) == base_url) {
+      same_url_without_query_and_ref_count++;
+    }
+  }
+  ukm::builders::SavedTabGroup_Navigation(source_id)
+      .SetNumSameUrlLoad(same_url_count)
+      .SetNumSameUrlWithoutRefAndQueryParamLoad(
+          same_url_without_query_and_ref_count)
+      .SetWasRedirected(static_cast<int64_t>(was_redirected))
+      .SetIsPost(static_cast<int64_t>(is_post))
+      .SetTabGroupType(static_cast<int64_t>(group_type))
+      .Record(ukm::UkmRecorder::Get());
+}
+
+void TabGroupSyncMetricsLoggerImpl::SetClockForTesting(base::Clock* clock) {
+  clock_ = clock;
+}
+
+void TabGroupSyncMetricsLoggerImpl::PruneRecentNavigationsThatAreTooOld() {
+  if (recent_navigations_.empty()) {
+    return;
+  }
+
+  base::Time now = clock_->Now();
+
+  for (auto it = recent_navigations_.cbegin();
+       it != recent_navigations_.cend();) {
+    std::deque<RecentNavigation>* recents = it->second.get();
+    while (!recents->empty() &&
+           (now - recents->front().timestamp > kTwoMinutes)) {
+      recents->pop_front();
+    }
+    if (recents->empty()) {
+      it = recent_navigations_.erase(it);
+    } else {
+      ++it;
+    }
+  }
 }
 
 }  // namespace tab_groups

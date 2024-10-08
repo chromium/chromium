@@ -19053,6 +19053,47 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="SavedTabGroup.Navigation">
+  <owner>qinmin@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <summary>
+    A collection of metrics which are recorded for navigations inside saved tab
+    groups. The metrics are recorded when a URL is synced from another client
+    and Chrome finishes the navigation to that URL.
+  </summary>
+  <metric name="IsPost" enum="Boolean">
+    <summary>
+      A boolean indicating whether the current navigation is triggered by a POST
+      request.
+    </summary>
+  </metric>
+  <metric name="NumSameUrlLoad">
+    <summary>
+      Records how many times the same URL, including the current navigation, is
+      loaded in the current tab in the past 2 minutes.
+    </summary>
+  </metric>
+  <metric name="NumSameUrlWithoutRefAndQueryParamLoad">
+    <summary>
+      Records how many times the same URL, without ref and query parameters, is
+      loaded in the current tab in the past 2 minutes. The current navigation is
+      also included in this count.
+    </summary>
+  </metric>
+  <metric name="TabGroupType" enum="SavedTabGroupType">
+    <summary>
+      Records the type of the tab group the navigation belongs to, such as
+      shared or synced. See |tab_groups::SavedTabGroupTypes| for enum elements.
+    </summary>
+  </metric>
+  <metric name="WasRedirected" enum="Boolean">
+    <summary>
+      A boolean indicating whether the current navigation involves any
+      redirection.
+    </summary>
+  </metric>
+</event>
+
 <event name="SchemefulSameSiteContextDowngrade">
   <owner>bingler@chromium.org</owner>
   <metric name="RequestPerCookie"

@@ -47,6 +47,15 @@ enum class TriggerSource {
   LOCAL = 1,
 };
 
+// Whether the saved tab group is for share or for sync.
+enum class SavedTabGroupType {
+  // The tab group is synced.
+  SYNCED = 0,
+
+  // The tab group is shared.
+  SHARED = 1,
+};
+
 // LINT.IfChange(OpeningSource)
 // Specifies the source of an action that opened a tab group.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.tab_group_sync
