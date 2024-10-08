@@ -21,19 +21,22 @@ ${this.enableHistoryEmbeddings_ ? html`
   $i18n{historyEmbeddingsDisclaimer}
 </div>
 ` : ''}
-${this.shouldShowHistoryEmbeddingsResults_() ? html`
-<cr-history-embeddings
-    .searchQuery="${this.query}"
-    .showRelativeTimes="${true}">
-</cr-history_embeddings>
-` : ''}
-<history-clusters id="historyClusters"
-    query="${this.query}"
-    path="journeys"
-    @query-changed-by-user="${this.onQueryChangedByUser_}"
-    class="sp-scroller sp-scroller-bottom-of-page"
-    .scrollTarget="${this.scrollTarget_}">
-</history-clusters>
+<div id="embeddingsScrollContainer"
+    class="sp-scroller sp-scroller-bottom-of-page">
+  ${this.shouldShowHistoryEmbeddingsResults_() ? html`
+  <cr-history-embeddings
+      .searchQuery="${this.query}"
+      .showRelativeTimes="${true}">
+  </cr-history_embeddings>
+  ` : ''}
+  <history-clusters id="historyClusters"
+      query="${this.query}"
+      path="journeys"
+      @query-changed-by-user="${this.onQueryChangedByUser_}"
+      class="${this.getClustersComponentClass_()}"
+      .scrollTarget="${this.scrollTarget_}">
+  </history-clusters>
+</div>
 <!--_html_template_end_-->`;
   // clang-format on
 }

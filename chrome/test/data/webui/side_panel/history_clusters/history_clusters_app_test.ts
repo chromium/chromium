@@ -59,4 +59,33 @@ suite('HistoryClustersAppWithEmbeddingsTest', () => {
     embeddingsComponent = getEmbeddingsComponent();
     assertTrue(!!embeddingsComponent);
   });
+
+  test('SwitchesScrollContainer', async () => {
+    // When embeddings is enabled, scroll target should be the
+    // embeddingsScrollContainer and the container should have styles on it.
+    assertEquals(
+        'flex', getComputedStyle(app.$.embeddingsScrollContainer).display);
+    assertEquals(
+        app.$.embeddingsScrollContainer, app.$.historyClusters.scrollTarget);
+    assertEquals(
+        'sp-scroller sp-scroller-bottom-of-page',
+        app.$.embeddingsScrollContainer.className);
+    assertEquals('', app.$.historyClusters.className);
+
+    // Create a new app after force disabling embeddings.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({enableHistoryEmbeddings: false});
+    app = document.createElement('history-clusters-app');
+    document.body.appendChild(app);
+    await microtasksFinished();
+
+    // When embeddings are disabled, scroll target should be the
+    // history-clusters element.
+    assertEquals(
+        'contents', getComputedStyle(app.$.embeddingsScrollContainer).display);
+    assertEquals(app.$.historyClusters, app.$.historyClusters.scrollTarget);
+    assertEquals(
+        'sp-scroller sp-scroller-bottom-of-page',
+        app.$.historyClusters.className);
+  });
 });

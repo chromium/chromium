@@ -35,3 +35,14 @@
   margin-block-end: 16px;
   padding: 0 16px;
 }
+
+#embeddingsScrollContainer {
+  display: contents;
+}
+
+:host([enable-history-embeddings_]) #embeddingsScrollContainer {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow: auto;
+}
