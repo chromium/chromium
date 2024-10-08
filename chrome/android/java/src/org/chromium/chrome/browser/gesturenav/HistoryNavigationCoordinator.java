@@ -246,7 +246,9 @@ public class HistoryNavigationCoordinator
      *     history entries in the given direction.
      */
     public boolean triggerUi(@BackGestureEventSwipeEdge int initiatingEdge) {
-        return mNavigationHandler != null && mNavigationHandler.triggerUi(initiatingEdge);
+        return mNavigationHandler != null
+                && mNavigationHandler.triggerUi(
+                        initiatingEdge, NavigationHandler.TriggerUiCallSource.WEBPAGE_OVERSCROLL);
     }
 
     /**

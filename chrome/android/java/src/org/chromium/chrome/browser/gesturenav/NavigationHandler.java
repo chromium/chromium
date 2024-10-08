@@ -25,6 +25,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.back_press.BackPressMetrics;
@@ -77,6 +78,18 @@ class NavigationHandler implements TouchEventObserver {
         int RESET_BUBBLE = 3;
     }
 
+    @IntDef({
+        TriggerUiCallSource.NO_TRIGGER,
+        TriggerUiCallSource.ON_SCROLL,
+        TriggerUiCallSource.WEBPAGE_OVERSCROLL
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface TriggerUiCallSource {
+        int NO_TRIGGER = 0;
+        int ON_SCROLL = 1;
+        int WEBPAGE_OVERSCROLL = 2;
+    }
+
     private final ViewGroup mParentView;
     private final Context mContext;
     private final Handler mHandler = new Handler();
@@ -98,6 +111,8 @@ class NavigationHandler implements TouchEventObserver {
     private float mPullOffsetY;
 
     private @BackGestureEventSwipeEdge int mInitiatingEdge;
+
+    private @TriggerUiCallSource int mTriggerUiCallSource;
 
     private boolean mBackGestureForTabHistoryInProgress;
     private boolean mStartNavDuringOngoingGesture;
@@ -137,6 +152,8 @@ class NavigationHandler implements TouchEventObserver {
         mBackActionDelegate = backActionDelegate;
         mWillNavigateSupplier = supplier;
         mState = GestureState.NONE;
+
+        mTriggerUiCallSource = TriggerUiCallSource.NO_TRIGGER;
 
         mEdgeWidthPx = EDGE_WIDTH_DP * parentView.getResources().getDisplayMetrics().density;
         mDetector = new GestureDetector(mContext, new SideNavGestureListener());
@@ -207,7 +224,8 @@ class NavigationHandler implements TouchEventObserver {
                 triggerUi(
                         distanceX > 0
                                 ? BackGestureEventSwipeEdge.RIGHT
-                                : BackGestureEventSwipeEdge.LEFT);
+                                : BackGestureEventSwipeEdge.LEFT,
+                        TriggerUiCallSource.ON_SCROLL);
             }
             if (!isActive()) mState = GestureState.NONE;
         }
@@ -228,8 +246,33 @@ class NavigationHandler implements TouchEventObserver {
     /**
      * @see {@link HistoryNavigationCoordinator#triggerUi(int)}
      */
-    boolean triggerUi(@BackGestureEventSwipeEdge int initiatingEdge) {
+    boolean triggerUi(
+            @BackGestureEventSwipeEdge int initiatingEdge,
+            @TriggerUiCallSource int triggerUiCallSource) {
         if (!isValidState()) return false;
+
+        if (mTriggerUiCallSource != TriggerUiCallSource.NO_TRIGGER) {
+            assert false
+                    : "triggerUi has been already called. mInitiatingEdge: "
+                            + String.valueOf(mInitiatingEdge)
+                            + ". initiatingEdge passed to the function: "
+                            + String.valueOf(initiatingEdge)
+                            + ". Previous triggerUi call source: "
+                            + String.valueOf(mTriggerUiCallSource)
+                            + ". Current triggerUi call source: "
+                            + String.valueOf(triggerUiCallSource);
+            Log.i(
+                    NavigationHandler.class.getSimpleName(),
+                    "triggerUi has been already called. mInitiatingEdge: "
+                            + String.valueOf(mInitiatingEdge)
+                            + ". initiatingEdge passed to the function: "
+                            + String.valueOf(initiatingEdge)
+                            + ". Previous triggerUi call source: "
+                            + String.valueOf(mTriggerUiCallSource)
+                            + ". Current triggerUi call source: "
+                            + String.valueOf(triggerUiCallSource));
+        }
+        mTriggerUiCallSource = triggerUiCallSource;
 
         mInitiatingEdge = initiatingEdge;
 
@@ -357,6 +400,7 @@ class NavigationHandler implements TouchEventObserver {
             }
             mTabOnBackGestureHandler = null;
         }
+        mTriggerUiCallSource = TriggerUiCallSource.NO_TRIGGER;
     }
 
     /**
@@ -367,6 +411,7 @@ class NavigationHandler implements TouchEventObserver {
             mModel.set(ACTION, GestureAction.RESET_BUBBLE);
         }
         mState = GestureState.NONE;
+        mTriggerUiCallSource = TriggerUiCallSource.NO_TRIGGER;
         mPullOffsetX = 0.f;
         mPullOffsetY = 0.f;
     }
