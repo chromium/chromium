@@ -88,13 +88,6 @@ class BrowserLauncherTest : public testing::Test {
     fake_user_manager_->SimulateUserProfileLoad(account_id);
   }
 
-  void PrepareFilesToPreload(const base::FilePath& lacros_dir) {
-    base::CreateDirectory(lacros_dir.Append("locales"));
-    for (const auto& file_path : BrowserLauncher::GetPreloadFiles(lacros_dir)) {
-      base::WriteFile(file_path, "dummy file");
-    }
-  }
-
  private:
   content::BrowserTaskEnvironment task_environment_;
 
@@ -161,8 +154,8 @@ TEST_F(BrowserLauncherTest, LacrosChromeAdditionalArgsVModule) {
   BrowserLauncher::LaunchParamsFromBackground bg_params;
   bg_params.logfd = std::move(dummy_fd1);
   BrowserLauncher::LaunchParams params =
-      browser_launcher()->CreateLaunchParamsForTesting({}, bg_params, {}, {},
-                                                       {}, dummy_channel, {});
+      browser_launcher()->CreateLaunchParamsForTesting({}, bg_params, {},
+                                                       dummy_channel, {});
 
   EXPECT_EQ(params.command_line.GetSwitchValueASCII("vmodule"), "foo");
 }
@@ -212,27 +205,7 @@ TEST_F(BrowserLauncherTest, BackgroundWorkPreLaunch) {
   base::test::TestFuture<void> future;
   browser_launcher()->WaitForBackgroundWorkPreLaunchForTesting(
       lacros_dir.GetPath(), /*clear_shared_resource_file=*/true,
-      /*launching_at_login_screen=*/false, future.GetCallback(), params);
-
-  EXPECT_TRUE(future.Wait());
-  EXPECT_TRUE(params.enable_resource_file_sharing);
-}
-
-TEST_F(BrowserLauncherTest, BackgroundWorkPreLaunchOnLaunchingAtLoginScreen) {
-  base::ScopedTempDir lacros_dir;
-  ASSERT_TRUE(lacros_dir.CreateUniqueTempDir());
-  // Create preload files which will be loaded on launching at login screen.
-  PrepareFilesToPreload(lacros_dir.GetPath());
-
-  // Add feature and check if it's reflected to `params`.
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeature(features::kLacrosResourcesFileSharing);
-
-  BrowserLauncher::LaunchParamsFromBackground params;
-  base::test::TestFuture<void> future;
-  browser_launcher()->WaitForBackgroundWorkPreLaunchForTesting(
-      lacros_dir.GetPath(), /*clear_shared_resource_file=*/true,
-      /*launching_at_login_screen=*/true, future.GetCallback(), params);
+      future.GetCallback(), params);
 
   EXPECT_TRUE(future.Wait());
   EXPECT_TRUE(params.enable_resource_file_sharing);
@@ -251,12 +224,10 @@ TEST_F(BrowserLauncherTest, Launch) {
                                         BrowserLauncher::LaunchFailureReason>>
       future;
 
-  constexpr bool launching_at_login_screen = false;
-  browser_launcher()->Launch(lacros_path, launching_at_login_screen,
-                             ash::standalone_browser::LacrosSelection::kRootfs,
-                             /*mojo_disconneciton_cb=*/{},
-                             /*is_keep_alive_enabled=*/false,
-                             future.GetCallback());
+  browser_launcher()->Launch(
+      lacros_path, ash::standalone_browser::LacrosSelection::kRootfs,
+      /*mojo_disconneciton_cb=*/{},
+      /*is_keep_alive_enabled=*/false, future.GetCallback());
 
   // Before adding primary profile, Launch should not proceed.
   EXPECT_FALSE(user_manager::UserManager::Get()->GetPrimaryUser());
@@ -270,87 +241,15 @@ TEST_F(BrowserLauncherTest, Launch) {
   EXPECT_TRUE(future.Get<0>().has_value());
 }
 
-TEST_F(BrowserLauncherTest, LaunchAtLoginScreen) {
-  base::ScopedTempDir lacros_dir;
-  ASSERT_TRUE(lacros_dir.CreateUniqueTempDir());
-  // Create preload files which will be loaded on launching at login screen.
-  // This will create chrome binary as well.
-  PrepareFilesToPreload(lacros_dir.GetPath());
-  const base::FilePath lacros_path = lacros_dir.GetPath().Append("chrome");
-
-  base::test::TestFuture<base::expected<BrowserLauncher::LaunchResults,
-                                        BrowserLauncher::LaunchFailureReason>>
-      future;
-
-  constexpr bool launching_at_login_screen = true;
-  browser_launcher()->Launch(lacros_path, launching_at_login_screen,
-                             ash::standalone_browser::LacrosSelection::kRootfs,
-                             /*mojo_disconneciton_cb=*/{},
-                             /*is_keep_alive_enabled=*/false,
-                             future.GetCallback());
-
-  // Make sure that Launch completes with success. In launching at login screen
-  // scenario, we completes Launch flow without waiting for the primary profile.
-  EXPECT_TRUE(future.Get<0>().has_value());
-  EXPECT_FALSE(user_manager::UserManager::Get()->GetPrimaryUser());
-}
-
-TEST_F(BrowserLauncherTest, ResumeLaunch) {
-  // Creates postlogin data pipe.
-  base::ScopedFD read_postlogin_fd =
-      browser_launcher()->CreatePostLoginPipeForTesting();
-  ASSERT_TRUE(read_postlogin_fd.is_valid());
-
-  // Creates a dedicated thread to read postlogin data which mocks Lacros
-  // process.
-  base::test::TestFuture<void> wait_read;
-  base::ThreadPool::CreateSingleThreadTaskRunner(
-      {base::MayBlock()}, base::SingleThreadTaskRunnerThreadMode::DEDICATED)
-      ->PostTaskAndReply(
-          FROM_HERE,
-          base::BindOnce(
-              [](base::ScopedFD fd) {
-                base::ScopedFILE file(fdopen(fd.get(), "r"));
-                std::string content;
-                EXPECT_TRUE(base::ReadStreamToString(file.get(), &content));
-                fd.reset();
-              },
-              std::move(read_postlogin_fd)),
-          base::BindOnce(wait_read.GetCallback()));
-
-  // Resume launch. This must be called after potlogin data pipe is constructed.
-  base::test::TestFuture<
-      base::expected<base::TimeTicks, BrowserLauncher::LaunchFailureReason>>
-      future;
-  browser_launcher()->ResumeLaunch(future.GetCallback());
-  // On resume launch, we need to wait for device owner and primary profile to
-  // be ready, so should not complete ResumeLaunch at this point.
-  EXPECT_FALSE(future.IsReady());
-
-  // Create primary profile.
-  CreatePrimaryProfile();
-  EXPECT_TRUE(user_manager::UserManager::Get()->GetPrimaryUser());
-
-  // Make sure that ResumeLaunch complets with success.
-  EXPECT_TRUE(future.Get<0>().has_value());
-
-  // Wait for fd to close for clean up.
-  EXPECT_TRUE(wait_read.Wait());
-}
-
 TEST_F(BrowserLauncherTest, ShutdownRequestedDuringLaunch) {
   base::test::TestFuture<base::expected<BrowserLauncher::LaunchResults,
                                         BrowserLauncher::LaunchFailureReason>>
       future;
 
-  // To test asynchronous behavior, we assume it's not launching at login
-  // screen.
-  constexpr bool launching_at_login_screen = false;
-  browser_launcher()->Launch(base::FilePath(), launching_at_login_screen,
-                             ash::standalone_browser::LacrosSelection::kRootfs,
-                             /*mojo_disconneciton_cb=*/{},
-                             /*is_keep_alive_enabled=*/false,
-                             future.GetCallback());
+  browser_launcher()->Launch(
+      base::FilePath(), ash::standalone_browser::LacrosSelection::kRootfs,
+      /*mojo_disconneciton_cb=*/{},
+      /*is_keep_alive_enabled=*/false, future.GetCallback());
   // Shutdown is synchronous while Launch preparation is asynchronously waiting,
   // for primary profiel to be ready so Shutdown request runs earlier.
   browser_launcher()->Shutdown();

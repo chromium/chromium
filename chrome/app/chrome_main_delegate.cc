@@ -233,7 +233,6 @@
 #include "chromeos/lacros/lacros_paths.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "chromeos/startup/browser_params_proxy.h"      // nogncheck
-#include "chromeos/startup/browser_postlogin_params.h"  // nogncheck
 #include "chromeos/startup/startup.h"                   // nogncheck
 #include "chromeos/startup/startup_switches.h"          // nogncheck
 #include "components/crash/core/app/client_upload_info.h"
@@ -440,40 +439,6 @@ void HandleHelpSwitches(const base::CommandLine& command_line) {
   }
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// BrowserManager launches Lacros redirecting its stderr to a log file.
-// This function redirects stderr a second time, to another log file, after
-// user login has happened (e.g. to the cryptohome).
-// Only useful when pre-launching Lacros at login screen.
-void RedirectLacrosLogging() {
-  const base::CommandLine& cmdline = *base::CommandLine::ForCurrentProcess();
-  uint32_t logging_dest = logging::DetermineLoggingDestination(cmdline);
-  base::FilePath log_file =
-      cmdline.GetSwitchValuePath(chromeos::switches::kCrosPostLoginLogFile);
-
-  if (!log_file.empty() && (logging_dest & logging::LOG_TO_STDERR)) {
-    log_file = logging::SetUpLogFile(log_file, /*new_log=*/true);
-    FILE* result = freopen(log_file.value().c_str(), "a", stderr);
-    DPCHECK(result != nullptr);
-
-    // Redirect Zygote and future children's logs.
-    if (result) {
-      content::ZygoteHost::GetInstance()->ReinitializeLogging(logging_dest,
-                                                              STDERR_FILENO);
-    }
-  }
-}
-
-// When prelaunching Lacros at login screen, the initialization of Crashpad
-// relies on the consent preferences of Ash. After login, we can rely on
-// the user-specific preferences. This function updates the user consent
-// preferences from the default location (the user's cryptohome).
-void SetCrashpadUploadConsentPostLogin() {
-  crash_reporter::SetUploadConsent(
-      crash_reporter::GetClientCollectStatsConsent());
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
 void SIGTERMProfilingShutdown(int signal) {
@@ -693,43 +658,6 @@ void InitializeUserDataDir(base::CommandLine* command_line) {
 #endif  // BUILDFLAG(IS_WIN)
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// If Lacros was prelaunched at login screen, this method blocks waiting
-// for the user to login. It can be called before or after the Zygotes
-// have been forked.
-void MaybeBlockAtLoginScreen(bool after_zygotes_fork) {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  std::string process_type =
-      command_line->GetSwitchValueASCII(switches::kProcessType);
-
-  if (process_type.empty() && chromeos::IsLaunchedWithPostLoginParams()) {
-    // NOTE: When prelaunching Lacros, this is as far as Lacros's initialization
-    // will go at the login screen. The browser process will block here.
-    //
-    // IMPORTANT NOTE: If your code requires access to post-login parameters
-    // (which are only known after login), please place them *after* this call.
-    chromeos::BrowserParamsProxy::WaitForLogin();
-
-    // NOTE: When launching Lacros at login screen, after this point,
-    // the user should have logged in. The cryptohome is now accessible.
-    if (chrome::ProcessNeedsProfileDir(process_type)) {
-      InitializeUserDataDir(base::CommandLine::ForCurrentProcess());
-    }
-
-    // Redirect logs from system directory to cryptohome.
-    RedirectLacrosLogging();
-
-    // If Lacros blocked after forking the zygotes, Crashpad has
-    // already been initialized, but we need to update the upload
-    // consent based on the user's preferences.
-    if (after_zygotes_fork) {
-      // Update upload consent to reflect the user's preference.
-      SetCrashpadUploadConsentPostLogin();
-    }
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 #if !BUILDFLAG(IS_ANDROID)
 void InitLogging(const std::string& process_type) {
   logging::OldFileDeletionState file_state = logging::APPEND_TO_OLD_LOG_FILE;
@@ -916,16 +844,8 @@ std::optional<int> ChromeMainDelegate::PostEarlyInitialization(
   // be scheduled in the main browser after taking the process singleton. They
   // cannot be scheduled immediately after InstantiatePersistentHistograms()
   // because ThreadPool is not ready at that time yet.
-  bool immediate_histogram_cleanup = true;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // When prelaunching Lacros at login screen, we want to postpone the
-  // cleanup of persistent histograms to when the user has logged in
-  // and the cryptohome is accessible.
-  immediate_histogram_cleanup = !chromeos::IsLaunchedWithPostLoginParams();
-#endif
   base::FilePath metrics_dir;
-  if (immediate_histogram_cleanup &&
-      base::PathService::Get(chrome::DIR_USER_DATA, &metrics_dir)) {
+  if (base::PathService::Get(chrome::DIR_USER_DATA, &metrics_dir)) {
     PersistentHistogramsCleanup(metrics_dir);
   }
 
@@ -945,11 +865,6 @@ std::optional<int> ChromeMainDelegate::PostEarlyInitialization(
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   // Initialize D-Bus for Lacros.
   chromeos::LacrosInitializeDBus();
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // If prelaunched at login screen, block waiting for the user to login.
-  MaybeBlockAtLoginScreen(/*after_zygotes_fork=*/true);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -1536,14 +1451,7 @@ void ChromeMainDelegate::PreSandboxStartup() {
 #endif
 
   // Initialize the user data dir for any process type that needs it.
-  bool initialize_user_data_dir = chrome::ProcessNeedsProfileDir(process_type);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // In Lacros, when prelaunching at login screen, we postpone the
-  // initialization of the user data directory.
-  // We verify that no access happens before login via CHECKs.
-  initialize_user_data_dir &= !chromeos::IsLaunchedWithPostLoginParams();
-#endif
-  if (initialize_user_data_dir) {
+  if (chrome::ProcessNeedsProfileDir(process_type)) {
     InitializeUserDataDir(base::CommandLine::ForCurrentProcess());
   }
 
@@ -1788,14 +1696,7 @@ void ChromeMainDelegate::SandboxInitialized(const std::string& process_type) {
   // Note: this is done before field trial initialization, so the values of
   // `kPersistentHistogramsFeature` and `kPersistentHistogramsStorage` will
   // not be used. Persist histograms to a memory-mapped file.
-  bool immediate_histogram_init = true;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // For Lacros, when prelaunching at login screen, we want to postpone the
-  // instantiation of persistent histograms to when the user has logged in
-  // and the cryptohome is accessible.
-  immediate_histogram_init = !chromeos::IsLaunchedWithPostLoginParams();
-#endif
-  if (immediate_histogram_init && process_type.empty()) {
+  if (process_type.empty()) {
     base::FilePath metrics_dir;
     if (base::PathService::Get(chrome::DIR_USER_DATA, &metrics_dir)) {
       InstantiatePersistentHistograms(

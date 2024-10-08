@@ -58,10 +58,6 @@ using version_info::Channel;
 
 namespace crosapi::browser_util {
 
-BASE_FEATURE(kLacrosLaunchAtLoginScreen,
-             "LacrosLaunchAtLoginScreen",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 namespace {
 
 // At session start the value for LacrosAvailability logic is applied and the

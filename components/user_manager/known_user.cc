@@ -105,9 +105,6 @@ const char kTokenHandleRotatedObsolete[] = "TokenHandleRotated";
 // Cache of the auth factors configured for the user.
 const char kAuthFactorPresenceCache[] = "AuthFactorsPresenceCache";
 
-// Records for each user whether Lacros is enabled.
-const char kLacrosEnabled[] = "lacros_enabled";
-
 // List containing all the known user preferences keys.
 const char* kReservedKeys[] = {kCanonicalEmail,
                                kGAIAIdKey,
@@ -131,8 +128,7 @@ const char* kReservedKeys[] = {kCanonicalEmail,
                                kPasswordSyncToken,
                                kOnboardingCompletedVersion,
                                kPendingOnboardingScreen,
-                               kAuthFactorPresenceCache,
-                               kLacrosEnabled};
+                               kAuthFactorPresenceCache};
 
 // List containing all known user preference keys that used to be reserved and
 // are now obsolete.
@@ -750,17 +746,6 @@ std::string KnownUser::GetPendingOnboardingScreen(const AccountId& account_id) {
   }
   // Return empty string if no screen is pending.
   return std::string();
-}
-
-void KnownUser::SetLacrosEnabled(const AccountId& account_id, bool enabled) {
-  SetBooleanPref(account_id, kLacrosEnabled, enabled);
-}
-
-bool KnownUser::GetLacrosEnabledForAnyUser() {
-  const std::vector<AccountId> account_ids = GetKnownAccountIds();
-  return base::ranges::any_of(account_ids, [this](const AccountId& account_id) {
-    return FindBoolPath(account_id, kLacrosEnabled).value_or(false);
-  });
 }
 
 bool KnownUser::UserExists(const AccountId& account_id) {

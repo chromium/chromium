@@ -61,30 +61,6 @@ ChromeBrowserFieldTrials::ChromeBrowserFieldTrials(PrefService* local_state)
 
 ChromeBrowserFieldTrials::~ChromeBrowserFieldTrials() = default;
 
-void ChromeBrowserFieldTrials::OnVariationsSetupComplete() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Persistent histograms must be enabled ASAP, but depends on Features.
-  // For non-Fuchsia platforms, it is enabled earlier on, and is not controlled
-  // by variations.
-  // See //chrome/app/chrome_main_delegate.cc.
-  bool histogram_init_and_cleanup = true;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // For Lacros, when prelaunching at login screen, we want to postpone the
-  // initialization and cleanup of persistent histograms to when the user has
-  // logged in and the cryptohome is accessible.
-  histogram_init_and_cleanup &= chromeos::IsLaunchedWithPostLoginParams();
-#endif
-  base::FilePath metrics_dir;
-  if (histogram_init_and_cleanup) {
-    if (base::PathService::Get(chrome::DIR_USER_DATA, &metrics_dir)) {
-      InstantiatePersistentHistogramsWithFeaturesAndCleanup(metrics_dir);
-    } else {
-      NOTREACHED_IN_MIGRATION();
-    }
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-}
-
 void ChromeBrowserFieldTrials::SetUpClientSideFieldTrials(
     bool has_seed,
     const variations::EntropyProviders& entropy_providers,

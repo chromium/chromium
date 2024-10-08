@@ -5637,16 +5637,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "lacros-fork-zygotes-at-login-screen",
-    "owners": [ "andreaorru@chromium.org", "lacros-team@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
-    "name": "lacros-launch-at-login-screen",
-    "owners": [ "andreaorru@chromium.org", "lacros-team@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "lacros-merge-icu-data-file",
     "owners": [ "andreaorru@chromium.org", "hidehiko@chromium.org", "lacros-team@google.com" ],
     "expiry_milestone": 140

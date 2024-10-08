@@ -2078,8 +2078,6 @@ AutotestPrivateGetLacrosInfoFunction::ToLacrosState(
   switch (state) {
     case crosapi::BrowserManager::State::NOT_INITIALIZED:
       return api::autotest_private::LacrosState::kNotInitialized;
-    case crosapi::BrowserManager::State::RELOADING:
-      return api::autotest_private::LacrosState::kReloading;
     case crosapi::BrowserManager::State::MOUNTING:
       return api::autotest_private::LacrosState::kMounting;
     case crosapi::BrowserManager::State::UNAVAILABLE:
@@ -2088,8 +2086,6 @@ AutotestPrivateGetLacrosInfoFunction::ToLacrosState(
       return api::autotest_private::LacrosState::kStopped;
     case crosapi::BrowserManager::State::PREPARING_FOR_LAUNCH:
       return api::autotest_private::LacrosState::kPreparingForLaunch;
-    case crosapi::BrowserManager::State::PRE_LAUNCHED:
-      return api::autotest_private::LacrosState::kPreLaunched;
     case crosapi::BrowserManager::State::STARTING:
       return api::autotest_private::LacrosState::kStarting;
     case crosapi::BrowserManager::State::RUNNING:

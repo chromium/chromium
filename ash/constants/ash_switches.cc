@@ -701,11 +701,6 @@ const char kForceHWIDCheckResultForTest[] = "force-hwid-check-result-for-test";
 // for any type of user. Should be used only for testing.
 const char kForceHappinessTrackingSystem[] = "force-happiness-tracking-system";
 
-// Forces prelaunching Lacros at login screen regardless
-// of whether there are or aren't users with Lacros enabled.
-const char kForceLacrosLaunchAtLoginScreenForTesting[] =
-    "force-lacros-launch-at-login-screen-for-testing";
-
 // Forces FullRestoreService to launch browser for telemetry tests.
 const char kForceLaunchBrowser[] = "force-launch-browser";
 

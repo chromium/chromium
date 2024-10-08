@@ -47,10 +47,6 @@ class BrowserLauncher {
 
   ~BrowserLauncher();
 
-  // Returns files to preload on launching at login screen.
-  static std::vector<base::FilePath> GetPreloadFiles(
-      const base::FilePath& lacros_dir);
-
   // Parameters used to launch Lacros that are calculated on a background
   // sequence.
   struct LaunchParamsFromBackground {
@@ -129,9 +125,6 @@ class BrowserLauncher {
   //
   // Following is explanation for Arguments.
   // `chrome_path`: Initializes `command_line`.
-  // `launching_at_login_screen`: Whether lacros is launching at login screen.
-  // `postlogin_pipe_fd`: Pipe FDs through which Ash and Lacros exchange
-  // post-login parameters.
   // `lacros_selection`: Whether "rootfs" or "stateful" lacros is selected.
   // `mojo_disconnection_cb`: Callback function setting up mojo connection.
   // `BrowserManager::OnMojoDisconnected` is called.
@@ -139,7 +132,6 @@ class BrowserLauncher {
   // `callback`: Callback function that will be called on launch process
   // completion.
   void Launch(const base::FilePath& chrome_path,
-              bool launching_at_login_screen,
               ash::standalone_browser::LacrosSelection lacros_selection,
               base::OnceClosure mojo_disconnection_cb,
               bool is_keep_alive_enabled,
@@ -182,16 +174,9 @@ class BrowserLauncher {
   LaunchParams CreateLaunchParamsForTesting(
       const base::FilePath& chrome_path,
       const LaunchParamsFromBackground& params,
-      bool launching_at_login_screen,
       std::optional<int> startup_fd,
-      std::optional<int> read_pipe_fd,
       mojo::PlatformChannel& channel,
       ash::standalone_browser::LacrosSelection lacros_selection);
-
-  // Creates postlogin pipe fd and returns the read fd. This is used to test
-  // ResumeLaunch. Note that the reader is on the same process and does not
-  // launch testing process.
-  base::ScopedFD CreatePostLoginPipeForTesting();
 
   // Sets up additional flags for unit tests.
   // This function overwrites `command_line` with the desired flags.
@@ -202,7 +187,6 @@ class BrowserLauncher {
   void WaitForBackgroundWorkPreLaunchForTesting(
       const base::FilePath& lacros_dir,
       bool clear_shared_resource_file,
-      bool launching_at_login_screen,
       base::OnceClosure callback,
       LaunchParamsFromBackground& params);
 
@@ -224,14 +208,11 @@ class BrowserLauncher {
   // `params`.
   void WaitForBackgroundWorkPreLaunch(const base::FilePath& lacros_dir,
                                       bool clear_shared_resource_file,
-                                      bool launching_at_login_screen,
                                       base::OnceClosure callback,
                                       LaunchParamsFromBackground& params);
 
   // Waits for the device owner being fetched from `UserManager` or the primary
-  // user profile being fully created and then executes a callback. Should NOT
-  // be called if Lacros is launching at the login screen since the device owner
-  // nor the profile is not available until login.
+  // user profile being fully created and then executes a callback.
   void WaitForDeviceOwnerFetchedAndThen(base::OnceClosure callback);
   void WaitForPrimaryProfileAddedAndThen(base::OnceClosure callback);
 
@@ -239,7 +220,6 @@ class BrowserLauncher {
   // become ready.
   void LaunchProcess(const base::FilePath& chrome_path,
                      std::unique_ptr<LaunchParamsFromBackground> params,
-                     bool launching_at_login_screen,
                      ash::standalone_browser::LacrosSelection lacros_selection,
                      base::OnceClosure mojo_disconnection_cb,
                      bool is_keep_alive_enabled,
@@ -248,9 +228,7 @@ class BrowserLauncher {
   LaunchParams CreateLaunchParams(
       const base::FilePath& chrome_path,
       const LaunchParamsFromBackground& params,
-      bool launching_at_login_screen,
       std::optional<int> startup_fd,
-      std::optional<int> read_pipe_fd,
       mojo::PlatformChannel& channel,
       ash::standalone_browser::LacrosSelection lacros_selection);
 
@@ -258,17 +236,8 @@ class BrowserLauncher {
   // This is also used for unittest.
   bool LaunchProcessWithParameters(const LaunchParams& parameters);
 
-  // Writes post login data after waiting for device owner and profile to be
-  // ready.
-  void WritePostLoginData(
-      base::OnceCallback<
-          void(base::expected<base::TimeTicks, LaunchFailureReason>)> callback);
-
   // Process handle for the lacros_chrome process.
   base::Process process_;
-
-  // Pipe FDs through which Ash and Lacros exchange post-login parameters.
-  base::ScopedFD postlogin_pipe_fd_;
 
   // Used to delay an action until the definitive device owner is fetched.
   std::unique_ptr<user_manager::DeviceOwnershipWaiter> device_ownership_waiter_;

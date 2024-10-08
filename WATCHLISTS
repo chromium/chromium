@@ -672,8 +672,7 @@
     },
     'browser_params': {
       'filepath': 'chromeos/startup/browser_init_params'\
-                  '|chromeos/startup/browser_params_proxy'\
-                  '|chromeos/startup/browser_postlogin_params',
+                  '|chromeos/startup/browser_params_proxy'
     },
     'browser_scheduler': {
       'filepath': 'content/browser/scheduler'

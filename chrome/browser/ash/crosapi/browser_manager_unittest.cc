@@ -98,18 +98,12 @@ class BrowserManagerFake : public BrowserManager {
   ~BrowserManagerFake() override = default;
 
   // BrowserManager:
-  void Start(bool launching_at_login_screen = false) override {
+  void Start() override {
     ++start_count_;
-    BrowserManager::Start(launching_at_login_screen);
+    BrowserManager::Start();
   }
 
   int start_count() const { return start_count_; }
-
-  void PrelaunchAtLoginScreen() override { ++prelaunch_count_; }
-
-  int prelaunch_count() const { return prelaunch_count_; }
-
-  void TriggerLoginPromptVisible() { OnLoginPromptVisible(); }
 
   void SetStatePublic(State state) { SetState(state); }
 
@@ -135,7 +129,6 @@ class BrowserManagerFake : public BrowserManager {
   using BrowserManager::State;
 
   int start_count_ = 0;
-  int prelaunch_count_ = 0;
 };
 
 class MockVersionServiceDelegate : public BrowserVersionServiceAsh::Delegate {
@@ -273,8 +266,6 @@ class BrowserManagerTest : public testing::Test {
   void AddKnownUser(bool lacros_enabled) {
     AccountId account_id =
         AccountId::FromUserEmail(TestingProfile::kDefaultProfileUserName);
-    user_manager::KnownUser(local_state_.Get())
-        .SetLacrosEnabled(account_id, lacros_enabled);
   }
 
   void AddUser(UserType user_type) {
@@ -622,85 +613,6 @@ TEST_F(BrowserManagerTest, OnLacrosUserDataDirRemoved) {
   EXPECT_EQ(user_uninstalled_preinstalled_web_app_prefs.Size(), 0);
   EXPECT_FALSE(
       pref_service->GetBoolean(ash::prefs::kAccessibilityHighContrastEnabled));
-}
-
-class BrowserManagerWithoutLacrosUserTest : public BrowserManagerTest {
- public:
-  void SetUpBrowserManager() override {
-    AddKnownUser(/*lacros_enabled=*/false);
-    BrowserManagerTest::SetUpBrowserManager();
-  }
-};
-
-TEST_F(BrowserManagerWithoutLacrosUserTest,
-       DoNotPrelaunchLacrosIfNoUserHasItEnabled) {
-  // Simulate that we are ready and the log in screen is shown.
-  session_manager::SessionManager::Get()->SetSessionState(
-      session_manager::SessionState::LOGIN_PRIMARY);
-  // Trigger the pre-launch logic as the log in screen is ready.
-  fake_browser_manager_->TriggerLoginPromptVisible();
-  // Expect the prelaunch logic was NOT called as no user has Lacros enabled.
-  EXPECT_EQ(fake_browser_manager_->prelaunch_count(), 0);
-}
-
-class BrowserManagerWithForceSwitchWithoutLacrosUserTest
-    : public BrowserManagerWithoutLacrosUserTest {
-  void SetUpBrowserManager() override {
-    base::test::ScopedCommandLine command_line;
-    command_line.GetProcessCommandLine()->AppendSwitch(
-        ash::switches::kForceLacrosLaunchAtLoginScreenForTesting);
-    BrowserManagerWithoutLacrosUserTest::SetUpBrowserManager();
-  }
-};
-
-TEST_F(BrowserManagerWithForceSwitchWithoutLacrosUserTest,
-       PrelaunchLacrosIfForcedViaSwitch) {
-  // Simulate that we are ready and the log in screen is shown.
-  session_manager::SessionManager::Get()->SetSessionState(
-      session_manager::SessionState::LOGIN_PRIMARY);
-  // Trigger the pre-launch logic as the log in screen is ready.
-  fake_browser_manager_->TriggerLoginPromptVisible();
-  // Now prelaunch logic is removed due to lacros sunset. Prelaunch should not
-  // happen.
-  EXPECT_EQ(fake_browser_manager_->prelaunch_count(), 0);
-}
-
-class BrowserManagerWithLacrosUserTest : public BrowserManagerTest {
- public:
-  void SetUpBrowserManager() override {
-    AddKnownUser(/*lacros_enabled=*/true);
-    BrowserManagerTest::SetUpBrowserManager();
-  }
-};
-
-TEST_F(BrowserManagerWithLacrosUserTest, AllowUseOfLacrosOnNormalCPUs) {
-  // Simulate that we are ready and the log in screen is shown.
-  session_manager::SessionManager::Get()->SetSessionState(
-      session_manager::SessionState::LOGIN_PRIMARY);
-  // Trigger the pre-launch logic as the log in screen is ready.
-  fake_browser_manager_->TriggerLoginPromptVisible();
-  // Now prelaunch logic is removed due to lacros sunset. Prelaunch should not
-  // happen in any case
-  EXPECT_EQ(fake_browser_manager_->prelaunch_count(), 0);
-}
-
-class BrowserManagerWithOldCPUTest : public BrowserManagerWithLacrosUserTest {
-  void SetUpBrowserManager() override {
-    // Set the used CPU type to really old.
-    ash::standalone_browser::BrowserSupport::SetCpuSupportedForTesting(false);
-
-    BrowserManagerWithLacrosUserTest::SetUpBrowserManager();
-  }
-};
-
-TEST_F(BrowserManagerWithOldCPUTest, DisallowUseOfLacrosOnOldCPUs) {
-  // Simulate that we are ready and the log in screen is shown.
-  session_manager::SessionManager::Get()->SetSessionState(
-      session_manager::SessionState::LOGIN_PRIMARY);
-  // Trigger the pre-launch logic as the log in screen is ready.
-  fake_browser_manager_->TriggerLoginPromptVisible();
-  // Expect the prelaunch logic was NOT called as the CPU is not sufficient.
-  EXPECT_EQ(fake_browser_manager_->prelaunch_count(), 0);
 }
 
 }  // namespace crosapi

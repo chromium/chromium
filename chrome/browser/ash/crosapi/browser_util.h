@@ -51,9 +51,6 @@ class User;
 // These methods are used by ash-chrome.
 namespace crosapi::browser_util {
 
-// Enable pre-launching Lacros at login screen.
-BASE_DECLARE_FEATURE(kLacrosLaunchAtLoginScreen);
-
 // Indicates how the decision for the usage of Lacros has been made.
 enum class LacrosLaunchSwitchSource {
   // It is unknown yet if and how Lacros will be used.

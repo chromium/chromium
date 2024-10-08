@@ -54,29 +54,17 @@ struct InitialBrowserAction {
 
 // Returns the initial parameter to be passed to Crosapi client,
 // such as lacros-chrome.
-// If |include_post_login_params| is true, it fills the structure
-// with all the parameters, including the ones that are only
-// available after login.
 mojom::BrowserInitParamsPtr GetBrowserInitParams(
     InitialBrowserAction initial_browser_action,
     bool is_keep_alive_enabled,
-    std::optional<ash::standalone_browser::LacrosSelection> lacros_selection,
-    bool include_post_login_params = true);
+    std::optional<ash::standalone_browser::LacrosSelection> lacros_selection);
 
 // Creates a memory backed file containing the serialized |params|,
 // and returns its FD.
-// If |include_post_login_params| is true, it creates a file
-// with all the parameters, including the ones that are only
-// available after login.
 base::ScopedFD CreateStartupData(
     InitialBrowserAction initial_browser_action,
     bool is_keep_alive_enabled,
-    std::optional<ash::standalone_browser::LacrosSelection> lacros_selection,
-    bool include_post_login_params = true);
-
-// Serializes and writes post-login parameters into the given FD.
-bool WritePostLoginData(base::PlatformFile fd,
-                        InitialBrowserAction initial_browser_action);
+    std::optional<ash::standalone_browser::LacrosSelection> lacros_selection);
 
 // Returns the device settings needed for Lacros.
 mojom::DeviceSettingsPtr GetDeviceSettings();

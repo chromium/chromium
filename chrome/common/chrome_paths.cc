@@ -192,12 +192,6 @@ bool PathProvider(int key, base::FilePath* result) {
   base::FilePath cur;
   switch (key) {
     case chrome::DIR_USER_DATA:
-#if BUILDFLAG(IS_CHROMEOS_LACROS) && DCHECK_IS_ON()
-      // Check that the user data directory is not accessed before
-      // initialization when prelaunching at login screen.
-      DCHECK(chromeos::lacros_paths::IsInitializedUserDataDir() ||
-             !chromeos::IsLaunchedWithPostLoginParams());
-#endif
       if (!GetDefaultUserDataDirectory(&cur)) {
         return false;
       }

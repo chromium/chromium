@@ -1177,8 +1177,7 @@ enum BuildFlag {
 //
 // IMPORTANT NOTE: These parameters are accessed via the BrowserParamsProxy
 // wrapper class. Please update the methods of that class when adding new
-// parameters here. If a new parameter is added and its value is only known
-// after the user has logged in, please update BrowserPostLoginParams as well.
+// parameters here.
 //
 // Next version: 90
 // Next id: 90
@@ -1681,105 +1680,4 @@ struct BrowserInitParams {
   // If true, "Magic Boost" will be enabled.
   [MinVersion=89]
   bool is_magic_boost_enabled@89;
-};
-
-// BrowserPostLoginParams is the subset of parameters in BrowserInitParams
-// that is only known after the user has successfully logged in.
-//
-// When lacros-chrome is pre-launched at login screen, the subset of
-// BrowserInitParams which is already available is by ash-chrome at
-// that time. The rest is passed after login via this structure.
-//
-// Next version: 3
-// Next id: 21
-struct BrowserPostLoginParams {
-  // Type of the ash-chrome session at the browser startup time.
-  SessionType session_type@0;
-
-  // Default directories on the system.
-  // Added in M89.
-  DefaultPaths? default_paths@1;
-
-  string? REMOVED_2@2;
-
-  // Primary user ID hash. Used to set CROS_USER_ID_HASH env var in crosh.
-  // Do not use this to construct paths, use DefaultPaths for that purpose.
-  string? cros_user_id_hash@3;
-
-  // Policy blob of the device account. If present, it's a managed account with
-  // policy data. If empty, it's unmanaged account. If absent, an error occurred
-  // while loading policy data. The format is serialized PolicyFetchResponse
-  // object. See components/policy/proto/device_management_backend.proto for
-  // details.
-  array<uint8>? device_account_policy@4;
-
-  // Timestamp (seconds since epoch in UTC) at which last device account policy
-  // fetch was attempted.
-  uint64 last_policy_fetch_attempt_timestamp@5;
-
-  // Defines which windows or tabs to restore on launch.
-  InitialBrowserAction initial_browser_action@6;
-
-  // The account used to sign into Chrome OS. This may be a Gaia account or a
-  // Microsoft Active Directory account. This field will be null for
-  // Guest sessions, Managed Guest sessions, Demo mode, and Kiosks.
-  // Note that this is different from the concept of a Primary Account in the
-  // browser. A user may not be signed into a Lacros browser Profile, or may be
-  // signed into a browser Profile with an account which is different from the
-  // account which they used to sign into the device - aka Device Account.
-  // Note: Do NOT use the email id of an account as an identifier. Use
-  // `AccountKey` - which has the necessary and sufficient information to
-  // identify an account.
-  // Added in M91.
-  Account? device_account@7;
-
-  bool REMOVED_8@8;
-  bool REMOVED_9@9;
-
-  // Specifies what requests the startup_urls.
-  // This can be effective only when startup_urls is specified.
-  // Added in M100.
-  OpenUrlFrom startup_urls_from@10;
-
-  // URLs to be opened at the beginning. This works only when
-  // initial_browser_action == OpenWindowWithUrls.
-  // Added in M96.
-  array<url.mojom.Url>? REMOVED_11@11;
-
-  bool REMOVED_12@12;
-
-  // When this flag is set, lacros will publish chrome apps to the app service.
-  bool publish_chrome_apps@13;
-
-  // When this flag is set, lacros will publish hosted apps to the app service.
-  bool publish_hosted_apps@14;
-
-  // Component (i.e. chrome extensions) policy for the device account.
-  // Maps `PolicyNamespace` representing an extension to the JSON policy
-  // value for that extension.
-  map<crosapi.mojom.PolicyNamespace, mojo_base.mojom.Value>? device_account_component_policy@15;
-
-  // Tells lacros whether the currently logged in user is the device owner.
-  bool is_current_user_device_owner@16;
-
-  // When this is set to true, Lacros will not mux extension app ids. The
-  // original reason for muxing was to avoid collision between lacros and ash
-  // apps with the same id. This is no longer possible with the extension keep
-  // list feature. This parameter is structured so that if ash is too old to
-  // support this feature, the default value of false maintains pre-existing
-  // behavior.
-  bool REMOVED_17@17;
-
-  // When this flag is set to true, Lacros tts support feature will be enabled.
-  bool enable_lacros_tts_support@18;
-
-  // Tells lacros whether the currently logged in user is ephemeral.
-  [MinVersion=1]
-  bool is_current_user_ephemeral@19;
-
-  // Deprecated in M118. Do not use.
-  // Set to true if the Mahi feature is supported and the feature key check has
-  // been satisfied.
-  [MinVersion=2]
-  bool is_mahi_supported_with_correct_feature_key_deprecated@20;
 };

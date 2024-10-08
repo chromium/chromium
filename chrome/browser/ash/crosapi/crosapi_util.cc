@@ -969,12 +969,8 @@ void InjectBrowserInitParams(
       chromeos::features::IsFileSystemProviderContentCacheEnabled();
 }
 
-template <typename BrowserParams>
-void InjectBrowserPostLoginParams(BrowserParams* params,
+void InjectBrowserPostLoginParams(mojom::BrowserInitParams* params,
                                   InitialBrowserAction initial_browser_action) {
-  static_assert(std::is_same<mojom::BrowserInitParams, BrowserParams>() ||
-                std::is_same<mojom::BrowserPostLoginParams, BrowserParams>());
-
   params->session_type = GetSessionType();
   params->default_paths = EnvironmentProvider::Get()->GetDefaultPaths();
 
@@ -1008,22 +1004,10 @@ void InjectBrowserPostLoginParams(BrowserParams* params,
 mojom::BrowserInitParamsPtr GetBrowserInitParams(
     InitialBrowserAction initial_browser_action,
     bool is_keep_alive_enabled,
-    std::optional<ash::standalone_browser::LacrosSelection> lacros_selection,
-    bool include_post_login_params) {
+    std::optional<ash::standalone_browser::LacrosSelection> lacros_selection) {
   mojom::BrowserInitParamsPtr params = mojom::BrowserInitParams::New();
   InjectBrowserInitParams(params.get(), is_keep_alive_enabled,
                           lacros_selection);
-  if (include_post_login_params) {
-    InjectBrowserPostLoginParams(params.get(),
-                                 std::move(initial_browser_action));
-  }
-  return params;
-}
-
-mojom::BrowserPostLoginParamsPtr GetBrowserPostLoginParams(
-    InitialBrowserAction initial_browser_action) {
-  mojom::BrowserPostLoginParamsPtr params =
-      mojom::BrowserPostLoginParams::New();
   InjectBrowserPostLoginParams(params.get(), std::move(initial_browser_action));
   return params;
 }
@@ -1031,29 +1015,12 @@ mojom::BrowserPostLoginParamsPtr GetBrowserPostLoginParams(
 base::ScopedFD CreateStartupData(
     InitialBrowserAction initial_browser_action,
     bool is_keep_alive_enabled,
-    std::optional<ash::standalone_browser::LacrosSelection> lacros_selection,
-    bool include_post_login_params) {
-  const auto& data = GetBrowserInitParams(
-      std::move(initial_browser_action), is_keep_alive_enabled,
-      lacros_selection, include_post_login_params);
+    std::optional<ash::standalone_browser::LacrosSelection> lacros_selection) {
+  const auto& data =
+      GetBrowserInitParams(std::move(initial_browser_action),
+                           is_keep_alive_enabled, lacros_selection);
 
   return chromeos::CreateMemFDFromBrowserInitParams(data);
-}
-
-bool WritePostLoginData(base::PlatformFile fd,
-                        InitialBrowserAction initial_browser_action) {
-  const auto& data =
-      GetBrowserPostLoginParams(std::move(initial_browser_action));
-
-  std::vector<uint8_t> serialized =
-      crosapi::mojom::BrowserPostLoginParams::Serialize(&data);
-
-  if (!base::WriteFileDescriptor(fd, serialized)) {
-    LOG(ERROR) << "Failed to dump the serialized BrowserPostLoginParams";
-    return false;
-  }
-
-  return true;
 }
 
 bool IsSigninProfileOrBelongsToAffiliatedUser(Profile* profile) {

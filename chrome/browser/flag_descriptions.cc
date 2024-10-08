@@ -7606,11 +7606,6 @@ const char kWindowSplittingName[] = "CrOS Labs - Window splitting";
 const char kWindowSplittingDescription[] =
     "Enables splitting windows by dragging one over another.";
 
-const char kLacrosLaunchAtLoginScreenName[] =
-    "Pre-launch Lacros at login screen";
-const char kLacrosLaunchAtLoginScreenDescription[] =
-    "When enabled, it causes Lacros to be pre-launched at login screen.";
-
 const char kLauncherGameSearchName[] = "Enable launcher game search";
 const char kLauncherGameSearchDescription[] =
     "Enables cloud game search results in the launcher.";

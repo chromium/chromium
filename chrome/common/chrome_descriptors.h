@@ -21,7 +21,6 @@ enum {
 
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   kCrosStartupDataDescriptor = kContentIPCDescriptorMax + 1,
-  kCrosPostLoginDataDescriptor,
 #endif
 };
 

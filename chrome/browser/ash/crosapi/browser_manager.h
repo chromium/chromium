@@ -99,7 +99,6 @@ using component_updater::ComponentUpdateService;
 // Manages the lifetime of lacros-chrome, and its loading status. Observes the
 // component updater for future updates. This class is a part of ash-chrome.
 class BrowserManager : public session_manager::SessionManagerObserver,
-                       public ash::SessionManagerClient::Observer,
                        public BrowserServiceHostObserver,
                        public policy::CloudPolicyCore::Observer,
                        public policy::CloudPolicyStore::Observer,
@@ -256,7 +255,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   void OpenProfileManager();
 
   // Ensures Lacros launches.
-  // Returns true if Lacros could be launched, resumed, or is already in the
+  // Returns true if Lacros could be launched, or is already in the
   // process of launching. Returns false if Lacros could not be launched.
   // NOTE: this method requires the user profile to be already initialized.
   bool EnsureLaunch();
@@ -385,10 +384,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
     // for user session.
     NOT_INITIALIZED,
 
-    // Lacros-chrome is reloading, because the wrong version was
-    // pre-launched at login screen.
-    RELOADING,
-
     // User session started, and now it's mounting lacros-chrome.
     MOUNTING,
 
@@ -402,11 +397,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
     // Params for lacros-chrome are parepared on a background thread.
     PREPARING_FOR_LAUNCH,
 
-    // Lacros-chrome has been pre-launched at login screen, and it's waiting to
-    // be unblocked post-login.
-    PRE_LAUNCHED,
-
-    // Lacros-chrome is launching, or resuming a pre-launched instance.
+    // Lacros-chrome is launching.
     STARTING,
 
     // Mojo connection to lacros-chrome is established so, it's in
@@ -450,7 +441,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Posts CreateLogFile() and StartWithLogFile() to the thread pool.
   // Also takes care of loading an update first, if available.
   // Virtual for tests.
-  virtual void Start(bool launching_at_login_screen = false);
+  virtual void Start();
 
   // BrowserServiceHostObserver:
   void OnBrowserServiceConnected(CrosapiId id,
@@ -470,9 +461,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   // Called when lacros-chrome is terminated and successfully wait(2)ed.
   void OnLacrosChromeTerminated();
-
-  // Called as soon as the login prompt is visible.
-  void OnLoginPromptVisible();
 
   // ID for the current Crosapi connection.
   // Available only when lacros-chrome is running.
@@ -572,7 +560,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // marked as friends of this class so that lacros owners can audit usage.
   std::unique_ptr<BrowserManagerScopedKeepAlive> KeepAlive(Feature feature);
 
-  void StartIfNeeded(bool launching_at_login_screen = false);
+  void StartIfNeeded();
 
   // This may be called synchronously by the BrowserManager following a
   // Terminate() signal during shutdown, or following a call to
@@ -581,34 +569,16 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // killing the process.
   void EnsureLacrosChromeTermination(base::TimeDelta timeout);
 
-  // Reload and possibly relaunch Lacros.
-  void HandleReload();
-
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override;
 
-  // Pre-launch Lacros at login screen. (Can be overridden by tests).
-  virtual void PrelaunchAtLoginScreen();
-
   // Called on launch process completed.
   void OnLaunchComplete(
-      bool lauching_at_login_screen,
       base::expected<BrowserLauncher::LaunchResults,
                      BrowserLauncher::LaunchFailureReason> launch_results);
 
-  // Resume Lacros startup process after login.
-  void ResumeLaunch();
-
-  // Called on ResumeLaunch completed.
-  void OnResumeLaunchComplete(
-      base::expected<base::TimeTicks, BrowserLauncher::LaunchFailureReason>
-          resume_time);
-
   // Launch "Go to files" if the migration error page was clicked.
   void HandleGoToFiles();
-
-  // ash::SessionManagerClient::Observer:
-  void EmitLoginPromptVisibleCalled() override;
 
   // BrowserServiceHostObserver:
   void OnBrowserRelaunchRequested(CrosapiId id) override;
@@ -642,8 +612,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   void OnUserProfileCreated(const user_manager::User& user) override;
 
   // crosapi::BrowserManagerObserver:
-  void OnLoadComplete(bool launching_at_login_screen,
-                      const base::FilePath& path,
+  void OnLoadComplete(const base::FilePath& path,
                       LacrosSelection selection,
                       base::Version version);
 
@@ -710,10 +679,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Time when the lacros process was launched.
   base::TimeTicks lacros_launch_time_;
 
-  // Time when the lacros process was resumed (when pre-launching at login
-  // screen).
-  base::TimeTicks lacros_resume_time_;
-
   // Remembers the request from Lacros-chrome whether it needs to be
   // relaunched. Reset on new process start in any cases.
   bool relaunch_requested_ = false;
@@ -721,16 +686,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Tracks whether Shutdown() has been signalled by ash. This flag ensures any
   // new or existing lacros startup tasks are not executed during shutdown.
   bool shutdown_requested_ = false;
-
-  // Tracks whether unloading Lacros was requested. Used to unload
-  // Lacros after terminating it in case pre-loading at login screen
-  // was unnecessary (e.g. because the user doesn't have Lacros enabled).
-  bool unload_requested_ = false;
-
-  // Tracks whether reloading Lacros was requested. Used to reload the right
-  // Lacros selection (rootfs/stateful) in case the wrong version was pre-loaded
-  // at login screen.
-  bool reload_requested_ = false;
 
   // Tracks whether BrowserManager should attempt to load a newer lacros-chrome
   // browser version (if an update is possible and a new version is available).
@@ -741,10 +696,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Tracks whether lacros-chrome is terminated.
   bool is_terminated_ = false;
 
-  // Whether a shutdown request was received while Lacros was in prelaunched
-  // state.
-  bool shutdown_requested_while_prelaunched_ = false;
-
   // Helps set up and manage the mojo connections between lacros-chrome and
   // ash-chrome in testing environment. Only applicable when
   // '--lacros-mojo-socket-for-testing' is present in the command line.
@@ -752,8 +703,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   // The features that are currently registered to keep Lacros alive.
   std::set<Feature> keep_alive_features_;
-
-  const bool launch_at_login_screen_;
 
   const bool disabled_for_testing_;
 

@@ -762,7 +762,6 @@
 #include "chromeos/crosapi/mojom/kerberos_in_browser.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "chromeos/startup/browser_init_params.h"
-#include "chromeos/startup/browser_postlogin_params.h"
 #include "chromeos/startup/startup.h"           // nogncheck
 #include "chromeos/startup/startup_switches.h"  // nogncheck
 #include "mojo/core/embedder/embedder.h"
@@ -2752,19 +2751,12 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
       *base::CommandLine::ForCurrentProcess();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Pass startup and post-login parameter FDs to child processes in Lacros.
+  // Pass startup parameter FDs to child processes in Lacros.
   if (process_type != switches::kZygoteProcess) {
     constexpr int kStartupDataFD =
         kCrosStartupDataDescriptor + base::GlobalDescriptors::kBaseDescriptor;
     command_line->AppendSwitchASCII(chromeos::switches::kCrosStartupDataFD,
                                     base::NumberToString(kStartupDataFD));
-
-    if (chromeos::IsLaunchedWithPostLoginParams()) {
-      constexpr int kPostLoginDataFD = kCrosPostLoginDataDescriptor +
-                                       base::GlobalDescriptors::kBaseDescriptor;
-      command_line->AppendSwitchASCII(chromeos::switches::kCrosPostLoginDataFD,
-                                      base::NumberToString(kPostLoginDataFD));
-    }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -4974,13 +4966,12 @@ void ChromeContentBrowserClient::GetAdditionalMappedFilesForChildProcess(
         // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Map startup and post-login parameter files to child processes in Lacros.
+  // Map startup parameter files to child processes in Lacros.
   // The FD numbers are passed via command line switches in
   // |AppendExtraCommandLineSwitches|.
   //
   // NOTE: the Zygote process requires special handling.
-  // It doesn't need the post-login parameters, so it can be fully launched at
-  // login screen. Also, serializing startup data early in the initialization
+  // Serializing startup data early in the initialization
   // process requires temporarily initializing Mojo. That's handled in the
   // |LaunchZygoteHelper| function in |content_main_runner_impl.cc|. Here, we
   // deal with all other type of processes.
@@ -4993,17 +4984,6 @@ void ChromeContentBrowserClient::GetAdditionalMappedFilesForChildProcess(
       constexpr int kStartupDataFD =
           kCrosStartupDataDescriptor + base::GlobalDescriptors::kBaseDescriptor;
       mappings->Transfer(kStartupDataFD, std::move(cros_startup_fd));
-    }
-
-    if (chromeos::IsLaunchedWithPostLoginParams()) {
-      base::ScopedFD cros_postlogin_fd =
-          chromeos::BrowserPostLoginParams::CreatePostLoginData();
-      if (cros_postlogin_fd.is_valid()) {
-        constexpr int kPostLoginDataFD =
-            kCrosPostLoginDataDescriptor +
-            base::GlobalDescriptors::kBaseDescriptor;
-        mappings->Transfer(kPostLoginDataFD, std::move(cros_postlogin_fd));
-      }
     }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
