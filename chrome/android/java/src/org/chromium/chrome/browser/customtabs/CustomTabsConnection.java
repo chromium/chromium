@@ -1362,14 +1362,6 @@ public class CustomTabsConnection {
      *
      * @param session The session that the corresponding custom tab is assigned to.
      * @param intent The intent that launched the custom tab.
-     */
-    void showSignInToastIfNecessary(CustomTabsSessionToken session, Intent intent) {}
-
-    /**
-     * Shows a toast about any possible sign in issues encountered during custom tab startup.
-     *
-     * @param session The session that the corresponding custom tab is assigned to.
-     * @param intent The intent that launched the custom tab.
      * @param profileProviderSupplier The supplier of the current profile.
      */
     void showSignInToastIfNecessary(
