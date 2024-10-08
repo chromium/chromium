@@ -112,7 +112,7 @@ void ContentUiEventHandler::SendMouseWheelEvent(
   float pixels_per_tick =
       window ? window->mouse_wheel_scroll_factor()
              : ui::kDefaultMouseWheelTickMultiplier * view->GetDipScale();
-  ui::MotionEventAndroid event(
+  ui::MotionEventAndroidJavaBacked event(
       env, nullptr, 1.f / view->GetDipScale(), ticks_x, ticks_y,
       pixels_per_tick, base::TimeTicks::FromJavaNanoTime(time_ns),
       0 /* action */, 1 /* pointer_count */, 0 /* history_size */,
@@ -146,7 +146,7 @@ void ContentUiEventHandler::SendMouseEvent(JNIEnv* env,
   ui::MotionEventAndroid::Pointer pointer(
       pointer_id, x, y, 0.0f /* touch_major */, 0.0f /* touch_minor */,
       orientation, tilt, android_tool_type);
-  ui::MotionEventAndroid event(
+  ui::MotionEventAndroidJavaBacked event(
       env, nullptr /* event */,
       1.f / web_contents_->GetNativeView()->GetDipScale(), 0.f, 0.f, 0.f,
       base::TimeTicks::FromJavaNanoTime(time_ns), android_action,

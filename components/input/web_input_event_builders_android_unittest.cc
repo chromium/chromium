@@ -206,7 +206,7 @@ TEST(WebInputEventBuilderAndroidTest, WebMouseEventCoordinates) {
   const float raw_offset_y = 22.f;
   const float kPixToDip = 0.5f;
 
-  ui::MotionEventAndroid motion_event(
+  ui::MotionEventAndroidJavaBacked motion_event(
       AttachCurrentThread(), nullptr, kPixToDip, 0.f, 0.f, 0.f,
       base::TimeTicks() + base::Nanoseconds(kEventTimeNs),
       AMOTION_EVENT_ACTION_DOWN, 1, 0, -1, 0, 0, 1, AMETA_ALT_ON, 0,

@@ -78,12 +78,12 @@ TEST(MotionEventAndroidTest, Constructor) {
   int pointer_count = 2;
   int history_size = 0;
   int action_index = -1;
-  MotionEventAndroid event(base::android::AttachCurrentThread(), nullptr,
-                           kPixToDip, 0.f, 0.f, 0.f, oldest_event_time,
-                           latest_event_time, kAndroidActionDown, pointer_count,
-                           history_size, action_index, kAndroidActionButton, 0,
-                           kAndroidButtonPrimary, kAndroidAltKeyDown, 0,
-                           raw_offset, -raw_offset, false, &p0, &p1);
+  MotionEventAndroidJavaBacked event(
+      base::android::AttachCurrentThread(), nullptr, kPixToDip, 0.f, 0.f, 0.f,
+      oldest_event_time, latest_event_time, kAndroidActionDown, pointer_count,
+      history_size, action_index, kAndroidActionButton, 0,
+      kAndroidButtonPrimary, kAndroidAltKeyDown, 0, raw_offset, -raw_offset,
+      false, &p0, &p1);
 
   EXPECT_EQ(MotionEvent::Action::DOWN, event.GetAction());
   EXPECT_EQ(oldest_event_time, event.GetEventTime());
@@ -125,10 +125,10 @@ TEST(MotionEventAndroidTest, Clone) {
   const int pointer_count = 1;
   MotionEventAndroid::Pointer p0(
       1, 13.7f, -7.13f, 5.3f, 1.2f, 0.1f, 0.2f, kAndroidToolTypeFinger);
-  MotionEventAndroid event(base::android::AttachCurrentThread(), nullptr,
-                           kPixToDip, 0, 0, 0, base::TimeTicks(),
-                           kAndroidActionDown, pointer_count, 0, 0, 0, 0, 0, 0,
-                           0, 0, 0, false, &p0, nullptr);
+  MotionEventAndroidJavaBacked event(
+      base::android::AttachCurrentThread(), nullptr, kPixToDip, 0, 0, 0,
+      base::TimeTicks(), kAndroidActionDown, pointer_count, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, false, &p0, nullptr);
 
   std::unique_ptr<MotionEvent> clone = event.Clone();
   EXPECT_EQ(ui::test::ToString(event), ui::test::ToString(*clone));
@@ -144,7 +144,7 @@ TEST(MotionEventAndroidTest, Cancel) {
   const int pointer_count = 1;
   MotionEventAndroid::Pointer p0(
       1, 13.7f, -7.13f, 5.3f, 1.2f, 0.1f, 0.2f, kAndroidToolTypeFinger);
-  MotionEventAndroid event(
+  MotionEventAndroidJavaBacked event(
       base::android::AttachCurrentThread(), nullptr, kPixToDip, 0, 0, 0,
       base::TimeTicks() + base::Nanoseconds(kEventTimeNS), kAndroidActionDown,
       pointer_count, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, &p0, nullptr);
@@ -168,10 +168,10 @@ TEST(MotionEventAndroidTest, InvalidOrientationsSanitized) {
   float orientation1 = std::numeric_limits<float>::quiet_NaN();
   MotionEventAndroid::Pointer p0(0, 0, 0, 0, 0, orientation0, 0, 0);
   MotionEventAndroid::Pointer p1(1, 0, 0, 0, 0, orientation1, 0, 0);
-  MotionEventAndroid event(base::android::AttachCurrentThread(), nullptr,
-                           kPixToDip, 0, 0, 0, base::TimeTicks(),
-                           kAndroidActionDown, pointer_count, 0, 0, 0, 0, 0, 0,
-                           0, 0, 0, false, &p0, &p1);
+  MotionEventAndroidJavaBacked event(
+      base::android::AttachCurrentThread(), nullptr, kPixToDip, 0, 0, 0,
+      base::TimeTicks(), kAndroidActionDown, pointer_count, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, false, &p0, &p1);
 
   EXPECT_EQ(0.f, event.GetOrientation(0));
   EXPECT_EQ(0.f, event.GetOrientation(1));
@@ -184,7 +184,7 @@ TEST(MotionEventAndroidTest, NonEmptyHistoryForNonMoveEventsSanitized) {
   int pointer_count = 1;
   size_t history_size = 5;
   MotionEventAndroid::Pointer p0(0, 0, 0, 0, 0, 0, 0, 0);
-  MotionEventAndroid event(
+  MotionEventAndroidJavaBacked event(
       base::android::AttachCurrentThread(), nullptr, kPixToDip, 0, 0, 0,
       base::TimeTicks(), base::TimeTicks(), kAndroidActionDown, pointer_count,
       history_size, 0, 0, 0, 0, 0, 0, 0, 0, false, &p0, nullptr);
@@ -203,7 +203,7 @@ TEST(MotionEventAndroidTest, ActionIndexForPointerDown) {
   int pointer_count = 2;
   int history_size = 0;
   int action_index = 1;
-  MotionEventAndroid event(
+  MotionEventAndroidJavaBacked event(
       base::android::AttachCurrentThread(), nullptr, kPixToDip, 0, 0, 0,
       base::TimeTicks(), kAndroidActionPointerDown, pointer_count, history_size,
       action_index, 0, 0, 0, 0, 0, 0, 0, false, &p0, &p1);
