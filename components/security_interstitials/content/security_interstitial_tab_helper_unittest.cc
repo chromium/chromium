@@ -72,11 +72,36 @@ class TestInterstitialPage : public SecurityInterstitialPage {
 class SecurityInterstitialTabHelperTest
     : public content::RenderViewHostTestHarness {
  protected:
+  void SetUp() override {
+    RenderViewHostTestHarness::SetUp();
+    content::RenderFrameHostTester::For(main_rfh())
+        ->InitializeRenderFrameIfNeeded();
+  }
+
+  // Creates a navigation handle for the main frame.
   std::unique_ptr<content::MockNavigationHandle> CreateHandle(
       bool committed,
       bool is_same_document) {
+    return CreateHandle(main_rfh(), committed, is_same_document);
+  }
+
+  // Creates a navigation handle for a subframe.
+  std::unique_ptr<content::MockNavigationHandle> CreateSubframeHandle(
+      bool committed,
+      bool is_same_document) {
+    content::RenderFrameHost* subframe =
+        content::RenderFrameHostTester::For(main_rfh())
+            ->AppendChild("subframe");
+    return CreateHandle(subframe, committed, is_same_document);
+  }
+
+  // Creates a navigation handle for the given frame.
+  std::unique_ptr<content::MockNavigationHandle> CreateHandle(
+      content::RenderFrameHost* frame,
+      bool committed,
+      bool is_same_document) {
     std::unique_ptr<content::MockNavigationHandle> handle =
-        std::make_unique<content::MockNavigationHandle>(GURL(), main_rfh());
+        std::make_unique<content::MockNavigationHandle>(GURL(), frame);
     handle->set_has_committed(committed);
     handle->set_is_same_document(is_same_document);
     return handle;
@@ -92,19 +117,6 @@ class SecurityInterstitialTabHelperTest
         handle, std::make_unique<TestInterstitialPage>(web_contents(), GURL(),
                                                        destroyed_tracker));
   }
-
-  // Returns a unique subframe tree node id.
-  content::FrameTreeNodeId GenerateSubFrameTreeNodeId() {
-    const int subframe_id =
-        main_rfh()->GetFrameTreeNodeId().GetUnsafeValue() + next_subframe_id_;
-    next_subframe_id_++;
-    return content::FrameTreeNodeId(subframe_id);
-  }
-
- private:
-  // This counter starts at an arbitrarily high number to avoid ID conflicts
-  // from multiple main frames being created in tests.
-  int64_t next_subframe_id_ = 1000;
 };
 
 // Tests that the helper properly handles the lifetime of a single blocking
@@ -112,8 +124,6 @@ class SecurityInterstitialTabHelperTest
 TEST_F(SecurityInterstitialTabHelperTest, SingleBlockingPage) {
   std::unique_ptr<content::MockNavigationHandle> blocking_page_handle =
       CreateHandle(true, false);
-  ON_CALL(*blocking_page_handle, GetFrameTreeNodeId())
-      .WillByDefault(testing::Return(content::FrameTreeNodeId(1)));
   bool blocking_page_destroyed = false;
   CreateAssociatedBlockingPage(blocking_page_handle.get(),
                                &blocking_page_destroyed);
@@ -124,8 +134,6 @@ TEST_F(SecurityInterstitialTabHelperTest, SingleBlockingPage) {
   // its navigation hasn't committed yet.
   std::unique_ptr<content::MockNavigationHandle> same_document_handle =
       CreateHandle(true, true);
-  ON_CALL(*same_document_handle, GetFrameTreeNodeId())
-      .WillByDefault(testing::Return(content::FrameTreeNodeId(1)));
   helper->DidFinishNavigation(same_document_handle.get());
   EXPECT_FALSE(blocking_page_destroyed);
 
@@ -133,8 +141,6 @@ TEST_F(SecurityInterstitialTabHelperTest, SingleBlockingPage) {
   // blocking page if its navigation hasn't committed yet.
   std::unique_ptr<content::MockNavigationHandle> committed_handle1 =
       CreateHandle(true, false);
-  ON_CALL(*committed_handle1, GetFrameTreeNodeId())
-      .WillByDefault(testing::Return(content::FrameTreeNodeId(1)));
   helper->DidFinishNavigation(committed_handle1.get());
   EXPECT_FALSE(blocking_page_destroyed);
 
@@ -146,8 +152,6 @@ TEST_F(SecurityInterstitialTabHelperTest, SingleBlockingPage) {
   // stored for the currently committed navigation.
   std::unique_ptr<content::MockNavigationHandle> committed_handle2 =
       CreateHandle(true, false);
-  ON_CALL(*committed_handle2, GetFrameTreeNodeId())
-      .WillByDefault(testing::Return(content::FrameTreeNodeId(1)));
   helper->DidFinishNavigation(committed_handle2.get());
   EXPECT_TRUE(blocking_page_destroyed);
 }
@@ -159,8 +163,6 @@ TEST_F(SecurityInterstitialTabHelperTest, MultipleBlockingPages) {
   // Simulate associating the first interstitial.
   std::unique_ptr<content::MockNavigationHandle> handle1 =
       CreateHandle(true, false);
-  ON_CALL(*handle1, GetFrameTreeNodeId())
-      .WillByDefault(testing::Return(content::FrameTreeNodeId(1)));
   bool blocking_page1_destroyed = false;
   CreateAssociatedBlockingPage(handle1.get(), &blocking_page1_destroyed);
 
@@ -177,8 +179,6 @@ TEST_F(SecurityInterstitialTabHelperTest, MultipleBlockingPages) {
   // Associate the second interstitial.
   std::unique_ptr<content::MockNavigationHandle> handle2 =
       CreateHandle(true, false);
-  ON_CALL(*handle2, GetFrameTreeNodeId())
-      .WillByDefault(testing::Return(content::FrameTreeNodeId(1)));
   bool blocking_page2_destroyed = false;
   CreateAssociatedBlockingPage(handle2.get(), &blocking_page2_destroyed);
   EXPECT_FALSE(blocking_page1_destroyed);
@@ -187,8 +187,6 @@ TEST_F(SecurityInterstitialTabHelperTest, MultipleBlockingPages) {
   // Associate the third interstitial.
   std::unique_ptr<content::MockNavigationHandle> handle3 =
       CreateHandle(true, false);
-  ON_CALL(*handle3, GetFrameTreeNodeId())
-      .WillByDefault(testing::Return(content::FrameTreeNodeId(1)));
   bool blocking_page3_destroyed = false;
   CreateAssociatedBlockingPage(handle3.get(), &blocking_page3_destroyed);
   EXPECT_FALSE(blocking_page1_destroyed);
@@ -211,8 +209,6 @@ TEST_F(SecurityInterstitialTabHelperTest, MultipleBlockingPages) {
   // page.
   std::unique_ptr<content::MockNavigationHandle> committed_handle4 =
       CreateHandle(true, false);
-  ON_CALL(*committed_handle4, GetFrameTreeNodeId())
-      .WillByDefault(testing::Return(content::FrameTreeNodeId(1)));
   helper->DidFinishNavigation(committed_handle4.get());
   EXPECT_TRUE(blocking_page2_destroyed);
 }
@@ -222,8 +218,6 @@ TEST_F(SecurityInterstitialTabHelperTest, MultipleBlockingPages) {
 TEST_F(SecurityInterstitialTabHelperTest, NavigationDoesNotCommit) {
   std::unique_ptr<content::MockNavigationHandle> committed_handle =
       CreateHandle(true, false);
-  ON_CALL(*committed_handle, GetFrameTreeNodeId())
-      .WillByDefault(testing::Return(content::FrameTreeNodeId(1)));
   bool committed_blocking_page_destroyed = false;
   CreateAssociatedBlockingPage(committed_handle.get(),
                                &committed_blocking_page_destroyed);
@@ -235,8 +229,6 @@ TEST_F(SecurityInterstitialTabHelperTest, NavigationDoesNotCommit) {
   // Simulate a navigation that does not commit.
   std::unique_ptr<content::MockNavigationHandle> non_committed_handle =
       CreateHandle(false, false);
-  ON_CALL(*non_committed_handle, GetFrameTreeNodeId())
-      .WillByDefault(testing::Return(content::FrameTreeNodeId(1)));
   helper->DidFinishNavigation(non_committed_handle.get());
 
   // The blocking page for the non-committed navigation should have been cleaned
@@ -247,8 +239,6 @@ TEST_F(SecurityInterstitialTabHelperTest, NavigationDoesNotCommit) {
   // When a navigation does commit, the previous one should be cleaned up.
   std::unique_ptr<content::MockNavigationHandle> next_committed_handle =
       CreateHandle(true, false);
-  ON_CALL(*next_committed_handle, GetFrameTreeNodeId())
-      .WillByDefault(testing::Return(content::FrameTreeNodeId(1)));
   helper->DidFinishNavigation(next_committed_handle.get());
   EXPECT_TRUE(committed_blocking_page_destroyed);
 }
@@ -258,8 +248,6 @@ TEST_F(SecurityInterstitialTabHelperTest, NavigationDoesNotCommit) {
 TEST_F(SecurityInterstitialTabHelperTest, ClosingTabForMainFrameInterstitial) {
   std::unique_ptr<content::MockNavigationHandle> committed_handle =
       CreateHandle(true, false);
-  ON_CALL(*committed_handle, GetFrameTreeNodeId())
-      .WillByDefault(testing::Return(main_rfh()->GetFrameTreeNodeId()));
   bool committed_blocking_page_destroyed = false;
   CreateAssociatedBlockingPage(committed_handle.get(),
                                &committed_blocking_page_destroyed);
@@ -278,23 +266,15 @@ TEST_F(SecurityInterstitialTabHelperTest, ClosingTabForMainFrameInterstitial) {
 
 // Tests that multiple FrameTreeNodes can display blocking interstitials.
 TEST_F(SecurityInterstitialTabHelperTest, MultipleFramesBlocked) {
-  // Initialize subframe IDs that do not overlap with main frame tree node ID.
-  content::FrameTreeNodeId frame_tree_node_id_1 = GenerateSubFrameTreeNodeId();
-  content::FrameTreeNodeId frame_tree_node_id_2 = GenerateSubFrameTreeNodeId();
-
   // Simulate associating the first interstitial.
   std::unique_ptr<content::MockNavigationHandle> handle1 =
-      CreateHandle(true, false);
-  ON_CALL(*handle1, GetFrameTreeNodeId())
-      .WillByDefault(testing::Return(frame_tree_node_id_1));
+      CreateSubframeHandle(true, false);
   bool blocking_page1_destroyed = false;
   CreateAssociatedBlockingPage(handle1.get(), &blocking_page1_destroyed);
 
   // Simulate associating the second interstitial to another frame.
   std::unique_ptr<content::MockNavigationHandle> handle2 =
-      CreateHandle(true, false);
-  ON_CALL(*handle2, GetFrameTreeNodeId())
-      .WillByDefault(testing::Return(frame_tree_node_id_2));
+      CreateSubframeHandle(true, false);
   bool blocking_page2_destroyed = false;
   CreateAssociatedBlockingPage(handle2.get(), &blocking_page2_destroyed);
 
@@ -309,8 +289,10 @@ TEST_F(SecurityInterstitialTabHelperTest, MultipleFramesBlocked) {
   EXPECT_FALSE(blocking_page2_destroyed);
 
   // The interstitial at frame 1 moved from pending to commit state.
-  EXPECT_TRUE(helper->IsInterstitialCommittedForFrame(frame_tree_node_id_1));
-  EXPECT_FALSE(helper->IsInterstitialCommittedForFrame(frame_tree_node_id_2));
+  EXPECT_TRUE(
+      helper->IsInterstitialCommittedForFrame(handle1->GetFrameTreeNodeId()));
+  EXPECT_FALSE(
+      helper->IsInterstitialCommittedForFrame(handle2->GetFrameTreeNodeId()));
   EXPECT_FALSE(
       helper->IsInterstitialPendingForNavigation(handle1->GetNavigationId()));
   EXPECT_TRUE(
@@ -322,17 +304,19 @@ TEST_F(SecurityInterstitialTabHelperTest, MultipleFramesBlocked) {
   EXPECT_FALSE(blocking_page2_destroyed);
 
   // The interstitial at frame 2 moved from pending to commit state.
-  EXPECT_TRUE(helper->IsInterstitialCommittedForFrame(frame_tree_node_id_1));
-  EXPECT_TRUE(helper->IsInterstitialCommittedForFrame(frame_tree_node_id_2));
+  EXPECT_TRUE(
+      helper->IsInterstitialCommittedForFrame(handle1->GetFrameTreeNodeId()));
+  EXPECT_TRUE(
+      helper->IsInterstitialCommittedForFrame(handle2->GetFrameTreeNodeId()));
   EXPECT_FALSE(
       helper->IsInterstitialPendingForNavigation(handle1->GetNavigationId()));
   EXPECT_FALSE(
       helper->IsInterstitialPendingForNavigation(handle2->GetNavigationId()));
 
-  helper->FrameDeleted(frame_tree_node_id_1);
+  helper->FrameDeleted(handle1->GetFrameTreeNodeId());
   EXPECT_TRUE(blocking_page1_destroyed);
 
-  helper->FrameDeleted(frame_tree_node_id_2);
+  helper->FrameDeleted(handle2->GetFrameTreeNodeId());
   EXPECT_TRUE(blocking_page2_destroyed);
 }
 
@@ -340,22 +324,21 @@ TEST_F(SecurityInterstitialTabHelperTest, MultipleFramesBlocked) {
 // the pending interstitial for another FrameTreeNode.
 TEST_F(SecurityInterstitialTabHelperTest,
        NavigationForSubframeWithPendingInterstitial) {
-  // Initialize subframe IDs that do not overlap with main frame tree node ID.
-  content::FrameTreeNodeId frame_tree_node_id_1 = GenerateSubFrameTreeNodeId();
-  content::FrameTreeNodeId frame_tree_node_id_2 = GenerateSubFrameTreeNodeId();
+  content::RenderFrameHost* subframe1 =
+      content::RenderFrameHostTester::For(main_rfh())
+          ->AppendChild("subframe 1");
+  content::RenderFrameHost* subframe2 =
+      content::RenderFrameHostTester::For(main_rfh())
+          ->AppendChild("subframe 2");
 
   std::unique_ptr<content::MockNavigationHandle> committed_handle =
-      CreateHandle(true, false);
-  ON_CALL(*committed_handle, GetFrameTreeNodeId())
-      .WillByDefault(testing::Return(frame_tree_node_id_1));
+      CreateHandle(subframe1, true, false);
   bool committed_blocking_page_destroyed = false;
   CreateAssociatedBlockingPage(committed_handle.get(),
                                &committed_blocking_page_destroyed);
 
   std::unique_ptr<content::MockNavigationHandle> pending_handle =
-      CreateHandle(true, false);
-  ON_CALL(*pending_handle, GetFrameTreeNodeId())
-      .WillByDefault(testing::Return(frame_tree_node_id_2));
+      CreateHandle(subframe2, true, false);
   bool pending_blocking_page_destroyed = false;
   CreateAssociatedBlockingPage(pending_handle.get(),
                                &pending_blocking_page_destroyed);
@@ -368,8 +351,10 @@ TEST_F(SecurityInterstitialTabHelperTest,
   EXPECT_FALSE(pending_blocking_page_destroyed);
 
   // The interstitial at frame 1 moved from pending to commit state.
-  EXPECT_TRUE(helper->IsInterstitialCommittedForFrame(frame_tree_node_id_1));
-  EXPECT_FALSE(helper->IsInterstitialCommittedForFrame(frame_tree_node_id_2));
+  EXPECT_TRUE(helper->IsInterstitialCommittedForFrame(
+      committed_handle->GetFrameTreeNodeId()));
+  EXPECT_FALSE(helper->IsInterstitialCommittedForFrame(
+      pending_handle->GetFrameTreeNodeId()));
   EXPECT_FALSE(helper->IsInterstitialPendingForNavigation(
       committed_handle->GetNavigationId()));
   EXPECT_TRUE(helper->IsInterstitialPendingForNavigation(
@@ -377,17 +362,17 @@ TEST_F(SecurityInterstitialTabHelperTest,
 
   // Simulate a navigation that does not commit.
   std::unique_ptr<content::MockNavigationHandle> non_committed_handle =
-      CreateHandle(false, false);
-  ON_CALL(*non_committed_handle, GetFrameTreeNodeId())
-      .WillByDefault(testing::Return(frame_tree_node_id_1));
+      CreateHandle(subframe1, false, false);
   helper->DidFinishNavigation(non_committed_handle.get());
 
   // The non-committed navigation should not affect the state of committed or
   // pending blocking pages.
   EXPECT_FALSE(committed_blocking_page_destroyed);
   EXPECT_FALSE(pending_blocking_page_destroyed);
-  EXPECT_TRUE(helper->IsInterstitialCommittedForFrame(frame_tree_node_id_1));
-  EXPECT_FALSE(helper->IsInterstitialCommittedForFrame(frame_tree_node_id_2));
+  EXPECT_TRUE(helper->IsInterstitialCommittedForFrame(
+      committed_handle->GetFrameTreeNodeId()));
+  EXPECT_FALSE(helper->IsInterstitialCommittedForFrame(
+      pending_handle->GetFrameTreeNodeId()));
   EXPECT_FALSE(helper->IsInterstitialPendingForNavigation(
       committed_handle->GetNavigationId()));
   EXPECT_TRUE(helper->IsInterstitialPendingForNavigation(
@@ -395,12 +380,11 @@ TEST_F(SecurityInterstitialTabHelperTest,
 
   // When a navigation does commit, the previous one should be cleaned up.
   std::unique_ptr<content::MockNavigationHandle> next_committed_handle =
-      CreateHandle(true, false);
-  ON_CALL(*next_committed_handle, GetFrameTreeNodeId())
-      .WillByDefault(testing::Return(frame_tree_node_id_1));
+      CreateHandle(subframe1, true, false);
   helper->DidFinishNavigation(next_committed_handle.get());
   EXPECT_TRUE(committed_blocking_page_destroyed);
-  EXPECT_FALSE(helper->IsInterstitialCommittedForFrame(frame_tree_node_id_1));
+  EXPECT_FALSE(helper->IsInterstitialCommittedForFrame(
+      committed_handle->GetFrameTreeNodeId()));
   EXPECT_FALSE(helper->IsInterstitialPendingForNavigation(
       committed_handle->GetNavigationId()));
 
@@ -408,10 +392,11 @@ TEST_F(SecurityInterstitialTabHelperTest,
   EXPECT_FALSE(pending_blocking_page_destroyed);
   EXPECT_TRUE(helper->IsInterstitialPendingForNavigation(
       pending_handle->GetNavigationId()));
-  EXPECT_FALSE(helper->IsInterstitialCommittedForFrame(frame_tree_node_id_2));
+  EXPECT_FALSE(helper->IsInterstitialCommittedForFrame(
+      pending_handle->GetFrameTreeNodeId()));
 
   // Frame deletions only affect committed interstitials.
-  helper->FrameDeleted(frame_tree_node_id_2);
+  helper->FrameDeleted(pending_handle->GetFrameTreeNodeId());
   EXPECT_FALSE(pending_blocking_page_destroyed);
 
   // Delete pending interstitials via web contents destruction.
@@ -423,22 +408,21 @@ TEST_F(SecurityInterstitialTabHelperTest,
 // the committed interstitial for another FrameTreeNode.
 TEST_F(SecurityInterstitialTabHelperTest,
        NavigationForSubframeWithCommittedInterstitial) {
-  // Initialize subframe IDs that do not overlap with main frame tree node ID.
-  content::FrameTreeNodeId frame_tree_node_id_1 = GenerateSubFrameTreeNodeId();
-  content::FrameTreeNodeId frame_tree_node_id_2 = GenerateSubFrameTreeNodeId();
+  content::RenderFrameHost* subframe1 =
+      content::RenderFrameHostTester::For(main_rfh())
+          ->AppendChild("subframe 1");
+  content::RenderFrameHost* subframe2 =
+      content::RenderFrameHostTester::For(main_rfh())
+          ->AppendChild("subframe 2");
 
   std::unique_ptr<content::MockNavigationHandle> committed_handle =
-      CreateHandle(true, false);
-  ON_CALL(*committed_handle, GetFrameTreeNodeId())
-      .WillByDefault(testing::Return(frame_tree_node_id_1));
+      CreateHandle(subframe1, true, false);
   bool committed_blocking_page_destroyed = false;
   CreateAssociatedBlockingPage(committed_handle.get(),
                                &committed_blocking_page_destroyed);
 
   std::unique_ptr<content::MockNavigationHandle> committed_handle2 =
-      CreateHandle(true, false);
-  ON_CALL(*committed_handle2, GetFrameTreeNodeId())
-      .WillByDefault(testing::Return(frame_tree_node_id_2));
+      CreateHandle(subframe2, true, false);
   bool committed_blocking_page2_destroyed = false;
   CreateAssociatedBlockingPage(committed_handle2.get(),
                                &committed_blocking_page2_destroyed);
@@ -456,8 +440,10 @@ TEST_F(SecurityInterstitialTabHelperTest,
   EXPECT_FALSE(committed_blocking_page2_destroyed);
 
   // Both interstitials have moved from pending to commit state.
-  EXPECT_TRUE(helper->IsInterstitialCommittedForFrame(frame_tree_node_id_1));
-  EXPECT_TRUE(helper->IsInterstitialCommittedForFrame(frame_tree_node_id_2));
+  EXPECT_TRUE(helper->IsInterstitialCommittedForFrame(
+      committed_handle->GetFrameTreeNodeId()));
+  EXPECT_TRUE(helper->IsInterstitialCommittedForFrame(
+      committed_handle2->GetFrameTreeNodeId()));
   EXPECT_FALSE(helper->IsInterstitialPendingForNavigation(
       committed_handle->GetNavigationId()));
   EXPECT_FALSE(helper->IsInterstitialPendingForNavigation(
@@ -465,17 +451,17 @@ TEST_F(SecurityInterstitialTabHelperTest,
 
   // Simulate a navigation that does not commit.
   std::unique_ptr<content::MockNavigationHandle> non_committed_handle =
-      CreateHandle(false, false);
-  ON_CALL(*non_committed_handle, GetFrameTreeNodeId())
-      .WillByDefault(testing::Return(frame_tree_node_id_1));
+      CreateHandle(subframe1, false, false);
   helper->DidFinishNavigation(non_committed_handle.get());
 
   // The non-committed navigation should not affect the state of committed or
   // pending blocking pages.
   EXPECT_FALSE(committed_blocking_page_destroyed);
   EXPECT_FALSE(committed_blocking_page2_destroyed);
-  EXPECT_TRUE(helper->IsInterstitialCommittedForFrame(frame_tree_node_id_1));
-  EXPECT_TRUE(helper->IsInterstitialCommittedForFrame(frame_tree_node_id_2));
+  EXPECT_TRUE(helper->IsInterstitialCommittedForFrame(
+      committed_handle->GetFrameTreeNodeId()));
+  EXPECT_TRUE(helper->IsInterstitialCommittedForFrame(
+      committed_handle2->GetFrameTreeNodeId()));
   EXPECT_FALSE(helper->IsInterstitialPendingForNavigation(
       committed_handle->GetNavigationId()));
   EXPECT_FALSE(helper->IsInterstitialPendingForNavigation(
@@ -483,20 +469,20 @@ TEST_F(SecurityInterstitialTabHelperTest,
 
   // When a navigation does commit, the previous one should be cleaned up.
   std::unique_ptr<content::MockNavigationHandle> next_committed_handle =
-      CreateHandle(true, false);
-  ON_CALL(*next_committed_handle, GetFrameTreeNodeId())
-      .WillByDefault(testing::Return(frame_tree_node_id_1));
+      CreateHandle(subframe1, true, false);
   helper->DidFinishNavigation(next_committed_handle.get());
   EXPECT_TRUE(committed_blocking_page_destroyed);
-  EXPECT_FALSE(helper->IsInterstitialCommittedForFrame(frame_tree_node_id_1));
+  EXPECT_FALSE(helper->IsInterstitialCommittedForFrame(
+      committed_handle->GetFrameTreeNodeId()));
   EXPECT_FALSE(helper->IsInterstitialPendingForNavigation(
       committed_handle->GetNavigationId()));
 
   // The pending interstitial should still be present.
   EXPECT_FALSE(committed_blocking_page2_destroyed);
-  EXPECT_TRUE(helper->IsInterstitialCommittedForFrame(frame_tree_node_id_2));
+  EXPECT_TRUE(helper->IsInterstitialCommittedForFrame(
+      committed_handle2->GetFrameTreeNodeId()));
 
-  helper->FrameDeleted(frame_tree_node_id_2);
+  helper->FrameDeleted(committed_handle2->GetFrameTreeNodeId());
   EXPECT_TRUE(committed_blocking_page2_destroyed);
 }
 

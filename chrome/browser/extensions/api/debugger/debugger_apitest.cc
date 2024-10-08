@@ -370,10 +370,6 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
   std::unique_ptr<content::MockNavigationHandle> navigation_handle =
       std::make_unique<content::MockNavigationHandle>(
           GURL("https://google.com/"), web_contents->GetPrimaryMainFrame());
-  ON_CALL(*navigation_handle, GetFrameTreeNodeId())
-      .WillByDefault(testing::Return(
-          web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId()));
-
   navigation_handle->set_has_committed(true);
   navigation_handle->set_is_same_document(false);
   EXPECT_TRUE(RunAttachFunction(web_contents, ""));

@@ -56,8 +56,6 @@ class PdfNavigationThrottleTest : public content::RenderViewHostTestHarness {
       const GURL& url,
       content::RenderFrameHost* frame) {
     InitializeNavigationHandle(url, frame);
-    ON_CALL(*navigation_handle_, GetFrameTreeNodeId())
-        .WillByDefault(Return(frame->GetFrameTreeNodeId()));
     return std::make_unique<PdfNavigationThrottle>(navigation_handle_.get(),
                                                    std::move(stream_delegate_));
   }
