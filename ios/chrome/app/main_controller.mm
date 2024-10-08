@@ -131,6 +131,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/ui/device_orientation/scoped_force_portrait_orientation.h"
 #import "ios/chrome/browser/ui/main/browser_view_wrangler.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/web/model/certificate_policy_app_agent.h"
@@ -151,6 +152,7 @@
 #import "ios/web/public/webui/web_ui_ios_controller_factory.h"
 #import "net/base/apple/url_conversions.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
+#import "ui/base/device_form_factor.h"
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
 #import "ios/chrome/app/credential_provider_migrator_app_agent.h"
@@ -455,7 +457,10 @@ void MainControllerAuthenticationServiceDelegate::
 - (void)performBrowserBackgroundInitialisation:(ProceduralBlock)completion;
 @end
 
-@implementation MainController
+@implementation MainController {
+  // Used to force the device orientation in portrait mode on iPhone.
+  std::unique_ptr<ScopedForcePortraitOrientation> _scopedForceOrientation;
+}
 
 // Defined by public protocols.
 // - StartupInformation
@@ -815,6 +820,11 @@ SEQUENCE_CHECKER(_sequenceChecker);
       [self maybeContinueForegroundInitialization];
       break;
     case AppInitStage::kNormalUI:
+      // Stop forcing the orientation at the application level. If needed,
+      // the ProfileControllers will be forcing the orientation until they
+      // also are ready.
+      _scopedForceOrientation.reset();
+
       // Scene controllers use this stage to create the normal UI if needed.
       // There is no specific agent (other than SceneController) handling
       // this stage.
@@ -866,6 +876,8 @@ SEQUENCE_CHECKER(_sequenceChecker);
   DCHECK(!_appState);
   _appState = appState;
   [appState addObserver:self];
+
+  _scopedForceOrientation = ForcePortraitOrientationOnIphone(_appState);
 
   // Create app state agents.
   [appState addAgent:[[AppMetricsAppStateAgent alloc] init]];

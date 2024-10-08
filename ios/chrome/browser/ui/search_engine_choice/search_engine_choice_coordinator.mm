@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/ui/scoped_iphone_portrait_only/scoped_iphone_portrait_only.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_learn_more/search_engine_choice_learn_more_coordinator.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_learn_more/search_engine_choice_learn_more_view_controller.h"
@@ -47,8 +46,6 @@
   base::Time _lastCallToDidTapPrimaryButtonTimestamp;
   // First run screen delegate.
   __weak id<FirstRunScreenDelegate> _firstRunDelegate;
-  // Force iPhone to be in portrait only for this coordinator.
-  std::unique_ptr<ScopedIphonePortraitOnly> _scopedIphonePortraitOnly;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -111,12 +108,7 @@
         search_engines::SearchEngineChoiceScreenEvents::
             kFreChoiceScreenWasDisplayed);
   } else {
-    ui::DeviceFormFactor deviceFormFactor = ui::GetDeviceFormFactor();
-    if (deviceFormFactor == ui::DEVICE_FORM_FACTOR_PHONE) {
-      AppState* appState = self.browser->GetSceneState().appState;
-      _scopedIphonePortraitOnly =
-          std::make_unique<ScopedIphonePortraitOnly>(appState);
-    } else {
+    if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
       _viewController.modalPresentationStyle = UIModalPresentationFormSheet;
       _viewController.preferredContentSize =
           CGSizeMake(kIPadSearchEngineChoiceScreenPreferredWidth,
@@ -147,7 +139,6 @@
   _viewController = nil;
   _baseNavigationController = nil;
   _firstRunDelegate = nil;
-  _scopedIphonePortraitOnly.reset();
   [super stop];
 }
 

@@ -43,7 +43,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
-#import "ios/chrome/browser/ui/scoped_iphone_portrait_only/scoped_iphone_portrait_only.h"
+#import "ios/chrome/browser/ui/device_orientation/scoped_force_portrait_orientation.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/common/crash_report/crash_helper.h"
@@ -662,29 +662,30 @@ TEST_F(AppStateTest,
   [observer2 verify];
 }
 
-// Tests, on iPhone, that when ScopedIphonePortraitOnly is created,
-// `-AppState.portraitOnly` returns YES.
-TEST_F(AppStateTest, BlockIphonePortraitOnly) {
+// Tests that when ScopedForcePortraitOrientation is created, `-portraitOnly`
+// returns YES.
+TEST_F(AppStateTest, ForcePortraitOrientation) {
   AppState* appState = GetAppStateWithMock();
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
-    [[[GetWindowMock() stub] andReturn:nil] rootViewController];
-    SwizzleSafeModeShouldStart(NO);
 
-    [[[GetStartupInformationMock() stub] andReturnValue:@YES] isColdStart];
-    [[GetStartupInformationMock() stub] setIsFirstRun:YES];
-    [[[GetStartupInformationMock() stub] andReturnValue:@YES] isFirstRun];
+  [[[GetWindowMock() stub] andReturn:nil] rootViewController];
+  SwizzleSafeModeShouldStart(NO);
 
-    // Simulate finishing the initialization before going to background.
-    [GetAppStateWithMock() startInitialization];
-    [GetAppStateWithMock() queueTransitionToNextInitStage];
+  [[[GetStartupInformationMock() stub] andReturnValue:@YES] isColdStart];
+  [[GetStartupInformationMock() stub] setIsFirstRun:YES];
+  [[[GetStartupInformationMock() stub] andReturnValue:@YES] isFirstRun];
 
-    ASSERT_FALSE(appState.portraitOnly);
-    std::unique_ptr<ScopedIphonePortraitOnly> scopedIphonePortraitOnly =
-        std::make_unique<ScopedIphonePortraitOnly>(appState);
-    ASSERT_TRUE(appState.portraitOnly);
-    scopedIphonePortraitOnly.reset();
-    ASSERT_FALSE(appState.portraitOnly);
-  }
+  // Simulate finishing the initialization before going to background.
+  [GetAppStateWithMock() startInitialization];
+  [GetAppStateWithMock() queueTransitionToNextInitStage];
+
+  ASSERT_FALSE(appState.portraitOnly);
+  std::unique_ptr<ScopedForcePortraitOrientation>
+      scopedForcePortraitOrientation =
+          std::make_unique<ScopedForcePortraitOrientation>(appState);
+  ASSERT_TRUE(appState.portraitOnly);
+
+  scopedForcePortraitOrientation.reset();
+  ASSERT_FALSE(appState.portraitOnly);
 }
 
 TEST_F(AppStateTest, AppAgentRetrieval) {

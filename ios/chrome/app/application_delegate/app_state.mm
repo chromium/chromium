@@ -158,9 +158,10 @@ void FlushCookieStoreOnIOThread(
   // -applicationDidEnterBackground: can be called twice.
   // TODO(crbug.com/41211311): Remove this once rdar://22392526 is fixed.
   BOOL _applicationInBackground;
-  // The counter of the number of views which want to block the screen to
-  // portrait mode for iPhone. This counter should always be 0 for iPad.
-  NSUInteger _iphonePortraitOnlyCounter;
+
+  // Counter of number of object that want to force the device in the
+  // portrait orientation (orientation is locked if non-zero).
+  NSUInteger _forcePortraitOrientationCounter;
 }
 
 @synthesize userInteracted = _userInteracted;
@@ -236,16 +237,7 @@ void FlushCookieStoreOnIOThread(
 }
 
 - (BOOL)portraitOnly {
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
-    return NO;
-  }
-  if (_iphonePortraitOnlyCounter > 0) {
-    return YES;
-  }
-  // Return YES if the First Run UI is showing.
-  return self.initStage > AppInitStage::kSafeMode &&
-         self.initStage <= AppInitStage::kFirstRun &&
-         self.startupInformation.isFirstRun;
+  return _forcePortraitOrientationCounter > 0;
 }
 
 - (NSArray<id<AppStateAgent>>*)connectedAgents {
@@ -657,15 +649,27 @@ void FlushCookieStoreOnIOThread(
   }
 }
 
-#pragma mark - IphonePortraitOnlyManager
+#pragma mark - PortraitOrientationManager
 
-- (void)incrementIphonePortraitOnlyCounter {
-  ++_iphonePortraitOnlyCounter;
+- (void)incrementForcePortraitOrientationCounter {
+  if (!_forcePortraitOrientationCounter) {
+    for (SceneState* sceneState in self.connectedScenes) {
+      [sceneState.browserProviderInterface.currentBrowserProvider
+              .viewController setNeedsUpdateOfSupportedInterfaceOrientations];
+    }
+  }
+  ++_forcePortraitOrientationCounter;
 }
 
-- (void)decrementIphonePortraitOnlyCounter {
-  CHECK_GT(_iphonePortraitOnlyCounter, 0ul);
-  --_iphonePortraitOnlyCounter;
+- (void)decrementForcePortraitOrientationCounter {
+  CHECK_GT(_forcePortraitOrientationCounter, 0ul);
+  --_forcePortraitOrientationCounter;
+  if (!_forcePortraitOrientationCounter) {
+    for (SceneState* sceneState in self.connectedScenes) {
+      [sceneState.browserProviderInterface.currentBrowserProvider
+              .viewController setNeedsUpdateOfSupportedInterfaceOrientations];
+    }
+  }
 }
 
 #pragma mark - UIBlockerManager

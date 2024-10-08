@@ -1,0 +1,22 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("device_orientation") {
+  sources = [
+    "portait_orientation_manager.h",
+    "scoped_force_portrait_orientation.h",
+    "scoped_force_portrait_orientation.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+  deps = [ "//ui/base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "scoped_force_portrait_orientation_unittest.mm" ]
+  deps = [
+    ":device_orientation",
+    "//testing/gtest",
+  ]
+}

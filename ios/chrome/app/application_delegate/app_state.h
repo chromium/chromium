@@ -11,7 +11,7 @@
 #import "ios/chrome/app/application_delegate/app_state_agent.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
-#import "ios/chrome/browser/ui/scoped_iphone_portrait_only/iphone_portrait_only_manager.h"
+#import "ios/chrome/browser/ui/device_orientation/portait_orientation_manager.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/ui_blocker_manager.h"
 
 @class CommandDispatcher;
@@ -43,8 +43,9 @@ enum class PostCrashAction {
 
 // Represents the application state and responds to application state changes
 // and system events.
-@interface AppState
-    : NSObject <IphonePortraitOnlyManager, SceneStateObserver, UIBlockerManager>
+@interface AppState : NSObject <PortraitOrientationManager,
+                                SceneStateObserver,
+                                UIBlockerManager>
 
 - (instancetype)init NS_UNAVAILABLE;
 

@@ -35,9 +35,11 @@ source_set("profile_controller") {
     ":profile",
     "//base",
     "//ios/chrome/app:search_engine_choice_profile_agent",
+    "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/profile:post_restore_profile_agent",
     "//ios/chrome/browser/discover_feed/model:discover_feed_profile_agent",
     "//ios/chrome/browser/profile_metrics/model:profile_agent",
+    "//ios/chrome/browser/ui/device_orientation",
   ]
 }
 
