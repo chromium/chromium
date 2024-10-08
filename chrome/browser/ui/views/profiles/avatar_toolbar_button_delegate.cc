@@ -1321,8 +1321,16 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
           l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_PASSPHRASE_BUTTON);
       break;
     case ButtonState::kSyncError:
-      color = color_provider->GetColor(kColorAvatarButtonHighlightSyncError);
-      text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_ERROR);
+      if (!IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
+              signin::ConsentLevel::kSync) &&
+          switches::IsImprovedSigninUIOnDesktopEnabled()) {
+        color =
+            color_provider->GetColor(kColorAvatarButtonHighlightSigninPaused);
+        text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED);
+      } else {
+        color = color_provider->GetColor(kColorAvatarButtonHighlightSyncError);
+        text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_ERROR);
+      }
       break;
     case ButtonState::kSigninPending: {
       const internal::SigninPendingStateProvider* signin_pending_state =
@@ -1421,16 +1429,19 @@ SkColor AvatarToolbarButtonDelegate::GetHighlightTextColor(
     case ButtonState::kIncognitoProfile:
       return color_provider->GetColor(
           kColorAvatarButtonHighlightIncognitoForeground);
-    case ButtonState::kSyncPaused:
-      return color_provider->GetColor(
-          kColorAvatarButtonHighlightNormalForeground);
     case ButtonState::kSyncError:
-      return color_provider->GetColor(
-          kColorAvatarButtonHighlightSyncErrorForeground);
+      if (IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
+              signin::ConsentLevel::kSync) ||
+          !switches::IsImprovedSigninUIOnDesktopEnabled()) {
+        return color_provider->GetColor(
+            kColorAvatarButtonHighlightSyncErrorForeground);
+      }
+      [[fallthrough]];
     case ButtonState::kManagement:
     case ButtonState::kSigninPending:
     case ButtonState::kUpgradeClientError:
     case ButtonState::kPassphraseError:
+    case ButtonState::kSyncPaused:
       return color_provider->GetColor(
           kColorAvatarButtonHighlightNormalForeground);
     case ButtonState::kExplicitTextShowing:
@@ -1488,19 +1499,23 @@ AvatarToolbarButtonDelegate::GetInkdropColors() const {
         hover_color_id = kColorAvatarButtonIncognitoHover;
         break;
       case ButtonState::kGuestSession:
+      case ButtonState::kNormal:
       case ButtonState::kExplicitTextShowing:
       case ButtonState::kShowIdentityName:
-      case ButtonState::kSyncError:
         break;
+      case ButtonState::kSyncError:
+        if (IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
+                signin::ConsentLevel::kSync) ||
+            !switches::IsImprovedSigninUIOnDesktopEnabled()) {
+          break;
+        }
+        [[fallthrough]];
       case ButtonState::kManagement:
       case ButtonState::kSigninPending:
       case ButtonState::kSyncPaused:
       case ButtonState::kUpgradeClientError:
       case ButtonState::kPassphraseError:
         ripple_color_id = kColorAvatarButtonNormalRipple;
-        break;
-      case ButtonState::kNormal:
-        ripple_color_id = kColorToolbarInkDropRipple;
         break;
     }
   }
@@ -1522,12 +1537,20 @@ ui::ImageModel AvatarToolbarButtonDelegate::GetAvatarIcon(
     // TODO(crbug.com/40756583): If sync-the-feature is disabled, the icon
     // should be different.
     case ButtonState::kSyncPaused:
-    case ButtonState::kSyncError:
     case ButtonState::kManagement:
     case ButtonState::kNormal:
       return ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
           GetProfileAvatarImage(icon_size), icon_size, icon_size,
           profiles::SHAPE_CIRCLE));
+    case ButtonState::kSyncError:
+      if (IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
+              signin::ConsentLevel::kSync) ||
+          !switches::IsImprovedSigninUIOnDesktopEnabled()) {
+        return ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
+            GetProfileAvatarImage(icon_size), icon_size, icon_size,
+            profiles::SHAPE_CIRCLE));
+      }
+      [[fallthrough]];
     case ButtonState::kPassphraseError:
     case ButtonState::kUpgradeClientError:
     case ButtonState::kSigninPending:
@@ -1635,8 +1658,14 @@ void AvatarToolbarButtonDelegate::PaintIcon(
     case ButtonState::kExplicitTextShowing:
     case ButtonState::kManagement:
     case ButtonState::kSyncPaused:
-    case ButtonState::kSyncError:
       return;
+    case ButtonState::kSyncError:
+      if (IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
+              signin::ConsentLevel::kSync) ||
+          !switches::IsImprovedSigninUIOnDesktopEnabled()) {
+        return;
+      }
+      [[fallthrough]];
     case ButtonState::kSigninPending:
     case ButtonState::kUpgradeClientError:
     case ButtonState::kPassphraseError:
