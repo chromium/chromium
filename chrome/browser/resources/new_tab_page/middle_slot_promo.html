@@ -11,7 +11,10 @@
   ` : ''}
 </div>
 ${this.mobilePromoEnabled_ ? html`
-  <ntp-mobile-promo id="mobilePromo" hidden></ntp-mobile-promo>
+  <!-- Visibility is toggled in TS -->
+  <ntp-mobile-promo id="mobilePromo"
+      @qr-code-changed="${this.onMobilePromoQrCodeChanged_}" hidden>
+  </ntp-mobile-promo>
 ` : ''}
 <cr-toast id="dismissPromoButtonToast" duration="10000">
   <div id="dismissPromoButtonToastMessage">

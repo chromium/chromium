@@ -16,7 +16,7 @@ import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from './test_support.js';
 
@@ -294,6 +294,55 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
       const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
       assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
       assertTrue(isVisible(middleSlotPromo.$.mobilePromo));
+    });
+
+    test(
+        `mobile promo hides if default promo doesn't render and no qr code`,
+        async () => {
+          const canShowPromo = false;
+          newTabPageHandler.setResultFor(
+              'getMobilePromoQrCode', Promise.resolve({qrCode: ''}));
+          const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
+          assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
+          assertFalse(isVisible(middleSlotPromo.$.mobilePromo));
+        });
+
+    test(`mobile promo shows if it gets a QR code later`, async () => {
+      const canShowPromo = false;
+      newTabPageHandler.setResultFor(
+          'getMobilePromoQrCode', Promise.resolve({qrCode: ''}));
+      const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
+      const mobilePromo = middleSlotPromo.$.mobilePromo;
+      assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
+      assertFalse(isVisible(mobilePromo));
+      mobilePromo.dispatchEvent(new CustomEvent('qr-code-changed', {
+        bubbles: true,
+        composed: true,
+        detail: {value: 'abc'},
+      }));
+      await microtasksFinished();
+
+      assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
+      assertTrue(isVisible(mobilePromo));
+    });
+
+    test(`mobile promo hides if QR code gets removed later`, async () => {
+      const canShowPromo = false;
+      newTabPageHandler.setResultFor(
+          'getMobilePromoQrCode', Promise.resolve({qrCode: 'abc'}));
+      const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
+      const mobilePromo = middleSlotPromo.$.mobilePromo;
+      assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
+      assertTrue(isVisible(mobilePromo));
+      mobilePromo.dispatchEvent(new CustomEvent('qr-code-changed', {
+        bubbles: true,
+        composed: true,
+        detail: {value: ''},
+      }));
+      await microtasksFinished();
+
+      assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
+      assertFalse(isVisible(mobilePromo));
     });
   });
 });

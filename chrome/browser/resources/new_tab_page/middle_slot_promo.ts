@@ -170,6 +170,8 @@ export class MiddleSlotPromoElement extends CrLitElement {
         reflect: true,
       },
 
+      hasMobilePromoContent_: {type: Boolean},
+      hasDefaultPromo_: {type: Boolean},
       promo_: {type: Object},
     };
   }
@@ -177,6 +179,8 @@ export class MiddleSlotPromoElement extends CrLitElement {
   protected mobilePromoEnabled_: boolean =
       loadTimeData.getBoolean('mobilePromoEnabled');
   protected shownMiddleSlotPromoId_: string;
+  private hasMobilePromoContent_ = false;
+  private hasDefaultPromo_: boolean|null = null;
   private promo_: Promo;
 
   private blocklistedMiddleSlotPromoId_: string;
@@ -210,25 +214,38 @@ export class MiddleSlotPromoElement extends CrLitElement {
     if (changedPrivateProperties.has('promo_')) {
       this.onPromoChange_();
     }
-  }
 
+    if (changedPrivateProperties.has('hasDefaultPromo_') ||
+        changedPrivateProperties.has('hasMobilePromoContent_')) {
+      this.updatePromoVisibility_();
+    }
+  }
 
   // Up to one promo type can show at any given time. If the mobile promo is
   // enabled, it should show whenever the "default" promo is hidden.
   // Note: To avoid immediately showing a new promo after a user dismisses one,
   // this behavior is not used in |onDismissPromoButtonClick_()| or
   // |onUndoDismissPromoButtonClick_()|.
-  private updatePromoVisibility_(showDefaultPromo: boolean) {
-    this.$.promoAndDismissContainer.hidden = !showDefaultPromo;
-    if (this.mobilePromoEnabled_) {
-      this.$.mobilePromo.hidden = showDefaultPromo;
+  private updatePromoVisibility_() {
+    if (this.hasDefaultPromo_ === null) {
+      return;
     }
+
+    this.$.promoAndDismissContainer.hidden = !this.hasDefaultPromo_;
+    if (this.mobilePromoEnabled_) {
+      this.$.mobilePromo.hidden =
+          this.hasDefaultPromo_ || !this.hasMobilePromoContent_;
+    }
+  }
+
+  protected onMobilePromoQrCodeChanged_(e: CustomEvent<{value: string}>) {
+    this.hasMobilePromoContent_ = !!e.detail.value;
   }
 
   private onPromoChange_() {
     renderPromo(this.promo_).then(promo => {
       if (!promo) {
-        this.updatePromoVisibility_(false);
+        this.hasDefaultPromo_ = false;
       } else {
         const promoContainer =
             this.shadowRoot!.getElementById('promoContainer');
@@ -241,7 +258,7 @@ export class MiddleSlotPromoElement extends CrLitElement {
         const renderedPromoContainer = promo.container;
         assert(renderedPromoContainer);
         this.$.promoAndDismissContainer.prepend(renderedPromoContainer);
-        this.updatePromoVisibility_(true);
+        this.hasDefaultPromo_ = true;
       }
       this.fire('ntp-middle-slot-promo-loaded');
     });

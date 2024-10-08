@@ -9,7 +9,7 @@ import {$$, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
-import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from './test_support.js';
 
@@ -36,7 +36,8 @@ suite('MobilePromoTest', () => {
     const mobilePromo = document.createElement('ntp-mobile-promo');
     document.body.appendChild(mobilePromo);
 
-    await microtasksFinished;
+    await eventToPromise('qr-code-changed', mobilePromo);
+    await microtasksFinished();
 
     return mobilePromo;
   }

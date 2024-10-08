@@ -27,20 +27,21 @@ export class MobilePromoElement extends CrLitElement {
 
   static override get properties() {
     return {
-      qrCode_: {
+      qrCode: {
         type: String,
+        notify: true,
         reflect: true,
       },
     };
   }
 
-  protected qrCode_: string;
+  protected qrCode: string;
 
   constructor() {
     super();
     NewTabPageProxy.getInstance().handler.getMobilePromoQrCode().then(
         ({qrCode}) => {
-          this.qrCode_ = qrCode;
+          this.qrCode = qrCode;
         });
   }
 }
