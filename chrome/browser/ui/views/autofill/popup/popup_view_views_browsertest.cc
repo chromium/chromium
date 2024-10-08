@@ -488,15 +488,8 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                                          .no_results_message = u""});
 }
 
-// TODO(crbug.com/372144308): Re-enable this test on Windows
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_SearchBarViewNoSuggestionsFound \
-  DISABLED_SearchBarViewNoSuggestionsFound
-#else
-#define MAYBE_SearchBarViewNoSuggestionsFound SearchBarViewNoSuggestionsFound
-#endif
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
-                       MAYBE_SearchBarViewNoSuggestionsFound) {
+                       SearchBarViewNoSuggestionsFound) {
   // This set imitates empty search result, it contains footer suggestions only.
   controller().set_suggestions(
       {SuggestionType::kSeparator, SuggestionType::kManageAddress});
