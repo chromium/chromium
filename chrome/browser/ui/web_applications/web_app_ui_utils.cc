@@ -38,9 +38,6 @@ std::optional<webapps::AppId> GetAppIdForManagementLinkInWebContents(
   if (!app_id)
     return std::nullopt;
 
-  if (!web_app::WebAppTabHelper::FromWebContents(web_contents)->acting_as_app())
-    return std::nullopt;
-
   if (!WebAppProvider::GetForWebApps(browser->profile())
            ->registrar_unsafe()
            .IsInstalled(*app_id)) {

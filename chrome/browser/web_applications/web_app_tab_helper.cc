@@ -99,9 +99,6 @@ void WebAppTabHelper::SetState(std::optional<webapps::AppId> app_id,
   app_id_ = std::move(app_id);
 
   is_in_app_window_ = is_in_app_window;
-  if (is_in_app_window) {
-    set_acting_as_app(true);
-  }
 
   if (previous_app_id != app_id_) {
     OnAssociatedAppChanged(previous_app_id, app_id_);
@@ -171,7 +168,6 @@ void WebAppTabHelper::DidCloneToNewWebContents(
 
   // Clone common state:
   new_tab_helper->SetState(app_id_, /*is_in_app_window=*/false);
-  new_tab_helper->set_acting_as_app(acting_as_app());
   // Note: We don't clone is_in_app_window, as that need to only be set when
   // the new web contents is added to an app window.
 }

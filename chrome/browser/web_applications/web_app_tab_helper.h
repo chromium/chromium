@@ -73,12 +73,6 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
 
   const std::optional<webapps::AppId> app_id() const { return app_id_; }
 
-  // Returns if this web contents was from an app-like launch from the OS, or if
-  // it was ever in an app window. This is used to determine if app settings
-  // should be shown in the page controls panel.
-  bool acting_as_app() const { return acting_as_app_; }
-  void set_acting_as_app(bool acting_as_app) { acting_as_app_ = acting_as_app; }
-
   bool is_pinned_home_tab() const { return is_pinned_home_tab_; }
   void set_is_pinned_home_tab(bool is_pinned_home_tab) {
     is_pinned_home_tab_ = is_pinned_home_tab;
@@ -140,13 +134,6 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
 
   // WebApp associated with this tab.
   std::optional<webapps::AppId> app_id_;
-
-  // True when the associated `WebContents` is acting as an app. Specifically,
-  // this should only be true if `app_id_` is non empty, and the WebContents was
-  // created in response to an app launch, or in some other corner cases such as
-  // when an app is first installed and reparented from tab to window. It should
-  // be false if a user types the app's URL into a normal browser window.
-  bool acting_as_app_ = false;
 
   bool is_in_app_window_ = false;
 

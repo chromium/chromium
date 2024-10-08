@@ -57,10 +57,8 @@ TabbedWebAppNavigationThrottle::MaybeCreateThrottleFor(
   std::optional<GURL> home_tab_url =
       provider->registrar_unsafe().GetAppPinnedHomeTabUrl(app_id);
 
-  auto* tab_helper = WebAppTabHelper::FromWebContents(web_contents);
-
   // Only create the throttle for tabbed web apps that have a home tab.
-  if (tab_helper && tab_helper->acting_as_app() &&
+  if (WebAppTabHelper::GetAppId(web_contents) &&
       provider->registrar_unsafe().IsTabbedWindowModeEnabled(app_id) &&
       home_tab_url.has_value()) {
     return std::make_unique<TabbedWebAppNavigationThrottle>(handle);

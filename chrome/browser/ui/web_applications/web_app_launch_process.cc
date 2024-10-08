@@ -169,12 +169,6 @@ content::WebContents* WebAppLaunchProcess::Run() {
   if (!web_contents) {
     return nullptr;
   }
-  // Because the browser could be a non-app browser, ensure that app launches
-  // always set 'acting_as_app' to true, to enable the app settings menu for
-  // the browser tab.
-  auto* helper = WebAppTabHelper::FromWebContents(web_contents);
-  CHECK(helper);
-  helper->set_acting_as_app(true);
 
   MaybeEnqueueWebLaunchParams(
       launch_url, is_file_handling, web_contents,
