@@ -97,8 +97,6 @@
   E_CPONLY(kColorComposeDialogTextareaReadonlyForeground) \
   E_CPONLY(kColorComposeDialogTextareaIcon) \
   E_CPONLY(kColorComposeDialogSelectOptionDisabled) \
-  /* Desktop media picker view. */ \
-  E_CPONLY(kColorDesktopMediaPickerDescriptionLabel) \
   /* Desktop media tab list colors. */ \
   E_CPONLY(kColorDesktopMediaTabListBorder) \
   E_CPONLY(kColorDesktopMediaTabListPreviewBackground) \
