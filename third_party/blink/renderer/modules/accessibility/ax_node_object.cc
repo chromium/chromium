@@ -273,7 +273,7 @@ bool ShouldIgnoreListItem(blink::Node* node) {
       IsA<blink::HTMLUListElement>(*parent) ||
       IsA<blink::HTMLOListElement>(*parent)) {
     AtomicString role =
-        blink::AXObject::GetAttribute(*parent, blink::html_names::kRoleAttr);
+        blink::AXObject::AriaAttribute(*parent, blink::html_names::kRoleAttr);
     if (!role.empty() && role != "list" && role != "directory") {
       return true;
     }
@@ -919,11 +919,13 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   // check if there's some kind of accessible name for the element)
   // to decide an element's visibility is not as definitive as
   // previous checks, so this should remain as one of the last.
-  if (HasAriaAttribute() || !GetAttribute(kTitleAttr).empty())
+  if (HasAriaAttribute() ||
+      !GetElement()->FastGetAttribute(kTitleAttr).empty()) {
     return kIncludeObject;
+  }
 
   if (IsImage() && !IsA<SVGElement>(node)) {
-    String alt = GetAttribute(kAltAttr);
+    String alt = GetElement()->FastGetAttribute(kAltAttr);
     // A null alt attribute means the attribute is not present. We assume this
     // is a mistake, and expose the image so that it can be repaired.
     // In contrast, alt="" is treated as intentional markup to ignore the image.
@@ -1364,7 +1366,8 @@ ax::mojom::blink::Role AXNodeObject::DetermineTableCellRole() const {
   if (!GetElement() || !GetNode()->HasTagName(html_names::kThTag))
     return ax::mojom::blink::Role::kCell;
 
-  const AtomicString& scope = GetAttribute(html_names::kScopeAttr);
+  const AtomicString& scope =
+      GetElement()->FastGetAttribute(html_names::kScopeAttr);
   if (EqualIgnoringASCIICase(scope, "row") ||
       EqualIgnoringASCIICase(scope, "rowgroup"))
     return ax::mojom::blink::Role::kRowHeader;
@@ -1618,7 +1621,7 @@ bool AXNodeObject::IsDataTable() const {
   }
 
   // If it has an ARIA role, it's definitely a data table.
-  if (HasAttribute(html_names::kRoleAttr)) {
+  if (HasAriaAttribute(html_names::kRoleAttr)) {
     return true;
   }
 
@@ -1932,7 +1935,7 @@ ax::mojom::blink::Role AXNodeObject::RoleFromLayoutObjectOrNode() const {
   // Minimum role:
   // TODO(accessibility) if (AXObjectCache().IsInternalUICheckerOn()) assert,
   // because it is a bad code smell and usually points to other problems.
-  if (GetElement() && !HasAttribute(html_names::kRoleAttr)) {
+  if (GetElement() && !HasAriaAttribute(html_names::kRoleAttr)) {
     if (IsPopup() != ax::mojom::blink::IsPopup::kNone ||
         GetElement()->FastHasAttribute(html_names::kAutofocusAttr) ||
         GetElement()->FastHasAttribute(html_names::kDraggableAttr)) {
@@ -2392,7 +2395,7 @@ static Element* SiblingWithAriaRole(String role, Node* node) {
     if (!element)
       continue;
     const AtomicString& sibling_aria_role =
-        blink::AXObject::GetAttribute(*element, html_names::kRoleAttr);
+        blink::AXObject::AriaAttribute(*element, html_names::kRoleAttr);
     if (EqualIgnoringASCIICase(sibling_aria_role, role))
       return element;
   }
@@ -4213,9 +4216,8 @@ String AXNodeObject::GetValueForControl(AXObjectSet& visited) const {
         select_element->GetListItems();
     if (selected_index >= 0 &&
         static_cast<wtf_size_t>(selected_index) < list_items.size()) {
-      const AtomicString& overridden_description =
-          list_items[selected_index]->FastGetAttribute(
-              html_names::kAriaLabelAttr);
+      const AtomicString& overridden_description = AriaAttribute(
+          *list_items[selected_index], html_names::kAriaLabelAttr);
       if (!overridden_description.IsNull())
         return overridden_description;
     }
@@ -4275,7 +4277,7 @@ String AXNodeObject::GetValueForControl(AXObjectSet& visited) const {
   }
 
   if (IsRangeValueSupported()) {
-    return GetAttribute(html_names::kAriaValuetextAttr).GetString();
+    return AriaAttribute(html_names::kAriaValuetextAttr).GetString();
   }
 
   // Handle other HTML input elements that aren't text controls, like date and
@@ -6257,7 +6259,7 @@ String AXNodeObject::TextAlternativeFromTooltip(
     return String();
   }
   name_from = ax::mojom::blink::NameFrom::kTitle;
-  const AtomicString& title = GetAttribute(kTitleAttr);
+  const AtomicString& title = GetElement()->FastGetAttribute(kTitleAttr);
   String title_text = TextAlternativeFromTitleAttribute(
       title, name_from, name_sources, found_text_alternative);
   // Do not use if empty or if redundant with inner text.
@@ -6635,7 +6637,7 @@ String AXNodeObject::NativeTextAlternative(
       source.type = name_from;
     }
     const AtomicString& aria_placeholder =
-        GetAttribute(html_names::kAriaPlaceholderAttr);
+        AriaAttribute(html_names::kAriaPlaceholderAttr);
     if (!aria_placeholder.empty()) {
       text_alternative = aria_placeholder;
       if (name_sources) {
@@ -6654,7 +6656,7 @@ String AXNodeObject::NativeTextAlternative(
   // 5.8 img or area Element
   if (IsA<HTMLImageElement>(GetNode()) || IsA<HTMLAreaElement>(GetNode())) {
     // alt
-    const AtomicString& alt = GetAttribute(kAltAttr);
+    const AtomicString& alt = GetElement()->FastGetAttribute(kAltAttr);
     const bool is_empty = alt.empty() && !alt.IsNull();
     name_from = is_empty ? ax::mojom::blink::NameFrom::kAttributeExplicitlyEmpty
                          : ax::mojom::blink::NameFrom::kAttribute;
@@ -6717,7 +6719,8 @@ String AXNodeObject::NativeTextAlternative(
           NameSource(*found_text_alternative, html_names::kSummaryAttr));
       name_sources->back().type = name_from;
     }
-    const AtomicString& summary = GetAttribute(html_names::kSummaryAttr);
+    const AtomicString& summary =
+        GetElement()->FastGetAttribute(html_names::kSummaryAttr);
     if (!summary.IsNull()) {
       text_alternative = summary;
       if (name_sources) {
@@ -6844,7 +6847,7 @@ String AXNodeObject::NativeTextAlternative(
       }
       if (Element* document_element = document->documentElement()) {
         const AtomicString& aria_label =
-            GetAttribute(*document_element, html_names::kAriaLabelAttr);
+            AriaAttribute(*document_element, html_names::kAriaLabelAttr);
         if (!aria_label.empty()) {
           text_alternative = aria_label;
 
@@ -7050,7 +7053,7 @@ String AXNodeObject::Description(
     // elements.
     if (description_sources) {
       description_sources->back().attribute_value =
-          GetAttribute(html_names::kAriaDescribedbyAttr);
+          AriaAttribute(html_names::kAriaDescribedbyAttr);
     }
     AXObjectSet visited;
     description = TextFromElements(true, visited, elements_from_attribute,
@@ -7074,7 +7077,7 @@ String AXNodeObject::Description(
   // aria-description overrides any HTML-based accessible description,
   // but not aria-describedby.
   const AtomicString& aria_desc =
-      GetAttribute(html_names::kAriaDescriptionAttr);
+      AriaAttribute(html_names::kAriaDescriptionAttr);
   if (aria_desc) {
     description_from = ax::mojom::blink::DescriptionFrom::kAriaDescription;
     description = aria_desc;
@@ -7222,7 +7225,7 @@ String AXNodeObject::Description(
           DescriptionSource(found_description, kTitleAttr));
       description_sources->back().type = description_from;
     }
-    const AtomicString& title = GetAttribute(kTitleAttr);
+    const AtomicString& title = GetElement()->FastGetAttribute(kTitleAttr);
     if (!title.empty() &&
         String(title).StripWhiteSpace() !=
             GetElement()->GetInnerTextWithoutUpdate().StripWhiteSpace()) {
@@ -7425,7 +7428,7 @@ String AXNodeObject::Placeholder(ax::mojom::blink::NameFrom name_from) const {
     return native_placeholder;
 
   const AtomicString& aria_placeholder =
-      GetAttribute(html_names::kAriaPlaceholderAttr);
+      AriaAttribute(html_names::kAriaPlaceholderAttr);
   if (!aria_placeholder.empty())
     return aria_placeholder;
 
@@ -7452,7 +7455,7 @@ String AXNodeObject::GetValueContributionToName(AXObjectSet& visited) const {
 
   if (IsRangeValueSupported()) {
     const AtomicString& aria_valuetext =
-        GetAttribute(html_names::kAriaValuetextAttr);
+        AriaAttribute(html_names::kAriaValuetextAttr);
     if (aria_valuetext) {
       return aria_valuetext.GetString();
     }

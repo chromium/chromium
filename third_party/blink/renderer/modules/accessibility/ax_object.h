@@ -1337,10 +1337,11 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // ARIA attribute access: use these methods in order to ensure that values
   // are also retrieved from elementInternals on custom elements.
   // For non-ARIA attributes, it's ok to just use Element methods.
-  bool HasAttribute(const QualifiedName&) const;
-  const AtomicString& GetAttribute(const QualifiedName&) const;
-  static const AtomicString& GetAttribute(Element& element,
-                                          const QualifiedName&);
+  bool HasAriaAttribute(const QualifiedName&) const;
+  static bool HasAriaAttribute(Element& element, const QualifiedName&);
+  const AtomicString& AriaAttribute(const QualifiedName&) const;
+  static const AtomicString& AriaAttribute(Element& element,
+                                           const QualifiedName&);
 
   // The following HasAriaFooAttribute() methods return true if the attribute
   // is present. `out_value` is filled with the value of the attribute or a
@@ -1356,7 +1357,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // not need to do any additional processing on the value.
   const AtomicString& AriaStringAttribute(
       const QualifiedName& attribute) const {
-    return GetAttribute(attribute);
+    return AriaAttribute(attribute);
   }
 
   // Additional boolean ARIA convenience methods.
@@ -1586,7 +1587,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   String KeyboardShortcut() const;
   void UpdateStyleAndLayoutTreeForNode(Node& node);
   void OnInheritedCachedValuesChanged();
-  static bool HasInternalsAttribute(Element&, const QualifiedName&);
   static const AtomicString& GetInternalsAttribute(Element&,
                                                    const QualifiedName&);
 

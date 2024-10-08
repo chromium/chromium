@@ -534,7 +534,7 @@ void AddIntAttribute(const AXObject* obj,
                      const QualifiedName& attr_name,
                      ui::AXNodeData* node_data,
                      int min_value = INT_MIN) {
-  const AtomicString& value = obj->GetAttribute(attr_name);
+  const AtomicString& value = obj->AriaAttribute(attr_name);
   if (!value.empty()) {
     int value_as_int = value.ToInt();
     if (value_as_int >= min_value) {
@@ -1164,20 +1164,25 @@ void AXObject::ShowAXTreeForThis() const {
 
 #endif
 
-bool AXObject::HasAttribute(const QualifiedName& attribute) const {
+// static
+bool AXObject::HasAriaAttribute(Element& element,
+                                const QualifiedName& attribute) {
+  return element.FastHasAttribute(attribute) ||
+         (element.DidAttachInternals() &&
+          element.EnsureElementInternals().HasAttribute(attribute));
+}
+
+bool AXObject::HasAriaAttribute(const QualifiedName& attribute) const {
   Element* element = GetElement();
   if (!element) {
     return false;
   }
-  if (element->FastHasAttribute(attribute)) {
-    return true;
-  }
-  return HasInternalsAttribute(*element, attribute);
+  return HasAriaAttribute(*element, attribute);
 }
 
 // static
-const AtomicString& AXObject::GetAttribute(Element& element,
-                                           const QualifiedName& attribute) {
+const AtomicString& AXObject::AriaAttribute(Element& element,
+                                            const QualifiedName& attribute) {
   const AtomicString& value = element.FastGetAttribute(attribute);
   if (!value.IsNull()) {
     return value;
@@ -1185,24 +1190,15 @@ const AtomicString& AXObject::GetAttribute(Element& element,
   return GetInternalsAttribute(element, attribute);
 }
 
-const AtomicString& AXObject::GetAttribute(
+const AtomicString& AXObject::AriaAttribute(
     const QualifiedName& attribute) const {
-  return GetElement() ? GetAttribute(*GetElement(), attribute) : g_null_atom;
-}
-
-// static
-bool AXObject::HasInternalsAttribute(Element& element,
-                                     const QualifiedName& attribute) {
-  if (!element.DidAttachInternals()) {
-    return false;
-  }
-  return element.EnsureElementInternals().HasAttribute(attribute);
+  return GetElement() ? AriaAttribute(*GetElement(), attribute) : g_null_atom;
 }
 
 // static
 bool AXObject::IsAriaAttributeTrue(Element& element,
                                    const QualifiedName& attribute) {
-  const AtomicString& value = GetAttribute(element, attribute);
+  const AtomicString& value = AriaAttribute(element, attribute);
   return !value.empty() && !EqualIgnoringASCIICase(value, "undefined") &&
          !EqualIgnoringASCIICase(value, "false");
 }
@@ -1214,7 +1210,7 @@ bool AXObject::IsAriaAttributeTrue(const QualifiedName& attribute) const {
 
 bool AXObject::AriaBooleanAttribute(const QualifiedName& attribute,
                                     bool* out_value) const {
-  const AtomicString& value = GetAttribute(attribute);
+  const AtomicString& value = AriaAttribute(attribute);
   if (value == g_null_atom || value.empty() ||
       EqualIgnoringASCIICase(value, "undefined")) {
     if (out_value) {
@@ -1230,7 +1226,7 @@ bool AXObject::AriaBooleanAttribute(const QualifiedName& attribute,
 
 bool AXObject::AriaIntAttribute(const QualifiedName& attribute,
                                 int32_t* out_value) const {
-  const AtomicString& value = GetAttribute(attribute);
+  const AtomicString& value = AriaAttribute(attribute);
   if (value == g_null_atom || value.empty()) {
     if (out_value) {
       *out_value = 0;
@@ -1263,7 +1259,7 @@ bool AXObject::AriaIntAttribute(const QualifiedName& attribute,
 
 bool AXObject::AriaFloatAttribute(const QualifiedName& attribute,
                                   float* out_value) const {
-  const AtomicString& value = GetAttribute(attribute);
+  const AtomicString& value = AriaAttribute(attribute);
   if (value == g_null_atom) {
     if (out_value) {
       *out_value = 0.0;
@@ -1280,7 +1276,7 @@ bool AXObject::AriaFloatAttribute(const QualifiedName& attribute,
 const AtomicString& AXObject::AriaTokenAttribute(
     const QualifiedName& attribute) const {
   DEFINE_STATIC_LOCAL(const AtomicString, undefined_value, ("undefined"));
-  const AtomicString& value = GetAttribute(attribute);
+  const AtomicString& value = AriaAttribute(attribute);
   if (attribute == html_names::kAriaAutocompleteAttr ||
       attribute == html_names::kAriaCheckedAttr ||
       attribute == html_names::kAriaCurrentAttr ||
@@ -1594,7 +1590,8 @@ void AXObject::SerializeChildTreeID(ui::AXNodeData* node_data) const {
          "considered relevant by AXObjectCacheImpl."
       << "\n* Parent: " << this
       << "\n* Frame owner: " << IsA<HTMLFrameOwnerElement>(GetNode())
-      << "\n* Element src: " << GetAttribute(html_names::kSrcAttr)
+      << "\n* Element src: "
+      << GetElement()->FastGetAttribute(html_names::kSrcAttr)
       << "\n* First child: " << FirstChildIncludingIgnored();
 
   ui::AXTreeID child_tree_id = ui::AXTreeID::FromToken(child_token.value());
@@ -2278,19 +2275,19 @@ void AXObject::SerializeTableAttributes(ui::AXNodeData* node_data) const {
       // aria-rowtext/aria-coltext once Sheets uses standard attribute names
       // aria-rowindextext/aria-colindextext.
       AtomicString aria_cell_row_index_text =
-          GetAttribute(html_names::kAriaRowindextextAttr);
+          AriaAttribute(html_names::kAriaRowindextextAttr);
       if (aria_cell_row_index_text.empty()) {
         aria_cell_row_index_text =
-            GetAttribute(DeprecatedAriaRowtextAttrName());
+            AriaAttribute(DeprecatedAriaRowtextAttrName());
       }
       TruncateAndAddStringAttribute(
           node_data, ax::mojom::blink::StringAttribute::kAriaCellRowIndexText,
           aria_cell_row_index_text);
       AtomicString aria_cell_column_index_text =
-          GetAttribute(html_names::kAriaColindextextAttr);
+          AriaAttribute(html_names::kAriaColindextextAttr);
       if (aria_cell_column_index_text.empty()) {
         aria_cell_column_index_text =
-            GetAttribute(DeprecatedAriaColtextAttrName());
+            AriaAttribute(DeprecatedAriaColtextAttrName());
       }
       TruncateAndAddStringAttribute(
           node_data,
@@ -2427,24 +2424,24 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
 
     TruncateAndAddStringAttribute(
         node_data, ax::mojom::blink::StringAttribute::kAriaBrailleLabel,
-        GetAttribute(html_names::kAriaBraillelabelAttr));
+        AriaAttribute(html_names::kAriaBraillelabelAttr));
     if (RoleValue() != ax::mojom::blink::Role::kGenericContainer) {
       // ARIA 1.2 prohibits aria-roledescription on the "generic" role.
       TruncateAndAddStringAttribute(
           node_data,
           ax::mojom::blink::StringAttribute::kAriaBrailleRoleDescription,
-          GetAttribute(html_names::kAriaBrailleroledescriptionAttr));
+          AriaAttribute(html_names::kAriaBrailleroledescriptionAttr));
       TruncateAndAddStringAttribute(
           node_data, ax::mojom::blink::StringAttribute::kRoleDescription,
-          GetAttribute(html_names::kAriaRoledescriptionAttr));
+          AriaAttribute(html_names::kAriaRoledescriptionAttr));
     }
     TruncateAndAddStringAttribute(
         node_data, ax::mojom::blink::StringAttribute::kKeyShortcuts,
-        GetAttribute(html_names::kAriaKeyshortcutsAttr));
+        AriaAttribute(html_names::kAriaKeyshortcutsAttr));
     if (RuntimeEnabledFeatures::AccessibilityAriaVirtualContentEnabled()) {
       TruncateAndAddStringAttribute(
           node_data, ax::mojom::blink::StringAttribute::kVirtualContent,
-          GetAttribute(html_names::kAriaVirtualcontentAttr));
+          AriaAttribute(html_names::kAriaVirtualcontentAttr));
     }
 
     if (IsAriaAttributeTrue(html_names::kAriaBusyAttr)) {
@@ -2522,7 +2519,7 @@ void AXObject::SerializeComputedDetailsRelation(
   // actually set the relation or not, the author's intent in using the
   // aria-details attribute is understood to mean that no automatic relation
   // should be set.
-  if (HasAttribute(html_names::kAriaDetailsAttr)) {
+  if (HasAriaAttribute(html_names::kAriaDetailsAttr)) {
     if (!node_data
              ->GetIntListAttribute(ax::mojom::IntListAttribute::kDetailsIds)
              .empty()) {
@@ -2691,7 +2688,7 @@ AXObject* AXObject::GetControlsListboxForTextfieldCombobox() const {
 const AtomicString& AXObject::GetRoleStringForSerialization(
     ui::AXNodeData* node_data) const {
   // All ARIA roles are exposed in xml-roles.
-  if (const AtomicString& role_str = GetAttribute(html_names::kRoleAttr)) {
+  if (const AtomicString& role_str = AriaAttribute(html_names::kRoleAttr)) {
     return role_str;
   }
 
@@ -4153,8 +4150,9 @@ bool AXObject::ComputeIsIgnoredButIncludedInTree() {
   }
 
   // Preserve nodes with language attributes.
-  if (HasAttribute(html_names::kLangAttr))
+  if (HasAriaAttribute(html_names::kLangAttr)) {
     return true;
+  }
 
   return false;
 }
@@ -4866,14 +4864,14 @@ String AXObject::AriaTextAlternative(
   }
 
   // Step 2B from: http://www.w3.org/TR/accname-aam-1.1
-  // If you change this logic, update AXObject::IsNameFromAriaAttributet, too.
+  // If you change this logic, update AXObject::IsNameFromAriaAttribute, too.
   if (!aria_label_or_description_root && !already_visited) {
     name_from = ax::mojom::blink::NameFrom::kRelatedElement;
 
     // Check ARIA attributes.
     const QualifiedName& attr =
-        HasAttribute(html_names::kAriaLabeledbyAttr) &&
-                !HasAttribute(html_names::kAriaLabelledbyAttr)
+        HasAriaAttribute(html_names::kAriaLabeledbyAttr) &&
+                !HasAriaAttribute(html_names::kAriaLabelledbyAttr)
             ? html_names::kAriaLabeledbyAttr
             : html_names::kAriaLabelledbyAttr;
 
@@ -4887,7 +4885,7 @@ String AXObject::AriaTextAlternative(
       HeapVector<Member<Element>> elements_from_attribute;
       ElementsFromAttribute(element, elements_from_attribute, attr);
 
-      const AtomicString& aria_labelledby = GetAttribute(attr);
+      const AtomicString& aria_labelledby = AriaAttribute(attr);
 
       if (!aria_labelledby.IsNull()) {
         if (name_sources)
@@ -4921,7 +4919,7 @@ String AXObject::AriaTextAlternative(
         NameSource(*found_text_alternative, html_names::kAriaLabelAttr));
     name_sources->back().type = name_from;
   }
-  const AtomicString& aria_label = GetAttribute(html_names::kAriaLabelAttr);
+  const AtomicString& aria_label = AriaAttribute(html_names::kAriaLabelAttr);
   if (!aria_label.GetString().ContainsOnlyWhitespaceOrEmpty()) {
     text_alternative = aria_label;
 
@@ -5064,7 +5062,7 @@ bool AXObject::IsNameFromAriaAttribute(Element* element) {
   }
 
   const AtomicString& aria_label =
-      GetAttribute(*element, html_names::kAriaLabelAttr);
+      AriaAttribute(*element, html_names::kAriaLabelAttr);
   if (!aria_label.GetString().ContainsOnlyWhitespaceOrEmpty()) {
     return true;
   }
@@ -5073,8 +5071,9 @@ bool AXObject::IsNameFromAriaAttribute(Element* element) {
 }
 
 bool AXObject::IsNameFromAuthorAttribute() const {
-  return IsNameFromAriaAttribute(GetElement()) ||
-         HasAttribute(html_names::kTitleAttr);
+  return GetElement() &&
+         (IsNameFromAriaAttribute(GetElement()) ||
+          GetElement()->FastHasAttribute(html_names::kTitleAttr));
 }
 
 AXObject* AXObject::InPageLinkTarget() const {
@@ -5473,7 +5472,7 @@ ax::mojom::blink::Role AXObject::RawAriaRole() const {
 }
 
 ax::mojom::blink::Role AXObject::DetermineRawAriaRole() const {
-  const AtomicString& aria_role = GetAttribute(html_names::kRoleAttr);
+  const AtomicString& aria_role = AriaAttribute(html_names::kRoleAttr);
   if (aria_role.empty()) {
     return ax::mojom::blink::Role::kUnknown;
   }
@@ -5486,7 +5485,7 @@ ax::mojom::blink::Role AXObject::DetermineAriaRole() const {
   if ((role == ax::mojom::blink::Role::kForm ||
        role == ax::mojom::blink::Role::kRegion) &&
       !IsNameFromAuthorAttribute() &&
-      !HasAttribute(html_names::kAriaRoledescriptionAttr)) {
+      !HasAriaAttribute(html_names::kAriaRoledescriptionAttr)) {
     // If form or region is nameless, use a valid fallback role (if present
     // in the role attribute) or the native element's role (by returning
     // kUnknown). We only check aria-label/aria-labelledby because those are the
@@ -5495,7 +5494,7 @@ ax::mojom::blink::Role AXObject::DetermineAriaRole() const {
     // ChromeVox will ignore the aria-roledescription. It only speaks the role
     // description on certain roles, and ignores it on the generic role.
     // See also https://github.com/w3c/aria/issues/1463.
-    if (const AtomicString& role_str = GetAttribute(html_names::kRoleAttr)) {
+    if (const AtomicString& role_str = AriaAttribute(html_names::kRoleAttr)) {
       return FirstValidRoleInRoleString(role_str,
                                         /*ignore_form_and_region*/ true);
     }
@@ -6520,9 +6519,12 @@ LocalFrameView* AXObject::DocumentFrameView() const {
 }
 
 AtomicString AXObject::Language() const {
-  const AtomicString& lang = GetAttribute(html_names::kLangAttr);
-  if (!lang.empty()) {
-    return lang;
+  if (GetElement()) {
+    const AtomicString& lang =
+        GetElement()->FastGetAttribute(html_names::kLangAttr);
+    if (!lang.empty()) {
+      return lang;
+    }
   }
 
   // Return early for non-root nodes. The root node's language can't be set by
@@ -7476,7 +7478,7 @@ bool AXObject::HasARIAOwns(Element* element) {
   // use aria-owns to point to visible children.
 
   const AtomicString& aria_owns =
-      element->FastGetAttribute(html_names::kAriaOwnsAttr);
+      AriaAttribute(*element, html_names::kAriaOwnsAttr);
 
   // TODO(accessibility): do we need to check !AriaOwnsElements.empty() ? Is
   // that fundamentally different from HasExplicitlySetAttrAssociatedElements()?
@@ -8065,15 +8067,13 @@ String AXObject::ToString(bool verbose) const {
 
     // Add properties of interest that often contribute to errors:
     if (HasARIAOwns(GetElement())) {
-      string_builder =
-          string_builder + " aria-owns=" +
-          GetElement()->FastGetAttribute(html_names::kAriaOwnsAttr);
+      string_builder = string_builder +
+                       " aria-owns=" + AriaAttribute(html_names::kAriaOwnsAttr);
     }
 
     if (GetAOMPropertyOrARIAAttribute(AOMRelationProperty::kActiveDescendant)) {
-      string_builder =
-          string_builder + " aria-activedescendant=" +
-          GetElement()->FastGetAttribute(html_names::kAriaOwnsAttr);
+      string_builder = string_builder + " aria-activedescendant=" +
+                       AriaAttribute(html_names::kAriaActivedescendantAttr);
     }
     if (IsFocused())
       string_builder = string_builder + " focused";

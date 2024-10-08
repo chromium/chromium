@@ -410,7 +410,7 @@ std::unique_ptr<AXProperty> CreateRelatedNodeListProperty(
     const QualifiedName& attr,
     AXObject& ax_object) {
   std::unique_ptr<AXValue> node_list_value = CreateRelatedNodeListValue(nodes);
-  const AtomicString& attr_value = ax_object.GetAttribute(attr);
+  const AtomicString& attr_value = ax_object.AriaAttribute(attr);
   node_list_value->setValue(protocol::StringValue::create(attr_value));
   return CreateProperty(key, std::move(node_list_value));
 }

@@ -227,7 +227,8 @@ bool IsActive(Document& document) {
 
 bool HasAriaCellRole(Element* elem) {
   DCHECK(elem);
-  const AtomicString& role_str = elem->FastGetAttribute(html_names::kRoleAttr);
+  const AtomicString& role_str =
+      AXObject::AriaAttribute(*elem, html_names::kRoleAttr);
   if (role_str.empty())
     return false;
 
@@ -256,7 +257,8 @@ bool CanIgnoreSpaceNextTo(LayoutObject* layout_object,
     // This construct hides the <br> from the AX tree and uses the space
     // instead, presenting a hard line break as a soft line break.
     DCHECK(elem);
-    return !is_after || !elem->FastHasAttribute(html_names::kRoleAttr);
+    return !is_after ||
+           !AXObject::HasAriaAttribute(*elem, html_names::kRoleAttr);
   }
 
   // If adjacent to a whitespace character, the current space can be ignored.
@@ -3908,7 +3910,8 @@ void AXObjectCacheImpl::HandleAriaPressedChangedWithCleanLayout(Node* node) {
   ax::mojom::blink::Role previous_role = ax_object->RoleValue();
   bool was_toggle_button =
       previous_role == ax::mojom::blink::Role::kToggleButton;
-  bool is_toggle_button = ax_object->HasAttribute(html_names::kAriaPressedAttr);
+  bool is_toggle_button =
+      ax_object->HasAriaAttribute(html_names::kAriaPressedAttr);
 
   if (was_toggle_button != is_toggle_button)
     HandleRoleChangeWithCleanLayout(node);
@@ -5114,7 +5117,7 @@ Element* AXObjectCacheImpl::AncestorAriaModalDialog(Node* node) {
     Element* element = DynamicTo<Element>(node);
     if (element) {
       const AtomicString& role_str =
-          AXObject::GetAttribute(*element, html_names::kRoleAttr);
+          AXObject::AriaAttribute(*element, html_names::kRoleAttr);
       if (!role_str.empty() &&
           ui::IsDialog(AXObject::FirstValidRoleInRoleString(role_str))) {
         if (AXObject::IsAriaAttributeTrue(*element,

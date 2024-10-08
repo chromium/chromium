@@ -24,7 +24,7 @@ namespace {
 void IdsFromAttribute(Element& element,
                       Vector<AtomicString>& ids,
                       const QualifiedName& attr_name) {
-  SpaceSplitString split_ids(element.FastGetAttribute(attr_name));
+  SpaceSplitString split_ids(AXObject::AriaAttribute(element, attr_name));
   ids.AppendRange(split_ids.begin(), split_ids.end());
 }
 }  // namespace
@@ -66,7 +66,7 @@ void AXRelationCache::DoInitialDocumentScan(Document& document) {
       CacheRelationIds(*element);
 
       // Caching aria-owns requires creating target AXObjects.
-      if (element->FastHasAttribute(html_names::kAriaOwnsAttr)) {
+      if (AXObject::HasAriaAttribute(*element, html_names::kAriaOwnsAttr)) {
         owner_ids_to_update_.insert(element->GetDomNodeId());
       }
     }
@@ -736,7 +736,7 @@ void AXRelationCache::UpdateAriaOwnsWithCleanLayout(AXObject* owner,
     // tree.
     TreeScope& scope = element->GetTreeScope();
     SpaceSplitString owned_id_vector(
-        element->FastGetAttribute(html_names::kAriaOwnsAttr));
+        AXObject::AriaAttribute(*element, html_names::kAriaOwnsAttr));
     HeapVector<Member<Element>> valid_owned_child_elements;
     for (AtomicString id_name : owned_id_vector) {
       Element* child_element = scope.getElementById(id_name);
