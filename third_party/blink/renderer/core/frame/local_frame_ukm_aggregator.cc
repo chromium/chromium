@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
@@ -29,6 +30,10 @@ inline base::HistogramBase::Sample ToSample(int64_t value) {
 inline int64_t ApplyBucket(int64_t value) {
   return ukm::GetExponentialBucketMinForCounts1000(value);
 }
+
+BASE_FEATURE(kAvoidUnnecessaryForcedLayoutMeasurements,
+             "AvoidUnnecessaryForcedLayoutMeasurements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 
@@ -119,23 +124,39 @@ void LocalFrameUkmAggregator::IterativeTimer::Record(
 LocalFrameUkmAggregator::ScopedForcedLayoutTimer::ScopedForcedLayoutTimer(
     LocalFrameUkmAggregator& aggregator,
     DocumentUpdateReason update_reason,
+    bool avoid_unnecessary_forced_layout_measurements,
     bool should_report_uma_this_frame,
-    bool is_pre_fcp)
+    bool is_pre_fcp,
+    bool record_ukm_for_current_frame)
     : aggregator_(&aggregator),
       update_reason_(update_reason),
-      start_time_(aggregator_->clock_->NowTicks()),
+      start_time_(!avoid_unnecessary_forced_layout_measurements ||
+                          should_report_uma_this_frame || is_pre_fcp ||
+                          record_ukm_for_current_frame
+                      ? aggregator_->clock_->NowTicks()
+                      : base::TimeTicks()),
+      avoid_unnecessary_forced_layout_measurements_(
+          avoid_unnecessary_forced_layout_measurements),
       should_report_uma_this_frame_(should_report_uma_this_frame),
-      is_pre_fcp_(is_pre_fcp) {
+      is_pre_fcp_(is_pre_fcp),
+      record_ukm_for_current_frame_(record_ukm_for_current_frame) {
   aggregator_->BeginForcedLayout();
 }
 
 LocalFrameUkmAggregator::ScopedForcedLayoutTimer::~ScopedForcedLayoutTimer() {
   // aggregator_ will be null in a moved-from object.
-  if (aggregator_) {
-    aggregator_->EndForcedLayout(update_reason_,
-                                 aggregator_->clock_->NowTicks() - start_time_,
-                                 should_report_uma_this_frame_, is_pre_fcp_);
+  if (!aggregator_) {
+    return;
   }
+
+  aggregator_->EndForcedLayout(
+      update_reason_,
+      // start_time_ will be null if we don't need to measure this forced
+      // layout, because it won't be reported.
+      !start_time_.is_null() ? aggregator_->clock_->NowTicks() - start_time_
+                             : base::TimeDelta(),
+      avoid_unnecessary_forced_layout_measurements_,
+      should_report_uma_this_frame_, is_pre_fcp_);
 }
 
 LocalFrameUkmAggregator::ScopedForcedLayoutTimer::ScopedForcedLayoutTimer(
@@ -246,6 +267,9 @@ LocalFrameUkmAggregator::GetScopedTimer(size_t metric_index) {
 LocalFrameUkmAggregator::ScopedForcedLayoutTimer
 LocalFrameUkmAggregator::GetScopedForcedLayoutTimer(
     DocumentUpdateReason update_reason) {
+  static const bool avoid_unnecessary_forced_layout_measurements =
+      base::FeatureList::IsEnabled(kAvoidUnnecessaryForcedLayoutMeasurements);
+
   // Accumulate for UKM always, but only record the UMA for a subset of cases to
   // avoid overflowing the counters.
   bool should_report_uma_this_frame = !calls_to_next_forced_style_layout_uma_;
@@ -259,8 +283,9 @@ LocalFrameUkmAggregator::GetScopedForcedLayoutTimer(
 
   bool is_pre_fcp = (fcp_state_ != kHavePassedFCP);
 
-  return ScopedForcedLayoutTimer(*this, update_reason,
-                                 should_report_uma_this_frame, is_pre_fcp);
+  return ScopedForcedLayoutTimer(
+      *this, update_reason, avoid_unnecessary_forced_layout_measurements,
+      should_report_uma_this_frame, is_pre_fcp, record_ukm_for_current_frame_);
 }
 
 void LocalFrameUkmAggregator::BeginMainFrame() {
@@ -603,12 +628,21 @@ void LocalFrameUkmAggregator::BeginForcedLayout() {
   TRACE_EVENT_BEGIN0("blink", metrics_data()[kForcedStyleAndLayout].name);
 }
 
-void LocalFrameUkmAggregator::EndForcedLayout(DocumentUpdateReason reason,
-                                              base::TimeDelta duration,
-                                              bool should_report_uma_this_frame,
-                                              bool is_pre_fcp) {
+void LocalFrameUkmAggregator::EndForcedLayout(
+    DocumentUpdateReason reason,
+    base::TimeDelta duration,
+    bool avoid_unnecessary_forced_layout_measurements,
+    bool should_report_uma_this_frame,
+    bool is_pre_fcp) {
   TRACE_EVENT_END1("blink", metrics_data()[kForcedStyleAndLayout].name,
                    "preFCP", fcp_state_ == kBeforeFCPSignal);
+
+  if (avoid_unnecessary_forced_layout_measurements &&
+      !(should_report_uma_this_frame || is_pre_fcp ||
+        record_ukm_for_current_frame_)) {
+    return;
+  }
+
   int64_t count = duration.InMicroseconds();
 
   auto& record =

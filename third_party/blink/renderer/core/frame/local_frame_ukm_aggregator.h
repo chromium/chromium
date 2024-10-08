@@ -271,8 +271,10 @@ class CORE_EXPORT LocalFrameUkmAggregator
    public:
     ScopedForcedLayoutTimer(LocalFrameUkmAggregator& aggregator,
                             DocumentUpdateReason update_reason,
+                            bool avoid_unnecessary_forced_layout_measurements,
                             bool should_report_uma_this_frame,
-                            bool is_pre_fcp);
+                            bool is_pre_fcp,
+                            bool record_ukm_for_current_frame);
     ~ScopedForcedLayoutTimer();
 
     ScopedForcedLayoutTimer(const ScopedForcedLayoutTimer&) = delete;
@@ -285,8 +287,10 @@ class CORE_EXPORT LocalFrameUkmAggregator
     scoped_refptr<LocalFrameUkmAggregator> aggregator_;
     DocumentUpdateReason update_reason_;
     base::TimeTicks start_time_;
+    bool avoid_unnecessary_forced_layout_measurements_;
     bool should_report_uma_this_frame_;
     bool is_pre_fcp_;
+    bool record_ukm_for_current_frame_;
   };
 
   LocalFrameUkmAggregator();
@@ -406,6 +410,7 @@ class CORE_EXPORT LocalFrameUkmAggregator
   // ForcedLayout regressions.
   void EndForcedLayout(DocumentUpdateReason reason,
                        base::TimeDelta duration,
+                       bool avoid_unnecessary_forced_layout_measurements,
                        bool should_report_uma_this_frame,
                        bool is_pre_fcp);
 
