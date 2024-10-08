@@ -17,7 +17,6 @@ namespace gfx {
 
 class Canvas;
 class Rect;
-class RectF;
 
 // This struct describes the "spinning" state of a throb animation.
 struct GFX_EXPORT ThrobberSpinningState {
@@ -28,27 +27,15 @@ struct GFX_EXPORT ThrobberSpinningState {
   SkScalar sweep_angle = 0.f;
 };
 
-// This struct describes the "waiting" mode of a throb animation. It's useful
-// for building a "spinning" state animation on top of a previous "waiting"
-// mode animation. See PaintThrobberSpinningAfterWaiting.
-struct GFX_EXPORT ThrobberWaitingState {
-  // The amount of time that was spent in the waiting state.
-  base::TimeDelta elapsed_time;
-
-  // The color of the arc in the waiting state.
-  SkColor color = SK_ColorTRANSPARENT;
-
-  // An opaque value used to cache calculations made by
-  // PaintThrobberSpinningAfterWaiting.
-  base::TimeDelta arc_time_offset;
-};
-
 // Returns the calculated state for a single frame of the throbber in the
 // "spinning", aka Material, state. Note that animation duration is a hardcoded
 // value in line with Material design specifications but is cyclic, so the
 // specified `elapsed_time` may exceed animation duration.
+// The `sweep_keyframe_offset` parameter can be used to begin the animation
+// from a different keyframe.
 GFX_EXPORT ThrobberSpinningState
-CalculateThrobberSpinningState(base::TimeDelta elapsed_time);
+CalculateThrobberSpinningState(base::TimeDelta elapsed_time,
+                               const int64_t sweep_keyframe_offset = 0);
 
 // Paints a single frame of the throbber in the "spinning", aka Material, state.
 // Note that animation duration is a hardcoded value in line with Material
@@ -61,32 +48,14 @@ GFX_EXPORT void PaintThrobberSpinning(
     const base::TimeDelta& elapsed_time,
     std::optional<SkScalar> stroke_width = std::nullopt);
 
-// Paints a throbber in the "waiting" state. Used when waiting on a network
-// response, for example.
-GFX_EXPORT void PaintThrobberWaiting(
+// Similar to PaintThrobberSpinner, but starts the spinning animation from the
+// second keyframe, where the spinner's arc starts collapsed and then grows.
+GFX_EXPORT void PaintThrobberSpinningWithSweepEasedIn(
     Canvas* canvas,
     const Rect& bounds,
     SkColor color,
     const base::TimeDelta& elapsed_time,
     std::optional<SkScalar> stroke_width = std::nullopt);
-
-// Paint a throbber in the "spinning" state, smoothly transitioning from a
-// previous "waiting" state described by |waiting_state|, which is an in-out
-// param.
-GFX_EXPORT void PaintThrobberSpinningAfterWaiting(
-    Canvas* canvas,
-    const Rect& bounds,
-    SkColor color,
-    const base::TimeDelta& elapsed_time,
-    ThrobberWaitingState* waiting_state,
-    std::optional<SkScalar> stroke_width = std::nullopt);
-
-// Paints a throbber in the "waiting" state (bouncing back and forth). Used when
-// waiting on a network response, for example.
-GFX_EXPORT void PaintNewThrobberWaiting(Canvas* canvas,
-                                        const RectF& throbber_container_bounds,
-                                        SkColor color,
-                                        const base::TimeDelta& elapsed_time);
 
 }  // namespace gfx
 

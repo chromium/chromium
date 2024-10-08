@@ -871,6 +871,7 @@ test("gfx_unittests") {
       "image/image_util_unittest.cc",
       "mojom/mojom_traits_unittest.cc",
       "overlay_transform_utils_unittest.cc",
+      "paint_throbber_unittest.cc",
       "paint_vector_icon_unittest.cc",
       "range/range_unittest.cc",
       "render_text_unittest.cc",
