@@ -82,6 +82,7 @@ source_set("unit_tests") {
   deps = [
     ":form_input_accessory",
     "//base/test:test_support",
+    "//components/autofill/ios/common",
     "//components/autofill/ios/form_util",
     "//components/autofill/ios/form_util:form_util_feature",
     "//components/autofill/ios/form_util:test_support",

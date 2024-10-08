@@ -113,8 +113,7 @@ class FormActivityTabHelperTest : public AutofillTestWithWebState {
     __block WebFrame* main_frame = nullptr;
     EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
       web::WebFramesManager* frames_manager =
-          FormUtilJavaScriptFeature::GetInstance()->GetWebFramesManager(
-              web_state());
+          GetWebFramesManagerForAutofill(web_state());
       main_frame = frames_manager->GetMainWebFrame();
       return main_frame != nullptr;
     }));

@@ -4,10 +4,12 @@
 
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 
-#include "base/no_destructor.h"
-#include "base/values.h"
+#import "base/no_destructor.h"
+#import "base/values.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
 #import "components/autofill/ios/form_util/cross_content_world_util_java_script_feature.h"
+#import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 
 namespace {
@@ -25,7 +27,10 @@ FormUtilJavaScriptFeature* FormUtilJavaScriptFeature::GetInstance() {
 
 FormUtilJavaScriptFeature::FormUtilJavaScriptFeature()
     : web::JavaScriptFeature(
-          ContentWorldForAutofillJavascriptFeatures(),
+          // Form submission detection hook in the page content world
+          // requires fill.ts and form.ts. That is why injection in both
+          // worlds is required.
+          web::ContentWorld::kAllContentWorlds,
           {FeatureScript::CreateWithFilename(
                kFillScriptName,
                FeatureScript::InjectionTime::kDocumentStart,

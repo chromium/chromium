@@ -13,9 +13,10 @@
 #import "components/autofill/core/common/password_form_fill_data.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
+#import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider_query.h"
-#import "components/autofill/ios/form_util/form_util_java_script_feature.h"
+#import "components/autofill/ios/common/javascript_feature_util.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/password_manager/ios/account_select_fill_data.h"
 #import "components/password_manager/ios/test_helpers.h"
@@ -80,8 +81,7 @@ class PasswordSuggestionHelperTest : public PlatformTest {
     AddWebFrame(std::move(main_frame));
 
     web::ContentWorld content_world =
-        autofill::FormUtilJavaScriptFeature::GetInstance()
-            ->GetSupportedContentWorld();
+        ContentWorldForAutofillJavascriptFeatures();
     web_state_.SetWebFramesManager(content_world, std::move(frames_manager));
 
     autofill::AutofillDriverIOSFactory::CreateForWebState(

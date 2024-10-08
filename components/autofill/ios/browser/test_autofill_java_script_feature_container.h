@@ -9,7 +9,6 @@
 
 namespace autofill {
 
-class FormUtilJavaScriptFeature;
 class FormHandlersJavaScriptFeature;
 class AutofillFormFeaturesJavaScriptFeature;
 
@@ -35,7 +34,6 @@ class TestAutofillJavaScriptFeatureContainer {
   TestAutofillJavaScriptFeatureContainer();
   ~TestAutofillJavaScriptFeatureContainer();
 
-  FormUtilJavaScriptFeature* form_util_java_script_feature();
   FormHandlersJavaScriptFeature* form_handlers_java_script_feature();
   AutofillFormFeaturesJavaScriptFeature*
   autofill_form_features_java_script_feature();
@@ -46,7 +44,6 @@ class TestAutofillJavaScriptFeatureContainer {
   TestAutofillJavaScriptFeatureContainer& operator=(
       const TestAutofillJavaScriptFeatureContainer&) = delete;
 
-  raw_ptr<FormUtilJavaScriptFeature> form_util_java_script_feature_ = nullptr;
   raw_ptr<FormHandlersJavaScriptFeature> form_handlers_java_script_feature_ =
       nullptr;
   raw_ptr<AutofillFormFeaturesJavaScriptFeature>

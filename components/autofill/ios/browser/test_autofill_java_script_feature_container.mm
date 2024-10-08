@@ -15,17 +15,8 @@ TestAutofillJavaScriptFeatureContainer::
 
 TestAutofillJavaScriptFeatureContainer::
     ~TestAutofillJavaScriptFeatureContainer() {
-  delete form_util_java_script_feature_;
   delete form_handlers_java_script_feature_;
-}
-
-FormUtilJavaScriptFeature*
-TestAutofillJavaScriptFeatureContainer::form_util_java_script_feature() {
-  if (!form_util_java_script_feature_) {
-    form_util_java_script_feature_ = new FormUtilJavaScriptFeature();
-  }
-
-  return form_util_java_script_feature_;
+  delete autofill_form_features_java_script_feature_;
 }
 
 FormHandlersJavaScriptFeature*
@@ -34,8 +25,8 @@ TestAutofillJavaScriptFeatureContainer::form_handlers_java_script_feature() {
     // Create the form handlers feature using the self contained
     // FormUtilJavaScriptFeature instance. This way the form util instance is
     // created for the correct content world.
-    form_handlers_java_script_feature_ =
-        new FormHandlersJavaScriptFeature(form_util_java_script_feature());
+    form_handlers_java_script_feature_ = new FormHandlersJavaScriptFeature(
+        autofill_form_features_java_script_feature());
   }
 
   return form_handlers_java_script_feature_;

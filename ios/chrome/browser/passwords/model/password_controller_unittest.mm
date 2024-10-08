@@ -25,6 +25,7 @@
 #import "components/autofill/core/browser/ui/suggestion_type.h"
 #import "components/autofill/core/common/password_form_fill_data.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
+#import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
@@ -299,11 +300,9 @@ class PasswordControllerTest : public PlatformTest {
   }
 
   bool WaitForMainFrame() {
-    autofill::FormUtilJavaScriptFeature* feature =
-        autofill::FormUtilJavaScriptFeature::GetInstance();
     return WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-      return feature->GetWebFramesManager(web_state())->GetMainWebFrame() !=
-             nullptr;
+      return autofill::GetWebFramesManagerForAutofill(web_state())
+                 ->GetMainWebFrame() != nullptr;
     });
   }
 
@@ -1955,10 +1954,8 @@ TEST_F(PasswordControllerTest, DetectSubmissionOnIFrameDetach) {
 
   WaitForFormManagersCreation();
 
-  autofill::FormUtilJavaScriptFeature* feature =
-      autofill::FormUtilJavaScriptFeature::GetInstance();
   std::set<WebFrame*> all_frames =
-      feature->GetWebFramesManager(web_state())->GetAllWebFrames();
+      autofill::GetWebFramesManagerForAutofill(web_state())->GetAllWebFrames();
   std::string iFrameID;
   for (auto* frame : all_frames) {
     if (!frame->IsMainFrame()) {

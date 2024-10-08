@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_mediator.h"
 
+#import "components/autofill/ios/common/javascript_feature_util.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
-#import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/autofill/ios/form_util/test_form_activity_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
@@ -57,8 +57,7 @@ class FormInputAccessoryMediatorTest : public PlatformTest {
     test_web_state_->SetCurrentURL(url);
 
     web::ContentWorld content_world =
-        autofill::FormUtilJavaScriptFeature::GetInstance()
-            ->GetSupportedContentWorld();
+        ContentWorldForAutofillJavascriptFeatures();
     test_web_state_->SetWebFramesManager(
         content_world, std::make_unique<web::FakeWebFramesManager>());
     main_frame_ = web::FakeWebFrame::CreateMainWebFrame(url);

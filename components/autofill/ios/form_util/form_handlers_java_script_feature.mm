@@ -112,11 +112,15 @@ void FormHandlersJavaScriptFeature::ScriptMessageReceived(
 }
 
 FormHandlersJavaScriptFeature::FormHandlersJavaScriptFeature(
-    autofill::FormUtilJavaScriptFeature* form_util_java_script_feature)
+    AutofillFormFeaturesJavaScriptFeature*
+        autofill_form_features_java_script_feature)
     : web::JavaScriptFeature(
           ContentWorldForAutofillJavascriptFeatures(),
           GetFeatureScripts(),
-          {web::java_script_features::GetCommonJavaScriptFeature(),
-           form_util_java_script_feature}) {}
+          {
+              web::java_script_features::GetCommonJavaScriptFeature(),
+              FormUtilJavaScriptFeature::GetInstance(),
+              autofill_form_features_java_script_feature,
+          }) {}
 
 }  // namespace autofill

@@ -15,6 +15,7 @@
 class GURL;
 
 namespace web {
+class WebFramesManager;
 class WebState;
 }
 
@@ -131,6 +132,10 @@ std::optional<std::set<IDType>> ExtractIDs(NSString* json_string) {
 // string.
 bool ExtractFillingResults(NSString* json_string,
                            std::map<uint32_t, std::u16string>* filling_results);
+
+// Returns the WebFramesManager that manages the frame space in which Autofill
+// works.
+web::WebFramesManager* GetWebFramesManagerForAutofill(web::WebState* web_state);
 
 }  // namespace autofill
 

@@ -125,7 +125,7 @@ void FormActivityTabHelper::HandleFormActivity(
   }
 
   web::WebFramesManager* frames_manager =
-      FormUtilJavaScriptFeature::GetInstance()->GetWebFramesManager(web_state);
+      GetWebFramesManagerForAutofill(web_state);
   web::WebFrame* sender_frame = frames_manager->GetFrameWithId(params.frame_id);
   if (!sender_frame) {
     return;
@@ -144,7 +144,7 @@ void FormActivityTabHelper::HandleFormRemoval(
   }
 
   web::WebFramesManager* frames_manager =
-      FormUtilJavaScriptFeature::GetInstance()->GetWebFramesManager(web_state);
+      GetWebFramesManagerForAutofill(web_state);
   web::WebFrame* sender_frame = frames_manager->GetFrameWithId(params.frame_id);
   if (!sender_frame) {
     return;
@@ -169,7 +169,7 @@ void FormActivityTabHelper::FormSubmissionHandler(
   }
 
   web::WebFramesManager* frames_manager =
-      FormUtilJavaScriptFeature::GetInstance()->GetWebFramesManager(web_state);
+      GetWebFramesManagerForAutofill(web_state);
   web::WebFrame* sender_frame = frames_manager->GetFrameWithId(*frame_id);
   if (!sender_frame) {
     return;

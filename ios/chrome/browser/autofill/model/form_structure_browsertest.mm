@@ -29,8 +29,8 @@
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
+#import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/browser/test_autofill_manager_injector.h"
-#import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #import "components/sync_user_events/fake_user_event_service.h"
@@ -276,11 +276,9 @@ bool FormStructureBrowserTest::LoadHtmlWithoutSubresourcesAndInitRendererIds(
     return false;
   }
 
-  autofill::FormUtilJavaScriptFeature* feature =
-      autofill::FormUtilJavaScriptFeature::GetInstance();
   return WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
     web::WebFramesManager* frames_manager =
-        feature->GetWebFramesManager(web_state());
+        GetWebFramesManagerForAutofill(web_state());
     return frames_manager->GetMainWebFrame() != nullptr;
   });
 }

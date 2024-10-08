@@ -24,6 +24,8 @@
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/form_field_data.h"
 #import "components/autofill/core/common/signatures.h"
+#import "components/autofill/ios/common/javascript_feature_util.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/security/ssl_status.h"
@@ -494,6 +496,13 @@ bool ExtractFillingResults(
     (*filling_results)[id_num] = base::UTF8ToUTF16(result.second.GetString());
   }
   return true;
+}
+
+web::WebFramesManager* GetWebFramesManagerForAutofill(
+    web::WebState* web_state) {
+  CHECK(web_state);
+  return web_state->GetWebFramesManager(
+      ContentWorldForAutofillJavascriptFeatures());
 }
 
 }  // namespace autofill

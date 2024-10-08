@@ -26,6 +26,7 @@
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
+#import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/browser/mock_password_autofill_agent_delegate.h"
 #import "components/autofill/ios/browser/new_frame_catcher.h"
 #import "components/autofill/ios/browser/test_autofill_manager_injector.h"
@@ -504,8 +505,7 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
   }
 
   web::WebFramesManager* web_frames_manager() {
-    return autofill::FormUtilJavaScriptFeature::GetInstance()
-        ->GetWebFramesManager(web_state());
+    return GetWebFramesManagerForAutofill(web_state());
   }
 
   autofill::ChildFrameRegistrar* registrar() {
