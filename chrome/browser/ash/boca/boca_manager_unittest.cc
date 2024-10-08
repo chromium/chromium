@@ -132,14 +132,22 @@ class BocaManagerProducerTest : public BocaManagerTest {
     boca_manager_ = std::make_unique<BocaManager>(
         std::make_unique<boca::OnTaskSessionManager>(nullptr),
         std::move(session_client_impl_), std::move(boca_session_manager_),
-        std::move(invalidation_service_impl_));
+        std::move(invalidation_service_impl_),
+        std::make_unique<boca::BabelOrcaManager>());
   }
   std::unique_ptr<BocaManager> boca_manager_;
 };
 
 TEST_F(BocaManagerProducerTest, VerifyOnTaskObserverNotAddedForProducer) {
+  ASSERT_FALSE(
+      boca_manager_->GetBocaSessionManagerForTesting()->observers().HasObserver(
+          boca_manager_->GetOnTaskSessionManagerForTesting()));
+}
+
+TEST_F(BocaManagerProducerTest, VerifyBabelOrcaObserverHasAddedForProducer) {
   ASSERT_TRUE(
-      boca_manager_->GetBocaSessionManagerForTesting()->observers().empty());
+      boca_manager_->GetBocaSessionManagerForTesting()->observers().HasObserver(
+          boca_manager_->GetBabelOrcaManagerForTesting()));
 }
 
 TEST_F(BocaManagerProducerTest, VerifyDependenciesTearDownProperly) {
@@ -161,14 +169,22 @@ class BocaManagerConsumerTest : public BocaManagerTest {
     boca_manager_ = std::make_unique<BocaManager>(
         std::make_unique<boca::OnTaskSessionManager>(nullptr),
         std::move(session_client_impl_), std::move(boca_session_manager_),
-        std::move(invalidation_service_impl_));
+        std::move(invalidation_service_impl_),
+        std::make_unique<boca::BabelOrcaManager>());
   }
   std::unique_ptr<BocaManager> boca_manager_;
 };
 
 TEST_F(BocaManagerConsumerTest, VerifyOnTaskObserverHasAddedForConsumer) {
-  ASSERT_FALSE(
-      boca_manager_->GetBocaSessionManagerForTesting()->observers().empty());
+  ASSERT_TRUE(
+      boca_manager_->GetBocaSessionManagerForTesting()->observers().HasObserver(
+          boca_manager_->GetOnTaskSessionManagerForTesting()));
+}
+
+TEST_F(BocaManagerConsumerTest, VerifyBabelOrcaObserverHasAddedForConsumer) {
+  ASSERT_TRUE(
+      boca_manager_->GetBocaSessionManagerForTesting()->observers().HasObserver(
+          boca_manager_->GetBabelOrcaManagerForTesting()));
 }
 
 TEST_F(BocaManagerConsumerTest, VerifyDependenciesTearDownProperly) {

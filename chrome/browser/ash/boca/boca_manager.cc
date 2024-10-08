@@ -10,6 +10,7 @@
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/boca/babelorca/babel_orca_manager.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/invalidations/invalidation_service_impl.h"
@@ -27,11 +28,13 @@ BocaManager::BocaManager(
     std::unique_ptr<boca::OnTaskSessionManager> on_task_session_manager,
     std::unique_ptr<boca::SessionClientImpl> session_client_impl,
     std::unique_ptr<boca::BocaSessionManager> boca_session_manager,
-    std::unique_ptr<boca::InvalidationServiceImpl> invalidation_service_impl)
+    std::unique_ptr<boca::InvalidationServiceImpl> invalidation_service_impl,
+    std::unique_ptr<boca::BabelOrcaManager> babel_orca_manager)
     : on_task_session_manager_(std::move(on_task_session_manager)),
       session_client_impl_(std::move(session_client_impl)),
       boca_session_manager_(std::move(boca_session_manager)),
-      invalidation_service_impl_(std::move(invalidation_service_impl)) {
+      invalidation_service_impl_(std::move(invalidation_service_impl)),
+      babel_orca_manager_(std::move(babel_orca_manager)) {
   AddObservers();
 }
 
@@ -41,6 +44,8 @@ BocaManager::BocaManager(Profile* profile) {
       session_client_impl_.get(), ash::BrowserContextHelper::Get()
                                       ->GetUserByBrowserContext(profile)
                                       ->GetAccountId());
+  babel_orca_manager_ = std::make_unique<boca::BabelOrcaManager>();
+
   if (ash::boca_util::IsConsumer()) {
     auto on_task_system_web_app_manager =
         std::make_unique<boca::OnTaskSystemWebAppManagerImpl>(profile);
@@ -74,6 +79,7 @@ void BocaManager::Shutdown() {
   }
 }
 void BocaManager::AddObservers() {
+  boca_session_manager_->AddObserver(babel_orca_manager_.get());
   if (ash::boca_util::IsConsumer()) {
     boca_session_manager_->AddObserver(on_task_session_manager_.get());
   }
