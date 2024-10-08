@@ -214,10 +214,6 @@ void ProductSpecificationsButton::ExecuteShow() {
   if (!tab_strip_model_->CanShowModalUI()) {
     return;
   }
-  // Check if the entry point is still eligible for showing.
-  if (!entry_point_controller_->ShouldExecuteEntryPointShow()) {
-    return;
-  }
 
   scoped_tab_strip_modal_ui_ = tab_strip_model_->ShowModalUI();
 
@@ -324,7 +320,10 @@ void ProductSpecificationsButton::SetLockedExpansionMode(
     LockedExpansionMode mode) {
   if (mode == LockedExpansionMode::kNone) {
     if (locked_expansion_mode_ == LockedExpansionMode::kWillShow) {
-      ExecuteShow();
+      // Check if the entry point is still eligible for showing.
+      if (entry_point_controller_->ShouldExecuteEntryPointShow()) {
+        ExecuteShow();
+      }
     } else if (locked_expansion_mode_ == LockedExpansionMode::kWillHide) {
       ExecuteHide();
     }
