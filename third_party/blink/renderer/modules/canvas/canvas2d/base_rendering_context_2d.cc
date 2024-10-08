@@ -3868,6 +3868,7 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
                                       "Unable to access canvas image.");
     return nullptr;
   }
+  host->SetTransferToGPUTextureWasInvoked();
 
   // Ensure that the canvas host lives on the GPU. This call is a no-op if the
   // host is already accelerated.

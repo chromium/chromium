@@ -293,15 +293,10 @@ function test_transferToGPUTexture_balanced_access(device, canvas) {
     assert_true(ex.message.includes('Transferring canvas to GPU was not zero-copy'));
   }
 
-  // Begin and end a WebGPU access session several times.
+  // Begin and end a WebGPU access session several times. No further transfers
+  // on this canvas should incur a copy.
   for (let count = 0; count < 10; ++count) {
-    // The initial transfer will again incur a copy, as the exception caused a
-    // new CanvasResource to be created whose SharedImage again doesn't have
-    // WebGPU usage by default. No transfers after that should incur a copy.
-    // TODO(crbug.com/340922308): When maintaining a document-level boolean of
-    // whether to add WebGPU usage, remove the special case of the initial
-    // transfer here.
-    const tex = ctx.transferToGPUTexture({device: device, requireZeroCopy: count > 0});
+    const tex = ctx.transferToGPUTexture({device: device, requireZeroCopy: true});
     ctx.transferBackFromGPUTexture();
   }
 }

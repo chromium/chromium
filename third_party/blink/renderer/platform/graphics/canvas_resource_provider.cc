@@ -1139,6 +1139,11 @@ CanvasResourceProvider::CreateSharedImageProvider(
         gpu::SHARED_IMAGE_USAGE_SCANOUT);
   }
 
+  if (resource_host && resource_host->TransferToGPUTextureWasInvoked()) {
+    shared_image_usage_flags.PutAll(gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+                                    gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE);
+  }
+
 #if BUILDFLAG(IS_MAC)
   if ((shared_image_usage_flags & gpu::SHARED_IMAGE_USAGE_SCANOUT) &&
       is_accelerated && adjusted_info.colorType() == kRGBA_8888_SkColorType) {
