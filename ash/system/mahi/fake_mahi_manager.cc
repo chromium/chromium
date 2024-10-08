@@ -155,7 +155,7 @@ void FakeMahiManager::OpenMahiPanel(int64_t display_id,
 }
 
 bool FakeMahiManager::IsEnabled() {
-  return true;
+  return mahi_enabled_;
 }
 
 bool FakeMahiManager::AllowRepeatingAnswers() {

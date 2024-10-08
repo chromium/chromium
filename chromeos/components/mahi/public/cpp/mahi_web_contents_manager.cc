@@ -16,7 +16,8 @@ MahiWebContentsManager* g_instance_for_testing = nullptr;
 
 // static
 // TODO(b:356035887): this may return different ptrs to callers depending on
-// timing in test. Need a better solution to it.
+// timing in test. Minimize the use of this global getter, and get rid of
+// overriding global instance while there exists a live one.
 MahiWebContentsManager* MahiWebContentsManager::Get() {
   if (g_instance_for_testing) {
     return g_instance_for_testing;

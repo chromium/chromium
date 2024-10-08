@@ -44,15 +44,6 @@ void MahiMenuController::OnContextMenuShown(Profile* profile) {}
 void MahiMenuController::OnTextAvailable(const gfx::Rect& anchor_bounds,
                                          const std::string& selected_text,
                                          const std::string& surrounding_text) {
-  if (!chromeos::features::IsMahiEnabled() ||
-      !chromeos::MahiWebContentsManager::Get()->GetPrefValue()) {
-    return;
-  }
-
-  // TODO(b:356035887): `MahiManager::Get()->IsEnabled()` is the source of truth
-  // because it checks flag & prefs, as well as age & country restrictions. But
-  // it is not accessible from lacros. Let's remove the macros and the checks
-  // above when the lacros support is removed.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!MahiManager::Get() || !MahiManager::Get()->IsEnabled()) {
     return;
@@ -97,8 +88,7 @@ void MahiMenuController::OnDismiss(bool is_other_command_executed) {
 }
 
 void MahiMenuController::OnPdfContextMenuShown(const gfx::Rect& anchor) {
-  if (!chromeos::features::IsMahiEnabled() ||
-      !chromeos::MahiWebContentsManager::Get()->GetPrefValue()) {
+  if (!MahiManager::Get() || !MahiManager::Get()->IsEnabled()) {
     return;
   }
 

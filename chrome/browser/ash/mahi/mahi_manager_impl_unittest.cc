@@ -21,9 +21,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
-#include "chrome/browser/ash/mahi/fake_mahi_browser_delegate_ash.h"
 #include "chrome/browser/ash/mahi/mahi_cache_manager.h"
+#include "chrome/browser/chromeos/mahi/test/fake_mahi_web_contents_manager.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
+#include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/crosapi/mojom/mahi.mojom-forward.h"
@@ -115,18 +116,12 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
     mahi_manager_impl_ = std::make_unique<MahiManagerImpl>();
     mahi_manager_impl_->mahi_provider_ = CreateMahiProvider();
 
-    fake_mahi_browser_delegate_ash_ =
-        std::make_unique<FakeMahiBrowserDelegateAsh>();
-    mahi_manager_impl_->mahi_browser_delegate_ash_ =
-        fake_mahi_browser_delegate_ash_.get();
-
     CreateUserSessions(1);
   }
 
   void TearDown() override {
     mahi_manager_impl_.reset();
     magic_boost_state_.reset();
-    fake_mahi_browser_delegate_ash_.reset();
     NoSessionAshTestBase::TearDown();
   }
 
@@ -185,9 +180,11 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
   base::test::ScopedFeatureList feature_list_;
 
  private:
+  mahi::FakeMahiWebContentsManager fake_mahi_web_contents_manager_;
+  chromeos::ScopedMahiWebContentsManagerOverride
+      scoped_mahi_web_contents_manager_{&fake_mahi_web_contents_manager_};
   network::TestURLLoaderFactory test_url_loader_factory_;
   signin::IdentityTestEnvironment identity_test_env_;
-  std::unique_ptr<FakeMahiBrowserDelegateAsh> fake_mahi_browser_delegate_ash_;
 };
 
 // Title is included in the request proto.

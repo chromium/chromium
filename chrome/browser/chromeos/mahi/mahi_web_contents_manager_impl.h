@@ -16,6 +16,7 @@
 #include "chrome/browser/chromeos/mahi/mahi_content_extraction_delegate.h"
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chromeos/components/mahi/public/cpp/mahi_browser_util.h"
+#include "chromeos/components/mahi/public/cpp/mahi_util.h"
 #include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
 #include "chromeos/crosapi/mojom/mahi.mojom-forward.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
@@ -32,9 +33,6 @@ namespace mahi {
 
 class MockMahiWebContentsManager;
 class FakeMahiWebContentsManager;
-
-using GetContentCallback =
-    base::OnceCallback<void(crosapi::mojom::MahiPageContentPtr)>;
 
 // MahiPDFObserver is a helper class that observes the accessibility change from
 // the PDF. The accessibility updates will then be used to extract the content
@@ -72,13 +70,6 @@ class MahiPDFObserver : public content::WebContentsObserver {
   base::WeakPtrFactory<MahiPDFObserver> weak_ptr_factory_{this};
 };
 
-// `MahiWebContentsManager` is the central class for mahi web contents in the
-// browser (ash and lacros) responsible for:
-// 1. Being the single source of truth for mahi browser parameters like focused
-//    web page, the lasted extracted web page, etc. and providing this
-//    information to ChromeOS backend as needed.
-// 2. Decides the distillability of a web page and extract contents from a
-//    requested web page.
 class MahiWebContentsManagerImpl : public chromeos::MahiWebContentsManager {
  public:
   MahiWebContentsManagerImpl(const MahiWebContentsManagerImpl&) = delete;
@@ -88,17 +79,16 @@ class MahiWebContentsManagerImpl : public chromeos::MahiWebContentsManager {
   ~MahiWebContentsManagerImpl() override;
 
   // chromeos::MahiWebContentsManager:
-  void Initialize() override;
   void OnFocusedPageLoadComplete(content::WebContents* web_contents) override;
-  void ClearFocusedWebContentState(
-      raw_ptr<aura::Window> top_level_window) override;
+  void ClearFocusedWebContentState() override;
   void WebContentsDestroyed(content::WebContents* web_contents) override;
   void OnContextMenuClicked(int64_t display_id,
                             chromeos::mahi::ButtonType button_type,
                             const std::u16string& question,
                             const gfx::Rect& mahi_menu_bounds) override;
   bool IsFocusedPageDistillable() override;
-  bool GetPrefValue() const override;
+  void RequestContent(const base::UnguessableToken& page_id,
+                      chromeos::mahi::GetContentCallback callback) override;
 
  private:
   // Friends to access some test-only functions.
@@ -113,27 +103,22 @@ class MahiWebContentsManagerImpl : public chromeos::MahiWebContentsManager {
   void OnGetSnapshot(const base::UnguessableToken& page_id,
                      content::WebContents* web_contents,
                      const base::Time& start_time,
-                     GetContentCallback callback,
+                     chromeos::mahi::GetContentCallback callback,
                      ui::AXTreeUpdate& snapshot);
 
   void OnFinishDistillableCheck(const base::UnguessableToken& page_id,
                                 bool is_distillable);
 
-  // Callback function of the user request from the OS side to get the page
-  // content.
-  void RequestContent(const base::UnguessableToken& page_id,
-                      GetContentCallback callback);
-
   // Get the page content of normal web pages.
   void RequestWebContent(const base::UnguessableToken& page_id,
-                         GetContentCallback callback);
+                         chromeos::mahi::GetContentCallback callback);
 
   // Get the content of PDFs.
   void RequestPDFContent(const base::UnguessableToken& page_id,
-                         GetContentCallback callback);
+                         chromeos::mahi::GetContentCallback callback);
 
   // Process the AXTreeUpdates received for PDF contents.
-  void OnGetAXTreeUpdatesForPDF(GetContentCallback callback,
+  void OnGetAXTreeUpdatesForPDF(chromeos::mahi::GetContentCallback callback,
                                 const std::vector<ui::AXTreeUpdate>& updates);
 
   // Gets the favicon from the given web contents. Returns an empty imageskia if
@@ -146,8 +131,6 @@ class MahiWebContentsManagerImpl : public chromeos::MahiWebContentsManager {
   bool ShouldSkip(content::WebContents* web_contents);
 
   std::unique_ptr<MahiContentExtractionDelegate> content_extraction_delegate_;
-  std::unique_ptr<MahiBrowserClientImpl> client_;
-  bool is_initialized_ = false;
 
   // The state of the web content which get focus in the browser.
   WebContentState focused_web_content_state_{/*url=*/GURL(), /*title=*/u""};

@@ -12,6 +12,8 @@
 namespace chromeos::mahi {
 
 using ActionType = crosapi::mojom::MahiContextMenuActionType;
+using GetContentCallback =
+    base::OnceCallback<void(crosapi::mojom::MahiPageContentPtr)>;
 
 // Metrics:
 COMPONENT_EXPORT(MAHI_PUBLIC_CPP)

@@ -11,10 +11,10 @@
 #include "ash/system/mahi/mahi_ui_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/ash/mahi/mahi_browser_delegate_ash.h"
 #include "chrome/browser/ash/mahi/mahi_cache_manager.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
@@ -147,7 +147,8 @@ class MahiManagerImpl : public chromeos::MahiManager,
 
   std::unique_ptr<manta::MahiProvider> mahi_provider_;
 
-  raw_ptr<MahiBrowserDelegateAsh> mahi_browser_delegate_ash_ = nullptr;
+  raw_ptr<chromeos::MahiWebContentsManager> mahi_web_contents_manager_ =
+      nullptr;
 
   // Keeps track of the latest result and code, used for feedback.
   std::u16string latest_summary_;
@@ -179,20 +180,6 @@ class MahiManagerImpl : public chromeos::MahiManager,
       this};
 
   base::WeakPtrFactory<MahiManagerImpl> weak_ptr_factory_for_requests_{this};
-};
-
-// ScopedMahiBrowserDelegateOverrider ------------------------------------------
-
-// A helper class to override the Mahi browser delegate during its life cycle.
-// NOTE: This class should have at most one instance.
-class ScopedMahiBrowserDelegateOverrider {
- public:
-  explicit ScopedMahiBrowserDelegateOverrider(MahiBrowserDelegateAsh* delegate);
-  ScopedMahiBrowserDelegateOverrider(
-      const ScopedMahiBrowserDelegateOverrider&) = delete;
-  ScopedMahiBrowserDelegateOverrider& operator=(
-      const ScopedMahiBrowserDelegateOverrider&) = delete;
-  ~ScopedMahiBrowserDelegateOverrider();
 };
 
 }  // namespace ash

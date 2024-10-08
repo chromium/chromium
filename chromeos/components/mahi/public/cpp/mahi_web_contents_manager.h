@@ -15,10 +15,6 @@ class WebContents;
 
 }  // namespace content
 
-namespace aura {
-class Window;
-}
-
 namespace chromeos {
 
 // `MahiWebContentsManager` is the central class for mahi web contents in the
@@ -36,9 +32,6 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiWebContentsManager {
 
   static MahiWebContentsManager* Get();
 
-  // Called to initialize necessary components.
-  virtual void Initialize() = 0;
-
   // Called when the focused tab finish loading.
   // Virtual so we can override in tests.
   virtual void OnFocusedPageLoadComplete(
@@ -48,8 +41,7 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiWebContentsManager {
   // Passes the `top_level_window` downstream if it is set. This may suppress
   // the notification if it is a media app window that is observed by media app
   // content manager.
-  virtual void ClearFocusedWebContentState(
-      raw_ptr<aura::Window> top_level_window) = 0;
+  virtual void ClearFocusedWebContentState() = 0;
 
   // Clears the focused web content and its state if the focused content is
   // destroyed.
@@ -68,13 +60,14 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiWebContentsManager {
   // distillability has not been checked yet.
   virtual bool IsFocusedPageDistillable() = 0;
 
-  virtual bool GetPrefValue() const = 0;
-  void set_mahi_pref_lacros(bool value) { mahi_pref_lacros_ = value; }
+  // Callback function of the user request from the OS side to get the page
+  // content.
+  // Virtual so we can override in tests.
+  virtual void RequestContent(const base::UnguessableToken& page_id,
+                              mahi::GetContentCallback callback) = 0;
 
  protected:
   MahiWebContentsManager();
-
-  bool mahi_pref_lacros_ = false;
 };
 
 // A scoped object that overrides `chromeos::MahiWebContentsManager::Get()` to

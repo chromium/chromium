@@ -7,6 +7,11 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_switches.h"
+#include "ash/system/mahi/fake_mahi_manager.h"
+#include "ash/system/mahi/test/mock_mahi_media_app_events_proxy.h"
+#include "base/auto_reset.h"
+#include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -19,20 +24,13 @@
 #include "chrome/browser/ui/views/mahi/mahi_menu_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_events_proxy.h"
+#include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view_utils.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_switches.h"
-#include "ash/system/mahi/fake_mahi_manager.h"
-#include "ash/system/mahi/test/mock_mahi_media_app_events_proxy.h"
-#include "base/auto_reset.h"
-#include "base/command_line.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace chromeos::mahi {
 
@@ -51,14 +49,10 @@ class MahiMenuControllerTest : public ChromeViewsTestBase {
         std::make_unique<chromeos::ScopedMahiWebContentsManagerOverride>(
             &fake_mahi_web_contents_manager_);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     fake_mahi_manager_ = std::make_unique<ash::FakeMahiManager>();
-#endif
     // Sets the focused page's distillability to true so that it does not block
     // the menu widget's display.
     ChangePageDistillability(true);
-    // Sets the default pref is true for testing.
-    ChangePrefValue(true);
   }
 
   MahiMenuControllerTest(const MahiMenuControllerTest&) = delete;
@@ -88,26 +82,19 @@ class MahiMenuControllerTest : public ChromeViewsTestBase {
         value);
   }
 
-  void ChangePrefValue(bool value) {
-    fake_mahi_web_contents_manager_.SetPrefForTesting(value);
-  }
-
  protected:
   ReadWriteCardsUiController read_write_cards_ui_controller_;
+  std::unique_ptr<ash::FakeMahiManager> fake_mahi_manager_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Providing a mock MahiMediaAppEvnetsProxy and a fake mahi manager to satisfy
   // MahiMenuController.
   testing::NiceMock<::ash::MockMahiMediaAppEventsProxy>
       mock_mahi_media_app_events_proxy_;
   chromeos::ScopedMahiMediaAppEventsProxySetter
       scoped_mahi_media_app_events_proxy_{&mock_mahi_media_app_events_proxy_};
-
-  std::unique_ptr<ash::FakeMahiManager> fake_mahi_manager_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   std::unique_ptr<MahiMenuController> menu_controller_;
 
@@ -193,8 +180,8 @@ TEST_F(MahiMenuControllerTest, TextSelected) {
   EXPECT_FALSE(read_write_cards_ui_controller_.GetMahiUiForTest());
 }
 
-// Tests the behavior of the controller when pref state changed.
-TEST_F(MahiMenuControllerTest, PrefChange) {
+// Tests the behavior of the controller when feature enable state changed.
+TEST_F(MahiMenuControllerTest, FeatureEnableStatusChange) {
   EXPECT_FALSE(menu_controller()->menu_widget_for_test());
 
   // Menu widget should show when text is displayed as the default is that Mahi
@@ -212,15 +199,16 @@ TEST_F(MahiMenuControllerTest, PrefChange) {
   menu_controller()->OnDismiss(/*is_other_command_executed=*/false);
   EXPECT_FALSE(menu_controller()->menu_widget_for_test());
 
-  // If pref value is false, then menu widget should not be triggered.
-  ChangePrefValue(false);
+  // If MahiManager says the feature is not enabled, then menu widget should not
+  // be triggered.
+  fake_mahi_manager_->set_mahi_enabled(false);
   menu_controller()->OnTextAvailable(/*anchor_bounds=*/gfx::Rect(),
                                      /*selected_text=*/"",
                                      /*surrounding_text=*/"");
   EXPECT_FALSE(menu_controller()->menu_widget_for_test());
 
-  // Set pref to true should show the widget again.
-  ChangePrefValue(true);
+  // Set mahi_enabled to true should show the widget again.
+  fake_mahi_manager_->set_mahi_enabled(true);
   menu_controller()->OnTextAvailable(/*anchor_bounds=*/gfx::Rect(),
                                      /*selected_text=*/"",
                                      /*surrounding_text=*/"");

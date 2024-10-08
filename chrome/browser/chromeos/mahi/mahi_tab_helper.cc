@@ -36,8 +36,7 @@ void MahiTabHelper::OnWebContentsFocused(
   } else {
     // Clears the previous focused page state so that it won't be shown before
     // the new page finishes loading.
-    chromeos::MahiWebContentsManager::Get()->ClearFocusedWebContentState(
-        /*top_level_window=*/nullptr);
+    chromeos::MahiWebContentsManager::Get()->ClearFocusedWebContentState();
   }
 }
 

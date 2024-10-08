@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/system/mahi/test/mock_mahi_manager.h"
 #include "base/callback_list.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -24,7 +25,9 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/components/mahi/public/cpp/mahi_browser_util.h"
+#include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_util.h"
+#include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -102,7 +105,6 @@ class MahiWebContentsManagerBrowserTest : public InProcessBrowserTest {
 
     fake_mahi_web_contents_manager_ =
         std::make_unique<FakeMahiWebContentsManager>();
-    fake_mahi_web_contents_manager_->Initialize();
     scoped_mahi_web_contents_manager_ =
         std::make_unique<chromeos::ScopedMahiWebContentsManagerOverride>(
             fake_mahi_web_contents_manager_.get());
@@ -111,9 +113,6 @@ class MahiWebContentsManagerBrowserTest : public InProcessBrowserTest {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     fake_mahi_web_contents_manager_->BindMahiBrowserDelegateForTesting(
         receiver_.BindNewPipeAndPassRemote());
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
-    fake_mahi_web_contents_manager_->SetMahiBrowserDelegateForTesting(
-        &browser_delegate_);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
@@ -160,26 +159,22 @@ class MahiWebContentsManagerBrowserTest : public InProcessBrowserTest {
     EXPECT_TRUE(AddTabAtIndex(0, pdf_url, ui::PAGE_TRANSITION_TYPED));
   }
 
-  void ExpectOnContextMenuClicked(bool success, ButtonType button_type) {
+  void ExpectOnContextMenuClicked(ButtonType button_type) {
     base::RunLoop run_loop;
-    EXPECT_CALL(browser_delegate_, OnContextMenuClicked)
-        .WillOnce([&run_loop, success](
-                      crosapi::mojom::MahiContextMenuRequestPtr request,
-                      base::OnceCallback<void(bool)> callback) {
-          std::move(callback).Run(/*success=*/success);
-          run_loop.Quit();
-        });
-    {
+    EXPECT_CALL(mock_mahi_manager_, OnContextMenuClicked)
+        .WillOnce(
+            [&run_loop](crosapi::mojom::MahiContextMenuRequestPtr request) {
+              run_loop.Quit();
+            });
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-      base::RunLoop run_loop_for_remote;
+    base::RunLoop run_loop_for_remote;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-      fake_mahi_web_contents_manager_->OnContextMenuClicked(
-          kDisplayID, button_type,
-          /*question=*/kQuestion, /*mahi_menu_bounds=*/gfx::Rect());
+    fake_mahi_web_contents_manager_->OnContextMenuClicked(
+        kDisplayID, button_type,
+        /*question=*/kQuestion, /*mahi_menu_bounds=*/gfx::Rect());
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-      run_loop_for_remote.RunUntilIdle();
+    run_loop_for_remote.RunUntilIdle();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-    }
 
     run_loop.Run();
   }
@@ -187,10 +182,8 @@ class MahiWebContentsManagerBrowserTest : public InProcessBrowserTest {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::test::ScopedFeatureList scoped_feature_list_;
 #endif
-
-  testing::StrictMock<MockMahiCrosapi> browser_delegate_;
-  mojo::Receiver<crosapi::mojom::MahiBrowserDelegate> receiver_{
-      &browser_delegate_};
+  testing::StrictMock<ash::MockMahiManager> mock_mahi_manager_;
+  chromeos::ScopedMahiManagerSetter scoped_manager_setter_{&mock_mahi_manager_};
 
   std::unique_ptr<FakeMahiWebContentsManager> fake_mahi_web_contents_manager_;
   std::unique_ptr<chromeos::ScopedMahiWebContentsManagerOverride>
@@ -208,16 +201,13 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   base::RunLoop run_loop;
-  // Expects that `MahiBrowserDelegate` should receive the context menu click
-  // action.
-  EXPECT_CALL(browser_delegate_, OnContextMenuClicked)
-      .WillOnce([&run_loop](crosapi::mojom::MahiContextMenuRequestPtr request,
-                            base::OnceCallback<void(bool)> callback) {
+  // Expects that `MahiManager` should receive the context menu click action.
+  EXPECT_CALL(mock_mahi_manager_, OnContextMenuClicked)
+      .WillOnce([&run_loop](crosapi::mojom::MahiContextMenuRequestPtr request) {
         EXPECT_EQ(kDisplayID, request->display_id);
         EXPECT_EQ(MatchButtonTypeToActionType(kButtonType),
                   request->action_type);
         EXPECT_EQ(kQuestion, request->question);
-        std::move(callback).Run(/*success=*/true);
         run_loop.Quit();
       });
 
@@ -243,24 +233,20 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
   base::HistogramTester histogram;
 
   base::RunLoop run_loop;
-  // Expects that `MahiBrowserDelegate` should receive the focused page change.
-  EXPECT_CALL(browser_delegate_, OnFocusedPageChanged)
+  // Expects that `MahiManager` should receive the focused page change.
+  EXPECT_CALL(mock_mahi_manager_, SetCurrentFocusedPageInfo)
       // When browser opens with `chrome://newtab`, we should be notified to
       // clear the previous focus info.
-      .WillOnce([](crosapi::mojom::MahiPageInfoPtr page_info,
-                   base::OnceCallback<void(bool)> callback) {
+      .WillOnce([](crosapi::mojom::MahiPageInfoPtr page_info) {
         EXPECT_EQ(GURL(), page_info->url);
         EXPECT_FALSE(page_info->IsDistillable.has_value());
-        std::move(callback).Run(/*success=*/true);
       })
-      // When a PDF is opened, the `MahiBrowserDelegate` should be
-      // notified without the distillability check.
-      .WillOnce([&run_loop, &histogram](
-                    crosapi::mojom::MahiPageInfoPtr page_info,
-                    base::OnceCallback<void(bool)> callback) {
+      // When a PDF is opened, the `MahiManager` should be notified without the
+      // distillability check.
+      .WillOnce([&run_loop,
+                 &histogram](crosapi::mojom::MahiPageInfoPtr page_info) {
         EXPECT_TRUE(page_info->IsDistillable.has_value());
         EXPECT_EQ(page_info->url.ExtractFileName(), kPDFFilename);
-        std::move(callback).Run(/*success=*/true);
         run_loop.Quit();
         // Since there is no distillability check for PDFs, triggering metric is
         // not logged.
@@ -288,39 +274,33 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
                   .favicon.isNull());
 
   base::RunLoop run_loop;
-  // Expects that `MahiBrowserDelegate` should receive the focused page change.
-  EXPECT_CALL(browser_delegate_, OnFocusedPageChanged)
+  // Expects that `MahiManager` should receive the focused page change.
+  EXPECT_CALL(mock_mahi_manager_, SetCurrentFocusedPageInfo)
       // When browser opens with `chrome://newtab`, we should be notified to
       // clear the previous focus info.
-      .WillOnce([](crosapi::mojom::MahiPageInfoPtr page_info,
-                   base::OnceCallback<void(bool)> callback) {
+      .WillOnce([](crosapi::mojom::MahiPageInfoPtr page_info) {
         EXPECT_EQ(GURL(), page_info->url);
         EXPECT_FALSE(page_info->IsDistillable.has_value());
-        std::move(callback).Run(/*success=*/true);
       })
-      // When a new page gets focus, the `MahiBrowserDelegate` should be
-      // notified without the distillability check.
-      .WillOnce([&histogram](crosapi::mojom::MahiPageInfoPtr page_info,
-                             base::OnceCallback<void(bool)> callback) {
+      // When a new page gets focus, the `MahiManager` should be notified
+      // without the distillability check.
+      .WillOnce([&histogram](crosapi::mojom::MahiPageInfoPtr page_info) {
         EXPECT_EQ(GURL(kUrl), page_info->url);
         EXPECT_FALSE(page_info->IsDistillable.has_value());
-        std::move(callback).Run(/*success=*/true);
         // Before distillability check finishes, triggering metric is not
         // logged.
         histogram.ExpectTotalCount(kMahiContentExtractionTriggeringLatency, 0);
       })
-      // When the focused page finishes loading, the `MahiBrowserDelegate`
-      // should be notified with the distillability check.
-      .WillOnce([&run_loop, &histogram](
-                    crosapi::mojom::MahiPageInfoPtr page_info,
-                    base::OnceCallback<void(bool)> callback) {
+      // When the focused page finishes loading, the `MahiManager` should be
+      // notified with the distillability check.
+      .WillOnce([&run_loop,
+                 &histogram](crosapi::mojom::MahiPageInfoPtr page_info) {
         EXPECT_EQ(GURL(kUrl), page_info->url);
         EXPECT_TRUE(page_info->IsDistillable.has_value());
         EXPECT_FALSE(page_info->IsDistillable.value());
         // The favicon is not empty.
         EXPECT_FALSE(page_info->favicon_image.isNull());
 
-        std::move(callback).Run(/*success=*/true);
         run_loop.Quit();
 
         // When distillability check finishes, triggering metric is logged.
@@ -346,27 +326,19 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest, GetPageContents) {
 
   // First create a web page so there is a place to extract the contents from.
   base::RunLoop run_loop;
-  EXPECT_CALL(browser_delegate_, OnFocusedPageChanged)
-      .WillOnce([](crosapi::mojom::MahiPageInfoPtr page_info,
-                   base::OnceCallback<void(bool)> callback) {
-        std::move(callback).Run(/*success=*/true);
-      })
-      .WillOnce([](crosapi::mojom::MahiPageInfoPtr page_info,
-                   base::OnceCallback<void(bool)> callback) {
-        std::move(callback).Run(/*success=*/true);
-      })
-      .WillOnce([&run_loop, &focused_page_id, this](
-                    crosapi::mojom::MahiPageInfoPtr page_info,
-                    base::OnceCallback<void(bool)> callback) {
+  EXPECT_CALL(mock_mahi_manager_, SetCurrentFocusedPageInfo)
+      .WillOnce([](crosapi::mojom::MahiPageInfoPtr page_info) {})
+      .WillOnce([](crosapi::mojom::MahiPageInfoPtr page_info) {})
+      .WillOnce([&run_loop, &focused_page_id,
+                 this](crosapi::mojom::MahiPageInfoPtr page_info) {
         EXPECT_TRUE(page_info->IsDistillable.has_value());
         EXPECT_FALSE(page_info->IsDistillable.value());
-        std::move(callback).Run(/*success=*/true);
 
         // Gets the page id of the newly opened page.
         focused_page_id = page_info->page_id;
         // When distillability check is returned, simulates the content request
         // from the mahi manager.
-        fake_mahi_web_contents_manager_->RequestContentFromPage(
+        fake_mahi_web_contents_manager_->RequestContent(
             focused_page_id,
             base::BindLambdaForTesting(
                 [&](crosapi::mojom::MahiPageContentPtr page_content) {
@@ -401,22 +373,17 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
 
   // First create a web page so there is a place to extract the contents from.
   base::RunLoop run_loop;
-  EXPECT_CALL(browser_delegate_, OnFocusedPageChanged)
-      .WillOnce([](crosapi::mojom::MahiPageInfoPtr page_info,
-                   base::OnceCallback<void(bool)> callback) {
-        std::move(callback).Run(/*success=*/true);
-      })
-      .WillOnce([&run_loop, &focused_page_id, this](
-                    crosapi::mojom::MahiPageInfoPtr page_info,
-                    base::OnceCallback<void(bool)> callback) {
+  EXPECT_CALL(mock_mahi_manager_, SetCurrentFocusedPageInfo)
+      .WillOnce([](crosapi::mojom::MahiPageInfoPtr page_info) {})
+      .WillOnce([&run_loop, &focused_page_id,
+                 this](crosapi::mojom::MahiPageInfoPtr page_info) {
         EXPECT_TRUE(page_info->IsDistillable.has_value());
         EXPECT_TRUE(page_info->IsDistillable.value());
         EXPECT_EQ(page_info->url.ExtractFileName(), kPDFFilename);
-        std::move(callback).Run(/*success=*/true);
 
         focused_page_id = page_info->page_id;
         // Simulate a request to extract content from client.
-        fake_mahi_web_contents_manager_->RequestContentFromPage(
+        fake_mahi_web_contents_manager_->RequestContent(
             focused_page_id,
             base::BindLambdaForTesting(
                 [&](crosapi::mojom::MahiPageContentPtr page_content) {
@@ -456,85 +423,36 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest, ContextMenuMetrics) {
                               ButtonType::kOutline, 0);
   histogram.ExpectBucketCount(kMahiContextMenuActivatedFailed,
                               ButtonType::kSummary, 0);
-  histogram.ExpectBucketCount(kMahiContextMenuActivatedFailed, ButtonType::kQA,
-                              0);
 
   // QA section.
   // With a successful click.
-  ExpectOnContextMenuClicked(true, ButtonType::kQA);
+  ExpectOnContextMenuClicked(ButtonType::kQA);
   histogram.ExpectBucketCount(kMahiContextMenuActivated, ButtonType::kQA, 1);
-  histogram.ExpectBucketCount(kMahiContextMenuActivatedFailed, ButtonType::kQA,
-                              0);
   histogram.ExpectTotalCount(kMahiContextMenuActivated, 1);
-  histogram.ExpectTotalCount(kMahiContextMenuActivatedFailed, 0);
-  testing::Mock::VerifyAndClearExpectations(this);
-  // Clicking failed.
-  ExpectOnContextMenuClicked(false, ButtonType::kQA);
-  histogram.ExpectBucketCount(kMahiContextMenuActivated, ButtonType::kQA, 2);
-  histogram.ExpectBucketCount(kMahiContextMenuActivatedFailed, ButtonType::kQA,
-                              1);
-  histogram.ExpectTotalCount(kMahiContextMenuActivated, 2);
-  histogram.ExpectTotalCount(kMahiContextMenuActivatedFailed, 1);
   testing::Mock::VerifyAndClearExpectations(this);
 
   // Outline.
   // With a successful click.
-  ExpectOnContextMenuClicked(true, ButtonType::kOutline);
+  ExpectOnContextMenuClicked(ButtonType::kOutline);
   histogram.ExpectBucketCount(kMahiContextMenuActivated, ButtonType::kOutline,
                               1);
-  histogram.ExpectBucketCount(kMahiContextMenuActivatedFailed,
-                              ButtonType::kOutline, 0);
-  histogram.ExpectTotalCount(kMahiContextMenuActivated, 3);
-  histogram.ExpectTotalCount(kMahiContextMenuActivatedFailed, 1);
-  testing::Mock::VerifyAndClearExpectations(this);
-  // Clicking failed.
-  ExpectOnContextMenuClicked(false, ButtonType::kOutline);
-  histogram.ExpectBucketCount(kMahiContextMenuActivated, ButtonType::kOutline,
-                              2);
-  histogram.ExpectBucketCount(kMahiContextMenuActivatedFailed,
-                              ButtonType::kOutline, 1);
-  histogram.ExpectTotalCount(kMahiContextMenuActivated, 4);
-  histogram.ExpectTotalCount(kMahiContextMenuActivatedFailed, 2);
+  histogram.ExpectTotalCount(kMahiContextMenuActivated, 2);
   testing::Mock::VerifyAndClearExpectations(this);
 
   // Summary button.
   // With a successful click.
-  ExpectOnContextMenuClicked(true, ButtonType::kSummary);
+  ExpectOnContextMenuClicked(ButtonType::kSummary);
   histogram.ExpectBucketCount(kMahiContextMenuActivated, ButtonType::kSummary,
                               1);
-  histogram.ExpectBucketCount(kMahiContextMenuActivatedFailed,
-                              ButtonType::kSummary, 0);
-  histogram.ExpectTotalCount(kMahiContextMenuActivated, 5);
-  histogram.ExpectTotalCount(kMahiContextMenuActivatedFailed, 2);
-  testing::Mock::VerifyAndClearExpectations(this);
-  // Clicking failed.
-  ExpectOnContextMenuClicked(false, ButtonType::kSummary);
-  histogram.ExpectBucketCount(kMahiContextMenuActivated, ButtonType::kSummary,
-                              2);
-  histogram.ExpectBucketCount(kMahiContextMenuActivatedFailed,
-                              ButtonType::kSummary, 1);
-  histogram.ExpectTotalCount(kMahiContextMenuActivated, 6);
-  histogram.ExpectTotalCount(kMahiContextMenuActivatedFailed, 3);
+  histogram.ExpectTotalCount(kMahiContextMenuActivated, 3);
   testing::Mock::VerifyAndClearExpectations(this);
 
   // Settings button.
   // With a successful click.
-  ExpectOnContextMenuClicked(true, ButtonType::kSettings);
+  ExpectOnContextMenuClicked(ButtonType::kSettings);
   histogram.ExpectBucketCount(kMahiContextMenuActivated, ButtonType::kSettings,
                               1);
-  histogram.ExpectBucketCount(kMahiContextMenuActivatedFailed,
-                              ButtonType::kSettings, 0);
-  histogram.ExpectTotalCount(kMahiContextMenuActivated, 7);
-  histogram.ExpectTotalCount(kMahiContextMenuActivatedFailed, 3);
-  testing::Mock::VerifyAndClearExpectations(this);
-  // Clicking failed.
-  ExpectOnContextMenuClicked(false, ButtonType::kSettings);
-  histogram.ExpectBucketCount(kMahiContextMenuActivated, ButtonType::kSettings,
-                              2);
-  histogram.ExpectBucketCount(kMahiContextMenuActivatedFailed,
-                              ButtonType::kSettings, 1);
-  histogram.ExpectTotalCount(kMahiContextMenuActivated, 8);
-  histogram.ExpectTotalCount(kMahiContextMenuActivatedFailed, 4);
+  histogram.ExpectTotalCount(kMahiContextMenuActivated, 4);
   testing::Mock::VerifyAndClearExpectations(this);
 }
 

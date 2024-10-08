@@ -10,6 +10,8 @@
 #include <type_traits>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
@@ -29,7 +31,9 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_browser_util.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "chromeos/components/mahi/public/cpp/mahi_media_app_content_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_util.h"
+#include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
 #include "chromeos/crosapi/mojom/mahi.mojom-forward.h"
 #include "components/pdf/browser/pdf_frame_util.h"
 #include "components/pdf/common/constants.h"
@@ -44,11 +48,6 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/session/session_controller_impl.h"
-#include "ash/shell.h"
-#endif
-
 #if DCHECK_IS_ON()
 #include "base/functional/callback_helpers.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -59,9 +58,37 @@ namespace mahi {
 namespace {
 
 using chromeos::mahi::ButtonType;
+using chromeos::mahi::GetContentCallback;
 
 // The character count threshold for a distillable page.
 static constexpr int kCharCountThreshold = 300;
+
+// Whether the `window` is a media app window.
+bool IsMediaAppWindow(const aura::Window* window) {
+  if (chromeos::MahiMediaAppContentManager::Get() &&
+      chromeos::MahiMediaAppContentManager::Get()->ObservingWindow(window)) {
+    return true;
+  }
+
+  return false;
+}
+
+crosapi::mojom::MahiPageInfoPtr ConvertWebContentStateToPageInfo(
+    const WebContentState& web_content_state) {
+  // Generates `page_info` from `web_content_state`.
+  crosapi::mojom::MahiPageInfoPtr page_info = crosapi::mojom::MahiPageInfo::New(
+      /*client_id, deprecated*/ base::UnguessableToken::Create(),
+      /*page_id=*/web_content_state.page_id,
+      /*url=*/web_content_state.url, /*title=*/web_content_state.title,
+      /*favicon_image=*/web_content_state.favicon.DeepCopy(),
+      /*is_distillable=*/std::nullopt,
+      /*is_incognito=*/web_content_state.is_incognito);
+  if (web_content_state.is_distillable.has_value()) {
+    page_info->IsDistillable = web_content_state.is_distillable.value();
+  }
+
+  return page_info;
+}
 
 // Checks if |web_contents| contains a PDF
 bool IsPDFWebContents(content::WebContents* web_contents) {
@@ -167,24 +194,21 @@ MahiWebContentsManagerImpl::~MahiWebContentsManagerImpl() {
   focused_web_contents_ = nullptr;
 }
 
-void MahiWebContentsManagerImpl::Initialize() {
-  client_ = std::make_unique<
-      MahiBrowserClientImpl>(/*request_content_callback=*/
-                             base::BindRepeating(
-                                 &MahiWebContentsManagerImpl::RequestContent,
-                                 weak_pointer_factory_.GetWeakPtr()));
-
-  is_initialized_ = true;
-}
-
 void MahiWebContentsManagerImpl::OnFocusedPageLoadComplete(
     content::WebContents* web_contents) {
-  if (!is_initialized_) {
+  auto* mahi_manager = chromeos::MahiManager::Get();
+  if (!mahi_manager) {
+    return;
+  }
+
+  // Do not notify mahi manager if the web_content is from a media app window,
+  // to avoid overriding media app focus status.
+  if (IsMediaAppWindow(web_contents->GetTopLevelNativeWindow())) {
     return;
   }
 
   if (ShouldSkip(web_contents)) {
-    ClearFocusedWebContentState(web_contents->GetTopLevelNativeWindow());
+    ClearFocusedWebContentState();
     return;
   }
 
@@ -195,22 +219,24 @@ void MahiWebContentsManagerImpl::OnFocusedPageLoadComplete(
       WebContentState(focused_web_contents_->GetLastCommittedURL(),
                       focused_web_contents_->GetTitle());
   focused_web_content_state_.favicon = GetFavicon(focused_web_contents_);
-  focused_web_content_state_.top_level_native_window =
-      web_contents->GetTopLevelNativeWindow();
   focused_web_content_state_.is_incognito =
       IsFromIncognito(focused_web_contents_);
+
+  crosapi::mojom::MahiPageInfoPtr page_info =
+      ConvertWebContentStateToPageInfo(focused_web_content_state_);
 
   // Skip the distillable check for PDF content.
   if (IsPDFWebContents(web_contents)) {
     is_pdf_focused_web_contents_ = true;
     focused_web_content_state_.is_distillable.emplace(true);
-    client_->OnFocusedPageChanged(focused_web_content_state_);
+    page_info->IsDistillable = true;
+    mahi_manager->SetCurrentFocusedPageInfo(std::move(page_info));
     return;
   }
 
   is_pdf_focused_web_contents_ = false;
   // Notifies `MahiManager` the focused page has changed.
-  client_->OnFocusedPageChanged(focused_web_content_state_);
+  mahi_manager->SetCurrentFocusedPageInfo(std::move(page_info));
 
   auto* rfh = web_contents->GetPrimaryMainFrame();
   if (!rfh || !rfh->IsRenderFrameLive()) {
@@ -224,26 +250,26 @@ void MahiWebContentsManagerImpl::OnFocusedPageLoadComplete(
                      focused_web_content_state_.page_id, start_time));
 }
 
-void MahiWebContentsManagerImpl::ClearFocusedWebContentState(
-    raw_ptr<aura::Window> top_level_window) {
+void MahiWebContentsManagerImpl::ClearFocusedWebContentState() {
   focused_web_contents_ = nullptr;
   is_pdf_focused_web_contents_ = false;
   focused_web_content_state_ = WebContentState(/*url=*/GURL(), /*title=*/u"");
-  if (top_level_window != nullptr) {
-    focused_web_content_state_.top_level_native_window = top_level_window;
-  }
-  if (!is_initialized_) {
+  if (!chromeos::MahiManager::Get()) {
     return;
   }
 
   // Notifies `MahiManager` the focused page has changed.
-  client_->OnFocusedPageChanged(focused_web_content_state_);
+  chromeos::MahiManager::Get()->SetCurrentFocusedPageInfo(
+      ConvertWebContentStateToPageInfo(focused_web_content_state_));
 }
 
 void MahiWebContentsManagerImpl::WebContentsDestroyed(
     content::WebContents* web_contents) {
+  if (IsMediaAppWindow(web_contents->GetTopLevelNativeWindow())) {
+    return;
+  }
   if (focused_web_contents_ == web_contents) {
-    ClearFocusedWebContentState(web_contents->GetTopLevelNativeWindow());
+    ClearFocusedWebContentState();
   }
 }
 
@@ -252,13 +278,31 @@ void MahiWebContentsManagerImpl::OnContextMenuClicked(
     ButtonType button_type,
     const std::u16string& question,
     const gfx::Rect& mahi_menu_bounds) {
-  // Forwards the UI request to `MahiBrowserDelegate`.
-  client_->OnContextMenuClicked(display_id, button_type, question,
-                                mahi_menu_bounds);
-
   // Records the `button_type` has been clicked.
   base::UmaHistogramEnumeration(chromeos::mahi::kMahiContextMenuActivated,
                                 button_type);
+
+  if (!chromeos::MahiManager::Get()) {
+    base::UmaHistogramEnumeration(
+        chromeos::mahi::kMahiContextMenuActivatedFailed, button_type);
+    return;
+  }
+
+  // Generates the context menu request.
+  crosapi::mojom::MahiContextMenuRequestPtr context_menu_request =
+      crosapi::mojom::MahiContextMenuRequest::New(
+          /*display_id=*/display_id,
+          /*action_type=*/
+          chromeos::mahi::MatchButtonTypeToActionType(button_type),
+          /*question=*/std::nullopt,
+          /*mahi_menu_bounds=*/mahi_menu_bounds);
+  if (button_type == chromeos::mahi::ButtonType::kQA) {
+    context_menu_request->question = question;
+  }
+
+  // Forwards the UI request to `MahiManager`.
+  chromeos::MahiManager::Get()->OnContextMenuClicked(
+      std::move(context_menu_request));
 }
 
 bool MahiWebContentsManagerImpl::IsFocusedPageDistillable() {
@@ -266,22 +310,6 @@ bool MahiWebContentsManagerImpl::IsFocusedPageDistillable() {
     return false;
   }
   return focused_web_content_state_.is_distillable.value();
-}
-
-bool MahiWebContentsManagerImpl::GetPrefValue() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto* session_controller = ash::Shell::Get()->session_controller();
-
-  if (!session_controller || !session_controller->GetActivePrefService()) {
-    return false;
-  }
-  return session_controller->GetActivePrefService()->GetBoolean(
-      ash::prefs::kHmrEnabled);
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return mahi_pref_lacros_;
-#endif
 }
 
 void MahiWebContentsManagerImpl::OnGetInnerText(
@@ -292,6 +320,10 @@ void MahiWebContentsManagerImpl::OnGetInnerText(
     // TODO(b:336438243): Add UMA to track this.
     return;
   }
+  if (!chromeos::MahiManager::Get()) {
+    return;
+  }
+
   base::UmaHistogramMicrosecondsTimes(
       chromeos::mahi::kMahiContentExtractionTriggeringLatency,
       base::Time::Now() - start_time);
@@ -302,7 +334,8 @@ void MahiWebContentsManagerImpl::OnGetInnerText(
       result ? result->inner_text.length() > kCharCountThreshold : false;
   focused_web_content_state_.is_distillable.emplace(distillable);
   // Notifies `MahiManager` the focused page has changed.
-  client_->OnFocusedPageChanged(focused_web_content_state_);
+  chromeos::MahiManager::Get()->SetCurrentFocusedPageInfo(
+      ConvertWebContentStateToPageInfo(focused_web_content_state_));
 }
 
 void MahiWebContentsManagerImpl::OnGetSnapshot(
@@ -318,7 +351,9 @@ void MahiWebContentsManagerImpl::OnGetSnapshot(
   }
   focused_web_content_state_.snapshot = snapshot;
   content_extraction_delegate_->ExtractContent(
-      focused_web_content_state_, client_->client_id(), std::move(callback));
+      focused_web_content_state_,
+      /*client_id, deprecated*/ base::UnguessableToken::Create(),
+      std::move(callback));
 }
 
 void MahiWebContentsManagerImpl::RequestContent(
@@ -395,7 +430,8 @@ void MahiWebContentsManagerImpl::OnGetAXTreeUpdatesForPDF(
     GetContentCallback callback,
     const std::vector<ui::AXTreeUpdate>& updates) {
   content_extraction_delegate_->ExtractContent(
-      focused_web_content_state_, std::move(updates), client_->client_id(),
+      focused_web_content_state_, std::move(updates),
+      /*client_id, deprecated*/ base::UnguessableToken::Create(),
       std::move(callback));
 
   // No need to observes more a11y changes from PDF content.

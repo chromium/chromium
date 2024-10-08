@@ -1487,7 +1487,6 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
   if (chromeos::features::IsMahiEnabled()) {
     mahi_web_contents_manager_ =
         std::make_unique<mahi::MahiWebContentsManagerImpl>();
-    mahi_web_contents_manager_->Initialize();
   }
 
   if (base::FeatureList::IsEnabled(::features::kPrintPreviewCrosPrimary)) {

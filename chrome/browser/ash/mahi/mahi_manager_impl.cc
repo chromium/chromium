@@ -34,7 +34,6 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 #include "chrome/browser/ash/mahi/mahi_availability.h"
-#include "chrome/browser/ash/mahi/mahi_browser_delegate_ash.h"
 #include "chrome/browser/ash/mahi/mahi_cache_manager.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -45,6 +44,7 @@
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_content_manager.h"
+#include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
@@ -57,8 +57,6 @@
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace {
-
-ash::MahiBrowserDelegateAsh* g_overriding_delegate_ptr_ = nullptr;
 
 // Aliases ---------------------------------------------------------------------
 
@@ -161,15 +159,6 @@ class OnConsentStateUpdateClosureRunner
       magic_boost_state_observation_{this};
 };
 
-// Helpers ---------------------------------------------------------------------
-
-ash::MahiBrowserDelegateAsh* GetBrowserDelegate() {
-  return g_overriding_delegate_ptr_ ? g_overriding_delegate_ptr_
-                                    : crosapi::CrosapiManager::Get()
-                                          ->crosapi_ash()
-                                          ->mahi_browser_delegate_ash();
-}
-
 MahiResponseStatus GetMahiResponseStatusFromMantaStatus(
     manta::MantaStatusCode code) {
   switch (code) {
@@ -245,7 +234,7 @@ MahiManagerImpl::MahiManagerImpl()
 
 MahiManagerImpl::~MahiManagerImpl() {
   mahi_provider_.reset();
-  mahi_browser_delegate_ash_ = nullptr;
+  mahi_web_contents_manager_ = nullptr;
 }
 
 std::u16string MahiManagerImpl::GetContentTitle() {
@@ -314,9 +303,8 @@ void MahiManagerImpl::GetSummary(MahiSummaryCallback callback) {
     chromeos::MahiMediaAppContentManager::Get()->GetContent(
         media_app_client_id_, std::move(get_content_done_callback));
   } else {
-    mahi_browser_delegate_ash_->GetContentFromClient(
-        current_panel_info_->client_id, current_panel_info_->page_id,
-        std::move(get_content_done_callback));
+    mahi_web_contents_manager_->RequestContent(
+        current_page_info_->page_id, std::move(get_content_done_callback));
   }
 }
 
@@ -379,9 +367,8 @@ void MahiManagerImpl::AnswerQuestion(const std::u16string& question,
     chromeos::MahiMediaAppContentManager::Get()->GetContent(
         media_app_client_id_, std::move(get_content_done_callback));
   } else {
-    mahi_browser_delegate_ash_->GetContentFromClient(
-        current_panel_info_->client_id, current_panel_info_->page_id,
-        std::move(get_content_done_callback));
+    mahi_web_contents_manager_->RequestContent(
+        current_panel_info_->page_id, std::move(get_content_done_callback));
   }
 }
 
@@ -620,8 +607,8 @@ bool MahiManagerImpl::MaybeInitializeAndDiscardPendingRequests() {
     mahi_provider_ = CreateProvider();
   }
 
-  if (!mahi_browser_delegate_ash_) {
-    mahi_browser_delegate_ash_ = GetBrowserDelegate();
+  if (!mahi_web_contents_manager_) {
+    mahi_web_contents_manager_ = chromeos::MahiWebContentsManager::Get();
   }
 
   if (weak_ptr_factory_for_requests_.HasWeakPtrs()) {
@@ -630,7 +617,7 @@ bool MahiManagerImpl::MaybeInitializeAndDiscardPendingRequests() {
 
   MaybeObserveHistoryService();
 
-  return mahi_provider_ && mahi_browser_delegate_ash_;
+  return mahi_provider_ != nullptr && mahi_web_contents_manager_ != nullptr;
 }
 
 void MahiManagerImpl::MaybeObserveHistoryService() {
@@ -831,18 +818,5 @@ void MahiManagerImpl::AnswerQuestionRepeating(
     const std::u16string& question,
     bool current_panel_content,
     MahiAnswerQuestionCallbackRepeating callback) {}
-
-// ScopedMahiBrowserDelegateOverrider----------------------------------------
-
-ScopedMahiBrowserDelegateOverrider::ScopedMahiBrowserDelegateOverrider(
-    MahiBrowserDelegateAsh* delegate) {
-  CHECK(g_overriding_delegate_ptr_ == nullptr);
-  g_overriding_delegate_ptr_ = delegate;
-}
-
-ScopedMahiBrowserDelegateOverrider::~ScopedMahiBrowserDelegateOverrider() {
-  CHECK(g_overriding_delegate_ptr_ != nullptr);
-  g_overriding_delegate_ptr_ = nullptr;
-}
 
 }  // namespace ash

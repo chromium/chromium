@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/mahi/test/fake_mahi_web_contents_manager.h"
 
+#include "base/notimplemented.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/gfx/image/image_skia.h"
@@ -20,27 +21,23 @@ gfx::ImageSkia FakeMahiWebContentsManager::GetFavicon(
   return gfx::test::CreateImage(27, 27).AsImageSkia();
 }
 
-void FakeMahiWebContentsManager::RequestContentFromPage(
+void FakeMahiWebContentsManager::RequestContent(
     const base::UnguessableToken& page_id,
-    GetContentCallback callback) {
-  // Forwards the request to `client_`, the first place to receive the request
-  // so that we can test the request end to end.
-  client_->GetContent(focused_web_content_state().page_id, std::move(callback));
-}
-
-bool FakeMahiWebContentsManager::GetPrefValue() const {
-  return pref_state_;
+    chromeos::mahi::GetContentCallback callback) {
+  std::move(callback).Run(crosapi::mojom::MahiPageContent::New(
+      /*client_id deprecated*/ base::UnguessableToken::Create(), page_id,
+      u"Test page content"));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void FakeMahiWebContentsManager::SetMahiBrowserDelegateForTesting(
     crosapi::mojom::MahiBrowserDelegate* delegate) {
-  client_->SetMahiBrowserDelegateForTesting(delegate);
+  NOTIMPLEMENTED();
 }
 #else   // BUILDFLAG(IS_CHROMEOS_LACROS)
 void FakeMahiWebContentsManager::BindMahiBrowserDelegateForTesting(
     mojo::PendingRemote<crosapi::mojom::MahiBrowserDelegate> pending_remote) {
-  client_->BindMahiBrowserDelegateForTesting(std::move(pending_remote));
+  NOTIMPLEMENTED();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
