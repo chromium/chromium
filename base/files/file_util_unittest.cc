@@ -1763,27 +1763,40 @@ TEST_F(FileUtilTest, DeleteDeep) {
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(FileUtilTest, ContentUriGetInfo) {
-  // path and content_uri are the same file.
-  FilePath path = temp_dir_.GetPath().Append("content_uri.txt");
-  WriteFile(path, "file-content");
-  FilePath content_uri =
-      *test::android::GetContentUriFromCacheDirFilePath(path);
+  FilePath file = temp_dir_.GetPath().Append("file.txt");
+  FilePath dir = temp_dir_.GetPath().Append("dir");
+  WriteFile(file, "file-content");
+  CreateDirectory(dir);
+
+  FilePath content_uri_file =
+      *test::android::GetContentUriFromCacheDirFilePath(file);
+  FilePath content_uri_dir =
+      *test::android::GetContentUriFromCacheDirFilePath(dir);
 
   // GetInfo() should work the same for files and content-URIs.
-  File::Info path_info;
+  File::Info info;
   File::Info content_uri_info;
-  EXPECT_TRUE(GetFileInfo(path, &path_info));
-  EXPECT_TRUE(GetFileInfo(content_uri, &content_uri_info));
-  EXPECT_EQ(12u, path_info.size);
+  EXPECT_TRUE(GetFileInfo(file, &info));
+  EXPECT_TRUE(GetFileInfo(content_uri_file, &content_uri_info));
+  EXPECT_EQ(12u, info.size);
   EXPECT_EQ(12u, content_uri_info.size);
-  EXPECT_EQ(path_info.last_modified, content_uri_info.last_modified);
-  EXPECT_FALSE(path_info.is_directory);
+  EXPECT_EQ(info.last_modified, content_uri_info.last_modified);
+  EXPECT_FALSE(info.is_directory);
   EXPECT_FALSE(content_uri_info.is_directory);
+
+  // GetInfo() should work the same for dirs and content-URIs.
+  EXPECT_TRUE(GetFileInfo(dir, &info));
+  EXPECT_TRUE(GetFileInfo(content_uri_dir, &content_uri_info));
+  EXPECT_EQ(info.last_modified, content_uri_info.last_modified);
+  EXPECT_TRUE(info.is_directory);
+  EXPECT_TRUE(content_uri_info.is_directory);
 
   // GetPosixFilePermissions() should fail for content URIs.
   int mode = 0;
-  EXPECT_TRUE(GetPosixFilePermissions(path, &mode));
-  EXPECT_FALSE(GetPosixFilePermissions(content_uri, &mode));
+  EXPECT_TRUE(GetPosixFilePermissions(file, &mode));
+  EXPECT_TRUE(GetPosixFilePermissions(dir, &mode));
+  EXPECT_FALSE(GetPosixFilePermissions(content_uri_file, &mode));
+  EXPECT_FALSE(GetPosixFilePermissions(content_uri_dir, &mode));
 }
 
 TEST_F(FileUtilTest, DeleteContentUri) {

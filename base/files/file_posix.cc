@@ -707,19 +707,20 @@ int File::Stat(const FilePath& path, stat_wrapper_t* sb) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 #if BUILDFLAG(IS_ANDROID)
   if (path.IsContentUri()) {
+    // Attempt to open the file and call GetInfo(), otherwise call Java code
+    // with the path which is required for dirs.
     File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-    if (file.IsValid()) {
-      Info info;
-      if (file.GetInfo(&info)) {
-        memset(sb, 0, sizeof(*sb));
-        sb->st_mode = info.is_directory ? S_IFDIR : S_IFREG;
-        sb->st_size = info.size;
-        sb->st_mtime = info.last_modified.ToTimeT();
-        sb->st_mtime_nsec =
-            (info.last_modified - Time::UnixEpoch()).InNanoseconds() %
-            Time::kNanosecondsPerSecond;
-        return 0;
-      }
+    Info info;
+    if ((file.IsValid() && file.GetInfo(&info)) ||
+        internal::ContentUriGetFileInfo(path, &info)) {
+      memset(sb, 0, sizeof(*sb));
+      sb->st_mode = info.is_directory ? S_IFDIR : S_IFREG;
+      sb->st_size = info.size;
+      sb->st_mtime = info.last_modified.ToTimeT();
+      sb->st_mtime_nsec =
+          (info.last_modified - Time::UnixEpoch()).InNanoseconds() %
+          Time::kNanosecondsPerSecond;
+      return 0;
     }
   }
 #endif
