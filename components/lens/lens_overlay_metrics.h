@@ -8,6 +8,7 @@
 #include <string>
 
 #include "components/lens/lens_overlay_dismissal_source.h"
+#include "components/lens/lens_overlay_first_interaction_type.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_permission_user_action.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -55,9 +56,11 @@ void RecordSessionForegroundDuration(
 
 // Records the elapsed time between when the overlay was invoked and when the
 // user first interacts with the overlay. Sliced, unsliced, UMA and UKM.
-void RecordTimeToFirstInteraction(LensOverlayInvocationSource invocation_source,
-                                  base::TimeDelta time_to_first_interaction,
-                                  ukm::SourceId source_id);
+void RecordTimeToFirstInteraction(
+    LensOverlayInvocationSource invocation_source,
+    base::TimeDelta time_to_first_interaction,
+    LensOverlayFirstInteractionType first_interaction_type,
+    ukm::SourceId source_id);
 
 // Records UKM session end metrics.
 void RecordUKMSessionEndMetrics(ukm::SourceId source_id,

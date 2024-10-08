@@ -29,6 +29,24 @@ std::string InvocationSourceToString(
   }
 }
 
+std::string FirstInteractionTypeToString(
+    LensOverlayFirstInteractionType interaction_type) {
+  switch (interaction_type) {
+    case LensOverlayFirstInteractionType::kClose:
+      return "Close";
+    case LensOverlayFirstInteractionType::kLensMenu:
+      return "LensMenu";
+    case LensOverlayFirstInteractionType::kRegionSelect:
+      return "RegionSelect";
+    case LensOverlayFirstInteractionType::kTextSelect:
+      return "TextSelect";
+    case LensOverlayFirstInteractionType::kSearchbox:
+      return "Searchbox";
+    case LensOverlayFirstInteractionType::kPermissionDialog:
+      return "Permission";
+  }
+}
+
 void RecordPermissionRequestedToBeShown(
     bool shown,
     LensOverlayInvocationSource invocation_source) {
@@ -110,9 +128,11 @@ void RecordSessionForegroundDuration(
                                 /*max=*/base::Minutes(10), /*buckets=*/50);
 }
 
-void RecordTimeToFirstInteraction(LensOverlayInvocationSource invocation_source,
-                                  base::TimeDelta time_to_first_interaction,
-                                  ukm::SourceId source_id) {
+void RecordTimeToFirstInteraction(
+    LensOverlayInvocationSource invocation_source,
+    base::TimeDelta time_to_first_interaction,
+    LensOverlayFirstInteractionType first_interaction_type,
+    ukm::SourceId source_id) {
   // UMA unsliced TimeToFirstInteraction.
   base::UmaHistogramCustomTimes("Lens.Overlay.TimeToFirstInteraction",
                                 time_to_first_interaction,
@@ -123,6 +143,16 @@ void RecordTimeToFirstInteraction(LensOverlayInvocationSource invocation_source,
       "Lens.Overlay.ByInvocationSource." +
       InvocationSourceToString(invocation_source) + ".TimeToFirstInteraction";
   base::UmaHistogramCustomTimes(sliced_time_to_first_interaction_histogram_name,
+                                time_to_first_interaction,
+                                /*min=*/base::Milliseconds(1),
+                                /*max=*/base::Minutes(10), /*buckets=*/50);
+
+  // UMA TimeToFirstInteraction sliced by interaction type.
+  const auto interaction_type_histogram_name =
+      "Lens.Overlay.TimeToFirstInteraction." +
+      FirstInteractionTypeToString(first_interaction_type);
+
+  base::UmaHistogramCustomTimes(interaction_type_histogram_name,
                                 time_to_first_interaction,
                                 /*min=*/base::Milliseconds(1),
                                 /*max=*/base::Minutes(10), /*buckets=*/50);

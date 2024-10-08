@@ -10,6 +10,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/timer/elapsed_timer.h"
+#import "components/lens/lens_overlay_first_interaction_type.h"
 #import "components/lens/lens_overlay_metrics.h"
 #import "components/prefs/pref_service.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
@@ -58,6 +59,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/lens/lens_configuration.h"
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_api.h"
+#import "ios/public/provider/chrome/browser/lens/lens_overlay_result.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
@@ -577,7 +579,10 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
   // Time to first interaction metrics.
   if (!_searchPerformedInSession) {
     _searchPerformedInSession = YES;
-    [self recordFirstInteraction];
+    [self recordFirstInteraction:
+              _mediator.currentLensResult.isTextSelection
+                  ? lens::LensOverlayFirstInteractionType::kTextSelect
+                  : lens::LensOverlayFirstInteractionType::kRegionSelect];
   }
 
   [self startResultPage];
@@ -611,6 +616,8 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
   lens::RecordPermissionUserAction(
       lens::LensPermissionUserAction::kAcceptButtonPressed,
       self.currentInvocationSource);
+  [self recordFirstInteraction:lens::LensOverlayFirstInteractionType::
+                                   kPermissionDialog];
 
   __weak __typeof(self) weakSelf = self;
   [_containerViewController
@@ -624,6 +631,8 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
   lens::RecordPermissionUserAction(
       lens::LensPermissionUserAction::kCancelButtonPressed,
       self.currentInvocationSource);
+  [self recordFirstInteraction:lens::LensOverlayFirstInteractionType::
+                                   kPermissionDialog];
   [self destroyLensUI:YES
                reason:lens::LensOverlayDismissalSource::kLensPermissionsDenied];
 }
@@ -631,6 +640,8 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
 - (void)didPressLearnMore {
   lens::RecordPermissionUserAction(lens::LensPermissionUserAction::kLinkOpened,
                                    self.currentInvocationSource);
+  [self recordFirstInteraction:lens::LensOverlayFirstInteractionType::
+                                   kPermissionDialog];
   OpenNewTabCommand* command = [OpenNewTabCommand
       commandWithURLFromChrome:GURL(kLearnMoreLensURL)
                    inIncognito:self.browser->GetProfile()->IsOffTheRecord()];
@@ -1070,14 +1081,15 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
 }
 
 /// Records the first interaction time.
-- (void)recordFirstInteraction {
+- (void)recordFirstInteraction:
+    (lens::LensOverlayFirstInteractionType)firstInteractionType {
   if (_firstInteractionRecorded) {
     return;
   }
   _firstInteractionRecorded = YES;
-  lens::RecordTimeToFirstInteraction(self.currentInvocationSource,
-                                     _invocationTime.Elapsed(),
-                                     self.associatedTabSourceId);
+  lens::RecordTimeToFirstInteraction(
+      self.currentInvocationSource, _invocationTime.Elapsed(),
+      firstInteractionType, self.associatedTabSourceId);
 }
 
 /// Metrics recorded on lens overlay dismissal.
@@ -1085,6 +1097,9 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
     (lens::LensOverlayDismissalSource)dismissalSource {
   lens::LensOverlayInvocationSource invocationSource =
       self.currentInvocationSource;
+
+  // First interaction metrics.
+  [self recordFirstInteraction:lens::LensOverlayFirstInteractionType::kClose];
 
   // Invocation metrics.
   lens::RecordInvocation(invocationSource);

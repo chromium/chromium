@@ -34,6 +34,7 @@
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/find_in_page/find_result_observer.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
+#include "components/lens/lens_overlay_first_interaction_type.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -865,7 +866,8 @@ class LensOverlayController : public LensSearchboxClient,
   // Records UMA and UKM metrics for time to first interaction. Not recorded
   // when invocation source is an image's content area menu because in this
   // case the time to first interaction is essentially zero.
-  void RecordTimeToFirstInteraction();
+  void RecordTimeToFirstInteraction(
+      lens::LensOverlayFirstInteractionType interaction_type);
 
   // Records UMA and UKM metrics for dismissal and end of session metrics.
   // This includes dismissal source, session length, and whether a search was

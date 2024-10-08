@@ -46,6 +46,10 @@
 
 @interface LensOverlayMediator () <CRWWebStateObserver, SearchEngineObserving>
 
+/// Current lens result.
+@property(nonatomic, strong, readwrite) id<ChromeLensOverlayResult>
+    currentLensResult;
+
 @end
 
 @implementation LensOverlayMediator {
@@ -58,8 +62,6 @@
 
   /// History stack for back navigation.
   NSMutableArray<HistoryElement*>* _historyStack;
-  /// Current lens result.
-  id<ChromeLensOverlayResult> _currentLensResult;
   /// Whether the next navigation is a reload.
   BOOL _isReloading;
 }

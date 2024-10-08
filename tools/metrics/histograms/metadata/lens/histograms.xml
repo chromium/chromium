@@ -22,6 +22,15 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="FirstInteractionType">
+  <variant name="Close"/>
+  <variant name="LensMenu"/>
+  <variant name="Permission"/>
+  <variant name="RegionSelect"/>
+  <variant name="Searchbox"/>
+  <variant name="TextSelect"/>
+</variants>
+
 <variants name="InvocationSources">
   <variant name="AppMenu"/>
   <variant name="ContentAreaContextMenuImage"/>
@@ -308,6 +317,18 @@ chromium-metrics-reviews@google.com.
     interacts with the overlay. Nothing is logged when the user enters through
     the image context menu.
   </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.TimeToFirstInteraction.{FirstInteractionType}"
+    units="ms" expires_after="2025-05-06">
+  <owner>christianxu@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the user first interacts with the overlay, sliced by
+    interaction type. Measures the elapsed time between when the overlay was
+    invoked and when the user first interacts with the overlay.
+  </summary>
+  <token key="FirstInteractionType" variants="FirstInteractionType"/>
 </histogram>
 
 <histogram name="Lens.Overlay.TimeToWebUIReady" units="ms"

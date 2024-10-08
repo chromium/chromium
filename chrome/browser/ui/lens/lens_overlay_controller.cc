@@ -2066,7 +2066,8 @@ void LensOverlayController::DoLensRequest(
       region.Clone(), selection_type,
       initialization_data_->additional_search_query_params_, region_bytes);
   results_side_panel_coordinator_->RegisterEntryAndShow();
-  RecordTimeToFirstInteraction();
+  RecordTimeToFirstInteraction(
+      lens::LensOverlayFirstInteractionType::kRegionSelect);
   search_performed_in_session_ = true;
   state_ = State::kOverlayAndResults;
 }
@@ -2247,7 +2248,8 @@ void LensOverlayController::IssueTextSelectionRequestInner(
       query, lens::TextOnlyQueryType::kLensTextSelection,
       initialization_data_->additional_search_query_params_);
   results_side_panel_coordinator_->RegisterEntryAndShow();
-  RecordTimeToFirstInteraction();
+  RecordTimeToFirstInteraction(
+      lens::LensOverlayFirstInteractionType::kTextSelect);
   search_performed_in_session_ = true;
   state_ = State::kOverlayAndResults;
 }
@@ -2325,7 +2327,8 @@ void LensOverlayController::IssueSearchBoxRequest(
   }
   results_side_panel_coordinator_->RegisterEntryAndShow();
   CloseSearchBubble();
-  RecordTimeToFirstInteraction();
+  RecordTimeToFirstInteraction(
+      lens::LensOverlayFirstInteractionType::kSearchbox);
   search_performed_in_session_ = true;
 
   // If we are in the zero state, this request must have come from CSB. In that
@@ -2390,7 +2393,8 @@ void LensOverlayController::SetSearchboxThumbnail(
   }
 }
 
-void LensOverlayController::RecordTimeToFirstInteraction() {
+void LensOverlayController::RecordTimeToFirstInteraction(
+    lens::LensOverlayFirstInteractionType interaction_type) {
   if (search_performed_in_session_) {
     return;
   }
@@ -2401,7 +2405,8 @@ void LensOverlayController::RecordTimeToFirstInteraction() {
       tab_->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
   // UMA and UKM TimeToFirstInteraction.
   lens::RecordTimeToFirstInteraction(invocation_source_,
-                                     time_to_first_interaction, source_id);
+                                     time_to_first_interaction,
+                                     interaction_type, source_id);
 }
 
 void LensOverlayController::RecordEndOfSessionMetrics(

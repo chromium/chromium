@@ -61,6 +61,10 @@ class WebState;
 
 @property(nonatomic, assign) LensOmniboxClient* omniboxClient;
 
+/// Current lens result. Readonly.
+@property(nonatomic, strong, readonly) id<ChromeLensOverlayResult>
+    currentLensResult;
+
 - (instancetype)initWithIsIncognito:(BOOL)isIncognito NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
