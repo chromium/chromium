@@ -366,13 +366,22 @@ struct LazyLineBreakIterator::Context {
       return FastBreakResult::kNoBreak;
     }
 
-    // Don't allow line breaking between '-' and a digit if the '-' may mean a
-    // minus sign in the context, while allow breaking in 'ABCD-1234' and
-    // '1234-5678' which may be in long URLs.
+    // U+002D HYPHEN-MINUS may depend on the context.
     static_assert('-' >= kFastLineBreakMinChar);
-    if (last_ch == '-' && IsASCIIDigit(ch)) {
-      return IsASCIIAlphanumeric(last_last_ch) ? FastBreakResult::kCanBreak
-                                               : FastBreakResult::kNoBreak;
+    if (last_ch == '-') [[unlikely]] {
+      if (ch <= 0x7F) {
+        // Up to U+007F is fast-breakable. See `LineBreakData::FillAscii()`.
+        if (IsASCIIDigit(ch)) {
+          // Don't allow line breaking between '-' and a digit if the '-' may
+          // mean a minus sign in the context, while allow breaking in
+          // 'ABCD-1234' and '1234-5678' which may be in long URLs.
+          return IsASCIIAlphanumeric(last_last_ch) ? FastBreakResult::kCanBreak
+                                                   : FastBreakResult::kNoBreak;
+        }
+      } else if (RuntimeEnabledFeatures::BreakIteratorHyphenMinusEnabled()) {
+        // Defer to the Unicode algorithm to take more context into account.
+        return FastBreakResult::kUnknown;
+      }
     }
 
     if constexpr (!use_fast_table) {

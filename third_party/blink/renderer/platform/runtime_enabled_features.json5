@@ -603,6 +603,11 @@
       status: "stable",
     },
     {
+      // crbug.com/371615505
+      name: "BreakIteratorHyphenMinus",
+      status: "stable",
+    },
+    {
       // crbug.com/41485013
       name: "BreakIteratorSetStartOffset",
       status: "stable",

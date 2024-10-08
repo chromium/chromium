@@ -331,4 +331,11 @@ TEST_F(TextBreakIteratorTest, SoftHyphen) {
   TestNextBreakOpportunity({9, 14}, break_iterator);
 }
 
+TEST_F(TextBreakIteratorTest, HyphenMinusBeforeHighLatin) {
+  SetTestString("Lorem-úpsum");
+  MatchLineBreaks({6, 11});
+  SetTestString("Lorem-èpsum");
+  MatchLineBreaks({6, 11});
+}
+
 }  // namespace blink
