@@ -85,8 +85,7 @@ class BatchUploadDialogViewBrowserTest : public InProcessBrowserTest {
   }
 
   void SigninWithFullInfo() {
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(browser()->profile());
+    signin::IdentityManager* identity_manager = GetIdentityManager();
     AccountInfo account_info = signin::MakePrimaryAccountAvailable(
         identity_manager, "test@gmail.com", signin::ConsentLevel::kSignin);
     ASSERT_FALSE(account_info.IsEmpty());
@@ -100,7 +99,17 @@ class BatchUploadDialogViewBrowserTest : public InProcessBrowserTest {
     signin::UpdateAccountInfoForAccount(identity_manager, account_info);
   }
 
+  void Signout() { signin::ClearPrimaryAccount(GetIdentityManager()); }
+
+  void TriggerSigninPending() {
+    signin::SetInvalidRefreshTokenForPrimaryAccount(GetIdentityManager());
+  }
+
  private:
+  signin::IdentityManager* GetIdentityManager() {
+    return IdentityManagerFactory::GetForProfile(browser()->profile());
+  }
+
   // Needed to make sure the mojo binders are set.
   base::test::ScopedFeatureList scoped_feature_list_{
       switches::kBatchUploadDesktop};
@@ -139,4 +148,44 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
     ASSERT_TRUE(widget);
     widget->Close();
   }
+}
+
+IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
+                       OpenBatchUploadDialogViewClosesOnSignout) {
+  SigninWithFullInfo();
+
+  base::MockCallback<SelectedDataTypeItemsCallback> mock_callback;
+
+  EXPECT_CALL(mock_callback, Run(kEmptySelectedMap)).Times(1);
+
+  BatchUploadDataProviderFake fake_provider(BatchUploadDataType::kPasswords);
+  fake_provider.SetHasLocalData(true);
+  BatchUploadDialogView* dialog_view = CreateBatchUploadDialogView(
+      browser()->profile(), {&fake_provider}, mock_callback.Get());
+  ASSERT_TRUE(dialog_view->GetWidget()->IsVisible());
+
+  // Signing out should close the dialog.
+  Signout();
+
+  EXPECT_FALSE(dialog_view->GetWidget()->IsVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
+                       OpenBatchUploadDialogViewClosesOnSigninPending) {
+  SigninWithFullInfo();
+
+  base::MockCallback<SelectedDataTypeItemsCallback> mock_callback;
+
+  EXPECT_CALL(mock_callback, Run(kEmptySelectedMap)).Times(1);
+
+  BatchUploadDataProviderFake fake_provider(BatchUploadDataType::kPasswords);
+  fake_provider.SetHasLocalData(true);
+  BatchUploadDialogView* dialog_view = CreateBatchUploadDialogView(
+      browser()->profile(), {&fake_provider}, mock_callback.Get());
+  ASSERT_TRUE(dialog_view->GetWidget()->IsVisible());
+
+  // Signing out should close the dialog.
+  TriggerSigninPending();
+
+  EXPECT_FALSE(dialog_view->GetWidget()->IsVisible());
 }

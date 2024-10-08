@@ -34,14 +34,12 @@ BatchUploadUI* GetBatchUploadUI(views::WebView* web_view) {
 }
 
 // Account is expected not to be in error.
-AccountInfo GetBatchUploadPrimaryAccountInfo(Profile& profile) {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(&profile);
-
-  AccountInfo primary_account = identity_manager->FindExtendedAccountInfo(
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+AccountInfo GetBatchUploadPrimaryAccountInfo(
+    signin::IdentityManager& identity_manager) {
+  AccountInfo primary_account = identity_manager.FindExtendedAccountInfo(
+      identity_manager.GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
   CHECK(!primary_account.email.empty());
-  CHECK(!identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+  CHECK(!identity_manager.HasAccountWithRefreshTokenInPersistentErrorState(
       primary_account.account_id));
   return primary_account;
 }
@@ -101,12 +99,17 @@ BatchUploadDialogView::BatchUploadDialogView(
   web_view_->SetPreferredSize(
       gfx::Size(kBatchUploadDialogFixedWidth, kBatchUploadDialogMaxHeight));
 
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  CHECK(identity_manager);
+  primary_account_info_ = GetBatchUploadPrimaryAccountInfo(*identity_manager);
+
   BatchUploadUI* web_ui = GetBatchUploadUI(web_view_);
   CHECK(web_ui);
 
   // Initializes the UI that will initialize the handler when ready.
   web_ui->Initialize(
-      GetBatchUploadPrimaryAccountInfo(*profile), data_providers_list,
+      primary_account_info_, data_providers_list,
       base::BindRepeating(&BatchUploadDialogView::SetHeightAndShowWidget,
                           base::Unretained(this)),
       base::BindOnce(&BatchUploadDialogView::OnDialogSelectionMade,
@@ -116,8 +119,8 @@ BatchUploadDialogView::BatchUploadDialogView(
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  // TODO(b/369306124): Observer IdentityManager to know if the user signed out
-  // to close the dialog.
+  // Observe Identity Manager for sign in state changes.
+  scoped_identity_manager_observation_.Observe(identity_manager);
 }
 
 void BatchUploadDialogView::OnClose() {
@@ -152,6 +155,14 @@ void BatchUploadDialogView::OnDialogSelectionMade(
 }
 
 void BatchUploadDialogView::SetHeightAndShowWidget(int height) {
+  // This might happen if an update was requested after a close event happens
+  // externally such as signing out or signin pending that triggers the closing
+  // of the widget. The widget does not get destroyed right away but is in
+  // closing mode.
+  if (GetWidget()->IsClosed()) {
+    return;
+  }
+
   // Beyond `kBatchUploadDialogMaxHeight`, the dialog will show a scrollbar.
   web_view_->SetPreferredSize(
       gfx::Size(kBatchUploadDialogFixedWidth,
@@ -163,6 +174,27 @@ void BatchUploadDialogView::SetHeightAndShowWidget(int height) {
   // the view margin to 0 in the constructor, it leads to the webview
   // overlapping on the native view in the corners.
   web_view_->holder()->SetCornerRadii(gfx::RoundedCornersF(GetCornerRadius()));
+}
+
+void BatchUploadDialogView::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      GetWidget()->Close();
+      return;
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      break;
+  }
+}
+
+void BatchUploadDialogView::OnErrorStateOfRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info,
+    const GoogleServiceAuthError& error,
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
+  if (account_info == primary_account_info_ && error.IsPersistentError()) {
+    GetWidget()->Close();
+  }
 }
 
 // BatchUploadUIDelegate -------------------------------------------------------

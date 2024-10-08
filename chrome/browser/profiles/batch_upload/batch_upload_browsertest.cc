@@ -210,6 +210,62 @@ IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest,
   EXPECT_FALSE(batch_upload->OpenBatchUpload(browser()));
 }
 
+IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest, OpenedDialogThenSigninPending) {
+  SigninWithFullInfo();
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->profile());
+  CoreAccountInfo primary_account =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  ASSERT_FALSE(primary_account.IsEmpty());
+
+  BatchUploadService* batch_upload =
+      BatchUploadServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(batch_upload);
+  EXPECT_TRUE(OpenBatchUpload(batch_upload, browser()));
+  EXPECT_TRUE(batch_upload->IsDialogOpened());
+
+  // Trigger Signin Pending.
+  signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
+  EXPECT_FALSE(batch_upload->IsDialogOpened());
+
+  // Opening the dialog again should fail as we are still in signin pending.
+  EXPECT_FALSE(batch_upload->OpenBatchUpload(browser()));
+
+  // Resolve the signin pending state.
+  signin::SetRefreshTokenForPrimaryAccount(identity_manager);
+  // Opening the dialog should now be possible again.
+  EXPECT_TRUE(OpenBatchUpload(batch_upload, browser()));
+}
+
+IN_PROC_BROWSER_TEST_F(BatchUploadBrowserTest, OpenedDialogThenSignout) {
+  SigninWithFullInfo();
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->profile());
+  CoreAccountInfo primary_account =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  ASSERT_FALSE(primary_account.IsEmpty());
+
+  BatchUploadService* batch_upload =
+      BatchUploadServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(batch_upload);
+  EXPECT_TRUE(OpenBatchUpload(batch_upload, browser()));
+  EXPECT_TRUE(batch_upload->IsDialogOpened());
+
+  // Sign out.
+  signin::ClearPrimaryAccount(identity_manager);
+  EXPECT_FALSE(batch_upload->IsDialogOpened());
+
+  // Opening the dialog again should fail as we are still signed out.
+  EXPECT_FALSE(batch_upload->OpenBatchUpload(browser()));
+
+  // Sign in again.
+  SigninWithFullInfo();
+  // Opening the dialog should now be possible again.
+  EXPECT_TRUE(OpenBatchUpload(batch_upload, browser()));
+}
+
 // Used to control the creation of the dialog (not actually creating it), and
 // the expected output without having to deal with the real dialog.
 // TODO(b/359146556): Delegate to be used when dummy implementations are removed

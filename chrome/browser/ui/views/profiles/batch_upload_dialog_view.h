@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_BATCH_UPLOAD_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_BATCH_UPLOAD_DIALOG_VIEW_H_
 
+#include "base/scoped_observation.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_delegate.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class Browser;
@@ -20,7 +23,8 @@ class WebView;
 // Native dialog view that holds the web ui component for the Batch Upload ui.
 // It needs to adapt the height size based on the web ui content that is
 // displayed, which is dynamic.
-class BatchUploadDialogView : public views::DialogDelegateView {
+class BatchUploadDialogView : public views::DialogDelegateView,
+                              public signin::IdentityManager::Observer {
   METADATA_HEADER(BatchUploadDialogView, views::DialogDelegateView)
 
  public:
@@ -66,9 +70,24 @@ class BatchUploadDialogView : public views::DialogDelegateView {
   // view fully is asynchronous.
   void OnClose();
 
+  // signin::IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
+  void OnErrorStateOfRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info,
+      const GoogleServiceAuthError& error,
+      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
+      override;
+
+  // Account info for which the data is showing.
+  AccountInfo primary_account_info_;
   SelectedDataTypeItemsCallback complete_callback_;
 
   raw_ptr<views::WebView> web_view_;
+
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      scoped_identity_manager_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_BATCH_UPLOAD_DIALOG_VIEW_H_
