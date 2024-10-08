@@ -5246,6 +5246,17 @@ AutofillSaveCreditCardPromptDestination.
   </token>
 </histogram>
 
+<histogram name="Autofill.SettingsPageActions.LocalIban"
+    enum="AutofillPaymentMethodsActionEnum" expires_after="2025-07-01">
+  <owner>jsaul@google.com</owner>
+  <owner>averina@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records user interactions with local IBANs on the Chrome payment methods
+    settings page.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.ShadowPredictions.{SourcePair}"
     enum="AutofillPredictionsComparisonResult" expires_after="2025-02-10">
   <owner>schwering@google.com</owner>

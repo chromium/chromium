@@ -14,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
@@ -23,6 +24,7 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.chrome.R;
@@ -41,6 +43,10 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
  * to the user's device only.
  */
 public class AutofillLocalIbanEditor extends AutofillEditorBase implements ProfileDependentSetting {
+    @VisibleForTesting
+    static final String SETTINGS_PAGE_LOCAL_IBAN_ACTIONS_HISTOGRAM =
+            "Autofill.SettingsPage.LocalIbanActions";
+
     private static Callback<Fragment> sObserverForTest;
 
     protected Button mDoneButton;
@@ -50,6 +56,28 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
     private Iban mIban;
     private Profile mProfile;
     private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    // Needs to stay in sync with AutofillPaymentMethodAction in enums.xml.
+    @IntDef({
+        IbanAction.IBAN_ADDED_WITH_NICKNAME,
+        IbanAction.IBAN_ADDED_WITHOUT_NICKNAME,
+        IbanAction.IBAN_DELETED,
+        IbanAction.IBAN_EDITOR_CLOSED_WITH_CHANGES,
+        IbanAction.IBAN_EDITOR_CLOSED_WITHOUT_CHANGES,
+        IbanAction.HISTOGRAM_BUCKET_COUNT
+    })
+    // TODO(b/371041630): Extend IBAN histograms to track nickname usage across all IBAN actions.
+    @VisibleForTesting
+    @interface IbanAction {
+        int IBAN_ADDED_WITH_NICKNAME = 0;
+        int IBAN_ADDED_WITHOUT_NICKNAME = 1;
+        int IBAN_DELETED = 2;
+        int IBAN_EDITOR_CLOSED_WITH_CHANGES = 3;
+        int IBAN_EDITOR_CLOSED_WITHOUT_CHANGES = 4;
+        int HISTOGRAM_BUCKET_COUNT = 5;
+    }
 
     @UsedByReflection("AutofillPaymentMethodsFragment.java")
     public AutofillLocalIbanEditor() {}
@@ -115,13 +143,39 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
         String guid = personalDataManager.addOrUpdateLocalIban(iban);
         // Return true if the GUID is non-empty (successful operation), and false if the GUID is
         // empty (unsuccessful).
-        return !guid.isEmpty();
+        if (guid.isEmpty()) return false;
+
+        if (mIsNewEntry) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    SETTINGS_PAGE_LOCAL_IBAN_ACTIONS_HISTOGRAM,
+                    iban.getNickname().isEmpty()
+                            ? IbanAction.IBAN_ADDED_WITHOUT_NICKNAME
+                            : IbanAction.IBAN_ADDED_WITH_NICKNAME,
+                    IbanAction.HISTOGRAM_BUCKET_COUNT);
+        } else {
+            boolean ibanChanged =
+                    !mIban.getNickname().equals(iban.getNickname())
+                            || !mIban.getValue().equals(iban.getValue());
+
+            RecordHistogram.recordEnumeratedHistogram(
+                    SETTINGS_PAGE_LOCAL_IBAN_ACTIONS_HISTOGRAM,
+                    ibanChanged
+                            ? IbanAction.IBAN_EDITOR_CLOSED_WITH_CHANGES
+                            : IbanAction.IBAN_EDITOR_CLOSED_WITHOUT_CHANGES,
+                    IbanAction.HISTOGRAM_BUCKET_COUNT);
+        }
+
+        return true;
     }
 
     @Override
     protected void deleteEntry() {
         if (mGUID != null) {
             PersonalDataManagerFactory.getForProfile(getProfile()).deleteIban(mGUID);
+            RecordHistogram.recordEnumeratedHistogram(
+                    SETTINGS_PAGE_LOCAL_IBAN_ACTIONS_HISTOGRAM,
+                    IbanAction.IBAN_DELETED,
+                    IbanAction.HISTOGRAM_BUCKET_COUNT);
         }
     }
 

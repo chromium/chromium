@@ -2142,6 +2142,14 @@ Called by update_autofill_enums.py.-->
              response"/>
 </enum>
 
+<enum name="AutofillPaymentMethodsActionEnum">
+  <int value="0" label="Added with nickname"/>
+  <int value="1" label="Added without nickname"/>
+  <int value="2" label="Deleted"/>
+  <int value="3" label="Editor closed with changes"/>
+  <int value="4" label="Editor closed without changes"/>
+</enum>
+
 <enum name="AutofillPopupInteraction">
   <int value="0" label="The popup was shown."/>
   <int value="1" label="A suggestion was selected."/>

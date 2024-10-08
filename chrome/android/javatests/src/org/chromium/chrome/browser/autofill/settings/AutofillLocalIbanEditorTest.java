@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.Button;
 
 import androidx.test.filters.MediumTest;
 
@@ -32,6 +33,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
@@ -106,6 +108,17 @@ public class AutofillLocalIbanEditorTest {
                         autofillLocalIbanEditorFragment.mValue.setText(value);
                     } catch (Exception e) {
                         throw new AssertionError("Failed to set IBAN", e);
+                    }
+                });
+    }
+
+    private void performButtonClick(Button button) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    try {
+                        button.performClick();
+                    } catch (Exception e) {
+                        throw new AssertionError("Failed to click the button", e);
                     }
                 });
     }
@@ -278,5 +291,122 @@ public class AutofillLocalIbanEditorTest {
         mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(VALID_BELGIUM_IBAN.getGuid()));
 
         onView(withId(R.id.help_menu_id)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testRecordHistogram_whenNewIbanIsAddedWithNickname() throws Exception {
+        HistogramWatcher settingsPageIbanActionHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        AutofillLocalIbanEditor.SETTINGS_PAGE_LOCAL_IBAN_ACTIONS_HISTOGRAM,
+                        AutofillLocalIbanEditor.IbanAction.IBAN_ADDED_WITH_NICKNAME);
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        AutofillLocalIbanEditor autofillLocalIbanEditorFragment =
+                (AutofillLocalIbanEditor) activity.getMainFragment();
+        setValueInEditor(autofillLocalIbanEditorFragment, "BE71096123456769");
+        setNicknameInEditor(autofillLocalIbanEditorFragment, "My IBAN");
+
+        performButtonClick(autofillLocalIbanEditorFragment.mDoneButton);
+
+        settingsPageIbanActionHistogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testRecordHistogram_whenNewIbanIsAddedWithoutNickname() throws Exception {
+        HistogramWatcher settingsPageIbanActionHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        AutofillLocalIbanEditor.SETTINGS_PAGE_LOCAL_IBAN_ACTIONS_HISTOGRAM,
+                        AutofillLocalIbanEditor.IbanAction.IBAN_ADDED_WITHOUT_NICKNAME);
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        AutofillLocalIbanEditor autofillLocalIbanEditorFragment =
+                (AutofillLocalIbanEditor) activity.getMainFragment();
+        setValueInEditor(autofillLocalIbanEditorFragment, "BE71096123456769");
+        performButtonClick(autofillLocalIbanEditorFragment.mDoneButton);
+
+        settingsPageIbanActionHistogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testRecordHistogram_whenIbanIsDeleted() throws Exception {
+        HistogramWatcher settingsPageIbanActionHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        AutofillLocalIbanEditor.SETTINGS_PAGE_LOCAL_IBAN_ACTIONS_HISTOGRAM,
+                        AutofillLocalIbanEditor.IbanAction.IBAN_DELETED);
+
+        String guid = mAutofillTestHelper.addOrUpdateLocalIban(VALID_BELGIUM_IBAN);
+        SettingsActivity activity =
+                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
+        AutofillLocalIbanEditor autofillLocalIbanEditorFragment =
+                (AutofillLocalIbanEditor) activity.getMainFragment();
+
+        PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManagerMock);
+
+        FakeModalDialogManager fakeModalDialogManager =
+                new FakeModalDialogManager(ModalDialogManager.ModalDialogType.APP);
+        openDeletePaymentMethodConfirmationDialog(
+                autofillLocalIbanEditorFragment, fakeModalDialogManager);
+        ThreadUtils.runOnUiThreadBlocking(() -> fakeModalDialogManager.clickPositiveButton());
+
+        settingsPageIbanActionHistogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testRecordHistogram_whenEditorIsClosedAfterEditingIbanNickname() throws Exception {
+        HistogramWatcher settingsPageIbanActionHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        AutofillLocalIbanEditor.SETTINGS_PAGE_LOCAL_IBAN_ACTIONS_HISTOGRAM,
+                        AutofillLocalIbanEditor.IbanAction.IBAN_EDITOR_CLOSED_WITH_CHANGES);
+
+        String guid = mAutofillTestHelper.addOrUpdateLocalIban(VALID_BELGIUM_IBAN);
+        SettingsActivity activity =
+                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
+        AutofillLocalIbanEditor autofillLocalIbanEditorFragment =
+                (AutofillLocalIbanEditor) activity.getMainFragment();
+        setNicknameInEditor(autofillLocalIbanEditorFragment, "My new IBAN");
+        performButtonClick(autofillLocalIbanEditorFragment.mDoneButton);
+
+        settingsPageIbanActionHistogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testRecordHistogram_whenEditorIsClosedAfterEditingIbanValue() throws Exception {
+        HistogramWatcher settingsPageIbanActionHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        AutofillLocalIbanEditor.SETTINGS_PAGE_LOCAL_IBAN_ACTIONS_HISTOGRAM,
+                        AutofillLocalIbanEditor.IbanAction.IBAN_EDITOR_CLOSED_WITH_CHANGES);
+
+        String guid = mAutofillTestHelper.addOrUpdateLocalIban(VALID_BELGIUM_IBAN);
+        SettingsActivity activity =
+                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
+        AutofillLocalIbanEditor autofillLocalIbanEditorFragment =
+                (AutofillLocalIbanEditor) activity.getMainFragment();
+        setValueInEditor(autofillLocalIbanEditorFragment, "RU0204452560040702810412345678901");
+        performButtonClick(autofillLocalIbanEditorFragment.mDoneButton);
+
+        settingsPageIbanActionHistogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testRecordHistogram_whenEditorIsClosedWithoutEditingIban() throws Exception {
+        HistogramWatcher settingsPageIbanActionHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        AutofillLocalIbanEditor.SETTINGS_PAGE_LOCAL_IBAN_ACTIONS_HISTOGRAM,
+                        AutofillLocalIbanEditor.IbanAction.IBAN_EDITOR_CLOSED_WITHOUT_CHANGES);
+
+        String guid = mAutofillTestHelper.addOrUpdateLocalIban(VALID_BELGIUM_IBAN);
+        SettingsActivity activity =
+                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
+        AutofillLocalIbanEditor autofillLocalIbanEditorFragment =
+                (AutofillLocalIbanEditor) activity.getMainFragment();
+        performButtonClick(autofillLocalIbanEditorFragment.mDoneButton);
+
+        settingsPageIbanActionHistogramWatcher.assertExpected();
     }
 }
