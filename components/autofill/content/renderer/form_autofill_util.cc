@@ -1976,6 +1976,9 @@ void WebFormControlElementToFormField(
 // change, e.g. adding a list of domains of captcha providers to be compared
 // with 'src' attribute.
 bool IsLikelyCaptchaIframe(const WebElement& element) {
+  if (!IsWebElementVisible(element)) {
+    return false;
+  }
   static constexpr std::string_view kCaptcha = "captcha";
   return GetAttribute<kSrc>(element).Find(kCaptcha) != std::string::npos ||
          GetAttribute<kTitle>(element).Find(kCaptcha) != std::string::npos ||
