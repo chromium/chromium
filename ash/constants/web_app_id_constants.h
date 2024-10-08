@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_ID_CONSTANTS_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_ID_CONSTANTS_H_
+#ifndef ASH_CONSTANTS_WEB_APP_ID_CONSTANTS_H_
+#define ASH_CONSTANTS_WEB_APP_ID_CONSTANTS_H_
 
 namespace web_app {
 
@@ -230,4 +230,4 @@ inline constexpr char kPasswordManagerAppId[] =
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_ID_CONSTANTS_H_
+#endif  // ASH_CONSTANTS_WEB_APP_ID_CONSTANTS_H_

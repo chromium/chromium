@@ -8,6 +8,7 @@
 
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/test/app_list_test_api.h"
@@ -27,7 +28,6 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"

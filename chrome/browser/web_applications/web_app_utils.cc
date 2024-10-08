@@ -10,6 +10,7 @@
 #include <set>
 #include <utility>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -30,7 +31,6 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"

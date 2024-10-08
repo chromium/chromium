@@ -113,7 +113,6 @@ include_rules = [
   "+chrome/browser/web_applications/preinstalled_web_app_config_utils.h",
   "+chrome/browser/web_applications/preinstalled_web_app_utils.h",
   "+chrome/browser/web_applications/test",
-  "+chrome/browser/web_applications/web_app_id_constants.h",
   "+chrome/browser/web_applications/web_app_provider.h",
   "+chrome/browser/web_applications/web_app_ui_manager.h",
   "+chrome/browser/web_applications/web_app_utils.h",

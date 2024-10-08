@@ -4,13 +4,13 @@
 
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/webui/mall/app_id.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"

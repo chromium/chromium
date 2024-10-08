@@ -50,7 +50,6 @@ include_rules = [
   "+chrome/browser/ui/web_applications/test",
   "+chrome/browser/ui/webui/ash/settings",
   "+chrome/browser/web_applications/test",
-  "+chrome/browser/web_applications/web_app_id_constants.h",
   "+chrome/browser/web_applications/web_app_install_info.h",
   "+chrome/browser/web_applications/web_app_utils.h",
   "+chrome/common/buildflags.h",

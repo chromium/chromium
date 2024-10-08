@@ -15,6 +15,7 @@ static_library("migrations") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chrome/common",
   ]

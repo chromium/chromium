@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ash/eche_app/app_id.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/mojom/app_permission_handler.mojom.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/trace_event/trace_event.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"

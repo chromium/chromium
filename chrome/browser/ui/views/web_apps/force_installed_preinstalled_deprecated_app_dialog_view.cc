@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -16,7 +17,6 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"

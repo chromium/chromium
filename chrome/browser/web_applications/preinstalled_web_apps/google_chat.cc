@@ -4,8 +4,8 @@
 
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_chat.h"
 
+#include "ash/constants/web_app_id_constants.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 
 namespace web_app {
 

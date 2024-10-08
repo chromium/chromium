@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "ash/webui/personalization_app/search/search_handler.h"
 #include "base/memory/raw_ptr.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"

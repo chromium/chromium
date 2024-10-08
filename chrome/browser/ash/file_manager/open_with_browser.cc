@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -29,7 +30,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/hats_office_trigger.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"

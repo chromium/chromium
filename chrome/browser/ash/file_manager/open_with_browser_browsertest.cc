@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/file_manager/open_with_browser.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/test/profile_test_helper.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "content/public/test/browser_test.h"

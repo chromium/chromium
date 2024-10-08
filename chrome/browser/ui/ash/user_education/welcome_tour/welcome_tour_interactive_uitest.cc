@@ -4,6 +4,7 @@
 
 #include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chromeos/constants/devicetype.h"

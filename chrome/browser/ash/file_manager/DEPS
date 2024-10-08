@@ -79,7 +79,6 @@ include_rules = [
   "+chrome/browser/web_applications/os_integration",
   "+chrome/browser/web_applications/test",
   "+chrome/browser/web_applications/web_app_helpers.h",
-  "+chrome/browser/web_applications/web_app_id_constants.h",
   "+chrome/browser/web_applications/web_app_provider.h",
   "+chrome/browser/web_applications/web_app_registry_update.h",
   "+chrome/browser/web_applications/web_app_sync_bridge.h",

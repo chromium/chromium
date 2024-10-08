@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/json/json_reader.h"
 #include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -25,7 +26,6 @@
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/prevent_close_test_base.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_features.h"
 #include "components/policy/core/browser/browser_policy_connector.h"

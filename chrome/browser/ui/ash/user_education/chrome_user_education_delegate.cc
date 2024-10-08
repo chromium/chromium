@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "ash/ash_element_identifiers.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/user_education/user_education_types.h"
 #include "ash/user_education/user_education_util.h"
 #include "base/check.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "components/account_id/account_id.h"

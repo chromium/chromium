@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "ash/components/arc/app/arc_app_constants.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -26,7 +27,6 @@
 #include "chrome/browser/ash/app_list/search/app_service_app_result.h"
 #include "chrome/browser/ash/extensions/gfx_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "chromeos/ash/components/string_matching/tokenized_string_match.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/test/bind.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/web_applications/preinstalled_web_app_config_utils.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_switches.h"

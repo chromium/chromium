@@ -8,6 +8,7 @@
 #include <optional>
 #include <set>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/json/values_util.h"
@@ -26,7 +27,6 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"

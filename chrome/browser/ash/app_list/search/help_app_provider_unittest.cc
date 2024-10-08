@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/webui/help_app_ui/search/search_handler.h"
 #include "ash/webui/help_app_ui/search/search_tag_registry.h"
 #include "ash/webui/help_app_ui/url_constants.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "components/services/app_service/public/cpp/stub_icon_loader.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"

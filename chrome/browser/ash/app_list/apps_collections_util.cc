@@ -10,6 +10,7 @@
 #include <string>
 
 #include "ash/components/arc/app/arc_app_constants.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/webui/mall/app_id.h"
@@ -17,7 +18,6 @@
 #include "base/no_destructor.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "chromeos/constants/chromeos_features.h"

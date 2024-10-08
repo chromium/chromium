@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/unload_controller.h"
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/json/json_reader.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/prevent_close_test_base.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"

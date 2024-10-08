@@ -8,6 +8,7 @@
 #include <string_view>
 #include <utility>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "components/crx_file/id_util.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/types_util.h"

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/hats_office_trigger.h"
 
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/safe_browsing/url_lookup_service_factory.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"

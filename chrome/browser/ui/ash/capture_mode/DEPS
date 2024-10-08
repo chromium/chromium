@@ -35,7 +35,6 @@ include_rules = [
   "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/views/frame",
   "+chrome/browser/ui/webui/ash/cloud_upload",
-  "+chrome/browser/web_applications/web_app_id_constants.h",
   "+chrome/common",
   "+chrome/test",
 ]

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
@@ -35,7 +36,6 @@
 #include "chrome/browser/ui/ash/capture_mode/search_results_view.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/experiences/screenshot_area/screenshot_area.h"

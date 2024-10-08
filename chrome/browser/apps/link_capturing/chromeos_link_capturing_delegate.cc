@@ -7,6 +7,7 @@
 #include <optional>
 #include <string_view>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/apps/link_capturing/link_capturing_tab_data.h"
 #include "chrome/browser/apps/link_capturing/metrics/intent_handling_metrics.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"

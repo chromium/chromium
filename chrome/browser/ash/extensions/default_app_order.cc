@@ -9,6 +9,7 @@
 
 #include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/constants/ash_paths.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/webui/mall/app_id.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
@@ -25,7 +26,6 @@
 #include "chrome/browser/apps/app_service/policy_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "chromeos/constants/chromeos_features.h"

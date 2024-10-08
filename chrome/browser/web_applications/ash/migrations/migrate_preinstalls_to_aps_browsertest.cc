@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"

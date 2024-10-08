@@ -525,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, AppInfo) {
   // The Camera app should appear first, and the rest of the apps should appear
   // in the reverse of the order they were created. We can check each entry
   // against a known SWA ID to verify. See
-  // `chrome/browser/web_applications/web_app_id_constants.h` for more IDs.
+  // `ash/constants/web_app_id_constants.h` for more IDs.
   ASSERT_EQ(4u, apps_infos.size());
 
   // Camera

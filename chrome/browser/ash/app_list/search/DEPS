@@ -58,7 +58,6 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/settings/test_support",
   "+chrome/browser/ui/webui/chrome_web_ui_controller_factory.h",
   "+chrome/browser/web_applications/test",
-  "+chrome/browser/web_applications/web_app_id_constants.h",
   "+chrome/browser/web_applications/web_app_provider.h",
   "+chrome/common/channel_info.h",
   "+chrome/common/chrome_constants.h",

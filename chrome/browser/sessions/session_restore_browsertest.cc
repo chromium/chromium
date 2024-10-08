@@ -144,9 +144,9 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/web_app_id_constants.h"
 #include "base/json/json_reader.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 using sessions::ContentTestHelper;

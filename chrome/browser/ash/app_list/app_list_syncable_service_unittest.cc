@@ -9,6 +9,7 @@
 
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/containers/to_vector.h"
 #include "base/strings/string_number_conversions.h"
@@ -29,7 +30,6 @@
 #include "chrome/browser/ash/app_list/test/app_list_syncable_service_test_base.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/app_constants/constants.h"

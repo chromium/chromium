@@ -5,12 +5,12 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/search/app_search_provider_test_base.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/browser/extension_prefs.h"

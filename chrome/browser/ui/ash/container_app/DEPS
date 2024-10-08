@@ -24,7 +24,6 @@ include_rules = [
   "+chrome/browser/ui/web_applications",
   "+chrome/browser/web_applications/preinstalled_web_apps",
   "+chrome/browser/web_applications/test",
-  "+chrome/browser/web_applications/web_app_id_constants.h",
   "+chrome/browser/web_applications/web_app_provider.h",
   "+chrome/common",
   "+chrome/test",

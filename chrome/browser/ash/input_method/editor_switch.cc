@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "base/containers/extend.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/json/json_reader.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"

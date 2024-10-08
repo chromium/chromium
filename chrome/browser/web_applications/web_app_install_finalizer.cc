@@ -7,6 +7,7 @@
 #include <map>
 #include <utility>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/barrier_callback.h"
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
@@ -44,7 +45,6 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ui/webui/ash/settings/search/search_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/test_support/fake_hierarchy.h"
 #include "chrome/browser/ui/webui/ash/settings/test_support/fake_os_settings_sections.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"

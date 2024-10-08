@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_app_definition_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/preinstalled_web_apps_resources.h"
 #include "chromeos/constants/chromeos_features.h"

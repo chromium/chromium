@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/graduation/graduation_manager_impl.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/edusumer/graduation_utils.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/functional/bind.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_service.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/callback_list.h"
 #include "base/check_is_test.h"
 #include "base/containers/flat_set.h"
@@ -32,7 +33,6 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"

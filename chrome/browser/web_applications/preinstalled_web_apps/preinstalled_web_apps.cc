@@ -25,6 +25,7 @@
 #include "chrome/browser/web_applications/preinstalled_web_apps/youtube.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/web_app_id_constants.h"
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -35,7 +36,6 @@
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_chat.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_meet.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/messages_dogfood.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "extensions/common/constants.h"

@@ -44,7 +44,6 @@ include_rules = [
   "+chrome/browser/ui/views/frame/browser_view.h",
   "+chrome/browser/ui/web_applications/test",
   "+chrome/browser/web_applications/test",
-  "+chrome/browser/web_applications/web_app_id_constants.h",
   "+chrome/common",
   "+chrome/grit",
   "+chrome/test",

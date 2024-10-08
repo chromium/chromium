@@ -377,7 +377,6 @@ source_set("web_applications") {
       "isolated_web_apps/policy/isolated_web_app_policy_manager.h",
       "os_integration/web_app_run_on_os_login_chromeos.cc",
       "os_integration/web_app_shortcut_chromeos.cc",
-      "web_app_id_constants.h",
       "web_app_run_on_os_login_manager.cc",
       "web_app_run_on_os_login_manager.h",
       "web_app_system_web_app_delegate_map_utils.cc",

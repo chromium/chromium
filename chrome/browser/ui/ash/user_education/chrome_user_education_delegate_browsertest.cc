@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/metrics/histogram_base.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/user_manager/user.h"

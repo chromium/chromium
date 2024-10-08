@@ -15,6 +15,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
 #include "ash/glanceables/glanceables_metrics.h"
 #include "base/barrier_closure.h"
@@ -34,7 +35,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/glanceables/glanceables_classroom_course_work_item.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "components/policy/content/policy_blocklist_service.h"
 #include "components/policy/core/browser/url_blocklist_manager.h"
 #include "components/prefs/pref_service.h"
