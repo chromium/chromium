@@ -11,6 +11,7 @@ import android.content.Context;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModelFilterBase;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterFactory;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 
@@ -34,10 +35,10 @@ public class ChromeTabModelFilterFactory implements TabModelFilterFactory {
      * Return a {@link TabModelFilter} for handling tab groups.
      *
      * @param model The {@link TabModel} that the {@link TabModelFilter} acts on.
-     * @return a {@link TabModelFilter}.
+     * @return a {@link TabModelFilterBase}.
      */
     @Override
-    public TabModelFilter createTabModelFilter(TabModel model) {
+    public TabModelFilterBase createTabModelFilter(TabModel model) {
         return new TabGroupModelFilter(model);
     }
 }

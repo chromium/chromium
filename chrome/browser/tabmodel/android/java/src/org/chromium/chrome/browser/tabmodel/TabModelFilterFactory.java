@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-/** A factory that creates {@link TabModelFilter} instances for {@link TabModel}s. */
+/**
+ * A factory that creates a concrete subclass of {@link TabModelFilterBase} for {@link TabModel}s.
+ */
 public interface TabModelFilterFactory {
     /**
      * @param model The {@link TabModel} to serve as base for the new filter.
-     * @return A new {@link TabModelFilter} for {@code model}.
+     * @return A new {@link TabModelFilterBase} for {@code model}.
      */
-    TabModelFilter createTabModelFilter(TabModel model);
+    TabModelFilterBase createTabModelFilter(TabModel model);
 }

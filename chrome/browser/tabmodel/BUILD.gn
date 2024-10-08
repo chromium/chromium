@@ -31,6 +31,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabList.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModel.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelFilter.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelFilterBase.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelFilterFactory.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelFilterProvider.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelInitializer.java",

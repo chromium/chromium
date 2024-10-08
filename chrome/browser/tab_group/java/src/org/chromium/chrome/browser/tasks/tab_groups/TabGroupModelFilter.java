@@ -30,7 +30,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModelFilterBase;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver.DidRemoveTabGroupReason;
 import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
@@ -49,7 +49,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * An implementation of {@link TabModelFilter} that puts {@link Tab}s into a group structure.
+ * An implementation of {@link TabModelFilterBase} that puts {@link Tab}s into a group structure.
  *
  * <p>A group is a collection of {@link Tab}s that share a common ancestor {@link Tab}. This filter
  * is also a {@link TabList} that contains the last shown {@link Tab} from every group.
@@ -60,7 +60,7 @@ import java.util.stream.Collectors;
  * removed and it is now launched. This class (and any clients) still need to be migrated off of
  * root ID.
  */
-public class TabGroupModelFilter extends TabModelFilter {
+public class TabGroupModelFilter extends TabModelFilterBase {
     // This is not a great place for this, but due to dependency issues it cannot go in
     // TabUiFeatureUtilities so this is the best place since we need it here.
     private static final String SKIP_TAB_GROUP_CREATION_DIALOG_PARAM =
@@ -714,7 +714,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         }
     }
 
-    // TabModelFilter implementation.
+    // TabModelFilterBase implementation.
     @NonNull
     @Override
     public List<Tab> getRelatedTabList(int id) {
@@ -1025,8 +1025,7 @@ public class TabGroupModelFilter extends TabModelFilter {
     }
 
     @Override
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public void markTabStateInitialized() {
+    protected void markTabStateInitialized() {
         super.markTabStateInitialized();
         boolean correctOrder = isOrderValid();
         RecordHistogram.recordBooleanHistogram("Tabs.Tasks.OrderValidOnStartup", correctOrder);
