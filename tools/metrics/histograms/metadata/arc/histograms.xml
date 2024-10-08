@@ -2022,6 +2022,21 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Arc.RevenHardwareChecker.Timeout" enum="Boolean"
+    expires_after="2025-10-07">
+  <owner>tinghaolin@google.com</owner>
+  <owner>chromeos-flex-eng@google.com</owner>
+  <summary>
+    Result of checking if the block device is available and without timeout
+    before performing a hardware filter on the reven board.
+
+    The block devices might be unavailable during hardware checking before
+    installing arcvm images on reven, leading to a crash. The reven board
+    implements a checking mechanism to verify the availability of block devices
+    before performing hardware filtering.
+  </summary>
+</histogram>
+
 <histogram
     name="Arc.Runtime.Performance.CommitDeviation2{ArcPerformanceAppCategories}"
     units="microseconds" expires_after="2025-03-30">
