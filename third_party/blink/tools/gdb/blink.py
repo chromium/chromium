@@ -204,8 +204,8 @@ class blinkFixedPointPrinter:
         self.val = val
 
     def to_string(self):
-        return "%.14gpx" % (self.val['value_'] /
-                            self.val['kFixedPointDenominator'])
+        return "%.14gpx" % (float(self.val['value_']) /
+                            float(self.val['kFixedPointDenominator']))
 
 
 class blinkLayoutPointPrinter:
