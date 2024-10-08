@@ -9,9 +9,6 @@ import android.view.View.OnLongClickListener;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.ui.base.DeviceFormFactor;
-
 /** The handler for the toolbar long press menu. */
 public class ToolbarLongPressMenuHandler {
     @Nullable private OnLongClickListener mOnLongClickListener;
@@ -21,8 +18,8 @@ public class ToolbarLongPressMenuHandler {
      *
      * @param context current context
      */
-    public ToolbarLongPressMenuHandler(Context context) {
-        if (shouldEnableLongPress(context)) {
+    public ToolbarLongPressMenuHandler(Context context, boolean isCustomTab) {
+        if (ToolbarPositionController.isToolbarPositionCustomizationEnabled(context, isCustomTab)) {
             mOnLongClickListener =
                     (view) -> {
                         displayMenu();
@@ -42,9 +39,4 @@ public class ToolbarLongPressMenuHandler {
     }
 
     private void displayMenu() {}
-
-    private boolean shouldEnableLongPress(Context context) {
-        return ChromeFeatureList.sAndroidBottomToolbar.isEnabled()
-                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
-    }
 }

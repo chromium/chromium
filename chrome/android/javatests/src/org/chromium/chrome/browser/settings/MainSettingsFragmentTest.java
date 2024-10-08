@@ -112,6 +112,7 @@ import org.chromium.chrome.browser.sync.settings.SignInPreference;
 import org.chromium.chrome.browser.sync.settings.SyncPromoPreference;
 import org.chromium.chrome.browser.sync.settings.SyncPromoPreference.State;
 import org.chromium.chrome.browser.tasks.tab_management.TabsSettings;
+import org.chromium.chrome.browser.toolbar.ToolbarPositionController;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
@@ -1217,18 +1218,28 @@ public class MainSettingsFragmentTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
-    public void testAndroidAdressBarFlagOn() {
+    public void testAndroidAddressBarFlagOn() {
         startSettings();
-        assertSettingsExists(MainSettings.PREF_ADDRESS_BAR, AddressBarSettingsFragment.class);
+        // This setting should only appear for certain devices, even if the flag is enabled. Since
+        // this is an instrumentation test there's not a good way to fake or force device
+        // characteristics, so we just fork the test's behavior based on the eligibility state.
+        if (!ToolbarPositionController.isToolbarPositionCustomizationEnabled(
+                mSettingsActivityTestRule.getActivity(), false)) {
+            Assert.assertNull(
+                    "Address Bar should not be shown for for ineligible devices",
+                    mMainSettings.findPreference(MainSettings.PREF_ADDRESS_BAR));
+        } else {
+            assertSettingsExists(MainSettings.PREF_ADDRESS_BAR, AddressBarSettingsFragment.class);
+        }
     }
 
     @Test
     @SmallTest
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
-    public void testAndroidAdressBarFlagOff() {
+    public void testAndroidAddressBarFlagOff() {
         startSettings();
         Assert.assertNull(
-                "Address Bar should not be shown when flag is off",
+                "Address Bar should not be shown when flag is off, regardless of device",
                 mMainSettings.findPreference(MainSettings.PREF_ADDRESS_BAR));
     }
 
