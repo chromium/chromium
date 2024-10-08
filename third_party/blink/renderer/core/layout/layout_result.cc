@@ -278,8 +278,7 @@ LayoutResult::LayoutResult(const PhysicalFragment* physical_fragment,
   }
 
   if (builder->column_spanner_path_) {
-    EnsureRareData()->EnsureBlockData()->column_spanner_path =
-        builder->column_spanner_path_;
+    EnsureRareData()->column_spanner_path = builder->column_spanner_path_;
     bitfields_.is_empty_spanner_parent = builder->is_empty_spanner_parent_;
   }
 
@@ -404,10 +403,7 @@ void LayoutResult::Trace(Visitor* visitor) const {
 void LayoutResult::RareData::Trace(Visitor* visitor) const {
   visitor->Trace(early_break);
   visitor->Trace(non_overflowing_scroll_ranges);
-  // This will not cause TOCTOU issue because data_union_type is set in the
-  // constructor and never changed.
-  if (const BlockData* data = GetBlockData())
-    visitor->Trace(data->column_spanner_path);
+  visitor->Trace(column_spanner_path);
   visitor->Trace(accessibility_anchor);
   visitor->Trace(display_locks_affected_by_anchors);
 }

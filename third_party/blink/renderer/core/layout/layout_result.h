@@ -198,11 +198,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
 
   // Get the path to the column spanner (if any) that interrupted column layout.
   const ColumnSpannerPath* GetColumnSpannerPath() const {
-    if (rare_data_) {
-      if (const RareData::BlockData* data = rare_data_->GetBlockData())
-        return data->column_spanner_path.Get();
-    }
-    return nullptr;
+    return rare_data_ ? rare_data_->column_spanner_path.Get() : nullptr;
   }
 
   // True if this result is the parent of a column spanner and is empty (i.e.
@@ -643,7 +639,6 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     // enum values.
     enum DataUnionType {
       kNone,
-      kBlockData,
       kFlexData,
       kGridData,
       kLineSmallData,
@@ -666,11 +661,6 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
         DataUnionTypeValue::DefineNextValue<bool, 1>;
     using IsBlockEndTrimmedFlag =
         IsBlockStartTrimmedFlag::DefineNextValue<bool, 1>;
-
-    struct BlockData {
-      GC_PLUGIN_IGNORE("crbug.com/1146383")
-      Member<const ColumnSpannerPath> column_spanner_path;
-    };
 
     struct FlexData {
       FlexData() = default;
@@ -803,12 +793,6 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
       return data_union_type() == data_type ? address : nullptr;
     }
 
-    BlockData* EnsureBlockData() {
-      return EnsureData<BlockData>(&block_data, kBlockData);
-    }
-    const BlockData* GetBlockData() const {
-      return GetData<BlockData>(&block_data, kBlockData);
-    }
     FlexData* EnsureFlexData() {
       return EnsureData<FlexData>(&flex_data, kFlexData);
     }
@@ -860,6 +844,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
 
     RareData(const RareData& rare_data)
         : early_break(rare_data.early_break),
+          column_spanner_path(rare_data.column_spanner_path),
           end_margin_strut(rare_data.end_margin_strut),
           // This will initialize "both" members of the union.
           tallest_unbreakable_block_size(
@@ -877,9 +862,6 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
           bit_field(rare_data.bit_field) {
       switch (data_union_type()) {
         case kNone:
-          break;
-        case kBlockData:
-          new (&block_data) BlockData(rare_data.block_data);
           break;
         case kFlexData:
           new (&flex_data) FlexData(rare_data.flex_data);
@@ -907,9 +889,6 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     ~RareData() {
       switch (data_union_type()) {
         case kNone:
-          break;
-        case kBlockData:
-          block_data.~BlockData();
           break;
         case kFlexData:
           flex_data.~FlexData();
@@ -978,6 +957,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     void Trace(Visitor* visitor) const;
 
     Member<const EarlyBreak> early_break;
+    Member<const ColumnSpannerPath> column_spanner_path;
     MarginStrut end_margin_strut;
     union {
       // Only set in the initial column balancing layout pass, when we have no
@@ -1014,7 +994,6 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     BitField bit_field;
 
     union {
-      BlockData block_data;
       FlexData flex_data;
       GridData grid_data;
       LineSmallData line_small_data;
