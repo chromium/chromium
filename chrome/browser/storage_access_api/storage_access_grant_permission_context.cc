@@ -348,6 +348,7 @@ void StorageAccessGrantPermissionContext::DecidePermission(
         "requestStorageAccess: inconsistent state. Requested permission for a "
         "frame that already claims to have permission.");
     std::move(callback).Run(CONTENT_SETTING_BLOCK);
+    return;
   }
   if (cookie_settings->IsFullCookieAccessAllowed(request_data.requesting_origin,
                                                  net::SiteForCookies(),
