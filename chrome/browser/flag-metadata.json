@@ -8679,11 +8679,6 @@
     "expiry_milestone" : 135
   },
   {
-    "name": "tangible-sync",
-    "owners": [ "aliceywang@chromium.org", "chrome-signin-team@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "tear-off-web-app-tab-opens-web-app-window",
     "owners": [ "davidbienvenu@chromium.org", "dmurph@chromium.org" ],
     "expiry_milestone": 135
