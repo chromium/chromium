@@ -355,6 +355,15 @@ void ViewAccessibility::ClearTextOffsets() {
   data_.RemoveIntListAttribute(ax::mojom::IntListAttribute::kWordEnds);
 }
 
+void ViewAccessibility::SetClipsChildren(bool clips_children) {
+  data_.AddBoolAttribute(ax::mojom::BoolAttribute::kClipsChildren,
+                         clips_children);
+}
+
+void ViewAccessibility::SetClassName(const std::string& class_name) {
+  data_.AddStringAttribute(ax::mojom::StringAttribute::kClassName, class_name);
+}
+
 void ViewAccessibility::SetHasPopup(const ax::mojom::HasPopup has_popup) {
   data_.SetHasPopup(has_popup);
 }

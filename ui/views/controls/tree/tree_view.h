@@ -6,6 +6,7 @@
 #define UI_VIEWS_CONTROLS_TREE_TREE_VIEW_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -22,7 +23,6 @@
 namespace ui {
 
 struct AXActionData;
-struct AXNodeData;
 
 }  // namespace ui
 
@@ -168,6 +168,8 @@ class VIEWS_EXPORT TreeView : public View,
     return drawing_provider_.get();
   }
 
+  void SetInitialAccessibilityAttributes();
+
   // View overrides:
   void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize(
@@ -177,7 +179,6 @@ class VIEWS_EXPORT TreeView : public View,
   void OnGestureEvent(ui::GestureEvent* event) override;
   void ShowContextMenu(const gfx::Point& p,
                        ui::MenuSourceType source_type) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
 
   // TreeModelObserver overrides:

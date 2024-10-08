@@ -152,6 +152,10 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   void ClearTextOffsets();
 
+  void SetClipsChildren(bool clips_children);
+
+  void SetClassName(const std::string& class_name);
+
   void SetHasPopup(const ax::mojom::HasPopup has_popup);
 
   void SetRole(const ax::mojom::Role role);

@@ -103,8 +103,7 @@ TreeView::TreeView()
   text_offset_ = folder_icon_.Size().width() + kImagePadding + kImagePadding +
                  kArrowRegionSize;
 
-  GetViewAccessibility().SetRole(ax::mojom::Role::kTree);
-  GetViewAccessibility().SetIsVertical(true);
+  SetInitialAccessibilityAttributes();
 }
 
 TreeView::~TreeView() {
@@ -400,6 +399,16 @@ void TreeView::SetDrawingProvider(
   drawing_provider_ = std::move(provider);
 }
 
+void TreeView::SetInitialAccessibilityAttributes() {
+  GetViewAccessibility().SetRole(ax::mojom::Role::kTree);
+  GetViewAccessibility().SetIsVertical(true);
+  GetViewAccessibility().SetReadOnly(true);
+  GetViewAccessibility().SetDefaultActionVerb(
+      ax::mojom::DefaultActionVerb::kActivate);
+  GetViewAccessibility().SetName(
+      std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+}
+
 void TreeView::Layout(PassKey) {
   int width = preferred_size_.width();
   int height = preferred_size_.height();
@@ -451,14 +460,6 @@ void TreeView::ShowContextMenu(const gfx::Point& p,
       return;
   }
   View::ShowContextMenu(p, source_type);
-}
-
-void TreeView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // ID, class name and relative bounds are added by ViewAccessibility for all
-  // non-virtual views, so we don't need to add them here.
-  node_data->SetRestriction(ax::mojom::Restriction::kReadOnly);
-  node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kActivate);
-  node_data->SetNameExplicitlyEmpty();
 }
 
 bool TreeView::HandleAccessibleAction(const ui::AXActionData& action_data) {

@@ -89,6 +89,7 @@ class Arrow : public Button {
     ConfigureComboboxButtonInkDrop(this);
     GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
     UpdateAccessibleDefaultActionVerb();
+    GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kMenu);
   }
   Arrow(const Arrow&) = delete;
   Arrow& operator=(const Arrow&) = delete;
@@ -110,11 +111,6 @@ class Arrow : public Button {
             style::CONTEXT_TEXTFIELD,
             GetEnabled() ? style::STYLE_PRIMARY : style::STYLE_DISABLED)),
         arrow_bounds, canvas);
-  }
-
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    Button::GetAccessibleNodeData(node_data);
-    node_data->SetHasPopup(ax::mojom::HasPopup::kMenu);
   }
 
   void UpdateAccessibleDefaultActionVerb() {

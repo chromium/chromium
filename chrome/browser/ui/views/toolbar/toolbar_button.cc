@@ -124,6 +124,10 @@ ToolbarButton::ToolbarButton(PressedCallback callback,
 
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
+
+  if (model_) {
+    GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kMenu);
+  }
 }
 
 ToolbarButton::~ToolbarButton() = default;
@@ -483,12 +487,6 @@ void ToolbarButton::OnGestureEvent(ui::GestureEvent* event) {
   }
 
   LabelButton::OnGestureEvent(event);
-}
-
-void ToolbarButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  Button::GetAccessibleNodeData(node_data);
-  if (model_)
-    node_data->SetHasPopup(ax::mojom::HasPopup::kMenu);
 }
 
 std::u16string ToolbarButton::GetTooltipText(const gfx::Point& p) const {

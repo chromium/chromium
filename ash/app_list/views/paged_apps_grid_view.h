@@ -95,7 +95,6 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
 
   // views::View:
   void Layout(PassKey) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnThemeChanged() override;
 
   // AppsGridView:
