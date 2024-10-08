@@ -67,8 +67,6 @@ void RegisterBrowserPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kOverscrollHistoryNavigationEnabled,
                                 true);
 #endif
-  registry->RegisterIntegerPref(prefs::kToolbarAvatarLabelSettings, 0);
-
   registry->RegisterTimePref(prefs::kDefaultBrowserLastDeclinedTime,
                              base::Time());
   registry->RegisterIntegerPref(prefs::kDefaultBrowserDeclinedCount, 0);

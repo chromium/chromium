@@ -1,6 +1,9 @@
 caption: Managed toolbar avatar label setting
+deprecated: true
 default: 0
 desc: |-
+  This policy is deprecated as the feature it controls was never launched. Please use the <ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR_SETTINGS">EnterpriseProfileBadgeToolbarSettings</ph> policy instead.
+
   Leaving this policy unset or setting it to <ph name="DISPLAY_MANAGEMENT_LABEL_PERMAMENT_VALUE">display_management_label_permanent</ph> (value 0) will show a Work or School label next to the toolbar avatar.
   These labels will only be shown if the signed in account is managed.
 
@@ -10,7 +13,7 @@ features:
   dynamic_refresh: true
   per_profile: false
 supported_on:
-- chrome.*:125-
+- chrome.*:125-130
 items:
 - caption: Always display management label
   name: display_management_label_permanent

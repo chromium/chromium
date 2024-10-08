@@ -134,9 +134,6 @@ class AvatarToolbarButtonBrowserTest : public InProcessBrowserTest {
     // properly test the behavior pre/post delay without being time dependent.
     SetInfiniteAvatarDelay(AvatarDelayType::kNameGreeting);
     SetInfiniteAvatarDelay(AvatarDelayType::kSigninPendingText);
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    SetInfiniteAvatarDelay(AvatarDelayType::kManagementLabelTransientMode);
-#endif
   }
 
   AvatarToolbarButtonBrowserTest(const AvatarToolbarButtonBrowserTest&) =
@@ -1104,15 +1101,6 @@ INSTANTIATE_TEST_SUITE_P(,
 class AvatarToolbarButtonEnterpriseBadgingBrowserTest
     : public AvatarToolbarButtonBrowserTest {
  public:
-  void EnableToolbarAvatarLabelByPolicy(bool transient) {
-    policy::PolicyMap policies;
-    policies.Set(policy::key::kToolbarAvatarLabelSettings,
-                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
-                 policy::POLICY_SOURCE_CLOUD, base::Value(transient ? 1 : 0),
-                 nullptr);
-    provider_.UpdateChromePolicy(policies);
-  }
-
   void SetUpInProcessBrowserTestFixture() override {
     provider_.SetDefaultReturns(
         true /* is_initialization_complete_return */,
@@ -1160,21 +1148,6 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
-                       WorkBadgeOnTransientModeTimesOut) {
-  std::u16string work_label = u"Work";
-  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
-
-  EnableToolbarAvatarLabelByPolicy(/*transient=*/true);
-  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
-  EXPECT_EQ(avatar_button->GetText(), work_label);
-
-  avatar_button->TriggerTimeoutForTesting(
-      AvatarDelayType::kManagementLabelTransientMode);
-  // After timeout the normal state is expect - no text.
-  EXPECT_EQ(avatar_button->GetText(), std::u16string());
-}
-
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
                        DefaultBadgeDisabledbyPolicy) {
   std::u16string work_label = u"Work";
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
@@ -1200,49 +1173,6 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
 
   // There should be no text because the policy fully disables badging.
   EXPECT_EQ(avatar_button->GetText(), std::u16string());
-}
-
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
-                       WorkBadgeOnTransientModeTimesOutToNonTransient) {
-  std::u16string work_label = u"Work";
-  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
-
-  EnableToolbarAvatarLabelByPolicy(/*transient=*/true);
-  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
-  EXPECT_EQ(avatar_button->GetText(), work_label);
-
-  avatar_button->TriggerTimeoutForTesting(
-      AvatarDelayType::kManagementLabelTransientMode);
-
-  // After timeout the normal state is expect - no text.
-  EXPECT_EQ(avatar_button->GetText(), std::u16string());
-
-  // Reset the policy to not be transient.
-  EnableToolbarAvatarLabelByPolicy(/*transient=*/false);
-  EXPECT_EQ(avatar_button->GetText(), work_label);
-
-  // Reset the policy to be transient again.
-  EnableToolbarAvatarLabelByPolicy(/*transient=*/true);
-  EXPECT_EQ(avatar_button->GetText(), std::u16string());
-}
-
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
-                       WorkBadgeOnNonTransientModeDoesNotTimesOut) {
-  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
-  ASSERT_TRUE(avatar_button->GetText().empty());
-
-  EnableToolbarAvatarLabelByPolicy(/*transient=*/false);
-
-  std::u16string work_label = u"Work";
-  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
-  EXPECT_EQ(avatar_button->GetText(), work_label);
-
-  // Enforcing the delay stop for the transient mode.
-  avatar_button->TriggerTimeoutForTesting(
-      AvatarDelayType::kManagementLabelTransientMode);
-
-  // Work label is still expected as it should be permanent.
-  EXPECT_EQ(avatar_button->GetText(), work_label);
 }
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
@@ -1274,11 +1204,10 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
 
 // Sync Pause/Error has priority over WorkBadge.
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
-                       WorkBadgeNonTransientModeAndSyncPause) {
+                       WorkBadgeAndSyncPaused) {
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   ASSERT_TRUE(avatar_button->GetText().empty());
 
-  EnableToolbarAvatarLabelByPolicy(/*transient=*/false);
   std::u16string work_label = u"Work";
   enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
   EXPECT_EQ(avatar_button->GetText(), work_label);
@@ -1295,39 +1224,11 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   EXPECT_EQ(avatar_button->GetText(), work_label);
 }
 
-// Sync Pause/Error has priority over WorkBadge.
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
-                       WorkBadgeTransientModeAndSyncPause) {
-  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
-  ASSERT_TRUE(avatar_button->GetText().empty());
-
-  EnableSyncWithImageAndClearGreeting(avatar_button, u"work@managed.com");
-
-  EnableToolbarAvatarLabelByPolicy(/*transient=*/true);
-  std::u16string work_label = u"Work";
-  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
-  EXPECT_EQ(avatar_button->GetText(), work_label);
-
-  SimulateSyncPaused();
-  // Sync Paused has priority over the Work badge.
-  ExpectSyncPaused(avatar_button);
-
-  ClearSyncPaused();
-
-  EXPECT_EQ(avatar_button->GetText(), work_label);
-
-  avatar_button->TriggerTimeoutForTesting(
-      AvatarDelayType::kManagementLabelTransientMode);
-
-  EXPECT_EQ(avatar_button->GetText(), std::u16string());
-}
-
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
                        DecliningManagementShouldRemoveWorkBadge) {
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   ASSERT_TRUE(avatar_button->GetText().empty());
 
-  EnableToolbarAvatarLabelByPolicy(/*transient=*/false);
   std::u16string work_label = u"Work";
   enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
   EXPECT_EQ(avatar_button->GetText(), work_label);

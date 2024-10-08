@@ -2693,14 +2693,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       static_cast<int>(enterprise_signin::ProfileReauthPrompt::kPromptInTab),
       false));
 
-  // Management badging
-  handlers->AddHandler(
-      std::make_unique<policy::SimpleSchemaValidatingPolicyHandler>(
-          key::kToolbarAvatarLabelSettings, prefs::kToolbarAvatarLabelSettings,
-          chrome_schema, policy::SchemaOnErrorStrategy::SCHEMA_STRICT,
-          policy::SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
-          policy::SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
-
   handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
       key::kEnterpriseCustomLabel, prefs::kEnterpriseCustomLabel,
       base::Value::Type::STRING));

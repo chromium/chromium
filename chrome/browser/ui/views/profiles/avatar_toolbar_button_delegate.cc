@@ -79,12 +79,6 @@ constexpr base::TimeDelta kShowSigninPendingTextDelay = base::Minutes(50);
 static std::optional<base::TimeDelta>
     g_show_signin_pending_text_delay_for_testing;
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-constexpr base::TimeDelta kEnterpriseTextTransientDuration = base::Seconds(30);
-static std::optional<base::TimeDelta>
-    g_enterprise_text_transient_duration_for_testing;
-#endif
-
 ProfileAttributesStorage& GetProfileAttributesStorage() {
   return g_browser_process->profile_manager()->GetProfileAttributesStorage();
 }
@@ -740,18 +734,12 @@ class ManagementStateProvider : public StateProvider,
     BrowserList::AddObserver(this);
     profile_observation_.Observe(&GetProfileAttributesStorage());
 
-    local_state_pref_change_registrar_.Init(g_browser_process->local_state());
-    local_state_pref_change_registrar_.Add(
-        prefs::kToolbarAvatarLabelSettings,
-        base::BindRepeating(&ManagementStateProvider::RequestUpdate,
-                            weak_ptr_factory_.GetWeakPtr()));
-
     profile_pref_change_registrar_.Init(profile_->GetPrefs());
     profile_pref_change_registrar_.Add(
         prefs::kEnterpriseCustomLabelForProfile,
         base::BindRepeating(&ManagementStateProvider::RequestUpdate,
                             weak_ptr_factory_.GetWeakPtr()));
-    local_state_pref_change_registrar_.Add(
+    profile_pref_change_registrar_.Add(
         prefs::kEnterpriseProfileBadgeToolbarSettings,
         base::BindRepeating(&ManagementStateProvider::RequestUpdate,
                             weak_ptr_factory_.GetWeakPtr()));
@@ -763,14 +751,7 @@ class ManagementStateProvider : public StateProvider,
   bool IsActive() const override {
     return enterprise_util::CanShowEnterpriseBadging(&profile_.get()) &&
            enterprise_util::IsEnterpriseBadgingEnabledForToolbar(
-               &profile_.get()) &&
-           (!IsTransient() || temporarily_showing_);
-  }
-
-  void ClearTransientTextForTesting() {
-    if (IsTransient()) {
-      ClearTransientText();
-    }
+               &profile_.get());
   }
 
  private:
@@ -780,56 +761,19 @@ class ManagementStateProvider : public StateProvider,
   void OnBrowserAdded(Browser*) override {
     // This is required so that the enterprise text is shown when a profile is
     // opened.
-    TryShowManagementText();
+    RequestUpdate();
   }
 
   // ProfileAttributesStorage::Observer:
   void OnProfileUserManagementAcceptanceChanged(
       const base::FilePath& profile_path) override {
-    if (!enterprise_util::CanShowEnterpriseBadging(&profile_.get()) ||
-        !enterprise_util::IsEnterpriseBadgingEnabledForToolbar(
-            &profile_.get())) {
-      RequestUpdate();
-      return;
-    }
-
-    TryShowManagementText();
-  }
-
-  void TryShowManagementText() {
-    if (IsTransient() && !enterprise_text_hide_scheduled_) {
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(&ManagementStateProvider::ClearTransientText,
-                         weak_ptr_factory_.GetWeakPtr()),
-          g_enterprise_text_transient_duration_for_testing.value_or(
-              kEnterpriseTextTransientDuration));
-      enterprise_text_hide_scheduled_ = true;
-      temporarily_showing_ = true;
-    }
     RequestUpdate();
-  }
-
-  void ClearTransientText() {
-    CHECK(IsTransient());
-
-    temporarily_showing_ = false;
-    RequestUpdate();
-  }
-
-  // Used to determine if the text should be shown permanently or not.
-  bool IsTransient() const {
-    return g_browser_process->local_state()->GetInteger(
-               prefs::kToolbarAvatarLabelSettings) == 1;
   }
 
   raw_ref<Profile> profile_;
   const raw_ref<const AvatarToolbarButton> avatar_toolbar_button_;
 
-  bool enterprise_text_hide_scheduled_ = false;
-  bool temporarily_showing_ = false;
   PrefChangeRegistrar profile_pref_change_registrar_;
-  PrefChangeRegistrar local_state_pref_change_registrar_;
 
   base::ScopedObservation<ProfileAttributesStorage,
                           ProfileAttributesStorage::Observer>
@@ -1717,12 +1661,6 @@ AvatarToolbarButtonDelegate::CreateScopedInfiniteDelayOverrideForTesting(
       return base::AutoReset<std::optional<base::TimeDelta>>(
           &g_show_signin_pending_text_delay_for_testing,
           kInfiniteTimeForTesting);
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    case AvatarDelayType::kManagementLabelTransientMode:
-      return base::AutoReset<std::optional<base::TimeDelta>>(
-          &g_enterprise_text_transient_duration_for_testing,
-          kInfiniteTimeForTesting);
-#endif
   }
 }
 
@@ -1751,18 +1689,6 @@ void AvatarToolbarButtonDelegate::TriggerTimeoutForTesting(
         signin_pending_state->ForceTimerTimeoutForTesting();  // IN-TEST
       }
       break;
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    case AvatarDelayType::kManagementLabelTransientMode:
-      if (state_manager_->GetButtonActiveState() == ButtonState::kManagement) {
-        internal::ManagementStateProvider* management_state =
-            const_cast<internal::ManagementStateProvider*>(
-                internal::StateProviderGetter(
-                    *state_manager_->GetActiveStateProvider())
-                    .AsManagement());
-        management_state->ClearTransientTextForTesting();  // IN-TEST
-      }
-      break;
-#endif
   }
 }
 

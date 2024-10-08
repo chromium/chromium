@@ -31,10 +31,6 @@ enum class AvatarDelayType {
   kNameGreeting,
   // Delay for the SigninPending mode to show the "Verify it's you" text.
   kSigninPendingText,
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Delay for the Management Label transient mode to stop showing "Work".
-  kManagementLabelTransientMode,
-#endif
 };
 
 // This class takes care the Profile Avatar Button.

@@ -4313,14 +4313,6 @@ inline constexpr char kCAPlatformIntegrationEnabled[] =
 inline constexpr char kEnterpriseBadgingTemporarySetting[] =
     "temporary_setting.enterpise_badging";
 
-// Integer value controlling whether to show Work/School label next to the
-// avatar. This is used on the local state so that the management label is
-// always shown for managed profiles on unmanaged devices.
-// - 0: Always show the label
-// - 1: Show the label for 30s
-inline constexpr char kToolbarAvatarLabelSettings[] =
-    "toolbar_avatar.label.settings";
-
 // Url to an image representing the enterprise logo.
 inline constexpr char kEnterpriseLogoUrl[] = "enterprise_logo.url";
 
