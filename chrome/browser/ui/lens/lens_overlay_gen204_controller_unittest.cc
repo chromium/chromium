@@ -31,7 +31,10 @@ const lens::LensOverlayInvocationSource kInvocationSource =
 constexpr char kEncodedAnalyticsId[] = "test";
 
 // Query parameter keys.
+constexpr char kGen204IdentifierQueryParameter[] = "plla";
+constexpr char kSemanticEventTimestampParameter[] = "zx";
 constexpr char kSemanticEventIdParameter[] = "rid";
+constexpr char kUserActionParameter[] = "uact";
 
 // Semantic event ids.
 constexpr int kTextGleamsViewStartSemanticEventID = 234181;
@@ -92,7 +95,7 @@ class LensOverlayGen204ControllerTest : public testing::Test {
 };
 
 TEST_F(LensOverlayGen204ControllerTest,
-       SendTaskCompletionGen204IfEnabled_OnQueryFlowEndSendsTextEndEvent) {
+       SemanticEventGen204IfEnabled_OnQueryFlowEndSendsTextEndEvent) {
   auto gen204_controller = std::make_unique<LensOverlayGen204ControllerMock>();
   gen204_controller->OnQueryFlowStart(kInvocationSource, profile(), kGen204Id);
   gen204_controller->SendSemanticEventGen204IfEnabled(
@@ -110,6 +113,37 @@ TEST_F(LensOverlayGen204ControllerTest,
       GetSemanticEventFromUrl(gen204_controller->last_url_sent_),
       testing::Optional(lens::mojom::SemanticEvent::kTextGleamsViewEnd));
   ASSERT_EQ(gen204_controller->num_gen204s_sent_, 2);
+}
+
+TEST_F(LensOverlayGen204ControllerTest,
+       SemanticEventGen204IfEnabled_AttachesAllParams) {
+  auto gen204_controller = std::make_unique<LensOverlayGen204ControllerMock>();
+  gen204_controller->OnQueryFlowStart(kInvocationSource, profile(), kGen204Id);
+  gen204_controller->SendSemanticEventGen204IfEnabled(
+      lens::mojom::SemanticEvent::kTextGleamsViewStart);
+
+  auto url = gen204_controller->last_url_sent_;
+  EXPECT_THAT(
+      GetSemanticEventFromUrl(url),
+      testing::Optional(lens::mojom::SemanticEvent::kTextGleamsViewStart));
+
+  // Check for the uact param.
+  std::string uact_param;
+  EXPECT_TRUE(
+      net::GetValueForKeyInQuery(url, kUserActionParameter, &uact_param));
+  ASSERT_EQ(uact_param, "1");
+
+  // Check that the timestamp param is present.
+  std::string timestamp_param;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, kSemanticEventTimestampParameter,
+                                         &timestamp_param));
+
+  // Check that the gen204 id param is present.
+  std::string gen204_id_param;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, kGen204IdentifierQueryParameter,
+                                         &gen204_id_param));
+
+  ASSERT_EQ(gen204_controller->num_gen204s_sent_, 1);
 }
 
 }  // namespace lens

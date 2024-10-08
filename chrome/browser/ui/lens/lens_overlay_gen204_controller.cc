@@ -184,10 +184,11 @@ void LensOverlayGen204Controller::SendSemanticEventGen204IfEnabled(
         event_id = kTextGleamsViewEndSemanticEventID;
         break;
     }
-    std::string query = base::StringPrintf(
-        "gen_204?%s=%d&zx=%" PRId64 "&%s=%" PRIu64, kSemanticEventIdParameter,
-        event_id, base::Time::Now().InMillisecondsSinceUnixEpoch(),
-        kGen204IdentifierQueryParameter, gen204_id_);
+    std::string query =
+        base::StringPrintf("gen_204?uact=1&%s=%d&zx=%" PRId64 "&%s=%" PRIu64,
+                           kSemanticEventIdParameter, event_id,
+                           base::Time::Now().InMillisecondsSinceUnixEpoch(),
+                           kGen204IdentifierQueryParameter, gen204_id_);
     auto fetch_url = GURL(TemplateURLServiceFactory::GetForProfile(profile_)
                               ->search_terms_data()
                               .GoogleBaseURLValue())
