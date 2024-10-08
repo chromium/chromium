@@ -79,13 +79,16 @@ enum class SkipScreenDecision {
 - (void)profileState:(ProfileState*)profileState
     didTransitionToInitStage:(ProfileInitStage)nextInitStage
                fromInitStage:(ProfileInitStage)fromInitStage {
-  if (self.profileState.initStage != ProfileInitStage::kChoiceScreen) {
+  if (nextInitStage == ProfileInitStage::kChoiceScreen) {
+    // Try to present the Choice Screen on the first active SceneState.
+    if (SceneState* sceneState = profileState.foregroundActiveScene) {
+      [self maybeShowChoiceScreen:sceneState];
+    }
     return;
   }
 
-  // Try to present the Choice Screen on the first active SceneState.
-  if (SceneState* sceneState = profileState.foregroundActiveScene) {
-    [self maybeShowChoiceScreen:sceneState];
+  if (fromInitStage == ProfileInitStage::kChoiceScreen) {
+    [profileState removeAgent:self];
   }
 }
 
@@ -99,7 +102,6 @@ enum class SkipScreenDecision {
   // Advance to the next stage when the screen is dismissed by the user.
   if (self.profileState.initStage == ProfileInitStage::kChoiceScreen) {
     [self.profileState queueTransitionToNextInitStage];
-    [self.profileState removeAgent:self];
   }
 }
 
@@ -153,7 +155,6 @@ enum class SkipScreenDecision {
             [self startupHadExternalIntent])) {
       _skipScreenDecision = SkipScreenDecision::kSkip;
       [self.profileState queueTransitionToNextInitStage];
-      [self.profileState removeAgent:self];
       return;
     }
 
