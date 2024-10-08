@@ -1,4 +1,10 @@
-source_set("enterprise_obfuscation") {
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("enterprise_obfuscation") {
+  defines = [ "IS_ENTERPRISE_OBFUSCATION_IMPL" ]
+
   sources = [
     "download_obfuscator.cc",
     "download_obfuscator.h",
