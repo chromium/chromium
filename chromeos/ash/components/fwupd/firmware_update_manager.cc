@@ -194,11 +194,12 @@ bool CreateDirIfNotExists(const base::FilePath& path) {
 
 firmware_update::mojom::FirmwareUpdatePtr CreateUpdate(
     const FwupdUpdate& update_details,
-    const std::string& device_id,
-    const std::string& device_name) {
+    const FwupdDevice& device) {
   auto update = firmware_update::mojom::FirmwareUpdate::New();
-  update->device_id = device_id;
-  update->device_name = base::UTF8ToUTF16(device_name);
+  update->device_id = device.id;
+  update->device_name = base::UTF8ToUTF16(device.device_name);
+  update->needs_reboot =
+      device.needs_reboot && features::IsFlexFirmwareUpdateEnabled();
   update->device_version = update_details.version;
   update->device_description = base::UTF8ToUTF16(update_details.description);
   update->priority =
@@ -878,8 +879,11 @@ void FirmwareUpdateManager::OnUpdateListResponse(const std::string& device_id,
   // If there are updates, then choose the first one.
   if (!updates->empty()) {
     auto device_name = devices_pending_update_[device_id].device_name;
+    auto needs_reboot = devices_pending_update_[device_id].needs_reboot &&
+                        features::IsFlexFirmwareUpdateEnabled();
     // Create a complete FirmwareUpdate and add to updates_.
-    updates_.push_back(CreateUpdate(updates->front(), device_id, device_name));
+    updates_.push_back(CreateUpdate(
+        updates->front(), FwupdDevice(device_id, device_name, needs_reboot)));
   }
 
   // Remove the pending device.

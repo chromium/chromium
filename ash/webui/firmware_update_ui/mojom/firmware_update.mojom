@@ -25,6 +25,13 @@ struct FirmwareUpdate {
   // Device name, may be in an internationalized language.
   mojo_base.mojom.String16 device_name;
 
+  // Whether the device requires a system reboot to apply firmware
+  // or to reload hardware.
+  //
+  // This is only available on devices that support user initiated
+  // system firmware updates (i.e. Flex).
+  bool needs_reboot;
+
   // Device firmware version.
   string device_version;
 

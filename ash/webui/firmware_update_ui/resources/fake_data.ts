@@ -10,6 +10,7 @@ export const fakeFirmwareUpdates: FirmwareUpdate[][] = [[
   {
     deviceId: '1',
     deviceName: stringToMojoString16('HP dock'),
+    needsReboot: false,
     deviceVersion: '5.4.3',
     deviceDescription: stringToMojoString16(
         `Update the firmware to the latest to enhance the security of your HP
@@ -22,6 +23,7 @@ export const fakeFirmwareUpdates: FirmwareUpdate[][] = [[
   {
     deviceId: '2',
     deviceName: stringToMojoString16('ColorHugALS'),
+    needsReboot: false,
     deviceVersion: '3.0.2',
     deviceDescription: stringToMojoString16(
         `Updating your ColorHugALS device firmware improves performance and
@@ -34,6 +36,7 @@ export const fakeFirmwareUpdates: FirmwareUpdate[][] = [[
   {
     deviceId: '3',
     deviceName: stringToMojoString16('Logitech keyboard'),
+    needsReboot: false,
     deviceVersion: '2.1.12',
     deviceDescription: stringToMojoString16(
         'Update firmware for Logitech keyboard to improve performance'),
@@ -45,6 +48,7 @@ export const fakeFirmwareUpdates: FirmwareUpdate[][] = [[
   {
     deviceId: '4',
     deviceName: stringToMojoString16('Game Controller (has user requests)'),
+    needsReboot: false,
     deviceVersion: '90.0.1',
     deviceDescription: stringToMojoString16(
         'Update this device to see what a device request looks like'),
@@ -57,6 +61,7 @@ export const fakeFirmwareUpdates: FirmwareUpdate[][] = [[
     deviceId: '5',
     deviceName:
         stringToMojoString16('Game Controller 2 (has user requests, fails)'),
+    needsReboot: false,
     deviceVersion: '90.0.1',
     deviceDescription:
         stringToMojoString16('This update will fail during the device request'),
@@ -97,6 +102,7 @@ export const fakeInstallationProgressWithRequestAndFailure:
 export const fakeFirmwareUpdate: FirmwareUpdate = {
   deviceId: '1',
   deviceName: stringToMojoString16('Logitech keyboard'),
+  needsReboot: false,
   deviceVersion: '2.1.12',
   deviceDescription: stringToMojoString16(
       'Update firmware for Logitech keyboard to improve performance'),
@@ -108,6 +114,7 @@ export const fakeFirmwareUpdate: FirmwareUpdate = {
 export const fakeCriticalFirmwareUpdate: FirmwareUpdate = {
   deviceId: '1',
   deviceName: stringToMojoString16('Logitech keyboard'),
+  needsReboot: false,
   deviceVersion: '2.1.12',
   deviceDescription: stringToMojoString16(
       'Update firmware for Logitech keyboard to improve performance'),
