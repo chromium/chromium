@@ -109,7 +109,7 @@ class ReadAnythingAppModel {
 
   const std::string& base_language_code() const { return base_language_code_; }
 
-  void SetBaseLanguageCode(const std::string code);
+  void SetBaseLanguageCode(const std::string& code);
 
   std::vector<std::string> GetSupportedFonts();
 

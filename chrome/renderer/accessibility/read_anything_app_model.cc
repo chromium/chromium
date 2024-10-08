@@ -1049,7 +1049,7 @@ void ReadAnythingAppModel::ToggleImagesEnabled() {
   images_enabled_ = !images_enabled_;
 }
 
-void ReadAnythingAppModel::SetBaseLanguageCode(const std::string code) {
+void ReadAnythingAppModel::SetBaseLanguageCode(const std::string& code) {
   DCHECK(!code.empty());
   base_language_code_ = code;
   // Update whether each font is supported by the new language code.

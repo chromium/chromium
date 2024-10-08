@@ -41,7 +41,7 @@ class ReadAloudAppModel {
   const std::string& default_language_code() const {
     return default_language_code_;
   }
-  void set_default_language_code(const std::string code) {
+  void set_default_language_code(const std::string& code) {
     default_language_code_ = code;
   }
 

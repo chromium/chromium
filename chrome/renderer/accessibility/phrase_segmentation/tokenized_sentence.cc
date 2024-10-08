@@ -16,8 +16,9 @@ TokenizedSentence::TokenizedSentence(const std::u16string& text) {
 }
 
 // Constructs a tokenized sentence from tokens.
-TokenizedSentence::TokenizedSentence(const std::u16string& text,
-                                     const std::vector<std::u16string> tokens) {
+TokenizedSentence::TokenizedSentence(
+    const std::u16string& text,
+    const std::vector<std::u16string>& tokens) {
   token_boundaries_.reserve(tokens.size());
   tokens_.reserve(tokens.size());
   for (unsigned int i = 0, start = 0; i < tokens.size(); i++) {
