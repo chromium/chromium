@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -162,6 +163,12 @@
     }
     [weakSelf.consumer attemptShowingLensOverlayIPH];
   }));
+  // Records the leading icon type when the document changes to avoid too many
+  // recording. Don't record on NTP as the leading icon is not visible.
+  if (navigation && !navigation->IsSameDocument() &&
+      !IsURLNewTabPage(navigation->GetUrl())) {
+    [self.consumer recordLensOverlayAvailability];
+  }
 }
 
 - (void)webStateDidStartLoading:(web::WebState*)webState {

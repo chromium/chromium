@@ -27,4 +27,7 @@
 - (void)attemptShowingLensOverlayIPH {
 }
 
+- (void)recordLensOverlayAvailability {
+}
+
 @end

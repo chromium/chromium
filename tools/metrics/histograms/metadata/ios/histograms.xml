@@ -1900,6 +1900,27 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.LocationBar.LensOverlayEntrypointAvailable" enum="Boolean"
+    expires_after="2025-05-06">
+  <owner>christianxu@chromium.org</owner>
+  <owner>stkhapugin@chromium.org</owner>
+  <summary>
+    Records that the lens entrypoint is available after a page has finished
+    loading.
+  </summary>
+</histogram>
+
+<histogram name="IOS.LocationBar.LensOverlayEntrypointHidden"
+    enum="IOSLocationBarLeadingIconType" expires_after="2025-05-06">
+  <owner>christianxu@chromium.org</owner>
+  <owner>stkhapugin@chromium.org</owner>
+  <summary>
+    Recorded when the lens overlay entrypoint is hidden due to another button
+    being prioritized. Records which button is shown in place of the lens
+    overlay.
+  </summary>
+</histogram>
+
 <histogram name="IOS.MagicStack.Module.Click" enum="IOSMagicStackModuleType"
     expires_after="2025-03-09">
   <owner>thegreenfrog@chromium.org</owner>

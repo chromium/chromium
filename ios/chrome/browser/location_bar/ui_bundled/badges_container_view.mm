@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/badges_container_view.h"
 
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_metrics.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -137,7 +138,22 @@ const CGFloat kPlaceholderViewLeadingMargin = 4.8;
                             !self.contextualPanelEntrypointView.hidden) ||
                            (self.badgeView && !self.badgeView.hidden);
 
+  if (!_placeholderView || placeholderHidden == _placeholderView.hidden) {
+    return;
+  }
+
   _placeholderView.hidden = placeholderHidden;
+
+  // Records why the placeholder view is hidden. These are not mutually
+  // exclusive, price tracking will take precedence over messages.
+  if (placeholderHidden) {
+    if (self.contextualPanelEntrypointView &&
+        !self.contextualPanelEntrypointView.hidden) {
+      RecordLensEntrypointHidden(IOSLocationBarLeadingIconType::kPriceTracking);
+    } else if (self.badgeView && !self.badgeView.hidden) {
+      RecordLensEntrypointHidden(IOSLocationBarLeadingIconType::kMessage);
+    }
+  }
 }
 
 @end

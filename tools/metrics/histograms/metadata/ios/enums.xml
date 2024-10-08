@@ -381,6 +381,18 @@ the generic promo launch. -->
   <int value="10" label="External action opened in Chrome"/>
 </enum>
 
+<!-- LINT.IfChange(IOSLocationBarLeadingIconType) -->
+
+<enum name="IOSLocationBarLeadingIconType">
+  <summary>The leading icon in the location bar</summary>
+  <int value="0" label="None"/>
+  <int value="1" label="Message (e.g. translate)"/>
+  <int value="2" label="Price insight"/>
+  <int value="3" label="Lens overlay"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/location_bar/ui_bundled/location_bar_metrics.h:IOSLocationBarLeadingIconType) -->
+
 <enum name="IOSMagicStackModuleType">
   <int value="-1" label="Invalid"/>
   <int value="0" label="Most Visited Tiles"/>

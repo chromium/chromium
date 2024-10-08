@@ -541,6 +541,10 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   [self.viewController attemptShowingLensOverlayIPH];
 }
 
+- (void)recordLensOverlayAvailability {
+  [self.viewController recordLensOverlayAvailability];
+}
+
 #pragma mark - URLDragDataSource
 
 - (URLInfo*)URLInfoForView:(UIView*)view {

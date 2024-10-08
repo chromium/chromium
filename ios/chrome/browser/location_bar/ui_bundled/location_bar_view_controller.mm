@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_entrypoint_view.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/badges_container_view.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_metrics.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_steady_view.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/location_bar_offset_provider.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -377,6 +378,13 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
       !self.locationBarSteadyView.badgesContainerView.placeholderView.hidden) {
     [self.helpCommandsHandler
         presentInProductHelpWithType:InProductHelpType::kLensOverlayEntrypoint];
+  }
+}
+
+- (void)recordLensOverlayAvailability {
+  // Record lens overlay placeholder available.
+  if (_placeholderType == LocationBarPlaceholderType::kLensOverlay) {
+    RecordLensEntrypointAvailable();
   }
 }
 
