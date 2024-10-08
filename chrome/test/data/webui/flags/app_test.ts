@@ -129,35 +129,31 @@ suite('FlagsAppTest', function() {
     // </if>
   });
 
-  test(
-      'check available/unavailable tabs are rendered properly',
-      async function() {
-        const crTabs = app.getRequiredElement('cr-tabs');
-        assertTrue(isVisible(crTabs));
-        assertEquals(2, crTabs.tabNames.length);
-        assertEquals(0, crTabs.selected);
+  test('check available/unavailable tabs are rendered properly', function() {
+    const availableTab = app.getRequiredElement('#tab-available');
+    const unavailableTab = app.getRequiredElement('#tab-unavailable');
 
-        const defaultAvailableExperimentsContainer =
-            app.getRequiredElement('#default-experiments');
-        const nonDefaultAvailableExperimentsContainer =
-            app.getRequiredElement('#non-default-experiments');
-        const unavailableExperimentsContainer =
-            app.getRequiredElement('#unavailable-experiments');
-        assertFalse(isVisible(nonDefaultAvailableExperimentsContainer));
-        assertTrue(isVisible(defaultAvailableExperimentsContainer));
-        assertFalse(isVisible(unavailableExperimentsContainer));
+    assertTrue(isVisible(availableTab));
+    assertTrue(isVisible(unavailableTab));
 
-        // Toggle unavailable tab and the unavailable experiments container
-        // becomes visible.
-        const tabs = crTabs.shadowRoot!.querySelectorAll<HTMLElement>('.tab');
-        assertEquals(2, tabs.length);
-        tabs[1]!.click();
-        await microtasksFinished();
-        assertEquals(1, crTabs.selected);
-        assertFalse(isVisible(nonDefaultAvailableExperimentsContainer));
-        assertFalse(isVisible(defaultAvailableExperimentsContainer));
-        assertTrue(isVisible(unavailableExperimentsContainer));
-      });
+    const defaultAvailableExperimentsContainer =
+        app.getRequiredElement('#default-experiments');
+    assertTrue(isVisible(defaultAvailableExperimentsContainer));
+
+    const nonDefaultAvailableExperimentsContainer =
+        app.getRequiredElement('#non-default-experiments');
+    assertFalse(isVisible(nonDefaultAvailableExperimentsContainer));
+
+    const unavailableExperimentsContainer =
+        app.getRequiredElement('#unavailable-experiments');
+    assertFalse(isVisible(unavailableExperimentsContainer));
+
+    // Toggle unavailable tab and the unavailable experiments container becomes
+    // visible.
+    unavailableTab.click();
+    assertTrue(isVisible(unavailableExperimentsContainer));
+    assertFalse(isVisible(defaultAvailableExperimentsContainer));
+  });
 
   test('clear search button shown/hidden', async function() {
     // The clear search button is hidden initially.

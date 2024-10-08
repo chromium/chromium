@@ -7,7 +7,6 @@ import 'chrome://resources/js/ios/web_ui.js';
 // </if>
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import './strings.m.js';
 import './experiment.js';
 
@@ -25,6 +24,11 @@ import {getHtml} from './app.html.js';
 import type {ExperimentElement as FlagsExperimentElement} from './experiment.js';
 import type {ExperimentalFeaturesData, Feature} from './flags_browser_proxy.js';
 import {FlagsBrowserProxyImpl} from './flags_browser_proxy.js';
+
+interface Tab {
+  tabEl: HTMLElement;
+  panelEl: HTMLElement;
+}
 
 
 /**
@@ -117,19 +121,8 @@ export class FlagsAppElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
-
-      tabNames_: {type: Array},
-      selectedTabIndex_: {type: Number},
     };
   }
-
-  protected tabNames_: string[] = [
-    loadTimeData.getString('available'),
-    // <if expr="not is_ios">
-    loadTimeData.getString('unavailable'),
-    // </if>
-  ];
-  protected selectedTabIndex_: number = 0;
 
   protected data: ExperimentalFeaturesData = {
     supportedFeatures: [],
@@ -200,22 +193,27 @@ export class FlagsAppElement extends CrLitElement {
     this.$.search.focus();
   }
 
-  override async updated(changedProperties: PropertyValues<this>) {
+  override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
     this.showRestartToast(this.data.needsRestart);
-    if (this.defaultFeatures.length === 0 &&
-        // <if expr="not is_ios">
-        this.data.unsupportedFeatures.length === 0 &&
-        // </if>
-        this.nonDefaultFeatures.length === 0) {
-      // Return early if this update corresponds to the initial dummy data, to
-      // avoid triggering `featuresResolver` prematurely in tests.
-      return;
-    }
-
-    await this.highlightReferencedFlag();
+    this.highlightReferencedFlag();
     this.featuresResolver.resolve();
+  }
+
+  getTabs(): Tab[] {
+    return [
+      {
+        tabEl: this.getRequiredElement('#tab-available'),
+        panelEl: this.getRequiredElement('#tab-content-available'),
+      },
+      // <if expr="not is_ios">
+      {
+        tabEl: this.getRequiredElement('#tab-unavailable'),
+        panelEl: this.getRequiredElement('#tab-content-unavailable'),
+      },
+      // </if>
+    ];
   }
 
   // <if expr="not is_ios">
@@ -346,8 +344,11 @@ export class FlagsAppElement extends CrLitElement {
       await this.announceSearchResults(searchTerm, availableExperimentsHits);
       // </if>
       // <if expr="not is_ios">
-      const hits = this.selectedTabIndex_ === 0 ? availableExperimentsHits :
-                                                  unavailableExperimentsHits;
+      const selectedTabContentId =
+          this.getRequiredElement('.tab-content.selected').id;
+      const hits = selectedTabContentId === 'tab-content-available' ?
+          availableExperimentsHits :
+          unavailableExperimentsHits;
       await this.announceSearchResults(searchTerm, hits);
       // </if>
     }
@@ -369,6 +370,18 @@ export class FlagsAppElement extends CrLitElement {
                   'searchResultsPlural', total, searchTerm));
     }
     return Promise.resolve();
+  }
+
+  /**
+   * Toggles necessary attributes to display selected tab.
+   */
+  private selectTab(selectedTabEl: HTMLElement) {
+    for (const tab of this.getTabs()) {
+      const isSelectedTab = tab.tabEl === selectedTabEl;
+      tab.tabEl.classList.toggle('selected', isSelectedTab);
+      tab.tabEl.setAttribute('aria-selected', String(isSelectedTab));
+      tab.panelEl.classList.toggle('selected', isSelectedTab);
+    }
   }
 
   /*
@@ -395,7 +408,7 @@ export class FlagsAppElement extends CrLitElement {
    * don't actually exist until after the template code runs; normal navigation
    * therefore doesn't work.
    */
-  private async highlightReferencedFlag() {
+  private highlightReferencedFlag() {
     if (!window.location.hash) {
       return;
     }
@@ -417,9 +430,7 @@ export class FlagsAppElement extends CrLitElement {
     // Switch to unavailable tab if the flag is in this section.
     if (this.getRequiredElement('#tab-content-unavailable')
             .contains(experiment)) {
-      this.selectedTabIndex_ = 1;
-      await this.updateComplete;
-      await this.getRequiredElement('cr-tabs').updateComplete;
+      this.selectTab(this.getRequiredElement('#tab-unavailable'));
     }
     // </if>
     experiment.scrollIntoView();
@@ -546,12 +557,9 @@ export class FlagsAppElement extends CrLitElement {
         this.data.showDevChannelPromotion;
   }
 
-  protected onSelectedTabIndexChanged_(e: CustomEvent<{value: number}>) {
-    this.selectedTabIndex_ = e.detail.value;
-  }
-
-  protected isTabSelected_(index: number): boolean {
-    return index === this.selectedTabIndex_;
+  protected onTabClick_(e: Event) {
+    e.preventDefault();
+    this.selectTab(e.target as HTMLElement);
   }
 
   // <if expr="not is_ios">

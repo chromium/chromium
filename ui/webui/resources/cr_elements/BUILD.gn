@@ -25,8 +25,6 @@ build_webui("build") {
     "cr_button/cr_button.html.ts",
     "cr_button/cr_button.ts",
     "cr_ripple/cr_ripple.ts",
-    "cr_tabs/cr_tabs.html.ts",
-    "cr_tabs/cr_tabs.ts",
   ]
 
   css_files = [
@@ -34,7 +32,6 @@ build_webui("build") {
     "cr_hidden_style_lit.css",
     "cr_ripple/cr_ripple.css",
     "cr_shared_vars.css",
-    "cr_tabs/cr_tabs.css",
   ]
 
   if (!is_android && !is_ios) {
@@ -129,6 +126,8 @@ build_webui("build") {
       "cr_selectable_mixin.ts",
       "cr_slider/cr_slider.html.ts",
       "cr_slider/cr_slider.ts",
+      "cr_tabs/cr_tabs.html.ts",
+      "cr_tabs/cr_tabs.ts",
       "cr_textarea/cr_textarea.html.ts",
       "cr_textarea/cr_textarea.ts",
       "cr_toast/cr_toast.html.ts",
@@ -208,6 +207,7 @@ build_webui("build") {
       "cr_progress/cr_progress.css",
       "cr_search_field/cr_search_field.css",
       "cr_slider/cr_slider.css",
+      "cr_tabs/cr_tabs.css",
       "cr_textarea/cr_textarea.css",
       "cr_toast/cr_toast.css",
       "cr_toast/cr_toast_manager.css",

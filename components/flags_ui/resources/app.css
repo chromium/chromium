@@ -4,7 +4,6 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
- * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
@@ -258,8 +257,52 @@ button {
   font-size: .875rem;
 }
 
-cr-tabs {
-  border-bottom: 1px solid var(--cr-separator-color);
+.tabs {
+  display: flex;
+  width: 100%;
+}
+
+.tab {
+  color: var(--secondary-color);
+  cursor: pointer;
+  display: block;
+  flex: 1;
+  font-size: 1rem;
+  font-weight: normal;
+  padding: 14px 21px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  transition: color 200ms var(--ease-in-out);
+  user-select: none;
+  width: 50%;
+  z-index: 1;
+}
+
+.tab::before {
+  background: currentColor;
+  bottom: 0;
+  content: '';
+  display: block;
+  height: 1px;
+  left: 0;
+  position: absolute;
+  transition: height 200ms var(--ease-in-out);
+  width: 100%;
+}
+
+.tabs .tab.selected,
+.tabs .tab.selected:focus {
+  color: var(--interactive-color);
+}
+
+.tabs .tab.selected::before,
+.tabs .tab.selected:focus::before {
+  height: 2px;
+}
+
+html:not(.focus-outline-visible) .tab:focus {
+  outline: 0;
 }
 
 .tab-content {
@@ -271,7 +314,8 @@ cr-tabs {
   position: relative;
 }
 
-.tab-content[selected] {
+.tab-content.selected,
+.tab-content.selected .template {
   display: block;
 }
 
@@ -324,7 +368,8 @@ cr-tabs {
 
 @media (max-width: 360px) {
   #experiment-reset-all {
-    text-align: center;
+    font-size: .65rem;
+    padding: 2px 8px;
   }
 
   #flagsTemplate>.flex-container {

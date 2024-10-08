@@ -74,15 +74,23 @@ export function getHtml(this: AppElement) {
         <a href="https://chrome.com/dev">dev channel</a>
       </span>
     </p>
-
-    <cr-tabs id="tabs" .tabNames="${this.tabNames_}"
-        .selected="${this.selectedTabIndex_}"
-        @selected-changed="${this.onSelectedTabIndexChanged_}">
-    </cr-tabs>
-
+    <div id="tabs" class="tabs" role="tablist">
+      <a href="#tab-content-available" id="tab-available" class="tab selected"
+          role="tab" aria-selected="true" aria-controls="panel1"
+          @click="${this.onTabClick_}">
+        $i18n{available}
+      </a>
+<!-- Unsupported experiments are not shown on iOS -->
+<if expr="not is_ios">
+      <a href="#tab-content-unavailable" id="tab-unavailable" class="tab"
+          role="tab" aria-selected="false" aria-controls="panel2"
+          @click="${this.onTabClick_}">
+        $i18n{unavailable}
+      </a>
+</if>
+    </div>
     <div id="tabpanels">
-      <div id="tab-content-available" class="tab-content"
-          ?selected="${this.isTabSelected_(0)}"
+      <div id="tab-content-available" class="tab-content selected"
           role="tabpanel" aria-labelledby="tab-available" aria-hidden="false">
         <!-- Non default experiments. -->
         <div id="non-default-experiments">
@@ -108,7 +116,6 @@ export function getHtml(this: AppElement) {
       </div>
 <if expr="not is_ios">
       <div id="tab-content-unavailable" class="tab-content"
-          ?selected="${this.isTabSelected_(1)}"
           role="tabpanel" aria-labelledby="tab-unavailable" aria-hidden="false">
         <div id="unavailable-experiments">
           ${this.data.unsupportedFeatures.map(feature => html`
