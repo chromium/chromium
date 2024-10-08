@@ -192,7 +192,7 @@ suite('NewTabPageAppTest', () => {
       // Act.
 
       // Create a dark mode theme with a custom background.
-      const theme = createTheme(true);
+      const theme = createTheme({isDark: true});
       theme.backgroundImage = createBackgroundImage('https://foo.com');
       callbackRouterRemote.setTheme(theme);
       await callbackRouterRemote.$.flushForTesting();
@@ -226,7 +226,7 @@ suite('NewTabPageAppTest', () => {
       // Arrange.
 
       // Set theme that triggers the scrim.
-      const theme = createTheme(true);
+      const theme = createTheme({isDark: true});
       theme.backgroundImage = createBackgroundImage('https://foo.com');
       callbackRouterRemote.setTheme(theme);
       await callbackRouterRemote.$.flushForTesting();
@@ -401,7 +401,7 @@ suite('NewTabPageAppTest', () => {
             // Act.
 
             // Create a theme with a custom background.
-            const theme = createTheme(isDark);
+            const theme = createTheme({isDark: isDark});
             theme.backgroundImage = createBackgroundImage('https://foo.com');
             callbackRouterRemote.setTheme(theme);
             await callbackRouterRemote.$.flushForTesting();
@@ -1046,7 +1046,7 @@ suite('NewTabPageAppTest', () => {
                 $$(app, '#customizeButton .customize-icon')!,
                 'background-color', 'rgb(255, 255, 255)');
 
-            const theme = createTheme(true);
+            const theme = createTheme({isDark: true});
             theme.backgroundImage = createBackgroundImage('https://foo.com');
             callbackRouterRemote.setTheme(theme);
             await callbackRouterRemote.$.flushForTesting();
@@ -1276,7 +1276,7 @@ suite('NewTabPageAppTest', () => {
                 32, $$<HTMLElement>(app, '#customizeButton')!.offsetWidth);
 
             // Create and set theme.
-            const theme = createTheme(true);
+            const theme = createTheme({isDark: true});
             theme.backgroundImage = createBackgroundImage('https://foo.com');
             callbackRouterRemote.setTheme(theme);
             await callbackRouterRemote.$.flushForTesting();
@@ -1401,9 +1401,7 @@ suite('NewTabPageAppTest', () => {
             assertTrue(
                 !!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
 
-
-            // Set theme with a color but no background image.
-            callbackRouterRemote.setTheme(createTheme());
+            callbackRouterRemote.setTheme(createTheme({isBaseline: false}));
             await callbackRouterRemote.$.flushForTesting();
             await microtasksFinished();
 
