@@ -15,17 +15,6 @@ class TabStripNewTabButton: UIView {
   /// View used for by the `layoutGuideCenter`.
   public var layoutGuideView: UIView { return button }
 
-  /// `IPHHighlighted` state of the button.
-  public var IPHHighlighted: Bool = false {
-    didSet {
-      button.configuration?.baseForegroundColor =
-        IPHHighlighted ? UIColor.init(named: kSolidWhiteColor) : UIColor(named: kTextSecondaryColor)
-      button.backgroundColor =
-        IPHHighlighted
-        ? UIColor(named: kBlueColor) : UIColor(named: kGroupedSecondaryBackgroundColor)
-    }
-  }
-
   /// `true` if the user is in incognito.
   public var isIncognito: Bool {
     didSet {
