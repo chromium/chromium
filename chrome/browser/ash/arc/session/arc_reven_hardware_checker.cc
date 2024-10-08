@@ -6,6 +6,7 @@
 
 #include <iomanip>
 
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -27,6 +28,13 @@ std::string IntToHex(uint16_t value) {
 constexpr int64_t kMinMemorySizeInKiB = 4LL * 1024LL * 1024LL;
 // Minimum required storage to enable the arcvm: 32 GB in bytes.
 constexpr int64_t kMinStorageSizeInBytes = 32LL * 1024LL * 1024LL * 1024LL;
+
+// It takes hundreds of milliseconds to wait for the hardware
+// information to be ready, so set the timeout to five seconds (100 ms * 50)
+// as a safe interval.
+constexpr int64_t kMaxRetries = 50;
+constexpr base::TimeDelta kHardwareInfoReadyRetryInterval =
+    base::Milliseconds(100);
 
 const std::unordered_set<std::string>
     ArcRevenHardwareChecker::kSupportedWiFiIds{
@@ -74,12 +82,61 @@ void ArcRevenHardwareChecker::IsRevenDeviceCompatibleForArc(
     probe_service_.set_disconnect_handler(base::BindOnce(
         &ArcRevenHardwareChecker::OnDisconnect, weak_factory_.GetWeakPtr()));
   }
-  // Request telemetry information from the cros_healthd service.
+  // Check whether the hardware information is ready.
   probe_service_->ProbeTelemetryInfo(
-      {mojom::ProbeCategoryEnum::kCpu,
-       mojom::ProbeCategoryEnum::kNonRemovableBlockDevices,
-       mojom::ProbeCategoryEnum::kMemory, mojom::ProbeCategoryEnum::kBus},
-      base::BindOnce(&ArcRevenHardwareChecker::OnRevenHardwareChecked,
+      {mojom::ProbeCategoryEnum::kNonRemovableBlockDevices},
+      base::BindOnce(&ArcRevenHardwareChecker::OnCheckNonRemovableBlockDevices,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ArcRevenHardwareChecker::OnCheckNonRemovableBlockDevices(
+    base::OnceCallback<void(bool)> callback,
+    mojom::TelemetryInfoPtr info_ptr) {
+  // Successfully obtained block device information.
+  if (!info_ptr.is_null() && info_ptr->block_device_result &&
+      info_ptr->block_device_result->which() ==
+          ash::cros_healthd::mojom::NonRemovableBlockDeviceResult::Tag::
+              kBlockDeviceInfo) {
+    if (retry_timer_.IsRunning()) {
+      retry_timer_.Stop();
+      retry_count_ = 0;
+    }
+    base::UmaHistogramBoolean("Arc.RevenHardwareChecker.Timeout", false);
+    // Request telemetry information from the cros_healthd service.
+    probe_service_->ProbeTelemetryInfo(
+        {mojom::ProbeCategoryEnum::kCpu,
+         mojom::ProbeCategoryEnum::kNonRemovableBlockDevices,
+         mojom::ProbeCategoryEnum::kMemory, mojom::ProbeCategoryEnum::kBus},
+        base::BindOnce(&ArcRevenHardwareChecker::OnRevenHardwareChecked,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+
+  // Timeout to obtain block device information.
+  if (retry_count_ > kMaxRetries) {
+    base::UmaHistogramBoolean("Arc.RevenHardwareChecker.Timeout", true);
+    LOG(ERROR)
+        << "Did not wait for hardware information to be ready before timeout";
+    std::move(callback).Run(false);
+    retry_timer_.Stop();
+    retry_count_ = 0;
+    return;
+  }
+
+  // Retry to obtain the block device information.
+  retry_count_++;
+  retry_timer_.Start(
+      FROM_HERE, kHardwareInfoReadyRetryInterval,
+      base::BindOnce(
+          &ArcRevenHardwareChecker::OnRetryNonRemovableBlockDevicesCheck,
+          weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ArcRevenHardwareChecker::OnRetryNonRemovableBlockDevicesCheck(
+    base::OnceCallback<void(bool)> callback) {
+  probe_service_->ProbeTelemetryInfo(
+      {mojom::ProbeCategoryEnum::kNonRemovableBlockDevices},
+      base::BindOnce(&ArcRevenHardwareChecker::OnCheckNonRemovableBlockDevices,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 

@@ -118,6 +118,12 @@ class ArcRevenHardwareCheckerTest : public testing::Test {
         std::move(storage_vector));
   }
 
+  mojom::NonRemovableBlockDeviceResultPtr CreateErrorStorageTag() {
+    auto error = ash::cros_healthd::mojom::ProbeError::New();
+    return ash::cros_healthd::mojom::NonRemovableBlockDeviceResult::NewError(
+        std::move(error));
+  }
+
   mojom::BusResultPtr CreateBusResult(uint64_t gpu_device_id,
                                       uint64_t wifi_device_id) {
     std::vector<mojom::BusDevicePtr> bus_devices;
@@ -158,6 +164,8 @@ class ArcRevenHardwareCheckerTest : public testing::Test {
 // Test failure due to insufficient memory size.
 TEST_F(ArcRevenHardwareCheckerTest, MemoryRequirementNotMet) {
   auto info = mojom::TelemetryInfo::New();
+  info->block_device_result =
+      CreateBlockDeviceResult(kStorageSizeMeetsRequirementInBytes);
   info->memory_result = CreateMemoryResult(kMemorySizeBelowRequirementInKiB);
   SetFakeTelemetryInfoResponse(std::move(info));
   RunCheckerAndExpect(kNotMeetHwRequirement);
@@ -167,6 +175,8 @@ TEST_F(ArcRevenHardwareCheckerTest, MemoryRequirementNotMet) {
 TEST_F(ArcRevenHardwareCheckerTest, CpuRequirementNotMet) {
   auto info = mojom::TelemetryInfo::New();
   info->memory_result = CreateMemoryResult(kMemorySizeMeetsRequirementInKiB);
+  info->block_device_result =
+      CreateBlockDeviceResult(kStorageSizeMeetsRequirementInBytes);
   info->cpu_result = CreateCpuResult(kNoKvmDevice);
   SetFakeTelemetryInfoResponse(std::move(info));
   RunCheckerAndExpect(kNotMeetHwRequirement);
@@ -205,6 +215,13 @@ TEST_F(ArcRevenHardwareCheckerTest, AllHardwareRequirementMet) {
 
   SetFakeTelemetryInfoResponse(std::move(info));
   RunCheckerAndExpect(kMeetHwRequirement);
+}
+
+TEST_F(ArcRevenHardwareCheckerTest, BlockDeviceCheckErrorAfterRetries) {
+  auto info = ash::cros_healthd::mojom::TelemetryInfo::New();
+  info->block_device_result = CreateErrorStorageTag();
+  SetFakeTelemetryInfoResponse(std::move(info));
+  RunCheckerAndExpect(false);
 }
 
 }  // namespace

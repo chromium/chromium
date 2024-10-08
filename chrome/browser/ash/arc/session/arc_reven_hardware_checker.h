@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ARC_SESSION_ARC_REVEN_HARDWARE_CHECKER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -26,6 +27,16 @@ class ArcRevenHardwareChecker {
  private:
   // Callback invoked when the CrosHealthd service disconnects.
   void OnDisconnect();
+
+  // Checks for non-removable block devices and calls a provided
+  // callback function when they are ready.
+  void OnCheckNonRemovableBlockDevices(
+      base::OnceCallback<void(bool)> callback,
+      ash::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
+
+  // Retries the check for non-removable block devices.
+  void OnRetryNonRemovableBlockDevicesCheck(
+      base::OnceCallback<void(bool)> callback);
 
   // Callback invoked when telemetry information is received from CrosHealthd.
   // This processes the telemetry info and invokes the provided callback with
@@ -60,6 +71,13 @@ class ArcRevenHardwareChecker {
   // telemetry information.
   mojo::Remote<ash::cros_healthd::mojom::CrosHealthdProbeService>
       probe_service_;
+
+  // Counter for the number of retry attempts made when checking for
+  // non-removable block devices.
+  int retry_count_ = 0;
+
+  // One-shot timer for retrying checks on non-removable block devices.
+  base::OneShotTimer retry_timer_;
 
   static const std::unordered_set<std::string> kSupportedWiFiIds;
   static const std::unordered_set<std::string> kSupportedGpuIds;
