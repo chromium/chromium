@@ -995,6 +995,10 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
 
   // Fill in metadata about which model we used.
   *verdict->mutable_population() = delegate_->GetUserPopulation();
+  verdict->mutable_population()->add_finch_active_groups(
+      base::FeatureList::IsEnabled(kConditionalImageResize)
+          ? "ConditionalImageResize.Enabled"
+          : "ConditionalImageResize.Control");
 
   raw_ptr<VerdictCacheManager> cache_manager = delegate_->GetCacheManager();
   if (cache_manager) {
