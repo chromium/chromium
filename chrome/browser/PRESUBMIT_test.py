@@ -22,11 +22,7 @@ _INVALID_DEP2 = "+third_party/blink/public/web/web_nothing.h,"
 class BlinkPublicWebUnwantedDependenciesTest(unittest.TestCase):
   def makeInputApi(self, files):
     input_api = MockInputApi()
-    input_api.files = files
-    # Override os_path.exists because the presubmit uses the actual
-    # os.path.exists.
-    input_api.CreateMockFileInPath(
-        [x.LocalPath() for x in input_api.AffectedFiles(include_deletes=True)])
+    input_api.InitFiles(files)
     return input_api
 
   INVALID_DEPS_MESSAGE = ('chrome/browser cannot depend on '
