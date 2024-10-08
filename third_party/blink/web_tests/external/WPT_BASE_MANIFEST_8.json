@@ -5095,6 +5095,13 @@
      ]
     },
     "css-typed-om": {
+     "cycle-in-unparsed-value-crash.html": [
+      "9d551901089f845e97c10150bd9200d772855925",
+      [
+       null,
+       {}
+      ]
+     ],
      "perspective-typed-arithmetic-crash.html": [
       "b65625b28681d6adf4edf414700b8c8fd1dfb3a6",
       [
@@ -5316,6 +5323,13 @@
     },
     "css-viewport": {
      "zoom": {
+      "perspective-small-effective-zoom-crash.html": [
+       "ab6f563d19ee8a826cf2ff9d0f04d105c7ba8d96",
+       [
+        null,
+        {}
+       ]
+      ],
       "scroll-corner-crash.html": [
        "0ec88deb748ba83e5408f7c126c021827e940bcf",
        [
@@ -6611,6 +6625,13 @@
      ],
      "replace-parent-of-editing-host-on-DOMSubtreeModified.html": [
       "9d431aa860ffa70c41257b4ccf9a9d8d1ab851a2",
+      [
+       null,
+       {}
+      ]
+     ],
+     "selectall-after-enableobjectresizing.html": [
+      "2aa1ffee8c7db9114b3cc88271a1ec10d91ea3a0",
       [
        null,
        {}
@@ -152074,6 +152095,19 @@
          [
           [
            "/css/css-masking/clip-path/animations/clip-path-animation-cancel-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "clip-path-animation-custom-property.html": [
+        "b4de2b1009b1f02211a10629b17d3963537d9bd5",
+        [
+         null,
+         [
+          [
+           "/css/css-masking/clip-path/animations/clip-path-animation-custom-property-ref.html",
            "=="
           ]
          ],
@@ -336311,6 +336345,10 @@
         "ac04bd53798188fb5fcc27ea87a6eae2ffb46a3b",
         []
        ],
+       "clip-path-animation-custom-property-ref.html": [
+        "b22cf321b45b38dab4ddcb50998af8ffb8ad4137",
+        []
+       ],
        "clip-path-animation-custom-timing-function-ref.html": [
         "49732d361b3ff40f6232fa87423cf5a9e6530a55",
         []
@@ -404983,7 +405021,7 @@
        []
       ],
       "utils.js": [
-       "c9486d7fa1dfe5ad2230958c57d6c5a2a924eada",
+       "259f71f6a70c7f07e65c7620f5fafeb810e2de6f",
        []
       ],
       "wake-lock.https.html": [
@@ -412536,7 +412574,7 @@
     },
     "resources": {
      "utils.js": [
-      "460fe46115476b073c5e650e119a6f6dd263b9ee",
+      "973c16baca760264cd71dc8b28288a8b01a68d51",
       []
      ],
      "utils_validation.js": [
@@ -486834,7 +486872,7 @@
        ]
       ],
       "cssUnparsedValue.html": [
-       "c87553dd917b124fbe42d82d5d4b13d4499749b9",
+       "6e9b1a0c90c23808fced4f6f80a933b8142a4fe5",
        [
         null,
         {}
@@ -665410,6 +665448,21 @@
        }
       ]
      ],
+     "send-beacon.html": [
+      "34843efcde78c5338116ab2ae2dfbfab023df389",
+      [
+       "speculation-rules/prerender/send-beacon.html?target_hint=_blank",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "speculation-rules/prerender/send-beacon.html?target_hint=_self",
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
      "service-workers.https.html": [
       "0f907c35aa10ef62bb4d5bbded5a72721ea740a2",
       [
@@ -690391,7 +690444,7 @@
        ]
       ],
       "processing-after-resume.https.html": [
-       "e000ab124fefa6f0eea4e5517d04436428c0cd8c",
+       "a456f88e186c20b58856fdec2beb1493b0657a0d",
        [
         null,
         {}
@@ -703844,7 +703897,7 @@
       ]
      ],
      "dequantizeLinear.https.any.js": [
-      "c6acb042a2462605ae46b3e388a706081ff0670f",
+      "8a04d0e6b8a36f1f4b5e3a0a9b04feec1acf7ab3",
       [
        "webnn/conformance_tests/dequantizeLinear.https.any.html?cpu",
        {
@@ -713042,7 +713095,7 @@
       ]
      ],
      "quantizeLinear.https.any.js": [
-      "0871c881b717b7eae1a8c016a363c4b39b59d63f",
+      "8aa9d7f3bcc407d92762ddbf67be894a7d17c34e",
       [
        "webnn/conformance_tests/quantizeLinear.https.any.html?cpu",
        {
