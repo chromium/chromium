@@ -10,6 +10,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
@@ -333,6 +334,9 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
                 }
                 case DialogType.UNKNOWN -> throw new IllegalStateException();
             }
+            // As the dialog states change the text, focus accessibility every time the state
+            // changes.
+            title.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
         }
     }
 }
