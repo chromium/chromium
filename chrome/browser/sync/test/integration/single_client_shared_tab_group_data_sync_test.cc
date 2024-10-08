@@ -60,6 +60,11 @@ sync_pb::SharedTabGroupDataSpecifics MakeSharedTabGroupTabSpecifics(
   return specifics;
 }
 
+std::string GetClientTag(const sync_pb::SharedTabGroupDataSpecifics& specifics,
+                         const std::string& collaboration_id) {
+  return specifics.guid() + "|" + collaboration_id;
+}
+
 class SingleClientSharedTabGroupDataSyncTest : public SyncTest {
  public:
   SingleClientSharedTabGroupDataSyncTest() : SyncTest(SINGLE_CLIENT) {
@@ -84,7 +89,8 @@ class SingleClientSharedTabGroupDataSyncTest : public SyncTest {
         syncer::PersistentUniqueClientEntity::
             CreateFromSharedSpecificsForTesting(
                 /*non_unique_name=*/"",
-                /*client_tag=*/entity_specifics.shared_tab_group_data().guid(),
+                GetClientTag(entity_specifics.shared_tab_group_data(),
+                             collaboration_id),
                 entity_specifics, /*creation_time=*/0, /*last_modified_time=*/0,
                 collaboration_id));
   }

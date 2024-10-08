@@ -25,6 +25,7 @@
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/saved_tab_groups/public/utils.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
@@ -440,12 +441,11 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnClientTag) {
   ASSERT_TRUE(InitializeBridgeAndModel());
 
   EXPECT_TRUE(bridge()->SupportsGetClientTag());
-  EXPECT_FALSE(bridge()
-                   ->GetClientTag(CreateEntityData(
-                       MakeTabGroupSpecifics("test title",
-                                             sync_pb::SharedTabGroup::GREEN),
-                       "collaboration"))
-                   .empty());
+  sync_pb::SharedTabGroupDataSpecifics group_specifics =
+      MakeTabGroupSpecifics("title", sync_pb::SharedTabGroup::BLUE);
+  EXPECT_EQ(bridge()->GetClientTag(
+                CreateEntityData(group_specifics, "collaboration")),
+            group_specifics.guid() + "|collaboration");
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldCallModelReadyToSync) {
@@ -1539,6 +1539,11 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldAssignLocalGroupId) {
 
   LocalTabGroupID local_group_id = test::GenerateRandomTabGroupID();
   model()->OnGroupOpenedInTabStrip(group.saved_guid(), local_group_id);
+
+  // Verify that the local group ID is persisted if supported.
+  if (!AreLocalIdsPersisted()) {
+    return;
+  }
 
   // Simulate browser restart to verify that the local group ID is persisted.
   StoreMetadataAndReset(kCollaborationId);

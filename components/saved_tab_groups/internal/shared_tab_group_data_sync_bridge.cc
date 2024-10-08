@@ -247,7 +247,8 @@ std::vector<sync_pb::SharedTabGroupDataSpecifics> LoadStoredEntries(
     }
     groups.emplace_back(SpecificsToSharedTabGroup(specifics, collaboration_id));
     // Load remaining local-only fields.
-    if (proto.local_group_data().has_local_group_id()) {
+    if (AreLocalIdsPersisted() &&
+        proto.local_group_data().has_local_group_id()) {
       groups.back().SetLocalGroupId(
           LocalTabGroupIDFromString(proto.local_group_data().local_group_id()));
     }
@@ -557,7 +558,8 @@ SharedTabGroupDataSyncBridge::GetAllDataForDebugging() {
 
 std::string SharedTabGroupDataSyncBridge::GetClientTag(
     const syncer::EntityData& entity_data) {
-  return GetStorageKey(entity_data);
+  return entity_data.specifics.shared_tab_group_data().guid() + "|" +
+         entity_data.collaboration_id;
 }
 
 std::string SharedTabGroupDataSyncBridge::GetStorageKey(
