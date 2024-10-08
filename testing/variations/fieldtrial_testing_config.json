@@ -26746,21 +26746,6 @@
             ]
         }
     ],
-    "WinSboxZeroAppShim": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WinSboxZeroAppShim"
-                    ]
-                }
-            ]
-        }
-    ],
     "WinSystemLocationPermission": [
         {
             "platforms": [

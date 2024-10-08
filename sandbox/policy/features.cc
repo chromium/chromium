@@ -86,10 +86,10 @@ BASE_FEATURE(kWinSboxForceRendererCodeIntegrity,
 
 // If enabled, modifies the child's PEB to stop further application of
 // appcompat in the child. Does not affect the browser or unsandboxed
-// processes.
+// processes. The feature has no effect for WOW (32bit on 64bit) installs.
 BASE_FEATURE(kWinSboxZeroAppShim,
              "WinSboxZeroAppShim",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables pre-launch Code Integrity Guard (CIG) for Chrome network service
 // process, when running on Windows 10 1511 and above. This has no effect if
