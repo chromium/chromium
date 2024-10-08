@@ -3366,6 +3366,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "enable-identity-in-auth-error",
+    "owners": [ "jlebel@chromium.org", "chrome-signin-team@google.com" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "enable-immersive-fullscreen-toolbar",
     "owners": [ "bur@chromium.org", "chrome-mac-dev@google.com" ],
     "expiry_milestone": 135
@@ -3986,11 +3991,6 @@
   {
     "name": "enable-speculation-rules-prerendering-target-hint",
     "owners": [ "//content/browser/preloading/prerender/OWNERS" ],
-    "expiry_milestone": 135
-  },
-  {
-    "name": "enable-stale-identities",
-    "owners": [ "jlebel@chromium.org", "chrome-signin-team@google.com" ],
     "expiry_milestone": 135
   },
   {

@@ -441,9 +441,9 @@ const char kEnableSignedOutViewDemotionDescription[] =
     "Enable signed out user view demotion to avoid repeated content for signed "
     "out users.";
 
-const char kEnableStaleIdentitiesName[] = "Enable Stale Identities";
-const char kEnableStaleIdentitiesDescription[] =
-    "Keeps identities available in Chrome when the identity tokens are stale.";
+const char kEnableIdentityInAuthErrorName[] = "Enable Identities in Auth Error";
+const char kEnableIdentityInAuthErrorDescription[] =
+    "Enable identities in auth error state.";
 
 const char kEnableWebChannelsName[] = "Enable WebFeed";
 const char kEnableWebChannelsDescription[] =
