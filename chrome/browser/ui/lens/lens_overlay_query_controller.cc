@@ -309,7 +309,9 @@ void LensOverlayQueryController::SendTextOnlyQuery(
   // should replace any in-flight interaction requests to cancel previously
   // issued fetches.
   latest_interaction_request_data_ = std::make_unique<LensServerFetchRequest>(
-      request_id_generator_->GetNextRequestId()->sequence_id(),
+      request_id_generator_
+          ->GetNextRequestId(RequestIdUpdateMode::kInteractionRequest)
+          ->sequence_id(),
       /*query_start_time_ms=*/base::TimeTicks::Now());
 
   // If content bytes exist on a text only query, contextualize the query via a
@@ -523,13 +525,9 @@ void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
   ref_counted_logs->client_logs().set_lens_overlay_entry_point(
       LenOverlayEntryPointFromInvocationSource(invocation_source_));
 
-  // The image sequence should be incremented and the analytics id updated
-  // for all full-image requests.
-  request_id_generator_->IncrementImageSequenceId();
-  request_id_generator_->CreateNewAnalyticsId();
-
   // Get request_id for this request flow.
-  auto request_id = request_id_generator_->GetNextRequestId();
+  auto request_id = request_id_generator_->GetNextRequestId(
+      RequestIdUpdateMode::kFullImageRequest);
   int current_sequence_id = request_id->sequence_id();
 
   // Initialize latest_full_image_request_data_ with the latest sequence_id to
@@ -834,11 +832,9 @@ void LensOverlayQueryController::SendInteraction(
   additional_search_query_params =
       AddStartTimeQueryParam(additional_search_query_params);
 
-  // Create a new analytics id for this request flow.
-  request_id_generator_->CreateNewAnalyticsId();
-
   // Get request_id for this request flow.
-  auto server_request_id = request_id_generator_->GetNextRequestId();
+  auto server_request_id = request_id_generator_->GetNextRequestId(
+      RequestIdUpdateMode::kInteractionRequest);
   int current_sequence_id = server_request_id->sequence_id();
 
   // Initialize latest_interaction_request_data_ with the latest sequence_id to
@@ -853,7 +849,7 @@ void LensOverlayQueryController::SendInteraction(
       &LensOverlayQueryController::CreateSearchUrlAndSendToCallback,
       weak_ptr_factory_.GetWeakPtr(), query_text,
       additional_search_query_params, selection_type,
-      request_id_generator_->GetNextRequestId());
+      request_id_generator_->GetNextRequestId(RequestIdUpdateMode::kSearchUrl));
 
   // The interaction request requires multiple async flows to complete before
   // the request is ready to be send to the server. We start these flows here,

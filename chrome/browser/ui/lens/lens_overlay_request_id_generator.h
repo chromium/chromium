@@ -10,6 +10,23 @@
 
 namespace lens {
 
+// The update modes for the request id generator.
+enum class RequestIdUpdateMode {
+  // Indicates that the request id should not be modified.
+  kNone = 0,
+  // Indicates that the request id should be modified for a full image request,
+  // i.e. incrementing the image sequence, sequence id, and creating a new
+  // analytics id.
+  kFullImageRequest = 1,
+  // Indicates that the request id should be modified for an interaction
+  // request, i.e. incrementing the sequence id and creating a new analytics
+  // id.
+  kInteractionRequest = 2,
+  // Indicates that the request id should be modified for a search url.
+  // i.e. just incrementing the sequence id.
+  kSearchUrl = 3,
+};
+
 // Manages creating lens overlay request IDs. Owned by a single Lens overlay
 // query controller.
 class LensOverlayRequestIdGenerator {
@@ -21,16 +38,10 @@ class LensOverlayRequestIdGenerator {
   // sequence.
   void ResetRequestId();
 
-  // Creates a new analytics id to use in followup requests. This should be
-  // called for each interaction.
-  void CreateNewAnalyticsId();
-
-  // Increments the image sequence id. This should be called whenever there
-  // is an objects request, since that corresponds with a full image upload.
-  void IncrementImageSequenceId();
-
-  // Increments the sequence and returns the next request id.
-  std::unique_ptr<lens::LensOverlayRequestId> GetNextRequestId();
+  // Updates the request id based on the given update mode and returns the
+  // request id proto.
+  std::unique_ptr<lens::LensOverlayRequestId> GetNextRequestId(
+      RequestIdUpdateMode update_mode);
 
   // Returns the current analytics id as a base32 encoded string.
   std::string GetBase32EncodedAnalyticsId();
