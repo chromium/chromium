@@ -490,10 +490,13 @@ class WebContentsCreationMonitor : public ui_test_utils::AllTabsObserver {
 // left/middle clicked and window.open is used (whether browser objects are
 // reused and what type gets launched).
 //
-// The test expectations are read from a json file that is stored here:
+// The test expectations are read from json files that are stored here.
+// The main test expectations file:
 // chrome/test/data/web_apps/link_capture_test_input.json
+// Secondary: For tests that expect App B to be launched when the test starts.
+// chrome/test/data/web_apps/navigation_capture_test_launch_app_b.json
 //
-// The expectations file maps test names (as serialized from the test
+// The expectations files map test names (as serialized from the test
 // parameters) to a json object containing a `disabled` flag as well as
 // `expected_state`, the expected state of all Browser objects and their
 // WebContents at the end of a test.
@@ -520,12 +523,33 @@ class WebAppLinkCapturingParameterizedBrowserTest
     parameters["link_capturing_state"] = "reimpl_default_on";
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kPwaNavigationCapturing, parameters);
-    InitializeTestExpectations();
   }
 
   // Returns the expectations JSON file name without extension
   virtual std::string GetExpectationsFileBaseName() const {
     return "link_capture_test_input";
+  }
+
+  // This function allows derived test suites to configure custom
+  // pre-condition steps before each test runs.
+  //
+  // @param app_a The id of an app A (aka. 'source app').
+  // @param app_b The id of an app B (aka. a possible 'destination app').
+  virtual void MaybeCustomSetup(const webapps::AppId& app_a,
+                                const webapps::AppId& app_b) {}
+
+  // Listens for a DomMessage that starts with FinishedNavigating.
+  //
+  // @param message_queue The message queue expected to see the message.
+  void WaitForNavigationFinishedMessages(
+      content::DOMMessageQueue* message_queue) {
+    std::string message;
+    EXPECT_TRUE(message_queue->WaitForMessage(&message));
+    std::string unquoted_message;
+    ASSERT_TRUE(base::RemoveChars(message, "\"", &unquoted_message)) << message;
+    EXPECT_TRUE(base::StartsWith(unquoted_message, "FinishedNavigating"))
+        << unquoted_message;
+    DLOG(INFO) << message;
   }
 
   base::FilePath GetExpectationsFile() const {
@@ -625,7 +649,6 @@ class WebAppLinkCapturingParameterizedBrowserTest
     base::Value::Dict* result =
         test_expectations().EnsureDict("tests")->EnsureDict(
             LinkCaptureTestParamToString(param));
-
     // Temporarily check expectations for the test name before redirect mode was
     // a separate parameter as well to make it easier to migrate expectations.
     // TODO(mek): Remove this migration code.
@@ -836,6 +859,12 @@ class WebAppLinkCapturingParameterizedBrowserTest
   Profile* profile() { return browser()->profile(); }
 
   void SetUpOnMainThread() override {
+    WebAppBrowserTestBase::SetUpOnMainThread();
+
+    // Parses the corresponding json file for test expectations given the
+    // respective test suite.
+    InitializeTestExpectations();
+
     embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
         &WebAppLinkCapturingParameterizedBrowserTest::SimulateRedirectHandler,
         base::Unretained(this)));
@@ -864,6 +893,139 @@ class WebAppLinkCapturingParameterizedBrowserTest
   base::Value::Dict& test_expectations() {
     CHECK(test_expectations_.has_value() && test_expectations_->is_dict());
     return test_expectations_->GetDict();
+  }
+
+  void RunTest() {
+    testing::TestParamInfo<LinkCaptureTestParam> param(GetParam(), 0);
+
+    const base::Value::Dict& test_case = GetTestCaseDataFromParam();
+    if (!ShouldRunDisabledTests() &&
+        test_case.FindBool("disabled").value_or(false)) {
+      GTEST_SKIP()
+          << "Skipped as test is marked as disabled in the expectations file. "
+             "Add the switch '--run-all-tests' to run disabled tests too.";
+    }
+
+    AssertValidTestConfiguration();
+
+    DLOG(INFO) << "Installing apps.";
+
+    // Install apps for scope A and B (note: scope X is deliberately excluded).
+    const webapps::AppId app_a = InstallTestWebApp(
+        embedded_test_server()->GetURL(kDestinationPageScopeA));
+    const webapps::AppId app_b = InstallTestWebApp(
+        embedded_test_server()->GetURL(kDestinationPageScopeB));
+
+    if (GetLinkCapturing() == LinkCapturing::kDisabled) {
+      ASSERT_EQ(apps::test::DisableLinkCapturingByUser(profile(), app_a),
+                base::ok());
+      ASSERT_EQ(apps::test::DisableLinkCapturingByUser(profile(), app_b),
+                base::ok());
+    }
+
+    DLOG(INFO) << "Setting up.";
+
+    MaybeCustomSetup(app_a, app_b);
+
+    // Setup the initial page.
+    Browser* browser_a;
+    content::WebContents* contents_a;
+    {
+      content::DOMMessageQueue message_queue;
+
+      if (StartInAppWindow()) {
+        base::test::TestFuture<base::WeakPtr<Browser>,
+                               base::WeakPtr<content::WebContents>,
+                               apps::LaunchContainer>
+            launch_future;
+        provider().scheduler().LaunchApp(
+            app_a, embedded_test_server()->GetURL(kStartPageScopeA),
+            launch_future.GetCallback());
+        ASSERT_TRUE(launch_future.Wait());
+        contents_a =
+            launch_future.Get<base::WeakPtr<content::WebContents>>().get();
+        content::WaitForLoadStop(contents_a);
+      } else {
+        ASSERT_TRUE(ui_test_utils::NavigateToURL(
+            browser(), embedded_test_server()->GetURL(kStartPageScopeA)));
+        contents_a = browser()->tab_strip_model()->GetActiveWebContents();
+      }
+
+      std::string message;
+      EXPECT_TRUE(message_queue.WaitForMessage(&message));
+      EXPECT_TRUE(base::Contains(message, "FinishedNavigating")) << message;
+      DLOG(INFO) << message;
+
+      browser_a = chrome::FindBrowserWithTab(contents_a);
+      ASSERT_TRUE(browser_a != nullptr);
+      ASSERT_EQ(StartInAppWindow() ? Browser::Type::TYPE_APP
+                                   : Browser::Type::TYPE_NORMAL,
+                browser_a->type());
+    }
+
+    DLOG(INFO) << "Performing action.";
+
+    action_histogram_tester_ = std::make_unique<base::HistogramTester>();
+
+    {
+      content::DOMMessageQueue message_queue;
+      // Perform action (launch destination page).
+      WebContentsCreationMonitor monitor;
+      // True if a navigation is expected, which will trigger a dom reply.
+      bool expect_navigation = true;
+
+      if (GetNavigationElement() == NavigationElement::kElementIntentPicker) {
+        ui_test_utils::BrowserChangeObserver app_browser_observer(
+            nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+        // Clicking the Intent Picker will trigger a re-parenting (not a new
+        // navigation, so the DomMessage has already been sent).
+        ASSERT_TRUE(web_app::ClickIntentPickerChip(browser_a));
+        app_browser_observer.Wait();
+
+        // After re-parenting, the old browser gets a new tab contents and we
+        // need to wait for that to finish loading before capturing the end
+        // state.
+        WaitForLoadStop(browser_a->tab_strip_model()->GetActiveWebContents());
+
+        // TODO(https://crbug.com/371513459): Not sure if this assumption holds
+        // if we add kNavigateExisting to the test params (for the Intent
+        // Picker).
+        expect_navigation = false;
+      } else if (ClickMethod() != test::ClickMethod::kRightClickLaunchApp) {
+        test::SimulateClickOnElement(contents_a, GetElementId(), ClickMethod());
+      } else {
+        SimulateRightClickOnElementAndLaunchApp(contents_a, GetElementId());
+      }
+
+      if (expect_navigation) {
+        std::string message;
+        EXPECT_TRUE(message_queue.WaitForMessage(&message));
+        DLOG(INFO) << message;
+        std::string unquoted_message;
+        ASSERT_TRUE(base::RemoveChars(message, "\"", &unquoted_message))
+            << message;
+        EXPECT_TRUE(base::StartsWith(unquoted_message, "FinishedNavigating"))
+            << unquoted_message;
+      }
+
+      content::WebContents* handled_contents =
+          monitor.GetLastSeenWebContentsAndStopMonitoring();
+      ASSERT_NE(nullptr, handled_contents);
+      ASSERT_TRUE(handled_contents->GetURL().is_valid());
+
+      provider().command_manager().AwaitAllCommandsCompleteForTesting();
+      // Attempt to ensure that all launchParams have propagated.
+      content::RunAllTasksUntilIdle();
+    }
+
+    if (ShouldRebaseline()) {
+      RecordActualResults();
+    } else {
+      const base::Value::Dict* expected_state =
+          test_case.FindDict("expected_state");
+      ASSERT_TRUE(expected_state);
+      ASSERT_EQ(*expected_state, CaptureCurrentState());
+    }
   }
 
   // Histogram tester for the action (navigation) that is performed in the test.
@@ -947,132 +1109,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
 #endif  // BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
                        MAYBE_CheckLinkCaptureCombinations) {
-  testing::TestParamInfo<LinkCaptureTestParam> param(GetParam(), 0);
-
-  const base::Value::Dict& test_case = GetTestCaseDataFromParam();
-  if (!ShouldRunDisabledTests() &&
-      test_case.FindBool("disabled").value_or(false)) {
-    GTEST_SKIP()
-        << "Skipped as test is marked as disabled in the expectations file. "
-           "Add the switch '--run-all-tests' to run disabled tests too.";
-  }
-
-  AssertValidTestConfiguration();
-
-  DLOG(INFO) << "Installing apps.";
-
-  // Install apps for scope A and B (note: scope X is deliberately excluded).
-  const webapps::AppId app_a =
-      InstallTestWebApp(embedded_test_server()->GetURL(kDestinationPageScopeA));
-  const webapps::AppId app_b =
-      InstallTestWebApp(embedded_test_server()->GetURL(kDestinationPageScopeB));
-
-  if (GetLinkCapturing() == LinkCapturing::kDisabled) {
-    ASSERT_EQ(apps::test::DisableLinkCapturingByUser(profile(), app_a),
-              base::ok());
-    ASSERT_EQ(apps::test::DisableLinkCapturingByUser(profile(), app_b),
-              base::ok());
-  }
-
-  DLOG(INFO) << "Setting up.";
-
-  // Setup the initial page.
-  Browser* browser_a;
-  content::WebContents* contents_a;
-  {
-    content::DOMMessageQueue message_queue;
-
-    if (StartInAppWindow()) {
-      base::test::TestFuture<base::WeakPtr<Browser>,
-                             base::WeakPtr<content::WebContents>,
-                             apps::LaunchContainer>
-          launch_future;
-      provider().scheduler().LaunchApp(
-          app_a, embedded_test_server()->GetURL(kStartPageScopeA),
-          launch_future.GetCallback());
-      ASSERT_TRUE(launch_future.Wait());
-      contents_a =
-          launch_future.Get<base::WeakPtr<content::WebContents>>().get();
-      content::WaitForLoadStop(contents_a);
-    } else {
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(
-          browser(), embedded_test_server()->GetURL(kStartPageScopeA)));
-      contents_a = browser()->tab_strip_model()->GetActiveWebContents();
-    }
-
-    std::string message;
-    EXPECT_TRUE(message_queue.WaitForMessage(&message));
-    EXPECT_TRUE(base::Contains(message, "FinishedNavigating")) << message;
-    DLOG(INFO) << message;
-
-    browser_a = chrome::FindBrowserWithTab(contents_a);
-    ASSERT_TRUE(browser_a != nullptr);
-    ASSERT_EQ(StartInAppWindow() ? Browser::Type::TYPE_APP
-                                 : Browser::Type::TYPE_NORMAL,
-              browser_a->type());
-  }
-
-  DLOG(INFO) << "Performing action.";
-
-  action_histogram_tester_ = std::make_unique<base::HistogramTester>();
-
-  {
-    content::DOMMessageQueue message_queue;
-    // Perform action (launch destination page).
-    WebContentsCreationMonitor monitor;
-    // True if a navigation is expected, which will trigger a dom reply.
-    bool expect_navigation = true;
-
-    if (GetNavigationElement() == NavigationElement::kElementIntentPicker) {
-      ui_test_utils::BrowserChangeObserver app_browser_observer(
-          nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
-      // Clicking the Intent Picker will trigger a re-parenting (not a new
-      // navigation, so the DomMessage has already been sent).
-      ASSERT_TRUE(web_app::ClickIntentPickerChip(browser_a));
-      app_browser_observer.Wait();
-
-      // After re-parenting, the old browser gets a new tab contents and we need
-      // to wait for that to finish loading before capturing the end state.
-      WaitForLoadStop(browser_a->tab_strip_model()->GetActiveWebContents());
-
-      // TODO(https://crbug.com/371513459): Not sure if this assumption holds if
-      // we add kNavigateExisting to the test params (for the Intent Picker).
-      expect_navigation = false;
-    } else if (ClickMethod() != test::ClickMethod::kRightClickLaunchApp) {
-      test::SimulateClickOnElement(contents_a, GetElementId(), ClickMethod());
-    } else {
-      SimulateRightClickOnElementAndLaunchApp(contents_a, GetElementId());
-    }
-
-    if (expect_navigation) {
-      std::string message;
-      EXPECT_TRUE(message_queue.WaitForMessage(&message));
-      DLOG(INFO) << message;
-      std::string unquoted_message;
-      ASSERT_TRUE(base::RemoveChars(message, "\"", &unquoted_message))
-          << message;
-      EXPECT_TRUE(base::StartsWith(unquoted_message, "FinishedNavigating"))
-          << unquoted_message;
-    }
-
-    content::WebContents* handled_contents =
-        monitor.GetLastSeenWebContentsAndStopMonitoring();
-    ASSERT_NE(nullptr, handled_contents);
-    ASSERT_TRUE(handled_contents->GetURL().is_valid());
-
-    provider().command_manager().AwaitAllCommandsCompleteForTesting();
-    // Attempt to ensure that all launchParams have propagated.
-    content::RunAllTasksUntilIdle();
-  }
-
-  if (ShouldRebaseline()) {
-    RecordActualResults();
-  } else {
-    const base::Value::Dict* expected_state =
-        test_case.FindDict("expected_state");
-    ASSERT_TRUE(expected_state);
-    ASSERT_EQ(*expected_state, CaptureCurrentState());
-  }
+  RunTest();
 }
 
 // Pro-tip: To run only one combination from the below list, supply this...
@@ -1118,9 +1155,10 @@ INSTANTIATE_TEST_SUITE_P(
     LinkCaptureTestParamToString);
 
 INSTANTIATE_TEST_SUITE_P(
-    RightClick,
+    RightClickNavigateNew,
     WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
+        // ClientMode::kAuto defaults to NavigateNew on all platforms.
         testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
         testing::Values(LinkCapturing::kEnabled),  // LinkCapturing turned on.
         testing::Values(
@@ -1269,11 +1307,72 @@ INSTANTIATE_TEST_SUITE_P(
 // TODO(crbug.com/372059334): Fix test infrastructure message handling to
 // support redirection that navigates existing windows without hanging.
 
+// This is a derived test fixture that allows us to test Navigation Capturing
+// code that relies on an app being launched in the background, so we can
+// test e.g. FocusExisting functionality. This additional step is performed
+// by overriding MaybeCustomSetup.
+//
+// For expectations, see navigation_capture_test_launch_app_b.json.
+class NavigationCapturingTestWithAppBLaunched
+    : public WebAppLinkCapturingParameterizedBrowserTest {
+ public:
+  // Returns the expectations JSON file name without extension
+  std::string GetExpectationsFileBaseName() const override {
+    return "navigation_capture_test_launch_app_b";
+  }
+
+  void MaybeCustomSetup(const webapps::AppId& app_a,
+                        const webapps::AppId& app_b) override {
+    DLOG(INFO) << "Launching App B.";
+    content::DOMMessageQueue message_queue;
+    web_app::LaunchWebAppBrowserAndWait(profile(), app_b);
+    // Launching a web app should listen to a single navigation message.
+    WaitForNavigationFinishedMessages(&message_queue);
+  }
+};
+
+// TODO(crbug.com/359600606): Enable on CrOS if needed.
+IN_PROC_BROWSER_TEST_P(NavigationCapturingTestWithAppBLaunched,
+                       MAYBE_CheckLinkCaptureCombinations) {
+  RunTest();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    RightClickFocusAndNavigateExisting,
+    NavigationCapturingTestWithAppBLaunched,
+    testing::Combine(
+        testing::Values(
+            blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting),
+        testing::Values(LinkCapturing::kEnabled),  // LinkCapturing turned on.
+        testing::Values(
+            StartingPoint::kAppWindow,  // Starting point is app window.
+            StartingPoint::kTab         // Starting point is a tab.
+            ),
+        testing::Values(Destination::kScopeA2B),  // Navigate A -> B
+        testing::Values(RedirectType::kNone),
+        testing::Values(
+            NavigationElement::kElementLink),  // Navigate via element.
+        testing::Values(
+            test::ClickMethod::kRightClickLaunchApp),  // Simulate right-mouse
+                                                       // click.
+        testing::Values(OpenerMode::kOpener,   // Supply 'opener' property.
+                        OpenerMode::kNoOpener  // Supply 'noopener' property.
+                        ),
+        testing::Values(
+            NavigationTarget::kSelf,    // Use target _self.
+            NavigationTarget::kFrame,   // Use named frame as target.
+            NavigationTarget::kBlank,   // User Target is _blank.
+            NavigationTarget::kNoFrame  // Target is non-existing frame.
+            )),
+    LinkCaptureTestParamToString);
+
 // This test verifies that there are no left-over expectations for tests that
 // no longer exist in code but still exist in the expectations json file.
 // Additionally if this test is run with the --rebaseline-link-capturing-test
 // flag any left-over expectations will be cleaned up.
 // TODO(crbug.com/359600606): Enable on CrOS if needed.
+// TODO(msiem): Configure this test to allow cleanup of
+// navigation_capture_test_launch_app_b.json.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CleanupExpectations DISABLED_CleanupExpectations
 #else
