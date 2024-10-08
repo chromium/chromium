@@ -18,6 +18,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/containers/contains.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -28,6 +29,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/suspend_unmount_manager.h"
@@ -97,6 +99,14 @@ class DiskMountManagerImpl : public DiskMountManager,
   }
 
   // DiskMountManager override.
+  void RegisterArcDelegate(DiskMountManager::ArcDelegate* delegate) override {
+    arc_delegate_ = delegate;
+  }
+
+  // DiskMountManager override.
+  void UnregisterArcDelegate() override { arc_delegate_ = nullptr; }
+
+  // DiskMountManager override.
   void MountPath(const std::string& source_path,
                  const std::string& source_format,
                  const std::string& mount_label,
@@ -143,6 +153,29 @@ class DiskMountManagerImpl : public DiskMountManager,
                    UnmountPathCallback callback) override {
     UnmountChildMounts(mount_path);
     VLOG(1) << "Unmounting '" << mount_path << "'...";
+
+    const base::FilePath mount_file_path(mount_path);
+    if (arc_delegate_ &&
+        cros_disks_client_->GetRemovableDiskMountPoint().IsParent(
+            mount_file_path)) {
+      arc_delegate_->PrepareForRemovableMediaUnmount(
+          mount_file_path, base::Seconds(3) /* timeout */,
+          BindOnce(&DiskMountManagerImpl::UnmountPathContinue,
+                   weak_ptr_factory_.GetWeakPtr(), mount_path,
+                   std::move(callback)));
+      return;
+    }
+
+    UnmountPathContinue(mount_path, std::move(callback), true /* success */);
+  }
+
+  void UnmountPathContinue(const std::string& mount_path,
+                           UnmountPathCallback callback,
+                           bool success) {
+    if (!success) {
+      LOG(WARNING) << "Failed to drop ARC caches before unmounting "
+                   << Redact(mount_path);
+    }
     cros_disks_client_->Unmount(mount_path,
                                 BindOnce(&DiskMountManagerImpl::OnUnmountPath,
                                          weak_ptr_factory_.GetWeakPtr(),
@@ -1113,6 +1146,8 @@ class DiskMountManagerImpl : public DiskMountManager,
 
   // Mount event change observers.
   base::ObserverList<Observer> observers_;
+
+  raw_ptr<DiskMountManager::ArcDelegate> arc_delegate_;
 
   const raw_ptr<CrosDisksClient> cros_disks_client_ = CrosDisksClient::Get();
 

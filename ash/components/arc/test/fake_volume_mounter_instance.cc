@@ -42,7 +42,9 @@ mojom::MountPointInfoPtr FakeVolumeMounterInstance::GetMountPointInfo(
 void FakeVolumeMounterInstance::PrepareForRemovableMediaUnmount(
     const base::FilePath& mount_path,
     PrepareForRemovableMediaUnmountCallback callback) {
-  std::move(callback).Run(true);
+  if (call_prepare_for_removable_media_unmount_callback_) {
+    std::move(callback).Run(true);
+  }
 }
 
 }  // namespace arc

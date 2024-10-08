@@ -14,11 +14,13 @@
 #include "ash/components/arc/test/fake_volume_mounter_instance.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/ash/components/disks/disk.h"
@@ -599,6 +601,35 @@ TEST_F(ArcVolumeMounterBridgeTest,
   bridge()->RequestAllMountPoints();
   task_environment()->RunUntilIdle();
   EXPECT_EQ(volume_mounter_instance()->num_on_mount_event_called(), 0);
+}
+
+TEST_F(ArcVolumeMounterBridgeTest, PrepareForRemovableMediaUnmount_Success) {
+  base::test::TestFuture<bool> future1, future2;
+  // Test that PrepareForRemovableMediaUnmount() can be called serially
+  // multiple times and calls back the correct callback.
+  bridge()->PrepareForRemovableMediaUnmount(
+      ash::CrosDisksClient::GetRemovableDiskMountPoint().Append("UNTITLED1"),
+      base::Seconds(0), future1.GetCallback());
+  EXPECT_TRUE(future1.Get());
+  bridge()->PrepareForRemovableMediaUnmount(
+      ash::CrosDisksClient::GetRemovableDiskMountPoint().Append("UNTITLED2"),
+      base::Seconds(0), future2.GetCallback());
+  EXPECT_TRUE(future2.Get());
+}
+
+TEST_F(ArcVolumeMounterBridgeTest,
+       PrepareForRemovableMediaUnmount_UnresponsiveARC) {
+  // Test the situation where ARC does not call the
+  // PrepareForRemovableMediaUnmount callback.
+  volume_mounter_instance()
+      ->set_call_prepare_for_removable_media_unmount_callback(false);
+
+  base::test::TestFuture<bool> future;
+  bridge()->PrepareForRemovableMediaUnmount(
+      ash::CrosDisksClient::GetRemovableDiskMountPoint().Append("UNTITLED"),
+      base::Seconds(0), future.GetCallback());
+  // The callback will be called with false due to timeout.
+  EXPECT_FALSE(future.Get());
 }
 
 }  // namespace

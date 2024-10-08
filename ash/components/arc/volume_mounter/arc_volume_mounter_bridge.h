@@ -9,10 +9,13 @@
 
 #include "ash/components/arc/mojom/volume_mounter.mojom.h"
 #include "ash/components/arc/session/connection_observer.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/keyed_service/core/keyed_service_base_factory.h"
@@ -34,6 +37,7 @@ class ArcBridgeService;
 class ArcVolumeMounterBridge
     : public KeyedService,
       public ash::disks::DiskMountManager::Observer,
+      public ash::disks::DiskMountManager::ArcDelegate,
       public ConnectionObserver<mojom::VolumeMounterInstance>,
       public mojom::VolumeMounterHost {
  public:
@@ -80,6 +84,13 @@ class ArcVolumeMounterBridge
       ash::MountError error_code,
       const ash::disks::DiskMountManager::MountPoint& mount_info) override;
 
+  // ash::disks::DiskMountManager::ArcDelegate overrides:
+  void PrepareForRemovableMediaUnmount(
+      const base::FilePath& mount_path,
+      const base::TimeDelta& timeout,
+      ash::disks::DiskMountManager::ArcDelegate::PreparationCallback callback)
+      override;
+
   // ConnectionObserver<mojom::VolumeMounterInstance> overrides:
   void OnConnectionClosed() override;
 
@@ -120,6 +131,8 @@ class ArcVolumeMounterBridge
       std::optional<std::string> error_name,
       std::optional<std::string> error_message);
 
+  void OnArcPreparedForRemovableMediaUnmount(bool success);
+
   raw_ptr<Delegate, DanglingUntriaged> delegate_ = nullptr;
 
   const raw_ptr<ArcBridgeService>
@@ -129,6 +142,10 @@ class ArcVolumeMounterBridge
   PrefChangeRegistrar change_registerar_;
 
   bool external_storage_mount_points_are_ready_ = false;
+
+  base::OneShotTimer prepare_removable_media_unmount_timer_;
+  ash::disks::DiskMountManager::ArcDelegate::PreparationCallback
+      prepare_removable_media_unmount_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

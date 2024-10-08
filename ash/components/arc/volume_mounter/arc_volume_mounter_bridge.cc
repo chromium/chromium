@@ -14,6 +14,7 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
@@ -23,7 +24,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
@@ -106,6 +110,7 @@ ArcVolumeMounterBridge::ArcVolumeMounterBridge(content::BrowserContext* context,
   arc_bridge_service_->volume_mounter()->SetHost(this);
   DCHECK(DiskMountManager::GetInstance());
   DiskMountManager::GetInstance()->AddObserver(this);
+  DiskMountManager::GetInstance()->RegisterArcDelegate(this);
 
   change_registerar_.Init(pref_service_);
   // Start monitoring |kArcVisibleExternalStorages| changes. Note that the
@@ -118,6 +123,7 @@ ArcVolumeMounterBridge::ArcVolumeMounterBridge(content::BrowserContext* context,
 
 ArcVolumeMounterBridge::~ArcVolumeMounterBridge() {
   DCHECK(DiskMountManager::GetInstance());
+  DiskMountManager::GetInstance()->UnregisterArcDelegate();
   DiskMountManager::GetInstance()->RemoveObserver(this);
   arc_bridge_service_->volume_mounter()->SetHost(nullptr);
   arc_bridge_service_->volume_mounter()->RemoveObserver(this);
@@ -296,6 +302,51 @@ void ArcVolumeMounterBridge::OnMountEvent(
                                       device_label, device_type, visible);
       delegate_->StopWatchingRemovableMedia(mount_info.mount_path);
       break;
+  }
+}
+
+void ArcVolumeMounterBridge::PrepareForRemovableMediaUnmount(
+    const base::FilePath& mount_path,
+    const base::TimeDelta& timeout,
+    DiskMountManager::ArcDelegate::PreparationCallback callback) {
+  CHECK(
+      ash::CrosDisksClient::GetRemovableDiskMountPoint().IsParent(mount_path));
+
+  if (prepare_removable_media_unmount_callback_) {
+    // TODO: crbug.com/317944073 - Support the case where this method is called
+    // again before the previous callback hasn't run yet.
+    std::move(callback).Run(false);
+    return;
+  }
+  mojom::VolumeMounterInstance* volume_mounter_instance =
+      ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->volume_mounter(),
+                                  PrepareForRemovableMediaUnmount);
+  if (!volume_mounter_instance) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // This will run when the mojo method callback runs or the `timeout` has
+  // elapsed, whichever that happens first.
+  prepare_removable_media_unmount_callback_ = std::move(callback);
+
+  volume_mounter_instance->PrepareForRemovableMediaUnmount(
+      mount_path,
+      base::BindOnce(
+          &ArcVolumeMounterBridge::OnArcPreparedForRemovableMediaUnmount,
+          weak_ptr_factory_.GetWeakPtr()));
+
+  prepare_removable_media_unmount_timer_.Start(
+      FROM_HERE, timeout,
+      base::BindOnce(
+          &ArcVolumeMounterBridge::OnArcPreparedForRemovableMediaUnmount,
+          weak_ptr_factory_.GetWeakPtr(), false /* success */));
+}
+
+void ArcVolumeMounterBridge::OnArcPreparedForRemovableMediaUnmount(
+    bool success) {
+  if (prepare_removable_media_unmount_callback_) {
+    std::move(prepare_removable_media_unmount_callback_).Run(success);
   }
 }
 
