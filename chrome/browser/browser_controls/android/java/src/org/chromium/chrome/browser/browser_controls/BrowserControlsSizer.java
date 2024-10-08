@@ -34,4 +34,24 @@ public interface BrowserControlsSizer extends BrowserControlsVisibilityManager {
      */
     @Deprecated
     void notifyBackgroundColor(@ColorInt int color);
+
+    /**
+     * Changes the current position of the control container to either top or bottom, simultaneously
+     * modifying the top and bottom controls heights. The provided new heights must accurately
+     * re-allocate the height of the control container to the new position.
+     *
+     * @param controlsPosition The new position.
+     * @param newTopControlsHeight The new height of the top controls after the position change.
+     * @param newTopControlsHeight The new min height of the top controls after the position change.
+     * @param newBottomControlsHeight The new height of the bottom controls after the position
+     *     change.
+     * @param newBottomControlsHeight The new min height of the bottom controls after the position
+     *     change.
+     */
+    void setControlsPosition(
+            @ControlsPosition int controlsPosition,
+            int newTopControlsHeight,
+            int newTopControlsMinHeight,
+            int newBottomControlsHeight,
+            int newBottomControlsMinHeight);
 }

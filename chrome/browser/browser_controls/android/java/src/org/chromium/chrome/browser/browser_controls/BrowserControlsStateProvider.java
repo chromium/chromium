@@ -18,7 +18,7 @@ public interface BrowserControlsStateProvider {
     /**
      * The possible positions of the control container, which contains the browsing mode toolbar.
      */
-    @IntDef({ControlsPosition.TOP, ControlsPosition.NONE})
+    @IntDef({ControlsPosition.TOP, ControlsPosition.BOTTOM, ControlsPosition.NONE})
     @Retention(RetentionPolicy.SOURCE)
     @interface ControlsPosition {
         /** Controls are top-anchored. */
