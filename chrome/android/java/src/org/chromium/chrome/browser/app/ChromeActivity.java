@@ -1171,7 +1171,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 // For picture-in-picture mode / auto-darken web contents.
                 webContents.notifyRendererPreferenceUpdate();
                 // Update input state to bind a new input connection if necessary.
-                webContents.getRenderWidgetHostView().onResume();
+                var renderWidgetHostView = webContents.getRenderWidgetHostView();
+                if (renderWidgetHostView != null) {
+                    renderWidgetHostView.onResume();
+                }
             }
         }
 
