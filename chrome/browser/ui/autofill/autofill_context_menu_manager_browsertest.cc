@@ -804,6 +804,7 @@ class PredictionImprovementsEnabledTest
 
 // Tests that when triggering the context menu on any form field, the improved
 // prediction entry point is added.
+// TODO(crbug.com/372158654): Implement suitable criteria or remove the entry.
 IN_PROC_BROWSER_TEST_F(PredictionImprovementsEnabledTest,
                        PredictionImprovementsEntryAdded) {
   FormData form = CreateAndAttachUnclassifiedForm();
@@ -811,7 +812,7 @@ IN_PROC_BROWSER_TEST_F(PredictionImprovementsEnabledTest,
       CreateContextMenuParams(form.renderer_id(),
                               form.fields()[0].renderer_id()));
   autofill_context_menu_manager()->AppendItems();
-  EXPECT_THAT(menu_model(), ContainsPredictionImprovementsEntry());
+  EXPECT_THAT(menu_model(), Not(ContainsPredictionImprovementsEntry()));
 }
 
 // Tests that selecting the improved predictions triggers the right command.

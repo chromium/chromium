@@ -508,7 +508,8 @@ bool AutofillContextMenuManager::ShouldAddPlusAddressManualFallbackItem(
 bool AutofillContextMenuManager::ShouldAddPredictionImprovementsItem(
     AutofillPredictionImprovementsDelegate* delegate,
     const GURL& url) {
-  return delegate && delegate->ShouldProvidePredictionImprovements(url);
+  // TODO(crbug.com/372158654): Implement suitable criteria or remove the entry.
+  return false;
 }
 
 bool AutofillContextMenuManager::ShouldAddAddressManualFallbackItem(
