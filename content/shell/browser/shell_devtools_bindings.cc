@@ -220,8 +220,7 @@ void ShellDevToolsBindings::AttachInternal() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   const bool create_for_tab = false;
 #else
-  const bool create_for_tab = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kContentShellDevToolsTabTarget);
+  const bool create_for_tab = true;
 #endif
   agent_host_ = create_for_tab
                     ? DevToolsAgentHost::GetOrCreateForTab(inspected_contents_)

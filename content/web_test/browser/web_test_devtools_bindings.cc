@@ -104,10 +104,7 @@ GURL WebTestDevToolsBindings::MapTestURLIfNeeded(const GURL& test_url,
   url_string += "&inspected_test=" + test_url_string;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kContentShellDevToolsTabTarget)) {
-    url_string += "&targetType=tab";
-  }
+  url_string += "&targetType=tab";
 #endif
   return GURL(url_string);
 }

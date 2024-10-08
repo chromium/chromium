@@ -70,7 +70,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   var sendMessageToBackendOriginal = InspectorFrontendHost.sendMessageToBackend;
   InspectorFrontendHost.sendMessageToBackend = sendMessageToBackendLoopback;
 
-  var agent = SDK.TargetManager.TargetManager.instance().rootTarget().profilerAgent();
+  var agent = SDK.TargetManager.TargetManager.instance().primaryPageTarget().profilerAgent();
   await processResult(
       'commandError',
       agent.commandError({'message': 'this is the error message'}));  // Error: error in the protocol response
