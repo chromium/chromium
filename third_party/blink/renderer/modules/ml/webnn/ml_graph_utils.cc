@@ -232,9 +232,6 @@ DOMArrayBufferView::ViewType GetArrayBufferViewType(
       return DOMArrayBufferView::ViewType::kTypeInt8;
     case webnn::OperandDataType::kUint8:
       return DOMArrayBufferView::ViewType::kTypeUint8;
-    case webnn::OperandDataType::kInt4:
-    case webnn::OperandDataType::kUint4:
-      return DOMArrayBufferView::ViewType::kTypeUint8;
   }
 }
 
@@ -349,10 +346,6 @@ V8MLOperandDataType ToBlinkDataType(webnn::OperandDataType data_type) {
       return V8MLOperandDataType(V8MLOperandDataType::Enum::kInt8);
     case webnn::OperandDataType::kUint8:
       return V8MLOperandDataType(V8MLOperandDataType::Enum::kUint8);
-    case webnn::OperandDataType::kInt4:
-      return V8MLOperandDataType(V8MLOperandDataType::Enum::kInt4);
-    case webnn::OperandDataType::kUint4:
-      return V8MLOperandDataType(V8MLOperandDataType::Enum::kUint4);
   }
 }
 
@@ -374,10 +367,6 @@ webnn::OperandDataType FromBlinkDataType(V8MLOperandDataType::Enum data_type) {
       return webnn::OperandDataType::kInt8;
     case V8MLOperandDataType::Enum::kUint8:
       return webnn::OperandDataType::kUint8;
-    case V8MLOperandDataType::Enum::kInt4:
-      return webnn::OperandDataType::kInt4;
-    case V8MLOperandDataType::Enum::kUint4:
-      return webnn::OperandDataType::kUint4;
   }
 }
 

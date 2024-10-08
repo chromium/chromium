@@ -100,10 +100,6 @@ DML_TENSOR_DATA_TYPE GetTensorDataType(OperandDataType type) {
       return DML_TENSOR_DATA_TYPE_INT32;
     case OperandDataType::kUint32:
       return DML_TENSOR_DATA_TYPE_UINT32;
-    case OperandDataType::kInt4:
-      return DML_TENSOR_DATA_TYPE_INT4;
-    case OperandDataType::kUint4:
-      return DML_TENSOR_DATA_TYPE_UINT4;
   }
 }
 
@@ -125,10 +121,6 @@ OperandDataType DmlDataTypeToOperand(DML_TENSOR_DATA_TYPE type) {
       return OperandDataType::kInt32;
     case DML_TENSOR_DATA_TYPE_UINT32:
       return OperandDataType::kUint32;
-    case DML_TENSOR_DATA_TYPE_INT4:
-      return OperandDataType::kInt4;
-    case DML_TENSOR_DATA_TYPE_UINT4:
-      return OperandDataType::kUint4;
     default:
       NOTREACHED() << "[WebNN] This data type is not supported.";
   }
@@ -1823,16 +1815,10 @@ const OperatorNode* CreateBinaryOperator(const TensorDesc& a_tensor,
 }
 
 template <typename DML_OPERATOR_DESC, typename DequantizeOrQuantizeLinearPtr>
-  requires((std::is_same_v<DequantizeOrQuantizeLinearPtr,
-                           mojom::DequantizeLinearPtr> ||
-            std::is_same_v<DequantizeOrQuantizeLinearPtr,
-                           mojom::QuantizeLinearPtr>) &&
-           (std::is_same_v<DML_OPERATOR_DESC, DML_QUANTIZE_OPERATOR_DESC> ||
-            std::is_same_v<DML_OPERATOR_DESC, DML_DEQUANTIZE_OPERATOR_DESC> ||
-            std::is_same_v<DML_OPERATOR_DESC,
-                           DML_ELEMENT_WISE_DEQUANTIZE_LINEAR_OPERATOR_DESC> ||
-            std::is_same_v<DML_OPERATOR_DESC,
-                           DML_ELEMENT_WISE_QUANTIZE_LINEAR_OPERATOR_DESC>))
+  requires(
+      std::is_same_v<DequantizeOrQuantizeLinearPtr,
+                     mojom::DequantizeLinearPtr> ||
+      std::is_same_v<DequantizeOrQuantizeLinearPtr, mojom::QuantizeLinearPtr>)
 void CreateOperatorNodeForDequantizeOrQuantizeLinear(
     const ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
@@ -1877,25 +1863,11 @@ void CreateOperatorNodeForDequantizeOrQuantizeLinear(
         DmlDataTypeToOperand(zero_point_tensor_desc.GetDataType())));
   }
 
-  DML_OPERATOR_DESC operator_desc;
-  std::array<DML_TENSOR_DESC, 2> quantization_tensors = {
-      scale_tensor_desc.GetDMLTensorDesc(),
-      zero_point_tensor_desc.GetDMLTensorDesc()};
-  if constexpr (std::is_same_v<DML_OPERATOR_DESC, DML_QUANTIZE_OPERATOR_DESC> ||
-                std::is_same_v<DML_OPERATOR_DESC,
-                               DML_DEQUANTIZE_OPERATOR_DESC>) {
-    operator_desc = {.InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
-                     .QuantizationType = DML_QUANTIZATION_TYPE_SCALE_ZERO_POINT,
-                     .QuantizationTensorCount = quantization_tensors.size(),
-                     .QuantizationTensors = quantization_tensors.data(),
-                     .OutputTensor = &output_tensor_desc.GetDMLTensorDesc()};
-  } else {
-    operator_desc = {
-        .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
-        .ScaleTensor = &scale_tensor_desc.GetDMLTensorDesc(),
-        .ZeroPointTensor = &zero_point_tensor_desc.GetDMLTensorDesc(),
-        .OutputTensor = &output_tensor_desc.GetDMLTensorDesc()};
-  }
+  DML_OPERATOR_DESC operator_desc{
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .ScaleTensor = &scale_tensor_desc.GetDMLTensorDesc(),
+      .ZeroPointTensor = &zero_point_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc()};
   const std::string& label = operation_ptr->label;
   std::array<const NodeOutput*, 3> inputs = {input, scale, zero_point};
   const OperatorNode* operator_node = graph_builder.CreateOperatorNode(
@@ -4945,8 +4917,6 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
           base::as_bytes(base::make_span(values)));
       break;
     }
-    default:
-      NOTREACHED() << "Unsupported data type.";
   }
 
   auto descriptor = *OperandDescriptor::Create(
@@ -6041,20 +6011,11 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
         break;
       }
       case Operation::Tag::kDequantizeLinear: {
-        if (adapter->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_6_3)) {
-          CreateOperatorNodeForDequantizeOrQuantizeLinear<
-              DML_DEQUANTIZE_OPERATOR_DESC>(
-              context_properties, id_to_operand_map,
-              operation->get_dequantize_linear(), graph_builder,
-              DML_OPERATOR_DEQUANTIZE, id_to_node_output_map);
-        } else {
-          CreateOperatorNodeForDequantizeOrQuantizeLinear<
-              DML_ELEMENT_WISE_DEQUANTIZE_LINEAR_OPERATOR_DESC>(
-              context_properties, id_to_operand_map,
-              operation->get_dequantize_linear(), graph_builder,
-              DML_OPERATOR_ELEMENT_WISE_DEQUANTIZE_LINEAR,
-              id_to_node_output_map);
-        }
+        CreateOperatorNodeForDequantizeOrQuantizeLinear<
+            DML_ELEMENT_WISE_DEQUANTIZE_LINEAR_OPERATOR_DESC>(
+            context_properties, id_to_operand_map,
+            operation->get_dequantize_linear(), graph_builder,
+            DML_OPERATOR_ELEMENT_WISE_DEQUANTIZE_LINEAR, id_to_node_output_map);
         break;
       }
       case mojom::Operation::Tag::kElementWiseBinary: {
@@ -6230,19 +6191,11 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
         break;
       }
       case Operation::Tag::kQuantizeLinear: {
-        if (adapter->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_6_3)) {
-          CreateOperatorNodeForDequantizeOrQuantizeLinear<
-              DML_QUANTIZE_OPERATOR_DESC>(context_properties, id_to_operand_map,
-                                          operation->get_quantize_linear(),
-                                          graph_builder, DML_OPERATOR_QUANTIZE,
-                                          id_to_node_output_map);
-        } else {
-          CreateOperatorNodeForDequantizeOrQuantizeLinear<
-              DML_ELEMENT_WISE_QUANTIZE_LINEAR_OPERATOR_DESC>(
-              context_properties, id_to_operand_map,
-              operation->get_quantize_linear(), graph_builder,
-              DML_OPERATOR_ELEMENT_WISE_QUANTIZE_LINEAR, id_to_node_output_map);
-        }
+        CreateOperatorNodeForDequantizeOrQuantizeLinear<
+            DML_ELEMENT_WISE_QUANTIZE_LINEAR_OPERATOR_DESC>(
+            context_properties, id_to_operand_map,
+            operation->get_quantize_linear(), graph_builder,
+            DML_OPERATOR_ELEMENT_WISE_QUANTIZE_LINEAR, id_to_node_output_map);
         break;
       }
       case Operation::Tag::kReduce: {
