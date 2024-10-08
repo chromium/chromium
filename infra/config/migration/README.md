@@ -32,6 +32,16 @@ Commands assume the working directory is //infra/config.
     related via parent-child triggering or try-builder mirroring must be migrated
     in one CL.
 
+    Executing this script may fail at the `./main.star` command because there is a
+    test modification or removal for a test not present in any of the bundles
+    within a builder, for example:
+    `Error: attempting to remove test 'perfetto_unittests' that is not contained in the bundle`.
+
+    This is most likely due to outdated configurations in //testing/buildbot,
+    where an update in the test suites in //testing/buildbot/waterfalls.pyl was
+    not reflected in //testing/buildbot/test_suite_exceptions.pyl. Remove the
+    unused test suite and rerun the script until the errors go away.
+
     After updating starlark, the script will put the working copy into the state
     where git index contains the updated starlark and the new json files with
     the specs for each builder set to the same content that the testing/buildbot
