@@ -30,7 +30,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
@@ -175,11 +174,9 @@ void UserManagerImpl::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 UserManagerImpl::UserManagerImpl(
     std::unique_ptr<Delegate> delegate,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     PrefService* local_state,
     ash::CrosSettings* cros_settings)
     : delegate_(std::move(delegate)),
-      task_runner_(std::move(task_runner)),
       local_state_(local_state),
       cros_settings_(cros_settings),
       multi_user_sign_in_policy_controller_(local_state, this) {
@@ -193,7 +190,7 @@ UserManagerImpl::UserManagerImpl(
 UserManagerImpl::~UserManagerImpl() = default;
 
 void UserManagerImpl::Shutdown() {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 const UserList& UserManagerImpl::GetUsers() const {
@@ -319,7 +316,7 @@ void UserManagerImpl::UserLoggedIn(const AccountId& account_id,
                                    const std::string& username_hash,
                                    bool browser_restart,
                                    bool is_child) {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!last_session_active_account_id_initialized_) {
     last_session_active_account_id_ = AccountId::FromUserEmail(
@@ -476,7 +473,7 @@ void UserManagerImpl::SwitchToLastActiveUser() {
 }
 
 void UserManagerImpl::OnSessionStarted() {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   NotifyLoginStateUpdated();
   local_state_->CommitPendingWrite();
@@ -568,7 +565,7 @@ bool UserManagerImpl::UpdateDeviceLocalAccountUser(
 
 void UserManagerImpl::RemoveUser(const AccountId& account_id,
                                  UserRemovalReason reason) {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   UserDirectoryIntegrityManager integrity_manager(local_state_.get());
   // Misconfigured user would not be included in GetUsers(),
@@ -667,7 +664,7 @@ void UserManagerImpl::RemoveUserFromListImpl(
     AccountId account_id,
     std::optional<UserRemovalReason> reason,
     bool trigger_cryptohome_removal) {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (reason.has_value()) {
     NotifyUserToBeRemoved(account_id);
   }
@@ -703,7 +700,7 @@ bool UserManagerImpl::IsKnownUser(const AccountId& account_id) const {
 }
 
 const User* UserManagerImpl::FindUser(const AccountId& account_id) const {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (active_user_ && active_user_->GetAccountId() == account_id) {
     return active_user_;
   }
@@ -711,7 +708,7 @@ const User* UserManagerImpl::FindUser(const AccountId& account_id) const {
 }
 
 User* UserManagerImpl::FindUserAndModify(const AccountId& account_id) {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (active_user_ && active_user_->GetAccountId() == account_id) {
     return active_user_;
   }
@@ -719,24 +716,24 @@ User* UserManagerImpl::FindUserAndModify(const AccountId& account_id) {
 }
 
 const User* UserManagerImpl::GetActiveUser() const {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return active_user_;
 }
 
 User* UserManagerImpl::GetActiveUser() {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return active_user_;
 }
 
 const User* UserManagerImpl::GetPrimaryUser() const {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return primary_user_;
 }
 
 void UserManagerImpl::SaveUserOAuthStatus(
     const AccountId& account_id,
     User::OAuthTokenStatus oauth_token_status) {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DVLOG(1) << "Saving user OAuth token status in Local State";
   User* user = FindUserAndModify(account_id);
@@ -761,7 +758,7 @@ void UserManagerImpl::SaveUserOAuthStatus(
 
 void UserManagerImpl::SaveForceOnlineSignin(const AccountId& account_id,
                                             bool force_online_signin) {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   User* const user = FindUserAndModify(account_id);
   if (user) {
@@ -784,7 +781,7 @@ void UserManagerImpl::SaveForceOnlineSignin(const AccountId& account_id,
 
 void UserManagerImpl::SaveUserDisplayName(const AccountId& account_id,
                                           const std::u16string& display_name) {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (User* user = FindUserAndModify(account_id)) {
     user->set_display_name(display_name);
@@ -801,7 +798,7 @@ void UserManagerImpl::SaveUserDisplayName(const AccountId& account_id,
 
 void UserManagerImpl::SaveUserDisplayEmail(const AccountId& account_id,
                                            const std::string& display_email) {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   User* user = FindUserAndModify(account_id);
   if (!user) {
@@ -829,7 +826,7 @@ UserType UserManagerImpl::GetUserType(const AccountId& account_id) {
 }
 
 void UserManagerImpl::SaveUserType(const User* user) {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(user);
   // Do not update local state if data stored or cached outside the user's
@@ -847,7 +844,7 @@ void UserManagerImpl::SaveUserType(const User* user) {
 void UserManagerImpl::SetUserUsingSaml(const AccountId& account_id,
                                        bool using_saml,
                                        bool using_saml_principals_api) {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto& user = CHECK_DEREF(FindUserAndModify(account_id));
   user.set_using_saml(using_saml);
@@ -893,7 +890,7 @@ void UserManagerImpl::RecordOwner(const AccountId& owner) {
 void UserManagerImpl::UpdateUserAccountData(
     const AccountId& account_id,
     const UserAccountData& account_data) {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   SaveUserDisplayName(account_id, account_data.display_name());
 
@@ -937,18 +934,18 @@ void UserManagerImpl::ParseUserList(const base::Value::List& users_list,
 }
 
 bool UserManagerImpl::IsOwnerUser(const User* user) const {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return user && owner_account_id_.has_value() &&
          user->GetAccountId() == *owner_account_id_;
 }
 
 bool UserManagerImpl::IsPrimaryUser(const User* user) const {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return user && user == primary_user_;
 }
 
 bool UserManagerImpl::IsEphemeralUser(const User* user) const {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!user) {
     return false;
   }
@@ -957,12 +954,12 @@ bool UserManagerImpl::IsEphemeralUser(const User* user) const {
 }
 
 bool UserManagerImpl::IsCurrentUserOwner() const {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return IsOwnerUser(active_user_);
 }
 
 bool UserManagerImpl::IsCurrentUserNew() const {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           ash::switches::kForceFirstRunUI)) {
     return true;
@@ -972,65 +969,65 @@ bool UserManagerImpl::IsCurrentUserNew() const {
 }
 
 bool UserManagerImpl::IsCurrentUserNonCryptohomeDataEphemeral() const {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return IsUserLoggedIn() &&
          IsUserNonCryptohomeDataEphemeral(GetActiveUser()->GetAccountId());
 }
 
 bool UserManagerImpl::IsCurrentUserCryptohomeDataEphemeral() const {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return IsUserLoggedIn() &&
          IsUserCryptohomeDataEphemeral(GetActiveUser()->GetAccountId());
 }
 
 bool UserManagerImpl::IsUserLoggedIn() const {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return active_user_;
 }
 
 bool UserManagerImpl::IsLoggedInAsUserWithGaiaAccount() const {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return IsUserLoggedIn() && active_user_->HasGaiaAccount();
 }
 
 bool UserManagerImpl::IsLoggedInAsChildUser() const {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return IsUserLoggedIn() && active_user_->GetType() == UserType::kChild;
 }
 
 bool UserManagerImpl::IsLoggedInAsManagedGuestSession() const {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return IsUserLoggedIn() &&
          active_user_->GetType() == UserType::kPublicAccount;
 }
 
 bool UserManagerImpl::IsLoggedInAsGuest() const {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return IsUserLoggedIn() && active_user_->GetType() == UserType::kGuest;
 }
 
 bool UserManagerImpl::IsLoggedInAsKioskApp() const {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return IsUserLoggedIn() && active_user_->GetType() == UserType::kKioskApp;
 }
 
 bool UserManagerImpl::IsLoggedInAsWebKioskApp() const {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return IsUserLoggedIn() && active_user_->GetType() == UserType::kWebKioskApp;
 }
 
 bool UserManagerImpl::IsLoggedInAsKioskIWA() const {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return IsUserLoggedIn() && active_user_->GetType() == UserType::kKioskIWA;
 }
 
 bool UserManagerImpl::IsLoggedInAsAnyKioskApp() const {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return IsUserLoggedIn() && active_user_->IsKioskType();
 }
 
 bool UserManagerImpl::IsLoggedInAsStub() const {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return IsUserLoggedIn() && active_user_->GetAccountId() == StubAccountId();
 }
 
@@ -1111,36 +1108,36 @@ bool UserManagerImpl::IsEphemeralAccountId(const AccountId& account_id) const {
 }
 
 void UserManagerImpl::AddObserver(UserManager::Observer* obs) {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observer_list_.AddObserver(obs);
 }
 
 void UserManagerImpl::RemoveObserver(UserManager::Observer* obs) {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observer_list_.RemoveObserver(obs);
 }
 
 void UserManagerImpl::AddSessionStateObserver(
     UserManager::UserSessionStateObserver* obs) {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   session_state_observer_list_.AddObserver(obs);
 }
 
 void UserManagerImpl::RemoveSessionStateObserver(
     UserManager::UserSessionStateObserver* obs) {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   session_state_observer_list_.RemoveObserver(obs);
 }
 
 void UserManagerImpl::NotifyLocalStateChanged() {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : observer_list_) {
     observer.LocalStateChanged(this);
   }
 }
 
 void UserManagerImpl::NotifyUserImageChanged(const User& user) {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : observer_list_) {
     observer.OnUserImageChanged(user);
   }
@@ -1149,14 +1146,14 @@ void UserManagerImpl::NotifyUserImageChanged(const User& user) {
 void UserManagerImpl::NotifyUserImageIsEnterpriseManagedChanged(
     const User& user,
     bool is_enterprise_managed) {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : observer_list_) {
     observer.OnUserImageIsEnterpriseManagedChanged(user, is_enterprise_managed);
   }
 }
 
 void UserManagerImpl::NotifyUserProfileImageUpdateFailed(const User& user) {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : observer_list_) {
     observer.OnUserProfileImageUpdateFailed(user);
   }
@@ -1165,28 +1162,28 @@ void UserManagerImpl::NotifyUserProfileImageUpdateFailed(const User& user) {
 void UserManagerImpl::NotifyUserProfileImageUpdated(
     const User& user,
     const gfx::ImageSkia& profile_image) {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : observer_list_) {
     observer.OnUserProfileImageUpdated(user, profile_image);
   }
 }
 
 void UserManagerImpl::NotifyUsersSignInConstraintsChanged() {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : observer_list_) {
     observer.OnUsersSignInConstraintsChanged();
   }
 }
 
 void UserManagerImpl::NotifyUserAffiliationUpdated(const User& user) {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : observer_list_) {
     observer.OnUserAffiliationUpdated(user);
   }
 }
 
 void UserManagerImpl::NotifyUserToBeRemoved(const AccountId& account_id) {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : observer_list_) {
     observer.OnUserToBeRemoved(account_id);
   }
@@ -1194,14 +1191,14 @@ void UserManagerImpl::NotifyUserToBeRemoved(const AccountId& account_id) {
 
 void UserManagerImpl::NotifyUserRemoved(const AccountId& account_id,
                                         UserRemovalReason reason) {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : observer_list_) {
     observer.OnUserRemoved(account_id, reason);
   }
 }
 
 void UserManagerImpl::NotifyUserNotAllowed(const std::string& user_email) {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : observer_list_) {
     observer.OnUserNotAllowed(user_email);
   }
@@ -1305,7 +1302,7 @@ void UserManagerImpl::ProcessPendingUserSwitchId() {
 }
 
 void UserManagerImpl::EnsureUsersLoaded() {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!local_state_) {
     return;
   }
@@ -1469,7 +1466,7 @@ User* UserManagerImpl::FindUserInListAndModify(const AccountId& account_id) {
 }
 
 void UserManagerImpl::GuestUserLoggedIn() {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto* user = User::CreateGuestUser(GuestAccountId());
   user->SetStubImage(CreateStubImage(), UserImage::Type::kInvalid,
                      /*is_loading=*/false);
@@ -1525,7 +1522,7 @@ void UserManagerImpl::RegularUserLoggedIn(const AccountId& account_id,
 void UserManagerImpl::RegularUserLoggedInAsEphemeral(
     const AccountId& account_id,
     const UserType user_type) {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SetIsCurrentUserNew(true);
   is_current_user_ephemeral_regular_user_ = true;
   auto* user = User::CreateRegularUser(account_id, user_type);
@@ -1536,13 +1533,13 @@ void UserManagerImpl::RegularUserLoggedInAsEphemeral(
 }
 
 void UserManagerImpl::PublicAccountUserLoggedIn(user_manager::User* user) {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SetIsCurrentUserNew(true);
   active_user_ = user;
 }
 
 void UserManagerImpl::KioskAppLoggedIn(user_manager::User* user) {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   user->SetStubImage(CreateStubImage(), UserImage::Type::kInvalid,
                      /*is_loading=*/false);
@@ -1598,21 +1595,21 @@ void UserManagerImpl::OnUserProfileWillBeDestroyed(
 }
 
 void UserManagerImpl::NotifyActiveUserChanged(User* active_user) {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : session_state_observer_list_) {
     observer.ActiveUserChanged(active_user);
   }
 }
 
 void UserManagerImpl::NotifyLoginStateUpdated() {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : session_state_observer_list_) {
     observer.OnLoginStateUpdated(active_user_);
   }
 }
 
 void UserManagerImpl::NotifyOnLogin() {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(active_user_);
 
   for (auto& observer : observer_list_) {
@@ -1625,7 +1622,7 @@ void UserManagerImpl::NotifyOnLogin() {
 
 User::OAuthTokenStatus UserManagerImpl::LoadUserOAuthStatus(
     const AccountId& account_id) const {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const base::Value::Dict& prefs_oauth_status =
       local_state_->GetDict(prefs::kUserOAuthTokenStatus);
@@ -1640,7 +1637,7 @@ User::OAuthTokenStatus UserManagerImpl::LoadUserOAuthStatus(
 }
 
 bool UserManagerImpl::LoadForceOnlineSignin(const AccountId& account_id) const {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const base::Value::Dict& prefs_force_online =
       local_state_->GetDict(prefs::kUserForceOnlineSignin);
@@ -1702,7 +1699,7 @@ User* UserManagerImpl::RemoveRegularOrSupervisedUserFromList(
 }
 
 void UserManagerImpl::NotifyUserAddedToSession(const User* added_user) {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : session_state_observer_list_) {
     observer.UserAddedToSession(added_user);
   }

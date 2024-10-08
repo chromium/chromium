@@ -14,7 +14,6 @@
 #include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
-#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -34,42 +33,11 @@
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/gfx/image/image_skia.h"
 
-namespace {
-
-class FakeTaskRunner : public base::SingleThreadTaskRunner {
- public:
-  FakeTaskRunner() = default;
-
-  FakeTaskRunner(const FakeTaskRunner&) = delete;
-  FakeTaskRunner& operator=(const FakeTaskRunner&) = delete;
-
- protected:
-  ~FakeTaskRunner() override {}
-
- private:
-  // base::SingleThreadTaskRunner:
-  bool PostDelayedTask(const base::Location& from_here,
-                       base::OnceClosure task,
-                       base::TimeDelta delay) override {
-    std::move(task).Run();
-    return true;
-  }
-  bool PostNonNestableDelayedTask(const base::Location& from_here,
-                                  base::OnceClosure task,
-                                  base::TimeDelta delay) override {
-    return PostDelayedTask(from_here, std::move(task), delay);
-  }
-  bool RunsTasksInCurrentSequence() const override { return true; }
-};
-
-}  // namespace
-
 namespace ash {
 
 FakeChromeUserManager::FakeChromeUserManager()
     : UserManagerImpl(
           std::make_unique<user_manager::FakeUserManagerDelegate>(),
-          new FakeTaskRunner(),
           g_browser_process ? g_browser_process->local_state() : nullptr,
           ash::CrosSettings::IsInitialized() ? ash::CrosSettings::Get()
                                              : nullptr) {

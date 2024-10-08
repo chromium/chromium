@@ -10,41 +10,15 @@
 #include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
-#include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
 
-namespace {
-
-class FakeTaskRunner : public base::SingleThreadTaskRunner {
- public:
-  // base::SingleThreadTaskRunner:
-  bool PostDelayedTask(const base::Location& from_here,
-                       base::OnceClosure task,
-                       base::TimeDelta delay) override {
-    std::move(task).Run();
-    return true;
-  }
-  bool PostNonNestableDelayedTask(const base::Location& from_here,
-                                  base::OnceClosure task,
-                                  base::TimeDelta delay) override {
-    return PostDelayedTask(from_here, std::move(task), delay);
-  }
-  bool RunsTasksInCurrentSequence() const override { return true; }
-
- protected:
-  ~FakeTaskRunner() override {}
-};
-
-}  // namespace
-
 namespace user_manager {
 
 FakeUserManager::FakeUserManager(PrefService* local_state)
     : UserManagerImpl(std::make_unique<FakeUserManagerDelegate>(),
-                      new FakeTaskRunner(),
                       local_state,
                       ash::CrosSettings::IsInitialized()
                           ? ash::CrosSettings::Get()

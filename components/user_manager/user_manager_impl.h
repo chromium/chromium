@@ -16,10 +16,9 @@
 #include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/synchronization/lock.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
@@ -34,10 +33,6 @@ class PrefRegistrySimple;
 namespace ash {
 class CrosSettings;
 }  // namespace ash
-
-namespace base {
-class SingleThreadTaskRunner;
-}  // namespace base
 
 namespace user_manager {
 
@@ -126,10 +121,9 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
     virtual void RemoveCryptohomeAsync(const AccountId& account_id) = 0;
   };
 
-  // Creates UserManagerImpl with |task_runner| for UI thread, and given
-  // |local_state|. |local_state| must outlive this UserManager.
+  // Creates UserManagerImpl on UI thread with given `local_state`.
+  // `local_state` must outlive this UserManager.
   UserManagerImpl(std::unique_ptr<Delegate> delegate,
-                  scoped_refptr<base::SingleThreadTaskRunner> task_runner,
                   PrefService* local_state,
                   ash::CrosSettings* cros_settings);
 
@@ -460,8 +454,7 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
 
   std::unique_ptr<Delegate> delegate_;
 
-  // TaskRunner for UI thread.
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   const raw_ptr<PrefService, DanglingUntriaged> local_state_;
 
