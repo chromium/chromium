@@ -726,19 +726,20 @@ void VTVideoEncodeAccelerator::ReturnBitstreamBuffer(
     return;
   }
 
-  auto* sample_attachments = static_cast<CFDictionaryRef>(
-      CFArrayGetValueAtIndex(CMSampleBufferGetSampleAttachmentsArray(
-                                 encode_output->sample_buffer.get(), true),
-                             0));
-  const bool keyframe = !CFDictionaryContainsKey(
-      sample_attachments, kCMSampleAttachmentKey_NotSync);
-  bool belongs_to_base_layer = true;
-  if (CFBooleanRef value_ptr =
-          base::apple::GetValueFromDictionary<CFBooleanRef>(
-              sample_attachments,
-              kCMSampleAttachmentKey_IsDependedOnByOthers)) {
-    belongs_to_base_layer = static_cast<bool>(CFBooleanGetValue(value_ptr));
-  }
+  NSArray* sample_attachments_array =
+      CFToNSPtrCast(CMSampleBufferGetSampleAttachmentsArray(
+          encode_output->sample_buffer.get(), true));
+  NSDictionary* sample_attachments =
+      [sample_attachments_array count] > 0
+          ? [sample_attachments_array objectAtIndex:0]
+          : nil;
+  NSNumber* not_sync = [sample_attachments
+      objectForKey:CFToNSPtrCast(kCMSampleAttachmentKey_NotSync)];
+  const bool keyframe = !not_sync || ![not_sync boolValue];
+
+  NSNumber* depended = [sample_attachments
+      objectForKey:CFToNSPtrCast(kCMSampleAttachmentKey_IsDependedOnByOthers)];
+  const bool belongs_to_base_layer = !depended || [depended boolValue];
 
   size_t used_buffer_size = 0;
   const bool copy_rv = video_toolbox::CopySampleBufferToAnnexBBuffer(
