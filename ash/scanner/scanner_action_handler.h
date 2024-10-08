@@ -16,8 +16,9 @@ namespace ash {
 // Given a ScannerAction this method will apply the contained command to the
 // system. The callback passed will be invoked after the action has completed,
 // with a bool specifying if the command was completed successfully.
-void HandleScannerAction(const ScannerAction& action,
-                         base::OnceCallback<void(bool success)> callback);
+ASH_EXPORT void HandleScannerAction(
+    const ScannerAction& action,
+    base::OnceCallback<void(bool success)> callback);
 
 }  // namespace ash
 
