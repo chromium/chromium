@@ -19,7 +19,10 @@ namespace blink {
 namespace {
 
 const char kNotHighTrustedAppExceptionMessage[] =
-    "This API is available only for managed apps.";
+    "Managed configuration is empty. This API is available only for "
+    "managed apps.";
+const char kServiceConnectionExceptionMessage[] =
+    "Service connection error. This API is available only for managed apps.";
 
 #if BUILDFLAG(IS_ANDROID)
 const char kManagedConfigNotSupported[] =
@@ -122,7 +125,7 @@ void NavigatorManagedData::OnServiceConnectionError() {
   for (ScriptPromiseResolverBase* resolver : pending_promises_) {
     resolver->Reject(
         MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotAllowedError,
-                                           kNotHighTrustedAppExceptionMessage));
+                                           kServiceConnectionExceptionMessage));
   }
 }
 
