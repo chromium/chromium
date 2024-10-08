@@ -1448,7 +1448,7 @@ bool ui::IsNSRange(id value) {
   }
 
   NSString* role = [self role];
-  if ([role isEqualToString:@"AXHeading"]) {
+  if (ui::IsHeading(_owner->GetRole())) {
     int level = 0;
     if (_owner->GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel,
                                 &level)) {

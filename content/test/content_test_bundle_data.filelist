@@ -4915,6 +4915,13 @@ data/accessibility/html/sub-expected-mac.txt
 data/accessibility/html/sub-expected-uia-win.txt
 data/accessibility/html/sub-expected-win.txt
 data/accessibility/html/sub.html
+data/accessibility/html/summary-as-heading-expected-android.txt
+data/accessibility/html/summary-as-heading-expected-auralinux.txt
+data/accessibility/html/summary-as-heading-expected-blink.txt
+data/accessibility/html/summary-as-heading-expected-mac.txt
+data/accessibility/html/summary-as-heading-expected-uia-win.txt
+data/accessibility/html/summary-as-heading-expected-win.txt
+data/accessibility/html/summary-as-heading.html
 data/accessibility/html/summary-expected-android-assist-data.txt
 data/accessibility/html/summary-expected-android-external.txt
 data/accessibility/html/summary-expected-android.txt

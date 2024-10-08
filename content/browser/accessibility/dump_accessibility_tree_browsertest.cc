@@ -28,6 +28,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/inspect/ax_api_type.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -158,6 +159,26 @@ class YieldingParserDumpAccessibilityTreeTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+class SummaryAsHeadingDumpAccessibilityTreeTest
+    : public DumpAccessibilityTreeTest {
+ protected:
+  SummaryAsHeadingDumpAccessibilityTreeTest() {
+    feature_list_.InitWithFeatures(
+        {{features::kAccessibilityExposeSummaryAsHeading}},
+        {/* disabled_features */});
+  }
+
+  ~SummaryAsHeadingDumpAccessibilityTreeTest() override {
+    // Ensure that the feature lists are destroyed in the same order they
+    // were created in.
+    scoped_feature_list_.Reset();
+    feature_list_.Reset();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // TODO(crbug.com/40925629): We need to create a way to incrementally
 // enable and create UIA tests.
 INSTANTIATE_TEST_SUITE_P(
@@ -176,6 +197,12 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     YieldingParserDumpAccessibilityTreeTest,
     ::testing::ValuesIn(DumpAccessibilityTestBase::TreeTestPassesExceptUIA()),
+    DumpAccessibilityTreeTestPassToString());
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SummaryAsHeadingDumpAccessibilityTreeTest,
+    ::testing::ValuesIn(DumpAccessibilityTestBase::TreeTestPasses()),
     DumpAccessibilityTreeTestPassToString());
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCSSAltText) {
@@ -3393,6 +3420,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySup) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySummary) {
   RunHtmlTest(FILE_PATH_LITERAL("summary.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(SummaryAsHeadingDumpAccessibilityTreeTest,
+                       AccessibilitySummaryAsHeading) {
+  RunHtmlTest(FILE_PATH_LITERAL("summary-as-heading.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySvg) {

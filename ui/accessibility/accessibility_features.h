@@ -69,6 +69,17 @@ AX_BASE_EXPORT bool IsAutoDisableAccessibilityEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kEnableAccessibilityAriaVirtualContent);
 AX_BASE_EXPORT bool IsAccessibilityAriaVirtualContentEnabled();
 
+// Expose <summary>" as a heading instead of a button.
+// Two reasons to try this:
+// 1. Unlike for a button, JAWS will not enforce leafiness for a heading, so
+// that things like child links will still be presented to the user.
+// 2. The user can use heading navigation for summaries.
+// We may decide to scale this back for use cases such as a summary inside of
+// a table or a list.
+// Experiment until we validate the approach with ATs and ARIA WG.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityExposeSummaryAsHeading);
+AX_BASE_EXPORT bool IsAccessibilityExposeSummaryAsHeadingEnabled();
+
 // Use language detection to determine the language
 // of text content in page and exposed to the browser process AXTree.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kEnableAccessibilityLanguageDetection);

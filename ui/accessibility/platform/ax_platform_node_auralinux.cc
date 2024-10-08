@@ -8,8 +8,6 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "ui/accessibility/platform/ax_platform_node_auralinux.h"
-
 #include <stdint.h>
 
 #include <algorithm>
@@ -33,6 +31,7 @@
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -42,6 +41,7 @@
 #include "ui/accessibility/platform/atk_util_auralinux.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_atk_hyperlink.h"
+#include "ui/accessibility/platform/ax_platform_node_auralinux.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/ax_platform_text_boundary.h"
 #include "ui/accessibility/platform/child_iterator.h"
@@ -2604,7 +2604,9 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
       return ATK_ROLE_DIALOG;
     case ax::mojom::Role::kDisclosureTriangle:
     case ax::mojom::Role::kDisclosureTriangleGrouped:
-      return ATK_ROLE_TOGGLE_BUTTON;
+      return ::features::IsAccessibilityExposeSummaryAsHeadingEnabled()
+                 ? ATK_ROLE_HEADING
+                 : ATK_ROLE_TOGGLE_BUTTON;
     case ax::mojom::Role::kDocCover:
       return ATK_ROLE_IMAGE;
     case ax::mojom::Role::kDocBackLink:

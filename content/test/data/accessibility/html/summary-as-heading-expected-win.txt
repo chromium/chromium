@@ -1,0 +1,9 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++ROLE_SYSTEM_GROUPING
+++++IA2_ROLE_HEADING name='details tag' COLLAPSED FOCUSABLE level:5
+++++++ROLE_SYSTEM_STATICTEXT name='details tag'
+++ROLE_SYSTEM_GROUPING
+++++IA2_ROLE_HEADING name='details tag open' EXPANDED FOCUSABLE level:5
+++++++ROLE_SYSTEM_STATICTEXT name='details tag open'
+++++IA2_ROLE_PARAGRAPH
+++++++ROLE_SYSTEM_STATICTEXT name='The details tag with open specifies that the details should be visible (open) to the user.'

@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 
 namespace ui {
@@ -332,6 +333,9 @@ bool IsFormatBoundary(const ax::mojom::Role role) {
 
 bool IsHeading(const ax::mojom::Role role) {
   switch (role) {
+    case ax::mojom::Role::kDisclosureTriangle:
+    case ax::mojom::Role::kDisclosureTriangleGrouped:
+      return ::features::IsAccessibilityExposeSummaryAsHeadingEnabled();
     case ax::mojom::Role::kHeading:
     case ax::mojom::Role::kDocSubtitle:
       return true;

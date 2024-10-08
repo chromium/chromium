@@ -603,7 +603,9 @@ void CollectAncestorRoles(
       // NSAccessibilityDisclosureTriangleRole, We should update
       // ax::mojom::Role::kDisclosureTriangle mapping to
       // NSAccessibilityDisclosureTriangleRole. http://crbug.com/558324
-      return NSAccessibilityButtonRole;
+      return features::IsAccessibilityExposeSummaryAsHeadingEnabled()
+                 ? NSAccessibilityDisclosureTriangleRole
+                 : NSAccessibilityButtonRole;
     case ax::mojom::Role::kDocBackLink:
     case ax::mojom::Role::kDocBiblioRef:
     case ax::mojom::Role::kDocGlossRef:

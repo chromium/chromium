@@ -28,6 +28,14 @@ bool IsAccessibilityPdfOcrForSelectToSpeakEnabled() {
       ::features::kAccessibilityPdfOcrForSelectToSpeak);
 }
 
+BASE_FEATURE(kAccessibilityExposeSummaryAsHeading,
+             "AccessibilityExposeSummaryAsHeading",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityExposeSummaryAsHeadingEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityExposeSummaryAsHeading);
+}
+
 BASE_FEATURE(kAccessibilityPruneRedundantInlineText,
              "AccessibilityPruneRedundantInlineText",
              base::FEATURE_DISABLED_BY_DEFAULT);

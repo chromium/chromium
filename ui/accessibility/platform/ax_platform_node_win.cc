@@ -917,9 +917,13 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
 
     case ax::mojom::Role::kDisclosureTriangle:
     case ax::mojom::Role::kDisclosureTriangleGrouped:
-      return {UIALocalizationStrategy::kSupply, UIA_ButtonControlTypeId,
-              L"button"};
-
+      if (::features::IsAccessibilityExposeSummaryAsHeadingEnabled()) {
+        return {UIALocalizationStrategy::kSupply, UIA_ButtonControlTypeId,
+                L"heading"};
+      } else {
+        return {UIALocalizationStrategy::kSupply, UIA_ButtonControlTypeId,
+                L"button"};
+      }
     case ax::mojom::Role::kDocCover:
       return {UIALocalizationStrategy::kSupply, UIA_ImageControlTypeId, L"img"};
 
@@ -6127,6 +6131,12 @@ LONG AXPlatformNodeWin::ComputeUIAStyleId() const {
   const AXPlatformNodeBase* current_node = this;
   do {
     switch (current_node->GetRole()) {
+      case ax::mojom::Role::kDisclosureTriangle:
+      case ax::mojom::Role::kDisclosureTriangleGrouped:
+        if (!::features::IsAccessibilityExposeSummaryAsHeadingEnabled()) {
+          break;
+        }
+        [[fallthrough]];  // Expose heading level.
       case ax::mojom::Role::kHeading:
         return AXHierarchicalLevelToUIAStyleId(current_node->GetIntAttribute(
             ax::mojom::IntAttribute::kHierarchicalLevel));
@@ -7000,6 +7010,14 @@ int32_t AXPlatformNodeWin::ComputeIA2Role() {
     case ax::mojom::Role::kDate:
     case ax::mojom::Role::kDateTime:
       ia2_role = IA2_ROLE_DATE_EDITOR;
+      break;
+    case ax::mojom::Role::kDisclosureTriangle:
+    case ax::mojom::Role::kDisclosureTriangleGrouped:
+      if (::features::IsAccessibilityExposeSummaryAsHeadingEnabled()) {
+        // TODO(accessibility): Consider keeping as button if inside list item
+        // or table cell.
+        ia2_role = IA2_ROLE_HEADING;
+      }
       break;
     case ax::mojom::Role::kDocPageFooter:
       ia2_role = IA2_ROLE_FOOTER;
