@@ -6,6 +6,8 @@ syntax = "proto3";
 
 package optimization_guide.proto;
 
+import "components/optimization_guide/proto/model_quality_metadata.proto";
+
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.optimization_guide.features.proto";
 
@@ -21,12 +23,15 @@ option java_outer_classname = "HistoryAnswerProto";
 // request contains the user query and top candidate passages, and
 // the response contains the answer and citations.
 
+// Next ID: 6
 message HistoryAnswerLoggingData {
   HistoryAnswerRequest request = 1;
 
   HistoryAnswerResponse response = 2;
 
   HistoryAnswerQuality quality = 3;
+
+  ModelExecutionInfo model_execution_info = 4;
 
   reserved 5;
 }

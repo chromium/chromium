@@ -84,7 +84,11 @@ proto_library("compose_proto_descriptor") {
   generate_cc = false
   generate_python = false
   generate_descriptor = "compose.descriptor"
-  proto_deps = [ ":optimization_guide_proto" ]
+  proto_deps = [
+    ":optimization_guide_proto",
+    "//third_party/metrics_proto:metrics_proto",
+  ]
+  import_dirs = [ "//third_party/metrics_proto/" ]
 }
 
 proto_library("string_value_proto_descriptor") {
@@ -104,7 +108,11 @@ proto_library("tab_organization_proto_descriptor") {
   generate_cc = false
   generate_python = false
   generate_descriptor = "tab_organization.descriptor"
-  proto_deps = [ ":optimization_guide_proto" ]
+  proto_deps = [
+    ":optimization_guide_proto",
+    "//third_party/metrics_proto:metrics_proto",
+  ]
+  import_dirs = [ "//third_party/metrics_proto/" ]
 }
 
 proto_library("history_answer_proto_descriptor") {
@@ -114,7 +122,11 @@ proto_library("history_answer_proto_descriptor") {
   generate_cc = false
   generate_python = false
   generate_descriptor = "history_answer.descriptor"
-  proto_deps = [ ":optimization_guide_proto" ]
+  proto_deps = [
+    ":optimization_guide_proto",
+    "//third_party/metrics_proto:metrics_proto",
+  ]
+  import_dirs = [ "//third_party/metrics_proto/" ]
 }
 
 proto_library("summarize_descriptor") {
