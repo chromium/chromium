@@ -154,7 +154,7 @@ BOOL VirtualCardFeatureEnabled() {
     }
     if (@available(iOS 17, *)) {
       [self registerForTraitChanges:TraitCollectionSetForTraits(
-                                        UITraitUserInterfaceStyle.self)
+                                        @[ UITraitUserInterfaceStyle.self ])
                          withAction:@selector(userInterfaceStyleDidChange)];
     }
   }
