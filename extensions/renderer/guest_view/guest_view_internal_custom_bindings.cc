@@ -46,12 +46,14 @@ namespace extensions {
 
 namespace {
 
-content::RenderFrame* GetRenderFrame(v8::Local<v8::Value> value) {
+content::RenderFrame* GetRenderFrame(v8::Isolate* isolate,
+                                     v8::Local<v8::Value> value) {
   v8::Local<v8::Context> context;
-  if (!v8::Local<v8::Object>::Cast(value)->GetCreationContext().ToLocal(
-          &context))
+  if (!v8::Local<v8::Object>::Cast(value)->GetCreationContext(isolate).ToLocal(
+          &context)) {
     if (context.IsEmpty())
       return nullptr;
+  }
   blink::WebLocalFrame* frame = blink::WebLocalFrame::FrameForContext(context);
   if (!frame)
     return nullptr;
@@ -162,7 +164,8 @@ void GuestViewInternalCustomBindings::AttachIframeGuest(
   // Get the WebLocalFrame before (possibly) executing any user-space JS while
   // getting the |params|. We track the status of the RenderFrame via an
   // observer in case it is deleted during user code execution.
-  content::RenderFrame* render_frame = GetRenderFrame(args[3]);
+  content::RenderFrame* render_frame =
+      GetRenderFrame(args.GetIsolate(), args[3]);
   RenderFrameStatus render_frame_status(render_frame);
 
   std::unique_ptr<base::Value> params =
@@ -219,7 +222,8 @@ void GuestViewInternalCustomBindings::GetFrameToken(
     return;
   }
 
-  content::RenderFrame* render_frame = GetRenderFrame(args[0]);
+  content::RenderFrame* render_frame =
+      GetRenderFrame(args.GetIsolate(), args[0]);
   if (!render_frame) {
     args.GetReturnValue().SetEmptyString();
     return;

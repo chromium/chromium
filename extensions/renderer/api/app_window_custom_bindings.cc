@@ -52,7 +52,7 @@ void AppWindowCustomBindings::GetFrame(
   bool notify_browser = args[1].As<v8::Boolean>()->Value();
 
   content::RenderFrame* app_frame =
-      ExtensionFrameHelper::FindFrameFromFrameTokenString(context()->isolate(),
+      ExtensionFrameHelper::FindFrameFromFrameTokenString(args.GetIsolate(),
                                                           args[0]);
   if (!app_frame) {
     return;
@@ -70,7 +70,7 @@ void AppWindowCustomBindings::GetFrame(
   // allowed accessing its window.
   v8::Local<v8::Context> caller_context =
       args.GetIsolate()->GetCurrentContext();
-  if (!ContextCanAccessObject(caller_context,
+  if (!ContextCanAccessObject(args.GetIsolate(), caller_context,
                               v8::Local<v8::Object>::Cast(window), true)) {
     return;
   }

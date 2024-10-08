@@ -540,9 +540,10 @@ void APIBinding::GetEventObject(
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context;
-  if (!info.Holder()->GetCreationContext().ToLocal(&context) ||
-      !binding::IsContextValidOrThrowError(context))
+  if (!info.Holder()->GetCreationContext(isolate).ToLocal(&context) ||
+      !binding::IsContextValidOrThrowError(context)) {
     return;
+  }
 
   CHECK(info.Data()->IsExternal());
   auto* event_data =
@@ -573,9 +574,10 @@ void APIBinding::GetCustomPropertyObject(
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context;
-  if (!info.Holder()->GetCreationContext().ToLocal(&context) ||
-      !binding::IsContextValid(context))
+  if (!info.Holder()->GetCreationContext(isolate).ToLocal(&context) ||
+      !binding::IsContextValid(context)) {
     return;
+  }
 
   v8::Context::Scope context_scope(context);
   CHECK(info.Data()->IsExternal());

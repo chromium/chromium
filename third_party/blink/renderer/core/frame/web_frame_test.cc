@@ -6607,8 +6607,8 @@ class CompositedSelectionBoundsTest
 
     UpdateAllLifecyclePhases(web_view_helper_.GetWebView());
 
-    v8::HandleScope handle_scope(
-        web_view_helper_.GetAgentGroupScheduler().Isolate());
+    v8::Isolate* isolate = web_view_helper_.GetAgentGroupScheduler().Isolate();
+    v8::HandleScope handle_scope(isolate);
     v8::Local<v8::Value> result =
         web_view_helper_.GetWebView()
             ->MainFrameImpl()
@@ -6620,7 +6620,7 @@ class CompositedSelectionBoundsTest
     ASSERT_GE(expected_result.Length(), 10u);
 
     v8::Local<v8::Context> context =
-        expected_result.GetCreationContext().ToLocalChecked();
+        expected_result.GetCreationContext(isolate).ToLocalChecked();
     v8::Context::Scope v8_context_scope(context);
 
     int start_edge_start_in_layer_x = expected_result.Get(context, 1)
