@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/containers/span.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gfx_export.h"
 
@@ -21,40 +22,42 @@ namespace gfx {
 
 // Creates an image from the given JPEG-encoded input. If there was an error
 // creating the image, returns an IsEmpty() Image.
-GFX_EXPORT Image ImageFrom1xJPEGEncodedData(const unsigned char* input,
-                                            size_t input_size);
+GFX_EXPORT Image ImageFrom1xJPEGEncodedData(base::span<const uint8_t> input);
 
-// Fills the |dst| vector with JPEG-encoded bytes of the 1x representation of
-// the given image.
-// Returns true if the image has a 1x representation and the 1x representation
-// was encoded successfully.
-// |quality| determines the compression level, 0 == lowest, 100 == highest.
-// Returns true if the Image was encoded successfully.
-GFX_EXPORT bool JPEG1xEncodedDataFromImage(const Image& image,
-                                           int quality,
-                                           std::vector<unsigned char>* dst);
+// Returns the JPEG-encoded bytes of the 1x representation of the given image.
+//
+// Returns the data if the image has a 1x representation and the 1x
+// representation was encoded successfully. Returns nullopt otherwise.
+//
+// `quality` determines the compression level, 0 == lowest, 100 == highest.
+GFX_EXPORT std::optional<std::vector<uint8_t>> JPEG1xEncodedDataFromImage(
+    const Image& image,
+    int quality);
 
-bool JPEG1xEncodedDataFromSkiaRepresentation(const Image& image,
-                                             int quality,
-                                             std::vector<unsigned char>* dst);
+GFX_EXPORT std::optional<std::vector<uint8_t>>
+JPEG1xEncodedDataFromSkiaRepresentation(const Image& image, int quality);
 
-// Fills the |dst| vector with WebP-encoded bytes of the the given image.
-// Returns true if the image was encoded (lossy) successfully.
-// |quality| determines the visual quality, 0 == lowest, 100 == highest.
-// Returns true if the Image was encoded successfully.
-GFX_EXPORT bool WebpEncodedDataFromImage(const Image& image,
-                                         int quality,
-                                         std::vector<unsigned char>* dst);
+// Returns the WebP-encoded bytes of the the given image.
+//
+// Returns the data if the image was encoded (lossy) successfully. Returns
+// nullopt otherwise.
+//
+// `quality` determines the visual quality, 0 == lowest, 100 == highest.
+GFX_EXPORT std::optional<std::vector<uint8_t>> WebpEncodedDataFromImage(
+    const Image& image,
+    int quality);
 
 // Computes the width of any nearly-transparent regions at the sides of the
-// image and returns them in |left| and |right|.  This checks each column of
-// pixels from the outsides in, looking for anything with alpha above a
-// reasonably small value.  For a fully-opaque image, the margins will thus be
-// (0, 0); for a fully-transparent image, the margins will be
-// (width / 2, width / 2), with |left| getting the extra pixel for odd widths.
-GFX_EXPORT void GetVisibleMargins(const ImageSkia& image,
-                                  int* left,
-                                  int* right);
+// image and returns them.  This checks each column of pixels from the outsides
+// in, looking for anything with alpha above a reasonably small value.  For a
+// fully-opaque image, the margins will thus be (0, 0); for a fully-transparent
+// image, the margins will be (width / 2, width / 2), with `left` getting the
+// extra pixel for odd widths.
+struct GFX_EXPORT VisibleMargins {
+  int left = 0;
+  int right = 0;
+};
+GFX_EXPORT VisibleMargins GetVisibleMargins(const ImageSkia& image);
 
 // Returns a resized Image from the provided Image.
 // The resizing operation uses skia::ImageOperations::RESIZE_GOOD quality.

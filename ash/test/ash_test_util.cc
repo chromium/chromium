@@ -15,6 +15,7 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -239,19 +240,20 @@ std::string CreateEncodedImageForTesting(const gfx::Size& size,
   if (image_out) {
     *image_out = test_image;
   }
-  std::vector<unsigned char> encoded_image;
+
+  std::optional<std::vector<uint8_t>> encoded_image;
   switch (codec) {
     case data_decoder::mojom::ImageCodec::kDefault:
-      CHECK(gfx::JPEG1xEncodedDataFromImage(gfx::Image(test_image), 100,
-                                            &encoded_image));
+      encoded_image =
+          gfx::JPEG1xEncodedDataFromImage(gfx::Image(test_image), 100);
       break;
     case data_decoder::mojom::ImageCodec::kPng:
-      CHECK(gfx::PNGCodec::EncodeBGRASkBitmap(
-          *test_image.bitmap(), /*discard_transparency=*/true, &encoded_image));
+      encoded_image = gfx::PNGCodec::EncodeBGRASkBitmap(
+          *test_image.bitmap(), /*discard_transparency=*/true);
       break;
   }
-  return std::string(reinterpret_cast<const char*>(encoded_image.data()),
-                     encoded_image.size());
+  CHECK(encoded_image.has_value());
+  return std::string(base::as_string_view(encoded_image.value()));
 }
 
 void DecorateWindow(aura::Window* window,

@@ -25,11 +25,9 @@ namespace {
 // pixels.
 std::vector<uint8_t> CreateJpg(int width, int height) {
   gfx::Image original = gfx::test::CreateImage(width, height);
-  std::vector<uint8_t> jpg_buffer;
-  if (!gfx::JPEG1xEncodedDataFromImage(original, 80, &jpg_buffer)) {
-    return {};
-  }
-  return jpg_buffer;
+  std::optional<std::vector<uint8_t>> jpg_buffer =
+      gfx::JPEG1xEncodedDataFromImage(original, /*quality=*/80);
+  return jpg_buffer.value_or(std::vector<uint8_t>());
 }
 
 }  // namespace

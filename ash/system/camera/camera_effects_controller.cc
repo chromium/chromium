@@ -308,8 +308,7 @@ std::optional<BackgroundImageInfo> GetBackgroundImageInfoOnWorker(
     return std::nullopt;
   }
 
-  auto image = gfx::ImageFrom1xJPEGEncodedData(&jpeg_bytes.value()[0],
-                                               jpeg_bytes.value().size());
+  auto image = gfx::ImageFrom1xJPEGEncodedData(jpeg_bytes.value());
   if (image.IsEmpty()) {
     return std::nullopt;
   }

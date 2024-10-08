@@ -285,14 +285,14 @@ scoped_refptr<base::RefCountedMemory> EncodeAndResizeImage(
     gfx::ImageSkia image) {
   auto resized = WallpaperResizer::GetResizedImage(image,
                                                    /*max_size_in_dips=*/1024);
-  scoped_refptr<base::RefCountedMemory> jpg_bytes = new base::RefCountedBytes();
-  std::vector<uint8_t> jpg_buffer;
   // Conversion quality between 0 - 100. Manually tested to use 90 for good
   // performance with reasonable quality.
-  gfx::JPEG1xEncodedDataFromImage(gfx::Image(resized), /*quality=*/90,
-                                  &jpg_buffer);
-  jpg_bytes = base::RefCountedBytes::TakeVector(&jpg_buffer);
-  return jpg_bytes;
+  std::optional<std::vector<uint8_t>> jpg_buffer =
+      gfx::JPEG1xEncodedDataFromImage(gfx::Image(resized), /*quality=*/90);
+  if (jpg_buffer) {
+    return base::RefCountedBytes::TakeVector(&jpg_buffer.value());
+  }
+  return base::MakeRefCounted<base::RefCountedBytes>(0);
 }
 
 // Selects the online wallpaper variant to show and specifies it in the
