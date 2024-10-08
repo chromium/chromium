@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityOptionsCompat;
 
@@ -515,6 +516,10 @@ public class SearchActivity extends AsyncInitializationActivity
                         .build();
         mTab.loadUrl(new LoadUrlParams(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL));
 
+        if (ChromeFeatureList.sAndroidHubSearch.isEnabled() && mIntentOrigin == IntentOrigin.HUB) {
+            setHubSearchBoxUrlBarElements();
+        }
+
         mSearchBoxDataProvider.onNativeLibraryReady(mTab);
 
         // Force the user to choose a search engine if they have to.
@@ -655,6 +660,16 @@ public class SearchActivity extends AsyncInitializationActivity
         if (hasFocus) {
             mLocationBarCoordinator.setUrlFocusChangeInProgress(false);
         }
+    }
+
+    private void setHubSearchBoxUrlBarElements() {
+        boolean isIncognito = mSearchBoxDataProvider.isIncognitoBranded();
+        @StringRes
+        int hintTextRes =
+                isIncognito
+                        ? R.string.hub_search_empty_hint_incognito
+                        : R.string.hub_search_empty_hint;
+        mLocationBarCoordinator.getUrlBarCoordinator().setUrlBarHintText(hintTextRes);
     }
 
     /* package */ boolean loadUrl(OmniboxLoadUrlParams params, boolean isIncognito) {

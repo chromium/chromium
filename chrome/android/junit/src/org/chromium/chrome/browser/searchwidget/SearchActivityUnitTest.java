@@ -48,6 +48,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
@@ -55,8 +56,10 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.metrics.UmaActivityObserver;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
+import org.chromium.chrome.browser.omnibox.UrlBarCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -786,6 +789,25 @@ public class SearchActivityUnitTest {
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         verify(mActivity, never()).finishDeferredInitialization();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_HUB_SEARCH)
+    public void finishNativeInitialization_setHubSearchBoxUrlBarElements() {
+        LocationBarCoordinator locationBarCoordinator = mock(LocationBarCoordinator.class);
+        UrlBarCoordinator urlBarCoordinator = mock(UrlBarCoordinator.class);
+        StatusCoordinator statusCoordinator = mock(StatusCoordinator.class);
+        doReturn(statusCoordinator).when(locationBarCoordinator).getStatusCoordinator();
+        doReturn(urlBarCoordinator).when(locationBarCoordinator).getUrlBarCoordinator();
+        mActivity.setLocationBarCoordinatorForTesting(locationBarCoordinator);
+
+        doReturn(IntentOrigin.HUB).when(mUtils).getIntentOrigin(any());
+        mActivity.handleNewIntent(new Intent(), false);
+
+        ShadowProfileManager.setProfile(mProfile);
+        mActivity.finishNativeInitialization();
+
+        verify(urlBarCoordinator).setUrlBarHintText(R.string.hub_search_empty_hint);
     }
 
     @Test

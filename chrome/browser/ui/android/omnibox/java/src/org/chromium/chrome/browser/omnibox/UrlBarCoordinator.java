@@ -13,6 +13,7 @@ import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
@@ -344,5 +345,12 @@ public class UrlBarCoordinator
      */
     public void setUrlBarHintTextColorForNtp() {
         mMediator.setUrlBarHintTextColorForNtp();
+    }
+
+    /**
+     * @see UrlBarMediator#setUrlBarHintText(int)
+     */
+    public void setUrlBarHintText(@StringRes int hintTextRes) {
+        mMediator.setUrlBarHintText(hintTextRes);
     }
 }

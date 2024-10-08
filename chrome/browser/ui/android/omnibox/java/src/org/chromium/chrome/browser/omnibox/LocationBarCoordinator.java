@@ -650,6 +650,11 @@ public class LocationBarCoordinator
         return mStatusCoordinator;
     }
 
+    /** Returns the {@link UrlBarCoordinator} for the LocationBar. */
+    public UrlBarCoordinator getUrlBarCoordinator() {
+        return mUrlCoordinator;
+    }
+
     /**
      * @param focusable Whether the url bar should be focusable.
      */

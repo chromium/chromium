@@ -9,6 +9,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.omnibox.UrlBarProperties.HINT_TEXT;
 import static org.chromium.chrome.browser.omnibox.UrlBarProperties.HINT_TEXT_COLOR;
 import static org.chromium.chrome.browser.omnibox.UrlBarProperties.SELECT_ALL_ON_FOCUS;
 import static org.chromium.chrome.browser.omnibox.UrlBarProperties.TEXT_COLOR;
@@ -179,5 +180,15 @@ public class UrlBarViewBinderUnitTest {
         mModel.set(UrlBarProperties.LONG_CLICK_LISTENER, longClickListener);
         mUrlBar.performLongClick();
         verify(longClickListener).onLongClick(any());
+    }
+
+    @Test
+    @SmallTest
+    public void testSetHintText() {
+        mModel.set(HINT_TEXT, R.string.hub_search_empty_hint);
+        Assert.assertEquals(mActivity.getString(R.string.hub_search_empty_hint), mUrlBar.getHint());
+        mModel.set(HINT_TEXT, R.string.hub_search_empty_hint_incognito);
+        Assert.assertEquals(
+                mActivity.getString(R.string.hub_search_empty_hint_incognito), mUrlBar.getHint());
     }
 }
