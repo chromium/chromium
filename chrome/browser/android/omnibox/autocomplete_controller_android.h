@@ -60,8 +60,7 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
       const base::android::JavaParamRef<jstring>& j_omnibox_text,
       const base::android::JavaParamRef<jstring>& j_current_url,
       jint j_page_classification,
-      const base::android::JavaParamRef<jstring>& j_current_title,
-      bool is_on_focus_context);
+      const base::android::JavaParamRef<jstring>& j_current_title);
   void Stop(JNIEnv* env, bool clear_result);
   void ResetSession(JNIEnv* env);
 
