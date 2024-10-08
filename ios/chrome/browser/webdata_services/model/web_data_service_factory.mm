@@ -28,10 +28,12 @@ namespace {
 
 std::unique_ptr<KeyedService> BuildWebDataService(web::BrowserState* context) {
   const base::FilePath& state_path = context->GetStatePath();
+  // On iOS (and Android), the account storage is persisted on disk.
   return std::make_unique<WebDataServiceWrapper>(
       state_path, GetApplicationContext()->GetApplicationLocale(),
       web::GetUIThreadTaskRunner({}), base::DoNothing(),
-      GetApplicationContext()->GetOSCryptAsync());
+      GetApplicationContext()->GetOSCryptAsync(),
+      /*use_in_memory_autofill_account_database=*/false);
 }
 
 }  // namespace

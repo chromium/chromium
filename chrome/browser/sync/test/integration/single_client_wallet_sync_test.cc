@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -262,6 +263,67 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
   // Check that one card is stored in the account storage.
   EXPECT_EQ(1U, GetServerCards(account_data).size());
 
+  // Check whether cards are stored in-memory or on-disk, which depends on
+  // feature flags.
+  EXPECT_EQ(!switches::IsImprovedSigninUIOnDesktopEnabled(),
+            GetAccountWebDataService(0)->UsesInMemoryDatabaseForTest());
+
+  ASSERT_NE(nullptr, pdm);
+  std::vector<CreditCard*> cards =
+      pdm->payments_data_manager().GetCreditCards();
+  ASSERT_EQ(1uL, cards.size());
+
+  ExpectDefaultCreditCardValues(*cards[0]);
+
+  GetClient(0)->SignOutPrimaryAccount();
+
+  // Verify that sync is stopped.
+  ASSERT_EQ(syncer::SyncService::TransportState::DISABLED,
+            GetSyncService(0)->GetTransportState());
+  ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::AUTOFILL_WALLET_DATA));
+
+  // Wait for PDM to receive the data change with no cards.
+  WaitForNumberOfCards(0, pdm);
+
+  // Check directly in the DB that the account storage is now cleared.
+  EXPECT_EQ(0U, GetServerCards(account_data).size());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
+                       DownloadAccountStorageWithImplicitSignIn_Card) {
+  ASSERT_TRUE(SetupClients());
+  autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
+
+  GetFakeServer()->SetWalletData(
+      {CreateDefaultSyncWalletCard(), CreateDefaultSyncPaymentsCustomerData()});
+
+  secondary_account_helper::ImplicitSignInUnconsentedAccount(
+      GetProfile(0), &test_url_loader_factory_, "user@email.com");
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(AwaitQuiescence());
+  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
+            GetSyncService(0)->GetTransportState());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::AUTOFILL_WALLET_DATA));
+
+  scoped_refptr<autofill::AutofillWebDataService> profile_data =
+      GetProfileWebDataService(0);
+  ASSERT_NE(nullptr, profile_data);
+  scoped_refptr<autofill::AutofillWebDataService> account_data =
+      GetAccountWebDataService(0);
+  ASSERT_NE(nullptr, account_data);
+
+  // Check that no data is stored in the profile storage.
+  EXPECT_EQ(0U, GetServerCards(profile_data).size());
+
+  // Check that one card is stored in the account storage.
+  EXPECT_EQ(1U, GetServerCards(account_data).size());
+
+  // Check whether cards are stored in-memory (which is always the case for
+  // implicit sign-ins).
+  EXPECT_TRUE(GetAccountWebDataService(0)->UsesInMemoryDatabaseForTest());
+
   ASSERT_NE(nullptr, pdm);
   std::vector<CreditCard*> cards =
       pdm->payments_data_manager().GetCreditCards();
@@ -352,6 +414,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, EnabledByDefault) {
   // exists.
   ASSERT_TRUE(GetClient(0)->service()->GetActiveDataTypes().Has(
       syncer::AUTOFILL_WALLET_METADATA));
+  EXPECT_FALSE(GetProfileWebDataService(0)->UsesInMemoryDatabaseForTest());
 }
 
 // ChromeOS does not sign out, so the test below does not apply.
@@ -958,8 +1021,6 @@ class SingleClientWalletSecondaryAccountSyncTest
   Profile* profile() { return GetProfile(0); }
 
  private:
-  base::test::ScopedFeatureList features_;
-
   base::CallbackListSubscription test_signin_client_subscription_;
 };
 
@@ -968,7 +1029,7 @@ class SingleClientWalletSecondaryAccountSyncTest
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(SingleClientWalletSecondaryAccountSyncTest,
                        SwitchesFromAccountToProfileStorageOnSyncOptIn) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard(),
                                   CreateDefaultSyncPaymentsCustomerData(),
@@ -1047,7 +1108,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSecondaryAccountSyncTest,
 IN_PROC_BROWSER_TEST_F(
     SingleClientWalletSecondaryAccountSyncTest,
     SwitchesFromAccountToProfileStorageOnSyncOptInWithAdvancedSetup) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard(),
                                   CreateDefaultSyncCreditCardCloudTokenData()});

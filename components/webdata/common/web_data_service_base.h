@@ -69,6 +69,10 @@ class WEBDATA_EXPORT WebDataServiceBase
   // the database is unavailable. Must be called on DB sequence.
   WebDatabase* GetDatabase();
 
+  // Test-only API to verify if the database is stored in-memory only, as
+  // opposed to on-disk storage.
+  bool UsesInMemoryDatabaseForTest() const;
+
  protected:
   friend class base::RefCountedDeleteOnSequence<WebDataServiceBase>;
   friend class base::DeleteHelper<WebDataServiceBase>;

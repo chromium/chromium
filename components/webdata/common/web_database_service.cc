@@ -165,6 +165,13 @@ void WebDatabaseService::RegisterDBErrorCallback(DBLoadErrorCallback callback) {
   error_callbacks_.push_back(std::move(callback));
 }
 
+bool WebDatabaseService::UsesInMemoryDatabaseForTest() const {
+  // This mimics what WebDatabase::Init() does internally, as it would require
+  // significant test-only boilerplate to actually fetch the authoritative
+  // boolean from the very underlying `sql::Database::in_memory_`.
+  return path_.value() == WebDatabase::kInMemoryPath;
+}
+
 void WebDatabaseService::OnDatabaseLoadDone(sql::InitStatus status,
                                             const std::string& diagnostics) {
   // The INIT_OK_WITH_DATA_LOSS status is an initialization success but with
