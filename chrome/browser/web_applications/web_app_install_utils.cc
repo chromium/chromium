@@ -603,7 +603,7 @@ void PopulateFileHandlerInfoFromManifest(
 // If any icons are correctly specified in the manifest, they take precedence
 // over any we picked up from web page metadata.
 void UpdateWebAppInstallInfoIconsFromManifestIfNeeded(
-    const std::vector<blink::Manifest::ImageResource> icons,
+    const std::vector<blink::Manifest::ImageResource>& icons,
     WebAppInstallInfo* web_app_info) {
   std::vector<apps::IconInfo> web_app_icons;
   for (const auto& icon : icons) {
