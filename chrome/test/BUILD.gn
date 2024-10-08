@@ -10296,6 +10296,7 @@ if (!is_android && !is_chromeos_device) {
 
     sources = [
       "../browser/about_flags_browsertest.cc",
+      "../browser/autofill_prediction_improvements/autofill_prediction_improvements_browsertest.cc",
       "../browser/browser_keyevents_browsertest.cc",
       "../browser/chrome_render_widget_host_browsertests.cc",
       "../browser/controlled_frame/controlled_frame_interactive_browsertest.cc",
@@ -10491,6 +10492,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/toolbar",
+      "//chrome/browser/user_annotations:user_annotations",
       "//chrome/browser/web_applications:interactive_ui_tests",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/browser/webauthn:test_support",
@@ -10503,6 +10505,7 @@ if (!is_android && !is_chromeos_device) {
       "//components/accessibility:reading",
       "//components/autofill/content/browser:test_support",
       "//components/autofill/core/common:credit_card_number_validation",
+      "//components/autofill_prediction_improvements/core/browser:browser",
       "//components/back_forward_cache",
       "//components/blocked_content",
       "//components/bookmarks/browser",
@@ -10558,6 +10561,7 @@ if (!is_android && !is_chromeos_device) {
       "//components/translate/content/browser:test_support",
       "//components/ukm:test_support",
       "//components/ukm:ukm_test_helper",
+      "//components/user_annotations:user_annotations",
       "//components/user_education/common",
       "//components/user_education/test",
       "//components/webapps/browser:test_support",
