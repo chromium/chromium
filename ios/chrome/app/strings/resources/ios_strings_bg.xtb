@@ -1081,6 +1081,7 @@
 <translation id="6140948187512243695">Показване на подробностите</translation>
 <translation id="6144589619057374135">Отваряне на ${url} в режим „инкогнито“</translation>
 <translation id="6151006591088192882">Отключване на разделите в режим „инкогнито“ с <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="6152340033632117531">Неактивно</translation>
 <translation id="6152406514676263192">Включете синхронизирането, за да виждате най-подходящото съдържание въз основа на интересите си.</translation>
 <translation id="6159839020698489198">незадължително</translation>
 <translation id="6160780110287872296">Да се изтегли ли файлът?</translation>
@@ -1134,6 +1135,7 @@
 <translation id="6355820205320395730">Ненадеждните пароли са лесни за отгатване. Уверете се, че създаваните от вас са надеждни. <ph name="BEGIN_LINK" />Вижте още съвети за сигурност<ph name="END_LINK" />.</translation>
 <translation id="6361848730467328243">Следване на <ph name="DOMAIN_NAME" /></translation>
 <translation id="6368038301482806847">Изберете търсеща машина от списъка.</translation>
+<translation id="6374469231428023295">Нов опит</translation>
 <translation id="6387994324662817823">Паролите се запазват в мениджъра на паролите в Google само на това устройство.</translation>
 <translation id="6404422529625928907">Отваряне в Google Диск</translation>
 <translation id="6404511346730675251">Редактиране на отметката</translation>

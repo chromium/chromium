@@ -2094,6 +2094,7 @@
 <translation id="2460356425461033301">ब्राउजरमा भएका आफ्ना डेटा ब्याकअप गर्नुहोस् र जुनसुकै डिभाइसमा सो डेटा प्रयोग गर्नुहोस्</translation>
 <translation id="2460482211073772897">अन्य फोल्डरहरूमा</translation>
 <translation id="2460826998961521840">आफ्नो Google खातामा सेभ गरिएका पासकीहरू प्रयोग गर्न</translation>
+<translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> यो डिभाइसमा मात्र सेभ गरिएको छ। तपाईंले यो बुकमार्क सारेर <ph name="LOCAL_FOLDER" /> मा लैजानुभयो भने उक्त बुकमार्क तपाईंका अन्य डिभाइसमा उपलब्ध हुन छाड्ने छ।</translation>
 <translation id="2461550163693930491">साइटहरूलाई साझा ट्याबहरू स्क्रोल तथा जुम गर्ने अनुमति नदिनुहोस्</translation>
 <translation id="2461593638794842577">तपाईं यो सेटिङ अफ गरी यो डिभाइसमा मात्र आफ्ना पासवर्डहरू सेभ गर्न सक्नुहुन्छ</translation>
 <translation id="2462332841984057083">Steam पहिल्यै देखि सेटअप गरिँदै छ। सेटअप गर्ने कार्य पूरा हुन्जेल पर्खनुहोस्।</translation>
@@ -2347,6 +2348,7 @@
 <translation id="2645047101481282803"><ph name="PROFILE_NAME" /> ले तपाईंको डिभाइसको व्यवस्थापन गर्छ</translation>
 <translation id="2645388244376970260">यो ट्याब <ph name="DEVICE_NAME" /> मा कास्ट गरिँदै छ</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">यसलाई तपाईंको Google खातामा भएको कुनै फोल्डरमा सेभ गर्ने हो?</translation>
 <translation id="264897126871533291">प्रोटानोमेली</translation>
 <translation id="2649045351178520408">आधार64-एन्कोडेड ASCII, प्रमाणपत्र साङ्लो</translation>
 <translation id="265156376773362237">पेज प्रिलोड गर्ने डिफल्ट मोड</translation>
@@ -2535,6 +2537,7 @@
 <translation id="2773288106548584039">लिगेसी ब्राउजरको समर्थन</translation>
 <translation id="2773621783913034737">ट्याबहरू निष्क्रिय बनाउनुहोस्</translation>
 <translation id="2774876860084746535">बौद्धिक</translation>
+<translation id="2775047284666165174"><ph name="LOCAL_FOLDER" /> यो डिभाइसमा मात्र सेभ गरिएको छ। तपाईंले यो फोल्डर सारेर <ph name="LOCAL_FOLDER" /> मा लैजानुभयो भने उक्त फोल्डर तपाईंका अन्य डिभाइसमा उपलब्ध हुन छाड्ने छ।</translation>
 <translation id="2775104091073479743">फिंगरप्रिन्टहरू सम्पादन गर्नुहोस्</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{"<ph name="EXTENSION" />" एक्स्टेन्सनले डिभाइसहरू एक्सेस गरिरहेको थियो}=1{"<ph name="EXTENSION" />" एक्स्टेन्सनले {0} वटा डिभाइस एक्सेस गरिरहेको छ}other{"<ph name="EXTENSION" />" एक्स्टेन्सनले {0} वटा डिभाइसहरू एक्सेस गरिरहेको छ}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{चलाउन नमिल्ने एउटा एप हटाउनुहोस्}other{चलाउन नमिल्ने # वटा एप हटाउनुहोस्}}</translation>
@@ -4934,6 +4937,7 @@
 <translation id="4527929807707405172">रिभर्स स्क्रोलिङ सक्षम पार्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">अनुवादसम्बन्धी सुझाव</translation>
 <translation id="4528638190900283934">अतिरिक्त सुविधाहरू प्राप्त गर्न साइन इन गर्नुहोस्</translation>
+<translation id="4529052777398765334">यो फोल्डर यो डिभाइसमा मात्र सेभ गरिएको छ। तपाईंले यसलाई <ph name="ACCOUNT_FOLDER" /> मा सेभ गर्नुभयो भने यो फोल्डर तपाईंको खातामा पनि सेभ गरिने छ।</translation>
 <translation id="4529455689802245339">Chrome लाइभ क्याप्सनले काम नगर्न सक्छ</translation>
 <translation id="4531451811601110068">तपाईं फेरि प्रयास गर्न वा मद्दत प्राप्त गर्नका लागि आफ्ना एड्मिनलाई सम्पर्क गर्न सक्नुहुन्छ</translation>
 <translation id="4531924570968473143">तपाईं यो <ph name="DEVICE_TYPE" /> मा कसलाई थप्न चाहनुहुन्छ?</translation>
@@ -5520,6 +5524,7 @@
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> को अनुमतिसम्बन्धी सेटिङ</translation>
 <translation id="4955710816792587366">आफ्नो PIN छनौट गर्नुहोस्</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">यसलाई यो डिभाइसमा भएको कुनै फोल्डरमा सेभ गर्ने हो?</translation>
 <translation id="4959262764292427323">तपाईं जुनसुकै बेला पासवर्ड प्रयोग गर्न सक्नुहोस् भन्नाका लागि तिनलाई तपाईंको Google खातामा सेभ गरिन्छ</translation>
 <translation id="4960020053211143927">केही एपहरूमा प्रयोग गर्न मिल्दैन</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8443,6 +8448,7 @@
 <translation id="711840821796638741">व्यवस्थित बुकमार्कहरू देखाउनुहोस्</translation>
 <translation id="711985611146095797">तिमी यो पेजमार्फत आफ्ना साइन इन गरिएका Google खाताहरू व्यवस्थापन गर्न सक्छौ। <ph name="LINK_BEGIN" />थप जान<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Chrome ब्राउजर र Android को ट्राफिक VPN कनेक्ट नहुँदासम्म ब्लक गरिने छ</translation>
+<translation id="7120904433567247946">यो बुकमार्क यो डिभाइसमा मात्र सेभ गरिएको छ। तपाईंले यसलाई <ph name="ACCOUNT_FOLDER" /> मा सेभ गर्नुभयो भने यो बुकमार्क तपाईंको खातामा पनि सेभ गरिने छ।</translation>
 <translation id="7121438501124788993">विकासकर्ताको मोड</translation>
 <translation id="7121728544325372695">स्मार्ट योजक चिन्ह</translation>
 <translation id="7122605570852873914">जे भए पनि साइन आउट गर्नुहोस्</translation>
@@ -8469,6 +8475,7 @@
 <translation id="7139627972753429585"><ph name="APP_NAME" /> ले तपाईंको डिभाइसको माइक्रोफोन प्रयोग गरिरहेको छ</translation>
 <translation id="7140785920919278717">एप इन्स्टलर</translation>
 <translation id="7141105143012495934">साइन इन असफल भयो किनभने तपाईँका खाता विवरणहरू पुनःप्राप्त गर्न सकेन। कृपया तपाईँको प्रशासकसँग सम्पर्क गर्नुहोस् वा फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7141844554192012199">जाँच गर्नुहोस्</translation>
 <translation id="714301620504747562">ब्राउज गर्ने तथा खोज्ने प्रक्रिया प्रिलोड गर्ने डिफल्ट प्रक्रियाभन्दा छिटो पूरा हुन्छ</translation>
 <translation id="7143207342074048698">जडान गर्दै...</translation>

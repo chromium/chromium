@@ -1700,6 +1700,7 @@
 <translation id="2184515124301515068">సైట్‌లు ధ్వనిని ఎప్పుడు ప్లే చేయాలనేది Chrome ఎంచుకునేలా సెట్ చేయండి (సిఫార్సు చేయబడింది)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">మరో పరికరం నుండి పేజీ షేర్ చేయబడింది</translation>
+<translation id="2187569197737151508">దీన్ని మళ్లీ ఎనేబుల్ చేయడానికి Escను 5 సార్లు నొక్కండి</translation>
 <translation id="2187675480456493911">మీ ఖాతాలోని ఇతర పరికరాలతో సింక్ చేయబడింది. ఇతర యూజర్‌ల చేత మార్చబడిన సెట్టింగ్‌లు సింక్ చేయబడవు. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">సర్వర్ ప్రమాణపత్రం దిగుమతి ఎర్రర్</translation>
 <translation id="2187906491731510095">ఎక్స్‌టెన్షన్‌లు అప్‌డేట్ చేయబడ్డాయి</translation>
@@ -2108,6 +2109,7 @@
 <translation id="2460356425461033301">మీ బ్రౌజర్ డేటాను బ్యాకప్ చేసి, దానిని ఏ పరికరంలో అయినా ఉపయోగించండి</translation>
 <translation id="2460482211073772897">ఇతర ఫోల్డర్‌లలో</translation>
 <translation id="2460826998961521840">మీ Google ఖాతాలో సేవ్ చేసిన పాస్-కీలను ఉపయోగించడానికి</translation>
+<translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> ఈ పరికరంలో మాత్రమే సేవ్ అయ్యి ఉంది. మీరు ఈ బుక్‌మార్క్‌ను <ph name="LOCAL_FOLDER" />‌కు తరలిస్తే, మీ ఇతర పరికరాలలో దీనిని ఇకపై పొందలేరు.</translation>
 <translation id="2461550163693930491">షేర్ చేసిన ట్యాబ్‌లను స్క్రోల్ చేయడానికి, జూమ్ చేయడానికి సైట్‌లను అనుమతించవద్దు</translation>
 <translation id="2461593638794842577">ఈ పరికరంలో మాత్రమే మీ పాస్‌వర్డ్‌లను సేవ్ చేయడానికి మీరు ఈ సెట్టింగ్‌ను ఆఫ్ చేయవచ్చు</translation>
 <translation id="2462332841984057083">Steam ఇప్పటికే సెటప్ చేయబడుతోంది. సెటప్ పూర్తయ్యే వరకు వేచి ఉండండి.</translation>
@@ -2361,6 +2363,7 @@
 <translation id="2645047101481282803">మీ పరికరం <ph name="PROFILE_NAME" /> ద్వారా మేనేజ్ చేయబడుతుంది</translation>
 <translation id="2645388244376970260"><ph name="DEVICE_NAME" />‌లో ఈ ట్యాబ్‌ను ప్రసారం చేస్తున్నారు</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">మీ Google ఖాతాలోని ఫోల్డర్‌లో సేవ్ చేయాలా?</translation>
 <translation id="264897126871533291">ప్రొటానోమలీ</translation>
 <translation id="2649045351178520408">Base64-ఎన్‌కోడ్ చేసిన ASCII, సర్టిఫికెట్ చైన్</translation>
 <translation id="265156376773362237">స్టాండర్డ్ ప్రీ - లోడింగ్</translation>
@@ -2549,6 +2552,7 @@
 <translation id="2773288106548584039">లెగసీ బ్రౌజర్ మద్దతు</translation>
 <translation id="2773621783913034737">ట్యాబ్‌లను ఇన్‌యాక్టివ్‌గా ఉంచండి</translation>
 <translation id="2774876860084746535">మేధోసంపత్తి</translation>
+<translation id="2775047284666165174"><ph name="LOCAL_FOLDER" /> ఈ పరికరంలో మాత్రమే సేవ్ అయ్యి ఉంది. మీరు ఈ ఫోల్డర్‌ను <ph name="LOCAL_FOLDER" />‌కు తరలిస్తే, మీ ఇతర పరికరాలలో దీనిని ఇకపై పొందలేరు.</translation>
 <translation id="2775104091073479743">వేలిముద్రలను ఎడిట్ చేయండి</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{"<ph name="EXTENSION" />" ఎక్స్‌టెన్షన్ పరికరాలను గతంలో యాక్సెస్ చేసింది}=1{"<ph name="EXTENSION" />" ఎక్స్‌టెన్షన్ {0} పరికరాన్ని యాక్సెస్ చేస్తోంది}other{"<ph name="EXTENSION" />" ఎక్స్‌టెన్షన్ {0} పరికరాలను యాక్సెస్ చేస్తోంది}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{సపోర్ట్ చేయని 1 యాప్‌ను తీసివేయండి}other{సపోర్ట్ చేయని # యాప్‌లను తీసివేయండి}}</translation>
@@ -2737,6 +2741,7 @@
 <translation id="2908122561561557160">Word, Excel, అలాగే PowerPoint ఫైల్స్‌ను తెరవండి</translation>
 <translation id="2908162660801918428">డైరెక్టరీ ద్వారా మీడియా గ్యాలరీని జోడించండి</translation>
 <translation id="2908358077082926882">కేటాయింపును తీసివేసి, <ph name="RESPONSE" /> కోసం "<ph name="CURRENTKEY" />"ని మళ్లీ నొక్కండి</translation>
+<translation id="2909487040556589351">మీ మొబైల్ పరికరంలో Chromeను పొందండి</translation>
 <translation id="2909506265808101667">Google సర్వీస్‌లతో కనెక్ట్ చేయడం సాధ్యం కాలేదు. మీ నెట్‌వర్క్ కనెక్షన్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి. ఎర్రర్ కోడ్: <ph name="ERROR_CODE" />.</translation>
 <translation id="2910318910161511225">నెట్‌వర్క్‌కి కనెక్ట్ చేసి మళ్లీ ట్రై చేయండి</translation>
 <translation id="2910678330803525229">ఇప్పుడు మీరు బ్రౌజింగ్ ప్రారంభించవచ్చు</translation>
@@ -4838,6 +4843,7 @@
 <translation id="4434611816075088065">ఈ సమయంలో, మీరు తదుపరి చర్యలు తీసుకోవలసిన అవసరం లేదు</translation>
 <translation id="443475966875174318">అనుకూలంగా లేని అప్లికేషన్‌లను అప్‌డేట్ చేయండి లేదా తీసివేయండి</translation>
 <translation id="443503224864902151">చాలా సైట్‌ల నుండి మిమ్మల్ని సైన్ అవుట్ చేస్తుంది. మీ Google ఖాతాలో మీరు సైన్ ఇన్ చేసి, అదే స్థితిలో కొనసాగాలి, తద్వారా సింక్ చేసిన మీ డేటాను తొలగించవచ్చు.</translation>
+<translation id="4436573279088520291">ఉపయోగించని ట్యాబ్‌లను మూసివేయండి</translation>
 <translation id="4437879751057074691">పాస్‌వర్డ్‌లు, పాస్-కీలను సేవ్ చేయాలో లేదో అడగాలి</translation>
 <translation id="4437947179446780764">అనుకూల DNS సర్వీస్ ప్రొవైడర్‌ను జోడించండి</translation>
 <translation id="4438043733494739848">పారదర్శకత</translation>
@@ -4950,6 +4956,7 @@
 <translation id="4527929807707405172">రివర్స్ స్క్రోలింగ్‌ను ఎనేబుల్ చేయండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">అనువాద సూచన</translation>
 <translation id="4528638190900283934">అదనపు ఫీచర్‌ల కోసం సైన్ ఇన్ చేయండి</translation>
+<translation id="4529052777398765334">ఈ ఫోల్డర్ ఈ పరికరంలో మాత్రమే సేవ్ అయ్యి ఉంది. మీరు దీనిని <ph name="ACCOUNT_FOLDER" />‌లో సేవ్ చేస్తే, ఈ ఫోల్డర్ కూడా మీ ఖాతాలో సేవ్ అవుతుంది.</translation>
 <translation id="4529455689802245339">Chrome లైవ్ క్యాప్షన్ పని చేయకపోవచ్చు</translation>
 <translation id="4531451811601110068">మీరు మళ్లీ ట్రై చేయవచ్చు లేదా సహాయం కోసం మీ అడ్మినిస్ట్రేటర్‌ను కాంటాక్ట్ చేయవచ్చు</translation>
 <translation id="4531924570968473143">మీరు ఎవరిని ఈ <ph name="DEVICE_TYPE" />కు జోడించాలనుకుంటున్నారు?</translation>
@@ -5536,6 +5543,7 @@
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> విజిబిలిటీ</translation>
 <translation id="4955710816792587366">మీ పిన్ ఎంచుకోండి</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">ఈ పరికరంలోని ఫోల్డర్‌లో మాత్రమే సేవ్ చేయాలా?</translation>
 <translation id="4959262764292427323">మీ Google ఖాతాలో పాస్‌వర్డ్‌లు సేవ్ చేయబడతాయి కాబట్టి మీరు వాటిని ఏ పరికరంలోనైనా ఉపయోగించవచ్చు</translation>
 <translation id="4960020053211143927">కొన్ని యాప్‌లు సపోర్ట్ చేయవు</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8460,6 +8468,7 @@
 <translation id="711840821796638741">నిర్వహించబడే బుక్‌మార్క్‌లను చూపు</translation>
 <translation id="711985611146095797">మీరు సైన్ ఇన్ చేసిన Google ఖాతాలను మేనేజ్ చేయడానికి ఈ పేజీ మిమ్మల్ని అనుమతిస్తుంది. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">VPN కనెక్ట్ చేయకపోతే Chrome బ్రౌజర్, Android ట్రాఫిక్ బ్లాక్ చేయబడతాయి</translation>
+<translation id="7120904433567247946">ఈ బుక్‌మార్క్ ఈ పరికరంలో మాత్రమే సేవ్ అయ్యి ఉంది. మీరు దీనిని <ph name="ACCOUNT_FOLDER" />‌లో సేవ్ చేస్తే, ఈ బుక్‌మార్క్ కూడా మీ ఖాతాలో సేవ్ అవుతుంది.</translation>
 <translation id="7121438501124788993">డెవలపర్ మోడ్</translation>
 <translation id="7121728544325372695">స్మార్ట్ డాష్‌లు</translation>
 <translation id="7122605570852873914">ఏదేమైనా సైన్ అవుట్ చేయండి</translation>
@@ -8486,6 +8495,7 @@
 <translation id="7139627972753429585"><ph name="APP_NAME" /> మీ మైక్రోఫోన్‌ను ఉపయోగిస్తోంది</translation>
 <translation id="7140785920919278717">అప్లికేషన్ ఇన్‌స్టాలర్</translation>
 <translation id="7141105143012495934">మీ ఖాతా వివరాలను తిరిగి పొందలేనందున సైన్-ఇన్ విఫలమైంది. దయచేసి మీ నిర్వాహకుడిని సంప్రదించండి లేదా మళ్లీ ట్రై చేయండి.</translation>
+<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7141844554192012199">చెకప్</translation>
 <translation id="714301620504747562">స్టాండర్డ్ ప్రీలోడింగ్‌లో కంటే బ్రౌజ్ చేయడం, సెర్చ్ చేయడం మరింత వేగంగా ఉంటాయి</translation>
 <translation id="7143207342074048698">కనెక్ట్ అవుతో.</translation>
@@ -9921,6 +9931,7 @@
 <translation id="816704878106051517">{COUNT,plural, =1{ఫోన్ నంబర్}other{# ఫోన్ నంబర్‌లు}}</translation>
 <translation id="8168435359814927499">కంటెంట్</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{చదవాల్సిన లిస్ట్‌కు ట్యాబ్‌ను జోడించండి}other{చదవాల్సిన లిస్ట్‌కు ట్యాబ్‌లను జోడించండి}}</translation>
+<translation id="8169177848833352618">దురదృష్టవశాత్తూ Bruschettaను ఇన్‌స్టాల్ చేయడానికి ఆవశ్యకతలను ఈ మెషీన్ పూర్తి చేయలేదు. ఎర్రర్ కోడ్ <ph name="ERROR" />.</translation>
 <translation id="8174047975335711832">పరికర సమాచారం</translation>
 <translation id="8176332201990304395">గులాబీ రంగు మరియు తెలుపు</translation>
 <translation id="8176529144855282213">మైక్రోఫోన్ యాక్సెస్‌ను ఆన్ చేయడానికి, మీ పరికరంలో ఫిజికల్ మైక్రోఫోన్ స్విచ్‌ని ఆన్ చేయండి</translation>

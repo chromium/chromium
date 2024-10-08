@@ -794,17 +794,6 @@ Bu politika ayarlanmadan bırakılırsa kullanıcıların, engellenebilir karma 
       Politika ayarlanmazsa kullanıcılar zayıf PIN kullandıklarında hata değil, uyarı alırlar.</translation>
 <translation id="1597684038583138808">Bil Bakalım Tanımını Etkinleştir</translation>
 <translation id="1598258379228800626">Giriş ekranında klavye odağını vurgulamayı etkinleştir</translation>
-<translation id="1599334938346636409">Bu politika, bir profili veya tarayıcıyı yöneten kişiyi tanımlamak için kullanılan özel bir etiket ekler.
-
-Bu etiket, araç çubuğunda gösterilir.
-
-Bu politika, tarayıcı düzeyinde ayarlanırsa etiket araç çubuğundaki tüm profillerde gösterilir.
-
-Bu politika, profil düzeyinde ayarlanırsa etiket yalnızca ilgili profilde gösterilir.
-
-Diğer politikaların aksine, profil düzeyinde ayarlanan bu politika, tarayıcı düzeyinde ayarlanan bir politikaya göre daha önceliklidir.
-
-Özel etiket çevrilmez.</translation>
 <translation id="1599424828227887013">Android cihazlarda Site İzolasyonu'nu belirtilen kaynaklar için etkinleştirme</translation>
 <translation id="159946228300522107">Politikayı True (Doğru) değerine ayarlamak, Chrome'un ilk çalıştırmada birinci pencereyi büyüteceği anlamına gelir.
 
@@ -5880,17 +5869,6 @@ Bu politika, <ph name="PRODUCT_NAME" /> 92 sürümünden itibaren gözetimsiz mo
       Bu politika bir giriş yöntemi tanımlayıcıları listesine ayarlanırsa belirtilen giriş yöntemleri oturum açma ekranında kullanılabilir. Belirtilen ilk giriş yöntemi önceden seçilir. Oturum açma ekranında bir kullanıcı simgesine odaklanılmışken, kullanıcının kullandığı son giriş yöntemi de bu politikada belirtilen giriş yöntemlerine ek olarak gösterilir. Bu politika ayarlanmazsa oturum açma ekranındaki giriş yöntemleri, oturum açma ekranının görüntülendiği yerel ayardan türetilir. Geçerli giriş yöntemi tanımlayıcıları olmayan değerler yok sayılır.</translation>
 <translation id="5406626703145660021">Cihazda TLS için kuantum sonrası anahtar anlaşmasını etkinleştir</translation>
 <translation id="5407008856008996384">CUPS yazıcılara erişim izni verir</translation>
-<translation id="5412932514296195873">Yapay zeka destekli geçmişte arama, kullanıcıların tarama geçmişlerinde yalnızca sayfa başlığı ve URL ile değil, sayfa içeriğine göre arama yapmasına olanak tanıyan bir özelliktir.
-
-0 = Özelliği kullanıcılar için etkinleştirin ve Google'a alakalı verileri göndererek yapay zeka modellerini eğitmesine ya da iyileştirmesine yardımcı olun. Alakalı veriler arasında özelliğe bağlı olarak istemler, girişler, çıkışlar ve kaynak materyalleri yer alabilir. Bu bilgiler, gerçek kişiler tarafından yalnızca yapay zeka modellerini iyileştirmek amacıyla incelenebilir. Aşağıdaki değerler belirtilmediği sürece varsayılan değer 0'dır.
-
-1 = Özelliği kullanıcılar için etkinleştirin ancak yapay zeka modellerini eğitmesi veya iyileştirmesi için Google'a veri göndermeyin. <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> tarafından yönetilen kurumsal kullanıcılar ve <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> tarafından yönetilen eğitim hesapları için varsayılan değer 1'dir.
-
-2 = Özelliği devre dışı bırakın.
-
-Politika ayarlanmadan bırakılırsa varsayılan davranış, normal tüketici kullanıcılar için 0, <ph name="PRODUCT_OS_NAME" /> ürününde yönetilen kullanıcı hesapları için ise 2 değerinin kullanılmasıdır.
-
-Üretken yapay zeka özelliklerinde verilerin nasıl işlendiği hakkında daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=generative_ai_settings adresine göz atın.</translation>
 <translation id="5413051574966911176">Etkin bağlantı olduğunda uzak ana makine masaüstünde bağlantıyla ilgili kullanıcı arayüzünü devre dışı bırak</translation>
 <translation id="5415713057512333739">İndirilecek verilerin URL'si.</translation>
 <translation id="5416263061774624216">Internet Explorer SiteList politikasını kural kaynağı olarak kullanma</translation>
@@ -6786,21 +6764,6 @@ Ekran koruyucuda en fazla 25 tane resim gösterilebilir. Yalnızca listedeki ilk
 Bu politika ayarlanmazsa veya listede geçerli bir resim referansı yoksa <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> politikasında ayarlanan değerden bağımsız olarak kilit ekranında ekran koruyucu gösterilmez.</translation>
 <translation id="6135398260575578389">Güvenli Tarama gelişmiş modda etkin. Bu mod daha yüksek güvenlik sağlar, ancak Google ile daha fazla tarama bilgisi paylaşmayı gerektirir.</translation>
 <translation id="6135552820180449830">Crosh (99 sürümünden itibaren desteklenir)</translation>
-<translation id="6136179371737299503">Cihaz düzeyindeki bu politika, <ph name="PRODUCT_OS_NAME" /> hizmetinin TLS'de kuantum sonrası anahtar anlaşması algoritması sunup sunmayacağını yapılandırır. Algoritma, gelecekteki sürümlerde NIST'nin kuantum sonrası standardı ML-KEM olacak. Algoritma, başlangıçta standardın daha önceki bir taslak iterasyonu olan Kyber'dı. Böylece, destekleyen sunucular, kullanıcı trafiğinin daha sonra kuantum bilgisayarlar tarafından şifresinin çözülmesine karşı koruma sağlayabilir.
-
-Bu politika etkinleştirilirse <ph name="PRODUCT_OS_NAME" />, TLS bağlantılarında kuantum sonrası anahtar anlaşması sunar. Bu durumda kullanıcı trafiği, uyumlu sunucularla iletişim kurarken kuantum bilgisayarlara karşı korunur.
-
-Bu politika devre dışı bırakılırsa <ph name="PRODUCT_OS_NAME" />, TLS bağlantılarında kuantum sonrası anahtar anlaşması sunmaz. Bu durumda kullanıcı trafiği, kuantum bilgisayarlara karşı korunmaz.
-
-Bu politika ayarlanmazsa <ph name="PRODUCT_OS_NAME" />, kuantum sonrası anahtar anlaşması sunmayla ilgili varsayılan kullanıma sunma sürecini uygular.
-
-Kyber'ı sunmak, geriye dönük uyumludur. Mevcut TLS sunucularının ve ağ kurulumu ara katman yazılımlarının yeni seçeneği yoksayıp önceki seçenekleri belirlemeye devam etmesi beklenir.
-
-Ancak, TLS'yi doğru uygulamayan cihazlar yeni seçenek sunulduğunda düzgün çalışmayabilir. Örneğin, tanınmayan seçenekler veya ortaya çıkan daha büyük mesajlar nedeniyle bağlantıları kesilebilir. Bu tür cihazlar, kuantum sonrası kullanıma hazır değildir ve kuruluşun kuantum sonrası geçişini etkileyebilir. Bu sorunla karşılaşan yöneticiler, düzeltilmesi için satıcıyla iletişime geçmelidir.
-
-Bu politika geçici bir çözüm olup <ph name="PRODUCT_OS_NAME" /> 141 sürümünden sonra kaldırılacaktır. Sorunları test etmenize olanak sağlamak için etkinleştirilmiş olabilir ve sorunlar çözülürken devre dışı olabilir.
-
-Hem bu politika hem de PostQuantumKeyAgreementEnabled politikası ayarlanırsa bu politika öncelikli olur.</translation>
 <translation id="6138636318340561140">Ziyaret edilen URL'lerin Güvenli Tarama durumunu gerçek zamanlı olarak kontrol et</translation>
 <translation id="6141402445226505817">Her zaman yüzeysel saat dilimi algılamasını kullan</translation>
 <translation id="6141944295566709543">Cihaz kilitliyken kullanıcıların medya oynatmasına izin ver</translation>
@@ -10241,19 +10204,6 @@ Bu politikanın değerinin 2'ye ayarlanarak JavaScript optimizasyonlarının dev
 Bu politika, <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" /> ve <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" /> politikaları kullanılarak belirli URL kalıpları için geçersiz kılınabilir.
 
 Bu politika ayarlanmadan bırakılırsa JavaScript optimizasyonları etkin olur.</translation>
-<translation id="8670585636650044874">Bu politika, <ph name="PRODUCT_NAME" /> hizmetinin TLS'de kuantum sonrası anahtar anlaşması algoritması sunup sunmayacağını yapılandırır. Algoritma, gelecekteki sürümlerde NIST'nin kuantum sonrası standardı ML-KEM olacak. Algoritma, başlangıçta standardın daha önceki bir taslak iterasyonu olan Kyber'dı. Böylece, destekleyen sunucular, kullanıcı trafiğinin daha sonra kuantum bilgisayarlar tarafından şifresinin çözülmesine karşı koruma sağlayabilir.
-
-Bu politika etkinleştirilirse <ph name="PRODUCT_NAME" />, TLS bağlantılarında kuantum sonrası anahtar anlaşması sunar. Bu durumda kullanıcı trafiği, uyumlu sunucularla iletişim kurarken kuantum bilgisayarlara karşı korunur.
-
-Bu politika devre dışı bırakılırsa <ph name="PRODUCT_NAME" />, TLS bağlantılarında kuantum sonrası anahtar anlaşması sunmaz. Bu durumda kullanıcı trafiği, kuantum bilgisayarlara karşı korunmaz.
-
-Bu politika ayarlanmazsa <ph name="PRODUCT_NAME" />, kuantum sonrası anahtar anlaşması sunmayla ilgili varsayılan kullanıma sunma sürecini uygular.
-
-Kuantum sonrası anahtar anlaşması sunmak, geriye dönük uyumludur. Mevcut TLS sunucularının ve ağ kurulumu ara katman yazılımlarının yeni seçeneği yoksayıp önceki seçenekleri belirlemeye devam etmesi beklenir.
-
-Ancak, TLS'yi doğru uygulamayan cihazlar yeni seçenek sunulduğunda düzgün çalışmayabilir. Örneğin, tanınmayan seçenekler veya ortaya çıkan daha büyük mesajlar nedeniyle bağlantıları kesilebilir. Bu tür cihazlar, kuantum sonrası kullanıma hazır değildir ve kuruluşun kuantum sonrası geçişini etkileyebilir. Bu sorunla karşılaşan yöneticiler, düzeltilmesi için satıcıyla iletişime geçmelidir.
-
-Bu politika geçici bir çözüm olup <ph name="PRODUCT_NAME" /> 141 sürümünden sonra kaldırılacaktır. Sorunları test etmenize olanak sağlamak için etkinleştirilmiş olabilir ve sorunlar çözülürken devre dışı olabilir.</translation>
 <translation id="8671119576957984818">Masaüstü paylaşım merkezini etkinleştir</translation>
 <translation id="8671193325113134911">Çalışan komut dosyaları için sıkı MIME türü kontrolünü etkinleştir</translation>
 <translation id="8671303329680827168">Bu politika kullanımdan kaldırıldı. Bunun yerine lütfen "<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />" politikasını kullanın.</translation>

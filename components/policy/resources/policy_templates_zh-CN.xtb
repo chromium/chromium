@@ -778,17 +778,6 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
       如果此政策未设置，当系统认为 PIN 码的安全系数偏低时，就会向用户显示警告（而非错误消息）。</translation>
 <translation id="1597684038583138808">启用快速解答定义功能</translation>
 <translation id="1598258379228800626">允许在登录屏幕上使用键盘焦点突出显示</translation>
-<translation id="1599334938346636409">此政策可控制用于标识资料或浏览器管理者身份的自定义标签。
-
-此标签将显示在工具栏中。
-
-如果在浏览器级别设置此政策，则所有资料都会在工具栏中显示此标签。
-
-如果在资料级别设置此政策，只有该资料会显示此标签。
-
-与其他政策不同，在资料级别设置的此政策将优先于在浏览器级别设置的政策。
-
-系统不会翻译该自定义标签。</translation>
 <translation id="1599424828227887013">在 Android 设备上为指定的来源启用网站隔离功能</translation>
 <translation id="159946228300522107">如果此政策设为 True，Chrome 会在首次运行时将所显示的第一个窗口最大化。
 
@@ -5703,17 +5692,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       如果此政策设为一个输入法标识符列表，登录屏幕上将会提供所有已指定的输入法以供选用。系统将会预先选择所指定的第一种输入法。当登录屏幕上显示已激活的用户操作大图标时，屏幕上除了会提供通过此政策指定的各种输入法外，还会提供相应用户最近一次用过的输入法。如果此政策未设置，系统则会根据显示登录屏幕时使用的语言区域提供登录屏幕上的输入法。系统将会忽略无效的输入法标识符。</translation>
 <translation id="5406626703145660021">为设备的 TLS 启用后量子密钥协议</translation>
 <translation id="5407008856008996384">允许访问 CUPS 打印机</translation>
-<translation id="5412932514296195873">“AI 历史记录搜索”功能可让用户根据网页内容（而不仅仅是网页标题和网址）搜索其浏览记录。
-
-0 表示为用户启用此功能，并向 Google 发送相关数据来帮助训练或改进 AI 模型。相关数据可能包括提示、输入、输出和来源资料，具体取决于相应功能。工作人员可能会仅出于改进 AI 模型的目的而审核这些数据。除非下文另有说明，否则默认值是 0。
-
-1 表示为用户启用此功能，但不向 Google 发送数据来训练或改进 AI 模型。对于受 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企业用户和受 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版账号，默认值是 1。
-
-2 表示停用此功能。
-
-如果此政策未设置，那么在 <ph name="PRODUCT_OS_NAME" /> 上，普通个人用户对应的默认行为设为 0，受管用户对应的默认行为设为 2。
-
-如需详细了解生成式 AI 功能的数据处理机制，请访问 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="5413051574966911176">禁止远程主机桌面在处于已连接状态时显示与连接相关的界面</translation>
 <translation id="5415713057512333739">要下载的数据的网址。</translation>
 <translation id="5416263061774624216">不使用 Internet Explorer SiteList 政策作为规则来源</translation>
@@ -6593,21 +6571,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 如果此政策未设置，或者列表不含任何有效的图片引用，那么无论 <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> 政策中设置了什么值，系统都不会为锁定屏幕显示屏保。</translation>
 <translation id="6135398260575578389">“安全浏览”功能会处于开启状态且会在增强模式下运行。此模式可提高安全性，但需与 Google 分享更多浏览信息。</translation>
 <translation id="6135552820180449830">crosh（自 99 版起受支持）</translation>
-<translation id="6136179371737299503">此设备级政策用于配置 <ph name="PRODUCT_OS_NAME" /> 是否在 TLS 中提供后量子密钥协议算法。在未来版本中，该算法将采用 NIST 后量子标准 ML-KEM。最初的算法为 Kyber，这是该标准的早期草案迭代版本。这让支持该算法的服务器能够保护用户流量，防止以后被量子计算机解密。
-
-如果此政策已启用，<ph name="PRODUCT_OS_NAME" /> 将在 TLS 连接中提供后量子密钥协议。系统将在与兼容的服务器通信时保护用户流量免遭量子计算机解密。
-
-如果此政策已停用，<ph name="PRODUCT_OS_NAME" /> 将不会在 TLS 连接中提供后量子密钥协议。系统将无法防止量子计算机对用户流量进行解密。
-
-如果此政策未设置，<ph name="PRODUCT_OS_NAME" /> 将会按照默认发布流程提供后量子密钥协议。
-
-提供 Kyber 可实现向后兼容。现有的 TLS 服务器和网络中间件预计会忽略这个新选项，并继续选择以前的选项。
-
-但是，在提供新选项后，未正确实现 TLS 的设备可能会发生故障。例如，当遇到无法识别的选项或产生较长的消息时，这些设备可能会断开连接。这些设备尚不支持后量子密钥协议，会妨碍企业改用该算法。如果遇到这种情况，管理员应联系供应商以寻求解决方案。
-
-此政策只是一项暂时性措施，会在 <ph name="PRODUCT_OS_NAME" /> 141 版之后的某个时间移除。您可启用此政策以测试是否存在问题，并在解决问题期间停用此政策。
-
-如果同时设置了此政策和 PostQuantumKeyAgreementEnabled 政策，则此政策的优先级更高。</translation>
 <translation id="6138636318340561140">实时查看网址的安全浏览状态</translation>
 <translation id="6141402445226505817">一律使用粗略式时区检测方式</translation>
 <translation id="6141944295566709543">允许用户在设备锁定时播放媒体</translation>
@@ -9957,19 +9920,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 您可以使用 <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" /> 和 <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" /> 政策为特定网址格式覆盖此政策。
 
 如果您未设置此政策，系统会启用 JavaScript 优化功能。</translation>
-<translation id="8670585636650044874">此政策用于配置 <ph name="PRODUCT_NAME" /> 是否在 TLS 中提供后量子密钥协议算法。在未来版本中，该算法将采用 NIST 后量子标准 ML-KEM。最初的算法为 Kyber，这是该标准的早期草案迭代版本。这让支持该算法的服务器能够保护用户流量，防止以后被量子计算机解密。
-
-如果此政策已启用，<ph name="PRODUCT_NAME" /> 将在 TLS 连接中提供后量子密钥协议。系统将在与兼容的服务器通信时保护用户流量免遭量子计算机解密。
-
-如果此政策已停用，<ph name="PRODUCT_NAME" /> 将不会在 TLS 连接中提供后量子密钥协议。系统将无法防止量子计算机对用户流量进行解密。
-
-如果此政策未设置，<ph name="PRODUCT_NAME" /> 将会按照默认发布流程提供后量子密钥协议。
-
-提供后量子密钥协议可实现向后兼容。现有的 TLS 服务器和网络中间件预计会忽略这个新选项，并继续选择以前的选项。
-
-但是，在提供新选项后，未正确实现 TLS 的设备可能会发生故障。例如，当遇到无法识别的选项或产生较长的消息时，这些设备可能会断开连接。这些设备尚不支持后量子密钥协议，会妨碍企业改用该算法。如果遇到这种情况，管理员应联系供应商以寻求解决方案。
-
-此政策只是一项暂时性措施，会在 <ph name="PRODUCT_NAME" /> 141 版之后的某个时间移除。您可启用此政策以测试是否存在问题，并在解决问题期间停用此政策。</translation>
 <translation id="8671119576957984818">启用桌面分享中心</translation>
 <translation id="8671193325113134911">为工作器脚本启用严格的 MIME 类型检查</translation>
 <translation id="8671303329680827168">此政策已被弃用，请改用“<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />”政策。</translation>

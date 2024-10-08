@@ -460,6 +460,7 @@
 <translation id="3098745985164956033">Некаторыя відарысы адпраўляюцца ў Google, каб палепшыць іх апісанне</translation>
 <translation id="3114507951000454849">Чытайце сённяшнія навіны <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Апавяшчэнні</translation>
+<translation id="3131961580615093332">Карыстальнік <ph name="GIVEN_NAME" /> змяніў укладку “<ph name="TAB_NAME" />”</translation>
 <translation id="3148237711805373460">Перайсці</translation>
 <translation id="314939179385989105">Галоўная старонка Chrome</translation>
 <translation id="3158667104057012316">Адсартавана ўручную</translation>
@@ -637,6 +638,7 @@
 <translation id="4042941173059740150">Працягвайце выкарыстоўваць сэрвіс "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />" для доступу да вэб-сайта <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="404352903042073578">Група без назвы</translation>
 <translation id="4044708993631234325">Ніжні аркуш</translation>
+<translation id="4045441967987592849">Зноў адкрыць</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> стандартная ўкладка з новым дзеяннем у абагуленых групах укладак}one{<ph name="TABS_COUNT_MANY" /> стандартная ўкладка з новым дзеяннем у абагуленых групах укладак}few{<ph name="TABS_COUNT_MANY" /> стандартныя ўкладкі з новым дзеяннем у абагуленых групах укладак}many{<ph name="TABS_COUNT_MANY" /> стандартных укладак з новым дзеяннем у абагуленых групах укладак}other{<ph name="TABS_COUNT_MANY" /> стандартнай укладкі з новым дзеяннем у абагуленых групах укладак}}</translation>
 <translation id="405365679581583349">Абнавіце сэрвісы Google Play</translation>
 <translation id="405399507749852140">Пры зніжэнні цаны на любым з сайтаў вы будзеце атрымліваць абвесткі</translation>
@@ -844,6 +846,7 @@
 <translation id="4943703118917034429">Віртуальная рэальнасць</translation>
 <translation id="4943872375798546930">Няма вынікаў</translation>
 <translation id="4950924971025849764">Пасля таго як вы ўвойдзеце з некалькіх прылад у адзін і той жа Уліковы запіс Google, гэтыя прылады змогуць выкарыстоўваць дадзены тэлефон у якасці ключа бяспекі.</translation>
+<translation id="4953833914914492602">Група ўкладак “<ph name="TAB_GROUP_NAME" />” больш не даступная</translation>
 <translation id="4957722034734105353">Даведацца больш...</translation>
 <translation id="4961107849584082341">Гэту старонку можна перакласці на любую мову</translation>
 <translation id="4964614743143953889">Chrome папярэджвае пра небяспечныя сайты і спампоўкі</translation>
@@ -957,6 +960,7 @@
 <translation id="5526281268548144413">Нельга закрыць у некалькіх вокнах</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# хв таму}one{# хв таму}few{# хв таму}many{# хв таму}other{# хв таму}}</translation>
 <translation id="5548606607480005320">Праверка бяспекі</translation>
+<translation id="5551564597369878730">Карыстальнік <ph name="GIVEN_NAME" /> далучыўся да групы ўкладак “<ph name="TAB_GROUP_NAME" />”</translation>
 <translation id="5554520618550346933">Chrome папярэджвае, калі пароль, які вы выкарыстоўваеце, быў апублікаваны ў інтэрнэце. Пры гэтым вашы паролі і імёны карыстальніка зашыфраваны – прачытаць іх не можа ніхто, нават Google.</translation>
 <translation id="5555525474779371165">Выберыце ўзровень абароны для Бяспечнага прагляду</translation>
 <translation id="5556459405103347317">Перазагрузіць</translation>
@@ -1079,6 +1083,7 @@
 <translation id="6085886413119427067">Вызначае, як устанаўліваць бяспечнае падключэнне да вэб-сайтаў</translation>
 <translation id="60923314841986378">Засталося <ph name="HOURS" /> гадз</translation>
 <translation id="6095578583683628124">Калі Google з’яўляецца вашай стандартнай пошукавай сістэмай, вам будуць паказвацца больш адпаведныя кантэксту прапановы.</translation>
+<translation id="610630277578876674">Хутка адкрывайце спасылкі ў паведамленнях і не толькі</translation>
 <translation id="6108923351542677676">Ідзе наладка…</translation>
 <translation id="6112702117600201073">Абнаўленне старонкі</translation>
 <translation id="6122831415929794347">Выключыць Бяспечны прагляд?</translation>
@@ -1245,6 +1250,7 @@
 <translation id="6775840696761158817">Пры ўводзе тэксту ў адрасным радку або ў полі пошуку вы будзеце бачыць прапановы вашай стандартнай пошукавай сістэмы. У рэжыме інкогніта гэта функцыя не працуе.</translation>
 <translation id="6785476624617658922">Дадатковыя ўмовы выкарыстання Chrome і Chrome OS</translation>
 <translation id="6795633245022906657">Хуткае адкрыццё новай укладкі. Каб змяніць функцыю гэтай кнопкі, перайдзіце ў Налады.</translation>
+<translation id="679588508577699489">Зрабіце Chrome стандартным браўзерам</translation>
 <translation id="679956319013005046">Каб задаць пераважную службу для аўтазапаўнення, спачатку дадайце гэту службу ў <ph name="BEGIN_LINK" />Налады Android<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">Акно будзе закрыта</translation>
 <translation id="6803791793483522764">Праверка апавяшчэнняў</translation>
@@ -1616,6 +1622,7 @@
 <translation id="8282297628636750033">Прымяняць цёмную тэму, калі гэта магчыма</translation>
 <translation id="8282950411412455249">Перайсці ў налады бяспекі</translation>
 <translation id="829672787777123339">Ідзе падключэнне да вашай прылады…</translation>
+<translation id="8307517230426267469">Карыстальнік <ph name="GIVEN_NAME" /> перамясціў укладку “<ph name="TAB_NAME" />”</translation>
 <translation id="831192587911042850">Дадае бягучы вэб-сайт у спіс падпісак.</translation>
 <translation id="8342727528718219152">Chrome паведаміць вам пра сайты, якія могуць адпраўляць зашмат апавяшчэнняў</translation>
 <translation id="834313815369870491">Ніколі не перакладаць наступныя сайты:</translation>
@@ -1736,6 +1743,7 @@
 <translation id="8863714995118816041">Вэб-сайту <ph name="SITE_NAME" /> зноў дадзены дазволы</translation>
 <translation id="8865415417596392024">Даныя Chrome у вашым уліковым запісе</translation>
 <translation id="8888527824584402177">Укладкі, якімі вы не карысталіся на працягу <ph name="DAYS_INACTIVE" /> сут, будуць перамешчаны сюды<ph name="AUTODELETE_SECTION" />. Гэты параметр можна ў любы час змяніць у раздзеле "<ph name="SETTINGS_TITLE" />".</translation>
+<translation id="8890668505403261809">Шукайце па ўкладках у рэжыме інкогніта</translation>
 <translation id="8898822736010347272">Адпраўляе URL-адрасы некаторых наведаных вамі старонак, пэўную сістэмную інфармацыю і фрагменты змесціва старонак у сэрвісы Google, каб дапамагаць выяўляць новыя кіберпагрозы і абараняць усіх у інтэрнэце.</translation>
 <translation id="8909135823018751308">Абагуліць…</translation>
 <translation id="8921980840204105660">Каб закладкі з іншых прылад сталі даступнымі, уключыце сінхранізацыю</translation>

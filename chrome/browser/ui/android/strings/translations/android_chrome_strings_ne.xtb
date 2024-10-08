@@ -460,6 +460,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3098745985164956033">तपाईंलाई उपलब्ध गराइने वर्णनको गुणस्तर सुधार गर्न केही फोटोहरू Google मा पठाइन्छन्</translation>
 <translation id="3114507951000454849">आजको समाचार पढ्नुहोस् <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">घोषणाहरू</translation>
+<translation id="3131961580615093332"><ph name="GIVEN_NAME" /> ले ट्याब “<ph name="TAB_NAME" />” बदल्नुभएको छ</translation>
 <translation id="3148237711805373460">मलाई त्यहाँ लैजानुहोस्</translation>
 <translation id="314939179385989105">Chrome को गृहपृष्ठ</translation>
 <translation id="3158667104057012316">म्यानुअल तरिकाले क्रमबद्ध गर्नुहोस्</translation>
@@ -637,6 +638,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> प्रयोग गरी <ph name="SITE_ETLD_PLUS_ONE" /> मा साइन इन गर्नुहोस्</translation>
 <translation id="404352903042073578">नाम नभएको समूह</translation>
 <translation id="4044708993631234325">पुछारको पाना</translation>
+<translation id="4045441967987592849">फेरि खोल्नुहोस्</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{सेयर गरिएका ट्याब समूहमा नयाँ गतिविधि भएको <ph name="TABS_COUNT_ONE" /> सामान्य ट्याब}other{सेयर गरिएका ट्याब समूहमा नयाँ गतिविधि भएको <ph name="TABS_COUNT_MANY" /> वटा सामान्य ट्याब}}</translation>
 <translation id="405365679581583349">Google Play services अपडेट गर्नुहोस्</translation>
 <translation id="405399507749852140">कुनै साइटमा मूल्य घटेका खण्डमा अलर्ट प्राप्त गर्नुहोस्</translation>
@@ -843,6 +845,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4943703118917034429">भर्चुअल रियालिटी</translation>
 <translation id="4943872375798546930">कुनै नतिजा छैन</translation>
 <translation id="4950924971025849764">तपाईंले अन्य डिभाइसमा पनि यो फोनमा प्रयोग गरिएकै Google खातामार्फत साइन इन गर्नुभएका बेला ती डिभाइसमा यो फोन सुरक्षा साँचोका रूपमा प्रयोग गर्न सकिन्छ।</translation>
+<translation id="4953833914914492602">“<ph name="TAB_GROUP_NAME" />” ट्याब समूह अबदेखि उपलब्ध छैन</translation>
 <translation id="4957722034734105353">थप जान्नुहोस्...</translation>
 <translation id="4961107849584082341">यस पृष्ठलाई जुनसुकै भाषामा अनुवाद गर्नुहोस्</translation>
 <translation id="4964614743143953889">Chrome ले तपाईंलाई असुरक्षित साइट तथा डाउनलोडहरूका बारेमा चेतावनी दिन्छ</translation>
@@ -956,6 +959,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5526281268548144413">एकभन्दा बढी विन्डोहरूमा बन्द गर्न सकिँदैन</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# मिनेटअघि}other{# मिनेटअघि}}</translation>
 <translation id="5548606607480005320">सुरक्षा जाँच</translation>
+<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> “<ph name="TAB_GROUP_NAME" />” ट्याब समूहमा सामेल हुनुभएको छ</translation>
 <translation id="5554520618550346933">तपाईंले कुनै पासवर्ड प्रयोग गर्नुभयो भने Chrome ले उक्त पासवर्ड अनलाइन प्रकाशित गरिएका खण्डमा तपाईंलाई चेतावनी दिन्छ। यसो गर्ने क्रममा Google लगायत अरू कसैले पनि तपाईंका पासवर्ड र युजरनेम हेर्न नसकून् भन्नाका लागि तिनलाई इन्क्रिप्ट गरिन्छ।</translation>
 <translation id="5555525474779371165">Safe Browsing को आफूले चाहेको सुरक्षा प्रणाली छनौट गर्नुहोस्</translation>
 <translation id="5556459405103347317">पुन: लोड गर्नुहोस्</translation>
@@ -1615,6 +1619,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8282297628636750033">साइटहरूमा सकेसम्म अँध्यारो थिम लागू गर्नु…</translation>
 <translation id="8282950411412455249">सुरक्षासम्बन्धी सेटिङमा जानुहोस्</translation>
 <translation id="829672787777123339">तपाईंको यन्त्रसँग कनेक्ट गरिँदै छ…</translation>
+<translation id="8307517230426267469"><ph name="GIVEN_NAME" /> ले ट्याब “<ph name="TAB_NAME" />” हटाउनुभएको छ</translation>
 <translation id="831192587911042850">यसले तपाईंले फलो गरिरहेका वेबसाइटहरूको सूचीमा हालको वेबसाइट थप्छ।</translation>
 <translation id="8342727528718219152">Chrome ले तपाईंलाई अत्यन्तै धेरै नोटिफिकेसनहरू पठाउन सक्ने साइटहरूका बारेमा जानकारी गराउने छ</translation>
 <translation id="834313815369870491">निम्न साइटहरूको पाठ कहिल्यै अनुवाद नगर्नुहोस्</translation>

@@ -460,6 +460,7 @@
 <translation id="3098745985164956033">သင့်အတွက် ရှင်းလင်းချက်များ ပိုကောင်းမွန်စေရန် ပုံအချို့ကို Google သို့ ပို့သည်</translation>
 <translation id="3114507951000454849">ယနေ့သတင်းများကို ဖတ်ရန် <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">ကြေညာချက်များ</translation>
+<translation id="3131961580615093332"><ph name="GIVEN_NAME" /> က “<ph name="TAB_NAME" />” တဘ်ကို ပြောင်းလိုက်သည်</translation>
 <translation id="3148237711805373460">ထိုနေရာသို့ သွားရန်</translation>
 <translation id="314939179385989105">Chrome ၏ ပင်မစာမျက်နှာ</translation>
 <translation id="3158667104057012316">ကိုယ်တိုင်အစဉ်ဖြင့် စီနေသည်</translation>
@@ -637,6 +638,7 @@
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ဖြင့် <ph name="SITE_ETLD_PLUS_ONE" /> ကို ရှေ့ဆက်ပါ</translation>
 <translation id="404352903042073578">အမည်ပေးမထားသော အုပ်စု</translation>
 <translation id="4044708993631234325">အောက်ခြေအပိုဆောင်း စာမျက်နှာ</translation>
+<translation id="4045441967987592849">ပြန်ဖွင့်ရန်</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{မျှဝေထားသော တဘ်အုပ်စုများရှိ လုပ်ဆောင်ချက်အသစ်ပါသည့် ပုံမှန်တဘ် <ph name="TABS_COUNT_ONE" /> ခု}other{မျှဝေထားသော တဘ်အုပ်စုများရှိ လုပ်ဆောင်ချက်အသစ်ပါသည့် ပုံမှန်တဘ် <ph name="TABS_COUNT_MANY" /> ခု}}</translation>
 <translation id="405365679581583349">Google Play ဝန်ဆောင်မှုများကို အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="405399507749852140">ဝဘ်ဆိုက်တစ်ခုခုတွင် ဈေးကျသွားပါက သတိပေးချက်များ ရယူနိုင်သည်</translation>
@@ -844,6 +846,7 @@
 <translation id="4943703118917034429">ပကတိအသွင်</translation>
 <translation id="4943872375798546930">ရလဒ်မရှိပါ</translation>
 <translation id="4950924971025849764">Google Account တစ်ခုတည်းသို့ လက်မှတ်ထိုးဝင်ထားသောအခါ အခြားစက်ပစ္စည်းများသည် ဤဖုန်းကို လုံခြုံရေးကီးအဖြစ် သုံးနိုင်သည်။</translation>
+<translation id="4953833914914492602">“<ph name="TAB_GROUP_NAME" />” တဘ်အုပ်စုကို မရနိုင်တော့ပါ</translation>
 <translation id="4957722034734105353">ပိုမို လေ့လာရန်...</translation>
 <translation id="4961107849584082341">ဤစာမျက်နှာကို နှစ်သက်ရာဘာသာစကားအဖြစ်သို့ ဘာသာပြန်ပါ</translation>
 <translation id="4964614743143953889">မလုံခြုံသော ဝဘ်ဆိုက်နှင့် ဒေါင်းလုဒ်များအကြောင်း Chrome က သင့်ကို သတိပေးသည်</translation>
@@ -957,6 +960,7 @@
 <translation id="5526281268548144413">ဝင်းဒိုးအများအပြားတွင် ပိတ်၍မရပါ</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{ပြီးခဲ့သော # မိနစ်}other{ပြီးခဲ့သော # မိနစ်}}</translation>
 <translation id="5548606607480005320">လုံခြုံရေး စစ်ဆေးမှု</translation>
+<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> က “<ph name="TAB_GROUP_NAME" />” တဘ်အုပ်စုတွင် ပါဝင်လိုက်သည်</translation>
 <translation id="5554520618550346933">သင်စကားဝှက်သုံးသောအခါ ၎င်းကို အွန်လိုင်းတွင် ထုတ်ဝေထားခြင်း ရှိ၊ မရှိ Chrome က သတိပေးပါသည်။ ဤသို့စစ်ဆေးသည့်အခါ သင်၏စကားဝှက်နှင့် အသုံးပြုသူအမည်များကို အသွင်ဝှက်ထားသောကြောင့် Google အပါအဝင် မည်သူမျှ ၎င်းတို့ကို ဖတ်၍မရပါ။</translation>
 <translation id="5555525474779371165">သင်၏ ‘လုံခြုံစွာကြည့်ရှုခြင်း’ အကာအကွယ်ကို ရွေးပါ</translation>
 <translation id="5556459405103347317">ပြန်တင်ရန်</translation>
@@ -1615,6 +1619,7 @@
 <translation id="8282297628636750033">ဝဘ်ဆိုက်ကိုဖြစ်နိုင်ပါက အမှောင်နောက်ခံပြောင်းခြင်း</translation>
 <translation id="8282950411412455249">လုံခြုံရေးဆက်တင်များသို့ သွားရန်</translation>
 <translation id="829672787777123339">သင့်စက်ပစ္စည်းသို့ ချိတ်ဆက်နေသည်…</translation>
+<translation id="8307517230426267469"><ph name="GIVEN_NAME" /> က “<ph name="TAB_NAME" />” တဘ်ကို ဖယ်ရှားလိုက်သည်</translation>
 <translation id="831192587911042850">သင်လိုက်ကြည့်နေသော ဝဘ်ဆိုက်များစာရင်းတွင် လက်ရှိဝဘ်ဆိုက်ကို ပေါင်းထည့်သည်။</translation>
 <translation id="8342727528718219152">အကြောင်းကြားချက်များစွာ ပို့နိုင်သည့် ဝဘ်ဆိုက်များနှင့် ပတ်သက်ပြီး Chrome က အသိပေးပါမည်</translation>
 <translation id="834313815369870491">ဝဘ်ဆိုက်များကို ဘယ်တော့မှ ဘာသာမပြန်ပါနှင့်</translation>

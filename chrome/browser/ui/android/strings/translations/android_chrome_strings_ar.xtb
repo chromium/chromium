@@ -462,6 +462,7 @@
 <translation id="3098745985164956033">‏يتم إرسال بعض الصور إلى Google لتحسين أوصاف الصور.</translation>
 <translation id="3114507951000454849">الاطّلاع على أخبار اليوم <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">الإعلامات</translation>
+<translation id="3131961580615093332">تم تغيير علامة التبويب "<ph name="TAB_NAME" />" من قِبل "<ph name="GIVEN_NAME" />"</translation>
 <translation id="3148237711805373460">الانتقال إلى الإعدادات</translation>
 <translation id="314939179385989105">‏الصفحة الرئيسية لمتصفّح Chrome</translation>
 <translation id="3158667104057012316">جارٍ الترتيب يدويًا</translation>
@@ -639,6 +640,7 @@
 <translation id="4042941173059740150">المتابعة إلى <ph name="SITE_ETLD_PLUS_ONE" /> باستخدام <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="404352903042073578">مجموعة لم تتم تسميتها</translation>
 <translation id="4044708993631234325">بطاقة سفلية</translation>
+<translation id="4045441967987592849">إعادة فتح</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{علامة تبويب عادية واحدة (<ph name="TABS_COUNT_ONE" />) تتضمّن نشاطًا جديدًا في مجموعات علامات التبويب التي تمت مشاركتها}zero{‫<ph name="TABS_COUNT_MANY" /> علامة تبويب عادية تتضمّن نشاطًا جديدًا في مجموعات علامات التبويب التي تمت مشاركتها}two{علامتا تبويب عاديتان (<ph name="TABS_COUNT_MANY" />) تتضمّنان نشاطًا جديدًا في مجموعات علامات التبويب التي تمت مشاركتها}few{‫<ph name="TABS_COUNT_MANY" /> علامات تبويب عادية تتضمّن نشاطًا جديدًا في مجموعات علامات التبويب التي تمت مشاركتها}many{‫<ph name="TABS_COUNT_MANY" /> علامة تبويب عادية تتضمّن نشاطًا جديدًا في مجموعات علامات التبويب التي تمت مشاركتها}other{‫<ph name="TABS_COUNT_MANY" /> علامة تبويب عادية تتضمّن نشاطًا جديدًا في مجموعات علامات التبويب التي تمت مشاركتها}}</translation>
 <translation id="405365679581583349">‏تحديث "خدمات Google Play"</translation>
 <translation id="405399507749852140">يمكنك الحصول على تنبيهات في حال انخفاض السعر على أي موقع إلكتروني</translation>
@@ -846,6 +848,7 @@
 <translation id="4943703118917034429">الواقع الافتراضي</translation>
 <translation id="4943872375798546930">لا نتائج</translation>
 <translation id="4950924971025849764">‏عند تسجيل الدخول إلى حساب Google نفسه على أجهزة أخرى، يمكن لهذه الأجهزة استخدام هذا الهاتف كمفتاح أمان.</translation>
+<translation id="4953833914914492602">لم تعُد مجموعة علامات التبويب "<ph name="TAB_GROUP_NAME" />" متوفّرة</translation>
 <translation id="4957722034734105353">مزيد من المعلومات...</translation>
 <translation id="4961107849584082341">ترجمة هذه الصفحة إلى أي لغة</translation>
 <translation id="4964614743143953889">‏يحذرك Chrome بشأن المواقع الإلكترونية وعمليات التنزيل غير الآمنة</translation>
@@ -959,6 +962,7 @@
 <translation id="5526281268548144413">لا يمكن إغلاق علامات التبويب في نوافذ متعددة</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{قبل دقيقة واحدة}zero{قبل # دقيقة}two{قبل دقيقتَين}few{قبل # دقائق}many{قبل # دقيقة}other{قبل # دقيقة}}</translation>
 <translation id="5548606607480005320">التحقّق من الأمان</translation>
+<translation id="5551564597369878730">تم انضمام "<ph name="GIVEN_NAME" />" إلى مجموعة علامات التبويب "<ph name="TAB_GROUP_NAME" />"</translation>
 <translation id="5554520618550346933">‏عندما تستخدم كلمة مرور، يحذّرك Chrome مما إذا كان قد تم نشرها على الإنترنت. وأثناء هذه العملية، يتم تشفير كلمات المرور وأسماء المستخدمين حتى لا يتمكّن أي طرف آخر من الاطّلاع عليها، بما في ذلك Google.</translation>
 <translation id="5555525474779371165">اختيار حماية "التصفُّح الآمن"</translation>
 <translation id="5556459405103347317">إعادة التحميل</translation>
@@ -1081,6 +1085,7 @@
 <translation id="6085886413119427067">تحديد طريقة الاتصال بمواقع إلكترونية من خلال اتصال آمن</translation>
 <translation id="60923314841986378">عدد الساعات المتبقية: <ph name="HOURS" /></translation>
 <translation id="6095578583683628124">‏إذا كان محرك البحث التلقائي هو Google، ستظهر لك اقتراحات أفضل وأكثر صلة بسياق عمليات البحث التي تجريها.</translation>
+<translation id="610630277578876674">فتح الروابط في الرسائل بسرعة وغير ذلك</translation>
 <translation id="6108923351542677676">الإعداد قيد التقدّم…</translation>
 <translation id="6112702117600201073">يتم الآن إعادة تحميل الصفحة</translation>
 <translation id="6122831415929794347">هل تريد إيقاف "التصفُّح الآمن"؟</translation>
@@ -1247,6 +1252,7 @@
 <translation id="6775840696761158817">عند النقر على شريط العناوين أو مربّع البحث أو الكتابة فيهما، ستظهر لك اقتراحات من محرك البحث التلقائي. يتم إيقاف هذه الاقتراحات في "وضع التصفّح المتخفي".</translation>
 <translation id="6785476624617658922">‏بنود الخدمة الإضافية لكل من متصفّح Google Chrome ونظام التشغيل Chrome</translation>
 <translation id="6795633245022906657">يتيح لك هذا الزر فتح علامة تبويب جديدة بسرعة. ولتعديل هذا الاختصار، انتقِل إلى "الإعدادات".</translation>
+<translation id="679588508577699489">‏جعل Chrome المتصفّح التلقائي</translation>
 <translation id="679956319013005046">‏لضبط الخدمة المفضّلة للملء التلقائي، عليك أولاً إضافة الخدمة في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">سيتم إغلاق النافذة.</translation>
 <translation id="6803791793483522764">مراجعة الإشعارات</translation>
@@ -1620,6 +1626,7 @@
 <translation id="8282297628636750033">تطبيق "المظهر الداكن" على المواقع، إن أمكن ذلك</translation>
 <translation id="8282950411412455249">الانتقال إلى إعدادات الأمان</translation>
 <translation id="829672787777123339">جارٍ الاتصال بجهازك…</translation>
+<translation id="8307517230426267469">تمّت إزالة علامة التبويب "<ph name="TAB_NAME" />" من قِبل "<ph name="GIVEN_NAME" />"</translation>
 <translation id="831192587911042850">تعمل هذه الميزة على إضافة الموقع الإلكتروني الحالي إلى قائمة المواقع الإلكترونية التي تتابعها.</translation>
 <translation id="8342727528718219152">‏سيُعلمك Chrome بالمواقع الإلكترونية التي قد ترسل الكثير من الإشعارات</translation>
 <translation id="834313815369870491">مواقع إلكترونية لا أريد ترجمتها مطلقًا</translation>
@@ -1740,6 +1747,7 @@
 <translation id="8863714995118816041">تم السماح بالأذونات مرة أخرى للموقع الإلكتروني <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">‏بيانات Chrome في حسابك</translation>
 <translation id="8888527824584402177">يتم نقل علامات التبويب التي لم يتم استخدامها لمدة <ph name="DAYS_INACTIVE" /> يوم إلى هذه القائمة<ph name="AUTODELETE_SECTION" />. يمكنك تعديل هذا الإعداد في أي وقت من خلال <ph name="SETTINGS_TITLE" />.</translation>
+<translation id="8890668505403261809">البحث في علامات التبويب في وضع التصفّح المتخفي</translation>
 <translation id="8898822736010347272">‏إرسال عناوين URL الخاصّة ببعض الصفحات التي تزورها، وعدد محدود من معلومات النظام، وبعض أنواع محتوى الصفحات إلى Google، وذلك للمساعدة على اكتشاف التهديدات الجديدة وتوفير الحماية لجميع المستخدمين على الويب</translation>
 <translation id="8909135823018751308">مشاركة…</translation>
 <translation id="8921980840204105660">يمكنك تفعيل المزامنة للحصول على الإشارات المرجعية من أجهزتك الأخرى.</translation>

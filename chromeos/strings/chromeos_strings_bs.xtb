@@ -20,6 +20,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Otkriven je zaštitni zid</translation>
 <translation id="1075811647922107217">Veličina stranice</translation>
+<translation id="108084407137234521">Ne može se sažeti prijepis koji ima manje od <ph name="MIN_WORD_LENGTH" /> riječi</translation>
 <translation id="1082009148392559545">Preuzimanje čuvara ekrana</translation>
 <translation id="1094693127011229778">IP adresa je nedostupna</translation>
 <translation id="1100902271996134409">Kreiranje slika…</translation>
@@ -413,6 +414,7 @@
 <translation id="3031560714565892478">Uređaj je video kamera.</translation>
 <translation id="3042927241478734594">Izaći iz snimanja?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
+<translation id="3055176406666937744">Ne može se sažeti prijepis koji ima više od <ph name="MAX_WORD_LENGTH" /> riječi</translation>
 <translation id="3056720590588772262">Krajnja tačka</translation>
 <translation id="3060579846059757016">Konture</translation>
 <translation id="3061850252076394168">omogućavanje funkcije Odaberite za govor</translation>
@@ -449,6 +451,7 @@
 <translation id="3226657629376379887">Raspored menija radnji</translation>
 <translation id="3227186760713762082">Podijelite vrijednost <ph name="CATEGORY_TEXT" /> s brojem <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">Ponovno pisanje</translation>
+<translation id="3245518008592055173">Ne mogu se izraditi nazivi prijepisa koji ima manje od <ph name="MIN_WORD_LENGTH" /> riječi</translation>
 <translation id="3246869037381808805">Zadaci za štampanje stariji od 1 dana će se ukloniti</translation>
 <translation id="324961752321393509">Administrator ne dozvoljava zatvaranje aplikacije</translation>
 <translation id="3263941347294171263">Iskopčajte uređaj <ph name="DEVICE_NAME" /> i ponovo ga priključite da nastavite postupak ažuriranja</translation>
@@ -609,6 +612,7 @@
 <translation id="409427325554347132">Sačuvaj detalje testa</translation>
 <translation id="409469431304488632">Eksperiment</translation>
 <translation id="4095829376260267438">WPA2 i WPA3</translation>
+<translation id="4105182082354119881">Ne mogu se izraditi nazivi prijepisa koji ima više od <ph name="MAX_WORD_LENGTH" /> riječi</translation>
 <translation id="4110686435123617899">Odaberite album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB dodirna podloga</translation>
 <translation id="4113067922640381334">Sada imate pristup novim <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />pozadinskim slikama<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>

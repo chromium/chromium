@@ -2113,6 +2113,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2460356425461033301">Varnostno kopirajte vsebino brskalnika in jo uporabljajte v poljubni napravi.</translation>
 <translation id="2460482211073772897">V drugih mapah</translation>
 <translation id="2460826998961521840">Za uporabo ključev za dostop, shranjenih v računu Google</translation>
+<translation id="2461045498706592033">Mapa <ph name="LOCAL_FOLDER" /> je shranjena samo v tej napravi. Če ta zaznamek premaknete v mapo <ph name="LOCAL_FOLDER" />, do njega ne boste mogli dostopati v drugih napravah.</translation>
 <translation id="2461550163693930491">Spletnim mestom nista dovoljena pomikanje po deljenih zavihkih in njihova povečava/pomanjšava</translation>
 <translation id="2461593638794842577">To nastavitev lahko izklopite, če želite, da se gesla shranjujejo samo v tej napravi</translation>
 <translation id="2462332841984057083">Steam se že nastavlja. Počakajte, da se nastavitev konča.</translation>
@@ -2366,6 +2367,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2645047101481282803">Napravo upravlja <ph name="PROFILE_NAME" />.</translation>
 <translation id="2645388244376970260">Predvajanje tega zavihka v napravi <ph name="DEVICE_NAME" />.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">Želite shraniti v mapo v računu Google?</translation>
 <translation id="264897126871533291">Protanomalija</translation>
 <translation id="2649045351178520408">Base64 kodiran ASCII, veriga potrdil</translation>
 <translation id="265156376773362237">Standardno vnaprejšnje nalaganje</translation>
@@ -2554,6 +2556,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2773288106548584039">Podpora za starejše brskalnike</translation>
 <translation id="2773621783913034737">Zavihke spremeni v neaktivne</translation>
 <translation id="2774876860084746535">Intelektualno</translation>
+<translation id="2775047284666165174">Mapa <ph name="LOCAL_FOLDER" /> je shranjena samo v tej napravi. Če jo premaknete v mapo <ph name="LOCAL_FOLDER" />, do nje ne boste mogli dostopati v drugih napravah.</translation>
 <translation id="2775104091073479743">Urejanje prstnih odtisov</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{Razširitev »<ph name="EXTENSION" />« je dostopala do naprav}=1{Razširitev »<ph name="EXTENSION" />« dostopa do naprave {0}}one{Razširitev »<ph name="EXTENSION" />« dostopa do {0} naprave}two{Razširitev »<ph name="EXTENSION" />« dostopa do {0} naprav}few{Razširitev »<ph name="EXTENSION" />« dostopa do {0} naprav}other{Razširitev »<ph name="EXTENSION" />« dostopa do {0} naprav}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Odstranitev 1 nepodprte aplikacije}one{Odstranitev # nepodprte aplikacije}two{Odstranitev # nepodprtih aplikacij}few{Odstranitev # nepodprtih aplikacij}other{Odstranitev # nepodprtih aplikacij}}</translation>
@@ -4955,6 +4958,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4527929807707405172">Omogoči obratno pomikanje. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Predlog prevoda</translation>
 <translation id="4528638190900283934">Če želite dodatne funkcije, se prijavite.</translation>
+<translation id="4529052777398765334">Ta mapa je shranjena samo v tej napravi. Če jo shranite v mapo <ph name="ACCOUNT_FOLDER" />, bo shranjena tudi v vašem računu.</translation>
 <translation id="4529455689802245339">Samodejni podnapisi v Chromu morda ne bodo delovali</translation>
 <translation id="4531451811601110068">Lahko poskusite znova ali se za pomoč obrnete na skrbnika</translation>
 <translation id="4531924570968473143">Koga želite dodati tej napravi <ph name="DEVICE_TYPE" />?</translation>
@@ -5541,6 +5545,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4955707703665801001">Vidnost funkcije <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Izberite kodo PIN</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">Želite shraniti v mapo samo v tej napravi?</translation>
 <translation id="4959262764292427323">Gesla so shranjena v Google Računu, da jih lahko uporabite v kateri koli napravi</translation>
 <translation id="4960020053211143927">Nekatere aplikacije ne podpirajo tega</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -8474,6 +8479,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="711840821796638741">Prikaz upravljanih zaznamkov</translation>
 <translation id="711985611146095797">Ta stran vam omogoča upravljanje računov Google, v katere ste prijavljeni. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Če povezava z omrežjem VPN ni vzpostavljena, bosta blokirana brskalnik Chrome in promet v Androidu.</translation>
+<translation id="7120904433567247946">Ta zaznamek je shranjen samo v tej napravi. Če ga shranite v mapo <ph name="ACCOUNT_FOLDER" />, bo shranjen tudi v vašem računu.</translation>
 <translation id="7121438501124788993">Način za razvijalce</translation>
 <translation id="7121728544325372695">Pametni pomišljaji</translation>
 <translation id="7122605570852873914">Vseeno odjavi</translation>
@@ -8500,6 +8506,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7139627972753429585"><ph name="APP_NAME" /> uporablja vaš mikrofon.</translation>
 <translation id="7140785920919278717">Namestitveni program za aplikacije</translation>
 <translation id="7141105143012495934">Prijava ni uspela, ker ni bilo mogoče pridobiti podrobnosti o računu. Obrnite se na skrbnika in poskusite znova.</translation>
+<translation id="7141470099673912333">Prenos vsebine</translation>
 <translation id="7141844554192012199">Pregled</translation>
 <translation id="714301620504747562">Brskanje in iskanje sta hitrejša od običajnega vnaprejšnjega nalaganja</translation>
 <translation id="7143207342074048698">Povezovanje</translation>

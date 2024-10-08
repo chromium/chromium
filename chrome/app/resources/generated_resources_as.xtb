@@ -2108,6 +2108,7 @@
 <translation id="2460356425461033301">আপোনাৰ ব্ৰাউজাৰৰ বস্তুবোৰৰ বেক আপ লওক আৰু সেইবোৰ যিকোনো ডিভাইচত ব্যৱহাৰ কৰক</translation>
 <translation id="2460482211073772897">অন্য ফ'ল্ডাৰত</translation>
 <translation id="2460826998961521840">আপোনাৰ Google একাউণ্টত ছেভ হৈ থকা পাছকী ব্যৱহাৰ কৰিবলৈ</translation>
+<translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> কেৱল এই ডিভাইচটোতহে ছেভ কৰা হৈছে। যদি আপুনি এই বুকমাৰ্কটো <ph name="LOCAL_FOLDER" />লৈ স্থানান্তৰ কৰে, তেন্তে আপুনি আৰু এইটো আপোনাৰ আন ডিভাইচসমূহত নাপাব।</translation>
 <translation id="2461550163693930491">ছাইটকসমূহক শ্বেয়াৰ কৰা টেবসমূহ স্ক্ৰল আৰু জুম কৰিবলৈ অনুমতি নিদিব</translation>
 <translation id="2461593638794842577">আপোনাৰ পাছৱৰ্ডসমূহ কেৱল এই ডিভাইচটোতহে ছেভ কৰিবলৈ আপুনি এই ছেটিংটো অফ কৰিব পাৰে</translation>
 <translation id="2462332841984057083">ইতিমধ্যে Steamৰ ছেট আপ কৰি থকা হৈছে। ছেটআপ সম্পূৰ্ণ হোৱালৈকে অপেক্ষা কৰক।</translation>
@@ -2361,6 +2362,7 @@
 <translation id="2645047101481282803">আপোনাৰ ডিভাইচটো <ph name="PROFILE_NAME" />এ পৰিচালনা কৰে</translation>
 <translation id="2645388244376970260"><ph name="DEVICE_NAME" />লৈ এই টেবটো কাষ্ট কৰি থকা হৈছে</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">আপোনাৰ Google একাউণ্টৰ এটা ফ’ল্ডাৰত ছেভ কৰিবনে?</translation>
 <translation id="264897126871533291">প্ৰ’টান’মেলী</translation>
 <translation id="2649045351178520408">Base64-এনক’ড কৰা ASCII, প্ৰমাণপত্ৰৰ চেইন</translation>
 <translation id="265156376773362237">মান্য আগতীয়া ল’ডিং</translation>
@@ -2549,6 +2551,7 @@
 <translation id="2773288106548584039">লিগেচি ব্ৰাউজাৰৰ ক্ষেত্ৰত সহায়</translation>
 <translation id="2773621783913034737">টেবসমূহ নিস্ক্ৰিয় কৰক</translation>
 <translation id="2774876860084746535">বৌদ্ধিক</translation>
+<translation id="2775047284666165174"><ph name="LOCAL_FOLDER" /> কেৱল এই ডিভাইচটোতহে ছেভ কৰা হৈছে। যদি আপুনি এই ফ’ল্ডাৰটো <ph name="LOCAL_FOLDER" />লৈ স্থানান্তৰ কৰে, তেন্তে আপুনি আৰু এইটো আপোনাৰ আন ডিভাইচসমূহত নাপাব।</translation>
 <translation id="2775104091073479743">ফিংগাৰপ্ৰিণ্ট সম্পাদনা কৰক</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{এক্সটেনশ্বন "<ph name="EXTENSION" />"এ ডিভাইচসমূহ এক্সেছ কৰি আছে}=1{এক্সটেনশ্বন "<ph name="EXTENSION" />"এ {0} টা ডিভাইচ এক্সেছ কৰি আছে}one{এক্সটেনশ্বন "<ph name="EXTENSION" />"এ {0} টা ডিভাইচ এক্সেছ কৰি আছে}other{এক্সটেনশ্বন "<ph name="EXTENSION" />"এ {0} টা ডিভাইচ এক্সেছ কৰি আছে}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{১ টা অসমৰ্থিত এপ্ আঁতৰাওক}one{# টা অসমৰ্থিত এপ্ আঁতৰাওক}other{# টা অসমৰ্থিত এপ্ আঁতৰাওক}}</translation>
@@ -4949,6 +4952,7 @@
 <translation id="4527929807707405172">ওলোটাকৈ স্ক্ৰ’ল কৰাৰ সুবিধাটো সক্ষম কৰক। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">অনুবাদৰ পৰামৰ্শ</translation>
 <translation id="4528638190900283934">অতিৰিক্ত সুবিধাৰ বাবে ছাইন ইন কৰক</translation>
+<translation id="4529052777398765334">এই ফ’ল্ডাৰটো কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে। যদি আপুনি এইটো <ph name="ACCOUNT_FOLDER" />ত ছেভ কৰে, তেন্তে এই ফ’ল্ডাৰটো অপোনাৰ একাউণ্টটো ছেভ কৰা হ’ব।</translation>
 <translation id="4529455689802245339">Chromeৰ লাইভ কেপশ্বন সুবিধাটোৱে কাম নকৰিবও পাৰে</translation>
 <translation id="4531451811601110068">আপুনি পুনৰ চেষ্টা কৰিব পাৰে বা আপোনাৰ প্ৰশাসক বা সহায়ৰ সৈতে যোগাযোগ কৰিব পাৰে</translation>
 <translation id="4531924570968473143">আপুনি এইটো <ph name="DEVICE_TYPE" />ত কাক যোগ দিব বিচাৰে?</translation>
@@ -5535,6 +5539,7 @@
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> দৃশ্যমানতা</translation>
 <translation id="4955710816792587366">আপোনাৰ পিন বাছনি কৰক</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">কেৱল এই ডিভাইচটোৰ এটা ফ’ল্ডাৰত ছেভ কৰিবনে?</translation>
 <translation id="4959262764292427323">আপুনি সকলো ডিভাইচতে ব্যৱহাৰ কৰিব পৰাকৈ নিজৰ Google একাউণ্টত পাছৱর্ডসমূহ ছেভ কৰা হয়</translation>
 <translation id="4960020053211143927">কিছুমান এপে সমৰ্থন নকৰে</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8461,6 +8466,7 @@
 <translation id="711840821796638741">পৰিচালিত বুকমাৰ্কবোৰ দেখুৱাওক</translation>
 <translation id="711985611146095797">এই পৃষ্ঠাখনে আপোনাক ছাইন ইন কৰি থোৱা Google একাউণ্টসমূহ পৰিচালনা কৰিবলৈ দিয়ে। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">ভিপিএন সংযোগ নকৰা পৰ্যন্ত Chrome ব্ৰাউজাৰ আৰু Android ট্ৰেফিক অৱৰোধ কৰা হ’ব</translation>
+<translation id="7120904433567247946">এই বুকমাৰ্কটো কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে। যদি আপুনি এইটো <ph name="ACCOUNT_FOLDER" />ত ছেভ কৰে, তেন্তে এই বুকমাৰ্কটো অপোনাৰ একাউণ্টটো ছেভ কৰা হ’ব।</translation>
 <translation id="7121438501124788993">বিকাশকর্তাৰ ম’ড</translation>
 <translation id="7121728544325372695">স্মাৰ্ট ডেশ্বসমূহ</translation>
 <translation id="7122605570852873914">যিহ’লেও ছাইন আউট কৰক</translation>
@@ -8487,6 +8493,7 @@
 <translation id="7139627972753429585"><ph name="APP_NAME" />এ আপোনাৰ মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰি আছে</translation>
 <translation id="7140785920919278717">এপ্লিকেশ্বন ইনষ্টলাৰ</translation>
 <translation id="7141105143012495934">আপোনাৰ একাউণ্টৰ সবিশেষ পুনৰুদ্ধাৰ কৰিব নোৱাৰাৰ বাবে ছাইন ইন কৰিব পৰা নগ’ল। অনুগ্ৰহ কৰি আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক বা আকৌ চেষ্টা কৰক।</translation>
+<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7141844554192012199">চেকআপ</translation>
 <translation id="714301620504747562">সাধাৰণভাৱে আগতীয়াকৈ ল’ড হোৱাতকৈ ব্ৰাউজ আৰু সন্ধান কৰাটো অধিক ক্ষিপ্ৰ</translation>
 <translation id="7143207342074048698">সংযোগ হৈছে</translation>

@@ -20,6 +20,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Zaznan je požarni zid</translation>
 <translation id="1075811647922107217">Velikost strani</translation>
+<translation id="108084407137234521">Ni mogoče povzeti prepisa, krajšega od toliko besed: <ph name="MIN_WORD_LENGTH" /></translation>
 <translation id="1082009148392559545">Prenos ohranjevalnika zaslona</translation>
 <translation id="1094693127011229778">Naslov IP ni na voljo.</translation>
 <translation id="1100902271996134409">Ustvarjanje slik …</translation>
@@ -413,6 +414,7 @@
 <translation id="3031560714565892478">Naprava je videokamera.</translation>
 <translation id="3042927241478734594">Želite zapreti posnetek?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
+<translation id="3055176406666937744">Ni mogoče povzeti prepisa, daljšega od toliko besed: <ph name="MAX_WORD_LENGTH" /></translation>
 <translation id="3056720590588772262">Končna točka</translation>
 <translation id="3060579846059757016">Orisi</translation>
 <translation id="3061850252076394168">omogočanje storitve Izberite in poslušajte</translation>
@@ -449,6 +451,7 @@
 <translation id="3226657629376379887">Meni z dejanji za postavitev</translation>
 <translation id="3227186760713762082">Deljenje vrednosti kategorije »<ph name="CATEGORY_TEXT" />« s/z: <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">Preoblikovanje</translation>
+<translation id="3245518008592055173">Ni mogoče ustvariti imen za prepis, krajši od toliko besed: <ph name="MIN_WORD_LENGTH" /></translation>
 <translation id="3246869037381808805">Izbrisana bodo tiskalna opravila, starejša od 1 dneva</translation>
 <translation id="324961752321393509">Skrbnik ne dovoli zapiranja te aplikacije</translation>
 <translation id="3263941347294171263">Če želite nadaljevati postopek posodobitve, odklopite in znova priklopite napravo <ph name="DEVICE_NAME" /></translation>
@@ -609,6 +612,7 @@
 <translation id="409427325554347132">Shrani podrobnosti preizkusa</translation>
 <translation id="409469431304488632">Preizkus</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
+<translation id="4105182082354119881">Ni mogoče ustvariti imen za prepis, daljši od toliko besed: <ph name="MAX_WORD_LENGTH" /></translation>
 <translation id="4110686435123617899">Izberite album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Sledilna ploščica USB</translation>
 <translation id="4113067922640381334">Zdaj imate dostop do novih <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />zaslonskih ozadij<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>

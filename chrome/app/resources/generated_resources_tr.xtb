@@ -1422,7 +1422,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1989903373608997757">Her zaman kullan</translation>
 <translation id="1990046457226896323">Canlı Altyazı dosyaları indirildi</translation>
 <translation id="1990727803345673966">Yedeklenen Linux dosyalarınız ve uygulamalarınız geri yükleniyor</translation>
-<translation id="199191324030140441">Rahatsız Etmeyin'i kapat</translation>
+<translation id="199191324030140441">Rahatsız Etmeyin özelliğini kapat</translation>
 <translation id="1992397118740194946">Ayarlanmadı</translation>
 <translation id="1994173015038366702">Site URL'si</translation>
 <translation id="1995916364271252349">Sitelerin hangi bilgileri kullanabileceğini ve gösterebileceğini kontrol eder (konum, kamera, pop-up'lar ve diğerleri)</translation>
@@ -8472,6 +8472,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7139627972753429585"><ph name="APP_NAME" /> mikrofonunuzu kullanıyor</translation>
 <translation id="7140785920919278717">Uygulama Yükleyici</translation>
 <translation id="7141105143012495934">Hesap ayrıntılarınız alınamadığı için oturum açma işlemi başarısız oldu. Lütfen yöneticinizle iletişime geçin veya tekrar deneyin.</translation>
+<translation id="7141470099673912333">İçerik Aktarımı</translation>
 <translation id="7141844554192012199">Kontrol</translation>
 <translation id="714301620504747562">Göz atma ve arama, standart önceden yükleme işleminden daha hızlıdır.</translation>
 <translation id="7143207342074048698">Bağlanıyor</translation>

@@ -782,17 +782,6 @@ Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden 
       Wenn die Richtlinie nicht konfiguriert ist, erhalten Nutzer eine Warnung und keinen Fehler, wenn sie eine schwache PIN festlegen.</translation>
 <translation id="1597684038583138808">Definition über „Schnellinfo“ aktivieren</translation>
 <translation id="1598258379228800626">„Objekt mit Tastaturfokus hervorheben“ auf dem Anmeldebildschirm aktivieren</translation>
-<translation id="1599334938346636409">Über diese Richtlinie wird ein benutzerdefiniertes Label gesteuert, mit dem identifiziert werden kann, wer ein Profil oder einen Browser verwaltet hat.
-
-Das Label wird in der Symbolleiste angezeigt.
-
-Wenn diese Richtlinie auf Browserebene konfiguriert ist, zeigen alle Profile das Label in der Symbolleiste an.
-
-Wenn diese Richtlinie auf Profilebene konfiguriert ist, wird das Label nur für dieses Profil angezeigt.
-
-Im Gegensatz zu anderen Richtlinien hat hier die Richtlinie, wenn sie auf Profilebene konfiguriert ist, Vorrang vor auf Browserebene konfigurierten Richtlinien.
-
-Das benutzerdefinierte Label wird nicht übersetzt.</translation>
 <translation id="1599424828227887013">Website-Isolierung für angegebene Ursprünge auf Android-Geräten aktivieren</translation>
 <translation id="159946228300522107">Wenn für diese Richtlinie "True" festgelegt ist, maximiert Chrome beim ersten Start das erste angezeigte Fenster.
 
@@ -5773,17 +5762,6 @@ Ab Version 92 von <ph name="PRODUCT_NAME" /> wird diese Richtlinie auch im moni
       Ist für diese Richtlinie eine Liste mit IDs für Eingabemethoden festgelegt, werden die entsprechenden Eingabemethoden auf der Anmeldeseite bereitgestellt. Das oberste Listenelement ist vorab ausgewählt. Während bestimmte Nutzerdaten auf der Anmeldeseite markiert sind, wird zusätzlich zu den von dieser Richtlinie bereitgestellten Eingabemethoden auch die vom Nutzer zuletzt verwendete angeboten. Ist diese Richtlinie nicht konfiguriert, werden die Eingabemethoden auf der Anmeldeseite von der Sprache der Anmeldeseite abgeleitet. Werte, die keine gültigen IDs für Eingabemethoden sind, werden ignoriert.</translation>
 <translation id="5406626703145660021">Post-Quanten-Algorithmus für Schlüsselvereinbarungen mit TLS für Geräte aktivieren</translation>
 <translation id="5407008856008996384">Zugriff auf CUPS-Drucker zulassen</translation>
-<translation id="5412932514296195873">Die KI‑basierte Verlaufssuche ist eine Funktion, mit der Nutzer ihren Browserverlauf auch anhand von Seiteninhalten durchsuchen können statt nur anhand von Seitentitel und URL.
-
-„0“ = Die Funktion wird für Nutzer aktiviert und es werden relevante Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben und Quellmaterialien sein. Die Funktion wird möglicherweise manuell überprüft. Dies dient dann ausschließlich dazu, KI‑Modelle zu verbessern. „0“ ist der Standardwert, sofern unten nicht anders angegeben.
-
-„1“ = Die Funktion wird für Nutzer aktiviert, aber es werden keine Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, und für Konten einer Bildungseinrichtung, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
-
-„2“ = Die Funktion wird deaktiviert.
-
-Wenn die Richtlinie nicht konfiguriert ist, ist die Standardeinstellung für normale Nutzer „0“ und für verwaltete Nutzer „2“ bei <ph name="PRODUCT_OS_NAME" />.
-
-Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5413051574966911176">Benutzeroberflächen im Zusammenhang mit der Verbindung auf dem Remote-Host-Desktop während einer aktiven Verbindung deaktivieren</translation>
 <translation id="5415713057512333739">URL der herunterzuladenden Daten.</translation>
 <translation id="5416263061774624216">SiteList-Richtlinie in Internet Explorer nicht als Quelle für Regeln verwenden</translation>
@@ -6665,21 +6643,6 @@ Diese Richtlinie wird nicht angewendet, wenn die Richtlinie <ph name="SCREENSAVE
 Wenn diese Richtlinie nicht konfiguriert ist oder die Liste keine gültigen Bildverweise enthält, wird der Bildschirmschoner auf dem Sperrbildschirm unabhängig von dem in der Richtlinie <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> festgelegten Wert nicht angezeigt.</translation>
 <translation id="6135398260575578389">Safe Browsing ist im erweiterten Modus aktiv. Dieser bietet einen besseren Schutz. Es müssen jedoch mehr Browserdaten mit Google geteilt werden.</translation>
 <translation id="6135552820180449830">Crosh (wird seit Version 99 unterstützt)</translation>
-<translation id="6136179371737299503">Diese Richtlinie auf Geräteebene bestimmt, ob <ph name="PRODUCT_OS_NAME" /> einen Post-Quanten-Algorithmus für Schlüsselvereinbarungen in TLS anbietet. In zukünftigen Versionen wird der Algorithmus ML‑KEM, ein Post-Quanten-Standard des NIST, sein. Ursprünglich war der Algorithmus Kyber, eine frühere Entwurfsversion des Standards. So können Server, die dies unterstützen, Nutzertraffic vor der späteren Entschlüsselung durch Quantencomputer schützen.
-
-Wenn diese Richtlinie aktiviert ist, bietet <ph name="PRODUCT_OS_NAME" /> in TLS‑Verbindungen eine Post-Quanten-Schlüsselvereinbarung an. Nutzertraffic ist dann bei der Kommunikation mit kompatiblen Servern vor Quantencomputern geschützt.
-
-Ist die Richtlinie deaktiviert, bietet <ph name="PRODUCT_OS_NAME" /> in TLS‑Verbindungen keine Post-Quanten-Schlüsselvereinbarung an. Der Nutzertraffic ist dann nicht vor Quantencomputern geschützt.
-
-Wenn diese Richtlinie nicht konfiguriert ist, folgt <ph name="PRODUCT_OS_NAME" /> dem standardmäßigen Roll-out-Prozess für das Anbieten einer Post-Quanten-Schlüsselvereinbarung.
-
-Das Anbieten von Kyber ist abwärtskompatibel. Bei vorhandenen TLS‑Servern und Netzwerk-Middleware wird die neue Option voraussichtlich ignoriert und es werden die früheren Optionen ausgewählt.
-
-Auf Geräten, auf denen TLS nicht korrekt implementiert ist, kann eine Fehlfunktion auftreten, wenn die neue Option angeboten wird. Beispielsweise kann bei unbekannten Optionen oder den resultierenden umfangreicheren Nachrichten die Verbindung dieser Geräte unterbrochen werden. Solche Geräte sind nicht post-quanten-kompatibel und beeinträchtigen die Post-Quanten-Umstellung von Unternehmen. Administratoren sollten in solchen Fällen den Anbieter fragen, wie sich das Problem beheben lässt.
-
-Die Richtlinie ist eine vorübergehende Maßnahme. Sie wird irgendwann nach Version 141 von <ph name="PRODUCT_OS_NAME" /> entfernt. Sie kann aktiviert werden, um zu prüfen, ob es Probleme gibt, und lässt sich zum Beheben etwaiger Probleme deaktivieren.
-
-Wenn sowohl diese Richtlinie als auch die Richtlinie „PostQuantumKeyAgreementEnabled“ festgelegt sind, hat diese Richtlinie Vorrang.</translation>
 <translation id="6138636318340561140">Safe Browsing-Status von URLs in Echtzeit prüfen</translation>
 <translation id="6141402445226505817">Immer die ungefähre Erkennung der Zeitzone verwenden</translation>
 <translation id="6141944295566709543">Zulassen, dass Nutzer Medien abspielen, wenn das Gerät gesperrt ist</translation>
@@ -10042,19 +10005,6 @@ Wenn JavaScript-Optimierungen deaktiviert sind (indem du den Wert dieser Richtli
 Die Richtlinie kann für bestimmte URL‑Muster überschrieben werden. Hierfür stehen die Richtlinien „<ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" />“ und „<ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />“ zur Verfügung.
 
 Ist diese Richtlinie nicht konfiguriert, sind JavaScript-Optimierungen aktiviert.</translation>
-<translation id="8670585636650044874">Diese Richtlinie bestimmt, ob <ph name="PRODUCT_NAME" /> einen Post-Quanten-Algorithmus für Schlüsselvereinbarungen in TLS anbietet. In zukünftigen Versionen wird der Algorithmus ML‑KEM, ein Post-Quanten-Standard des NIST, sein. Ursprünglich war der Algorithmus Kyber, eine frühere Entwurfsversion des Standards. So können Server, die dies unterstützen, Nutzertraffic vor der späteren Entschlüsselung durch Quantencomputer schützen.
-
-Wenn diese Richtlinie aktiviert ist, bietet <ph name="PRODUCT_NAME" /> in TLS‑Verbindungen eine Post-Quanten-Schlüsselvereinbarung an. Nutzertraffic ist dann bei der Kommunikation mit kompatiblen Servern vor Quantencomputern geschützt.
-
-Ist die Richtlinie deaktiviert, bietet <ph name="PRODUCT_NAME" /> in TLS‑Verbindungen keine Post-Quanten-Schlüsselvereinbarung an. Der Nutzertraffic ist dann nicht vor Quantencomputern geschützt.
-
-Wenn diese Richtlinie nicht konfiguriert ist, folgt <ph name="PRODUCT_NAME" /> dem standardmäßigen Roll-out-Prozess für das Anbieten einer Post-Quanten-Schlüsselvereinbarung.
-
-Das Anbieten eines Post-Quanten-Algorithmus für Schlüsselvereinbarungen ist abwärtskompatibel. Bei vorhandenen TLS‑Servern und Netzwerk-Middleware wird die neue Option voraussichtlich ignoriert und es werden die früheren Optionen ausgewählt.
-
-Auf Geräten, auf denen TLS nicht korrekt implementiert ist, kann eine Fehlfunktion auftreten, wenn die neue Option angeboten wird. Beispielsweise kann bei unbekannten Optionen oder den resultierenden umfangreicheren Nachrichten die Verbindung dieser Geräte unterbrochen werden. Solche Geräte sind nicht post-quanten-kompatibel und beeinträchtigen die Post-Quanten-Umstellung von Unternehmen. Administratoren sollten in solchen Fällen den Anbieter fragen, wie sich das Problem beheben lässt.
-
-Die Richtlinie ist eine vorübergehende Maßnahme. Sie wird irgendwann nach Version 141 von <ph name="PRODUCT_NAME" /> entfernt. Sie kann aktiviert werden, um zu prüfen, ob es Probleme gibt, und lässt sich zum Beheben etwaiger Probleme deaktivieren.</translation>
 <translation id="8671119576957984818">Desktop-Freigabe-Hub aktivieren</translation>
 <translation id="8671193325113134911">Strikte MIME-Typprüfung für Worker-Skripts aktivieren</translation>
 <translation id="8671303329680827168">Diese Richtlinie wurde eingestellt. Bitte verwende stattdessen die Richtlinie „<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />“.</translation>

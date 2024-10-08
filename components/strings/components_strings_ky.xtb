@@ -1743,6 +1743,7 @@
 <translation id="4152318981910038897">{COUNT,plural, =1{1-бет}other{{COUNT}-бет}}</translation>
 <translation id="4154277373259957087">Эми Chrome төлөм ыкмаларын толтуруудан мурун сиз экениңизди текшерет. Муну каалаган убакта <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> бөлүмүнөн өзгөртө аласыз.</translation>
 <translation id="4159784952369912983">Кызгылт көгүш</translation>
+<translation id="4165422751765527461">Жардам борборунун макаласы жаңы өтмөктө ачылат</translation>
 <translation id="4165986682804962316">Сайт параметрлери</translation>
 <translation id="4169535189173047238">Жок</translation>
 <translation id="4171400957073367226">Текшерүү колтамгасы начар</translation>
@@ -2903,6 +2904,7 @@
 <translation id="6306713302480826305">Бул дарек аккаунтка кирип турган ушул жана башка түзмөктөрдөн өчүрүлөт</translation>
 <translation id="6307968763353904914">Азырынча банк бул төлөм ыкмасы үчүн виртуалдык карталарды сунуштабайт, бирок <ph name="CARD_LABEL" /> картаңызды Интернетте төлөө үчүн колдоно берсеңиз болот.</translation>
 <translation id="6311410654831092784">Картон</translation>
+<translation id="6311642842034740437">Аталган жер</translation>
 <translation id="6312113039770857350">Веб-баракча жеткиликтүү эмес</translation>
 <translation id="6316110367871394043">Файлды <ph name="CLOUD_PROVIDER" /> кызматына жүктөө тындырылды</translation>
 <translation id="6316723751983724988">Жаңы: Chrome үчүн Family Link тандоолору бул жерде колдонулат</translation>

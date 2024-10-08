@@ -460,6 +460,7 @@
 <translation id="3098745985164956033">ზოგიერთი სურათი გაეგზავნება Google-ს, უკეთესი აღწერილობები რომ შემოგთავაზოთ</translation>
 <translation id="3114507951000454849">გაეცანით დღის სიახლეებს <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">განცხადებები</translation>
+<translation id="3131961580615093332"><ph name="GIVEN_NAME" />-მა შეცვალა ჩანართი „<ph name="TAB_NAME" />“</translation>
 <translation id="3148237711805373460">გადასვლა</translation>
 <translation id="314939179385989105">Chrome-ის მთავარი გვერდი</translation>
 <translation id="3158667104057012316">ხელით არჩეული მიმდევრობით დალაგება</translation>
@@ -637,6 +638,7 @@
 <translation id="4042941173059740150">გადადით <ph name="SITE_ETLD_PLUS_ONE" />-ზე <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ით</translation>
 <translation id="404352903042073578">უსახელო ჯგუფი</translation>
 <translation id="4044708993631234325">ქვედა ფურცელი</translation>
+<translation id="4045441967987592849">ხელახლა გახსნა</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{ახალი აქტივობის მქონე <ph name="TABS_COUNT_ONE" /> სტანდარტული ჩანართი ჩანართების გაზიარებულ ჯგუფებში}other{ახალი აქტივობის მქონე <ph name="TABS_COUNT_MANY" /> სტანდარტული ჩანართი ჩანართების გაზიარებულ ჯგუფებში}}</translation>
 <translation id="405365679581583349">განაახლეთ Google Play Services</translation>
 <translation id="405399507749852140">მიიღეთ გაფრთხილებები, როცა ფასი დაიკლებს რომელიმე საიტზე</translation>
@@ -844,6 +846,7 @@
 <translation id="4943703118917034429">ვირტუალური რეალობა</translation>
 <translation id="4943872375798546930">შედეგები არ არის</translation>
 <translation id="4950924971025849764">თუ ერთსა და იმავე Google ანგარიშში იქნებით შესული, სხვა მოწყობილობებიდან შესაძლებელი იქნება ამ ტელეფონის გამოყენება უსაფრთხოების გასაღების სახით.</translation>
+<translation id="4953833914914492602">ჩანართების ჯგუფი „<ph name="TAB_GROUP_NAME" />“ აღარ არის ხელმისაწვდომი.</translation>
 <translation id="4957722034734105353">შეიტყვეთ მეტი…</translation>
 <translation id="4961107849584082341">თარგმნეთ ეს გვერდი ნებისმიერ ენაზე</translation>
 <translation id="4964614743143953889">Chrome გაგაფრთხილებთ არაუსაფრთხო საიტებისა და ჩამოტვირთვების შესახებ</translation>
@@ -957,6 +960,7 @@
 <translation id="5526281268548144413">სხვადასხვა ფანჯრებში დახურვა შეუძლებელია</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# წუთის წინ}other{# წუთის წინ}}</translation>
 <translation id="5548606607480005320">უსაფრთხოების შემოწმება</translation>
+<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> შეუერთდა ჩანართების ჯგუფს „<ph name="TAB_GROUP_NAME" />“</translation>
 <translation id="5554520618550346933">პაროლის გამოყენებისას Chrome გაგაფრთხილებთ ხოლმე, თუ აღმოჩნდება, რომ ის ონლაინ გამოქვეყნდა. აღნიშნული ქმედებისას თქვენი პაროლები და მომხმარებლის სახელები დაშიფრული იქნება, რაც ნიშნავს, რომ მათ ვერავინ (მათ შორის, ვერც Google) წაიკითხავს.</translation>
 <translation id="5555525474779371165">აირჩიეთ სასურველი Safe Browsing-ის დაცვის დონე</translation>
 <translation id="5556459405103347317">ხელახლა ჩატვირთვა</translation>
@@ -1618,6 +1622,7 @@
 <translation id="8282297628636750033">საიტებზე მუქი თემის გამოყენება (შეძლებისდაგვარად)</translation>
 <translation id="8282950411412455249">უსაფრთხოების პარამეტრებზე გადასვლა</translation>
 <translation id="829672787777123339">მიმდინარეობს თქვენს მოწყობილობასთან დაკავშირება…</translation>
+<translation id="8307517230426267469"><ph name="GIVEN_NAME" />-მა ამოშალა „<ph name="TAB_NAME" />“</translation>
 <translation id="831192587911042850">დაამატებს ამჟამინდელ ვებსაიტს თქვენ მიერ თვალმიდევნებული ვებსაიტების სიას.</translation>
 <translation id="8342727528718219152">Chrome გაცნობებთ იმ საიტების შესახებ, რომლებიც მეტისმეტად ბევრ შეტყობინებას გიგზავნით</translation>
 <translation id="834313815369870491">არასოდეს ითარგმნოს საიტები</translation>

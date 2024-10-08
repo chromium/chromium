@@ -1702,6 +1702,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2184515124301515068">Cho phép Chrome chọn thời điểm trang web có thể phát âm thanh (khuyên dùng)</translation>
 <translation id="2186206192313702726">Google Ống kính</translation>
 <translation id="2186711480981247270">Trang được chia sẻ từ một thiết bị khác</translation>
+<translation id="2187569197737151508">Nhấn phím esc 5 lần để bật lại</translation>
 <translation id="2187675480456493911">Đã đồng bộ hóa với các thiết bị khác trên tài khoản của bạn. Các tùy chọn cài đặt do những người dùng khác sửa đổi sẽ không được đồng bộ hóa. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Lỗi nhập chứng chỉ máy chủ</translation>
 <translation id="2187906491731510095">Đã cập nhật tiện ích</translation>
@@ -2110,6 +2111,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2460356425461033301">Sao lưu và sử dụng dữ liệu trình duyệt trên mọi thiết bị</translation>
 <translation id="2460482211073772897">Trong các thư mục khác</translation>
 <translation id="2460826998961521840">Để dùng khoá truy cập đã lưu trong Tài khoản Google của bạn</translation>
+<translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> chỉ được lưu vào thiết bị này. Nếu chuyển dấu trang này sang <ph name="LOCAL_FOLDER" />, bạn sẽ không còn thấy dấu trang này trên các thiết bị khác của mình.</translation>
 <translation id="2461550163693930491">Không cho phép các trang web cuộn và thu phóng các thẻ được chia sẻ</translation>
 <translation id="2461593638794842577">Bạn có thể tắt chế độ cài đặt này nếu chỉ muốn lưu mật khẩu trên thiết bị này</translation>
 <translation id="2462332841984057083">Steam đang được thiết lập. Vui lòng chờ quá trình thiết lập hoàn tất.</translation>
@@ -2363,6 +2365,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2645047101481282803">Thiết bị của bạn do <ph name="PROFILE_NAME" /> quản lý</translation>
 <translation id="2645388244376970260">Đang truyền thẻ này tới <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">Lưu vào một thư mục trong Tài khoản Google của bạn?</translation>
 <translation id="264897126871533291">Mù màu đỏ nhẹ</translation>
 <translation id="2649045351178520408">ASCII được mã hóa base64, chuỗi chứng chỉ</translation>
 <translation id="265156376773362237">Tải trước ở chế độ chuẩn</translation>
@@ -2551,6 +2554,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2773288106548584039">Hỗ trợ trình duyệt cũ</translation>
 <translation id="2773621783913034737">Dừng hoạt động của thẻ</translation>
 <translation id="2774876860084746535">Giàu trí tuệ</translation>
+<translation id="2775047284666165174"><ph name="LOCAL_FOLDER" /> chỉ được lưu vào thiết bị này. Nếu chuyển thư mục này sang <ph name="LOCAL_FOLDER" />, bạn sẽ không còn thấy thư mục này trên các thiết bị khác của mình.</translation>
 <translation id="2775104091073479743">Chỉnh sửa vân tay</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{Tiện ích "<ph name="EXTENSION" />" đã truy cập vào các thiết bị}=1{Tiện ích "<ph name="EXTENSION" />" đang truy cập vào {0} thiết bị}other{Tiện ích "<ph name="EXTENSION" />" đang truy cập vào {0} thiết bị}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Xóa 1 ứng dụng không được hỗ trợ}other{Xóa # ứng dụng không được hỗ trợ}}</translation>
@@ -2739,6 +2743,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2908122561561557160">Mở tệp Word, Excel và PowerPoint</translation>
 <translation id="2908162660801918428">Thêm thư viện của phương tiện theo thư mục</translation>
 <translation id="2908358077082926882">Hãy nhấn phím “<ph name="CURRENTKEY" />” một lần nữa để xóa công tắc đã gán và <ph name="RESPONSE" /></translation>
+<translation id="2909487040556589351">Tải Chrome xuống thiết bị di động</translation>
 <translation id="2909506265808101667">Không thể kết nối với các dịch vụ của Google. Hãy kiểm tra kết nối mạng của bạn rồi thử lại. Mã lỗi: <ph name="ERROR_CODE" />.</translation>
 <translation id="2910318910161511225">Hãy kết nối với mạng rồi thử lại</translation>
 <translation id="2910678330803525229">Bây giờ, bạn có thể bắt đầu duyệt web</translation>
@@ -4840,6 +4845,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4434611816075088065">Hiện không có vấn đề nào khác cần bạn chú ý</translation>
 <translation id="443475966875174318">Cập nhật hoặc xóa các ứng dụng không tương thích</translation>
 <translation id="443503224864902151">Đăng xuất bạn khỏi hầu hết các trang web. Trạng thái đăng nhập vào Tài khoản Google sẽ vẫn duy trì để bạn có thể xoá dữ liệu đã đồng bộ hoá.</translation>
+<translation id="4436573279088520291">Đóng các thẻ không dùng đến</translation>
 <translation id="4437879751057074691">Đề xuất lưu mật khẩu và khoá truy cập</translation>
 <translation id="4437947179446780764">Thêm nhà cung cấp dịch vụ DNS tuỳ chỉnh</translation>
 <translation id="4438043733494739848">Trong suốt</translation>
@@ -4952,6 +4958,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4527929807707405172">Bật chế độ cuộn ngược. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Bản dịch đề xuất</translation>
 <translation id="4528638190900283934">Đăng nhập để sử dụng các tính năng bổ sung</translation>
+<translation id="4529052777398765334">Thư mục này chỉ được lưu vào thiết bị này. Nếu được lưu vào <ph name="ACCOUNT_FOLDER" />, thư mục này cũng sẽ được lưu trong tài khoản của bạn.</translation>
 <translation id="4529455689802245339">Tính năng Phụ đề trực tiếp trên Chrome có thể không hoạt động</translation>
 <translation id="4531451811601110068">Bạn có thể thử lại hoặc liên hệ với quản trị viên để được trợ giúp</translation>
 <translation id="4531924570968473143">Bạn muốn thêm ai vào chiếc <ph name="DEVICE_TYPE" /> này?</translation>
@@ -5538,6 +5545,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4955707703665801001">Chế độ hiển thị của <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Chọn mã PIN</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">Chỉ lưu vào một thư mục trên thiết bị này?</translation>
 <translation id="4959262764292427323">Các mật khẩu được lưu trong Tài khoản Google của bạn, vì vậy, bạn có thể sử dụng các mật khẩu đó trên bất cứ thiết bị nào</translation>
 <translation id="4960020053211143927">Một số ứng dụng vẫn chưa hỗ trợ</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8169,7 +8177,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 
 </translation>
 <translation id="6900284862687837908">Ứng dụng nền: <ph name="BACKGROUND_APP_URL" /></translation>
-<translation id="6900532703269623216">Chế độ bảo vệ nâng cao</translation>
+<translation id="6900532703269623216">Bảo vệ nâng cao</translation>
 <translation id="6900651018461749106">Đăng nhập lại để cập nhật <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">Bạn có chắc chắn muốn xoá công cụ tìm kiếm này không?</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
@@ -8465,6 +8473,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="711840821796638741">Hiển thị dấu trang được quản lý</translation>
 <translation id="711985611146095797">Trang này cho phép bạn quản lý các Tài khoản Google mà bạn đã đăng nhập. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Lưu lượng truy cập trên Android và trình duyệt Chrome sẽ bị chặn trừ phi bạn kết nối VPN</translation>
+<translation id="7120904433567247946">Dấu trang này chỉ được lưu vào thiết bị này. Nếu được lưu vào <ph name="ACCOUNT_FOLDER" />, dấu trang này cũng sẽ được lưu trong tài khoản của bạn.</translation>
 <translation id="7121438501124788993">Chế độ nhà phát triển</translation>
 <translation id="7121728544325372695">Dấu gạch ngang thông minh</translation>
 <translation id="7122605570852873914">Vẫn đăng xuất</translation>
@@ -8491,6 +8500,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7139627972753429585"><ph name="APP_NAME" /> đang sử dụng micrô của bạn</translation>
 <translation id="7140785920919278717">Trình cài đặt ứng dụng</translation>
 <translation id="7141105143012495934">Đăng nhập không thành công vì không thể truy xuất chi tiết tài khoản của bạn. Vui lòng liên hệ với quản trị viên của bạn hoặc thử lại.</translation>
+<translation id="7141470099673912333">Chuyển nội dung</translation>
 <translation id="7141844554192012199">Kiểm tra</translation>
 <translation id="714301620504747562">Duyệt web và tìm kiếm nhanh hơn so với chế độ tải trước tiêu chuẩn</translation>
 <translation id="7143207342074048698">Đang kết nối</translation>
@@ -9930,6 +9940,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="816704878106051517">{COUNT,plural, =1{một số điện thoại}other{# số điện thoại}}</translation>
 <translation id="8168435359814927499">Nội dung</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Thêm thẻ vào danh sách đọc}other{Thêm các thẻ vào danh sách đọc}}</translation>
+<translation id="8169177848833352618">Rất tiếc, máy này không đáp ứng các yêu cầu để cài đặt Bruschetta. Mã lỗi là <ph name="ERROR" />.</translation>
 <translation id="8174047975335711832">Thông tin thiết bị</translation>
 <translation id="8176332201990304395">Hồng và trắng</translation>
 <translation id="8176529144855282213">Để bật quyền truy cập vào micrô, hãy bật công tắc micrô nằm trên thiết bị</translation>

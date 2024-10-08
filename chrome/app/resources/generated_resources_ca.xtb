@@ -2097,6 +2097,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2460356425461033301">Crea una còpia de seguretat de les dades del teu navegador i utilitza-les en qualsevol dispositiu</translation>
 <translation id="2460482211073772897">En altres carpetes</translation>
 <translation id="2460826998961521840">Per usar claus d'accés del Compte de Google</translation>
+<translation id="2461045498706592033">La carpeta <ph name="LOCAL_FOLDER" /> només es desa en aquest dispositiu. Si mous aquesta adreça d'interès a <ph name="LOCAL_FOLDER" />, ja no hi podràs accedir des dels teus altres dispositius.</translation>
 <translation id="2461550163693930491">No permetis que els llocs web es desplacin ni facin zoom a les pestanyes compartides</translation>
 <translation id="2461593638794842577">Pots desactivar aquesta opció de configuració per desar les contrasenyes només en aquest dispositiu</translation>
 <translation id="2462332841984057083">Ja s'està configurant Steam. Espera que finalitzi la configuració.</translation>
@@ -2350,6 +2351,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2645047101481282803"><ph name="PROFILE_NAME" /> gestiona el teu dispositiu</translation>
 <translation id="2645388244376970260">S'està emetent aquesta pestanya a <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">Vols desar-la en una carpeta del teu Compte de Google?</translation>
 <translation id="264897126871533291">Protanomalia</translation>
 <translation id="2649045351178520408">ASCII codificat en Base64, cadena de certificats</translation>
 <translation id="265156376773362237">Precàrrega estàndard</translation>
@@ -2538,6 +2540,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2773288106548584039">Compatibilitat amb el navegador heretat</translation>
 <translation id="2773621783913034737">Desactiva les pestanyes</translation>
 <translation id="2774876860084746535">Intel·lectual</translation>
+<translation id="2775047284666165174">La carpeta <ph name="LOCAL_FOLDER" /> només es desa en aquest dispositiu. Si mous aquesta carpeta a <ph name="LOCAL_FOLDER" />, ja no hi podràs accedir des dels teus altres dispositius.</translation>
 <translation id="2775104091073479743">Edita les empremtes digitals</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{L'extensió "<ph name="EXTENSION" />" estava accedint als dispositius}=1{L'extensió "<ph name="EXTENSION" />" està accedint a {0} dispositiu}other{L'extensió "<ph name="EXTENSION" />" està accedint a {0} dispositius}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Suprimeix 1 aplicació no admesa}other{Suprimeix # aplicacions no admeses}}</translation>
@@ -4936,6 +4939,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4527929807707405172">Activa el desplaçament invers. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Suggeriment de traducció</translation>
 <translation id="4528638190900283934">Inicia la sessió per gaudir de més funcions</translation>
+<translation id="4529052777398765334">Aquesta carpeta només es desa en aquest dispositiu. Si la deses a <ph name="ACCOUNT_FOLDER" />, també es desarà al teu compte.</translation>
 <translation id="4529455689802245339">Pot ser que Subtítols instantanis de Chrome no funcioni</translation>
 <translation id="4531451811601110068">Pots tornar-ho a provar o bé contactar amb l'administrador per obtenir ajuda</translation>
 <translation id="4531924570968473143">A qui t'agradaria afegir al <ph name="DEVICE_TYPE" />?</translation>
@@ -5521,6 +5525,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4955707703665801001">Visibilitat de <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Tria un PIN</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">Vols desar-la en una carpeta només en aquest dispositiu?</translation>
 <translation id="4959262764292427323">Les contrasenyes es desen al Compte de Google perquè les puguis utilitzar en tots els dispositius</translation>
 <translation id="4960020053211143927">No és compatible amb algunes aplicacions</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" />: <ph name="PROFILE_NAME" /></translation>
@@ -8444,6 +8449,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="711840821796638741">Mostra les adreces d'interès gestionades</translation>
 <translation id="711985611146095797">En aquesta pàgina pots gestionar els Comptes de Google en què tinguis la sessió iniciada. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">El navegador Chrome i el trànsit d'Android es bloquejaran tret que es connecti una VPN</translation>
+<translation id="7120904433567247946">Aquesta adreça d'interès només es desa en aquest dispositiu. Si la deses a <ph name="ACCOUNT_FOLDER" />, també es desarà al teu compte.</translation>
 <translation id="7121438501124788993">Mode de desenvolupador</translation>
 <translation id="7121728544325372695">Guions intel·ligents</translation>
 <translation id="7122605570852873914">Tanca la sessió igualment</translation>
@@ -8470,6 +8476,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7139627972753429585"><ph name="APP_NAME" /> està utilitzant el micròfon</translation>
 <translation id="7140785920919278717">Instal·lador d'aplicacions</translation>
 <translation id="7141105143012495934">S'ha produït un problema en iniciar la sessió perquè no s'ha pogut recuperar la informació del compte. Contacteu amb l'administrador o torneu a provar-ho.</translation>
+<translation id="7141470099673912333">Transferència de contingut</translation>
 <translation id="7141844554192012199">Comprova</translation>
 <translation id="714301620504747562">Navegar i fer cerques és més ràpid que amb la precàrrega estàndard</translation>
 <translation id="7143207342074048698">Connectant</translation>

@@ -1688,6 +1688,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2184515124301515068">Saytların avtomatik oxutma vaxtını Chrome'un seçməsinə icazə verin (məsləhətlidir)</translation>
 <translation id="2186206192313702726">Google Linza</translation>
 <translation id="2186711480981247270">Səhifə başqa cihazdan paylaşılıb</translation>
+<translation id="2187569197737151508">Yenidən aktiv etmək üçün esc düyməsini 5 dəfə basın</translation>
 <translation id="2187675480456493911">Hesabınızdakı digər cihazlarla sinxronlaşdırılıb. Digər istifadəçilər tərəfindən dəyişdirilən ayarlar sinxronlaşdırılmayacaq. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Server Sertifikatını İmport Xətası</translation>
 <translation id="2187906491731510095">Artırmalar yeniləndi</translation>
@@ -2096,6 +2097,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2460356425461033301">Brauzer elementlərini yedəkləyin və istənilən cihazda istifadə edin</translation>
 <translation id="2460482211073772897">Digər qovluqlarda</translation>
 <translation id="2460826998961521840">Google Hesabında yadda saxlanmış giriş açarlarından istifadə etmək üçün</translation>
+<translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> yalnız bu cihazda yadda saxlanılır. Bu əlfəcini <ph name="LOCAL_FOLDER" /> qovluğuna köçürsəniz, artıq digər cihazlarınızda görə bilməyəcəksiniz.</translation>
 <translation id="2461550163693930491">Saytlara paylaşılan tabları sürüşdürüb zumlamaq icazəsi verməyin</translation>
 <translation id="2461593638794842577">Parolları yalnız bu cihazda yadda saxlamaq üçün bu ayarı söndürə bilərsiniz</translation>
 <translation id="2462332841984057083">Steam ayarlanır. Ayarlamanın tamamlanmasını gözləyin.</translation>
@@ -2349,6 +2351,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2645047101481282803">Cihazınız <ph name="PROFILE_NAME" /> tərəfindən idarə olunur</translation>
 <translation id="2645388244376970260">Bu tab <ph name="DEVICE_NAME" /> cihazında yayımlanır</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">Google Hesabınızdakı qovluqda yadda saxlanılsın?</translation>
 <translation id="264897126871533291">Protanomaliya</translation>
 <translation id="2649045351178520408">Base64-şifrələnmiş ASCII, sertifikat zənciri</translation>
 <translation id="265156376773362237">Standart əvvəlcədən yükləmə</translation>
@@ -2537,6 +2540,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2773288106548584039">Köhnə Axtarış Dəstəyi</translation>
 <translation id="2773621783913034737">Tabları deaktiv edin</translation>
 <translation id="2774876860084746535">İntellektual</translation>
+<translation id="2775047284666165174"><ph name="LOCAL_FOLDER" /> yalnız bu cihazda yadda saxlanılır. Bu qovluğu <ph name="LOCAL_FOLDER" /> qovluğuna köçürsəniz, artıq digər cihazlarınızda görə bilməyəcəksiniz.</translation>
 <translation id="2775104091073479743">Barmaq izlərinə düzəliş edin</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{Artırma ("<ph name="EXTENSION" />") cihazlara daxil olurdu}=1{Artırma ("<ph name="EXTENSION" />") {0} cihaza daxil olur}other{Artırma ("<ph name="EXTENSION" />") {0} cihaza daxil olur}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{1 dəstəklənməyən tətbiqi silin}other{# dəstəklənməyən tətbiqi silin}}</translation>
@@ -2725,6 +2729,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2908122561561557160">Word, Excel və PowerPoint fayllarını açın</translation>
 <translation id="2908162660801918428">Direktoriya üzrə Media Qalereyası əlavə edin</translation>
 <translation id="2908358077082926882">Təyinatı ləğv etmək və <ph name="RESPONSE" /> üçün yenidən "<ph name="CURRENTKEY" />" düyməsinə basın</translation>
+<translation id="2909487040556589351">Chrome-u mobil cihazınızda quraşdırın</translation>
 <translation id="2909506265808101667">Google xidmətlərinə qoşulmaq mümkün olmadı. Şəbəkə bağlantınızı yoxlayıb yenidən cəhd edin. Xəta kodu: <ph name="ERROR_CODE" />.</translation>
 <translation id="2910318910161511225">Şəbəkəyə qoşulun və yenidən cəhd edin</translation>
 <translation id="2910678330803525229">İndi nəzər salmağa başlaya bilərsiniz</translation>
@@ -4824,6 +4829,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4434611816075088065">Nəzərdən keçiriləcək heç nə yoxdur</translation>
 <translation id="443475966875174318">Uyğun olmayan tətbiqləri güncəlləyin və ya silin</translation>
 <translation id="443503224864902151">Bir çox saytlardan çıxış edəcəksiniz. Google Hesabına daxil olmuş vəziyyətdə qalacaqsınız ki, sinxronlaşdırılmış data silinsin.</translation>
+<translation id="4436573279088520291">İstifadə edilməyən tabları bağlayın</translation>
 <translation id="4437879751057074691">Parol və giriş açarlarını yadda saxlamağı təklif edin</translation>
 <translation id="4437947179446780764">Fərdi DNS xidməti provayderini əlavə edin</translation>
 <translation id="4438043733494739848">Şəffaf</translation>
@@ -4936,6 +4942,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4527929807707405172">Əksinə sürüşdürməni aktivləşdirin. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Tərcümə təklifi</translation>
 <translation id="4528638190900283934">Əlavə funksiyalar üçün daxil olun</translation>
+<translation id="4529052777398765334">Bu qovluq yalnız bu cihazda yadda saxlanılır. <ph name="ACCOUNT_FOLDER" /> qovluğunda yadda saxlasanız, bu qovluq da hesabınızda yadda saxlanılacaq.</translation>
 <translation id="4529455689802245339">Chrome Canlı Altyazı işləməyə bilər</translation>
 <translation id="4531451811601110068">Yenidən cəhd edə, yaxud kömək üçün administrator ilə əlaqə saxlaya bilərsiniz</translation>
 <translation id="4531924570968473143">Bu <ph name="DEVICE_TYPE" /> cihazına kimi əlavə etmək istərdiniz?</translation>
@@ -5522,6 +5529,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> - görünmə imkanı</translation>
 <translation id="4955710816792587366">PIN seçin</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">Yalnız bu cihazdakı qovluqda yadda saxlanılsın?</translation>
 <translation id="4959262764292427323">Parollar Google Hesabınızda yadda saxlanılıb, beləliklə, onları istənilən cihazda istifadə edə bilərsiniz</translation>
 <translation id="4960020053211143927">Bəzi tətbiqlər dəstəkləmir</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8444,6 +8452,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="711840821796638741">İdarə olunan əlfəcinləri göstərin</translation>
 <translation id="711985611146095797">Bu səhifə daxil olduğunuz Google Hesablarını idarə etmənizə imkan verir. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">VPN qoşulmadıqca Chrome brauzeri və Android trafiki bloklanacaq</translation>
+<translation id="7120904433567247946">Bu əlfəcin yalnız bu cihazda yadda saxlanılır. <ph name="ACCOUNT_FOLDER" /> qovluğunda yadda saxlasanız, bu əlfəcin də hesabınızda yadda saxlanılacaq.</translation>
 <translation id="7121438501124788993">Tərtibatçı Rejimi</translation>
 <translation id="7121728544325372695">Ağıllı Tirelər</translation>
 <translation id="7122605570852873914">İstənilən halda çıxın</translation>
@@ -8470,6 +8479,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7139627972753429585"><ph name="APP_NAME" /> mikrofonunuzdan istifadə edir</translation>
 <translation id="7140785920919278717">Tətbiq quraşdırıcı</translation>
 <translation id="7141105143012495934">Sign-sizin hesab ayrıntıları alına bilməz, çünki uğursuz oldu. Sizin administratoru ilə əlaqə və ya yenidən cəhd edin.</translation>
+<translation id="7141470099673912333">Kontent Köçürülməsi</translation>
 <translation id="7141844554192012199">Yoxlanış</translation>
 <translation id="714301620504747562">Baxış və axtarış əvvəlcədən yükləmənin standart versiyasından sürətlidir</translation>
 <translation id="7143207342074048698">Qoşulur</translation>
@@ -9908,6 +9918,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{telefon nömrəsi}other{# telefon nömrəsi}}</translation>
 <translation id="8168435359814927499">Kontent</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Oxuma Siyahısına Tab əlavə edin}other{Oxuma Siyahısına Tablar əlavə edin}}</translation>
+<translation id="8169177848833352618">Təəssüf ki, bu maşın Bruschetta-nı quraşdırmaq üçün tələblərə cavab vermir. Xəta kodu: <ph name="ERROR" />.</translation>
 <translation id="8174047975335711832">Cihaz haqqında məlumat</translation>
 <translation id="8176332201990304395">Çəhrayı və ağ</translation>
 <translation id="8176529144855282213">Mikrofon girişini aktiv etmək üçün cihazınızda fiziki mikrofon keçiricisini aktiv edin</translation>

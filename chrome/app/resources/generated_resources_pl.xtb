@@ -1689,6 +1689,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2184515124301515068">Niech Chrome decyduje, które strony mogą odtwarzać dźwięk (zalecane)</translation>
 <translation id="2186206192313702726">Obiektyw Google</translation>
 <translation id="2186711480981247270">Strona udostępniona z innego urządzenia</translation>
+<translation id="2187569197737151508">Aby go ponownie włączyć, naciśnij 5 razy klawisz Esc</translation>
 <translation id="2187675480456493911">Sieć jest zsynchronizowana ze wszystkimi urządzeniami na Twoim koncie. Ustawienia zmienione przez innych użytkowników nie zostaną zsynchronizowane. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Błąd importowania certyfikatu serwera</translation>
 <translation id="2187906491731510095">Rozszerzenia zaktualizowane</translation>
@@ -2083,6 +2084,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2460356425461033301">Twórz kopie zapasowe danych z przeglądarki i używaj ich na dowolnym urządzeniu.</translation>
 <translation id="2460482211073772897">W innych folderach</translation>
 <translation id="2460826998961521840">Aby używać kluczy dostępu z konta Google</translation>
+<translation id="2461045498706592033">Folder <ph name="LOCAL_FOLDER" /> został zapisany tylko na tym urządzeniu. Jeśli przeniesiesz tę zakładkę do folderu <ph name="LOCAL_FOLDER" />, nie będzie ona już dostępna na innych urządzeniach.</translation>
 <translation id="2461550163693930491">Nie zezwalaj witrynom na przewijanie ani powiększanie udostępnionych kart</translation>
 <translation id="2461593638794842577">Możesz wyłączyć to ustawienie, aby zapisywać hasła tylko na tym urządzeniu</translation>
 <translation id="2462332841984057083">Aplikacja Steam jest już konfigurowana. Poczekaj na zakończenie tego procesu.</translation>
@@ -2334,6 +2336,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2645047101481282803">Twoim urządzeniem zarządza <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">Przesyłam tę kartę na: <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">Zapisać w folderze na Twoim koncie Google?</translation>
 <translation id="264897126871533291">Protanomalia</translation>
 <translation id="2649045351178520408">Plik ASCII z kodowaniem Base64, łańcuch certyfikatów</translation>
 <translation id="265156376773362237">Wczytywanie standardowe</translation>
@@ -2522,6 +2525,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2773288106548584039">Obsługa starszych przeglądarek</translation>
 <translation id="2773621783913034737">Dezaktywuj karty</translation>
 <translation id="2774876860084746535">Intelektualny</translation>
+<translation id="2775047284666165174">Folder <ph name="LOCAL_FOLDER" /> został zapisany tylko na tym urządzeniu. Jeśli przeniesiesz go do folderu <ph name="LOCAL_FOLDER" />, nie będzie on już dostępny na innych urządzeniach.</translation>
 <translation id="2775104091073479743">Edytuj odciski palców</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{Rozszerzenie „<ph name="EXTENSION" />” uzyskiwało dostęp do urządzeń}=1{Rozszerzenie „<ph name="EXTENSION" />” uzyskuje dostęp do {0} urządzenia}few{Rozszerzenie „<ph name="EXTENSION" />” uzyskuje dostęp do {0} urządzeń}many{Rozszerzenie „<ph name="EXTENSION" />” uzyskuje dostęp do {0} urządzeń}other{Rozszerzenie „<ph name="EXTENSION" />” uzyskuje dostęp do {0} urządzenia}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Usuń 1 nieobsługiwaną aplikację}few{Usuń # nieobsługiwane aplikacje}many{Usuń # nieobsługiwanych aplikacji}other{Usuń # nieobsługiwanej aplikacji}}</translation>
@@ -2710,6 +2714,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2908122561561557160">Otwieraj pliki programów Word, Excel i PowerPoint</translation>
 <translation id="2908162660801918428">Dodaj galerię multimediów na podstawie katalogu</translation>
 <translation id="2908358077082926882">Naciśnij jeszcze raz „<ph name="CURRENTKEY" />”, aby usunąć przypisanie i <ph name="RESPONSE" /></translation>
+<translation id="2909487040556589351">Pobierz Chrome na urządzenie mobilne</translation>
 <translation id="2909506265808101667">Nie udało się połączyć z usługami Google. Sprawdź połączenie sieciowe i spróbuj jeszcze raz. Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="2910318910161511225">Połącz się z siecią i spróbuj ponownie</translation>
 <translation id="2910678330803525229">Możesz już przeglądać</translation>
@@ -4807,6 +4812,7 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4434611816075088065">Nic więcej nie wymaga teraz Twojej uwagi</translation>
 <translation id="443475966875174318">Zaktualizuj lub usuń niezgodne aplikacje</translation>
 <translation id="443503224864902151">Spowoduje wylogowanie Cię z większości stron internetowych. Nie nastąpi wylogowanie z konta Google, więc będzie można usunąć zsynchronizowane dane.</translation>
+<translation id="4436573279088520291">Zamknij nieużywane karty</translation>
 <translation id="4437879751057074691">Oferuj zapisywanie haseł i kluczy dostępu</translation>
 <translation id="4437947179446780764">Dodaj niestandardowego dostawcę usługi DNS</translation>
 <translation id="4438043733494739848">Przezroczyste</translation>
@@ -4919,6 +4925,7 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4527929807707405172">Włącz odwrotne przewijanie. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Sugestia tłumaczenia</translation>
 <translation id="4528638190900283934">Zaloguj się, aby mieć dostęp do dodatkowych funkcji</translation>
+<translation id="4529052777398765334">Ten folder został zapisany tylko na tym urządzeniu. Jeśli zapiszesz go w folderze <ph name="ACCOUNT_FOLDER" />, zostanie on też zapisany na Twoim koncie.</translation>
 <translation id="4529455689802245339">Napisy na żywo w Chrome mogą nie działać</translation>
 <translation id="4531451811601110068">Możesz spróbować jeszcze raz lub poprosić o pomoc administratora</translation>
 <translation id="4531924570968473143">Kogo chcesz dodać na tym urządzeniu z <ph name="DEVICE_TYPE" />?</translation>
@@ -5504,6 +5511,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> – widoczność</translation>
 <translation id="4955710816792587366">Ustaw kod PIN</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">Zapisać w folderze tylko na tym urządzeniu?</translation>
 <translation id="4959262764292427323">Hasła są zapisywane na Twoim koncie Google, dzięki czemu możesz ich używać na dowolnym urządzeniu</translation>
 <translation id="4960020053211143927">Nieobsługiwane przez niektóre aplikacje</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -8429,6 +8437,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="711840821796638741">Pokaż zakładki zarządzane</translation>
 <translation id="711985611146095797">Na tej stronie możesz zarządzać kontami Google, na które się logujesz. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Ruch w przeglądarce Chrome i na Androidzie będzie blokowany, dopóki nie połączysz się z siecią VPN</translation>
+<translation id="7120904433567247946">Ta zakładka została zapisana tylko na tym urządzeniu. Jeśli zapiszesz ją w folderze <ph name="ACCOUNT_FOLDER" />, zostanie ona też zapisana na Twoim koncie.</translation>
 <translation id="7121438501124788993">Tryb programisty</translation>
 <translation id="7121728544325372695">Inteligentne myślniki</translation>
 <translation id="7122605570852873914">Wyloguj się mimo to</translation>
@@ -8455,6 +8464,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7139627972753429585"><ph name="APP_NAME" /> używa Twojego mikrofonu</translation>
 <translation id="7140785920919278717">Instalator aplikacji</translation>
 <translation id="7141105143012495934">Nie udało się zalogować, bo nie można pobrać informacji o koncie. Skontaktuj się z administratorem lub spróbuj ponownie.</translation>
+<translation id="7141470099673912333">Przenoszenie treści</translation>
 <translation id="7141844554192012199">Sprawdzanie</translation>
 <translation id="714301620504747562">Przeglądanie i wyszukiwanie jest szybsze niż standardowe wstępne wczytywanie</translation>
 <translation id="7143207342074048698">Łączenie</translation>
@@ -9893,6 +9903,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="816704878106051517">{COUNT,plural, =1{numer telefonu}few{# numery telefonów}many{# numerów telefonów}other{# numeru telefonu}}</translation>
 <translation id="8168435359814927499">Treść</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Dodaj kartę do listy Do przeczytania}few{Dodaj karty do listy Do przeczytania}many{Dodaj karty do listy Do przeczytania}other{Dodaj karty do listy Do przeczytania}}</translation>
+<translation id="8169177848833352618">Ten komputer nie spełnia wymagań do zainstalowania Bruschetta. Kod błędu: <ph name="ERROR" />.</translation>
 <translation id="8174047975335711832">Informacje o urządzeniu</translation>
 <translation id="8176332201990304395">Różowo-biały</translation>
 <translation id="8176529144855282213">Aby korzystać z mikrofonu, włącz go odpowiednim fizycznym przełącznikiem na urządzeniu</translation>

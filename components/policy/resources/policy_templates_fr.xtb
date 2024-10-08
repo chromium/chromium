@@ -781,17 +781,6 @@ Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA 
       Si cette règle n'est pas configurée, un message d'avertissement (et non un message d'erreur) s'affiche quand le code choisi par l'utilisateur est peu sécurisé.</translation>
 <translation id="1597684038583138808">Activer la définition pour Réponses rapides</translation>
 <translation id="1598258379228800626">Activer la mise en surbrillance des éléments sélectionnés au clavier sur l'écran de connexion</translation>
-<translation id="1599334938346636409">Cette règle permet de définir un libellé personnalisé servant à identifier la personne qui gère un profil ou un navigateur.
-
-Ce libellé s'affichera dans la barre d'outils.
-
-Si cette règle est définie au niveau du navigateur, tous les profils afficheront ce libellé dans la barre d'outils.
-
-Si cette règle est définie au niveau du profil, seul ce profil aura ce libellé.
-
-Contrairement aux autres règles, celle-ci définie au niveau du profil est prioritaire sur une règle définie au niveau du navigateur.
-
-Le libellé personnalisé ne sera pas traduit.</translation>
 <translation id="1599424828227887013">Activer l'isolation des sites pour des origines définies sur les appareils Android</translation>
 <translation id="159946228300522107">Si cette règle est définie sur "True", Chrome agrandit la première fenêtre affichée à la première exécution.
 
@@ -5773,17 +5762,6 @@ Si cette règle n'est pas configurée, aucune exception à <ph name="URL_BLOCKLI
       Si cette règle est définie sur une liste d'identifiants de modes de saisie, les modes de saisie indiqués sont disponibles sur l'écran de connexion. Le premier mode de saisie proposé est présélectionné. Lorsqu'un profil utilisateur est actif sur l'écran de connexion, le dernier mode de saisie utilisé par l'utilisateur est disponible en plus des modes de saisie fournis par cette règle. Si cette règle n'est pas définie, les modes de saisie sur l'écran de connexion sont dérivés des paramètres régionaux dans lesquels cet écran est affiché. Les valeurs qui ne constituent pas des identifiants de modes de saisie valides sont ignorées.</translation>
 <translation id="5406626703145660021">Activer l'accord de clé post-quantique pour TLS pour l'appareil</translation>
 <translation id="5407008856008996384">Permet d'autoriser l'accès aux imprimantes CUPS</translation>
-<translation id="5412932514296195873">La fonctionnalité de recherche dans l'historique optimisée par l'IA permet aux utilisateurs d'effectuer des recherches dans leur historique de navigation en fonction du contenu (et pas seulement du titre et de l'URL) des pages.
-
-0 = Activer la fonctionnalité pour les utilisateurs et envoyer des données pertinentes à Google afin d'entraîner ou d'améliorer les modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des requêtes, des entrées, des sorties et des documents source. Elles pourront être examinées par des réviseurs dans le seul but d'améliorer les modèles d'IA. 0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
-
-1 = Activer la fonctionnalité pour les utilisateurs, mais ne pas envoyer de données à Google afin d'entraîner ou d'améliorer les modèles d'IA. 1 est la valeur par défaut pour les utilisateurs de la version Enterprise gérés par <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> et pour les comptes Education gérés par <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-2 = Désactiver la fonctionnalité.
-
-Si la règle n'est pas configurée, le comportement par défaut est défini sur 0 pour les utilisateurs standards et sur 2 pour les utilisateurs gérés sur <ph name="PRODUCT_OS_NAME" />.
-
-Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA générative, veuillez consulter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5413051574966911176">Désactiver l'interface utilisateur liée à la connexion sur le bureau de l'hôte à distance lorsqu'une connexion est active</translation>
 <translation id="5415713057512333739">URL des données à télécharger.</translation>
 <translation id="5416263061774624216">Ne pas utiliser la règle SiteList d'Internet Explorer comme source des règles</translation>
@@ -6678,21 +6656,6 @@ Cette règle n'aura aucune incidence si la règle <ph name="SCREENSAVER_LOCK_SCR
 Si cette règle n'est pas configurée ou si la liste ne contient aucune référence d'image valide, l'économiseur d'écran ne s'affiche pas pour l'écran de verrouillage, quelle que soit la valeur définie dans la règle <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" />.</translation>
 <translation id="6135398260575578389">La navigation sécurisée est active et en mode de protection renforcée. Ce mode offre une meilleure sécurité, mais nécessite de partager plus d'informations de navigation avec Google.</translation>
 <translation id="6135552820180449830">Crosh (disponible depuis la version 99)</translation>
-<translation id="6136179371737299503">Cette règle au niveau de l'appareil définit si <ph name="PRODUCT_OS_NAME" /> proposera ou non un algorithme d'accord de clé post-quantique, dans TLS. Dans les versions futures, l'algorithme sera ML-KEM, une norme post-quantique du NIST. Initialement, l'algorithme était Kyber, une version antérieure de la norme. Cela permet aux serveurs compatibles de protéger le trafic utilisateur contre les déchiffrement ultérieurs par des ordinateurs quantiques.
-
-Si cette règle est activée, <ph name="PRODUCT_OS_NAME" /> proposera un accord de clé post-quantique dans les connexions TLS. Dans ce cas, le trafic utilisateur est protégé contre les ordinateurs quantiques lorsqu'il communique avec des serveurs compatibles.
-
-Si cette règle est désactivée, <ph name="PRODUCT_OS_NAME" /> ne proposera pas d'accord de clé post-quantique dans les connexions TLS. Dans ce cas, le trafic utilisateur ne sera pas protégé contre les ordinateurs quantiques.
-
-Si cette règle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> suivra le processus de déploiement par défaut pour proposer un accord de clé post-quantique.
-
-La proposition de Kyber est rétrocompatible. Les serveurs TLS et le middleware de mise en réseau existants devraient ignorer la nouvelle option et continuer à sélectionner les options précédentes.
-
-Toutefois, les appareils qui n'implémentent pas correctement TLS peuvent dysfonctionner lorsqu'ils reçoivent la nouvelle option. Par exemple, ils peuvent se déconnecter en réponse à des options non reconnues ou à des messages plus volumineux qui en résultent. Ces appareils ne sont pas prêts pour le post-quantique et interfèrent avec la transition post-quantique d'une entreprise. Le cas échéant, les administrateurs doivent contacter le fournisseur pour obtenir une solution.
-
-Cette règle est une mesure temporaire qui sera supprimée après la version 141 de <ph name="PRODUCT_OS_NAME" />. Elle peut être activée pour vous permettre de tester des problèmes, ou désactivée pendant la résolution des problèmes.
-
-Cette règle prévaut sur la règle PostQuantumKeyAgreementEnabled si les deux sont configurées.</translation>
 <translation id="6138636318340561140">Vérifier en temps réel l'état de la navigation sécurisée pour les URL</translation>
 <translation id="6141402445226505817">Toujours utiliser une détection de fuseau horaire standard</translation>
 <translation id="6141944295566709543">Autoriser les utilisateurs à lire des médias lorsque l'appareil est verrouillé</translation>
@@ -10060,19 +10023,6 @@ Si vous désactivez les optimisations JavaScript (en définissant la valeur de c
 Pour les formats d'URL spécifiques, cette règle peut être remplacée par les règles <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" /> et <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />.
 
 Si cette règle n'est pas configurée, les optimisations JavaScript sont activées.</translation>
-<translation id="8670585636650044874">Cette règle définit si <ph name="PRODUCT_NAME" /> proposera ou non un algorithme d'accord de clé post-quantique dans TLS. Dans les versions futures, l'algorithme sera ML-KEM, une norme post-quantique du NIST. Initialement, l'algorithme était Kyber, une version antérieure de la norme. Cela permet aux serveurs compatibles de protéger le trafic utilisateur contre les déchiffrement ultérieurs par des ordinateurs quantiques.
-
-Si cette règle est activée, <ph name="PRODUCT_NAME" /> proposera un accord de clé post-quantique dans les connexions TLS. Dans ce cas, le trafic utilisateur est protégé contre les ordinateurs quantiques lorsqu'il communique avec des serveurs compatibles.
-
-Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> ne proposera pas d'accord de clé post-quantique dans les connexions TLS. Dans ce cas, le trafic utilisateur ne sera pas protégé contre les ordinateurs quantiques.
-
-Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> suivra le processus de déploiement par défaut pour proposer un accord de clé post-quantique.
-
-La proposition d'un accord de clé post-quantique est rétrocompatible. Les serveurs TLS et le middleware de mise en réseau existants devraient ignorer la nouvelle option et continuer à sélectionner les options précédentes.
-
-Toutefois, les appareils qui n'implémentent pas correctement TLS peuvent dysfonctionner lorsqu'ils reçoivent la nouvelle option. Par exemple, ils peuvent se déconnecter en réponse à des options non reconnues ou à des messages plus volumineux qui en résultent. Ces appareils ne sont pas prêts pour le post-quantique et interfèrent avec la transition post-quantique d'une entreprise. Le cas échéant, les administrateurs doivent contacter le fournisseur pour obtenir une solution.
-
-Cette règle est une mesure temporaire qui sera supprimée après la version 141 de <ph name="PRODUCT_NAME" />. Elle peut être activée pour vous permettre de tester des problèmes, ou désactivée pendant la résolution des problèmes.</translation>
 <translation id="8671119576957984818">Activer le hub de partage du bureau</translation>
 <translation id="8671193325113134911">Activer la vérification stricte du type MIME pour les scripts de nœuds de calcul</translation>
 <translation id="8671303329680827168">Cette règle est obsolète (veuillez utiliser la règle <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" /> à la place).</translation>

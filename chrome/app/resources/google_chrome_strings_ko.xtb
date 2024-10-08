@@ -407,6 +407,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6060842547856900641">렌즈 열기</translation>
 <translation id="6069027071882229820">이미지로 복사</translation>
 <translation id="6070348360322141662">보안 강화를 위해 Chrome에서 사용자 데이터 암호화</translation>
+<translation id="6075300983329039771">조직(<ph name="MANAGER" />)에서 Chrome에 로그인할 것을 요구합니다</translation>
 <translation id="608006075545470555">이 브라우저에 직장 프로필 추가</translation>
 <translation id="6097822892606850415">AI의 도움으로 더욱 자신 있게 글을 작성하세요.</translation>
 <translation id="6113794647360055231">더욱 업그레이드된 Chrome</translation>
@@ -545,6 +546,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7670287553302121848">Chrome 계정에 재인증이 필요함</translation>
 <translation id="769538538642757151">검토가 필요한 사항이 있으면 Chrome에서 알려 드립니다.</translation>
 <translation id="77283119132245232"><ph name="BROWSER_NAME" />에 시스템 추적 서비스가 제공됩니다. 이 서비스를 사용 중지하면 브라우저에서 생성한 성능 추적에 컨텍스트 전환 및 준비된 스레드 이벤트와 같은 시스템 전체 이벤트가 포함되지 않습니다.</translation>
+<translation id="7736869414036750079">조직에서 Chrome에 로그인할 것을 요구합니다</translation>
 <translation id="7747138024166251722">설치 프로그램이 임시 디렉터리를 만들지 못했습니다. 디스크 공간 및 설치 권한을 확인해 보세요.</translation>
 <translation id="7761834446675418963">Chrome을 열고 탐색을 시작하려면 내 이름을 클릭하세요.</translation>
 <translation id="7763983146198734674">비밀번호를 저장하여 이동 중에도 액세스하세요.</translation>

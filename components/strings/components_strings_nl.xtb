@@ -1104,6 +1104,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="301521992641321250">Automatisch geblokkeerd</translation>
 <translation id="3016780570757425217">Je locatie weten</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, druk op Tab en daarna op Enter om de suggestie te verwijderen.</translation>
+<translation id="3022959067768579802">Doorgaan met schrijven</translation>
 <translation id="3023165109041533893">Met door sites voorgestelde advertenties worden je browsegeschiedenis en identiteit beschermd terwijl de sites je relevante advertenties kunnen laten zien. Op basis van je activiteit kan een site die je hebt bezocht gerelateerde advertenties voorstellen terwijl je browst. In de instellingen kun je een lijst van deze sites bekijken en ongewenste sites blokkeren.</translation>
 <translation id="3024663005179499861">Onjuist beleidstype</translation>
 <translation id="3030331669969285614">Deze flags voorkomen een schadelijke wijziging of maken deze ongedaan en zijn maar beperkte tijd beschikbaar.</translation>
@@ -1373,6 +1374,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="350763432931695541">Tekst extraheren van de volgende pagina's</translation>
 <translation id="3507869775212388416">Juridische banen</translation>
 <translation id="3507936815618196901">Een 3D-kaart van je omgeving maken en de camerapositie volgen</translation>
+<translation id="3510341387555916271">Open om te hervatten</translation>
 <translation id="3512163584740124171">Dit beleid wordt genegeerd omdat een ander beleid in dezelfde beleidsgroep een hogere prioriteit heeft.</translation>
 <translation id="351522771072578657">Je bevindt je op dit moment in een menu</translation>
 <translation id="3517264445792388751">Het bestandssysteem is door je beheerder uitgezet</translation>
@@ -1738,6 +1740,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4152318981910038897">{COUNT,plural, =1{Pagina 1}other{Pagina {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome verifieert nu of jij het bent voordat een betaalmethode wordt ingevuld. Je kunt dit altijd updaten via <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4159784952369912983">Paars</translation>
+<translation id="4165422751765527461">Opent een Helpcentrum-artikel in een nieuw tabblad</translation>
 <translation id="4165986682804962316">Site-instellingen</translation>
 <translation id="4169535189173047238">Niet toestaan</translation>
 <translation id="4171400957073367226">Onjuiste verificatiehandtekening</translation>
@@ -2897,6 +2900,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6306713302480826305">Dit adres wordt verwijderd van dit apparaat en je andere ingelogde apparaten</translation>
 <translation id="6307968763353904914">Je bank biedt nu geen virtuele kaarten voor deze betaalmethode aan. Je kunt je <ph name="CARD_LABEL" /> wel gebruiken om online te betalen.</translation>
 <translation id="6311410654831092784">Kaartpapier</translation>
+<translation id="6311642842034740437">Benoemde locatie</translation>
 <translation id="6312113039770857350">Webpagina niet beschikbaar</translation>
 <translation id="6316110367871394043">Bestandsupload naar <ph name="CLOUD_PROVIDER" /> is onderbroken</translation>
 <translation id="6316723751983724988">Nieuw: Family Link-keuzes voor Chrome zijn hier van toepassing</translation>

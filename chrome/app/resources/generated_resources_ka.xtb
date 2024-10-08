@@ -1881,7 +1881,6 @@
     თუ მოგვიანებით გადაწყვეტთ, რომ Voice Match თქვენი ბავშვისთვის შესაფერისი არ არის, უბრალოდ, ამოშალეთ ის ასისტენტის პარამეტრებიდან. Voice Match-ის დაყენებისას ჩაწერილი აუდიოკლიპების სანახავად ან წასაშლელად თქვენი ბავშვის ანგარიშით გადადით მისამართზე <ph name="VOICE_MATCH_SETTINGS_URL" />.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2308649763891515230">დაასკანირეთ QR კოდი, რომ ჩამოტვირთოთ Chrome თქვენი iPhone-ისთვის ან iPad-ისთვის და განაგრძოთ იქიდან, სადაც გაჩერდით.</translation>
 <translation id="2308798336967462263">მხარდაუჭერელია შემდეგი კლავიშები: Tab, Shift, Control, Escape, Caps lock, ხმის კლავიშები</translation>
 <translation id="2309620859903500144">ამ საიტს აეკრძალა მოძრაობისა თუ განათების სენსორებზე წვდომა.</translation>
 <translation id="2310923358723722542">ჩვენება და გადიდება</translation>
@@ -2099,6 +2098,7 @@
 <translation id="2460356425461033301">შექმენით თქვენი ბრაუზერის მონაცემების სარეზერვო ასლები და გამოიყენეთ ისინი ნებისმიერ მოწყობილობაზე</translation>
 <translation id="2460482211073772897">სხვა საქაღალდეებში</translation>
 <translation id="2460826998961521840">თქვენს Google ანგარიშში შენახული წვდომის გასაღებების გამოსაყენებლად</translation>
+<translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> შენახულია მხოლოდ ამ მოწყობილობაზე. თუ ამ სანიშნეს გადაიტანთ <ph name="LOCAL_FOLDER" />-ში, მას სხვა მოწყობილობებში ვეღარ მიიღებთ.</translation>
 <translation id="2461550163693930491">არ დაიშვას საიტებისთვის გაზიარებულ ჩანართებში გადაადგილება და ,მათი მასშტაბირება</translation>
 <translation id="2461593638794842577">სურვილისამებრ, შეგიძლიათ გამორთოთ ეს პარამეტრი, თქვენი პაროლები მხოლოდ ამ მოწყობილობაზე რომ შეინახოს</translation>
 <translation id="2462332841984057083">Steam უკვე ყენდება. დაელოდეთ დაყენების დასრულებას.</translation>
@@ -2352,6 +2352,7 @@
 <translation id="2645047101481282803">თქვენს მოწყობილობას მართავს <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">მიმდინარეობს ამ ჩანართის ტრანსლირება <ph name="DEVICE_NAME" />-ზე</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">გსურთ თქვენი Google ანგარიშის საქაღალდეში შენახვა?</translation>
 <translation id="264897126871533291">პროტანომალია</translation>
 <translation id="2649045351178520408">Base64-დაშიფრული ASCII, სერტიფიკატების ჯაჭვი</translation>
 <translation id="265156376773362237">სტანდარტული წინაწარი ჩატვირთვა</translation>
@@ -2540,6 +2541,7 @@
 <translation id="2773288106548584039">მოძველებული ბრაუზერის მხარდაჭერა</translation>
 <translation id="2773621783913034737">ჩანართების უმოქმედო რეჟიმში გადატანა</translation>
 <translation id="2774876860084746535">ინტელექტუალური</translation>
+<translation id="2775047284666165174"><ph name="LOCAL_FOLDER" /> შენახულია მხოლოდ ამ მოწყობილობაზე. თუ ამ საქაღალდეს გადაიტანთ <ph name="LOCAL_FOLDER" />-ში, მას სხვა მოწყობილობებში ვეღარ მიიღებთ.</translation>
 <translation id="2775104091073479743">თითის ანაბეჭდების რედაქტირება</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{გაფართოებას „<ph name="EXTENSION" />“ წვდომა ჰქონდა მოწყობილობებზე}=1{გაფართოებას „<ph name="EXTENSION" />“ წვდომა აქვს {0} მოწყობილობაზე}other{გაფართოებას „<ph name="EXTENSION" />“ წვდომა აქვს {0} მოწყობილობაზე}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{1 მხარდაუჭერელი აპის ამოშლა}other{# მხარდაუჭერელი აპის ამოშლა}}</translation>
@@ -4943,6 +4945,7 @@
 <translation id="4527929807707405172">უკუგადაადგილების ჩართვა. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">თარგმნის შემოთავაზება</translation>
 <translation id="4528638190900283934">შედით სისტემაში, დამატებითი ფუნქციებით რომ ისარგებლოთ</translation>
+<translation id="4529052777398765334">ეს საქაღალდე შენახულია მხოლოდ ამ მოწყობილობაზე. თუ მას შეინახავთ <ph name="ACCOUNT_FOLDER" />-ში, ეს საქაღალდეც თქვენს ანგარიშში შეინახება.</translation>
 <translation id="4529455689802245339">Chrome-ის ავტოსუბტიტრებმა შეიძლება არ იმუშაოს</translation>
 <translation id="4531451811601110068">ხელახლა ცადეთ ან დახმარებისთვის მიმართეთ ადმინისტრატორს</translation>
 <translation id="4531924570968473143">ვინ გსურთ, დაამატოთ ამ <ph name="DEVICE_TYPE" />-ს?</translation>
@@ -5529,6 +5532,7 @@
 <translation id="4955707703665801001">ხილვადობა ფუნქციაში „<ph name="FEATURE_NAME" />“</translation>
 <translation id="4955710816792587366">აირჩიეთ PIN-კოდი</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">გსურთ მხოლოდ ამ მოწყობილობის საქაღალდეში შენახვა?</translation>
 <translation id="4959262764292427323">პაროლები ინახება თქვენს Google ანგარიშში, რაც ნიშნავს, რომ მათი გამოყენება ნებისმიერ მოწყობილობაზე შეგიძლიათ</translation>
 <translation id="4960020053211143927">მხარდაუჭერელია ზოგიერთი აპის მიერ</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> — <ph name="PROFILE_NAME" /></translation>
@@ -8453,6 +8457,7 @@
 <translation id="711840821796638741">მართული სანიშნეების ჩვენება</translation>
 <translation id="711985611146095797">ეს გვერდი საშუალებას გაძლევთ, მართოთ თქვენი სისტემაში შესული Google ანგარიშები. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Chrome ბრაუზერისა და Android-ის ტრაფიკი დაიბლოკება, როცა VPN დაკავშირებული არ იქნება</translation>
+<translation id="7120904433567247946">ეს სანიშნე შენახულია მხოლოდ ამ მოწყობილობაზე. თუ მას შეინახავთ <ph name="ACCOUNT_FOLDER" />-ში, ეს სანიშნეც თქვენს ანგარიშში შეინახება.</translation>
 <translation id="7121438501124788993">შემმუშავებლის რეჟიმი</translation>
 <translation id="7121728544325372695">გონიერი ტირეები</translation>
 <translation id="7122605570852873914">მაინც გამოსვლა</translation>
@@ -8479,6 +8484,7 @@
 <translation id="7139627972753429585"><ph name="APP_NAME" /> იყენებს თქვენს მიკროფონს</translation>
 <translation id="7140785920919278717">აპლიკაციის ინსტალატორი</translation>
 <translation id="7141105143012495934">შესვლა ვერ მოხერხდა, რადგან თქვენი ანგარიშის შესახებ დეტალების მიღება შეუძლებელია. გთხოვთ, დაუკავშირდეთ ადმინისტრატორს ან სცადოთ ხელახლა.</translation>
+<translation id="7141470099673912333">კონტენტის გადატანა</translation>
 <translation id="7141844554192012199">შემოწმება</translation>
 <translation id="714301620504747562">ვების დათვალიერება და ძიება უფრო სწრაფია, ვიდრე სტანდარტული წინასწარი ჩატვირთვა</translation>
 <translation id="7143207342074048698">დაკავშირება</translation>

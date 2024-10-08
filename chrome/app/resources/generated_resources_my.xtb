@@ -2108,6 +2108,7 @@
 <translation id="2460356425461033301">သင့်ဘရောင်ဇာ အချက်အလက်များကို အရန်သိမ်းပြီး စက်တိုင်းတွင် သုံးနိုင်သည်</translation>
 <translation id="2460482211073772897">အခြားဖိုင်တွဲများတွင်</translation>
 <translation id="2460826998961521840">သင့် Google Account တွင် သိမ်းထားသည့် လျှို့ဝှက်ကီးများသုံးရန်</translation>
+<translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> ကို ဤစက်တွင်သာ သိမ်းသည်။ ဤလိပ်စာကို <ph name="LOCAL_FOLDER" /> သို့ ရွှေ့ပါက ၎င်းကို သင်၏အခြားစက်များတွင် မရနိုင်တော့ပါ။</translation>
 <translation id="2461550163693930491">မျှဝေထားသည့် တဘ်များကို လှိမ့်ရန်၊ ဇူးမ်ဆွဲရန် ခွင့်မပြုပါ</translation>
 <translation id="2461593638794842577">သင့်စကားဝှက်များကို ဤစက်တွင်သာ သိမ်းရန် ဤဆက်တင်ကို ပိတ်နိုင်သည်</translation>
 <translation id="2462332841984057083">Steam ကို လက်ရှိ ထည့်သွင်းလျက်ရှိသည်။ စနစ်ထည့်သွင်းပြီးသည်အထိ စောင့်ပါ။</translation>
@@ -2361,6 +2362,7 @@
 <translation id="2645047101481282803">သင့်စက်ပစ္စည်းကို <ph name="PROFILE_NAME" /> က စီမံခန့်ခွဲသည်</translation>
 <translation id="2645388244376970260">ဤတဘ်ကို <ph name="DEVICE_NAME" /> သို့ ကာစ်လုပ်နေသည်</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">သင့် Google Account ရှိ ဖိုင်တွဲတွင် သိမ်းမလား။</translation>
 <translation id="264897126871533291">အနီ မမြင်ရခြင်း</translation>
 <translation id="2649045351178520408">Base64-ကုဒ်သွင်းထား ASCII၊ လက်မှတ် ကွင်းဆက်</translation>
 <translation id="265156376773362237">ပုံမှန် ကြိုဖွင့်မှု</translation>
@@ -2549,6 +2551,7 @@
 <translation id="2773288106548584039">ဝဘ်ဆိုက်အဟောင်း ဖွင့်ရန် အကူအညီ</translation>
 <translation id="2773621783913034737">တဘ်များကို ပိတ်ရန်</translation>
 <translation id="2774876860084746535">ဉာဏ်သုံးခြင်း</translation>
+<translation id="2775047284666165174"><ph name="LOCAL_FOLDER" /> ကို ဤစက်တွင်သာ သိမ်းသည်။ ဤဖိုင်တွဲကို <ph name="LOCAL_FOLDER" /> သို့ ရွှေ့ပါက ၎င်းကို သင်၏အခြားစက်များတွင် မရနိုင်တော့ပါ။</translation>
 <translation id="2775104091073479743">လက်ဗွေများကို တည်းဖြတ်ရန်</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{“<ph name="EXTENSION" />” နောက်ဆက်တွဲသည် စက်များကို သုံးထားသည်}=1{“<ph name="EXTENSION" />” နောက်ဆက်တွဲသည် စက် {0} ခုကို သုံးနေသည်}other{“<ph name="EXTENSION" />” နောက်ဆက်တွဲသည် စက် {0} ခုကို သုံးနေသည်}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{ပံ့ပိုးမထားသော အက်ပ် ၁ ခုကို ဖျက်ရန်}other{ပံ့ပိုးမထားသော အက်ပ် # ခုကို ဖျက်ရန်}}</translation>
@@ -4950,6 +4953,7 @@
 <translation id="4527929807707405172">နောက်ပြန်လှိမ့်ခြင်း ဖွင့်ပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">ဘာသာပြန် အကြံပြုချက်</translation>
 <translation id="4528638190900283934">ထပ်ဆောင်းဝန်ဆောင်မှုများအတွက် လက်မှတ်ထိုးဝင်ပါ</translation>
+<translation id="4529052777398765334">ဤဖိုင်တွဲကို ယခုစက်တွင်သာ သိမ်းသည်။ ၎င်းကို <ph name="ACCOUNT_FOLDER" /> တွင် သိမ်းပါက ဤဖိုင်တွဲကိုလည်း သင့်အကောင့်တွင် သိမ်းပါမည်။</translation>
 <translation id="4529455689802245339">Chrome ‘တိုက်ရိုက်စာတန်း’ အလုပ်လုပ်နိုင်လောက်မည် မဟုတ်ပါ</translation>
 <translation id="4531451811601110068">ထပ်စမ်းကြည့်နိုင်သည် (သို့) အကူအညီရယူရန် သင့်စီမံခန့်ခွဲသူကို ဆက်သွယ်နိုင်သည်</translation>
 <translation id="4531924570968473143">ဤ <ph name="DEVICE_TYPE" /> တွင် ဘယ်သူ့ကို ထည့်လိုသလဲ။</translation>
@@ -5536,6 +5540,7 @@
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> မြင်နိုင်မှု</translation>
 <translation id="4955710816792587366">သင်၏ ပင်နံပါတ်ကို ရွေးချယ်ခြင်း</translation>
 <translation id="4956847150856741762">၁</translation>
+<translation id="4958009531430054995">ဤစက်တွင်သာ ဖိုင်တွဲတစ်ခုထဲသို့ သိမ်းမလား။</translation>
 <translation id="4959262764292427323">မည်သည့်စက်ပစ္စည်းတွင်မဆို အသုံးပြုနိုင်ရန် စကားဝှက်များကို သင်၏ Google အကောင့်ထဲတွင် သိမ်းဆည်းထားပါသည်</translation>
 <translation id="4960020053211143927">အက်ပ်အချို့တွင် ပံ့ပိုးမထားပါ</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8458,6 +8463,7 @@
 <translation id="711840821796638741">စီမံကွပ်ကဲထားသည့် စာညှပ်များကို ပြရန်</translation>
 <translation id="711985611146095797">သင်လက်မှတ်ထိုးဝင်ထားသော Google Account များကို စီမံရန် ဤစာမျက်နှာက ခွင့်ပြုသည်။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">VPN ချိတ်ဆက်မထားပါက Chrome ဘရောင်ဇာနှင့် Android ဒေတာစီးဆင်းမှုတို့ကို ပိတ်ထားမည်</translation>
+<translation id="7120904433567247946">ဤလိပ်စာကို ဤစက်တွင်သာ သိမ်းသည်။ ၎င်းကို <ph name="ACCOUNT_FOLDER" /> တွင် သိမ်းပါက ဤလိပ်စာကိုလည်း သင့်အကောင့်တွင် သိမ်းပါမည်။</translation>
 <translation id="7121438501124788993">တီထွင်သူမုဒ်</translation>
 <translation id="7121728544325372695">အဆင့်မြင့် တုံးတိုများ</translation>
 <translation id="7122605570852873914">မည်သို့ပင်ဖြစ်စေ ထွက်ရန်</translation>
@@ -8484,6 +8490,7 @@
 <translation id="7139627972753429585"><ph name="APP_NAME" /> က သင့်မိုက်ခရိုဖုန်းကို အသုံးပြုနေသည်</translation>
 <translation id="7140785920919278717">အပလီကေးရှင်း ထည့်သွင်းကိရိယာ</translation>
 <translation id="7141105143012495934">သင့်အကောင့်အသေးစိတ်များအား ထုတ်ယူ၍မရသောကြောင့် လက်မှတ်ထိုးဝင်ရောက်မှု မအောင်မြင်ပါ။ ကျေးဇူးပြု၍ သင့်ကြီးကြပ်သူကို ဆက်သွယ်ပါ သို့မဟုတ် နောက်တစ်ကြိမ်ကြိုးစားပါ။</translation>
+<translation id="7141470099673912333">အချက်အလက် လွှဲပြောင်းခြင်း</translation>
 <translation id="7141844554192012199">စစ်ဆေးရန်</translation>
 <translation id="714301620504747562">ကြည့်ရှုရှာဖွေရာ၌ ပုံမှန်ကြိုဖွင့်ခြင်းထက် ပိုမိုမြန်ဆန်သည်</translation>
 <translation id="7143207342074048698">ချိတ်ဆက်နေသည်</translation>

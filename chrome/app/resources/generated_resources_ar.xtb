@@ -1697,6 +1697,7 @@
 <translation id="2184515124301515068">‏السماح لمتصفِّح Chrome باختيار الوقت الذي يمكن للمواقع الإلكترونية تشغيل الصوت فيه (مُوصى به)</translation>
 <translation id="2186206192313702726">‏عدسة Google</translation>
 <translation id="2186711480981247270">صفحة تمت مشاركتها من جهاز آخر</translation>
+<translation id="2187569197737151508">‏اضغط على مفتاح Esc‏ 5 مرّات لإعادة تفعيلها</translation>
 <translation id="2187675480456493911">تمت مزامنة الشبكة مع الأجهزة الأخرى المرتبطة بحسابك. ولن تتم مزامنة الإعدادات التي عدَّلها المستخدمون. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">خط استيراد شهادة الخادم</translation>
 <translation id="2187906491731510095">تم تحديث الإضافات.</translation>
@@ -2102,6 +2103,7 @@
 <translation id="2460356425461033301">الاحتفاظ بنسخة احتياطية من بيانات المتصفِّح واستخدامها على أي جهاز</translation>
 <translation id="2460482211073772897">في مجلدات أخرى</translation>
 <translation id="2460826998961521840">‏لاستخدام مفاتيح المرور المحفوظة في حسابك على Google</translation>
+<translation id="2461045498706592033">تم حفظ "<ph name="LOCAL_FOLDER" />" على هذا الجهاز فقط. وفي حال نقل هذه الإشارة المرجعية إلى "<ph name="LOCAL_FOLDER" />"، لن يعود بإمكانك الوصول إليها على أجهزتك الأخرى.</translation>
 <translation id="2461550163693930491">عدم السماح للمواقع الإلكترونية بالانتقال للأعلى أو للأسفل في محتوى علامات التبويب التي تمّت مشاركتها وتكبيره أو تصغيره</translation>
 <translation id="2461593638794842577">يمكنك إيقاف هذه الميزة لحفظ كلمات المرور على هذا الجهاز فقط</translation>
 <translation id="2462332841984057083">‏تجري الآن عملية إعداد تطبيق Steam. يُرجى الانتظار إلى أن تكتمل العملية.</translation>
@@ -2355,6 +2357,7 @@
 <translation id="2645047101481282803">تتم إدارة جهازك من قِبل <ph name="PROFILE_NAME" />.</translation>
 <translation id="2645388244376970260">جارٍ بث علامة التبويب هذه على "<ph name="DEVICE_NAME" />"</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">‏هل تريد حفظ الإشارة المرجعية ضِمن مجلد في حسابك على Google؟</translation>
 <translation id="264897126871533291">غَطَشُ الأحمر</translation>
 <translation id="2649045351178520408">‏حفظ سلسلة شهادات بتشفير ASCII المرمّز باستخدام Base64</translation>
 <translation id="265156376773362237">التحميل المُسبق العادي</translation>
@@ -2544,6 +2547,7 @@
 <translation id="2773288106548584039">دعم المتصفِّحات القديمة</translation>
 <translation id="2773621783913034737">إيقاف علامات التبويب</translation>
 <translation id="2774876860084746535">فكري</translation>
+<translation id="2775047284666165174">تم حفظ "<ph name="LOCAL_FOLDER" />" على هذا الجهاز فقط. وفي حال نقل هذا المجلد إلى "<ph name="LOCAL_FOLDER" />"، لن يعود بإمكانك الوصول إليه على أجهزتك الأخرى.</translation>
 <translation id="2775104091073479743">تعديل بصمات الأصابع</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{إزالة تطبيق واحد تم إيقافه نهائيًا}zero{إزالة # تطبيق تم إيقافه نهائيًا}two{إزالة تطبيقَين تم إيقافهما نهائيًا}few{إزالة # تطبيقات تم إيقافها نهائيًا}many{إزالة # تطبيقًا تم إيقافه نهائيًا}other{إزالة # تطبيق تم إيقافه نهائيًا}}</translation>
 <translation id="2776515114087183002">عرض المواقع الإلكترونية</translation>
@@ -2731,6 +2735,7 @@
 <translation id="2908122561561557160">‏فتح ملفات Word وExcel وPowerPoint</translation>
 <translation id="2908162660801918428">إضافة معرض الوسائط باستخدام الدليل</translation>
 <translation id="2908358077082926882">يمكنك الضغط على مفتاح "<ph name="CURRENTKEY" />" مرة أخرى لإزالة التخصيص، واختيار <ph name="RESPONSE" /> بعد ذلك.</translation>
+<translation id="2909487040556589351">‏تنزيل Chrome على جهازك الجوّال</translation>
 <translation id="2909506265808101667">‏تعذَّر الاتصال بخدمات Google. يُرجى التحقّق من اتصال الشبكة ثم إعادة المحاولة. رمز الخطأ: <ph name="ERROR_CODE" /></translation>
 <translation id="2910318910161511225">الاتصال بالشبكة وإعادة المحاولة</translation>
 <translation id="2910678330803525229">يمكنك الآن بدء التصفّح</translation>
@@ -4830,6 +4835,7 @@
 <translation id="4434611816075088065">ما مِن اقتراحات أخرى تستدعي انتباهك الآن</translation>
 <translation id="443475966875174318">تحديث التطبيقات غير المتوافقة أو إزالتها</translation>
 <translation id="443503224864902151">‏سيتم تسجيل خروجك من معظم المواقع الإلكترونية. وستظل مسجِّلاً الدخول إلى حسابك على Google، وبالتالي يمكن حذف بياناتك التي تمت مزامنتها.</translation>
+<translation id="4436573279088520291">إغلاق علامات التبويب غير المستخدَمة</translation>
 <translation id="4437879751057074691">اقتراح حفظ كلمات المرور ومفاتيح المرور</translation>
 <translation id="4437947179446780764">إضافة مقدِّم خدمة مخصّص لنظام أسماء النطاقات</translation>
 <translation id="4438043733494739848">شفاف</translation>
@@ -4942,6 +4948,7 @@
 <translation id="4527929807707405172">تفعيل "عكس اتجاه التنقّل في الصفحة". <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">اقتراح الترجمة</translation>
 <translation id="4528638190900283934">سجِّل الدخول للحصول على ميزات إضافية.</translation>
+<translation id="4529052777398765334">تم حفظ هذا المجلد على هذا الجهاز فقط. وإذا حفظته في "<ph name="ACCOUNT_FOLDER" />"، سيتم حفظه أيضًا في حسابك.</translation>
 <translation id="4529455689802245339">‏قد لا تعمل ميزة "النسخ النصي التلقائي" في Chrome</translation>
 <translation id="4531451811601110068">يمكنك إعادة المحاولة أو التواصل مع مشرفك لطلب المساعدة</translation>
 <translation id="4531924570968473143">من الشخص الذي تريد إضافته إلى جهاز <ph name="DEVICE_TYPE" />؟</translation>
@@ -5528,6 +5535,7 @@
 <translation id="4955707703665801001">إمكانية ظهور الجهاز الذي يستخدم ميزة "<ph name="FEATURE_NAME" />"</translation>
 <translation id="4955710816792587366">اختيار رقم التعريف الشخصي</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">هل تريد حفظ الإشارة المرجعية في مجلد على هذا الجهاز فقط؟</translation>
 <translation id="4959262764292427323">‏يتم حفظ كلمات المرور في حسابك على Google حتى تتمكَّن من استخدامها على أي جهاز.</translation>
 <translation id="4960020053211143927">هذا الخيار غير متاح في بعض التطبيقات.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8461,6 +8469,7 @@
 <translation id="711840821796638741">عرض الإشارات المرجعية المدارة</translation>
 <translation id="711985611146095797">‏تتيح لك هذه الصفحة إدارة حساباتك على Google التي تم تسجيل الدخول إليها. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">‏سيتم حظر متصفِّح Chrome وزيارات Android حتى يتم الاتصال بشبكة VPN</translation>
+<translation id="7120904433567247946">تم حفظ هذه الإشارة المرجعية على هذا الجهاز فقط. وإذا حفظتها في "<ph name="ACCOUNT_FOLDER" />"، سيتم أيضًا حفظها في حسابك.</translation>
 <translation id="7121438501124788993">وضع مطوِّر البرامج</translation>
 <translation id="7121728544325372695">الشرطات الذكية</translation>
 <translation id="7122605570852873914">تسجيل الخروج على أي حال</translation>
@@ -8488,6 +8497,7 @@
 <translation id="7139627972753429585">يستخدم تطبيق <ph name="APP_NAME" /> الميكروفون.</translation>
 <translation id="7140785920919278717">أداة تثبيت التطبيق</translation>
 <translation id="7141105143012495934">فشل تسجيل الدخول، نظرًا لعدم القدرة على استرداد تفاصيل حسابك، يُرجى الاتصال بالمسؤول أو إعادة المحاولة.</translation>
+<translation id="7141470099673912333">نقل المحتوى</translation>
 <translation id="7141844554192012199">التحقّق من كلمات المرور</translation>
 <translation id="714301620504747562">التصفُّح والبحث أسرع من التحميل المُسبق العادي</translation>
 <translation id="7143207342074048698">اتصال</translation>
@@ -9926,6 +9936,7 @@
 <translation id="816704878106051517">{COUNT,plural, =1{رقم هاتف واحد}zero{# رقم هاتف}two{رقما هاتف}few{# أرقام هاتف}many{# رقم هاتف}other{# رقم هاتف}}</translation>
 <translation id="8168435359814927499">المحتوى</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{إضافة علامة التبويب إلى قائمة القراءة}zero{إضافة علامات التبويب إلى قائمة القراءة}two{إضافة علامتَي التبويب إلى قائمة القراءة}few{إضافة علامات التبويب إلى قائمة القراءة}many{إضافة علامات التبويب إلى قائمة القراءة}other{إضافة علامات التبويب إلى قائمة القراءة}}</translation>
+<translation id="8169177848833352618">‏لا يستوفي هذا الجهاز متطلبات تثبيت Bruschetta. رمز الخطأ هو <ph name="ERROR" />.</translation>
 <translation id="8174047975335711832">معلومات عن الجهاز</translation>
 <translation id="8176332201990304395">زهري وأبيض</translation>
 <translation id="8176529144855282213">لتفعيل إمكانية الوصول إلى الميكروفون، عليك تشغيل الميكروفون باستخدام الزر اليدوي على جهازك.</translation>

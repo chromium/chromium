@@ -2095,6 +2095,7 @@
 <translation id="2460356425461033301">બ્રાઉઝર પરની તમારી વસ્તુઓનું બૅકઅપ લો અને કોઈપણ ડિવાઇસ પર તેનો ઉપયોગ કરો</translation>
 <translation id="2460482211073772897">બીજા ફોલ્ડરોમાં</translation>
 <translation id="2460826998961521840">તમારા Google એકાઉન્ટમાં સાચવવામાં આવેલી પાસકીનો ઉપયોગ કરવા માટે</translation>
+<translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> માત્ર આ ડિવાઇસ પર સાચવવામાં આવ્યું છે. જો તમે આ બુકમાર્કને <ph name="LOCAL_FOLDER" />માં ખસેડશો, તો હવેથી આ તમને તમારા અન્ય ડિવાઇસ પર મળશે નહીં.</translation>
 <translation id="2461550163693930491">સાઇટને શેર કરેલા ટૅબને સ્ક્રોલ અને નાનું-મોટું કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="2461593638794842577">તમે તમારા પાસવર્ડને ફક્ત આ ડિવાઇસ પર સાચવવા માટે આ સેટિંગ બંધ કરી શકો છો</translation>
 <translation id="2462332841984057083">Steamનું પહેલેથી સેટઅપ કરવામાં આવી રહ્યું છે. સેટઅપ પૂર્ણ થવાની રાહ જુઓ.</translation>
@@ -2348,6 +2349,7 @@
 <translation id="2645047101481282803">તમારું ડિવાઇસ <ph name="PROFILE_NAME" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="2645388244376970260"><ph name="DEVICE_NAME" /> પર આ ટૅબ કાસ્ટ કરી રહ્યાં છીએ</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">શું આને તમારા Google એકાઉન્ટમાંના કોઈ ફોલ્ડરમાં સાચવીએ?</translation>
 <translation id="264897126871533291">લાલ રંગ ન દેખાવાની ખામી</translation>
 <translation id="2649045351178520408">Base64-encoded ASCII, પ્રમાણપત્ર ચેન</translation>
 <translation id="265156376773362237">પહેલેથી લોડ કરવાનો માનક મોડ</translation>
@@ -2536,6 +2538,7 @@
 <translation id="2773288106548584039">લેગસી બ્રાઉઝર સહાય</translation>
 <translation id="2773621783913034737">ટૅબ નિષ્ક્રિય કરો</translation>
 <translation id="2774876860084746535">બૌદ્ધિક</translation>
+<translation id="2775047284666165174"><ph name="LOCAL_FOLDER" /> માત્ર આ ડિવાઇસ પર સાચવવામાં આવ્યું છે. જો તમે આ ફોલ્ડરને <ph name="LOCAL_FOLDER" />માં ખસેડશો, તો હવેથી આ તમને તમારા અન્ય ડિવાઇસ પર મળશે નહીં.</translation>
 <translation id="2775104091073479743">ફિંગરપ્રિન્ટમાં ફેરફાર કરો</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{એક્સ્ટેન્શન "<ph name="EXTENSION" />" ડિવાઇસ ઍક્સેસ કરી રહ્યું હતું}=1{એક્સ્ટેન્શન "<ph name="EXTENSION" />" {0} ડિવાઇસ ઍક્સેસ કરી રહ્યું છે}one{એક્સ્ટેન્શન "<ph name="EXTENSION" />" {0} ડિવાઇસ ઍક્સેસ કરી રહ્યું છે}other{એક્સ્ટેન્શન "<ph name="EXTENSION" />" {0} ડિવાઇસ ઍક્સેસ કરી રહ્યું છે}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{સપોર્ટ ન કરવામાં આવતી 1 ઍપ કાઢી નાખો}one{સપોર્ટ ન કરવામાં આવતી # ઍપ કાઢી નાખો}other{સપોર્ટ ન કરવામાં આવતી # ઍપ કાઢી નાખો}}</translation>
@@ -4937,6 +4940,7 @@
 <translation id="4527929807707405172">રિવર્સ સ્ક્રોલિંગ ચાલુ કરો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">સૂચિત અનુવાદ</translation>
 <translation id="4528638190900283934">વધારાની સુવિધાઓ માટે સાઇન ઇન કરો</translation>
+<translation id="4529052777398765334">આ ફોલ્ડર માત્ર આ ડિવાઇસ પર સાચવવામાં આવ્યું છે. જો તમે તેને <ph name="ACCOUNT_FOLDER" />માં સાચવશો, તો આ ફોલ્ડરને તમારા એકાઉન્ટમાં પણ સાચવવામાં આવશે.</translation>
 <translation id="4529455689802245339">Chrome લાઇવ કૅપ્શન કામ કરી શકશે નહીં</translation>
 <translation id="4531451811601110068">તમે ફરીથી પ્રયાસ કરી શકો છો અથવા સહાય માટે તમારા ઍડમિનિસ્ટ્રેટરનો સંપર્ક કરી શકો છો</translation>
 <translation id="4531924570968473143">આ <ph name="DEVICE_TYPE" /> પર કોને ઉમેરવાનું પસંદ કરશો?</translation>
@@ -5523,6 +5527,7 @@
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> માટે દૃશ્યતા</translation>
 <translation id="4955710816792587366">તમારો પિન પસંદ કરો</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">શું તેને માત્ર આ ડિવાઇસ પર કોઈ ફોલ્ડરમાં સાચવીએ?</translation>
 <translation id="4959262764292427323">પાસવર્ડ તમારા Google એકાઉન્ટમાં સાચવવામાં આવે છે, જેથી તમે કોઈપણ ઉપકરણ પર તેનો ઉપયોગ કરી શકો</translation>
 <translation id="4960020053211143927">અમુક ઍપ દ્વારા સપોર્ટ આપવામાં આવતો નથી</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8452,6 +8457,7 @@ USB ડિવાઇસ</translation>
 <translation id="711840821796638741">મેનેજ કરેલા બુકમાર્ક બતાવો</translation>
 <translation id="711985611146095797">આ પેજ તમને તમારા સાઇન ઇન કરેલા હોય એવા Google એકાઉન્ટ મેનેજ કરવાની મંજૂરી આપે છે. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">જ્યાં સુધી VPNથી કનેક્ટ થવામાં ન આવે, ત્યાં સુધી Chrome બ્રાઉઝર અને Android ટ્રાફિક બ્લૉક કરવામાં આવશે</translation>
+<translation id="7120904433567247946">આ બુકમાર્કને માત્ર આ ડિવાઇસમાં સાચવવામાં આવ્યું છે. જો તમે તેને આ <ph name="ACCOUNT_FOLDER" />માં સાચવશો, તો આ બુકમાર્કને પણ તમારા એકાઉન્ટમાં સાચવવામાં આવશે.</translation>
 <translation id="7121438501124788993">ડેવલપર મોડ</translation>
 <translation id="7121728544325372695">સ્માર્ટ ડૅશ</translation>
 <translation id="7122605570852873914">તેમ છતાં સાઇન આઉટ કરો</translation>
@@ -8478,6 +8484,7 @@ USB ડિવાઇસ</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> તમારા માઇક્રોફોનનો ઉપયોગ કરી રહી છે</translation>
 <translation id="7140785920919278717">ઍપ્લિકેશન ઇન્સ્ટૉલર</translation>
 <translation id="7141105143012495934">સાઇન ઇન નિષ્ફળ થયું કારણ કે તમારી એકાઉન્ટ વિગતો પાછી મેળવી શકાઈ નથી. કૃપા કરીને તમારા એડમિનનો સંપર્ક કરો અથવા ફરી પ્રયાસ કરો.</translation>
+<translation id="7141470099673912333">કન્ટેન્ટ ટ્રાન્સફર</translation>
 <translation id="7141844554192012199">તપાસ</translation>
 <translation id="714301620504747562">બ્રાઉઝ કરવું અને શોધવું પહેલેથી લોડ કરવાની સ્ટૅન્ડર્ડ પ્રક્રિયા કરતાં વધુ ઝડપી બને છે</translation>
 <translation id="7143207342074048698">કનેક્ટિંગ</translation>

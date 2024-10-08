@@ -385,7 +385,6 @@
 <translation id="6787751205395685251"><ph name="SITE_NAME" />에 적용할 옵션 선택</translation>
 <translation id="6790428901817661496">재생</translation>
 <translation id="6818926723028410516">항목 선택</translation>
-<translation id="6837658163275294267">Chrome은 탐색 중인 사용자를 추적하려는 목적으로 대부분의 사이트에서 서드 파티 쿠키를 사용하지 못하도록 제한합니다. 설정으로 이동하여 <ph name="BEGIN_LINK" />서드 파티 쿠키의 액세스를 관리<ph name="END_LINK" />하세요</translation>
 <translation id="6838525730752203626">Chrome을 기본 브라우저로 사용</translation>
 <translation id="6840760312327750441">탭을 그룹화하려면 탭을 길게 터치한 다음 다른 탭으로 드래그하세요.</translation>
 <translation id="6864395892908308021">기기에서 NFC를 읽을 수 없음</translation>

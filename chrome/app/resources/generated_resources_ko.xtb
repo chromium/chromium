@@ -2112,6 +2112,7 @@
 <translation id="2460356425461033301">브라우저 콘텐츠를 백업하고 어느 기기에서나 사용하세요</translation>
 <translation id="2460482211073772897">다른 폴더 내</translation>
 <translation id="2460826998961521840">Google 계정에 저장된 패스키를 사용하려면</translation>
+<translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> 폴더가 이 기기에만 저장됩니다. 이 북마크를 <ph name="LOCAL_FOLDER" /> 폴더로 이동하면 다른 기기에서 더 이상 액세스할 수 없습니다</translation>
 <translation id="2461550163693930491">사이트에서 공유한 탭을 스크롤 및 확대/축소하도록 허용하지 않음</translation>
 <translation id="2461593638794842577">이 설정을 사용 중지하면 비밀번호를 이 기기에만 저장할 수 있습니다</translation>
 <translation id="2462332841984057083">이미 Steam을 설정하는 중입니다. 설정이 완료될 때까지 기다려 주세요.</translation>
@@ -2365,6 +2366,7 @@
 <translation id="2645047101481282803"><ph name="PROFILE_NAME" />님이 관리하는 기기입니다</translation>
 <translation id="2645388244376970260"><ph name="DEVICE_NAME" /> 기기로 이 탭 전송 중</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">Google 계정의 폴더에 저장하시겠습니까?</translation>
 <translation id="264897126871533291">적색약</translation>
 <translation id="2649045351178520408">Base64-인코딩 ASCII, 인증서 체인</translation>
 <translation id="265156376773362237">표준 미리 로드</translation>
@@ -2553,6 +2555,7 @@
 <translation id="2773288106548584039">이전 브라우저 지원</translation>
 <translation id="2773621783913034737">탭 비활성화</translation>
 <translation id="2774876860084746535">지적임</translation>
+<translation id="2775047284666165174"><ph name="LOCAL_FOLDER" /> 폴더가 이 기기에만 저장됩니다. 이 폴더를 <ph name="LOCAL_FOLDER" /> 폴더로 이동하면 다른 기기에서 더 이상 액세스할 수 없습니다</translation>
 <translation id="2775104091073479743">지문 수정</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{확장 프로그램 ‘<ph name="EXTENSION" />’에서 기기에 액세스했습니다.}=1{확장 프로그램 ‘<ph name="EXTENSION" />’에서 기기 {0}대에 액세스하는 중입니다.}other{확장 프로그램 ‘<ph name="EXTENSION" />’에서 기기 {0}대에 액세스하는 중입니다.}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{지원되지 않는 앱 1개 삭제}other{지원되지 않는 앱 #개 삭제}}</translation>
@@ -4953,6 +4956,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4527929807707405172">역방향 스크롤이 사용 설정되었습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">번역 제안</translation>
 <translation id="4528638190900283934">로그인하여 더 많은 기능을 사용하세요</translation>
+<translation id="4529052777398765334">이 폴더가 이 기기에만 저장됩니다. <ph name="ACCOUNT_FOLDER" />에 저장하면 이 폴더가 계정에도 저장됩니다</translation>
 <translation id="4529455689802245339">Chrome 실시간 자막이 작동하지 않을 수 있음</translation>
 <translation id="4531451811601110068">다시 시도하거나 관리자에게 문의하여 도움을 요청하세요</translation>
 <translation id="4531924570968473143"><ph name="DEVICE_TYPE" />에 어떤 사용자를 추가할까요?</translation>
@@ -5539,6 +5543,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> 공개 상태</translation>
 <translation id="4955710816792587366">PIN 선택</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">이 기기의 폴더에만 저장하시겠습니까?</translation>
 <translation id="4959262764292427323">어느 기기에서나 사용할 수 있도록 비밀번호가 Google 계정에 저장됩니다.</translation>
 <translation id="4960020053211143927">일부 앱에서 지원되지 않습니다.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8464,6 +8469,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="711840821796638741">관리 북마크 표시</translation>
 <translation id="711985611146095797">이 페이지에서는 로그인된 Google 계정을 관리할 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">VPN이 연결되지 않으면 Chrome 브라우저 및 Android 트래픽이 차단됩니다</translation>
+<translation id="7120904433567247946">이 북마크가 이 기기에만 저장됩니다. <ph name="ACCOUNT_FOLDER" />에 저장하면 이 북마크가 계정에도 저장됩니다</translation>
 <translation id="7121438501124788993">개발자 모드</translation>
 <translation id="7121728544325372695">스마트 대시</translation>
 <translation id="7122605570852873914">무시하고 로그아웃</translation>
@@ -8490,6 +8496,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" />에서 마이크를 사용 중입니다.</translation>
 <translation id="7140785920919278717">애플리케이션 설치 프로그램</translation>
 <translation id="7141105143012495934">계정 세부정보를 가져올 수 없어 로그인할 수 없습니다. 관리자에게 문의하거나 다시 시도해 주세요.</translation>
+<translation id="7141470099673912333">콘텐츠 전송</translation>
 <translation id="7141844554192012199">진단</translation>
 <translation id="714301620504747562">탐색과 검색이 표준 미리 로드보다 빠릅니다.</translation>
 <translation id="7143207342074048698">연결 중</translation>

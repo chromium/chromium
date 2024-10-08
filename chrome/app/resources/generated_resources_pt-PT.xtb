@@ -1881,7 +1881,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
     Se decidir mais tarde que o Voice Match não é adequado para a criança, basta removê-lo nas Definições do Assistente. Para ver ou eliminar os clipes de áudio que a criança grava durante a configuração do Voice Match, aceda a <ph name="VOICE_MATCH_SETTINGS_URL" /> na respetiva conta.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2308649763891515230">Leia o código QR para transferir o Chrome para o seu iPhone e iPad e continuar a partir do ponto onde ficou.</translation>
 <translation id="2308798336967462263">As seguintes teclas não são suportadas: Tab, Shift, Control, Escape, Caps Lock e Volume</translation>
 <translation id="2309620859903500144">Este site foi impedido de aceder aos seus sensores de movimento ou de luz.</translation>
 <translation id="2310923358723722542">Apresentação e ampliação</translation>
@@ -2099,6 +2098,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2460356425461033301">Faça uma cópia de segurança dos itens do navegador e use-os em qualquer dispositivo</translation>
 <translation id="2460482211073772897">Noutras pastas</translation>
 <translation id="2460826998961521840">Para usar chaves de acesso guardadas na sua Conta Google</translation>
+<translation id="2461045498706592033">A pasta <ph name="LOCAL_FOLDER" /> está guardada apenas neste dispositivo. Se mover este marcador para <ph name="LOCAL_FOLDER" />, deixa de o ter nos seus outros dispositivos.</translation>
 <translation id="2461550163693930491">Não permitir que os sites desloquem e façam zoom nos separadores partilhados</translation>
 <translation id="2461593638794842577">Pode desativar esta definição para guardar as suas palavras-passe apenas neste dispositivo</translation>
 <translation id="2462332841984057083">O Steam já está a ser configurado. Aguarde pela conclusão da configuração.</translation>
@@ -2352,6 +2352,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2645047101481282803">O seu dispositivo é gerido por <ph name="PROFILE_NAME" />.</translation>
 <translation id="2645388244376970260">A transmitir este separador para o dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">Guardar numa pasta na sua Conta Google?</translation>
 <translation id="264897126871533291">Protanomalia</translation>
 <translation id="2649045351178520408">Cadeia de certificados ASCII codificados em Base64</translation>
 <translation id="265156376773362237">Pré-carregamento padrão</translation>
@@ -2540,6 +2541,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2773288106548584039">Compatibilidade com o navegador antigo</translation>
 <translation id="2773621783913034737">Tornar separadores inativos</translation>
 <translation id="2774876860084746535">Intelectual</translation>
+<translation id="2775047284666165174">A pasta <ph name="LOCAL_FOLDER" /> está guardada apenas neste dispositivo. Se mover esta pasta para <ph name="LOCAL_FOLDER" />, deixa de a ter nos seus outros dispositivos.</translation>
 <translation id="2775104091073479743">Editar impressões digitais</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{A extensão "<ph name="EXTENSION" />" estava a aceder a dispositivos}=1{A extensão "<ph name="EXTENSION" />" está a aceder a {0} dispositivo}other{A extensão "<ph name="EXTENSION" />" está a aceder a {0} dispositivos}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Remova 1 app não suportada}other{Remova # apps não suportadas}}</translation>
@@ -4944,6 +4946,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4527929807707405172">Ative o deslocamento inverso. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Sugestão de tradução</translation>
 <translation id="4528638190900283934">Inicie sessão para obter funcionalidades adicionais</translation>
+<translation id="4529052777398765334">Esta pasta está guardada apenas neste dispositivo. Se a guardar em <ph name="ACCOUNT_FOLDER" />, esta pasta também é guardada na sua conta.</translation>
 <translation id="4529455689802245339">As Legendas instantâneas do Chrome podem não funcionar</translation>
 <translation id="4531451811601110068">Pode tentar novamente ou contactar o administrador para obter ajuda</translation>
 <translation id="4531924570968473143">Quem quer adicionar a este dispositivo <ph name="DEVICE_TYPE" />?</translation>
@@ -5530,6 +5533,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4955707703665801001">Visibilidade da funcionalidade <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Escolher o PIN</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">Guardar numa pasta apenas neste dispositivo?</translation>
 <translation id="4959262764292427323">As palavras-passe são guardadas na sua Conta Google para que as possa utilizar em qualquer dispositivo.</translation>
 <translation id="4960020053211143927">Não suportado por algumas apps</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -8456,6 +8460,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="711840821796638741">Mostrar marcadores geridos</translation>
 <translation id="711985611146095797">Esta página permite-lhe gerir Contas Google com sessão iniciada. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">O navegador Chrome e o tráfego do Android serão bloqueados, exceto se tiver ligação a uma VPN</translation>
+<translation id="7120904433567247946">Este marcador está guardado apenas neste dispositivo. Se o guardar em <ph name="ACCOUNT_FOLDER" />, este marcador também é guardado na sua conta.</translation>
 <translation id="7121438501124788993">Modo de programador</translation>
 <translation id="7121728544325372695">Traços inteligentes</translation>
 <translation id="7122605570852873914">Terminar sessão mesmo assim</translation>
@@ -8482,6 +8487,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7139627972753429585">A app <ph name="APP_NAME" /> está a utilizar o seu microfone.</translation>
 <translation id="7140785920919278717">Instalador da aplicação</translation>
 <translation id="7141105143012495934">O início de sessão falhou porque não foi possível obter os detalhes da sua conta. Contacte o gestor ou tente novamente.</translation>
+<translation id="7141470099673912333">Transferência de conteúdo</translation>
 <translation id="7141844554192012199">Verificação</translation>
 <translation id="714301620504747562">A navegação e a pesquisa são mais rápidas do que o pré-carregamento padrão</translation>
 <translation id="7143207342074048698">A ligar</translation>
