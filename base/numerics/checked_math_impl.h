@@ -189,7 +189,7 @@ struct CheckedMulOp<T, U> {
 
     Promotion presult = {};
     bool is_valid = true;
-    if (CheckedMulFastOp<Promotion, Promotion>::is_supported) {
+    if constexpr (CheckedMulFastOp<Promotion, Promotion>::is_supported) {
       // The fast op may be available with the promoted type.
       // The casts here are safe because of the "value in range" conditional
       // above.
