@@ -12,6 +12,7 @@
 
 namespace blink {
 
+class V8XRLayerLayout;
 class XRGraphicsBinding;
 
 class XRCompositionLayer : public XRLayer {
@@ -22,7 +23,7 @@ class XRCompositionLayer : public XRLayer {
   ~XRCompositionLayer() override = default;
 
   XRGraphicsBinding* binding() const { return binding_.Get(); }
-  const String& layout() const;
+  V8XRLayerLayout layout() const;
   bool blendTextureSourceAlpha() const;
   void setBlendTextureSourceAlpha(bool value);
   std::optional<bool> chromaticAberrationCorrection() const;
@@ -39,7 +40,6 @@ class XRCompositionLayer : public XRLayer {
 
  private:
   const Member<XRGraphicsBinding> binding_;
-  const String layout_{"default"};
   bool blend_texture_source_alpha_{false};
   std::optional<bool> chromatic_aberration_correction_{std::nullopt};
   bool force_mono_presentation_{false};

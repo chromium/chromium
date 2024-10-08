@@ -428,7 +428,7 @@ void XRSession::SetDOMOverlayElement(Element* element) {
   //
   // At this time, "screen" is the only supported DOM Overlay type.
   dom_overlay_state_ = MakeGarbageCollected<XRDOMOverlayState>(
-      XRDOMOverlayState::DOMOverlayType::kScreen);
+      V8XRDOMOverlayType::Enum::kScreen);
 }
 
 const String XRSession::visibilityState() const {

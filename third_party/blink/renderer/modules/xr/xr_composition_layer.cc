@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_composition_layer.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_layer_layout.h"
 #include "third_party/blink/renderer/modules/xr/xr_graphics_binding.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 
@@ -12,8 +13,8 @@ namespace blink {
 XRCompositionLayer::XRCompositionLayer(XRGraphicsBinding* binding)
     : XRLayer(binding->session()), binding_(binding) {}
 
-const String& XRCompositionLayer::layout() const {
-  return layout_;
+V8XRLayerLayout XRCompositionLayer::layout() const {
+  return V8XRLayerLayout(V8XRLayerLayout::Enum::kDefault);
 }
 
 bool XRCompositionLayer::blendTextureSourceAlpha() const {
