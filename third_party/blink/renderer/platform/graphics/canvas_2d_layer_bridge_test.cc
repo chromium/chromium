@@ -259,60 +259,6 @@ class MockLogger : public Canvas2DLayerBridge::Logger {
   ~MockLogger() override = default;
 };
 
-TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxWhileHibernating) {
-  if (!features::IsCanvas2DHibernationEnabled()) {
-    GTEST_SKIP();
-  }
-
-  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(gfx::Size(300, 300), RasterModeHint::kPreferGPU, kNonOpaque);
-  DrawSomething(bridge.get());
-
-  // Register an alternate Logger for tracking hibernation events
-  std::unique_ptr<MockLogger> mock_logger = std::make_unique<MockLogger>();
-  MockLogger* mock_logger_ptr = mock_logger.get();
-  bridge->SetLoggerForTesting(std::move(mock_logger));
-
-  // Test entering hibernation
-  EXPECT_CALL(
-      *mock_logger_ptr,
-      ReportHibernationEvent(Canvas2DLayerBridge::kHibernationScheduled));
-  EXPECT_CALL(*mock_logger_ptr, DidStartHibernating()).Times(1);
-  Host()->SetPageVisible(false);
-
-  // TODO(crbug.com/1476964): Remove this when done refactoring.
-  bridge->PageVisibilityChanged();
-
-  ThreadScheduler::Current()
-      ->ToMainThreadScheduler()
-      ->StartIdlePeriodForTesting();
-  platform->RunUntilIdle();
-  testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
-
-  // TODO(crbug.com/1476964): Remove this when done refactoring.
-  // Temporary plumbing. In non-test code, HTMLCanvasElement overrides
-  // CanvasResourceHost::IsHibernating to propagate to Canvas2DLayerBridge.
-  // FakeCanvasResourceHost does not do this.  We will be able to remove this
-  // one hibernation management is moved out of Canvas2DLayerBridge.
-  Host()->SetIsHibernating(bridge->GetHibernationHandler().IsHibernating());
-
-  // Test PrepareTransferableResource() while hibernating
-  viz::TransferableResource resource;
-  viz::ReleaseCallback release_callback;
-  EXPECT_FALSE(Host()->PrepareTransferableResource(nullptr, &resource,
-                                                   &release_callback));
-  EXPECT_TRUE(Host()->IsResourceValid());
-
-  // Tear down the bridge on the thread so that 'bridge' can go out of scope
-  // without crashing due to thread checks
-  EXPECT_CALL(*mock_logger_ptr,
-              ReportHibernationEvent(
-                  Canvas2DLayerBridge::kHibernationEndedWithTeardown));
-  bridge.reset();
-  testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
-}
-
 TEST_F(Canvas2DLayerBridgeTest, ResourceRecycling) {
   ScopedCanvas2dImageChromiumForTest canvas_2d_image_chromium(true);
   const_cast<gpu::Capabilities&>(SharedGpuContext::ContextProviderWrapper()
