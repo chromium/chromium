@@ -1183,7 +1183,7 @@ void V4LocalDatabaseManager::SetupUpdateProtocolManager(
       base::BindRepeating(&V4LocalDatabaseManager::UpdateRequestCompleted,
                           weak_factory_.GetWeakPtr());
 
-  v4_update_protocol_manager_ = V4UpdateProtocolManager::Create(
+  v4_update_protocol_manager_ = std::make_unique<V4UpdateProtocolManager>(
       url_loader_factory, config, update_callback,
       extended_reporting_level_callback_);
 }

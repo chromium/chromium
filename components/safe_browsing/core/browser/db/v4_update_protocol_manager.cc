@@ -96,48 +96,7 @@ ChromeClientInfo::SafeBrowsingReportingPopulation GetReportingLevelProtoValue(
   }
 }
 
-// The default V4UpdateProtocolManagerFactory.
-class V4UpdateProtocolManagerFactoryImpl
-    : public V4UpdateProtocolManagerFactory {
- public:
-  V4UpdateProtocolManagerFactoryImpl() {}
-
-  V4UpdateProtocolManagerFactoryImpl(
-      const V4UpdateProtocolManagerFactoryImpl&) = delete;
-  V4UpdateProtocolManagerFactoryImpl& operator=(
-      const V4UpdateProtocolManagerFactoryImpl&) = delete;
-
-  ~V4UpdateProtocolManagerFactoryImpl() override {}
-  std::unique_ptr<V4UpdateProtocolManager> CreateProtocolManager(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const V4ProtocolConfig& config,
-      V4UpdateCallback update_callback,
-      ExtendedReportingLevelCallback extended_reporting_level_callback)
-      override {
-    return base::WrapUnique(
-        new V4UpdateProtocolManager(url_loader_factory, config, update_callback,
-                                    extended_reporting_level_callback));
-  }
-};
-
 // V4UpdateProtocolManager implementation --------------------------------
-
-// static
-V4UpdateProtocolManagerFactory* V4UpdateProtocolManager::factory_ = nullptr;
-
-// static
-std::unique_ptr<V4UpdateProtocolManager> V4UpdateProtocolManager::Create(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const V4ProtocolConfig& config,
-    V4UpdateCallback update_callback,
-    ExtendedReportingLevelCallback extended_reporting_level_callback) {
-  if (!factory_) {
-    factory_ = new V4UpdateProtocolManagerFactoryImpl();
-  }
-  return factory_->CreateProtocolManager(url_loader_factory, config,
-                                         update_callback,
-                                         extended_reporting_level_callback);
-}
 
 void V4UpdateProtocolManager::ResetUpdateErrors() {
   update_error_count_ = 0;
