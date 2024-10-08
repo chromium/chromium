@@ -2406,6 +2406,13 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
       // Some clients do not want local URLs to have access to other local
       // URLs.
       origin->BlockLocalAccessFromLocalOrigin();
+      if (origin_to_commit_) {
+        // This information does not exist on `origin_to_commit_` as it comes
+        // from the browser side. To make sure the `IsSameOriginWith()` check
+        // at the end of the function will pass, also block access for
+        // `origin_to_commit_`.
+        origin_to_commit_->BlockLocalAccessFromLocalOrigin();
+      }
       debug_info_builder.Append(", universal_access_block_file");
     }
   }
