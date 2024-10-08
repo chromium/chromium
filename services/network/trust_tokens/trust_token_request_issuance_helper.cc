@@ -260,19 +260,22 @@ void TrustTokenRequestIssuanceHelper::Finalize(
   net_log_.BeginEvent(
       net::NetLogEventType::TRUST_TOKEN_OPERATION_FINALIZE_ISSUANCE);
 
-  std::string header_value;
+  // EnumerateHeader(|iter|=nullptr) asks for a previous instance of the header,
+  // and returns the next one.
+  std::optional<std::string_view> header_value =
+      response_headers.EnumerateHeader(
+          /*iter=*/nullptr, kTrustTokensSecTrustTokenHeader);
 
-  // EnumerateHeader(|iter|=nullptr) asks for the first instance of the header,
-  // if any.
-  if (!response_headers.EnumerateHeader(
-          /*iter=*/nullptr, kTrustTokensSecTrustTokenHeader, &header_value)) {
+  if (!header_value) {
     LogOutcome(net_log_, kFinalize, "Response missing Trust Tokens header");
     std::move(done).Run(mojom::TrustTokenOperationStatus::kBadResponse);
     return;
   }
-  response_headers.RemoveHeader(kTrustTokensSecTrustTokenHeader);
 
-  ProcessIssuanceResponse(std::move(header_value), std::move(done));
+  ProcessIssuanceResponse(std::string(*header_value), std::move(done));
+  // Can only remove the header after the last user of `header_value`, since it
+  // holds a pointer to the kTrustTokensSecTrustTokenHeader header's value.
+  response_headers.RemoveHeader(kTrustTokensSecTrustTokenHeader);
 }
 
 void TrustTokenRequestIssuanceHelper::ProcessIssuanceResponse(

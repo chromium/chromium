@@ -206,13 +206,14 @@ void TrustTokenRequestRedemptionHelper::Finalize(
   net_log_.BeginEvent(
       net::NetLogEventType::TRUST_TOKEN_OPERATION_FINALIZE_REDEMPTION);
 
-  // 1. If the response has no Sec-Private-State-Token header, return an error.
-  std::string header_value;
+  // EnumerateHeader(|iter|=nullptr) asks for a previous instance of the header,
+  // and returns the next one.
+  std::optional<std::string_view> header_value =
+      response_headers.EnumerateHeader(
+          /*iter=*/nullptr, kTrustTokensSecTrustTokenHeader);
 
-  // EnumerateHeader(|iter|=nullptr) asks for the first instance of the header,
-  // if any.
-  if (!response_headers.EnumerateHeader(
-          /*iter=*/nullptr, kTrustTokensSecTrustTokenHeader, &header_value)) {
+  // 1. If the response has no Sec-Private-State-Token header, return an error.
+  if (!header_value) {
     LogOutcome(net_log_, kFinalize, "Response missing Trust Tokens header");
     response_headers.RemoveHeader(
         kTrustTokensResponseHeaderSecTrustTokenLifetime);
@@ -220,12 +221,13 @@ void TrustTokenRequestRedemptionHelper::Finalize(
     return;
   }
 
-  // 2. Strip the Sec-Private-State-Token header, from the response and pass the
-  // header to BoringSSL.
-  response_headers.RemoveHeader(kTrustTokensSecTrustTokenHeader);
-
+  // 2. Pass the header to BoringSSL and Strip the Sec-Private-State-Token
+  // header. Removing the header will invalidate `header_value`, so have to pass
+  // it to BoringSSL before doing so.
   std::optional<std::string> maybe_redemption_record =
-      cryptographer_->ConfirmRedemption(header_value);
+      cryptographer_->ConfirmRedemption(*header_value);
+  response_headers.RemoveHeader(kTrustTokensSecTrustTokenHeader);
+  header_value.reset();
 
   // 3. If BoringSSL fails its structural validation / signature check, return
   // an error.
