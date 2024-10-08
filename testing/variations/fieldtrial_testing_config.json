@@ -21514,6 +21514,21 @@
             ]
         }
     ],
+    "SegmentedDefaultBrowserPromo": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SegmentedDefaultBrowserPromo"
+                    ]
+                }
+            ]
+        }
+    ],
     "SelectFileOpenDocument": [
         {
             "platforms": [
