@@ -743,3 +743,9 @@
 -All/SitePerProcessWithMainFrameThresholdWithTotalLimitTest.ExcessiveAllocation/0
 -All/SitePerProcessWithMainFrameThresholdWithTotalLimitTest.ExcessiveAllocation/1
 -All/SitePerProcessWithMainFrameThresholdWithTotalLimitTest.ExcessiveAllocation/1
+
+# TODO(crbug.com/372062085): These tests have been failing since
+# https://crrev.com/c/5854463.
+-RenderFrameHostImplPartitionedPopinBrowserTest.CreateNewWindow_FailsWithAboutBlankTargetUrl
+-RenderFrameHostImplPartitionedPopinBrowserTest.CreateNewWindow_FailsWithEmptyTargetUrl
+-RenderFrameHostImplPartitionedPopinBrowserTest.CreateNewWindow_FailsWithHttpTargetUrl
