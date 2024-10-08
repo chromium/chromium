@@ -1345,7 +1345,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ShaderLoadPrefixOK" enum="BooleanMatched"
-    expires_after="2025-02-02">
+    expires_after="2025-04-06">
   <owner>vikassoni@chromium.org</owner>
   <owner>chrome-gpu-metrics@google.com</owner>
   <summary>
