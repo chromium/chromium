@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scheduler_post_task_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scheduler_post_task_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_task_priority.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/scheduler/dom_task.h"
@@ -31,6 +32,33 @@
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
+
+namespace {
+WebSchedulingPriority WebSchedulingPriorityFromEnum(
+    V8TaskPriority::Enum priority) {
+  switch (priority) {
+    case V8TaskPriority::Enum::kUserBlocking:
+      return WebSchedulingPriority::kUserBlockingPriority;
+    case V8TaskPriority::Enum::kUserVisible:
+      return WebSchedulingPriority::kUserVisiblePriority;
+    case V8TaskPriority::Enum::kBackground:
+      return WebSchedulingPriority::kBackgroundPriority;
+  }
+  NOTREACHED();
+}
+V8TaskPriority::Enum V8TaskEnumFromWebSchedulingPriority(
+    WebSchedulingPriority priority) {
+  switch (priority) {
+    case WebSchedulingPriority::kUserBlockingPriority:
+      return V8TaskPriority::Enum::kUserBlocking;
+    case WebSchedulingPriority::kUserVisiblePriority:
+      return V8TaskPriority::Enum::kUserVisible;
+    case WebSchedulingPriority::kBackgroundPriority:
+      return V8TaskPriority::Enum::kBackground;
+  }
+  NOTREACHED();
+}
+}  // namespace
 
 const char DOMScheduler::kSupplementName[] = "DOMScheduler";
 
@@ -95,8 +123,8 @@ ScriptPromise<IDLAny> DOMScheduler::postTask(
   if (options->hasPriority()) {
     // The priority option overrides the signal for priority.
     priority_source = GetFixedPriorityTaskSignal(
-        script_state, WebSchedulingPriorityFromString(
-                          AtomicString(IDLEnumAsString(options->priority()))));
+        script_state,
+        WebSchedulingPriorityFromEnum(options->priority().AsEnum()));
   } else if (IsA<DOMTaskSignal>(signal_option)) {
     priority_source = To<DOMTaskSignal>(signal_option);
   }
@@ -219,7 +247,7 @@ DOMScheduler::DOMTaskQueue* DOMScheduler::CreateDynamicPriorityTaskQueue(
   FrameOrWorkerScheduler* scheduler = GetExecutionContext()->GetScheduler();
   CHECK(scheduler);
   WebSchedulingPriority priority =
-      WebSchedulingPriorityFromString(signal->priority());
+      WebSchedulingPriorityFromEnum(signal->priority().AsEnum());
   std::unique_ptr<WebSchedulingTaskQueue> task_queue =
       scheduler->CreateWebSchedulingTaskQueue(queue_type, priority);
   CHECK(task_queue);
@@ -238,7 +266,7 @@ DOMTaskSignal* DOMScheduler::GetFixedPriorityTaskSignal(
   wtf_size_t index = static_cast<wtf_size_t>(priority);
   if (!fixed_priority_task_signals_[index]) {
     auto* signal = DOMTaskSignal::CreateFixedPriorityTaskSignal(
-        script_state, WebSchedulingPriorityToString(priority));
+        script_state, V8TaskEnumFromWebSchedulingPriority(priority));
     CHECK(signal->HasFixedPriority());
     fixed_priority_task_signals_[index] = signal;
   }
@@ -249,7 +277,8 @@ DOMScheduler::DOMTaskQueue* DOMScheduler::GetTaskQueue(
     DOMTaskSignal* task_signal,
     WebSchedulingQueueType queue_type) {
   if (task_signal->HasFixedPriority()) {
-    auto priority = WebSchedulingPriorityFromString(task_signal->priority());
+    auto priority =
+        WebSchedulingPriorityFromEnum(task_signal->priority().AsEnum());
     return queue_type == WebSchedulingQueueType::kTaskQueue
                ? fixed_priority_task_queues_[static_cast<wtf_size_t>(priority)]
                : fixed_priority_continuation_queues_[static_cast<wtf_size_t>(
@@ -276,7 +305,8 @@ void DOMScheduler::OnPriorityChange(DOMTaskSignal* signal,
     return;
   }
   DCHECK(signal);
-  task_queue->SetPriority(WebSchedulingPriorityFromString(signal->priority()));
+  task_queue->SetPriority(
+      WebSchedulingPriorityFromEnum(signal->priority().AsEnum()));
 }
 
 DOMScheduler::DOMTaskQueue::DOMTaskQueue(

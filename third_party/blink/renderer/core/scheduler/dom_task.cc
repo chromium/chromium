@@ -38,6 +38,18 @@ namespace blink {
 
 namespace {
 
+const char* WebSchedulingPriorityToString(WebSchedulingPriority priority) {
+  switch (priority) {
+    case WebSchedulingPriority::kUserBlockingPriority:
+      return "user-blocking";
+    case WebSchedulingPriority::kUserVisiblePriority:
+      return "user-visible";
+    case WebSchedulingPriority::kBackgroundPriority:
+      return "background";
+  }
+  NOTREACHED();
+}
+
 void GenericTaskData(perfetto::TracedDictionary& dict,
                      ExecutionContext* context,
                      const uint64_t task_id) {
