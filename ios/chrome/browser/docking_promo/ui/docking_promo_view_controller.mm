@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "ios/chrome/browser/docking_promo/ui/docking_promo_metrics.h"
 #import "ios/chrome/browser/shared/ui/elements/instruction_view.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -56,29 +57,31 @@ NSString* const kDockingPromoAccessibilityId = @"kDockingPromoAccessibilityId";
   }
   [self configureAlertScreen];
   [self layoutAlertScreen];
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+        @[ UITraitUserInterfaceStyle.self, UITraitVerticalSizeClass.self ]);
+    __weak __typeof(self) weakSelf = self;
+    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                     UITraitCollection* previousCollection) {
+      [weakSelf updateUIOnTraitChange:previousCollection];
+    };
+    [self registerForTraitChanges:traits withHandler:handler];
+  }
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 // Called when the device is rotated or dark mode is enabled/disabled. (Un)Hide
 // the animations accordingly.
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-
-  if (self.traitCollection.userInterfaceStyle !=
-      previousTraitCollection.userInterfaceStyle) {
-    RecordDockingPromoAction(IOSDockingPromoAction::kToggleAppearance);
+  if (@available(iOS 17, *)) {
+    return;
   }
 
-  BOOL darkModeEnabled =
-      (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
-  BOOL hidden = ![self shouldShowAnimation];
-
-  self.animationViewWrapper.animationView.hidden = hidden || darkModeEnabled;
-  self.animationViewWrapperDarkMode.animationView.hidden =
-      hidden || !darkModeEnabled;
-
-  [self updateAnimationsPlaying];
-  [self updateAlertScreenTopAnchorConstraint];
+  [self updateUIOnTraitChange:previousTraitCollection];
 }
+#endif
 
 #pragma mark - DockingPromoConsumer
 
@@ -250,6 +253,26 @@ NSString* const kDockingPromoAccessibilityId = @"kDockingPromoAccessibilityId";
   self.animationViewWrapperDarkMode.animationView.hidden
       ? [self.animationViewWrapperDarkMode stop]
       : [self.animationViewWrapperDarkMode play];
+}
+
+// Called when the device is rotated or dark mode is enabled/disabled. (Un)Hide
+// the animations accordingly.
+- (void)updateUIOnTraitChange:(UITraitCollection*)previousTraitCollection {
+  if (self.traitCollection.userInterfaceStyle !=
+      previousTraitCollection.userInterfaceStyle) {
+    RecordDockingPromoAction(IOSDockingPromoAction::kToggleAppearance);
+  }
+
+  BOOL darkModeEnabled =
+      (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
+  BOOL hidden = ![self shouldShowAnimation];
+
+  self.animationViewWrapper.animationView.hidden = hidden || darkModeEnabled;
+  self.animationViewWrapperDarkMode.animationView.hidden =
+      hidden || !darkModeEnabled;
+
+  [self updateAnimationsPlaying];
+  [self updateAlertScreenTopAnchorConstraint];
 }
 
 @end
