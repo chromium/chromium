@@ -8,6 +8,7 @@ import 'chrome://settings/settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsSearchEngineListDialogElement, SearchEnginesInfo, SettingsSearchPageElement} from 'chrome://settings/settings.js';
+import type {CrCheckboxElement} from 'chrome://settings/lazy_load.js';
 import {SearchEnginesBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -78,6 +79,11 @@ suite('SearchPageTests', function() {
     const radioGroupElement =
         searchEngineListDialog.shadowRoot!.querySelector('cr-radio-group')!;
     assertEquals('0', radioGroupElement.selected);
+
+    const saveGuestChoiceCheckbox =
+        searchEngineListDialog.shadowRoot!.querySelector(
+            '#saveGuestChoiceCheckbox')!;
+    assertFalse(!!saveGuestChoiceCheckbox);
 
     // Simulate a user initiated change of the default search engine.
     const radioButtons =
@@ -153,5 +159,29 @@ suite('SearchPageTests', function() {
     assertFalse(
         !!page.shadowRoot!.querySelector('extension-controlled-indicator'));
     assertTrue(!!page.shadowRoot!.querySelector('cr-policy-pref-indicator'));
+  });
+
+  test('ShowGuestSaveCheckbox', async function() {
+    browserProxy.setSaveGuestChoice(true);
+    await browserProxy.whenCalled('getSearchEnginesList');
+    flush();
+
+    // Open the search engine list dialog.
+    const openSearchEngineListButton =
+        page.shadowRoot!.querySelector<HTMLButtonElement>('#openDialogButton')!;
+    openSearchEngineListButton.click();
+    assertEquals(metrics.count('ChooseDefaultSearchEngine'), 1);
+
+    await flushTasks();
+
+    const searchEngineListDialog =
+        page.shadowRoot!.querySelector<SettingsSearchEngineListDialogElement>(
+            'settings-search-engine-list-dialog')!;
+
+    const saveGuestChoiceCheckbox =
+        searchEngineListDialog.shadowRoot!.querySelector<CrCheckboxElement>(
+            '#saveGuestChoiceCheckbox')!;
+    assertTrue(!!saveGuestChoiceCheckbox);
+    assertTrue(saveGuestChoiceCheckbox.checked);
   });
 });

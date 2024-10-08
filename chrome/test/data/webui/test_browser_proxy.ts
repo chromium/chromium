@@ -65,8 +65,9 @@ export class TestBrowserProxy {
    *     arguments.
    */
   methodCalled(methodName: string, ...args: any[]): void {
+    // Tip: check that the |methodName| is being passed to |this.constructor|.
     const methodData = this.resolverMap_.get(methodName);
-    assert(methodData);
+    assert(methodData, `Method '${methodName}' not found in TestBrowserProxy.`);
     const storedArgs = args.length === 1 ? args[0] : args;
     methodData.args.push(storedArgs);
     this.resolverMap_.set(methodName, methodData);

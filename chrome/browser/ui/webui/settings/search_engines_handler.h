@@ -56,6 +56,11 @@ class SearchEnginesHandler : public SettingsPageUIHandler,
 
   base::Value::Dict GetSearchEnginesList();
 
+  // Returns whether the search engine choice should be saved in guest mode
+  // Returns null if the profile is not eligible for guest choice saving.
+  // Called from WebUI.
+  void HandleGetSaveGuestChoice(const base::Value::List& args);
+
   // Removes the search engine at the given index. Called from WebUI.
   void HandleRemoveSearchEngine(const base::Value::List& args);
 

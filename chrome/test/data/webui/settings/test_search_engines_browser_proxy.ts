@@ -16,10 +16,12 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 export class TestSearchEnginesBrowserProxy extends TestBrowserProxy implements
     SearchEnginesBrowserProxy {
   private searchEnginesInfo_: SearchEnginesInfo;
+  private saveGuestChoice_: boolean|null;
 
   constructor() {
     super([
       'getSearchEnginesList',
+      'getSaveGuestChoice',
       'removeSearchEngine',
       'searchEngineEditCancelled',
       'searchEngineEditCompleted',
@@ -32,6 +34,7 @@ export class TestSearchEnginesBrowserProxy extends TestBrowserProxy implements
 
     this.searchEnginesInfo_ =
         {defaults: [], actives: [], others: [], extensions: []};
+    this.saveGuestChoice_ = null;
   }
 
   setDefaultSearchEngine(
@@ -66,6 +69,11 @@ export class TestSearchEnginesBrowserProxy extends TestBrowserProxy implements
     return Promise.resolve(this.searchEnginesInfo_);
   }
 
+  getSaveGuestChoice() {
+    this.methodCalled('getSaveGuestChoice');
+    return Promise.resolve(this.saveGuestChoice_);
+  }
+
   validateSearchEngineInput(fieldName: string, fieldValue: string) {
     this.methodCalled('validateSearchEngineInput', [fieldName, fieldValue]);
     return Promise.resolve(true);
@@ -80,6 +88,14 @@ export class TestSearchEnginesBrowserProxy extends TestBrowserProxy implements
    */
   setSearchEnginesInfo(searchEnginesInfo: SearchEnginesInfo) {
     this.searchEnginesInfo_ = searchEnginesInfo;
+  }
+
+  /**
+   * Sets whether the DSE choice should be persisted for guest profiles.
+   * Null if the checkbox is not available.
+   */
+  setSaveGuestChoice(saveGuestChoice: boolean|null) {
+    this.saveGuestChoice_ = saveGuestChoice;
   }
 }
 

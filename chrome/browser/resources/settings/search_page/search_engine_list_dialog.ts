@@ -63,14 +63,43 @@ export class SettingsSearchEngineListDialogElement extends
         type: String,
         value: '',
       },
+
+      /**
+       * Whether the checkbox to save the search engine choice in guest mode
+       * should be shown.
+       */
+      showSaveGuestChoice_: {
+        type: Boolean,
+        computed: 'computeShowSaveGuestChoice_(saveGuestChoice_)',
+      },
+
+      /**
+       * State of the checkbox to save the search engine in guest mode. Null if
+       * checkbox is not displayed.
+       */
+      saveGuestChoice_: {
+        type: Boolean,
+        value: null,
+        notify: true,
+      },
     };
   }
 
   searchEngines: SearchEngine[];
 
   private selectedEngineId_: string;
+  private saveGuestChoice_: boolean|null = null;
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();
+
+  override ready() {
+    super.ready();
+
+    this.browserProxy_.getSaveGuestChoice().then(
+        (saveGuestChoice: boolean|null) => {
+          this.saveGuestChoice_ = saveGuestChoice;
+        });
+  }
 
   private onSetAsDefaultClick_() {
     const searchEngine = this.searchEngines.find(
@@ -103,6 +132,10 @@ export class SettingsSearchEngineListDialogElement extends
         this.searchEngines.find(searchEngine => searchEngine.default);
     assert(defaultSearchEngine);
     this.selectedEngineId_ = defaultSearchEngine.id.toString();
+  }
+
+  private computeShowSaveGuestChoice_(saveGuestChoice: boolean|null): boolean {
+    return saveGuestChoice !== null;
   }
 }
 

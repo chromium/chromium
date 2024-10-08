@@ -73,6 +73,10 @@ void SearchEnginesHandler::RegisterMessages() {
       base::BindRepeating(&SearchEnginesHandler::HandleGetSearchEnginesList,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
+      "getSaveGuestChoice",
+      base::BindRepeating(&SearchEnginesHandler::HandleGetSaveGuestChoice,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
       "setDefaultSearchEngine",
       base::BindRepeating(&SearchEnginesHandler::HandleSetDefaultSearchEngine,
                           base::Unretained(this)));
@@ -307,6 +311,22 @@ void SearchEnginesHandler::HandleSetDefaultSearchEngine(
   list_controller_.MakeDefaultTemplateURL(index, choice_made_location);
 
   base::RecordAction(base::UserMetricsAction("Options_SearchEngineSetDefault"));
+}
+
+void SearchEnginesHandler::HandleGetSaveGuestChoice(
+    const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
+  AllowJavascript();
+
+  base::Value save_guest_choice;
+  auto* choice_service =
+      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(profile_);
+  if (choice_service->IsProfileEligibleForDseGuestPropagation()) {
+    save_guest_choice = base::Value(
+        choice_service->GetSavedSearchEngineBetweenGuestSessions().has_value());
+  }
+  ResolveJavascriptCallback(callback_id, std::move(save_guest_choice));
 }
 
 void SearchEnginesHandler::HandleSetIsActiveSearchEngine(

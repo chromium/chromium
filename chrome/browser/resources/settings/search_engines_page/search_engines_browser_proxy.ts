@@ -103,6 +103,8 @@ export interface SearchEnginesBrowserProxy {
 
   getSearchEnginesList(): Promise<SearchEnginesInfo>;
 
+  getSaveGuestChoice(): Promise<boolean|null>;
+
   validateSearchEngineInput(fieldName: string, fieldValue: string):
       Promise<boolean>;
 
@@ -151,6 +153,10 @@ export class SearchEnginesBrowserProxyImpl implements
 
   getSearchEnginesList() {
     return sendWithPromise('getSearchEnginesList');
+  }
+
+  getSaveGuestChoice() {
+    return sendWithPromise('getSaveGuestChoice');
   }
 
   validateSearchEngineInput(fieldName: string, fieldValue: string) {

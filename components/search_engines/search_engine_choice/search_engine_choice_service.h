@@ -124,6 +124,10 @@ class SearchEngineChoiceService : public KeyedService {
   // Register Local state preferences in `registry`.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
+  void SetIsProfileEligibleForDseGuestPropagationForTesting(bool eligible) {
+    is_profile_eligible_for_dse_guest_propagation_ = eligible;
+  }
+
  private:
   // Checks if the search engine choice should be prompted again, based on
   // experiment parameters. If a reprompt is needed, some preferences related to
