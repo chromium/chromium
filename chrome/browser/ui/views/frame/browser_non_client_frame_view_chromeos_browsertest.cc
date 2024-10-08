@@ -1006,6 +1006,10 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
     EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
   }
 
+  // Ensure the current layout is finished before entering overview mode.
+  views::test::RunScheduledLayout(browser_view);
+  ASSERT_FALSE(browser_view->needs_layout());
+
   EnterOverviewMode();
   EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
