@@ -121,8 +121,7 @@ void IdentityManagerObserver::OnAccountsCookieDeletedByUserAction() {
   // OnAccountInCookieUpdated() properly.
   UpdateAccountsInCookieJarInfoIfNeeded(
       signin::AccountsInCookieJarInfo(/*accounts_are_fresh=*/true,
-                                      /*signed_in_accounts=*/{},
-                                      /*signed_out_accounts=*/{}));
+                                      /*accounts=*/{}));
   notify_keys_changed_callback_.Run();
 }
 

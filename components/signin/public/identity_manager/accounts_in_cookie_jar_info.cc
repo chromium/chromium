@@ -13,14 +13,25 @@ AccountsInCookieJarInfo::AccountsInCookieJarInfo() = default;
 
 AccountsInCookieJarInfo::AccountsInCookieJarInfo(
     bool accounts_are_fresh,
-    const std::vector<gaia::ListedAccount>& signed_in_accounts,
-    const std::vector<gaia::ListedAccount>& signed_out_accounts)
-    : accounts_are_fresh_(accounts_are_fresh),
-      potentially_invalid_signed_in_accounts_(signed_in_accounts),
-      signed_out_accounts_(signed_out_accounts) {
-  std::ranges::copy_if(potentially_invalid_signed_in_accounts_,
-                       std::back_inserter(valid_signed_in_accounts_),
-                       [](const gaia::ListedAccount& a) { return a.valid; });
+    const std::vector<gaia::ListedAccount>& accounts)
+    : accounts_are_fresh_(accounts_are_fresh), all_accounts_(accounts) {
+  // `potentially_invalid_signed_in_accounts_` contains accounts that are not
+  // considered signed out.
+  std::ranges::copy_if(
+      all_accounts_,
+      std::back_inserter(potentially_invalid_signed_in_accounts_),
+      [](const gaia::ListedAccount& a) { return !a.signed_out; });
+
+  // `valid_signed_in_accounts_` contains accounts that are valid and not
+  // considered signed out.
+  std::ranges::copy_if(
+      all_accounts_, std::back_inserter(valid_signed_in_accounts_),
+      [](const gaia::ListedAccount& a) { return a.valid && !a.signed_out; });
+
+  // `signed_out_accounts_` contains accounts that are signed out.
+  std::ranges::copy_if(
+      all_accounts_, std::back_inserter(signed_out_accounts_),
+      [](const gaia::ListedAccount& a) { return a.signed_out; });
 }
 
 AccountsInCookieJarInfo::AccountsInCookieJarInfo(
@@ -32,6 +43,11 @@ AccountsInCookieJarInfo::~AccountsInCookieJarInfo() = default;
 
 bool AccountsInCookieJarInfo::AreAccountsFresh() const {
   return accounts_are_fresh_;
+}
+
+const std::vector<gaia::ListedAccount>&
+AccountsInCookieJarInfo::GetAllAccounts() const {
+  return all_accounts_;
 }
 
 const std::vector<gaia::ListedAccount>&

@@ -2271,8 +2271,8 @@ TEST_F(AccountReconcilorMirrorTest, ExtraCookieChangeNotification) {
   // Add extra cookie change notification. Reconcilor should ignore it.
   gaia::ListedAccount listed_account =
       ListedAccountFromCookieParams(cookie_params, account_id);
-  signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info = {
-      /*accounts_are_fresh=*/true, {listed_account}, {}};
+  signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info(
+      /*accounts_are_fresh=*/true, /*accounts=*/{listed_account});
   reconcilor->OnAccountsInCookieUpdated(
       accounts_in_cookie_jar_info, GoogleServiceAuthError::AuthErrorNone());
 

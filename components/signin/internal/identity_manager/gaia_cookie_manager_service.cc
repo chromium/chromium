@@ -446,12 +446,10 @@ GaiaCookieManagerService::GaiaCookieManagerService(
 
   if (!gaia_cookie_last_list_accounts_data.empty()) {
     if (!gaia::ParseListAccountsData(gaia_cookie_last_list_accounts_data,
-                                     &listed_accounts_,
-                                     &signed_out_accounts_)) {
+                                     &accounts_)) {
       DLOG(WARNING) << "GaiaCookieManagerService::ListAccounts: Failed to "
                        "parse list accounts data from pref.";
-      listed_accounts_.clear();
-      signed_out_accounts_.clear();
+      accounts_.clear();
       return;
     }
     InitializeListedAccountsIds();
@@ -532,8 +530,7 @@ signin::AccountsInCookieJarInfo GaiaCookieManagerService::ListAccounts() {
 
   return signin::AccountsInCookieJarInfo(
       /*accounts_are_fresh=*/!list_accounts_stale_,
-      /*signed_in_accounts=*/listed_accounts_,
-      /*signed_out_accounts=*/signed_out_accounts_);
+      /*accounts=*/accounts_);
 }
 
 void GaiaCookieManagerService::TriggerListAccounts() {
@@ -601,10 +598,9 @@ void GaiaCookieManagerService::RemoveLoggedOutAccountByGaiaId(
   }
 
   const bool accounts_updated =
-      std::erase_if(signed_out_accounts_,
-                    [&gaia_id](const gaia::ListedAccount& account) {
-                      return account.gaia_id == gaia_id;
-                    }) != 0;
+      std::erase_if(accounts_, [&gaia_id](const gaia::ListedAccount& account) {
+        return account.gaia_id == gaia_id && account.signed_out == true;
+      }) != 0;
 
   if (!accounts_updated) {
     return;
@@ -614,8 +610,7 @@ void GaiaCookieManagerService::RemoveLoggedOutAccountByGaiaId(
     gaia_accounts_updated_in_cookie_callback_.Run(
         signin::AccountsInCookieJarInfo(
             /*accounts_are_fresh=*/!list_accounts_stale_,
-            /*signed_in_accounts=*/listed_accounts_,
-            /*signed_out_accounts=*/signed_out_accounts_),
+            /*accounts=*/accounts_),
         GoogleServiceAuthError::AuthErrorNone());
   }
 }
@@ -708,10 +703,8 @@ void GaiaCookieManagerService::OnListAccountsSuccess(const std::string& data) {
          GaiaCookieRequestType::LIST_ACCOUNTS);
   fetcher_backoff_.InformOfRequest(true);
 
-  if (!gaia::ParseListAccountsData(data, &listed_accounts_,
-                                   &signed_out_accounts_)) {
-    listed_accounts_.clear();
-    signed_out_accounts_.clear();
+  if (!gaia::ParseListAccountsData(data, &accounts_)) {
+    accounts_.clear();
     signin_client_->GetPrefs()->ClearPref(
         prefs::kGaiaCookieLastListAccountsData);
     GoogleServiceAuthError error =
@@ -821,12 +814,7 @@ GaiaCookieManagerService::GetCookieManagerForPartition() {
 }
 
 void GaiaCookieManagerService::InitializeListedAccountsIds() {
-  for (gaia::ListedAccount& account : listed_accounts_) {
-    DCHECK(account.id.empty());
-    account.id = account_tracker_service_->PickAccountIdForAccount(
-        account.gaia_id, account.email);
-  }
-  for (gaia::ListedAccount& account : signed_out_accounts_) {
+  for (gaia::ListedAccount& account : accounts_) {
     DCHECK(account.id.empty());
     account.id = account_tracker_service_->PickAccountIdForAccount(
         account.gaia_id, account.email);

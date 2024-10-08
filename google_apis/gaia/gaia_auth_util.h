@@ -80,12 +80,10 @@ COMPONENT_EXPORT(GOOGLE_APIS) bool HasGaiaSchemeHostPort(const GURL& url);
 // email/valid pairs.  An email addresses is considered valid if a passive
 // login would succeed (i.e. the user does not need to reauthenticate).
 // If there an error parsing the JSON, then false is returned.
-// If either |accounts| or |signed_out_accounts| is null, the corresponding
-// accounts returned from /ListAccounts will be ignored.
+// If |accounts| is null, accounts returned from /ListAccounts will be ignored.
 COMPONENT_EXPORT(GOOGLE_APIS)
 bool ParseListAccountsData(std::string_view data,
-                           std::vector<ListedAccount>* accounts,
-                           std::vector<ListedAccount>* signed_out_accounts);
+                           std::vector<ListedAccount>* accounts);
 
 // Parses base64url encoded protobuf message returned by the remote consent
 // flow, returning whether the consent was approved and the gaia id of the user

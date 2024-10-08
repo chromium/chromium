@@ -127,13 +127,9 @@ bool HasGaiaSchemeHostPort(const GURL& url) {
 }
 
 bool ParseListAccountsData(std::string_view data,
-                           std::vector<ListedAccount>* accounts,
-                           std::vector<ListedAccount>* signed_out_accounts) {
+                           std::vector<ListedAccount>* accounts) {
   if (accounts)
     accounts->clear();
-
-  if (signed_out_accounts)
-    signed_out_accounts->clear();
 
   // Parse returned data and make sure we have data.
   std::optional<base::Value> value = base::JSONReader::Read(data);
@@ -187,10 +183,9 @@ bool ParseListAccountsData(std::string_view data,
           listed_account.signed_out = signed_out != 0;
           listed_account.verified = verified != 0;
           listed_account.raw_email = email;
-          auto* accounts_ptr =
-              listed_account.signed_out ? signed_out_accounts : accounts;
-          if (accounts_ptr)
-            accounts_ptr->push_back(listed_account);
+          if (accounts) {
+            accounts->push_back(listed_account);
+          }
         }
       }
     }

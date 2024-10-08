@@ -509,8 +509,7 @@ void AccountReconcilor::StartReconcile(Trigger trigger) {
     OnAccountsInCookieUpdated(
         /*accounts_in_cookie_jar_info=*/signin::AccountsInCookieJarInfo(
             /*accounts_are_fresh=*/true,
-            /*signed_in_accounts=*/{},
-            /*signed_out_accounts=*/{}),
+            /*accounts=*/{}),
         /*error=*/GoogleServiceAuthError(GoogleServiceAuthError::NONE));
     return;
   }

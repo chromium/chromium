@@ -240,12 +240,10 @@ class GaiaCookieManagerServiceTest : public testing::Test {
 
 const signin::AccountsInCookieJarInfo kCookiesEmptyStale(
     /*accounts_are_fresh=*/false,
-    /*signed_in_accounts=*/{},
-    /*signed_out_accounts=*/{});
+    /*accounts=*/{});
 const signin::AccountsInCookieJarInfo kCookiesEmptyFresh(
     /*accounts_are_fresh=*/true,
-    /*signed_in_accounts=*/{},
-    /*signed_out_accounts=*/{});
+    /*accounts=*/{});
 
 }  // namespace
 
@@ -644,7 +642,7 @@ TEST_F(GaiaCookieManagerServiceTest, ListAccountsFindsOneAccount) {
   account.email = "a@b.com";
   account.gaia_id = "8";
   account.raw_email = "a@b.com";
-  signin::AccountsInCookieJarInfo cookies_expected_fresh(true, {account}, {});
+  signin::AccountsInCookieJarInfo cookies_expected_fresh(true, {account});
   EXPECT_CALL(observer, OnGaiaAccountsInCookieUpdated(cookies_expected_fresh,
                                                       no_error()));
 
@@ -677,7 +675,7 @@ TEST_F(GaiaCookieManagerServiceTest, ListAccountsFindsSignedOutAccounts) {
   signed_out_account.raw_email = "c@d.com";
   signed_out_account.signed_out = true;
   signin::AccountsInCookieJarInfo cookies_expected_fresh(
-      true, {signed_in_account}, {signed_out_account});
+      true, {signed_in_account, signed_out_account});
   EXPECT_CALL(observer, OnGaiaAccountsInCookieUpdated(cookies_expected_fresh,
                                                       no_error()));
 
@@ -707,7 +705,7 @@ TEST_F(GaiaCookieManagerServiceTest, ListAccountsAfterOnCookieChange) {
   account.email = "a@b.com";
   account.gaia_id = "8";
   account.raw_email = "a@b.com";
-  signin::AccountsInCookieJarInfo cookies_expected_fresh(true, {account}, {});
+  signin::AccountsInCookieJarInfo cookies_expected_fresh(true, {account});
   EXPECT_CALL(observer, OnGaiaAccountsInCookieUpdated(cookies_expected_fresh,
                                                       no_error()));
 
@@ -726,7 +724,7 @@ TEST_F(GaiaCookieManagerServiceTest, ListAccountsAfterOnCookieChange) {
 
   // OnCookieChange should invalidate the cached data and trigger a/ListAccounts
   // request.
-  signin::AccountsInCookieJarInfo cookies_expected_stale(false, {account}, {});
+  signin::AccountsInCookieJarInfo cookies_expected_stale(false, {account});
   ASSERT_EQ(helper.ListAccounts(), cookies_expected_stale);
 
   EXPECT_CALL(observer,
@@ -760,7 +758,7 @@ TEST_F(GaiaCookieManagerServiceTest,
   account.email = "a@b.com";
   account.gaia_id = "8";
   account.raw_email = "a@b.com";
-  signin::AccountsInCookieJarInfo cookies_expected_fresh(true, {account}, {});
+  signin::AccountsInCookieJarInfo cookies_expected_fresh(true, {account});
   EXPECT_CALL(observer, OnGaiaAccountsInCookieUpdated(cookies_expected_fresh,
                                                       no_error()));
   std::string data =
@@ -863,7 +861,7 @@ TEST_F(GaiaCookieManagerServiceTest, GaiaCookieLastListAccountsDataSaved) {
   signed_out_account.raw_email = "c@d.com";
   signed_out_account.signed_out = true;
   signin::AccountsInCookieJarInfo cookies_expected_fresh(
-      true, {signed_in_account}, {signed_out_account});
+      true, {signed_in_account, signed_out_account});
   {
     InstrumentedGaiaCookieManagerService helper(
         account_tracker_service(), token_service(), signin_client());
@@ -904,7 +902,7 @@ TEST_F(GaiaCookieManagerServiceTest, GaiaCookieLastListAccountsDataSaved) {
     // retrieve last |list_accounts| and  |expected_accounts| from the pref,
     // but mark them as stale. A |StartFetchingListAccounts| is triggered.
     signin::AccountsInCookieJarInfo cookies_expected_stale(
-        false, {signed_in_account}, {signed_out_account});
+        false, {signed_in_account, signed_out_account});
     EXPECT_EQ(helper.ListAccounts(), cookies_expected_stale);
 
     // |SimulateListAccountsSuccess| and assert list accounts is not stale
@@ -1092,12 +1090,12 @@ TEST_F(GaiaCookieManagerServiceTest, RemoveLoggedOutAccountByGaiaId) {
   account2.raw_email = "b@d.com";
   account2.signed_out = true;
   signin::AccountsInCookieJarInfo cookies_expected_two_accounts_fresh(
-      true, {}, {account1, account2});
+      true, {account1, account2});
   ASSERT_EQ(helper.ListAccounts(), cookies_expected_two_accounts_fresh);
 
   // The removal should notify observers, with one account removed.
   signin::AccountsInCookieJarInfo cookies_expected_one_account_fresh(
-      true, {}, {account2});
+      true, {account2});
   EXPECT_CALL(observer, OnGaiaAccountsInCookieUpdated(
                             cookies_expected_one_account_fresh, _));
   EXPECT_CALL(helper, StartFetchingListAccounts()).Times(0);
@@ -1139,7 +1137,7 @@ TEST_F(GaiaCookieManagerServiceTest,
   account.gaia_id = kTestGaiaId1;
   account.raw_email = "a@d.com";
   account.signed_out = true;
-  signin::AccountsInCookieJarInfo cookies_expected_stale(false, {}, {account});
+  signin::AccountsInCookieJarInfo cookies_expected_stale(false, {account});
   ASSERT_EQ(helper.ListAccounts(), cookies_expected_stale);
 
   // The removal should be ignored because the account list is stale.
@@ -1179,7 +1177,7 @@ TEST_F(GaiaCookieManagerServiceTest,
   account.gaia_id = kTestGaiaId1;
   account.raw_email = "a@d.com";
   account.signed_out = true;
-  signin::AccountsInCookieJarInfo cookies_expected_fresh(true, {}, {account});
+  signin::AccountsInCookieJarInfo cookies_expected_fresh(true, {account});
   ASSERT_EQ(helper.ListAccounts(), cookies_expected_fresh);
 
   // The removal should be ignored because the Gaia ID is not listed/known.

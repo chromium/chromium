@@ -4,7 +4,6 @@
 
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 
-#include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,18 +16,24 @@ class AccountsInCookieJarInfoTest : public testing::Test {
     valid_account1_ = CreateListedAccount("a@example.com", "gaia_a");
     valid_account1_ = CreateListedAccount("b@example.com", "gaia_b");
 
-    invalid_account_ = CreateListedAccount("c@example.com", "gaia_b");
-    invalid_account_.valid = false;
+    invalid_account1_ = CreateListedAccount("c@example.com", "gaia_c");
+    invalid_account1_.valid = false;
+    invalid_account2_ = CreateListedAccount("d@example.com", "gaia_d");
+    invalid_account2_.valid = false;
 
-    signed_out_account_ = CreateListedAccount("d@example.com", "gaia_c");
-    signed_out_account_.signed_out = true;
+    signed_out_account1_ = CreateListedAccount("e@example.com", "gaia_e");
+    signed_out_account1_.signed_out = true;
+    signed_out_account2_ = CreateListedAccount("f@example.com", "gaia_f");
+    signed_out_account2_.signed_out = true;
   }
 
  protected:
   gaia::ListedAccount valid_account1_;
   gaia::ListedAccount valid_account2_;
-  gaia::ListedAccount invalid_account_;
-  gaia::ListedAccount signed_out_account_;
+  gaia::ListedAccount invalid_account1_;
+  gaia::ListedAccount invalid_account2_;
+  gaia::ListedAccount signed_out_account1_;
+  gaia::ListedAccount signed_out_account2_;
 
  private:
   static gaia::ListedAccount CreateListedAccount(const std::string& email,
@@ -42,13 +47,19 @@ class AccountsInCookieJarInfoTest : public testing::Test {
   }
 };
 
-TEST_F(AccountsInCookieJarInfoTest, InvalidSignedInAccountsFiltered) {
+TEST_F(AccountsInCookieJarInfoTest, AccountsFiltered) {
   signin::AccountsInCookieJarInfo cookies(
-      false, {valid_account1_, invalid_account_, valid_account2_},
-      {signed_out_account_});
+      false, {signed_out_account1_, valid_account1_, invalid_account1_,
+              valid_account2_, signed_out_account2_, invalid_account2_});
+  EXPECT_THAT(
+      cookies.GetAllAccounts(),
+      ElementsAre(signed_out_account1_, valid_account1_, invalid_account1_,
+                  valid_account2_, signed_out_account2_, invalid_account2_));
   EXPECT_THAT(cookies.GetValidSignedInAccounts(),
               ElementsAre(valid_account1_, valid_account2_));
   EXPECT_THAT(cookies.GetPotentiallyInvalidSignedInAccounts(),
-              ElementsAre(valid_account1_, invalid_account_, valid_account2_));
-  EXPECT_THAT(cookies.GetSignedOutAccounts(), ElementsAre(signed_out_account_));
+              ElementsAre(valid_account1_, invalid_account1_, valid_account2_,
+                          invalid_account2_));
+  EXPECT_THAT(cookies.GetSignedOutAccounts(),
+              ElementsAre(signed_out_account1_, signed_out_account2_));
 }

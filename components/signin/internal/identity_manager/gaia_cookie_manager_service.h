@@ -376,8 +376,7 @@ class GaiaCookieManagerService
   // True once the ExternalCCResultFetcher has completed once.
   bool external_cc_result_fetched_;
 
-  std::vector<gaia::ListedAccount> listed_accounts_;
-  std::vector<gaia::ListedAccount> signed_out_accounts_;
+  std::vector<gaia::ListedAccount> accounts_;
 
   bool list_accounts_stale_;
 
