@@ -49,9 +49,9 @@ bool IsInGroup(std::string_view group_name) {
   variations::ActiveGroupId id =
       variations::MakeActiveGroupId("WebUITabStripOnTablets", group_name);
 
-  std::vector<variations::ActiveGroupId> active_groups;
-  variations::SyntheticTrialsActiveGroupIdProvider::GetInstance()
-      ->GetActiveGroupIds(&active_groups);
+  std::vector<variations::ActiveGroupId> active_groups =
+      variations::SyntheticTrialsActiveGroupIdProvider::GetInstance()
+          ->GetActiveGroupIds();
 
   for (const auto& group_id : active_groups) {
     LOG(ERROR) << group_id.name << " " << group_id.group;

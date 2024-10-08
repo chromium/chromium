@@ -15,8 +15,26 @@
 #include "components/variations/active_field_trials.h"
 #include "components/variations/net/variations_command_line.h"
 #include "components/variations/service/safe_seed_manager.h"
+#include "components/variations/synthetic_trials_active_group_id_provider.h"
 
 namespace version_ui {
+namespace {
+
+#if !defined(NDEBUG)
+std::string GetActiveGroupNameAsString(
+    const base::FieldTrial::ActiveGroup& group) {
+  static const unsigned char kNonBreakingHyphenUTF8[] = {0xE2, 0x80, 0x91,
+                                                         '\0'};
+  static std::string_view kNonBreakingHyphenUTF8String(
+      reinterpret_cast<const char*>(kNonBreakingHyphenUTF8));
+
+  std::string result = group.trial_name + ":" + group.group_name;
+  base::ReplaceChars(result, "-", kNonBreakingHyphenUTF8String, &result);
+  return result;
+}
+#endif  // !defined(NDEBUG)
+
+}  // namespace
 
 std::string SeedTypeToUiString(variations::SeedType seed_type) {
   switch (seed_type) {
@@ -37,24 +55,34 @@ base::Value::List GetVariationsList() {
   // displayed locally (and is useful for diagnostics purposes).
   base::FieldTrialListIncludingLowAnonymity::GetActiveFieldTrialGroups(
       &active_groups);
+
 #if !defined(NDEBUG)
-  const unsigned char kNonBreakingHyphenUTF8[] = {0xE2, 0x80, 0x91, '\0'};
-  const std::string kNonBreakingHyphenUTF8String(
-      reinterpret_cast<const char*>(kNonBreakingHyphenUTF8));
   for (const auto& group : active_groups) {
-    std::string line = group.trial_name + ":" + group.group_name;
-    base::ReplaceChars(line, "-", kNonBreakingHyphenUTF8String, &line);
-    variations.push_back(line);
+    variations.push_back(GetActiveGroupNameAsString(group));
+  }
+
+  // Synthetic field trials.
+  for (const variations::SyntheticTrialGroup& group :
+       variations::SyntheticTrialsActiveGroupIdProvider::GetInstance()
+           ->GetGroups()) {
+    variations.push_back(GetActiveGroupNameAsString(group.active_group()));
   }
 #else
   // In release mode, display the hashes only.
   variations::GetFieldTrialActiveGroupIdsAsStrings(std::string_view(),
                                                    active_groups, &variations);
+
+  // Synthetic field trials.
+  std::vector<std::string> synthetic_field_trials;
+  variations::GetSyntheticTrialGroupIdsAsString(&synthetic_field_trials);
+  variations.insert(variations.end(), synthetic_field_trials.begin(),
+                    synthetic_field_trials.end());
 #endif
 
   base::Value::List variations_list;
-  for (std::string& variation : variations)
+  for (std::string& variation : variations) {
     variations_list.Append(std::move(variation));
+  }
 
   return variations_list;
 }

@@ -143,9 +143,8 @@ void GetFieldTrialActiveGroupIdsAsStrings(
 }
 
 void GetSyntheticTrialGroupIdsAsString(std::vector<std::string>* output) {
-  std::vector<ActiveGroupId> name_group_ids;
-  SyntheticTrialsActiveGroupIdProvider::GetInstance()->GetActiveGroupIds(
-      &name_group_ids);
+  std::vector<ActiveGroupId> name_group_ids =
+      SyntheticTrialsActiveGroupIdProvider::GetInstance()->GetActiveGroupIds();
   AppendActiveGroupIdsAsStrings(name_group_ids, output);
 }
 
