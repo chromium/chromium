@@ -292,7 +292,7 @@ void SaveAutofillPredictionImprovementsBubbleView::AddedToWidget() {
       views::Builder<views::Label>()
           .SetText(l10n_util::GetStringUTF16(
               IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_TITLE))
-          .SetTextStyle(views::style::STYLE_HEADLINE_4_BOLD)
+          .SetTextStyle(views::style::STYLE_HEADLINE_4)
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
           .Build());
   GetBubbleFrameView()->SetHeaderView(std::move(header_container));
