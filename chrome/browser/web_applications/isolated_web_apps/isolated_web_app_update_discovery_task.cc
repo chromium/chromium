@@ -96,6 +96,23 @@ constexpr auto kWebBundleDownloadTrafficAnnotation =
 
 }  // namespace
 
+IwaUpdateDiscoveryTaskParams::IwaUpdateDiscoveryTaskParams(
+    const GURL& update_manifest_url,
+    const UpdateChannel& update_channel,
+    const IsolatedWebAppUrlInfo& url_info,
+    bool dev_mode)
+    : update_manifest_url_(update_manifest_url),
+      update_channel_(update_channel),
+      url_info_(url_info),
+      dev_mode_(dev_mode) {}
+
+IwaUpdateDiscoveryTaskParams::IwaUpdateDiscoveryTaskParams(
+    IwaUpdateDiscoveryTaskParams&& other)
+    : update_manifest_url_(std::move(other.update_manifest_url_)),
+      update_channel_(std::move(other.update_channel_)),
+      url_info_(std::move(other.url_info_)),
+      dev_mode_(other.dev_mode_) {}
+
 // static
 std::string IsolatedWebAppUpdateDiscoveryTask::SuccessToString(
     Success success) {
@@ -147,9 +164,11 @@ IsolatedWebAppUpdateDiscoveryTask::IsolatedWebAppUpdateDiscoveryTask(
   CHECK(url_loader_factory_);
   debug_log_ =
       base::Value::Dict()
-          .Set("bundle_id", task_params_.url_info.web_bundle_id().id())
-          .Set("app_id", task_params_.url_info.app_id())
-          .Set("update_manifest_url", task_params_.update_manifest_url.spec());
+          .Set("bundle_id", task_params_.url_info().web_bundle_id().id())
+          .Set("update_channel", task_params_.update_channel().ToString())
+          .Set("app_id", task_params_.url_info().app_id())
+          .Set("update_manifest_url",
+               task_params_.update_manifest_url().spec());
 }
 
 IsolatedWebAppUpdateDiscoveryTask::~IsolatedWebAppUpdateDiscoveryTask() =
@@ -163,7 +182,7 @@ void IsolatedWebAppUpdateDiscoveryTask::Start(CompletionCallback callback) {
   debug_log_.Set("start_time", base::TimeToValue(base::Time::Now()));
 
   update_manifest_fetcher_ = std::make_unique<UpdateManifestFetcher>(
-      task_params_.update_manifest_url, kUpdateManifestFetchTrafficAnnotation,
+      task_params_.update_manifest_url(), kUpdateManifestFetchTrafficAnnotation,
       url_loader_factory_);
   update_manifest_fetcher_->FetchUpdateManifest(base::BindOnce(
       &IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched,
@@ -188,11 +207,7 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
                    });
 
   std::optional<UpdateManifest::VersionEntry> latest_version_entry =
-      update_manifest.GetLatestVersion(
-          // TODO(b/294481776): In the future, we will support channel selection
-          // via policy and by the end user for unmanaged users. For now, we
-          // always use the "default" channel.
-          UpdateChannel::default_channel());
+      update_manifest.GetLatestVersion(task_params_.update_channel());
   if (!latest_version_entry.has_value()) {
     FailWith(Error::kUpdateManifestNoApplicableVersion);
     return;
@@ -211,7 +226,7 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
 
   ASSIGN_OR_RETURN(
       const WebApp& iwa,
-      GetIsolatedWebAppById(*registrar_, task_params_.url_info.app_id()),
+      GetIsolatedWebAppById(*registrar_, task_params_.url_info().app_id()),
       [&](const std::string&) { FailWith(Error::kIwaNotInstalled); });
   const auto& isolation_data = *iwa.isolation_data();
   base::Version currently_installed_version = isolation_data.version();
@@ -222,12 +237,13 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
 
   bool same_version_update_allowed_by_key_rotation = false;
   bool pending_info_overwrite_allowed_by_key_rotation = false;
-  switch (LookupRotatedKey(task_params_.url_info.web_bundle_id(), debug_log_)) {
+  switch (
+      LookupRotatedKey(task_params_.url_info().web_bundle_id(), debug_log_)) {
     case KeyRotationLookupResult::kNoKeyRotation:
       break;
     case KeyRotationLookupResult::kKeyFound: {
       KeyRotationData data = GetKeyRotationData(
-          task_params_.url_info.web_bundle_id(), isolation_data);
+          task_params_.url_info().web_bundle_id(), isolation_data);
       if (!data.current_installation_has_rk) {
         same_version_update_allowed_by_key_rotation = true;
       }
@@ -306,7 +322,7 @@ void IsolatedWebAppUpdateDiscoveryTask::OnWebBundleDownloaded(
   // (dev mode / prod mode) stays unchanged between updates. For this reason,
   // the update info is wrapped accordingly depending on `dev_mode`.
   auto update_info =
-      task_params_.dev_mode
+      task_params_.dev_mode()
           ? IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo(
                 IwaSourceBundleDevModeWithFileOp(
                     bundle_.path(), IwaSourceBundleDevFileOp::kMove),
@@ -317,7 +333,7 @@ void IsolatedWebAppUpdateDiscoveryTask::OnWebBundleDownloaded(
                 expected_version);
 
   command_scheduler_->PrepareAndStoreIsolatedWebAppUpdate(
-      update_info, task_params_.url_info,
+      update_info, task_params_.url_info(),
       /*optional_keep_alive=*/nullptr,
       /*optional_profile_keep_alive=*/nullptr,
       base::BindOnce(&IsolatedWebAppUpdateDiscoveryTask::OnUpdateDryRunDone,

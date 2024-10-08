@@ -31,6 +31,8 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_waiter.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "components/webapps/common/web_app_id.h"
 
@@ -70,6 +72,11 @@ enum class IsolatedWebAppUpdateError {
   kUpdateDryRunFailed = 9,
   kUpdateApplyFailed = 10,
   kMaxValue = kUpdateApplyFailed
+};
+
+struct IsolatedWebAppUpdateOptions {
+  GURL update_manifest_url;
+  UpdateChannel update_channel;
 };
 
 // The `IsolatedWebAppUpdateManager` is responsible for discovery, download, and
@@ -163,6 +170,7 @@ class IsolatedWebAppUpdateManager
   // communicated via observers.
   void DiscoverUpdatesForApp(const IsolatedWebAppUrlInfo& url_info,
                              const GURL& update_manifest_url,
+                             const UpdateChannel& update_channel,
                              bool dev_mode);
 
   // Used to queue update discovery tasks manually from the
@@ -288,11 +296,9 @@ class IsolatedWebAppUpdateManager
   // not an Isolated Web App.
   bool MaybeQueueUpdateDiscoveryTask(
       const WebApp& web_app,
-      const base::flat_map<web_package::SignedWebBundleId, GURL>&
-          id_to_update_manifest_map);
-
-  base::flat_map<web_package::SignedWebBundleId, GURL>
-  GetForceInstalledBundleIdToUpdateManifestUrlMap();
+      const base::flat_map<web_package::SignedWebBundleId,
+                           IsolatedWebAppUpdateOptions>&
+          id_to_update_options_map);
 
   void MaybeScheduleUpdateDiscoveryCheck();
   void MaybeResetScheduledUpdateDiscoveryCheck();

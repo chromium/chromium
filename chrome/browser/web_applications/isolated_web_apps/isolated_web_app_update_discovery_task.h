@@ -25,10 +25,25 @@
 
 namespace web_app {
 
-struct IwaUpdateDiscoveryTaskParams {
-  GURL update_manifest_url;
-  IsolatedWebAppUrlInfo url_info;
-  bool dev_mode;
+class IwaUpdateDiscoveryTaskParams {
+ public:
+  IwaUpdateDiscoveryTaskParams(const GURL& update_manifest_url,
+                               const UpdateChannel& update_channel,
+                               const IsolatedWebAppUrlInfo& url_info,
+                               bool dev_mode);
+
+  IwaUpdateDiscoveryTaskParams(IwaUpdateDiscoveryTaskParams&& other);
+
+  const GURL& update_manifest_url() const { return update_manifest_url_; }
+  const UpdateChannel& update_channel() const { return update_channel_; }
+  const IsolatedWebAppUrlInfo& url_info() const { return url_info_; }
+  bool dev_mode() const { return dev_mode_; }
+
+ private:
+  GURL update_manifest_url_;
+  UpdateChannel update_channel_;
+  IsolatedWebAppUrlInfo url_info_;
+  bool dev_mode_;
 };
 
 class IsolatedWebAppUpdateDiscoveryTask {
@@ -78,7 +93,7 @@ class IsolatedWebAppUpdateDiscoveryTask {
   bool has_started() const { return has_started_; }
 
   const IsolatedWebAppUrlInfo& url_info() const {
-    return task_params_.url_info;
+    return task_params_.url_info();
   }
 
   base::Value AsDebugValue() const;

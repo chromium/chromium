@@ -125,6 +125,36 @@ class IsolatedWebAppUpdateManager::LocalDevModeUpdateDiscoverer {
   base::WeakPtrFactory<LocalDevModeUpdateDiscoverer> weak_factory_{this};
 };
 
+base::flat_map<web_package::SignedWebBundleId, IsolatedWebAppUpdateOptions>
+GetForceInstalledBundleIdToIsolatedWebAppsUpdateOptionsMap(Profile* profile) {
+  base::flat_map<web_package::SignedWebBundleId, IsolatedWebAppUpdateOptions>
+      id_to_update_options_map;
+
+// TODO(crbug.com/40274058): Enable automatic updates on other platforms.
+#if BUILDFLAG(IS_CHROMEOS)
+  const base::Value::List& iwa_force_install_list =
+      profile->GetPrefs()->GetList(prefs::kIsolatedWebAppInstallForceList);
+  for (const base::Value& policy_entry : iwa_force_install_list) {
+    base::expected<IsolatedWebAppExternalInstallOptions, std::string> options =
+        IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_entry);
+    if (!options.has_value()) {
+      LOG(ERROR) << "IsolatedWebAppUpdateManager: "
+                 << "Could not parse IWA force-install policy: "
+                 << options.error();
+      continue;
+    }
+
+    id_to_update_options_map.emplace(
+        options->web_bundle_id(),
+        IsolatedWebAppUpdateOptions{
+            .update_manifest_url = options->update_manifest_url(),
+            .update_channel = options->update_channel()});
+  }
+#endif
+
+  return id_to_update_options_map;
+}
+
 IsolatedWebAppUpdateManager::IsolatedWebAppUpdateManager(
     Profile& profile,
     base::TimeDelta update_discovery_frequency)
@@ -322,12 +352,13 @@ bool IsolatedWebAppUpdateManager::MaybeDiscoverUpdatesForApp(
                    GetIsolatedWebAppById(provider_->registrar_unsafe(), app_id),
                    [](const std::string&) { return false; });
 
-  base::flat_map<web_package::SignedWebBundleId, GURL>
-      id_to_update_manifest_map =
-          GetForceInstalledBundleIdToUpdateManifestUrlMap();
+  base::flat_map<web_package::SignedWebBundleId, IsolatedWebAppUpdateOptions>
+      id_to_update_options_map =
+          GetForceInstalledBundleIdToIsolatedWebAppsUpdateOptionsMap(
+              &*profile_);
 
   bool queued_update_discovery_task =
-      MaybeQueueUpdateDiscoveryTask(iwa, id_to_update_manifest_map);
+      MaybeQueueUpdateDiscoveryTask(iwa, id_to_update_options_map);
   if (queued_update_discovery_task) {
     task_queue_.MaybeStartNextTask();
   }
@@ -338,11 +369,11 @@ bool IsolatedWebAppUpdateManager::MaybeDiscoverUpdatesForApp(
 void IsolatedWebAppUpdateManager::DiscoverUpdatesForApp(
     const IsolatedWebAppUrlInfo& url_info,
     const GURL& update_manifest_url,
+    const UpdateChannel& update_channel,
     bool dev_mode) {
   task_queue_.Push(std::make_unique<IsolatedWebAppUpdateDiscoveryTask>(
-      IwaUpdateDiscoveryTaskParams{.update_manifest_url = update_manifest_url,
-                                   .url_info = url_info,
-                                   .dev_mode = dev_mode},
+      IwaUpdateDiscoveryTaskParams(update_manifest_url, update_channel,
+                                   url_info, dev_mode),
       provider_->scheduler(), provider_->registrar_unsafe(),
       profile_->GetURLLoaderFactory()));
 
@@ -412,41 +443,15 @@ bool IsolatedWebAppUpdateManager::IsAnyIwaInstalled() {
   return false;
 }
 
-base::flat_map<web_package::SignedWebBundleId, GURL>
-IsolatedWebAppUpdateManager::GetForceInstalledBundleIdToUpdateManifestUrlMap() {
-  base::flat_map<web_package::SignedWebBundleId, GURL>
-      id_to_update_manifest_map;
-
-// TODO(crbug.com/40274058): Enable automatic updates on other platforms.
-#if BUILDFLAG(IS_CHROMEOS)
-  const base::Value::List& iwa_force_install_list =
-      profile_->GetPrefs()->GetList(prefs::kIsolatedWebAppInstallForceList);
-  for (const base::Value& policy_entry : iwa_force_install_list) {
-    base::expected<IsolatedWebAppExternalInstallOptions, std::string> options =
-        IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_entry);
-    if (!options.has_value()) {
-      LOG(ERROR) << "IsolatedWebAppUpdateManager: "
-                 << "Could not parse IWA force-install policy: "
-                 << options.error();
-      continue;
-    }
-
-    id_to_update_manifest_map.emplace(options->web_bundle_id(),
-                                      options->update_manifest_url());
-  }
-#endif
-
-  return id_to_update_manifest_map;
-}
-
 size_t IsolatedWebAppUpdateManager::QueueUpdateDiscoveryTasks() {
   // Clear the log of previously finished update discovery tasks when queueing
   // new tasks so that it doesn't grow forever.
   task_queue_.ClearUpdateDiscoveryLog();
 
-  base::flat_map<web_package::SignedWebBundleId, GURL>
+  base::flat_map<web_package::SignedWebBundleId, IsolatedWebAppUpdateOptions>
       id_to_update_manifest_map =
-          GetForceInstalledBundleIdToUpdateManifestUrlMap();
+          GetForceInstalledBundleIdToIsolatedWebAppsUpdateOptionsMap(
+              &*profile_);
 
   size_t num_new_tasks = 0;
   for (const WebApp& web_app : provider_->registrar_unsafe().GetApps()) {
@@ -464,8 +469,9 @@ size_t IsolatedWebAppUpdateManager::QueueUpdateDiscoveryTasks() {
 
 bool IsolatedWebAppUpdateManager::MaybeQueueUpdateDiscoveryTask(
     const WebApp& web_app,
-    const base::flat_map<web_package::SignedWebBundleId, GURL>&
-        id_to_update_manifest_map) {
+    const base::flat_map<web_package::SignedWebBundleId,
+                         IsolatedWebAppUpdateOptions>&
+        id_to_update_options_map) {
   // TODO(crbug.com/40274186): In the future, we also need to automatically
   // update IWAs not installed via policy.
   if (!web_app.IsIwaPolicyInstalledApp()) {
@@ -486,14 +492,16 @@ bool IsolatedWebAppUpdateManager::MaybeQueueUpdateDiscoveryTask(
                    IsolatedWebAppUrlInfo::Create(web_app.manifest_id()),
                    [](auto error) { return false; });
 
-  const GURL* update_manifest_url =
-      base::FindOrNull(id_to_update_manifest_map, url_info.web_bundle_id());
-  if (!update_manifest_url) {
+  const IsolatedWebAppUpdateOptions* update_options =
+      base::FindOrNull(id_to_update_options_map, url_info.web_bundle_id());
+  if (!update_options) {
     // The app is no longer part of the policy (and thus should soon be
     // uninstalled), so no need to check for updates.
     return false;
   }
-  DiscoverUpdatesForApp(url_info, *update_manifest_url, /*dev_mode=*/false);
+
+  DiscoverUpdatesForApp(url_info, update_options->update_manifest_url,
+                        update_options->update_channel, /*dev_mode=*/false);
 
   return true;
 }

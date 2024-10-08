@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -78,18 +79,21 @@ class IsolatedWebAppUpdateDiscoveryTaskTest : public WebAppTest {
         fake_provider().web_contents_manager());
   }
 
-  Task CreateDefaultIwaUpdateDiscoveryTask() {
-    return Task({.update_manifest_url = update_manifest_url_,
-                 .url_info = url_info_,
-                 .dev_mode = false},
-                fake_provider().scheduler(), fake_provider().registrar_unsafe(),
-                profile()->GetURLLoaderFactory());
+  Task CreateDefaultIwaUpdateDiscoveryTask(
+      UpdateChannel update_channel = UpdateChannel::default_channel()) {
+    return Task(
+        IwaUpdateDiscoveryTaskParams(update_manifest_url_, update_channel,
+                                     url_info_, /*dev_mode=*/false),
+        fake_provider().scheduler(), fake_provider().registrar_unsafe(),
+        profile()->GetURLLoaderFactory());
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
   data_decoder::test::InProcessDataDecoder data_decoder_;
 
   GURL update_manifest_url_ = GURL("https://example.com/update_manifest.json");
+
+  UpdateChannel beta_update_channel_ = UpdateChannel::Create("beta").value();
 
   GURL url_ = GURL(
       base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
@@ -139,6 +143,22 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskUpdateManifestTest,
        NoApplicableVersion) {
   profile_url_loader_factory().AddResponse(update_manifest_url_.spec(), R"(
     { "versions": [] }
+  )");
+
+  Task task = CreateDefaultIwaUpdateDiscoveryTask();
+
+  base::test::TestFuture<Task::CompletionStatus> future;
+  task.Start(future.GetCallback());
+  EXPECT_THAT(future.Take(),
+              ErrorIs(Task::Error::kUpdateManifestNoApplicableVersion));
+}
+
+TEST_F(IsolatedWebAppUpdateDiscoveryTaskUpdateManifestTest,
+       NoApplicableVersionForChannel) {
+  profile_url_loader_factory().AddResponse(update_manifest_url_.spec(), R"(
+    { "versions": [
+      { "src": "https://example.com/bundle.swbn", "version": "2.0.0", "channels": ["beta"] }
+    ] }
   )");
 
   Task task = CreateDefaultIwaUpdateDiscoveryTask();
@@ -200,6 +220,34 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskUpdateManifestTest, NoUpdateFound) {
   )");
 
   Task task = CreateDefaultIwaUpdateDiscoveryTask();
+
+  base::test::TestFuture<Task::CompletionStatus> future;
+  task.Start(future.GetCallback());
+  EXPECT_THAT(future.Take(), ValueIs(Task::Success::kNoUpdateFound))
+      << task.AsDebugValue();
+}
+
+TEST_F(IsolatedWebAppUpdateDiscoveryTaskUpdateManifestTest,
+       NoUpdateFoundForCurrentChannel) {
+  AddDummyIsolatedAppToRegistry(
+      profile(), url_info_.origin().GetURL(), "installed iwa",
+      IsolationData::Builder(
+          IwaStorageOwnedBundle{"some_folder", /*dev_mode=*/false},
+          base::Version("1.0.0"))
+          .Build());
+
+  // No "channels" field means that the version belongs only to "default"
+  // channel.
+  profile_url_loader_factory().AddResponse(update_manifest_url_.spec(), R"(
+    {
+      "versions": [
+        { "src": "https://example.com/bundle.swbn", "version": "1.0.0", "channels": ["beta"]},
+        { "src": "https://example.com/bundle.swbn", "version": "2.0.0"}
+      ]
+    }
+  )");
+
+  Task task = CreateDefaultIwaUpdateDiscoveryTask(beta_update_channel_);
 
   base::test::TestFuture<Task::CompletionStatus> future;
   task.Start(future.GetCallback());

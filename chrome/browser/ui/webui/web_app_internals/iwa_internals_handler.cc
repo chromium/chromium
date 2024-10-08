@@ -159,8 +159,10 @@ class IwaInternalsHandler::IwaManifestInstallUpdateHandler
     }
 
     update_requests_.emplace(app_id, std::move(callback));
+    // TODO(b/371521930): introduce channel switching for dev mode apps.
     provider_->iwa_update_manager().DiscoverUpdatesForApp(
-        url_info, *isolation_data.update_manifest_url(), /*dev_mode=*/true);
+        url_info, *isolation_data.update_manifest_url(),
+        UpdateChannel::default_channel(), /*dev_mode=*/true);
   }
 
   // IsolatedWebAppUpdateManager::Observer:
