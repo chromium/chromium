@@ -38,6 +38,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/function_ref.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -362,6 +363,9 @@ bool WebFrameWidgetImpl::ForTopMostMainFrame() const {
 }
 
 void WebFrameWidgetImpl::Close() {
+  TRACE_EVENT0("navigation", "WebFrameWidgetImpl::Close");
+  base::ScopedUmaHistogramTimer histogram_timer(
+      "Navigation.WebFrameWidgetImpl.Close");
   // TODO(bokan): This seems wrong since the page may have other still-active
   // frame widgets. See also: https://crbug.com/1344531.
   GetPage()->WillStopCompositing();

@@ -824,6 +824,9 @@ bool ProxyMain::MainFrameWillHappenForTesting() {
 }
 
 void ProxyMain::ReleaseLayerTreeFrameSink() {
+  TRACE_EVENT0("cc", "ProxyMain::ReleaseLayerTreeFrameSink");
+  base::ScopedUmaHistogramTimer histogram_timer(
+      "Navigation.ProxyMain.ReleaseLayerTreeFrameSink");
   DCHECK(IsMainThread());
   frame_sink_bound_weak_factory_.InvalidateWeakPtrs();
   DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);

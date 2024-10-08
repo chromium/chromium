@@ -3894,6 +3894,9 @@ void RenderFrameImpl::WillDetach(blink::DetachReason detach_reason) {
 }
 
 void RenderFrameImpl::FrameDetached() {
+  TRACE_EVENT0("navigation", "RenderFrameImpl::FrameDetached");
+  base::ScopedUmaHistogramTimer histogram_timer(
+      "Navigation.RenderFrameImpl.FrameDetached");
   // We need to clean up subframes by removing them from the map and deleting
   // the RenderFrameImpl.  In contrast, the main frame is owned by its
   // containing RenderViewHost (so that they have the same lifetime), so only
