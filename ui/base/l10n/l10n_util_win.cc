@@ -44,14 +44,6 @@ base::LazyInstance<OverrideLocaleHolder>::DestructorAtExit
 
 namespace l10n_util {
 
-int GetExtendedStyles() {
-  return !base::i18n::IsRTL() ? 0 : WS_EX_LAYOUTRTL | WS_EX_RTLREADING;
-}
-
-DWORD GetExtendedTooltipStyles() {
-  return base::i18n::IsRTL() ? WS_EX_LAYOUTRTL : 0;
-}
-
 void HWNDSetRTLLayout(HWND hwnd) {
   LONG ex_style = ::GetWindowLong(hwnd, GWL_EXSTYLE);
 

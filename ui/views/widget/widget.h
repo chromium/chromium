@@ -321,8 +321,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // See Widget class comment above.
     Ownership ownership;
 
-    bool mirror_origin_in_rtl = false;
-
     ShadowType shadow_type = ShadowType::kDefault;
 
     // A hint about the size of the shadow if the type is ShadowType::kDrop. May

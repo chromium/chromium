@@ -47,8 +47,6 @@ void CalculateWindowStylesFromInitParams(
     *ex_style |= WS_EX_NOACTIVATE;
   if (params.EffectiveZOrderLevel() != ui::ZOrderLevel::kNormal)
     *ex_style |= WS_EX_TOPMOST;
-  if (params.mirror_origin_in_rtl)
-    *ex_style |= l10n_util::GetExtendedTooltipStyles();
   if (params.shadow_type == Widget::InitParams::ShadowType::kDrop)
     *class_style |= CS_DROPSHADOW;
 
