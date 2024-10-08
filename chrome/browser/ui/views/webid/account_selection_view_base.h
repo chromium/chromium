@@ -87,6 +87,8 @@ inline constexpr int kModalHorizontalSpacing = 8;
 inline constexpr int kIdpBadgeOffset = 8;
 // The size of the arrow icon.
 inline constexpr int kArrowIconSize = 8;
+// The size of the arrow icon.
+inline constexpr int kModalIconSpinnerSize = 28;
 
 inline constexpr char kImageFetcherUmaClient[] = "FedCMAccountChooser";
 

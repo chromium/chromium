@@ -23,6 +23,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 
 class AccountSelectionModalViewTest : public DialogBrowserTest,
@@ -142,12 +143,12 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
         static_cast<views::View*>(header_children[0]);
     ASSERT_TRUE(background_container);
 
-    // Check background container contains the background image, IDP icon and
-    // combined icon container.
+    // Check background container contains the background image, spinner, IDP
+    // icon and combined icon container.
     std::vector<raw_ptr<views::View, VectorExperimental>>
         background_container_children = background_container->children();
     ASSERT_EQ(background_container_children.size(),
-              expect_visible_combined_icons ? 3u : 2u);
+              expect_visible_combined_icons ? 4u : 3u);
 
     views::View* background_image =
         static_cast<views::View*>(background_container_children[0]);
@@ -156,8 +157,28 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     // Check IDP icon container contains the IDP icon image. The IDP icon
     // container is always present. Its visibility is updated when we want to
     // show the combined icons container instead.
-    views::View* idp_icon_container =
+    views::View* spinner_container =
         static_cast<views::View*>(background_container_children[1]);
+    ASSERT_TRUE(spinner_container);
+
+    std::vector<raw_ptr<views::View, VectorExperimental>>
+        spinner_container_children = spinner_container->children();
+    ASSERT_EQ(spinner_container_children.size(), 1u);
+
+    views::Throbber* spinner =
+        static_cast<views::Throbber*>(spinner_container_children[0]);
+    ASSERT_TRUE(spinner);
+    EXPECT_TRUE(spinner->GetVisible());
+
+    // Check spinner is of the correct size.
+    EXPECT_EQ(spinner->size(),
+              gfx::Size(kModalIconSpinnerSize, kModalIconSpinnerSize));
+
+    // Check IDP icon container contains the IDP icon image. The IDP icon
+    // container is always present. Its visibility is updated when we want to
+    // show the combined icons container instead.
+    views::View* idp_icon_container =
+        static_cast<views::View*>(background_container_children[2]);
     ASSERT_TRUE(idp_icon_container);
 
     std::vector<raw_ptr<views::View, VectorExperimental>>
@@ -183,7 +204,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
       // Check combined icons container contains the IDP, arrow and RP icon
       // images.
       views::View* combined_icons_container =
-          static_cast<views::View*>(background_container_children[2]);
+          static_cast<views::View*>(background_container_children[3]);
       ASSERT_TRUE(combined_icons_container);
 
       std::vector<raw_ptr<views::View, VectorExperimental>>
@@ -442,17 +463,16 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
 
   void TestLoadingDialog() {
     CreateAndShowLoadingDialog();
-    // Order: Progress bar, header, placeholder account chooser, button row
-    std::vector<std::string> expected_class_names = {"ProgressBar", "View",
-                                                     "View", "View"};
+    // Order: Header, placeholder account chooser, button row
+    std::vector<std::string> expected_class_names = {"View", "View", "View"};
     EXPECT_THAT(GetChildClassNames(dialog()),
                 testing::ElementsAreArray(expected_class_names));
 
-    PerformHeaderChecks(dialog()->children()[1],
+    PerformHeaderChecks(dialog()->children()[0],
                         /*expect_visible_idp_icon=*/false);
 
     std::vector<raw_ptr<views::View, VectorExperimental>>
-        placeholder_account_chooser = dialog()->children()[2]->children();
+        placeholder_account_chooser = dialog()->children()[1]->children();
     // Order: Placeholder account image, placeholder text column
     ASSERT_EQ(placeholder_account_chooser.size(), 2u);
 
@@ -461,7 +481,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     // Order: Placeholder account name, placeholder account email
     ASSERT_EQ(placeholder_text_column.size(), 2u);
 
-    CheckDisabledButtonRow(dialog()->children()[3]);
+    CheckDisabledButtonRow(dialog()->children()[2]);
   }
 
   AccountSelectionModalView* dialog() { return dialog_; }

@@ -40,6 +40,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -610,17 +611,27 @@ void AccountSelectionModalView::ShowErrorDialog(
 
 void AccountSelectionModalView::ShowLoadingDialog() {
   header_view_ = AddChildView(CreateHeader());
-  AddProgressBar();
   AddChildView(CreatePlaceholderAccountRow());
   AddChildView(CreateButtonRow());
 
   InitDialogWidget();
 }
 
+void AccountSelectionModalView::OnIdpBrandIconFetched() {
+  if (!idp_brand_icon_) {
+    return;
+  }
+  header_icon_spinner_->Stop();
+  header_icon_spinner_->SetVisible(/*visible=*/false);
+  idp_brand_icon_->SetVisible(/*visible=*/true);
+}
+
 void AccountSelectionModalView::OnCombinedIconsFetched() {
   if (!combined_icons_) {
     return;
   }
+  header_icon_spinner_->Stop();
+  header_icon_spinner_->SetVisible(/*visible=*/false);
   idp_brand_icon_->SetVisible(/*visible=*/false);
   combined_icons_->SetVisible(/*visible=*/true);
 }
@@ -689,21 +700,48 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateIconHeaderView() {
   background_container->AddChildView(std::move(background_image_view));
 
   // Put BoxLayout containers into FillLayout container to stack the views. This
-  // stacks the icon container on top of the background image.
+  // stacks the spinner and icon container on top of the background image.
+  background_container->AddChildView(CreateSpinnerIconView());
   background_container->AddChildView(CreateIdpIconView());
 
   return background_container;
 }
 
 std::unique_ptr<views::BoxLayoutView>
+AccountSelectionModalView::CreateSpinnerIconView() {
+  // Put spinner icon into a BoxLayout container so that it can be stacked on
+  // top of the background.
+  std::unique_ptr<views::BoxLayoutView> icon_container =
+      std::make_unique<views::BoxLayoutView>();
+  icon_container->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
+  icon_container->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+
+  std::unique_ptr<views::Throbber> header_icon_spinner =
+      std::make_unique<views::Throbber>();
+  header_icon_spinner->SetPreferredSize(
+      gfx::Size(kModalIconSpinnerSize, kModalIconSpinnerSize));
+  header_icon_spinner->Start();
+  header_icon_spinner_ =
+      icon_container->AddChildView(std::move(header_icon_spinner));
+
+  return icon_container;
+}
+
+std::unique_ptr<views::BoxLayoutView>
 AccountSelectionModalView::CreateIdpIconView() {
+  constexpr int kNumIconsInIdpIconView = 1;
+  base::RepeatingClosure on_image_set = BarrierClosure(
+      kNumIconsInIdpIconView,
+      base::BindOnce(&AccountSelectionModalView::OnIdpBrandIconFetched,
+                     weak_ptr_factory_.GetWeakPtr()));
+
   // Create IDP brand icon image view.
   std::unique_ptr<BrandIconImageView> idp_brand_icon_image_view =
       std::make_unique<BrandIconImageView>(
           base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
                          weak_ptr_factory_.GetWeakPtr()),
-          kModalIdpIconSize, /*should_circle_crop=*/true);
-  idp_brand_icon_ = idp_brand_icon_image_view.get();
+          kModalIdpIconSize, /*should_circle_crop=*/true,
+          /*background_color=*/std::nullopt, on_image_set);
   idp_brand_icon_image_view->SetImageSize(
       gfx::Size(kModalIdpIconSize, kModalIdpIconSize));
   idp_brand_icon_image_view->SetVisible(/*visible=*/false);
@@ -714,7 +752,8 @@ AccountSelectionModalView::CreateIdpIconView() {
       std::make_unique<views::BoxLayoutView>();
   icon_container->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
   icon_container->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-  icon_container->AddChildView(std::move(idp_brand_icon_image_view));
+  idp_brand_icon_ =
+      icon_container->AddChildView(std::move(idp_brand_icon_image_view));
 
   return icon_container;
 }

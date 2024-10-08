@@ -18,6 +18,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/progress_bar.h"
+#include "ui/views/controls/throbber.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class AccountSelectionModalView : public views::DialogDelegateView,
@@ -123,6 +124,9 @@ class AccountSelectionModalView : public views::DialogDelegateView,
   // `ConfigureBrandImageView`.
   std::unique_ptr<views::View> CreateIconHeaderView();
 
+  // Returns a BoxLayoutView containing a spinner.
+  std::unique_ptr<views::BoxLayoutView> CreateSpinnerIconView();
+
   // Returns a BoxLayoutView containing the IDP icon. If the image cannot be
   // fetched, a globe icon is shown.
   std::unique_ptr<views::BoxLayoutView> CreateIdpIconView();
@@ -131,8 +135,12 @@ class AccountSelectionModalView : public views::DialogDelegateView,
   // that order, horizontally.
   std::unique_ptr<views::BoxLayoutView> CreateCombinedIconsView();
 
-  // Hides `idp_brand_icon_` and shows `combined_icons_` upon successful IDP and
-  // RP icon fetches.
+  // Hides `header_icon_spinner_` and shows `idp_brand_icon_` upon successful
+  // IDP icon fetch.
+  void OnIdpBrandIconFetched();
+
+  // Hides `header_icon_spinner_`, `idp_brand_icon_` and shows `combined_icons_`
+  // upon successful IDP and RP icon fetches.
   void OnCombinedIconsFetched();
 
   // Adds a progress bar at the top of the modal dialog.
@@ -175,6 +183,10 @@ class AccountSelectionModalView : public views::DialogDelegateView,
   // View containing the IDP brand icon image. This view is constructed in the
   // loading dialog but is only visible after the loading dialog.
   raw_ptr<BrandIconImageView> idp_brand_icon_ = nullptr;
+
+  // View containing the spinner in the header. This spinner is shown until the
+  // IDP brand icon is fetched.
+  raw_ptr<views::Throbber> header_icon_spinner_ = nullptr;
 
   // View containing the IDP brand icon image meant to be shown in the request
   // permission dialog together with the RP icon. This icon is a smaller version
