@@ -438,7 +438,7 @@ class CC_EXPORT LayerTreeImpl {
       int64_t item_sequence_number) {
     primary_main_frame_item_sequence_number_ = item_sequence_number;
   }
-  uint64_t primary_main_frame_item_sequence_number() {
+  int64_t primary_main_frame_item_sequence_number() const {
     return primary_main_frame_item_sequence_number_;
   }
 

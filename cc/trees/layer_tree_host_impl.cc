@@ -1273,6 +1273,15 @@ bool LayerTreeHostImpl::HasDamage() const {
   }
 
   const LayerTreeImpl* active_tree = active_tree_.get();
+  // Make sure we propagate the primary main item sequence number. If there is
+  // no stored sequence number, we don't need to damage: either damage will
+  // happen anyway, or we're not generating metadata entries.
+  if (last_draw_render_frame_metadata_ &&
+      last_draw_render_frame_metadata_
+              ->primary_main_frame_item_sequence_number !=
+          active_tree->primary_main_frame_item_sequence_number()) {
+    return true;
+  }
 
   // If the root render surface has no visible damage, then don't generate a
   // frame at all.
