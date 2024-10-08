@@ -18253,6 +18253,8 @@ from previous Chrome versions.
   <int value="-860936336" label="ContextualTriggersSelectionMenu:enabled"/>
   <int value="-860578793" label="TabGridLayoutAndroid:disabled"/>
   <int value="-860534647" label="SiteDetails:enabled"/>
+  <int value="-860319964"
+      label="AutomotiveFullscreenToolbarImprovements:enabled"/>
   <int value="-859583725" label="WebRtcTimerUsesMetronome:enabled"/>
   <int value="-859193162" label="KeepSecondaryZeroSuggest:disabled"/>
   <int value="-858280894" label="DelayCompetingLowPriorityRequests:disabled"/>
@@ -22260,6 +22262,8 @@ from previous Chrome versions.
       label="AutofillEnableOfferNotificationForPromoCodes:disabled"/>
   <int value="780743733" label="QueryTilesLocalOrdering:disabled"/>
   <int value="781085897" label="IncognitoReauthenticationForAndroid:disabled"/>
+  <int value="781110099"
+      label="AutomotiveFullscreenToolbarImprovements:disabled"/>
   <int value="781152619" label="SupportToolScreenshot:disabled"/>
   <int value="781298961" label="CrosAppsBackgroundEventHandling:enabled"/>
   <int value="781573553" label="UnifiedPasswordManagerAndroid:enabled"/>

@@ -221,6 +221,8 @@ public abstract class ChromeFeatureList {
             "AutofillVirtualViewStructureAndroid";
     public static final String AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID =
             "AutofillEnableSecurityTouchEventFilteringAndroid";
+    public static final String AUTOMOTIVE_FULLSCREEN_TOOLBAR_IMPROVEMENTS =
+            "AutomotiveFullscreenToolbarImprovements";
     public static final String AVOID_SELECTED_TAB_FOCUS_ON_LAYOUT_DONE_SHOWING =
             "AvoidSelectedTabFocusOnLayoutDoneShowing";
     public static final String BACKGROUND_THREAD_POOL = "BackgroundThreadPool";

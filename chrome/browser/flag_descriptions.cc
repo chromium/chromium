@@ -101,6 +101,11 @@ const char kAriaElementReflectionDescription[] =
     "Enable setting ARIA relationship attributes that reference other elements "
     "directly without an IDREF";
 
+const char kAutomotiveFullscreenToolbarImprovementsName[] =
+    "Enable automotive fullscreen toolbar improvements.";
+const char kAutomotiveFullscreenToolbarImprovementsDescription[] =
+    "In automotive, hides the toolbar when entering fullscreen mode. Swipe on"
+    "edge to reshow the toolbar.";
 const char kAuxiliarySearchDonationName[] = "Auxiliary Search Donation";
 const char kAuxiliarySearchDonationDescription[] =
     "If enabled, override Auxiliary Search donation cap.";

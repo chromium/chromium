@@ -11868,10 +11868,19 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableCardBenefitsIphDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardBenefitsIph)},
 
-    // NOTE: Adding a new flag requires adding a corresponding entry to enum
-    // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
-    // Histograms" in tools/metrics/histograms/README.md (run the
-    // AboutFlagsHistogramTest unit test to verify this process).
+#if BUILDFLAG(IS_ANDROID)
+    {"enable-automotive-fullscreen-toolbar-improvements",
+     flag_descriptions::kAutomotiveFullscreenToolbarImprovementsName,
+     flag_descriptions::kAutomotiveFullscreenToolbarImprovementsDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         chrome::android::kAutomotiveFullscreenToolbarImprovements)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
+        // NOTE: Adding a new flag requires adding a corresponding entry to enum
+        // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
+        // Histograms" in tools/metrics/histograms/README.md (run the
+        // AboutFlagsHistogramTest unit test to verify this process).
 };
 
 class FlagsStateSingleton : public flags_ui::FlagsState::Delegate {

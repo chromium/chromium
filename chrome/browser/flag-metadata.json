@@ -2601,6 +2601,11 @@
     "expiry_milestone": 132
   },
   {
+    "name": "enable-automotive-fullscreen-toolbar-improvements",
+    "owners": [ "jtanaristy@google.com", "wenyufu@google.com" ],
+    "expiry_milestone": 136
+  },
+  {
     "name": "enable-background-blur",
     "owners": [ "newcomer@chromium.org" ],
     "expiry_milestone": 86

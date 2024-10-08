@@ -89,6 +89,9 @@ extern const char kAnnotatorModeDescription[];
 extern const char kAriaElementReflectionName[];
 extern const char kAriaElementReflectionDescription[];
 
+extern const char kAutomotiveFullscreenToolbarImprovementsName[];
+extern const char kAutomotiveFullscreenToolbarImprovementsDescription[];
+
 extern const char kAuxiliarySearchDonationName[];
 extern const char kAuxiliarySearchDonationDescription[];
 
