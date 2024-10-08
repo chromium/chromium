@@ -252,6 +252,10 @@ base::WeakPtr<content::PrerenderHandle>
 PrerenderManager::StartPrerenderNewTabPage(
     const GURL& prerendering_url,
     content::PreloadingPredictor predictor) {
+  if (IsSearchUrl(*web_contents(), prerendering_url)) {
+    return nullptr;
+  }
+
   // Helpers to create content::PreloadingAttempt.
   auto* preloading_data =
       content::PreloadingData::GetOrCreateForWebContents(web_contents());
