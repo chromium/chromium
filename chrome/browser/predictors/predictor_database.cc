@@ -31,7 +31,7 @@ namespace {
 const base::FilePath::CharType kPredictorDatabaseName[] =
     FILE_PATH_LITERAL("Network Action Predictor");
 
-void ReportUMA(const base::FilePath file_path) {
+void ReportUMA(const base::FilePath& file_path) {
   int64_t db_file_size;
   if (!base::GetFileSize(file_path, &db_file_size)) {
     return;
