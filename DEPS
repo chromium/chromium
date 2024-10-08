@@ -2730,7 +2730,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/media_app/app',
-        'version': 'Oxve-i98ium7xxlxgGbpQYzhe5zt2t-1Qfwx8TEesqYC',
+        'version': '2w3NsRw5fciJz8RiFk7dSvYTuzPaEdX3jESBGUH25QwC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
