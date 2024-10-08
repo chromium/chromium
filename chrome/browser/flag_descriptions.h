@@ -3737,8 +3737,8 @@ extern const char kCameraAppPdfOcrDescription[];
 extern const char kCameraAppPreviewOcrName[];
 extern const char kCameraAppPreviewOcrDescription[];
 
-extern const char kChromeboxUsbPassthroughLimitName[];
-extern const char kChromeboxUsbPassthroughLimitDescription[];
+extern const char kChromeboxUsbPassthroughRestrictionsName[];
+extern const char kChromeboxUsbPassthroughRestrictionsDescription[];
 
 extern const char kConchName[];
 extern const char kConchDescription[];
