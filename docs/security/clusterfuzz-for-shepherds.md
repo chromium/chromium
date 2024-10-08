@@ -9,16 +9,20 @@ This page has instructions for [Security Shepherds](shepherd.md) in how best to 
 
 [https://clusterfuzz.com/upload-testcase](https://clusterfuzz.com/upload-testcase)
 allows you to upload files to reproduce crashes on various platforms and will
-identify revision ranges when the regression was introduced. If a test case
-requires multiple files, they can be uploaded together in a zip or tar
-archive: the main file needs to contain the words `run`, `fuzz-` `index.` or
-`crash.`.
+identify revision ranges when the regression was introduced.
 
-Please *do* specify the crbug number when uploading the test case. This will allow
+Prefer using the "Quick upload" flow for simple cases. If you choose to use
+"Upload" instead, you will have to pick which [job](#useful-jobs) to run.
+
+Note that ClusterFuzz only supports running untrusted inputs on Linux. The UI
+will warn you of that.
+
+If a test case requires multiple files, they can be uploaded together in a zip
+or tar archive: the main file needs to contain the words `run`, `fuzz-` `index.`
+or `crash.`.
+
+Please *do* specify the crbug number when uploading the test case. This allows
 ClusterFuzz to keep the crbug updated with progress.
-
-Please *don't* upload test cases unless they're obviously harmless. Currently
-ClusterFuzz does not support untrusted workloads.
 
 ## Useful jobs
 
