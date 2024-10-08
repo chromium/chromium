@@ -264,6 +264,11 @@ VTVideoEncodeAccelerator::VTVideoEncodeAccelerator()
 VTVideoEncodeAccelerator::~VTVideoEncodeAccelerator() {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Flush the compression session and make it join its internal threads. After
+  // this, no callbacks will be issued by the session and we can proceed with
+  // the destruction of VTVideoEncodeAccelerator.
+  compression_session_.reset();
 }
 
 VideoEncodeAccelerator::SupportedProfiles
@@ -271,7 +276,7 @@ VTVideoEncodeAccelerator::GetSupportedH264Profiles() {
   SupportedProfiles profiles;
   bool supported =
       CreateCompressionSession(VideoCodec::kH264, kDefaultSupportedResolution);
-  DestroyCompressionSession();
+  compression_session_.reset();
   if (!supported) {
     DVLOG(1) << "Hardware H.264 encode acceleration is not available on this "
                 "platform.";
@@ -331,7 +336,7 @@ VTVideoEncodeAccelerator::GetSupportedHEVCProfiles() {
   }
   bool supported =
       CreateCompressionSession(VideoCodec::kHEVC, kDefaultSupportedResolution);
-  DestroyCompressionSession();
+  compression_session_.reset();
   if (!supported) {
     DVLOG(1) << "Hardware HEVC encode acceleration is not available on this "
                 "platform.";
@@ -615,7 +620,6 @@ void VTVideoEncodeAccelerator::RequestEncodingParametersChange(
 void VTVideoEncodeAccelerator::Destroy() {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DestroyCompressionSession();
   delete this;
 }
 
@@ -769,8 +773,7 @@ void VTVideoEncodeAccelerator::ReturnBitstreamBuffer(
 bool VTVideoEncodeAccelerator::ResetCompressionSession(VideoCodec codec) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DestroyCompressionSession();
-
+  compression_session_.reset();
   if (!CreateCompressionSession(codec, input_visible_size_)) {
     return false;
   }
@@ -847,7 +850,7 @@ bool VTVideoEncodeAccelerator::CreateCompressionSession(
     // write a non-null value into compression_session_, but just in case,
     // we'll clear it without calling CFRelease() because it can be unsafe
     // to call on a not fully created session.
-    (void)compression_session_.release();
+    std::ignore = compression_session_.release();
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderInitializationError,
                        "VTCompressionSessionCreate failed: " +
                            logging::DescriptionFromOSStatus(status)});
@@ -951,13 +954,6 @@ bool VTVideoEncodeAccelerator::ConfigureCompressionSession(VideoCodec codec) {
   }
 
   return true;
-}
-
-void VTVideoEncodeAccelerator::DestroyCompressionSession() {
-  if (compression_session_) {
-    VTCompressionSessionInvalidate(compression_session_.get());
-    compression_session_.reset();
-  }
 }
 
 void VTVideoEncodeAccelerator::MaybeRunFlushCallback() {
