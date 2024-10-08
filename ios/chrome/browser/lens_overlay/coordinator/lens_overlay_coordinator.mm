@@ -845,7 +845,6 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
 }
 
 - (void)stopResultPage {
-  [_selectionViewController removeSelectionWithClearText:YES];
   [_resultContextMenuProvider stop];
   _resultContextMenuProvider = nil;
   [_resultViewController.presentingViewController
