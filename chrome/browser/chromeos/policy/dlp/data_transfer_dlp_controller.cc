@@ -257,7 +257,9 @@ bool DataTransferDlpController::IsClipboardReadAllowed(
                    dst_pattern, level,
                    /*is_clipboard_event=*/true, rule_metadata);
 
-  bool notify_on_paste = ShouldNotifyOnPaste(destination.as_ptr());
+  // Use original destination as OffTheRecord destinations might also have
+  // `notify_if_restricted` param to be checked in case of system tools access.
+  bool notify_on_paste = ShouldNotifyOnPaste(data_dst.as_ptr());
 
   bool is_read_allowed = true;
 

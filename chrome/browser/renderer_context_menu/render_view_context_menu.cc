@@ -4058,12 +4058,13 @@ void RenderViewContextMenu::AppendSendTabToSelfItem(bool add_separator) {
 std::unique_ptr<ui::DataTransferEndpoint>
 RenderViewContextMenu::CreateDataEndpoint(bool notify_if_restricted) const {
   RenderFrameHost* render_frame_host = GetRenderFrameHost();
-  if (render_frame_host &&
-      !render_frame_host->GetBrowserContext()->IsOffTheRecord()) {
+  if (render_frame_host) {
     return std::make_unique<ui::DataTransferEndpoint>(
         render_frame_host->GetMainFrame()->GetLastCommittedURL(),
-        ui::DataTransferEndpointOptions{.notify_if_restricted =
-                                            notify_if_restricted});
+        ui::DataTransferEndpointOptions{
+            .notify_if_restricted = notify_if_restricted,
+            .off_the_record =
+                render_frame_host->GetBrowserContext()->IsOffTheRecord()});
   }
   return nullptr;
 }
