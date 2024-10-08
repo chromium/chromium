@@ -28,10 +28,10 @@ IncludeCategories:
   # LINT.IfChange(winheader)
   - Regex:           '^<objbase\.h>' # This has to be before initguid.h.
     Priority:        1
-  - Regex:           '^<(initguid|mmdeviceapi|windows|winsock2|ws2tcpip|shobjidl|atlbase|ole2|unknwn|tchar|ocidl)\.h>'
+  - Regex:           '^<(atlbase|initguid|mmdeviceapi|ocidl|ole2|shobjidl|tchar|unknwn|windows|winsock2|winternl|ws2tcpip)\.h>'
     Priority:        2
   # LINT.ThenChange(/tools/add_header.py:winheader)
-  # UIAutomation*.h need to be after base/win/atl.h.
+  # UIAutomation*.h needs to be after base/win/atl.h.
   # Note the low priority number.
   - Regex:           '^<UIAutomation.*\.h>'
     Priority:        6
@@ -39,8 +39,11 @@ IncludeCategories:
   - Regex:           '^<.*\.h>'
     Priority:        3
   # C++ standard library headers.
-  - Regex:           '^<.*'
+  - Regex:           '^<.*>'
     Priority:        4
+  # windows_h_disallowed.h should appear last. Note the low priority number.
+  - Regex:           '"(.*/)?windows_h_disallowed\.h"'
+    Priority:        7
   # Other libraries.
   - Regex:           '.*'
     Priority:        5
