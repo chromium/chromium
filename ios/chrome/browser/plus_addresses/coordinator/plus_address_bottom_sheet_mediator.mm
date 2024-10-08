@@ -141,6 +141,19 @@ enum class PlusAddressAction {
              plus_addresses::features::kPlusAddressUserOnboardingEnabled);
 }
 
+#pragma mark - PlusAddressErrorAlertDelegate
+
+- (void)didAcceptAffiliatedPlusAddressSuggestion {
+  std::move(_autofillCallback)
+      .Run(base::SysNSStringToUTF8(_reservedPlusAddress));
+  [_consumer dismissBottomSheet];
+}
+
+- (void)didCancelAlert {
+  std::move(_autofillCallback).Run("");
+  [_consumer dismissBottomSheet];
+}
+
 #pragma mark - Private
 
 // Runs the autofill callback and notifies the consumer of the successful
@@ -178,6 +191,8 @@ enum class PlusAddressAction {
 - (void)handlePlusAddressResult:
             (const plus_addresses::PlusProfileOrError&)maybePlusProfile
                       forAction:(PlusAddressAction)action {
+  BOOL errorStatesEnabled = base::FeatureList::IsEnabled(
+      plus_addresses::features::kPlusAddressIOSErrorAndLoadingStatesEnabled);
   BOOL showGenericError = NO;
   switch (action) {
       // Both actions have the same success behavior.
@@ -198,10 +213,22 @@ enum class PlusAddressAction {
       break;
     case PlusAddressAction::kPlusAddressActionConfirm:
       if (maybePlusProfile.has_value()) {
-        // If the action was successful, call `runAutofillCallback` with the
-        // confirmed Plus Address.
-        [self runAutofillCallback:base::SysUTF8ToNSString(
-                                      *maybePlusProfile->plus_address)];
+        NSString* confirmedPlusAddress =
+            base::SysUTF8ToNSString(*maybePlusProfile->plus_address);
+        if ([_reservedPlusAddress isEqualToString:confirmedPlusAddress]) {
+          // If the action was successful, call `runAutofillCallback` with the
+          // confirmed Plus Address.
+          [self runAutofillCallback:confirmedPlusAddress];
+        } else {
+          [self.consumer notifyError:plus_addresses::metrics::
+                                         PlusAddressModalCompletionStatus::
+                                             kConfirmPlusAddressError];
+          _reservedPlusAddress = confirmedPlusAddress;
+          // Show affiliation error.
+          if (errorStatesEnabled) {
+            [_delegate showAffiliationError:*maybePlusProfile];
+          }
+        }
       } else {
         // If the action failed, notify the error.
         [self.consumer notifyError:plus_addresses::metrics::
@@ -212,11 +239,8 @@ enum class PlusAddressAction {
       break;
   }
 
-  if (showGenericError &&
-      base::FeatureList::IsEnabled(
-          plus_addresses::features::
-              kPlusAddressIOSErrorAndLoadingStatesEnabled)) {
-    [_delegate showErrorAlert];
+  if (showGenericError && errorStatesEnabled) {
+    [_delegate showGenericErrorAlert];
   }
 }
 

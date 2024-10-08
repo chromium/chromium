@@ -189,6 +189,15 @@ void FakePlusAddressService::ConfirmPlusAddress(
             PlusAddressRequestErrorType::kNetworkError)));
     return;
   }
+  if (should_return_affiliated_plus_profile_on_confirm_) {
+    std::move(on_completed)
+        .Run(PlusProfile(
+            kFakeProfileId,
+            FacetURI::FromCanonicalSpec(plus_addresses::test::kAffiliatedFacet),
+            PlusAddress(plus_addresses::test::kFakeAffiliatedPlusAddress),
+            true));
+    return;
+  }
   is_confirmed_ = true;
   PlusProfile profile(kFakeProfileId, FacetURI::FromCanonicalSpec(kFacet),
                       std::move(plus_address), is_confirmed_);

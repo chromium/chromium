@@ -32,6 +32,10 @@
 // Setter to show confirm error states in `FakePlusAddressService` in tests.
 + (void)setShouldFailToConfirm:(BOOL)shouldFailToConfirm;
 
+// Setter to return an affiliated plus profile on confirm.
++ (void)setShouldReturnAffiliatedPlusProfileOnConfirm:
+    (BOOL)shouldReturnAffiliatedPlusProfileOnConfirm;
+
 // Returns the primary email from `FakePlusAddressService`.
 + (NSString*)primaryEmail;
 

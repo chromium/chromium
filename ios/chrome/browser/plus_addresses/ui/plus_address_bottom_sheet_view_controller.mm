@@ -308,6 +308,10 @@ UIImageView* BrandingImageView() {
   }
 }
 
+- (void)dismissBottomSheet {
+  [self dismiss];
+}
+
 #pragma mark - UITextViewDelegate
 
 // Handle click on URLs on the bottomsheet.

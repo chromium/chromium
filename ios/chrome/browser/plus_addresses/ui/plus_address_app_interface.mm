@@ -55,6 +55,13 @@ plus_addresses::FakePlusAddressService* GetFakePlusAddressService() {
   GetFakePlusAddressService()->set_should_fail_to_confirm(shouldFailToConfirm);
 }
 
++ (void)setShouldReturnAffiliatedPlusProfileOnConfirm:
+    (BOOL)shouldReturnAffiliatedPlusProfileOnConfirm {
+  GetFakePlusAddressService()
+      ->set_should_return_affiliated_plus_profile_on_confirm(
+          shouldReturnAffiliatedPlusProfileOnConfirm);
+}
+
 + (NSString*)primaryEmail {
   return base::SysUTF8ToNSString(
       *(GetFakePlusAddressService()->GetPrimaryEmail()));

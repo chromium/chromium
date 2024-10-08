@@ -116,7 +116,8 @@ void ExpectModalTimeSample(
         feature_engagement::kIPHPlusAddressCreateSuggestionFeature.name;
   }
 
-  if ([self isRunningTest:@selector(testGenericErrorAlert)]) {
+  if ([self isRunningTest:@selector(testGenericErrorAlert)] ||
+      [self isRunningTest:@selector(testAffiliationError)]) {
     config.features_enabled_and_params.push_back(
         {plus_addresses::features::kPlusAddressIOSErrorAndLoadingStatesEnabled,
          {}});
@@ -410,6 +411,45 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
 
   // Ensure the error alert is shown.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:error_alert];
+}
+
+// Tests that the alert is shown and filled when an affiliated site contains the
+// plus address during the creation.
+- (void)testAffiliationError {
+  [PlusAddressAppInterface setShouldReturnAffiliatedPlusProfileOnConfirm:YES];
+  [self openCreatePlusAddressBottomSheet];
+
+  id<GREYMatcher> plusAddressLabelMatcher = GetMatcherForPlusAddressLabel(
+      base::SysUTF8ToNSString(plus_addresses::test::kFakePlusAddress));
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:plusAddressLabelMatcher];
+
+  id<GREYMatcher> confirmButton =
+      chrome_test_util::ButtonWithAccessibilityLabelId(
+          IDS_PLUS_ADDRESS_BOTTOMSHEET_OK_TEXT_IOS);
+
+  // Click the okay button, confirming the plus address.
+  [[EarlGrey selectElementWithMatcher:confirmButton] performAction:grey_tap()];
+
+  NSString* message = l10n_util::GetNSStringF(
+      IDS_PLUS_ADDRESS_AFFILIATION_ERROR_ALERT_MESSAGE_IOS,
+      plus_addresses::test::kAffiliatedFacetWithoutSchemeU16,
+      plus_addresses::test::kFakeAffiliatedPlusAddressU16);
+
+  // Ensure the error alert is shown.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:grey_text(message)];
+
+  // Click on "Use existing" button.
+  id<GREYMatcher> useExitingButton =
+      chrome_test_util::ButtonWithAccessibilityLabelId(
+          IDS_PLUS_ADDRESS_AFFILIATION_ERROR_PRIMARY_BUTTON_IOS);
+  [[EarlGrey selectElementWithMatcher:useExitingButton]
+      performAction:grey_tap()];
+
+  // Verify that the affiliated address has been filled.
+  [self verifyFieldWithIdHasBeenFilled:kEmailFieldId
+                                 value:base::SysUTF8ToNSString(
+                                           plus_addresses::test::
+                                               kFakeAffiliatedPlusAddress)];
 }
 
 @end

@@ -15,6 +15,9 @@
 
 namespace plus_addresses::test {
 
+inline constexpr char kAffiliatedFacet[] = "https://facet.affiliated";
+inline constexpr char16_t kAffiliatedFacetWithoutSchemeU16[] =
+    u"facet.affiliated";
 inline constexpr char kFakeManagementUrl[] = "https://manage.example/";
 inline constexpr char kFakeOauthScope[] = "https://foo.example";
 inline constexpr char kReservePath[] = "/v1/profiles/reserve";
@@ -26,6 +29,10 @@ inline constexpr char kFakePlusAddressRefresh[] = "plus-refresh@plus.plus";
 inline constexpr char16_t kFakePlusAddressU16[] = u"plus@plus.plus";
 inline constexpr char16_t kFakePlusAddressRefreshU16[] =
     u"plus-refresh@plus.plus";
+inline constexpr char kFakeAffiliatedPlusAddress[] =
+    "plus-affiliated@plus.plus";
+inline constexpr char16_t kFakeAffiliatedPlusAddressU16[] =
+    u"plus-affiliated@plus.plus";
 
 // Returns a fully populated, confirmed PlusProfile.
 PlusProfile CreatePlusProfile(std::string plus_address, bool is_confirmed);

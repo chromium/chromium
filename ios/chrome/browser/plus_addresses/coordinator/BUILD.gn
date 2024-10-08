@@ -8,6 +8,7 @@ source_set("coordinator") {
     "plus_address_bottom_sheet_coordinator.mm",
     "plus_address_bottom_sheet_mediator.h",
     "plus_address_bottom_sheet_mediator.mm",
+    "plus_address_error_alert_delegate.h",
   ]
   deps = [
     "//base",

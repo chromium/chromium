@@ -24,6 +24,9 @@
 - (void)notifyError:
     (plus_addresses::metrics::PlusAddressModalCompletionStatus)status;
 
+// Used to dismiss the bottom sheet.
+- (void)dismissBottomSheet;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_PLUS_ADDRESSES_UI_PLUS_ADDRESS_BOTTOM_SHEET_CONSUMER_H_

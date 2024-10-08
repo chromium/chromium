@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/plus_addresses/plus_address_service.h"
 #import "components/plus_addresses/plus_address_types.h"
+#import "components/plus_addresses/plus_address_ui_utils.h"
 #import "components/plus_addresses/settings/plus_address_setting_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
@@ -35,6 +36,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 @implementation PlusAddressBottomSheetCoordinator {
   // The view controller responsible for display of the bottom sheet.
   PlusAddressBottomSheetViewController* _viewController;
+
   // A mediator that hides data operations from the view controller.
   PlusAddressBottomSheetMediator* _mediator;
 
@@ -101,7 +103,38 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 
 #pragma mark - PlusAddressBottomSheetMediatorDelegate
 
-- (void)showErrorAlert {
+- (void)showAffiliationError:(const plus_addresses::PlusProfile&)plusProfile {
+  NSString* message = l10n_util::GetNSStringF(
+      IDS_PLUS_ADDRESS_AFFILIATION_ERROR_ALERT_MESSAGE_IOS,
+      GetOriginForDisplay(plusProfile),
+      base::UTF8ToUTF16(*plusProfile.plus_address));
+  _alertCoordinator = [[AlertCoordinator alloc]
+      initWithBaseViewController:_viewController
+                         browser:self.browser
+                           title:
+                               l10n_util::GetNSString(
+                                   IDS_PLUS_ADDRESS_AFFILIATION_ERROR_ALERT_TITLE_IOS)
+                         message:message];
+  __weak PlusAddressBottomSheetMediator* weakMediator = _mediator;
+  [_alertCoordinator
+      addItemWithTitle:
+          l10n_util::GetNSString(
+              IDS_PLUS_ADDRESS_AFFILIATION_ERROR_PRIMARY_BUTTON_IOS)
+                action:^{
+                  [weakMediator didAcceptAffiliatedPlusAddressSuggestion];
+                }
+                 style:UIAlertActionStyleDefault];
+
+  [_alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
+                               action:^{
+                                 [weakMediator didCancelAlert];
+                               }
+                                style:UIAlertActionStyleCancel];
+
+  [_alertCoordinator start];
+}
+
+- (void)showGenericErrorAlert {
   _alertCoordinator = [[AlertCoordinator alloc]
       initWithBaseViewController:_viewController
                          browser:self.browser

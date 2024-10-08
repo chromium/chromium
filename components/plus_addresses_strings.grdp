@@ -166,6 +166,15 @@
     <message name="IDS_PLUS_ADDRESS_GENERIC_ERROR_ALERT_MESSAGE_IOS" desc="The message displayed in the generic error alert." translateable="false">
 	Try reloading the page or some lorem ipsum generic text
     </message>
+    <message name="IDS_PLUS_ADDRESS_AFFILIATION_ERROR_ALERT_TITLE_IOS" desc="The title of the alert view shown if there is a plus address found for an affiliated site during the creation of a plus address via the bottom sheet." translateable="false">
+        Use existing address?
+    </message>
+    <message name="IDS_PLUS_ADDRESS_AFFILIATION_ERROR_ALERT_MESSAGE_IOS" desc="The message displayed in the alert view shown if there is a plus address found for an affiliated site during the creation of a plus address via the bottom sheet." translateable="false">
+        You already have a plus address for <ph name="DOMAIN">$1<ex>domain.com</ex></ph>. Use existing address <ph name="GAIA_EMAIL">$2<ex>example@gmail.com</ex></ph>?
+    </message>
+    <message name="IDS_PLUS_ADDRESS_AFFILIATION_ERROR_PRIMARY_BUTTON_IOS" desc="The confirmation button displayed in the alert view shown if there is a plus address found for an affiliated site during the creation of a plus address via the bottom sheet." translateable="false">
+        Use existing
+    </message>
 
     <!-- Desktop strings -->
     <message name="IDS_PLUS_ADDRESS_MODAL_TITLE" desc="Title for the experimental enterprise plus addresses feature modal" translateable="false">

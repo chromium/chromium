@@ -138,6 +138,12 @@ class FakePlusAddressService : public PlusAddressService {
         should_return_no_affiliated_plus_profiles;
   }
 
+  void set_should_return_affiliated_plus_profile_on_confirm(
+      bool should_return_affiliated_plus_profile_on_confirm) {
+    should_return_affiliated_plus_profile_on_confirm_ =
+        should_return_affiliated_plus_profile_on_confirm;
+  }
+
  private:
   PlusAddressRequestCallback on_confirmed_;
   testing::NiceMock<affiliations::MockAffiliationService>
@@ -150,6 +156,7 @@ class FakePlusAddressService : public PlusAddressService {
   bool is_plus_address_filling_enabled_ = false;
   bool should_offer_creation_ = false;
   bool should_return_no_affiliated_plus_profiles_ = false;
+  bool should_return_affiliated_plus_profile_on_confirm_ = false;
 };
 
 }  // namespace plus_addresses
