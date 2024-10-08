@@ -70,6 +70,9 @@ if (host_os == "mac") {
 }
 
 copy("copy_signing") {
-  sources = [ "sign.py" ]
-  outputs = [ "$root_out_dir/EnterpriseCompanionSigning/sign.py" ]
+  sources = [
+    "//chrome/installer/mac/pkg-dmg",
+    "sign.py",
+  ]
+  outputs = [ "$root_out_dir/EnterpriseCompanionSigning/{{source_file_part}}" ]
 }

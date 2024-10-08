@@ -10,6 +10,7 @@ import subprocess
 import logging
 import shutil
 import os
+import tempfile
 
 
 def sign(path, identity):
@@ -25,24 +26,21 @@ def validate(path):
 
 
 def notarize(tool_path, file):
-    return subprocess.run([tool_path, "--file", file])
+    return subprocess.run([tool_path, "--file", file]).returncode
 
 
-# Create a zip archive containing the input directory and save it to
-# output/enterprise_companion.zip. That is, if `input` is
-# /path/to/ChromeEnterpriseCompanion.app, the resulting zip will contain
-# ChromeEnterpriseCompanion.app.
-def copy(input, output):
-    # Use the system zip/unzip because Python's zipfile doesn't preserve
-    # file metadata and symlinks.
-    input = os.path.normpath(input)
-    output = os.path.normpath(output)
-    subprocess.check_call([
-        'zip', '-r',
-        os.path.join(output, 'enterprise_companion.zip'),
-        os.path.basename(input)
-    ],
-                          cwd=os.path.dirname(input))
+def create_dmg(app_bundle_path, output_dir):
+    with tempfile.TemporaryDirectory() as tempdir:
+        work_dir = tempfile.mkdtemp(dir=tempdir)
+        empty_dir = tempfile.mkdtemp(dir=tempdir)
+        return subprocess.run([
+            os.path.join(os.path.dirname(sys.argv[0]),
+                         'pkg-dmg'), '--verbosity', '0', '--tempdir', work_dir,
+            '--source', empty_dir, '--target',
+            os.path.join(output_dir, 'ChromeEnterpriseCompanion.dmg'),
+            '--format', 'UDBZ', '--volname', 'ChromeEnterpriseCompanion',
+            '--copy', '{}:/'.format(app_bundle_path)
+        ]).returncode
 
 
 def main(options):
@@ -56,7 +54,10 @@ def main(options):
         if notarize(options.notarization_tool, options.input) != 0:
             logging.error('Notarization tool failed')
             return 1
-    copy(options.input, options.output)
+    if create_dmg(options.input, options.output) != 0:
+        logging.error('DMG packaging failed')
+        return 1
+    return 0
 
 
 if __name__ == '__main__':
