@@ -41,7 +41,7 @@
 #include "chrome/browser/ash/input_method/input_method_syncer.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/ash/policy/skyvault/local_files_migration_manager.h"
+#include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
@@ -681,8 +681,7 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterIntegerPref(
       ::prefs::kSkyVaultMigrationState,
-      static_cast<int>(policy::local_user_files::LocalFilesMigrationManager::
-                           State::kUninitialized));
+      static_cast<int>(policy::local_user_files::State::kUninitialized));
 }
 
 void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {

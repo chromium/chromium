@@ -56,4 +56,59 @@ void SkyVaultOneDriveSignInErrorHistogram(UploadTrigger trigger, bool value) {
       value);
 }
 
+void SkyVaultLocalStorageEnabledHistogram(bool value) {
+  base::UmaHistogramBoolean("Enterprise.SkyVault.LocalStorage.Enabled", value);
+}
+
+void SkyVaultMigrationEnabledHistogram(CloudProvider provider, bool value) {
+  base::UmaHistogramBoolean(
+      base::StrCat({"Enterprise.SkyVault.Migration.",
+                    GetUMACloudProvider(provider), ".Enabled"}),
+      value);
+}
+
+void SkyVaultMigrationMisconfiguredHistogram(CloudProvider provider,
+                                             bool value) {
+  base::UmaHistogramBoolean(
+      base::StrCat({"Enterprise.SkyVault.Migration.",
+                    GetUMACloudProvider(provider), ".Misconfigured"}),
+      value);
+}
+
+void SkyVaultMigrationResetHistogram(bool value) {
+  base::UmaHistogramBoolean("Enterprise.SkyVault.Migration.Reset", value);
+}
+
+void SkyVaultMigrationStoppedHistogram(CloudProvider provider, bool value) {
+  base::UmaHistogramBoolean(
+      base::StrCat({"Enterprise.SkyVault.Migration.",
+                    GetUMACloudProvider(provider), ".Stopped"}),
+      value);
+}
+
+void SkyVaultMigrationWrongStateHistogram(CloudProvider provider,
+                                          StateErrorContext context,
+                                          State state) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Enterprise.SkyVault.Migration.",
+                    GetUMACloudProvider(provider), ".StateErrorContext"}),
+      context);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Enterprise.SkyVault.Migration.",
+                    GetUMACloudProvider(provider), ".WrongState"}),
+      state);
+}
+
+void SkyVaultMigrationFailedHistogram(CloudProvider provider, bool value) {
+  base::UmaHistogramBoolean(
+      base::StrCat({"Enterprise.SkyVault.Migration.",
+                    GetUMACloudProvider(provider), ".Failed"}),
+      value);
+}
+
+void SkyVaultMigrationWriteAccessErrorHistogram(bool value) {
+  base::UmaHistogramBoolean("Enterprise.SkyVault.Migration.WriteAccessError",
+                            value);
+}
+
 }  // namespace policy::local_user_files

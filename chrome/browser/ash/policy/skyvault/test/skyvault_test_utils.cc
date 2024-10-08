@@ -26,6 +26,10 @@ MockMigrationCoordinator::MockMigrationCoordinator(Profile* profile)
                             const std::string& destination_dir,
                             MigrationDoneCallback callback) {
         is_running_ = true;
+        if (run_cb_) {
+          std::move(run_cb_).Run();
+          return;
+        }
         // Simulate upload lasting a while.
         base::SequencedTaskRunner::GetCurrentDefault()
             ->GetCurrentDefault()
@@ -50,6 +54,11 @@ void MockMigrationCoordinator::OnMigrationDone(
     std::move(callback).Run(std::move(errors));
     is_running_ = false;
   }
+}
+
+void MockMigrationCoordinator::SetRunCallback(base::OnceClosure run_cb) {
+  CHECK(run_cb);
+  run_cb_ = std::move(run_cb);
 }
 
 }  // namespace policy::local_user_files

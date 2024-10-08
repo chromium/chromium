@@ -47,6 +47,42 @@ enum class UploadTrigger {
   kMaxValue = kMigration,
 };
 
+// Possible states of the migration. Persisted to a pref.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(State)
+enum class State {
+  kUninitialized = 0,
+  kPending = 1,
+  kInProgress = 2,
+  kCleanup = 3,
+  kCompleted = 4,
+  kFailure = 5,
+  kMaxValue = kFailure,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:EnterpriseSkyVaultMigrationState)
+
+// The context, or the part of the migration process in which an unexpected
+// state transition happens.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(StateErrorContext)
+enum class StateErrorContext {
+  kShowDialog = 0,  //
+  kDialogClick = 1,
+  kSkipTimeout = 2,
+  kTimeout = 3,
+  kListFiles = 4,
+  kMigrationStart = 5,
+  kMigrationDone = 6,
+  kCleanupStart = 7,
+  kCleanupDone = 8,
+  kMaxValue = kCleanupDone,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:EnterpriseSkyVaultMigrationStateErrorContext)
+
 // Returns whether local user files are enabled on the device by the flag and
 // policy.
 bool LocalUserFilesAllowed();

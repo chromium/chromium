@@ -44,17 +44,6 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
     virtual void OnMigrationSucceeded() = 0;
   };
 
-  // Possible states of the migration. Should not be re-ordered as it's
-  // persisted to a pref.
-  enum class State {
-    kUninitialized,
-    kPending,
-    kInProgress,
-    kCleanup,
-    kCompleted,
-    kFailure,
-  };
-
   // Creates an instance of LocalFilesMigrationManager with overridden
   // dependencies.
   static LocalFilesMigrationManager* CreateForTesting(
@@ -142,7 +131,7 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
       std::optional<user_data_auth::SetUserDataStorageWriteEnabledReply> reply);
 
   // Stops the migration if currently ongoing.
-  void MaybeStopMigration();
+  void MaybeStopMigration(CloudProvider previous_provider);
 
   // Sets and stores the state on the device.
   void SetState(State new_state);

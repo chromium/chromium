@@ -16,11 +16,14 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/policy/skyvault/histogram_helper.h"
 #include "chrome/browser/ash/policy/skyvault/local_files_migration_constants.h"
 #include "chrome/browser/ash/policy/skyvault/migration_coordinator.h"
 #include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
@@ -85,19 +88,19 @@ std::string GenerateDestinationDirName() {
 }
 
 // Converts `state` to its string representation.
-std::string StateToString(LocalFilesMigrationManager::State state) {
+std::string StateToString(State state) {
   switch (state) {
-    case LocalFilesMigrationManager::State::kUninitialized:
+    case State::kUninitialized:
       return "uninitialized";
-    case LocalFilesMigrationManager::State::kPending:
+    case State::kPending:
       return "pending";
-    case LocalFilesMigrationManager::State::kInProgress:
+    case State::kInProgress:
       return "in_progress";
-    case LocalFilesMigrationManager::State::kCleanup:
+    case State::kCleanup:
       return "clean_up";
-    case LocalFilesMigrationManager::State::kCompleted:
+    case State::kCompleted:
       return "completed";
-    case LocalFilesMigrationManager::State::kFailure:
+    case State::kFailure:
       return "failure";
   }
 }
@@ -130,15 +133,20 @@ void LocalFilesMigrationManager::Initialize() {
   local_user_files_allowed_ = LocalUserFilesAllowed();
   cloud_provider_ = GetMigrationDestination();
 
+  SkyVaultLocalStorageEnabledHistogram(local_user_files_allowed_);
+
   if (local_user_files_allowed_ || !IsMigrationEnabled(cloud_provider_)) {
     // Migration is now disabled, reset the state.
     if (state_ != State::kUninitialized) {
       LOG(WARNING) << "Migration disabled - resetting the state";
       SetState(State::kUninitialized);
+      SkyVaultMigrationResetHistogram(true);
     }
     return;
   }
   // Migration is enabled.
+  SkyVaultMigrationEnabledHistogram(cloud_provider_, true);
+
   switch (state_) {
     case State::kUninitialized:
     case State::kPending:
@@ -202,20 +210,22 @@ void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
     return;
   }
 
+  SkyVaultLocalStorageEnabledHistogram(local_user_files_allowed_);
+
   // If local files are allowed or migration is turned off, just stop ongoing
   // migration or timers if any.
   if (local_user_files_allowed_ || !IsMigrationEnabled(cloud_provider_)) {
-    MaybeStopMigration();
+    MaybeStopMigration(cloud_provider_old);
     if (local_user_files_allowed_) {
       SetLocalUserFilesWriteEnabled(/*enabled=*/true);
     }
     return;
   }
+  SkyVaultMigrationEnabledHistogram(cloud_provider_, true);
 
   // If the destination changed, stop ongoing migration or timers if any.
-  if (IsMigrationEnabled(cloud_provider_) &&
-      cloud_provider_ != cloud_provider_old) {
-    MaybeStopMigration();
+  if (cloud_provider_ != cloud_provider_old) {
+    MaybeStopMigration(cloud_provider_old);
   }
 
   // Check if the destination cloud provider is enabled.
@@ -235,6 +245,7 @@ void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
                          : "OneDrive")
                  << ", but it is not enabled for this user.";
     notification_manager_->ShowConfigurationErrorNotification(cloud_provider_);
+    SkyVaultMigrationMisconfiguredHistogram(cloud_provider_, true);
     return;
   }
 
@@ -245,8 +256,12 @@ void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
 }
 
 void LocalFilesMigrationManager::InformUser() {
-  CHECK(state_ == State::kPending)
-      << "Wrong state when informing the user first time";
+  if (state_ != State::kPending) {
+    LOG(ERROR) << "Wrong state when informing the user first time";
+    SkyVaultMigrationWrongStateHistogram(
+        cloud_provider_, StateErrorContext::kShowDialog, state_);
+    return;
+  }
   CHECK(!local_user_files_allowed_);
   CHECK(IsMigrationEnabled(cloud_provider_));
 
@@ -271,6 +286,8 @@ void LocalFilesMigrationManager::ScheduleMigrationAndInformUser() {
 
   if (state_ != State::kPending) {
     LOG(ERROR) << "Wrong state when informing the user second time";
+    SkyVaultMigrationWrongStateHistogram(
+        cloud_provider_, StateErrorContext::kShowDialog, state_);
     return;
   }
 
@@ -288,6 +305,8 @@ void LocalFilesMigrationManager::ScheduleMigrationAndInformUser() {
 void LocalFilesMigrationManager::SkipMigrationDelay() {
   if (state_ != State::kPending) {
     LOG(ERROR) << "Wrong state in SkipMigrationDelay";
+    SkyVaultMigrationWrongStateHistogram(
+        cloud_provider_, StateErrorContext::kSkipTimeout, state_);
     return;
   }
   SetState(State::kInProgress);
@@ -298,6 +317,8 @@ void LocalFilesMigrationManager::SkipMigrationDelay() {
 void LocalFilesMigrationManager::OnTimeoutExpired() {
   if (state_ != State::kPending) {
     LOG(ERROR) << "Wrong state in OnTimeoutExpired";
+    SkyVaultMigrationWrongStateHistogram(cloud_provider_,
+                                         StateErrorContext::kTimeout, state_);
     return;
   }
   // TODO(aidazolic): This could cause issues if the dialog doesn't close fast
@@ -310,6 +331,8 @@ void LocalFilesMigrationManager::OnTimeoutExpired() {
 void LocalFilesMigrationManager::GetPathsToUpload() {
   if (state_ != State::kInProgress) {
     LOG(ERROR) << "Wrong state when getting paths to upload";
+    SkyVaultMigrationWrongStateHistogram(cloud_provider_,
+                                         StateErrorContext::kListFiles, state_);
     return;
   }
 
@@ -336,6 +359,8 @@ void LocalFilesMigrationManager::StartMigration(
     std::vector<base::FilePath> files) {
   if (state_ != State::kInProgress) {
     LOG(ERROR) << "Wrong state in migration start";
+    SkyVaultMigrationWrongStateHistogram(
+        cloud_provider_, StateErrorContext::kMigrationStart, state_);
     return;
   }
 
@@ -357,8 +382,12 @@ void LocalFilesMigrationManager::OnMigrationDone(
     std::map<base::FilePath, MigrationUploadError> errors) {
   if (state_ != State::kInProgress) {
     LOG(ERROR) << "Wrong state in migration done";
+    SkyVaultMigrationWrongStateHistogram(
+        cloud_provider_, StateErrorContext::kMigrationDone, state_);
     return;
   }
+
+  SkyVaultMigrationFailedHistogram(cloud_provider_, !errors.empty());
 
   // TODO(b/354709404): Get destination folder path in drive.
   const base::FilePath destination_path = base::FilePath();
@@ -394,6 +423,8 @@ void LocalFilesMigrationManager::ProcessErrors(
 void LocalFilesMigrationManager::CleanupLocalFiles() {
   if (state_ != State::kCleanup) {
     LOG(ERROR) << "Wrong state in cleanup start";
+    SkyVaultMigrationWrongStateHistogram(
+        cloud_provider_, StateErrorContext::kCleanupStart, state_);
     return;
   }
 
@@ -415,6 +446,8 @@ void LocalFilesMigrationManager::OnCleanupDone(
     const std::optional<std::string>& error_message) {
   if (state_ != State::kCleanup) {
     LOG(ERROR) << "Wrong state in cleanup done";
+    SkyVaultMigrationWrongStateHistogram(
+        cloud_provider_, StateErrorContext::kCleanupDone, state_);
     return;
   }
 
@@ -443,13 +476,16 @@ void LocalFilesMigrationManager::SetLocalUserFilesWriteEnabled(bool enabled) {
 
 void LocalFilesMigrationManager::OnFilesWriteRestricted(
     std::optional<user_data_auth::SetUserDataStorageWriteEnabledReply> reply) {
-  if (!reply.has_value() ||
-      reply->error() != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+  bool failed = !reply.has_value() ||
+                reply->error() != user_data_auth::CRYPTOHOME_ERROR_NOT_SET;
+  if (failed) {
     LOG(ERROR) << "Could not restrict write access";
   }
+  SkyVaultMigrationWriteAccessErrorHistogram(failed);
 }
 
-void LocalFilesMigrationManager::MaybeStopMigration() {
+void LocalFilesMigrationManager::MaybeStopMigration(
+    CloudProvider previous_provider) {
   // Stop the timer. No-op if not running.
   scheduling_timer_->Stop();
 
@@ -458,6 +494,9 @@ void LocalFilesMigrationManager::MaybeStopMigration() {
   }
 
   notification_manager_->CloseAll();
+  if (state_ == State::kPending || state_ == State::kInProgress) {
+    SkyVaultMigrationStoppedHistogram(previous_provider, true);
+  }
   SetState(State::kUninitialized);
 }
 

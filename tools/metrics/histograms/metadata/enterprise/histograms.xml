@@ -2991,6 +2991,110 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.SkyVault.LocalStorage.Enabled"
+    enum="BooleanEnabled" expires_after="2025-10-01">
+  <owner>aidazolic@google.com</owner>
+  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
+  <summary>
+    Records whether local storage is enabled (default) or disabled by policy.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.SkyVault.Migration.Reset" enum="Boolean"
+    expires_after="2025-10-01">
+  <owner>aidazolic@google.com</owner>
+  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
+  <summary>
+    Recorded when SkyVault migration of local files is reset during session
+    initialization, due to policy changing since the last session to either
+    allow local storage or disable the migration.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.SkyVault.Migration.WriteAccessError" enum="Boolean"
+    expires_after="2025-10-01">
+  <owner>aidazolic@google.com</owner>
+  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
+  <summary>
+    Recorded when an error occurs while setting the local storage write access.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.SkyVault.Migration.{CloudProvider}.Enabled"
+    enum="Boolean" expires_after="2025-10-01">
+  <owner>aidazolic@google.com</owner>
+  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
+  <summary>
+    Recorded when SkyVault migration to {CloudProvider} is enabled and all
+    policies are configured properly, i.e. local storage is blocked, migration
+    destination is set to {CloudProvider} and the required cloud storage is
+    enabled.
+  </summary>
+  <token key="CloudProvider" variants="Enterprise_SkyVaultCloudProvider"/>
+</histogram>
+
+<histogram name="Enterprise.SkyVault.Migration.{CloudProvider}.Failed"
+    enum="Boolean" expires_after="2025-10-01">
+  <owner>aidazolic@google.com</owner>
+  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
+  <summary>
+    Recorded when SkyVault migration of local files to {CloudProvider} fails,
+    i.e. when at least one file couldn't be uploaded to the cloud due to a non
+    retryable error.
+  </summary>
+  <token key="CloudProvider" variants="Enterprise_SkyVaultCloudProvider"/>
+</histogram>
+
+<histogram name="Enterprise.SkyVault.Migration.{CloudProvider}.Misconfigured"
+    enum="Boolean" expires_after="2025-10-01">
+  <owner>aidazolic@google.com</owner>
+  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
+  <summary>
+    Recorded when SkyVault migration of local files to {CloudProvider} cannot
+    proceed because the policies to enable the required cloud storage aren't set
+    properly.
+  </summary>
+  <token key="CloudProvider" variants="Enterprise_SkyVaultCloudProvider"/>
+</histogram>
+
+<histogram name="Enterprise.SkyVault.Migration.{CloudProvider}.Stopped"
+    enum="Boolean" expires_after="2025-10-01">
+  <owner>aidazolic@google.com</owner>
+  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
+  <summary>
+    Recorded when SkyVault migration of local files to {CloudProvider} is
+    stopped due to policy update to allow local storage, disable migration, or
+    change the target cloud provider.
+  </summary>
+  <token key="CloudProvider" variants="Enterprise_SkyVaultCloudProvider"/>
+</histogram>
+
+<histogram name="Enterprise.SkyVault.Migration.{CloudProvider}.WrongState"
+    enum="EnterpriseSkyVaultMigrationState" expires_after="2025-10-01">
+  <owner>aidazolic@google.com</owner>
+  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
+  <summary>
+    Recorded when an unexpected state transition happens during SkyVault
+    migration of local files to {CloudProvider}. Records the unexpected state
+    value.
+  </summary>
+  <token key="CloudProvider" variants="Enterprise_SkyVaultCloudProvider"/>
+</histogram>
+
+<histogram
+    name="Enterprise.SkyVault.Migration.{CloudProvider}.WrongStateContext"
+    enum="EnterpriseSkyVaultMigrationStateErrorContext"
+    expires_after="2025-10-01">
+  <owner>aidazolic@google.com</owner>
+  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
+  <summary>
+    Recorded when an unexpected state transition happens during SkyVault
+    migration of local files to {CloudProvider}. Records the context in which
+    the wrong state error occurred.
+  </summary>
+  <token key="CloudProvider" variants="Enterprise_SkyVaultCloudProvider"/>
+</histogram>
+
 <histogram name="Enterprise.SkyVault.{Action}.DeleteError" enum="Boolean"
     expires_after="2025-10-01">
   <owner>aidazolic@google.com</owner>

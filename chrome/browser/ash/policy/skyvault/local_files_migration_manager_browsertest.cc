@@ -10,7 +10,9 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/time/time.h"
@@ -50,6 +52,9 @@ constexpr char kTestDeviceSerialNumber[] = "12345689";
 
 constexpr base::TimeDelta kMaxDelta = base::Seconds(1);
 
+constexpr char kMigrationEnabledUMASuffix[] = "Enabled";
+constexpr char kMigrationMisconfiguredUMASuffix[] = "Misconfigured";
+
 // Matcher for scheduled migration time.
 MATCHER_P(TimeNear, expected_time, "") {
   base::TimeDelta delta = (arg - expected_time).magnitude();
@@ -60,6 +65,15 @@ MATCHER_P(TimeNear, expected_time, "") {
 std::string ExpectedDestinationDirName() {
   return std::string(kDestinationDirName) + " " +
          std::string(kTestDeviceSerialNumber);
+}
+
+std::string GetUMAName(const std::string& destination,
+                       const std::string& suffix) {
+  const std::string provider =
+      (destination == download_dir_util::kLocationGoogleDrive) ? "GoogleDrive"
+                                                               : "OneDrive";
+  return base::StrCat(
+      {"Enterprise.SkyVault.Migration.", provider, ".", suffix});
 }
 
 }  // namespace
@@ -139,6 +153,7 @@ class LocalFilesMigrationManagerTest : public policy::PolicyTest {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::HistogramTester histogram_tester_;
   ash::system::FakeStatisticsProvider statistics_provider_;
   std::unique_ptr<MockMigrationNotificationManager> notification_manager_ =
       nullptr;
@@ -156,7 +171,7 @@ class LocalFilesMigrationManagerLocationTest
   }
 
   LocalFilesMigrationManagerLocationTest() = default;
-  ~LocalFilesMigrationManagerLocationTest() = default;
+  ~LocalFilesMigrationManagerLocationTest() override = default;
 
  protected:
   std::string MigrationDestination() { return GetParam(); }
@@ -172,6 +187,10 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
                   _, TimeNear(base::Time::Now() + kTotalMigrationTimeout), _))
       .Times(2);
 
+  // Logged during initialization.
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.LocalStorage.Enabled", true, 1);
+
   // Changing the LocalUserFilesAllowed policy should trigger the migration and
   // update, after the timeout.
   SetMigrationPolicies(/*local_user_files_allowed=*/false,
@@ -182,6 +201,15 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
       base::TimeDelta(kTotalMigrationTimeout - kFinalMigrationTimeout));
   // Fast forward again. The "now" doesn't advance so skip the full timeout.
   task_runner->FastForwardBy(base::TimeDelta(kTotalMigrationTimeout));
+
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.LocalStorage.Enabled", false, 1);
+  const std::string provider =
+      (MigrationDestination() == download_dir_util::kLocationGoogleDrive)
+          ? "GoogleDrive"
+          : "OneDrive";
+  histogram_tester_.ExpectBucketCount(
+      GetUMAName(MigrationDestination(), kMigrationEnabledUMASuffix), true, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
@@ -258,7 +286,7 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
                        NoMigrationIfMisconfigured) {
   EXPECT_CALL(observer_, OnMigrationSucceeded).Times(0);
 
-  std::string destination = MigrationDestination();
+  const std::string destination = MigrationDestination();
   CloudProvider provider;
   // Disable the cloud storage before setting SkyVault policies.
   if (destination == download_dir_util::kLocationGoogleDrive) {
@@ -275,6 +303,13 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
       .Times(1);
 
   SetMigrationPolicies(/*local_user_files_allowed=*/false, destination);
+
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.LocalStorage.Enabled", false, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetUMAName(destination, kMigrationEnabledUMASuffix), true, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetUMAName(destination, kMigrationMisconfiguredUMASuffix), true, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,

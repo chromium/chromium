@@ -15,6 +15,19 @@ void SkyVaultDeleteErrorHistogram(UploadTrigger trigger,
                                   bool value);
 void SkyVaultOneDriveSignInErrorHistogram(UploadTrigger trigger, bool value);
 
+// Helper functions to log UMA stats specific for the migration flow.
+void SkyVaultLocalStorageEnabledHistogram(bool value);
+void SkyVaultMigrationEnabledHistogram(CloudProvider provider, bool value);
+void SkyVaultMigrationMisconfiguredHistogram(CloudProvider provider,
+                                             bool value);
+void SkyVaultMigrationResetHistogram(bool value);
+void SkyVaultMigrationStoppedHistogram(CloudProvider provider, bool value);
+void SkyVaultMigrationWrongStateHistogram(CloudProvider provider,
+                                          StateErrorContext context,
+                                          State state);
+void SkyVaultMigrationFailedHistogram(CloudProvider provider, bool value);
+void SkyVaultMigrationWriteAccessErrorHistogram(bool value);
+
 }  // namespace policy::local_user_files
 
 #endif  // CHROME_BROWSER_ASH_POLICY_SKYVAULT_HISTOGRAM_HELPER_H_
