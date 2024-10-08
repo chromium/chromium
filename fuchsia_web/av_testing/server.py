@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -19,18 +18,15 @@ class ThreadedHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
 Handler = http.server.SimpleHTTPRequestHandler
 
 Handler.extensions_map = {
-    '.mp4': 'video/mp4',
     '.html': 'text/html',
-    '.css': 'text/css',
-    '.js': 'application/javascript',
-    '.jpg': 'image/jpeg',
     '': 'application/octet-stream',
 }
 
-PORT = int(sys.argv[-1])
 DIR = os.path.dirname(__file__)
 
-with ThreadedHTTPServer(("", PORT), Handler) as httpd:
-    os.chdir(DIR)
-    logging.warning('Http server is running on port %s at %s', PORT, DIR)
-    httpd.serve_forever()
+
+def start(port: int) -> None:
+    with ThreadedHTTPServer(("", port), Handler) as httpd:
+        os.chdir(DIR)
+        logging.warning('Http server is running on port %s at %s', port, DIR)
+        httpd.serve_forever()

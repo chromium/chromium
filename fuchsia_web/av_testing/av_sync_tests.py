@@ -8,11 +8,17 @@
 
 import json
 import logging
+import multiprocessing
 import os
 import re
 import subprocess
 import sys
 import time
+
+from contextlib import AbstractContextManager
+
+import camera
+import server
 
 TEST_SCRIPTS_ROOT = os.path.join(os.path.dirname(__file__), '..', '..',
                                  'build', 'fuchsia', 'test')
@@ -29,6 +35,39 @@ from run_webpage_test import WebpageTestRunner, capture_devtools_addr
 HTTP_SERVER_PORT = get_free_local_port()
 LOG_DIR = os.environ.get('ISOLATED_OUTDIR', '/tmp')
 
+VIDEOS = {'720p24fpsVP9_gangnam_sync.webm': {'length': 251}}
+
+
+class StartProcess(AbstractContextManager):
+    """Starts a multiprocessing.Process."""
+
+    def __init__(self, target, args, terminate: bool):
+        self._proc = multiprocessing.Process(target=target, args=args)
+        self._terminate = terminate
+
+    def __enter__(self):
+        self._proc.start()
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        if self._terminate:
+            self._proc.terminate()
+        self._proc.join()
+        if not self._terminate:
+            assert self._proc.exitcode == 0
+
+
+def parameters_of(file: str) -> camera.Parameters:
+    result = camera.Parameters()
+    result.output_path = LOG_DIR
+    # Record several extra seconds to cover the video buffering.
+    result.duration_sec = VIDEOS[file]['length'] + 5
+
+    # Testing purpose now. The video will later be uploaded to the GCS bucket
+    # for analysis rather than storing in the cas output.
+    result.duration_sec = 10
+
+    return result
+
 
 def run_test(proc: subprocess.Popen) -> None:
     device, port = capture_devtools_addr(proc, LOG_DIR)
@@ -37,8 +76,9 @@ def run_test(proc: subprocess.Popen) -> None:
     # machine being accessible on the device.
     host = '.'.join(device.split('.')[:-1] + ['1'])
     with ChromeDriverWrapper((device, port)) as driver:
+        file = '720p24fpsVP9_gangnam_sync.webm'
         if running_unattended():
-            param = 'file=720p24fpsVP9_gangnam_sync.webm'
+            param = f'file={file}'
             proxy_host = os.environ.get('GCS_PROXY_HOST')
             if proxy_host:
                 # This is a hacky way to get the ip address of the host machine
@@ -47,14 +87,20 @@ def run_test(proc: subprocess.Popen) -> None:
         else:
             param = 'local'
         driver.get(f'http://{host}:{HTTP_SERVER_PORT}/video.html?{param}')
-        video = driver.find_element_by_id('video')
-        video.click()
-        while not driver.execute_script('return arguments[0].ended;', video):
-            time.sleep(1)
-        logging.warning('Video finished')
+        with StartProcess(camera.start, [parameters_of(file)], False):
+            video = driver.find_element_by_id('video')
+            video.click()
+            # Video playback should finish almost within the same time as the
+            # camera recording, and this check may only be necessary to indicate
+            # a very heavy network laggy and buffering.
+            # TODO(crbug.com/40935291): Consider a way to record the extra time
+            # over the camera recording.
+            while not driver.execute_script('return arguments[0].ended;',
+                                            video):
+                time.sleep(1)
+            logging.warning('Video finished')
 
 
-# TODO(crbug.com/40935291): Implement the tests.
 def main() -> int:
     proc = subprocess.Popen([
         os.path.join(TEST_SCRIPTS_ROOT,
@@ -80,14 +126,7 @@ if __name__ == '__main__':
         os.environ['FUCHSIA_NODENAME'] = 'fuchsia-ac67-8475-ee82'
     # Setting a temporary isolate daemon dir and share it with the webpage
     # runner.
-    server = subprocess.Popen(
-        [os.path.dirname(__file__) + '/server.py',
-         str(HTTP_SERVER_PORT)])
-    try:
-        with IsolateDaemon.IsolateDir():
-            logging.warning('ffx daemon is running in %s',
-                            get_ffx_isolate_dir())
-            sys.exit(main())
-    finally:
-        server.kill()
-        server.wait()
+    with StartProcess(server.start, [HTTP_SERVER_PORT], True), \
+         IsolateDaemon.IsolateDir():
+        logging.warning('ffx daemon is running in %s', get_ffx_isolate_dir())
+        sys.exit(main())
