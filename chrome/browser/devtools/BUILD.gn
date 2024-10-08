@@ -260,6 +260,8 @@ static_library("devtools") {
       "devtools_ui_bindings.h",
       "devtools_window.cc",
       "devtools_window.h",
+      "features.cc",
+      "features.h",
       "global_confirm_info_bar.cc",
       "global_confirm_info_bar.h",
       "process_sharing_infobar_delegate.cc",

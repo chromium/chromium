@@ -8,8 +8,8 @@
 
 #include "base/functional/bind.h"
 #include "base/values.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/devtools/devtools_settings.h"
+#include "chrome/browser/devtools/features.h"
 #include "chrome/browser/devtools/visual_logging.h"
 
 namespace {
