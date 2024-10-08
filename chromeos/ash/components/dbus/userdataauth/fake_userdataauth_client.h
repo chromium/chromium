@@ -388,6 +388,12 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   // allows blocking IO.
   void SetUserDataDir(base::FilePath path);
 
+  // Adds a default Gaia password factor if none other auth factors exist
+  // when AuthSession starts.
+  void set_add_default_password_factor(bool add_default_password_factor) {
+    add_default_password_factor_ = add_default_password_factor;
+  }
+
  private:
   enum class AuthResult {
     kAuthSuccess,
@@ -514,6 +520,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   // service is not available (instead of adding the callback to pending
   // callback list).
   bool service_reported_not_available_ = false;
+
+  // If set, adds a default Gaia password factor when AuthSession starts.
+  bool add_default_password_factor_ = false;
 };
 
 }  // namespace ash

@@ -24,6 +24,7 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -79,18 +80,19 @@ using FakeAuthFactor = absl::variant<PasswordFactor,
 // directory name. The prefix "u-" below corresponds to
 // `chrome::kProfileDirPrefix` (which can not be easily included here) and
 // "-hash" is as in `GetStubSanitizedUsername`.
-const std::string kUserDataDirNamePrefix = "u-";
-const std::string kUserDataDirNameSuffix = "-hash";
+constexpr char kUserDataDirNamePrefix[] = "u-";
+constexpr char kUserDataDirNameSuffix[] = "-hash";
 
 // Label of the recovery auth factor.
 // Label of the kiosk auth factor.
-const std::string kCryptohomePublicMountLabel = "publicmount";
+constexpr char kCryptohomePublicMountLabel[] = "publicmount";
 
 // Labels used of of various types of auth factors used by chrome. These must
 // be kept in sync with the labels in cryptohome_key_constants.{cc,h}, which
 // cannot be included into this file because that would result in circular
 // dependencies.
-const std::string kCryptohomeRecoveryKeyLabel = "recovery";
+constexpr char kCryptohomeRecoveryKeyLabel[] = "recovery";
+constexpr char kCryptohomeGaiaKeyLabel[] = "gaia";
 
 template <typename ReplyType>
 void SetErrorWrapperToReply(ReplyType& reply, cryptohome::ErrorWrapper error) {
@@ -905,9 +907,9 @@ void FakeUserDataAuthClient::StartAuthSession(
   if (user_exists) {
     UserCryptohomeState& user_state = user_it->second;
 
-    // TODO(b/239422391): Some tests expect that kiosk keys exist for existing
-    // users, but don't set those keys up. Until those tests are fixed, we
-    // explicitly add keys here.
+    // TODO(b/239422391): Some tests expect that kiosk keys or gaia keys exist
+    // for existing users, but don't set those keys up. Until those tests are
+    // fixed, we explicitly add keys here.
     if (is_kiosk) {
       if (!user_state.auth_factors.contains(kCryptohomePublicMountLabel)) {
         LOG(ERROR) << "Listing kiosk key even though it was not set up";
@@ -915,6 +917,13 @@ void FakeUserDataAuthClient::StartAuthSession(
         FakeAuthFactor factor{KioskFactor()};
         user_state.auth_factors.insert(
             {kCryptohomeRecoveryKeyLabel, std::move(factor)});
+      };
+    } else {
+      if (add_default_password_factor_ && user_state.auth_factors.empty()) {
+        LOG(ERROR) << "Listing GAIA password key even though it was not set up";
+        FakeAuthFactor factor{PasswordFactor()};
+        user_state.auth_factors.insert(
+            {kCryptohomeGaiaKeyLabel, std::move(factor)});
       };
     }
 
@@ -1845,7 +1854,8 @@ void FakeUserDataAuthClient::SetUserDataDir(base::FilePath path) {
   CHECK(!user_data_dir_.has_value());
   user_data_dir_ = std::move(path);
 
-  std::string pattern = kUserDataDirNamePrefix + "*" + kUserDataDirNameSuffix;
+  std::string pattern =
+      base::StrCat({kUserDataDirNamePrefix, "*", kUserDataDirNameSuffix});
   base::FileEnumerator e(*user_data_dir_, /*recursive=*/false,
                          base::FileEnumerator::DIRECTORIES, std::move(pattern));
   for (base::FilePath name = e.Next(); !name.empty(); name = e.Next()) {
@@ -1856,8 +1866,8 @@ void FakeUserDataAuthClient::SetUserDataDir(base::FilePath path) {
     // Remove kUserDataDirNamePrefix from front and kUserDataDirNameSuffix from
     // end to obtain account id.
     std::string account_id_str(
-        base_name.value().begin() + kUserDataDirNamePrefix.size(),
-        base_name.value().end() - kUserDataDirNameSuffix.size());
+        base_name.value().begin() + std::strlen(kUserDataDirNamePrefix),
+        base_name.value().end() - std::strlen(kUserDataDirNameSuffix));
 
     cryptohome::AccountIdentifier account_id;
     account_id.set_account_id(std::move(account_id_str));

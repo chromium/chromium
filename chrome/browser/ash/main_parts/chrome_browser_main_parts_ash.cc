@@ -716,6 +716,12 @@ int ChromeBrowserMainPartsAsh::PreEarlyInitialization() {
     base::FilePath user_data_dir;
     base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
     FakeUserDataAuthClient::Get()->SetUserDataDir(std::move(user_data_dir));
+    // Set a default password factor when `--login-manager` is used in
+    // non-testing mode.
+    if (command_line->HasSwitch(switches::kLoginManager) &&
+        !is_integration_test()) {
+      FakeUserDataAuthClient::Get()->set_add_default_password_factor(true);
+    }
 
     // If we're not running on a device, i.e. either in a test or in ash Chrome
     // on linux, fake dbus calls that would result in a shutdown of Chrome by
