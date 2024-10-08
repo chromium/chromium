@@ -474,7 +474,8 @@ void ChipController::ShowPageInfoDialog() {
           chip_, gfx::Rect(), chip_->GetWidget()->GetNativeWindow(), contents,
           entry->GetVirtualURL(), std::move(initialized_callback),
           base::BindOnce(&ChipController::OnPageInfoBubbleClosed,
-                         weak_factory_.GetWeakPtr()));
+                         weak_factory_.GetWeakPtr()),
+          /*allow_about_this_site=*/true);
   bubble->GetWidget()->Show();
   bubble_tracker_.SetView(bubble);
   permissions::PermissionUmaUtil::RecordPageInfoDialogAccessType(

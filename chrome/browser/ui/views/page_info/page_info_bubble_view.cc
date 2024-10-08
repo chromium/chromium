@@ -132,7 +132,8 @@ PageInfoBubbleView::PageInfoBubbleView(
     content::WebContents* associated_web_contents,
     const GURL& url,
     base::OnceClosure initialized_callback,
-    PageInfoClosingCallback closing_callback)
+    PageInfoClosingCallback closing_callback,
+    bool allow_about_this_site)
     : PageInfoBubbleViewBase(anchor_view,
                              anchor_rect,
                              parent_window,
@@ -161,7 +162,8 @@ PageInfoBubbleView::PageInfoBubbleView(
         std::make_unique<PageInfoHistoryController>(web_contents(), url);
   }
   view_factory_ = std::make_unique<PageInfoViewFactory>(
-      presenter_.get(), ui_delegate_.get(), this, history_controller_.get());
+      presenter_.get(), ui_delegate_.get(), this, history_controller_.get(),
+      allow_about_this_site);
 
   SetShowTitle(false);
   SetShowCloseButton(false);
@@ -193,7 +195,8 @@ views::BubbleDialogDelegateView* PageInfoBubbleView::CreatePageInfoBubble(
     content::WebContents* web_contents,
     const GURL& url,
     base::OnceClosure initialized_callback,
-    PageInfoClosingCallback closing_callback) {
+    PageInfoClosingCallback closing_callback,
+    bool allow_about_this_site) {
   DCHECK(web_contents);
   gfx::NativeView parent_view = platform_util::GetViewForWindow(parent_window);
 
@@ -206,7 +209,8 @@ views::BubbleDialogDelegateView* PageInfoBubbleView::CreatePageInfoBubble(
 
   return new PageInfoBubbleView(
       anchor_view, anchor_rect, parent_view, web_contents, url,
-      std::move(initialized_callback), std::move(closing_callback));
+      std::move(initialized_callback), std::move(closing_callback),
+      allow_about_this_site);
 }
 
 void PageInfoBubbleView::OpenMainPage(base::OnceClosure initialized_callback) {
@@ -339,7 +343,7 @@ void ShowPageInfoDialogImpl(Browser* browser,
       PageInfoBubbleView::CreatePageInfoBubble(
           configuration.anchor_view, anchor_rect, parent_window, web_contents,
           virtual_url, std::move(initialized_callback),
-          std::move(closing_callback));
+          std::move(closing_callback), /*allow_about_this_site=*/true);
   bubble->SetHighlightedButton(configuration.highlighted_button);
   bubble->SetArrow(configuration.bubble_arrow);
   bubble->GetWidget()->Show();

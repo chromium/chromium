@@ -92,7 +92,8 @@ PageInfoMainView::PageInfoMainView(
     ChromePageInfoUiDelegate* ui_delegate,
     PageInfoNavigationHandler* navigation_handler,
     PageInfoHistoryController* history_controller,
-    base::OnceClosure initialized_callback)
+    base::OnceClosure initialized_callback,
+    bool allow_about_this_site)
     : presenter_(presenter),
       ui_delegate_(ui_delegate),
       navigation_handler_(navigation_handler) {
@@ -148,8 +149,8 @@ PageInfoMainView::PageInfoMainView(
     history_controller->InitRow(AddChildView(CreateContainerView()));
   }
 
-  if (page_info::IsAboutThisSiteFeatureEnabled(
-          g_browser_process->GetApplicationLocale())) {
+  if (allow_about_this_site && page_info::IsAboutThisSiteFeatureEnabled(
+                                   g_browser_process->GetApplicationLocale())) {
     about_this_site_section_ = AddChildView(CreateContainerView());
   }
 
@@ -389,8 +390,7 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
 
     // Show "About this site" section only if connection is secure, because
     // security information has higher priority.
-    if (page_info::IsAboutThisSiteFeatureEnabled(
-            g_browser_process->GetApplicationLocale())) {
+    if (about_this_site_section_) {
       auto info = ui_delegate_->GetAboutThisSiteInfo();
       if (info.has_value()) {
         about_this_site_section_->RemoveAllChildViews();
