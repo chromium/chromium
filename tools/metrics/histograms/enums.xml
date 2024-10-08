@@ -34553,6 +34553,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="164517522" label="chrome://discards/"/>
   <int value="171659041" label="chrome://webrtc-device-provider/"/>
   <int value="182993612" label="chrome-untrusted://help-app-kids-magazine/"/>
+  <int value="187846858" label="chrome://lens-overlay/"/>
   <int value="253258497" label="chrome://components/"/>
   <int value="260253931" label="chrome://devices/"/>
   <int value="275260142" label="chrome://eoc-internals/"/>

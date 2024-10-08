@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/webui/omnibox/omnibox_ui.h"
 #include "chrome/browser/ui/webui/policy/policy_ui.h"
 #include "chrome/browser/ui/webui/predictors/predictors_ui.h"
+#include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_ui.h"
 #include "chrome/browser/ui/webui/segmentation_internals/segmentation_internals_ui.h"
 #include "chrome/browser/ui/webui/signin_internals_ui.h"
 #include "chrome/browser/ui/webui/sync_internals/sync_internals_ui.h"
@@ -176,6 +177,10 @@
 #include "chrome/browser/ui/webui/signin/signin_reauth_ui.h"
 #endif
 
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+#include "chrome/browser/ui/webui/lens/lens_ui.h"
+#endif
+
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/browser/ui/webui/reset_password/reset_password_ui.h"
 #endif
@@ -238,6 +243,9 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<UserActionsUIConfig>());
   map.AddWebUIConfig(std::make_unique<VersionUIConfig>());
   map.AddWebUIConfig(std::make_unique<WebRtcLogsUIConfig>());
+  map.AddWebUIConfig(
+      std::make_unique<
+          privacy_sandbox_internals::PrivacySandboxInternalsUIConfig>());
 
 #if BUILDFLAG(ENABLE_NACL)
   map.AddWebUIConfig(std::make_unique<NaClUIConfig>());
@@ -369,6 +377,10 @@ void RegisterChromeWebUIConfigs() {
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
   map.AddWebUIConfig(std::make_unique<SigninReauthUIConfig>());
+#endif
+
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+  map.AddWebUIConfig(std::make_unique<LensUIConfig>());
 #endif
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
