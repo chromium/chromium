@@ -1,66 +1,9 @@
-<style include="cr-shared-style md-select">
-  :host {
-    --radio-group-height: 132px;
-    --dialog-height: 360px;
-  }
-
-  #dialog-title {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  #title-subtext {
-    color: var(--cr-secondary-text-color);
-    font-size: 81.25%; /* Default font size. */
-  }
-
-  cr-radio-group {
-    padding-inline: 8px;
-  }
-
-  .site-access-list {
-    max-height: var(--dialog-height);
-  }
-
-  .indented-site-access-list {
-    margin-inline-start: 36px;
-    max-height: calc(var(--dialog-height) - var(--radio-group-height));
-  }
-
-  .extension-row {
-    --md-select-width: 180px;
-    align-items: center;
-    border-top: var(--cr-separator-line);
-    display: flex;
-    height: 32px;
-    padding: 12px 0;
-  }
-
-  .extension-row:first-child {
-    border-top: none;
-  }
-
-  .extension-icon {
-    height: 24px;
-    margin-inline-end: 12px;
-    width: 24px;
-  }
-
-  .extension-name {
-    flex-grow: 1;
-    margin-inline-end: 12px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-</style>
 <cr-dialog id="dialog" show-on-attach>
   <div slot="title" id="dialog-title">
     <div>$i18n{sitePermissionsEditPermissionsDialogTitle}</div>
     <div id="title-subtext">
-      <span id="site">[[getSiteWithoutSubdomainSpecifier_(site)]]</span>
-      <span id="includesSubdomains" hidden$="[[!matchesSubdomains_(site)]]">
+      <span id="site">${this.getSiteWithoutSubdomainSpecifier_()}</span>
+      <span id="includesSubdomains" ?hidden="${!this.matchesSubdomains_()}">
         $i18n{sitePermissionsIncludesSubdomains}
       </span>
     </div>
@@ -69,56 +12,62 @@
     <!-- The cr-radio-group is in the header instead of the body slot so it is
          fixed in place while the list of extensions in the body slot can scroll
          if the dialog's contents exceed the max height. -->
-    <template is="dom-if" if="[[!matchesSubdomains_(site)]]">
-      <cr-radio-group selected="{{siteSet_}}">
+    ${!this.matchesSubdomains_() ? html`
+      <cr-radio-group .selected="${this.siteSet_}"
+          @selected-changed="${this.onSiteSetChanged_}">
         <cr-radio-button
-            hidden="[[!showPermittedOption_]]"
-            name="[[siteSetEnum_.USER_PERMITTED]]"
-            label="[[getPermittedSiteLabel_(site)]]">
+            ?hidden="${!this.showPermittedOption_}"
+            name="${chrome.developerPrivate.SiteSet.USER_PERMITTED}"
+            label="${this.getPermittedSiteLabel_()}">
         </cr-radio-button>
         <cr-radio-button
-            name="[[siteSetEnum_.USER_RESTRICTED]]"
-            label="[[getRestrictedSiteLabel_(site)]]">
+            name="${chrome.developerPrivate.SiteSet.USER_RESTRICTED}"
+            label="${this.getRestrictedSiteLabel_()}">
         </cr-radio-button>
         <cr-radio-button
-            name="[[siteSetEnum_.EXTENSION_SPECIFIED]]"
+            name="${chrome.developerPrivate.SiteSet.EXTENSION_SPECIFIED}"
             label="$i18n{editSitePermissionsCustomizePerExtension}">
         </cr-radio-button>
-      </cr-radio-group>
-    </template>
+      </cr-radio-group>` : ''}
   </div>
   <div slot="body">
-    <template is="dom-if" if="[[showExtensionSiteAccessData_(siteSet_)]]">
-      <div class$="[[getDialogBodyContainerClass_(site)]]">
-        <template is="dom-repeat" items="[[extensionSiteAccessData_]]">
+    ${this.showExtensionSiteAccessData_() ? html`
+      <div class="${this.getDialogBodyContainerClass_()}">
+        ${this.extensionSiteAccessData_.map((item, index) => html`
           <div class="extension-row">
-            <img class="extension-icon" src="[[item.iconUrl]]" alt="">
-            <span class="extension-name">[[item.name]]</span>
+            <img class="extension-icon" src="${item.iconUrl}" alt="">
+            <span class="extension-name">${item.name}</span>
             <select class="extension-host-access md-select"
-                disabled="[[item.addedByPolicy]]"
-                on-change="onHostAccessChange_"
-                value="[[getExtensionHostAccess_(item.id, item.siteAccess)]]">
-              <option value="[[hostAccessEnum_.ON_CLICK]]">
+                ?disabled="${item.addedByPolicy}"
+                @change="${this.onHostAccessChange_}"
+                data-index="${index}">
+              <option value="${chrome.developerPrivate.HostAccess.ON_CLICK}"
+                  .selected="${this.isSelected_(item.id, item.siteAccess,
+                      chrome.developerPrivate.HostAccess.ON_CLICK)}">
                 $i18n{sitePermissionsAskOnEveryVisit}
               </option>
-              <option value="[[hostAccessEnum_.ON_SPECIFIC_SITES]]">
+              <option value="${chrome.developerPrivate.HostAccess
+                  .ON_SPECIFIC_SITES}"
+                  .selected="${this.isSelected_(item.id, item.siteAccess,
+                      chrome.developerPrivate.HostAccess.ON_SPECIFIC_SITES)}">
                 $i18n{sitePermissionsAlwaysOnThisSite}
               </option>
-              <option value="[[hostAccessEnum_.ON_ALL_SITES]]"
-                  disabled="[[!item.canRequestAllSites]]">
+              <option value="${chrome.developerPrivate.HostAccess.ON_ALL_SITES}"
+                  .selected="${this.isSelected_(item.id, item.siteAccess,
+                      chrome.developerPrivate.HostAccess.ON_ALL_SITES)}"
+                  ?disabled="${!item.canRequestAllSites}">
                 $i18n{sitePermissionsAlwaysOnAllSites}
               </option>
             </select>
-          </div>
-        </template>
-      </div>
-    </template>
+          </div>`)}
+      </div>` : '' }
   </div>
   <div slot="button-container">
-    <cr-button class="cancel-button" on-click="onCancelClick_">
+    <cr-button class="cancel-button" @click="${this.onCancelClick_}">
       $i18n{cancel}
     </cr-button>
-    <cr-button class="action-button" id="submit" on-click="onSubmitClick_">
+    <cr-button class="action-button" id="submit"
+        @click="${this.onSubmitClick_}">
       $i18n{save}
     </cr-button>
   </div>

@@ -6,28 +6,29 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/md_select.css.js';
 import '../strings.m.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getItemSource, SourceType} from '../item_util.js';
-import {getTemplate} from './site_permissions_edit_permissions_dialog.html.js';
-import type {SiteSettingsDelegate} from './site_settings_mixin.js';
 import {matchesSubdomains, SUBDOMAIN_SPECIFIER} from '../url_util.js';
+
+import {getCss} from './site_permissions_edit_permissions_dialog.css.js';
+import {getHtml} from './site_permissions_edit_permissions_dialog.html.js';
+import type {SiteSettingsDelegate} from './site_settings_mixin.js';
+import {DummySiteSettingsDelegate} from './site_settings_mixin.js';
 
 interface ExtensionSiteAccessInfo {
   id: string;
   name: string;
   iconUrl: string;
-  siteAccess: string;
+  siteAccess: chrome.developerPrivate.HostAccess;
   addedByPolicy: boolean;
   canRequestAllSites: boolean;
 }
@@ -62,7 +63,7 @@ const VALID_SCHEMES = [
 ];
 
 const SitePermissionsEditPermissionsDialogElementBase =
-    I18nMixin(PolymerElement);
+    I18nMixinLit(CrLitElement);
 
 export class SitePermissionsEditPermissionsDialogElement extends
     SitePermissionsEditPermissionsDialogElementBase {
@@ -70,93 +71,67 @@ export class SitePermissionsEditPermissionsDialogElement extends
     return 'site-permissions-edit-permissions-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      delegate: Object,
-      extensions: {
-        type: Array,
-        value: () => [],
-        observer: 'onExtensionsUpdated_',
-      },
+      delegate: {type: Object},
+      extensions: {type: Array},
 
       /**
        * The current siteSet for `site`, as stored in the backend. Specifies
        * whether `site` is a user specified permitted or restricted site, or is
        * a pattern specified by an extension's host permissions..
        */
-      originalSiteSet: String,
+      originalSiteSet: {type: String},
 
       /**
        * The url of the site whose permissions are currently being edited.
        */
-      site: String,
+      site: {type: String},
 
       /**
        * The temporary siteSet for `site` as displayed in the dialog. Will be
        * saved to the backend when the dialog is submitted.
        */
-      siteSet_: {
-        type: String,
-        observer: 'onSiteSetUpdated_',
-      },
+      siteSet_: {type: String},
 
-      siteSetEnum_: {
-        type: Object,
-        value: chrome.developerPrivate.SiteSet,
-      },
-
-      extensionSiteAccessData_: {
-        type: Array,
-        value: () => [],
-      },
-
-      showPermittedOption_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('enableUserPermittedSites'),
-      },
-
-      /**
-       * Proxying the enum to be used easily by the html template.
-       */
-      hostAccessEnum_: {
-        type: Object,
-        value: chrome.developerPrivate.HostAccess,
-      },
+      extensionSiteAccessData_: {type: Array},
+      showPermittedOption_: {type: Boolean},
     };
   }
 
-  delegate: SiteSettingsDelegate;
-  extensions: chrome.developerPrivate.ExtensionInfo[];
-  originalSiteSet: chrome.developerPrivate.SiteSet;
-  site: string;
-  private siteSet_: chrome.developerPrivate.SiteSet;
+  delegate: SiteSettingsDelegate = new DummySiteSettingsDelegate();
+  extensions: chrome.developerPrivate.ExtensionInfo[] = [];
+  originalSiteSet: chrome.developerPrivate.SiteSet =
+      chrome.developerPrivate.SiteSet.USER_PERMITTED;
+  site: string = '';
+  protected siteSet_: chrome.developerPrivate.SiteSet =
+      chrome.developerPrivate.SiteSet.USER_PERMITTED;
   private extensionsIdToInfo_:
-      Map<string, chrome.developerPrivate.ExtensionInfo>;
-  private extensionSiteAccessData_: ExtensionSiteAccessInfo[];
-  private showPermittedOption_: boolean;
+      Map<string, chrome.developerPrivate.ExtensionInfo> = new Map();
+  protected extensionSiteAccessData_: ExtensionSiteAccessInfo[] = [];
+  protected showPermittedOption_: boolean =
+      loadTimeData.getBoolean('enableUserPermittedSites');
 
   // Tracks any unsaved changes to HostAccess for each extension made by
   // changing the value in the ".extension-host-access" <select> element. Any
   // values in here should be different than the HostAccess for the extension
   // inside `extensionSiteAccessData_`.
   private unsavedExtensionsIdToHostAccess_:
-      Map<string, chrome.developerPrivate.HostAccess>;
+      Map<string, chrome.developerPrivate.HostAccess> = new Map();
 
-  constructor() {
-    super();
-    this.unsavedExtensionsIdToHostAccess_ = new Map();
-  }
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
 
-  override ready() {
-    super.ready();
-
-    // Setting this to an initial value will trigger a call to
-    // `updateExtensionSiteAccessData_`.
     this.siteSet_ = this.originalSiteSet;
+    this.updateExtensionSiteAccessData_(this.siteSet_);
 
     // If `this.site` matches subdomains, then it should not be a user specified
     // site.
@@ -165,17 +140,26 @@ export class SitePermissionsEditPermissionsDialogElement extends
         this.originalSiteSet === EXTENSION_SPECIFIED);
   }
 
-  private onExtensionsUpdated_(extensions:
-                                   chrome.developerPrivate.ExtensionInfo[]) {
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('extensions')) {
+      this.onExtensionsUpdated_();
+    }
+  }
+
+  private onExtensionsUpdated_() {
     this.extensionsIdToInfo_ = new Map();
-    for (const extension of extensions) {
+    for (const extension of this.extensions) {
       this.extensionsIdToInfo_.set(extension.id, extension);
     }
     this.updateExtensionSiteAccessData_(this.siteSet_);
   }
 
-  private onSiteSetUpdated_(siteSet: chrome.developerPrivate.SiteSet) {
-    this.updateExtensionSiteAccessData_(siteSet);
+  protected onSiteSetChanged_(
+      e: CustomEvent<{value: chrome.developerPrivate.SiteSet}>) {
+    this.siteSet_ = e.detail.value;
+    this.updateExtensionSiteAccessData_(this.siteSet_);
   }
 
   // Returns true if this.site is a just a host by checking whether or not it
@@ -230,11 +214,11 @@ export class SitePermissionsEditPermissionsDialogElement extends
     this.extensionSiteAccessData_ = extensionSiteAccessData;
   }
 
-  private onCancelClick_() {
+  protected onCancelClick_() {
     this.$.dialog.cancel();
   }
 
-  private async onSubmitClick_() {
+  protected async onSubmitClick_() {
     if (this.siteSet_ !== this.originalSiteSet) {
       // If `this.site` has a scheme (and can be considered a full url), use it
       // as is. Otherwise if `this.site` is just a host, append the http and
@@ -268,61 +252,64 @@ export class SitePermissionsEditPermissionsDialogElement extends
     this.$.dialog.close();
   }
 
-  private getSiteWithoutSubdomainSpecifier_(): string {
+  protected getSiteWithoutSubdomainSpecifier_(): string {
     return this.site.replace(SUBDOMAIN_SPECIFIER, '');
   }
 
-  private getPermittedSiteLabel_(): string {
+  protected getPermittedSiteLabel_(): string {
     return this.i18n('editSitePermissionsAllowAllExtensions', this.site);
   }
 
-  private getRestrictedSiteLabel_(): string {
+  protected getRestrictedSiteLabel_(): string {
     return this.i18n('editSitePermissionsRestrictExtensions', this.site);
   }
 
-  private matchesSubdomains_(): boolean {
+  protected matchesSubdomains_(): boolean {
     return matchesSubdomains(this.site);
   }
 
-  private showExtensionSiteAccessData_(): boolean {
+  protected showExtensionSiteAccessData_(): boolean {
     return this.siteSet_ === EXTENSION_SPECIFIED;
   }
 
-  private getDialogBodyContainerClass_(): string {
+  protected getDialogBodyContainerClass_(): string {
     return this.matchesSubdomains_() ? 'site-access-list' :
                                        'indented-site-access-list';
   }
 
-  // Returns the value to be displayed for the <select> element for the
+  // Returns whether a <select> <option> is selected for the
   // extension's host access. This shows the unsaved HostAccess value that was
   // changed by the user. Otherwise, show the preexisting HostAccess value.
-  private getExtensionHostAccess_(
+  protected isSelected_(
       extensionId: string,
-      originalSiteAccess: chrome.developerPrivate.HostAccess):
-      chrome.developerPrivate.HostAccess {
-    return this.unsavedExtensionsIdToHostAccess_.get(extensionId) ||
+      originalSiteAccess: chrome.developerPrivate.HostAccess,
+      option: chrome.developerPrivate.HostAccess): boolean {
+    const selectedValue =
+        this.unsavedExtensionsIdToHostAccess_.get(extensionId) ||
         originalSiteAccess;
+    return selectedValue === option;
   }
 
-  private onHostAccessChange_(e: DomRepeatEvent<ExtensionSiteAccessInfo>) {
-    const selectMenu = this.shadowRoot!.querySelectorAll<HTMLSelectElement>(
-        '.extension-host-access')[e.model.index];
+  protected onHostAccessChange_(e: Event) {
+    const selectMenu = e.target as HTMLSelectElement;
     assert(selectMenu);
 
-    const originalSiteAccess = e.model.item.siteAccess;
+    const index = Number(selectMenu.dataset['index']);
+    const item = this.extensionSiteAccessData_[index]!;
+    const originalSiteAccess = item.siteAccess;
     const newSiteAccess =
         selectMenu.value as chrome.developerPrivate.HostAccess;
 
     // Sanity check that extensions that don't request all sites access cannot
     // request all sites access from the dialog.
     assert(
-        e.model.item.canRequestAllSites ||
+        item.canRequestAllSites ||
         newSiteAccess !== chrome.developerPrivate.HostAccess.ON_ALL_SITES);
 
     if (originalSiteAccess === newSiteAccess) {
-      this.unsavedExtensionsIdToHostAccess_.delete(e.model.item.id);
+      this.unsavedExtensionsIdToHostAccess_.delete(item.id);
     } else {
-      this.unsavedExtensionsIdToHostAccess_.set(e.model.item.id, newSiteAccess);
+      this.unsavedExtensionsIdToHostAccess_.set(item.id, newSiteAccess);
     }
   }
 }

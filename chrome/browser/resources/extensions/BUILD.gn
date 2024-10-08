@@ -89,6 +89,7 @@ build_webui("build") {
     "shared_vars.css",
     "shortcut_input.css",
     "sidebar.css",
+    "site_permissions/site_permissions_edit_permissions_dialog.css",
     "toolbar.css",
   ]
 

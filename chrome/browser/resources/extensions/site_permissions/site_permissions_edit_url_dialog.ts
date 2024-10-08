@@ -5,17 +5,18 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../strings.m.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {getCss as getSharedStyleCss} from 'chrome://resources/cr_elements/cr_shared_style_lit.css.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './site_permissions_edit_url_dialog.html.js';
+import {getHtml} from './site_permissions_edit_url_dialog.html.js';
 import type {SiteSettingsDelegate} from './site_settings_mixin.js';
+import {DummySiteSettingsDelegate} from './site_settings_mixin.js';
 
 // A RegExp to roughly match acceptable patterns entered by the user.
 // exec'ing() this RegExp will match the following groups:
@@ -50,47 +51,43 @@ export interface SitePermissionsEditUrlDialogElement {
   };
 }
 
-export class SitePermissionsEditUrlDialogElement extends PolymerElement {
+export class SitePermissionsEditUrlDialogElement extends CrLitElement {
   static get is() {
     return 'site-permissions-edit-url-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getSharedStyleCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      delegate: Object,
-      siteSet: String,
+      delegate: {type: Object},
+      siteSet: {type: String},
 
       /**
        * The site that this entry is currently managing. Only non-empty if this
        * is for editing an existing entry.
        */
-      siteToEdit: {
-        type: String,
-        value: null,
-      },
+      siteToEdit: {type: String},
 
-      site_: {
-        type: String,
-        value: '',
-      },
+      site_: {type: String},
 
       /** Whether the currently-entered input is valid. */
-      inputValid_: {
-        type: Boolean,
-        value: true,
-      },
+      inputValid_: {type: Boolean},
     };
   }
 
-  delegate: SiteSettingsDelegate;
-  siteSet: chrome.developerPrivate.SiteSet;
-  siteToEdit: string|null;
-  private site_: string;
-  private inputValid_: boolean;
+  delegate: SiteSettingsDelegate = new DummySiteSettingsDelegate();
+  siteSet: chrome.developerPrivate.SiteSet =
+      chrome.developerPrivate.SiteSet.USER_PERMITTED;
+  siteToEdit: string|null = null;
+  protected site_: string = '';
+  protected inputValid_: boolean = true;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -107,37 +104,41 @@ export class SitePermissionsEditUrlDialogElement extends PolymerElement {
    * not be shown, but the input cannot be submitted as the action button will
    * be disabled.
    */
-  private validate_() {
+  protected validate_() {
     this.inputValid_ = this.site_.trim().length === 0 ||
         sitePermissionsPatternRegExp.test(this.site_);
   }
 
-  private computeDialogTitle_(): string {
+  protected computeDialogTitle_(): string {
     return loadTimeData.getString(
         this.siteToEdit === null ? 'sitePermissionsAddSiteDialogTitle' :
                                    'sitePermissionsEditSiteDialogTitle');
   }
 
-  private computeSubmitButtonDisabled_(): boolean {
+  protected computeSubmitButtonDisabled_(): boolean {
     // If input is empty, disable the action button.
     return !this.inputValid_ || this.site_.trim().length === 0;
   }
 
-  private computeSubmitButtonLabel_(): string {
+  protected computeSubmitButtonLabel_(): string {
     return loadTimeData.getString(this.siteToEdit === null ? 'add' : 'save');
   }
 
-  private onCancel_() {
+  protected onCancel_() {
     this.$.dialog.cancel();
   }
 
-  private onSubmit_() {
+  protected onSubmit_() {
     const pattern = getSitePermissionsPatternFromSite(this.site_);
     if (this.siteToEdit !== null) {
       this.handleEdit_(pattern);
     } else {
       this.handleAdd_(pattern);
     }
+  }
+
+  protected onSiteChanged_(e: CustomEvent<{value: string}>) {
+    this.site_ = e.detail.value;
   }
 
   private handleEdit_(pattern: string) {

@@ -34,6 +34,39 @@ export interface SiteSettingsDelegate {
       ChromeEvent<(settings: chrome.developerPrivate.UserSiteSettings) => void>;
 }
 
+export class DummySiteSettingsDelegate {
+  getUserSiteSettings() {
+    return Promise.resolve({permittedSites: [], restrictedSites: []});
+  }
+  addUserSpecifiedSites(
+      _siteSet: chrome.developerPrivate.SiteSet, _hosts: string[]) {
+    return Promise.resolve();
+  }
+  removeUserSpecifiedSites(
+      _siteSet: chrome.developerPrivate.SiteSet, _hosts: string[]) {
+    return Promise.resolve();
+  }
+  getUserAndExtensionSitesByEtld() {
+    return Promise.resolve([]);
+  }
+  getMatchingExtensionsForSite(_site: string) {
+    return Promise.resolve([]);
+  }
+  updateSiteAccess(
+      _site: string,
+      _updates: chrome.developerPrivate.ExtensionSiteAccessUpdate[]) {
+    return Promise.resolve();
+  }
+  getUserSiteSettingsChangedTarget() {
+    // FakeChromeEvent
+    return {
+      addListener(_listener: Function) {},
+      removeListener(_listener: Function) {},
+      callListeners(..._args: any[]) {},
+    };
+  }
+}
+
 export const SiteSettingsMixin = dedupingMixin(
     <T extends Constructor<PolymerElement>>(superClass: T): T&
     Constructor<SiteSettingsMixinInterface> => {
