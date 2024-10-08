@@ -13,6 +13,11 @@ namespace on_device_translation {
 // Enables the TranslateKit Component.
 BASE_DECLARE_FEATURE(kEnableTranslateKitComponent);
 
+// When this feature is enabled, the Translation API will fail if neither the
+// source nor destination language is in the AcceptLanguages. This is introduced
+// to mitigate privacy concerns.
+BASE_DECLARE_FEATURE(kTranslationAPIAcceptLanguagesCheck);
+
 const char kTranslateKitBinaryPath[] = "translate-kit-binary-path";
 
 base::FilePath GetTranslateKitBinaryPathFromCommandLine();
