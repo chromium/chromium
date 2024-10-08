@@ -71,6 +71,7 @@ config("xnnpack_config") {
     "src/deps/clog/include",
     "src/include",
     "src/src",
+    "src",
   ]
 
   cflags=[
@@ -540,7 +541,7 @@ def GenerateObjectBuilds(cpu):
     f'--crosstool_top={crosstool_top}',
     '--host_crosstool_top=@bazel_tools//tools/cpp:toolchain',
     f'--cpu={cpu}',
-    'mnemonic("CppCompile", filter("//:", deps(:xnnpack_for_tflite)))',
+    'mnemonic("CppCompile", filter("//:", deps(:XNNPACK)))',
     '--define',
     'xnn_enable_jit=false',
     "--output=jsonproto",

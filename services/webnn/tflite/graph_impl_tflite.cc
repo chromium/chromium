@@ -60,6 +60,8 @@ std::string_view TfLiteStatusToString(TfLiteStatus status) {
       return "unresolved ops";
     case kTfLiteCancelled:
       return "cancelled";
+    case kTfLiteOutputShapeNotKnown:
+      return "output shape not known";
   }
 }
 

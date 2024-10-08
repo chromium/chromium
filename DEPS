@@ -1728,7 +1728,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/google/cpu_features.git' + '@' + '936b9ab5515dead115606559502e3864958f7f6e',
 
   'src/third_party/cpuinfo/src':
-    Var('chromium_git') + '/external/github.com/pytorch/cpuinfo.git' + '@' + 'a5ff6df40ce528721cfc310c7ed43946d77404d5',
+    Var('chromium_git') + '/external/github.com/pytorch/cpuinfo.git' + '@' + '1e83a2fdd3102f65c6f1fb602c1b320486218a99',
 
   'src/third_party/crc32c/src':
     Var('chromium_git') + '/external/github.com/google/crc32c.git' + '@' + 'd3d60ac6e0f16780bcfcc825385e1d338801a558',
@@ -1758,7 +1758,7 @@ deps = {
     Var('chromium_git') + '/chromium/dom-distiller/dist.git' + '@' + '199de96b345ada7c6e7e6ba3d2fa7a6911b8767d',
 
   'src/third_party/eigen3/src':
-    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + '134b526d6110061469168e7e0511822a8e30bcaf',
+    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + '2d4c9b400cca33d2f5cf316efc7151236244edb1',
 
   'src/third_party/emoji-metadata/src': {
     'url': Var('chromium_git') + '/external/github.com/googlefonts/emoji-metadata' + '@' + '045f146fca682a836e01cd265171312bfb300e06',
@@ -2517,7 +2517,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/GoogleChromeLabs/text-fragments-polyfill.git' + '@' + 'c036420683f672d685e27415de0a5f5e85bdc23f',
 
   'src/third_party/tflite/src':
-    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + 'a8125e3362fd367fe148a39291599bdac9026da3',
+    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + '8ff94d3cf1e5edc5586a98bd0cdab1601ff6924b',
 
   'src/third_party/turbine/cipd': {
       'packages': [
@@ -2610,7 +2610,7 @@ deps = {
   },
 
   'src/third_party/xnnpack/src':
-    Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + '6b575cfd98c822cf36f6ffda901725c7aa9914cc',
+    Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + '14ce5c47ebf2ff79e3dc2f1d319ad7b1793e1b21',
 
   'src/tools/page_cycler/acid3':
     Var('chromium_git') + '/chromium/deps/acid3.git' + '@' + 'a926d0a32e02c4c03ae95bb798e6c780e0e184ba',
