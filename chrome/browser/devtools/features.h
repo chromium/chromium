@@ -31,6 +31,15 @@ enum class DevToolsFreestylerUserTier {
   kPublic
 };
 
+enum class DevToolsFreestylerExecutionMode {
+  // Allows running all scripts.
+  kAllScripts,
+  // Only allow running side-effect free scripts.
+  kSideEffectFreeScriptsOnly,
+  // Disallow all scripts.
+  kNoScripts
+};
+
 extern const base::FeatureParam<DevToolsFreestylerUserTier>
     kDevToolsFreestylerDogfoodUserTier;
 
@@ -39,6 +48,8 @@ extern const base::FeatureParam<std::string> kDevToolsFreestylerModelId;
 extern const base::FeatureParam<double> kDevToolsFreestylerTemperature;
 extern const base::FeatureParam<DevToolsFreestylerUserTier>
     kDevToolsFreestylerUserTier;
+extern const base::FeatureParam<DevToolsFreestylerExecutionMode>
+    kDevToolsFreestylerExecutionMode;
 
 BASE_DECLARE_FEATURE(kDevToolsExplainThisResourceDogfood);
 extern const base::FeatureParam<std::string>

@@ -1592,6 +1592,9 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
     freestyler_dict.Set("userTier",
                         features::kDevToolsFreestylerUserTier.GetName(
                             features::kDevToolsFreestylerUserTier.Get()));
+    freestyler_dict.Set("executionMode",
+                        features::kDevToolsFreestylerExecutionMode.GetName(
+                            features::kDevToolsFreestylerExecutionMode.Get()));
   } else {
     freestyler_dict.Set("enabled", base::FeatureList::IsEnabled(
                                        ::features::kDevToolsFreestylerDogfood));

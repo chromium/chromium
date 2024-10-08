@@ -27,6 +27,13 @@ const base::FeatureParam<DevToolsFreestylerUserTier>::Option
         {DevToolsFreestylerUserTier::kBeta, "BETA"},
         {DevToolsFreestylerUserTier::kPublic, "PUBLIC"}};
 
+const base::FeatureParam<DevToolsFreestylerExecutionMode>::Option
+    devtools_freestyler_execution_mode_options[] = {
+        {DevToolsFreestylerExecutionMode::kAllScripts, "ALL_SCRIPTS"},
+        {DevToolsFreestylerExecutionMode::kSideEffectFreeScriptsOnly,
+         "SIDE_EFFECT_FREE_SCRIPTS_ONLY"},
+        {DevToolsFreestylerExecutionMode::kNoScripts, "NO_SCRIPTS"}};
+
 // Whether the DevTools styling assistant dogfood is enabled.
 BASE_FEATURE(kDevToolsFreestylerDogfood,
              "DevToolsFreestylerDogfood",
@@ -54,6 +61,11 @@ const base::FeatureParam<DevToolsFreestylerUserTier>
         &kDevToolsFreestyler, "user_tier",
         /*default_value=*/DevToolsFreestylerUserTier::kPublic,
         &devtools_freestyler_user_tier_options};
+const base::FeatureParam<DevToolsFreestylerExecutionMode>
+    kDevToolsFreestylerExecutionMode{
+        &kDevToolsFreestyler, "execution_mode",
+        /*default_value=*/DevToolsFreestylerExecutionMode::kAllScripts,
+        &devtools_freestyler_execution_mode_options};
 
 // Whether the DevTools resource explainer assistant is enabled.
 BASE_FEATURE(kDevToolsExplainThisResourceDogfood,
