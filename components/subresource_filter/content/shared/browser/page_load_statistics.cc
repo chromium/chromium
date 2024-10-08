@@ -119,10 +119,12 @@ void PageLoadStatistics::OnDidFinishLoad() {
         aggregated_document_statistics_.evaluation_total_cpu_duration,
         base::Microseconds(1), base::Seconds(10), 50);
   } else {
-    DCHECK(aggregated_document_statistics_.evaluation_total_wall_duration
-               .is_zero());
-    DCHECK(aggregated_document_statistics_.evaluation_total_cpu_duration
-               .is_zero());
+    CHECK(aggregated_document_statistics_.evaluation_total_wall_duration
+              .is_zero(),
+          base::NotFatalUntil::M132);
+    CHECK(
+        aggregated_document_statistics_.evaluation_total_cpu_duration.is_zero(),
+        base::NotFatalUntil::M132);
   }
 }
 
