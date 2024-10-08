@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 
 import androidx.annotation.Nullable;
 
@@ -80,6 +81,7 @@ public class DefaultBrowserPromoCard implements SettingsPromoCardProvider {
                         PromoCardProperties.PRIMARY_BUTTON_TEXT,
                         mContext.getResources()
                                 .getString(R.string.default_browser_promo_open_settings_label))
+                .with(PromoCardProperties.BUTTONS_WIDTH, LayoutParams.WRAP_CONTENT)
                 .with(PromoCardProperties.PRIMARY_BUTTON_CALLBACK, this::onPromoClicked)
                 .with(PromoCardProperties.HAS_CLOSE_BUTTON, true)
                 .with(PromoCardProperties.CLOSE_BUTTON_CALLBACK, this::onDismissClicked)

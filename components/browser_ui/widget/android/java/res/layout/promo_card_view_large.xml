@@ -72,6 +72,7 @@ found in the LICENSE file.
           android:id="@+id/promo_primary_button"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
+          android:layout_gravity="center"
           android:ellipsize="end"
           android:singleLine="true"
           style="@style/FilledButton" />
@@ -80,6 +81,7 @@ found in the LICENSE file.
           style="@style/TextButton"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
+          android:layout_gravity="center"
           android:ellipsize="end"
           android:singleLine="true"/>
 

@@ -43,6 +43,13 @@ class PromoCardViewBinder
                 return;
             }
             view.mSecondaryButton.setText(model.get(PromoCardProperties.SECONDARY_BUTTON_TEXT));
+        } else if (propertyKey == PromoCardProperties.BUTTONS_WIDTH) {
+            view.mPrimaryButton.getLayoutParams().width =
+                    model.get(PromoCardProperties.BUTTONS_WIDTH);
+            if (view.mSecondaryButton != null) {
+                view.mSecondaryButton.getLayoutParams().width =
+                        model.get(PromoCardProperties.BUTTONS_WIDTH);
+            }
 
             // Visibility properties
         } else if (propertyKey == PromoCardProperties.HAS_SECONDARY_BUTTON) {
