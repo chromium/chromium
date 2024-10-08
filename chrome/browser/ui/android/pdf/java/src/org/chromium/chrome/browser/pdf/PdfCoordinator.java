@@ -184,8 +184,8 @@ public class PdfCoordinator {
                             SystemClock.elapsedRealtime();
                     mChromePdfViewerFragment.setDocumentUri(uri);
                 }
-            } catch (NullPointerException e) {
-                Log.e(TAG, "Load pdf fails due to invalid uri.");
+            } catch (Exception e) {
+                Log.e(TAG, "Load pdf fails.", e);
             } finally {
                 mIsPdfLoaded = true;
             }
