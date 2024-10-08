@@ -63,6 +63,9 @@
 // does not match ours.  Only has an effect on Windows.
 #define _LIBCPP_NO_AUTO_LINK
 
+// See https://libcxx.llvm.org/DesignDocs/HeaderRemovalPolicy.html
+#define _LIBCPP_REMOVE_TRANSITIVE_INCLUDES
+
 // Don't add ABI tags to libc++ symbols. ABI tags increase mangled name sizes.
 // This only exists to allow multiple // libc++ versions to be linked into a
 // binary, which Chrome doesn't do.
