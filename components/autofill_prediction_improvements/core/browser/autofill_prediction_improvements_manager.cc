@@ -373,12 +373,6 @@ void AutofillPredictionImprovementsManager::OnReceivedPredictions(
     AutofillPredictionImprovementsFillingEngine::PredictionsOrError
         predictions_or_error,
     std::optional<std::string> feedback_id) {
-  // If the timeout suggestion is still running, it means we retrieved the
-  // predictions before timeout threshold. Otherwise it means we're too late and
-  // should discard the received predictions.
-  if (!suggestion_timeout_timer_.IsRunning()) {
-    return;
-  }
   suggestion_timeout_timer_.Stop();
 
   if (predictions_or_error.has_value()) {
