@@ -52,6 +52,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.GarbageCollectionTestUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Token;
 import org.chromium.base.TokenJni;
@@ -80,6 +81,7 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -421,6 +423,21 @@ public class TabGroupModelFilterUnitTest {
         setUpTab();
         setUpTabModel();
         setupTabGroupModelFilter(true, false);
+    }
+
+    @Test
+    public void testDestroy() {
+        TabModelObserver tabModelObserver = new TabModelObserver() {};
+        mTabGroupModelFilter.addObserver(tabModelObserver);
+
+        WeakReference ref = new WeakReference(tabModelObserver);
+        tabModelObserver = null;
+        assertFalse(GarbageCollectionTestUtils.canBeGarbageCollected(ref));
+
+        mTabGroupModelFilter.destroy();
+
+        verify(mTabModel).removeObserver(any());
+        assertTrue(GarbageCollectionTestUtils.canBeGarbageCollected(ref));
     }
 
     @Test

@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -22,10 +23,10 @@ import java.util.List;
  * delegated to the concrete class that extends this abstract class. If no filter is active, this
  * class has the same {@link TabList} as {@link TabModel} does.
  *
- * If there is at least one filter active, this is a {@link TabList} that contains the most
+ * <p>If there is at least one filter active, this is a {@link TabList} that contains the most
  * important tabs that the filter defines.
  */
-public abstract class TabModelFilter implements TabModelObserver, TabList {
+public abstract class TabModelFilter implements TabModelObserver, TabList, Destroyable {
     private static final List<Tab> sEmptyRelatedTabList =
             Collections.unmodifiableList(new ArrayList<Tab>());
     private static final List<Integer> sEmptyRelatedTabIds =
@@ -40,8 +41,15 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
         mTabModel.addObserver(this);
     }
 
+    @Override
+    public void destroy() {
+        mFilteredObservers.clear();
+        mTabModel.removeObserver(this);
+    }
+
     /**
      * Adds a {@link TabModelObserver} to be notified on {@link TabModelFilter} changes.
+     *
      * @param observer The {@link TabModelObserver} to add.
      */
     public void addObserver(TabModelObserver observer) {
@@ -56,6 +64,7 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
         mFilteredObservers.removeObserver(observer);
     }
 
+    /** Whether this is filter for the currently active {@link TabModel}. */
     public boolean isCurrentlySelectedFilter() {
         return getTabModel().isActiveModel();
     }
@@ -70,22 +79,12 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
         mTabStateInitialized = true;
     }
 
-    /**
-     * To be called when this filter should be destroyed. This filter should no longer be used after
-     * this.
-     */
-    public void destroy() {
-        mFilteredObservers.clear();
-    }
-
     /** Returns the {@link TabModel} that the filter is acting on. */
-    public TabModel getTabModel() {
+    public @NonNull TabModel getTabModel() {
         return mTabModel;
     }
 
-    /**
-     * @return The total tab count in the underlying {@link TabModel}.
-     */
+    /** Returns the total tab count in the underlying {@link TabModel}. */
     public int getTotalTabCount() {
         return mTabModel.getCount();
     }
@@ -99,8 +98,7 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
      * @param tabId Id of the {@link Tab} try to relate with.
      * @return An unmodifiable list of {@link Tab} that relate with the given tab id.
      */
-    @NonNull
-    public List<Tab> getRelatedTabList(int tabId) {
+    public @NonNull List<Tab> getRelatedTabList(int tabId) {
         Tab tab = getTabModel().getTabById(tabId);
         if (tab == null) return sEmptyRelatedTabList;
         List<Tab> relatedTab = new ArrayList<>();
@@ -117,8 +115,7 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
      * @param tabId Id of the {@link Tab} try to relate with.
      * @return An unmodifiable list of id that relate with the given tab id.
      */
-    @NonNull
-    public List<Integer> getRelatedTabIds(int tabId) {
+    public @NonNull List<Integer> getRelatedTabIds(int tabId) {
         Tab tab = getTabModel().getTabById(tabId);
         if (tab == null) return sEmptyRelatedTabIds;
         List<Integer> relatedTabIds = new ArrayList<>();
