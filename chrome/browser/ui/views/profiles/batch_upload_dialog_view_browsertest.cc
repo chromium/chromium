@@ -150,8 +150,16 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
   }
 }
 
+// Fails on Mac only.  http://crbug.com/372194892
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_OpenBatchUploadDialogViewClosesOnSignout \
+  DISABLED_OpenBatchUploadDialogViewClosesOnSignout
+#else
+#define MAYBE_OpenBatchUploadDialogViewClosesOnSignout \
+  OpenBatchUploadDialogViewClosesOnSignout
+#endif
 IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
-                       OpenBatchUploadDialogViewClosesOnSignout) {
+                       MAYBE_OpenBatchUploadDialogViewClosesOnSignout) {
   SigninWithFullInfo();
 
   base::MockCallback<SelectedDataTypeItemsCallback> mock_callback;
@@ -170,8 +178,16 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
   EXPECT_FALSE(dialog_view->GetWidget()->IsVisible());
 }
 
+// Fails on Mac only.  http://crbug.com/372194892
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_OpenBatchUploadDialogViewClosesOnSigninPending \
+  DISABLED_OpenBatchUploadDialogViewClosesOnSigninPending
+#else
+#define MAYBE_OpenBatchUploadDialogViewClosesOnSigninPending \
+  OpenBatchUploadDialogViewClosesOnSigninPending
+#endif
 IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
-                       OpenBatchUploadDialogViewClosesOnSigninPending) {
+                       MAYBE_OpenBatchUploadDialogViewClosesOnSigninPending) {
   SigninWithFullInfo();
 
   base::MockCallback<SelectedDataTypeItemsCallback> mock_callback;
