@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 5
+// Next MinVersion: 6
 
 module arc.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
 
 [Extensible]
 enum MountEvent {
@@ -58,11 +60,19 @@ interface VolumeMounterHost {
 };
 
 // Notifies Android about Mounting events.
-// Next Method ID: 2
+// Next Method ID: 3
 interface VolumeMounterInstance {
   // Establishes full-duplex communication with the host.
   [MinVersion=1] Init@0(pending_remote<VolumeMounterHost> host_remote) => ();
 
   // Triggers a mount event in Android.
   OnMountEvent@1(MountPointInfo mount_point_info);
+
+  // Requests ARC to prpeare for the host-side unmount of a removable media
+  // mounted on `path` by unmounting it on the ARC side and dropping ARC-side
+  // cache for the volume. `path` is the host-side mount path. When `path` is
+  // not a host-side mount path of a removable media known to ARC, this method
+  // is no-op and returns true.
+  [MinVersion=5] PrepareForRemovableMediaUnmount@2(
+      mojo_base.mojom.FilePath path) => (bool success);
 };

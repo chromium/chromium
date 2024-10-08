@@ -31,6 +31,9 @@ class FakeVolumeMounterInstance : public mojom::VolumeMounterInstance {
   void Init(::mojo::PendingRemote<mojom::VolumeMounterHost> host_remote,
             InitCallback callback) override;
   void OnMountEvent(mojom::MountPointInfoPtr mount_point_info) override;
+  void PrepareForRemovableMediaUnmount(
+      const base::FilePath& mount_path,
+      PrepareForRemovableMediaUnmountCallback callback) override;
 
  private:
   mojo::Remote<mojom::VolumeMounterHost> host_remote_;
