@@ -7,7 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/files/file.h"
-#include "mojo/public/mojom/base/read_only_file.mojom-shared.h"
+#include "mojo/public/mojom/base/file.mojom-shared.h"
 
 namespace mojo {
 

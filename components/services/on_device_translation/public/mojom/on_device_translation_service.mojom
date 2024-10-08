@@ -5,11 +5,10 @@
 module on_device_translation.mojom;
 
 import "components/services/on_device_translation/public/mojom/translator.mojom";
+import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
-import "mojo/public/mojom/base/read_only_file.mojom";
 import "sandbox/policy/mojom/context.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
-
 
 // The language package information of the TranslateKit library.
 // Normally, `language1` and `language2` are input from hard-coded dictionary
@@ -33,16 +32,16 @@ interface FileOperationProxy {
   // Returns if the file exists and whether it is a directory.
   // `package_index` is the index of the language package in the config.
   // `relative_path` is the relative path in the language package.
-  [Sync] FileExists(uint32 package_index,
-                    mojo_base.mojom.FilePath relative_path)
+  [Sync]
+  FileExists(uint32 package_index, mojo_base.mojom.FilePath relative_path)
       => (bool exists, bool is_directory);
 
   // Returns the file handle of the file. If the file does not exist, it will
   // return an invalid handle.
   // `package_index` is the index of the language package in the config.
   // `relative_path` is the relative path in the language package.
-  [Sync] Open(uint32 package_index,
-              mojo_base.mojom.FilePath relative_path)
+  [Sync]
+  Open(uint32 package_index, mojo_base.mojom.FilePath relative_path)
       => (mojo_base.mojom.ReadOnlyFile? file);
 };
 
@@ -54,24 +53,25 @@ struct OnDeviceTranslationServiceConfig {
   pending_remote<FileOperationProxy> file_operation_proxy;
 };
 
-
 // Currently the sandboxing of the On Device Translation service is supported
 // only on macOS and Linux.
 // TODO(crbug.com/340778819): Implement sandboxing on other platforms.
 [EnableIf=is_linux_or_mac]
-const sandbox.mojom.Sandbox kOnDeviceTranslationSandbox
-    = sandbox.mojom.Sandbox.kOnDeviceTranslation;
+const sandbox.mojom.Sandbox kOnDeviceTranslationSandbox =
+    sandbox.mojom.Sandbox.kOnDeviceTranslation;
+
 [EnableIf=is_win]
-const sandbox.mojom.Sandbox kOnDeviceTranslationSandbox
-    = sandbox.mojom.Sandbox.kService;
+const sandbox.mojom.Sandbox kOnDeviceTranslationSandbox =
+    sandbox.mojom.Sandbox.kService;
+
 [EnableIfNot=is_linux_or_mac_or_win]
-const sandbox.mojom.Sandbox kOnDeviceTranslationSandbox
-    = sandbox.mojom.Sandbox.kNoSandbox;
+const sandbox.mojom.Sandbox kOnDeviceTranslationSandbox =
+    sandbox.mojom.Sandbox.kNoSandbox;
 
 // The service that provides translation capabilities through
 // various implementation.
 [ServiceSandbox=kOnDeviceTranslationSandbox,
- RequireContext=sandbox.mojom.Context.kBrowser]
+    RequireContext=sandbox.mojom.Context.kBrowser]
 interface OnDeviceTranslationService {
   // This must be called soon after creating the service. Also this can be used
   // when the binary or the language packages are updated (or uninstalled).
@@ -79,12 +79,13 @@ interface OnDeviceTranslationService {
 
   // Binds the receiver to a `Translator` implementation that could
   // do translation from `source_lang` to `target_lang`.
-  CreateTranslator(
-    string source_lang, string target_lang,
-    pending_receiver<Translator> receiver
-  ) => (bool is_sucessful);
+  CreateTranslator(string source_lang,
+                   string target_lang,
+                   pending_receiver<Translator> receiver)
+      => (bool is_sucessful);
 
   // Returns if the service could translate text from `source_lang` to
   // `target_lang`.
-  CanTranslate(string source_lang, string target_lang) => (bool can_stranslate);
+  CanTranslate(string source_lang, string target_lang)
+      => (bool can_stranslate);
 };

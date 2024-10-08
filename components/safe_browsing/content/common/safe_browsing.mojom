@@ -5,8 +5,8 @@
 module safe_browsing.mojom;
 
 import "components/safe_browsing/core/common/safe_browsing_url_checker.mojom";
+import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/proto_wrapper.mojom";
-import "mojo/public/mojom/base/read_only_file.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "services/network/public/mojom/http_request_headers.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
@@ -37,17 +37,15 @@ interface SafeBrowsing {
   // |proceed| indicates whether it is okay to proceed with loading the URL.
   // |showed_interstitial| indicates whether the SafeBrowsing interstitial page
   // has been shown to the user.
-  CreateCheckerAndCheck(
-      blink.mojom.LocalFrameToken? frame_token,
-      pending_receiver<SafeBrowsingUrlChecker> receiver,
-      url.mojom.Url url,
-      string method,
-      network.mojom.HttpRequestHeaders headers,
-      int32 load_flags,
-      bool has_user_gesture,
-      bool originated_from_service_worker)
-          => (bool proceed,
-              bool showed_interstitial);
+  CreateCheckerAndCheck(blink.mojom.LocalFrameToken? frame_token,
+                        pending_receiver<SafeBrowsingUrlChecker> receiver,
+                        url.mojom.Url url,
+                        string method,
+                        network.mojom.HttpRequestHeaders headers,
+                        int32 load_flags,
+                        bool has_user_gesture,
+                        bool originated_from_service_worker)
+      => (bool proceed, bool showed_interstitial);
 
   // Bind an additional pipe to this instance of the SafeBrowsing interface.
   Clone(pending_receiver<SafeBrowsing> receiver);
@@ -133,22 +131,22 @@ enum PhishingDetectorResult {
   VISUAL_EXTRACTION_FAILED = 10,
 };
 
-[EnableIf=full_safe_browsing]
 // Interface for starting phishing classification. This is scoped to a
 // particular RenderFrame.
+[EnableIf=full_safe_browsing]
 interface PhishingDetector {
   // Tells the renderer to begin phishing detection for the given toplevel URL
   // which it has started loading. Returns the serialized request proto and a
   // `result` enum to indicate failure. If the URL is phishing the `request`
   // ClientPhishingRequest will have `is_phishing()` set to true.
   StartPhishingDetection(url.mojom.Url url)
-    => (PhishingDetectorResult result,
-        mojo_base.mojom.ProtoWrapper? request);
+      => (PhishingDetectorResult result,
+          mojo_base.mojom.ProtoWrapper? request);
 };
 
-[EnableIf=full_safe_browsing]
 // Interface for setting a phishing model. This is scoped to an entire
 // RenderProcess.
+[EnableIf=full_safe_browsing]
 interface PhishingModelSetter {
   // A classification model for client-side phishing detection in addition to
   // the image embedding model. This call sends the model and the image
@@ -160,17 +158,16 @@ interface PhishingModelSetter {
   // ping to be sent to CSPP for better model training. All else is the same as
   // the SetPhishingFlatBufferModel function.
   SetImageEmbeddingAndPhishingFlatBufferModel(
-                              mojo_base.mojom.ReadOnlySharedMemoryRegion region,
-                              mojo_base.mojom.ReadOnlyFile? tflite_model,
-                              mojo_base.mojom.ReadOnlyFile?
-                              image_embedding_model);
+      mojo_base.mojom.ReadOnlySharedMemoryRegion region,
+      mojo_base.mojom.ReadOnlyFile? tflite_model,
+      mojo_base.mojom.ReadOnlyFile? image_embedding_model);
 
   // The image embedding model is a complementary model that is used with the
   // classification process, and this function will attach the model to an
   // already existing model object in the renderer process if the versions
   // match.
-  AttachImageEmbeddingModel(mojo_base.mojom.ReadOnlyFile?
-                            image_embedding_model);
+  AttachImageEmbeddingModel(
+      mojo_base.mojom.ReadOnlyFile? image_embedding_model);
 
   // A classification model for client-side phishing detection. This call sends
   // the model from the browser process to the renderer process. The model is
@@ -179,8 +176,9 @@ interface PhishingModelSetter {
   // renderer process. An invalid region is used to disable classification. The
   // |tflite_model| is a file handle with contents a TfLite model, which is used
   // to classify the appearance of pages.
-  SetPhishingFlatBufferModel(mojo_base.mojom.ReadOnlySharedMemoryRegion region,
-                             mojo_base.mojom.ReadOnlyFile? tflite_model);
+  SetPhishingFlatBufferModel(
+      mojo_base.mojom.ReadOnlySharedMemoryRegion region,
+      mojo_base.mojom.ReadOnlyFile? tflite_model);
 
   // When OptimizationGuide server sends a null model, this signals there is a
   // bad model on disk. Calling this function clears the current Scorer object
@@ -189,8 +187,8 @@ interface PhishingModelSetter {
 
   // This is used in tests to ensure that the model has been set before sending
   // IPCs to start classification.
-  SetTestObserver(pending_remote<PhishingModelSetterTestObserver>? observer) =>
-    ();
+  SetTestObserver(pending_remote<PhishingModelSetterTestObserver>? observer)
+      => ();
 };
 
 // This is used in tests to ensure that the model has been set before sending
@@ -217,17 +215,17 @@ enum PhishingImageEmbeddingResult {
   kFailed,
 };
 
-[EnableIf=full_safe_browsing]
 // Interface for starting image embedding. This is scoped to a
 // particular RenderFrame.
+[EnableIf=full_safe_browsing]
 interface PhishingImageEmbedderDetector {
   // Tells the renderer to begin image embedding. This should only happen if the
   // user is subscribed to ESB, and the verdict is phishy or LLAMA force trigger
   // the CSPP ping. The return objects are Image Embedding process result and a
   // ImageFeatureEmbedding object declared in csd.proto
   StartImageEmbedding(url.mojom.Url url)
-    => (PhishingImageEmbeddingResult result,
-        mojo_base.mojom.ProtoWrapper? image_embedding_request);
+      => (PhishingImageEmbeddingResult result,
+          mojo_base.mojom.ProtoWrapper? image_embedding_request);
 };
 
 // Enum representing protocol type of a web request.

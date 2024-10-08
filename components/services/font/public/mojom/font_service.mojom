@@ -4,8 +4,8 @@
 
 module font_service.mojom;
 
+import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
-import "mojo/public/mojom/base/read_only_file.mojom";
 
 enum TypefaceSlant {
   ROMAN = 0,
@@ -31,18 +31,19 @@ struct FontIdentity {
 };
 
 enum RenderStyleSwitch {
-    OFF = 0,
-    ON = 1,
-    NO_PREFERENCE = 2,
+  OFF = 0,
+  ON = 1,
+  NO_PREFERENCE = 2,
 };
 
 struct FontRenderStyle {
-  RenderStyleSwitch use_bitmaps;    // use embedded bitmap strike if possible
+  RenderStyleSwitch use_bitmaps;  // use embedded bitmap strike if possible
   RenderStyleSwitch use_autohint;  // use 'auto' hinting (FreeType specific)
-  RenderStyleSwitch use_hinting;    // hint glyphs to the pixel grid
-  uint8 hint_style;                 // level of hinting, 0..3
+  RenderStyleSwitch use_hinting;  // hint glyphs to the pixel grid
+  uint8 hint_style;  // level of hinting, 0..3
   RenderStyleSwitch use_antialias;  // antialias glyph shapes
   // use subpixel rendering (partially-filled pixels)
+
   RenderStyleSwitch use_subpixel_rendering;
   // use subpixel positioning (fractional X positions for glyphs)
   RenderStyleSwitch use_subpixel_positioning;
@@ -59,40 +60,42 @@ struct FontRenderStyle {
 interface FontService {
   // Returns the best match for |family_name| and |style|. On error, returns a
   // null |identity|.
-  MatchFamilyName(string family_name, TypefaceStyle style) =>
-      (FontIdentity? identity, string family_name, TypefaceStyle style);
+  MatchFamilyName(string family_name, TypefaceStyle style)
+      => (FontIdentity? identity, string family_name, TypefaceStyle style);
 
   // Returns a handle to the raw font specified by |id_number|.
   OpenStream(uint32 id_number) => (mojo_base.mojom.ReadOnlyFile? font_handle);
 
   // Returns a fallback FontIdentity and Typeface style for the given character
   // and locale. If no fallback font can be found, returns a null identity.
-  FallbackFontForCharacter(uint32 character, string locale) =>
-      (FontIdentity? identity,
-       string family_name,
-       bool is_bold,
-       bool is_italic);
+  FallbackFontForCharacter(uint32 character, string locale)
+      => (FontIdentity? identity,
+          string family_name,
+          bool is_bold,
+          bool is_italic);
 
   // Fill out the given WebFontRenderStyle with the user's preferences for
   // rendering the given font at the given size (in pixels), given weight
   // (is_bold or not), and given slant (is_italic or not).
   FontRenderStyleForStrike(string family,
-    uint32 size,
-    bool is_italic,
-    bool is_bold,
-    float device_scale_factor) =>
-    (FontRenderStyle? font_render_style);
+                           uint32 size,
+                           bool is_italic,
+                           bool is_bold,
+                           float device_scale_factor)
+      => (FontRenderStyle? font_render_style);
 
   // Matches a font uniquely by postscript name or full font name.
   // Used in Blink for @font-face { src: local(arg) } matching.
   // Provide full_postscript_name_or_full_font_name encoded as UTF-8.
   MatchFontByPostscriptNameOrFullFontName(
-      string postscript_name_or_full_font_name) =>
-    (FontIdentity? identity);
+      string postscript_name_or_full_font_name) => (FontIdentity? identity);
 
   // PDF-specific font call to match a font family and charset.
   [EnableIf=enable_pdf]
-  MatchFontWithFallback(string family, bool is_bold, bool is_italic,
-      uint32 charset, uint32 fallback_family_type) =>
-      (mojo_base.mojom.ReadOnlyFile? font_file_handle);
+  MatchFontWithFallback(string family,
+                        bool is_bold,
+                        bool is_italic,
+                        uint32 charset,
+                        uint32 fallback_family_type)
+      => (mojo_base.mojom.ReadOnlyFile? font_file_handle);
 };

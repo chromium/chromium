@@ -4,7 +4,7 @@
 
 module passage_embeddings.mojom;
 
-import "mojo/public/mojom/base/read_only_file.mojom";
+import "mojo/public/mojom/base/file.mojom";
 import "sandbox/policy/mojom/context.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
@@ -38,24 +38,23 @@ enum PassagePriority {
 // A loaded model which can be queried to generate embeddings for passages.
 // Functions in this interface will be called from the browser process.
 [ServiceSandbox=sandbox.mojom.Sandbox.kOnDeviceModelExecution,
- RequireContext=sandbox.mojom.Context.kBrowser]
+    RequireContext=sandbox.mojom.Context.kBrowser]
 interface PassageEmbedder {
   // Execute the model to generate embeddings(array<float>) for each string
   // in `inputs`. If successful, the returned `results` will match the number of
   // elements in `inputs` and be in the same order. If not successful, an empty
   // `results` array will be returned.
-  GenerateEmbeddings(array<string> passages, PassagePriority priority) =>
-      (array<PassageEmbeddingsResult> results);
+  GenerateEmbeddings(array<string> passages, PassagePriority priority)
+      => (array<PassageEmbeddingsResult> results);
 };
 
 // Service for executing on-device embeddings model.
 // Functions in this interface will be called from the browser process.
 [ServiceSandbox=sandbox.mojom.Sandbox.kOnDeviceModelExecution,
- RequireContext=sandbox.mojom.Context.kBrowser]
+    RequireContext=sandbox.mojom.Context.kBrowser]
 interface PassageEmbeddingsService {
   // Load the given models for generating embeddings.
   [AllowedContext=sandbox.mojom.Context.kBrowser]
-  LoadModels(
-      PassageEmbeddingsLoadModelsParams params,
-      pending_receiver<PassageEmbedder> model) => (bool success);
+  LoadModels(PassageEmbeddingsLoadModelsParams params,
+             pending_receiver<PassageEmbedder> model) => (bool success);
 };

@@ -4,13 +4,11 @@
 
 module language_detection.mojom;
 
-import "mojo/public/mojom/base/read_only_file.mojom";
+import "mojo/public/mojom/base/file.mojom";
 
 // Provides the language detection model. The browser provides this interface
 // so that the renderer can access the language model file.
 interface ContentLanguageDetectionDriver {
   // Request that the language detection model be loaded and returned.
-  GetLanguageDetectionModel()
-        => (mojo_base.mojom.ReadOnlyFile? model_file);
-
+  GetLanguageDetectionModel() => (mojo_base.mojom.ReadOnlyFile? model_file);
 };

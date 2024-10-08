@@ -4,7 +4,7 @@
 
 module spellcheck.mojom;
 
-import "mojo/public/mojom/base/read_only_file.mojom";
+import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 
 // Render process interface exposed to the browser for receiving process-
@@ -20,8 +20,8 @@ interface SpellChecker {
 
   // Custom dictionary words have been added or removed: update the local
   // custom word list.
-  CustomDictionaryChanged(array<string> words_added,
-                          array<string> words_removed);
+  CustomDictionaryChanged(
+      array<string> words_added, array<string> words_removed);
 };
 
 struct SpellCheckBDictLanguage {
@@ -51,14 +51,14 @@ interface SpellCheckHost {
   // to do the spellchecking. If the remote Spelling server is available,
   // returns |success| true, and the spellchecked |results|.
   [EnableIf=USE_RENDERER_SPELLCHECKER]
-  CallSpellingService(mojo_base.mojom.String16 text) =>
-      (bool success, array<SpellCheckResult> results);
+  CallSpellingService(mojo_base.mojom.String16 text)
+      => (bool success, array<SpellCheckResult> results);
 
   // Asks the host to spellcheck the |text| using a platform-specific spell
   // checker, and returns the spellchecked |results|.
   [EnableIf=USE_BROWSER_SPELLCHECKER]
-  RequestTextCheck(mojo_base.mojom.String16 text) =>
-      (array<SpellCheckResult> results);
+  RequestTextCheck(mojo_base.mojom.String16 text)
+      => (array<SpellCheckResult> results);
 
   // Disconnects the Android spell checker session bridge.
   [EnableIf=is_android]
@@ -67,21 +67,19 @@ interface SpellCheckHost {
   // Checks the correctness of a word with a platform-specific spell checker.
   // TODO(groby): This needs to originate from SpellcheckProvider.
   [EnableIf=USE_BROWSER_SPELLCHECKER, Sync]
-  CheckSpelling(mojo_base.mojom.String16 word)
-      => (bool correct);
+  CheckSpelling(mojo_base.mojom.String16 word) => (bool correct);
 
   // Returns a list of suggestions for a given word with a platform-specific
   // spell checker.
   [EnableIf=USE_BROWSER_SPELLCHECKER, Sync]
-  FillSuggestionList(mojo_base.mojom.String16 word) =>
-      (array<mojo_base.mojom.String16> suggestions);
+  FillSuggestionList(mojo_base.mojom.String16 word)
+      => (array<mojo_base.mojom.String16> suggestions);
 
   // Completes initialization of the spellcheck service by loading dictionaries.
   [EnableIf=is_win]
-  InitializeDictionaries() =>
-      (array<SpellCheckBDictLanguage> dictionaries,
-       array<string> custom_words,
-       bool enable);
+  InitializeDictionaries() => (array<SpellCheckBDictLanguage> dictionaries,
+                               array<string> custom_words,
+                               bool enable);
 };
 
 enum Decoration {

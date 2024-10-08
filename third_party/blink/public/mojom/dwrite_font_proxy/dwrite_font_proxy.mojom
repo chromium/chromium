@@ -4,8 +4,8 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
-import "mojo/public/mojom/base/read_only_file.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 
@@ -49,7 +49,7 @@ interface DWriteFontProxy {
   // index.
   [Sync]
   GetFontFileHandles(uint32 family_index)
-     => (array<mojo_base.mojom.ReadOnlyFile> file_handles);
+      => (array<mojo_base.mojom.ReadOnlyFile> file_handles);
 
   // Matches a unique PostScript or full font name against the installed fonts
   // using DirectWrite API. Returns a pre-opened file handle and ttc_index from
