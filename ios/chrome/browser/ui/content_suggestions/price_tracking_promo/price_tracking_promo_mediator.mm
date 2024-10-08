@@ -21,6 +21,8 @@
 #import "components/power_bookmarks/core/power_bookmark_utils.h"
 #import "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #import "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
+#import "components/prefs/ios/pref_observer_bridge.h"
+#import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/push_notification/model/provisional_push_notification_util.h"
@@ -65,7 +67,8 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
 
 }  // namespace
 
-@interface PriceTrackingPromoMediator () <NotificationsSettingsObserverDelegate>
+@interface PriceTrackingPromoMediator () <NotificationsSettingsObserverDelegate,
+                                          PrefObserverDelegate>
 @end
 
 @implementation PriceTrackingPromoMediator {
@@ -77,6 +80,8 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
   raw_ptr<AuthenticationService> _authenticationService;
   std::unique_ptr<image_fetcher::ImageDataFetcher> _imageFetcher;
   NotificationsSettingsObserver* _notificationsObserver;
+  std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
+  PrefChangeRegistrar _prefChangeRegistrar;
 }
 
 - (instancetype)
@@ -101,6 +106,10 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
                                                         localState:localState];
 
     _notificationsObserver.delegate = self;
+    _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
+    _prefChangeRegistrar.Init(prefService);
+    _prefObserverBridge->ObserveChangesForPreference(
+        kPriceTrackingPromoDisabled, &_prefChangeRegistrar);
   }
   return self;
 }
@@ -115,6 +124,8 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
   _notificationsObserver.delegate = nil;
   [_notificationsObserver disconnect];
   _notificationsObserver = nil;
+  _prefChangeRegistrar.RemoveAll();
+  _prefObserverBridge.reset();
 }
 
 - (void)reset {
@@ -142,8 +153,11 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
   return _priceTrackingPromoItem;
 }
 
+// TODO(crbug.com/371870438) merge disableModule &&
+// removePriceTrackingPromo. They are the same (the price tracking
+// promo can only be displayed once).
 - (void)removePriceTrackingPromo {
-  [self.delegate removePriceTrackingPromo];
+  [self disableModule];
 }
 
 - (void)enablePriceTrackingSettingsAndShowSnackbar {
@@ -155,7 +169,6 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
 
 - (void)disableModule {
   _prefService->SetBoolean(kPriceTrackingPromoDisabled, true);
-  [self.delegate removePriceTrackingPromo];
 }
 
 - (void)setDelegate:(id<PriceTrackingPromoMediatorDelegate>)delegate {
@@ -198,8 +211,17 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
             GetMobileNotificationPermissionStatusForClient(
                 PushNotificationClientId::kCommerce,
                 base::SysNSStringToUTF8(identity.gaiaID))) {
-      [self.delegate removePriceTrackingPromo];
+      [self disableModule];
     }
+  }
+}
+
+#pragma mark - PrefObserverDelegate
+
+- (void)onPreferenceChanged:(const std::string&)preferenceName {
+  if (preferenceName == kPriceTrackingPromoDisabled &&
+      _prefService->GetBoolean(kPriceTrackingPromoDisabled)) {
+    [self.delegate removePriceTrackingPromo];
   }
 }
 
@@ -228,7 +250,7 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
   if (granted && !error) {
     [self enablePriceTrackingNotificationsSettings];
     [self.dispatcher showSnackbarMessage:[self snackbarMessage]];
-    [self.delegate removePriceTrackingPromo];
+    [self disableModule];
   } else if (!granted && !promptShown && !error) {
     // If the prompt wasn't shown and permission is denied, the user
     // has turned off notifications in the app before.
