@@ -84,25 +84,31 @@ bool TranslationManagerImpl::PassAcceptLanguagesCheck(
           on_device_translation::kTranslationAPIAcceptLanguagesCheck)) {
     return true;
   }
+  // When the TranslationAPIAcceptLanguagesCheck feature is enabled, the
+  // Translation API will fail if neither the source nor destination language is
+  // in the AcceptLanguages. This is intended to mitigate privacy concerns.
   CHECK(browser_context_);
   const std::vector<std::string_view> accept_languages = base::SplitStringPiece(
       static_cast<Profile*>(browser_context_.get())
           ->GetPrefs()
           ->GetString(language::prefs::kAcceptLanguages),
       ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  // Currently, we don't support language region code in `source_lang` nor
-  // `target_lang`. So we check GetLanguage(lang) of each language in
-  // `accept_languages` against `source_lang` and `target_lang`.
+  const std::string normalized_source_lang =
+      l10n_util::GetLanguage(source_lang);
+  const std::string normalized_target_lang =
+      l10n_util::GetLanguage(target_lang);
   // TODO(crbug.com/371899260): Implement better language code handling.
   if (std::find_if(accept_languages.begin(), accept_languages.end(),
                    [&](const std::string_view& lang) {
-                     return l10n_util::GetLanguage(lang) == source_lang;
+                     return l10n_util::GetLanguage(lang) ==
+                            normalized_source_lang;
                    }) != accept_languages.end()) {
     return true;
   }
   if (std::find_if(accept_languages.begin(), accept_languages.end(),
                    [&](const std::string_view& lang) {
-                     return l10n_util::GetLanguage(lang) == target_lang;
+                     return l10n_util::GetLanguage(lang) ==
+                            normalized_target_lang;
                    }) != accept_languages.end()) {
     return true;
   }
