@@ -3018,7 +3018,7 @@ gfx::Rect CaptureModeSession::CalculateActionContainerWidgetBounds() const {
 
   const gfx::Size preferred_size = action_container_view_->GetPreferredSize();
   const gfx::Rect capture_bar_bounds =
-      action_container_widget_->GetNativeWindow()->bounds();
+      capture_mode_bar_widget_->GetNativeWindow()->bounds();
 
   const gfx::Rect capture_region = controller_->user_capture_region();
   gfx::Rect bounds = CalculateRegionEdgeBounds(
