@@ -6,7 +6,6 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 
 import {BubbleController} from './bubble_controller.js';
-import {FaceGazeConstants} from './constants.js';
 import {GestureHandler} from './gesture_handler.js';
 import {MetricsUtils} from './metrics_utils.js';
 import {MouseController} from './mouse_controller.js';
@@ -25,7 +24,6 @@ export class FaceGaze {
   private prefsListener_: (prefs: PrefObject[]) => void;
   private metricsUtils_: MetricsUtils;
   private webCamFaceLandmarker_: WebCamFaceLandmarker;
-  private weightsWindowId_ = -1;
   private bubbleController_: BubbleController;
 
   constructor() {
@@ -99,7 +97,6 @@ export class FaceGaze {
     }
 
     // If the dialog was accepted, then initialize FaceGaze.
-    this.openWeightsPanel_();
     chrome.accessibilityPrivate.openSettingsSubpage(
         FaceGaze.SETTINGS_PAGE_ROUTE);
 
@@ -192,9 +189,6 @@ export class FaceGaze {
     this.mouseController_.reset();
     this.gestureHandler_.stop();
     this.webCamFaceLandmarker_.stop();
-    if (this.weightsWindowId_ !== -1) {
-      chrome.windows.remove(this.weightsWindowId_);
-    }
   }
 
   /** Allows tests to wait for FaceGaze to be fully initialized. */
@@ -205,28 +199,6 @@ export class FaceGaze {
     }
 
     callback();
-  }
-
-  private openWeightsPanel_(): void {
-    const params = {
-      url: chrome.runtime.getURL('accessibility_common/facegaze/weights.html'),
-      type: chrome.windows.CreateType.PANEL,
-    };
-    chrome.windows.create(params, (win) => {
-      if (!win || win.id === undefined) {
-        return;
-      }
-
-      this.weightsWindowId_ = win.id;
-      chrome.runtime.onMessage.addListener(message => {
-        if (message.type === FaceGazeConstants.UPDATE_LANDMARK_WEIGHTS) {
-          this.mouseController_.updateLandmarkWeights(
-              new Map(Object.entries(message.weights)));
-        }
-
-        return false;
-      });
-    });
   }
 }
 

@@ -170,10 +170,6 @@ export class MouseController {
         () => this.updateMouseLocation_(), MouseController.MOUSE_INTERVAL_MS);
   }
 
-  updateLandmarkWeights(weights: Map<string, number>): void {
-    this.landmarkWeights_ = weights;
-  }
-
   /** Update the current location of the tracked face landmark. */
   onFaceLandmarkerResult(result: FaceLandmarkerResult): void {
     if (this.paused_ || !this.screenBounds_ || !result.faceLandmarks ||
