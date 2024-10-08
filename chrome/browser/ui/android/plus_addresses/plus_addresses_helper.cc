@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/android/plus_addresses/plus_addresses_helper.h"
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
 #include "chrome/browser/ui/android/plus_addresses/jni_headers/PlusAddressesHelper_jni.h"
+#include "components/plus_addresses/features.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
@@ -17,7 +19,8 @@ void ShowManagePlusAddressesPage(content::WebContents& web_contents) {
       web_contents.GetNativeView()->GetWindowAndroid() != nullptr) {
     Java_PlusAddressesHelper_openManagePlusAddresses(
         base::android::AttachCurrentThread(),
-        web_contents.GetNativeView()->GetWindowAndroid()->GetJavaObject());
+        web_contents.GetNativeView()->GetWindowAndroid()->GetJavaObject(),
+        plus_addresses::features::kPlusAddressManagementUrl.Get());
   }
 }
 
