@@ -1123,9 +1123,30 @@ BrowserView::~BrowserView() {
     global_registry->set_registry_for_active_window(nullptr);
   }
 
-  // `watermark_view_` is a raw pointer to a child view, so it needs to be set
-  // to null before `RemoveAllChildViews()` is called to avoid dangling.
+  // These are raw pointers to child views, so they need to be set to null
+  // before `RemoveAllChildViews()` is called to avoid dangling.
+  frame_ = nullptr;
+  top_container_ = nullptr;
+  web_app_frame_toolbar_ = nullptr;
+  web_app_window_title_ = nullptr;
+  tab_strip_region_view_ = nullptr;
+  tabstrip_ = nullptr;
+  webui_tab_strip_ = nullptr;
+  toolbar_ = nullptr;
+  contents_separator_ = nullptr;
+  loading_bar_ = nullptr;
+  find_bar_host_view_ = nullptr;
+  download_shelf_ = nullptr;
+  infobar_container_ = nullptr;
+  contents_web_view_ = nullptr;
+  devtools_web_view_ = nullptr;
   watermark_view_ = nullptr;
+  contents_container_ = nullptr;
+  unified_side_panel_ = nullptr;
+  right_aligned_side_panel_separator_ = nullptr;
+  left_aligned_side_panel_separator_ = nullptr;
+  side_panel_rounded_corner_ = nullptr;
+  toolbar_button_provider_ = nullptr;
 
   // Child views maintain PrefMember attributes that point to
   // OffTheRecordProfile's PrefService which gets deleted by ~Browser.
@@ -4711,12 +4732,10 @@ void BrowserView::MaybeInitializeWebUITabStrip() {
     }
   } else if (webui_tab_strip_) {
     top_container_->RemoveChildView(webui_tab_strip_);
-    delete webui_tab_strip_;
-    webui_tab_strip_ = nullptr;
+    webui_tab_strip_.ClearAndDelete();
 
     top_container_->RemoveChildView(loading_bar_);
-    delete loading_bar_;
-    loading_bar_ = nullptr;
+    loading_bar_.ClearAndDelete();
   }
   GetBrowserViewLayout()->set_webui_tab_strip(webui_tab_strip_);
   GetBrowserViewLayout()->set_loading_bar(loading_bar_);
