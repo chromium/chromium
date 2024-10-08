@@ -3003,7 +3003,8 @@ public class AwAutofillTest extends AwParameterizedTest {
         assertEquals(
                 "UNKNOWN_TYPE",
                 viewStructure.getChild(0).getHtmlInfo().getAttribute("computed-autofill-hints"));
-        assertNull(
+        assertEquals(
+                "NO_SERVER_DATA",
                 viewStructure
                         .getChild(0)
                         .getHtmlInfo()
@@ -3017,7 +3018,8 @@ public class AwAutofillTest extends AwParameterizedTest {
         assertEquals(
                 "HTML_TYPE_EMAIL",
                 viewStructure.getChild(1).getHtmlInfo().getAttribute("computed-autofill-hints"));
-        assertNull(
+        assertEquals(
+                "NO_SERVER_DATA",
                 viewStructure
                         .getChild(1)
                         .getHtmlInfo()
@@ -3098,7 +3100,8 @@ public class AwAutofillTest extends AwParameterizedTest {
         assertEquals(
                 "UNKNOWN_TYPE",
                 viewStructure.getChild(0).getHtmlInfo().getAttribute("computed-autofill-hints"));
-        assertNull(
+        assertEquals(
+                "NO_SERVER_DATA",
                 viewStructure
                         .getChild(0)
                         .getHtmlInfo()
@@ -3112,7 +3115,8 @@ public class AwAutofillTest extends AwParameterizedTest {
         assertEquals(
                 "HTML_TYPE_EMAIL",
                 viewStructure.getChild(1).getHtmlInfo().getAttribute("computed-autofill-hints"));
-        assertNull(
+        assertEquals(
+                "NO_SERVER_DATA",
                 viewStructure
                         .getChild(1)
                         .getHtmlInfo()
@@ -3188,7 +3192,8 @@ public class AwAutofillTest extends AwParameterizedTest {
         assertEquals(
                 "UNKNOWN_TYPE",
                 viewStructure.getChild(0).getHtmlInfo().getAttribute("computed-autofill-hints"));
-        assertNull(
+        assertEquals(
+                "NO_SERVER_DATA",
                 viewStructure
                         .getChild(0)
                         .getHtmlInfo()
@@ -3202,7 +3207,8 @@ public class AwAutofillTest extends AwParameterizedTest {
         assertEquals(
                 "HTML_TYPE_EMAIL",
                 viewStructure.getChild(1).getHtmlInfo().getAttribute("computed-autofill-hints"));
-        assertNull(
+        assertEquals(
+                "NO_SERVER_DATA",
                 viewStructure
                         .getChild(1)
                         .getHtmlInfo()
