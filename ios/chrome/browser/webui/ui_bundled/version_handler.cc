@@ -24,12 +24,10 @@ void VersionHandler::RegisterMessages() {
 
 void VersionHandler::HandleRequestVariationInfo(const base::Value::List& args) {
   // Respond with the variations info immediately.
-  CHECK_EQ(1U, args.size());
+  CHECK_EQ(2U, args.size());
   std::string callback_id = args[0].GetString();
 
   base::Value::Dict response;
   response.Set(version_ui::kKeyVariationsList, version_ui::GetVariationsList());
-  response.Set(version_ui::kKeyVariationsCmd,
-               version_ui::GetVariationsCommandLineAsValue());
   web_ui()->ResolveJavascriptCallback(base::Value(callback_id), response);
 }

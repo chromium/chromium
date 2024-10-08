@@ -24,28 +24,12 @@ import {$} from 'chrome://resources/js/util.js';
 // </if>
 // clang-format on
 
-
-/**
- * Truncate string if it's too long to show.
- * @param str The original string.
- * @returns If |str| length is less or equal than 60, return |str|.
- * Otherwise return the truncated |str|, appended with '...' in the end.
- */
-function truncateString(str: string): string {
-  // 60 is a magic number which show nicely on the page.
-  const maxLength = 60;
-  if (str.length <= maxLength) {
-    return str;
-  }
-  return str.substring(0, maxLength) + '...';
-}
-
 /**
  * Promise resolution handler for variations list and command line equivalent.
  */
 function handleVariationInfo(
     {variationsList, variationsCmd}:
-        {variationsList: string[], variationsCmd: string}) {
+        {variationsList: string[], variationsCmd?: string}) {
   getRequiredElement('variations-section').hidden = !variationsList.length;
   for (const item of variationsList) {
     getRequiredElement('variations-list')
@@ -54,18 +38,9 @@ function handleVariationInfo(
         .appendChild(document.createElement('br'));
   }
 
-  const includeVariationsCmd = location.search.includes('show-variations-cmd');
-  if (variationsCmd !== '') {
-    getRequiredElement('variations-cmd-section').hidden = false;
-    getRequiredElement('copy-variations-to-clipboard').hidden =
-        includeVariationsCmd;
-    if (includeVariationsCmd) {
-      getRequiredElement('variations-cmd').textContent = variationsCmd;
-    } else {
-      getRequiredElement('variations-cmd').textContent =
-          truncateString(variationsCmd);
-      getRequiredElement('variations-cmd').dataset['value'] = variationsCmd;
-    }
+  if (variationsCmd) {
+    getRequiredElement('variations-cmd-section').hidden = !variationsCmd;
+    getRequiredElement('variations-cmd').textContent = variationsCmd;
   }
 }
 
@@ -153,24 +128,12 @@ function crosUrlVersionRedirect() {
 }
 // </if>
 
-async function copyVersionToClipboard() {
-  await navigator.clipboard.writeText(
-      getRequiredElement('copy-content').innerText);
-  announceCopy('copy_notice');
+function copyToClipboard() {
+  navigator.clipboard.writeText(getRequiredElement('copy-content').innerText)
+      .then(announceCopy);
 }
 
-async function copyVariationsToClipboard() {
-  const cmdLine =
-      getRequiredElement('variations-cmd').dataset['value'] as string;
-  await navigator.clipboard.writeText(cmdLine);
-  announceCopy('copy_variations_notice');
-}
-
-/**
- * Announce the copy action when screen reader is on.
- * @param id The id string for the notice.
- */
-function announceCopy(id: string) {
+function announceCopy() {
   const messagesDiv = getRequiredElement('messages');
   messagesDiv.innerHTML = window.trustedTypes!.emptyHTML;
 
@@ -183,7 +146,7 @@ function announceCopy(id: string) {
   // </if>
 
   const div = document.createElement('div');
-  div.innerText = loadTimeData.getString(id);
+  div.innerText = loadTimeData.getString('copy_notice');
   messagesDiv.append(div);
 }
 
@@ -220,7 +183,9 @@ function initialize() {
   // </if>
 
   chrome.send('requestVersionInfo');
-  sendWithPromise('requestVariationInfo').then(handleVariationInfo);
+  const includeVariationsCmd = location.search.includes('show-variations-cmd');
+  sendWithPromise('requestVariationInfo', includeVariationsCmd)
+      .then(handleVariationInfo);
   sendWithPromise('requestPathInfo').then(handlePathInfo);
 
   if (getRequiredElement('variations-seed').textContent !== '') {
@@ -232,10 +197,7 @@ function initialize() {
   }
 
   getRequiredElement('copy-to-clipboard')
-      .addEventListener('click', copyVersionToClipboard);
-
-  getRequiredElement('copy-variations-to-clipboard')
-      .addEventListener('click', copyVariationsToClipboard);
+      .addEventListener('click', copyToClipboard);
 
   // <if expr="chromeos_lacros">
   getRequiredElement('copy-os-content-to-clipboard')
