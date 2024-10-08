@@ -53,7 +53,7 @@ class SessionBindingHelper {
   virtual ~SessionBindingHelper();
 
   // Asynchronously loads the `wrapped_binding_key_` if loading it hasn't
-  // started yet.
+  // started yet or the previous loading attempt failed.
   // Virtual for testing.
   virtual void MaybeLoadBindingKey();
 

@@ -232,8 +232,8 @@ void UnexportableKeyServiceImpl::OnKeyCreatedFromWrappedKey(
     ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
         key_or_error) {
   if (!key_or_error.has_value()) {
-    pending_entry_it->second.RunCallbacksWithFailure(key_or_error.error());
-    key_id_by_wrapped_key_.erase(pending_entry_it);
+    auto node = key_id_by_wrapped_key_.extract(pending_entry_it);
+    node.mapped().RunCallbacksWithFailure(key_or_error.error());
     return;
   }
   scoped_refptr<RefCountedUnexportableSigningKey>& key = key_or_error.value();

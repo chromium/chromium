@@ -46,9 +46,14 @@ source_set("test_support") {
   sources = [
     "fake_unexportable_key_service.cc",
     "fake_unexportable_key_service.h",
+    "mock_unexportable_key_service.cc",
+    "mock_unexportable_key_service.h",
   ]
 
-  public_deps = [ ":unexportable_keys" ]
+  public_deps = [
+    ":unexportable_keys",
+    "//testing/gmock",
+  ]
 }
 
 source_set("unit_tests") {

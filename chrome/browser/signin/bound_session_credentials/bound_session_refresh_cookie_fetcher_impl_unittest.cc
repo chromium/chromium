@@ -585,7 +585,7 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, SignChallengeFailed) {
   EXPECT_EQ(future.Get(), Result::kSignChallengeFailed);
   EXPECT_EQ(sec_session_challenge_response(), std::nullopt);
   VerifyMetricsRecorded(Result::kSignChallengeFailed,
-                        /*expect_assertion_was_generated_count=*/1);
+                        /*expect_assertion_was_generated_count=*/2);
 }
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest,
@@ -773,7 +773,7 @@ TEST(BoundSessionRefreshCookieFetcherImplParseChallengeHeaderTest,
       FieldsAre("other_challenge", "other_session_id"));
 }
 
-class BoundSessionRefreshCookieFetcherImplSignChallengeVerificationTest
+class BoundSessionRefreshCookieFetcherImplSignChallengeFailedTest
     : public BoundSessionRefreshCookieFetcherImplTest {
  public:
   static constexpr std::string_view kGenerateAssertionFirstAttemptHistogram =
@@ -783,7 +783,7 @@ class BoundSessionRefreshCookieFetcherImplSignChallengeVerificationTest
       "Signin.BoundSessionCredentials.CookieRotationGenerateAssertionResult."
       "Attempt1";
 
-  BoundSessionRefreshCookieFetcherImplSignChallengeVerificationTest() {
+  BoundSessionRefreshCookieFetcherImplSignChallengeFailedTest() {
     fetcher_.reset();
     // These tests use `MockSessionBindingHelper` to simulate errors more
     // easily.
@@ -804,7 +804,7 @@ class BoundSessionRefreshCookieFetcherImplSignChallengeVerificationTest
   raw_ptr<MockSessionBindingHelper> mock_session_binding_helper_;
 };
 
-TEST_F(BoundSessionRefreshCookieFetcherImplSignChallengeVerificationTest,
+TEST_F(BoundSessionRefreshCookieFetcherImplSignChallengeFailedTest,
        FirstAttemptFailedSecondSuccess) {
   const std::string kAssertionToken = "test_token";
   EXPECT_CALL(*mock_session_binding_helper_,
@@ -839,7 +839,7 @@ TEST_F(BoundSessionRefreshCookieFetcherImplSignChallengeVerificationTest,
                                        1);
 }
 
-TEST_F(BoundSessionRefreshCookieFetcherImplSignChallengeVerificationTest,
+TEST_F(BoundSessionRefreshCookieFetcherImplSignChallengeFailedTest,
        BothAttemptsFailed) {
   EXPECT_CALL(*mock_session_binding_helper_,
               GenerateBindingKeyAssertion(kChallenge, _, _))
@@ -864,12 +864,14 @@ TEST_F(BoundSessionRefreshCookieFetcherImplSignChallengeVerificationTest,
       SessionBindingHelper::Error::kVerifySignatureFailure, 1);
 }
 
-TEST_F(BoundSessionRefreshCookieFetcherImplSignChallengeVerificationTest,
-       NoRetryForOtherErrors) {
+TEST_F(BoundSessionRefreshCookieFetcherImplSignChallengeFailedTest,
+       RetryForOtherErrors) {
   EXPECT_CALL(*mock_session_binding_helper_,
               GenerateBindingKeyAssertion(kChallenge, _, _))
+      .WillOnce(RunOnceCallback<2>(
+          base::unexpected(SessionBindingHelper::Error::kLoadKeyFailure)))
       .WillOnce(RunOnceCallback<2>(base::unexpected(
-          SessionBindingHelper::Error::kAppendSignatureFailure)));
+          SessionBindingHelper::Error::kSignAssertionFailure)));
   RefreshTestFuture future;
   fetcher_->Start(future.GetCallback(), std::nullopt);
   SimulateChallengeRequired(CreateChallengeHeaderValue(kChallenge));
@@ -877,13 +879,16 @@ TEST_F(BoundSessionRefreshCookieFetcherImplSignChallengeVerificationTest,
   EXPECT_EQ(future.Get(), Result::kSignChallengeFailed);
   VerifyMetricsRecorded(
       BoundSessionRefreshCookieFetcher::Result::kSignChallengeFailed,
-      /*expect_assertion_was_generated_count=*/1);
+      /*expect_assertion_was_generated_count=*/2);
   histogram_tester_.ExpectUniqueSample(
       kGenerateAssertionFirstAttemptHistogram,
-      SessionBindingHelper::Error::kAppendSignatureFailure, 1);
+      SessionBindingHelper::Error::kLoadKeyFailure, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kGenerateAssertionSecondAttemptHistogram,
+      SessionBindingHelper::Error::kSignAssertionFailure, 1);
 }
 
-TEST_F(BoundSessionRefreshCookieFetcherImplSignChallengeVerificationTest,
+TEST_F(BoundSessionRefreshCookieFetcherImplSignChallengeFailedTest,
        MixFailedVerificationAndRejectedChallenge) {
   const std::string kAssertionToken = "test_token";
   EXPECT_CALL(*mock_session_binding_helper_,
