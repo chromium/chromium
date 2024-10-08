@@ -88,6 +88,9 @@ inline constexpr char kNoCurrentWindowError[] = "No current window";
 inline constexpr char kNoLastFocusedWindowError[] = "No last-focused window";
 inline constexpr char kNoTabInBrowserWindowError[] =
     "There is no tab in browser window.";
+inline constexpr char kInvalidTabIndexBreaksGroupContiguity[] =
+    "Tab operation is invalid as the specified input would disrupt group "
+    "continuity in the tab strip.";
 inline constexpr char kPerOriginOnlyInAutomaticError[] =
     "Can only set scope to \"per-origin\" in \"automatic\" mode.";
 inline constexpr char kWindowNotFoundError[] = "No window with id: *.";
