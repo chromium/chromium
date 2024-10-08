@@ -2487,6 +2487,86 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   }
 }
 
+TEST_P(CanvasRenderingContext2DTestAccelerated, ContextLossAbortsHibernation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
+
+  CreateContext(kNonOpaque);
+
+  // Do initial setup to ensure that CanvasResourceHost will check for the GPU
+  // context being lost as part of checking resource validity:
+
+  // * Install a CanvasResourceProvider that is accelerated and supports direct
+  //   compositing. The former is necessary as part of ensuring that
+  //   CanvasResourceHost::IsResourceValid() checks for context loss, while the
+  //   latter is necessary for GetOrCreateCcLayerIfNeeded() to succeed.
+  gfx::Size size = CanvasElement().Size();
+  auto provider = std::make_unique<FakeCanvasResourceProvider>(
+      SkImageInfo::MakeN32Premul(size.width(), size.height()),
+      RasterModeHint::kPreferGPU, &CanvasElement(),
+      CompositingMode::kSupportsDirectCompositing);
+  CanvasElement().SetResourceProviderForTesting(
+      std::move(provider),
+      std::make_unique<Canvas2DLayerBridge>(&CanvasElement()), size);
+
+  // * Put the host in GPU compositing mode, also necessary to ensure that
+  //   IsResourceValid() checks for context loss.
+  CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
+
+  // * Finally, create a CC layer as otherwise IsResourceValid() will always
+  //   unconditionally return true.
+  EXPECT_TRUE(CanvasElement().GetOrCreateCcLayerIfNeeded());
+
+  EXPECT_TRUE(CanvasElement().IsResourceValid());
+
+  auto* bridge = CanvasElement().GetCanvas2DLayerBridge();
+  auto& handler = bridge->GetHibernationHandler();
+
+  // Install a minimal delay for testing to ensure that the test remains fast
+  // to execute.
+  handler.SetBeforeCompressionDelayForTesting(base::Microseconds(10));
+
+  EXPECT_FALSE(handler.IsHibernating());
+
+  // Simulate GPU context loss.
+  test_context_provider_->TestContextGL()->set_context_lost(true);
+
+  // Verify that going to the background triggers hibernation asynchronously.
+  {
+    base::HistogramTester histogram_tester;
+    GetDocument().GetPage()->SetVisibilityState(
+        mojom::blink::PageVisibilityState::kHidden,
+        /*is_initial_state=*/false);
+
+    histogram_tester.ExpectUniqueSample(
+        "Blink.Canvas.HibernationEvents",
+        Canvas2DLayerBridge::HibernationEvent::kHibernationScheduled, 1);
+    EXPECT_FALSE(handler.IsHibernating());
+  }
+
+  // Verify that running the hibernation task aborts hibernation due to the
+  // GPU context having been lost.
+  {
+    base::HistogramTester histogram_tester;
+
+    // Run the task that initiates hibernation, which has been posted as an idle
+    // task.
+    ThreadScheduler::Current()
+        ->ToMainThreadScheduler()
+        ->StartIdlePeriodForTesting();
+    blink::test::RunPendingTasks();
+
+    histogram_tester.ExpectUniqueSample(
+        "Blink.Canvas.HibernationEvents",
+        Canvas2DLayerBridge::HibernationEvent::
+            kHibernationAbortedDueGpuContextLoss,
+        1);
+    EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
+    EXPECT_FALSE(handler.IsHibernating());
+    EXPECT_FALSE(CanvasElement().IsResourceValid());
+  }
+}
+
 TEST_P(CanvasRenderingContext2DTestAccelerated,
        CanvasDrawInBackgroundEndsHibernation) {
   base::test::ScopedFeatureList scoped_feature_list;
