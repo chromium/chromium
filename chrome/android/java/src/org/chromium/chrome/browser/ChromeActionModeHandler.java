@@ -41,6 +41,7 @@ import org.chromium.content_public.browser.ActionModeCallback;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 
 import java.util.HashSet;
 import java.util.List;
@@ -100,6 +101,18 @@ public class ChromeActionModeHandler {
                         mActiveTab = tab;
                         TabWebContentsObserver.from(tab)
                                 .addInitWebContentsObserver(mInitWebContentsObserver);
+                    }
+
+                    @Override
+                    public void onPageLoadStarted(Tab tab, GURL url) {
+                        SelectionPopupController.fromWebContents(tab.getWebContents())
+                                .clearSelection();
+                    }
+
+                    @Override
+                    public void onContentChanged(Tab tab) {
+                        SelectionPopupController.fromWebContents(tab.getWebContents())
+                                .clearSelection();
                     }
                 };
     }
