@@ -181,7 +181,7 @@ std::unique_ptr<std::vector<extensions::TtsVoice>> GetVoicesInternal(
   return std::make_unique<std::vector<extensions::TtsVoice>>();
 }
 
-bool GetTtsEventType(const std::string event_type_string,
+bool GetTtsEventType(const std::string& event_type_string,
                      content::TtsEventType* event_type) {
   if (event_type_string == constants::kEventTypeStart) {
     *event_type = content::TTS_EVENT_START;
