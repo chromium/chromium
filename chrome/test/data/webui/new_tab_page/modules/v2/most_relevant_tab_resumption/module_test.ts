@@ -197,5 +197,22 @@ suite('NewTabPageModulesMostRelevantTabResumptionModuleTest', () => {
 
       await waitForUsageEvent;
     });
+
+    test('See More click fires usage event', async () => {
+      // Arrange.
+      const moduleElement = await initializeModule(createSampleURLVisits(1));
+
+      // Assert.
+      assertTrue(!!moduleElement);
+      const seeMoreButtonElement =
+          ($$(moduleElement,
+              '#seeMoreButtonContainer'))!.querySelector<HTMLElement>('a');
+      assertTrue(!!seeMoreButtonElement);
+      const waitForUsageEvent = eventToPromise('usage', moduleElement);
+      seeMoreButtonElement!.removeAttribute('href');
+      seeMoreButtonElement!.click();
+      assertEquals(1, metrics.count(`NewTabPage.TabResumption.SeeMoreClick`));
+      await waitForUsageEvent;
+    });
   });
 });
