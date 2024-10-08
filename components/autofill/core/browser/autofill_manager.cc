@@ -197,11 +197,11 @@ void AutofillManager::OnLanguageDetermined(
     std::unique_ptr<BufferingLogManager> log_manager;
   };
 
-  // If parsing is currently going on, `form_structures_` can be empty. The
-  // following task is executed on the main thread after all ongoing parsing
-  // tasks and their responses (updating the cache) have completed.
-  auto reparse_forms = [](const translate::LanguageDetectionDetails& details,
-                          base::WeakPtr<AutofillManager> self) {
+  // Wait for ongoing parsing operations to finish, so `form_structures_` is
+  // up to date.
+  AfterParsingFinishes(base::BindOnce([](const translate::
+                                             LanguageDetectionDetails& details,
+                                         base::WeakPtr<AutofillManager> self) {
     if (!self) {
       return;
     }
@@ -259,11 +259,7 @@ void AutofillManager::OnLanguageDetermined(
                          self->client().GetVariationConfigCountryCode(),
                          self->log_manager_)),
         base::BindOnce(UpdateCache, self));
-  };
-  parsing_task_runner_->PostTaskAndReply(
-      FROM_HERE, base::DoNothing(),
-      base::BindOnce(reparse_forms, details,
-                     parsing_weak_ptr_factory_.GetWeakPtr()));
+  })).Run(details, GetWeakPtr());
 }
 
 void AutofillManager::OnTranslateDriverDestroyed(
@@ -377,10 +373,12 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
   // Query the server if at least one of the forms was parsed.
   if (!queryable_forms.empty() && client().GetCrowdsourcingManager()) {
     NotifyObservers(&Observer::OnBeforeLoadedServerPredictions);
+    // If language detection is currently reparsing the form, wait until the
+    // server response is processed, to ensure server predictions are not lost.
     client().GetCrowdsourcingManager()->StartQueryRequest(
         queryable_forms, driver().GetIsolationInfo(),
-        base::BindOnce(&AutofillManager::OnLoadedServerPredictions,
-                       GetWeakPtr()));
+        AfterParsingFinishes(base::BindOnce(
+            &AutofillManager::OnLoadedServerPredictions, GetWeakPtr())));
   }
 }
 

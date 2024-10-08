@@ -456,6 +456,24 @@ class AutofillManager
   std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>
   CreateFormInteractionsUkmLogger();
 
+  // Returns a callback that runs `callback` on the main thread after all
+  // ongoing async parsing operations have finished.
+  template <typename... Args>
+  base::OnceCallback<void(Args...)> AfterParsingFinishes(
+      base::OnceCallback<void(Args...)> callback) {
+    return base::BindOnce(
+        [](base::WeakPtr<AutofillManager> self,
+           base::OnceCallback<void(Args...)> callback, Args... args) {
+          if (self) {
+            self->parsing_task_runner_->PostTaskAndReply(
+                FROM_HERE, base::DoNothing(),
+                base::BindOnce(std::move(callback),
+                               std::forward<Args>(args)...));
+          }
+        },
+        GetWeakPtr(), std::move(callback));
+  }
+
   // Provides driver-level context to the shared code of the component.
   // `*driver_` owns this object.
   const raw_ref<AutofillDriver> driver_;
