@@ -30,9 +30,7 @@ namespace {
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 std::u16string GetAuthenticationMessage(PasswordsModelDelegate* delegate) {
-  // TODO(lziest, b/366209336): Add ChromeOS Strings
   std::u16string message;
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   if (!delegate || !delegate->GetWebContents()) {
     return u"";
   }
@@ -42,7 +40,6 @@ std::u16string GetAuthenticationMessage(PasswordsModelDelegate* delegate) {
                                            ->GetLastCommittedOrigin()));
   message =
       l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_FILLING_REAUTH, origin);
-#endif
   return message;
 }
 #endif

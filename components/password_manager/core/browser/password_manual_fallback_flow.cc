@@ -376,7 +376,7 @@ void PasswordManualFallbackFlow::MaybeAuthenticateBeforeFilling(
         base::BindOnce(&PasswordManualFallbackFlow::OnBiometricReauthCompleted,
                        weak_ptr_factory_.GetWeakPtr(), std::move(fill_fields));
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
     const std::u16string origin = base::UTF8ToUTF16(GetShownOrigin(
         url::Origin::Create(password_manager_driver_->GetLastCommittedURL())));
     message =

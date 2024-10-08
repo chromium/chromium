@@ -265,8 +265,13 @@ std::u16string GetMessageForBiometricAuthenticationBeforeFillingSetting(
   message = l10n_util::GetStringUTF16(
       pref_enabled ? IDS_PASSWORD_MANAGER_TURN_OFF_FILLING_REAUTH_WIN
                    : IDS_PASSWORD_MANAGER_TURN_ON_FILLING_REAUTH_WIN);
+#elif BUILDFLAG(IS_CHROMEOS)
+  const bool pref_enabled =
+      prefs->GetBoolean(kBiometricAuthenticationBeforeFilling);
+  message = l10n_util::GetStringUTF16(
+      pref_enabled ? IDS_PASSWORD_MANAGER_TURN_OFF_FILLING_REAUTH_CHROMEOS
+                   : IDS_PASSWORD_MANAGER_TURN_ON_FILLING_REAUTH_CHROMEOS);
 #endif
-  // TODO(lziest, b/366209336): Add ChromeOS Strings
   return message;
 }
 
