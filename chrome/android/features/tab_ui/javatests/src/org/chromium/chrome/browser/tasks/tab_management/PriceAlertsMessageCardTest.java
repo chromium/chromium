@@ -21,6 +21,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstCardFromTabSwitcher;
@@ -46,6 +49,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -54,10 +60,12 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.commerce.ShoppingFeatures;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
@@ -74,6 +82,9 @@ import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
+import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
+import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.io.IOException;
@@ -99,12 +110,20 @@ public class PriceAlertsMessageCardTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule public JniMocker mJniMocker = new JniMocker();
+
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(
                             ChromeRenderTestRule.Component.UI_BROWSER_SHOPPING_PRICE_TRACKING)
                     .build();
+
+    @Mock private ShoppingService mShoppingService;
+    @Mock private ShoppingServiceFactory.Natives mShoppingServiceFactoryJniMock;
+    @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
 
     @Before
     public void setUp() {
@@ -113,7 +132,10 @@ public class PriceAlertsMessageCardTest {
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
         mMockNotificationManager = new MockNotificationManagerProxy();
         PriceDropNotificationManagerImpl.setNotificationManagerForTesting(mMockNotificationManager);
-        ShoppingFeatures.setShoppingListEligibleForTesting(true);
+        mJniMocker.mock(ShoppingServiceFactoryJni.TEST_HOOKS, mShoppingServiceFactoryJniMock);
+        doReturn(mShoppingService).when(mShoppingServiceFactoryJniMock).getForProfile(any());
+        mJniMocker.mock(CommerceFeatureUtilsJni.TEST_HOOKS, mCommerceFeatureUtilsJniMock);
+        doReturn(true).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
 
         mActivityTestRule.startMainActivityOnBlankPage();
         CriteriaHelper.pollUiThread(

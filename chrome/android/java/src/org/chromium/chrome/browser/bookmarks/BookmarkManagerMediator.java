@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.Observer;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRow.Location;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
-import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksReader;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -50,6 +49,7 @@ import org.chromium.components.browser_ui.widget.dragreorder.DragStateDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.SubscriptionsObserver;
@@ -438,7 +438,7 @@ class BookmarkManagerMediator
         mBookmarkUndoController = bookmarkUndoController;
         mBookmarkMoveSnackbarManager = bookmarkMoveSnackbarManager;
 
-        if (mShoppingService.isShoppingListEligible()) {
+        if (CommerceFeatureUtils.isShoppingListEligible(mShoppingService)) {
             mShoppingService.addSubscriptionsObserver(mSubscriptionsObserver);
         }
 
@@ -503,7 +503,8 @@ class BookmarkManagerMediator
         mBookmarkUiPrefs.removeObserver(mBookmarkUiPrefsObserver);
         mBookmarkMoveSnackbarManager.destroy();
 
-        if (mShoppingService != null && mShoppingService.isShoppingListEligible()) {
+        if (mShoppingService != null
+                && CommerceFeatureUtils.isShoppingListEligible(mShoppingService)) {
             mShoppingService.removeSubscriptionsObserver(mSubscriptionsObserver);
         }
 
@@ -1596,8 +1597,7 @@ class BookmarkManagerMediator
     // properly.
     @VisibleForTesting
     void updateShoppingFilterVisible() {
-        boolean eligible = ShoppingFeatures.isShoppingListEligible(mProfile);
-        if (!eligible) {
+        if (!CommerceFeatureUtils.isShoppingListEligible(mShoppingService)) {
             updateFilterAvailability(false);
             return;
         }

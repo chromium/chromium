@@ -34,7 +34,6 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
-import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -49,6 +48,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.commerce.core.IdentifierType;
 import org.chromium.components.commerce.core.ManagementType;
@@ -183,7 +183,9 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
         // Currently we only post notifications for explicit price tracking which is gated by the
         // "shopping list" feature flag. When we start implicit price tracking, we should use a
         // separate flag and add the check on it here.
-        if (!areAppNotificationsEnabled() || !ShoppingFeatures.isShoppingListEligible(mProfile)) {
+        if (!areAppNotificationsEnabled()
+                || !CommerceFeatureUtils.isShoppingListEligible(
+                        ShoppingServiceFactory.getForProfile(mProfile))) {
             return false;
         }
 
@@ -199,7 +201,8 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
 
     @Override
     public boolean canPostNotificationWithMetricsRecorded() {
-        if (!ShoppingFeatures.isShoppingListEligible(mProfile)) {
+        if (!CommerceFeatureUtils.isShoppingListEligible(
+                ShoppingServiceFactory.getForProfile(mProfile))) {
             return false;
         }
         boolean isSystemNotificationEnabled = areAppNotificationsEnabled();

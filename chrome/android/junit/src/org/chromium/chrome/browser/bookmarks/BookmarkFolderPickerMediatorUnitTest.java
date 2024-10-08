@@ -39,6 +39,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
@@ -48,6 +49,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
+import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.sync.SyncFeatureMap;
@@ -71,6 +74,8 @@ public class BookmarkFolderPickerMediatorUnitTest {
     @Rule
     public final ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
+
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
     // Initial structure:
     // Root
@@ -236,6 +241,7 @@ public class BookmarkFolderPickerMediatorUnitTest {
     @Mock private Menu mMenu;
     @Mock private MenuItem mMenuItem;
     @Mock private BookmarkAddNewFolderCoordinator mAddNewFolderCoordinator;
+    @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
     @Mock private ShoppingService mShoppingService;
     @Captor private ArgumentCaptor<BookmarkUiPrefs.Observer> mBookmarkUiPrefsObserverCaptor;
 
@@ -247,6 +253,8 @@ public class BookmarkFolderPickerMediatorUnitTest {
     @Before
     public void setUp() throws Exception {
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
+
+        mJniMocker.mock(CommerceFeatureUtilsJni.TEST_HOOKS, mCommerceFeatureUtilsJniMock);
 
         // Setup profile-related factories.
         TrackerFactory.setTrackerForTests(mTracker);

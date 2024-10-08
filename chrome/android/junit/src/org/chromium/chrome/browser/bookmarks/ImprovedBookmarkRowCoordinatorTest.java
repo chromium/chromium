@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
@@ -42,10 +43,11 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
-import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
+import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.components.payments.CurrencyFormatterJni;
@@ -79,6 +81,7 @@ public class ImprovedBookmarkRowCoordinatorTest {
     @Mock private Runnable mClickListener;
     @Mock private BookmarkUiPrefs mBookmarkUiPrefs;
     @Mock private ShoppingService mShoppingService;
+    @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
     @Mock private CurrencyFormatter.Natives mCurrencyFormatterJniMock;
     @Mock private ImprovedBookmarkRow mImprovedBookmarkRow;
 
@@ -108,6 +111,8 @@ public class ImprovedBookmarkRowCoordinatorTest {
 
         // Setup CurrencyFormatter.
         mJniMocker.mock(CurrencyFormatterJni.TEST_HOOKS, mCurrencyFormatterJniMock);
+
+        mJniMocker.mock(CommerceFeatureUtilsJni.TEST_HOOKS, mCommerceFeatureUtilsJniMock);
 
         mCoordinator =
                 new ImprovedBookmarkRowCoordinator(
@@ -148,8 +153,7 @@ public class ImprovedBookmarkRowCoordinatorTest {
 
     @Test
     public void testShoppingCoordinator() {
-        ShoppingFeatures.setShoppingListEligibleForTesting(true);
-        doReturn(true).when(mShoppingService).isShoppingListEligible();
+        doReturn(true).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
 
         ShoppingSpecifics specifics = ShoppingSpecifics.newBuilder().setProductClusterId(1).build();
         PowerBookmarkMeta meta =
@@ -168,7 +172,7 @@ public class ImprovedBookmarkRowCoordinatorTest {
 
     @Test
     public void testShoppingCoordinator_nullWhenShoppingListNotEligible() {
-        ShoppingFeatures.setShoppingListEligibleForTesting(false);
+        doReturn(false).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
 
         ShoppingSpecifics specifics = ShoppingSpecifics.newBuilder().setProductClusterId(1).build();
         PowerBookmarkMeta meta =

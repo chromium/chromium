@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.customtabs;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,14 +36,15 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
@@ -66,6 +68,8 @@ import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinat
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
+import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
@@ -84,6 +88,8 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
+
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
     @Mock private ActivityTabProvider mTabProvider;
@@ -129,6 +135,8 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private GoogleBottomBarCoordinator mGoogleBottomBarCoordinator;
     @Mock private ShoppingService mShoppingService;
+    @Mock private ShoppingServiceFactory.Natives mShoppingServiceFactoryJniMock;
+    @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
 
     private AppCompatActivity mActivity;
     private BaseCustomTabRootUiCoordinator mBaseCustomTabRootUiCoordinator;
@@ -139,8 +147,11 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
         MockitoAnnotations.initMocks(this);
 
         // Setup the shopping service.
-        ShoppingFeatures.setShoppingListEligibleForTesting(false);
-        ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
+        mJniMocker.mock(CommerceFeatureUtilsJni.TEST_HOOKS, mCommerceFeatureUtilsJniMock);
+        doReturn(false).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
+
+        mJniMocker.mock(ShoppingServiceFactoryJni.TEST_HOOKS, mShoppingServiceFactoryJniMock);
+        doReturn(mShoppingService).when(mShoppingServiceFactoryJniMock).getForProfile(any());
 
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(new UnownedUserDataHost());
         when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(mActivity));

@@ -289,6 +289,7 @@ static_library("shopping_service") {
 
   if (is_android) {
     sources += [
+      "android/feature_utils_android.cc",
       "android/shopping_service_android.cc",
       "android/shopping_service_android.h",
     ]

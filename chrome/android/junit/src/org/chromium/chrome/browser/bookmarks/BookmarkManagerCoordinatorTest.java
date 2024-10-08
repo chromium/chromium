@@ -39,6 +39,8 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
+import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
@@ -83,6 +85,7 @@ public class BookmarkManagerCoordinatorTest {
     @Mock private IdentityManager mIdentityManager;
     @Mock private BookmarkModel mBookmarkModel;
     @Mock private BookmarkUiPrefs mBookmarkUiPrefs;
+    @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
     @Mock private ShoppingService mShoppingService;
 
     private Activity mActivity;
@@ -93,6 +96,7 @@ public class BookmarkManagerCoordinatorTest {
         // Setup JNI mocks.
         mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mMockLargeIconBridgeJni);
         mJniMocker.mock(ImageServiceBridgeJni.TEST_HOOKS, mImageServiceBridgeJni);
+        mJniMocker.mock(CommerceFeatureUtilsJni.TEST_HOOKS, mCommerceFeatureUtilsJniMock);
 
         // Setup service mocks.
         doReturn(mProfile).when(mProfile).getOriginalProfile();

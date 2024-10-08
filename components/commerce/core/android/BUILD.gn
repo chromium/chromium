@@ -7,6 +7,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("core_jni") {
   sources = [
+    "java/src/org/chromium/components/commerce/core/CommerceFeatureUtils.java",
     "java/src/org/chromium/components/commerce/core/DiscountInfo.java",
     "java/src/org/chromium/components/commerce/core/ShoppingService.java",
   ]
@@ -14,6 +15,7 @@ generate_jni("core_jni") {
 
 android_library("core_java") {
   sources = [
+    "java/src/org/chromium/components/commerce/core/CommerceFeatureUtils.java",
     "java/src/org/chromium/components/commerce/core/CommerceSubscription.java",
     "java/src/org/chromium/components/commerce/core/DiscountInfo.java",
     "java/src/org/chromium/components/commerce/core/ShoppingService.java",

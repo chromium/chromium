@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -74,6 +75,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
@@ -92,8 +94,8 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRow;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.TestingDelegate;
-import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
@@ -115,6 +117,8 @@ import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.NavigationButton;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.ViewType;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
+import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
@@ -167,9 +171,12 @@ public class BookmarkTest {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private SyncService mSyncService;
     @Mock private ShoppingService mShoppingService;
+    @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
+    @Mock private ShoppingServiceFactory.Natives mShoppingServiceFactoryJniMock;
     @Captor private ArgumentCaptor<SyncStateChangedListener> mSyncStateChangedListenerCaptor;
 
     private BookmarkModel mBookmarkModel;
@@ -192,8 +199,11 @@ public class BookmarkTest {
     @Before
     public void setUp() {
         // Setup the shopping service.
-        ShoppingFeatures.setShoppingListEligibleForTesting(false);
-        ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
+        mJniMocker.mock(ShoppingServiceFactoryJni.TEST_HOOKS, mShoppingServiceFactoryJniMock);
+        doReturn(mShoppingService).when(mShoppingServiceFactoryJniMock).getForProfile(any());
+
+        mJniMocker.mock(CommerceFeatureUtilsJni.TEST_HOOKS, mCommerceFeatureUtilsJniMock);
+        doReturn(false).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
 
         mActivityTestRule.startMainActivityOnBlankPage();
         runOnUiThreadBlocking(
@@ -1747,8 +1757,7 @@ public class BookmarkTest {
     @MediumTest
     @Restriction({DeviceFormFactor.PHONE})
     public void testShoppingFilterInBookmarks() throws InterruptedException, ExecutionException {
-        ShoppingFeatures.setShoppingListEligibleForTesting(true);
-        doReturn(true).when(mShoppingService).isShoppingListEligible();
+        doReturn(true).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
         BookmarkId id = addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestPage);
         PowerBookmarkMeta.Builder meta =
                 PowerBookmarkMeta.newBuilder()
@@ -1789,7 +1798,7 @@ public class BookmarkTest {
     @Restriction({DeviceFormFactor.PHONE})
     public void testShoppingDataPresentButFeatureDisabled()
             throws InterruptedException, ExecutionException {
-        ShoppingFeatures.setShoppingListEligibleForTesting(true);
+        doReturn(true).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
         BookmarkId id = addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestPage);
         PowerBookmarkMeta.Builder meta =
                 PowerBookmarkMeta.newBuilder()

@@ -13,7 +13,6 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
-import org.chromium.base.ResettersForTesting;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.url.GURL;
@@ -392,23 +391,6 @@ public class ShoppingService {
         callback.onResult(bookmarks);
     }
 
-    /**
-     * This is a feature check for the "shopping list". This will only return true if the user has
-     * the feature flag enabled, is signed-in, has MSBB enabled, has webapp activity enabled, is
-     * allowed by enterprise policy, and (if applicable) in an eligible country and locale. The
-     * value returned by this method can change at runtime, so it should not be used when deciding
-     * whether to create critical, feature-related infrastructure.
-     *
-     * @return Whether the user is eligible to use the shopping list feature.
-     */
-    public boolean isShoppingListEligible() {
-        if (sShoppingListEligibleForTestsing != null) return sShoppingListEligibleForTestsing;
-
-        if (mNativeShoppingServiceAndroid == 0) return false;
-
-        return ShoppingServiceJni.get().isShoppingListEligible(mNativeShoppingServiceAndroid, this);
-    }
-
     // This is a feature check for the "merchant viewer", which will return true if the user has the
     // feature flag enabled or (if applicable) is in an eligible country and locale.
     public boolean isMerchantViewerEnabled() {
@@ -604,13 +586,8 @@ public class ShoppingService {
         }
     }
 
-    public static void setShoppingListEligibleForTesting(Boolean eligible) {
-        sShoppingListEligibleForTestsing = eligible;
-        ResettersForTesting.register(() -> sShoppingListEligibleForTestsing = null);
-    }
-
-    public static Boolean isShoppingListEligibleForTesting() {
-        return sShoppingListEligibleForTestsing;
+    long getNativePtr() {
+        return mNativeShoppingServiceAndroid;
     }
 
     @NativeMethods

@@ -10,6 +10,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -41,10 +43,11 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
-import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationType;
@@ -57,6 +60,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
+import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.commerce.core.IdentifierType;
 import org.chromium.components.commerce.core.ManagementType;
@@ -90,26 +95,33 @@ public class PriceDropNotificationManagerTest {
             new ChromeTabbedActivityTestRule();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Rule
     public BlankCTATabInitialStateRule mInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     @Mock private ShoppingService mMockShoppingService;
+    @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
+    @Mock private ShoppingServiceFactory.Natives mShoppingServiceFactoryJniMock;
     @Mock private BookmarkModel mMockBookmarkModel;
     @Mock private Profile mMockProfile;
     @Captor private ArgumentCaptor<CommerceSubscription> mSubscriptionCaptor;
 
     @Before
     public void setUp() {
+        mJniMocker.mock(CommerceFeatureUtilsJni.TEST_HOOKS, mCommerceFeatureUtilsJniMock);
+        doReturn(true).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
+
+        mJniMocker.mock(ShoppingServiceFactoryJni.TEST_HOOKS, mShoppingServiceFactoryJniMock);
+        doReturn(mMockShoppingService).when(mShoppingServiceFactoryJniMock).getForProfile(any());
+
         mMockNotificationManager = new MockNotificationManagerProxy();
         PriceDropNotificationManagerImpl.setNotificationManagerForTesting(mMockNotificationManager);
         mPriceDropNotificationManager = PriceDropNotificationManagerFactory.create(mMockProfile);
         when(mMockBookmarkModel.isBookmarkModelLoaded()).thenReturn(true);
         BookmarkModel.setInstanceForTesting(mMockBookmarkModel);
-        ShoppingServiceFactory.setShoppingServiceForTesting(mMockShoppingService);
         ProfileManager.setLastUsedProfileForTesting(mMockProfile);
-        ShoppingFeatures.setShoppingListEligibleForTesting(true);
     }
 
     @After
@@ -143,7 +155,7 @@ public class PriceDropNotificationManagerTest {
     @MediumTest
     public void testCanPostNotification_FeatureDisabled() {
         mMockNotificationManager.setNotificationsEnabled(true);
-        ShoppingFeatures.setShoppingListEligibleForTesting(false);
+        doReturn(false).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
         assertFalse(mPriceDropNotificationManager.canPostNotification());
         assertFalse(mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded());
     }

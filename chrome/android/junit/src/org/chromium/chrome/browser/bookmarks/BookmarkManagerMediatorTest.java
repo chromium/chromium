@@ -77,7 +77,8 @@ import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRow.Location;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtilsJni;
-import org.chromium.chrome.browser.commerce.ShoppingFeatures;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -100,6 +101,8 @@ import org.chromium.components.browser_ui.widget.dragreorder.DragStateDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
+import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.SubscriptionsObserver;
@@ -179,7 +182,9 @@ public class BookmarkManagerMediatorTest {
     @Mock private Tracker mTracker;
     @Mock private BookmarkImageFetcher mBookmarkImageFetcher;
     @Mock private Drawable mDrawable;
+    @Mock private ShoppingServiceFactory.Natives mShoppingServiceFactoryJniMock;
     @Mock private ShoppingService mShoppingService;
+    @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private PriceTrackingUtils.Natives mPriceTrackingUtilsJniMock;
     @Mock private ListObservable.ListObserver<Void> mListObserver;
@@ -351,6 +356,11 @@ public class BookmarkManagerMediatorTest {
 
         // Setup CurrencyFormatter.
         mJniMocker.mock(CurrencyFormatterJni.TEST_HOOKS, mCurrencyFormatterJniMock);
+        mJniMocker.mock(ShoppingServiceFactoryJni.TEST_HOOKS, mShoppingServiceFactoryJniMock);
+        mJniMocker.mock(CommerceFeatureUtilsJni.TEST_HOOKS, mCommerceFeatureUtilsJniMock);
+
+        // Setup ShoppingServiceFactory
+        doReturn(mShoppingService).when(mShoppingServiceFactoryJniMock).getForProfile(any());
 
         // Setup TrackerFactory.
         TrackerFactory.setTrackerForTests(mTracker);
@@ -456,7 +466,7 @@ public class BookmarkManagerMediatorTest {
                 .fetchFaviconForBookmark(any(), any());
 
         // Setup price tracking utils.
-        doReturn(true).when(mShoppingService).isShoppingListEligible();
+        doReturn(true).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
         mJniMocker.mock(PriceTrackingUtilsJni.TEST_HOOKS, mPriceTrackingUtilsJniMock);
         doCallback(3, (Callback<Boolean> callback) -> callback.onResult(true))
                 .when(mPriceTrackingUtilsJniMock)
@@ -483,7 +493,7 @@ public class BookmarkManagerMediatorTest {
         doReturn(shoppingMetaTracked)
                 .when(mBookmarkModel)
                 .getPowerBookmarkMeta(mPriceTrackedBookmarkId);
-        ShoppingFeatures.setShoppingListEligibleForTesting(true);
+        doReturn(true).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
 
         mDragReorderableRecyclerViewAdapter =
                 spy(new DragReorderableRecyclerViewAdapter(mActivity, mModelList));
@@ -1182,13 +1192,13 @@ public class BookmarkManagerMediatorTest {
 
     @Test
     public void testcreateListMenuModelList_shopping_notEligible() {
-        ShoppingFeatures.setShoppingListEligibleForTesting(false);
+        doReturn(false).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
 
         finishLoading();
         mMediator.openFolder(mFolderId2);
 
         doReturn(true).when(mShoppingService).isSubscribedFromCache(any());
-        doReturn(false).when(mShoppingService).isShoppingListEligible();
+        doReturn(false).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
         PowerBookmarkMeta meta =
                 PowerBookmarkMeta.newBuilder()
                         .setShoppingSpecifics(
@@ -2054,7 +2064,7 @@ public class BookmarkManagerMediatorTest {
 
     @Test
     public void testSearchBox_priceTrackingFilterGoneWithEligibility() {
-        ShoppingFeatures.setShoppingListEligibleForTesting(false);
+        doReturn(false).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
         finishLoading();
 
         mMediator.openFolder(mFolderId3);

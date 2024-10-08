@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.ShoppingService;
 
 import java.util.concurrent.TimeUnit;
@@ -94,7 +95,7 @@ public class CommerceSubscriptionsService implements Destroyable {
         }
         mSharedPreferencesManager.writeLong(
                 CHROME_MANAGED_SUBSCRIPTIONS_TIMESTAMP, System.currentTimeMillis());
-        if (!mShoppingService.isShoppingListEligible()) return;
+        if (!CommerceFeatureUtils.isShoppingListEligible(mShoppingService)) return;
         recordMetricsForEligibleAccount();
         if (mImplicitPriceDropSubscriptionsManager != null) {
             mImplicitPriceDropSubscriptionsManager.initializeSubscriptions();

@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.commerce.core.CommerceSubscription.UserSeenOffer;
 import org.chromium.components.commerce.core.IdentifierType;
@@ -46,7 +47,7 @@ public class PowerBookmarkUtils {
     /** Returns whether the given meta is a shopping list item. */
     public static boolean isShoppingListItem(
             ShoppingService shoppingService, PowerBookmarkMeta meta) {
-        return shoppingService.isShoppingListEligible()
+        return CommerceFeatureUtils.isShoppingListEligible(shoppingService)
                 && meta != null
                 && meta.hasShoppingSpecifics();
     }

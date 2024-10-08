@@ -34,6 +34,8 @@ class ShoppingServiceAndroid : public base::SupportsUserData::Data,
   ShoppingServiceAndroid(ShoppingService* service);
   ~ShoppingServiceAndroid() override;
 
+  ShoppingService* GetShoppingService();
+
   void GetProductInfoForUrl(JNIEnv* env,
                             const JavaParamRef<jobject>& obj,
                             const JavaParamRef<jobject>& j_gurl,

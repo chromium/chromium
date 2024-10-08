@@ -19,7 +19,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
-import org.chromium.chrome.browser.commerce.ShoppingFeatures;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -165,7 +166,8 @@ public class ToolbarButtonInProductHelpController
     private void showPriceTrackingIPH(Tab tab) {
         if (tab == null || tab.getWebContents() == null) return;
 
-        if (!ShoppingFeatures.isShoppingListEligible(tab.getProfile())
+        if (!CommerceFeatureUtils.isShoppingListEligible(
+                        ShoppingServiceFactory.getForProfile(tab.getProfile()))
                 || !PowerBookmarkUtils.isPriceTrackingEligible(tab)) {
             return;
         }

@@ -20,7 +20,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
-import org.chromium.chrome.browser.commerce.ShoppingFeatures;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -28,6 +28,7 @@ import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -176,7 +177,8 @@ public class BookmarkSaveFlowCoordinator {
             setupAutodismiss();
         }
 
-        if (ShoppingFeatures.isShoppingListEligible(mProfile)) {
+        if (CommerceFeatureUtils.isShoppingListEligible(
+                ShoppingServiceFactory.getForProfile(mProfile))) {
             PriceTrackingUtils.isBookmarkPriceTracked(
                     mProfile,
                     bookmarkId.getId(),

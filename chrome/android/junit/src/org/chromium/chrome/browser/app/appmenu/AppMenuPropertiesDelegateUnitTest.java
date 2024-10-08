@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
@@ -64,8 +65,8 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl.MenuGroup;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
-import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.device.ShadowDeviceConditions;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
@@ -100,6 +101,8 @@ import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
+import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
@@ -157,6 +160,8 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Mock private IncognitoReauthController mIncognitoReauthControllerMock;
     @Mock private IncognitoUtils.Natives mIncognitoUtilsJniMock;
     @Mock private ShoppingService mShoppingService;
+    @Mock private ShoppingServiceFactory.Natives mShoppingServiceFactoryJniMock;
+    @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
     @Mock private AppBannerManager.Natives mAppBannerManagerJniMock;
     @Mock private ReadAloudController mReadAloudController;
     @Mock private TranslateBridge.Natives mTranslateBridgeJniMock;
@@ -246,7 +251,9 @@ public class AppMenuPropertiesDelegateUnitTest {
                                 mIncognitoReauthControllerSupplier,
                                 mReadAloudControllerSupplier));
 
-        ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
+        mJniMocker.mock(CommerceFeatureUtilsJni.TEST_HOOKS, mCommerceFeatureUtilsJniMock);
+        mJniMocker.mock(ShoppingServiceFactoryJni.TEST_HOOKS, mShoppingServiceFactoryJniMock);
+        doReturn(mShoppingService).when(mShoppingServiceFactoryJniMock).getForProfile(any());
         BuildConfig.IS_DESKTOP_ANDROID = false;
         ResettersForTesting.register(() -> BuildConfig.IS_DESKTOP_ANDROID = false);
     }
@@ -258,12 +265,11 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     private void setupFeatureDefaults() {
         setShoppingListEligible(false);
-        setShoppingListEligible(false);
         FeatureList.setTestValues(mTestValues);
     }
 
     private void setShoppingListEligible(boolean enabled) {
-        ShoppingFeatures.setShoppingListEligibleForTesting(enabled);
+        doReturn(enabled).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
         FeatureList.setTestValues(mTestValues);
     }
 
