@@ -70,6 +70,17 @@ export const fakeFirmwareUpdates: FirmwareUpdate[][] = [[
     checksum:
         '3fab34cfa1ef97238fb24c5e40a979bc544bb2b0967b863e43e7d58e0d9a9232',
   },
+  {
+    deviceId: '6',
+    deviceName: stringToMojoString16('System Firmware'),
+    needsReboot: true,
+    deviceVersion: '1.16.0',
+    deviceDescription: stringToMojoString16(`Update system firmware`),
+    priority: UpdatePriority.kMedium,
+    filepath: {'path': '6.cab'},
+    checksum:
+        '3fab34cfa1ef97238fb24c5e40a979bc544bb2b0967b863e43e7d58e0d9a9232',
+  },
 ]];
 
 export const fakeInstallationProgress: InstallationProgress[] = [

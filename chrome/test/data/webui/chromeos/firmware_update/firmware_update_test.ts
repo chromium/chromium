@@ -262,6 +262,43 @@ suite('FirmwareUpdateAppTest', () => {
         });
   });
 
+  test('SuccessfulUpdateButNeedsReboot', async () => {
+    initializePage();
+    await flushTasks();
+    // Open dialog for firmware update.
+    const button = strictQuery(
+        `#updateButton`, getUpdateCards()[5]!.shadowRoot, CrButtonElement);
+    button.click();
+    await flushTasks();
+    const whenFired = eventToPromise('cr-dialog-open', page!);
+    await confirmUpdate();
+    // Process |OnProgressChanged| call.
+    await flushTasks();
+    return whenFired
+        .then(() => {
+          assertEquals(UpdateState.kUpdating, getUpdateState());
+          const fakeFirmwareUpdate = getFirmwareUpdateFromDialog()!;
+          assertEquals(
+              loadTimeData.getStringF(
+                  'updating',
+                  mojoString16ToString(fakeFirmwareUpdate.deviceName)),
+              getUpdateDialogTitle().innerText.trim());
+          // Allow firmware update to complete.
+          return controller?.getUpdateCompletedPromiseForTesting();
+        })
+        .then(() => flushTasks())
+        .then(() => {
+          const fakeFirmwareUpdate = getFirmwareUpdateFromDialog()!;
+          assertEquals(UpdateState.kSuccess, getUpdateState());
+          assertTrue(getUpdateDialog().open);
+          assertEquals(
+              loadTimeData.getStringF(
+                  'deviceReadyToInstallUpdate',
+                  mojoString16ToString(fakeFirmwareUpdate.deviceName)),
+              getUpdateDialogTitle().innerText.trim());
+        });
+  });
+
   test('UpdateFailed', async () => {
     initializePage();
     await flushTasks();

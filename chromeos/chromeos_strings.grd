@@ -5763,6 +5763,12 @@
         <message name="IDS_FIRMWARE_DEVICE_UP_TO_DATE_TEXT" desc="Label for when a device is up to date.">
           Your <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph> is now up to date
         </message>
+        <message name="IDS_FIRMWARE_DEVICE_READY_TO_INSTALL_UPDATE_TEXT" desc="Label for when a device needs a reboot to complete an update.">
+          <ph name="DEVICE_NAME">$1<ex>system firmware</ex></ph> is ready to be updated
+        </message>
+        <message name="IDS_FIRMWARE_DEVICE_NEEDS_REBOOT_TEXT" desc="Label for displaying which version the device will update to after the necessary reboot.">
+          A restart is required to complete the installation of firmware for <ph name="DEVICE_NAME">$1<ex>system</ex></ph> to version <ph name="VERSION">$2<ex>2.0.12</ex></ph>. Your computer may appear to reboot several times. This behavior is expected.
+        </message>
         <message name="IDS_FIRMWARE_HAS_BEEN_UPDATED_TEXT" desc="Label for displaying which version the device has been updated to.">
           Firmware <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph> has been updated to version <ph name="VERSION">$2<ex>2.0.12</ex></ph>
         </message>
