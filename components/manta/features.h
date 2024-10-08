@@ -24,6 +24,8 @@ COMPONENT_EXPORT(MANTA) bool IsMantaServiceEnabled();
 
 COMPONENT_EXPORT(MANTA) bool IsOrcaUseProdServerEnabled();
 
+COMPONENT_EXPORT(MANTA) bool IsScannerUseProdServerEnabled();
+
 COMPONENT_EXPORT(MANTA) bool IsSeaPenUseProdServerEnabled();
 
 COMPONENT_EXPORT(MANTA) bool IsMahiUseProdServerEnabled();

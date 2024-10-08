@@ -35,6 +35,7 @@ enum class FeatureSupportStatus {
 class AnchovyProvider;
 class MahiProvider;
 class OrcaProvider;
+class ScannerProvider;
 class SnapperProvider;
 class SparkyProvider;
 class WalrusProvider;
@@ -72,6 +73,7 @@ class COMPONENT_EXPORT(MANTA) MantaService : public KeyedService {
   virtual std::unique_ptr<WalrusProvider> CreateWalrusProvider();
 
   std::unique_ptr<OrcaProvider> CreateOrcaProvider();
+  std::unique_ptr<ScannerProvider> CreateScannerProvider();
   virtual std::unique_ptr<SnapperProvider> CreateSnapperProvider();
   std::unique_ptr<SparkyProvider> CreateSparkyProvider(
       std::unique_ptr<SparkyDelegate> sparky_delegate,

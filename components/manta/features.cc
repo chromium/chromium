@@ -15,6 +15,11 @@ BASE_FEATURE(kOrcaUseProdServer,
              "OrcaUseProdServer",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables Scanner Prod Server
+BASE_FEATURE(kScannerUseProdServer,
+             "ScannerUseProdServer",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables SeaPen Prod Server
 BASE_FEATURE(kSeaPenUseProdServer,
              "SeaPenUseProdServer",
@@ -36,6 +41,10 @@ bool IsMantaServiceEnabled() {
 
 bool IsOrcaUseProdServerEnabled() {
   return base::FeatureList::IsEnabled(kOrcaUseProdServer);
+}
+
+bool IsScannerUseProdServerEnabled() {
+  return base::FeatureList::IsEnabled(kScannerUseProdServer);
 }
 
 bool IsSeaPenUseProdServerEnabled() {

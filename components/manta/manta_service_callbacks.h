@@ -24,6 +24,7 @@ namespace manta {
 enum class MantaMetricType {
   kAnchovy,
   kOrca,
+  kScanner,
   kSnapper,
   kMahiSummary,
   kMahiQA,

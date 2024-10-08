@@ -272,6 +272,7 @@ chromium-metrics-reviews@google.com.
   <variant name="MahiProvider.Summary"
       summary="Request from Mahi provider for summary"/>
   <variant name="OrcaProvider" summary="Request from Orca provider"/>
+  <variant name="ScannerProvider" summary="Request from Scanner provider"/>
   <variant name="SnapperProvider" summary="Request from Snapper provider"/>
   <variant name="WalrusProvider" summary="Request from Walrus provider"/>
 </variants>
