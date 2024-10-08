@@ -351,6 +351,11 @@ void LensOverlayController::ShowUI(
     return;
   }
 
+  // If a different tab-modal is showing, do nothing.
+  if (!tab_->CanShowModalUI()) {
+    return;
+  }
+
   invocation_source_ = invocation_source;
 
   // Request user permission before grabbing a screenshot.
@@ -419,6 +424,7 @@ void LensOverlayController::ShowUI(
     }
   }
 
+  // This is safe because we checked if another modal was showing above.
   scoped_tab_modal_ui_ = tab_->ShowModalUI();
   fullscreen_observation_.Observe(tab_->GetBrowserWindowInterface()
                                       ->GetExclusiveAccessManager()
