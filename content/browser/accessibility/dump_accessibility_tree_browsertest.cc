@@ -1698,6 +1698,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunAriaTest(FILE_PATH_LITERAL("aria-treeitem-nested-in-lists.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityDisabledAriaComboboxHasValue) {
+  RunAriaTest(FILE_PATH_LITERAL("disabled-aria-combobox-has-value.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaUndefined) {
   RunAriaTest(FILE_PATH_LITERAL("aria-undefined.html"));
 }

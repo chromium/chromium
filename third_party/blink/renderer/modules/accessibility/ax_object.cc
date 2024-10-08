@@ -2899,6 +2899,24 @@ bool AXObject::IsButton() const {
   return ui::IsButton(RoleValue());
 }
 
+bool AXObject::ShouldUseComboboxMenuButtonRole() const {
+  DCHECK(GetElement());
+  if (GetElement()->SupportsFocus(
+          Element::UpdateBehavior::kNoneForAccessibility) !=
+      FocusableState::kNotFocusable) {
+    return true;
+  }
+  if (IsA<HTMLButtonElement>(GetNode())) {
+    return true;
+  }
+  if (auto* input = DynamicTo<HTMLInputElement>(GetNode())) {
+    if (input && input->IsButton()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool AXObject::IsCanvas() const {
   return RoleValue() == ax::mojom::blink::Role::kCanvas;
 }
@@ -5544,10 +5562,7 @@ ax::mojom::blink::Role AXObject::DetermineAriaRole() const {
         // This is a select element. Don't set the aria role for it.
         role = ax::mojom::blink::Role::kUnknown;
       }
-    } else if (GetElement() &&
-               GetElement()->SupportsFocus(
-                   Element::UpdateBehavior::kNoneForAccessibility) !=
-                   FocusableState::kNotFocusable) {
+    } else if (ShouldUseComboboxMenuButtonRole()) {
       role = ax::mojom::blink::Role::kComboBoxMenuButton;
     }
   }

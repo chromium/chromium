@@ -360,6 +360,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // (on certain platforms) combobox.
   bool IsARIATextField() const;
 
+  // Returns true if the AXObject is a button based on its AXRole.
   bool IsButton() const;
   bool IsCanvas() const;
   bool IsColorWell() const;
@@ -1589,6 +1590,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   void OnInheritedCachedValuesChanged();
   static const AtomicString& GetInternalsAttribute(Element&,
                                                    const QualifiedName&);
+
+  // Returns true if this node should use the aria role combobox menu button.
+  bool ShouldUseComboboxMenuButtonRole() const;
 
   bool children_dirty_ : 1 = false;
 
