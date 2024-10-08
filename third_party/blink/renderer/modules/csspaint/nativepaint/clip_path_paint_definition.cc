@@ -218,8 +218,13 @@ bool ValidateClipPathValue(const Element* element,
                            const CSSValue* value,
                            const InterpolableValue* interpolable_value) {
   if (value) {
+    const CSSPropertyName property_name =
+        CSSPropertyName(CSSPropertyID::kClipPath);
+    const CSSValue* computed_value = StyleResolver::ComputeValue(
+        const_cast<Element*>(element), property_name, *value);
+
     // Don't try to composite animations where we can't extract a shape or path
-    if (CanExtractShapeOrPath(value)) {
+    if (computed_value && CanExtractShapeOrPath(computed_value)) {
       return true;
     }
 
