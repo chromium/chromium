@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/bits.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
 #include "build/build_config.h"
@@ -29,7 +28,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_gl_utils.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
-#include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "gpu/vulkan/vma_wrapper.h"
 #include "gpu/vulkan/vulkan_command_buffer.h"
@@ -88,13 +86,6 @@
 namespace gpu {
 
 namespace {
-
-// Determine whether to apply the correction of the computation on using the
-// color attachment, which conceptually is "can this backing be written".
-bool CorrectComputationOfUsagesNeedingColorAttachment() {
-  // TODO(crbug.com/339171225): Remove this function entirely.
-  return true;
-}
 
 class ScopedDedicatedMemoryObject {
  public:
@@ -181,17 +172,9 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
 
   SharedImageUsageSet usages_needing_color_attachment;
 
-  if (CorrectComputationOfUsagesNeedingColorAttachment()) {
-    usages_needing_color_attachment =
-        SHARED_IMAGE_USAGE_GLES2_WRITE | SHARED_IMAGE_USAGE_RASTER_WRITE |
-        SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_WEBGPU_WRITE;
-  } else {
-    usages_needing_color_attachment =
-        SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
-        SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
-        SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_WEBGPU_READ |
-        SHARED_IMAGE_USAGE_WEBGPU_WRITE;
-  }
+  usages_needing_color_attachment =
+      SHARED_IMAGE_USAGE_GLES2_WRITE | SHARED_IMAGE_USAGE_RASTER_WRITE |
+      SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_WEBGPU_WRITE;
 
   VkImageUsageFlags vk_usage = VK_IMAGE_USAGE_SAMPLED_BIT |
                                VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
