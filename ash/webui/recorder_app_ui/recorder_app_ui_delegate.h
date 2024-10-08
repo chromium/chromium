@@ -26,6 +26,8 @@ class RecorderAppUIDelegate {
   virtual void OpenAiFeedbackDialog(
       const std::string& description_template) = 0;
 
+  virtual bool CanUseGenerativeAiForCurrentProfile() = 0;
+
   virtual bool CanUseSpeakerLabelForCurrentProfile() = 0;
 
   virtual void RecordSpeakerLabelConsent(

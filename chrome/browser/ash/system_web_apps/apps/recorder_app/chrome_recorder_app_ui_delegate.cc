@@ -66,6 +66,25 @@ ChromeRecorderAppUIDelegate::GetMediaDeviceSaltService(
       context);
 }
 
+bool ChromeRecorderAppUIDelegate::CanUseGenerativeAiForCurrentProfile() {
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  if (identity_manager == nullptr) {
+    return false;
+  }
+
+  const auto account_id =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  if (account_id.empty()) {
+    return false;
+  }
+
+  const AccountInfo extended_account_info =
+      identity_manager->FindExtendedAccountInfoByAccountId(account_id);
+  return extended_account_info.capabilities
+             .can_use_generative_ai_in_recorder_app() == signin::Tribool::kTrue;
+}
+
 bool ChromeRecorderAppUIDelegate::CanUseSpeakerLabelForCurrentProfile() {
   Profile* profile = Profile::FromWebUI(web_ui_);
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
