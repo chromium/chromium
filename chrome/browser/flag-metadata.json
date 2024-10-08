@@ -5637,11 +5637,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "lacros-merge-icu-data-file",
-    "owners": [ "andreaorru@chromium.org", "hidehiko@chromium.org", "lacros-team@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "lacros-only",
     "owners": [ "hidehiko@chromium.org", "erikchen@chromium.org", "lacros-team@google.com" ],
     // Once Lacros is launched, this flag can be removed. Until then, this
