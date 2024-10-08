@@ -118,7 +118,7 @@ class GWSPageLoadMetricsObserver
   void RecordPreCommitHistograms();
 
   bool IsFromNewTabPage(content::NavigationHandle* navigation_handle);
-  std::string AddHistogramSuffix(const std::string histogram_name);
+  std::string AddHistogramSuffix(const std::string& histogram_name);
 
   content::NavigationHandleTiming navigation_handle_timing_;
 

@@ -587,7 +587,7 @@ class LargestContentfulPaintTypeTest : public MetricIntegrationTest {
               "");
   }
 
-  void AddText(const std::string text) {
+  void AddText(std::string_view text) {
     EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(),
                      content::JsReplace("add_text($1)", text))
                   .error,

@@ -131,7 +131,7 @@ GWSHpPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
 }
 
 std::string GWSHpPageLoadMetricsObserver::AddHistogramSuffix(
-    const std::string histogram_name) {
+    const std::string& histogram_name) {
   std::string suffix =
       (is_first_navigation_ ? internal::kSuffixFirstNavigation
                             : internal::kSuffixSubsequentNavigation);
