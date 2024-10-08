@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
+#include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_hidden_container.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
@@ -196,9 +197,33 @@ PhysicalRect VisualRectInDocument(const LayoutObject& object,
     object.MapToVisualRectInAncestorSpace(object.View(), rect, flags);
     return rect;
   }
-  PhysicalRect rect = object.LocalVisualRect();
+  PhysicalRect rect = LocalVisualRect(object);
   object.MapToVisualRectInAncestorSpace(object.View(), rect, flags);
   return rect;
+}
+
+PhysicalRect LocalVisualRect(const LayoutObject& object) {
+  if (object.StyleRef().UsedVisibility() != EVisibility::kVisible &&
+      object.VisualRectRespectsVisibility()) {
+    return PhysicalRect();
+  }
+
+  if (const auto* text = DynamicTo<LayoutText>(object)) {
+    return UnionRect(text->VisualOverflowRect(),
+                     text->LocalSelectionVisualRect());
+  } else if (const auto* layout_inline = DynamicTo<LayoutInline>(object)) {
+    if (layout_inline->IsInLayoutNGInlineFormattingContext()) {
+      return FragmentItem::LocalVisualRectFor(*layout_inline);
+    }
+    return PhysicalRect();
+  } else if (const auto* view = DynamicTo<LayoutView>(object)) {
+    PhysicalRect rect = view->VisualOverflowRect();
+    rect.Unite(PhysicalRect(rect.offset, view->ViewRect().size));
+    return rect;
+  } else if (const auto* box = DynamicTo<LayoutBox>(object)) {
+    return box->SelfVisualOverflowRect();
+  }
+  NOTREACHED() << object;
 }
 
 }  // namespace blink

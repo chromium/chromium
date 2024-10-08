@@ -760,14 +760,6 @@ PhysicalRect LayoutInline::LinesVisualOverflowBoundingBox() const {
   return PhysicalRect();
 }
 
-PhysicalRect LayoutInline::LocalVisualRectIgnoringVisibility() const {
-  NOT_DESTROYED();
-  if (IsInLayoutNGInlineFormattingContext()) {
-    return FragmentItem::LocalVisualRectFor(*this);
-  }
-  return PhysicalRect();
-}
-
 PhysicalRect LayoutInline::VisualOverflowRect() const {
   NOT_DESTROYED();
   PhysicalRect overflow_rect = LinesVisualOverflowBoundingBox();

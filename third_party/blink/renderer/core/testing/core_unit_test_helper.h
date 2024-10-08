@@ -207,6 +207,13 @@ constexpr PhysicalRect::PhysicalRect(int left, int top, int width, int height)
 PhysicalRect VisualRectInDocument(const LayoutObject& object,
                                   VisualRectFlags = kDefaultVisualRectFlags);
 
+// Returns the rect that should have raster invalidated whenever the specified
+// object changes. The rect is in the object's local physical coordinate space.
+// This is for non-SVG objects and LayoutSVGRoot only. SVG objects (except
+// LayoutSVGRoot) should use VisualRectInLocalSVGCoordinates() and map with
+// SVG transforms instead.
+PhysicalRect LocalVisualRect(const LayoutObject& object);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_CORE_UNIT_TEST_HELPER_H_

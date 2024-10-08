@@ -2275,12 +2275,6 @@ void LayoutObject::InvalidatePaint(
   ObjectPaintInvalidatorWithContext(*this, context).InvalidatePaint();
 }
 
-PhysicalRect LayoutObject::LocalVisualRectIgnoringVisibility() const {
-  NOT_DESTROYED();
-  NOTREACHED_IN_MIGRATION();
-  return PhysicalRect();
-}
-
 bool LayoutObject::MapToVisualRectInAncestorSpaceInternalFastPath(
     const LayoutBoxModelObject* ancestor,
     gfx::RectF& rect,

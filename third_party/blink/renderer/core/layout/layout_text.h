@@ -419,8 +419,6 @@ class CORE_EXPORT LayoutText : public LayoutObject {
     return true;
   }
 
-  PhysicalRect LocalVisualRectIgnoringVisibility() const final;
-
   const DisplayItemClient* GetSelectionDisplayItemClient() const final;
 
   // We put the bitfield first to minimize padding on 64-bit.

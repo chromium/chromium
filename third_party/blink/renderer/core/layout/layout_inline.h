@@ -304,12 +304,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   LayoutUnit OffsetWidth() const final;
   LayoutUnit OffsetHeight() const final;
 
-  // This method differs from VisualOverflowRect() in that
-  // 1. it doesn't include the rects for culled inline boxes, which aren't
-  //    necessary for paint invalidation;
-  // 2. it is in physical coordinates.
-  PhysicalRect LocalVisualRectIgnoringVisibility() const override;
-
   bool MapToVisualRectInAncestorSpaceInternal(
       const LayoutBoxModelObject* ancestor,
       TransformState&,

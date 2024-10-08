@@ -2858,11 +2858,6 @@ void LayoutBox::ClearSpannerPlaceholder() {
   rare_data_->spanner_placeholder_ = nullptr;
 }
 
-PhysicalRect LayoutBox::LocalVisualRectIgnoringVisibility() const {
-  NOT_DESTROYED();
-  return SelfVisualOverflowRect();
-}
-
 void LayoutBox::InflateVisualRectForFilterUnderContainer(
     TransformState& transform_state,
     const LayoutObject& container,

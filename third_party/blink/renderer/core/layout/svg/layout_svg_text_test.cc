@@ -112,24 +112,6 @@ body { margin:0; padding: 0; }
   EXPECT_EQ(307.0f, bounding.right());
 }
 
-TEST_F(LayoutSVGTextTest, LocalVisualRect) {
-  LoadAhem();
-  SetBodyInnerHTML(R"HTML(
-<style>
-body { margin:0; padding: 0; }
-text { font-family: Ahem; }
-</style>
-<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400">
-  <text id="t" font-size="20" y="32" rotate="45">Foo</text>
-</svg>)HTML");
-  UpdateAllLifecyclePhasesForTest();
-
-  auto* object = GetLayoutObjectByElementId("t");
-  // The descent of the font is 4px.  The bottom of the visual rect should
-  // be greater than 32 + 4 if rotate is specified.
-  EXPECT_GT(object->LocalVisualRect().Bottom(), LayoutUnit(36));
-}
-
 TEST_F(LayoutSVGTextTest, ObjectBoundingBox) {
   SetBodyInnerHTML(R"HTML(
 <html>

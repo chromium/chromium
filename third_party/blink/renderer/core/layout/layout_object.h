@@ -2529,20 +2529,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   virtual CursorDirective GetCursor(const PhysicalOffset&, ui::Cursor&) const;
 
-  // Returns the rect that should have raster invalidated whenever this object
-  // changes. The rect is in the object's local physical coordinate space.
-  // This is for non-SVG objects and LayoutSVGRoot only. SVG objects (except
-  // LayoutSVGRoot) should use VisualRectInLocalSVGCoordinates() and map with
-  // SVG transforms instead.
-  PhysicalRect LocalVisualRect() const {
-    NOT_DESTROYED();
-    if (StyleRef().UsedVisibility() != EVisibility::kVisible &&
-        VisualRectRespectsVisibility()) {
-      return PhysicalRect();
-    }
-    return LocalVisualRectIgnoringVisibility();
-  }
-
   // Given a rect in the object's physical coordinate space, mutates the rect
   // into one representing the size of its visual painted output as if
   // |ancestor| was the root of the page: the rect is modified by any
@@ -3518,9 +3504,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     bitfields_.SetEverHadLayout(true);
   }
-
-  // See LocalVisualRect().
-  virtual PhysicalRect LocalVisualRectIgnoringVisibility() const;
 
   virtual bool CanBeSelectionLeafInternal() const {
     NOT_DESTROYED();

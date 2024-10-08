@@ -191,12 +191,6 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
   }
   LayoutPoint LocationInternal() const override;
 
-  // Sets |column_rule_bounds| to the bounds of each column rule rect's painted
-  // extent, adjusted by paint offset, before pixel snapping. Returns true if
-  // column rules should be painted at all.
-  bool ComputeColumnRuleBounds(const PhysicalOffset& paint_offset,
-                               Vector<PhysicalRect>& column_rule_bounds) const;
-
   // Tell the column set that it shouldn't really exist. This happens when
   // there's a leftover column set after DOM / style changes, that NG doesn't
   // care about.
@@ -205,8 +199,6 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
   LayoutMultiColumnSet(LayoutFlowThread*);
 
  private:
-  PhysicalRect LocalVisualRectIgnoringVisibility() const final;
-
   void InsertedIntoTree() final;
   void WillBeRemovedFromTree() final;
   PhysicalSize Size() const override;

@@ -305,13 +305,6 @@ bool LayoutView::ShouldPlaceBlockDirectionScrollbarOnLogicalLeft() const {
   return false;
 }
 
-PhysicalRect LayoutView::LocalVisualRectIgnoringVisibility() const {
-  NOT_DESTROYED();
-  PhysicalRect rect = VisualOverflowRect();
-  rect.Unite(PhysicalRect(rect.offset, ViewRect().size));
-  return rect;
-}
-
 void LayoutView::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
                                     TransformState& transform_state,
                                     MapCoordinatesFlags mode) const {

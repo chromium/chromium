@@ -821,7 +821,6 @@ blink_core_tests_layout = [
   "svg/svg_layout_support_test.cc",
   "svg/svg_text_layout_algorithm_test.cc",
   "svg/svg_text_layout_attributes_builder_test.cc",
-  "table/layout_table_col_test.cc",
   "table/layout_table_section_test.cc",
   "table/layout_table_test.cc",
   "table/table_layout_utils_test.cc",

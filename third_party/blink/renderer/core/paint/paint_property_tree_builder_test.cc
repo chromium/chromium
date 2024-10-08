@@ -100,7 +100,7 @@ void PaintPropertyTreeBuilderTest::SetUp() {
 #define CHECK_VISUAL_RECT(expected, source_object, ancestor, slop_factor)      \
   do {                                                                         \
     if ((source_object)->HasLayer() && (ancestor)->HasLayer()) {               \
-      auto actual = (source_object)->LocalVisualRect();                        \
+      auto actual = LocalVisualRect(*(source_object));                         \
       (source_object)                                                          \
           ->MapToVisualRectInAncestorSpace(ancestor, actual,                   \
                                            kUseGeometryMapper);                \
@@ -110,7 +110,7 @@ void PaintPropertyTreeBuilderTest::SetUp() {
                                                                                \
     if (slop_factor == LayoutUnit::Max())                                      \
       break;                                                                   \
-    auto slow_path_rect = (source_object)->LocalVisualRect();                  \
+    auto slow_path_rect = LocalVisualRect(*(source_object));                   \
     (source_object)->MapToVisualRectInAncestorSpace(ancestor, slow_path_rect); \
     if (slop_factor) {                                                         \
       auto inflated_expected = expected;                                       \

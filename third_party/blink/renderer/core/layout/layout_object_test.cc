@@ -792,41 +792,6 @@ TEST_F(LayoutObjectTest,
   EXPECT_EQ(layout_object1, layout_object2);
 }
 
-TEST_F(LayoutObjectTest, VisualRect) {
-  class MockLayoutObject : public LayoutObject {
-   public:
-    MockLayoutObject() : LayoutObject(nullptr) {}
-    MOCK_CONST_METHOD0(VisualRectRespectsVisibility, bool());
-
-   private:
-    PhysicalRect LocalVisualRectIgnoringVisibility() const override {
-      return PhysicalRect(10, 10, 20, 20);
-    }
-    const char* GetName() const final { return "MockLayoutObject"; }
-    gfx::RectF LocalBoundingBoxRectForAccessibility() const final {
-      return gfx::RectF();
-    }
-  };
-
-  MockLayoutObject* mock_object = MakeGarbageCollected<MockLayoutObject>();
-  const auto& style = GetDocument().GetStyleResolver().InitialStyle();
-  mock_object->SetStyle(&style);
-  EXPECT_EQ(PhysicalRect(10, 10, 20, 20), mock_object->LocalVisualRect());
-  EXPECT_EQ(PhysicalRect(10, 10, 20, 20), mock_object->LocalVisualRect());
-
-  ComputedStyleBuilder builder(style);
-  builder.SetVisibility(EVisibility::kHidden);
-  mock_object->SetStyle(builder.TakeStyle(),
-                        LayoutObject::ApplyStyleChanges::kNo);
-  EXPECT_CALL(*mock_object, VisualRectRespectsVisibility())
-      .WillOnce(Return(true));
-  EXPECT_TRUE(mock_object->LocalVisualRect().IsEmpty());
-  EXPECT_CALL(*mock_object, VisualRectRespectsVisibility())
-      .WillOnce(Return(false));
-  EXPECT_EQ(PhysicalRect(10, 10, 20, 20), mock_object->LocalVisualRect());
-  mock_object->SetDestroyedForTesting();
-}
-
 TEST_F(LayoutObjectTest, DisplayContentsInlineWrapper) {
   SetBodyInnerHTML("<div id='div' style='display:contents;color:pink'>A</div>");
   Element* div = GetElementById("div");

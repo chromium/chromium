@@ -1301,8 +1301,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   static bool SkipContainingBlockForPercentHeightCalculation(
       const LayoutBox* containing_block);
 
-  PhysicalRect LocalVisualRectIgnoringVisibility() const override;
-
   virtual LayoutPoint LocationInternal() const {
     NOT_DESTROYED();
     return frame_location_;

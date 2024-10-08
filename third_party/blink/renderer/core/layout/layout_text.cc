@@ -1091,11 +1091,6 @@ PhysicalRect LayoutText::VisualOverflowRect() const {
   return FragmentItem::LocalVisualRectFor(*this);
 }
 
-PhysicalRect LayoutText::LocalVisualRectIgnoringVisibility() const {
-  NOT_DESTROYED();
-  return UnionRect(VisualOverflowRect(), LocalSelectionVisualRect());
-}
-
 PhysicalRect LayoutText::LocalSelectionVisualRect() const {
   NOT_DESTROYED();
   DCHECK(!NeedsLayout());
