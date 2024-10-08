@@ -41,6 +41,8 @@ class AIManagerKeyedService : public KeyedService,
       const AITextSession::Context& context,
       CreateTextSessionCallback callback);
 
+  size_t GetReceiversSizeForTesting() { return receivers_.size(); }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(AIManagerKeyedServiceTest,
                            NoUAFWithInvalidOnDeviceModelPath);
@@ -77,7 +79,9 @@ class AIManagerKeyedService : public KeyedService,
       optimization_guide::ModelBasedCapabilityKey capability,
       CanCreateTextSessionCallback callback);
 
-  // Creates an `AITextSession`, either as a new session, or as a clone of
+  void RemoveReceiver(mojo::ReceiverId receiver_id);
+
+  // Creates an `AIAssistant`, either as a new session, or as a clone of
   // an existing session with its context copied.
   std::unique_ptr<AITextSession> CreateTextSessionInternal(
       mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
