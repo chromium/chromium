@@ -34,7 +34,11 @@ std::ostream& operator<<(std::ostream& out,
 // or behaves as DCHECK in DCHECK-enabled builds. Unlike DUMP_WILL_BE_CHECK,
 // there is no intent to transform those into CHECKs. Used to report potential
 // performance issues.
-#define DUMP_OR_DCHECK DUMP_WILL_BE_CHECK
+//
+// TODO(crbug.com/363049758): This is temporarily a `DCHECK` to avoid getting a
+// lot of crash reports while known issues are being addressed. Change to
+// `DUMP_WILL_BE_CHECK` once known issues are addressed.
+#define DUMP_OR_DCHECK DCHECK
 
 namespace {
 
