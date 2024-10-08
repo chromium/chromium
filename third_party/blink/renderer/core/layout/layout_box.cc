@@ -3091,6 +3091,31 @@ PhysicalRect LayoutBox::LocalCaretRect(
       GetNode() &&
       !(EditingIgnoresContent(*GetNode()) || IsDisplayInsideTable(GetNode()));
 
+  if (RuntimeEnabledFeatures::SidewaysWritingModesEnabled()) {
+    WritingDirectionMode writing_direction = Style()->GetWritingDirection();
+    LogicalOffset offset;
+    LayoutUnit content_inline_size = size.inline_size;
+    if (apply_border_padding) {
+      BoxStrut border_padding = (BorderOutsets() + PaddingOutsets())
+                                    .ConvertToLogical(writing_direction);
+      offset.inline_offset = border_padding.inline_start;
+      offset.block_offset = border_padding.block_start;
+      content_inline_size -= border_padding.InlineSum();
+    }
+    LayoutUnit extra_width;
+    if (caret_offset) {
+      offset.inline_offset += content_inline_size - caret_width;
+    } else {
+      extra_width = content_inline_size - caret_width;
+    }
+
+    if (extra_width_to_end_of_line) {
+      *extra_width_to_end_of_line = extra_width;
+    }
+
+    LogicalRect rect(offset, LogicalSize(caret_width, caret_block_size));
+    return WritingModeConverter(writing_direction, Size()).ToPhysical(rect);
+  }
   const bool is_horizontal = IsHorizontalWritingMode();
   PhysicalOffset offset = PhysicalLocation();
   PhysicalRect rect(offset, is_horizontal
