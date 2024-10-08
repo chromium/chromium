@@ -196,6 +196,40 @@ TEST_P(CookieControlsIconViewUnitTest,
                              : BlockedLabel());
 }
 
+TEST_P(CookieControlsIconViewUnitTest,
+       IconAnimationTextDoesNotResetWhenProtectionsDoNotChange) {
+  view_->OnCookieControlsIconStatusChanged(/*icon_visible=*/true,
+                                           /*protections_on=*/true, GetParam(),
+                                           /*should_highlight=*/true);
+  FlushEvents();
+  EXPECT_TRUE(Visible());
+  EXPECT_TRUE(LabelShown());
+  EXPECT_EQ(LabelText(), In3pcd() ? SiteNotWorkingLabel() : BlockedLabel());
+
+  view_->OnCookieControlsIconStatusChanged(/*icon_visible=*/true,
+                                           /*protections_on=*/true, GetParam(),
+                                           /*should_highlight=*/true);
+  FlushEvents();
+  EXPECT_EQ(LabelText(), In3pcd() ? SiteNotWorkingLabel() : BlockedLabel());
+}
+
+TEST_P(CookieControlsIconViewUnitTest,
+       IconAnimationTextUpdatesWhenProtectionsChange) {
+  view_->OnCookieControlsIconStatusChanged(/*icon_visible=*/true,
+                                           /*protections_on=*/true, GetParam(),
+                                           /*should_highlight=*/true);
+  FlushEvents();
+  EXPECT_TRUE(Visible());
+  EXPECT_TRUE(LabelShown());
+  EXPECT_EQ(LabelText(), In3pcd() ? SiteNotWorkingLabel() : BlockedLabel());
+
+  view_->OnCookieControlsIconStatusChanged(/*icon_visible=*/true,
+                                           /*protections_on=*/false, GetParam(),
+                                           /*should_highlight=*/true);
+  FlushEvents();
+  EXPECT_EQ(LabelText(), AllowedLabel());
+}
+
 TEST_P(CookieControlsIconViewUnitTest, IconAnimationIsResetOnWebContentChange) {
   view_->OnCookieControlsIconStatusChanged(/*icon_visible=*/true,
                                            /*protections_on=*/true, GetParam(),

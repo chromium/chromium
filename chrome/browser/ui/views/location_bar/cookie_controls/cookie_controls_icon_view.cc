@@ -153,14 +153,11 @@ bool CookieControlsIconView::IsManagedIPHActive() const {
       feature_engagement::kIPHCookieControlsFeature);
 }
 
-void CookieControlsIconView::SetLabelAndTooltip() {
+void CookieControlsIconView::SetLabelForStatus() {
   int icon_label = GetLabelForStatus();
   // Only use "Tracking Protection" and verbose accessibility description if the
   // label is hidden.
-  if (base::FeatureList::IsEnabled(
-          privacy_sandbox::kTrackingProtection3pcdUx) &&
-      blocking_status_ != CookieBlocking3pcdStatus::kNotIn3pcd &&
-      !label()->GetVisible()) {
+  if (ShouldShowTrackingProtectionText()) {
     // Set the accessible description to whatever the 3PC blocking state is.
     GetViewAccessibility().SetDescription(
         l10n_util::GetStringUTF16(icon_label));
@@ -168,7 +165,6 @@ void CookieControlsIconView::SetLabelAndTooltip() {
   } else {
     GetViewAccessibility().SetDescription(u"");
   }
-  SetTooltipText(l10n_util::GetStringUTF16(icon_label));
   SetLabel(l10n_util::GetStringUTF16(icon_label));
 }
 
@@ -190,6 +186,7 @@ void CookieControlsIconView::OnCookieControlsIconStatusChanged(
   if (icon_visible != icon_visible_ || protections_on != protections_on_ ||
       blocking_status != blocking_status_ || should_highlight_) {
     icon_visible_ = icon_visible;
+    protections_changed_ = protections_on != protections_on_;
     protections_on_ = protections_on;
     blocking_status_ = blocking_status;
     should_highlight_ = should_highlight;
@@ -229,7 +226,13 @@ void CookieControlsIconView::UpdateIcon() {
   }
   UpdateIconImage();
   SetVisible(true);
-  SetLabelAndTooltip();
+  if (protections_changed_ || label()->GetText().empty()) {
+    SetLabelForStatus();
+  }
+  SetTooltipText(
+      l10n_util::GetStringUTF16(ShouldShowTrackingProtectionText()
+                                    ? IDS_TRACKING_PROTECTION_PAGE_ACTION_LABEL
+                                    : GetLabelForStatus()));
   if (protections_on_ && should_highlight_) {
     if (blocking_status_ == CookieBlocking3pcdStatus::kNotIn3pcd) {
       MaybeShowIPH();
@@ -310,8 +313,15 @@ views::BubbleDialogDelegate* CookieControlsIconView::GetBubble() const {
 }
 
 const gfx::VectorIcon& CookieControlsIconView::GetVectorIcon() const {
-    return protections_on_ ? views::kEyeCrossedRefreshIcon
-                           : views::kEyeRefreshIcon;
+  return protections_on_ ? views::kEyeCrossedRefreshIcon
+                         : views::kEyeRefreshIcon;
+}
+
+bool CookieControlsIconView::ShouldShowTrackingProtectionText() {
+  return base::FeatureList::IsEnabled(
+             privacy_sandbox::kTrackingProtection3pcdUx) &&
+         blocking_status_ != CookieBlocking3pcdStatus::kNotIn3pcd &&
+         !label()->GetVisible();
 }
 
 void CookieControlsIconView::UpdateTooltipForFocus() {}

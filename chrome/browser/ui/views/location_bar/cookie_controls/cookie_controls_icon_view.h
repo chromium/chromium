@@ -75,10 +75,14 @@ class CookieControlsIconView : public PageActionIconView,
   void UpdateIcon();
 
   int GetLabelForStatus() const;
-  void SetLabelAndTooltip();
+  void SetLabelForStatus();
+
+  // Whether to use "Tracking Protection" for label and tooltip.
+  bool ShouldShowTrackingProtectionText();
 
   bool icon_visible_ = false;
   bool protections_on_ = false;
+  bool protections_changed_ = true;
   bool did_animate_ = false;
   // Whether we should have a visual indicator highlighting the icon.
   bool should_highlight_ = false;
