@@ -51,7 +51,7 @@ static_library("ui") {
   sources = [
     "accelerator_utils.h",
 
-    # All other app_list/ files go under is_chromeos_ash below.
+    # All other app_list/ files go under is_chromeos below.
     "bluetooth/bluetooth_dialogs.h",
     "browser_dialogs.cc",
     "browser_dialogs.h",
@@ -1947,14 +1947,14 @@ static_library("ui") {
       allow_circular_includes_from += [ "//chrome/browser/ui/find_bar:impl" ]
     }
 
-    if (use_ozone && !is_chromeos_ash) {
+    if (use_ozone && !is_chromeos) {
       deps += [
         "//ui/base:features",
         "//ui/ozone",
       ]
     }
 
-    if (is_linux || is_chromeos_lacros) {
+    if (is_linux) {
       deps += [ "//ui/base/ime/linux" ]
     }
 
@@ -1991,7 +1991,7 @@ static_library("ui") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     assert(enable_extensions)
     assert(enable_supervised_users)
     assert(toolkit_views)
@@ -2983,59 +2983,19 @@ static_library("ui") {
     ]
   }
 
-  if (is_chromeos_lacros) {
-    sources += [
-      "media_router/cast_notification_controller_lacros.cc",
-      "media_router/cast_notification_controller_lacros.h",
-      "media_router/cast_notification_controller_lacros_factory.cc",
-      "media_router/cast_notification_controller_lacros_factory.h",
-      "startup/silent_sync_enabler.cc",
-      "startup/silent_sync_enabler.h",
-      "views/chrome_browser_main_extra_parts_views_lacros.cc",
-      "views/chrome_browser_main_extra_parts_views_lacros.h",
-      "views/chrome_views_delegate_lacros.cc",
-      "views/eye_dropper/eye_dropper_lacros.cc",
-      "views/frame/browser_desktop_window_tree_host_lacros.cc",
-      "views/frame/browser_desktop_window_tree_host_lacros.h",
-      "views/frame/browser_frame_lacros.cc",
-      "views/frame/browser_frame_lacros.h",
-      "views/frame/desktop_browser_frame_lacros.cc",
-      "views/frame/desktop_browser_frame_lacros.h",
-      "views/profiles/first_run_flow_controller_lacros.cc",
-      "views/profiles/first_run_flow_controller_lacros.h",
-      "webui/signin/profile_picker_lacros_sign_in_provider.cc",
-      "webui/signin/profile_picker_lacros_sign_in_provider.h",
-    ]
-    deps += [
-      "//chrome/browser/chromeos/tablet_mode",
-      "//chrome/browser/lacros/account_manager",
-      "//chrome/browser/lacros/account_manager:impl",
-      "//chrome/browser/policy:onc",
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-      "//chromeos/startup",
-      "//chromeos/ui/base",
-      "//chromeos/ui/frame",
-      "//chromeos/ui/wm",
-      "//ui/chromeos",
-    ]
-    allow_circular_includes_from += [
-      "//chrome/browser/chromeos/tablet_mode",
-      "//chrome/browser/lacros/account_manager:impl",
-    ]
-  } else {
-    # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
-    allow_circular_includes_from +=
-        [ "//chrome/browser/ui/webui/bluetooth_internals" ]
-    deps += [
-      "//chrome/browser/crash_upload_list",
-      "//chrome/browser/ui/webui/bluetooth_internals",
-    ]
-    sources += [
-      "webui/crashes_ui.cc",
-      "webui/crashes_ui.h",
-    ]
-  }
+  sources += [
+    "webui/crashes_ui.cc",
+    "webui/crashes_ui.h",
+  ]
+
+  deps += [
+    "//chrome/browser/crash_upload_list",
+    "//chrome/browser/ui/webui/bluetooth_internals",
+  ]
+
+  # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
+  allow_circular_includes_from +=
+      [ "//chrome/browser/ui/webui/bluetooth_internals" ]
 
   if (is_win || is_mac || is_linux || is_chromeos) {
     sources += [
@@ -3172,7 +3132,7 @@ static_library("ui") {
     ]
   }
 
-  if (is_win || is_mac || is_linux || is_chromeos_ash) {
+  if (is_win || is_mac || is_linux || is_chromeos) {
     sources += [
       "passwords/password_cross_domain_confirmation_popup_view.h",
       "webui/app_management/app_management_page_handler_base.cc",
@@ -3198,7 +3158,7 @@ static_library("ui") {
     }
   }
 
-  if (is_win || is_mac || is_linux || is_chromeos_lacros) {
+  if (is_win || is_mac || is_linux) {
     sources += [
       "passwords/account_storage_auth_helper.cc",
       "passwords/account_storage_auth_helper.h",
@@ -3354,14 +3314,14 @@ static_library("ui") {
     }
   }
 
-  if (enable_dice_support || is_chromeos_ash) {
+  if (enable_dice_support || is_chromeos) {
     sources += [
       "webui/signin/inline_login_ui.cc",
       "webui/signin/inline_login_ui.h",
     ]
   }
 
-  if (is_win || is_mac || is_chromeos_ash) {
+  if (is_win || is_mac || is_chromeos) {
     sources += [
       "passwords/bubble_controllers/biometric_authentication_confirmation_bubble_controller.cc",
       "passwords/bubble_controllers/biometric_authentication_confirmation_bubble_controller.h",
@@ -3688,7 +3648,7 @@ static_library("ui") {
     ]
   }
 
-  if (is_linux || is_chromeos_lacros) {
+  if (is_linux) {
     sources += [
       "views/apps/chrome_app_window_client_views_aura.cc",
       "views/frame/browser_desktop_window_tree_host.h",
@@ -3730,7 +3690,7 @@ static_library("ui") {
     }
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [ "views/external_protocol_handler_ash.cc" ]
   }
 
@@ -5151,7 +5111,7 @@ static_library("ui") {
       ]
     }
 
-    if (is_linux || is_chromeos_lacros) {
+    if (is_linux) {
       sources += [
         "views/chrome_views_delegate_linux.cc",
         "views/frame/browser_frame_view_layout_linux.cc",
@@ -5239,14 +5199,14 @@ static_library("ui") {
       ]
     }
 
-    if (is_win || is_linux || is_chromeos_lacros) {
+    if (is_win || is_linux) {
       sources += [
         "views/native_widget_factory.cc",
         "views/native_widget_factory.h",
       ]
     }
 
-    if (use_aura && (is_linux || is_chromeos_lacros)) {
+    if (use_aura && is_linux) {
       # These files can do Gtk+-based theming for builds with gtk enabled.
       sources += [
         "views/chrome_browser_main_extra_parts_views_linux.cc",
@@ -5268,7 +5228,7 @@ static_library("ui") {
       }
     }
 
-    if (!is_chromeos_ash) {
+    if (!is_chromeos) {
       sources += [
         "bookmarks/bookmark_bubble_sign_in_delegate.cc",
         "bookmarks/bookmark_bubble_sign_in_delegate.h",
@@ -5299,7 +5259,13 @@ static_library("ui") {
       deps += [ "//components/metrics/debug/structured:debug" ]
     }
 
-    if (!is_chromeos) {
+    if (is_chromeos) {
+      sources += [
+        "views/frame/picture_in_picture_browser_frame_view_ash.cc",
+        "views/frame/picture_in_picture_browser_frame_view_ash.h",
+        "views/web_apps/isolated_web_apps/pref_observer_ash.cc",
+      ]
+    } else {
       sources += [
         "idle_dialog.h",
         "sharing_hub/sharing_hub_bubble_controller_desktop_impl.cc",
@@ -5327,18 +5293,6 @@ static_library("ui") {
         "//chrome/browser/shortcuts",
         "//ui/views/window/vector_icons",
       ]
-    }
-
-    if (is_chromeos_ash) {
-      sources += [
-        "views/frame/picture_in_picture_browser_frame_view_ash.cc",
-        "views/frame/picture_in_picture_browser_frame_view_ash.h",
-        "views/web_apps/isolated_web_apps/pref_observer_ash.cc",
-      ]
-    }
-
-    if (is_chromeos_lacros) {
-      sources += [ "views/web_apps/isolated_web_apps/pref_observer_lacros.cc" ]
     }
 
     if (enable_compose) {
@@ -5400,12 +5354,8 @@ static_library("ui") {
     ]
 
     if (!is_chromeos) {
-      sources +=
-          [ "views/frame/browser_non_client_frame_view_factory_views.cc" ]
-    }
-
-    if (!is_chromeos_ash) {
       sources += [
+        "views/frame/browser_non_client_frame_view_factory_views.cc",
         "views/frame/desktop_browser_frame_aura.cc",
         "views/frame/desktop_browser_frame_aura.h",
       ]
@@ -5556,20 +5506,17 @@ static_library("ui") {
     ]
 
     if (is_chromeos) {
-      deps += [ "//chromeos/components/kiosk" ]
-
       sources += [
         "web_applications/web_app_relaunch_notification.cc",
         "web_applications/web_app_relaunch_notification.h",
         "web_applications/web_app_run_on_os_login_notification.cc",
         "web_applications/web_app_run_on_os_login_notification.h",
       ]
-    }
-    if (is_chromeos_ash) {
       deps += [
         "//chrome/browser/ash/system_web_apps/types",
         "//chrome/browser/ui/ash/system_web_apps",
         "//chromeos/ash/components/nonclosable_app_ui",
+        "//chromeos/components/kiosk",
       ]
 
       # Any circular includes must depend on the target
@@ -5665,28 +5612,22 @@ static_library("ui") {
 
     if (is_chromeos) {
       sources += [
+        "webui/print_preview/extension_printer_handler_adapter_ash.cc",
+        "webui/print_preview/extension_printer_handler_adapter_ash.h",
         "webui/print_preview/local_printer_handler_chromeos.cc",
         "webui/print_preview/local_printer_handler_chromeos.h",
         "webui/print_preview/print_preview_handler_chromeos.cc",
         "webui/print_preview/print_preview_handler_chromeos.h",
       ]
-      deps += [ "//chromeos/printing" ]
-    } else {
-      sources += [
-        "webui/print_preview/local_printer_handler_default.cc",
-        "webui/print_preview/local_printer_handler_default.h",
-      ]
-    }
-
-    if (is_chromeos_ash) {
-      sources += [
-        "webui/print_preview/extension_printer_handler_adapter_ash.cc",
-        "webui/print_preview/extension_printer_handler_adapter_ash.h",
-      ]
       deps += [
         "//chromeos/crosapi/cpp",
         "//chromeos/crosapi/mojom",
         "//chromeos/printing",
+      ]
+    } else {
+      sources += [
+        "webui/print_preview/local_printer_handler_default.cc",
+        "webui/print_preview/local_printer_handler_default.h",
       ]
     }
   }
@@ -5844,7 +5785,7 @@ static_library("ui_public_dependencies") {
       "//components/feed/core/proto:proto_v2",
     ]
   }
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     public_deps += [ "//chromeos/ash/services/multidevice_setup/public/mojom" ]
   }
   if (is_win) {
