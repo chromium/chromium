@@ -1395,8 +1395,6 @@ bool RenderWidgetHostViewAndroid::OnTouchEvent(
     }
     if (ime_adapter_android_)
       ime_adapter_android_->UpdateOnTouchDown();
-    if (gesture_listener_manager_)
-      gesture_listener_manager_->UpdateOnTouchDown();
   }
 
   if (event.for_touch_handle())
@@ -2222,17 +2220,7 @@ void RenderWidgetHostViewAndroid::GestureEventAck(
   // but not consumed.
   StopFlingingIfNecessary(event, ack_result);
 
-  if (gesture_listener_manager_)
-    gesture_listener_manager_->GestureEventAck(event, ack_result);
-
   HandleSwipeToMoveCursorGestureAck(event);
-}
-
-void RenderWidgetHostViewAndroid::ChildDidAckGestureEvent(
-    const blink::WebGestureEvent& event,
-    blink::mojom::InputEventResultState ack_result) {
-  if (gesture_listener_manager_)
-    gesture_listener_manager_->GestureEventAck(event, ack_result);
 }
 
 blink::mojom::InputEventResultState
@@ -2493,12 +2481,6 @@ void RenderWidgetHostViewAndroid::DidOverscroll(
 
   if (overscroll_controller_)
     overscroll_controller_->OnOverscrolled(params);
-}
-
-void RenderWidgetHostViewAndroid::DidStopFlinging() {
-  if (!gesture_listener_manager_)
-    return;
-  gesture_listener_manager_->DidStopFlinging();
 }
 
 const viz::FrameSinkId& RenderWidgetHostViewAndroid::GetFrameSinkId() const {

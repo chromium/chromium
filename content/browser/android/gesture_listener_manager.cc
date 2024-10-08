@@ -107,9 +107,15 @@ GestureListenerManager::GestureListenerManager(JNIEnv* env,
                                                const JavaParamRef<jobject>& obj,
                                                WebContentsImpl* web_contents)
     : RenderWidgetHostConnector(web_contents),
+      WebContentsObserver(web_contents),
       reset_scroll_observer_(new ResetScrollObserver(web_contents, this)),
       web_contents_(web_contents),
-      java_ref_(env, obj) {}
+      java_ref_(env, obj) {
+  RenderFrameHost* host = web_contents->GetPrimaryMainFrame();
+  if (host) {
+    host->GetRenderWidgetHost()->AddInputEventObserver(this);
+  }
+}
 
 GestureListenerManager::~GestureListenerManager() {
   JNIEnv* env = AttachCurrentThread();
@@ -152,6 +158,46 @@ void GestureListenerManager::SetRootScrollOffsetUpdateFrequency(
     rwhva_->UpdateRootScrollOffsetUpdateFrequency();
 }
 
+void GestureListenerManager::RenderFrameHostChanged(RenderFrameHost* old_host,
+                                                    RenderFrameHost* new_host) {
+  if (old_host && old_host->GetVisibilityState() ==
+                      blink::mojom::PageVisibilityState::kHidden) {
+    old_host->GetRenderWidgetHost()->RemoveInputEventObserver(this);
+  }
+  if (new_host) {
+    new_host->GetRenderWidgetHost()->AddInputEventObserver(this);
+  }
+}
+
+void GestureListenerManager::OnInputEvent(const blink::WebInputEvent& event) {
+  const blink::mojom::EventType event_type = event.GetType();
+  if (WebInputEvent::IsTouchEventType(event_type)) {
+    if (event_type == blink::mojom::EventType::kTouchStart) {
+      active_pointers_++;
+      if (active_pointers_ == 1) {
+        UpdateOnTouchDown();
+      }
+    } else if (event_type == blink::mojom::EventType::kTouchCancel) {
+      active_pointers_ = 0;
+    } else if (event_type == blink::mojom::EventType::kTouchEnd) {
+      active_pointers_--;
+      DCHECK(active_pointers_ >= 0);
+    }
+    return;
+  }
+
+  if (event_type == blink::mojom::EventType::kGestureFlingStart) {
+    DCHECK(!is_in_a_fling_);
+    is_in_a_fling_ = true;
+  } else if (event_type == blink::mojom::EventType::kGestureFlingCancel ||
+             event_type == blink::mojom::EventType::kGestureScrollEnd) {
+    if (is_in_a_fling_) {
+      DidStopFlinging();
+    }
+    is_in_a_fling_ = false;
+  }
+}
+
 void GestureListenerManager::GestureEventAck(
     const blink::WebGestureEvent& event,
     blink::mojom::InputEventResultState ack_result) {
@@ -178,6 +224,18 @@ void GestureListenerManager::GestureEventAck(
 
   Java_GestureListenerManagerImpl_onEventAck(
       env, j_obj, static_cast<int>(event.GetType()), consumed);
+}
+
+void GestureListenerManager::OnInputEventAck(
+    blink::mojom::InputEventResultSource source,
+    blink::mojom::InputEventResultState state,
+    const blink::WebInputEvent& event) {
+  if (!WebInputEvent::IsGestureEventType(event.GetType())) {
+    return;
+  }
+  const blink::WebGestureEvent& gesture_event =
+      static_cast<const blink::WebGestureEvent&>(event);
+  GestureEventAck(gesture_event, state);
 }
 
 void GestureListenerManager::DidStopFlinging() {
