@@ -3461,7 +3461,7 @@ gfx::Rect AccessibilityController::GetConfirmationDialogBoundsInScreen() {
 }
 
 void AccessibilityController::PreviewFlashNotification() const {
-  flash_screen_controller_->OnNotificationAdded("preview");
+  flash_screen_controller_->PreviewFlash();
 }
 
 void AccessibilityController::

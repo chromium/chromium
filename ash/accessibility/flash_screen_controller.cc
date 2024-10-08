@@ -7,6 +7,8 @@
 #include "ash/color_enhancement/color_enhancement_controller.h"
 #include "ash/shell.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/message_center/message_center_types.h"
+#include "ui/message_center/public/cpp/notification_types.h"
 
 namespace ash {
 
@@ -30,7 +32,10 @@ FlashScreenController::~FlashScreenController() = default;
 void FlashScreenController::OnNotificationDisplayed(
     const std::string& notification_id,
     const message_center::DisplaySource display_source) {
-  MaybeFlashOn(notification_id);
+  // Only flash when a popup is displayed (not the message center).
+  if (display_source == message_center::DISPLAY_SOURCE_POPUP) {
+    MaybeFlashOn(notification_id);
+  }
 }
 
 void FlashScreenController::OnNotificationAdded(
@@ -97,6 +102,15 @@ void FlashScreenController::MaybeFlashOn(const std::string& notification_id) {
     // notifications).
     return;
   }
+  if (notification->priority() < message_center::DEFAULT_PRIORITY) {
+    // Do not flash for low priority notifications, as no pop-up will
+    // be shown.
+    return;
+  }
+  FlashOn();
+}
+
+void FlashScreenController::PreviewFlash() {
   FlashOn();
 }
 

@@ -51,6 +51,7 @@
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notification_types.h"
 
 using message_center::MessageCenter;
 
@@ -1845,6 +1846,17 @@ TEST_F(AccessibilityControllerTest, DoesNotFlashSilentNotifications) {
 
   // Send a second notification that is similar in order to create a group.
   // Ensure that the screen is still not flashed.
+  ShowNotification(data);
+  ExpectFlashNotificationNotShown();
+}
+
+TEST_F(AccessibilityControllerTest, DoesNotLowPriorityNotifications) {
+  auto* accessibility_controller = Shell::Get()->accessibility_controller();
+  accessibility_controller->flash_notifications().SetEnabled(true);
+
+  message_center::RichNotificationData data =
+      message_center::RichNotificationData();
+  data.priority = message_center::LOW_PRIORITY;
   ShowNotification(data);
   ExpectFlashNotificationNotShown();
 }
