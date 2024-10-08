@@ -170,7 +170,9 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
   GURL sent_fetch_url_;
   lens::LensOverlayClientLogs sent_client_logs_;
   lens::LensOverlayRequestId sent_request_id_;
-  lens::LensOverlayObjectsRequest sent_objects_request_;
+  lens::LensOverlayRequestId sent_page_content_request_id_;
+  lens::LensOverlayObjectsRequest sent_full_image_objects_request_;
+  lens::LensOverlayObjectsRequest sent_page_content_objects_request_;
   lens::LensOverlayInteractionRequest sent_interaction_request_;
   int num_full_page_objects_gen204_pings_sent_ = 0;
   int num_full_page_translate_gen204_pings_sent_ = 0;
@@ -188,9 +190,18 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
       // Cluster info request.
       fake_server_response_string =
           fake_cluster_info_response_.SerializeAsString();
+    } else if (request->has_objects_request() &&
+               request->objects_request().has_payload()) {
+      // Page content upload request.
+      sent_page_content_objects_request_.CopyFrom(request->objects_request());
+      // The server doesn't send a response to this request, so no need to set
+      // the response string to something meaningful.
+      fake_server_response_string = "";
+      sent_page_content_request_id_.CopyFrom(
+          request->objects_request().request_context().request_id());
     } else if (request->has_objects_request()) {
       // Full image request.
-      sent_objects_request_.CopyFrom(request->objects_request());
+      sent_full_image_objects_request_.CopyFrom(request->objects_request());
       fake_server_response.mutable_objects_response()->CopyFrom(
           fake_objects_response_);
       fake_server_response_string = fake_server_response.SerializeAsString();
@@ -353,7 +364,7 @@ TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
   ASSERT_TRUE(full_image_response_future.IsReady());
 
   // Check initial fetch objects request is correct.
-  auto sent_object_request = query_controller.sent_objects_request_;
+  auto sent_object_request = query_controller.sent_full_image_objects_request_;
   ASSERT_EQ(sent_object_request.request_context().request_id().sequence_id(),
             1);
   ASSERT_EQ(sent_object_request.image_data().image_metadata().width(), 100);
@@ -514,7 +525,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_TRUE(full_image_response_future.IsReady());
 
   // Check the initial fetch objects request.
-  auto sent_object_request = query_controller.sent_objects_request_;
+  auto sent_object_request = query_controller.sent_full_image_objects_request_;
   ASSERT_EQ(sent_object_request.image_data().image_metadata().width(), 100);
   ASSERT_EQ(sent_object_request.image_data().image_metadata().height(), 100);
   ASSERT_TRUE(url_response_future.Get().has_url());
@@ -609,7 +620,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_TRUE(full_image_response_future.IsReady());
 
   // Check initial fetch objects request is correct.
-  auto sent_object_request = query_controller.sent_objects_request_;
+  auto sent_object_request = query_controller.sent_full_image_objects_request_;
   ASSERT_EQ(sent_object_request.image_data().image_metadata().width(), 1000);
   ASSERT_EQ(sent_object_request.image_data().image_metadata().height(), 1000);
   ASSERT_TRUE(url_response_future.Get().has_url());
@@ -710,7 +721,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_TRUE(full_image_response_future.IsReady());
 
   // Check initial fetch objects request is correct.
-  auto sent_object_request = query_controller.sent_objects_request_;
+  auto sent_object_request = query_controller.sent_full_image_objects_request_;
   ASSERT_EQ(sent_object_request.image_data().image_metadata().width(), 100);
   ASSERT_EQ(sent_object_request.image_data().image_metadata().height(), 100);
   ASSERT_TRUE(url_response_future.Get().has_url());
@@ -849,12 +860,21 @@ TEST_F(LensOverlayQueryControllerTest,
 
   ASSERT_TRUE(full_image_response_future.IsReady());
 
-  // Check initial fetch objects request is correct.
-  auto sent_object_request = query_controller.sent_objects_request_;
-  ASSERT_EQ(sent_object_request.image_data().image_metadata().width(), 100);
-  ASSERT_EQ(sent_object_request.image_data().image_metadata().height(), 100);
-  ASSERT_FALSE(sent_object_request.payload().content_data().empty());
-  ASSERT_EQ(sent_object_request.payload().content_type(), "application/pdf");
+  // Verify the content bytes were not included with the image bytes request.
+  auto full_image_request = query_controller.sent_full_image_objects_request_;
+  ASSERT_EQ(full_image_request.image_data().image_metadata().width(), 100);
+  ASSERT_EQ(full_image_request.image_data().image_metadata().height(), 100);
+  ASSERT_TRUE(full_image_request.payload().content_data().empty());
+
+  // Verify the content bytes were included in a followup request.
+  auto page_content_request =
+      query_controller.sent_page_content_objects_request_;
+  ASSERT_FALSE(page_content_request.payload().content_data().empty());
+  ASSERT_EQ(page_content_request.payload().content_type(), "application/pdf");
+
+  // The full image and page content requests should have the same request id.
+  ASSERT_EQ(full_image_request.request_context().request_id().sequence_id(),
+            page_content_request.request_context().request_id().sequence_id());
 
   // Check interaction request is correct.
   auto sent_interaction_request = query_controller.sent_interaction_request_;
@@ -1045,7 +1065,8 @@ TEST_F(LensOverlayQueryControllerTest,
 
   // Check initial fetch objects request id is correct.
   ASSERT_TRUE(full_image_response_future.IsReady());
-  auto initial_sent_object_request = query_controller.sent_objects_request_;
+  auto initial_sent_object_request =
+      query_controller.sent_full_image_objects_request_;
   ASSERT_EQ(initial_sent_object_request.request_context()
                 .request_id()
                 .image_sequence_id(),
@@ -1086,7 +1107,8 @@ TEST_F(LensOverlayQueryControllerTest,
   // Check that the image sequence id and sequence id were incremented by
   // the fullpage translate request, and a new analytics id was generated.
   ASSERT_TRUE(full_image_response_future.IsReady());
-  auto second_sent_object_request = query_controller.sent_objects_request_;
+  auto second_sent_object_request =
+      query_controller.sent_full_image_objects_request_;
   ASSERT_EQ(second_sent_object_request.request_context()
                 .request_id()
                 .image_sequence_id(),
@@ -1110,7 +1132,8 @@ TEST_F(LensOverlayQueryControllerTest,
   // Check that the image sequence id and sequence id were incremented by
   // the fullpage translate request, and a new analytics id was generated.
   ASSERT_TRUE(full_image_response_future.IsReady());
-  auto third_sent_object_request = query_controller.sent_objects_request_;
+  auto third_sent_object_request =
+      query_controller.sent_full_image_objects_request_;
   ASSERT_EQ(third_sent_object_request.request_context()
                 .request_id()
                 .image_sequence_id(),
@@ -1132,7 +1155,8 @@ TEST_F(LensOverlayQueryControllerTest,
   // Check that the image sequence id and sequence id were incremented by
   // the end translate mode request.
   ASSERT_TRUE(full_image_response_future.IsReady());
-  auto fourth_sent_object_request = query_controller.sent_objects_request_;
+  auto fourth_sent_object_request =
+      query_controller.sent_full_image_objects_request_;
   ASSERT_EQ(fourth_sent_object_request.request_context()
                 .request_id()
                 .image_sequence_id(),

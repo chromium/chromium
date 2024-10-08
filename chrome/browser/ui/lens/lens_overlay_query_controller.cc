@@ -491,6 +491,7 @@ void LensOverlayQueryController::ClusterInfoFetchResponseHandler(
   // Continue with the full image request which will use the session id from the
   // cluster info we just received.
   PrepareAndFetchFullImageRequest();
+  PrepareAndFetchPageContentRequest();
 }
 
 void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
@@ -537,6 +538,7 @@ void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
   latest_full_image_request_data_ = std::make_unique<LensServerFetchRequest>(
       current_sequence_id,
       /*query_start_time=*/base::TimeTicks::Now());
+  latest_full_image_request_data_->request_id_ = std::move(request_id);
 
   // Preparing for the full image request requires multiple async flows to
   // complete before the request is ready to be send to the server. We start
@@ -555,7 +557,7 @@ void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
       base::BindOnce(&LensOverlayQueryController::
                          CreateFullImageRequestAndTryPerformFullImageRequest,
                      weak_ptr_factory_.GetWeakPtr(), current_sequence_id,
-                     std::move(request_id), ref_counted_logs));
+                     ref_counted_logs));
 
   // Async Flow 2: Retrieve the OAuth headers.
   CreateOAuthHeadersAndTryPerformFullPageRequest(current_sequence_id);
@@ -575,7 +577,6 @@ void LensOverlayQueryController::PrepareImageDataForFullImageRequest(
 void LensOverlayQueryController::
     CreateFullImageRequestAndTryPerformFullImageRequest(
         int sequence_id,
-        std::unique_ptr<lens::LensOverlayRequestId> request_id,
         scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs,
         lens::ImageData image_data) {
   DCHECK_EQ(query_controller_state_,
@@ -586,15 +587,23 @@ void LensOverlayQueryController::
   lens::LensOverlayServerRequest request;
   request.mutable_client_logs()->CopyFrom(ref_counted_logs->client_logs());
   lens::LensOverlayRequestContext request_context;
-  request_context.mutable_request_id()->CopyFrom(*request_id.get());
+
+  // The request ID is guaranteed to exist since it was created in
+  // PrepareAndFetchFullImageRequest().
+  CHECK(latest_full_image_request_data_->request_id_);
+  request_context.mutable_request_id()->CopyFrom(
+      *latest_full_image_request_data_->request_id_);
+
   request_context.mutable_client_context()->CopyFrom(CreateClientContext());
   request.mutable_objects_request()->mutable_request_context()->CopyFrom(
       request_context);
   request.mutable_objects_request()->mutable_image_data()->CopyFrom(image_data);
 
-  // The content bytes are optional, so if they were included in the
-  // StartQueryFlow, included them in the request.
-  if (!underlying_content_bytes_.empty()) {
+  // The content bytes ideally are uploaded separately once the cluster info is
+  // retrieved. However, if the cluster info request fails, we should include
+  // them in this request. So if page content bytes are available, and the
+  // cluster info was not retrieved, included them in this request.
+  if (!underlying_content_bytes_.empty() && !cluster_info_.has_value()) {
     lens::Payload payload;
     payload.mutable_content_data()->assign(underlying_content_bytes_.begin(),
                                            underlying_content_bytes_.end());
@@ -752,6 +761,52 @@ void LensOverlayQueryController::RunFullImageCallbackForError() {
       FROM_HERE, base::BindOnce(full_image_callback_,
                                 std::vector<lens::mojom::OverlayObjectPtr>(),
                                 /*text=*/nullptr, /*is_error=*/true));
+}
+
+void LensOverlayQueryController::PrepareAndFetchPageContentRequest() {
+  if (!cluster_info_ || underlying_content_bytes_.empty()) {
+    // Cannot send this request without cluster info. No need to send the
+    // request without underlying content bytes.
+    return;
+  }
+
+  // Create the request.
+  lens::LensOverlayServerRequest request;
+  lens::LensOverlayRequestContext request_context;
+
+  // Use the same request ID as the full image request. It is guaranteed to
+  // exist since the full image request was started first.
+  CHECK(latest_full_image_request_data_->request_id_);
+  request_context.mutable_request_id()->CopyFrom(
+      *latest_full_image_request_data_->request_id_);
+
+  request_context.mutable_client_context()->CopyFrom(CreateClientContext());
+  request.mutable_objects_request()->mutable_request_context()->CopyFrom(
+      request_context);
+
+  lens::Payload payload;
+  payload.mutable_content_data()->assign(underlying_content_bytes_.begin(),
+                                         underlying_content_bytes_.end());
+  payload.set_content_type(underlying_content_type_);
+  request.mutable_objects_request()->mutable_payload()->CopyFrom(payload);
+
+  page_content_access_token_fetcher_ = CreateOAuthHeadersAndContinue(
+      base::BindOnce(&LensOverlayQueryController::PerformPageContentRequest,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(request)));
+}
+
+void LensOverlayQueryController::PerformPageContentRequest(
+    lens::LensOverlayServerRequest request,
+    std::vector<std::string> headers) {
+  page_content_access_token_fetcher_.reset();
+
+  // Pass no response callback because this is a fire and forget request.
+  PerformFetchRequest(
+      &request, &headers,
+      base::BindOnce(
+          &LensOverlayQueryController::OnPageContentEndpointFetcherCreated,
+          weak_ptr_factory_.GetWeakPtr()),
+      base::DoNothing());
 }
 
 void LensOverlayQueryController::SendInteraction(
@@ -1238,6 +1293,11 @@ void LensOverlayQueryController::ResetRequestClusterInfoState() {
 void LensOverlayQueryController::OnFullImageEndpointFetcherCreated(
     std::unique_ptr<EndpointFetcher> endpoint_fetcher) {
   full_image_endpoint_fetcher_ = std::move(endpoint_fetcher);
+}
+
+void LensOverlayQueryController::OnPageContentEndpointFetcherCreated(
+    std::unique_ptr<EndpointFetcher> endpoint_fetcher) {
+  page_content_endpoint_fetcher_ = std::move(endpoint_fetcher);
 }
 
 void LensOverlayQueryController::OnInteractionEndpointFetcherCreated(

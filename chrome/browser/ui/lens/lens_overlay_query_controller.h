@@ -196,6 +196,9 @@ class LensOverlayQueryController {
     // The start time of the query.
     const base::TimeTicks query_start_time_;
 
+    // The request ID for this request.
+    std::unique_ptr<lens::LensOverlayRequestId> request_id_;
+
     // The request to be sent to the server. Must be set prior to making the
     // request.
     std::unique_ptr<lens::LensOverlayServerRequest> request_;
@@ -238,7 +241,6 @@ class LensOverlayQueryController {
   // will perform the request.
   void CreateFullImageRequestAndTryPerformFullImageRequest(
       int sequence_id,
-      std::unique_ptr<lens::LensOverlayRequestId> request_id,
       scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs,
       lens::ImageData image_data);
 
@@ -274,6 +276,15 @@ class LensOverlayQueryController {
 
   // Runs the full image callback with empty response data, for errors.
   void RunFullImageCallbackForError();
+
+  // Creates a full image request with the page content bytes and sends it to
+  // the server.
+  void PrepareAndFetchPageContentRequest();
+
+  // Performs the page content request. This is a send and forget request, so we
+  // are not expecting a response.
+  void PerformPageContentRequest(lens::LensOverlayServerRequest request,
+                                 std::vector<std::string> headers);
 
   // Sends the interaction data, triggering async image cropping and fetching
   // the request.
@@ -389,6 +400,10 @@ class LensOverlayQueryController {
   void OnFullImageEndpointFetcherCreated(
       std::unique_ptr<EndpointFetcher> endpoint_fetcher);
 
+  // Callback for when the page content endpoint fetcher is created.
+  void OnPageContentEndpointFetcherCreated(
+      std::unique_ptr<EndpointFetcher> endpoint_fetcher);
+
   // Callback for when the interaction endpoint fetcher is created.
   void OnInteractionEndpointFetcherCreated(
       std::unique_ptr<EndpointFetcher> endpoint_fetcher);
@@ -453,6 +468,10 @@ class LensOverlayQueryController {
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       full_image_access_token_fetcher_;
 
+  // The access token fetcher used for getting OAuth for page content requests.
+  std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
+      page_content_access_token_fetcher_;
+
   // The access token fetcher used for getting OAuth for interaction requests.
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       interaction_access_token_fetcher_;
@@ -470,6 +489,9 @@ class LensOverlayQueryController {
 
   // The endpoint fetcher used for the full image request.
   std::unique_ptr<EndpointFetcher> full_image_endpoint_fetcher_;
+
+  // The endpoint fetcher used for the page content request.
+  std::unique_ptr<EndpointFetcher> page_content_endpoint_fetcher_;
 
   // The endpoint fetcher used for the interaction request. Only the last
   // endpoint fetcher is kept; additional fetch requests will discard
