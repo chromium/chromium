@@ -13524,6 +13524,21 @@
             ]
         }
     ],
+    "MacImmersiveFullscreenAlwaysOnTrafficLights": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FullscreenAlwaysShowTrafficLights"
+                    ]
+                }
+            ]
+        }
+    ],
     "MacPlatformLocationProvider": [
         {
             "platforms": [

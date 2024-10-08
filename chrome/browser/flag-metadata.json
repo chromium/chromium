@@ -3248,10 +3248,11 @@
   {
     "name": "enable-fullscreen-always-show-traffic-lights",
     "owners": [
-      "bur@chromium.org",
+      "kerezhu@chromium.org",
+      "lgrey@chromium.org",
       "chrome-mac-dev@google.com"
     ],
-    "expiry_milestone": 131
+    "expiry_milestone": 132
   },
   {
     "name": "enable-fullscreen-animate-tabs",
