@@ -380,6 +380,12 @@ def resolve_packages(packages: List[str], target_id: Optional[str]) -> None:
 def get_ip_address(target_id: Optional[str], ipv4_only: bool = False):
     """Determines address of the given target; returns the value from
     ipaddress.ip_address."""
+    return ipaddress.ip_address(get_ssh_address(target_id, ipv4_only)[0])
+
+
+def get_ssh_address(target_id: Optional[str],
+                    ipv4_only: bool = False) -> Tuple[str, int]:
+    """Determines SSH address for given target."""
     cmd = ['target', 'list']
     if ipv4_only:
         cmd.append('--no-ipv6')
@@ -389,16 +395,12 @@ def get_ip_address(target_id: Optional[str], ipv4_only: bool = False):
     target = json.loads(
         run_ffx_command(cmd=cmd, json_out=True,
                         capture_output=True).stdout.strip())
-    return ipaddress.ip_address(target[0]['addresses'][0])
-
-
-def get_ssh_address(target_id: Optional[str]) -> str:
-    """Determines SSH address for given target."""
-    # TODO(crbug.com/40935291): May move the implementation to the ffx target
-    # list implementation as get_ip_address when ffx populates the ssh port.
-    return run_ffx_command(cmd=('target', 'get-ssh-address'),
-                           target_id=target_id,
-                           capture_output=True).stdout.strip()
+    addr = target[0]['addresses'][0]
+    ssh_port = int(addr['ssh_port'])
+    if ssh_port == 0:
+        # Returning an unset ssh_port means the default port 22.
+        ssh_port = 22
+    return (addr['ip'], ssh_port)
 
 
 def find_in_dir(target_name: str, parent_dir: str) -> Optional[str]:
