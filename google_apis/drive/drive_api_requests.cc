@@ -901,7 +901,8 @@ MultipartUploadNewFileDelegate::MultipartUploadNewFileDelegate(
 MultipartUploadNewFileDelegate::~MultipartUploadNewFileDelegate() = default;
 
 GURL MultipartUploadNewFileDelegate::GetURL() const {
-  return url_generator_.GetMultipartUploadNewFileUrl(has_modified_date_);
+  return url_generator_.GetMultipartUploadNewFileUrl(has_modified_date_,
+                                                     /*convert=*/false);
 }
 
 HttpRequestMethod MultipartUploadNewFileDelegate::GetRequestType() const {
