@@ -292,7 +292,6 @@ void VariationsSeedProcessor::CreateTrialsFromSeed(
                                seed.study().size());
   std::vector<ProcessedStudy> filtered_studies =
       FilterAndValidateStudies(seed, client_state, layers);
-  SetSeedVersion(seed.version());
 
   for (const ProcessedStudy& study : filtered_studies) {
     CreateTrialFromStudy(study, override_callback, entropy_providers, layers,
