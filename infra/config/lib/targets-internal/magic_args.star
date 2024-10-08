@@ -134,7 +134,7 @@ def _get_gpus(spec_value):
     """
     dimensions = _get_dimensions(spec_value)
     if "gpu" not in dimensions:
-        return None
+        return []
     return dimensions["gpu"].split("|")
 
 def _get_android_vulkan_device(settings, spec_value):
