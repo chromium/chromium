@@ -242,7 +242,8 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         } else if (permanentException) {
             mThirdPartyCookiesTitle.setTitle(
                     getString(R.string.page_info_cookies_permanent_allowed_title));
-            int resId = R.string.page_info_cookies_send_feedback_description;
+            int resId =
+                    R.string.page_info_cookies_tracking_protection_permanent_allowed_description;
             mThirdPartyCookiesSummary.setSummary(
                     SpanApplier.applySpans(
                             getString(resId),
