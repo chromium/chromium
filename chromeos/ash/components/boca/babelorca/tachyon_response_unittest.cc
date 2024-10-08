@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/boca/babelorca/tachyon_response.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "net/base/net_errors.h"
