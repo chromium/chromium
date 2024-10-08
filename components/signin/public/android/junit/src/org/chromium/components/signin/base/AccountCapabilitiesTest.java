@@ -75,6 +75,10 @@ public final class AccountCapabilitiesTest {
                 return capabilities.isSubjectToEnterprisePolicies();
             case AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME:
                 return capabilities.isSubjectToParentalControls();
+            case AccountCapabilitiesConstants.CAN_USE_SPEAKER_LABEL_IN_RECORDER_APP:
+                return capabilities.canUseSpeakerLabelInRecorderApp();
+            case AccountCapabilitiesConstants.CAN_USE_GENERATIVE_AI_IN_RECORDER_APP:
+                return capabilities.canUseGenerativeAiInRecorderApp();
         }
         assert false : "Capability name is not known.";
         return -1;
@@ -147,13 +151,25 @@ public final class AccountCapabilitiesTest {
                                         AccountCapabilitiesConstants
                                                 .IS_SUBJECT_TO_ENTERPRISE_POLICIES_CAPABILITY_NAME),
                         new ParameterSet()
-                            .name("CanFetchFamilyMemberInfo")
-                            .value(AccountCapabilitiesConstants.CAN_FETCH_FAMILY_MEMBER_INFO_CAPABILITY_NAME),
+                                .name("CanFetchFamilyMemberInfo")
+                                .value(
+                                        AccountCapabilitiesConstants
+                                                .CAN_FETCH_FAMILY_MEMBER_INFO_CAPABILITY_NAME),
                         new ParameterSet()
                                 .name("IsSubjectToParentalControls")
                                 .value(
                                         AccountCapabilitiesConstants
-                                                .IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME));
+                                                .IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME),
+                        new ParameterSet()
+                                .name("CanUseSpeakerLabelInRecorderApp")
+                                .value(
+                                        AccountCapabilitiesConstants
+                                                .CAN_USE_SPEAKER_LABEL_IN_RECORDER_APP),
+                        new ParameterSet()
+                                .name("CanUseGenerativeAiInRecorderApp")
+                                .value(
+                                        AccountCapabilitiesConstants
+                                                .CAN_USE_GENERATIVE_AI_IN_RECORDER_APP));
 
         // Returns String value added from Capabilities ParameterSet.
         static String getCapabilityName(ParameterSet parameterSet) {

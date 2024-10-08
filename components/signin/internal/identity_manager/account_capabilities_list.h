@@ -79,3 +79,11 @@ ACCOUNT_CAPABILITY(kIsSubjectToParentalControlsCapabilityName,
 ACCOUNT_CAPABILITY(kCanUseEduFeaturesCapabilityName,
                    CAN_USE_EDU_FEATURES_CAPABILITY_NAME,
                    "accountcapabilities/gezdsmbnmnqxa")
+
+ACCOUNT_CAPABILITY(kCanUseSpeakerLabelInRecorderApp,
+                   CAN_USE_SPEAKER_LABEL_IN_RECORDER_APP,
+                   "accountcapabilities/ge2tknznmnqxa")
+
+ACCOUNT_CAPABILITY(kCanUseGenerativeAiInRecorderApp,
+                   CAN_USE_GENERATIVE_AI_IN_RECORDER_APP,
+                   "accountcapabilities/ge2tkobnmnqxa")

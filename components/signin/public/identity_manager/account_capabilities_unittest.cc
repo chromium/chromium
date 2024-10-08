@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/signin/public/identity_manager/account_capabilities.h"
-#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -220,6 +220,36 @@ TEST_F(AccountCapabilitiesTest, IsSubjectToParentalControls) {
 
   mutator.set_is_subject_to_parental_controls(false);
   EXPECT_EQ(capabilities.is_subject_to_parental_controls(),
+            signin::Tribool::kFalse);
+}
+
+TEST_F(AccountCapabilitiesTest, CanUseSpeakerLabelInRecorderApp) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.can_use_speaker_label_in_recorder_app(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_can_use_speaker_label_in_recorder_app(true);
+  EXPECT_EQ(capabilities.can_use_speaker_label_in_recorder_app(),
+            signin::Tribool::kTrue);
+
+  mutator.set_can_use_speaker_label_in_recorder_app(false);
+  EXPECT_EQ(capabilities.can_use_speaker_label_in_recorder_app(),
+            signin::Tribool::kFalse);
+}
+
+TEST_F(AccountCapabilitiesTest, CanUseGenerativeAiInRecorderApp) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.can_use_generative_ai_in_recorder_app(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_can_use_generative_ai_in_recorder_app(true);
+  EXPECT_EQ(capabilities.can_use_generative_ai_in_recorder_app(),
+            signin::Tribool::kTrue);
+
+  mutator.set_can_use_generative_ai_in_recorder_app(false);
+  EXPECT_EQ(capabilities.can_use_generative_ai_in_recorder_app(),
             signin::Tribool::kFalse);
 }
 

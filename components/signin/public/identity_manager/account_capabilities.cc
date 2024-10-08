@@ -138,6 +138,16 @@ signin::Tribool AccountCapabilities::is_subject_to_parental_controls() const {
   return GetCapabilityByName(kIsSubjectToParentalControlsCapabilityName);
 }
 
+signin::Tribool AccountCapabilities::can_use_speaker_label_in_recorder_app()
+    const {
+  return GetCapabilityByName(kCanUseSpeakerLabelInRecorderApp);
+}
+
+signin::Tribool AccountCapabilities::can_use_generative_ai_in_recorder_app()
+    const {
+  return GetCapabilityByName(kCanUseGenerativeAiInRecorderApp);
+}
+
 bool AccountCapabilities::UpdateWith(const AccountCapabilities& other) {
   bool modified = false;
 
@@ -156,8 +166,9 @@ bool AccountCapabilities::UpdateWith(const AccountCapabilities& other) {
 
 bool AccountCapabilities::operator==(const AccountCapabilities& other) const {
   for (const std::string& name : GetSupportedAccountCapabilityNames()) {
-    if (GetCapabilityByName(name) != other.GetCapabilityByName(name))
+    if (GetCapabilityByName(name) != other.GetCapabilityByName(name)) {
       return false;
+    }
   }
   return true;
 }
