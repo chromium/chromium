@@ -74,7 +74,10 @@ void ClickSignOutInAccountSettings() {
   // Enable the feature that shows the clear data on signout dialog for managed
   // accounts.
   config.features_enabled.push_back(kClearDeviceDataOnSignOutForManagedUsers);
-  if ([self isRunningTest:@selector(testSignoutFromAccountsTableView)]) {
+  if ([self isRunningTest:@selector(testSignoutFromAccountsTableView)] ||
+      [self isRunningTest:@selector(testCancelSignoutForManagedIdentity)] ||
+      [self
+          isRunningTest:@selector(testSignoutConfirmationForManagedIdentity)]) {
     // Once kIdentityDiscAccountMenu is launched, the sign out button in
     // AccountsTableView will be removed. It will be safe to remove this test at
     // that point. Also, testPopUpAccountsListViewOnSignOut covers the part of

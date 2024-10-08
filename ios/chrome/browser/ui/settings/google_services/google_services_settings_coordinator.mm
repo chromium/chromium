@@ -10,6 +10,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -180,10 +181,17 @@ using signin_metrics::PromoAction;
             }];
     [self.signOutCoordinator updateAttributedText];
   } else if (shouldClearDataOnSignOut) {
+    // If `kIdentityDiscAccountMenu` is enabled, signing out may also cause tabs
+    // to be closed, see `MainControllerAuthenticationServiceDelegate::
+    //    ClearBrowsingDataForSignedinPeriod`.
+    NSString* clearDataMessage =
+        base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)
+            ? l10n_util::GetNSString(
+                  IDS_IOS_SIGNOUT_AND_DISALLOW_SIGNIN_CLOSES_TABS_AND_CLEARS_DATA_MESSAGE_WITH_MANAGED_ACCOUNT)
+            : l10n_util::GetNSString(
+                  IDS_IOS_SIGNOUT_AND_DISALLOW_SIGNIN_CLEARS_DATA_MESSAGE_WITH_MANAGED_ACCOUNT);
     self.signOutCoordinator.attributedMessage = [[NSAttributedString alloc]
-        initWithString:
-            l10n_util::GetNSString(
-                IDS_IOS_SIGNOUT_AND_DISALLOW_SIGNIN_CLEARS_DATA_MESSAGE_WITH_MANAGED_ACCOUNT)
+        initWithString:clearDataMessage
             attributes:@{
               NSFontAttributeName :
                   [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]

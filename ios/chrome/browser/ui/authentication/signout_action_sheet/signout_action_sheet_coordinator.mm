@@ -283,8 +283,14 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       return nil;
     }
     case SignedInUserStateWithManagedAccountClearsDataOnSignout:
-      return l10n_util::GetNSString(
-          IDS_IOS_SIGNOUT_CLEARS_DATA_DIALOG_MESSAGE_WITH_MANAGED_ACCOUNT);
+      // If `kIdentityDiscAccountMenu` is enabled, signing out may also cause
+      // tabs to be closed, see `MainControllerAuthenticationServiceDelegate::
+      //    ClearBrowsingDataForSignedinPeriod`.
+      return base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)
+                 ? l10n_util::GetNSString(
+                       IDS_IOS_SIGNOUT_CLOSES_TABS_AND_CLEARS_DATA_DIALOG_MESSAGE_WITH_MANAGED_ACCOUNT)
+                 : l10n_util::GetNSString(
+                       IDS_IOS_SIGNOUT_CLEARS_DATA_DIALOG_MESSAGE_WITH_MANAGED_ACCOUNT);
     case SignedInUserStateWithManagedAccountAndMigratedFromSyncing:
     case SignedInUserStateWithManagedAccountAndSyncing:
     case SignedInUserStateWithNonManagedAccountAndSyncing: {

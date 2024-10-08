@@ -51,6 +51,7 @@ source_set("google_services") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/commerce/model:model",
     "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/parcel_tracking:features",
     "//ios/chrome/browser/parcel_tracking:opt_in_status",
     "//ios/chrome/browser/policy/model",
