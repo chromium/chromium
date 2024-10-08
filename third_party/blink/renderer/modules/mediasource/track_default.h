@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASOURCE_TRACK_DEFAULT_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_track_default_type.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -22,14 +23,14 @@ class TrackDefault final : public ScriptWrappable {
   static AtomicString VideoKeyword();
   static AtomicString TextKeyword();
 
-  static TrackDefault* Create(const AtomicString& type,
+  static TrackDefault* Create(const V8TrackDefaultType& type,
                               const String& language,
                               const String& label,
                               const Vector<String>& kinds,
                               const String& byte_stream_track_id,
                               ExceptionState&);
 
-  TrackDefault(const AtomicString& type,
+  TrackDefault(const V8TrackDefaultType& type,
                const String& language,
                const String& label,
                const Vector<String>& kinds,
@@ -37,14 +38,14 @@ class TrackDefault final : public ScriptWrappable {
   ~TrackDefault() override;
 
   // Implement the IDL
-  AtomicString type() const { return type_; }
+  V8TrackDefaultType type() const { return type_; }
   String byteStreamTrackID() const { return byte_stream_track_id_; }
   String language() const { return language_; }
   String label() const { return label_; }
   ScriptValue kinds(ScriptState*) const;
 
  private:
-  const AtomicString type_;
+  const V8TrackDefaultType type_;
   const String byte_stream_track_id_;
   const String language_;
   const String label_;

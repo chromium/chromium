@@ -39,6 +39,7 @@ class CrossThreadMediaSourceAttachment;
 class SameThreadMediaSourceAttachment;
 class SourceBufferConfig;
 class TrackBase;
+class V8EndOfStreamError;
 class WebSourceBuffer;
 
 // Media Source Extensions (MSE) API's MediaSource object implementation (see
@@ -90,9 +91,9 @@ class MediaSource final : public EventTarget,
   DEFINE_ATTRIBUTE_EVENT_LISTENER(sourceclose, kSourceclose)
 
   AtomicString readyState() const;
-  void endOfStream(const AtomicString& error, ExceptionState&)
-      LOCKS_EXCLUDED(attachment_link_lock_);
   void endOfStream(ExceptionState&) LOCKS_EXCLUDED(attachment_link_lock_);
+  void endOfStream(std::optional<V8EndOfStreamError> error, ExceptionState&)
+      LOCKS_EXCLUDED(attachment_link_lock_);
   void setLiveSeekableRange(double start, double end, ExceptionState&)
       LOCKS_EXCLUDED(attachment_link_lock_);
   void clearLiveSeekableRange(ExceptionState&)

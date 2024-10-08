@@ -209,7 +209,6 @@ SourceBuffer::SourceBuffer(std::unique_ptr<WebSourceBuffer> web_source_buffer,
       source_(source),
       track_defaults_(MakeGarbageCollected<TrackDefaultList>()),
       async_event_queue_(async_event_queue),
-      mode_(SegmentsKeyword()),
       updating_(false),
       timestamp_offset_(0),
       append_window_start_(0),
@@ -262,17 +261,9 @@ void SourceBuffer::Dispose() {
   web_source_buffer_.reset();
 }
 
-AtomicString SourceBuffer::SegmentsKeyword() {
-  return AtomicString("segments");
-}
-
-AtomicString SourceBuffer::SequenceKeyword() {
-  return AtomicString("sequence");
-}
-
-void SourceBuffer::setMode(const AtomicString& new_mode,
+void SourceBuffer::setMode(const V8AppendMode& new_mode,
                            ExceptionState& exception_state) {
-  DVLOG(3) << __func__ << " this=" << this << " new_mode=" << new_mode;
+  DVLOG(3) << __func__ << " this=" << this << " new_mode=" << new_mode.AsCStr();
 
   // Section 3.1 On setting mode attribute steps.
   // https://www.w3.org/TR/media-source/#dom-sourcebuffer-mode
@@ -291,9 +282,9 @@ void SourceBuffer::setMode(const AtomicString& new_mode,
   // is protected from destruction (applicable especially for MSE-in-Worker
   // case). Note, we must have |source_| and |source_| must have an attachment
   // because !IsRemoved().
-  if (!source_->RunUnlessElementGoneOrClosingUs(
-          WTF::BindOnce(&SourceBuffer::SetMode_Locked, WrapPersistent(this),
-                        new_mode, WTF::Unretained(&exception_state)))) {
+  if (!source_->RunUnlessElementGoneOrClosingUs(WTF::BindOnce(
+          &SourceBuffer::SetMode_Locked, WrapPersistent(this),
+          new_mode.AsEnum(), WTF::Unretained(&exception_state)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     MediaSource::LogAndThrowDOMException(
@@ -303,7 +294,7 @@ void SourceBuffer::setMode(const AtomicString& new_mode,
 }
 
 void SourceBuffer::SetMode_Locked(
-    AtomicString new_mode,
+    V8AppendMode::Enum new_mode,
     ExceptionState* exception_state,
     MediaSourceAttachmentSupplement::ExclusiveKey /* passkey */) {
   DCHECK(source_);
@@ -313,11 +304,11 @@ void SourceBuffer::SetMode_Locked(
   // 4. If generate timestamps flag equals true and new mode equals "segments",
   //    then throw a TypeError exception and abort these steps.
   if (web_source_buffer_->GetGenerateTimestampsFlag() &&
-      new_mode == SegmentsKeyword()) {
+      new_mode == V8AppendMode::Enum::kSegments) {
     MediaSource::LogAndThrowTypeError(
-        *exception_state, "The mode value provided (" + SegmentsKeyword() +
-                              ") is invalid for a byte stream format that uses "
-                              "generated timestamps.");
+        *exception_state,
+        "The mode value provided (segments) is invalid for a byte stream "
+        "format that uses generated timestamps.");
     return;
   }
 
@@ -334,8 +325,9 @@ void SourceBuffer::SetMode_Locked(
   //    the highest presentation end timestamp.
   WebSourceBuffer::AppendMode append_mode =
       WebSourceBuffer::kAppendModeSegments;
-  if (new_mode == SequenceKeyword())
+  if (new_mode == V8AppendMode::Enum::kSequence) {
     append_mode = WebSourceBuffer::kAppendModeSequence;
+  }
   if (!web_source_buffer_->SetMode(append_mode)) {
     MediaSource::LogAndThrowDOMException(
         *exception_state, DOMExceptionCode::kInvalidStateError,
@@ -1075,7 +1067,7 @@ void SourceBuffer::ChangeType_Locked(
   //    of the mode attribute on this SourceBuffer object, without running any
   //    associated steps for that attribute being set.
   if (web_source_buffer_->GetGenerateTimestampsFlag())
-    SetMode_Locked(SequenceKeyword(), exception_state, pass_key);
+    SetMode_Locked(V8AppendMode::Enum::kSequence, exception_state, pass_key);
 
   // 9. Set pending initialization segment for changeType flag to true.
   // The logic for this flag is handled by the pipeline (the new bytestream

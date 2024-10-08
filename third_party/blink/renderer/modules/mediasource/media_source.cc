@@ -26,6 +26,7 @@
 #include "third_party/blink/public/platform/web_media_source.h"
 #include "third_party/blink/public/platform/web_source_buffer.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_end_of_stream_error.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_source_buffer_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -414,10 +415,10 @@ void MediaSource::AddSourceBuffer_Locked(
   // here, which depends on |buffer| being in |source_buffers_| in our
   // implementation.
   if (generate_timestamps_flag) {
-    buffer->SetMode_Locked(SourceBuffer::SequenceKeyword(), exception_state,
+    buffer->SetMode_Locked(V8AppendMode::Enum::kSequence, exception_state,
                            pass_key);
   } else {
-    buffer->SetMode_Locked(SourceBuffer::SegmentsKeyword(), exception_state,
+    buffer->SetMode_Locked(V8AppendMode::Enum::kSegments, exception_state,
                            pass_key);
   }
 
@@ -1111,9 +1112,14 @@ AtomicString MediaSource::readyState() const {
   return ReadyStateToString(ready_state_);
 }
 
-void MediaSource::endOfStream(const AtomicString& error,
+void MediaSource::endOfStream(ExceptionState& exception_state) {
+  endOfStream(std::nullopt, exception_state);
+}
+
+void MediaSource::endOfStream(std::optional<V8EndOfStreamError> error,
                               ExceptionState& exception_state) {
-  DVLOG(3) << __func__ << " this=" << this << " : error=" << error;
+  DVLOG(3) << __func__ << " this=" << this
+           << " : error=" << (error.has_value() ? error->AsCStr() : "");
 
   // https://www.w3.org/TR/media-source/#dom-mediasource-endofstream
   // 1. If the readyState attribute is not in the "open" state then throw an
@@ -1125,13 +1131,20 @@ void MediaSource::endOfStream(const AtomicString& error,
     return;
 
   // 3. Run the end of stream algorithm with the error parameter set to error.
-  WebMediaSource::EndOfStreamStatus status;
-  if (error == "network")
-    status = WebMediaSource::kEndOfStreamStatusNetworkError;
-  else if (error == "decode")
-    status = WebMediaSource::kEndOfStreamStatusDecodeError;
-  else  // "" is allowed internally but not by IDL bindings.
-    status = WebMediaSource::kEndOfStreamStatusNoError;
+  WebMediaSource::EndOfStreamStatus status =
+      WebMediaSource::kEndOfStreamStatusNoError;
+  if (error.has_value()) {
+    switch (error->AsEnum()) {
+      case V8EndOfStreamError::Enum::kNetwork:
+        status = WebMediaSource::kEndOfStreamStatusNetworkError;
+        break;
+      case V8EndOfStreamError::Enum::kDecode:
+        status = WebMediaSource::kEndOfStreamStatusDecodeError;
+        break;
+      default:
+        NOTREACHED();
+    }
+  }
 
   // Do remainder of steps only if attachment is usable and underlying demuxer
   // is protected from destruction (applicable especially for MSE-in-Worker
@@ -1144,10 +1157,6 @@ void MediaSource::endOfStream(const AtomicString& error,
                             DOMExceptionCode::kInvalidStateError,
                             "Worker MediaSource attachment is closing");
   }
-}
-
-void MediaSource::endOfStream(ExceptionState& exception_state) {
-  endOfStream(g_empty_atom, exception_state);
 }
 
 void MediaSource::setLiveSeekableRange(double start,

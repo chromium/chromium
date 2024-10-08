@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_append_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
@@ -74,15 +75,12 @@ class SourceBuffer final : public EventTarget,
   USING_PRE_FINALIZER(SourceBuffer, Dispose);
 
  public:
-  static AtomicString SegmentsKeyword();
-  static AtomicString SequenceKeyword();
-
   SourceBuffer(std::unique_ptr<WebSourceBuffer>, MediaSource*, EventQueue*);
   ~SourceBuffer() override;
 
   // SourceBuffer.idl methods
-  const AtomicString& mode() const { return mode_; }
-  void setMode(const AtomicString&, ExceptionState&);
+  V8AppendMode mode() const { return V8AppendMode(mode_); }
+  void setMode(const V8AppendMode&, ExceptionState&);
   bool updating() const { return updating_; }
   TimeRanges* buffered(ExceptionState&) const;
   double timestampOffset() const;
@@ -119,7 +117,7 @@ class SourceBuffer final : public EventTarget,
   // may also require the same, since they can be called from within these
   // methods.
   void SetMode_Locked(
-      AtomicString,
+      V8AppendMode::Enum,
       ExceptionState*,
       MediaSourceAttachmentSupplement::ExclusiveKey /* passkey */);
   void GetBuffered_Locked(
@@ -243,7 +241,7 @@ class SourceBuffer final : public EventTarget,
   Member<TrackDefaultList> track_defaults_;
   Member<EventQueue> async_event_queue_;
 
-  AtomicString mode_;
+  V8AppendMode::Enum mode_ = V8AppendMode::Enum::kSegments;
   bool updating_;
 
   double timestamp_offset_;
