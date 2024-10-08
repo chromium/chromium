@@ -2221,7 +2221,6 @@ class D3DImageBackingFactoryBufferTest : public D3DImageBackingFactoryTestBase {
  public:
   void SetUp() override {
     D3DImageBackingFactoryTestBase::SetUp();
-    scoped_refptr<gl::GLShareGroup> share_group = new gl::GLShareGroup();
   }
 
  protected:
@@ -2230,36 +2229,6 @@ class D3DImageBackingFactoryBufferTest : public D3DImageBackingFactoryTestBase {
       wgpu::FeatureName::SharedFenceDXGISharedHandle,
       wgpu::FeatureName::SharedBufferMemoryD3D12Resource,
   };
-
-  Microsoft::WRL::ComPtr<ID3D12Resource> CreateD3D12UploadBuffer(
-      ID3D12Device* device,
-      uint32_t bufferSize) {
-    D3D12_HEAP_PROPERTIES heap_properties = {D3D12_HEAP_TYPE_UPLOAD,
-                                             D3D12_CPU_PAGE_PROPERTY_UNKNOWN,
-                                             D3D12_MEMORY_POOL_UNKNOWN, 0, 0};
-
-    D3D12_RESOURCE_DESC descriptor;
-    descriptor.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-    descriptor.Alignment = 0;
-    descriptor.Width = bufferSize;
-    descriptor.Height = 1;
-    descriptor.DepthOrArraySize = 1;
-    descriptor.MipLevels = 1;
-    descriptor.Format = DXGI_FORMAT_UNKNOWN;
-    descriptor.SampleDesc.Count = 1;
-    descriptor.SampleDesc.Quality = 0;
-    descriptor.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-    descriptor.Flags = D3D12_RESOURCE_FLAG_NONE;
-
-    Microsoft::WRL::ComPtr<ID3D12Resource> resource;
-
-    EXPECT_EQ(device->CreateCommittedResource(&heap_properties,
-                                              D3D12_HEAP_FLAG_NONE, &descriptor,
-                                              D3D12_RESOURCE_STATE_GENERIC_READ,
-                                              {}, IID_PPV_ARGS(&resource)),
-              S_OK);
-    return resource;
-  }
 
   void CheckDawnBuffer(wgpu::Buffer src_buffer,
                        const wgpu::Instance& instance,
@@ -2293,12 +2262,11 @@ class D3DImageBackingFactoryBufferTest : public D3DImageBackingFactoryTestBase {
 
     EXPECT_EQ(expected_value, *dst_value);
   }
-
-  scoped_refptr<SharedContextState> context_state_;
 };
 
-// Verifies successful creation of a Dawn buffer created from D3DImageBacking.
-TEST_F(D3DImageBackingFactoryBufferTest, ReadDawnBufferFromD3D12Resource) {
+// Verifies that creating a shared image backed by a D3D12 buffer works and can
+// be imported into Dawn.
+TEST_F(D3DImageBackingFactoryBufferTest, CreateSharedImageImportToDawn) {
   WGPUInstanceDescriptor instance_desc = {
       .features =
           {
@@ -2329,47 +2297,52 @@ TEST_F(D3DImageBackingFactoryBufferTest, ReadDawnBufferFromD3D12Resource) {
   wgpu::Device device =
       wgpu::Device::Acquire(adapters[0].CreateDevice(&device_descriptor));
 
-  Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device =
-      dawn::native::d3d12::GetD3D12Device(device.Get());
-
-  // Create a D3D12 buffer resource and write data to it.
   constexpr uint32_t kBufferSize = 4;
-  constexpr uint32_t kBufferData = 0x12345678;
-  Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_upload_buffer =
-      CreateD3D12UploadBuffer(d3d12_device.Get(), kBufferSize);
-
-  void* mapped_buffer_begin;
-  D3D12_RANGE range;
-  range.Begin = 0;
-  range.End = kBufferSize;
-  ASSERT_EQ(d3d12_upload_buffer->Map(0, &range, &mapped_buffer_begin), S_OK);
-  memcpy(mapped_buffer_begin, &kBufferData, kBufferSize);
-  d3d12_upload_buffer->Unmap(0, &range);
-
-  // Create a D3DImageBacking from the D3D12 buffer resource.
-  gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
-                                   gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE |
-                                   gpu::SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER;
   const gpu::Mailbox mailbox = gpu::Mailbox::Generate();
-  std::unique_ptr<SharedImageBacking> shared_image_backing =
-      D3DImageBacking::CreateFromD3D12Resource(
-          mailbox, kBufferSize, usage, "TestLabel", d3d12_upload_buffer);
+  auto backing = shared_image_factory_->CreateSharedImage(
+      mailbox, viz::SharedImageFormat(), gpu::kNullSurfaceHandle,
+      gfx::Size(kBufferSize, 1), gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
+      kUnknown_SkAlphaType,
+      gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+          gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE |
+          gpu::SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER,
+      "TestLabel", false);
 
+  // Register the backing and create a wgpu::Buffer from it.
   std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
-      shared_image_manager_.Register(std::move(shared_image_backing),
+      shared_image_manager_.Register(std::move(backing),
                                      memory_type_tracker_.get());
 
-  // Import the D3D12 buffer resource into Dawn.
   auto dawn_representation =
       shared_image_representation_factory_->ProduceDawnBuffer(
           mailbox, device, wgpu::BackendType::D3D12);
   ASSERT_NE(dawn_representation, nullptr);
 
-  auto scoped_access =
-      dawn_representation->BeginScopedAccess(wgpu::BufferUsage::CopySrc);
+  auto scoped_access = dawn_representation->BeginScopedAccess(
+      wgpu::BufferUsage::CopySrc | wgpu::BufferUsage::CopyDst);
   ASSERT_TRUE(scoped_access);
 
   wgpu::Buffer buffer(scoped_access->buffer());
+
+  // Create and upload data to a mappable buffer.
+  wgpu::BufferDescriptor buffer_desc{
+      .usage = wgpu::BufferUsage::CopySrc | wgpu::BufferUsage::MapWrite,
+      .size = kBufferSize,
+      .mappedAtCreation = true};
+  wgpu::Buffer src_buffer = device.CreateBuffer(&buffer_desc);
+
+  constexpr uint32_t kBufferData = 0x12345678;
+  uint32_t* mapped_range = static_cast<uint32_t*>(src_buffer.GetMappedRange());
+  std::memcpy(mapped_range, &kBufferData, kBufferSize);
+  src_buffer.Unmap();
+
+  // Copy data from the mappable buffer to the imported buffer.
+  wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
+  encoder.CopyBufferToBuffer(src_buffer, 0, buffer, 0, kBufferSize);
+  wgpu::CommandBuffer commands = encoder.Finish();
+
+  wgpu::Queue queue = device.GetQueue();
+  queue.Submit(1, &commands);
 
   // Check that the contents of the imported D3D12 resource within Dawn.
   CheckDawnBuffer(buffer, instance.Get(), device, kBufferSize, kBufferData);

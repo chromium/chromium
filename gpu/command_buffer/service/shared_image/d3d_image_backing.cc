@@ -216,13 +216,12 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSwapChainBuffer(
 // static
 std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromD3D12Resource(
     const Mailbox& mailbox,
-    uint32_t size,
+    const gfx::Size& size,
     gpu::SharedImageUsageSet usage,
     std::string debug_label,
     Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource) {
-  auto backing = base::WrapUnique(
-      new D3DImageBacking(mailbox, gfx::Size(size, 1), usage,
-                          std::move(debug_label), std::move(d3d12_resource)));
+  auto backing = base::WrapUnique(new D3DImageBacking(
+      mailbox, size, usage, std::move(debug_label), std::move(d3d12_resource)));
   return backing;
 }
 

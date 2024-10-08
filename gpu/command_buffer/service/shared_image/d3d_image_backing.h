@@ -73,7 +73,7 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   // Creation method meant for buffer resources originating as ID3D12Resources.
   static std::unique_ptr<D3DImageBacking> CreateFromD3D12Resource(
       const Mailbox& mailbox,
-      const uint32_t size,
+      const gfx::Size& size,
       gpu::SharedImageUsageSet usage,
       std::string debug_label,
       Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource);

@@ -83,13 +83,6 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
                                     SkAlphaType alpha_type,
                                     gpu::SharedImageUsageSet usage);
 
-  std::unique_ptr<SharedImageBacking> CreateFromD3D12Resource(
-      const Mailbox& mailbox,
-      uint32_t size,
-      SharedImageUsageSet usage,
-      std::string debug_label,
-      Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource);
-
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
       viz::SharedImageFormat format,
@@ -136,11 +129,24 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
   }
 
  private:
-  bool SupportsBGRA8UnormStorage();
+  std::unique_ptr<SharedImageBacking> CreateSharedBufferD3D12(
+      const Mailbox& mailbox,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      SharedImageUsageSet usage,
+      std::string debug_label);
 
+  bool SupportsBGRA8UnormStorage();
   // D3D11 device used for creating textures. This is also Skia's D3D11 device.
   // Can be different from |angle_d3d11_device_| when using Graphite.
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
+
+  // A D3D12 device is currently used for creation of buffer resources to be
+  // used with WebNN and WebGPU.
+  Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device_;
+
   std::optional<bool> supports_bgra8unorm_storage_;
 
   scoped_refptr<DXGISharedHandleManager> dxgi_shared_handle_manager_;

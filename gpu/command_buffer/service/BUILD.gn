@@ -629,6 +629,7 @@ target(link_target_type, "gles2_sources") {
       "shared_image/dxgi_swap_chain_image_representation.h",
     ]
     libs = [
+      "d3d12.lib",
       "dxguid.lib",
       "onecore.lib",
     ]
