@@ -1,0 +1,29 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Contains the information necessary for a renderer process to procure the
+// binary data for a resource given just the URL without further communication
+// with the browser process.
+struct LocalResourceSource {
+  // Data source name. This source serves URLs of the form: chrome://<name>
+  string name;
+
+  // HTTP response headers associated with all content served from this source.
+  // The format is that of net::HttpResponseHeaders::raw_headers_.
+  string headers;
+
+  bool should_replace_i18n_in_js;
+
+  // Map from URL path to resource ID. Used to index into the ResourceBundle.
+  map<string, int32> path_to_resource_id_map;
+
+  // Used to replace template expressions in fetched resources, e.g. for i18n.
+  map<string, string> replacement_strings;
+};
+
+struct LocalResourceLoaderConfig {
+  array<LocalResourceSource> sources;
+};

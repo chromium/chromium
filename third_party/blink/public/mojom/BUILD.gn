@@ -133,6 +133,7 @@ mojom("mojom_platform") {
     "loader/javascript_framework_detection.mojom",
     "loader/keep_alive_handle.mojom",
     "loader/keep_alive_handle_factory.mojom",
+    "loader/local_resource_loader_config.mojom",
     "loader/mixed_content.mojom",
     "loader/navigation_predictor.mojom",
     "loader/pause_subresource_loading_handle.mojom",

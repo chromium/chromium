@@ -79,6 +79,7 @@ def _CheckForWrongMojomIncludes(input_api, output_api):
         'third_party/blink/public/mojom/fetch/fetch_api_request',
         'third_party/blink/public/mojom/loader/code_cache',
         'third_party/blink/public/mojom/loader/fetch_later',
+        'third_party/blink/public/mojom/loader/local_resource_loader_config',
         'third_party/blink/public/mojom/loader/resource_load_info',
         'third_party/blink/public/mojom/loader/resource_load_info_notifier',
         'third_party/blink/public/mojom/loader/transferrable_url_loader',

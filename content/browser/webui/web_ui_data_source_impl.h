@@ -66,6 +66,11 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
   bool IsWebUIDataSourceImpl() const override;
   void AddFrameAncestor(const GURL& frame_ancestor) override;
 
+  // URL path to resource ID (Grit IDR) map.
+  const std::map<std::string, int>& path_to_idr_map() const {
+    return path_to_idr_map_;
+  }
+
  protected:
   explicit WebUIDataSourceImpl(const std::string& source_name);
   ~WebUIDataSourceImpl() override;
@@ -87,6 +92,7 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
   friend class URLDataManagerBackendTest;
   friend class WebUIDataSource;
   friend class WebUIDataSourceTest;
+  friend class WebUIImplTest;
 
   // Methods that match URLDataSource which are called by
   // InternalDataSource.

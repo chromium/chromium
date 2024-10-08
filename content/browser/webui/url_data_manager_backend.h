@@ -34,6 +34,7 @@ class CONTENT_EXPORT URLDataManagerBackend
     : public base::SupportsUserData::Data {
  public:
   typedef int RequestID;
+  using DataSourceMap = std::map<std::string, scoped_refptr<URLDataSourceImpl>>;
 
   URLDataManagerBackend();
 
@@ -58,6 +59,8 @@ class CONTENT_EXPORT URLDataManagerBackend
   // else NULL.
   URLDataSourceImpl* GetDataSourceFromURL(const GURL& url);
 
+  const DataSourceMap& data_sources() const { return data_sources_; }
+
   // Creates and sets the response headers for the given request.
   static scoped_refptr<net::HttpResponseHeaders> GetHeaders(
       URLDataSourceImpl* source,
@@ -80,8 +83,6 @@ class CONTENT_EXPORT URLDataManagerBackend
   static void SetDisallowWebUISchemeCachingForTesting(bool disallow_caching);
 
  private:
-  typedef std::map<std::string, scoped_refptr<URLDataSourceImpl>> DataSourceMap;
-
   // Custom sources of data, keyed by source path (e.g. "favicon").
   DataSourceMap data_sources_;
 
