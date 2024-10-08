@@ -1,6 +1,6 @@
 AXWebArea AXRoleDescription='HTML content'
 ++AXGroup AXRoleDescription='details'
-++++AXButton AXExpanded=0 AXRoleDescription='disclosure triangle' AXTitle='the summary'
+++++AXButton AXARIAPosInSet=1 AXARIASetSize=1 AXExpanded=0 AXRoleDescription='disclosure triangle' AXTitle='the summary'
 ++++++AXStaticText AXRoleDescription='text' AXValue='the summary'
 ++AXGroup AXRoleDescription='group'
 ++++AXGroup AXRoleDescription='details'

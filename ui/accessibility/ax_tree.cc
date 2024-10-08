@@ -2628,6 +2628,7 @@ void AXTree::ComputeSetSizePosInSetAndCache(const AXNode& node,
   // role::kRadioButton are special cases and do not necessarily need to be
   // contained in an ordered set.
   if (node.GetRole() != ax::mojom::Role::kComment &&
+      node.GetRole() != ax::mojom::Role::kDisclosureTriangle &&
       node.GetRole() != ax::mojom::Role::kDisclosureTriangleGrouped &&
       node.GetRole() != ax::mojom::Role::kRadioButton &&
       !node.SetRoleMatchesItemRole(ordered_set) && !node.IsOrderedSet()) {

@@ -3,7 +3,7 @@ rootWebArea
 ++++genericContainer ignored
 ++++++details
 ++++++++genericContainer ignored
-++++++++++disclosureTriangle collapsed name='the summary'
+++++++++++disclosureTriangle collapsed name='the summary' setSize=1 posInSet=1
 ++++++++++++listMarker ignored
 ++++++++++++++staticText ignored
 ++++++++++++staticText name='the summary'

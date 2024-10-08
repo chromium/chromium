@@ -1,6 +1,6 @@
 Document PositionInSet=0 SizeOfSet=0
 ++Group LocalizedControlType='details' PositionInSet=0 SizeOfSet=0
-++++Button Name='the summary' PositionInSet=0 SizeOfSet=0 ExpandCollapse.ExpandCollapseState='Collapsed'
+++++Button Name='the summary' PositionInSet=1 SizeOfSet=1 ExpandCollapse.ExpandCollapseState='Collapsed'
 ++++++Text Name='the summary' PositionInSet=0 SizeOfSet=0
 ++Group IsControlElement=false PositionInSet=0 SizeOfSet=0
 ++++Group LocalizedControlType='details' PositionInSet=0 SizeOfSet=0

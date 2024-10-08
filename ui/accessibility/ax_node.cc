@@ -1878,6 +1878,7 @@ bool AXNode::SetRoleMatchesItemRole(const AXNode* ordered_set) const {
   // Tree grid rows and grouped disclosure triangles should be treated as
   // ordered set items.
   if (IsRowInTreeGrid(ordered_set) ||
+      item_role == ax::mojom::Role::kDisclosureTriangle ||
       item_role == ax::mojom::Role::kDisclosureTriangleGrouped) {
     return true;
   }
