@@ -307,7 +307,7 @@ bool Dav1dVideoDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
   ScopedPtrDav1dData input_buffer;
 
   if (!buffer->end_of_stream()) {
-    input_buffer.reset(new Dav1dData{0});
+    input_buffer.reset(new Dav1dData{});
     const int res =
         dav1d_data_wrap(input_buffer.get(), buffer->data(), buffer->size(),
                         &ReleaseDecoderBuffer, buffer.get());
@@ -343,7 +343,7 @@ bool Dav1dVideoDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
 
     using ScopedPtrDav1dPicture =
         std::unique_ptr<Dav1dPicture, ScopedDav1dPictureFree>;
-    ScopedPtrDav1dPicture p(new Dav1dPicture{0});
+    ScopedPtrDav1dPicture p(new Dav1dPicture{});
 
     const int res = dav1d_get_picture(dav1d_decoder_.get(), p.get());
     if (res < 0) {
