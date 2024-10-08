@@ -18,18 +18,12 @@ include_rules = [
   "+chrome/browser/ash/app_list/arc",
   "+chrome/browser/ash/arc",
   "+chrome/browser/ash/child_accounts",
-  "+chrome/browser/ash/login/test",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/extensions/extension_service.h",
   "+chrome/browser/extensions/launch_util.h",
-  "+chrome/browser/extensions/test_extension_system.h",
   "+chrome/browser/notifications",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/browser_list.h",
-  "+chrome/browser/ui/browser_window.h",
-  "+chrome/browser/web_applications/test",
   "+chrome/browser/web_applications/web_app_command_scheduler.h",
   "+chrome/browser/web_applications/web_app_constants.h",
   "+chrome/browser/web_applications/web_app_helpers.h",
@@ -41,6 +35,15 @@ include_rules = [
   "+chrome/common/extensions",
   "+chrome/common/pref_names.h",
   "+chrome/grit",
-  "+chrome/test/base",
-  "+chrome/test/views",
 ]
+
+specific_include_rules = {
+  ".*test.*": [
+    "+chrome/browser/ash/login/test",
+    "+chrome/browser/extensions/test_extension_system.h",
+    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/web_applications/test",
+    "+chrome/test/base",
+    "+chrome/test/views",
+  ]
+}
