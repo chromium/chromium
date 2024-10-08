@@ -213,6 +213,9 @@ crbug.com/329138770 [ graphite-enabled release-x64 win10 ] WebGPUCachingTraceTes
 crbug.com/329138770 [ graphite-enabled release-x64 win10 ] WebGPUCachingTraceTest_RenderPipelineDifferentOrigins [ Failure ]
 crbug.com/329138770 [ graphite-enabled release-x64 win10 ] WebGPUCachingTraceTest_RenderPipelineIncognito [ Failure ]
 
+# Fail or flaky on Windows and Linux
+crbug.com/371949935 [ win ] TraceTest_ViewTransitionsCapture [ Failure ]
+crbug.com/371949935 [ linux renderer-skia-gl ] TraceTest_ViewTransitionsCapture [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
