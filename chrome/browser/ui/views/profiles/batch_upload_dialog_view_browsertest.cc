@@ -46,9 +46,11 @@ class BatchUploadDataProviderFake : public BatchUploadDataProvider {
         /*dialog_subtitle_id=*/IDS_BATCH_UPLOAD_SUBTITLE);
     if (has_local_data_) {
       // Add an arbitrary item.
-      container.items.push_back({.id = BatchUploadDataItemModel::Id(123),
-                                 .title = "data_title",
-                                 .subtitle = "data_subtitle"});
+      BatchUploadDataItemModel item;
+      item.id = BatchUploadDataItemModel::Id(123);
+      item.title = "data_title";
+      item.subtitle = "data_subtitle";
+      container.items.push_back(std::move(item));
     }
     return container;
   }

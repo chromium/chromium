@@ -9,11 +9,17 @@
 #include <vector>
 
 #include "base/types/id_type.h"
+#include "url/gurl.h"
 
 enum class BatchUploadDataType;
 
 // Representation of a single item to be displayed in the BatchUpload dialog.
 struct BatchUploadDataItemModel {
+  BatchUploadDataItemModel();
+  ~BatchUploadDataItemModel();
+  BatchUploadDataItemModel(BatchUploadDataItemModel&& other);
+  BatchUploadDataItemModel& operator=(BatchUploadDataItemModel&& other);
+
   // Strong Alias ID which is reprenseted as an int.
   using Id = base::IdType32<BatchUploadDataItemModel>;
 
@@ -28,13 +34,15 @@ struct BatchUploadDataItemModel {
   // TODO(b/359509890): Make the ID field more easily manageable.
   Id id;
 
-  // TODO(b/359146282): add icon field.
+  // Icon url for the icon of the item model. If empty the the icon will be
+  // hidden.
+  GURL icon_url;
 
   // Used as the primary text of the item model.
-  const std::string title;
+  std::string title;
 
   // Used as the secondary text of the item model.
-  const std::string subtitle;
+  std::string subtitle;
 
   // TODO(b/359150954): handle optional data logic -- e.g. passwords with reveal
   // callback, this may be handled in the controller/dialog directly.

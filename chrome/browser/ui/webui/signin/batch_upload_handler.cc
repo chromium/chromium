@@ -49,7 +49,8 @@ batch_upload::mojom::BatchUploadDataPtr ConstructMojoBatchUploadData(
     for (const auto& data_item : container.items) {
       batch_upload::mojom::DataItemPtr data_item_mojo =
           batch_upload::mojom::DataItem::New();
-      data_item_mojo->id = data_item.id.GetUnsafeValue();
+      data_item_mojo->id = data_item.id.value();
+      data_item_mojo->icon_url = data_item.icon_url.spec();
       data_item_mojo->title = data_item.title;
       data_item_mojo->subtitle = data_item.subtitle;
 

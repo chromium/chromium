@@ -216,6 +216,10 @@ export class DataSectionElement extends CrLitElement {
       this.resetWithState_(/*disabled=*/ true);
     }
   }
+
+  protected isStrEmpty_(str: string) {
+    return (!str || str.length === 0);
+  }
 }
 
 declare global {

@@ -41,10 +41,14 @@ class DummyBatchUploadDataProvider : public BatchUploadDataProvider {
     BatchUploadDataContainer container(/*section_name_id=*/title_id_,
                                        /*dialog_subtitle_id=*/456);
     for (int i = 0; i < item_count_; ++i) {
-      container.items.push_back(BatchUploadDataItemModel{
-          .id = BatchUploadDataItemModel::Id(i),
-          .title = "title_" + base::UTF16ToUTF8(base::FormatNumber(i)),
-          .subtitle = "subtitle_" + base::UTF16ToUTF8(base::FormatNumber(i))});
+      BatchUploadDataItemModel item;
+      item.id = BatchUploadDataItemModel::Id(i);
+      item.icon_url = GetDataType() == BatchUploadDataType::kPasswords
+                          ? GURL("chrome://theme/IDR_PASSWORD_MANAGER_FAVICON")
+                          : GURL();
+      item.title = "title_" + base::UTF16ToUTF8(base::FormatNumber(i));
+      item.subtitle = "subtitle_" + base::UTF16ToUTF8(base::FormatNumber(i));
+      container.items.push_back(std::move(item));
     }
     return container;
   }

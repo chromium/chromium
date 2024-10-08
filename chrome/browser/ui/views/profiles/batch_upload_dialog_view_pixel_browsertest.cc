@@ -50,12 +50,16 @@ class BatchUploadDataProviderFake : public BatchUploadDataProvider {
 
     // Add arbitrary items.
     for (int i = 0; i < item_count_; ++i) {
-      container.items.push_back(
-          {.id = BatchUploadDataItemModel::Id(i),
-           .title =
-               data_name + "_title_" + base::UTF16ToUTF8(base::FormatNumber(i)),
-           .subtitle = data_name + "_subtitle_" +
-                       base::UTF16ToUTF8(base::FormatNumber(i))});
+      BatchUploadDataItemModel item;
+      item.id = BatchUploadDataItemModel::Id(i);
+      item.icon_url = GetDataType() == BatchUploadDataType::kPasswords
+                          ? GURL("chrome://theme/IDR_PASSWORD_MANAGER_FAVICON")
+                          : GURL();
+      item.title =
+          data_name + "_title_" + base::UTF16ToUTF8(base::FormatNumber(i));
+      item.subtitle =
+          data_name + "_subtitle_" + base::UTF16ToUTF8(base::FormatNumber(i));
+      container.items.push_back(std::move(item));
     }
     return container;
   }

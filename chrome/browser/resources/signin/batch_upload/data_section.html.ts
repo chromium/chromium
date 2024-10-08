@@ -35,7 +35,9 @@ export function getHtml(this: DataSectionElement) {
                 ?checked="${this.isCheckboxChecked_(item.id)}"
                 @change="${this.onCheckedChanged_}"/>
             <div class="data-item-content">
-              <img class="item-icon" alt="Item icon" src="${item.iconUrl}">
+              <img class="item-icon"
+                  ?hidden="${this.isStrEmpty_(item.iconUrl)}"
+                  alt="Item icon" src="${item.iconUrl}">
               <div class="item-title">${item.title}</div>
               <div class="item-subtitle">${item.subtitle}</div>
             </div>
