@@ -28,6 +28,16 @@ constexpr const char kPrefShowAccessRequestsInToolbar[] =
 constexpr int kRefreshRequiredActionsMask =
     BLOCKED_ACTION_WEB_REQUEST | BLOCKED_ACTION_SCRIPT_AT_START;
 
+std::vector<ExtensionId> GetExtensionIds(
+    const std::vector<const Extension*>& extensions) {
+  std::vector<ExtensionId> extension_ids;
+  extension_ids.reserve(extensions.size());
+  for (const auto* extension : extensions) {
+    extension_ids.push_back(extension->id());
+  }
+  return extension_ids;
+}
+
 }  // namespace
 
 SitePermissionsHelper::SitePermissionsHelper(Profile* profile)
@@ -85,89 +95,111 @@ void SitePermissionsHelper::UpdateSiteAccess(
     const Extension& extension,
     content::WebContents* web_contents,
     PermissionsManager::UserSiteAccess new_access) {
-  auto* permissions_manager = PermissionsManager::Get(profile_);
-  auto current_access = permissions_manager->GetUserSiteAccess(
-      extension, web_contents->GetLastCommittedURL());
-  if (new_access == current_access) {
-    return;
-  }
+  std::vector<const Extension*> extensions = {&extension};
+  UpdateSiteAccess(extensions, web_contents, new_access);
+}
 
-  ScriptingPermissionsModifier modifier(profile_, &extension);
-  CHECK(permissions_manager->CanAffectExtension(extension));
-
+void SitePermissionsHelper::UpdateSiteAccess(
+    const std::vector<const Extension*>& extensions,
+    content::WebContents* web_contents,
+    PermissionsManager::UserSiteAccess new_access) {
   auto current_url = web_contents->GetLastCommittedURL();
-  CHECK(permissions_manager->CanUserSelectSiteAccess(extension, current_url,
-                                                     new_access));
+  bool reload_required = false;
 
-  if (current_access == PermissionsManager::UserSiteAccess::kOnAllSites) {
-    permissions_manager->AddExtensionToPreviousBroadSiteAccessSet(
-        extension.id());
-  } else {
-    permissions_manager->RemoveExtensionFromPreviousBroadSiteAccessSet(
-        extension.id());
-  }
-
-  switch (new_access) {
-    case PermissionsManager::UserSiteAccess::kOnClick:
-      if (permissions_manager->HasBroadGrantedHostPermissions(extension)) {
-        modifier.RemoveBroadGrantedHostPermissions();
-      }
-      // Note: SetWithholdHostPermissions() is a no-op if host permissions are
-      // already being withheld.
-      modifier.SetWithholdHostPermissions(true);
-      if (permissions_manager->HasGrantedHostPermission(extension,
-                                                        current_url)) {
-        modifier.RemoveGrantedHostPermission(current_url);
-      }
-      break;
-    case PermissionsManager::UserSiteAccess::kOnSite:
-      if (permissions_manager->HasBroadGrantedHostPermissions(extension)) {
-        modifier.RemoveBroadGrantedHostPermissions();
-      }
-      // Note: SetWithholdHostPermissions() is a no-op if host permissions are
-      // already being withheld.
-      modifier.SetWithholdHostPermissions(true);
-      if (!permissions_manager->HasGrantedHostPermission(extension,
-                                                         current_url)) {
-        modifier.GrantHostPermission(current_url);
-      }
-      break;
-    case PermissionsManager::UserSiteAccess::kOnAllSites:
-      modifier.SetWithholdHostPermissions(false);
-      break;
-  }
-
-  ExtensionActionRunner* runner =
+  auto* permissions_manager = PermissionsManager::Get(profile_);
+  ExtensionActionRunner* action_runner =
       ExtensionActionRunner::GetForWebContents(web_contents);
-  if (!runner) {
-    return;
+
+  for (auto const* extension : extensions) {
+    auto current_access =
+        permissions_manager->GetUserSiteAccess(*extension, current_url);
+    if (new_access == current_access) {
+      break;
+    }
+
+    CHECK(permissions_manager->CanAffectExtension(*extension));
+    CHECK(permissions_manager->CanUserSelectSiteAccess(*extension, current_url,
+                                                       new_access));
+
+    // Store/remove whether the extension has broad site access so we can
+    // preserve the setting when toggling an extension's site access back on.
+    if (current_access == PermissionsManager::UserSiteAccess::kOnAllSites) {
+      permissions_manager->AddExtensionToPreviousBroadSiteAccessSet(
+          extension->id());
+    } else {
+      permissions_manager->RemoveExtensionFromPreviousBroadSiteAccessSet(
+          extension->id());
+    }
+
+    // Update the extension's site access.
+    ScriptingPermissionsModifier modifier(profile_, extension);
+    switch (new_access) {
+      case PermissionsManager::UserSiteAccess::kOnClick:
+        if (permissions_manager->HasBroadGrantedHostPermissions(*extension)) {
+          modifier.RemoveBroadGrantedHostPermissions();
+        }
+        // Note: SetWithholdHostPermissions() is a no-op if host permissions are
+        // already being withheld.
+        modifier.SetWithholdHostPermissions(true);
+        if (permissions_manager->HasGrantedHostPermission(*extension,
+                                                          current_url)) {
+          modifier.RemoveGrantedHostPermission(current_url);
+        }
+        break;
+      case PermissionsManager::UserSiteAccess::kOnSite:
+        if (permissions_manager->HasBroadGrantedHostPermissions(*extension)) {
+          modifier.RemoveBroadGrantedHostPermissions();
+        }
+        // Note: SetWithholdHostPermissions() is a no-op if host permissions are
+        // already being withheld.
+        modifier.SetWithholdHostPermissions(true);
+        if (!permissions_manager->HasGrantedHostPermission(*extension,
+                                                           current_url)) {
+          modifier.GrantHostPermission(current_url);
+        }
+        break;
+      case PermissionsManager::UserSiteAccess::kOnAllSites:
+        modifier.SetWithholdHostPermissions(false);
+        break;
+    }
+
+    // Clear extension's tab permission when revoking user site permissions.
+    bool revoking_current_site_permissions =
+        new_access == PermissionsManager::UserSiteAccess::kOnClick;
+    if (revoking_current_site_permissions) {
+      TabHelper::FromWebContents(web_contents)
+          ->active_tab_permission_granter()
+          ->ClearActiveExtensionAndNotify(extension->id());
+      // While revoking permissions doesn't necessarily mandate a page
+      // refresh, it is complicated to determine when an extension has affected
+      // the page. Showing a reload page bubble after the user blocks the
+      // extension re enforces the user confidence on blocking the extension.
+      // Also, this scenario should not be that common and therefore hopefully
+      // is not too noisy.
+      reload_required = true;
+      break;
+    }
+
+    if (!action_runner) {
+      break;
+    }
+
+    // Run blocked actions when granting user site permissions.
+    int blocked_actions = action_runner->GetBlockedActions(extension->id());
+    if (PageNeedsRefreshToRun(blocked_actions)) {
+      // Show reload bubble when blocked actions mandate a page refresh.
+      // Refreshing the page will run them.
+      reload_required = true;
+    } else if (blocked_actions != BLOCKED_ACTION_NONE) {
+      action_runner->RunBlockedActions(extension);
+    }
   }
 
-  // Clear extension's tab permission when revoking user site permissions.
-  bool revoking_current_site_permissions =
-      new_access == PermissionsManager::UserSiteAccess::kOnClick;
-  if (revoking_current_site_permissions) {
-    TabHelper::FromWebContents(web_contents)
-        ->active_tab_permission_granter()
-        ->ClearActiveExtensionAndNotify(extension.id());
-    // While revoking permissions doesn't necessarily mandate a page
-    // refresh, it is complicated to determine when an extension has affected
-    // the page. Showing a reload page bubble after the user blocks the
-    // extension re enforces the user confidence on blocking the extension.
-    // Also, this scenario should not be that common and therefore hopefully is
-    // not too noisy.
-    runner->ShowReloadPageBubble({extension.id()});
-    return;
-  }
-
-  // Run blocked actions when granting user site permissions.
-  int blocked_actions = runner->GetBlockedActions(extension.id());
-  if (PageNeedsRefreshToRun(blocked_actions)) {
-    // Show reload bubble when blocked actions mandate a page refresh.
-    // Refreshing the page will run them.
-    runner->ShowReloadPageBubble({extension.id()});
-  } else if (blocked_actions != BLOCKED_ACTION_NONE) {
-    runner->RunBlockedActions(&extension);
+  if (action_runner && reload_required) {
+    // Show the reload bubble for all extensions, since it could be confusing to
+    // the user why only some of them appear on the dialog.
+    std::vector<ExtensionId> extension_ids = GetExtensionIds(extensions);
+    action_runner->ShowReloadPageBubble(extension_ids);
   }
 }
 

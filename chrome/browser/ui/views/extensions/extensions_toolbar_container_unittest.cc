@@ -1017,18 +1017,21 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
   EXPECT_EQ(extensions_button()->state(),
             ExtensionsToolbarButton::State::kDefault);
 
+  extensions::PermissionsManagerWaiter waiter(
+      PermissionsManager::Get(profile()));
   ClickButton(request_access_button());
+  waiter.WaitForExtensionPermissionsUpdate();
   WaitForAnimation();
   LayoutContainerIfNecessary();
 
   // Verify extension was executed and extensions menu button has "any
-  // extension has access" state. Extension's site access should have not
-  // changed, since clicking the button grants one time access.
+  // extension has access" state. Extension's site access should be "on site",
+  // since clicking the button grants always access to that site.
   EXPECT_EQ(user_action_tester.GetActionCount(kActivatedUserAction), 1);
   EXPECT_EQ(extensions_button()->state(),
             ExtensionsToolbarButton::State::kAnyExtensionHasAccess);
   EXPECT_EQ(permissions->GetUserSiteAccess(*extension, url),
-            PermissionsManager::UserSiteAccess::kOnClick);
+            PermissionsManager::UserSiteAccess::kOnSite);
 
   // Verify confirmation message appears on the request access button.
   EXPECT_TRUE(request_access_button()->GetVisible());

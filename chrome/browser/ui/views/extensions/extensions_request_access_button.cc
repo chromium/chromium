@@ -176,17 +176,14 @@ void ExtensionsRequestAccessButton::OnButtonPressed() {
   confirmation_origin_ =
       web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
 
-  // Grant tab permission to all extensions.
+  // Always grant access to this site to all extensions.
   DCHECK_GT(extension_ids_.size(), 0u);
   std::vector<const extensions::Extension*> extensions_to_run =
       GetExtensions(browser_->profile(), extension_ids_);
-
-  base::RecordAction(base::UserMetricsAction(
-      "Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton"));
-  UMA_HISTOGRAM_COUNTS_100(
-      "Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton",
-      extension_ids_.size());
-  action_runner->GrantTabPermissions(extensions_to_run);
+  extensions::SitePermissionsHelper(browser_->profile())
+      .UpdateSiteAccess(
+          extensions_to_run, web_contents,
+          extensions::PermissionsManager::UserSiteAccess::kOnSite);
 
   // Show confirmation message, and disable the button, for a specific duration.
   std::optional<SkColor> color;
@@ -198,12 +195,18 @@ void ExtensionsRequestAccessButton::OnButtonPressed() {
   base::TimeDelta collapse_duration = remove_confirmation_for_testing_
                                           ? base::Seconds(0)
                                           : kConfirmationDisplayDuration;
-  // base::Unretained() below is safe because this view is tied to the lifetime
-  // of `extensions_container_`.
+  // base::Unretained() below is safe because this view is tied to the
+  // lifetime of `extensions_container_`.
   collapse_timer_.Start(
       FROM_HERE, collapse_duration,
       base::BindOnce(&ExtensionsContainer::CollapseConfirmation,
                      base::Unretained(extensions_container_)));
+
+  base::RecordAction(base::UserMetricsAction(
+      "Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton"));
+  UMA_HISTOGRAM_COUNTS_100(
+      "Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton",
+      extension_ids_.size());
 }
 
 content::WebContents* ExtensionsRequestAccessButton::GetActiveWebContents()

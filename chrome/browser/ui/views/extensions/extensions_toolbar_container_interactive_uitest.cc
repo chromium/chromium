@@ -1022,7 +1022,7 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 // Tests that when clicking the request access button (and a refresh should be
-// required to run blocked actions) it grants one time site access to the
+// required to run blocked actions) it always grants site access to the
 // extensions listed. Blocked actions are only run if the refresh is accepted.
 IN_PROC_BROWSER_TEST_P(
     ExtensionsToolbarContainerFeatureUIReloadBubbleAcceptanceTest,
@@ -1036,9 +1036,9 @@ IN_PROC_BROWSER_TEST_P(
       InstallExtensionWithHostPermissions("C Extension", "<all_urls>");
 
   // Withheld site access for extensions A and B.
-  extensions::ScriptingPermissionsModifier(profile(), extensionA)
+  ScriptingPermissionsModifier(profile(), extensionA)
       .SetWithholdHostPermissions(true);
-  extensions::ScriptingPermissionsModifier(profile(), extensionB)
+  ScriptingPermissionsModifier(profile(), extensionB)
       .SetWithholdHostPermissions(true);
 
   // Navigate to a site where extensions A and B have withheld access.
@@ -1077,8 +1077,9 @@ IN_PROC_BROWSER_TEST_P(
   // tests for it.
   request_access_button()->remove_confirmation_for_testing(true);
 
-  // Click the request access button to grant one-time access. A reload page
-  // dialog will appear since extension A needs a page reload to run its action.
+  // Click the request access button to always grants site access. A reload
+  // page dialog will appear since extension A needs a page reload to run its
+  // action.
   auto* action_runner =
       extensions::ExtensionActionRunner::GetForWebContents(web_contents);
   const bool kReloadBubbleAccepted = GetParam();
@@ -1105,9 +1106,8 @@ IN_PROC_BROWSER_TEST_P(
     // extension?
   }
 
-  // Extension A and B should have active site interaction, since their actions
-  // ran, but keep the same user site access since this is a one-time access
-  // grant.
+  // Extension A and B should have 'granted' site interaction, since their
+  // actions ran, and 'on site' site access.
   EXPECT_EQ(permissions_helper.GetSiteInteraction(*extensionA, web_contents),
             SiteInteraction::kGranted);
   EXPECT_EQ(permissions_helper.GetSiteInteraction(*extensionB, web_contents),
@@ -1115,28 +1115,11 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(permissions_helper.GetSiteInteraction(*extensionC, web_contents),
             SiteInteraction::kGranted);
   EXPECT_EQ(permissions_manager->GetUserSiteAccess(*extensionA, url),
-            UserSiteAccess::kOnClick);
+            UserSiteAccess::kOnSite);
   EXPECT_EQ(permissions_manager->GetUserSiteAccess(*extensionB, url),
-            UserSiteAccess::kOnClick);
+            UserSiteAccess::kOnSite);
   EXPECT_EQ(permissions_manager->GetUserSiteAccess(*extensionC, url),
             UserSiteAccess::kOnAllSites);
-
-  // Re-navigate to the same url. Refreshing the page doesn't remove the
-  // action, thus we need to navigate to another page and then navigate back
-  // to the original page.
-  NavigateToUrl(embedded_test_server()->GetURL("other.com", "/title1.html"));
-  NavigateToUrl(url);
-
-  // Extension A and B should have pending access again and the request access
-  // button should not be visible, since requests are reset on cross-origin
-  // navigation.
-  EXPECT_FALSE(request_access_button()->GetVisible());
-  EXPECT_EQ(permissions_helper.GetSiteInteraction(*extensionA, web_contents),
-            SiteInteraction::kWithheld);
-  EXPECT_EQ(permissions_helper.GetSiteInteraction(*extensionB, web_contents),
-            SiteInteraction::kWithheld);
-  EXPECT_EQ(permissions_helper.GetSiteInteraction(*extensionC, web_contents),
-            SiteInteraction::kGranted);
 }
 
 // Tests that the extension menu (puzzle piece menu) closes alongside the
@@ -1162,8 +1145,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerFeatureUITest,
   EXPECT_FALSE(extensions_menu_coordinator()->IsShowing());
 }
 
-// Tests that clicking the request access button grants one time access to the
-// extensions listed without needing a page refresh.
+// Tests that clicking the request access button always grants site access to
+// the extensions listed without needing a page refresh.
 IN_PROC_BROWSER_TEST_F(
     ExtensionsToolbarContainerFeatureUITest,
     ClickingRequestAccessButtonRunsAction_RefreshNotRequired) {
@@ -1178,9 +1161,9 @@ IN_PROC_BROWSER_TEST_F(
       InstallExtensionWithHostPermissions(kExtensionCName, "<all_urls>");
 
   // Withheld site access for extensions A and B.
-  extensions::ScriptingPermissionsModifier(profile(), extensionA)
+  ScriptingPermissionsModifier(profile(), extensionA)
       .SetWithholdHostPermissions(true);
-  extensions::ScriptingPermissionsModifier(profile(), extensionB)
+  ScriptingPermissionsModifier(profile(), extensionB)
       .SetWithholdHostPermissions(true);
 
   // Navigate to a site where extensions A and B have withheld access.
@@ -1194,7 +1177,7 @@ IN_PROC_BROWSER_TEST_F(
   WaitForAnimation();
 
   // Verify request access button is visible because extensions A and B have
-  // pending site interaction.
+  // site access requests.
   EXPECT_TRUE(request_access_button()->GetVisible());
   EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
               testing::ElementsAre(extensionA->id(), extensionB->id()));
@@ -1218,7 +1201,7 @@ IN_PROC_BROWSER_TEST_F(
   // tests for it.
   request_access_button()->remove_confirmation_for_testing(true);
 
-  // Click the request access button to grant one-time access. Since no
+  // Click the request access button to always grant site access. Since no
   // extensions need page refresh to run their actions, it immediately grants
   // access and the script is injected.
   ExtensionTestMessageListener script_injection_listener("injection succeeded");
@@ -1226,9 +1209,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(script_injection_listener.WaitUntilSatisfied());
   WaitForAnimation();
 
-  // Extension A and B should have active site interaction, since their actions
-  // ran, but keep the same site access since this is a one-time access grant.
-  // The request access button should be hidden.
+  // Extension A and B should have 'granted' site interaction, since their
+  // actions ran, and 'on site' site access. The request access button should be
+  // hidden.
   EXPECT_FALSE(request_access_button()->GetVisible());
   EXPECT_EQ(permissions_helper.GetSiteInteraction(*extensionA, web_contents),
             SiteInteraction::kGranted);
@@ -1237,28 +1220,11 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(permissions_helper.GetSiteInteraction(*extensionC, web_contents),
             SiteInteraction::kGranted);
   EXPECT_EQ(permissions_manager->GetUserSiteAccess(*extensionA, url),
-            UserSiteAccess::kOnClick);
+            UserSiteAccess::kOnSite);
   EXPECT_EQ(permissions_manager->GetUserSiteAccess(*extensionB, url),
-            UserSiteAccess::kOnClick);
+            UserSiteAccess::kOnSite);
   EXPECT_EQ(permissions_manager->GetUserSiteAccess(*extensionC, url),
             UserSiteAccess::kOnAllSites);
-
-  // Re-navigate to the same url. Refreshing the page doesn't remove the action,
-  // thus we need to navigate to another page and then navigate back to the
-  // original page.
-  NavigateToUrl(embedded_test_server()->GetURL("other.com", "/title1.html"));
-  NavigateToUrl(url);
-
-  // Extension A and B should have pending access again and the request access
-  // button should not be visible, since requests are reset on cross-origin
-  // navigation.
-  EXPECT_FALSE(request_access_button()->GetVisible());
-  EXPECT_EQ(permissions_helper.GetSiteInteraction(*extensionA, web_contents),
-            SiteInteraction::kWithheld);
-  EXPECT_EQ(permissions_helper.GetSiteInteraction(*extensionB, web_contents),
-            SiteInteraction::kWithheld);
-  EXPECT_EQ(permissions_helper.GetSiteInteraction(*extensionC, web_contents),
-            SiteInteraction::kGranted);
 }
 
 // Tests that when the user clicks on the request access button and immediately
