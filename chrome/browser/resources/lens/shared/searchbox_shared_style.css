@@ -31,7 +31,7 @@
   --color-searchbox-results-typed-prefix: #70757A;
   --color-searchbox-results-url: #1967d2ff;
   --color-searchbox-results-url-selected: #1967d2ff;
-  --color-searchbox-search-icon-background: #5F6368;
+  --color-searchbox-search-icon-background: var(--color-primary);
   /* Colors specific to the cr-searchbox input */
   --color-searchbox-background-hovered: #F1F3F4;
   --color-searchbox-background: #F1F3F4;
@@ -66,7 +66,7 @@
   --color-searchbox-results-typed-prefix: #9DA3A9;
   --color-searchbox-results-url: #a8c7faff;
   --color-searchbox-results-url-selected: #a8c7faff;
-  --color-searchbox-search-icon-background: #5F6368;
+  --color-searchbox-search-icon-background: var(--color-primary);
   /* Colors specific to the cr-searchbox input */
   --color-searchbox-background-hovered: #4a4a4aff;
   --color-searchbox-background: #303134;
