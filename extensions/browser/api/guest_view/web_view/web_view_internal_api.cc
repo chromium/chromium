@@ -355,6 +355,11 @@ void WebViewInternalCaptureVisibleRegionFunction::GetQuotaLimitHeuristics(
       "MAX_CAPTURE_VISIBLE_REGION_CALLS_PER_SECOND"));
 }
 
+bool WebViewInternalCaptureVisibleRegionFunction::ShouldSkipQuotaLimiting()
+    const {
+  return user_gesture();
+}
+
 WebContentsCaptureClient::ScreenshotAccess
 WebViewInternalCaptureVisibleRegionFunction::GetScreenshotAccess(
     content::WebContents* web_contents) const {

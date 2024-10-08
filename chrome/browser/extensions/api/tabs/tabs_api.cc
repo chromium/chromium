@@ -2304,7 +2304,7 @@ void TabsCaptureVisibleTabFunction::GetQuotaLimitHeuristics(
 }
 
 bool TabsCaptureVisibleTabFunction::ShouldSkipQuotaLimiting() const {
-  return disable_throttling_for_test_;
+  return user_gesture() || disable_throttling_for_test_;
 }
 
 void TabsCaptureVisibleTabFunction::OnCaptureSuccess(const SkBitmap& bitmap) {
