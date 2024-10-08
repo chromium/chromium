@@ -621,8 +621,6 @@ void BackForwardTransitionAnimator::OnRenderWidgetHostDestroyed(
   // The subscribed `RenderWidgetHost` is getting destroyed. We must cancel the
   // transition and reset everything. This can happen for a client redirect,
   // where Viz never activates a frame from the committed renderer.
-  CHECK_EQ(state_, State::kWaitingForNewRendererToDraw);
-  CHECK_EQ(navigation_state_, NavigationState::kCommitted);
   AbortAnimation(AnimationAbortReason::kRenderWidgetHostDestroyed);
 }
 
