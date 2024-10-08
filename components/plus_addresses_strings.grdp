@@ -164,7 +164,7 @@
         Something Went Wrong
     </message>
     <message name="IDS_PLUS_ADDRESS_GENERIC_ERROR_ALERT_MESSAGE_IOS" desc="The message displayed in the generic error alert." translateable="false">
-	Try reloading the page or some lorem ipsum generic text
+	Can't create plus address right now.
     </message>
     <message name="IDS_PLUS_ADDRESS_AFFILIATION_ERROR_ALERT_TITLE_IOS" desc="The title of the alert view shown if there is a plus address found for an affiliated site during the creation of a plus address via the bottom sheet." translateable="false">
         Use existing address?
@@ -174,6 +174,21 @@
     </message>
     <message name="IDS_PLUS_ADDRESS_AFFILIATION_ERROR_PRIMARY_BUTTON_IOS" desc="The confirmation button displayed in the alert view shown if there is a plus address found for an affiliated site during the creation of a plus address via the bottom sheet." translateable="false">
         Use existing
+    </message>
+    <message name="IDS_PLUS_ADDRESS_TIMEOUT_ERROR_ALERT_TITLE_IOS" desc="The title of the error alert shown during the creation of plus address when the backend fails to reserve/confirm the plus address due to network timeout." translateable="false">
+        Something Went Wrong
+    </message>
+    <message name="IDS_PLUS_ADDRESS_TIMEOUT_ERROR_ALERT_MESSAGE_IOS" desc="The message displayed in the error alert shown during the creation of plus address when the backend fails to reserve/confirm the plus address due to network timeout." translateable="false">
+        Make sure you're online and try again.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_QUOTA_ERROR_ALERT_TITLE_IOS" desc="The title of the error alert shown during the creation of plus address when the backend fails to reserve/confirm the plus address due to the plus address quota limit exceeded." translateable="false">
+        Too many plus addresses
+    </message>
+    <message name="IDS_PLUS_ADDRESS_QUOTA_ERROR_ALERT_MESSAGE_IOS" desc="The message displayed in the error alert shown during the creation of plus address when the backend fails to reserve/confirm the plus address due to the plus address quota limit exceeded." translateable="false">
+        Can't create any more plus addresses.
+    </message>
+     <message name="IDS_PLUS_ADDRESS_ERROR_TRY_AGAIN_PRIMARY_BUTTON_IOS" desc="The confirmation button displayed in the alert view that retries the previous failed action." translateable="false">
+        Try again
     </message>
 
     <!-- Desktop strings -->
