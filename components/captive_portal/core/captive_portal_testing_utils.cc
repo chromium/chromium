@@ -26,7 +26,7 @@ namespace captive_portal {
 CaptivePortalDetectorTestBase::CaptivePortalDetectorTestBase()
     : detector_(nullptr) {}
 
-CaptivePortalDetectorTestBase::~CaptivePortalDetectorTestBase() {}
+CaptivePortalDetectorTestBase::~CaptivePortalDetectorTestBase() = default;
 
 void CaptivePortalDetectorTestBase::SetTime(const base::Time& time) {
   detector()->set_time_for_testing(time);

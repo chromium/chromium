@@ -224,8 +224,8 @@ class DomainReliabilityUploaderImpl : public DomainReliabilityUploader,
   int discarded_upload_count_;
 };
 
-DomainReliabilityUploader::DomainReliabilityUploader() {}
-DomainReliabilityUploader::~DomainReliabilityUploader() {}
+DomainReliabilityUploader::DomainReliabilityUploader() = default;
+DomainReliabilityUploader::~DomainReliabilityUploader() = default;
 
 // static
 std::unique_ptr<DomainReliabilityUploader> DomainReliabilityUploader::Create(

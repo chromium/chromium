@@ -34,8 +34,8 @@ namespace wifi {
 
 class WiFiTest {
  public:
-  WiFiTest() {}
-  ~WiFiTest() {}
+  WiFiTest() = default;
+  ~WiFiTest() = default;
 
   enum Result {
     RESULT_ERROR = -2,

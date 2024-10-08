@@ -179,8 +179,8 @@ namespace {
 
 class ActualTimer : public MockableTime::Timer {
  public:
-  ActualTimer() {}
-  ~ActualTimer() override {}
+  ActualTimer() = default;
+  ~ActualTimer() override = default;
 
   // MockableTime::Timer implementation:
   void Start(const base::Location& posted_from,
@@ -202,11 +202,11 @@ class ActualTimer : public MockableTime::Timer {
 MockableTime::Timer::~Timer() {}
 MockableTime::Timer::Timer() {}
 
-MockableTime::~MockableTime() {}
-MockableTime::MockableTime() {}
+MockableTime::~MockableTime() = default;
+MockableTime::MockableTime() = default;
 
-ActualTime::ActualTime() {}
-ActualTime::~ActualTime() {}
+ActualTime::ActualTime() = default;
+ActualTime::~ActualTime() = default;
 
 base::Time ActualTime::Now() const {
   return base::Time::Now();
