@@ -628,12 +628,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // credentials and client certificates.
   void SetRequestCredentials(const GURL& url);
 
-  // Returns whether sending/storing credentials is allowed by COEP.
+  // Returns whether sending/storing credentials is allowed by COEP and
+  // Document-Isolation-Policy.
   // |url| is the latest request URL, either the original URL or
   // `redirect_info.new_url`.
-  // When Cross-Origin-Embedder-Policy: credentialless is set, do not
-  // send or store credentials for no-cors cross-origin request.
-  bool CoepAllowCredentials(const GURL& url);
+  // When Cross-Origin-Embedder-Policy: credentialless or
+  // Document-Isolation-Policy: isolate-and-credentialless are set, do not send
+  // or store credentials for no-cors cross-origin request.
+  bool WebPoliciesAllowCredentials(const GURL& url);
 
   // Returns whether TransferSizeUpdated IPC should be sent.
   bool ShouldSendTransferSizeUpdated() const;

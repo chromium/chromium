@@ -3022,14 +3022,14 @@ bool URLLoader::ShouldForceIgnoreSiteForCookies(
 }
 
 void URLLoader::SetRequestCredentials(const GURL& url) {
-  bool coep_allow_credentials = CoepAllowCredentials(url);
+  bool policies_allow_credentials = WebPoliciesAllowCredentials(url);
 
   bool allow_credentials = ShouldAllowCredentials(request_credentials_mode_) &&
-                           coep_allow_credentials;
+                           policies_allow_credentials;
 
   bool allow_client_certificates =
       ShouldSendClientCertificates(request_credentials_mode_) &&
-      coep_allow_credentials;
+      policies_allow_credentials;
 
   // The decision not to include credentials is sticky. This is equivalent to
   // checking the tainted origin flag in the fetch specification.
@@ -3043,7 +3043,7 @@ void URLLoader::SetRequestCredentials(const GURL& url) {
   // https://docs.google.com/document/d/1lvbiy4n-GM5I56Ncw304sgvY5Td32R6KHitjRXvkZ6U
   // As a workaround until a solution is implemented, the cached responses
   // aren't used for those requests.
-  if (!coep_allow_credentials) {
+  if (!policies_allow_credentials) {
     url_request_->SetLoadFlags(url_request_->load_flags() |
                                net::LOAD_BYPASS_CACHE);
   }
@@ -3051,7 +3051,7 @@ void URLLoader::SetRequestCredentials(const GURL& url) {
 
 // [spec]:
 // https://fetch.spec.whatwg.org/#cross-origin-embedder-policy-allows-credentials
-bool URLLoader::CoepAllowCredentials(const GURL& url) {
+bool URLLoader::WebPoliciesAllowCredentials(const GURL& url) {
   // [spec]: To check if Cross-Origin-Embedder-Policy allows credentials, given
   //         a request request, run these steps:
 
@@ -3073,8 +3073,13 @@ bool URLLoader::CoepAllowCredentials(const GURL& url) {
 
   // [spec]: 3. If request’s client’s policy container’s embedder policy’s value
   //            is not "credentialless", then return true.
+  // Document-Isolation-Policy: also check that Document-Isolation-Policy allows
+  // credentials.
   if (factory_params_->client_security_state->cross_origin_embedder_policy
-          .value != mojom::CrossOriginEmbedderPolicyValue::kCredentialless) {
+              .value !=
+          mojom::CrossOriginEmbedderPolicyValue::kCredentialless &&
+      factory_params_->client_security_state->document_isolation_policy.value !=
+          mojom::DocumentIsolationPolicyValue::kIsolateAndCredentialless) {
     return true;
   }
 

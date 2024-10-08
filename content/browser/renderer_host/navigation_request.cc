@@ -10211,29 +10211,24 @@ NavigationRequest::ComputeCrossOriginIsolationKey() {
     return std::nullopt;
   }
 
-  // If the Document-Isolation-Policy value is "isolate-and-credentialless",
-  // return an empty CrossOriginIsolationKey. Subresource checks have not been
-  // implemented in this mode yet, so it is not safe to make the document
-  // cross-origin isolated in this case.
-  // TODO(crbug.com/349792240): Support credentialless mode.
-  if (policy_container_builder_->FinalPolicies()
-          .document_isolation_policy.value ==
-      network::mojom::DocumentIsolationPolicyValue::kIsolateAndCredentialless) {
-    return std::nullopt;
-  }
-
   // The document we're navigating to has a DocumentIsolationPolicy of
-  // "isolate-and-require-corp". This means that the document requested
-  // crossOriginIsolation, so return a cross-origin isolation key with the
-  // current origin. Its cross-origin isolation mode depends on the capabilities
-  // of the platform.  Currently, we only support a cross-origin isolation mode
-  // of kConcrete and platforms with full Site Isolation.
+  // "isolate-and-require-corp" or "isolate-and-credentialless". This means that
+  // the document requested crossOriginIsolation, so return a cross-origin
+  // isolation key with the current origin. Its cross-origin isolation mode
+  // depends on the capabilities of the platform.  Currently, we only support a
+  // cross-origin isolation mode of kConcrete and platforms with full Site
+  // Isolation.
   // TODO(crbug.com/342364564): Support platforms that do not
   // support OOPIF and return an AgentClusterKey with a CrossOriginIsolationKey
   // that has a kLogical cross-origin isolation mode.
   CHECK(policy_container_builder_->FinalPolicies()
-            .document_isolation_policy.value ==
-        network::mojom::DocumentIsolationPolicyValue::kIsolateAndRequireCorp);
+                .document_isolation_policy.value ==
+            network::mojom::DocumentIsolationPolicyValue::
+                kIsolateAndRequireCorp ||
+        policy_container_builder_->FinalPolicies()
+                .document_isolation_policy.value ==
+            network::mojom::DocumentIsolationPolicyValue::
+                kIsolateAndCredentialless);
 
   // If the navigation doesn't have an origin, we cannot create a
   // CrossOriginIsolationKey for it, since it must be tied to an origin.
@@ -11009,21 +11004,6 @@ void NavigationRequest::SanitizeDocumentIsolationPolicyHeader() {
   // enabled.
   if (!base::FeatureList::IsEnabled(
           network::features::kDocumentIsolationPolicy)) {
-    response_head_->parsed_headers->document_isolation_policy =
-        network::DocumentIsolationPolicy();
-    return;
-  }
-
-  // Currently, we don't support Document-Isolation-Policy
-  // 'isolate-and-credentialless'. Set Document-Isolation-Policy to its default
-  // value if a credentialless header has been sent.
-  if (response_head_->parsed_headers->document_isolation_policy.value ==
-          network::mojom::DocumentIsolationPolicyValue::
-              kIsolateAndCredentialless ||
-      response_head_->parsed_headers->document_isolation_policy
-              .report_only_value ==
-          network::mojom::DocumentIsolationPolicyValue::
-              kIsolateAndCredentialless) {
     response_head_->parsed_headers->document_isolation_policy =
         network::DocumentIsolationPolicy();
     return;
