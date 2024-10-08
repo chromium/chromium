@@ -302,7 +302,7 @@ def main():
 
   subprocess.check_call([_INFRA_CONFIG_DIR / 'scripts/sync-pyl-files.py'])
 
-  sys.stderr.write(ret.stderr, file=sys.stderr)
+  sys.stderr.write(ret.stderr)
   sys.exit(ret.returncode)
 
 
