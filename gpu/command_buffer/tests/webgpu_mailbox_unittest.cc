@@ -46,20 +46,6 @@ void ToMockBufferMapCallback(wgpu::MapAsyncStatus status, const char* message) {
   mock_buffer_map_callback->Call(status, message);
 }
 
-class MockUncapturedErrorCallback {
- public:
-  MOCK_METHOD3(Call,
-               void(WGPUErrorType type, const char* message, void* userdata));
-};
-
-std::unique_ptr<testing::StrictMock<MockUncapturedErrorCallback>>
-    mock_device_error_callback;
-void ToMockUncapturedErrorCallback(WGPUErrorType type,
-                                   const char* message,
-                                   void* userdata) {
-  mock_device_error_callback->Call(type, message, userdata);
-}
-
 struct WebGPUMailboxTestParams : WebGPUTest::Options {
   viz::SharedImageFormat format;
 };
@@ -161,13 +147,10 @@ class WebGPUMailboxTest
 
     mock_buffer_map_callback =
         std::make_unique<testing::StrictMock<MockBufferMapCallback>>();
-    mock_device_error_callback =
-        std::make_unique<testing::StrictMock<MockUncapturedErrorCallback>>();
   }
 
   void TearDown() override {
     mock_buffer_map_callback = nullptr;
-    mock_device_error_callback = nullptr;
     // Wait for all operations to catch any validation or device lost errors.
     PollUntilIdle();
     device_ = nullptr;
@@ -704,9 +687,6 @@ TEST_P(WebGPUMailboxTest, PassWriteUsagesWhenAssociatingReadOnlyMailbox) {
   SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
   webgpu()->WaitSyncTokenCHROMIUM(mailbox_produced_token.GetConstData());
 
-  // Set callback to expect a validation error.
-  device_.SetUncapturedErrorCallback(ToMockUncapturedErrorCallback, nullptr);
-
   // Register the shared image as a Dawn texture in the wire.
   gpu::webgpu::ReservedTexture reservation =
       webgpu()->ReserveTexture(device_.Get());
@@ -740,11 +720,7 @@ TEST_P(WebGPUMailboxTest, PassWriteUsagesWhenAssociatingReadOnlyMailbox) {
   wgpu::CommandEncoder encoder = device_.CreateCommandEncoder();
   encoder.CopyTextureToBuffer(&copy_src, &copy_dst, &copy_size);
 
-  EXPECT_CALL(*mock_device_error_callback,
-              Call(WGPUErrorType_Validation, testing::_, testing::_))
-      .Times(1);
-
-  encoder.Finish();
+  EXPECT_WEBGPU_ERROR(device_, wgpu::ErrorType::Validation, encoder.Finish());
 
   WaitForCompletion(device_);
 }
@@ -764,9 +740,6 @@ TEST_P(WebGPUMailboxTest,
                              kNullSurfaceHandle);
   SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
   webgpu()->WaitSyncTokenCHROMIUM(mailbox_produced_token.GetConstData());
-
-  // Set callback to expect a validation error.
-  device_.SetUncapturedErrorCallback(ToMockUncapturedErrorCallback, nullptr);
 
   // Register the shared image as a Dawn texture in the wire.
   gpu::webgpu::ReservedTexture reservation =
@@ -801,11 +774,7 @@ TEST_P(WebGPUMailboxTest,
   wgpu::CommandEncoder encoder = device_.CreateCommandEncoder();
   encoder.CopyTextureToBuffer(&copy_src, &copy_dst, &copy_size);
 
-  EXPECT_CALL(*mock_device_error_callback,
-              Call(WGPUErrorType_Validation, testing::_, testing::_))
-      .Times(1);
-
-  encoder.Finish();
+  EXPECT_WEBGPU_ERROR(device_, wgpu::ErrorType::Validation, encoder.Finish());
 
   WaitForCompletion(device_);
 }
@@ -824,9 +793,6 @@ TEST_P(WebGPUMailboxTest, PassDiscardWhenAssociatingReadOnlyMailbox) {
                              kNullSurfaceHandle);
   SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
   webgpu()->WaitSyncTokenCHROMIUM(mailbox_produced_token.GetConstData());
-
-  // Set callback to expect a validation error.
-  device_.SetUncapturedErrorCallback(ToMockUncapturedErrorCallback, nullptr);
 
   // Register the shared image as a Dawn texture in the wire.
   gpu::webgpu::ReservedTexture reservation =
@@ -861,11 +827,7 @@ TEST_P(WebGPUMailboxTest, PassDiscardWhenAssociatingReadOnlyMailbox) {
   wgpu::CommandEncoder encoder = device_.CreateCommandEncoder();
   encoder.CopyTextureToBuffer(&copy_src, &copy_dst, &copy_size);
 
-  EXPECT_CALL(*mock_device_error_callback,
-              Call(WGPUErrorType_Validation, testing::_, testing::_))
-      .Times(1);
-
-  encoder.Finish();
+  EXPECT_WEBGPU_ERROR(device_, wgpu::ErrorType::Validation, encoder.Finish());
 
   WaitForCompletion(device_);
 }
@@ -885,9 +847,6 @@ TEST_P(WebGPUMailboxTest,
                              kNullSurfaceHandle);
   SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
   webgpu()->WaitSyncTokenCHROMIUM(mailbox_produced_token.GetConstData());
-
-  // Set callback to expect a validation error.
-  device_.SetUncapturedErrorCallback(ToMockUncapturedErrorCallback, nullptr);
 
   // Register the shared image as a Dawn texture in the wire.
   gpu::webgpu::ReservedTexture reservation =
@@ -922,11 +881,7 @@ TEST_P(WebGPUMailboxTest,
   wgpu::CommandEncoder encoder = device_.CreateCommandEncoder();
   encoder.CopyTextureToBuffer(&copy_src, &copy_dst, &copy_size);
 
-  EXPECT_CALL(*mock_device_error_callback,
-              Call(WGPUErrorType_Validation, testing::_, testing::_))
-      .Times(1);
-
-  encoder.Finish();
+  EXPECT_WEBGPU_ERROR(device_, wgpu::ErrorType::Validation, encoder.Finish());
 
   WaitForCompletion(device_);
 }
@@ -1225,9 +1180,6 @@ TEST_P(WebGPUMailboxTest, ErrorWhenUsingTextureAfterDissociate) {
   SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
   webgpu()->WaitSyncTokenCHROMIUM(mailbox_produced_token.GetConstData());
 
-  // Set callback to expect a validation error.
-  device_.SetUncapturedErrorCallback(ToMockUncapturedErrorCallback, nullptr);
-
   // Associate and immediately dissociate the image.
   gpu::webgpu::ReservedTexture reservation =
       webgpu()->ReserveTexture(device_.Get());
@@ -1267,12 +1219,9 @@ TEST_P(WebGPUMailboxTest, ErrorWhenUsingTextureAfterDissociate) {
 
   // Wait so it's clear the validation error after this when we call Submit.
   WaitForCompletion(device_);
-  device_.GetQueue().Submit(1, &commandBuffer);
 
-  EXPECT_CALL(*mock_device_error_callback,
-              Call(WGPUErrorType_Validation, testing::_, testing::_))
-      .Times(1);
-  WaitForCompletion(device_);
+  EXPECT_WEBGPU_ERROR(device_, wgpu::ErrorType::Validation,
+                      device_.GetQueue().Submit(1, &commandBuffer));
 }
 
 // This is a regression test for an issue when using multiple shared images
