@@ -1577,8 +1577,8 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
-    public void test_elementClassIdSrcAttr() {
-        performHtmlTest("element-class-id-src-attr.html");
+    public void test_elementClassIdAttr() {
+        performHtmlTest("element-class-id-attr.html");
     }
 
     @Test

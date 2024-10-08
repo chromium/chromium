@@ -27,6 +27,8 @@
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_enums.mojom-shared-internal.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -1553,9 +1555,9 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
     AddAttributeToList("id", id, attributes);
   }
 
-  // Expose src attribute.
   std::string src;
-  if (GetRole() == ax::mojom::Role::kImage && GetHtmlAttribute("src", &src)) {
+  if (IsImage(GetRole()) &&
+      GetStringAttribute(ax::mojom::StringAttribute::kUrl, &src)) {
     AddAttributeToList("src", src, attributes);
   }
 

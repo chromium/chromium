@@ -1269,6 +1269,8 @@ const char* ToString(ax::mojom::StringAttribute string_attribute) {
       return "none";
     case ax::mojom::StringAttribute::kAccessKey:
       return "accessKey";
+    case ax::mojom::StringAttribute::kAppId:
+      return "appId";
     case ax::mojom::StringAttribute::kAriaCellColumnIndexText:
       return "ariaCellColumnIndexText";
     case ax::mojom::StringAttribute::kAriaCellRowIndexText:
@@ -1313,8 +1315,6 @@ const char* ToString(ax::mojom::StringAttribute string_attribute) {
       return "imageAnnotation";
     case ax::mojom::StringAttribute::kImageDataUrl:
       return "imageDataUrl";
-    case ax::mojom::StringAttribute::kInnerHtml:
-      return "innerHtml";
     case ax::mojom::StringAttribute::kInputType:
       return "inputType";
     case ax::mojom::StringAttribute::kKeyShortcuts:
@@ -1323,14 +1323,14 @@ const char* ToString(ax::mojom::StringAttribute string_attribute) {
       return "language";
     case ax::mojom::StringAttribute::kLinkTarget:
       return "linkTarget";
-    case ax::mojom::StringAttribute::kName:
-      return "name";
     case ax::mojom::StringAttribute::kLiveRelevant:
       return "liveRelevant";
     case ax::mojom::StringAttribute::kLiveStatus:
       return "liveStatus";
-    case ax::mojom::StringAttribute::kAppId:
-      return "appId";
+    case ax::mojom::StringAttribute::kMathContent:
+      return "mathContent";
+    case ax::mojom::StringAttribute::kName:
+      return "name";
     case ax::mojom::StringAttribute::kPlaceholder:
       return "placeholder";
     case ax::mojom::StringAttribute::kRole:
@@ -1358,6 +1358,12 @@ ax::mojom::StringAttribute StringToStringAttribute(
     return ax::mojom::StringAttribute::kNone;
   } else if (string_attribute == "kAccessKey") {
     return ax::mojom::StringAttribute::kAccessKey;
+  } else if (string_attribute == "kApp") {
+    return ax::mojom::StringAttribute::kAppId;
+  } else if (string_attribute == "kAriaCellColumnIndexText") {
+    return ax::mojom::StringAttribute::kAriaCellColumnIndexText;
+  } else if (string_attribute == "kAriaCellRowIndexText") {
+    return ax::mojom::StringAttribute::kAriaCellRowIndexText;
   } else if (string_attribute == "kAriaInvalidValueDeprecated") {
     return ax::mojom::StringAttribute::kAriaInvalidValueDeprecated;
   } else if (string_attribute == "kAutoComplete") {
@@ -1398,22 +1404,20 @@ ax::mojom::StringAttribute StringToStringAttribute(
     return ax::mojom::StringAttribute::kImageAnnotation;
   } else if (string_attribute == "kImageDataUrl") {
     return ax::mojom::StringAttribute::kImageDataUrl;
-  } else if (string_attribute == "kInnerHtml") {
-    return ax::mojom::StringAttribute::kInnerHtml;
   } else if (string_attribute == "kInputType") {
     return ax::mojom::StringAttribute::kInputType;
   } else if (string_attribute == "kKeyShortcuts") {
     return ax::mojom::StringAttribute::kKeyShortcuts;
   } else if (string_attribute == "kLanguage") {
     return ax::mojom::StringAttribute::kLanguage;
-  } else if (string_attribute == "kName") {
-    return ax::mojom::StringAttribute::kName;
   } else if (string_attribute == "kLiveRelevant") {
     return ax::mojom::StringAttribute::kLiveRelevant;
   } else if (string_attribute == "kLiveStatus") {
     return ax::mojom::StringAttribute::kLiveStatus;
-  } else if (string_attribute == "kApp") {
-    return ax::mojom::StringAttribute::kAppId;
+  } else if (string_attribute == "kMathContent") {
+    return ax::mojom::StringAttribute::kMathContent;
+  } else if (string_attribute == "kName") {
+    return ax::mojom::StringAttribute::kName;
   } else if (string_attribute == "kPlaceholder") {
     return ax::mojom::StringAttribute::kPlaceholder;
   } else if (string_attribute == "kRole") {

@@ -177,13 +177,6 @@ const GetChildIds = natives.GetChildIDs;
 /**
  * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
- * @return {?Object} An object mapping html attributes to values.
- */
-const GetHtmlAttributes = natives.GetHtmlAttributes;
-
-/**
- * @param {string} axTreeID The id of the accessibility tree.
- * @param {number} nodeID The id of a node.
  * @return {?number} The index of this node in its parent, or undefined if
  *     the tree or node or node parent wasn't found.
  */
@@ -339,15 +332,6 @@ const GetIntListAttribute = natives.GetIntListAttribute;
  */
 const GetIntListAttributeReverseRelations =
     natives.GetIntListAttributeReverseRelations;
-
-/**
- * @param {string} axTreeID The id of the accessibility tree.
- * @param {number} nodeID The id of a node.
- * @param {string} attr The name of an HTML attribute.
- * @return {?string} The value of this attribute, or undefined if the tree,
- *     node, or attribute wasn't found.
- */
-const GetHtmlAttribute = natives.GetHtmlAttribute;
 
 /**
  * @param {string} axTreeID The id of the accessibility tree.
@@ -678,10 +662,6 @@ AutomationNodeImpl.prototype = {
     if (info) {
       return AutomationRootNodeImpl.getNodeFromTree(info.treeId, info.nodeId);
     }
-  },
-
-  get htmlAttributes() {
-    return GetHtmlAttributes(this.treeID, this.id) || {};
   },
 
   get state() {
@@ -1484,6 +1464,8 @@ AutomationNodeImpl.prototype = {
 const stringAttributes = [
   'accessKey',
   'appId',
+  'ariaCellColumnIndexText',
+  'ariaCellRowIndexText',
   'autoComplete',
   'checkedStateDescription',
   'className',
@@ -1496,11 +1478,12 @@ const stringAttributes = [
   'htmlId',
   'htmlTag',
   'imageDataUrl',
-  'innerHtml',
+  'inputType',
   'language',
   'liveRelevant',
   'liveStatus',
   'longClickLabel',
+  'mathContent',
   'placeholder',
   'roleDescription',
   'tooltip',
@@ -1572,8 +1555,6 @@ const nodeRefListAttributes = [
 
 const floatAttributes =
     ['fontSize', 'maxValueForRange', 'minValueForRange', 'valueForRange'];
-
-const htmlAttributes = [['type', 'inputType']];
 
 const publicAttributes = [];
 
@@ -1709,18 +1690,6 @@ Array.prototype.forEach.call(floatAttributes, function(attributeName) {
     __proto__: null,
     get: function() {
       return GetFloatAttribute(this.treeID, this.id, attributeName);
-    },
-  });
-});
-
-Array.prototype.forEach.call(htmlAttributes, function(params) {
-  const srcAttributeName = params[0];
-  const dstAttributeName = params[1];
-  Array.prototype.push.call(publicAttributes, dstAttributeName);
-  Object.defineProperty(AutomationNodeImpl.prototype, dstAttributeName, {
-    __proto__: null,
-    get: function() {
-      return GetHtmlAttribute(this.treeID, this.id, srcAttributeName);
     },
   });
 });
@@ -2166,7 +2135,6 @@ utils.expose(AutomationNode, AutomationNodeImpl, {
         'detectedLanguage',
         'firstChild',
         'hasPopup',
-        'htmlAttributes',
         'imageAnnotation',
         'indexInParent',
         'invalidState',

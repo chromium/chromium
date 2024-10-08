@@ -1356,11 +1356,12 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_innerHTML(BSTR* innerHTML) {
   }
   if (GetOwner()->GetRole() != ax::mojom::Role::kMath &&
       GetOwner()->GetRole() != ax::mojom::Role::kMathMLMath) {
+    // TODO(nektar): Make sure we only get calls for Math nodes.
     return E_NOTIMPL;
   }
 
-  std::u16string inner_html =
-      GetOwner()->GetString16Attribute(ax::mojom::StringAttribute::kInnerHtml);
+  std::u16string inner_html = GetOwner()->GetString16Attribute(
+      ax::mojom::StringAttribute::kMathContent);
   *innerHTML = SysAllocString(base::as_wcstr(inner_html));
   DCHECK(*innerHTML);
   return S_OK;

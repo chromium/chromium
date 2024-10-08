@@ -118,6 +118,7 @@
 #include "third_party/blink/renderer/core/svg/svg_title_element.h"
 #include "third_party/blink/renderer/modules/accessibility/aria_notification.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_enums.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #if DCHECK_IS_ON()
 #include "third_party/blink/renderer/modules/accessibility/ax_debug_utils.h"
 #endif
@@ -566,6 +567,14 @@ const QualifiedName& DeprecatedAriaRowtextAttrName() {
                       (AtomicString("aria-rowtext")));
   return aria_rowtext_attr;
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+const QualifiedName& MathMLAttrName() {
+  DEFINE_STATIC_LOCAL(QualifiedName, mathml_attr,
+                      (AtomicString("data-mathml")));
+  return mathml_attr;
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -2088,15 +2097,23 @@ void AXObject::SerializeOtherScreenReaderAttributes(
 
 void AXObject::SerializeMathContent(ui::AXNodeData* node_data) const {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+  const Element* element = GetElement();
+  if (!element) {
+    return;
+  }
+  if (const AtomicString& math_ml = AriaAttribute(MathMLAttrName())) {
+    TruncateAndAddStringAttribute(
+        node_data, ax::mojom::blink::StringAttribute::kMathContent, math_ml,
+        kMaxStaticTextLength);
+    return;
+  }
   if (node_data->role == ax::mojom::blink::Role::kMath ||
       node_data->role == ax::mojom::blink::Role::kMathMLMath) {
-    const Element* element = GetElement();
-    DCHECK(element);
-    TruncateAndAddStringAttribute(node_data,
-                                  ax::mojom::blink::StringAttribute::kInnerHtml,
-                                  element->innerHTML(), kMaxStaticTextLength);
+    TruncateAndAddStringAttribute(
+        node_data, ax::mojom::blink::StringAttribute::kMathContent,
+        element->innerHTML(), kMaxStaticTextLength);
   }
-#endif
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 }
 
 void AXObject::SerializeScrollAttributes(ui::AXNodeData* node_data) const {

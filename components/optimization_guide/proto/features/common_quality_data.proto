@@ -750,7 +750,7 @@ enum AXStringAttribute {
 
   AX_SA_IMAGEDATAURL = 16;
 
-  AX_SA_INNERHTML = 17;
+  AX_SA_MATHCONTENT = 17;
 
   AX_SA_INPUTTYPE = 18;
 

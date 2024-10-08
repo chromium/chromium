@@ -8463,7 +8463,6 @@ void AXPlatformNodeWin::NotifyAPIObserverForPropertyRequest(
 
   bool probable_advanced_client_detected = false;
   bool probable_screen_reader_detected = false;
-  bool uiautomation_id_requested = false;
   switch (property_id) {
     // These properties are used by non-screenreader UIA clients. They should
     // not cause additional enablement.
@@ -8535,7 +8534,6 @@ void AXPlatformNodeWin::NotifyAPIObserverForPropertyRequest(
     case UIA_LocalizedLandmarkTypePropertyId:
     case UIA_FullDescriptionPropertyId:
     case UIA_IsDialogPropertyId:
-      uiautomation_id_requested = true;
       probable_screen_reader_detected = true;
       probable_advanced_client_detected = true;
       break;
@@ -8547,8 +8545,6 @@ void AXPlatformNodeWin::NotifyAPIObserverForPropertyRequest(
       observer.OnAdvancedUIAutomationUsed();
     if (probable_screen_reader_detected)
       observer.OnProbableUIAutomationScreenReaderDetected();
-    if (uiautomation_id_requested)
-      observer.OnUIAutomationIdRequested();
   }
 }
 

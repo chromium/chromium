@@ -65,14 +65,10 @@ export class AutomationUtil {
 
       // Chrome automatically calculates these attributes.
       case 'posInSet':
-        // TODO(b/314203187): node.htmlAttributes may be undefined.
-        return Boolean(node.htmlAttributes!['aria-posinset']) ||
-            (node.root!.role !== RoleType.ROOT_WEB_AREA &&
-             Boolean(node.posInSet));
+        return node.root!.role !== RoleType.ROOT_WEB_AREA &&
+            Boolean(node.posInSet);
       case 'setSize':
-        // TODO(b/314203187): node.htmlAttributes may be undefined.
-        return Boolean(node.htmlAttributes!['aria-setsize']) ||
-            Boolean(node.setSize);
+        return Boolean(node.setSize);
 
       // These attributes default to false for empty strings.
       case 'roleDescription':
