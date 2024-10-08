@@ -59,6 +59,7 @@ class SupervisedUserPendingStateNavigationTest
         {supervised_user::kForceSupervisedUserReauthenticationForBlockedSites,
          supervised_user::kCloseSignTabsFromReauthenticationInterstitial,
          supervised_user::kUncredentialedFilteringFallbackForSupervisedUsers,
+         supervised_user::kForceSupervisedUserReauthenticationForYouTube,
          supervised_user::kAllowSupervisedUserReauthenticationForSubframes},
         /*disabled_features=*/{});
   }
@@ -114,10 +115,10 @@ class SupervisedUserPendingStateNavigationTest
     observer.WaitForNavigationFinished();
   }
 
+  // Start sign-in flow by clicking on the primary button.
   bool StartSignInFlowFromContent(content::WebContents* interstitial_content) {
-    return content::ExecJs(
-        interstitial_content,
-        "window.certificateErrorPageController.openLogin();");
+    return content::ExecJs(interstitial_content,
+                           "document.querySelector('#primary-button').click()");
   }
 
   void WaitForReauthenticationInterstitial() {
@@ -175,9 +176,31 @@ class SupervisedUserPendingStateNavigationTest
   }
 
   content::RenderFrameHost* FindFrameByName(const std::string& name) {
-    return content::FrameMatchingPredicate(
+    content::RenderFrameHost* rfh = content::FrameMatchingPredicate(
         contents()->GetPrimaryPage(),
         base::BindRepeating(&content::FrameMatchesName, name));
+    CHECK(rfh);
+    CHECK(rfh->IsRenderFrameLive());
+    return rfh;
+  }
+
+  std::string GetInnerHTMLString(
+      const content::ToRenderFrameHost& execution_target) {
+    return content::EvalJs(execution_target,
+                           "document.documentElement.innerHTML")
+        .ExtractString();
+  }
+
+  int GetReauthInterstitialUKMCount(const std::string& metric_name) {
+    int count = 0;
+    auto entries = ukm_recorder_->GetEntriesByName(
+        ukm::builders::FamilyLinkUser_ReauthenticationInterstitial::kEntryName);
+    for (const ukm::mojom::UkmEntry* const entry : entries) {
+      if (ukm_recorder_->GetEntryMetric(entry, metric_name)) {
+        ++count;
+      }
+    }
+    return count;
   }
 
  private:
@@ -302,6 +325,46 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
   WaitForReauthenticationInterstitial();
 }
 
+// Tests the YouTube main frame re-authentication interstitial.
+IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
+                       TestYouTubeMainFrameReauthInterstitial) {
+  supervision_mixin_.SetPendingStateForPrimaryAccount();
+  kids_management_api_mock().AllowSubsequentClassifyUrl();
+
+  // Navigate to YouTube and wait for the interstitial.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://youtube.com/")));
+  ASSERT_TRUE(WaitForRenderFrameReady(contents()->GetPrimaryMainFrame()));
+  WaitForPageTitle(
+      l10n_util::GetStringUTF16(IDS_SUPERVISED_USER_VERIFY_PAGE_TAB_TITLE));
+  EXPECT_EQ(GetReauthInterstitialUKMCount("InterstitialShown"), 1);
+
+  // Check that the YouTube interstitial contains the correct text.
+  EXPECT_EQ(ui_test_utils::FindInPage(
+                contents(),
+                l10n_util::GetStringUTF16(
+                    IDS_SUPERVISED_USER_VERIFY_PAGE_PRIMARY_PARAGRAPH),
+                /*forward=*/true, /*case_sensitive=*/true, /*ordinal=*/nullptr,
+                /*selection_rect=*/nullptr),
+            1);
+
+  // Open re-authentication in a new tab.
+  ASSERT_TRUE(StartSignInFlowFromContent(contents()));
+  EXPECT_EQ(GetReauthInterstitialUKMCount("ReauthenticationStarted"), 1);
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+
+  // Sign in a supervised user, which completes re-authentication.
+  // This should records UKM metrics and close the sign-in tab.
+  supervision_mixin_.SignIn(
+      supervised_user::SupervisionMixin::SignInMode::kSupervised);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetReauthInterstitialUKMCount("ReauthenticationCompleted") == 1;
+  }));
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+  EXPECT_EQ(GetReauthInterstitialUKMTotalCount(), 3);
+}
+
 // Tests the blocked site subframe re-authentication interstitial.
 IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
                        TestBlockedSiteSubFrameReauthInterstitial) {
@@ -326,16 +389,47 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
   EXPECT_TRUE(content::EvalJs(contents(), "loaded2()").ExtractBool());
 
   SCOPED_TRACE("iframe2");
-  content::RenderFrameHost* frame = FindFrameByName("iframe2");
-  ASSERT_TRUE(frame);
-  ASSERT_TRUE(frame->IsRenderFrameLive());
+  content::RenderFrameHost* iframe2 = FindFrameByName("iframe2");
 
   // Check that the sub-frame interstitial contains the correct text.
   EXPECT_THAT(
-      content::EvalJs(frame, "document.documentElement.innerHTML")
-          .ExtractString(),
+      GetInnerHTMLString(iframe2),
       testing::HasSubstr(l10n_util::GetStringUTF8(
           IDS_SUPERVISED_USER_VERIFY_PAGE_SUBFRAME_BLOCKED_SITE_HEADING)));
+
+  // UKM should not be recorded for the sub-frame interstitial.
+  EXPECT_EQ(GetReauthInterstitialUKMTotalCount(), 0);
+}
+
+// Tests the YouTube subframe re-authentication interstitial.
+IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
+                       TestYouTubeSubFrameReauthInterstitial) {
+  supervision_mixin_.SetPendingStateForPrimaryAccount();
+  kids_management_api_mock().AllowSubsequentClassifyUrl();
+
+  GURL url_with_youtube_iframes = embedded_test_server()->GetURL(
+      "www.example.com", "/supervised_user/with_embedded_youtube_videos.html");
+
+  // Navigate to the custom html containing 2 YouTube iframes.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), url_with_youtube_iframes));
+  ASSERT_TRUE(WaitForRenderFrameReady(contents()->GetPrimaryMainFrame()));
+
+  // Verify that the iframes are loaded.
+  WaitForPageTitle(u"Supervised User test: page with embedded YouTube videos");
+  EXPECT_TRUE(content::EvalJs(contents(), "loaded1()").ExtractBool());
+  EXPECT_TRUE(content::EvalJs(contents(), "loaded2()").ExtractBool());
+
+  content::RenderFrameHost* iframe1 = FindFrameByName("iframe1");
+  content::RenderFrameHost* iframe2 = FindFrameByName("iframe2");
+
+  // Check that the sub-frame interstitial contains the correct text.
+  std::string subframe_description = l10n_util::GetStringUTF8(
+      IDS_SUPERVISED_USER_VERIFY_PAGE_SUBFRAME_YOUTUBE_HEADING);
+  EXPECT_THAT(GetInnerHTMLString(iframe1),
+              testing::HasSubstr(subframe_description));
+  EXPECT_THAT(GetInnerHTMLString(iframe2),
+              testing::HasSubstr(subframe_description));
 
   // UKM should not be recorded for the sub-frame interstitial.
   EXPECT_EQ(GetReauthInterstitialUKMTotalCount(), 0);
