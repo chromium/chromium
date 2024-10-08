@@ -13,6 +13,7 @@ namespace autofill {
 
 // Holds resources for save IBAN bottom sheet UI.
 struct AutofillSaveIbanUiInfo {
+  bool is_server_save;
   // Initialized in CreateForUploadSave.
   int logo_icon_id;
   std::u16string iban_label;

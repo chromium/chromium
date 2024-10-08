@@ -29,6 +29,7 @@ public class AutofillSaveIbanUiInfo {
     private final String mDescriptionText;
     // The obfuscated value of IBAN being saved, e.g. CH **8009.
     private final String mIbanLabel;
+    private final boolean mIsServerSave;
     // This should be empty for local save.
     private final List<LegalMessageLine> mLegalMessageLines;
     // LogoIcon is 0 for local save.
@@ -49,6 +50,10 @@ public class AutofillSaveIbanUiInfo {
 
     public String getIbanLabel() {
         return mIbanLabel;
+    }
+
+    public boolean isServerSave() {
+        return mIsServerSave;
     }
 
     public List<LegalMessageLine> getLegalMessageLines() {
@@ -85,6 +90,7 @@ public class AutofillSaveIbanUiInfo {
             @JniType("std::u16string") String cancelText,
             @JniType("std::u16string") String descriptionText,
             @JniType("std::u16string") String ibanLabel,
+            boolean isServerSave,
             @JniType("std::vector") List<LegalMessageLine> legalMessageLines,
             @DrawableRes int logoIcon,
             @JniType("std::u16string") String titleText) {
@@ -93,6 +99,7 @@ public class AutofillSaveIbanUiInfo {
         mDescriptionText =
                 Objects.requireNonNull(descriptionText, "Description text can't be null");
         mIbanLabel = Objects.requireNonNull(ibanLabel, "Iban label can't be null");
+        mIsServerSave = isServerSave;
         mLegalMessageLines =
                 Collections.unmodifiableList(
                         Objects.requireNonNull(
@@ -108,6 +115,7 @@ public class AutofillSaveIbanUiInfo {
         private String mCancelText;
         private String mDescriptionText;
         private String mIbanLabel;
+        private boolean mIsServerSave;
         private List<LegalMessageLine> mLegalMessageLines = Collections.EMPTY_LIST;
         @DrawableRes private int mLogoIcon;
         private String mTitleText;
@@ -129,6 +137,11 @@ public class AutofillSaveIbanUiInfo {
 
         public Builder withIbanLabel(String ibanLabel) {
             mIbanLabel = ibanLabel;
+            return this;
+        }
+
+        public Builder withIsServerSave(boolean isServerSave) {
+            mIsServerSave = isServerSave;
             return this;
         }
 
@@ -159,6 +172,7 @@ public class AutofillSaveIbanUiInfo {
                     mCancelText,
                     mDescriptionText,
                     mIbanLabel,
+                    mIsServerSave,
                     mLegalMessageLines,
                     mLogoIcon,
                     mTitleText);

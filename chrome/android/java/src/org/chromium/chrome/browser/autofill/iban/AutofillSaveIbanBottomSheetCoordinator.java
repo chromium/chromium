@@ -105,7 +105,8 @@ public class AutofillSaveIbanBottomSheetCoordinator {
                                 mView.mContentView, mView.mScrollView),
                         bottomSheetController,
                         layoutStateProvider,
-                        tabModel);
+                        tabModel,
+                        uiInfo.isServerSave());
     }
 
     void onAcceptButtonClick(String userProvidedNickname) {

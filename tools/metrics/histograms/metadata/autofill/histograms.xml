@@ -5033,6 +5033,8 @@ AutofillSaveCreditCardPromptDestination.
   <summary>
     Records every time the save IBAN bubble or omnibox icon (due to maxstrike
     reached) is offered to the user, broken down by destination and show type.
+    On Android, the ShowType is only logged as &quot;FirstShow&quot; since there
+    is no option to retrigger the prompt or reshow it once dismissed.
   </summary>
   <token key="IbanTypeToBeSaved" variants="IbanTypeToBeSaved"/>
   <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>
@@ -5057,7 +5059,9 @@ AutofillSaveCreditCardPromptDestination.
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records when the user makes a decision on the save IBAN bubble, broken down
-    by destinations.
+    by destinations. On Android, the ShowType is only logged as
+    &quot;FirstShow&quot; since there is no option to retrigger the prompt or
+    reshow it once dismissed.
   </summary>
   <token key="IbanTypeToBeSaved" variants="IbanTypeToBeSaved"/>
   <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>

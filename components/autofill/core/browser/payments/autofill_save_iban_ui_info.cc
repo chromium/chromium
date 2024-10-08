@@ -22,6 +22,7 @@ AutofillSaveIbanUiInfo& AutofillSaveIbanUiInfo::operator=(
 AutofillSaveIbanUiInfo::~AutofillSaveIbanUiInfo() = default;
 
 static AutofillSaveIbanUiInfo CreateAutofillSaveIbanUiInfo(
+    bool is_server_save,
     int logo_icon_id,
     const std::u16string& iban_label,
     const std::u16string& title_text,
@@ -30,6 +31,7 @@ static AutofillSaveIbanUiInfo CreateAutofillSaveIbanUiInfo(
     const std::u16string& cancel_text,
     const LegalMessageLines& legal_message_lines) {
   AutofillSaveIbanUiInfo ui_info;
+  ui_info.is_server_save = is_server_save;
   ui_info.logo_icon_id = logo_icon_id;
   ui_info.iban_label = iban_label;
   ui_info.title_text = title_text;
@@ -45,6 +47,7 @@ static AutofillSaveIbanUiInfo CreateAutofillSaveIbanUiInfo(
 AutofillSaveIbanUiInfo AutofillSaveIbanUiInfo::CreateForLocalSave(
     const std::u16string& iban_label) {
   return CreateAutofillSaveIbanUiInfo(
+      /*is_server_save=*/false,
       /*logo_icon_id=*/0, iban_label,
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_PROMPT_TITLE_LOCAL),
       /*description_text=*/std::u16string(),
@@ -58,7 +61,7 @@ AutofillSaveIbanUiInfo AutofillSaveIbanUiInfo::CreateForUploadSave(
     const std::u16string& iban_label,
     const LegalMessageLines& legal_message_lines) {
   return CreateAutofillSaveIbanUiInfo(
-      IDR_AUTOFILL_GOOGLE_PAY, iban_label,
+      /*is_server_save=*/true, IDR_AUTOFILL_GOOGLE_PAY, iban_label,
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_PROMPT_TITLE_SERVER),
       l10n_util::GetStringUTF16(IDS_AUTOFILL_UPLOAD_IBAN_PROMPT_EXPLANATION),
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_MOBILE_ACCEPT),

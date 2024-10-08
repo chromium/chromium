@@ -27,6 +27,7 @@ public class AutofillSaveIbanUiInfoTest {
                 .withCancelText("")
                 .withDescriptionText("")
                 .withIbanLabel("FR **0189")
+                .withIsServerSave(false)
                 .withLegalMessageLines(Collections.EMPTY_LIST)
                 .withLogoIcon(0)
                 .withTitleText("");
@@ -59,6 +60,13 @@ public class AutofillSaveIbanUiInfoTest {
         AutofillSaveIbanUiInfo uiInfo = defaultBuilder().withIbanLabel("DE **6789").build();
 
         assertThat(uiInfo.getIbanLabel(), equalTo("DE **6789"));
+    }
+
+    @Test
+    public void testBuilder_setsIsServerSave() {
+        AutofillSaveIbanUiInfo uiInfo = defaultBuilder().withIsServerSave(true).build();
+
+        assertThat(uiInfo.isServerSave(), equalTo(true));
     }
 
     @Test

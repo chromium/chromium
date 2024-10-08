@@ -37,6 +37,7 @@ TEST(AutofillSaveIbanUiInfo, CreateForLocalSaveSetsProperties) {
   auto ui_info = AutofillSaveIbanUiInfo::CreateForLocalSave(
       localIban.GetIdentifierStringForAutofillDisplay());
 
+  EXPECT_FALSE(ui_info.is_server_save);
   EXPECT_EQ(ui_info.logo_icon_id, 0);
   EXPECT_EQ(FormatIbanForDisplay(ui_info.iban_label), u"CH **8009");
   EXPECT_EQ(ui_info.title_text, l10n_util::GetStringUTF16(
@@ -57,6 +58,7 @@ TEST(AutofillSaveIbanUiInfo, CreateForUploadSaveSetsProperties) {
   auto ui_info = AutofillSaveIbanUiInfo::CreateForUploadSave(
       serverIban.GetIdentifierStringForAutofillDisplay(), LegalMessageLines());
 
+  EXPECT_TRUE(ui_info.is_server_save);
   EXPECT_EQ(ui_info.logo_icon_id, IDR_AUTOFILL_GOOGLE_PAY);
   EXPECT_EQ(FormatIbanForDisplay(ui_info.iban_label), u"FR **0189");
   EXPECT_EQ(
