@@ -2487,7 +2487,11 @@ class TabListMediator implements TabListNotificationHandler {
         if (index == TabModel.INVALID_TAB_INDEX) return null;
 
         Tab tab = getTabForIndex(index);
-        if (tab == null || !mCurrentTabModelFilterSupplier.get().isTabInTabGroup(tab)) {
+        // If the found tab has a different root ID from the rootId set in the args then the update
+        // is likely for a group that no longer exists so we should drop the update.
+        if (tab == null
+                || tab.getRootId() != rootId
+                || !mCurrentTabModelFilterSupplier.get().isTabInTabGroup(tab)) {
             return null;
         }
         return Pair.create(index, tab);

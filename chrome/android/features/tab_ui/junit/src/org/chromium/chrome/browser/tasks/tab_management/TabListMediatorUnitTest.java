@@ -645,6 +645,31 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void updatesColor_OnTabGroupColorChange_Group_RejectFromOldRootId() {
+        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, newTab));
+        createTabGroup(tabs, TAB1_ID, TAB_GROUP_ID);
+
+        mTabGroupModelFilter.setTabGroupColor(mTab1.getRootId(), TabGroupColorId.BLUE);
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .didChangeTabGroupColor(mTab1.getRootId(), TabGroupColorId.BLUE);
+
+        assertNull(mModel.get(0).model.get(TabProperties.FAVICON_FETCHER));
+        var provider = mModel.get(0).model.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER);
+        assertNotNull(provider);
+        assertEquals(TabGroupColorId.BLUE, provider.getTabGroupColorIdForTesting());
+
+        // Updates for the old root ID of one of the grouped tabs should be rejected.
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .didChangeTabGroupColor(TAB3_ID, TabGroupColorId.GREY);
+        provider = mModel.get(0).model.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER);
+        assertNotNull(provider);
+        assertEquals(TabGroupColorId.BLUE, provider.getTabGroupColorIdForTesting());
+    }
+
+    @Test
     public void tabGroupColorViewProviderDestroyed_Reset() {
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, newTab));
