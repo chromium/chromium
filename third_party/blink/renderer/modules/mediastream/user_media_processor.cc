@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_capturer_source.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/processed_local_audio_source.h"
+#include "third_party/blink/renderer/modules/mediastream/scoped_media_stream_tracer.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
 #include "third_party/blink/renderer/platform/mediastream/media_constraints_consts.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
@@ -455,6 +456,13 @@ class UserMediaProcessor::RequestInfo final
     }
   }
 
+  void StartTrace(const String& event_name) {
+    traces_.insert(event_name,
+                   std::make_unique<ScopedMediaStreamTracer>(event_name));
+  }
+
+  void EndTrace(const String& event_name) { traces_.erase(event_name); }
+
   bool CanStartTracks() const {
     return video_formats_map_.size() == count_video_devices();
   }
@@ -526,6 +534,7 @@ class UserMediaProcessor::RequestInfo final
   String request_result_name_;
   // Sources used in this request.
   HeapVector<Member<MediaStreamSource>> sources_;
+  HashMap<String, std::unique_ptr<ScopedMediaStreamTracer>> traces_;
   Vector<blink::WebPlatformMediaStreamSource*> sources_waiting_for_callback_;
   HashMap<String, Vector<media::VideoCaptureFormat>> video_formats_map_;
   mojom::blink::StreamDevicesSet stream_devices_set_;
@@ -612,6 +621,11 @@ void UserMediaProcessor::RequestInfo::OnTrackStarted(
     request_result_name_ = result_name;
   }
 
+  if (IsAudioInputMediaType(source->device().type)) {
+    EndTrace("CreateAudioTrack");
+  } else {
+    EndTrace("CreateVideoTrack");
+  }
   CheckAllTracksStarted();
 }
 
@@ -1156,6 +1170,9 @@ void UserMediaProcessor::GenerateStreamForCurrentRequestInfo(
           .c_str()));
   current_request_info_->set_state(RequestInfo::State::kSentForGeneration);
 
+  // Capture trace for only non-transferred tracks.
+  current_request_info_->StartTrace("GenerateStreams");
+
   // If SessionId is set, this request is for a transferred MediaStreamTrack and
   // GetOpenDevice() should be called.
   if (current_request_info_->request() &&
@@ -1239,6 +1256,8 @@ void UserMediaProcessor::OnStreamsGenerated(
     mojom::blink::StreamDevicesSetPtr stream_devices_set,
     bool pan_tilt_zoom_allowed) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  current_request_info_->EndTrace("GenerateStreams");
 
   if (result != MediaStreamRequestResult::OK) {
     DCHECK(!stream_devices_set);
@@ -1459,6 +1478,8 @@ void UserMediaProcessor::OnAudioSourceStarted(
     }
     pending_local_sources_.erase(it);
 
+    current_request_info_->EndTrace("CreateAudioSource");
+
     NotifyCurrentRequestInfoOfAudioSourceStarted(source, result, result_name);
     return;
   }
@@ -1660,9 +1681,13 @@ MediaStreamSource* UserMediaProcessor::InitializeVideoSourceObject(
     return existing_source;
   }
 
+  current_request_info_->StartTrace("CreateVideoSource");
   auto video_source = CreateVideoSource(
       device, WTF::BindOnce(&UserMediaProcessor::OnLocalSourceStopped,
                             WrapWeakPersistent(this)));
+  video_source->SetStartCallback(WTF::BindOnce(
+      &UserMediaProcessor::OnVideoSourceStarted, WrapWeakPersistent(this)));
+
   MediaStreamSource* source =
       InitializeSourceObject(device, std::move(video_source));
 
@@ -1676,6 +1701,14 @@ MediaStreamSource* UserMediaProcessor::InitializeVideoSourceObject(
       current_request_info_->is_video_device_capture(), device.group_id));
   local_sources_.push_back(source);
   return source;
+}
+
+void UserMediaProcessor::OnVideoSourceStarted(
+    blink::WebPlatformMediaStreamSource* source,
+    MediaStreamRequestResult result) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  current_request_info_->EndTrace("CreateVideoSource");
 }
 
 MediaStreamSource* UserMediaProcessor::InitializeAudioSourceObject(
@@ -1704,6 +1737,7 @@ MediaStreamSource* UserMediaProcessor::InitializeAudioSourceObject(
     return existing_source;
   }
 
+  current_request_info_->StartTrace("CreateAudioSource");
   blink::WebPlatformMediaStreamSource::ConstraintsRepeatingCallback
       source_ready = ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
           &UserMediaProcessor::OnAudioSourceStartedOnAudioThread, task_runner_,
@@ -1905,6 +1939,8 @@ MediaStreamComponent* UserMediaProcessor::CreateVideoTrack(
   if (!device) {
     return nullptr;
   }
+
+  current_request_info_->StartTrace("CreateVideoTrack");
   MediaStreamSource* source = InitializeVideoSourceObject(*device);
   MediaStreamComponent* component =
       current_request_info_->CreateAndStartVideoTrack(source);
@@ -1921,6 +1957,8 @@ MediaStreamComponent* UserMediaProcessor::CreateAudioTrack(
   if (!device) {
     return nullptr;
   }
+
+  current_request_info_->StartTrace("CreateAudioTrack");
   MediaStreamDevice overriden_audio_device = *device;
   bool render_to_associated_sink =
       current_request_info_->audio_capture_settings().HasValue() &&

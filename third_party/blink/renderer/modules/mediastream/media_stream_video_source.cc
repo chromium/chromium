@@ -485,6 +485,10 @@ void MediaStreamVideoSource::OnStartDone(
     StopSource();
   }
 
+  if (start_callback_) {
+    std::move(start_callback_).Run(this, result);
+  }
+
   // This object can be deleted after calling FinalizeAddPendingTracks. See
   // comment in the header file.
   FinalizeAddPendingTracks(result);
@@ -598,6 +602,11 @@ uint32_t MediaStreamVideoSource::GetSubCaptureTargetVersion() const {
 VideoCaptureFeedbackCB MediaStreamVideoSource::GetFeedbackCallback() const {
   // Each source implementation has to implement its own feedback callbacks.
   return base::DoNothing();
+}
+
+void MediaStreamVideoSource::SetStartCallback(SourceStartCallback callback) {
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+  start_callback_ = std::move(callback);
 }
 
 scoped_refptr<VideoTrackAdapter> MediaStreamVideoSource::GetTrackAdapter() {

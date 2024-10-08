@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/navigator_media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/restriction_target.h"
+#include "third_party/blink/renderer/modules/mediastream/scoped_media_stream_tracer.h"
 #include "third_party/blink/renderer/modules/mediastream/sub_capture_target.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
@@ -89,15 +90,20 @@ class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
       ScriptPromiseResolverWithTracker<UserMediaRequestResult, IDLResolvedType>*
           resolver,
       base::OnceCallback<void(const String&, CaptureController*)>
-          on_success_follow_up)
+          on_success_follow_up,
+      std::unique_ptr<ScopedMediaStreamTracer> tracer)
       : media_type_(media_type),
         resolver_(resolver),
-        on_success_follow_up_(std::move(on_success_follow_up)) {}
+        on_success_follow_up_(std::move(on_success_follow_up)),
+        tracer_(std::move(tracer)) {}
   ~PromiseResolverCallbacks() override = default;
 
   void OnSuccess(const MediaStreamVector& streams,
                  CaptureController* capture_controller) override {
     OnSuccessImpl<IDLResolvedType>(streams, capture_controller);
+    if (tracer_) {
+      tracer_->End();
+    }
   }
 
   template <typename T>
@@ -111,6 +117,9 @@ class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
       capture_controller->FinalizeFocusDecision();
     }
     resolver_->template Reject<V8MediaStreamError>(error, result);
+    if (tracer_) {
+      tracer_->End();
+    }
   }
 
   void Trace(Visitor* visitor) const override {
@@ -126,6 +135,7 @@ class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
       resolver_;
   base::OnceCallback<void(const String&, CaptureController*)>
       on_success_follow_up_;
+  std::unique_ptr<ScopedMediaStreamTracer> tracer_;
 };
 
 template <>
@@ -434,6 +444,8 @@ ScriptPromise<IDLSequence<MediaDeviceInfo>> MediaDevices::enumerateDevices(
     return ScriptPromise<IDLSequence<MediaDeviceInfo>>();
   }
 
+  auto tracer = std::make_unique<ScopedMediaStreamTracer>(
+      "MediaDevices.EnumerateDevices");
   auto* result_tracker = MakeGarbageCollected<ScriptPromiseResolverWithTracker<
       EnumerateDevicesResult, IDLSequence<MediaDeviceInfo>>>(
       script_state, "Media.MediaDevices.EnumerateDevices", base::Seconds(4));
@@ -449,7 +461,7 @@ ScriptPromise<IDLSequence<MediaDeviceInfo>> MediaDevices::enumerateDevices(
       /*request_audio_input_capabilities=*/
       base::FeatureList::IsEnabled(kEnumerateDevicesRequestAudioCapabilities),
       WTF::BindOnce(&MediaDevices::DevicesEnumerated, WrapPersistent(this),
-                    WrapPersistent(result_tracker)));
+                    WrapPersistent(result_tracker), std::move(tracer)));
   return promise;
 }
 
@@ -463,6 +475,10 @@ ScriptPromise<MediaStream> MediaDevices::getUserMedia(
     const UserMediaStreamConstraints* options,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto tracer =
+      std::make_unique<ScopedMediaStreamTracer>("MediaDevices.GetUserMedia");
+
   // This timeout of base::Seconds(8) is an initial value and based on the data
   // in Media.MediaDevices.GetUserMedia.Latency, it should be iterated upon.
   auto* resolver = MakeGarbageCollected<
@@ -482,7 +498,7 @@ ScriptPromise<MediaStream> MediaDevices::getUserMedia(
   }
 
   return SendUserMediaRequest(UserMediaRequestType::kUserMedia, resolver,
-                              constraints, exception_state);
+                              constraints, exception_state, std::move(tracer));
 }
 
 template <typename IDLResolvedType>
@@ -491,7 +507,8 @@ ScriptPromise<IDLResolvedType> MediaDevices::SendUserMediaRequest(
     ScriptPromiseResolverWithTracker<UserMediaRequestResult, IDLResolvedType>*
         resolver,
     const MediaStreamConstraints* options,
-    ExceptionState& exception_state) {
+    ExceptionState& exception_state,
+    std::unique_ptr<ScopedMediaStreamTracer> tracer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!exception_state.HadException());
 
@@ -532,7 +549,8 @@ ScriptPromise<IDLResolvedType> MediaDevices::SendUserMediaRequest(
 
   auto* callbacks =
       MakeGarbageCollected<PromiseResolverCallbacks<IDLResolvedType>>(
-          media_type, resolver, std::move(on_success_follow_up));
+          media_type, resolver, std::move(on_success_follow_up),
+          std::move(tracer));
 
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
   UserMediaClient* user_media_client = UserMediaClient::From(window);
@@ -578,6 +596,9 @@ ScriptPromise<IDLSequence<MediaStream>> MediaDevices::getAllScreensMedia(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto tracer = std::make_unique<ScopedMediaStreamTracer>(
+      "MediaDevices.GetAllScreensMedia");
 
   // This timeout of base::Seconds(6) is an initial value and based on the data
   // in Media.MediaDevices.GetAllScreensMedia.Latency, it should be iterated
@@ -628,7 +649,7 @@ ScriptPromise<IDLSequence<MediaStream>> MediaDevices::getAllScreensMedia(
   constraints->setVideo(
       MakeGarbageCollected<V8UnionBooleanOrMediaTrackConstraints>(true));
   return SendUserMediaRequest(UserMediaRequestType::kAllScreensMedia, resolver,
-                              constraints, exception_state);
+                              constraints, exception_state, std::move(tracer));
 }
 
 ScriptPromise<MediaStream> MediaDevices::getDisplayMedia(
@@ -637,6 +658,10 @@ ScriptPromise<MediaStream> MediaDevices::getDisplayMedia(
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LocalDOMWindow* const window = DomWindow();
+
+  auto tracer =
+      std::make_unique<ScopedMediaStreamTracer>("MediaDevices.GetDisplayMedia");
+
   // Using timeout of base::Seconds(12) based on the
   // Media.MediaDevices.GetDisplayMedia.Latency values. With the earlier value
   // of base::Seconds(6), we got about 25% of results counted as kTimeout.
@@ -705,7 +730,7 @@ ScriptPromise<MediaStream> MediaDevices::getDisplayMedia(
   }
 
   return SendUserMediaRequest(UserMediaRequestType::kDisplayMedia, resolver,
-                              constraints, exception_state);
+                              constraints, exception_state, std::move(tracer));
 }
 
 void MediaDevices::setCaptureHandleConfig(ScriptState* script_state,
@@ -1078,6 +1103,7 @@ void MediaDevices::DevicesEnumerated(
     ScriptPromiseResolverWithTracker<EnumerateDevicesResult,
                                      IDLSequence<MediaDeviceInfo>>*
         result_tracker,
+    std::unique_ptr<ScopedMediaStreamTracer> tracer,
     const Vector<Vector<WebMediaDeviceInfo>>& enumeration,
     Vector<mojom::blink::VideoInputDeviceCapabilitiesPtr>
         video_input_capabilities,
@@ -1150,6 +1176,7 @@ void MediaDevices::DevicesEnumerated(
 
   RecordEnumeratedDevices(result_tracker->GetScriptState(), media_devices);
   result_tracker->Resolve(media_devices);
+  tracer->End();
 }
 
 void MediaDevices::OnDispatcherHostConnectionError() {

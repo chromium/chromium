@@ -124,6 +124,7 @@
   X("log")                                                               \
   X("login")                                                             \
   X("media")                                                             \
+  X("mediastream")                                                       \
   X("media_router")                                                      \
   X("memory")                                                            \
   X("midi")                                                              \

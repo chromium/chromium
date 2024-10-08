@@ -252,6 +252,10 @@ class MODULES_EXPORT UserMediaProcessor
       blink::mojom::blink::MediaStreamRequestResult result,
       const String& result_name);
 
+  void OnVideoSourceStarted(
+      blink::WebPlatformMediaStreamSource* source,
+      blink::mojom::blink::MediaStreamRequestResult result);
+
   void NotifyCurrentRequestInfoOfAudioSourceStarted(
       blink::WebPlatformMediaStreamSource* source,
       blink::mojom::blink::MediaStreamRequestResult result,

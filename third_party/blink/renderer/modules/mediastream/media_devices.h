@@ -37,6 +37,7 @@ class DisplayMediaStreamOptions;
 class ExceptionState;
 class LocalFrame;
 class Navigator;
+class ScopedMediaStreamTracer;
 class MediaTrackSupportedConstraints;
 class RestrictionTarget;
 class ScriptState;
@@ -135,7 +136,8 @@ class MODULES_EXPORT MediaDevices final
       ScriptPromiseResolverWithTracker<UserMediaRequestResult,
                                        IDLResolvedType>*,
       const MediaStreamConstraints*,
-      ExceptionState&);
+      ExceptionState&,
+      std::unique_ptr<ScopedMediaStreamTracer> tracer);
 
   void ScheduleDispatchEvent(Event*);
   void DispatchScheduledEvents();
@@ -150,6 +152,7 @@ class MODULES_EXPORT MediaDevices final
   void DevicesEnumerated(ScriptPromiseResolverWithTracker<
                              EnumerateDevicesResult,
                              IDLSequence<MediaDeviceInfo>>* result_tracker,
+                         std::unique_ptr<ScopedMediaStreamTracer> tracer,
                          const Vector<Vector<WebMediaDeviceInfo>>&,
                          Vector<mojom::blink::VideoInputDeviceCapabilitiesPtr>,
                          Vector<mojom::blink::AudioInputDeviceCapabilitiesPtr>);
