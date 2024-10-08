@@ -903,6 +903,7 @@ repack("components_tests_pak") {
     "$root_gen_dir/components/autofill/core/browser/autofill_address_rewriter_resources.pak",
     "$root_gen_dir/components/components_resources.pak",
     "$root_gen_dir/components/omnibox/resources/omnibox_pedal_synonyms_en-US.pak",
+    "$root_gen_dir/components/plus_addresses/resources/strings/plus_addresses_strings_en-US.pak",
     "$root_gen_dir/components/strings/components_locale_settings_en-US.pak",
     "$root_gen_dir/components/strings/components_strings_en-US.pak",
   ]
@@ -914,6 +915,7 @@ repack("components_tests_pak") {
     "//ash/components/arc/input_overlay/resources:resources_grit",
     "//components/autofill/core/browser:autofill_address_rewriter_resources",
     "//components/omnibox/resources:omnibox_pedal_synonyms",
+    "//components/plus_addresses/resources/strings",
     "//components/resources",
     "//components/strings",
   ]

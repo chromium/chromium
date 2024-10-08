@@ -274,9 +274,6 @@
     <message name="IDS_PLUS_ADDRESS_FILL_SUGGESTION_SECONDARY_TEXT" desc="The main text in the Autofill suggestion for filling an existing plus address." translateable="false">
       Lorem Ipsum dolor
     </message>
-    <message name="IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_TEXT" desc="The main text in the Autofill suggestion for opening the settings page with creates plus addresses." translateable="false">
-      Lorem Ipsum dolor ...
-    </message>
     <message name="IDS_PLUS_ADDRESS_RESERVE_GENERIC_ERROR_TEXT" desc="The error description shown inside the popup when an error occurs while attempting to reserve a plus address." translateable="false">
       Something went wrong. Try again.
     </message>

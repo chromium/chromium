@@ -1061,6 +1061,16 @@
   "components/search_engine_descriptions_strings.grd": {
     "messages": [7260],
   },
+
+  # plus_addresses_strings.grd and plus_addresses_internal_strings.grd must
+  # share the same id because the define the same strings, but only one of them
+  # is built depending on whether src_internal is available.
+  "components/plus_addresses/resources/strings/plus_addresses_strings.grd": {
+    "messages": [7280],
+  },
+  "components/plus_addresses/resources/internal/strings/plus_addresses_internal_strings.grd": {
+    "messages": [7280],
+  },
   # END components/ section.
 
   # START ios/ section.
