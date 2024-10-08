@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "components/saved_tab_groups/messaging/android/messaging_backend_service_bridge.h"
+#include "components/saved_tab_groups/messaging/message.h"
 #include "components/saved_tab_groups/messaging/messaging_backend_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -66,6 +67,7 @@ class MessagingBackendServiceBridgeTest : public testing::Test {
   void TearDown() override {
     EXPECT_CALL(service_, SetInstantMessageDelegate(nullptr));
     EXPECT_CALL(service_, RemovePersistentMessageObserver(bridge()));
+    success_callback_invocation_count_ = 0;
   }
 
   // API wrapper methods, since they are intentionaly private in the bridge.
@@ -81,18 +83,33 @@ class MessagingBackendServiceBridgeTest : public testing::Test {
     bridge()->HidePersistentMessage(message);
   }
 
-  void DisplayInstantaneousMessage(InstantMessage message) {
-    bridge()->DisplayInstantaneousMessage(message);
+  void DisplayInstantaneousMessage(InstantMessage message,
+                                   bool expected_success_value) {
+    bridge()->DisplayInstantaneousMessage(
+        message,
+        base::BindOnce(
+            &MessagingBackendServiceBridgeTest::OnInstantMessageCallbackResult,
+            base::Unretained(this), expected_success_value));
   }
 
+  // Member accessors.
   MessagingBackendServiceBridge* bridge() { return bridge_.get(); }
   MockMessagingBackendService& service() { return service_; }
   base::android::ScopedJavaGlobalRef<jobject> j_service() { return j_service_; }
   base::android::ScopedJavaGlobalRef<jobject> j_companion() {
     return j_companion_;
   }
+  uint64_t success_callback_invocation_count() {
+    return success_callback_invocation_count_;
+  }
 
  private:
+  void OnInstantMessageCallbackResult(bool expected, bool actual) {
+    EXPECT_EQ(expected, actual);
+    ++success_callback_invocation_count_;
+  }
+
+  uint64_t success_callback_invocation_count_ = 0;
   MockMessagingBackendService service_;
   std::unique_ptr<MessagingBackendServiceBridge> bridge_;
   base::android::ScopedJavaGlobalRef<jobject> j_service_;
@@ -129,6 +146,50 @@ TEST_F(MessagingBackendServiceBridgeTest, TestPersistentMessageObservation) {
   OnMessagingBackendServiceInitialized();
   Java_MessagingBackendServiceBridgeUnitTestCompanion_verifyOnInitializedCalled(
       base::android::AttachCurrentThread(), j_companion(), 1);
+}
+
+TEST_F(MessagingBackendServiceBridgeTest, TestDisplayingInstantMessageSuccess) {
+  // Set up the delegate for instant messages in Java.
+  Java_MessagingBackendServiceBridgeUnitTestCompanion_setInstantMessageDelegate(
+      base::android::AttachCurrentThread(), j_companion());
+
+  // Create and display an instant message.
+  InstantMessage message;
+  message.level = InstantNotificationLevel::SYSTEM;
+  message.type = InstantNotificationType::CONFLICT_TAB_REMOVED;
+  message.action = UserAction::TAB_REMOVED;
+  DisplayInstantaneousMessage(message, /*success=*/true);
+
+  // Ensure that the message was received on the Java side with correct data.
+  Java_MessagingBackendServiceBridgeUnitTestCompanion_verifyInstantMessage(
+      base::android::AttachCurrentThread(), j_companion());
+
+  // Verify that the callback has been invoked with the correct success value.
+  Java_MessagingBackendServiceBridgeUnitTestCompanion_invokeInstantMessageSuccessCallback(
+      base::android::AttachCurrentThread(), j_companion(), /*success=*/true);
+  EXPECT_EQ(1U, success_callback_invocation_count());
+}
+
+TEST_F(MessagingBackendServiceBridgeTest, TestDisplayingInstantMessageFailure) {
+  // Set up the delegate for instant messages in Java.
+  Java_MessagingBackendServiceBridgeUnitTestCompanion_setInstantMessageDelegate(
+      base::android::AttachCurrentThread(), j_companion());
+
+  // Create and display an instant message.
+  InstantMessage message;
+  message.level = InstantNotificationLevel::SYSTEM;
+  message.type = InstantNotificationType::CONFLICT_TAB_REMOVED;
+  message.action = UserAction::TAB_REMOVED;
+  DisplayInstantaneousMessage(message, /*success=*/false);
+
+  // Ensure that the message was received on the Java side with correct data.
+  Java_MessagingBackendServiceBridgeUnitTestCompanion_verifyInstantMessage(
+      base::android::AttachCurrentThread(), j_companion());
+
+  // Verify that the callback has been invoked with the correct success value.
+  Java_MessagingBackendServiceBridgeUnitTestCompanion_invokeInstantMessageSuccessCallback(
+      base::android::AttachCurrentThread(), j_companion(), /*success=*/false);
+  EXPECT_EQ(1U, success_callback_invocation_count());
 }
 
 }  // namespace tab_groups::messaging::android

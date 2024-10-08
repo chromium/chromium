@@ -36,8 +36,20 @@ class MessagingBackendService : public KeyedService,
   // This needs to be provided to the `MessagingBackendService` through
   // `MessagingBackendService::SetInstantMessageDelegate(...)`.
   class InstantMessageDelegate : public base::CheckedObserver {
+   public:
+    // Callback for informing the backend service whether a message could be
+    // displayed.
+    using SuccessCallback = base::OnceCallback<void(bool)>;
+
     // Invoked when the frontend needs to display an instant message.
-    virtual void DisplayInstantaneousMessage(InstantMessage message) = 0;
+    // When a decision has been made whether it can be displayed or not, invoke
+    // `success_callback` with `true` if it was displayed, and `false`
+    // otherwise. This enables the backend to either:
+    // *   Success: Clear the message from internal storage.
+    // *   Failure: Prepare the message to be redelivered at a later time.
+    virtual void DisplayInstantaneousMessage(
+        InstantMessage message,
+        SuccessCallback success_callback) = 0;
   };
 
   ~MessagingBackendService() override = default;

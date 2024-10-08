@@ -6,6 +6,7 @@ package org.chromium.components.tab_group_sync.messaging;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.Callback;
 import org.chromium.components.tab_group_sync.messaging.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.messaging.EitherId.EitherTabId;
 
@@ -40,8 +41,17 @@ public interface MessagingBackendService {
      * provided to the {@link MessagingBackendService} through {@link #SetInstantMessageDelegate}.
      */
     interface InstantMessageDelegate {
-        /* Invoked when the frontend needs to display an instant message. */
-        void displayInstantaneousMessage(InstantMessage message);
+        /**
+         * Invoked when the frontend needs to display an instant message. When a decision has been
+         * made whether it can be displayed or not, invoke `successCallback` with `true` if it was
+         * displayed, and `false` otherwise. This enables the backend to either: * Success: Clear
+         * the message from internal storage. * Failure: Prepare the message to be redelivered at a
+         * later time.
+         *
+         * <p>Note on memory safety: The successCallback is backed by an object in C++, and must NOT
+         * be given to the garbage collector without invoking it first.
+         */
+        void displayInstantaneousMessage(InstantMessage message, Callback<Boolean> successCallback);
     }
 
     /** Sets the delegate for instant (one-off) messages. */

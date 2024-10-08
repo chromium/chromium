@@ -11,6 +11,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "components/saved_tab_groups/messaging/android/conversion_utils.h"
@@ -158,6 +159,20 @@ MessagingBackendServiceBridge::GetMessages(
   return PersistentMessagesToJava(env, messages);
 }
 
+void MessagingBackendServiceBridge::RunInstantaneousMessageSuccessCallback(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_caller,
+    jlong j_callback,
+    jboolean j_result) {
+  CHECK(j_callback);
+  std::unique_ptr<
+      MessagingBackendService::InstantMessageDelegate::SuccessCallback>
+      callback_ptr(
+          reinterpret_cast<MessagingBackendService::InstantMessageDelegate::
+                               SuccessCallback*>(j_callback));
+  std::move(*callback_ptr).Run(j_result);
+}
+
 void MessagingBackendServiceBridge::OnMessagingBackendServiceInitialized() {
   if (java_ref_.is_null()) {
     return;
@@ -188,14 +203,31 @@ void MessagingBackendServiceBridge::HidePersistentMessage(
 }
 
 void MessagingBackendServiceBridge::DisplayInstantaneousMessage(
-    InstantMessage message) {
+    InstantMessage message,
+    InstantMessageDelegate::SuccessCallback success_callback) {
   if (java_ref_.is_null()) {
+    // We definitely failed to display the message.
+    std::move(success_callback).Run(false);
     return;
   }
 
   JNIEnv* env = base::android::AttachCurrentThread();
+
+  std::unique_ptr<
+      MessagingBackendService::InstantMessageDelegate::SuccessCallback>
+      wrapped_callback = std::make_unique<
+          MessagingBackendService::InstantMessageDelegate::SuccessCallback>(
+          std::move(success_callback));
+  CHECK(wrapped_callback.get());
+  jlong j_native_ptr = reinterpret_cast<jlong>(wrapped_callback.get());
+
   Java_MessagingBackendServiceBridge_displayInstantaneousMessage(
-      env, java_ref_, InstantMessageToJava(env, message));
+      env, java_ref_, InstantMessageToJava(env, message), j_native_ptr);
+
+  // We expect Java to always call us back through
+  // MessagingBackendServiceBridge::RunInstantaneousMessageSuccessCallback,
+  // which means we assume it is OK to release this object.
+  wrapped_callback.release();
 }
 
 }  // namespace tab_groups::messaging::android

@@ -171,9 +171,19 @@ import java.util.Optional;
     }
 
     @CalledByNative
-    private void displayInstantaneousMessage(InstantMessage message) {
+    private void displayInstantaneousMessage(InstantMessage message, long nativeCallback) {
         if (mInstantMessageDelegate != null) {
-            mInstantMessageDelegate.displayInstantaneousMessage(message);
+            mInstantMessageDelegate.displayInstantaneousMessage(
+                    message,
+                    (Boolean success) -> {
+                        assert success != null;
+                        MessagingBackendServiceBridgeJni.get()
+                                .runInstantaneousMessageSuccessCallback(
+                                        mNativeMessagingBackendServiceBridge,
+                                        this,
+                                        nativeCallback,
+                                        success);
+                    });
         }
     }
 
@@ -200,5 +210,11 @@ import java.util.Optional;
                 long nativeMessagingBackendServiceBridge,
                 MessagingBackendServiceBridge caller,
                 @PersistentNotificationType int type);
+
+        void runInstantaneousMessageSuccessCallback(
+                long nativeMessagingBackendServiceBridge,
+                MessagingBackendServiceBridge caller,
+                long callback,
+                boolean success);
     }
 }

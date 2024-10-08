@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.util.Pair;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -75,30 +76,38 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
     }
 
     @Override
-    public void displayInstantaneousMessage(InstantMessage message) {
-        if (message.level == InstantNotificationLevel.SYSTEM) {
-            // TODO(https://crbug.com/369164214): Implement.
-        } else if (message.level == InstantNotificationLevel.BROWSER) {
-            @Nullable
-            Pair<WindowAndroid, TabGroupModelFilter> attach = getAttach(message.attribution);
-            if (attach == null) return;
-            @NonNull WindowAndroid windowAndroid = attach.first;
-            @NonNull TabGroupModelFilter tabGroupModelFilter = attach.second;
-            @Nullable
-            MessageDispatcher messageDispatcher = MessageDispatcherProvider.from(windowAndroid);
-            @Nullable Context context = windowAndroid.getContext().get();
-            if (messageDispatcher == null || context == null) return;
+    public void displayInstantaneousMessage(
+            InstantMessage message, Callback<Boolean> successCallback) {
+        boolean success = false;
+        try {
+            if (message.level == InstantNotificationLevel.SYSTEM) {
+                // TODO(https://crbug.com/369164214): Implement.
+            } else if (message.level == InstantNotificationLevel.BROWSER) {
+                @Nullable
+                Pair<WindowAndroid, TabGroupModelFilter> attach = getAttach(message.attribution);
+                if (attach == null) return;
+                @NonNull WindowAndroid windowAndroid = attach.first;
+                @NonNull TabGroupModelFilter tabGroupModelFilter = attach.second;
+                @Nullable
+                MessageDispatcher messageDispatcher = MessageDispatcherProvider.from(windowAndroid);
+                @Nullable Context context = windowAndroid.getContext().get();
+                if (messageDispatcher == null || context == null) return;
 
-            @UserAction int userAction = message.action;
-            if (userAction == UserAction.TAB_REMOVED) {
-                showTabRemoved(message, context, messageDispatcher, tabGroupModelFilter);
-            } else if (userAction == UserAction.TAB_NAVIGATED) {
-                showTabChange(message, context, messageDispatcher, tabGroupModelFilter);
-            } else if (userAction == UserAction.COLLABORATION_USER_JOINED) {
-                showCollaborationUserJoined(message, context, messageDispatcher);
-            } else if (userAction == UserAction.COLLABORATION_REMOVED) {
-                showCollaborationRemoved(message, context, messageDispatcher);
+                @UserAction int userAction = message.action;
+                if (userAction == UserAction.TAB_REMOVED) {
+                    showTabRemoved(message, context, messageDispatcher, tabGroupModelFilter);
+                } else if (userAction == UserAction.TAB_NAVIGATED) {
+                    showTabChange(message, context, messageDispatcher, tabGroupModelFilter);
+                } else if (userAction == UserAction.COLLABORATION_USER_JOINED) {
+                    showCollaborationUserJoined(message, context, messageDispatcher);
+                } else if (userAction == UserAction.COLLABORATION_REMOVED) {
+                    showCollaborationRemoved(message, context, messageDispatcher);
+                }
+                success = true;
             }
+        } finally {
+            // TODO(https://crbug.com/369164214): Implement correct usage of `successCallback`.
+            successCallback.onResult(success);
         }
     }
 

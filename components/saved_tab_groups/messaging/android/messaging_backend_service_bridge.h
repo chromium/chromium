@@ -56,6 +56,11 @@ class MessagingBackendServiceBridge
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& j_caller,
       jint j_type);
+  void RunInstantaneousMessageSuccessCallback(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& j_caller,
+      jlong j_callback,
+      jboolean j_result);
 
  private:
   friend class MessagingBackendServiceBridgeTest;
@@ -67,7 +72,9 @@ class MessagingBackendServiceBridge
   void HidePersistentMessage(PersistentMessage message) override;
 
   // MessagingBackendService::InstantMessageDelegate implementation.
-  void DisplayInstantaneousMessage(InstantMessage message) override;
+  void DisplayInstantaneousMessage(
+      InstantMessage message,
+      InstantMessageDelegate::SuccessCallback success_callback) override;
 
   raw_ptr<MessagingBackendService> service_;
 

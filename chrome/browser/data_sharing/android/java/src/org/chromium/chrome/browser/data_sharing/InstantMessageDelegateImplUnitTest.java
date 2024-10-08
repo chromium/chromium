@@ -27,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -62,6 +63,7 @@ public class InstantMessageDelegateImplUnitTest {
     @Mock private ManagedMessageDispatcher mManagedMessageDispatcher;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Mock private Callback<Boolean> mSuccessCallback;
 
     @Captor private ArgumentCaptor<PropertyModel> mPropertyModelCaptor;
 
@@ -94,24 +96,30 @@ public class InstantMessageDelegateImplUnitTest {
     @Test
     public void testDisplayInstantaneousMessage_NotAttached() {
         mDelegate.detachWindow(mWindowAndroid);
-        mDelegate.displayInstantaneousMessage(newInstantMessage(UserAction.TAB_REMOVED));
+        mDelegate.displayInstantaneousMessage(
+                newInstantMessage(UserAction.TAB_REMOVED), mSuccessCallback);
         verify(mManagedMessageDispatcher, never()).enqueueWindowScopedMessage(any(), anyBoolean());
+        verify(mSuccessCallback).onResult(false);
     }
 
     @Test
     public void testDisplayInstantaneousMessage_NotInTabModel() {
         when(mTabGroupModelFilter.getRootIdFromStableId(TAB_GROUP_ID))
                 .thenReturn(Tab.INVALID_TAB_ID);
-        mDelegate.displayInstantaneousMessage(newInstantMessage(UserAction.TAB_REMOVED));
+        mDelegate.displayInstantaneousMessage(
+                newInstantMessage(UserAction.TAB_REMOVED), mSuccessCallback);
         verify(mManagedMessageDispatcher, never()).enqueueWindowScopedMessage(any(), anyBoolean());
+        verify(mSuccessCallback).onResult(false);
     }
 
     @Test
     public void testTabRemoved() {
-        mDelegate.displayInstantaneousMessage(newInstantMessage(UserAction.TAB_REMOVED));
+        mDelegate.displayInstantaneousMessage(
+                newInstantMessage(UserAction.TAB_REMOVED), mSuccessCallback);
 
         verify(mManagedMessageDispatcher)
                 .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
+        verify(mSuccessCallback).onResult(true);
         PropertyModel propertyModel = mPropertyModelCaptor.getValue();
         @MessageIdentifier int messageIdentifier = propertyModel.get(MESSAGE_IDENTIFIER);
         assertEquals(MessageIdentifier.TAB_REMOVED_THROUGH_COLLABORATION, messageIdentifier);
@@ -121,10 +129,12 @@ public class InstantMessageDelegateImplUnitTest {
 
     @Test
     public void testTabNavigated() {
-        mDelegate.displayInstantaneousMessage(newInstantMessage(UserAction.TAB_NAVIGATED));
+        mDelegate.displayInstantaneousMessage(
+                newInstantMessage(UserAction.TAB_NAVIGATED), mSuccessCallback);
 
         verify(mManagedMessageDispatcher)
                 .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
+        verify(mSuccessCallback).onResult(true);
         PropertyModel propertyModel = mPropertyModelCaptor.getValue();
         @MessageIdentifier int messageIdentifier = propertyModel.get(MESSAGE_IDENTIFIER);
         assertEquals(MessageIdentifier.TAB_NAVIGATED_THROUGH_COLLABORATION, messageIdentifier);
@@ -135,10 +145,11 @@ public class InstantMessageDelegateImplUnitTest {
     @Test
     public void testCollaborationUserJoined() {
         mDelegate.displayInstantaneousMessage(
-                newInstantMessage(UserAction.COLLABORATION_USER_JOINED));
+                newInstantMessage(UserAction.COLLABORATION_USER_JOINED), mSuccessCallback);
 
         verify(mManagedMessageDispatcher)
                 .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
+        verify(mSuccessCallback).onResult(true);
         PropertyModel propertyModel = mPropertyModelCaptor.getValue();
         @MessageIdentifier int messageIdentifier = propertyModel.get(MESSAGE_IDENTIFIER);
         assertEquals(MessageIdentifier.COLLABORATION_USER_JOINED, messageIdentifier);
@@ -148,10 +159,12 @@ public class InstantMessageDelegateImplUnitTest {
 
     @Test
     public void testCollaborationRemoved() {
-        mDelegate.displayInstantaneousMessage(newInstantMessage(UserAction.COLLABORATION_REMOVED));
+        mDelegate.displayInstantaneousMessage(
+                newInstantMessage(UserAction.COLLABORATION_REMOVED), mSuccessCallback);
 
         verify(mManagedMessageDispatcher)
                 .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
+        verify(mSuccessCallback).onResult(true);
         PropertyModel propertyModel = mPropertyModelCaptor.getValue();
         @MessageIdentifier int messageIdentifier = propertyModel.get(MESSAGE_IDENTIFIER);
         assertEquals(MessageIdentifier.COLLABORATION_REMOVED, messageIdentifier);
