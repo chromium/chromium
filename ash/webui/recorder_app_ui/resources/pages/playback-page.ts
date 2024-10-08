@@ -51,8 +51,9 @@ import {
   ComputedState,
   ReactiveLitElement,
   ScopedAsyncComputed,
+  ScopedEffect,
 } from '../core/reactive/lit.js';
-import {computed, Dispose, effect, signal} from '../core/reactive/signal.js';
+import {computed, signal} from '../core/reactive/signal.js';
 import {navigateTo} from '../core/state/route.js';
 import {
   assert,
@@ -419,8 +420,18 @@ export class PlaybackPage extends ReactiveLitElement {
 
   private readonly spokenTimeQueue = new AsyncJobQueue('keepLatest');
 
-  // TODO(pihsun): ScopedEffect without the async part?
-  private autoOpenTranscription: Dispose|null = null;
+  protected readonly autoOpenTranscription = new ScopedEffect(this, () => {
+    if (this.transcription.state === ComputedState.DONE) {
+      // We only updates the transcription open state when it's just
+      // computed.
+      const transcription = this.transcription.valueSignal.peek();
+
+      // Default to show transcription panel if there's a non-empty
+      // transcription.
+      this.showTranscription.value =
+        transcription !== null && !transcription.isEmpty();
+    }
+  });
 
   get pauseButtonForTest(): CraIconButton {
     assert(this.audioPlayer.playing.value, 'The playback is already paused');
@@ -455,30 +466,10 @@ export class PlaybackPage extends ReactiveLitElement {
 
   override connectedCallback(): void {
     super.connectedCallback();
-    if (this.autoOpenTranscription === null) {
-      this.autoOpenTranscription = effect(() => {
-        if (this.transcription.state === ComputedState.DONE) {
-          // We only updates the transcription open state when it's just
-          // computed.
-          const transcription = this.transcription.valueSignal.peek();
-
-          // Default to show transcription panel if there's a non-empty
-          // transcription.
-          this.showTranscription.value =
-            transcription !== null && !transcription.isEmpty();
-        }
-      });
-    }
     if (initialAudio !== null) {
       this.audioPlayer.setInnerAudio(initialAudio);
       initialAudio = null;
     }
-  }
-
-  override disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this.autoOpenTranscription?.();
-    this.autoOpenTranscription = null;
   }
 
   private onWordClick(ev: CustomEvent<{startMs: number}>) {
