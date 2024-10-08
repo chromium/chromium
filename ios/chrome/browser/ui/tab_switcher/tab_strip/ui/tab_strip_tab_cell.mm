@@ -517,7 +517,7 @@ UIImage* DefaultFavicon() {
                         : [TabStripHelper backgroundColor];
   }
 
-  if ([TabStripFeaturesUtils isTabStripBlackBackgroundEnabled]) {
+  if (TabStripFeaturesUtils.hasBlackBackground) {
     if (self.isSelected) {
       self.overrideUserInterfaceStyle = UIUserInterfaceStyleUnspecified;
     } else {
@@ -897,25 +897,18 @@ UIImage* DefaultFavicon() {
 - (UIButton*)createCloseButton {
   UIImage* closeSymbol =
       DefaultSymbolWithPointSize(kXMarkSymbol, kCloseButtonSize);
-  UIButton* closeButton;
-  if ([TabStripFeaturesUtils isTabStripBiggerCloseTargetEnabled]) {
-    ExtendedTouchTargetButton* button =
-        [[ExtendedTouchTargetButton alloc] init];
-    button.minimumDiameter = kCloseButtonMinimumTouchTarget;
-    closeButton = button;
-  } else {
-    closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-  }
-  closeButton.translatesAutoresizingMaskIntoConstraints = NO;
-  closeButton.tintColor = [UIColor colorNamed:kTextSecondaryColor];
-  [closeButton setImage:closeSymbol forState:UIControlStateNormal];
-  [closeButton addTarget:self
-                  action:@selector(closeButtonTapped:)
-        forControlEvents:UIControlEventTouchUpInside];
-  closeButton.pointerInteractionEnabled = YES;
-  closeButton.accessibilityIdentifier =
+  ExtendedTouchTargetButton* button = [[ExtendedTouchTargetButton alloc] init];
+  button.minimumDiameter = kCloseButtonMinimumTouchTarget;
+  button.translatesAutoresizingMaskIntoConstraints = NO;
+  button.tintColor = [UIColor colorNamed:kTextSecondaryColor];
+  [button setImage:closeSymbol forState:UIControlStateNormal];
+  [button addTarget:self
+                action:@selector(closeButtonTapped:)
+      forControlEvents:UIControlEventTouchUpInside];
+  button.pointerInteractionEnabled = YES;
+  button.accessibilityIdentifier =
       TabStripTabItemConstants.closeButtonAccessibilityIdentifier;
-  return closeButton;
+  return button;
 }
 
 // Returns a new title label.

@@ -43,7 +43,7 @@ class TabStripNewTabButton: UIView {
     addSubview(button)
     button.accessibilityIdentifier = TabStripConstants.NewTabButton.accessibilityIdentifier
 
-    if TabStripFeaturesUtils.isTabStripV2 {
+    if TabStripFeaturesUtils.hasBiggerNTB {
       NSLayoutConstraint.activate([
         button.leadingAnchor.constraint(
           equalTo: self.leadingAnchor, constant: TabStripConstants.NewTabButton.leadingInset),
@@ -80,7 +80,7 @@ class TabStripNewTabButton: UIView {
   /// Configures the `UIButton`.
   private func configureButton() {
     let symbolSize =
-      TabStripFeaturesUtils.isTabStripV2
+      TabStripFeaturesUtils.hasBiggerNTB
       ? TabStripConstants.NewTabButton.symbolBiggerPointSize
       : TabStripConstants.NewTabButton.symbolPointSize
     let closeSymbol = DefaultSymbolWithPointSize(
@@ -93,14 +93,12 @@ class TabStripNewTabButton: UIView {
     configuration.baseForegroundColor = TabStripHelper.newTabButtonSymbolColor
     button.configuration = configuration
     button.imageView?.contentMode = .center
-    if TabStripFeaturesUtils.isTabStripV2 {
+    if TabStripFeaturesUtils.hasBiggerNTB {
       button.layer.cornerRadius = TabStripConstants.NewTabButton.diameter / 2.0
     } else {
       button.layer.cornerRadius = TabStripConstants.NewTabButton.legacyCornerRadius
     }
-    if !TabStripFeaturesUtils.isTabStripNTBNoBackgroundEnabled
-      && !TabStripFeaturesUtils.isTabStripBlackBackgroundEnabled
-    {
+    if !TabStripFeaturesUtils.hasNoNTBBackground {
       button.backgroundColor = UIColor(named: kGroupedSecondaryBackgroundColor)
     }
 

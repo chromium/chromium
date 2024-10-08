@@ -21,48 +21,29 @@
   return IsTabGroupInGridEnabled();
 }
 
-+ (BOOL)isTabStripCloserNTBEnabled {
-  std::string feature_param = base::GetFieldTrialParamValueByFeature(
-      kModernTabStrip, kModernTabStripV2ParameterName);
-  return feature_param == kModernTabStripCloserNTBParam;
++ (BOOL)hasCloserNTB {
+  return GetFieldTrialParamByFeatureAsBool(kModernTabStrip,
+                                           kModernTabStripCloserNTB, false);
 }
 
-+ (BOOL)isTabStripDarkerBackgroundEnabled {
-  std::string feature_param = base::GetFieldTrialParamValueByFeature(
-      kModernTabStrip, kModernTabStripV2ParameterName);
-  return feature_param == kModernTabStripDarkerBackgroundParam;
++ (BOOL)hasDarkerBackground {
+  return GetFieldTrialParamByFeatureAsBool(
+      kModernTabStrip, kModernTabStripDarkerBackground, false);
 }
 
-+ (BOOL)isTabStripCloserNTBDarkerBackgroundEnabled {
-  std::string feature_param = base::GetFieldTrialParamValueByFeature(
-      kModernTabStrip, kModernTabStripV2ParameterName);
-  return feature_param == kModernTabStripCloserNTBDarkerBackgroundParam;
++ (BOOL)hasNoNTBBackground {
+  return GetFieldTrialParamByFeatureAsBool(
+      kModernTabStrip, kModernTabStripNTBNoBackground, false);
 }
 
-+ (BOOL)isTabStripNTBNoBackgroundEnabled {
-  std::string feature_param = base::GetFieldTrialParamValueByFeature(
-      kModernTabStrip, kModernTabStripV2ParameterName);
-  return feature_param == kModernTabStripNTBNoBackgroundParam;
++ (BOOL)hasBlackBackground {
+  return GetFieldTrialParamByFeatureAsBool(
+      kModernTabStrip, kModernTabStripBlackBackground, false);
 }
 
-+ (BOOL)isTabStripBlackBackgroundEnabled {
-  std::string feature_param = base::GetFieldTrialParamValueByFeature(
-      kModernTabStrip, kModernTabStripV2ParameterName);
-  return feature_param == kModernTabStripBlackBackgroundParam;
-}
-
-+ (BOOL)isTabStripV2 {
-  return [self isTabStripCloserNTBEnabled] ||
-         [self isTabStripDarkerBackgroundEnabled] ||
-         [self isTabStripCloserNTBDarkerBackgroundEnabled] ||
-         [self isTabStripNTBNoBackgroundEnabled] ||
-         [self isTabStripBlackBackgroundEnabled] ||
-         [self isTabStripBiggerCloseTargetEnabled];
-}
-
-+ (BOOL)isTabStripBiggerCloseTargetEnabled {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kModernTabStrip, kModernTabStripBiggerCloseTargetName, false);
++ (BOOL)hasBiggerNTB {
+  return GetFieldTrialParamByFeatureAsBool(kModernTabStrip,
+                                           kModernTabStripBiggerNTB, false);
 }
 
 @end

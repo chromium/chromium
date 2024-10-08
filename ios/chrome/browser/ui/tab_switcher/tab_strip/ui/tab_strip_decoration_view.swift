@@ -14,7 +14,7 @@ class TabStripDecorationView: UIView {
     super.init(frame: frame)
     translatesAutoresizingMaskIntoConstraints = false
 
-    if TabStripFeaturesUtils.isTabStripBlackBackgroundEnabled {
+    if TabStripFeaturesUtils.hasBlackBackground {
       overrideUserInterfaceStyle = .dark
     }
 

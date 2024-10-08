@@ -10,19 +10,18 @@
 @implementation TabStripHelper
 
 + (UIColor*)backgroundColor {
-  if ([TabStripFeaturesUtils isTabStripDarkerBackgroundEnabled] ||
-      [TabStripFeaturesUtils isTabStripCloserNTBDarkerBackgroundEnabled]) {
-    return [UIColor colorNamed:kTabStripBackgroundColor];
-  } else if ([TabStripFeaturesUtils isTabStripBlackBackgroundEnabled]) {
+  if (TabStripFeaturesUtils.hasBlackBackground) {
     return UIColor.blackColor;
+  } else if (TabStripFeaturesUtils.hasDarkerBackground) {
+    return [UIColor colorNamed:kTabStripBackgroundColor];
   }
   return [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
 }
 
 + (UIColor*)newTabButtonSymbolColor {
-  if ([TabStripFeaturesUtils isTabStripBlackBackgroundEnabled]) {
+  if (TabStripFeaturesUtils.hasBlackBackground) {
     return [UIColor colorNamed:kStaticGrey600Color];
-  } else if ([TabStripFeaturesUtils isTabStripV2]) {
+  } else if (TabStripFeaturesUtils.hasBiggerNTB) {
     return [UIColor colorNamed:kTabStripNewTabButtonColor];
   }
   return [UIColor colorNamed:kTextSecondaryColor];

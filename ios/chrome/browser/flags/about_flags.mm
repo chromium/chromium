@@ -575,39 +575,41 @@ const FeatureEntry::FeatureParam kModernTabStripNTBDynamic[] = {
     {kModernTabStripParameterName, kModernTabStripNTBDynamicParam}};
 const FeatureEntry::FeatureParam kModernTabStripNTBStatic[] = {
     {kModernTabStripParameterName, kModernTabStripNTBStaticParam}};
-const FeatureEntry::FeatureParam kModernTabStripCloserNTB[] = {
-    {kModernTabStripV2ParameterName, kModernTabStripCloserNTBParam}};
-const FeatureEntry::FeatureParam kModernTabStripDarkerBackground[] = {
-    {kModernTabStripV2ParameterName, kModernTabStripDarkerBackgroundParam}};
-const FeatureEntry::FeatureParam kModernTabStripCloserNTBDarkerBackground[] = {
-    {kModernTabStripV2ParameterName,
-     kModernTabStripCloserNTBDarkerBackgroundParam}};
-const FeatureEntry::FeatureParam kModernTabStripNTBNoBackground[] = {
-    {kModernTabStripV2ParameterName, kModernTabStripNTBNoBackgroundParam}};
-const FeatureEntry::FeatureParam kModernTabStripBlackBackground[] = {
-    {kModernTabStripV2ParameterName, kModernTabStripBlackBackgroundParam}};
-const FeatureEntry::FeatureParam kModernTabStripBiggerCloseTarget[] = {
-    {kModernTabStripBiggerCloseTargetName, "true"},
-    {kModernTabStripV2ParameterName, kModernTabStripNTBNoBackgroundParam}};
+const FeatureEntry::FeatureParam kModernTabStripCloserNTBOption[] = {
+    {kModernTabStripCloserNTB, "true"},
+    {kModernTabStripBiggerNTB, "true"}};
+const FeatureEntry::FeatureParam kModernTabStripDarkerBackgroundOption[] = {
+    {kModernTabStripDarkerBackground, "true"},
+    {kModernTabStripBiggerNTB, "true"}};
+const FeatureEntry::FeatureParam
+    kModernTabStripCloserNTBDarkerBackgroundOption[] = {
+        {kModernTabStripDarkerBackground, "true"},
+        {kModernTabStripCloserNTB, "true"},
+        {kModernTabStripBiggerNTB, "true"}};
+const FeatureEntry::FeatureParam kModernTabStripNTBNoBackgroundOption[] = {
+    {kModernTabStripNTBNoBackground, "true"},
+    {kModernTabStripBiggerNTB, "true"}};
+const FeatureEntry::FeatureParam kModernTabStripBlackBackgroundOption[] = {
+    {kModernTabStripBlackBackground, "true"},
+    {kModernTabStripNTBNoBackground, "true"},
+    {kModernTabStripBiggerNTB, "true"}};
 
 const FeatureEntry::FeatureVariation kModernTabStripVariations[] = {
     {"New tab button dynamic", kModernTabStripNTBDynamic,
      std::size(kModernTabStripNTBDynamic), nullptr},
     {"New tab button static", kModernTabStripNTBStatic,
      std::size(kModernTabStripNTBStatic), nullptr},
-    {"Closer NTB", kModernTabStripCloserNTB,
-     std::size(kModernTabStripCloserNTB), nullptr},
-    {"Darker background", kModernTabStripDarkerBackground,
-     std::size(kModernTabStripDarkerBackground), nullptr},
-    {"Closer NTB + darker background", kModernTabStripCloserNTBDarkerBackground,
-     std::size(kModernTabStripCloserNTBDarkerBackground), nullptr},
-    {"NTB no background", kModernTabStripNTBNoBackground,
-     std::size(kModernTabStripNTBNoBackground), nullptr},
-    {"Black background", kModernTabStripBlackBackground,
-     std::size(kModernTabStripBlackBackground), nullptr},
-    {"Bigger close target", kModernTabStripBiggerCloseTarget,
-     std::size(kModernTabStripBiggerCloseTarget), nullptr},
-
+    {"Closer NTB", kModernTabStripCloserNTBOption,
+     std::size(kModernTabStripCloserNTBOption), nullptr},
+    {"Darker background", kModernTabStripDarkerBackgroundOption,
+     std::size(kModernTabStripDarkerBackgroundOption), nullptr},
+    {"Closer NTB + darker background",
+     kModernTabStripCloserNTBDarkerBackgroundOption,
+     std::size(kModernTabStripCloserNTBDarkerBackgroundOption), nullptr},
+    {"NTB no background", kModernTabStripNTBNoBackgroundOption,
+     std::size(kModernTabStripNTBNoBackgroundOption), nullptr},
+    {"Black background", kModernTabStripBlackBackgroundOption,
+     std::size(kModernTabStripBlackBackgroundOption), nullptr},
 };
 
 const FeatureEntry::FeatureVariation
