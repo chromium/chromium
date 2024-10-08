@@ -230,6 +230,42 @@ constexpr net::NetworkTrafficAnnotationTag
             "Not implemented."
         })");
 
+constexpr net::NetworkTrafficAnnotationTag kGenerateIceConfigTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("remoting_cloud_generate_ice_config",
+                                        R"(
+        semantics {
+          sender: "Chrome Remote Desktop"
+          description:
+            "Request used by Chrome Remote Desktop to fetch an ICE "
+            "(Interactive Connectivity Establishment) configuration which "
+            "contains a list of STUN (Session Traversal Utilities for NAT) & "
+            "TURN (Traversal Using Relay NAT) servers and TURN credentials. "
+            "Please see https://tools.ietf.org/html/rfc5245 for more details."
+          trigger:
+            "When a user connects to a remote access host instance running on "
+            "GCE which has been configured as a 'Cloud' host."
+          user_data {
+            type: OTHER
+          }
+          data:
+            "An access token for the device robot account associated with this "
+            "machine."
+          destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts { owners: "//remoting/OWNERS" }
+          }
+          last_reviewed: "2024-10-08"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "This request cannot be stopped in settings, but will not be sent "
+            "if the Chrome Remote Desktop host is not registered as a Cloud "
+            "host running on GCE."
+          policy_exception_justification:
+            "Not implemented."
+        })");
+
 using LegacyProvisionGceInstanceRequest =
     remoting::apis::v1::ProvisionGceInstanceRequest;
 
@@ -382,10 +418,9 @@ void CloudServiceClient::GenerateHostToken(GenerateHostTokenCallback callback) {
 }
 
 void CloudServiceClient::GenerateIceConfig(GenerateIceConfigCallback callback) {
-  constexpr char path[] = "/v1alpha/networktraversal:generateIceConfig";
+  constexpr char path[] = "/v1alpha/networkTraversal:generateIceConfig";
 
-  // TODO: joedow - Add specific traffic annotation for generateIceConfig.
-  ExecuteRequest(kGenerateHostTokenTrafficAnnotation, path, /*api_key=*/"",
+  ExecuteRequest(kGenerateIceConfigTrafficAnnotation, path, /*api_key=*/"",
                  net::HttpRequestHeaders::kPostMethod,
                  std::make_unique<GenerateIceConfigRequest>(),
                  std::move(callback));
