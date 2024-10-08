@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/clang/clang.gni")
 import("//testing/test.gni")
 
 # Use the following import to find other suffixes as needed. The suffixes start
@@ -15,25 +16,46 @@ _common_args = [
   # Assume that we are running this script from the output directory.
   "--builddir",
   ".",
+  "--is-bot",
   "--android-browser",
 ]
 
 _common_data_deps = [
-  # Needed to import `android_browser_backend_settings`. Need to depend on the
-  # entire catapult lib since catapult/telemetry has internal deps to other
-  # catapult libs like catapult/common.
-  "//third_party/catapult:telemetry_chrome_test_support",
+  # Likely the following are not all necessary just to run
+  # `tools/perf/run_benchmark` but it is easier to get started by mirroring.
+  # From performance_test_suite_template_base:
+  "//components:components_perftests",
+  "//testing:run_perf_test",
+  "//third_party/dawn/src/tint/cmd/bench:bench_cmd",
+
+  # From performance_test_suite_template_android:
+  # The target-specific ones will need to be added for each target, e.g.
+  # "//chrome/test:telemetry_perf_tests${suffix}"
 ]
 
-isolated_script_test(
-    "generate_profile_android_clank_trichrome_chrome_google_64_32_bundle") {
-  script = _script_name
-  args = _common_args + [ "android-trichrome-chrome-google-64-32-bundle" ]
-  data_deps = _common_data_deps
-}
+_common_data = [
+  # This avoids generate_profile.py attempting to download it on demand.
+  "${clang_base_path}/bin/llvm-profdata",
+]
 
-isolated_script_test("generate_profile_android_clank_trichrome_bundle") {
-  script = _script_name
-  args = _common_args + [ "android-trichrome-bundle" ]
-  data_deps = _common_data_deps
+if (enable_chrome_android_internal) {
+  isolated_script_test("generate_profile_android_clank_trichrome_bundle") {
+    script = _script_name
+    args = _common_args + [ "android-trichrome-bundle" ]
+    data_deps = _common_data_deps
+    data_deps +=
+        [ "//chrome/test:telemetry_perf_tests_android_clank_trichrome_bundle" ]
+    data = _common_data
+  }
+
+  if (android_64bit_target_cpu) {
+    isolated_script_test(
+        "generate_profile_android_clank_trichrome_chrome_google_64_32_bundle") {
+      script = _script_name
+      args = _common_args + [ "android-trichrome-chrome-google-64-32-bundle" ]
+      data_deps = _common_data_deps
+      data_deps += [ "//chrome/test:telemetry_perf_tests_android_clank_trichrome_chrome_google_64_32_bundle" ]
+      data = _common_data
+    }
+  }
 }

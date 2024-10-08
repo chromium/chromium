@@ -1295,6 +1295,7 @@ template("isolated_script_test") {
                            "*",
                            TESTONLY_AND_VISIBILITY + [
                                  "args",
+                                 "data",
                                  "deps",
                                  "script",
                                ])
@@ -1305,6 +1306,9 @@ template("isolated_script_test") {
     }
     script = "//testing/scripts/run_isolated_script_test.py"
     data = [ invoker.script ]
+    if (defined(invoker.data)) {
+      data += invoker.data
+    }
     args = [
       rebase_path(invoker.script, root_build_dir),
       "--script-type=bare",

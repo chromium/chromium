@@ -78,6 +78,8 @@ class OptionsNamespace(argparse.Namespace):
     repeats: int
     verbose: int
     quiet: int
+    # TODO(https://crbug.com/40272686): Remove this when no longer needed.
+    is_bot: bool
 
 
 def parse_args():
@@ -147,6 +149,10 @@ def parse_args():
                         default=0,
                         help='Decrease verbosity level (passed through to '
                         'run_benchmark.)')
+    parser.add_argument('--is-bot',
+                        action='store_true',
+                        default=False,
+                        help='Makes it easier to add bot-specific logic.')
     # ▲▲▲▲▲ Please update OptionsNamespace when adding or modifying args. ▲▲▲▲▲
 
     args = parser.parse_args(namespace=OptionsNamespace())
@@ -432,10 +438,16 @@ def main():
         _LOGGER.setLevel(logging.WARN)
 
     if not os.path.exists(_PROFDATA):
-        _LOGGER.warning(f'{_PROFDATA} does not exist, downloading it')
-        subprocess.run(
-            [sys.executable, _UPDATE_PY, '--package=coverage_tools'],
-            check=True)
+        if args.is_bot:
+            _LOGGER.warning(f'{_PROFDATA} missing on bot, {_LLVM_DIR}:')
+            for root, _, files in os.walk(_LLVM_DIR):
+                for f in files:
+                    _LOGGER.warning(f'> {os.path.join(root, f)}')
+        else:
+            _LOGGER.warning(f'{_PROFDATA} does not exist, downloading it')
+            subprocess.run(
+                [sys.executable, _UPDATE_PY, '--package=coverage_tools'],
+                check=True)
     assert os.path.exists(_PROFDATA), f'{_PROFDATA} does not exist'
 
     if os.path.exists(args.profiledir):

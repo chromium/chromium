@@ -116,7 +116,6 @@ group("gn_all") {
       "//tools/binary_size:binary_size_trybot_py",
       "//tools/ipc_fuzzer:ipc_fuzzer_all",
       "//tools/metrics:metrics_metadata",
-      "//tools/pgo:generate_profile_android_clank_trichrome_chrome_google_64_32_bundle",
       "//ui/base:ui_base_unittests",
       "//ui/gfx:gfx_unittests",
       "//ui/tests:ui_unittests",
@@ -438,7 +437,10 @@ group("gn_all") {
       }
 
       if (enable_chrome_android_internal) {
-        deps += [ "//clank" ]
+        deps += [
+          "//clank",
+          "//tools/pgo:generate_profile_android_clank_trichrome_bundle",
+        ]
       }
     }
 
