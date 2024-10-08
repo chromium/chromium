@@ -80,12 +80,12 @@ TransportContext::TransportContext(
 
 TransportContext::~TransportContext() = default;
 
-void TransportContext::GetIceConfig(GetIceConfigCallback callback) {
+void TransportContext::GetIceConfig(OnIceConfigCallback callback) {
   EnsureFreshIceConfig();
 
   // If there is a pending |ice_config_request_| then delay the callback until
   // the request is finished.
-  if (ice_config_request_) {
+  if (ice_config_fetcher_) {
     pending_ice_config_callbacks_.push_back(std::move(callback));
   } else {
     HOST_LOG << "Using cached ICE Config.";
@@ -96,7 +96,7 @@ void TransportContext::GetIceConfig(GetIceConfigCallback callback) {
 
 void TransportContext::EnsureFreshIceConfig() {
   // Check if request is already pending.
-  if (ice_config_request_) {
+  if (ice_config_fetcher_) {
     HOST_LOG << "ICE Config request is already pending.";
     return;
   }
@@ -108,18 +108,18 @@ void TransportContext::EnsureFreshIceConfig() {
 
   if (base::Time::Now() >
       (last_request_completion_time_ + kIceConfigRequestCooldown)) {
-    ice_config_request_ = std::make_unique<RemotingIceConfigRequest>(
+    ice_config_fetcher_ = std::make_unique<RemotingIceConfigRequest>(
         url_loader_factory_, oauth_token_getter_);
-    ice_config_request_->Send(
+    ice_config_fetcher_->GetIceConfig(
         base::BindOnce(&TransportContext::OnIceConfig, base::Unretained(this)));
   } else {
     HOST_LOG << "Skipping ICE Config request made during the cooldown period.";
   }
 }
 
-void TransportContext::OnIceConfig(const IceConfig& ice_config) {
-  ice_config_ = ice_config;
-  ice_config_request_.reset();
+void TransportContext::OnIceConfig(std::optional<IceConfig> ice_config) {
+  ice_config_ = ice_config.value_or(IceConfig());
+  ice_config_fetcher_.reset();
 
   if (!ice_config_.is_null()) {
     // Only reset |last_request_completion_time_| if we received a valid config.
@@ -130,11 +130,11 @@ void TransportContext::OnIceConfig(const IceConfig& ice_config) {
   }
 
   HOST_LOG << "Using newly requested ICE Config.";
-  PrintIceConfig(ice_config);
+  PrintIceConfig(ice_config_);
 
   auto& callback_list = pending_ice_config_callbacks_;
   while (!callback_list.empty()) {
-    std::move(callback_list.front()).Run(ice_config);
+    std::move(callback_list.front()).Run(ice_config_);
     callback_list.pop_front();
   }
 }

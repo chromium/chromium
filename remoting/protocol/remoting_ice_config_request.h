@@ -10,7 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/base/protobuf_http_client.h"
-#include "remoting/protocol/ice_config_request.h"
+#include "remoting/protocol/ice_config_fetcher.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -31,7 +31,7 @@ namespace protocol {
 
 // IceConfigRequest that fetches IceConfig from the remoting NetworkTraversal
 // service.
-class RemotingIceConfigRequest final : public IceConfigRequest {
+class RemotingIceConfigRequest final : public IceConfigFetcher {
  public:
   RemotingIceConfigRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -42,8 +42,8 @@ class RemotingIceConfigRequest final : public IceConfigRequest {
 
   ~RemotingIceConfigRequest() override;
 
-  // IceConfigRequest implementation.
-  void Send(OnIceConfigCallback callback) override;
+  // IceConfigFetcher implementation.
+  void GetIceConfig(OnIceConfigCallback callback) override;
 
  private:
   friend class RemotingIceConfigRequestTest;

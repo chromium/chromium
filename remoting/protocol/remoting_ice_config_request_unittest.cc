@@ -4,6 +4,10 @@
 
 #include "remoting/protocol/remoting_ice_config_request.h"
 
+#include <memory>
+#include <optional>
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -21,7 +25,7 @@ namespace {
 using testing::_;
 
 using MockOnResultCallback =
-    base::MockCallback<IceConfigRequest::OnIceConfigCallback>;
+    base::MockCallback<IceConfigFetcher::OnIceConfigCallback>;
 
 }  // namespace
 
@@ -29,13 +33,14 @@ class RemotingIceConfigRequestTest : public testing::Test {
  protected:
   std::unique_ptr<MockOnResultCallback> SendRequest(
       base::RunLoop* run_loop_to_quit,
-      IceConfig* out_config) {
+      std::optional<IceConfig>& out_config) {
     auto mock_on_result = std::make_unique<MockOnResultCallback>();
-    EXPECT_CALL(*mock_on_result, Run(_)).WillOnce([=](const IceConfig& config) {
-      *out_config = config;
-      run_loop_to_quit->Quit();
-    });
-    request_.Send(mock_on_result->Get());
+    EXPECT_CALL(*mock_on_result, Run(_))
+        .WillOnce([=, &out_config](std::optional<IceConfig> ice_config) {
+          out_config = std::move(ice_config);
+          run_loop_to_quit->Quit();
+        });
+    request_.GetIceConfig(mock_on_result->Get());
     return mock_on_result;
   }
 
@@ -47,8 +52,8 @@ class RemotingIceConfigRequestTest : public testing::Test {
 
 TEST_F(RemotingIceConfigRequestTest, SuccessfulRequest) {
   base::RunLoop run_loop;
-  IceConfig received_config;
-  auto mock_on_result = SendRequest(&run_loop, &received_config);
+  std::optional<IceConfig> received_config;
+  auto mock_on_result = SendRequest(&run_loop, received_config);
 
   EXPECT_THAT(
       test_responder_.GetMostRecentPendingRequest().request.headers.GetHeader(
@@ -67,23 +72,23 @@ TEST_F(RemotingIceConfigRequestTest, SuccessfulRequest) {
   test_responder_.AddResponseToMostRecentRequestUrl(response);
   run_loop.Run();
 
-  ASSERT_FALSE(received_config.is_null());
+  ASSERT_TRUE(received_config.has_value());
 
-  EXPECT_EQ(1U, received_config.turn_servers.size());
-  EXPECT_EQ(1U, received_config.stun_servers.size());
+  EXPECT_EQ(1U, received_config->turn_servers.size());
+  EXPECT_EQ(1U, received_config->stun_servers.size());
 }
 
 TEST_F(RemotingIceConfigRequestTest, FailedRequest) {
   base::RunLoop run_loop;
-  IceConfig received_config;
-  auto mock_on_result = SendRequest(&run_loop, &received_config);
+  std::optional<IceConfig> received_config;
+  auto mock_on_result = SendRequest(&run_loop, received_config);
 
   ASSERT_LT(0, test_responder_.GetNumPending());
   test_responder_.AddErrorToMostRecentRequestUrl(
       ProtobufHttpStatus(ProtobufHttpStatus::Code::INVALID_ARGUMENT, ""));
   run_loop.Run();
 
-  EXPECT_TRUE(received_config.is_null());
+  EXPECT_FALSE(received_config.has_value());
 }
 
 }  // namespace remoting::protocol

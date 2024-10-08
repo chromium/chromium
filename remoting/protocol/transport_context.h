@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -26,15 +27,15 @@ class OAuthTokenGetter;
 namespace protocol {
 
 class PortAllocatorFactory;
-class IceConfigRequest;
+class IceConfigFetcher;
 
 // TransportContext is responsible for storing all parameters required for
 // P2P transport initialization. It's also responsible for fetching STUN and
 // TURN configuration.
 class TransportContext : public base::RefCountedThreadSafe<TransportContext> {
  public:
-  typedef base::OnceCallback<void(const IceConfig& ice_config)>
-      GetIceConfigCallback;
+  using OnIceConfigCallback =
+      base::OnceCallback<void(const IceConfig& ice_config)>;
 
   static scoped_refptr<TransportContext> ForTests(TransportRole role);
 
@@ -60,7 +61,7 @@ class TransportContext : public base::RefCountedThreadSafe<TransportContext> {
   }
 
   // Requests fresh STUN and TURN information.
-  void GetIceConfig(GetIceConfigCallback callback);
+  void GetIceConfig(OnIceConfigCallback callback);
 
   PortAllocatorFactory* port_allocator_factory() {
     return port_allocator_factory_.get();
@@ -78,7 +79,7 @@ class TransportContext : public base::RefCountedThreadSafe<TransportContext> {
   ~TransportContext();
 
   void EnsureFreshIceConfig();
-  void OnIceConfig(const IceConfig& ice_config);
+  void OnIceConfig(std::optional<IceConfig> ice_config);
 
   std::unique_ptr<PortAllocatorFactory> port_allocator_factory_;
   raw_ptr<rtc::SocketFactory> socket_factory_;
@@ -89,10 +90,10 @@ class TransportContext : public base::RefCountedThreadSafe<TransportContext> {
   IceConfig ice_config_;
 
   base::Time last_request_completion_time_;
-  std::unique_ptr<IceConfigRequest> ice_config_request_;
+  std::unique_ptr<IceConfigFetcher> ice_config_fetcher_;
 
   // Called once |ice_config_request_| completes.
-  std::list<GetIceConfigCallback> pending_ice_config_callbacks_;
+  std::list<OnIceConfigCallback> pending_ice_config_callbacks_;
 };
 
 }  // namespace protocol

@@ -81,9 +81,9 @@ RemotingIceConfigRequest::RemotingIceConfigRequest(
 
 RemotingIceConfigRequest::~RemotingIceConfigRequest() = default;
 
-void RemotingIceConfigRequest::Send(OnIceConfigCallback callback) {
-  DCHECK(on_ice_config_callback_.is_null());
-  DCHECK(!callback.is_null());
+void RemotingIceConfigRequest::GetIceConfig(OnIceConfigCallback callback) {
+  DCHECK(!on_ice_config_callback_);
+  DCHECK(callback);
 
   on_ice_config_callback_ = std::move(callback);
 
@@ -114,11 +114,16 @@ void RemotingIceConfigRequest::OnResponse(
     LOG(ERROR) << "Received error code: "
                << static_cast<int>(status.error_code())
                << ", message: " << status.error_message();
-    std::move(on_ice_config_callback_).Run(IceConfig());
+    std::move(on_ice_config_callback_).Run(std::nullopt);
     return;
   }
-
-  std::move(on_ice_config_callback_).Run(IceConfig::Parse(*response));
+  // TODO: joedow - Update Parse() to return nullopt instead.
+  auto ice_config = IceConfig::Parse(*response);
+  if (!ice_config.is_null()) {
+    std::move(on_ice_config_callback_).Run(std::move(ice_config));
+  } else {
+    std::move(on_ice_config_callback_).Run(std::nullopt);
+  }
 }
 
 }  // namespace remoting::protocol

@@ -98,7 +98,7 @@ static_library("protocol") {
     "host_video_stats_dispatcher.h",
     "ice_config.cc",
     "ice_config.h",
-    "ice_config_request.h",
+    "ice_config_fetcher.h",
     "ice_connection_to_host.cc",
     "ice_connection_to_host.h",
     "ice_transport.cc",
