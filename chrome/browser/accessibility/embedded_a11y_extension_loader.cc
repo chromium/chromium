@@ -72,8 +72,8 @@ extensions::ComponentLoader* GetComponentLoader(Profile* profile) {
 }  // namespace
 
 EmbeddedA11yExtensionLoader::ExtensionInfo::ExtensionInfo(
-    const std::string extension_id,
-    const std::string extension_path,
+    const std::string& extension_id,
+    const std::string& extension_path,
     const base::FilePath::CharType* extension_manifest_file,
     bool should_localize)
     : extension_id(extension_id),

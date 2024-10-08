@@ -34,8 +34,8 @@ class EmbeddedA11yExtensionLoader : public ProfileObserver,
   // Simple struct to hold information about each extension installed on all
   // profiles.
   struct ExtensionInfo {
-    ExtensionInfo(const std::string extension_id,
-                  const std::string extension_path,
+    ExtensionInfo(const std::string& extension_id,
+                  const std::string& extension_path,
                   const base::FilePath::CharType* extension_manifest_file,
                   bool should_localize);
     ExtensionInfo(const ExtensionInfo& other);
