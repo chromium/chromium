@@ -104,7 +104,7 @@ struct GetExtensionAndStorageFrontendResult {
 };
 
 GetExtensionAndStorageFrontendResult GetExtensionAndStorageFrontend(
-    const std::string target_id_,
+    const std::string& target_id_,
     const protocol::String& extension_id,
     const protocol::String& storage_area) {
   GetExtensionAndStorageFrontendResult result;
