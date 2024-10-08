@@ -43,7 +43,7 @@ class HitTestingTest : public RenderingTest {
 
   static HitTestResult HitTestForOcclusion(const Element& target) {
     const LayoutObject* object = target.GetLayoutObject();
-    return object->HitTestForOcclusion(object->VisualRectInDocument());
+    return object->HitTestForOcclusion(VisualRectInDocument(*object));
   }
 };
 
@@ -149,7 +149,7 @@ TEST_F(HitTestingTest, HitTestWithCallback) {
   LocalFrame* frame = GetDocument().GetFrame();
   DCHECK(!frame->View()->NeedsLayout());
   const PhysicalRect& hit_rect =
-      target->GetLayoutObject()->VisualRectInDocument();
+      VisualRectInDocument(*target->GetLayoutObject());
   HitTestRequest::HitTestRequestType hit_type =
       HitTestRequest::kIgnorePointerEventsNone | HitTestRequest::kReadOnly |
       HitTestRequest::kIgnoreClipping |

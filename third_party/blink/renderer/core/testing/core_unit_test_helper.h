@@ -201,6 +201,12 @@ constexpr PhysicalSize::PhysicalSize(int width, int height)
 constexpr PhysicalRect::PhysicalRect(int left, int top, int width, int height)
     : offset(left, top), size(width, height) {}
 
+// Returns the rect that should have raster invalidated whenever this object
+// changes. The rect is in the coordinate space of the document's scrolling
+// contents. This method deals with outlines and overflow.
+PhysicalRect VisualRectInDocument(const LayoutObject& object,
+                                  VisualRectFlags = kDefaultVisualRectFlags);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_CORE_UNIT_TEST_HELPER_H_

@@ -2275,13 +2275,6 @@ void LayoutObject::InvalidatePaint(
   ObjectPaintInvalidatorWithContext(*this, context).InvalidatePaint();
 }
 
-PhysicalRect LayoutObject::VisualRectInDocument(VisualRectFlags flags) const {
-  NOT_DESTROYED();
-  PhysicalRect rect = LocalVisualRect();
-  MapToVisualRectInAncestorSpace(View(), rect, flags);
-  return rect;
-}
-
 PhysicalRect LayoutObject::LocalVisualRectIgnoringVisibility() const {
   NOT_DESTROYED();
   NOTREACHED_IN_MIGRATION();

@@ -207,12 +207,6 @@ void LayoutSVGInlineText::ComputeNewScaledFontForStyle(
       Font(font_description, document.GetStyleEngine().GetFontSelector());
 }
 
-PhysicalRect LayoutSVGInlineText::VisualRectInDocument(
-    VisualRectFlags flags) const {
-  NOT_DESTROYED();
-  return Parent()->VisualRectInDocument(flags);
-}
-
 gfx::RectF LayoutSVGInlineText::VisualRectInLocalSVGCoordinates() const {
   NOT_DESTROYED();
   return Parent()->VisualRectInLocalSVGCoordinates();

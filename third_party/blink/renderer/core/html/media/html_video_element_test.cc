@@ -380,7 +380,7 @@ TEST_P(HTMLVideoElementTest, VideoVisibilityTrackerVideoElementRectDimensions) {
 
   // Verify that the `video_element_rect` intersects the `HTMLVideoElement`
   // bounds.
-  const auto intersection = Intersection(box->VisualRectInDocument(),
+  const auto intersection = Intersection(VisualRectInDocument(*box),
                                          occlusion_state.video_element_rect);
   EXPECT_EQ(occlusion_state.video_element_rect, intersection);
 }

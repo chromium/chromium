@@ -1133,7 +1133,7 @@ class LayoutObjectSimTest : public SimTest {
  protected:
   static HitTestResult HitTestForOcclusion(const Element& target) {
     const LayoutObject* object = target.GetLayoutObject();
-    return object->HitTestForOcclusion(object->VisualRectInDocument());
+    return object->HitTestForOcclusion(VisualRectInDocument(*object));
   }
 };
 

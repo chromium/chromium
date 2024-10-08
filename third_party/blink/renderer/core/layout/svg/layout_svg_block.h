@@ -91,8 +91,6 @@ class LayoutSVGBlock : public LayoutBlockFlow {
  private:
   // LayoutSVGBlock subclasses should use GetElement() instead.
   void GetNode() const = delete;
-
-  PhysicalRect VisualRectInDocument(VisualRectFlags) const final;
 };
 
 }  // namespace blink

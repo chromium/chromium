@@ -47,9 +47,6 @@ class LayoutSVGModelObject : public LayoutObject {
 
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
 
-  PhysicalRect VisualRectInDocument(
-      VisualRectFlags = kDefaultVisualRectFlags) const override;
-
   gfx::RectF VisualRectInLocalSVGCoordinates() const override {
     NOT_DESTROYED();
     return DecoratedBoundingBox();

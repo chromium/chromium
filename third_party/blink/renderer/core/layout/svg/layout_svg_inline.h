@@ -54,8 +54,6 @@ class LayoutSVGInline : public LayoutInline {
   gfx::RectF DecoratedBoundingBox() const final;
   gfx::RectF VisualRectInLocalSVGCoordinates() const final;
 
-  PhysicalRect VisualRectInDocument(
-      VisualRectFlags = kDefaultVisualRectFlags) const final;
   void MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
                           TransformState&,
                           MapCoordinatesFlags) const final;

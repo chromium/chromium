@@ -13,6 +13,11 @@
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_hidden_container.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_inline.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_model_object.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -172,6 +177,28 @@ ConstraintSpace RenderingTest::ConstraintSpaceForAvailableSize(
       /* is_new_fc */ false);
   builder.SetAvailableSize(LogicalSize(inline_size, LayoutUnit::Max()));
   return builder.ToConstraintSpace();
+}
+
+PhysicalRect VisualRectInDocument(const LayoutObject& object,
+                                  VisualRectFlags flags) {
+  if (IsA<LayoutSVGInlineText>(object)) {
+    return VisualRectInDocument(*object.Parent(), flags);
+  }
+  if (IsA<LayoutSVGHiddenContainer>(object)) {
+    return PhysicalRect();
+  }
+  if (object.IsSVG() || IsA<LayoutSVGInline>(object)) {
+    return SVGLayoutSupport::VisualRectInAncestorSpace(object, *object.View(),
+                                                       flags);
+  }
+  if (const auto* layout_inline = DynamicTo<LayoutInline>(object)) {
+    PhysicalRect rect = layout_inline->VisualOverflowRect();
+    object.MapToVisualRectInAncestorSpace(object.View(), rect, flags);
+    return rect;
+  }
+  PhysicalRect rect = object.LocalVisualRect();
+  object.MapToVisualRectInAncestorSpace(object.View(), rect, flags);
+  return rect;
 }
 
 }  // namespace blink

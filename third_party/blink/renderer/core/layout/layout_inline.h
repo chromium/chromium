@@ -216,9 +216,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   PhysicalRect AbsoluteBoundingBoxRectHandlingEmptyInline(
       MapCoordinatesFlags = 0) const final;
 
-  PhysicalRect VisualRectInDocument(
-      VisualRectFlags = kDefaultVisualRectFlags) const override;
-
   const char* GetName() const override {
     NOT_DESTROYED();
     return "LayoutInline";

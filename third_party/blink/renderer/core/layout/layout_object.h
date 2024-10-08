@@ -2530,12 +2530,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   virtual CursorDirective GetCursor(const PhysicalOffset&, ui::Cursor&) const;
 
   // Returns the rect that should have raster invalidated whenever this object
-  // changes. The rect is in the coordinate space of the document's scrolling
-  // contents. This method deals with outlines and overflow.
-  virtual PhysicalRect VisualRectInDocument(
-      VisualRectFlags = kDefaultVisualRectFlags) const;
-
-  // Returns the rect that should have raster invalidated whenever this object
   // changes. The rect is in the object's local physical coordinate space.
   // This is for non-SVG objects and LayoutSVGRoot only. SVG objects (except
   // LayoutSVGRoot) should use VisualRectInLocalSVGCoordinates() and map with
