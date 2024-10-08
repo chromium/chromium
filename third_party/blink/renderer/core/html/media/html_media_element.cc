@@ -2197,6 +2197,37 @@ void HTMLMediaElement::SetReadyState(ReadyState state) {
       ScheduleNamedEvent(event_type_names::kResize);
     ScheduleNamedEvent(event_type_names::kLoadedmetadata);
 
+    if (RuntimeEnabledFeatures::AudioVideoTracksEnabled()) {
+      Vector<String> default_tracks = fragment_parser.DefaultTracks();
+      if (!default_tracks.empty()) {
+        AudioTrack* default_audio_track = nullptr;
+        VideoTrack* default_video_track = nullptr;
+        // http://www.w3.org/2008/WebVideo/Fragments/WD-media-fragments-spec/#error-uri-general
+        // Multiple occurrences of the same dimension: only the last valid
+        // occurrence of a dimension (e.g., t=10 in #t=2&t=10) is interpreted,
+        // all previous occurrences (valid or invalid) SHOULD be ignored by the
+        // UA. The track dimension is an exception to this rule: multiple track
+        // dimensions are allowed (e.g., #track=1&track=2 selects both tracks 1
+        // and 2).
+        // Because we can't actually play multiple tracks of the same type, we
+        // fall back to only selecting the one which is declared last.
+        for (const String& track_id : default_tracks) {
+          if (AudioTrack* maybe_track = audioTracks().getTrackById(track_id)) {
+            default_audio_track = maybe_track;
+          }
+          if (VideoTrack* maybe_track = videoTracks().getTrackById(track_id)) {
+            default_video_track = maybe_track;
+          }
+        }
+        if (default_audio_track) {
+          default_audio_track->setEnabled(true);
+        }
+        if (default_video_track) {
+          default_video_track->setSelected(true);
+        }
+      }
+    }
+
     bool jumped = false;
     if (default_playback_start_position_ > 0) {
       Seek(default_playback_start_position_);

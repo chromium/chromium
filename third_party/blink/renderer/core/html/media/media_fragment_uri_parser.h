@@ -46,17 +46,11 @@ class CORE_EXPORT MediaFragmentURIParser final {
 
   double StartTime();
   double EndTime();
+  Vector<String> DefaultTracks();
 
  private:
   void ParseFragments();
-
-  enum TimeFormat {
-    kNone,
-    kInvalid,
-    kNormalPlayTime,
-    kSMPTETimeCode,
-    kWallClockTimeCode
-  };
+  void ParseTrackFragment();
   void ParseTimeFragment();
   bool ParseNPTFragment(std::string_view, double& start_time, double& end_time);
 
@@ -64,10 +58,16 @@ class CORE_EXPORT MediaFragmentURIParser final {
   bool ParseNPTTime(std::string_view, size_t& offset, double& time);
 
   KURL url_;
-  TimeFormat time_format_;
+
   double start_time_;
   double end_time_;
+  Vector<String> default_tracks_;
+
   Vector<std::pair<std::string, std::string>> fragments_;
+
+  bool has_parsed_fragments_ = false;
+  bool has_parsed_time_ = false;
+  bool has_parsed_track_ = false;
 };
 
 }  // namespace blink
