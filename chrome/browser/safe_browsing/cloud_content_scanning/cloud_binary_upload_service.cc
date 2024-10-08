@@ -230,10 +230,12 @@ void CloudBinaryUploadService::MaybeUploadForDeepScanning(
     const bool is_enhanced_protection =
         profile_ && IsEnhancedProtectionEnabled(*profile_->GetPrefs());
 
-    const bool is_deep_scan_authorized =
-        is_advanced_protection || is_enhanced_protection;
-    MaybeUploadForDeepScanningCallback(std::move(request),
-                                       /*authorized=*/is_deep_scan_authorized);
+    const Result is_deep_scan_authorized =
+        is_advanced_protection || is_enhanced_protection ? Result::SUCCESS
+                                                         : Result::UNAUTHORIZED;
+    MaybeUploadForDeepScanningCallback(
+        std::move(request),
+        /*auth_check_result=*/is_deep_scan_authorized);
     return;
   }
 
@@ -244,14 +246,14 @@ void CloudBinaryUploadService::MaybeUploadForDeepScanning(
 
   if (dm_token.empty()) {
     MaybeUploadForDeepScanningCallback(std::move(request),
-                                       /*authorized*/ false);
+                                       /*authorized*/ Result::UNAUTHORIZED);
     return;
   }
 
   // Validate if `token_and_connector` is authorized to upload data if this is
   // the first time or the previous check failed.
   if (!can_upload_enterprise_data_.contains(token_and_connector) ||
-      !can_upload_enterprise_data_[token_and_connector]) {
+      can_upload_enterprise_data_[token_and_connector] != Result::SUCCESS) {
     // Get data from `request` before calling `IsAuthorized` since it is about
     // to move.
     GURL url = request->GetUrlWithParams();
@@ -286,12 +288,12 @@ base::WeakPtr<BinaryUploadService> CloudBinaryUploadService::AsWeakPtr() {
 
 void CloudBinaryUploadService::MaybeUploadForDeepScanningCallback(
     std::unique_ptr<CloudBinaryUploadService::Request> request,
-    bool authorized) {
+    Result auth_check_result) {
   // Ignore the request if the browser cannot upload data.
-  if (!authorized) {
+  if (auth_check_result != Result::SUCCESS) {
     // TODO(crbug.com/40660637): Add extra logic to handle UX for non-authorized
     // users.
-    request->FinishRequest(Result::UNAUTHORIZED,
+    request->FinishRequest(auth_check_result,
                            enterprise_connectors::ContentAnalysisResponse());
     return;
   }
@@ -516,6 +518,12 @@ void CloudBinaryUploadService::OnUploadComplete(
     const std::string& response_data) {
   Request* request = GetRequest(request_id);
   if (!request) {
+    return;
+  }
+
+  if (http_status == net::HTTP_UNAUTHORIZED) {
+    FinishRequest(request, Result::UNAUTHORIZED,
+                  enterprise_connectors::ContentAnalysisResponse());
     return;
   }
 
@@ -831,7 +839,7 @@ void CloudBinaryUploadService::IsAuthorized(
   // Validate if `token_and_connector` is authorized to upload data if this is
   // the first time or the previous check failed.
   if (!can_upload_enterprise_data_.contains(token_and_connector) ||
-      !can_upload_enterprise_data_[token_and_connector]) {
+      can_upload_enterprise_data_[token_and_connector] != Result::SUCCESS) {
     // Send a request to check if the browser can upload data.
     authorization_callbacks_[token_and_connector].push_back(
         std::move(callback));
@@ -873,8 +881,7 @@ void CloudBinaryUploadService::ValidateDataUploadRequestConnectorCallback(
     enterprise_connectors::ContentAnalysisResponse response) {
   TokenAndConnector token_and_connector = {dm_token, connector};
   pending_validate_data_upload_request_.erase(token_and_connector);
-  can_upload_enterprise_data_[token_and_connector] =
-      (result == CloudBinaryUploadService::Result::SUCCESS);
+  can_upload_enterprise_data_[token_and_connector] = result;
 }
 
 void CloudBinaryUploadService::RunAuthorizationCallbacks(
@@ -909,7 +916,7 @@ void CloudBinaryUploadService::Shutdown() {
 }
 
 void CloudBinaryUploadService::SetAuthForTesting(const std::string& dm_token,
-                                                 bool authorized) {
+                                                 Result auth_check_result) {
   for (enterprise_connectors::AnalysisConnector connector : {
          enterprise_connectors::AnalysisConnector::
              ANALYSIS_CONNECTOR_UNSPECIFIED,
@@ -922,7 +929,7 @@ void CloudBinaryUploadService::SetAuthForTesting(const std::string& dm_token,
 #endif
        }) {
     TokenAndConnector token_and_connector = {dm_token, connector};
-    can_upload_enterprise_data_[token_and_connector] = authorized;
+    can_upload_enterprise_data_[token_and_connector] = auth_check_result;
   }
 }
 

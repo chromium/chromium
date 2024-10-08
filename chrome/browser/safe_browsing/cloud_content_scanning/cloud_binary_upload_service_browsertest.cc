@@ -263,7 +263,8 @@ IN_PROC_BROWSER_TEST_P(CloudBinaryUploadServiceRequestValidationBrowserTest,
   request->set_device_token(dm_token());
   request->set_per_profile_request(profile_request());
 
-  service()->SetAuthForTesting(dm_token(), true);
+  service()->SetAuthForTesting(dm_token(),
+                               BinaryUploadService::Result::SUCCESS);
   service()->MaybeUploadForDeepScanning(std::move(request));
 
   ASSERT_EQ(future.Get<0>(), BinaryUploadService::Result::SUCCESS);
@@ -289,7 +290,8 @@ IN_PROC_BROWSER_TEST_P(CloudBinaryUploadServiceRequestValidationBrowserTest,
   request->set_device_token(dm_token());
   request->set_per_profile_request(profile_request());
 
-  service()->SetAuthForTesting(dm_token(), true);
+  service()->SetAuthForTesting(dm_token(),
+                               BinaryUploadService::Result::SUCCESS);
   service()->MaybeUploadForDeepScanning(std::move(request));
 
   ASSERT_EQ(future.Get<0>(), BinaryUploadService::Result::SUCCESS);
@@ -315,7 +317,8 @@ IN_PROC_BROWSER_TEST_P(CloudBinaryUploadServiceRequestValidationBrowserTest,
   request->set_device_token(dm_token());
   request->set_per_profile_request(profile_request());
 
-  service()->SetAuthForTesting(dm_token(), true);
+  service()->SetAuthForTesting(dm_token(),
+                               BinaryUploadService::Result::SUCCESS);
   service()->MaybeUploadForDeepScanning(std::move(request));
 
   ASSERT_EQ(future.Get<0>(), BinaryUploadService::Result::SUCCESS);
@@ -341,7 +344,8 @@ IN_PROC_BROWSER_TEST_P(CloudBinaryUploadServiceRequestValidationBrowserTest,
   request->set_device_token(dm_token());
   request->set_per_profile_request(profile_request());
 
-  service()->SetAuthForTesting(dm_token(), true);
+  service()->SetAuthForTesting(dm_token(),
+                               BinaryUploadService::Result::SUCCESS);
   service()->MaybeUploadForDeepScanning(std::move(request));
 
   ASSERT_EQ(future.Get<0>(), BinaryUploadService::Result::SUCCESS);

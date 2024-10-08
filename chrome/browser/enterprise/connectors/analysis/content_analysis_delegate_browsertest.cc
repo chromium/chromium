@@ -2314,7 +2314,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateUnauthorizedBrowserTest, Paste) {
       base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create,
                           content_analysis_run_loop.QuitClosure()));
 
-  FakeBinaryUploadServiceStorage()->SetAuthForTesting(dm_token(), false);
+  FakeBinaryUploadServiceStorage()->SetAuthForTesting(
+      dm_token(), BinaryUploadService::Result::UNAUTHORIZED);
   FakeBinaryUploadServiceStorage()->SetAuthorized(false);
 
   bool called = false;
@@ -2364,7 +2365,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateUnauthorizedBrowserTest, Files) {
       base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create,
                           content_analysis_run_loop.QuitClosure()));
 
-  FakeBinaryUploadServiceStorage()->SetAuthForTesting(dm_token(), false);
+  FakeBinaryUploadServiceStorage()->SetAuthForTesting(
+      dm_token(), BinaryUploadService::Result::UNAUTHORIZED);
   // Make sure all auth retries fail.
   FakeBinaryUploadServiceStorage()->SetAuthorized(false);
   FakeBinaryUploadServiceStorage()->SetShouldAutomaticallyAuthorize(true);

@@ -419,7 +419,9 @@ class DownloadDeepScanningBrowserTestBase
   void AuthorizeForDeepScanning() {
     static_cast<safe_browsing::CloudBinaryUploadService*>(
         CloudBinaryUploadServiceFactory::GetForProfile(browser()->profile()))
-        ->SetAuthForTesting("dm_token", /*authorized=*/true);
+        ->SetAuthForTesting(
+            "dm_token",
+            /*auth_check_result=*/BinaryUploadService::Result::SUCCESS);
   }
 
   bool connectors_machine_scope() const { return connectors_machine_scope_; }

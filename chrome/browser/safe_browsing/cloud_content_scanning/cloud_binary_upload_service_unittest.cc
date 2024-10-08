@@ -24,6 +24,7 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_fcm_service.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/multipart_uploader.h"
 #include "chrome/test/base/testing_profile.h"
@@ -32,6 +33,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
+#include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -73,6 +75,7 @@ class FakeConnectorUploadRequest : public ConnectorUploadRequest {
   FakeConnectorUploadRequest(
       bool should_succeed,
       enterprise_connectors::ContentAnalysisResponse response,
+      int http_status,
       Callback callback)
       : ConnectorUploadRequest(nullptr,
                                GURL(),
@@ -82,12 +85,13 @@ class FakeConnectorUploadRequest : public ConnectorUploadRequest {
                                base::DoNothing()),
         should_succeed_(should_succeed),
         response_(response),
+        http_status_(http_status),
         callback_(std::move(callback)) {}
 
   void Start() override {
     std::string serialized_response;
     response_.SerializeToString(&serialized_response);
-    std::move(callback_).Run(should_succeed_, should_succeed_ ? 200 : 401,
+    std::move(callback_).Run(should_succeed_, http_status_,
                              serialized_response);
   }
 
@@ -96,6 +100,7 @@ class FakeConnectorUploadRequest : public ConnectorUploadRequest {
  private:
   bool should_succeed_;
   enterprise_connectors::ContentAnalysisResponse response_;
+  int http_status_;
   Callback callback_;
 };
 
@@ -103,8 +108,11 @@ class FakeConnectorUploadRequestFactory : public ConnectorUploadRequestFactory {
  public:
   FakeConnectorUploadRequestFactory(
       bool should_succeed,
-      enterprise_connectors::ContentAnalysisResponse response)
-      : should_succeed_(should_succeed), response_(response) {}
+      enterprise_connectors::ContentAnalysisResponse response,
+      int http_status)
+      : should_succeed_(should_succeed),
+        http_status_(http_status),
+        response_(response) {}
 
   std::unique_ptr<ConnectorUploadRequest> CreateStringRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -114,7 +122,7 @@ class FakeConnectorUploadRequestFactory : public ConnectorUploadRequestFactory {
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       ConnectorUploadRequest::Callback callback) override {
     return std::make_unique<FakeConnectorUploadRequest>(
-        should_succeed_, response_, std::move(callback));
+        should_succeed_, response_, http_status_, std::move(callback));
   }
 
   std::unique_ptr<ConnectorUploadRequest> CreateFileRequest(
@@ -127,7 +135,7 @@ class FakeConnectorUploadRequestFactory : public ConnectorUploadRequestFactory {
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       ConnectorUploadRequest::Callback callback) override {
     return std::make_unique<FakeConnectorUploadRequest>(
-        should_succeed_, response_, std::move(callback));
+        should_succeed_, response_, http_status_, std::move(callback));
   }
 
   std::unique_ptr<ConnectorUploadRequest> CreatePageRequest(
@@ -139,11 +147,12 @@ class FakeConnectorUploadRequestFactory : public ConnectorUploadRequestFactory {
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       ConnectorUploadRequest::Callback callback) override {
     return std::make_unique<FakeConnectorUploadRequest>(
-        should_succeed_, response_, std::move(callback));
+        should_succeed_, response_, http_status_, std::move(callback));
   }
 
  private:
   bool should_succeed_;
+  int http_status_;
   enterprise_connectors::ContentAnalysisResponse response_;
 };
 
@@ -164,7 +173,9 @@ class CloudBinaryUploadServiceTest : public ::testing::TestWithParam<bool> {
  public:
   CloudBinaryUploadServiceTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        fake_factory_(true, enterprise_connectors::ContentAnalysisResponse()) {
+        fake_factory_(true,
+                      enterprise_connectors::ContentAnalysisResponse(),
+                      net::HTTP_OK) {
     is_resumable_upload_enabled()
         ? scoped_feature_list_.InitAndEnableFeature(
               enterprise_connectors::kResumableUploadEnabled)
@@ -190,8 +201,13 @@ class CloudBinaryUploadServiceTest : public ::testing::TestWithParam<bool> {
 
   void ExpectNetworkResponse(
       bool should_succeed,
-      enterprise_connectors::ContentAnalysisResponse response) {
-    fake_factory_ = FakeConnectorUploadRequestFactory(should_succeed, response);
+      enterprise_connectors::ContentAnalysisResponse response,
+      int http_status = -1) {
+    if (http_status == -1) {
+      http_status = should_succeed ? net::HTTP_OK : net::HTTP_BAD_REQUEST;
+    }
+    fake_factory_ = FakeConnectorUploadRequestFactory(should_succeed, response,
+                                                      http_status);
   }
 
   void ExpectInstanceID(std::string id, int times = 1) {
@@ -228,8 +244,9 @@ class CloudBinaryUploadServiceTest : public ::testing::TestWithParam<bool> {
 
   void UploadForDeepScanning(
       std::unique_ptr<BinaryUploadService::Request> request,
-      bool authorized_for_enterprise = true) {
-    service_->SetAuthForTesting("fake_device_token", authorized_for_enterprise);
+      BinaryUploadService::Result auth_check_for_enterprise =
+          BinaryUploadService::Result::SUCCESS) {
+    service_->SetAuthForTesting("fake_device_token", auth_check_for_enterprise);
     service_->MaybeUploadForDeepScanning(std::move(request));
   }
 
@@ -242,7 +259,8 @@ class CloudBinaryUploadServiceTest : public ::testing::TestWithParam<bool> {
   void ReceiveResponseFromUpload(BinaryUploadService::Request::Id request_id,
                                  bool success,
                                  const std::string& response) {
-    service_->OnUploadComplete(request_id, success, success ? 200 : 401,
+    service_->OnUploadComplete(request_id, success,
+                               success ? net::HTTP_OK : net::HTTP_BAD_REQUEST,
                                response);
   }
 
@@ -383,10 +401,11 @@ TEST_P(CloudBinaryUploadServiceTest,
   base::RunLoop run_loop;
   service_->IsAuthorized(
       GURL(), /*per_profile_request*/ false,
-      base::BindLambdaForTesting([&run_loop](bool authorized) {
-        EXPECT_TRUE(authorized);
-        run_loop.Quit();
-      }),
+      base::BindLambdaForTesting(
+          [&run_loop](BinaryUploadService::Result auth_check_result) {
+            EXPECT_EQ(auth_check_result, BinaryUploadService::Result::SUCCESS);
+            run_loop.Quit();
+          }),
       "fake_device_token",
       enterprise_connectors::AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED);
   run_loop.Run();
@@ -438,8 +457,8 @@ TEST_P(CloudBinaryUploadServiceTest, FailsWhenUploadFails_Authentication) {
   std::unique_ptr<MockRequest> request = MakeRequest(
       &scanning_result, &scanning_response, /*is_advanced_protection*/ false);
 
-  ExpectNetworkResponse(false,
-                        enterprise_connectors::ContentAnalysisResponse());
+  ExpectNetworkResponse(false, enterprise_connectors::ContentAnalysisResponse(),
+                        net::HTTP_UNAUTHORIZED);
 
   service_->MaybeUploadForDeepScanning(std::move(request));
   content::RunAllTasksUntilIdle();
@@ -644,9 +663,10 @@ TEST_P(CloudBinaryUploadServiceTest,
   ExpectNetworkResponse(true, simulated_response);
 
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::UNKNOWN);
-  // Set the previous auth check to be false.
-  UploadForDeepScanning(std::move(request),
-                        /*authorized_for_enterprise=*/false);
+  // Set the previous auth check to be unauthorized.
+  UploadForDeepScanning(
+      std::move(request),
+      /*auth_check_for_enterprise=*/BinaryUploadService::Result::UNAUTHORIZED);
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::SUCCESS);
 }
@@ -662,10 +682,11 @@ TEST_P(CloudBinaryUploadServiceTest,
   request->add_tag("malware");
 
   // Fail the new auth request.
-  ExpectNetworkResponse(false,
-                        enterprise_connectors::ContentAnalysisResponse());
-  UploadForDeepScanning(std::move(request),
-                        /*authorized_for_enterprise=*/false);
+  ExpectNetworkResponse(false, enterprise_connectors::ContentAnalysisResponse(),
+                        net::HTTP_UNAUTHORIZED);
+  UploadForDeepScanning(
+      std::move(request),
+      /*auth_check_for_enterprise=*/BinaryUploadService::Result::UNAUTHORIZED);
 
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::UNAUTHORIZED);
@@ -681,8 +702,8 @@ TEST_P(CloudBinaryUploadServiceTest,
                   /*is_advanced_protection*/ false);
 
   // Fail the first auth request.
-  ExpectNetworkResponse(false,
-                        enterprise_connectors::ContentAnalysisResponse());
+  ExpectNetworkResponse(false, enterprise_connectors::ContentAnalysisResponse(),
+                        net::HTTP_UNAUTHORIZED);
   service_->MaybeUploadForDeepScanning(std::move(request_1));
 
   content::RunAllTasksUntilIdle();
@@ -850,12 +871,14 @@ TEST_P(CloudBinaryUploadServiceTest, IsAuthorizedValidTimer) {
 }
 
 TEST_P(CloudBinaryUploadServiceTest, IsAuthorizedMultipleDMTokens) {
-  service_->SetAuthForTesting("valid_dm_token", true);
-  service_->SetAuthForTesting("invalid_dm_token", false);
+  service_->SetAuthForTesting("valid_dm_token",
+                              BinaryUploadService::Result::SUCCESS);
+  service_->SetAuthForTesting("invalid_dm_token",
+                              BinaryUploadService::Result::UNAUTHORIZED);
   // Fail all requests so that the auth retry logic will not change the pre-set
   // authorization status.
-  ExpectNetworkResponse(false,
-                        enterprise_connectors::ContentAnalysisResponse());
+  ExpectNetworkResponse(false, enterprise_connectors::ContentAnalysisResponse(),
+                        net::HTTP_UNAUTHORIZED);
 
   for (auto connector : {
          enterprise_connectors::AnalysisConnector::
@@ -870,11 +893,16 @@ TEST_P(CloudBinaryUploadServiceTest, IsAuthorizedMultipleDMTokens) {
        }) {
     service_->IsAuthorized(
         GURL(), /*per_profile_request*/ false,
-        base::BindOnce([](bool authorized) { EXPECT_TRUE(authorized); }),
+        base::BindOnce([](BinaryUploadService::Result auth_check_result) {
+          EXPECT_EQ(auth_check_result, BinaryUploadService::Result::SUCCESS);
+        }),
         "valid_dm_token", connector);
     service_->IsAuthorized(
         GURL(), /*per_profile_request*/ false,
-        base::BindOnce([](bool authorized) { EXPECT_FALSE(authorized); }),
+        base::BindOnce([](BinaryUploadService::Result auth_check_result) {
+          EXPECT_EQ(auth_check_result,
+                    BinaryUploadService::Result::UNAUTHORIZED);
+        }),
         "invalid_dm_token", connector);
   }
 }
@@ -906,8 +934,9 @@ TEST_P(CloudBinaryUploadServiceTest,
 
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::UNKNOWN);
 
-  UploadForDeepScanning(std::move(request),
-                        /*authorized_for_enterprise=*/false);
+  UploadForDeepScanning(
+      std::move(request),
+      /*auth_check_for_enterprise=*/BinaryUploadService::Result::UNAUTHORIZED);
 
   content::RunAllTasksUntilIdle();
 
@@ -940,8 +969,9 @@ TEST_P(CloudBinaryUploadServiceTest, AdvancedProtectionDlpRequestUnauthorized) {
 
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::UNKNOWN);
 
-  UploadForDeepScanning(std::move(request),
-                        /*authorized_for_enterprise=*/false);
+  UploadForDeepScanning(
+      std::move(request),
+      /*auth_check_for_enterprise=*/BinaryUploadService::Result::UNAUTHORIZED);
 
   // The result is set synchronously on unauthorized requests, so it is
   // UNAUTHORIZED before and after waiting.
@@ -976,8 +1006,9 @@ TEST_P(CloudBinaryUploadServiceTest,
 
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::UNKNOWN);
 
-  UploadForDeepScanning(std::move(request),
-                        /*authorized_for_enterprise=*/false);
+  UploadForDeepScanning(
+      std::move(request),
+      /*auth_check_for_enterprise=*/BinaryUploadService::Result::UNAUTHORIZED);
 
   content::RunAllTasksUntilIdle();
 
