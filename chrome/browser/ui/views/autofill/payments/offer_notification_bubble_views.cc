@@ -90,7 +90,7 @@ void OfferNotificationBubbleViews::AddedToWidget() {
 
   GetBubbleFrameView()->SetTitleView(
       std::make_unique<TitleWithIconAfterLabelView>(
-          GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_G));
+          GetWindowTitle(), TitleWithIconAfterLabelView::Icon::GOOGLE_G));
 }
 
 std::u16string OfferNotificationBubbleViews::GetWindowTitle() const {

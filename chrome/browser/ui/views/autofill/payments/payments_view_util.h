@@ -31,16 +31,13 @@ namespace autofill {
 // Gets the user avatar icon if available, or else a placeholder.
 ui::ImageModel GetProfileAvatar(const AccountInfo& account_info);
 
-// Defines a title view with an icon, a separator, and a label, to be used
-// by dialogs that need to present the Google or Google Pay logo with a
-// separator and custom horizontal padding.
-class TitleWithIconAndSeparatorView : public views::TableLayoutView {
-  METADATA_HEADER(TitleWithIconAndSeparatorView, views::TableLayoutView)
+// Defines a title view with a label and an icon, to be used by dialogs
+// that need to present the Google or Google Pay logo and custom
+// horizontal padding.
+class TitleWithIconAfterLabelView : public views::BoxLayoutView {
+  METADATA_HEADER(TitleWithIconAfterLabelView, views::BoxLayoutView)
 
  public:
-  // TODO(crbug.com/40264259): This enum is also used by
-  // TitleWithIconAfterLabelView, and should be refactored to be outside of
-  // TitleWithIconAndSeparatorView.
   enum class Icon {
     // Google Pay icon. The "Pay" portion is recolored for light/dark mode.
     GOOGLE_PAY,
@@ -48,27 +45,8 @@ class TitleWithIconAndSeparatorView : public views::TableLayoutView {
     GOOGLE_G,
   };
 
-  TitleWithIconAndSeparatorView(const std::u16string& window_title,
-                                Icon icon_to_show);
-  ~TitleWithIconAndSeparatorView() override;
-
- private:
-  // views::View:
-  gfx::Size GetMinimumSize() const override;
-};
-
-// Defines a title view with a label and an icon, to be used by dialogs
-// that need to present the Google or Google Pay logo and custom
-// horizontal padding.
-//
-// Unlike TitleWithIconAndSeparatorView, this view has no separator and places
-// the icon after the title rather than before.
-class TitleWithIconAfterLabelView : public views::BoxLayoutView {
-  METADATA_HEADER(TitleWithIconAfterLabelView, views::BoxLayoutView)
-
- public:
   TitleWithIconAfterLabelView(const std::u16string& window_title,
-                              TitleWithIconAndSeparatorView::Icon icon_to_show);
+                              Icon icon_to_show);
   ~TitleWithIconAfterLabelView() override;
 
  private:

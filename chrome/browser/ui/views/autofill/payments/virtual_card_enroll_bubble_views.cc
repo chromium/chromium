@@ -107,7 +107,7 @@ void VirtualCardEnrollBubbleViews::AddedToWidget() {
   GetBubbleFrameView()->SetHeaderView(std::move(header_view));
   GetBubbleFrameView()->SetTitleView(
       std::make_unique<TitleWithIconAfterLabelView>(
-          GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
+          GetWindowTitle(), TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
 }
 
 std::u16string VirtualCardEnrollBubbleViews::GetWindowTitle() const {

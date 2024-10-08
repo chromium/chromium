@@ -91,7 +91,7 @@ views::View* AutofillErrorDialogViewNativeViews::GetContentsView() {
 void AutofillErrorDialogViewNativeViews::AddedToWidget() {
   GetBubbleFrameView()->SetTitleView(
       std::make_unique<TitleWithIconAfterLabelView>(
-          GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
+          GetWindowTitle(), TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
 }
 
 std::u16string AutofillErrorDialogViewNativeViews::GetWindowTitle() const {
