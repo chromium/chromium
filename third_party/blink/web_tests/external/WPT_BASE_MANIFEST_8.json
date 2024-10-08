@@ -344001,6 +344001,10 @@
       "29a0fe8013dcbda6c44369794dfe6e7cde21c1a8",
       []
      ],
+     "keyword-sizes-on-floated-element-expected.txt": [
+      "aa0fbd85d1e66e471f22a997727fbb28831946ce",
+      []
+     ],
      "max-content-input-001-ref.html": [
       "c01e46550a7f0b5b92321d5893a8fe2a1ea0c9ac",
       []
@@ -412574,7 +412578,7 @@
     },
     "resources": {
      "utils.js": [
-      "973c16baca760264cd71dc8b28288a8b01a68d51",
+      "460fe46115476b073c5e650e119a6f6dd263b9ee",
       []
      ],
      "utils_validation.js": [
@@ -474591,7 +474595,7 @@
       ]
      ],
      "nested-declarations-cssom.html": [
-      "ee8ba2295230ca485424dff6d47305c3d1266c36",
+      "ecac09bcfba5d2f670336a5961d5675f79104a16",
       [
        null,
        {}
@@ -481015,6 +481019,13 @@
      ],
      "intrinsic-size-fallback-replaced.html": [
       "a3325b0aea01c008ec322a20e0f279d5bd765b1c",
+      [
+       null,
+       {}
+      ]
+     ],
+     "keyword-sizes-on-floated-element.html": [
+      "adfffba8061aa983800822746a0cd5fc8f6f0fa8",
       [
        null,
        {}
@@ -703897,7 +703908,7 @@
       ]
      ],
      "dequantizeLinear.https.any.js": [
-      "8a04d0e6b8a36f1f4b5e3a0a9b04feec1acf7ab3",
+      "c6acb042a2462605ae46b3e388a706081ff0670f",
       [
        "webnn/conformance_tests/dequantizeLinear.https.any.html?cpu",
        {
@@ -713095,7 +713106,7 @@
       ]
      ],
      "quantizeLinear.https.any.js": [
-      "8aa9d7f3bcc407d92762ddbf67be894a7d17c34e",
+      "0871c881b717b7eae1a8c016a363c4b39b59d63f",
       [
        "webnn/conformance_tests/quantizeLinear.https.any.html?cpu",
        {
