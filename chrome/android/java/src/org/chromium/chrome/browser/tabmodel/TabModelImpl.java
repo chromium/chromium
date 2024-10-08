@@ -142,6 +142,13 @@ public class TabModelImpl extends TabModelJniBridge {
             TabModelImpl.this.notifyOnFinishingMultipleTabClosure(
                     tabs, /* saveToTabRestoreService= */ true);
         }
+
+        @Override
+        public void notifyOnCancelingTabClosure(@Nullable Runnable undoRunnable) {
+            if (undoRunnable != null) {
+                undoRunnable.run();
+            }
+        }
     }
 
     public TabModelImpl(
@@ -523,7 +530,8 @@ public class TabModelImpl extends TabModelJniBridge {
 
         startTabClosure(tabToClose, recommendedNextTab, uponExit, allowUndo, tabCloseType);
         if (notifyPending && allowUndo) {
-            mPendingTabClosureManager.addTabClosureEvent(Collections.singletonList(tabToClose));
+            mPendingTabClosureManager.addTabClosureEvent(
+                    Collections.singletonList(tabToClose), /* undoRunnable= */ null);
             for (TabModelObserver obs : mObservers) obs.tabPendingClosure(tabToClose);
         }
         if (!allowUndo) {
@@ -557,12 +565,12 @@ public class TabModelImpl extends TabModelJniBridge {
             closeTab(tab, null, false, allowUndo, false, TabCloseType.MULTIPLE);
         }
         if (allowUndo) {
-            mPendingTabClosureManager.addTabClosureEvent(tabs);
+            mPendingTabClosureManager.addTabClosureEvent(tabs, /* undoRunnable= */ null);
             for (TabModelObserver obs : mObservers) obs.multipleTabsPendingClosure(tabs, false);
         }
     }
 
-    private void closeAllTabs(boolean uponExit) {
+    private void closeAllTabs(boolean uponExit, @Nullable Runnable undoRunnable) {
         for (TabModelObserver obs : mObservers) obs.willCloseAllTabs(isIncognito());
 
         // Force close immediately upon exit or if Chrome needs to close with a zero-state.
@@ -590,7 +598,7 @@ public class TabModelImpl extends TabModelJniBridge {
         }
 
         if (supportsPendingClosures()) {
-            mPendingTabClosureManager.addTabClosureEvent(closedTabs);
+            mPendingTabClosureManager.addTabClosureEvent(closedTabs, undoRunnable);
             for (TabModelObserver obs : mObservers) {
                 obs.multipleTabsPendingClosure(closedTabs, true);
             }
@@ -630,7 +638,7 @@ public class TabModelImpl extends TabModelJniBridge {
                         tabClosureParams.saveToTabRestoreService);
                 return true;
             case TabCloseType.ALL:
-                closeAllTabs(tabClosureParams.uponExit);
+                closeAllTabs(tabClosureParams.uponExit, tabClosureParams.undoRunnable);
                 return true;
             default:
                 assert false : "Not reached.";

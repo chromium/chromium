@@ -1442,7 +1442,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     private void handleDebugIntent(Intent intent) {
         if (ACTION_CLOSE_TABS.equals(intent.getAction())) {
-            CloseAllTabsHelper.closeAllTabsHidingTabGroups(getTabModelSelectorSupplier().get());
+            CloseAllTabsHelper.closeAllTabsHidingTabGroups(
+                    getTabModelSelectorSupplier().get(),
+                    getTabCreatorManagerSupplier().get().getTabCreator(/* incognito= */ false));
         } else if (MemoryPressureListener.handleDebugIntent(
                 ChromeTabbedActivity.this, intent.getAction())) {
             // Handled.
@@ -2842,7 +2844,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // Close both incognito and normal tabs.
             Runnable closeAllTabsRunnable =
                     CloseAllTabsHelper.buildCloseAllTabsRunnable(
-                            getTabModelSelectorSupplier().get(), /* isIncognitoOnly= */ false);
+                            getTabModelSelectorSupplier().get(),
+                            getTabCreatorManagerSupplier()
+                                    .get()
+                                    .getTabCreator(/* incognito= */ false),
+                            /* isIncognitoOnly= */ false);
             CloseAllTabsDialog.show(
                     this,
                     getModalDialogManagerSupplier(),
@@ -2853,7 +2859,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // Close only incognito tabs
             Runnable closeAllTabsRunnable =
                     CloseAllTabsHelper.buildCloseAllTabsRunnable(
-                            getTabModelSelectorSupplier().get(), /* isIncognitoOnly= */ true);
+                            getTabModelSelectorSupplier().get(),
+                            getTabCreatorManagerSupplier()
+                                    .get()
+                                    .getTabCreator(/* incognito= */ false),
+                            /* isIncognitoOnly= */ true);
             CloseAllTabsDialog.show(
                     this,
                     getModalDialogManagerSupplier(),
