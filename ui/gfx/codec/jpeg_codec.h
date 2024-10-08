@@ -88,12 +88,12 @@ class CODEC_EXPORT JPEGCodec {
   //
   // TODO(https://crbug.com/371987005): Remove and replace, as this is untested
   // and unused other than in unit tests.
-  static bool Decode(const uint8_t* input,
-                     size_t input_size,
-                     SkColorType color_type,
-                     std::vector<uint8_t>* output,
-                     int* w,
-                     int* h);
+  [[nodiscard]] static bool Decode(const uint8_t* input,
+                                   size_t input_size,
+                                   SkColorType color_type,
+                                   std::vector<uint8_t>* output,
+                                   int* w,
+                                   int* h);
 
   // Decodes the JPEG data contained in `input`.
   // If successful, an SkBitmap is created and returned.

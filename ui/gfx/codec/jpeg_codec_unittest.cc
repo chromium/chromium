@@ -229,15 +229,15 @@ TEST(JPEGCodec, DecodeCorrupted) {
                                  &outh));
 }
 
-// Test that we can decode JPEG images without invalid-read errors on valgrind.
-// This test decodes a 1x1 JPEG image and writes the decoded RGB (or RGBA) pixel
-// to the output buffer without OOB reads.
+// Test that we can decode JPEG images without invalid-read errors on
+// sanitizers. This test decodes a 1x1 JPEG image and writes the decoded RGB (or
+// RGBA) pixel to the output buffer without OOB reads.
 TEST(JPEGCodec, InvalidRead) {
-  std::vector<unsigned char> output;
+  std::vector<uint8_t> output;
   int outw, outh;
-  JPEGCodec::Decode(kTopSitesMigrationTestImage,
-                    std::size(kTopSitesMigrationTestImage),
-                    kRGBA_8888_SkColorType, &output, &outw, &outh);
+  ASSERT_TRUE(JPEGCodec::Decode(kTopSitesMigrationTestImage,
+                                std::size(kTopSitesMigrationTestImage),
+                                kRGBA_8888_SkColorType, &output, &outw, &outh));
 }
 
 // Coverage for data races in JPEG encoding when run with TSan.

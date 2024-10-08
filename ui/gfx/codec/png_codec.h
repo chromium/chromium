@@ -181,7 +181,8 @@ class CODEC_EXPORT PNGCodec {
   //
   // Returns true if data is non-null and can be decoded as a png, false
   // otherwise.
-  static bool Decode(base::span<const uint8_t> input, SkBitmap* bitmap);
+  [[nodiscard]] static bool Decode(base::span<const uint8_t> input,
+                                   SkBitmap* bitmap);
 
   // DEPRECATED version of above.
   static bool Decode(const unsigned char* input,

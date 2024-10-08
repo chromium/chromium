@@ -18,7 +18,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data_ptr, size_t size) {
   SkBitmap out;
   // SAFETY: libfuzzer gives a valid pointer and size pair.
   auto data = UNSAFE_BUFFERS(base::span(data_ptr, size));
-  PNGCodec::Decode(data, &out);
+  // Ignoring the result because the point of fuzzing is to catch code
+  // misbehavior.
+  std::ignore = PNGCodec::Decode(data, &out);
   return 0;
 }
 
