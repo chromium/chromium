@@ -226,6 +226,10 @@ void PlusAddressSuggestionGenerator::SetLoadingStateForSuggestion(
     autofill::Suggestion& suggestion) {
   suggestion.is_loading = Suggestion::IsLoading(is_loading);
   suggestion.is_acceptable = !is_loading;
+  auto existing_payload =
+      suggestion.GetPayload<Suggestion::PlusAddressPayload>();
+  existing_payload.offer_refresh = !is_loading;
+  suggestion.payload = std::move(existing_payload);
 }
 
 autofill::Suggestion

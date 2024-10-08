@@ -44,13 +44,14 @@ using ::testing::Property;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 auto IsCreateInlineSuggestion(
     std::optional<std::u16string> suggested_plus_address) {
+  const bool is_loading = !suggested_plus_address.has_value();
+  Suggestion::PlusAddressPayload payload(std::move(suggested_plus_address));
+  payload.offer_refresh = !is_loading;
   return AllOf(
       EqualsSuggestion(SuggestionType::kCreateNewPlusAddressInline),
-      Property(
-          &Suggestion::GetPayload<Suggestion::PlusAddressPayload>,
-          Suggestion::PlusAddressPayload(std::move(suggested_plus_address))),
-      Field(&Suggestion::is_loading,
-            Suggestion::IsLoading(!suggested_plus_address.has_value())));
+      Property(&Suggestion::GetPayload<Suggestion::PlusAddressPayload>,
+               std::move(payload)),
+      Field(&Suggestion::is_loading, Suggestion::IsLoading(is_loading)));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -202,6 +203,27 @@ TEST_F(PlusAddressSuggestionGeneratorTest,
       suggestion.labels,
       ElementsAre(ElementsAre(Suggestion::Text(l10n_util::GetStringUTF16(
           IDS_PLUS_ADDRESS_RESERVE_QUOTA_ERROR_TEXT)))));
+}
+
+// Tests that suggestions in the `is_loading` state do not have a refresh
+// button and is not acceptable.
+TEST_F(PlusAddressSuggestionGeneratorTest, LoadingStateProperties) {
+  Suggestion inline_suggestion(SuggestionType::kCreateNewPlusAddressInline);
+  inline_suggestion.payload = Suggestion::PlusAddressPayload();
+
+  PlusAddressSuggestionGenerator::SetLoadingStateForSuggestion(
+      /*is_loading=*/true, inline_suggestion);
+  EXPECT_TRUE(inline_suggestion.is_loading);
+  EXPECT_FALSE(inline_suggestion.is_acceptable);
+  EXPECT_FALSE(inline_suggestion.GetPayload<Suggestion::PlusAddressPayload>()
+                   .offer_refresh);
+
+  PlusAddressSuggestionGenerator::SetSuggestedPlusAddressForSuggestion(
+      PlusAddress("foo@moo.com"), inline_suggestion);
+  EXPECT_FALSE(inline_suggestion.is_loading);
+  EXPECT_TRUE(inline_suggestion.GetPayload<Suggestion::PlusAddressPayload>()
+                  .offer_refresh);
+  EXPECT_TRUE(inline_suggestion.is_acceptable);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
