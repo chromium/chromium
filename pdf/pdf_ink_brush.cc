@@ -4,9 +4,7 @@
 
 #include "pdf/pdf_ink_brush.h"
 
-#include <numbers>
 #include <optional>
-#include <utility>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
@@ -20,13 +18,6 @@
 namespace chrome_pdf {
 
 namespace {
-
-ink::Uri CreateBrushUri() {
-  // TODO(crbug.com/353942923): Use real value here.
-  auto uri = ink::Uri::Parse("ink://ink/texture:test-texture");
-  CHECK(uri.ok());
-  return *uri;
-}
 
 float GetCornerRounding(PdfInkBrush::Type type) {
   switch (type) {
@@ -58,21 +49,9 @@ ink::Brush CreateInkBrush(PdfInkBrush::Type type, PdfInkBrush::Params params) {
   tip.corner_rounding = GetCornerRounding(type);
   tip.opacity_multiplier = GetOpacity(type);
 
-  // TODO(crbug.com/353942923): Use real value here.
-  ink::BrushPaint::TextureLayer layer;
-  layer.color_texture_uri = CreateBrushUri();
-  layer.mapping = ink::BrushPaint::TextureMapping::kWinding;
-  layer.size_unit = ink::BrushPaint::TextureSizeUnit::kBrushSize;
-  layer.size = {3, 5};
-  layer.size_jitter = {0.1, 2};
-  layer.keyframes = {
-      {.progress = 0.1,
-       .rotation = ink::Angle::Radians(std::numbers::pi_v<float> / 4)}};
-  layer.blend_mode = ink::BrushPaint::BlendMode::kSrcIn;
-
-  ink::BrushPaint paint;
-  paint.texture_layers.push_back(layer);
-  auto family = ink::BrushFamily::Create(std::move(tip), std::move(paint), "");
+  // TODO(crbug.com/353942923): Use real `uri_string` here.
+  auto family = ink::BrushFamily::Create(tip, ink::BrushPaint(),
+                                         /*uri_string=*/"");
   CHECK(family.ok());
 
   auto brush = ink::Brush::Create(*family,
