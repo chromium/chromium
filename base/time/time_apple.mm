@@ -26,7 +26,7 @@ namespace {
 
 // Returns a pointer to the initialized Mach timebase info struct.
 mach_timebase_info_data_t* MachTimebaseInfo() {
-  static mach_timebase_info_data_t timebase_info = []() {
+  static mach_timebase_info_data_t timebase_info = [] {
     mach_timebase_info_data_t info;
     kern_return_t kr = mach_timebase_info(&info);
     MACH_DCHECK(kr == KERN_SUCCESS, kr) << "mach_timebase_info";

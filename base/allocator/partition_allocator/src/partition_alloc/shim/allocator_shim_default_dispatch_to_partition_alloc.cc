@@ -633,7 +633,7 @@ void ConfigurePartitions(
   // shouldn't bite us here. Mentioning just in case we move this code earlier.
   static partition_alloc::internal::base::NoDestructor<
       partition_alloc::PartitionAllocator>
-      new_main_allocator([&]() {
+      new_main_allocator([&] {
         partition_alloc::PartitionOptions opts;
         // The caller of ConfigurePartitions() will decide whether this or
         // another partition will have the thread cache enabled, by calling

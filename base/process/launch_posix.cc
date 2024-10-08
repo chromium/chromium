@@ -76,7 +76,7 @@ namespace base {
 // constant in which case we don't need to bother checking
 void CheckPThreadStackMinIsSafe() {
   if constexpr (!__builtin_constant_p(PTHREAD_STACK_MIN)) {
-    [[maybe_unused]] static const bool dummy = []() {
+    [[maybe_unused]] static const bool dummy = [] {
       CHECK_GE(PTHREAD_STACK_MIN_CONST, PTHREAD_STACK_MIN);
       return false;
     }();

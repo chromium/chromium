@@ -138,7 +138,7 @@ bool* GetDomainEnrollmentStateStorage() {
 }
 
 bool* GetRegisteredWithManagementStateStorage() {
-  static bool state = []() {
+  static bool state = [] {
     // Mitigate the issues caused by loading DLLs on a background thread
     // (http://crbug/973868).
     SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
@@ -168,7 +168,7 @@ bool* GetRegisteredWithManagementStateStorage() {
 
 // TODO (crbug/1300219): return a DSREG_JOIN_TYPE* instead of bool*.
 bool* GetAzureADJoinStateStorage() {
-  static bool state = []() {
+  static bool state = [] {
     base::ElapsedTimer timer;
 
     // Mitigate the issues caused by loading DLLs on a background thread
@@ -619,7 +619,7 @@ bool IsJoinedToAzureAD() {
 }
 
 bool IsUser32AndGdi32Available() {
-  static const bool is_user32_and_gdi32_available = []() {
+  static const bool is_user32_and_gdi32_available = [] {
     // If win32k syscalls aren't disabled, then user32 and gdi32 are available.
     PROCESS_MITIGATION_SYSTEM_CALL_DISABLE_POLICY policy = {};
     if (::GetProcessMitigationPolicy(GetCurrentProcess(),

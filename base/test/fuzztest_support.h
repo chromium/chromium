@@ -26,7 +26,7 @@ std::optional<std::tuple<T>> Wrap(base::optional_ref<const T> maybe_value) {
 
 auto ArbitraryValueNull() {
   return fuzztest::ReversibleMap(
-      []() { return base::Value(); },
+      [] { return base::Value(); },
       [](const base::Value& value) { return std::optional<std::tuple<>>{}; });
 }
 

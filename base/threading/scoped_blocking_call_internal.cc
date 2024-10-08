@@ -203,7 +203,7 @@ IOJankMonitoringWindow::MonitorNextJankWindowIfNecessary(TimeTicks recent_now) {
   // beats us to it. Adjust the timing to alleviate any drift in the timer. Do
   // this outside the lock to avoid scheduling tasks while holding it.
   ThreadPool::PostDelayedTask(
-      FROM_HERE, BindOnce([]() {
+      FROM_HERE, BindOnce([] {
         IOJankMonitoringWindow::MonitorNextJankWindowIfNecessary(
             TimeTicks::Now());
       }),

@@ -111,7 +111,7 @@ class PkeyTest : public testing::Test {
     }
     isolated_globals.pkey = pkey;
 
-    isolated_globals.allocator->init([]() {
+    isolated_globals.allocator->init([] {
       partition_alloc::PartitionOptions opts;
       opts.thread_isolation = ThreadIsolationOption(isolated_globals.pkey);
       return opts;

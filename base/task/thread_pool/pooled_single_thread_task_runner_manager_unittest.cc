@@ -198,7 +198,7 @@ TEST_F(PooledSingleThreadTaskRunnerManagerTest,
       ->CreateSingleThreadTaskRunner(
           {TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
           SingleThreadTaskRunnerThreadMode::SHARED)
-      ->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+      ->PostTask(FROM_HERE, base::BindLambdaForTesting([&] {
                    task_has_started.Signal();
                    task_can_continue.Wait();
                  }));
@@ -291,7 +291,7 @@ TEST_P(PooledSingleThreadTaskRunnerManagerCommonTest, ThreadTypeSetCorrectly) {
   for (auto& test_case : test_cases) {
     TestWaitableEvent event;
     CreateTaskRunner(test_case.traits)
-        ->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
+        ->PostTask(FROM_HERE, BindLambdaForTesting([&] {
                      EXPECT_EQ(test_case.expected_thread_type,
                                PlatformThread::GetCurrentThreadType());
                      event.Signal();
@@ -378,7 +378,7 @@ TEST_P(PooledSingleThreadTaskRunnerManagerCommonTest, ThreadNamesSet) {
   for (auto& test_case : test_cases) {
     TestWaitableEvent event;
     CreateTaskRunner(test_case.traits)
-        ->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
+        ->PostTask(FROM_HERE, BindLambdaForTesting([&] {
                      EXPECT_THAT(PlatformThread::GetName(),
                                  ::testing::MatchesRegex(
                                      test_case.expected_thread_name));

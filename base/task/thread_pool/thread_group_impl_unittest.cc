@@ -337,7 +337,7 @@ TEST_F(ThreadGroupImplImplTest, ShouldYieldFloodedUserVisible) {
   test::CreatePooledTaskRunner({TaskPriority::BEST_EFFORT},
                                &mock_pooled_task_runner_delegate_)
       ->PostTask(
-          FROM_HERE, BindLambdaForTesting([&]() {
+          FROM_HERE, BindLambdaForTesting([&] {
             EXPECT_FALSE(thread_group_->ShouldYield(
                 {TaskPriority::BEST_EFFORT, TimeTicks(), /* worker_count=*/1}));
           }));
@@ -353,10 +353,10 @@ TEST_F(ThreadGroupImplImplTest, ShouldYieldFloodedUserVisible) {
 
   // Posting a USER_VISIBLE task should cause BEST_EFFORT and USER_VISIBLE with
   // higher worker_count tasks to yield.
-  auto post_user_visible = [&]() {
+  auto post_user_visible = [&] {
     test::CreatePooledTaskRunner({TaskPriority::USER_VISIBLE},
                                  &mock_pooled_task_runner_delegate_)
-        ->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
+        ->PostTask(FROM_HERE, BindLambdaForTesting([&] {
                      EXPECT_FALSE(thread_group_->ShouldYield(
                          {TaskPriority::USER_VISIBLE, TimeTicks(),
                           /* worker_count=*/1}));
@@ -377,10 +377,10 @@ TEST_F(ThreadGroupImplImplTest, ShouldYieldFloodedUserVisible) {
 
   // Posting a USER_BLOCKING task should cause BEST_EFFORT, USER_VISIBLE and
   // USER_BLOCKING with higher worker_count tasks to yield.
-  auto post_user_blocking = [&]() {
+  auto post_user_blocking = [&] {
     test::CreatePooledTaskRunner({TaskPriority::USER_BLOCKING},
                                  &mock_pooled_task_runner_delegate_)
-        ->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
+        ->PostTask(FROM_HERE, BindLambdaForTesting([&] {
                      // Once this task got to start, no other task needs to
                      // yield.
                      EXPECT_FALSE(thread_group_->ShouldYield(
@@ -499,11 +499,10 @@ TEST_F(ThreadGroupImplImplStartInBodyTest, PostManyTasks) {
       BindOnce(&TestWaitableEvent::Signal, Unretained(&threads_running)));
   // Posting these tasks should cause new workers to be created.
   for (size_t i = 0; i < kMaxTasks; ++i) {
-    task_runner->PostTask(
-        FROM_HERE, BindLambdaForTesting([&]() {
-          threads_running_barrier.Run();
-          threads_continue.Wait();
-        }));
+    task_runner->PostTask(FROM_HERE, BindLambdaForTesting([&] {
+                            threads_running_barrier.Run();
+                            threads_continue.Wait();
+                          }));
   }
   // Post the remaining |kNumTasksPosted - kMaxTasks| tasks, don't wait for them
   // as they'll be blocked behind the above kMaxtasks.
@@ -564,7 +563,7 @@ TEST_F(BackgroundThreadGroupImplTest, UpdatePriorityBlockingStarted) {
 
   for (size_t i = 0; i < kMaxTasks; ++i) {
     task_runner->PostTask(
-        FROM_HERE, BindLambdaForTesting([&]() {
+        FROM_HERE, BindLambdaForTesting([&] {
           EXPECT_EQ(ThreadType::kBackground,
                     PlatformThread::GetCurrentThreadType());
           {
@@ -843,7 +842,7 @@ TEST_P(ThreadGroupImplBlockingTest, TooManyBestEffortTasks) {
                                      &mock_pooled_task_runner_delegate_);
     for (size_t i = 0; i < kMaxBestEffortTasks + 1; ++i) {
       best_effort_task_runner->PostTask(
-          FROM_HERE, BindLambdaForTesting([&]() {
+          FROM_HERE, BindLambdaForTesting([&] {
             {
               NestedScopedBlockingCall scoped_blocking_call(GetParam());
               entered_blocking_scope_barrier.Run();
@@ -868,7 +867,7 @@ TEST_P(ThreadGroupImplBlockingTest, TooManyBestEffortTasks) {
   EXPECT_EQ(thread_group_->GetMaxTasksForTesting(), kMaxTasks);
 
   TestWaitableEvent threads_running;
-  task_runner_->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
+  task_runner_->PostTask(FROM_HERE, BindLambdaForTesting([&] {
                            threads_running.Signal();
                            threads_continue.Wait();
                          }));
@@ -1027,7 +1026,7 @@ TEST_P(ThreadGroupImplBlockingTest, ThreadBlockedUnblockedShouldYield) {
   // should cause BEST_EFFORT tasks to yield.
   test::CreatePooledTaskRunner({TaskPriority::USER_VISIBLE},
                                &mock_pooled_task_runner_delegate_)
-      ->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
+      ->PostTask(FROM_HERE, BindLambdaForTesting([&] {
                    EXPECT_FALSE(thread_group_->ShouldYield(
                        {TaskPriority::BEST_EFFORT, TimeTicks()}));
                  }));
@@ -1038,7 +1037,7 @@ TEST_P(ThreadGroupImplBlockingTest, ThreadBlockedUnblockedShouldYield) {
   // should cause USER_VISIBLE tasks to yield.
   test::CreatePooledTaskRunner({TaskPriority::USER_BLOCKING},
                                &mock_pooled_task_runner_delegate_)
-      ->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
+      ->PostTask(FROM_HERE, BindLambdaForTesting([&] {
                    EXPECT_FALSE(thread_group_->ShouldYield(
                        {TaskPriority::USER_VISIBLE, TimeTicks()}));
                  }));
@@ -1460,11 +1459,10 @@ TEST_F(ThreadGroupImplImplStartInBodyTest, MaxBestEffortTasks) {
                                     Unretained(&best_effort_tasks_running)));
 
   for (int i = 0; i < kMaxBestEffortTasks; ++i) {
-    background_runner->PostTask(
-        FROM_HERE, base::BindLambdaForTesting([&]() {
-          best_effort_tasks_running_barrier.Run();
-          unblock_best_effort_tasks.Wait();
-        }));
+    background_runner->PostTask(FROM_HERE, base::BindLambdaForTesting([&] {
+                                  best_effort_tasks_running_barrier.Run();
+                                  unblock_best_effort_tasks.Wait();
+                                }));
   }
   best_effort_tasks_running.Wait();
 
@@ -1472,7 +1470,7 @@ TEST_F(ThreadGroupImplImplStartInBodyTest, MaxBestEffortTasks) {
   AtomicFlag extra_best_effort_task_can_run;
   TestWaitableEvent extra_best_effort_task_running;
   background_runner->PostTask(
-      FROM_HERE, base::BindLambdaForTesting([&]() {
+      FROM_HERE, base::BindLambdaForTesting([&] {
         EXPECT_TRUE(extra_best_effort_task_can_run.IsSet());
         extra_best_effort_task_running.Signal();
       }));
@@ -1508,7 +1506,7 @@ TEST_F(ThreadGroupImplImplStartInBodyTest,
                                    &mock_pooled_task_runner_delegate_);
 
   for (size_t i = 0; i < kLargeNumber; ++i) {
-    runner->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
+    runner->PostTask(FROM_HERE, BindLambdaForTesting([&] {
                        EXPECT_LE(thread_group_->NumberOfWorkersForTesting(),
                                  kMaxBestEffortTasks + 1);
                      }));
@@ -1539,9 +1537,9 @@ TEST_F(ThreadGroupImplImplStartInBodyTest,
       {MayBlock()}, &mock_pooled_task_runner_delegate_);
 
   for (size_t i = 0; i < kLargeNumber; ++i) {
-    runner->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
+    runner->PostTask(FROM_HERE, BindLambdaForTesting([&] {
                        runner->PostTask(
-                           FROM_HERE, BindLambdaForTesting([&]() {
+                           FROM_HERE, BindLambdaForTesting([&] {
                              EXPECT_LE(
                                  thread_group_->NumberOfWorkersForTesting(),
                                  kNumWorkers + 1);
@@ -1605,7 +1603,7 @@ TEST_P(ThreadGroupImplBlockingCallAndMaxBestEffortTasksTest,
                               Unretained(&blocking_best_effort_tasks_running)));
   for (int i = 0; i < kMaxBestEffortTasks; ++i) {
     background_runner->PostTask(
-        FROM_HERE, base::BindLambdaForTesting([&]() {
+        FROM_HERE, base::BindLambdaForTesting([&] {
           blocking_best_effort_tasks_running_barrier.Run();
           ScopedBlockingCall scoped_blocking_call(FROM_HERE, GetParam());
           unblock_blocking_best_effort_tasks.Wait();
@@ -1625,11 +1623,10 @@ TEST_P(ThreadGroupImplBlockingCallAndMaxBestEffortTasksTest,
       kMaxBestEffortTasks, BindOnce(&TestWaitableEvent::Signal,
                                     Unretained(&best_effort_tasks_running)));
   for (int i = 0; i < kMaxBestEffortTasks; ++i) {
-    background_runner->PostTask(
-        FROM_HERE, base::BindLambdaForTesting([&]() {
-          best_effort_tasks_running_barrier.Run();
-          unblock_best_effort_tasks.Wait();
-        }));
+    background_runner->PostTask(FROM_HERE, base::BindLambdaForTesting([&] {
+                                  best_effort_tasks_running_barrier.Run();
+                                  unblock_best_effort_tasks.Wait();
+                                }));
   }
   best_effort_tasks_running.Wait();
 

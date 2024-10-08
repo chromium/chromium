@@ -7,7 +7,7 @@
 namespace partition_alloc::internal {
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 PartitionRoot& InternalAllocatorRoot() {
-  static internal::base::NoDestructor<PartitionRoot> allocator([]() {
+  static internal::base::NoDestructor<PartitionRoot> allocator([] {
     // Disable features using the internal root to avoid reentrancy issue.
     PartitionOptions opts;
     opts.thread_cache = PartitionOptions::kDisabled;

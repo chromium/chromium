@@ -223,7 +223,7 @@ UnwindScenario::InvokeSetupFunction(const SetupFunction& setup_function,
 
   if (!setup_function.is_null()) {
     const auto wait_for_sample_closure =
-        BindLambdaForTesting([&]() { UnwindScenario::WaitForSample(events); });
+        BindLambdaForTesting([&] { UnwindScenario::WaitForSample(events); });
     setup_function.Run(wait_for_sample_closure);
   }
 
@@ -306,7 +306,7 @@ void WithTargetThread(UnwindScenario* scenario,
                       ProfileCallback profile_callback) {
   UnwindScenario::SampleEvents events;
   TargetThread target_thread(
-      BindLambdaForTesting([&]() { scenario->Execute(&events); }));
+      BindLambdaForTesting([&] { scenario->Execute(&events); }));
 
   target_thread.Start();
   events.ready_for_sample.Wait();

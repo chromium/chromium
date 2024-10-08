@@ -438,7 +438,7 @@ TEST_P(RunLoopTest, IsRunningOnCurrentThread) {
   EXPECT_FALSE(RunLoop::IsRunningOnCurrentThread());
   SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      BindOnce([]() { EXPECT_TRUE(RunLoop::IsRunningOnCurrentThread()); }));
+      BindOnce([] { EXPECT_TRUE(RunLoop::IsRunningOnCurrentThread()); }));
   SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, run_loop_.QuitClosure());
   run_loop_.Run();
@@ -448,15 +448,14 @@ TEST_P(RunLoopTest, IsNestedOnCurrentThread) {
   EXPECT_FALSE(RunLoop::IsNestedOnCurrentThread());
 
   SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, BindOnce([]() {
+      FROM_HERE, BindOnce([] {
         EXPECT_FALSE(RunLoop::IsNestedOnCurrentThread());
 
         RunLoop nested_run_loop(RunLoop::Type::kNestableTasksAllowed);
 
         SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, BindOnce([]() {
-              EXPECT_TRUE(RunLoop::IsNestedOnCurrentThread());
-            }));
+            FROM_HERE,
+            BindOnce([] { EXPECT_TRUE(RunLoop::IsNestedOnCurrentThread()); }));
         SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, nested_run_loop.QuitClosure());
 
@@ -543,7 +542,7 @@ TEST_P(RunLoopTest, NestingObservers) {
 
   RunLoop::AddNestingObserverOnCurrentThread(&nesting_observer);
 
-  const RepeatingClosure run_nested_loop = BindRepeating([]() {
+  const RepeatingClosure run_nested_loop = BindRepeating([] {
     RunLoop nested_run_loop(RunLoop::Type::kNestableTasksAllowed);
     SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, nested_run_loop.QuitClosure());

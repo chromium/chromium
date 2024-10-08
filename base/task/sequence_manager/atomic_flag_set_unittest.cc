@@ -142,8 +142,7 @@ TEST_F(AtomicFlagSetTest, GroupBecomesFull) {
   EXPECT_FALSE(group1->IsEmpty());
 
   // Add an extra flag to fill up the group.
-  atomic_flags_.push_back(
-      atomic_flag_set_.AddFlag(base::BindRepeating([]() {})));
+  atomic_flags_.push_back(atomic_flag_set_.AddFlag(base::BindRepeating([] {})));
 
   EXPECT_TRUE(group1->IsFull());
   EXPECT_THAT(atomic_flag_set_.GetPartiallyFreeListForTesting(), IsNull());

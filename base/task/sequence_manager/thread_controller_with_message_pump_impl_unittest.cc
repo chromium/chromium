@@ -1177,7 +1177,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         EXPECT_CALL(
             *thread_controller_.trace_observer_,
             OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
-        EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([&]() {
+        EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([&] {
           // C:
           // kChromeTask phase is suspended when the nested loop is entered.
           EXPECT_CALL(*thread_controller_.trace_observer_,
@@ -1318,7 +1318,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         EXPECT_CALL(
             *thread_controller_.trace_observer_,
             OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
-        EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([&]() {
+        EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([&] {
           // C:
           EXPECT_FALSE(thread_controller_.IsTaskExecutionAllowed());
           EXPECT_CALL(*message_pump_, ScheduleWork());
@@ -1423,7 +1423,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         EXPECT_CALL(
             *thread_controller_.trace_observer_,
             OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
-        EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([&]() {
+        EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([&] {
           // C:
           EXPECT_FALSE(thread_controller_.IsTaskExecutionAllowed());
           EXPECT_CALL(*message_pump_, ScheduleWork());
@@ -1502,7 +1502,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         EXPECT_CALL(
             *thread_controller_.trace_observer_,
             OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
-        EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([&]() {
+        EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([&] {
           // C:
           // D:
           // kChromeTask phase is suspended when the nested loop is entered.
@@ -1588,7 +1588,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         EXPECT_CALL(
             *thread_controller_.trace_observer_,
             OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
-        EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([&]() {
+        EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([&] {
           for (int i = 0; i < 2; ++i) {
             // C & F:
             EXPECT_FALSE(thread_controller_.IsTaskExecutionAllowed());
@@ -1684,7 +1684,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         EXPECT_CALL(
             *thread_controller_.trace_observer_,
             OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
-        EXPECT_CALL(task, Run()).WillOnce(Invoke([&]() {
+        EXPECT_CALL(task, Run()).WillOnce(Invoke([&] {
           // C:
           EXPECT_FALSE(thread_controller_.IsTaskExecutionAllowed());
           EXPECT_CALL(*message_pump_, ScheduleWork());
@@ -1780,7 +1780,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         EXPECT_CALL(
             *thread_controller_.trace_observer_,
             OnPhaseRecorded(ThreadController::kSelectingApplicationTask));
-        EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([&]() {
+        EXPECT_CALL(tasks[0], Run()).WillOnce(Invoke([&] {
           // C:
           EXPECT_FALSE(thread_controller_.IsTaskExecutionAllowed());
           EXPECT_CALL(*message_pump_, ScheduleWork());
@@ -1875,7 +1875,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
 
         EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveBegin)
-            .WillOnce(Invoke([&]() {
+            .WillOnce(Invoke([&] {
               // C:
               EXPECT_TRUE(thread_controller_.IsTaskExecutionAllowed());
 
@@ -1966,7 +1966,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
 
         EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnThreadControllerActiveBegin)
-            .WillOnce(Invoke([&]() {
+            .WillOnce(Invoke([&] {
               // C + D:
               EXPECT_TRUE(thread_controller_.IsTaskExecutionAllowed());
               EXPECT_CALL(*message_pump_, ScheduleWork());

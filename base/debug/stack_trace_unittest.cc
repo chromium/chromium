@@ -430,7 +430,7 @@ TEST(CheckExitCodeAfterSignalHandlerDeathTest,
 #endif  // #if !defined(ADDRESS_SANITIZER) && !defined(UNDEFINED_SANITIZER)
 
 TEST(CheckExitCodeAfterSignalHandlerDeathTest, CheckSIGILL) {
-  auto const raise_sigill = []() {
+  auto const raise_sigill = [] {
 #if defined(ARCH_CPU_X86_FAMILY)
     asm("ud2");
 #elif defined(ARCH_CPU_ARM_FAMILY)

@@ -42,7 +42,7 @@ class RunUntilTest : public ::testing::Test {
 };
 
 TEST_F(RunUntilTest, ShouldReturnTrueIfPredicateIsAlreadyFulfilled) {
-  EXPECT_TRUE(RunUntil([]() { return true; }));
+  EXPECT_TRUE(RunUntil([] { return true; }));
 }
 
 TEST_F(RunUntilTest, ShouldReturnTrueOncePredicateIsFulfilled) {
@@ -60,7 +60,7 @@ TEST_F(RunUntilTest, ShouldNotSimplyActivelyInvokePredicateInALoop) {
   PostDelayedTask(base::BindLambdaForTesting([&done]() { done = true; }),
                   base::Milliseconds(50));
 
-  EXPECT_TRUE(RunUntil([&]() {
+  EXPECT_TRUE(RunUntil([&] {
     call_count++;
     return done;
   }));
@@ -77,7 +77,7 @@ TEST_F(RunUntilTest, ShouldNotSimplyReturnOnFirstIdle) {
   PostDelayedTask(base::BindLambdaForTesting([&done]() { done = true; }),
                   base::Milliseconds(10));
 
-  EXPECT_TRUE(RunUntil([&]() { return done; }));
+  EXPECT_TRUE(RunUntil([&] { return done; }));
 }
 
 TEST_F(RunUntilTest,
@@ -87,7 +87,7 @@ TEST_F(RunUntilTest,
   bool other_job_done = false;
   RunLater([&other_job_done] { other_job_done = true; });
 
-  EXPECT_TRUE(RunUntil([]() { return true; }));
+  EXPECT_TRUE(RunUntil([] { return true; }));
 
   EXPECT_TRUE(other_job_done);
 }
@@ -101,7 +101,7 @@ TEST_F(RunUntilTest, ShouldWorkEvenWhenTimerIsRunning) {
   PostDelayedTask(base::BindLambdaForTesting([&done]() { done = true; }),
                   base::Milliseconds(10));
 
-  EXPECT_TRUE(RunUntil([&]() { return done; }));
+  EXPECT_TRUE(RunUntil([&] { return done; }));
 }
 
 TEST_F(RunUntilTest, ShouldReturnFalseIfTimeoutHappens) {
@@ -112,8 +112,8 @@ TEST_F(RunUntilTest, ShouldReturnFalseIfTimeoutHappens) {
   // EXPECT_FATAL_FAILURE only works on static objects.
   static bool success;
 
-  EXPECT_NONFATAL_FAILURE({ success = RunUntil([]() { return false; }); },
-                          "timed out");
+  EXPECT_NONFATAL_FAILURE(
+      { success = RunUntil([] { return false; }); }, "timed out");
 
   EXPECT_FALSE(success);
 }

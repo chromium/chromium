@@ -213,7 +213,7 @@ class ThreadCheckerOwner {
 // during thread destruction.
 TEST(ThreadCheckerTest, CalledOnValidThreadFromThreadDestruction) {
   ThreadLocalOwnedPointer<ThreadCheckerOwner> thread_local_owner;
-  RunCallbackOnNewThreadSynchronously(BindLambdaForTesting([&]() {
+  RunCallbackOnNewThreadSynchronously(BindLambdaForTesting([&] {
     thread_local_owner.Set(std::make_unique<ThreadCheckerOwner>(false));
   }));
 }
@@ -222,7 +222,7 @@ TEST(ThreadCheckerTest, CalledOnValidThreadFromThreadDestruction) {
 // ThreadCheckerImpl::DetachFromThread().
 TEST(ThreadCheckerTest, CalledOnValidThreadFromThreadDestructionDetached) {
   ThreadLocalOwnedPointer<ThreadCheckerOwner> thread_local_owner;
-  RunCallbackOnNewThreadSynchronously(BindLambdaForTesting([&]() {
+  RunCallbackOnNewThreadSynchronously(BindLambdaForTesting([&] {
     thread_local_owner.Set(std::make_unique<ThreadCheckerOwner>(true));
   }));
 }

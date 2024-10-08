@@ -189,7 +189,7 @@ TEST(PartitionAllocDanglingPtrChecks, CrossTaskIgnoresSameTask) {
 
   base::test::TaskEnvironment task_environment;
   task_environment.GetMainThreadTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce([]() {
+      FROM_HERE, base::BindOnce([] {
         partition_alloc::GetDanglingRawPtrDetectedFn()(37);
         partition_alloc::GetDanglingRawPtrReleasedFn()(37);
       }));

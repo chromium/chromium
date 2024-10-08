@@ -154,10 +154,10 @@ std::string Explain(const MatcherType& matcher, const Value& value) {
 inline constexpr auto HasPath = [](const FilePath& path) {
   return testing::Field(&Event::path, path);
 };
-inline constexpr auto HasErrored = []() {
+inline constexpr auto HasErrored = [] {
   return testing::Field(&Event::error, testing::IsTrue());
 };
-inline constexpr auto HasCookie = []() {
+inline constexpr auto HasCookie = [] {
   return testing::Field(
       &Event::change_info,
       testing::Field(&FilePathWatcher::ChangeInfo::cookie, testing::IsTrue()));
@@ -170,20 +170,20 @@ inline constexpr auto IsType =
                          change_type));
     };
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-inline constexpr auto IsFile = []() {
+inline constexpr auto IsFile = [] {
   return testing::Field(
       &Event::change_info,
       testing::Field(&FilePathWatcher::ChangeInfo::file_path_type,
                      FilePathWatcher::FilePathType::kFile));
 };
-inline constexpr auto IsDirectory = []() {
+inline constexpr auto IsDirectory = [] {
   return testing::Field(
       &Event::change_info,
       testing::Field(&FilePathWatcher::ChangeInfo::file_path_type,
                      FilePathWatcher::FilePathType::kDirectory));
 };
 #else
-inline constexpr auto IsUnknownPathType = []() {
+inline constexpr auto IsUnknownPathType = [] {
   return testing::Field(
       &Event::change_info,
       testing::Field(&FilePathWatcher::ChangeInfo::file_path_type,
@@ -305,7 +305,7 @@ class TestDelegate final : public TestDelegateBase {
       SpinEventLoopForABit();
     }
 
-    EXPECT_TRUE(test::RunUntil([&]() {
+    EXPECT_TRUE(test::RunUntil([&] {
       DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
       return testing::Matches(matcher)(received_events_);
     })) << "Timed out attemping to match events at "
@@ -1442,7 +1442,7 @@ TEST_F(FilePathWatcherTest, RacyRecursiveWatch) {
   Thread subdir_updater("SubDir Updater");
   ASSERT_TRUE(subdir_updater.Start());
 
-  auto subdir_update_task = BindLambdaForTesting([&]() {
+  auto subdir_update_task = BindLambdaForTesting([&] {
     for (const auto& subdir : subdirs) {
       // First update event to trigger watch callback.
       ASSERT_TRUE(CreateDirectory(subdir));

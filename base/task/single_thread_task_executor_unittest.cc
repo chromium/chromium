@@ -1364,8 +1364,8 @@ TEST_P(SingleThreadTaskExecutorTypedTest,
 TEST_P(SingleThreadTaskExecutorTypedTest, IsIdleForTesting) {
   SingleThreadTaskExecutor executor(GetParam());
   EXPECT_TRUE(CurrentThread::Get()->IsIdleForTesting());
-  executor.task_runner()->PostTask(FROM_HERE, BindOnce([]() {}));
-  executor.task_runner()->PostDelayedTask(FROM_HERE, BindOnce([]() {}),
+  executor.task_runner()->PostTask(FROM_HERE, BindOnce([] {}));
+  executor.task_runner()->PostDelayedTask(FROM_HERE, BindOnce([] {}),
                                           Milliseconds(10));
   EXPECT_FALSE(CurrentThread::Get()->IsIdleForTesting());
   RunLoop().RunUntilIdle();
@@ -1381,14 +1381,14 @@ TEST_P(SingleThreadTaskExecutorTypedTest, IsIdleForTestingNonNestableTask) {
   EXPECT_TRUE(CurrentThread::Get()->IsIdleForTesting());
   bool nested_task_run = false;
   executor.task_runner()->PostTask(
-      FROM_HERE, BindLambdaForTesting([&]() {
+      FROM_HERE, BindLambdaForTesting([&] {
         RunLoop nested_run_loop(RunLoop::Type::kNestableTasksAllowed);
 
         executor.task_runner()->PostNonNestableTask(
-            FROM_HERE, BindLambdaForTesting([&]() { nested_task_run = true; }));
+            FROM_HERE, BindLambdaForTesting([&] { nested_task_run = true; }));
 
         executor.task_runner()->PostTask(
-            FROM_HERE, BindLambdaForTesting([&]() {
+            FROM_HERE, BindLambdaForTesting([&] {
               EXPECT_FALSE(nested_task_run);
               EXPECT_TRUE(CurrentThread::Get()->IsIdleForTesting());
             }));
@@ -2072,10 +2072,10 @@ TEST(SingleThreadTaskExecutorTest, SequenceLocalStorageSetGet) {
   SequenceLocalStorageSlot<int> slot;
 
   SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, BindLambdaForTesting([&]() { slot.emplace(11); }));
+      FROM_HERE, BindLambdaForTesting([&] { slot.emplace(11); }));
 
   SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, BindLambdaForTesting([&]() { EXPECT_EQ(*slot, 11); }));
+      FROM_HERE, BindLambdaForTesting([&] { EXPECT_EQ(*slot, 11); }));
 
   RunLoop().RunUntilIdle();
   EXPECT_EQ(*slot, 11);
@@ -2089,7 +2089,7 @@ TEST(SingleThreadTaskExecutorTest, SequenceLocalStorageDifferentMessageLoops) {
   {
     SingleThreadTaskExecutor executor;
     SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, BindLambdaForTesting([&]() { slot.emplace(11); }));
+        FROM_HERE, BindLambdaForTesting([&] { slot.emplace(11); }));
 
     RunLoop().RunUntilIdle();
     EXPECT_EQ(*slot, 11);
@@ -2097,7 +2097,7 @@ TEST(SingleThreadTaskExecutorTest, SequenceLocalStorageDifferentMessageLoops) {
 
   SingleThreadTaskExecutor executor;
   SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, BindLambdaForTesting([&]() { EXPECT_FALSE(slot); }));
+      FROM_HERE, BindLambdaForTesting([&] { EXPECT_FALSE(slot); }));
 
   RunLoop().RunUntilIdle();
   EXPECT_NE(slot.GetOrCreateValue(), 11);

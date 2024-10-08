@@ -256,7 +256,7 @@ class CheckProcessPriority : public testing::EmptyTestEventListener {
 #endif  // !BUILDFLAG(IS_APPLE)
 
 const std::string& GetProfileName() {
-  static const NoDestructor<std::string> profile_name([]() {
+  static const NoDestructor<std::string> profile_name([] {
     const CommandLine& command_line = *CommandLine::ForCurrentProcess();
     if (command_line.HasSwitch(switches::kProfilingFile))
       return command_line.GetSwitchValueASCII(switches::kProfilingFile);

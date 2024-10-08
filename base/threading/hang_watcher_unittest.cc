@@ -729,7 +729,7 @@ TEST_F(HangWatcherSnapshotTest, NonActionableReport) {
               base::TimeTicks::FromInternalValue(kArbitraryDeadline));
     current_hang_watch_state->GetHangWatchDeadlineForTesting()
         ->SetSwitchBitsClosureForTesting(
-            base::BindLambdaForTesting([]() { return kArbitraryDeadline; }));
+            base::BindLambdaForTesting([] { return kArbitraryDeadline; }));
 
     ExpectNoCapture();
 
@@ -1294,7 +1294,7 @@ TEST_F(HangWatchDeadlineTest, SetShouldBlockOnHangDeadlineChanged) {
       base::TimeTicks::FromInternalValue(kArbitraryDeadline);
   ASSERT_NE(deadline, new_deadline);
   deadline_.SetSwitchBitsClosureForTesting(
-      base::BindLambdaForTesting([]() { return kArbitraryDeadline; }));
+      base::BindLambdaForTesting([] { return kArbitraryDeadline; }));
 
   // kShouldBlockOnHangs does not persist through value change.
   ASSERT_FALSE(deadline_.SetShouldBlockOnHang(flags, deadline));
@@ -1323,7 +1323,7 @@ TEST_F(HangWatchDeadlineTest, ClearIgnoreHangsDeadlineChanged) {
   const base::TimeTicks new_deadline =
       base::TimeTicks::FromInternalValue(kArbitraryDeadline);
   ASSERT_NE(deadline, new_deadline);
-  deadline_.SetSwitchBitsClosureForTesting(base::BindLambdaForTesting([]() {
+  deadline_.SetSwitchBitsClosureForTesting(base::BindLambdaForTesting([] {
     return static_cast<uint64_t>(HangWatchDeadline::Flag::kShouldBlockOnHang) |
            kArbitraryDeadline;
   }));
@@ -1351,7 +1351,7 @@ TEST_F(HangWatchDeadlineTest,
       base::TimeTicks::FromInternalValue(kArbitraryDeadline);
 
   ASSERT_NE(deadline, new_deadline);
-  deadline_.SetSwitchBitsClosureForTesting(base::BindLambdaForTesting([]() {
+  deadline_.SetSwitchBitsClosureForTesting(base::BindLambdaForTesting([] {
     return static_cast<uint64_t>(HangWatchDeadline::Flag::kShouldBlockOnHang) |
            kArbitraryDeadline;
   }));

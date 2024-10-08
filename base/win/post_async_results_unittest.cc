@@ -178,7 +178,7 @@ TYPED_TEST_P(PostAsyncResultsTest,
                               value_received = result;
                               std::move(quit_closure).Run();
                             }),
-                        base::BindLambdaForTesting([&]() {
+                        base::BindLambdaForTesting([&] {
                           failure_handler_called = true;
                           std::move(quit_closure).Run();
                         })));
@@ -208,7 +208,7 @@ TYPED_TEST_P(PostAsyncResultsTest,
                               success_handler_called = true;
                               std::move(quit_closure).Run();
                             }),
-                        base::BindLambdaForTesting([&]() {
+                        base::BindLambdaForTesting([&] {
                           failure_handler_called = true;
                           std::move(quit_closure).Run();
                         })));

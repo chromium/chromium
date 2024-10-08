@@ -204,7 +204,7 @@ TEST(TestMockTimeTaskRunnerTest, AvoidCaptureWhenBound) {
     auto task_runner = MakeRefCounted<TestMockTimeTaskRunner>(
         TestMockTimeTaskRunner::Type::kBoundToThread);
 
-    task_runner->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+    task_runner->PostTask(FROM_HERE, base::BindLambdaForTesting([&] {
                             captured =
                                 SingleThreadTaskRunner::GetCurrentDefault();
                           }));
@@ -282,8 +282,8 @@ TEST(TestMockTimeTaskRunnerTest, NoFastForwardToCancelledTask) {
 TEST(TestMockTimeTaskRunnerTest, AdvanceMockTickClockDoesNotRunTasks) {
   auto task_runner = MakeRefCounted<TestMockTimeTaskRunner>();
   TimeTicks start_time = task_runner->NowTicks();
-  task_runner->PostTask(FROM_HERE, BindOnce([]() { ADD_FAILURE(); }));
-  task_runner->PostDelayedTask(FROM_HERE, BindOnce([]() { ADD_FAILURE(); }),
+  task_runner->PostTask(FROM_HERE, BindOnce([] { ADD_FAILURE(); }));
+  task_runner->PostDelayedTask(FROM_HERE, BindOnce([] { ADD_FAILURE(); }),
                                Seconds(1));
 
   task_runner->AdvanceMockTickClock(Seconds(3));

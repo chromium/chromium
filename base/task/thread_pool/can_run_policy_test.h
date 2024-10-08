@@ -38,13 +38,13 @@ void TestCanRunPolicyBasic(Target* target,
 
   const auto user_visible_task_runner =
       create_task_runner(TaskPriority::USER_VISIBLE);
-  user_visible_task_runner->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
+  user_visible_task_runner->PostTask(FROM_HERE, BindLambdaForTesting([&] {
                                        EXPECT_TRUE(foreground_can_run.IsSet());
                                        foreground_did_run.Signal();
                                      }));
   const auto best_effort_task_runner =
       create_task_runner(TaskPriority::BEST_EFFORT);
-  best_effort_task_runner->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
+  best_effort_task_runner->PostTask(FROM_HERE, BindLambdaForTesting([&] {
                                       EXPECT_TRUE(best_effort_can_run.IsSet());
                                       best_effort_did_run.Signal();
                                     }));
@@ -105,12 +105,11 @@ void TestCanRunPolicyChangedBeforeRun(Target* target,
     target->DidUpdateCanRunPolicy();
 
     const auto task_runner = create_task_runner(test_case.priority);
-    task_runner->PostTask(
-        FROM_HERE, BindLambdaForTesting([&]() {
-          first_task_started.Signal();
-          first_task_blocked.Wait();
-        }));
-    task_runner->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
+    task_runner->PostTask(FROM_HERE, BindLambdaForTesting([&] {
+                            first_task_started.Signal();
+                            first_task_blocked.Wait();
+                          }));
+    task_runner->PostTask(FROM_HERE, BindLambdaForTesting([&] {
                             EXPECT_TRUE(second_task_can_run.IsSet());
                           }));
 

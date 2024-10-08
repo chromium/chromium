@@ -246,7 +246,7 @@ TEST(TimerTest, OneShotTimer_CustomTaskRunner) {
   // The timer will use the TestSimpleTaskRunner to schedule its delays.
   timer.SetTaskRunner(task_runner);
   timer.Start(FROM_HERE, Days(1),
-              BindLambdaForTesting([&]() { task_ran = true; }));
+              BindLambdaForTesting([&] { task_ran = true; }));
 
   EXPECT_FALSE(task_ran);
   EXPECT_TRUE(task_runner->HasPendingTask());

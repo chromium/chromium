@@ -1301,9 +1301,8 @@ void PartitionAllocSupport::OnBackgrounded() {
   // TODO(lizeb): Remove once/if the behavior of idle tasks changes.
   base::PostDelayedMemoryReductionTask(
       base::SingleThreadTaskRunner::GetCurrentDefault(), FROM_HERE,
-      base::BindOnce([]() {
-        ::partition_alloc::MemoryReclaimer::Instance()->ReclaimAll();
-      }),
+      base::BindOnce(
+          [] { ::partition_alloc::MemoryReclaimer::Instance()->ReclaimAll(); }),
       base::Seconds(10));
 
 #endif  // PA_CONFIG(THREAD_CACHE_SUPPORTED)

@@ -454,7 +454,7 @@ TEST_F(ThreadGroupTest, UpdatePriorityBestEffortToUserBlocking) {
         TaskTraits(TaskPriority::BEST_EFFORT),
         &mock_pooled_task_runner_delegate_));
     task_runners.back()->PostTask(
-        FROM_HERE, BindLambdaForTesting([&]() {
+        FROM_HERE, BindLambdaForTesting([&] {
           // Increment the number of tasks running.
           {
             CheckedAutoLock auto_lock(num_tasks_running_lock);
@@ -557,7 +557,7 @@ TEST_F(ThreadGroupTest, ShouldYieldSingleTask) {
 
   test::CreatePooledTaskRunner({TaskPriority::USER_BLOCKING},
                                &mock_pooled_task_runner_delegate_)
-      ->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
+      ->PostTask(FROM_HERE, BindLambdaForTesting([&] {
                    EXPECT_FALSE(thread_group_->ShouldYield(
                        {TaskPriority::BEST_EFFORT, TimeTicks::Now()}));
                    EXPECT_FALSE(thread_group_->ShouldYield(

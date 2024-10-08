@@ -201,7 +201,7 @@ TEST_F(RepeatingTestFutureTest, ShouldStoreMultipleValuesInATuple) {
   RepeatingTestFuture<int, std::string> future;
 
   RunLater(BindLambdaForTesting(
-      [&]() { future.AddValue(expected_int_value, expected_string_value); }));
+      [&] { future.AddValue(expected_int_value, expected_string_value); }));
 
   std::tuple<int, std::string> actual = future.Take();
   EXPECT_EQ(expected_int_value, std::get<0>(actual));

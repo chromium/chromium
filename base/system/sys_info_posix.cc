@@ -132,7 +132,7 @@ int SysInfo::NumberOfProcessors() {
   // doesn't work on some platforms. The Mac-specific code above is not
   // included because changing the value at runtime is the best way to unittest
   // its behavior.
-  static int cached_num_cpus = []() {
+  static int cached_num_cpus = [] {
     // sysconf returns the number of "logical" (not "physical") processors on
     // both Mac and Linux.  So we get the number of max available "logical"
     // processors.

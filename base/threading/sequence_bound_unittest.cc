@@ -820,7 +820,7 @@ TYPED_TEST(SequenceBoundTest, AsyncCallNoArgsVoidThen) {
 
   {
     RunLoop loop;
-    s.AsyncCall(&NoArgsVoidReturn::Method).Then(BindLambdaForTesting([&]() {
+    s.AsyncCall(&NoArgsVoidReturn::Method).Then(BindLambdaForTesting([&] {
       loop.Quit();
     }));
     loop.Run();
@@ -828,8 +828,9 @@ TYPED_TEST(SequenceBoundTest, AsyncCallNoArgsVoidThen) {
 
   {
     RunLoop loop;
-    s.AsyncCall(&NoArgsVoidReturn::ConstMethod)
-        .Then(BindLambdaForTesting([&]() { loop.Quit(); }));
+    s.AsyncCall(&NoArgsVoidReturn::ConstMethod).Then(BindLambdaForTesting([&] {
+      loop.Quit();
+    }));
     loop.Run();
   }
 }

@@ -23,7 +23,7 @@ std::unique_ptr<StackSampler> StackSampler::Create(
     StackSamplerTestDelegate* test_delegate) {
   DCHECK(!core_unwinders_factory);
 #if defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64)
-  const auto create_unwinders = []() {
+  const auto create_unwinders = [] {
     std::vector<std::unique_ptr<Unwinder>> unwinders;
     unwinders.push_back(std::make_unique<NativeUnwinderWin>());
     return unwinders;

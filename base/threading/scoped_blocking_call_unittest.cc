@@ -470,7 +470,7 @@ TEST_F(ScopedBlockingCallIOJankMonitoringTest, MultiThreaded) {
 
   for (int i = 0; i < kNumJankyTasks; ++i) {
     base::ThreadPool::PostTask(
-        FROM_HERE, {MayBlock()}, BindLambdaForTesting([&]() {
+        FROM_HERE, {MayBlock()}, BindLambdaForTesting([&] {
           ScopedBlockingCall blocked_until_signal(FROM_HERE,
                                                   BlockingType::MAY_BLOCK);
           on_thread_blocked.Run();
@@ -715,7 +715,7 @@ TEST_F(ScopedBlockingCallIOJankMonitoringTest, BackgroundBlockingCallsIgnored) {
 
   base::ThreadPool::PostTask(
       FROM_HERE, {TaskPriority::BEST_EFFORT, MayBlock()},
-      BindLambdaForTesting([&]() {
+      BindLambdaForTesting([&] {
         ScopedBlockingCall blocked_for_7s(FROM_HERE, BlockingType::MAY_BLOCK);
         task_running.Signal();
 
@@ -751,7 +751,7 @@ TEST_F(ScopedBlockingCallIOJankMonitoringTest,
 
   base::ThreadPool::PostTask(
       FROM_HERE, {TaskPriority::BEST_EFFORT, MayBlock()},
-      BindLambdaForTesting([&]() {
+      BindLambdaForTesting([&] {
         ScopedBlockingCall blocked_for_7s(FROM_HERE, BlockingType::MAY_BLOCK);
         on_task_running.Run();
 
@@ -761,7 +761,7 @@ TEST_F(ScopedBlockingCallIOJankMonitoringTest,
 
   base::ThreadPool::PostTask(
       FROM_HERE, {TaskPriority::USER_BLOCKING, MayBlock()},
-      BindLambdaForTesting([&]() {
+      BindLambdaForTesting([&] {
         ScopedBlockingCall blocked_for_7s(FROM_HERE, BlockingType::MAY_BLOCK);
         on_task_running.Run();
 
@@ -899,7 +899,7 @@ TEST_F(ScopedBlockingCallIOJankMonitoringTest,
   // First warmup the ThreadPool so there are kNumRacingThreads ready threads
   // (to maximize the likelihood of a race).
   for (int i = 0; i < kNumRacingThreads; ++i) {
-    ThreadPool::PostTask(FROM_HERE, {MayBlock()}, BindLambdaForTesting([&]() {
+    ThreadPool::PostTask(FROM_HERE, {MayBlock()}, BindLambdaForTesting([&] {
                            on_thread_blocked.Run();
                            unblock_worker_threads.Wait();
                          }));
@@ -915,7 +915,7 @@ TEST_F(ScopedBlockingCallIOJankMonitoringTest,
   unblock_worker_threads.Reset();
 
   for (int i = 0; i < kNumRacingThreads; ++i) {
-    ThreadPool::PostTask(FROM_HERE, {MayBlock()}, BindLambdaForTesting([&]() {
+    ThreadPool::PostTask(FROM_HERE, {MayBlock()}, BindLambdaForTesting([&] {
                            ScopedBlockingCall blocked_for_14s(
                                FROM_HERE, BlockingType::MAY_BLOCK);
                            on_thread_blocked.Run();

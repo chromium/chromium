@@ -5906,7 +5906,7 @@ TEST_P(PartitionAllocTest, GlobalEmptySlotSpanRingIndexResets) {
 TEST_P(PartitionAllocTest, FastReclaim) {
   static base::TimeTicks now = base::TimeTicks();
   // Advances times by the same amount every time.
-  allocator.root()->now_maybe_overridden_for_testing = []() {
+  allocator.root()->now_maybe_overridden_for_testing = [] {
     now += PartitionRoot::kMaxPurgeDuration / 10;
     return now;
   };
@@ -5949,7 +5949,7 @@ TEST_P(PartitionAllocTest, FastReclaim) {
 TEST_P(PartitionAllocTest, FastReclaimEventuallyLooksAtAllBuckets) {
   static base::TimeTicks now = base::TimeTicks();
   // Advances times by the same amount every time.
-  allocator.root()->now_maybe_overridden_for_testing = []() {
+  allocator.root()->now_maybe_overridden_for_testing = [] {
     now += PartitionRoot::kMaxPurgeDuration / 10;
     return now;
   };

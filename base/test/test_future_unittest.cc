@@ -230,12 +230,12 @@ TEST_F(TestFutureTest, ShouldNotAllowOverwritingStoredValue) {
 TEST_F(TestFutureTest, ShouldAllowReuseIfPreviousValueIsFirstConsumed) {
   TestFuture<std::string> future;
 
-  RunLater([&]() { future.SetValue("first value"); });
+  RunLater([&] { future.SetValue("first value"); });
   EXPECT_EQ(future.Take(), "first value");
 
   ASSERT_FALSE(future.IsReady());
 
-  RunLater([&]() { future.SetValue("second value"); });
+  RunLater([&] { future.SetValue("second value"); });
   EXPECT_EQ(future.Take(), "second value");
 }
 
@@ -268,7 +268,7 @@ TEST_F(TestFutureTest, WaitShouldWorkAfterTake) {
   future.SetValue("first value");
   std::ignore = future.Take();
 
-  RunLater([&]() { future.SetValue("second value"); });
+  RunLater([&] { future.SetValue("second value"); });
 
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(future.Get(), "second value");

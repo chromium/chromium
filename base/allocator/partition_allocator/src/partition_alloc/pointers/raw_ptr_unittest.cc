@@ -1624,7 +1624,7 @@ class BackupRefPtrTest : public testing::Test {
   }
 
   partition_alloc::PartitionAllocator allocator_ =
-      partition_alloc::PartitionAllocator([]() {
+      partition_alloc::PartitionAllocator([] {
         partition_alloc::PartitionOptions opts;
         opts.backup_ref_ptr = partition_alloc::PartitionOptions::kEnabled;
         opts.memory_tagging = {

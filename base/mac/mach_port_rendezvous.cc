@@ -318,8 +318,7 @@ MachPortRendezvousClient* MachPortRendezvousClient::GetInstance() {
       client = nullptr;
     }
     return client;
-  }
-  ();
+  }();
   return client;
 #endif
 }

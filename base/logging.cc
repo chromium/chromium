@@ -781,7 +781,7 @@ void LogMessage::Flush() {
     // CF-635.21/CFUtilities.c also_do_stderr(). This would result in logging to
     // both stderr and os_log even in tests, where it's undesirable to log to
     // the system log at all.
-    const bool log_to_system = []() {
+    const bool log_to_system = [] {
       struct stat stderr_stat;
       if (fstat(fileno(stderr), &stderr_stat) == -1) {
         return true;

@@ -4651,7 +4651,7 @@ TEST(FileUtilMultiThreadedTest, MultiThreadedTempFiles) {
     thread->WaitUntilThreadStarted();
   }
 
-  const RepeatingClosure open_write_close_read = BindRepeating([]() {
+  const RepeatingClosure open_write_close_read = BindRepeating([] {
     FilePath output_filename;
     ScopedFILE output_file(CreateAndOpenTemporaryStream(&output_filename));
     EXPECT_TRUE(output_file);

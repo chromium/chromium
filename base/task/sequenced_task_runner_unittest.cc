@@ -232,7 +232,7 @@ TEST_F(SequencedTaskRunnerCurrentDefaultHandleTest,
 TEST_F(SequencedTaskRunnerCurrentDefaultHandleTest,
        NoHandleFromUnsequencedTask) {
   base::ThreadPool::PostTask(base::BindOnce(
-      []() { EXPECT_FALSE(SequencedTaskRunner::HasCurrentDefault()); }));
+      [] { EXPECT_FALSE(SequencedTaskRunner::HasCurrentDefault()); }));
   task_environment_.RunUntilIdle();
 }
 
