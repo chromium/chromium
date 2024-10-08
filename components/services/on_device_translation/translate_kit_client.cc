@@ -178,6 +178,13 @@ void TranslateKitClient::SetConfig(
   if (!MaybeInitialize()) {
     return;
   }
+
+  // When `file_operation_proxy_` is set, need to reset `file_operation_proxy_`
+  // before binding the new one. This happens when SetConfig() is called again
+  // for the new config.
+  if (file_operation_proxy_) {
+    file_operation_proxy_.reset();
+  }
   file_operation_proxy_.Bind(std::move(config->file_operation_proxy));
   chrome::on_device_translation::TranslateKitLanguagePackageConfig config_proto;
   size_t index = 0;

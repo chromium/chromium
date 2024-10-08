@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ON_DEVICE_TRANSLATION_SERVICE_CONTROLLER_H_
 
 #include <optional>
+#include <set>
 #include <vector>
 
 #include "base/no_destructor.h"
@@ -64,18 +65,39 @@ class OnDeviceTranslationServiceController {
     base::FilePath package_path;
   };
 
+  // The information of a pending task. This is used to keep the tasks that are
+  // waiting for the language packs to be installed.
+  class PendingTask {
+   public:
+    PendingTask(std::set<on_device_translation::LanguagePackKey> required_packs,
+                base::OnceClosure once_closure);
+    ~PendingTask();
+    PendingTask(const PendingTask&) = delete;
+    PendingTask& operator=(const PendingTask&) = delete;
+
+    PendingTask(PendingTask&&);
+    PendingTask& operator=(PendingTask&&);
+
+    std::set<on_device_translation::LanguagePackKey> required_packs;
+    base::OnceClosure once_closure;
+  };
+
   OnDeviceTranslationServiceController();
   ~OnDeviceTranslationServiceController();
+
+  // Send the CreateTranslator IPC call to the OnDeviceTranslationService.
+  void CreateTranslatorImpl(
+      const std::string& source_lang,
+      const std::string& target_lang,
+      mojo::PendingReceiver<on_device_translation::mojom::Translator> receiver,
+      base::OnceCallback<void(bool)> callback);
 
   // Returns the language packs that are installed or set by the command line.
   std::vector<LanguagePackInfo> GetLanguagePackInfo();
 
   // Registers the installed language pack components.
   void RegisterInstalledLanguagePackComponent();
-  // Maybe triggers the language pack install if the required language packs are
-  // not installed.
-  void MaybeTriggerLanguagePackInstall(const std::string& source_lang,
-                                       const std::string& target_lang);
+
   // Registers the language pack component.
   void RegisterLanguagePackComponent(on_device_translation::LanguagePackKey);
 
@@ -84,6 +106,15 @@ class OnDeviceTranslationServiceController {
 
   // Send the service config to the translation service.
   void SendServiceConfig();
+
+  void CalculateLanguagePackRequirements(
+      const std::string& source_lang,
+      const std::string& target_lang,
+      std::set<on_device_translation::LanguagePackKey>& required_packs,
+      std::vector<on_device_translation::LanguagePackKey>&
+          required_not_installed_packs,
+      std::vector<on_device_translation::LanguagePackKey>&
+          to_be_downloaded_packs);
 
   // Get a list of LanguagePackInfo from the command line flag
   // `--translate-kit-packages`.
@@ -106,6 +137,8 @@ class OnDeviceTranslationServiceController {
   // a background task runner.
   std::unique_ptr<FileOperationProxyImpl, base::OnTaskRunnerDeleter>
       file_operation_proxy_;
+  // The pending tasks that are waiting for the language packs to be installed.
+  std::vector<PendingTask> pending_tasks_;
 };
 
 #endif  // CHROME_BROWSER_ON_DEVICE_TRANSLATION_SERVICE_CONTROLLER_H_

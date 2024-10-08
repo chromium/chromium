@@ -48,6 +48,8 @@ using on_device_translation::mojom::OnDeviceTranslationServiceConfigPtr;
 
 namespace {
 
+constexpr size_t kMaxPendingTaskCount = 1024;
+
 const char kTranslateKitPackagePaths[] = "translate-kit-packages";
 
 const char kOnDeviceTranslationServiceDisplayName[] =
@@ -94,6 +96,19 @@ std::set<LanguagePackKey> GetInstalledLanguagePacks() {
 }
 
 }  // namespace
+
+OnDeviceTranslationServiceController::PendingTask::PendingTask(
+    std::set<on_device_translation::LanguagePackKey> required_packs,
+    base::OnceClosure once_closure)
+    : required_packs(std::move(required_packs)),
+      once_closure(std::move(once_closure)) {}
+
+OnDeviceTranslationServiceController::PendingTask::~PendingTask() = default;
+OnDeviceTranslationServiceController::PendingTask::PendingTask(PendingTask&&) =
+    default;
+OnDeviceTranslationServiceController::PendingTask&
+OnDeviceTranslationServiceController::PendingTask::operator=(PendingTask&&) =
+    default;
 
 // Implementation of FileOperationProxy. It is used to provide file operations
 // to the OnDeviceTranslationService. This is created on the UI thread and
@@ -271,9 +286,47 @@ void OnDeviceTranslationServiceController::CreateTranslator(
     const std::string& target_lang,
     mojo::PendingReceiver<on_device_translation::mojom::Translator> receiver,
     base::OnceCallback<void(bool)> callback) {
-  MaybeTriggerLanguagePackInstall(source_lang, target_lang);
-  // TODO(crbug.com/358030919): Implement a logic to defer the CreateTranslator
-  // IPC call when a new language pack was installed.
+  // If the language packs are set by the command line, we don't need to check
+  // the installed language packs.
+  if (!language_packs_from_command_line_) {
+    std::set<LanguagePackKey> required_packs;
+    std::vector<LanguagePackKey> required_not_installed_packs;
+    std::vector<LanguagePackKey> to_be_downloaded_packs;
+    CalculateLanguagePackRequirements(source_lang, target_lang, required_packs,
+                                      required_not_installed_packs,
+                                      to_be_downloaded_packs);
+    for (const auto& language_pack : to_be_downloaded_packs) {
+      // Register the language pack component.
+      RegisterLanguagePackComponent(language_pack);
+    }
+    // If there are required language packs that are not installed, we will wait
+    // until they are installed to create the translator.
+    if (!required_not_installed_packs.empty()) {
+      // When the size of pending tasks is too large, we will not queue the new
+      // task and hadle the request as failure to avoid OOM of the browser
+      // process.
+      if (pending_tasks_.size() == kMaxPendingTaskCount) {
+        std::move(callback).Run(false);
+        return;
+      }
+      pending_tasks_.emplace_back(
+          required_packs,
+          base::BindOnce(
+              &OnDeviceTranslationServiceController::CreateTranslatorImpl,
+              base::Unretained(this), source_lang, target_lang,
+              std::move(receiver), std::move(callback)));
+      return;
+    }
+  }
+  CreateTranslatorImpl(source_lang, target_lang, std::move(receiver),
+                       std::move(callback));
+}
+
+void OnDeviceTranslationServiceController::CreateTranslatorImpl(
+    const std::string& source_lang,
+    const std::string& target_lang,
+    mojo::PendingReceiver<on_device_translation::mojom::Translator> receiver,
+    base::OnceCallback<void(bool)> callback) {
   service_remote_->CreateTranslator(source_lang, target_lang,
                                     std::move(receiver), std::move(callback));
 }
@@ -282,9 +335,6 @@ void OnDeviceTranslationServiceController::CanTranslate(
     const std::string& source_lang,
     const std::string& target_lang,
     base::OnceCallback<void(bool)> callback) {
-  MaybeTriggerLanguagePackInstall(source_lang, target_lang);
-  // TODO(crbug.com/358030919): Implement a logic to defer the CanTranslate
-  // IPC call when a new language pack was installed.
   service_remote_->CanTranslate(source_lang, target_lang, std::move(callback));
 }
 
@@ -317,32 +367,6 @@ void OnDeviceTranslationServiceController::
   }
 }
 
-// Maybe trigger the language pack install if the required language packs are
-// not installed.
-void OnDeviceTranslationServiceController::MaybeTriggerLanguagePackInstall(
-    const std::string& source_lang,
-    const std::string& target_lang) {
-  const auto required_packs =
-      on_device_translation::CalculateRequiredLanguagePacks(source_lang,
-                                                            target_lang);
-  if (required_packs.empty()) {
-    return;
-  }
-  const auto installed_packs = GetInstalledLanguagePacks();
-  std::vector<LanguagePackKey> differences;
-  base::ranges::set_difference(required_packs, installed_packs,
-                               std::back_inserter(differences));
-  if (differences.empty()) {
-    return;
-  }
-  std::vector<LanguagePackKey> to_be_installed;
-  base::ranges::set_difference(differences, registered_language_packs_,
-                               std::back_inserter(to_be_installed));
-  for (const auto& language_pack : to_be_installed) {
-    RegisterLanguagePackComponent(language_pack);
-  }
-}
-
 // Register the language pack component.
 void OnDeviceTranslationServiceController::RegisterLanguagePackComponent(
     LanguagePackKey language_pack) {
@@ -360,6 +384,23 @@ void OnDeviceTranslationServiceController::RegisterLanguagePackComponent(
 void OnDeviceTranslationServiceController::OnLanguagePackKeyPrefChanged(
     const std::string& pref_name) {
   SendServiceConfig();
+
+  if (pending_tasks_.empty()) {
+    return;
+  }
+  const auto installed_packs = GetInstalledLanguagePacks();
+  std::vector<PendingTask> pending_tasks = std::move(pending_tasks_);
+  for (auto& task : pending_tasks) {
+    if (base::ranges::all_of(task.required_packs.begin(),
+                             task.required_packs.end(),
+                             [&](const LanguagePackKey& key) {
+                               return installed_packs.contains(key);
+                             })) {
+      std::move(task.once_closure).Run();
+    } else {
+      pending_tasks_.push_back(std::move(task));
+    }
+  }
 }
 
 // Sends config to the service.
@@ -390,6 +431,26 @@ void OnDeviceTranslationServiceController::SendServiceConfig() {
           new FileOperationProxyImpl(std::move(proxy_receiver), task_runner,
                                      std::move(package_pathes)),
           base::OnTaskRunnerDeleter(task_runner));
+}
+
+void OnDeviceTranslationServiceController::CalculateLanguagePackRequirements(
+    const std::string& source_lang,
+    const std::string& target_lang,
+    std::set<LanguagePackKey>& required_packs,
+    std::vector<LanguagePackKey>& required_not_installed_packs,
+    std::vector<LanguagePackKey>& to_be_downloaded_packs) {
+  CHECK(required_packs.empty());
+  CHECK(required_not_installed_packs.empty());
+  CHECK(to_be_downloaded_packs.empty());
+  required_packs = on_device_translation::CalculateRequiredLanguagePacks(
+      source_lang, target_lang);
+  const auto installed_packs = GetInstalledLanguagePacks();
+  base::ranges::set_difference(
+      required_packs, installed_packs,
+      std::back_inserter(required_not_installed_packs));
+  base::ranges::set_difference(required_not_installed_packs,
+                               registered_language_packs_,
+                               std::back_inserter(to_be_downloaded_packs));
 }
 
 // static
