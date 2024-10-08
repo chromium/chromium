@@ -1092,6 +1092,20 @@ void MaybeRegisterChromeFeaturePromos(
           .SetMetadata(129, "ydago@chromium.org",
                        "Triggered after a user uses managed browser where the "
                        "toolbar management button is visible.")));
+
+  // kIPHLensOverlayTranslateButtonFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHLensOverlayTranslateButtonFeature,
+          kLensOverlayTranslateButtonElementId,
+          IDS_LENS_OVERLAY_TRANSLATE_BUTTON_IPH,
+          IDS_LENS_OVERLAY_TRANSLATE_BUTTON_IPH_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+          .SetInAnyContext(true)
+          .SetMetadata(131, "juanmojica@google.com",
+                       "Triggered to inform users of the availability of the "
+                       "new translate screen feature on the Lens Overlay.")));
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_COMPOSE)

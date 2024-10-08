@@ -188,6 +188,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHGMCCastStartStopFeature,
     &kIPHGMCLocalMediaCastingFeature,
     &kIPHMemorySaverModeFeature,
+    &kIPHLensOverlayTranslateButtonFeature,
     &kIPHLiveCaptionFeature,
     &kIPHTabAudioMutingFeature,
     &kIPHPasswordsManagementBubbleAfterSaveFeature,
