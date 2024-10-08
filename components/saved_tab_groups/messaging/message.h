@@ -23,13 +23,15 @@ namespace tab_groups::messaging {
 enum class UserAction {
   // Source: TabGroupSyncService data.
   TAB_ADDED,
-  TAB_REMOVED,  // TODO(345856704): How do we get attribution data here?
+  // TODO(345856704): How do we get attribution data here?
+  TAB_REMOVED,
   TAB_NAVIGATED,
 
   // Source: DataSharingService data.
   COLLABORATION_USER_JOINED,
   COLLABORATION_USER_LEFT,
-  COLLABORATION_REMOVED,  // User left or lost access.
+  // User left or lost access.
+  COLLABORATION_REMOVED,
 };
 
 // Different types of instant notifications that need to be shown immediately
@@ -38,8 +40,10 @@ enum class UserAction {
 //   org.chromium.components.tab_group_sync.messaging)
 enum class InstantNotificationLevel {
   UNDEFINED,
-  SYSTEM,   // Show notification using OS notification.
-  BROWSER,  // Show a browser level notification
+  // Show notification using OS notification.
+  SYSTEM,
+  // Show a browser level notification
+  BROWSER,
 };
 
 // The notification type provides an explicit hint to the frontend about how
@@ -50,8 +54,9 @@ enum class InstantNotificationLevel {
 //   org.chromium.components.tab_group_sync.messaging)
 enum class InstantNotificationType {
   UNDEFINED,
-  CONFLICT_TAB_REMOVED,  // A special notification when a tab is removed while
-                         // the user is focused on the tab.
+  // A special notification when a tab is removed while the user is focused on
+  // the tab.
+  CONFLICT_TAB_REMOVED,
 };
 
 // Different types of persistent notifications that need to be shown to the
@@ -60,12 +65,13 @@ enum class InstantNotificationType {
 //   org.chromium.components.tab_group_sync.messaging)
 enum class PersistentNotificationType {
   UNDEFINED,
-  FOCUSED,    // Message displayed when the given item is visible (e.g. tab
-              // chip).
-  DIRTY_TAB,  // A marker that a tab has been changed and the user has not seen
-              // it yet.
-  DIRTY_TAB_GROUP,  // A marker that something in the tab group has changed and
-                    // the user has not seen it yet.
+  // Message displayed when the given item is visible (e.g. tab chip).
+  FOCUSED,
+  // A marker that a tab has been changed and the user has not seen it yet.
+  DIRTY_TAB,
+  // A marker that something in the tab group has changed and the user has not
+  // seen it yet.
+  DIRTY_TAB_GROUP,
 };
 
 // A list of attribution data for a message, which can be used to associate it
