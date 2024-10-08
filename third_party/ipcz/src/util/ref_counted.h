@@ -5,7 +5,6 @@
 #ifndef IPCZ_SRC_UTIL_REF_COUNTED_H_
 #define IPCZ_SRC_UTIL_REF_COUNTED_H_
 
-#include <algorithm>
 #include <atomic>
 #include <cstddef>
 #include <type_traits>
