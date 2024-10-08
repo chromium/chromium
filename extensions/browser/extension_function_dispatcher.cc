@@ -84,96 +84,6 @@ void ResponseCallbackOnError(ExtensionFunction::ResponseCallback callback,
   std::move(callback).Run(type, base::Value::List(), error, nullptr);
 }
 
-// Returns `true` if `render_process_host` can legitimately claim to send IPC
-// messages on behalf of `extension_id`.  `render_frame_host` parameter is
-// needed to account for scenarios involving a Chrome Web Store frame.
-bool CanRendererActOnBehalfOfExtension(
-    const ExtensionId& extension_id,
-    content::RenderFrameHost* render_frame_host,
-    content::RenderProcessHost& render_process_host) {
-  // TODO(lukasza): Some of the checks below can be restricted to specific
-  // context types (e.g. an empty `extension_id` should not happen in an
-  // extension context;  and the SiteInstance-based check should only be needed
-  // for hosted apps).  Consider leveraging ProcessMap::GetMostLikelyContextType
-  // to implement this kind of restrictions.  Note that
-  // ExtensionFunctionDispatcher::CreateExtensionFunction already calls
-  // GetMostLikelyContextType - some refactoring might be needed to avoid
-  // duplicating the work.
-
-  // Allow empty extension id (it seems okay to assume that no
-  // extension-specific special powers will be granted without an extension id).
-  // For instance, WebUI pages may call private APIs like developerPrivate,
-  // settingsPrivate, metricsPrivate, and others. In these cases, there is no
-  // associated extension ID.
-  //
-  // TODO(lukasza): Investigate if the exception below can be avoided if
-  // `render_process_host` hosts HTTP origins (i.e. if the exception can be
-  // restricted to NTP, and/or chrome://... cases.
-  if (extension_id.empty()) {
-    return true;
-  }
-
-  // Did `render_process_id` run a content script or user script from
-  // `extension_id`?
-  // TODO(crbug.com/40055126): Ideally, we'd only check content script/
-  // user script status if the renderer claimed to be acting on behalf of the
-  // corresponding type (e.g. mojom::ContextType::kContentScript). We evaluate
-  // this later in ProcessMap::CanProcessHostContextType(), but we could be
-  // stricter by including it here.
-  if (ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
-          render_process_host, extension_id) ||
-      ScriptInjectionTracker::DidProcessRunUserScriptFromExtension(
-          render_process_host, extension_id)) {
-    return true;
-  }
-
-  // CanRendererHostExtensionOrigin() needs to know if the extension is
-  // sandboxed, so check the sandbox flags if this request is for an extension
-  // frame. Note that extension workers cannot be sandboxed since workers aren't
-  // supported in opaque origins.
-  bool is_sandboxed =
-      render_frame_host &&
-      render_frame_host->IsSandboxed(network::mojom::WebSandboxFlags::kOrigin);
-
-  // Can `render_process_id` host a chrome-extension:// origin (frame, worker,
-  // etc.)?
-  if (util::CanRendererHostExtensionOrigin(render_process_host.GetID(),
-                                           extension_id, is_sandboxed)) {
-    return true;
-  }
-
-  if (render_frame_host) {
-    DCHECK_EQ(render_process_host.GetID(),
-              render_frame_host->GetProcess()->GetID());
-    content::SiteInstance& site_instance =
-        *render_frame_host->GetSiteInstance();
-
-    // Chrome Extension APIs can be accessed from some hosted apps.
-    //
-    // Today this is mostly needed by the Chrome Web Store's hosted app, but the
-    // code below doesn't make this assumption and allows *all* hosted apps
-    // based on the trustworthy, Browser-side information from the SiteInstance
-    // / SiteURL.  This way the code is resilient to future changes + there are
-    // concerns that `chrome.test.sendMessage` might already be exposed to
-    // hosted apps (but maybe not covered by tests).
-    //
-    // Note that the condition below allows all extensions (i.e. not just hosted
-    // apps), but hosted apps aren't covered by the
-    // `CanRendererHostExtensionOrigin` call above (because the process lock of
-    // hosted apps is based on a https://, rather than chrome-extension:// url).
-    //
-    // GuestView is explicitly excluded, because we don't want to allow
-    // GuestViews to spoof the extension id of their host.
-    if (!site_instance.IsGuest() &&
-        extension_id == util::GetExtensionIdForSiteInstance(site_instance)) {
-      return true;
-    }
-  }
-
-  // Disallow any other cases.
-  return false;
-}
-
 std::optional<bad_message::BadMessageReason> ValidateRequest(
     const mojom::RequestParams& params,
     content::RenderFrameHost* render_frame_host,
@@ -183,8 +93,9 @@ std::optional<bad_message::BadMessageReason> ValidateRequest(
     return bad_message::EFD_BAD_MESSAGE;
   }
 
-  if (!CanRendererActOnBehalfOfExtension(params.extension_id, render_frame_host,
-                                         render_process_host)) {
+  if (!util::CanRendererActOnBehalfOfExtension(
+          params.extension_id, render_frame_host, render_process_host,
+          /*include_user_scripts=*/true)) {
     return bad_message::EFD_INVALID_EXTENSION_ID_FOR_PROCESS;
   }
 

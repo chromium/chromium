@@ -7,8 +7,14 @@
 
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/storage/session_storage_manager.h"
+#include "extensions/browser/api/storage/storage_area_namespace.h"
 #include "extensions/common/api/storage.h"
 #include "extensions/common/extension_id.h"
+
+namespace content {
+class RenderFrameHost;
+class RenderProcessHost;
+}  // namespace content
 
 namespace extensions::storage_utils {
 
@@ -25,6 +31,15 @@ void SetSessionAccessLevel(const ExtensionId& extension_id,
 // Returns a nested dictionary Value converted from a ValueChange.
 base::Value ValueChangeToValue(
     std::vector<SessionStorageManager::ValueChange> changes);
+
+// Returns true if `render_frame_host` should be able to access `storage_area`
+// for `extension`.
+bool CanRendererAccessExtensionStorage(
+    content::BrowserContext& browser_context,
+    const Extension& extension,
+    StorageAreaNamespace storage_area,
+    content::RenderFrameHost* render_frame_host,
+    content::RenderProcessHost& render_process_host);
 
 }  // namespace extensions::storage_utils
 
