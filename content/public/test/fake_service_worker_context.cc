@@ -93,12 +93,6 @@ void FakeServiceWorkerContext::CheckHasServiceWorker(
     CheckHasServiceWorkerCallback callback) {
   NOTREACHED_IN_MIGRATION();
 }
-void FakeServiceWorkerContext::CheckOfflineCapability(
-    const GURL& url,
-    const blink::StorageKey& key,
-    const ServiceWorkerContext::CheckOfflineCapabilityCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-}
 void FakeServiceWorkerContext::ClearAllServiceWorkersForTest(
     base::OnceClosure) {
   NOTREACHED_IN_MIGRATION();

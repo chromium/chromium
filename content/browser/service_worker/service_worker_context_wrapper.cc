@@ -792,23 +792,6 @@ void ServiceWorkerContextWrapper::CheckHasServiceWorker(
                                    std::move(callback));
 }
 
-void ServiceWorkerContextWrapper::CheckOfflineCapability(
-    const GURL& url,
-    const blink::StorageKey& key,
-    CheckOfflineCapabilityCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  if (!context_core_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), OfflineCapability::kUnsupported,
-                       blink::mojom::kInvalidServiceWorkerRegistrationId));
-    return;
-  }
-  context()->CheckOfflineCapability(net::SimplifyUrlForRequest(url), key,
-                                    std::move(callback));
-}
-
 void ServiceWorkerContextWrapper::ClearAllServiceWorkersForTest(
     base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

@@ -33,7 +33,6 @@
 #include "content/browser/service_worker/service_worker_host.h"
 #include "content/browser/service_worker/service_worker_info.h"
 #include "content/browser/service_worker/service_worker_job_coordinator.h"
-#include "content/browser/service_worker/service_worker_offline_capability_checker.h"
 #include "content/browser/service_worker/service_worker_process_manager.h"
 #include "content/browser/service_worker/service_worker_quota_client.h"
 #include "content/browser/service_worker/service_worker_register_job.h"
@@ -1065,27 +1064,6 @@ void ServiceWorkerContextCore::CheckHasServiceWorker(
       base::BindOnce(&ServiceWorkerContextCore::
                          DidFindRegistrationForCheckHasServiceWorker,
                      AsWeakPtr(), std::move(callback)));
-}
-
-void ServiceWorkerContextCore::CheckOfflineCapability(
-    const GURL& url,
-    const blink::StorageKey& key,
-    ServiceWorkerContext::CheckOfflineCapabilityCallback callback) {
-  auto checker =
-      std::make_unique<ServiceWorkerOfflineCapabilityChecker>(url, key);
-  ServiceWorkerOfflineCapabilityChecker* checker_rawptr = checker.get();
-  checker_rawptr->Start(
-      registry(),
-      // Bind unique_ptr to the |callback| so that
-      // ServiceWorkerOfflineCapabilityChecker outlives |callback| and is surely
-      // freed when |callback| is called.
-      base::BindOnce(
-          [](std::unique_ptr<ServiceWorkerOfflineCapabilityChecker> checker,
-             ServiceWorkerContext::CheckOfflineCapabilityCallback callback,
-             OfflineCapability result, int64_t registration_id) {
-            std::move(callback).Run(result, registration_id);
-          },
-          std::move(checker), std::move(callback)));
 }
 
 void ServiceWorkerContextCore::UpdateVersionFailureCount(
