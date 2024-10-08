@@ -40,7 +40,7 @@ public class ColorPickerAdvanced extends LinearLayout implements OnSeekBarChange
 
     private int mCurrentColor;
 
-    private final float[] mCurrentHsvValues = new float[] {0, 1, 1};
+    private final float[] mCurrentHsvValues = new float[3];
 
     public ColorPickerAdvanced(Context context, AttributeSet attrs) {
         super(context, attrs);
