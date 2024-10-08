@@ -810,6 +810,10 @@ BASE_FEATURE(kExcludeLowEntropyImagesFromLCP,
 const base::FeatureParam<double> kMinimumEntropyForLCP{
     &kExcludeLowEntropyImagesFromLCP, "min_bpp", 0.05};
 
+BASE_FEATURE(kExemptSpeculationRulesHeaderFromCSP,
+             "ExemptSpeculationRulesHeaderFromCSP",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kExpandCompositedCullRect,
              "ExpandCompositedCullRect",
              base::FEATURE_ENABLED_BY_DEFAULT);

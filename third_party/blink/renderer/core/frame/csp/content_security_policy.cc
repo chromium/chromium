@@ -35,6 +35,7 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-shared.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -691,10 +692,15 @@ std::optional<CSPDirectiveName> GetDirectiveTypeFromRequestContextType(
       return CSPDirectiveName::DefaultSrc;
 
     case mojom::blink::RequestContextType::SPECULATION_RULES:
-      // If speculation rules ever supports <script src>, then it will probably
-      // be necessary to use ScriptSrcElem in such cases.
-      return CSPDirectiveName::ScriptSrc;
-
+      // If speculation rules ever supports <script src>, then it will
+      // probably be necessary to use ScriptSrcElem in such cases.
+      if (!base::FeatureList::IsEnabled(
+              features::kExemptSpeculationRulesHeaderFromCSP)) {
+        return CSPDirectiveName::ScriptSrc;
+      }
+      // Speculation Rules loaded from Speculation-Rules header are exempt
+      // from CSP checks.
+      [[fallthrough]];
     case mojom::blink::RequestContextType::CSP_REPORT:
     case mojom::blink::RequestContextType::DOWNLOAD:
     case mojom::blink::RequestContextType::HYPERLINK:

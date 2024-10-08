@@ -476,6 +476,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kExcludeLowEntropyImagesFromLCP);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
     kMinimumEntropyForLCP;
 
+// Controls if the file loaded via the Speculation-Rules header
+// is exempt from CSP checks. See crbug.com/371595744 for context.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kExemptSpeculationRulesHeaderFromCSP);
+
 // Number of pixels to expand in root layout coordinates for cull rect under
 // scroll translation or other composited transform:
 //   kCullRectPixelDistanceToExpand *

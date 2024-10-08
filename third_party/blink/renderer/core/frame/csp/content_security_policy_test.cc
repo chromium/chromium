@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1533,5 +1534,37 @@ TEST_F(ContentSecurityPolicyTest, AllowFencedFrameOpaqueURL) {
     EXPECT_EQ(test.expected, csp->AllowFencedFrameOpaqueURL());
   }
 }
+
+class SpeculationRulesHeaderContentSecurityPolicyTest
+    : public base::test::WithFeatureOverride,
+      public ContentSecurityPolicyTest {
+ public:
+  SpeculationRulesHeaderContentSecurityPolicyTest()
+      : base::test::WithFeatureOverride(
+            features::kExemptSpeculationRulesHeaderFromCSP) {}
+};
+
+TEST_P(SpeculationRulesHeaderContentSecurityPolicyTest,
+       ExemptSpeculationRulesFromHeader) {
+  KURL speculation_rules_url("http://example.com/rules.json");
+  csp = MakeGarbageCollected<ContentSecurityPolicy>();
+  csp->BindToDelegate(execution_context->GetContentSecurityPolicyDelegate());
+  csp->AddPolicies(ParseContentSecurityPolicies(
+      "script-src 'strict-dynamic'", ContentSecurityPolicyType::kEnforce,
+      ContentSecurityPolicySource::kHTTP, *secure_origin));
+
+  EXPECT_EQ(
+      base::FeatureList::IsEnabled(
+          features::kExemptSpeculationRulesHeaderFromCSP),
+      csp->AllowRequest(mojom::blink::RequestContextType::SPECULATION_RULES,
+                        network::mojom::RequestDestination::kSpeculationRules,
+                        speculation_rules_url, String(), IntegrityMetadataSet(),
+                        kParserInserted, speculation_rules_url,
+                        ResourceRequest::RedirectStatus::kNoRedirect,
+                        ReportingDisposition::kSuppressReporting));
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    SpeculationRulesHeaderContentSecurityPolicyTest);
 
 }  // namespace blink
