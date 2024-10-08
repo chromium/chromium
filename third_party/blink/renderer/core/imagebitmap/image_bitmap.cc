@@ -247,11 +247,8 @@ scoped_refptr<StaticBitmapImage> ApplyTransformsFromOptions(
   params.flip_y = options.flip_y;
   params.premultiply_alpha = options.premultiply_alpha;
   params.has_color_space_conversion = options.has_color_space_conversion;
-  params.source_is_unpremul = options.source_is_unpremul;
   params.orientation_from_image = options.orientation_from_image;
   params.sampling = options.sampling;
-  params.source_orientation = options.source_orientation;
-  params.source_size = options.source_size;
   params.source_rect = options.source_rect;
   params.dest_size = options.dest_size;
   return StaticBitmapImageTransform::Apply(FlushReason::kCreateImageBitmap,

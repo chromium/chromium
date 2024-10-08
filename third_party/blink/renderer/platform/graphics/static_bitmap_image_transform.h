@@ -34,9 +34,6 @@ class PLATFORM_EXPORT StaticBitmapImageTransform {
     // reinterpret the image as being sRGB).
     bool has_color_space_conversion = true;
 
-    // Set to true only if the source has kUnpremul_SkAlphaType.
-    bool source_is_unpremul = false;
-
     // If false, then strip the orientation from teh imgae (and therefore
     // reinterpret the image as having the origin be the top-left).
     bool orientation_from_image = true;
@@ -45,27 +42,10 @@ class PLATFORM_EXPORT StaticBitmapImageTransform {
     // resampling is performed.
     SkSamplingOptions sampling;
 
-    // The orientation of the source.
-    class ImageOrientation source_orientation;
-
     // The `source_size`, `source_rect`, and `dest_size` parameters are all in
     // the space after the `source_orientation` has been applied.
-    gfx::Size source_size;
     gfx::Rect source_rect;
     gfx::Size dest_size;
-
-    // Compute the parameters for creating and then resizing a subset of the
-    // source image. In the underlying PaintImage, `source_skrect` corresponds
-    // to `source_rect`, `source_skrect_valid` corresponds to the intersection
-    // of that with the PaintImage size, and `dest_sksize` corresponds to the
-    // output size.
-    void ComputeSubsetParameters(SkIRect& source_skrect,
-                                 SkIRect& source_skrect_valid,
-                                 SkISize& dest_sksize) const;
-
-    bool MustPreserveUnpremulValues() const {
-      return source_is_unpremul && !premultiply_alpha;
-    }
   };
 
   // Apply the specified transform to the indcated image.

@@ -50,14 +50,38 @@ void FlipSkPixmapInPlace(SkPixmap& pm, bool horizontal) {
   }
 }
 
-}  // namespace
+// Return the effective orientation of `source`, which may have been
+// overridden by `params`.
+ImageOrientation GetSourceOrientation(
+    scoped_refptr<StaticBitmapImage> source,
+    const StaticBitmapImageTransform::Params& params) {
+  if (!params.orientation_from_image) {
+    return ImageOrientationEnum::kOriginTopLeft;
+  }
+  return source->CurrentFrameOrientation();
+}
 
-void StaticBitmapImageTransform::Params::ComputeSubsetParameters(
-    SkIRect& source_skrect,
-    SkIRect& source_skrect_valid,
-    SkISize& dest_sksize) const {
+// Return the oriented size of `source`.
+gfx::Size GetSourceSize(scoped_refptr<StaticBitmapImage> source,
+                        const StaticBitmapImageTransform::Params& params) {
+  const auto source_info = source->GetSkImageInfo();
+  const auto source_orientation = GetSourceOrientation(source, params);
+
+  return source_orientation.UsesWidthAsHeight()
+             ? gfx::Size(source_info.height(), source_info.width())
+             : gfx::Size(source_info.width(), source_info.height());
+}
+
+void ComputeSubsetParameters(scoped_refptr<StaticBitmapImage> source,
+                             const StaticBitmapImageTransform::Params& params,
+                             SkIRect& source_skrect,
+                             SkIRect& source_skrect_valid,
+                             SkISize& dest_sksize) {
+  const gfx::Size source_size = GetSourceSize(source, params);
+  const ImageOrientation source_orientation =
+      GetSourceOrientation(source, params);
   gfx::Size unoriented_source_size = source_size;
-  gfx::Size unoriented_dest_size = dest_size;
+  gfx::Size unoriented_dest_size = params.dest_size;
   if (source_orientation.UsesWidthAsHeight()) {
     unoriented_source_size = gfx::TransposeSize(unoriented_source_size);
     unoriented_dest_size = gfx::TransposeSize(unoriented_dest_size);
@@ -65,9 +89,9 @@ void StaticBitmapImageTransform::Params::ComputeSubsetParameters(
   auto t = source_orientation.TransformFromDefault(
       gfx::SizeF(unoriented_source_size));
   const gfx::Rect source_rect_valid =
-      gfx::IntersectRects(source_rect, gfx::Rect(source_size));
+      gfx::IntersectRects(params.source_rect, gfx::Rect(source_size));
 
-  const gfx::Rect unoriented_source_rect = t.MapRect(source_rect);
+  const gfx::Rect unoriented_source_rect = t.MapRect(params.source_rect);
   const gfx::Rect unoriented_source_rect_valid = t.MapRect(source_rect_valid);
 
   source_skrect = gfx::RectToSkIRect(unoriented_source_rect);
@@ -75,18 +99,22 @@ void StaticBitmapImageTransform::Params::ComputeSubsetParameters(
   dest_sksize = gfx::SizeToSkISize(unoriented_dest_size);
 }
 
+}  // namespace
+
 // Perform the requested transformations on the CPU.
 scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyUsingPixmap(
     scoped_refptr<StaticBitmapImage> source,
     const StaticBitmapImageTransform::Params& options) {
   auto source_paint_image = source->PaintImageForCurrentFrame();
   auto source_info = source->GetSkImageInfo();
+  const auto source_orientation = GetSourceOrientation(source, options);
 
   // Compute the unoriented source and dest rects and sizes.
   SkIRect source_rect;
   SkIRect source_rect_valid;
   SkISize dest_size;
-  options.ComputeSubsetParameters(source_rect, source_rect_valid, dest_size);
+  ComputeSubsetParameters(source, options, source_rect, source_rect_valid,
+                          dest_size);
 
   // Let `bm` be the image that we're manipulating step-by-step.
   SkBitmap bm;
@@ -145,7 +173,7 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyUsingPixmap(
   // Apply vertical flip by using a different ImageOrientation.
   if (options.flip_y) {
     SkPixmap pm = bm.pixmap();
-    FlipSkPixmapInPlace(pm, options.source_orientation.UsesWidthAsHeight());
+    FlipSkPixmapInPlace(pm, source_orientation.UsesWidthAsHeight());
   }
 
   // Create the resulting SkImage.
@@ -164,7 +192,7 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyUsingPixmap(
           .set_image(std::move(dest_image), cc::PaintImage::GetNextContentId())
           .TakePaintImage();
   return UnacceleratedStaticBitmapImage::Create(std::move(dest_paint_image),
-                                                options.source_orientation);
+                                                source_orientation);
 }
 
 // Perform all transformations using a blit, which will result in a new
@@ -173,12 +201,11 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
     FlushReason flush_reason,
     scoped_refptr<StaticBitmapImage> src,
     const StaticBitmapImageTransform::Params& options) {
-  // This path will necessarily premultiply alpha. If unmultiplied alpha is
-  // requested and the source was originally unmultiplied, then we this would
-  // break things.
-  CHECK(!options.MustPreserveUnpremulValues());
+  // This path will necessarily premultiply alpha.
+  CHECK(options.premultiply_alpha);
 
   auto paint_image = src->PaintImageForCurrentFrame();
+  const auto source_orientation = GetSourceOrientation(src, options);
 
   // Compute the parameters for the blit.
   const SkAlphaType dst_alpha_type =
@@ -188,7 +215,8 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
   SkIRect source_rect;
   SkIRect source_rect_valid;
   SkISize dest_size;
-  options.ComputeSubsetParameters(source_rect, source_rect_valid, dest_size);
+  ComputeSubsetParameters(src, options, source_rect, source_rect_valid,
+                          dest_size);
 
   // Create the resource provider for the target for the blit.
   std::unique_ptr<CanvasResourceProvider> resource_provider;
@@ -224,7 +252,7 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
   paint.setBlendMode(SkBlendMode::kSrc);
   cc::PaintCanvas& canvas = resource_provider->Canvas();
   if (options.flip_y) {
-    if (options.source_orientation.UsesWidthAsHeight()) {
+    if (source_orientation.UsesWidthAsHeight()) {
       canvas.translate(dest_size.width(), 0);
       canvas.scale(-1, 1);
     } else {
@@ -235,7 +263,7 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
   canvas.drawImageRect(paint_image, SkRect::Make(source_rect),
                        SkRect::Make(dest_size), options.sampling, &paint,
                        SkCanvas::kStrict_SrcRectConstraint);
-  return resource_provider->Snapshot(flush_reason, options.source_orientation);
+  return resource_provider->Snapshot(flush_reason, source_orientation);
 }
 
 // Apply the transformations indicated in `options` on `source`, and return the
@@ -252,12 +280,14 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::Apply(
   }
 
   const bool needs_flip = options.flip_y;
-  const bool needs_crop = options.source_rect != gfx::Rect(options.source_size);
+  const bool needs_crop =
+      options.source_rect != gfx::Rect(GetSourceSize(source, options));
   const bool needs_resize = options.source_rect.size() != options.dest_size;
   const bool needs_strip_orientation = !options.orientation_from_image;
   const bool needs_strip_color_space = !options.has_color_space_conversion;
   const bool needs_alpha_change =
-      options.source_is_unpremul != (!options.premultiply_alpha);
+      (source->GetSkImageInfo().alphaType() == kUnpremul_SkAlphaType) !=
+      (!options.premultiply_alpha);
 
   // If we aren't doing anything (and this wasn't a forced copy), just return
   // the original.
@@ -283,14 +313,9 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::Clone(
     scoped_refptr<StaticBitmapImage> source) {
   const auto info = source->GetSkImageInfo();
   StaticBitmapImageTransform::Params options;
-  options.source_orientation = source->CurrentFrameOrientation();
-  options.source_size = options.source_orientation.UsesWidthAsHeight()
-                            ? gfx::Size(info.height(), info.width())
-                            : gfx::Size(info.width(), info.height());
-  options.source_rect = gfx::Rect(options.source_size);
-  options.dest_size = options.source_size;
-  options.source_is_unpremul = info.alphaType() == kUnpremul_SkAlphaType;
-  options.premultiply_alpha = !options.source_is_unpremul;
+  options.source_rect = gfx::Rect(GetSourceSize(source, options));
+  options.dest_size = GetSourceSize(source, options);
+  options.premultiply_alpha = info.alphaType() != kUnpremul_SkAlphaType;
   options.force_copy = true;
   return Apply(flush_reason, source, options);
 }
@@ -309,13 +334,8 @@ StaticBitmapImageTransform::GetWithAlphaDisposition(
 
   const auto info = source->GetSkImageInfo();
   StaticBitmapImageTransform::Params options;
-  options.source_orientation = source->CurrentFrameOrientation();
-  options.source_size = options.source_orientation.UsesWidthAsHeight()
-                            ? gfx::Size(info.height(), info.width())
-                            : gfx::Size(info.width(), info.height());
-  options.source_rect = gfx::Rect(options.source_size);
-  options.dest_size = options.source_size;
-  options.source_is_unpremul = info.alphaType() == kUnpremul_SkAlphaType;
+  options.source_rect = gfx::Rect(GetSourceSize(source, options));
+  options.dest_size = GetSourceSize(source, options);
   options.premultiply_alpha = true;
   return Apply(flush_reason, source, options);
 }
