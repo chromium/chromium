@@ -140,6 +140,8 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
         static_cast<const BubbleFrameView*>(this)->title());
   }
 
+  Label* default_title() { return default_title_.get(); }
+
   void SetContentMargins(const gfx::Insets& content_margins);
   gfx::Insets GetContentMargins() const;
 

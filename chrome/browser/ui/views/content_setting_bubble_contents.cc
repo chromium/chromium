@@ -15,6 +15,7 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -384,7 +385,8 @@ void ContentSettingBubbleContents::Init() {
   if (!bubble_content.message.empty()) {
     auto message_label = std::make_unique<views::Label>(
         bubble_content.message, views::style::CONTEXT_LABEL,
-        views::style::STYLE_SECONDARY);
+        views::style::STYLE_BODY_3);
+    message_label->SetEnabledColorId(kColorActivityIndicatorForeground);
     message_label->SetMultiLine(true);
     message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     rows.push_back({std::move(message_label), LayoutRowType::DEFAULT});
@@ -411,6 +413,8 @@ void ContentSettingBubbleContents::Init() {
   if (!radio_group.radio_items.empty()) {
     for (const auto& radio_item : radio_group.radio_items) {
       auto radio = std::make_unique<views::RadioButton>(radio_item, 0);
+      radio->SetLabelStyle(views::style::STYLE_BODY_4);
+      radio->SetEnabledTextColorIds(kColorActivityIndicatorSubtitleForeground);
       radio->SetVisible(bubble_content.is_user_modifiable);
       radio->SetMultiLine(true);
       radio_group_.push_back(radio.get());

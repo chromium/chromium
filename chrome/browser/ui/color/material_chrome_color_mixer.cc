@@ -57,6 +57,11 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   // TODO(tluk): Factor the always-applied material color definitions into a
   // separate file.
 
+  // Content settings activity indicators popup dialog colors.
+  mixer[kColorActivityIndicatorForeground] = {ui::kColorSysOnSurface};
+  mixer[kColorActivityIndicatorSubtitleForeground] = {
+      ui::kColorSysOnSurfaceSubtle};
+
   // Download bubble colors.
   mixer[kColorDownloadBubbleRowHover] = {ui::kColorSysStateHoverOnSubtle};
   mixer[kColorDownloadBubbleShowAllDownloadsIcon] = {

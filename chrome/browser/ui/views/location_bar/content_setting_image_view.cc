@@ -15,6 +15,7 @@
 #include "base/token.h"
 #include "build/build_config.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
@@ -260,6 +261,16 @@ bool ContentSettingImageView::ShowBubbleImpl() {
     views::Widget* bubble_widget =
         views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
     observation_.Observe(bubble_widget);
+
+    // Update popup bubble's title style.
+    if (views::BubbleFrameView* const frame_view =
+            bubble_view_->GetBubbleFrameView()) {
+      if (views::Label* title_label = frame_view->default_title()) {
+        title_label->SetTextStyle(views::style::STYLE_HEADLINE_4);
+        title_label->SetEnabledColorId(kColorActivityIndicatorForeground);
+      }
+    }
+
     bubble_widget->Show();
     delegate_->OnContentSettingImageBubbleShown(
         content_setting_image_model_->image_type());
