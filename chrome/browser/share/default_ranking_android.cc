@@ -482,7 +482,7 @@ bool IsEnUsLocale(const std::string& locale) {
 }
 
 std::vector<std::string> FlattenComponents(
-    const std::vector<ComponentName> cs) {
+    const std::vector<ComponentName>& cs) {
   std::vector<std::string> result;
   base::ranges::transform(cs, std::back_inserter(result),
                           &ComponentName::Flatten);

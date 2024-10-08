@@ -265,8 +265,8 @@ std::map<std::string, int> BuildHistoryMap(
 }
 
 std::vector<std::string> AddMissingItemsFromHistory(
-    const std::vector<std::string> existing,
-    const std::map<std::string, int> history) {
+    const std::vector<std::string>& existing,
+    const std::map<std::string, int>& history) {
   std::vector<std::string> updated = existing;
   for (const auto& item : history) {
     if (!RankingContains(updated, item.first))
