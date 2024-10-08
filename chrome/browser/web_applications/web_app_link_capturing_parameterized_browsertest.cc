@@ -932,7 +932,8 @@ class WebAppLinkCapturingParameterizedBrowserTest
 };
 
 // TODO(crbug.com/359600606): Enable on CrOS if needed.
-#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/372119276): Enable on MacOS if needed.
+#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC))
 #define MAYBE_CheckLinkCaptureCombinations DISABLED_CheckLinkCaptureCombinations
 #else
 #define MAYBE_CheckLinkCaptureCombinations CheckLinkCaptureCombinations
