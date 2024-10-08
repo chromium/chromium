@@ -94,6 +94,9 @@ const char kHistogramGWSTimeBetweenHCTAndSCT[] =
 const char kHistogramGWSNavigationSourceType[] =
     HISTOGRAM_PREFIX "NavigationSourceType";
 
+const char kHistogramGWSIsFirstNavigationForGWS[] =
+    HISTOGRAM_PREFIX "IsFirstNavigationForGWS";
+
 }  // namespace internal
 
 namespace {
@@ -168,8 +171,13 @@ GWSPageLoadMetricsObserver::OnStart(
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 GWSPageLoadMetricsObserver::OnCommit(
     content::NavigationHandle* navigation_handle) {
-  if (!page_load_metrics::IsGoogleSearchResultUrl(
-          navigation_handle->GetURL())) {
+  const bool is_gws_url =
+      page_load_metrics::IsGoogleSearchResultUrl(navigation_handle->GetURL());
+  if (is_first_navigation_) {
+    base::UmaHistogramBoolean(internal::kHistogramGWSIsFirstNavigationForGWS,
+                              is_gws_url);
+  }
+  if (!is_gws_url) {
     return STOP_OBSERVING;
   }
 

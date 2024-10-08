@@ -1311,6 +1311,18 @@ chromium-metrics-reviews@google.com.
   <token key="TabInitializationStatus" variants="TabInitializationStatus"/>
 </histogram>
 
+<histogram name="PageLoad.Clients.GoogleSearch.IsFirstNavigationForGWS"
+    enum="Boolean" expires_after="2025-08-01">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records whether the first navigation is the navigation to GWS or not. This
+    is recorded for the first navigation after the browser init, at commit. True
+    indicates that the first navigation after browser init is to GWS, while as
+    False indicates that the navigation was for elsewhere.
+  </summary>
+</histogram>
+
 <histogram
     name="PageLoad.Clients.GoogleSearch.Leakage2.{NavigationMilestone}ToAbandon{NavigationAbandonReason}{BackgroundSuffix}{HiddenSuffix}{RTTBucketSuffix}"
     units="ms" expires_after="2025-02-10">
