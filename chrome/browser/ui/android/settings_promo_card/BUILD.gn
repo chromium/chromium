@@ -34,6 +34,8 @@ android_resources("java_resources") {
     "java/res/drawable/default_browser_promo_illustration_left.xml",
     "java/res/drawable/default_browser_promo_illustration_right.xml",
     "java/res/layout/settings_promo_card.xml",
+    "java/res/values-night/colors.xml",
+    "java/res/values/colors.xml",
   ]
   deps = [
     "//chrome/browser/ui/android/signin:java_resources",

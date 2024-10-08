@@ -10,7 +10,7 @@ found in the LICENSE file.
         android:left="0dp"
         android:right="125dp"/>
     <item
-        android:drawable="@mipmap/app_icon"
+        android:drawable="@drawable/chrome_sync_logo"
         android:left="77dp"
         android:right="61dp"/>
     <item

@@ -78,7 +78,9 @@ found in the LICENSE file.
     <color name="baseline_secondary_70">#5AB3F0</color>
     <color name="baseline_secondary_70_with_neutral_90_alpha_8">#53A7E1</color>
     <color name="baseline_secondary_70_with_neutral_90_alpha_24">#448FC4</color>
+    <color name="baseline_secondary_35">#005789</color>
     <color name="baseline_secondary_30">#004A77</color>
+    <color name="baseline_secondary_25">#003F66</color>
     <color name="baseline_secondary_10">#001D35</color>
     <color name="baseline_tertiary_90">#C4EED0</color>
     <color name="baseline_tertiary_80">#6DD58C</color>
