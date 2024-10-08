@@ -127,8 +127,8 @@ void NearbyShareDetailedViewImpl::CreateYourDevicesRow() {
   your_devices_row_ = visibility_selection_container_->AddChildView(
       std::make_unique<HoverHighlightView>(/*listener=*/this));
 
-  // TODO(brandosocarras, b/360150790): replace icon with your devices
-  // icon of correct size. replace label, sublabel with IDS strings.
+  // TODO(brandosocarras, b/360150790): replace label, sublabel with IDS
+  // strings.
   CreateVisibilityRow(your_devices_row_,
                       kQuickSettingsQuickShareYourDevicesIcon,
                       /*label=*/u"Your devices",
@@ -142,9 +142,9 @@ void NearbyShareDetailedViewImpl::CreateContactsRow() {
   contacts_row_ = visibility_selection_container_->AddChildView(
       std::make_unique<HoverHighlightView>(/*listener=*/this));
 
-  // TODO(brandosocarras, b/360150790): replace icon with appropriate contacts
-  // icon. replace label, sublabel with IDS strings.
-  CreateVisibilityRow(contacts_row_, kQuickSettingsQuickShareYourDevicesIcon,
+  // TODO(brandosocarras, b/360150790): replace label, sublabel with IDS
+  // strings.
+  CreateVisibilityRow(contacts_row_, kQuickSettingsQuickShareContactsIcon,
                       /*label=*/u"Contacts",
                       /*sublabel=*/u"Only your contacts with a Google Account");
 }
@@ -156,9 +156,9 @@ void NearbyShareDetailedViewImpl::CreateEveryoneRow() {
   everyone_row_ = visibility_selection_container_->AddChildView(
       std::make_unique<HoverHighlightView>(/*listener=*/this));
 
-  // TODO(brandosocarras, b/360150790): replace icon with appropriate contacts
-  // icon. replace label, sublabel with IDS strings.
-  CreateVisibilityRow(everyone_row_, kQuickSettingsQuickShareYourDevicesIcon,
+  // TODO(brandosocarras, b/360150790): replace label, sublabel with IDS
+  // strings.
+  CreateVisibilityRow(everyone_row_, kQuickSettingsQuickShareEveryoneIcon,
                       /*label=*/u"Everyone", /*sublabel=*/u"Anyone nearby");
 }
 
