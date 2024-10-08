@@ -8,6 +8,8 @@ import android.app.Activity;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.ResettersForTesting;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -39,6 +41,7 @@ public class PrivacySandboxSurveyController {
     private Profile mProfile;
     private PrivacySandboxSurveyBridge mPrivacySandboxSurveyBridge;
     private boolean mHasSeenNtp;
+    private static boolean sEnableForTesting;
 
     PrivacySandboxSurveyController(
             TabModelSelector tabModelSelector,
@@ -73,6 +76,10 @@ public class PrivacySandboxSurveyController {
             MessageDispatcher messageDispatcher,
             ActivityTabProvider activityTabProvider,
             Profile profile) {
+        // Do not create the client for testing unless explicitly enabled.
+        if (BuildConfig.IS_FOR_TEST && !sEnableForTesting) {
+            return null;
+        }
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SENTIMENT_SURVEY)) {
             return null;
         }
@@ -144,5 +151,11 @@ public class PrivacySandboxSurveyController {
                         }
                     }
                 };
+    }
+
+    /** Set whether to trigger the start up survey in tests. */
+    public static void setEnableForTesting() {
+        sEnableForTesting = true;
+        ResettersForTesting.register(() -> sEnableForTesting = false);
     }
 }

@@ -60,6 +60,7 @@ public class PrivacySandboxSurveyControllerTest {
 
     @Before
     public void before() {
+        PrivacySandboxSurveyController.setEnableForTesting();
         doReturn(Mockito.mock(Resources.class)).when(mActivity).getResources();
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);

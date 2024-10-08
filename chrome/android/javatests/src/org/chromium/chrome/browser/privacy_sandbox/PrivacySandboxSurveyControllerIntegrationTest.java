@@ -57,6 +57,7 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
 
     @Before
     public void setup() {
+        PrivacySandboxSurveyController.setEnableForTesting();
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
     }
 
