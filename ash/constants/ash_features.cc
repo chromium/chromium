@@ -1588,6 +1588,11 @@ BASE_FEATURE(kSmbServiceIsCreatedOnUserSessionStartUpTaskCompleted,
              "SmbServiceIsCreatedOnUserSessionStartUpTaskCompleted",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, smbprovider is started on-demand.
+BASE_FEATURE(kSmbproviderdOnDemand,
+             "SmbproviderdOnDemand",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether the snooping protection prototype is enabled.
 BASE_FEATURE(kSnoopingProtection,
              "SnoopingProtection",
