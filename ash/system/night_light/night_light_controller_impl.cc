@@ -549,7 +549,7 @@ void NightLightControllerImpl::AmbientColorChanged(
   // We adjust the ambient color temperature only if the difference with
   // the last ambient temperature computed is greated than a threshold to
   // avoid changing it too often when the powerd readings are noisy.
-  constexpr float kAmbientColorChangeThreshold = 100.0f;
+  constexpr float kAmbientColorChangeThreshold = 50.0f;
   if (abs_temperature_difference < kAmbientColorChangeThreshold)
     return;
 
