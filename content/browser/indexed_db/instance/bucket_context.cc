@@ -605,7 +605,6 @@ void BucketContext::CreateAllExternalObjects(
         mojo::PendingReceiver<blink::mojom::Blob> receiver =
             output_info->blob.InitWithNewPipeAndPassReceiver();
         if (blob_info.is_remote_valid()) {
-          output_info->uuid = blob_info.uuid();
           blob_info.Clone(std::move(receiver));
           continue;
         }
@@ -628,10 +627,11 @@ void BucketContext::CreateAllExternalObjects(
                        element->reader.InitWithNewPipeAndPassReceiver());
 
         // Write results to output_info.
-        output_info->uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
-
         blob_storage_context_->RegisterFromDataItem(
-            std::move(receiver), output_info->uuid, std::move(element));
+            std::move(receiver),
+            base::Uuid::GenerateRandomV4().AsLowercaseString(),
+            std::move(element));
+
         break;
       }
       case IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle: {

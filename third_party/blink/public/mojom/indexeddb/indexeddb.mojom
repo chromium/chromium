@@ -202,7 +202,6 @@ struct IDBFileInfo {
 
 struct IDBBlobInfo {
   pending_remote<blink.mojom.Blob> blob;
-  string uuid;
   mojo_base.mojom.String16 mime_type;
   int64 size;
   IDBFileInfo? file;

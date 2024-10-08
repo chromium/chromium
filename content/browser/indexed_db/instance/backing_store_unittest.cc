@@ -390,7 +390,7 @@ class BackingStoreTestWithExternalObjects
                   std::move(pending_receiver));
             },
             uuid, remote.InitWithNewPipeAndPassReceiver()));
-    IndexedDBExternalObject info(std::move(remote), uuid, file_name, type,
+    IndexedDBExternalObject info(std::move(remote), file_name, type,
                                  last_modified, size);
     return info;
   }
@@ -409,7 +409,7 @@ class BackingStoreTestWithExternalObjects
                   std::move(pending_receiver));
             },
             uuid, remote.InitWithNewPipeAndPassReceiver()));
-    IndexedDBExternalObject info(std::move(remote), uuid, type, size);
+    IndexedDBExternalObject info(std::move(remote), type, size);
     return info;
   }
 
@@ -534,19 +534,8 @@ class BackingStoreTestWithExternalObjects
         continue;
       }
 
-      base::RunLoop uuid_loop;
-      std::string uuid_out;
       DCHECK(desc.blob.is_bound());
       DCHECK(desc.blob.is_connected());
-      desc.blob->GetInternalUUID(
-          base::BindLambdaForTesting([&](const std::string& uuid) {
-            uuid_out = uuid;
-            uuid_loop.Quit();
-          }));
-      uuid_loop.Run();
-      if (uuid_out != info.uuid()) {
-        return false;
-      }
     }
     for (size_t i = 0; i < file_system_access_context_->writes().size(); ++i) {
       const IndexedDBExternalObject& info =

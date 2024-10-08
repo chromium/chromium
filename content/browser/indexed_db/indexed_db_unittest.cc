@@ -854,8 +854,8 @@ TEST_P(IndexedDBTest, DISABLED_PutWithInvalidBlob) {
   // an invalid blob.
   std::ignore = blob.InitWithNewPipeAndPassReceiver();
   external_objects.push_back(blink::mojom::IDBExternalObject::NewBlobOrFile(
-      blink::mojom::IDBBlobInfo::New(std::move(blob), "fakeUUID",
-                                     std::u16string(), 100, nullptr)));
+      blink::mojom::IDBBlobInfo::New(std::move(blob), std::u16string(), 100,
+                                     nullptr)));
 
   std::string value = "hello";
   const char* value_data = value.data();

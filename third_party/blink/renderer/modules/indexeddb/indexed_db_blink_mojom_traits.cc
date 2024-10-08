@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/mojo/string16_mojom_traits.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/uuid.h"
 
 using blink::mojom::IDBCursorDirection;
 using blink::mojom::IDBDataLoss;
@@ -196,8 +197,6 @@ StructTraits<blink::mojom::IDBValueDataView, std::unique_ptr<blink::IDBValue>>::
           info.LastModified().value_or(base::Time());
     }
     blob_info->size = info.size();
-    blob_info->uuid = info.Uuid();
-    DCHECK(!blob_info->uuid.empty());
     String mime_type = info.GetType();
     if (mime_type.IsNull())
       mime_type = g_empty_string;
@@ -244,13 +243,19 @@ bool StructTraits<blink::mojom::IDBValueDataView,
     switch (object->which()) {
       case blink::mojom::blink::IDBExternalObject::Tag::kBlobOrFile: {
         auto& info = object->get_blob_or_file();
+        // The UUID is used as an implementation detail of V8 serialization
+        // code, but it is no longer relevant to or related to the blob storage
+        // context UUID, so we can make one up here.
+        // TODO(crbug.com/40529364): remove the UUID parameter from WebBlobInfo.
         if (info->file) {
           value_blob_info.emplace_back(
-              info->uuid, info->file->name, info->mime_type,
+              WTF::CreateCanonicalUUIDString(), info->file->name,
+              info->mime_type,
               blink::NullableTimeToOptionalTime(info->file->last_modified),
               info->size, std::move(info->blob));
         } else {
-          value_blob_info.emplace_back(info->uuid, info->mime_type, info->size,
+          value_blob_info.emplace_back(WTF::CreateCanonicalUUIDString(),
+                                       info->mime_type, info->size,
                                        std::move(info->blob));
         }
         break;

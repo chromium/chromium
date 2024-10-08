@@ -508,11 +508,11 @@ uint64_t Transaction::CreateExternalObjects(
         if (info->file) {
           DCHECK_NE(info->size, IndexedDBExternalObject::kUnknownSize);
           (*external_objects)[i] = IndexedDBExternalObject(
-              std::move(info->blob), info->uuid, info->file->name,
-              info->mime_type, info->file->last_modified, info->size);
+              std::move(info->blob), info->file->name, info->mime_type,
+              info->file->last_modified, info->size);
         } else {
           (*external_objects)[i] = IndexedDBExternalObject(
-              std::move(info->blob), info->uuid, info->mime_type, info->size);
+              std::move(info->blob), info->mime_type, info->size);
         }
         break;
       }
