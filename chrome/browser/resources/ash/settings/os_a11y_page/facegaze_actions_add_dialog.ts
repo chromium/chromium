@@ -34,7 +34,7 @@ import {KeyEvent, ShortcutInputProviderInterface} from '../device_page/input_dev
 import {getShortcutInputProvider} from '../device_page/shortcut_input_mojo_interface_provider.js';
 
 import {getTemplate} from './facegaze_actions_add_dialog.html.js';
-import {AssignedKeyCombo, FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF, FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF_DICT, FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeActions, FaceGazeCommandPair, FaceGazeGestures, FaceGazeUtils, KeyCombination} from './facegaze_constants.js';
+import {AssignedKeyCombo, FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF, FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF_DICT, FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeActions, FaceGazeCommandPair, FaceGazeGestures, FaceGazeLocationDependentActions, FaceGazeLookGestures, FaceGazeUtils, KeyCombination} from './facegaze_constants.js';
 import {FaceGazeSubpageBrowserProxy, FaceGazeSubpageBrowserProxyImpl} from './facegaze_subpage_browser_proxy.js';
 
 export interface FaceGazeAddActionDialogElement {
@@ -139,7 +139,6 @@ export class FaceGazeAddActionDialogElement extends
       leftClickGestures: {
         type: Array,
         value: () => [],
-        observer: 'leftClickGesturesChanged_',
       },
 
       showSelectAction_: {
@@ -184,7 +183,7 @@ export class FaceGazeAddActionDialogElement extends
 
       displayedGestures_: {
         type: Array,
-        value: () => [],
+        computed: 'computeAllowedGestures_(selectedAction_, leftClickGestures)',
       },
 
       selectedGesture_: {
@@ -245,7 +244,7 @@ export class FaceGazeAddActionDialogElement extends
   shortcutInput: ShortcutInputElement|null;
 
   // Internal state.
-  private selectedAction_: MacroName|null = null;
+  private selectedAction_: MacroName;
   private keyCombination_: KeyCombination|null = null;
   private selectedGesture_: FacialGesture|null = null;
   private gestureThresholdValue_: number;
@@ -257,9 +256,7 @@ export class FaceGazeAddActionDialogElement extends
   private stream_: MediaStream|null;
   private streamTrack_: MediaStreamTrack|null;
 
-  // Computed properties.
   private displayedActions_: MacroName[] = FaceGazeActions;
-  private displayedGestures_: FacialGesture[] = FaceGazeGestures;
 
   private faceGazeSubpageBrowserProxy_: FaceGazeSubpageBrowserProxy;
 
@@ -516,16 +513,27 @@ export class FaceGazeAddActionDialogElement extends
     }
   }
 
-  // If left-click action is assigned to a singular gesture then remove it
-  // from the list of available gestures to avoid losing left click
-  // functionality.
-  private leftClickGesturesChanged_(leftClickGestures: FacialGesture[]): void {
-    if (leftClickGestures.length === 1) {
-      this.displayedGestures_ =
-          this.displayedGestures_.filter((gesture: FacialGesture) => {
-            return leftClickGestures[0] !== gesture;
-          });
+  private computeAllowedGestures_(): FacialGesture[] {
+    let displayedGestures: FacialGesture[] = FaceGazeGestures;
+    // If left-click action is assigned to a singular gesture then remove it
+    // from the list of available gestures to avoid losing left click
+    // functionality.
+    if (this.leftClickGestures.length === 1) {
+      displayedGestures = displayedGestures.filter((gesture: FacialGesture) => {
+        return this.leftClickGestures[0] !== gesture;
+      });
     }
+
+    // If the selected action is dependent on location, then only allow gestures
+    // where the user can be looking at their screen while performing it so they
+    // can be certain of their mouse location.
+    if (FaceGazeLocationDependentActions.includes(this.selectedAction_)) {
+      displayedGestures = displayedGestures.filter((gesture: FacialGesture) => {
+        return !FaceGazeLookGestures.includes(gesture);
+      });
+    }
+
+    return displayedGestures;
   }
 
   private async onThresholdPageDomChanged_(): Promise<void> {

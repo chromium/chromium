@@ -99,7 +99,7 @@ suite('<facegaze-actions-add-dialog>', () => {
     assertNull(actionList);
   }
 
-  function setActionsListSelection() {
+  function setActionsListSelectionToMouseClick() {
     const actionList = assertActionsList();
 
     // Cast to Object to satisfy typing for IronListElement.selectedItem.
@@ -131,6 +131,12 @@ suite('<facegaze-actions-add-dialog>', () => {
         faceGazeAddActionDialog.shadowRoot!.querySelector<IronListElement>(
             '#faceGazeAvailableGesturesList');
     return gestureList;
+  }
+
+  function isGestureDisplayed(gesture: FacialGesture): boolean {
+    const gestureList = assertGesturesList();
+    assertTrue(!!gestureList.items);
+    return gestureList.items.includes(gesture);
   }
 
   function assertGesturesList(): IronListElement {
@@ -257,7 +263,7 @@ suite('<facegaze-actions-add-dialog>', () => {
 
   function navigateToThresholdPage(): void {
     assertActionsListNoSelection();
-    setActionsListSelection();
+    setActionsListSelectionToMouseClick();
 
     const actionNextButton = getActionNextButton();
     assertFalse(actionNextButton.disabled);
@@ -303,7 +309,7 @@ suite('<facegaze-actions-add-dialog>', () => {
   test('action page next button changes dialog to gesture page', async () => {
     await initPage();
     assertActionsListNoSelection();
-    setActionsListSelection();
+    setActionsListSelectionToMouseClick();
 
     const nextButton = getActionNextButton();
     assertFalse(nextButton.disabled);
@@ -408,11 +414,58 @@ suite('<facegaze-actions-add-dialog>', () => {
       });
 
   test(
+      'gesture page displayed gestures excludes single gesture assigned to left click',
+      async () => {
+        await initPage();
+        faceGazeAddActionDialog.leftClickGestures =
+            [FacialGesture.BROW_INNER_UP];
+        setActionsListSelectionToMouseClick();
+        const actionNextButton = getActionNextButton();
+        assertFalse(actionNextButton.disabled);
+        actionNextButton.click();
+        await flushTasks();
+
+        assertFalse(isGestureDisplayed(FacialGesture.BROW_INNER_UP));
+      });
+
+  test(
+      'gesture page displayed gestures does not exclude gestures if multiple assigned to left click',
+      async () => {
+        await initPage();
+        faceGazeAddActionDialog.leftClickGestures =
+            [FacialGesture.BROW_INNER_UP, FacialGesture.JAW_OPEN];
+        setActionsListSelectionToMouseClick();
+        const actionNextButton = getActionNextButton();
+        assertFalse(actionNextButton.disabled);
+        actionNextButton.click();
+        await flushTasks();
+
+        assertTrue(isGestureDisplayed(FacialGesture.BROW_INNER_UP));
+        assertTrue(isGestureDisplayed(FacialGesture.JAW_OPEN));
+      });
+
+  test(
+      'gesture page does not display look gestures for actions dependent on mouse location',
+      async () => {
+        await initPage();
+        setActionsListSelectionToMouseClick();
+        const actionNextButton = getActionNextButton();
+        assertFalse(actionNextButton.disabled);
+        actionNextButton.click();
+        await flushTasks();
+
+        assertFalse(isGestureDisplayed(FacialGesture.EYES_LOOK_DOWN));
+        assertFalse(isGestureDisplayed(FacialGesture.EYES_LOOK_LEFT));
+        assertFalse(isGestureDisplayed(FacialGesture.EYES_LOOK_RIGHT));
+        assertFalse(isGestureDisplayed(FacialGesture.EYES_LOOK_UP));
+      });
+
+  test(
       'gesture page previous button changes dialog to action page',
       async () => {
         await initPage();
         assertActionsListNoSelection();
-        setActionsListSelection();
+        setActionsListSelectionToMouseClick();
 
         const nextButton = getActionNextButton();
         assertFalse(nextButton.disabled);
@@ -480,7 +533,7 @@ suite('<facegaze-actions-add-dialog>', () => {
       async () => {
         await initPage();
         assertActionsListNoSelection();
-        setActionsListSelection();
+        setActionsListSelectionToMouseClick();
 
         const actionNextButton = getActionNextButton();
         assertFalse(actionNextButton.disabled);
@@ -682,7 +735,7 @@ suite('<facegaze-actions-add-dialog>', () => {
       async () => {
         await initPage();
         assertActionsListNoSelection();
-        setActionsListSelection();
+        setActionsListSelectionToMouseClick();
 
         const actionNextButton = getActionNextButton();
         assertFalse(actionNextButton.disabled);

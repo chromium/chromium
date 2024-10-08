@@ -37,9 +37,27 @@ export const FaceGazeActions: MacroName[] = [
   MacroName.CUSTOM_KEY_COMBINATION,
 ];
 
+// Actions that involve mouse location and require an accurate mouse location to
+// execute as expected.
+export const FaceGazeLocationDependentActions: MacroName[] = [
+  MacroName.MOUSE_CLICK_LEFT,
+  MacroName.MOUSE_CLICK_LEFT_DOUBLE,
+  MacroName.MOUSE_CLICK_RIGHT,
+  MacroName.MOUSE_LONG_CLICK_LEFT,
+  MacroName.TOGGLE_SCROLL_MODE,
+];
+
 // All possible facial gestures.
 // Values are extracted here for ease of use.
 export const FaceGazeGestures = Object.values(FacialGesture);
+
+// Facial gestures that require looking away from the screen.
+export const FaceGazeLookGestures: FacialGesture[] = [
+  FacialGesture.EYES_LOOK_DOWN,
+  FacialGesture.EYES_LOOK_LEFT,
+  FacialGesture.EYES_LOOK_RIGHT,
+  FacialGesture.EYES_LOOK_UP,
+];
 
 export interface KeyCombination {
   key: number;
