@@ -15,14 +15,27 @@ import "bound_session_params.proto";
 // rotation requests.
 message RotationDebugInfo {
   // Various transient error types that might have occurred during cookie
-  // rotation. Persistent errors are not included because they lead to session
-  // termination and thus no rotation requests will be sent to carry this debug
-  // info.
+  // rotation. See `TerminationReason` for persistent errors.
   enum FailureType {
     OTHER = 0;
     CONNECTION_ERROR = 1;
     SERVER_ERROR = 2;
     TIMEOUT = 3;
+  }
+
+  // Persistent error type that may only be included in the last rotation
+  // request ping before terminating the session on the client. Delivery of the
+  // last ping request is not guaranteed.
+  enum TerminationReason {
+    TERMINATION_REASON_OTHER = 0;
+    ROTATION_PERSISTENT_ERROR = 1;
+    ROTATION_UNEXPECTED_RESPONSE = 2;
+    ROTATION_CHALLENGE_UNEXPECTED_FORMAT = 3;
+    ROTATION_CHALLENGE_LIMIT_EXCEEDED = 4;
+    ROTATION_SIGN_CHALLENGE_FAILED = 5;
+    ROTATION_UNKNOWN_ERROR = 6;
+    TERMINATION_HEADER_RECEIVED = 7;
+    SESSION_OVERRIDE = 8;
   }
 
   // Contains how many times a specific type of error occurred.
@@ -41,4 +54,7 @@ message RotationDebugInfo {
   optional Timestamp request_time = 1;
   repeated FailureCounter errors_since_last_rotation = 2;
   optional FailureInfo first_failure_info = 3;
+  // Only populated if the session had already been terminated and the client
+  // reports its last status.
+  optional TerminationReason termination_reason = 4;
 }

@@ -35,11 +35,6 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace {
-constexpr char kRotationChallengeHeader[] = "Sec-Session-Google-Challenge";
-constexpr char kRotationChallengeResponseHeader[] =
-    "Sec-Session-Google-Response";
-constexpr char kRotationDebugHeader[] =
-    "Sec-Session-Google-Rotation-Debug-Info";
 constexpr char kChallengeItemKey[] = "challenge";
 constexpr char kSessionIdItemKey[] = "session_id";
 const size_t kMaxAssertionRequestsAllowed = 5;
@@ -147,45 +142,6 @@ void BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest(
     return;
   }
 
-  // TODO(b/273920907): Update the `traffic_annotation` setting once a mechanism
-  // allowing the user to disable the feature is implemented.
-  net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("gaia_auth_rotate_bound_cookies",
-                                          R"(
-        semantics {
-          sender: "Chrome - Google authentication API"
-          description:
-            "This request is used to rotate bound Google authentication "
-            "cookies."
-          trigger:
-            "This request is triggered in a bound session when the bound Google"
-            " authentication cookies are soon to expire."
-          user_data {
-            type: ACCESS_TOKEN
-          }
-          data: "Request includes cookies and a signed token proving that a"
-                " request comes from the same device as was registered before."
-          destination: GOOGLE_OWNED_SERVICE
-          internal {
-            contacts {
-                email: "chrome-signin-team@google.com"
-            }
-          }
-          last_reviewed: "2024-05-30"
-        }
-        policy {
-          cookies_allowed: YES
-          cookies_store: "user"
-          setting:
-             "This feature cannot be disabled in settings, but this request "
-             "won't be made unless the user signs in to google.com."
-          chrome_policy: {
-            BoundSessionCredentialsEnabled {
-              BoundSessionCredentialsEnabled: false
-            }
-          }
-        })");
-
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = refresh_url_;
   request->method = "GET";
@@ -212,7 +168,7 @@ void BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest(
           std::move(request),
           is_off_the_record_profile_ ? variations::InIncognito::kYes
                                      : variations::InIncognito::kNo,
-          traffic_annotation);
+          kTrafficAnnotation);
   url_loader_->SetRetryOptions(
       3, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
   // TODO(b/273920907): Download the response body to support in refresh DBSC

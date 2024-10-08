@@ -7433,6 +7433,8 @@ static_library("browser") {
       "signin/bound_session_credentials/bound_session_params_storage.h",
       "signin/bound_session_credentials/bound_session_params_util.cc",
       "signin/bound_session_credentials/bound_session_params_util.h",
+      "signin/bound_session_credentials/bound_session_refresh_cookie_debug_report_fetcher.cc",
+      "signin/bound_session_credentials/bound_session_refresh_cookie_debug_report_fetcher.h",
       "signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.cc",
       "signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h",
       "signin/bound_session_credentials/bound_session_refresh_cookie_fetcher_impl.cc",

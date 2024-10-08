@@ -28,9 +28,11 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_storage.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_param.h"
 #include "chrome/browser/signin/bound_session_credentials/fake_bound_session_refresh_cookie_fetcher.h"
+#include "chrome/browser/signin/bound_session_credentials/rotation_debug_info.pb.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -128,6 +130,10 @@ class FakeBoundSessionCookieController : public BoundSessionCookieController {
     resume_blocked_requests_.push_back(std::move(resume_blocked_request));
   }
 
+  bound_session_credentials::RotationDebugInfo TakeDebugInfo() override {
+    return {};
+  }
+
   bool ShouldPauseThrottlingRequests() const override {
     return throttling_requests_paused_;
   }
@@ -147,7 +153,8 @@ class FakeBoundSessionCookieController : public BoundSessionCookieController {
   }
 
   void SimulateOnPersistentErrorEncountered() {
-    delegate_->OnPersistentErrorEncountered(this);
+    delegate_->OnPersistentErrorEncountered(
+        this, BoundSessionRefreshCookieFetcher::Result::kServerPersistentError);
   }
 
   void SimulateRefreshBoundSessionCompleted() {
@@ -277,6 +284,20 @@ MATCHER_P2(IsBoundSessionRegistrationFetcher,
       arg, result_listener);
 }
 
+class FakeBoundSessionDebugReportFetcher
+    : public BoundSessionRefreshCookieFetcher {
+ public:
+  void Start(
+      RefreshCookieCompleteCallback callback,
+      std::optional<std::string> sec_session_challenge_response) override {
+    std::move(callback).Run(Result::kSuccess);
+  }
+  bool IsChallengeReceived() const override { return false; }
+  std::optional<std::string> TakeSecSessionChallengeResponseIfAny() override {
+    return std::nullopt;
+  }
+};
+
 class MockObserver : public BoundSessionCookieRefreshService::Observer {
  public:
   MOCK_METHOD(void,
@@ -333,6 +354,10 @@ class BoundSessionCookieRefreshServiceImplTestBase : public testing::Test {
     BoundSessionParamsStorage::RegisterProfilePrefs(prefs_.registry());
     test_storage_ =
         BoundSessionParamsStorage::CreatePrefsStorageForTesting(prefs_);
+    EXPECT_CALL(*this, CreateBoundSessionDebugReportFetcher)
+        .WillRepeatedly(testing::InvokeWithoutArgs([] {
+          return std::make_unique<FakeBoundSessionDebugReportFetcher>();
+        }));
   }
 
   ~BoundSessionCookieRefreshServiceImplTestBase() override = default;
@@ -345,6 +370,14 @@ class BoundSessionCookieRefreshServiceImplTestBase : public testing::Test {
   virtual std::unique_ptr<BoundSessionRegistrationFetcher>
   CreateBoundSessionRegistrationFetcher(
       BoundSessionRegistrationFetcherParam fetcher_params) = 0;
+
+  MOCK_METHOD(std::unique_ptr<BoundSessionRefreshCookieFetcher>,
+              CreateBoundSessionDebugReportFetcher,
+              (std::string_view session_id,
+               const GURL& refresh_url,
+               bool is_off_the_record_profile,
+               bound_session_credentials::RotationDebugInfo debug_info),
+              ());
 
   BoundSessionCookieRefreshServiceImpl* GetCookieRefreshServiceImpl() {
     if (!cookie_refresh_service_) {
@@ -383,10 +416,14 @@ class BoundSessionCookieRefreshServiceImplTestBase : public testing::Test {
         begin, end);
   }
 
-  void SimulateTerminateSession(BoundSessionCookieController* controller,
-                                SessionTerminationTrigger trigger) {
+  void SimulateTerminateSession(
+      BoundSessionCookieController* controller,
+      SessionTerminationTrigger trigger,
+      std::optional<BoundSessionRefreshCookieFetcher::Result> refresh_error =
+          std::nullopt) {
     CHECK(cookie_refresh_service_);
-    cookie_refresh_service_->TerminateSession(controller, trigger);
+    cookie_refresh_service_->TerminateSession(controller, trigger,
+                                              refresh_error);
   }
 
   void VerifySessionTerminationTriggerRecorded(
@@ -433,6 +470,10 @@ class BoundSessionCookieRefreshServiceImplTestBase : public testing::Test {
     cookie_refresh_service->set_registration_fetcher_factory_for_testing(
         base::BindRepeating(&BoundSessionCookieRefreshServiceImplTestBase::
                                 CreateBoundSessionRegistrationFetcher,
+                            base::Unretained(this)));
+    cookie_refresh_service->set_debug_report_fetcher_factory_for_testing(
+        base::BindRepeating(&BoundSessionCookieRefreshServiceImplTestBase::
+                                CreateBoundSessionDebugReportFetcher,
                             base::Unretained(this)));
     cookie_refresh_service->AddObserver(&mock_observer_);
     cookie_refresh_service->Initialize();
@@ -507,9 +548,12 @@ class BoundSessionCookieRefreshServiceImplTest
                 IsEmpty());
   }
 
-  void SimulateTerminateSession(SessionTerminationTrigger trigger) {
+  void SimulateTerminateSession(
+      SessionTerminationTrigger trigger,
+      std::optional<BoundSessionRefreshCookieFetcher::Result> refresh_error =
+          std::nullopt) {
     BoundSessionCookieRefreshServiceImplTestBase::SimulateTerminateSession(
-        cookie_controller_.get(), trigger);
+        cookie_controller_.get(), trigger, refresh_error);
   }
 
   base::WeakPtr<FakeBoundSessionCookieController> cookie_controller() {
@@ -673,6 +717,35 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   SimulateTerminateSession(
       SessionTerminationTrigger::kSessionTerminationHeader);
   testing::Mock::VerifyAndClearExpectations(&renderer_updater);
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplTest,
+       SendDebugReportOnBoundSessionTerminated) {
+  SetupPreConditionForBoundSession();
+  GetCookieRefreshServiceImpl();
+  EXPECT_TRUE(cookie_controller());
+
+  EXPECT_CALL(
+      *mock_observer(),
+      OnBoundSessionTerminated(kTestGoogleURL,
+                               base::flat_set<std::string>(
+                                   {k1PSIDTSCookieName, k3PSIDTSCookieName})))
+      .Times(1);
+  bound_session_credentials::RotationDebugInfo sent_rotation_debug_info;
+  EXPECT_CALL(*this, CreateBoundSessionDebugReportFetcher(
+                         kTestSessionId, kTestGoogleURL.Resolve("/rotate"),
+                         /*is_off_the_record_profile=*/false, testing::_))
+      .WillOnce(testing::DoAll(
+          testing::SaveArg<3>(&sent_rotation_debug_info),
+          testing::InvokeWithoutArgs([] {
+            return std::make_unique<FakeBoundSessionDebugReportFetcher>();
+          })));
+  SimulateTerminateSession(
+      SessionTerminationTrigger::kCookieRotationPersistentError,
+      BoundSessionRefreshCookieFetcher::Result::kSignChallengeFailed);
+  EXPECT_EQ(sent_rotation_debug_info.termination_reason(),
+            bound_session_credentials::RotationDebugInfo::
+                ROTATION_SIGN_CHALLENGE_FAILED);
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest, TerminateSession) {

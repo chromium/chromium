@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller_impl.h"
@@ -24,7 +25,9 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_key.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_storage.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_debug_report_fetcher.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_impl.h"
+#include "chrome/browser/signin/bound_session_credentials/rotation_debug_info.pb.h"
 #include "chrome/common/google_url_loader_throttle.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -74,6 +77,48 @@ chrome::mojom::ResumeBlockedRequestsTrigger AggregateMultipleTriggers(
         return GetResumeBlockedRequestsTriggerPriority(lhs) <
                GetResumeBlockedRequestsTriggerPriority(rhs);
       });
+}
+
+bound_session_credentials::RotationDebugInfo::TerminationReason
+GetRotationDebugTerminationReason(
+    BoundSessionCookieRefreshServiceImpl::SessionTerminationTrigger trigger,
+    std::optional<BoundSessionRefreshCookieFetcher::Result> refresh_error) {
+  using enum BoundSessionCookieRefreshServiceImpl::SessionTerminationTrigger;
+  using bound_session_credentials::RotationDebugInfo;
+
+  auto GetReasonFromRefreshError =
+      [](BoundSessionRefreshCookieFetcher::Result refresh_error) {
+        using Result = BoundSessionRefreshCookieFetcher::Result;
+        CHECK(
+            BoundSessionRefreshCookieFetcher::IsPersistentError(refresh_error));
+        switch (refresh_error) {
+          case Result::kServerPersistentError:
+            return RotationDebugInfo::ROTATION_PERSISTENT_ERROR;
+          case Result::kServerUnexepectedResponse:
+            return RotationDebugInfo::ROTATION_UNEXPECTED_RESPONSE;
+          case Result::kChallengeRequiredUnexpectedFormat:
+            return RotationDebugInfo::ROTATION_CHALLENGE_UNEXPECTED_FORMAT;
+          case Result::kChallengeRequiredLimitExceeded:
+            return RotationDebugInfo::ROTATION_CHALLENGE_LIMIT_EXCEEDED;
+          case Result::kSignChallengeFailed:
+            return RotationDebugInfo::ROTATION_SIGN_CHALLENGE_FAILED;
+          default:
+            return RotationDebugInfo::TERMINATION_REASON_OTHER;
+        }
+      };
+
+  switch (trigger) {
+    case kSessionTerminationHeader:
+      return RotationDebugInfo::TERMINATION_HEADER_RECEIVED;
+    case kCookieRotationPersistentError:
+      return refresh_error ? GetReasonFromRefreshError(*refresh_error)
+                           : RotationDebugInfo::TERMINATION_REASON_OTHER;
+    case kSessionOverride:
+      return RotationDebugInfo::SESSION_OVERRIDE;
+    case kCookiesCleared:
+      // `kCookiesCleared` should not be reported in the debug header.
+      NOTREACHED();
+  }
 }
 
 chrome::mojom::BoundSessionThrottlerParamsPtr
@@ -402,9 +447,11 @@ void BoundSessionCookieRefreshServiceImpl::
 }
 
 void BoundSessionCookieRefreshServiceImpl::OnPersistentErrorEncountered(
-    BoundSessionCookieController* controller) {
+    BoundSessionCookieController* controller,
+    BoundSessionRefreshCookieFetcher::Result refresh_error) {
   TerminateSession(controller,
-                   SessionTerminationTrigger::kCookieRotationPersistentError);
+                   SessionTerminationTrigger::kCookieRotationPersistentError,
+                   refresh_error);
 }
 
 void BoundSessionCookieRefreshServiceImpl::OnStorageKeyDataCleared(
@@ -483,7 +530,8 @@ void BoundSessionCookieRefreshServiceImpl::UpdateAllRenderers() {
 
 void BoundSessionCookieRefreshServiceImpl::TerminateSession(
     BoundSessionCookieController* controller,
-    SessionTerminationTrigger trigger) {
+    SessionTerminationTrigger trigger,
+    std::optional<BoundSessionRefreshCookieFetcher::Result> refresh_error) {
   BoundSessionKey session_key = controller->GetBoundSessionKey();
   auto it = cookie_controllers_.find(session_key);
   CHECK(it != cookie_controllers_.end());
@@ -492,6 +540,7 @@ void BoundSessionCookieRefreshServiceImpl::TerminateSession(
   // `controller`.
   base::flat_set<std::string> bound_cookie_names =
       controller->bound_cookie_names();
+  MaybeReportTerminationReason(controller, trigger, refresh_error);
   cookie_controllers_.erase(it);
   // `controller` is no longer valid and must not be used.
 
@@ -515,4 +564,46 @@ void BoundSessionCookieRefreshServiceImpl::NotifyBoundSessionTerminated(
   for (BoundSessionCookieRefreshService::Observer& observer : observers_) {
     observer.OnBoundSessionTerminated(site, bound_cookie_names);
   }
+}
+
+void BoundSessionCookieRefreshServiceImpl::MaybeReportTerminationReason(
+    BoundSessionCookieController* controller,
+    SessionTerminationTrigger trigger,
+    std::optional<BoundSessionRefreshCookieFetcher::Result> refresh_error) {
+  if (trigger == SessionTerminationTrigger::kCookiesCleared) {
+    // Do not send the debug report if cookies were cleared as the request won't
+    // be attributed to a user in any case.
+    return;
+  }
+
+  bound_session_credentials::RotationDebugInfo debug_info =
+      controller->TakeDebugInfo();
+  debug_info.set_termination_reason(
+      GetRotationDebugTerminationReason(trigger, refresh_error));
+  auto reporter =
+      debug_report_fetcher_factory_for_testing_.is_null()
+          ? std::make_unique<BoundSessionRefreshCookieDebugReportFetcher>(
+                storage_partition_->GetURLLoaderFactoryForBrowserProcess(),
+                controller->session_id(), controller->refresh_url(),
+                is_off_the_record_profile_, std::move(debug_info))
+          : debug_report_fetcher_factory_for_testing_.Run(
+                controller->session_id(), controller->refresh_url(),
+                is_off_the_record_profile_, std::move(debug_info));
+  CHECK(reporter);
+  BoundSessionRefreshCookieFetcher* reporter_raw = reporter.get();
+  termination_reason_reporters_.insert(std::move(reporter));
+  // `base::Unretained()` is safe because `this` owns
+  // `termination_reason_reporters_`.
+  reporter_raw->Start(base::BindOnce(&BoundSessionCookieRefreshServiceImpl::
+                                         OnTerminationReasonReportCompleted,
+                                     base::Unretained(this), reporter_raw),
+                      "SESSION_TERMINATION_DEBUG_REPORT");
+}
+
+void BoundSessionCookieRefreshServiceImpl::OnTerminationReasonReportCompleted(
+    BoundSessionRefreshCookieFetcher* reporter,
+    BoundSessionRefreshCookieFetcher::Result result) {
+  auto it = termination_reason_reporters_.find(reporter);
+  CHECK(it != termination_reason_reporters_.end());
+  termination_reason_reporters_.erase(it);
 }

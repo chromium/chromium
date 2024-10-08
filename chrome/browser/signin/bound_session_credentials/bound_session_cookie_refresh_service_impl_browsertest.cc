@@ -195,9 +195,10 @@ struct CookieRotationResponseParams {
             .block_server_response_ = block_server_response};
   }
 
-  static CookieRotationResponseParams CreateServerPersistentError() {
+  static CookieRotationResponseParams CreateServerPersistentError(
+      bool block_server_response = true) {
     return {.status_code = net::HttpStatusCode::HTTP_FORBIDDEN,
-            .block_server_response_ = true};
+            .block_server_response_ = block_server_response};
   }
 
   HeaderVector headers;
@@ -711,6 +712,10 @@ class BoundSessionCookieRefreshServiceImplFailingRotationBrowserTest
     base::queue<CookieRotationResponseParams> rotation_responses_params;
     rotation_responses_params.push(
         CookieRotationResponseParams::CreateServerPersistentError());
+    // Response to the session termination debug report.
+    rotation_responses_params.push(
+        CookieRotationResponseParams::CreateServerPersistentError(
+            /*block_server_response=*/false));
 
     fake_server_host->Initialize(embedded_test_server,
                                  std::move(rotation_responses_params));
