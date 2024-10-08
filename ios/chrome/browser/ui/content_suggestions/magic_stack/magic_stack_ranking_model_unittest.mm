@@ -344,6 +344,7 @@ class MagicStackRankingModelTest : public PlatformTest {
                   bookmarkModel:nil
                    imageFetcher:nil
                     prefService:GetBrowserState()->GetPrefs()
+                     localState:GetLocalState()
         pushNotificationService:nil
           authenticationService:nil];
 

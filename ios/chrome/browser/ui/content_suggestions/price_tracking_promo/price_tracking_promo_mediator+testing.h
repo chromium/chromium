@@ -9,6 +9,7 @@
 
 class AuthenticationService;
 @class MDCSnackbarMessage;
+class NotificationsSettingsObserver;
 class PrefService;
 @class PriceTrackingPromoItem;
 class PushNotificationService;
@@ -43,6 +44,8 @@ class ImageDataFetcher;
 - (PriceTrackingPromoItem*)priceTrackingPromoItemForTesting;
 
 - (MDCSnackbarMessage*)snackbarMessageForTesting;
+
+- (NotificationsSettingsObserver*)notificationsSettingsObserverForTesting;
 
 - (void)enablePriceTrackingNotificationsSettingsForTesting;
 

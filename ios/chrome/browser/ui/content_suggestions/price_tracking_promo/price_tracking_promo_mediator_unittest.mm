@@ -17,6 +17,7 @@
 #import "components/prefs/testing_pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -64,13 +65,19 @@ class PriceTrackingPromoMediatorTest : public PlatformTest {
     shopping_service_ = std::make_unique<commerce::MockShoppingService>();
     bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
     push_notification_service_ = ios::provider::CreatePushNotificationService();
+    pref_service_.registry()->RegisterDictionaryPref(
+        prefs::kFeaturePushNotificationPermissions);
+    local_state_.registry()->RegisterDictionaryPref(
+        prefs::kAppLevelPushNotificationPermissions);
+
     mediator_ = [[PriceTrackingPromoMediator alloc]
         initWithShoppingService:shopping_service_.get()
                   bookmarkModel:bookmark_model_.get()
                    imageFetcher:std::make_unique<
                                     image_fetcher::ImageDataFetcher>(
                                     browser_state_->GetSharedURLLoaderFactory())
-                    prefService:&pref_service_
+                    prefService:pref_service()
+                     localState:&local_state_
         pushNotificationService:push_notification_service_.get()
           authenticationService:auth_service_];
     // Mock notifications settings response.
@@ -90,6 +97,13 @@ class PriceTrackingPromoMediatorTest : public PlatformTest {
 
   ~PriceTrackingPromoMediatorTest() override {}
 
+  void TearDown() override {
+    pref_service_.ClearPref(prefs::kFeaturePushNotificationPermissions);
+    pref_service_.ClearPref(commerce::kPriceEmailNotificationsEnabled);
+    local_state_.ClearPref(prefs::kAppLevelPushNotificationPermissions);
+    [mediator_ disconnect];
+  }
+
   PriceTrackingPromoMediator* mediator() { return mediator_; }
 
   PrefService* pref_service() { return &pref_service_; }
@@ -105,6 +119,7 @@ class PriceTrackingPromoMediatorTest : public PlatformTest {
  protected:
   std::unique_ptr<PushNotificationService> push_notification_service_;
   TestingPrefServiceSimple pref_service_;
+  TestingPrefServiceSimple local_state_;
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
@@ -141,6 +156,7 @@ TEST_F(PriceTrackingPromoMediatorTest, TestDisconnect) {
   EXPECT_NE(nil, mediator().pushNotificationServiceForTesting);
   EXPECT_NE(nil, mediator().authenticationServiceForTesting);
   EXPECT_NE(nil, mediator().imageFetcherForTesting);
+  EXPECT_NE(nil, mediator().notificationsSettingsObserverForTesting);
   [mediator() disconnect];
   EXPECT_EQ(nil, mediator().shoppingServiceForTesting);
   EXPECT_EQ(nil, mediator().bookmarkModelForTesting);
@@ -148,6 +164,7 @@ TEST_F(PriceTrackingPromoMediatorTest, TestDisconnect) {
   EXPECT_EQ(nil, mediator().pushNotificationServiceForTesting);
   EXPECT_EQ(nil, mediator().authenticationServiceForTesting);
   EXPECT_EQ(nil, mediator().imageFetcherForTesting);
+  EXPECT_EQ(nil, mediator().notificationsSettingsObserverForTesting);
 }
 
 // Resets card and fetches most recent subscription, if available.

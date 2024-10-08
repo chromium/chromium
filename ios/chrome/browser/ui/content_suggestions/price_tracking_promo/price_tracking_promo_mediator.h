@@ -50,6 +50,7 @@ class AuthenticationService;
                imageFetcher:
                    (std::unique_ptr<image_fetcher::ImageDataFetcher>)fetcher
                 prefService:(PrefService*)prefService
+                 localState:(PrefService*)localState
     pushNotificationService:(PushNotificationService*)pushNotificationService
       authenticationService:(AuthenticationService*)authenticationService
     NS_DESIGNATED_INITIALIZER;

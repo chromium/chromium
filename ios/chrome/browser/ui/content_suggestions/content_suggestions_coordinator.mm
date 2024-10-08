@@ -372,6 +372,7 @@
                                     self.browser->GetBrowserState()
                                         ->GetSharedURLLoaderFactory())
                     prefService:prefs
+                     localState:GetApplicationContext()->GetLocalState()
         pushNotificationService:GetApplicationContext()
                                     ->GetPushNotificationService()
           authenticationService:self.authService];
