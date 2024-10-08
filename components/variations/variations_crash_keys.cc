@@ -58,20 +58,6 @@ crash_reporter::CrashKeyString<kVariationsKeySize> g_variations_crash_key(
 crash_reporter::CrashKeyString<64> g_variations_seed_version_crash_key(
     kVariationsSeedVersionKey);
 
-std::string GetVariationsSeedVersion() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  // kVariationsSeedVersion should be set by the browser process in
-  // variations::PopulateLaunchOptionsWithVariationsInfo() before launching the
-  // child process.
-  if (command_line->HasSwitch(variations::switches::kVariationsSeedVersion)) {
-    return command_line->GetSwitchValueASCII(
-        variations::switches::kVariationsSeedVersion);
-  }
-
-  // Only works for the browser process.
-  return GetSeedVersion();
-}
-
 }  // namespace
 
 class VariationsCrashKeys final : public base::FieldTrialList::Observer {
@@ -256,7 +242,15 @@ void VariationsCrashKeys::UpdateCrashKeys() {
   }
 
   g_variations_crash_key.Set(info.experiment_list);
-  g_variations_seed_version_crash_key.Set(GetVariationsSeedVersion());
+
+  // If we're in the child process, set the variations seed version from the
+  // command line, which is passed from the browser process. In the browser
+  // process, SetVariationsSeedVersionCrashKey() gets called on startup.
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(variations::switches::kVariationsSeedVersion)) {
+    SetVariationsSeedVersionCrashKey(command_line->GetSwitchValueASCII(
+        variations::switches::kVariationsSeedVersion));
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   ReportVariationsToChromeOs(background_thread_task_runner_, info);
@@ -298,6 +292,10 @@ void UpdateCrashKeysWithSyntheticTrials(
     const std::vector<SyntheticTrialGroup>& synthetic_trials) {
   DCHECK(g_variations_crash_keys);
   g_variations_crash_keys->OnSyntheticTrialsChanged(synthetic_trials);
+}
+
+void SetVariationsSeedVersionCrashKey(const std::string& seed_version) {
+  g_variations_seed_version_crash_key.Set(seed_version);
 }
 
 void ClearCrashKeysInstanceForTesting() {

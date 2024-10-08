@@ -21,6 +21,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/variations/hashing.h"
 #include "components/variations/synthetic_trials_active_group_id_provider.h"
+#include "components/variations/variations_crash_keys.h"
 #include "components/variations/variations_switches.h"
 
 namespace variations {
@@ -169,6 +170,7 @@ bool IsInSyntheticTrialGroup(const std::string& trial_name,
 
 void SetSeedVersion(const std::string& seed_version) {
   GetSeedVersionInternal() = seed_version;
+  SetVariationsSeedVersionCrashKey(seed_version);
 }
 
 const std::string& GetSeedVersion() {
