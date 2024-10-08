@@ -482,8 +482,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         // insets.
         rootView.setFitsSystemWindows(false);
 
-        if (BuildInfo.getInstance().isAutomotive
-                && ChromeFeatureList.sVerticalAutomotiveBackButtonToolbar.isEnabled()) {
+        if (BuildInfo.getInstance().isAutomotive) {
             mBaseChromeLayout = new FrameLayout(this);
         }
 
@@ -3069,9 +3068,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     @Override
     protected int getAutomotiveToolbarImplementation() {
-        return ChromeFeatureList.sVerticalAutomotiveBackButtonToolbar.isEnabled()
-                ? AutomotiveToolbarImplementation.WITH_TOOLBAR_VIEW
-                : AutomotiveToolbarImplementation.WITH_ACTION_BAR;
+        return AutomotiveToolbarImplementation.WITH_TOOLBAR_VIEW;
     }
 
     /**

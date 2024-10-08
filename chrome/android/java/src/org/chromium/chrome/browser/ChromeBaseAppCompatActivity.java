@@ -73,7 +73,6 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
      * activity.
      *
      * Activities that use the <merge> tag or delay layout inflation cannot use WITH_TOOLBAR_VIEW.
-     * Activities that use their own action bar cannot use WITH_ACTION_BAR.
      * Activities that appear as Dialogs using themes do not have an automotive toolbar yet (NONE).
      *
      * Full screen alert dialogs display the automotive toolbar using FullscreenAlertDialog.
@@ -81,7 +80,6 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
      */
     @IntDef({
         AutomotiveToolbarImplementation.WITH_TOOLBAR_VIEW,
-        AutomotiveToolbarImplementation.WITH_ACTION_BAR,
         AutomotiveToolbarImplementation.NONE,
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -93,14 +91,6 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
          * R.layout.automotive_layout_with_vertical_back_button_toolbar.
          */
         int WITH_TOOLBAR_VIEW = 0;
-
-        /**
-         * Automotive toolbar is added using AppCompatActivity's ActionBar, provided with a
-         * ThemeOverlay, see R.style.ThemeOverlay_BrowserUI_Automotive_PersistentBackButtonToolbar.
-         *
-         * <p>This will be deprecated because it does not support a vertical toolbar.
-         */
-        @Deprecated int WITH_ACTION_BAR = 1;
 
         /** Automotive toolbar is not added. */
         int NONE = -1;
@@ -339,15 +329,6 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
                                     isDynamicColorAvailable ? "Enabled" : "Disabled");
                         });
 
-        if (BuildInfo.getInstance().isAutomotive
-                && getAutomotiveToolbarImplementation()
-                        == AutomotiveToolbarImplementation.WITH_ACTION_BAR) {
-            int automotiveOverlay =
-                    R.style.ThemeOverlay_BrowserUI_Automotive_PersistentBackButtonToolbar;
-            getTheme().applyStyle(automotiveOverlay, /* force= */ true);
-            mThemeResIds.add(automotiveOverlay);
-        }
-
         if (ChromeFeatureList.sAndroidElegantTextHeight.isEnabled()) {
             int elegantTextHeightOverlay = R.style.ThemeOverlay_BrowserUI_ElegantTextHeight;
             getTheme().applyStyle(elegantTextHeightOverlay, true);
@@ -474,17 +455,6 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         } else {
             super.addContentView(view, params);
         }
-    }
-
-    @Override
-    protected void onResume() {
-        if (BuildInfo.getInstance().isAutomotive
-                && getAutomotiveToolbarImplementation()
-                        == AutomotiveToolbarImplementation.WITH_ACTION_BAR
-                && getSupportActionBar() != null) {
-            getSupportActionBar().setHomeActionContentDescription(R.string.back);
-        }
-        super.onResume();
     }
 
     protected int getAutomotiveToolbarImplementation() {

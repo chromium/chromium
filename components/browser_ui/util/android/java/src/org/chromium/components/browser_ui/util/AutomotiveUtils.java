@@ -11,10 +11,12 @@ import android.content.res.TypedArray;
 import androidx.annotation.LayoutRes;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 
 public class AutomotiveUtils {
+    private static boolean sForceHorizontalAutomotiveTesting;
 
     /** Returns the height of the horizontal automotive back button toolbar. */
     public static int getHorizontalAutomotiveToolbarHeightDp(Context activityContext) {
@@ -57,8 +59,14 @@ public class AutomotiveUtils {
     }
 
     private static boolean useVerticalAutomotiveBackButtonToolbar(Context activityContext) {
-        return BrowserUiUtilsCachedFlags.getInstance().getVerticalAutomotiveBackButtonToolbarFlag()
+        return !sForceHorizontalAutomotiveTesting
                 && activityContext.getResources().getConfiguration().orientation
                         == Configuration.ORIENTATION_LANDSCAPE;
+    }
+
+    public static void forceHorizontalAutomotiveToolbarForTesting(
+            boolean forceHorizontalAutomotiveTesting) {
+        sForceHorizontalAutomotiveTesting = forceHorizontalAutomotiveTesting;
+        ResettersForTesting.register(() -> sForceHorizontalAutomotiveTesting = false);
     }
 }

@@ -64,9 +64,6 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
             // TODO(crbug.com/40266922): Remove this after code changes allow for //components to
             // access cached flags.
             BrowserUiUtilsCachedFlags.getInstance()
-                    .setVerticalAutomotiveBackButtonToolbarFlag(
-                            ChromeFeatureList.sVerticalAutomotiveBackButtonToolbar.isEnabled());
-            BrowserUiUtilsCachedFlags.getInstance()
                     .setAsyncNotificationManagerFlag(
                             ChromeFeatureList.sAsyncNotificationManager.isEnabled());
 

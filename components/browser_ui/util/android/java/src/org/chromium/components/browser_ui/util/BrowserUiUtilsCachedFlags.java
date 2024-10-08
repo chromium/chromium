@@ -15,7 +15,6 @@ public class BrowserUiUtilsCachedFlags {
     /** The singleton instance for this class. */
     private static BrowserUiUtilsCachedFlags sInstance;
 
-    private boolean mUseVerticalAutomotiveBackButtonToolbar;
     private boolean mAsyncNotificationManager;
 
     /** Returns the singleton instance, creating one if needed. */
@@ -24,14 +23,6 @@ public class BrowserUiUtilsCachedFlags {
             sInstance = new BrowserUiUtilsCachedFlags();
         }
         return sInstance;
-    }
-
-    public void setVerticalAutomotiveBackButtonToolbarFlag(boolean value) {
-        mUseVerticalAutomotiveBackButtonToolbar = value;
-    }
-
-    public boolean getVerticalAutomotiveBackButtonToolbarFlag() {
-        return mUseVerticalAutomotiveBackButtonToolbar;
     }
 
     /** Sets whether to use async notiication manager. */

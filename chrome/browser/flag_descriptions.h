@@ -2205,9 +2205,6 @@ extern const char kUserNotesSidePanelDescription[];
 extern const char kUseSearchClickForRightClickName[];
 extern const char kUseSearchClickForRightClickDescription[];
 
-extern const char kVerticalAutomotiveBackButtonToolbarName[];
-extern const char kVerticalAutomotiveBackButtonToolbarDescription[];
-
 extern const char kVcBackgroundReplaceName[];
 extern const char kVcBackgroundReplaceDescription[];
 

@@ -6,21 +6,14 @@ package org.chromium.chrome.browser.automotive;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
-import static androidx.appcompat.app.ActionBar.DISPLAY_HOME_AS_UP;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.VERTICAL_AUTOMOTIVE_BACK_BUTTON_TOOLBAR;
 
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 
@@ -42,9 +35,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags.Add;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsActivity;
@@ -82,35 +73,6 @@ public class BackButtonToolbarTest extends BlankUiTestActivityTestCase {
     public void setUp() {
         mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
         mBackPressCallbackHelper = new CallbackHelper();
-    }
-
-    @Test
-    @SmallTest
-    @Restriction(DeviceRestriction.RESTRICTION_TYPE_AUTO)
-    @Feature({"Automotive Toolbar"})
-    @DisableFeatures(VERTICAL_AUTOMOTIVE_BACK_BUTTON_TOOLBAR)
-    public void testAutomotiveToolbar_ActionBar() throws Exception {
-        mChromeTabbedActivityTestRule.startMainActivityOnBlankPage();
-        ChromeTabbedActivity chromeTabbedActivity = mChromeTabbedActivityTestRule.getActivity();
-
-        // Check that the automotive toolbar is present with only a back button.
-        assertTrue(chromeTabbedActivity.getSupportActionBar().isShowing());
-        assertEquals(
-                "Automotive toolbar should only contain a back button",
-                DISPLAY_HOME_AS_UP,
-                chromeTabbedActivity.getSupportActionBar().getDisplayOptions());
-
-        // Simulate a back button press on the automotive toolbar.
-        addOnBackPressedCallback(chromeTabbedActivity, mBackPressCallbackHelper);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    MenuItem backButton = mock(MenuItem.class);
-                    when(backButton.getItemId()).thenReturn(android.R.id.home);
-                    chromeTabbedActivity.onOptionsItemSelected(backButton);
-                });
-
-        // Verify that #onBackPressed was called.
-        mBackPressCallbackHelper.waitForOnly();
     }
 
     @Test

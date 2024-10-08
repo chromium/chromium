@@ -329,7 +329,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAccountReauthenticationRecentTimeWindow,
     &kUmaBackgroundSessions,
     &kUseLibunwindstackNativeUnwinderAndroid,
-    &kVerticalAutomotiveBackButtonToolbar,
     &kVoiceSearchAudioCapturePolicy,
     &kWebOtpCrossDeviceSimpleString,
     &kWebApkAllowIconUpdate,
@@ -1058,10 +1057,6 @@ BASE_FEATURE(kUseLibunwindstackNativeUnwinderAndroid,
 BASE_FEATURE(kUserMediaScreenCapturing,
              "UserMediaScreenCapturing",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kVerticalAutomotiveBackButtonToolbar,
-             "VerticalAutomotiveBackButtonToolbar",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kVoiceSearchAudioCapturePolicy,
              "VoiceSearchAudioCapturePolicy",

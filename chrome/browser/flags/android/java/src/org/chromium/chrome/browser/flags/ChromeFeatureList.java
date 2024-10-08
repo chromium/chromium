@@ -542,8 +542,6 @@ public abstract class ChromeFeatureList {
     public static final String USE_CHIME_ANDROID_SDK = "UseChimeAndroidSdk";
     public static final String USE_LIBUNWINDSTACK_NATIVE_UNWINDER_ANDROID =
             "UseLibunwindstackNativeUnwinderAndroid";
-    public static final String VERTICAL_AUTOMOTIVE_BACK_BUTTON_TOOLBAR =
-            "VerticalAutomotiveBackButtonToolbar";
     public static final String VISITED_URL_RANKING_SERVICE = "VisitedURLRankingService";
     public static final String VOICE_SEARCH_AUDIO_CAPTURE_POLICY = "VoiceSearchAudioCapturePolicy";
     public static final String WEB_APK_ALLOW_ICON_UPDATE = "WebApkAllowIconUpdate";
@@ -744,8 +742,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(USE_CHIME_ANDROID_SDK, false);
     public static final CachedFlag sUseLibunwindstackNativeUnwinderAndroid =
             newCachedFlag(USE_LIBUNWINDSTACK_NATIVE_UNWINDER_ANDROID, true);
-    public static final CachedFlag sVerticalAutomotiveBackButtonToolbar =
-            newCachedFlag(VERTICAL_AUTOMOTIVE_BACK_BUTTON_TOOLBAR, true);
     public static final CachedFlag sWebApkMinShellApkVersion =
             newCachedFlag(WEB_APK_MIN_SHELL_APK_VERSION, true);
 
@@ -844,7 +840,6 @@ public abstract class ChromeFeatureList {
                     sTraceBinderIpc,
                     sUseChimeAndroidSdk,
                     sUseLibunwindstackNativeUnwinderAndroid,
-                    sVerticalAutomotiveBackButtonToolbar,
                     sWebApkMinShellApkVersion);
 
     public static final List<CachedFlag> sFlagsCachedInMinimalBrowser =
