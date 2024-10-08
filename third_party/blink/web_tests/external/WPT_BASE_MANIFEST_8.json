@@ -243310,6 +243310,19 @@
         {}
        ]
       ],
+      "custom-scrollbar.html": [
+       "cc05ca53e1d8a2213969b30e70f66072ed5ba377",
+       [
+        null,
+        [
+         [
+          "/css/css-view-transitions/navigation/custom-scrollbar-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "navigation-auto-excludes-reload.html": [
        "c0fb61a4b0aa85848f55332e5d491798854853b0",
        [
@@ -305188,8 +305201,12 @@
       "6b2b3097926b192df23c3e21dd19742bb19e69d4",
       []
      ],
+     "sync-pressure-observer.js": [
+      "49f7d95a1364fc6e63a0c2c70693b8de268ccb1f",
+      []
+     ],
      "worker-support.js": [
-      "998bcd66610ba1a8e329b32e4ef6660804247332",
+      "39caeb6192f6fee2a9b71d8ea78a1cf9e64e512d",
       []
      ]
     }
@@ -316300,7 +316317,7 @@
        []
       ],
       "background-valid-expected.txt": [
-       "331d8cc6ec5de8752e713377985d3bedb8fd3bc7",
+       "17f84f3398ada134a50c1d6915800eec4921651d",
        []
       ],
       "border-shorthand-expected.txt": [
@@ -354429,6 +354446,10 @@
        "90267e3a84a34157078d1ad890710ea8059a75da",
        []
       ],
+      "custom-scrollbar-ref.html": [
+       "21c3f0844288123d1ec46ca4a2a3ed2a55737d18",
+       []
+      ],
       "navigation-auto-excludes-reload-ref.html": [
        "ed12194c3107880808952a165fe591c6e5fa490b",
        []
@@ -354488,6 +354509,10 @@
        ],
        "common.js": [
         "cbe023a3d9ed808dcab2bc9b3b1a769ca6ff68cc",
+        []
+       ],
+       "custom-scrollbar.html": [
+        "8ebd34a1cea2840c4b84ac2fe8d77664bde24842",
         []
        ],
        "opt-in-style.css": [
@@ -404570,7 +404595,7 @@
        []
       ],
       "ruleset.py": [
-       "5b6ac87aed5ea1ed41f7e79bf340a4259039e52a",
+       "0a6cfde79ac28d5252fcb4d5711ce9c5ca8f0a49",
        []
       ],
       "slow-executor.py": [
@@ -445034,11 +445059,15 @@
      ]
     ],
     "compute_pressure_detached_iframe.https.window.js": [
-     "a43d6b0fc2dc7ed0263dbf3bde7c242dc421cea4",
+     "78654626fe1b775aa074850b2e7daf0beacec326",
      [
       "compute-pressure/compute_pressure_detached_iframe.https.window.html?globalScope=window",
       {
        "script_metadata": [
+        [
+         "timeout",
+         "long"
+        ],
         [
          "variant",
          "?globalScope=window"
@@ -445063,7 +445092,8 @@
          "script",
          "./resources/common.js"
         ]
-       ]
+       ],
+       "timeout": "long"
       }
      ]
     ],
@@ -445287,11 +445317,15 @@
      ]
     ],
     "compute_pressure_duplicate_updates.https.window.js": [
-     "f11a59b4cbbad30b4b9b0700e243bd12f5ea68d5",
+     "e6f4ed10454a28bc276e839dd6a54f75769d565c",
      [
       "compute-pressure/compute_pressure_duplicate_updates.https.window.html?globalScope=dedicated_worker",
       {
        "script_metadata": [
+        [
+         "timeout",
+         "long"
+        ],
         [
          "variant",
          "?globalScope=window"
@@ -445319,8 +445353,13 @@
         [
          "script",
          "./resources/common.js"
+        ],
+        [
+         "script",
+         "./resources/sync-pressure-observer.js"
         ]
-       ]
+       ],
+       "timeout": "long"
       }
      ],
      [
@@ -445328,6 +445367,10 @@
       {
        "script_metadata": [
         [
+         "timeout",
+         "long"
+        ],
+        [
          "variant",
          "?globalScope=window"
         ],
@@ -445354,8 +445397,13 @@
         [
          "script",
          "./resources/common.js"
+        ],
+        [
+         "script",
+         "./resources/sync-pressure-observer.js"
         ]
-       ]
+       ],
+       "timeout": "long"
       }
      ]
     ],
@@ -445724,7 +445772,7 @@
      ]
     ],
     "compute_pressure_timestamp.https.window.js": [
-     "0f35eef522a454bfde3db8fcf0d2fce49f3f2bb6",
+     "b9544faef71dd43d45829ff92b5b3f662f620447",
      [
       "compute-pressure/compute_pressure_timestamp.https.window.html?globalScope=dedicated_worker",
       {
@@ -445760,6 +445808,10 @@
         [
          "script",
          "./resources/common.js"
+        ],
+        [
+         "script",
+         "./resources/sync-pressure-observer.js"
         ]
        ],
        "timeout": "long"
@@ -445800,6 +445852,10 @@
         [
          "script",
          "./resources/common.js"
+        ],
+        [
+         "script",
+         "./resources/sync-pressure-observer.js"
         ]
        ],
        "timeout": "long"
@@ -445807,7 +445863,7 @@
      ]
     ],
     "compute_pressure_timestamp_continuously_increasing.https.window.js": [
-     "bdf5dbae6f513ccd0603f97b4c29f6f6c65f1c12",
+     "590d0fb1f6811fde75b3e62792f150d9eade9128",
      [
       "compute-pressure/compute_pressure_timestamp_continuously_increasing.https.window.html?globalScope=dedicated_worker",
       {
@@ -445843,6 +445899,10 @@
         [
          "script",
          "./resources/common.js"
+        ],
+        [
+         "script",
+         "./resources/sync-pressure-observer.js"
         ]
        ],
        "timeout": "long"
@@ -445883,6 +445943,10 @@
         [
          "script",
          "./resources/common.js"
+        ],
+        [
+         "script",
+         "./resources/sync-pressure-observer.js"
         ]
        ],
        "timeout": "long"
@@ -445890,7 +445954,7 @@
      ]
     ],
     "compute_pressure_timestamp_faster_collector.https.window.js": [
-     "40ffe3b5b006e3ed8e1d1aae7ad3db40be2a17a3",
+     "ce25540385ee069fe0a6c865079cd35056843be2",
      [
       "compute-pressure/compute_pressure_timestamp_faster_collector.https.window.html?globalScope=dedicated_worker",
       {
@@ -445926,6 +445990,10 @@
         [
          "script",
          "./resources/common.js"
+        ],
+        [
+         "script",
+         "./resources/sync-pressure-observer.js"
         ]
        ],
        "timeout": "long"
@@ -445966,6 +446034,10 @@
         [
          "script",
          "./resources/common.js"
+        ],
+        [
+         "script",
+         "./resources/sync-pressure-observer.js"
         ]
        ],
        "timeout": "long"
@@ -459800,7 +459872,7 @@
        ]
       ],
       "background-valid.html": [
-       "e011c2238d2df73452dd011a8114415556ea790a",
+       "7bf23f7614bdb8d164e4404f0c4573a62af7a34d",
        [
         null,
         {}
