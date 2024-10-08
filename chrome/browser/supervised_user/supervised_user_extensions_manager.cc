@@ -548,12 +548,12 @@ bool SupervisedUserExtensionsManager::IsLocallyParentApprovedExtension(
 }
 
 void SupervisedUserExtensionsManager::RemoveLocalParentalApproval(
-    const std::set<std::string> extension_ids) {
+    const std::set<std::string>& extension_ids) {
   base::Value::Dict locally_approved_extensions_dict =
       user_prefs_
           ->GetDict(prefs::kSupervisedUserLocallyParentApprovedExtensions)
           .Clone();
-  for (auto& extension_id : extension_ids) {
+  for (const auto& extension_id : extension_ids) {
     locally_approved_extensions_dict.Remove(extension_id);
   }
   user_prefs_->SetDict(prefs::kSupervisedUserLocallyParentApprovedExtensions,

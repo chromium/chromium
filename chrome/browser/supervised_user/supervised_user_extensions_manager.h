@@ -174,7 +174,7 @@ class SupervisedUserExtensionsManager : public ExtensionRegistryObserver,
   // `extension_ids`. The input `extension_ids` doesn't have to be a subset of
   // the locally approved extensions: the method will remove those that are
   // locally approved and ignore the rest.
-  void RemoveLocalParentalApproval(const std::set<std::string> extension_ids);
+  void RemoveLocalParentalApproval(const std::set<std::string>& extension_ids);
 
   // Handles the parent-approval state of the present extensions,
   // whenever the parent changes the value of the FL "Extension" switch.
