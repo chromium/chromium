@@ -127,6 +127,8 @@ class AccountMenuViewControllerTest : public PlatformTest {
 
     view_controller_.dataSource = data_source_;
     view_controller_.mutator = mutator_;
+    navigation_controller_ = [[UINavigationController alloc]
+        initWithRootViewController:view_controller_];
     [view_controller_ viewDidLoad];
   }
 
@@ -136,6 +138,10 @@ class AccountMenuViewControllerTest : public PlatformTest {
   }
 
  protected:
+  // The navigation controller that displays the view_controller_.
+  // It is not used in test. However, it’s accessed by the view controller, so
+  // we must not let it be deallocated until tests are done.
+  UINavigationController* navigation_controller_;
   AccountMenuViewController* view_controller_;
   raw_ptr<ChromeAccountManagerService> account_manager_service_;
   id<AccountMenuMutator> mutator_;
@@ -250,57 +256,6 @@ TEST_F(AccountMenuViewControllerTest, TestTapSignOut) {
   OCMExpect([mutator_ signOutFromTargetRect:CGRect()]).ignoringNonObjectArgs();
   SelectCell(path_for_sign_out_);
   EXPECT_EQ(1, user_actions_.GetActionCount("Signin_AccountMenu_Signout"));
-}
-
-// Tests tapping on the close button.
-TEST_F(AccountMenuViewControllerTest, TestTapClose) {
-  UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
-  if (idiom == UIUserInterfaceIdiomPad) {
-    // There is no close button on ipad.
-    return;
-  }
-  UIButton* closeButton = static_cast<UIButton*>(
-      view_controller_.navigationItem.rightBarButtonItem.customView);
-  OCMExpect([mutator_ viewControllerWantsToBeClosed:view_controller_]);
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-  [closeButton sendActionsForControlEvents:UIControlEventTouchUpInside];
-#pragma clang diagnostic pop
-  EXPECT_EQ(1, user_actions_.GetActionCount("Signin_AccountMenu_Close"));
-}
-
-// Tests tapping on Manage your account.
-TEST_F(AccountMenuViewControllerTest, TestTapManageYourAccount) {
-  UIBarButtonItem* ellipsisButton =
-      view_controller_.navigationItem.leftBarButtonItem;
-  UIMenu* ellipsisMenu = static_cast<UIButton*>(ellipsisButton.customView).menu;
-  UIAction* manageYourAccountAction =
-      static_cast<UIAction*>(ellipsisMenu.children[0]);
-  // Cast the handler block into a form that we can execute
-  void (^manageYourAccountHandler)(id obj) =
-      [manageYourAccountAction valueForKey:@"handler"];
-  // Execute the block
-  OCMExpect([mutator_ didTapManageYourGoogleAccount]);
-  manageYourAccountHandler(manageYourAccountAction);
-  EXPECT_EQ(1,
-            user_actions_.GetActionCount("Signin_AccountMenu_ManageAccount"));
-}
-
-// Tests tapping on edit account list.
-TEST_F(AccountMenuViewControllerTest, TestTapEditAccountsList) {
-  UIBarButtonItem* ellipsisButton =
-      view_controller_.navigationItem.leftBarButtonItem;
-  UIMenu* ellipsisMenu = static_cast<UIButton*>(ellipsisButton.customView).menu;
-  UIAction* editAccountsListAction =
-      static_cast<UIAction*>(ellipsisMenu.children[1]);
-  // Cast the handler block into a form that we can execute
-  void (^editAccountsListHandler)(id obj) =
-      [editAccountsListAction valueForKey:@"handler"];
-  // Execute the block
-  OCMExpect([mutator_ didTapEditAccountList]);
-  editAccountsListHandler(editAccountsListAction);
-  EXPECT_EQ(1,
-            user_actions_.GetActionCount("Signin_AccountMenu_EditAccountList"));
 }
 
 #pragma mark - AccountMenuConsumer

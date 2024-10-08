@@ -40,6 +40,9 @@ const char kManageYourGoogleAccountIdentifier[] =
 
 namespace {
 
+// The margin between the cell and the sheet.
+constexpr CGFloat kSideMargins = 16.;
+
 // Size of the symbols.
 constexpr CGFloat kErrorSymbolSize = 22.;
 
@@ -57,9 +60,6 @@ constexpr CGFloat kLastSecondaryAccountLeftSeparatorInset = 60.;
 
 // Per Apple guidelines, touch targets should be at least 44x44.
 constexpr CGFloat kMinimumTouchTargetSize = 44.0;
-// Move navigation buttons towards the "out side" by this much, so they visually
-// align with the table views.
-constexpr CGFloat kButtonExtraSpacingOnOutside = 3.0;
 
 constexpr CGFloat kHalfSheetCornerRadius = 10.0;
 
@@ -93,6 +93,8 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 @implementation AccountMenuViewController {
   UITableViewDiffableDataSource* _accountMenuDataSource;
+  UIButton* _closeButton;
+  UIButton* _ellipsisButton;
 }
 
 #pragma mark - UIViewController
@@ -105,7 +107,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   RegisterTableViewCell<TableViewAccountCell>(self.tableView);
   RegisterTableViewCell<SettingsImageDetailTextCell>(self.tableView);
   RegisterTableViewCell<TableViewTextCell>(self.tableView);
-  [self setUpNavigationController];
+  [self setUpTopButtons];
   [self setUpTableContent];
   [self updatePrimaryAccount];
   [self resize];
@@ -133,10 +135,11 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 }
 
 // Creates a button for the navigation bar.
-- (UIButton*)navigationButtonWithSymbolName:(NSString*)symbolName
-                        symbolConfiguration:
-                            (UIImageSymbolConfiguration*)symbolConfiguration
-                                  isLeading:(BOOL)isLeading {
+- (UIButton*)addTopButtonWithSymbolName:(NSString*)symbolName
+                    symbolConfiguration:
+                        (UIImageSymbolConfiguration*)symbolConfiguration
+                              isLeading:(BOOL)isLeading
+                accessibilityIdentifier:(NSString*)accessibilityIdentifier {
   NSArray<UIColor*>* colors = @[
     [UIColor colorNamed:kTextSecondaryColor],
     [UIColor colorNamed:kUpdatedTertiaryBackgroundColor]
@@ -148,23 +151,43 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   // Add padding on all sides of the button, to make it a 44x44 touch target.
   CGFloat verticalInsets = (kMinimumTouchTargetSize - image.size.height) / 2.0;
   CGFloat horizontalInsets = (kMinimumTouchTargetSize - image.size.width) / 2.0;
-  CGFloat outsideInsets = horizontalInsets - kButtonExtraSpacingOnOutside;
-  CGFloat insideInsets = horizontalInsets + kButtonExtraSpacingOnOutside;
+  CGFloat distanceToSide = kSideMargins - horizontalInsets;
+  CGFloat distanceToTop = kSideMargins - verticalInsets;
 
   UIButtonConfiguration* buttonConfiguration =
       [UIButtonConfiguration plainButtonConfiguration];
   buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-      verticalInsets, isLeading ? outsideInsets : insideInsets, verticalInsets,
-      isLeading ? insideInsets : outsideInsets);
+      verticalInsets, horizontalInsets, verticalInsets, horizontalInsets);
   UIButton* button = [UIButton buttonWithConfiguration:buttonConfiguration
                                          primaryAction:nil];
   [button setImage:image forState:UIControlStateNormal];
+  button.translatesAutoresizingMaskIntoConstraints = NO;
+
+  button.accessibilityIdentifier = accessibilityIdentifier;
+  [self.navigationController.navigationBar addSubview:button];
+  if (isLeading) {
+    [button.leadingAnchor
+        constraintEqualToAnchor:self.navigationController.navigationBar
+                                    .leadingAnchor
+                       constant:distanceToSide]
+        .active = YES;
+  } else {
+    [button.trailingAnchor
+        constraintEqualToAnchor:self.navigationController.navigationBar
+                                    .trailingAnchor
+                       constant:-distanceToSide]
+        .active = YES;
+  }
+  [button.topAnchor
+      constraintEqualToAnchor:self.navigationController.navigationBar.topAnchor
+                     constant:distanceToTop]
+      .active = YES;
 
   return button;
 }
 
-// Sets up the navigation controller’s buttons.
-- (void)setUpNavigationController {
+// Sets up the buttons.
+- (void)setUpTopButtons {
   UIImageSymbolConfiguration* symbolConfiguration = [UIImageSymbolConfiguration
       configurationWithPointSize:kButtonSize
                           weight:UIImageSymbolWeightRegular
@@ -172,19 +195,13 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   // Stop button
   UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
   if (idiom != UIUserInterfaceIdiomPad) {
-    UIButton* closeButton =
-        [self navigationButtonWithSymbolName:kXMarkCircleFillSymbol
-                         symbolConfiguration:symbolConfiguration
-                                   isLeading:NO];
-    [closeButton addTarget:self
-                    action:@selector(userTappedOnClose)
-          forControlEvents:UIControlEventTouchUpInside];
-    // We could use -initWithImage: instead of -initWithCustomView:, but this
-    // looks wrong for non-20x20 images.
-    UIBarButtonItem* closeButtonItem =
-        [[UIBarButtonItem alloc] initWithCustomView:closeButton];
-    closeButtonItem.accessibilityIdentifier = kAccountMenuCloseButtonId;
-    self.navigationItem.rightBarButtonItem = closeButtonItem;
+    _closeButton = [self addTopButtonWithSymbolName:kXMarkCircleFillSymbol
+                                symbolConfiguration:symbolConfiguration
+                                          isLeading:NO
+                            accessibilityIdentifier:kAccountMenuCloseButtonId];
+    [_closeButton addTarget:self
+                     action:@selector(userTappedOnClose)
+           forControlEvents:UIControlEventTouchUpInside];
   }
 
   // Ellipsis button
@@ -218,19 +235,13 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   UIMenu* ellipsisMenu = [UIMenu
       menuWithChildren:@[ manageYourAccountAction, editAccountListAction ]];
 
-  UIButton* ellipsisButton =
-      [self navigationButtonWithSymbolName:kEllipsisCircleFillSymbol
-                       symbolConfiguration:symbolConfiguration
-                                 isLeading:YES];
-  ellipsisButton.menu = ellipsisMenu;
-  ellipsisButton.showsMenuAsPrimaryAction = true;
-  // We could use -initWithImage: instead of -initWithCustomView:, but this
-  // looks wrong for non-20x20 images.
-  UIBarButtonItem* ellipsisButtonItem =
-      [[UIBarButtonItem alloc] initWithCustomView:ellipsisButton];
-  ellipsisButtonItem.accessibilityIdentifier =
-      kAccountMenuSecondaryActionMenuButtonId;
-  self.navigationItem.leftBarButtonItem = ellipsisButtonItem;
+  _ellipsisButton =
+      [self addTopButtonWithSymbolName:kEllipsisCircleFillSymbol
+                   symbolConfiguration:symbolConfiguration
+                             isLeading:YES
+               accessibilityIdentifier:kAccountMenuSecondaryActionMenuButtonId];
+  _ellipsisButton.menu = ellipsisMenu;
+  _ellipsisButton.showsMenuAsPrimaryAction = true;
 }
 
 - (UITableViewCell*)cellForTableView:(UITableView*)tableView
