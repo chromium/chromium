@@ -477,8 +477,13 @@ export class FlagsAppElement extends CrLitElement {
   protected onSelectChange_(e: Event) {
     const select = e.composedPath()[0];
     assert(select instanceof HTMLSelectElement);
-    this.lastChanged = select;
     this.showRestartToast(true);
+
+    if (this.lastChanged === select) {
+      return;
+    }
+
+    this.lastChanged = select;
 
     // Add listeners so that next 'Tab' keystroke focuses the restart button.
     const eventTracker = new EventTracker();
