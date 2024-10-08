@@ -154,5 +154,5 @@ external/wpt/webrtc/idlharness.https.window.html [ Skip Timeout ]
 [ Webview ] external/wpt/visual-viewport/viewport-scrollbars-cause-resize-in-iframe.html [ Failure Pass ]
 [ Webview ] external/wpt/webauthn/idlharness.https.window.html [ Failure Pass ]
 [ Webview ] external/wpt/webrtc-encoded-transform/idlharness.https.window.html [ Failure Pass ]
-crbug.com/372119113 [ Webview ] external/wpt/visual-viewport/scroll-event-order.html [ Failure Pass Crash ]  # Flaky output
-crbug.com/372097205 external/wpt/visual-viewport/page-and-offset-in-iframe.html [ Failure Pass Crash ]
+crbug.com/372119113 [ Webview ] external/wpt/visual-viewport/scroll-event-order.html [ Crash Failure Pass ]  # Flaky output
+crbug.com/372097205 external/wpt/visual-viewport/page-and-offset-in-iframe.html [ Crash Failure Pass ]
