@@ -71,22 +71,6 @@ def __filegroups(ctx):
     print(fg)
     return fg
 
-def __cros_compiler(ctx, cmd):
-    tool_inputs = cmd.tool_inputs
-    for i, arg in enumerate(cmd.args):
-        if arg.startswith("-fprofile-sample-use="):
-            # profile data is in ninja input (direct or indirect),
-            # but siso doesn't include ninja inputs for deps=gcc
-            # (it would include lots of unnecessary inputs)
-            # so just add profdata by checking command line flag.
-            profdata = ctx.fs.canonpath(arg.removeprefix("-fprofile-sample-use="))
-            tool_inputs.append(profdata)
-    ctx.actions.fix(tool_inputs = tool_inputs)
-
-__handlers = {
-    "cros_compiler": __cros_compiler,
-}
-
 def __step_config(ctx, step_config):
     if __custom_toolchain(ctx):
         step_config["rules"].extend([
@@ -95,7 +79,6 @@ def __step_config(ctx, step_config):
                 "action": "(.*_)?cxx",
                 "command_prefix": "../../build/cros_cache/chrome-sdk/",
                 "remote": True,
-                "handler": "cros_compiler",
                 "canonicalize_dir": True,
                 "timeout": "5m",
             },
@@ -104,7 +87,6 @@ def __step_config(ctx, step_config):
                 "action": "(.*_)?cc",
                 "command_prefix": "../../build/cros_cache/chrome-sdk/",
                 "remote": True,
-                "handler": "cros_compiler",
                 "canonicalize_dir": True,
                 "timeout": "5m",
             },
@@ -125,6 +107,6 @@ cros = module(
     custom_toolchain = __custom_toolchain,
     custom_sysroot = __custom_sysroot,
     filegroups = __filegroups,
-    handlers = __handlers,
+    handlers = {},
     step_config = __step_config,
 )
