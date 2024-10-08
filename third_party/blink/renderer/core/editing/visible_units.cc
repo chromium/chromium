@@ -1460,14 +1460,12 @@ gfx::Rect FirstRectForRange(const EphemeralRange& range) {
   DocumentLifecycle::DisallowTransitionScope disallow_transition(
       range.GetDocument().Lifecycle());
 
-  LayoutUnit extra_width_to_end_of_line;
   DCHECK(range.IsNotNull());
 
   const PositionWithAffinity start_position(
       CreateVisiblePosition(range.StartPosition()).DeepEquivalent(),
       TextAffinity::kDownstream);
-  gfx::Rect start_caret_rect =
-      AbsoluteCaretBoundsOf(start_position, &extra_width_to_end_of_line);
+  gfx::Rect start_caret_rect = AbsoluteCaretBoundsOf(start_position);
   if (start_caret_rect.IsEmpty())
     return gfx::Rect();
 

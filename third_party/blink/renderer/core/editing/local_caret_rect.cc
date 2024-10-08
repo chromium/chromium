@@ -87,7 +87,6 @@ PositionWithAffinityTemplate<Strategy> AdjustForInlineCaretPosition(
 template <typename Strategy>
 LocalCaretRect LocalCaretRectOfPositionTemplate(
     const PositionWithAffinityTemplate<Strategy>& position,
-    LayoutUnit* extra_width_to_end_of_line,
     EditingBoundaryCrossingRule rule) {
   if (position.IsNull())
     return LocalCaretRect();
@@ -123,8 +122,7 @@ LocalCaretRect LocalCaretRectOfPositionTemplate(
 
   return LocalCaretRect(layout_object,
                         layout_object->LocalCaretRect(
-                            position.GetPosition().ComputeEditingOffset(),
-                            extra_width_to_end_of_line),
+                            position.GetPosition().ComputeEditingOffset()),
                         root_box_fragment);
 }
 
@@ -156,15 +154,14 @@ LocalCaretRect LocalSelectionRectOfPositionTemplate(
 
 LocalCaretRect LocalCaretRectOfPosition(const PositionWithAffinity& position,
                                         EditingBoundaryCrossingRule rule) {
-  return LocalCaretRectOfPositionTemplate<EditingStrategy>(position, nullptr,
-                                                           rule);
+  return LocalCaretRectOfPositionTemplate<EditingStrategy>(position, rule);
 }
 
 LocalCaretRect LocalCaretRectOfPosition(
     const PositionInFlatTreeWithAffinity& position,
     EditingBoundaryCrossingRule rule) {
-  return LocalCaretRectOfPositionTemplate<EditingInFlatTreeStrategy>(
-      position, nullptr, rule);
+  return LocalCaretRectOfPositionTemplate<EditingInFlatTreeStrategy>(position,
+                                                                     rule);
 }
 
 LocalCaretRect LocalSelectionRectOfPosition(
@@ -177,20 +174,17 @@ LocalCaretRect LocalSelectionRectOfPosition(
 template <typename Strategy>
 static gfx::Rect AbsoluteCaretBoundsOfAlgorithm(
     const PositionWithAffinityTemplate<Strategy>& position,
-    LayoutUnit* extra_width_to_end_of_line,
     EditingBoundaryCrossingRule rule) {
-  const LocalCaretRect& caret_rect = LocalCaretRectOfPositionTemplate<Strategy>(
-      position, extra_width_to_end_of_line, rule);
+  const LocalCaretRect& caret_rect =
+      LocalCaretRectOfPositionTemplate<Strategy>(position, rule);
   if (caret_rect.IsEmpty())
     return gfx::Rect();
   return gfx::ToEnclosingRect(LocalToAbsoluteQuadOf(caret_rect).BoundingBox());
 }
 
 gfx::Rect AbsoluteCaretBoundsOf(const PositionWithAffinity& position,
-                                LayoutUnit* extra_width_to_end_of_line,
                                 EditingBoundaryCrossingRule rule) {
-  return AbsoluteCaretBoundsOfAlgorithm<EditingStrategy>(
-      position, extra_width_to_end_of_line, rule);
+  return AbsoluteCaretBoundsOfAlgorithm<EditingStrategy>(position, rule);
 }
 
 template <typename Strategy>
@@ -211,7 +205,7 @@ gfx::Rect AbsoluteSelectionBoundsOf(const VisiblePosition& visible_position) {
 gfx::Rect AbsoluteCaretBoundsOf(
     const PositionInFlatTreeWithAffinity& position) {
   return AbsoluteCaretBoundsOfAlgorithm<EditingInFlatTreeStrategy>(
-      position, nullptr, kCanCrossEditingBoundary);
+      position, kCanCrossEditingBoundary);
 }
 
 }  // namespace blink

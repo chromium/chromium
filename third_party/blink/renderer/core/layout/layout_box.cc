@@ -3054,9 +3054,7 @@ LayoutUnit LayoutBox::ContainingBlockLogicalHeightForPositioned(
   return height_result;
 }
 
-PhysicalRect LayoutBox::LocalCaretRect(
-    int caret_offset,
-    LayoutUnit* extra_width_to_end_of_line) const {
+PhysicalRect LayoutBox::LocalCaretRect(int caret_offset) const {
   NOT_DESTROYED();
   // VisiblePositions at offsets inside containers either a) refer to the
   // positions before/after those containers (tables and select elements) or
@@ -3102,15 +3100,8 @@ PhysicalRect LayoutBox::LocalCaretRect(
       offset.block_offset = border_padding.block_start;
       content_inline_size -= border_padding.InlineSum();
     }
-    LayoutUnit extra_width;
     if (caret_offset) {
       offset.inline_offset += content_inline_size - caret_width;
-    } else {
-      extra_width = content_inline_size - caret_width;
-    }
-
-    if (extra_width_to_end_of_line) {
-      *extra_width_to_end_of_line = extra_width;
     }
 
     LogicalRect rect(offset, LogicalSize(caret_width, caret_block_size));
@@ -3128,12 +3119,6 @@ PhysicalRect LayoutBox::LocalCaretRect(
         is_horizontal
             ? PhysicalOffset(size.inline_size - caret_width, LayoutUnit())
             : PhysicalOffset(LayoutUnit(), size.inline_size - caret_width));
-  }
-
-  if (extra_width_to_end_of_line) {
-    *extra_width_to_end_of_line =
-        is_horizontal ? (offset.left + Size().width - rect.Right())
-                      : (offset.top + Size().height - rect.Bottom());
   }
 
   // Move to local coords
