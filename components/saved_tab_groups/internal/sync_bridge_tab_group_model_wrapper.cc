@@ -97,9 +97,6 @@ const SavedTabGroup* SyncBridgeTabGroupModelWrapper::MergeRemoteGroupMetadata(
 
 const SavedTabGroupTab* SyncBridgeTabGroupModelWrapper::MergeRemoteTab(
     const SavedTabGroupTab& remote_tab) {
-  // TODO(crbug.com/351022699): verify that both the existing and the new group
-  // correspond to the current data type.
-
   return model_->MergeRemoteTab(remote_tab);
 }
 
