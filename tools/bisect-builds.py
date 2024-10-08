@@ -85,6 +85,10 @@ DEPS_FILE_OLD = ('http://src.chromium.org/viewvc/chrome/trunk/src/'
                  'DEPS?revision=%d')
 DEPS_FILE_NEW = ('https://chromium.googlesource.com/chromium/src/+/%s/DEPS')
 
+# Source Tag
+SOURCE_TAG_URL = ('https://chromium.googlesource.com/chromium/src/'
+                  '+/refs/tags/%s?format=JSON')
+
 
 DONE_MESSAGE_GOOD_MIN = ('You are probably looking for a change made after %s ('
                          'known good), but no later than %s (first known bad).')
@@ -1768,8 +1772,10 @@ def Bisect(archive_build,
   prefetch = {}
   try:
     while len(rev_list) > 2:
+      # We are retaining the boundary elements in the rev_list, that should not
+      # count towards the steps when calculating the number the steps.
       print('You have %d revisions with about %d steps left.' %
-            (len(rev_list), (len(rev_list).bit_length() - 1)))
+            (len(rev_list), ((len(rev_list) - 2).bit_length())))
       print('Bisecting range [%s (bad), %s (good)].' %
             (rev_list[-1], rev_list[0]))
       # clean prefetch to keep only the valid fetches
@@ -1876,6 +1882,26 @@ def IsVersionNumber(revision):
   return re.match(r'^\d+\.\d+\.\d+\.\d+$', revision) is not None
 
 
+def GetRevisionFromSourceTag(tag):
+  """Return Base Commit Position based on the commit message of a version tag"""
+  # Searching from commit message for
+  # Cr-Branched-From: (?P<githash>\w+)-refs/heads/master@{#857950}
+  # Cr-Commit-Position: refs/heads/main@{#992738}
+  revision_regex = re.compile(r'refs/heads/\w+@{#(\d+)}$')
+  source_url = SOURCE_TAG_URL % str(tag)
+  data = FetchJsonFromURL(source_url)
+  match = revision_regex.search(data.get('message', ''))
+  if not match:
+    # The commit message for version tag before M116 doesn't contains
+    # Cr-Branched-From and Cr-Commit-Position message lines. However they might
+    # exists in the parent commit.
+    source_url = SOURCE_TAG_URL % str(tag) + '^'
+    data = FetchJsonFromURL(source_url)
+    match = revision_regex.search(data.get('message', ''))
+  if match:
+    return int(match.group(1))
+
+
 def GetRevisionFromVersion(version):
   """Returns Base Commit Position from a version number"""
   chromiumdash_url = VERSION_INFO_URL % str(version)
@@ -1890,10 +1916,13 @@ def GetRevisionFromVersion(version):
     # branch position from 127.0.6533.0 instead.
     chromiumdash_url = VERSION_INFO_URL % re.sub(r'\d+$', '0', str(version))
     data = FetchJsonFromURL(chromiumdash_url)
-  if data and 'chromium_main_branch_position' in data:
+  if data and data.get('chromium_main_branch_position'):
     return data['chromium_main_branch_position']
-  print('Something went wrong. The data we got from chromiumdash:\n%s' % data)
-  return None
+  revision_from_source_tag = GetRevisionFromSourceTag(version)
+  if revision_from_source_tag:
+    return revision_from_source_tag
+  raise BisectException(
+      f'Can not find revision for {version} from chromiumdash and source')
 
 
 def GetRevisionFromMilestone(milestone):
@@ -1903,7 +1932,7 @@ def GetRevisionFromMilestone(milestone):
   for m in milestones:
     if m['milestone'] == milestone:
       return m['chromium_main_branch_position']
-  return None
+  raise BisectException(f'Can not find revision for milestone {milestone}')
 
 
 def GetRevision(revision):

@@ -107,11 +107,30 @@ class BisectTest(BisectTestCase):
                                             try_args=options.args)
     return (minrev, maxrev)
 
-  def testBisectConsistentAnswer(self):
+  @patch('builtins.print')
+  def testBisectConsistentAnswer(self, mock_print):
+
+    def get_steps():
+      steps = []
+      for call in mock_print.call_args_list:
+        if call.args and call.args[0].startswith('You have'):
+          steps.append(int(re.search(r'(\d+) steps', call.args[0])[1]))
+      return steps
+
     self.assertEqual(self.bisect(1000, 100, lambda *args: 'g'), (100, 101))
+    self.assertSequenceEqual(get_steps(), range(10, 1, -1))
+
+    mock_print.reset_mock()
     self.assertEqual(self.bisect(100, 1000, lambda *args: 'b'), (100, 101))
+    self.assertSequenceEqual(get_steps(), range(10, 0, -1))
+
+    mock_print.reset_mock()
     self.assertEqual(self.bisect(2000, 200, lambda *args: 'b'), (1999, 2000))
+    self.assertSequenceEqual(get_steps(), range(11, 0, -1))
+
+    mock_print.reset_mock()
     self.assertEqual(self.bisect(200, 2000, lambda *args: 'g'), (1999, 2000))
+    self.assertSequenceEqual(get_steps(), range(11, 1, -1))
 
   @patch('bisect-builds.ArchiveBuild.run_revision', return_value=(0, '', ''))
   def test_bisect_should_retry(self, mock_run_revision):
@@ -1407,6 +1426,18 @@ class MethodTest(BisectTestCase):
         call('https://chromiumdash.appspot.com/fetch_version'
              '?version=127.0.6533.0'),
     ])
+
+  @patch("urllib.request.urlopen",
+         side_effect=[
+             io.StringIO('{"chromium_main_branch_position": null}'),
+             io.StringIO('{"message": "DEP\\n"}'),
+             io.StringIO('{"message": "Cr-Branched-From: '
+                         'e5ce7dc4f7518237b3d9bb93cccca35d25216cbe-'
+                         'refs/heads/master@{#857950}\\n"}'),
+         ])
+  def test_GetRevisionFromSourceTag(self, mock_urlopen):
+    self.assertEqual(857950,
+                     bisect_builds.GetRevisionFromVersion('127.0.6533.134'))
 
 
 if __name__ == '__main__':
