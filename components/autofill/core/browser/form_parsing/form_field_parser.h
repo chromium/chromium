@@ -215,7 +215,6 @@ class FormFieldParser {
   static constexpr float kBaseNameParserScore = 0.9f;
   static constexpr float kBaseMerchantPromoCodeParserScore = 0.85f;
   static constexpr float kBaseSearchParserScore = 0.8f;
-  static constexpr float kBaseNumericQuantityParserScore = 0.75f;
   static constexpr float kBaseImprovedPredictionsScore = 0.7f;
 
   // Only derived classes may instantiate.

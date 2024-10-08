@@ -391,16 +391,6 @@ AutofillType AutofillField::ComputedType() const {
     // predictions get precedence over the server predictions.
     believe_server = believe_server && (heuristic_type_local != IBAN_VALUE);
 
-    // The numeric quantity heuristic should get granted precedence over the
-    // server prediction since it tries to catch false-positive server
-    // predictions.
-    believe_server =
-        believe_server &&
-        !(heuristic_type_local == NUMERIC_QUANTITY &&
-          server_type_local != UNKNOWN_TYPE &&
-          base::FeatureList::IsEnabled(
-              features::kAutofillGivePrecedenceToNumericQuantities));
-
     // Password Manager ignores the computed type - it looks at server
     // predictions directly. Since many username fields also admit emails, we
     // can thus give precedence to the EMAIL_ADDRESS classification. This will

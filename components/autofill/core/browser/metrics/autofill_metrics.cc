@@ -3255,22 +3255,6 @@ const std::string PaymentsRpcResultToMetricsSuffix(PaymentsRpcResult result) {
 }
 
 // static
-void AutofillMetrics::LogNumericQuantityCollidesWithServerPrediction(
-    bool collision) {
-  base::UmaHistogramBoolean(
-      "Autofill.NumericQuantityCollidesWithServerPrediction", collision);
-}
-
-// static
-void AutofillMetrics::
-    LogAcceptedFilledFieldWithNumericQuantityHeuristicPrediction(
-        bool accepted) {
-  base::UmaHistogramBoolean(
-      "Autofill.AcceptedFilledFieldWithNumericQuantityHeuristicPrediction",
-      accepted);
-}
-
-// static
 std::string AutofillMetrics::GetHistogramStringForCardType(
     absl::variant<PaymentsRpcCardType, CreditCard::RecordType> card_type) {
   if (absl::holds_alternative<PaymentsRpcCardType>(card_type)) {

@@ -31,42 +31,6 @@ namespace autofill::autofill_metrics {
 
 namespace {
 
-void LogNumericQuantityMetrics(const FormStructure& form) {
-  for (const std::unique_ptr<AutofillField>& field : form) {
-    if (field->heuristic_type() != NUMERIC_QUANTITY) {
-      continue;
-    }
-    // For every field that has a heuristics prediction for a
-    // NUMERIC_QUANTITY, log if there was a colliding server
-    // prediction and if the NUMERIC_QUANTITY was a false-positive prediction.
-    // The latter is true when the field was correctly filled. This can
-    // only be recorded when the feature to grant precedence to
-    // NUMERIC_QUANTITY predictions is disabled.
-    bool field_has_non_empty_server_prediction =
-        field->server_type() != UNKNOWN_TYPE &&
-        field->server_type() != NO_SERVER_DATA;
-    // Log if there was a colliding server prediction.
-    AutofillMetrics::LogNumericQuantityCollidesWithServerPrediction(
-        field_has_non_empty_server_prediction);
-    if (field_has_non_empty_server_prediction) {
-      base::UmaHistogramBoolean(
-          "Autofill.NumericQuantity.DidTriggerSuggestions",
-          field->did_trigger_suggestions());
-    }
-    // If there was a collision, log if the NUMERIC_QUANTITY was a false
-    // positive since the field was correctly filled.
-    if ((field->is_autofilled() || field->previously_autofilled()) &&
-        field->filling_product() != FillingProduct::kAutocomplete &&
-        field_has_non_empty_server_prediction &&
-        !base::FeatureList::IsEnabled(
-            features::kAutofillGivePrecedenceToNumericQuantities)) {
-      AutofillMetrics::
-          LogAcceptedFilledFieldWithNumericQuantityHeuristicPrediction(
-              !field->previously_autofilled());
-    }
-  }
-}
-
 void LogPerfectFillingMetric(const FormStructure& form) {
   // Denotes whether for a given FillingProduct, the form has a field which was
   // last filled with this product (and maybe user/JS edited afterwards).
@@ -277,7 +241,6 @@ void LogQualityMetrics(
                     observed_submission);
   if (observed_submission) {
     LogExtractionMetrics(form_structure);
-    LogNumericQuantityMetrics(form_structure);
     LogDurationMetrics(form_structure, load_time, interaction_time,
                        submission_time);
   }

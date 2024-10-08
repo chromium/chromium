@@ -1218,16 +1218,6 @@ class AutofillMetrics {
       FieldType server_type,
       FieldType heuristic_types);
 
-  // Logs whether a heuristic detection for an NUMERIC_QUANTITY collides with a
-  // server prediction.
-  static void LogNumericQuantityCollidesWithServerPrediction(bool collision);
-
-  // Logs if the filling of a field was accepted even though it had a
-  // NUMERIC_QUANTITY. This metric is only emitted if the feature to grant the
-  // heuristic precedence is disabled.
-  static void LogAcceptedFilledFieldWithNumericQuantityHeuristicPrediction(
-      bool accepted);
-
   // Returns the histogram string for the passed in
   // `payments::PaymentsAutofillClient::PaymentsRpcCardType` or
   // `CreditCard::RecordType`, starting with a period.

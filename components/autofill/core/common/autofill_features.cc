@@ -17,12 +17,6 @@ BASE_FEATURE(kAutofillAcrossIframesIos,
              base::FEATURE_DISABLED_BY_DEFAULT);
 // LINT.ThenChange(//components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_across_iframes_ios)
 
-// Use the heuristic parser to detect unfillable numeric types in field labels
-// and grant the heuristic precedence over non-override server predictions.
-BASE_FEATURE(kAutofillGivePrecedenceToNumericQuantities,
-             "AutofillGivePrecedenceToNumericQuantities",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Feature flag to control the displaying of an ongoing hats survey that
 // measures users perception of Autofill. Differently from other surveys,
 // the Autofill user perception survey will not have a specific target

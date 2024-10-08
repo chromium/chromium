@@ -712,19 +712,6 @@ AutofillSaveCreditCardPromptDestination.
   <token key="Group" variants="Autofill.Ablation.Group"/>
 </histogram>
 
-<histogram
-    name="Autofill.AcceptedFilledFieldWithNumericQuantityHeuristicPrediction"
-    enum="Boolean" expires_after="2025-02-10">
-  <owner>koerber@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Logs if the filling of a field was accepted even though it had a
-    NUMERIC_QUANTITY prediction. This metric is only emitted if the feature to
-    grant the heuristic precedence is disabled. Emitted on submission time.
-    Since M127 this stopped including fields filled with autocomplete.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.AcceptedSuggestionDesktopRowViewVisibleEnough"
     enum="Boolean" expires_after="2025-08-07">
   <owner>vykochko@google.com</owner>
@@ -3697,27 +3684,6 @@ AutofillSaveCreditCardPromptDestination.
   <summary>
     The number of Autofill profiles that have been removed during deduplication.
     Emitted once per major version, if the user has at least two profiles.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.NumericQuantity.DidTriggerSuggestions" enum="Boolean"
-    expires_after="2025-02-23">
-  <owner>jihadghanna@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Logs whether a field with a NUMERIC_QUANTITY heuristic prediction and
-    non-empty server prediction triggered suggestions or not. The metric is
-    emitted on form submission.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.NumericQuantityCollidesWithServerPrediction"
-    enum="Boolean" expires_after="2025-02-10">
-  <owner>koerber@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Logs that a field with a heuristic prediction for an NUMERIC_QUANTITY
-    collides with a server prediction. The metric is emitted on form submission.
   </summary>
 </histogram>
 
