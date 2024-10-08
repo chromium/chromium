@@ -59,8 +59,10 @@ class TriangleIterator {
 
 }  // namespace
 
-bool WriteStrokeToPage(FPDF_PAGE page, const ink::Stroke& stroke) {
-  if (!page) {
+bool WriteStrokeToPage(FPDF_DOCUMENT document,
+                       FPDF_PAGE page,
+                       const ink::Stroke& stroke) {
+  if (!document || !page) {
     return false;
   }
 

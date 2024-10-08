@@ -131,7 +131,7 @@ TEST_P(PDFiumInkWriterTest, Basic) {
       CreateInkInputBatch(kBasicInputs);
   ASSERT_TRUE(inputs.has_value());
   ink::Stroke stroke(brush->GetInkBrush(), inputs.value());
-  ASSERT_TRUE(WriteStrokeToPage(page, stroke));
+  ASSERT_TRUE(WriteStrokeToPage(engine->doc(), page, stroke));
 
   ASSERT_TRUE(FPDFPage_GenerateContent(page));
 
@@ -156,14 +156,27 @@ TEST_P(PDFiumInkWriterTest, EmptyStroke) {
   auto brush =
       std::make_unique<PdfInkBrush>(PdfInkBrush::Type::kPen, kBasicBrushParams);
   ink::Stroke unused_stroke(brush->GetInkBrush());
-  ASSERT_FALSE(WriteStrokeToPage(page, unused_stroke));
+  ASSERT_FALSE(WriteStrokeToPage(engine->doc(), page, unused_stroke));
 }
 
-TEST_P(PDFiumInkWriterTest, NoPage) {
+TEST_P(PDFiumInkWriterTest, NoDocumentNoPage) {
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
+  ASSERT_TRUE(engine);
+
+  PDFiumPage& pdfium_page = GetPDFiumPageForTest(*engine, 0);
+  FPDF_PAGE page = pdfium_page.GetPage();
+  ASSERT_TRUE(page);
+
   auto brush =
       std::make_unique<PdfInkBrush>(PdfInkBrush::Type::kPen, kBasicBrushParams);
   ink::Stroke unused_stroke(brush->GetInkBrush());
-  ASSERT_FALSE(WriteStrokeToPage(/*page=*/nullptr, unused_stroke));
+  ASSERT_FALSE(
+      WriteStrokeToPage(/*document=*/nullptr, /*page=*/nullptr, unused_stroke));
+  ASSERT_FALSE(WriteStrokeToPage(/*document=*/nullptr, page, unused_stroke));
+  ASSERT_FALSE(
+      WriteStrokeToPage(engine->doc(), /*page=*/nullptr, unused_stroke));
 }
 
 // Don't be concerned about any slight rendering differences in AGG vs. Skia,
