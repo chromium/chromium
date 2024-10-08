@@ -3156,6 +3156,12 @@ const char kPrivacySandboxPrivacyGuideAdTopicsDescription[] =
     "Enables the Ad Topics card in the Privacy Guide to be displayed, subject "
     "to regional availability.";
 
+const char kPrivacySandboxPrivacyPolicyName[] =
+    "Privacy Sandbox Privacy Policy";
+const char kPrivacySandboxPrivacyPolicyDescription[] =
+    "Enables the Privacy Policy link to be displayed on the Privacy Sandbox "
+    "Consent dialog, subject to regional availability.";
+
 const char kProtectedAudiencesConsentedDebugTokenName[] =
     "Protected Audiences Consented Debug Token";
 const char kProtectedAudiencesConsentedDebugTokenDescription[] =

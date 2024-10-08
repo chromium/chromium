@@ -11866,6 +11866,11 @@ const FeatureEntry kFeatureEntries[] = {
          chrome::android::kAutomotiveFullscreenToolbarImprovements)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+    {"privacy-sandbox-privacy-policy",
+     flag_descriptions::kPrivacySandboxPrivacyPolicyName,
+     flag_descriptions::kPrivacySandboxPrivacyPolicyDescription, kOsAll,
+     FEATURE_VALUE_TYPE(privacy_sandbox::kPrivacySandboxPrivacyPolicy)},
+
         // NOTE: Adding a new flag requires adding a corresponding entry to enum
         // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
         // Histograms" in tools/metrics/histograms/README.md (run the

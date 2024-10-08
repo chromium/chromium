@@ -17112,6 +17112,7 @@ from previous Chrome versions.
   <int value="-1325230610" label="TailoredSecurityRetryForSyncUsers:enabled"/>
   <int value="-1324982303" label="MacAddressRandomization:disabled"/>
   <int value="-1324972952" label="WallpaperGooglePhotosSharedAlbums:disabled"/>
+  <int value="-1324780951" label="PrivacySandboxPrivacyPolicy:enabled"/>
   <int value="-1324634193" label="EnablePalmOnMaxTouchMajor:disabled"/>
   <int value="-1324313449" label="ScreenSaverPreview:enabled"/>
   <int value="-1324029365" label="EnableTLS13EarlyData:enabled"/>
@@ -18601,6 +18602,7 @@ from previous Chrome versions.
   <int value="-714712077" label="ClickToOpenPDFPlaceholder:disabled"/>
   <int value="-714710496" label="VideoFullscreenOrientationLock:disabled"/>
   <int value="-714543772" label="enable-gpu-service-logging"/>
+  <int value="-714064808" label="PrivacySandboxPrivacyPolicy:disabled"/>
   <int value="-714043324" label="OutOfBlinkCORS:enabled"/>
   <int value="-713705575" label="PhoneHubCallNotification:enabled"/>
   <int value="-713136799" label="NearbySharingOnePageOnboarding:disabled"/>
