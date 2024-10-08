@@ -28,10 +28,10 @@
 #include "base/values.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/mahi/mahi_browser_delegate_ash.h"
 #include "chrome/browser/ash/sparky/sparky_delegate_impl.h"
 #include "chromeos/ash/components/sparky/system_info_delegate_impl.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/manta/features.h"
@@ -50,14 +50,6 @@ using chromeos::MahiResponseStatus;
 using crosapi::mojom::MahiContextMenuActionType;
 constexpr int kMaxConsecutiveTurns = 20;
 constexpr base::TimeDelta kWaitBeforeAdditionalCall = base::Seconds(2);
-
-ash::MahiBrowserDelegateAsh* GetMahiBrowserDelgateAsh() {
-  auto* mahi_browser_delegate_ash = crosapi::CrosapiManager::Get()
-                                        ->crosapi_ash()
-                                        ->mahi_browser_delegate_ash();
-  CHECK(mahi_browser_delegate_ash);
-  return mahi_browser_delegate_ash;
-}
 
 }  // namespace
 namespace ash {
@@ -135,8 +127,8 @@ GURL SparkyManagerImpl::GetContentUrl() {
 }
 
 void SparkyManagerImpl::GetSummary(MahiSummaryCallback callback) {
-  GetMahiBrowserDelgateAsh()->GetContentFromClient(
-      current_page_info_->client_id, current_page_info_->page_id,
+  chromeos::MahiWebContentsManager::Get()->RequestContent(
+      current_page_info_->page_id,
       base::BindOnce(&SparkyManagerImpl::OnGetPageContentForSummary,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -167,8 +159,8 @@ void SparkyManagerImpl::AnswerQuestionRepeating(
     return;
   }
 
-  GetMahiBrowserDelgateAsh()->GetContentFromClient(
-      current_page_info_->client_id, current_page_info_->page_id,
+  chromeos::MahiWebContentsManager::Get()->RequestContent(
+      current_page_info_->page_id,
       base::BindOnce(&SparkyManagerImpl::OnGetPageContentForQA,
                      weak_ptr_factory_.GetWeakPtr(), question,
                      std::move(callback)));

@@ -37,7 +37,6 @@ class DigitalGoodsFactoryAsh;
 namespace ash {
 class DiagnosticsServiceAsh;
 class MagicBoostControllerAsh;
-class MahiBrowserDelegateAsh;
 class ProbeServiceAsh;
 class SmartReaderManagerAsh;
 class TelemetryDiagnosticsRoutineServiceAsh;
@@ -586,10 +585,6 @@ class CrosapiAsh : public mojom::Crosapi {
     return magic_boost_controller_ash_.get();
   }
 
-  ash::MahiBrowserDelegateAsh* mahi_browser_delegate_ash() {
-    return mahi_browser_delegate_ash_.get();
-  }
-
   MediaAppAsh* media_app_ash() { return media_app_ash_.get(); }
 
   MediaUIAsh* media_ui_ash() { return media_ui_ash_.get(); }
@@ -752,7 +747,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<LoginScreenStorageAsh> login_screen_storage_ash_;
   std::unique_ptr<LoginStateAsh> login_state_ash_;
   std::unique_ptr<ash::MagicBoostControllerAsh> magic_boost_controller_ash_;
-  std::unique_ptr<ash::MahiBrowserDelegateAsh> mahi_browser_delegate_ash_;
   std::unique_ptr<MediaAppAsh> media_app_ash_;
   std::unique_ptr<MediaUIAsh> media_ui_ash_;
   std::unique_ptr<MessageCenterAsh> message_center_ash_;

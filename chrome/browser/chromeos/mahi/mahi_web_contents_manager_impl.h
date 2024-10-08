@@ -12,7 +12,6 @@
 #include "base/no_destructor.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/chromeos/mahi/mahi_browser_client_impl.h"
 #include "chrome/browser/chromeos/mahi/mahi_content_extraction_delegate.h"
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chromeos/components/mahi/public/cpp/mahi_browser_util.h"

@@ -827,7 +827,6 @@ source_set("browser_tests") {
   sources = [
     "file_change_service_bridge_ash_browsertest.cc",
     "magic_boost_ash_browsertest.cc",
-    "mahi_ash_browsertest.cc",
     "media_ui_ash_browsertest.cc",
     "network_settings_service_ash_browsertest.cc",
     "power_ash_apitest.cc",

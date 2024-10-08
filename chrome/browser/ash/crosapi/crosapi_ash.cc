@@ -118,7 +118,6 @@
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
-#include "chrome/browser/ash/mahi/mahi_browser_delegate_ash.h"
 #include "chrome/browser/ash/printing/print_preview/print_preview_webcontents_adapter_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
@@ -283,8 +282,6 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       login_state_ash_(std::make_unique<LoginStateAsh>()),
       magic_boost_controller_ash_(
           std::make_unique<ash::MagicBoostControllerAsh>()),
-      mahi_browser_delegate_ash_(
-          std::make_unique<ash::MahiBrowserDelegateAsh>()),
       media_app_ash_(std::make_unique<MediaAppAsh>()),
       media_ui_ash_(std::make_unique<MediaUIAsh>()),
       message_center_ash_(std::make_unique<MessageCenterAsh>()),
@@ -780,7 +777,7 @@ void CrosapiAsh::BindMachineLearningService(
 
 void CrosapiAsh::BindMahiBrowserDelegate(
     mojo::PendingReceiver<mojom::MahiBrowserDelegate> receiver) {
-  mahi_browser_delegate_ash_->BindReceiver(std::move(receiver));
+  NOTIMPLEMENTED();
 }
 
 void CrosapiAsh::BindMagicBoostController(

@@ -8,8 +8,6 @@ assert(is_chromeos)
 
 static_library("mahi") {
   sources = [
-    "mahi_browser_client_impl.cc",
-    "mahi_browser_client_impl.h",
     "mahi_content_extraction_delegate.cc",
     "mahi_content_extraction_delegate.h",
     "mahi_tab_helper.cc",
