@@ -10,10 +10,8 @@ Do not modify it manually. -->
   <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Privado. Rápido. Menos anuncios. DuckDuckGo nunca te rastrea.</translation>
   <translation id="IDS_ECOSIA_SEARCH_DESCRIPTION">Planta árboles gratis buscando en Internet. Ya más de 200 millones de árboles.</translation>
   <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Con Google, encuentra lo que necesitas</translation>
-  <translation id="IDS_KARMA_SEARCH_DESCRIPTION">El motor de búsqueda que protege la biodiversidad y el bienestar animal</translation>
   <translation id="IDS_LILO_SEARCH_DESCRIPTION">Tu investigación en Internet financia asociaciones gratis</translation>
-  <translation id="IDS_OCEANHERO_SEARCH_DESCRIPTION">Tus búsquedas limpian nuestros océanos y playas de plástico.</translation>
-  <translation id="IDS_PANDA_SEARCH_DESCRIPTION">Consulta con Panda y apoya los proyectos y campañas de WWF.</translation>
   <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">Un motor de búsqueda que protege tu privacidad.</translation>
   <translation id="IDS_YAHOO_SEARCH_DESCRIPTION">Busca en la Web y encuentra respuestas a preguntas cotidianas con Yahoo.</translation>
+  <translation id="IDS_YEP_SEARCH_DESCRIPTION">Buscador web que comparte los ingresos publicitarios con los creadores.</translation>
 </translationbundle>

@@ -188,20 +188,8 @@ process but are generated using a script that pulls them from outside the repo.-
       <message name="IDS_GOOGLE_SEARCH_DESCRIPTION" use_name_for_id="true">
         Find what you need with Google
       </message>
-      <message name="IDS_KARMA_SEARCH_DESCRIPTION" use_name_for_id="true">
-        Protect animals and biodiversity - make every search count!
-      </message>
       <message name="IDS_LILO_SEARCH_DESCRIPTION" use_name_for_id="true">
         Your internet searches fund for free social and environmental projects
-      </message>
-      <message name="IDS_METAGER_SEARCH_DESCRIPTION" use_name_for_id="true">
-        Search safely while having your privacy respected.
-      </message>
-      <message name="IDS_OCEANHERO_SEARCH_DESCRIPTION" use_name_for_id="true">
-        Your searches power the cleaning of our oceans and beaches of plastic waste
-      </message>
-      <message name="IDS_PANDA_SEARCH_DESCRIPTION" use_name_for_id="true">
-        Search with Panda and support WWF projects and campaigns.
       </message>
       <message name="IDS_PRIVACYWALL_SEARCH_DESCRIPTION" use_name_for_id="true">
         A search engine that protects your privacy.
@@ -215,8 +203,8 @@ process but are generated using a script that pulls them from outside the repo.-
       <message name="IDS_YAHOO_SEARCH_DESCRIPTION" use_name_for_id="true">
         Search the web and answer life’s daily questions with Yahoo.
       </message>
-      <message name="IDS_YOU_SEARCH_DESCRIPTION" use_name_for_id="true">
-        AI enhanced search
+      <message name="IDS_YEP_SEARCH_DESCRIPTION" use_name_for_id="true">
+        Web search engine that aims to share ad revenue with creators.
       </message>
     </messages>
   </release>

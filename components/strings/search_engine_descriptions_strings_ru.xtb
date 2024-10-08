@@ -7,4 +7,5 @@ Do not modify it manually. -->
 <translationbundle lang="ru">
   <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Найдите то, что вам нужно, вместе с Google</translation>
   <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">Поисковая система, которая защищает вашу конфиденциальность.</translation>
+  <translation id="IDS_YEP_SEARCH_DESCRIPTION">Система веб-поиска, цель которой - делиться доходами от рекламы с создателями.</translation>
 </translationbundle>

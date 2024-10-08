@@ -7,6 +7,6 @@ Do not modify it manually. -->
 <translationbundle lang="bg">
   <translation id="IDS_BING_SEARCH_DESCRIPTION">Осъществено от GPT-4 на ChatGPT</translation>
   <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Намери каквото ти трябва с Гугъл</translation>
-  <translation id="IDS_OCEANHERO_SEARCH_DESCRIPTION">Търсенията ви почистват океаните и плажове от пластмасови отпадъци.</translation>
   <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">Търсачка, която защитава вашата поверителност.</translation>
+  <translation id="IDS_YEP_SEARCH_DESCRIPTION">Уеб търсачка, която има за цел споделя приходи от реклами с създателите.</translation>
 </translationbundle>
