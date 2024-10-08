@@ -1358,15 +1358,15 @@ bool CrabbyAVIFImageDecoder::GetGainmapInfoAndData(
   // 'tmap' box.
   if (decoder_->gainMapPresent) {
     const crabbyavif::avifGainMap& gain_map = *decoder_->image->gainMap;
-    const crabbyavif::avifGainMapMetadata& metadata = gain_map.metadata;
-    if (metadata.baseHdrHeadroomD == 0 || metadata.alternateHdrHeadroomD == 0) {
+    if (gain_map.baseHdrHeadroom.d == 0 ||
+        gain_map.alternateHdrHeadroom.d == 0) {
       DVLOG(1) << "Invalid gainmap metadata: a denominator value is zero";
       return false;
     }
-    const float base_headroom = std::exp2(
-        FractionToFloat(metadata.baseHdrHeadroomN, metadata.baseHdrHeadroomD));
+    const float base_headroom = std::exp2(FractionToFloat(
+        gain_map.baseHdrHeadroom.n, gain_map.baseHdrHeadroom.d));
     const float alternate_headroom = std::exp2(FractionToFloat(
-        metadata.alternateHdrHeadroomN, metadata.alternateHdrHeadroomD));
+        gain_map.alternateHdrHeadroom.n, gain_map.alternateHdrHeadroom.d));
     const bool base_is_hdr = base_headroom > alternate_headroom;
     out_gainmap_info.fDisplayRatioSdr =
         base_is_hdr ? alternate_headroom : base_headroom;
@@ -1376,37 +1376,37 @@ bool CrabbyAVIFImageDecoder::GetGainmapInfoAndData(
                                           ? SkGainmapInfo::BaseImageType::kHDR
                                           : SkGainmapInfo::BaseImageType::kSDR;
     for (int i = 0; i < 3; ++i) {
-      if (metadata.gainMapMinD[i] == 0 || metadata.gainMapMaxD[i] == 0 ||
-          metadata.gainMapGammaD[i] == 0 || metadata.baseOffsetD[i] == 0 ||
-          metadata.alternateOffsetD[i] == 0) {
+      if (gain_map.gainMapMin[i].d == 0 || gain_map.gainMapMax[i].d == 0 ||
+          gain_map.gainMapGamma[i].d == 0 || gain_map.baseOffset[i].d == 0 ||
+          gain_map.alternateOffset[i].d == 0) {
         DVLOG(1) << "Invalid gainmap metadata: a denominator value is zero";
         return false;
       }
-      if (metadata.gainMapGammaN[i] == 0) {
+      if (gain_map.gainMapGamma[i].n == 0) {
         DVLOG(1) << "Invalid gainmap metadata: gamma is zero";
         return false;
       }
 
       const float min_log2 =
-          FractionToFloat(metadata.gainMapMinN[i], metadata.gainMapMinD[i]);
+          FractionToFloat(gain_map.gainMapMin[i].n, gain_map.gainMapMin[i].d);
       const float max_log2 =
-          FractionToFloat(metadata.gainMapMaxN[i], metadata.gainMapMaxD[i]);
+          FractionToFloat(gain_map.gainMapMax[i].n, gain_map.gainMapMax[i].d);
       out_gainmap_info.fGainmapRatioMin[i] = std::exp2(min_log2);
       out_gainmap_info.fGainmapRatioMax[i] = std::exp2(max_log2);
 
       // Numerator and denominator intentionally swapped to get 1.0/gamma.
-      out_gainmap_info.fGainmapGamma[i] =
-          FractionToFloat(metadata.gainMapGammaD[i], metadata.gainMapGammaN[i]);
+      out_gainmap_info.fGainmapGamma[i] = FractionToFloat(
+          gain_map.gainMapGamma[i].d, gain_map.gainMapGamma[i].n);
       const float base_offset =
-          FractionToFloat(metadata.baseOffsetN[i], metadata.baseOffsetD[i]);
+          FractionToFloat(gain_map.baseOffset[i].n, gain_map.baseOffset[i].d);
       const float alternate_offset = FractionToFloat(
-          metadata.alternateOffsetN[i], metadata.alternateOffsetD[i]);
+          gain_map.alternateOffset[i].n, gain_map.alternateOffset[i].d);
       out_gainmap_info.fEpsilonSdr[i] =
           base_is_hdr ? alternate_offset : base_offset;
       out_gainmap_info.fEpsilonHdr[i] =
           base_is_hdr ? base_offset : alternate_offset;
 
-      if (!metadata.useBaseColorSpace) {
+      if (!gain_map.useBaseColorSpace) {
         // Try to use the alternate image's color space.
         out_gainmap_info.fGainmapMathColorSpace =
             GetAltImageColorSpace(*decoder_->image);

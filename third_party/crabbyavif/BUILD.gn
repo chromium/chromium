@@ -87,6 +87,8 @@ rust_bindgen("crabbyavif_libyuv_bindings") {
     "allowlist-item=I444AlphaToARGBMatrix",
     "allowlist-item=I444ToARGBMatrix",
     "allowlist-item=I444ToRGB24Matrix",
+    "allowlist-item=NV12ToARGBMatrix",
+    "allowlist-item=NV21ToARGBMatrix",
     "allowlist-item=P010ToAR30Matrix",
     "allowlist-item=ScalePlane",
     "allowlist-item=ScalePlane_12",
