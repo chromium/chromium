@@ -207,6 +207,7 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           // TODO(crbug.com/40741721): Remove once shared labels are launched.
           features::kAutofillEnableSupportForParsingWithSharedLabels,
           features::kAutofillPageLanguageDetection,
+          features::kAutofillFixValueSemantics,
           // TODO(crbug.com/40220393): Remove once launched.
           features::kAutofillEnableSupportForPhoneNumberTrunkTypes,
           features::kAutofillInferCountryCallingCode,
@@ -373,6 +374,7 @@ const auto& GetFailingTestNames() {
       // TODO(crbug.com/360322019): Even though the page language detection
       // feature is enabled, is it not triggered properly for this test on iOS.
       "153_fmm-en_inm.gob.mx.html",
+      "155_fmm-ja_inm.gob.mx.html",
   };
   return failing_test_names;
 }

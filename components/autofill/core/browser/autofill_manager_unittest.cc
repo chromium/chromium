@@ -305,8 +305,11 @@ TEST_F(AutofillManagerTest, FormCacheUpdatesValue) {
 }
 
 TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillPageLanguageDetection};
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillPageLanguageDetection,
+                            features::kAutofillFixValueSemantics},
+      /*disabled_features=*/{});
 
   std::vector<FormData> forms = CreateTestForms(2);
   FormData form = forms[0];

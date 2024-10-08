@@ -6712,8 +6712,10 @@ class BrowserAutofillManagerTestPageLanguageDetection
       public testing::WithParamInterface<bool> {
  public:
   BrowserAutofillManagerTestPageLanguageDetection() {
-    scoped_features_.InitAndEnableFeature(
-        features::kAutofillPageLanguageDetection);
+    scoped_features_.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillPageLanguageDetection,
+                              features::kAutofillFixValueSemantics},
+        /*disabled_features=*/{});
   }
 
   bool is_active() const { return GetParam(); }
@@ -6734,10 +6736,10 @@ TEST_P(BrowserAutofillManagerTestPageLanguageDetection, GetsCorrectlyDetected) {
 
   translate::LanguageDetectionDetails language_detection_details;
   language_detection_details.adopted_language = "hu";
+  autofill_client_.GetLanguageState()->SetCurrentLanguage("hu");
+
   autofill_driver_->SetIsActive(is_active());
   browser_autofill_manager_->OnLanguageDetermined(language_detection_details);
-
-  autofill_client_.GetLanguageState()->SetCurrentLanguage("hu");
 
   parsed_form = browser_autofill_manager_->FindCachedFormById(form.global_id());
 
