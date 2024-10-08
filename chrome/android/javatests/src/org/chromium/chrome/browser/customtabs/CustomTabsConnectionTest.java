@@ -40,6 +40,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
@@ -54,10 +55,12 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.util.PrefetchTestUtil;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,6 +76,18 @@ public class CustomTabsConnectionTest {
     private static final String URL2 = "https://www.android.com";
     private static final String URL3 = "https://example.com";
     private static final String INVALID_SCHEME_URL = "intent://www.google.com";
+    private static final String TEST_PAGE = "/chrome/test/data/android/simple.html";
+
+    private String mTestPageUrl;
+    private EmbeddedTestServer mTestServer;
+
+    /* This should only be called for the test that uses EmbeddedTestServer */
+    private void prepareEmbeddedTestServer() {
+        Context context = ApplicationProvider.getApplicationContext();
+        mTestServer =
+                EmbeddedTestServer.createAndStartHTTPSServer(context, ServerCertificate.CERT_OK);
+        mTestPageUrl = mTestServer.getURL(TEST_PAGE);
+    }
 
     @Rule
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
@@ -406,19 +421,17 @@ public class CustomTabsConnectionTest {
         // 4. Launch a second custom tab and confirm that it sees the third cookie.
         // 5. Launch a third custom tab and confirm that it sees the first cookie.
 
+        prepareEmbeddedTestServer();
         Context context = ApplicationProvider.getApplicationContext();
 
         Assert.assertTrue("Failed warmup()", mCustomTabsConnection.warmup(0));
-
-        EmbeddedTestServer server =
-                EmbeddedTestServer.createAndStartHTTPSServer(context, ServerCertificate.CERT_OK);
-        final String url = server.getURL("/chrome/test/data/android/simple.html");
 
         final OnEvaluateJavaScriptResultHelper JsHelper = new OnEvaluateJavaScriptResultHelper();
 
         // Launch a custom tab and load the url.
         Assert.assertTrue("Failed warmup()", mCustomTabsConnection.warmup(0));
-        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, url);
+        Intent intent =
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPageUrl);
         mCustomTabActivityTestRule.launchActivity(intent);
         Tab normalTab = mCustomTabActivityTestRule.getActivity().getActivityTab();
 
@@ -445,14 +458,15 @@ public class CustomTabsConnectionTest {
         // Launch the first hidden tab. This tab should use a separate storage partition and
         // therefore shouldn't see the first cookie.
         Assert.assertTrue("Failed warmup()", mCustomTabsConnection.warmup(0));
-        Intent intent2 = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, url);
+        Intent intent2 =
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPageUrl);
         CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent2);
         Assert.assertTrue("Failed newSession()", mCustomTabsConnection.newSession(token));
         mCustomTabsConnection.setCanUseHiddenTabForSession(token, true);
 
         Assert.assertTrue(
                 "Failed first mayLaunchUrl()",
-                mCustomTabsConnection.mayLaunchUrl(token, Uri.parse(url), null, null));
+                mCustomTabsConnection.mayLaunchUrl(token, Uri.parse(mTestPageUrl), null, null));
 
         CriteriaHelper.pollUiThread(
                 () ->
@@ -485,7 +499,7 @@ public class CustomTabsConnectionTest {
         mCustomTabsConnection.resetThrottling(Process.myUid());
         Assert.assertTrue(
                 "Failed second mayLaunchUrl()",
-                mCustomTabsConnection.mayLaunchUrl(token, Uri.parse(url), null, null));
+                mCustomTabsConnection.mayLaunchUrl(token, Uri.parse(mTestPageUrl), null, null));
 
         CriteriaHelper.pollUiThread(
                 () ->
@@ -536,7 +550,8 @@ public class CustomTabsConnectionTest {
         // Finally, launch a third custom tab. Because there isn't an associated mayLaunchUrl this
         // custom tab will use the default storage partition and will access the first cookie.
         Assert.assertTrue("Failed warmup()", mCustomTabsConnection.warmup(0));
-        Intent intent3 = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, url);
+        Intent intent3 =
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPageUrl);
         mCustomTabActivityTestRule.launchActivity(intent3);
         Tab normalTab3 = mCustomTabActivityTestRule.getActivity().getActivityTab();
 
@@ -859,11 +874,18 @@ public class CustomTabsConnectionTest {
         ChromeFeatureList.CCT_NAVIGATIONAL_PREFETCH
     })
     public void testPrefetch() throws Exception {
+        prepareEmbeddedTestServer();
         CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
         Assert.assertTrue(mCustomTabsConnection.newSession(token));
-        Assert.assertTrue(
-                mCustomTabsConnection.prefetch(
-                        token, Uri.parse(URL), new PrefetchOptions.Builder().build()));
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("PrefetchProxy.Prefetch.Mainframe.BodyLength")
+                        .build();
+        mCustomTabsConnection.prefetch(
+                token, List.of(Uri.parse(mTestPageUrl)), new PrefetchOptions.Builder().build());
+        PrefetchTestUtil.waitUntilPrefetchResponseCompleted(new GURL(mTestPageUrl));
+        histogramWatcher.assertExpected();
     }
 
     /** Tests that prefetch() also succeeds if we run warmup beforehand */
@@ -874,12 +896,19 @@ public class CustomTabsConnectionTest {
         ChromeFeatureList.CCT_NAVIGATIONAL_PREFETCH
     })
     public void testPrefetchWithWarmup() throws Exception {
+        prepareEmbeddedTestServer();
         CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
         Assert.assertTrue(mCustomTabsConnection.warmup(0));
         Assert.assertTrue(mCustomTabsConnection.newSession(token));
-        Assert.assertTrue(
-                mCustomTabsConnection.prefetch(
-                        token, Uri.parse(URL), new PrefetchOptions.Builder().build()));
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("PrefetchProxy.Prefetch.Mainframe.BodyLength")
+                        .build();
+        mCustomTabsConnection.prefetch(
+                token, List.of(Uri.parse(mTestPageUrl)), new PrefetchOptions.Builder().build());
+        PrefetchTestUtil.waitUntilPrefetchResponseCompleted(new GURL(mTestPageUrl));
+        histogramWatcher.assertExpected();
     }
 
     /** Tests that prefetch() with invalid Uri fails. */
@@ -890,13 +919,20 @@ public class CustomTabsConnectionTest {
         ChromeFeatureList.CCT_NAVIGATIONAL_PREFETCH
     })
     public void testPrefetchWithInvalidUri() throws Exception {
+        prepareEmbeddedTestServer();
         CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
         Assert.assertTrue(mCustomTabsConnection.newSession(token));
-        Assert.assertFalse(
-                mCustomTabsConnection.prefetch(
-                        token,
-                        Uri.parse(INVALID_SCHEME_URL),
-                        new PrefetchOptions.Builder().build()));
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecordTimes("PrefetchProxy.Prefetch.Mainframe.BodyLength", 1)
+                        .build();
+        mCustomTabsConnection.prefetch(
+                token,
+                List.of(Uri.parse(INVALID_SCHEME_URL), Uri.parse(mTestPageUrl)),
+                new PrefetchOptions.Builder().build());
+        PrefetchTestUtil.waitUntilPrefetchResponseCompleted(new GURL(mTestPageUrl));
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -934,7 +970,11 @@ public class CustomTabsConnectionTest {
                         Origin.create(prefetchOptionsInvalidSourceOrigin.sourceOrigin.toString())));
     }
 
-    /** Tests that prefetch() with valid Uri and valid sourceOrigin succeeds. */
+    /**
+     * Tests that prefetch() with valid Uri and valid sourceOrigin succeeds.
+     * TODO(crbug.com/40288091): Update this to follow the change in crrev.com/c/5873830 and check
+     * more detailed prefetch result
+     */
     @Test
     @SmallTest
     @EnableFeatures({
@@ -955,16 +995,17 @@ public class CustomTabsConnectionTest {
                                 packageName,
                                 Origin.create(sourceOrigin),
                                 CustomTabsService.RELATION_USE_AS_ORIGIN));
-        Assert.assertTrue(
-                mCustomTabsConnection.prefetch(
-                        token,
-                        Uri.parse(prefetchUrl),
-                        new PrefetchOptions.Builder()
-                                .setSourceOrigin(Uri.parse(sourceOrigin))
-                                .build()));
+        mCustomTabsConnection.prefetch(
+                token,
+                List.of(Uri.parse(prefetchUrl)),
+                new PrefetchOptions.Builder().setSourceOrigin(Uri.parse(sourceOrigin)).build());
     }
 
-    /** Tests that prefetch() with valid Uri and invalid sourceOrigin succeeds. */
+    /**
+     * Tests that prefetch() with valid Uri and invalid sourceOrigin succeeds.
+     * TODO(crbug.com/40288091): Update this to follow the change in crrev.com/c/5873830 and check
+     * more detailed prefetch result.
+     */
     @Test
     @SmallTest
     @EnableFeatures({
@@ -979,12 +1020,11 @@ public class CustomTabsConnectionTest {
         CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
         Assert.assertTrue(mCustomTabsConnection.newSession(token));
         mCustomTabsConnection.overridePackageNameForSessionForTesting(token, packageName);
-        Assert.assertTrue(
-                mCustomTabsConnection.prefetch(
-                        token,
-                        Uri.parse(prefetchUrl),
-                        new PrefetchOptions.Builder()
-                                .setSourceOrigin(Uri.parse(invalidSourceOrigin))
-                                .build()));
+        mCustomTabsConnection.prefetch(
+                token,
+                List.of(Uri.parse(prefetchUrl)),
+                new PrefetchOptions.Builder()
+                        .setSourceOrigin(Uri.parse(invalidSourceOrigin))
+                        .build());
     }
 }

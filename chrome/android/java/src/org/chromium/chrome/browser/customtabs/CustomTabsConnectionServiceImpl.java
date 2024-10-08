@@ -71,9 +71,10 @@ public class CustomTabsConnectionServiceImpl extends CustomTabsConnectionService
 
     @Override
     @androidx.browser.customtabs.ExperimentalPrefetch
-    protected void prefetch(CustomTabsSessionToken sessionToken, Uri uri, PrefetchOptions options) {
+    protected void prefetch(
+            CustomTabsSessionToken sessionToken, List<Uri> urls, PrefetchOptions options) {
         if (!isFirstRunDone()) return;
-        mConnection.prefetch(sessionToken, uri, options);
+        mConnection.prefetch(sessionToken, urls, options);
     }
 
     @Override

@@ -1273,7 +1273,8 @@ public class CustomTabActivityTest {
         connection.newSession(token);
 
         // Start prefetch and wait until the prefetch request is completed.
-        connection.prefetch(token, Uri.parse(mTestPage), new PrefetchOptions.Builder().build());
+        connection.prefetch(
+                token, List.of(Uri.parse(mTestPage)), new PrefetchOptions.Builder().build());
         PrefetchTestUtil.waitUntilPrefetchResponseCompleted(new GURL(mTestPage));
 
         // Open custom tabs, and check prefetch result is served as expected.

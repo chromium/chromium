@@ -672,8 +672,8 @@ public class CustomTabsConnection {
     }
 
     @androidx.browser.customtabs.ExperimentalPrefetch
-    public boolean prefetch(
-            CustomTabsSessionToken session, Uri uri, @Nullable PrefetchOptions options) {
+    public void prefetch(
+            CustomTabsSessionToken session, List<Uri> urls, @Nullable PrefetchOptions options) {
         try (TraceEvent e = TraceEvent.scoped("CustomTabsConnection.prefetch")) {
             if (!ChromeFeatureList.sPrefetchBrowserInitiatedTriggers.isEnabled()
                     || !ChromeFeatureList.sCctNavigationalPrefetch.isEnabled()) {
@@ -681,18 +681,15 @@ public class CustomTabsConnection {
                         TAG,
                         "Prefetch failed because PrefetchBrowserInitiatedTriggers and/or"
                                 + " CCTNavigationalPrefetch is not enabled.");
-                return false;
+                return;
             }
-            return prefetchInternal(session, uri, options);
+            prefetchInternal(session, urls, options);
         }
     }
 
     @androidx.browser.customtabs.ExperimentalPrefetch
-    private boolean prefetchInternal(
-            CustomTabsSessionToken session, Uri uri, PrefetchOptions options) {
-        String uriString = isValid(uri) ? uri.toString() : null;
-        if (uriString == null) return false;
-
+    private void prefetchInternal(
+            CustomTabsSessionToken session, List<Uri> urls, PrefetchOptions options) {
         boolean usePrefetchProxy = options.requiresAnonymousIpWhenCrossOrigin;
         Origin sourceOrigin =
                 options.sourceOrigin != null
@@ -713,14 +710,19 @@ public class CustomTabsConnection {
                             isValidForPrefetchSourceOrigin(session, sourceOrigin)
                                     ? sourceOrigin.toString()
                                     : null;
-
-                    PostTask.postTask(
-                            TaskTraits.UI_DEFAULT,
-                            () -> {
-                                WarmupManager.getInstance()
-                                        .startPrefetchFromCCT(
-                                                uriString, usePrefetchProxy, verifiedSourceOrigin);
-                            });
+                    for (Uri url : urls) {
+                        String urlString = isValid(url) ? url.toString() : null;
+                        if (urlString == null) continue;
+                        PostTask.postTask(
+                                TaskTraits.UI_DEFAULT,
+                                () -> {
+                                    WarmupManager.getInstance()
+                                            .startPrefetchFromCCT(
+                                                    urlString,
+                                                    usePrefetchProxy,
+                                                    verifiedSourceOrigin);
+                                });
+                    }
                 };
 
         // (2)
@@ -736,8 +738,6 @@ public class CustomTabsConnection {
 
         // (1)
         warmupInternal(true, validateOrigin);
-
-        return true;
     }
 
     @VisibleForTesting
